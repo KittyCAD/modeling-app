@@ -2101,15 +2101,16 @@ hide(sketch001)`
     })
   }
 
-  test('Revolve point-and-click', async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    modelingDialog,
-  }) => {
-    const initialCode = `sketch001 = sketch(on = XZ) {
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Revolve point-and-click ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      modelingDialog,
+    }) => {
+      const initialCode = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -102.57mm, var 101.72mm], end = [var 100.03mm, var 101.72mm])
   line2 = line(start = [var 100.03mm, var 101.72mm], end = [var 100.03mm, var -100.88mm])
   coincident([line1.end, line2.start])
@@ -2126,15 +2127,15 @@ sketch002 = sketch(on = face001) {
 }
 hidden001 = hide(sketch002)
 region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
-    // TODO: replace region line above with topological selection, see https://kittycadworkspace.slack.com/archives/C09CJ6XPY1Y/p1775311720628419?thread_ts=1775157918.840339&cid=C09CJ6XPY1Y
-    const newCodeToFindAfterAdd = `revolve001 = revolve(
+      // TODO: replace region line above with topological selection, see https://kittycadworkspace.slack.com/archives/C09CJ6XPY1Y/p1775311720628419?thread_ts=1775157918.840339&cid=C09CJ6XPY1Y
+      const newCodeToFindAfterAdd = `revolve001 = revolve(
   region002,
   angle = 360deg,
   axis = {
     sideFaces = [region001.tags.line1, capEnd001]
   },
 )`
-    const newCodeToFindAfterEdit = `revolve001 = revolve(
+      const newCodeToFindAfterEdit = `revolve001 = revolve(
   region002,
   angle = 360deg,
   axis = {
@@ -2142,71 +2143,75 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
   },
 )`
 
-    await page.setBodyDimensions({ width: 1200, height: 800 })
-    await homePage.goToModelingScene()
-    await scene.settled()
-    await scene.waitForExecutionDoneAfter(() =>
-      editor.replaceCode('', initialCode)
-    )
-    await resetView(scene)
-
-    await test.step('Add revolve feature via point-and-click', async () => {
-      // select line of code
-      const codeToSelection = `region002 = region(`
-      // revolve
-      await editor.selectText(codeToSelection)
-      await editor.closePane()
-      await toolbar.revolveButton.click()
-      await modelingDialog.selection('Profiles').click()
-
-      await expect(modelingDialog.options('axis or edge')).toBeVisible()
-      await modelingDialog
-        .options('axis or edge')
-        .selectOption({ label: 'Edge' })
-      await modelingDialog.selection('Edge').click()
-      const [clickOnFirstEdge] = scene.makeMouseHelpers(0.5, 0.28, {
-        format: 'ratio',
-      })
-      await clickOnFirstEdge()
-
-      await expect(modelingDialog.input('angle')).toHaveText('360deg')
-
-      await expect(modelingDialog.submitButton).toBeEnabled()
-      await modelingDialog.submit()
-
-      await editor.expectEditor.toContain(newCodeToFindAfterAdd, {
-        shouldNormalise: true,
-      })
-    })
-
-    await test.step('Edit revolve feature via feature tree selection', async () => {
+      await page.setBodyDimensions({ width: 1200, height: 800 })
+      await homePage.goToModelingScene()
       await scene.settled()
-      const newAngle = '180deg'
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'Revolve',
-        0
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
       )
-      await operationButton.dblclick({ button: 'left' })
-      await expect(modelingDialog.input('angle')).toHaveText('360deg')
-      await modelingDialog.input('angle').fill(newAngle)
-      await modelingDialog.variableCheckbox('angle').check()
-      await expect(page.getByPlaceholder('Variable name')).toHaveValue(
-        'angle001'
-      )
+      await resetView(scene)
 
-      await expect(modelingDialog.submitButton).toBeEnabled()
-      await modelingDialog.submit()
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-      await editor.expectEditor.toContain('angle001 = ' + newAngle)
-      await editor.expectEditor.toContain(
-        newCodeToFindAfterEdit.replace('angle = 360deg', 'angle = angle001'),
-        {
+      await test.step('Add revolve feature via point-and-click', async () => {
+        // select line of code
+        const codeToSelection = `region002 = region(`
+        // revolve
+        await editor.selectText(codeToSelection)
+        await editor.closePane()
+        await toolbar.revolveButton.click()
+        await modelingDialog.selection('Profiles').click()
+
+        await expect(modelingDialog.options('axis or edge')).toBeVisible()
+        await modelingDialog
+          .options('axis or edge')
+          .selectOption({ label: 'Edge' })
+        await modelingDialog.selection('Edge').click()
+        // The opposite line1 edge borders the capEnd used by the axis below.
+        const [clickOnFirstEdge] = await scene.makeSelectionHelpers({
+          kind: 'edge',
+          index: 1,
+          stream: { x: 0.5, y: 0.28, format: 'ratio' },
+        })
+        await clickOnFirstEdge()
+
+        await expect(modelingDialog.input('angle')).toHaveText('360deg')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
+
+        await editor.expectEditor.toContain(newCodeToFindAfterAdd, {
           shouldNormalise: true,
-        }
-      )
+        })
+      })
+
+      await test.step('Edit revolve feature via feature tree selection', async () => {
+        await scene.settled()
+        const newAngle = '180deg'
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Revolve',
+          0
+        )
+        await operationButton.dblclick({ button: 'left' })
+        await expect(modelingDialog.input('angle')).toHaveText('360deg')
+        await modelingDialog.input('angle').fill(newAngle)
+        await modelingDialog.variableCheckbox('angle').check()
+        await expect(page.getByPlaceholder('Variable name')).toHaveValue(
+          'angle001'
+        )
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await editor.expectEditor.toContain('angle001 = ' + newAngle)
+        await editor.expectEditor.toContain(
+          newCodeToFindAfterEdit.replace('angle = 360deg', 'angle = angle001'),
+          {
+            shouldNormalise: true,
+          }
+        )
+      })
     })
-  })
+  }
 
   test(
     `Translate helix point-and-click`,

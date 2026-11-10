@@ -2356,17 +2356,18 @@ extrude001 = extrude(profile001, length = 5)`
     })
   })
 
-  test('starts a sketch block on an extruded sketch-block wall', async ({
-    context,
-    page,
-    homePage,
-    scene,
-    cmdBar,
-    editor,
-    toolbar,
-    tronApp,
-  }) => {
-    const code = `@settings(defaultLengthUnit = mm)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`starts a sketch block on an extruded sketch-block wall ${rendererTag}`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      cmdBar,
+      editor,
+      toolbar,
+      tronApp,
+    }) => {
+      const code = `@settings(defaultLengthUnit = mm)
 
 sketch001 = sketch(on = XY) {
   bottom = line(start = [0, 0], end = [30, 0])
@@ -2378,61 +2379,63 @@ region001 = region(point = [15, 10], sketch = sketch001)
 body001 = extrude(region001, length = 12, tagEnd = $endCap)
 hide(sketch001)`
 
-    if (tronApp) {
-      await tronApp.cleanProjectDir()
-    }
-    await context.addInitScript(
-      ({ initialCode }) => {
-        localStorage.setItem('persistCode', initialCode)
-      },
-      {
-        initialCode: code,
+      if (tronApp) {
+        await tronApp.cleanProjectDir()
       }
-    )
-    await page.setBodyDimensions({ width: 1200, height: 800 })
-    await homePage.goToModelingScene()
-    await scene.settled()
-    await editor.expectEditor.toContain('body001 = extrude')
-    await scene.moveCameraTo(
-      { x: 43.8, y: -79.54, z: 9.08 },
-      { x: 15, y: 0, z: 6 }
-    )
+      await context.addInitScript(
+        ({ initialCode }) => {
+          localStorage.setItem('persistCode', initialCode)
+        },
+        {
+          initialCode: code,
+        }
+      )
+      await page.setBodyDimensions({ width: 1200, height: 800 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await editor.expectEditor.toContain('body001 = extrude')
+      await scene.moveCameraTo(
+        { x: 43.8, y: -79.54, z: 9.08 },
+        { x: 15, y: 0, z: 6 }
+      )
 
-    const [clickWall] = scene.makeMouseHelpers(0.5373, 0.4864, {
-      format: 'ratio',
+      const [clickWall] = scene.makeMouseHelpers(0.5373, 0.4864, {
+        format: 'ratio',
+      })
+      await toolbar.startSketchPlaneSelection()
+      await expect(
+        page.getByText('Select a plane or face to start sketching.')
+      ).toBeVisible()
+      await toolbar.openFeatureTreePane()
+      await toolbar.getDefaultPlaneVisibilityButton('XZ').locator('..').hover()
+      await toolbar.getDefaultPlaneVisibilityButton('XZ').click()
+      await expect(
+        toolbar
+          .getDefaultPlaneVisibilityButton('XZ')
+          .locator('[aria-label="eye crossed out"]')
+      ).toBeVisible()
+      await clickWall()
+
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+      await editor.expectEditor.toContain(
+        'face001 = faceOf(body001, face = region001.tags.bottom)'
+      )
+      await editor.expectEditor.toContain('sketch002 = sketch(on = face001)')
     })
-    await toolbar.startSketchPlaneSelection()
-    await expect(
-      page.getByText('Select a plane or face to start sketching.')
-    ).toBeVisible()
-    await toolbar.openFeatureTreePane()
-    await toolbar.getDefaultPlaneVisibilityButton('XZ').locator('..').hover()
-    await toolbar.getDefaultPlaneVisibilityButton('XZ').click()
-    await expect(
-      toolbar
-        .getDefaultPlaneVisibilityButton('XZ')
-        .locator('[aria-label="eye crossed out"]')
-    ).toBeVisible()
-    await clickWall()
+  }
 
-    await expect(toolbar.exitSketchBtn).toBeEnabled()
-    await editor.expectEditor.toContain(
-      'face001 = faceOf(body001, face = region001.tags.bottom)'
-    )
-    await editor.expectEditor.toContain('sketch002 = sketch(on = face001)')
-  })
-
-  test('starts and re-edits a sketch on a chamfer face', async ({
-    context,
-    page,
-    homePage,
-    scene,
-    cmdBar,
-    editor,
-    toolbar,
-    tronApp,
-  }) => {
-    const code = `@settings(defaultLengthUnit = mm)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`starts and re-edits a sketch on a chamfer face ${rendererTag}`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      cmdBar,
+      editor,
+      toolbar,
+      tronApp,
+    }) => {
+      const code = `@settings(defaultLengthUnit = mm)
 
 sketch001 = sketch(on = XY) {
   bottom = line(start = [0, 0], end = [30, 0])
@@ -2449,47 +2452,48 @@ chamfer001 = chamfer(
 )
 hide(sketch001)`
 
-    if (tronApp) {
-      await tronApp.cleanProjectDir()
-    }
-    await context.addInitScript(
-      ({ initialCode }) => {
-        localStorage.setItem('persistCode', initialCode)
-      },
-      { initialCode: code }
-    )
-    await page.setBodyDimensions({ width: 1200, height: 800 })
-    await homePage.goToModelingScene()
-    await scene.settled()
-    await editor.closePane()
-    await scene.moveCameraTo(
-      { x: 39.68, y: -7.24, z: 19.4 },
-      { x: 15, y: 10, z: 6 }
-    )
+      if (tronApp) {
+        await tronApp.cleanProjectDir()
+      }
+      await context.addInitScript(
+        ({ initialCode }) => {
+          localStorage.setItem('persistCode', initialCode)
+        },
+        { initialCode: code }
+      )
+      await page.setBodyDimensions({ width: 1200, height: 800 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await editor.closePane()
+      await scene.moveCameraTo(
+        { x: 39.68, y: -7.24, z: 19.4 },
+        { x: 15, y: 10, z: 6 }
+      )
 
-    await toolbar.startSketchPlaneSelection()
-    await expect(
-      page.getByText('Select a plane or face to start sketching.')
-    ).toBeVisible()
-    await toolbar.openFeatureTreePane()
-    await toolbar.getDefaultPlaneVisibilityButton('XZ').locator('..').hover()
-    await toolbar.getDefaultPlaneVisibilityButton('XZ').click()
-    await expect(
-      toolbar
-        .getDefaultPlaneVisibilityButton('XZ')
-        .locator('[aria-label="eye crossed out"]')
-    ).toBeVisible()
-    const [clickChamferFace] = scene.makeMouseHelpers(0.3456, 0.4701, {
-      format: 'ratio',
+      await toolbar.startSketchPlaneSelection()
+      await expect(
+        page.getByText('Select a plane or face to start sketching.')
+      ).toBeVisible()
+      await toolbar.openFeatureTreePane()
+      await toolbar.getDefaultPlaneVisibilityButton('XZ').locator('..').hover()
+      await toolbar.getDefaultPlaneVisibilityButton('XZ').click()
+      await expect(
+        toolbar
+          .getDefaultPlaneVisibilityButton('XZ')
+          .locator('[aria-label="eye crossed out"]')
+      ).toBeVisible()
+      const [clickChamferFace] = scene.makeMouseHelpers(0.3456, 0.4701, {
+        format: 'ratio',
+      })
+      await clickChamferFace()
+
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+      await editor.expectEditor.toContain('tag = $')
+      await editor.expectEditor.toContain(
+        'sketch002 = sketch(on = faceOf(chamfer001, face = chamferFace01))'
+      )
+      await toolbar.exitSketch()
+      await toolbar.editSketch(1)
     })
-    await clickChamferFace()
-
-    await expect(toolbar.exitSketchBtn).toBeEnabled()
-    await editor.expectEditor.toContain('tag = $')
-    await editor.expectEditor.toContain(
-      'sketch002 = sketch(on = faceOf(chamfer001, face = chamferFace01))'
-    )
-    await toolbar.exitSketch()
-    await toolbar.editSketch(1)
-  })
+  }
 })
