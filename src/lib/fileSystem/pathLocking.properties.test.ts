@@ -165,6 +165,10 @@ it('gives case and canonical Unicode aliases the same stable lock ID', () => {
         expect(conservativePathLockKey(path.toLowerCase())).toBe(key)
         expect(conservativePathLockKey(path.toUpperCase())).toBe(key)
         expect(conservativePathLockKey(key)).toBe(key)
+        // Equality alone would also pass if every path shared one lock.
+        expect(
+          conservativePathLockKey(`/unrelated-projects/${letters.join('')}.kcl`)
+        ).not.toBe(key)
       }
     )
   )
