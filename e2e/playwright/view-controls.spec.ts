@@ -3,7 +3,9 @@ import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { uuidv4 } from '@src/lib/utils'
 
-test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
+test.use({ useTestSettings: true })
+
+test.describe('Testing Gizmo', { tag: '@web' }, () => {
   const cases = [
     {
       testDescription: 'top view',
@@ -48,15 +50,21 @@ test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
     expectedCameraTarget,
     testDescription,
   } of cases) {
-    test(`check ${testDescription}`, async ({ page, homePage }) => {
+    test(`check ${testDescription}`, async ({
+      editor,
+      scene,
+      page,
+      homePage,
+    }) => {
       const u = await getUtils(page)
-      await page.addInitScript((TEST_CODE_GIZMO) => {
-        localStorage.setItem('persistCode', TEST_CODE_GIZMO)
-      }, TEST_CODE_GIZMO)
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', TEST_CODE_GIZMO)
+      )
       await u.waitForPageLoad()
 
       await page.waitForTimeout(100)
@@ -142,7 +150,12 @@ test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
     })
   }
 
-  test('Context menu and popover menu', async ({ page, homePage }) => {
+  test('Context menu and popover menu', async ({
+    editor,
+    scene,
+    page,
+    homePage,
+  }) => {
     const testCase = {
       testDescription: 'Right view',
       expectedCameraPosition: { x: 5660.02, y: -152, z: 26 },
@@ -151,12 +164,14 @@ test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
 
     // Test prelude taken from the above test
     const u = await getUtils(page)
-    await page.addInitScript((TEST_CODE_GIZMO) => {
-      localStorage.setItem('persistCode', TEST_CODE_GIZMO)
-    }, TEST_CODE_GIZMO)
+
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', TEST_CODE_GIZMO)
+    )
     await page.waitForTimeout(100)
     // wait for execution done
     await u.openDebugPanel()

@@ -5,7 +5,9 @@ import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 
-test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
+test.use({ useTestSettings: true })
+
+test.describe('Testing Camera Movement', { tag: '@web' }, () => {
   /**
    * hack that we're implemented our own retry instead of using retries built into playwright.
    * however each of these camera drags can be flaky, because of udp
@@ -169,6 +171,9 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
     })
 
     await test.step('Zoom with scrollwheel', async () => {
+      // Wheel zoom scales by pixel ratio; the browser projects use different ratios.
+      const pixelRatio = await page.evaluate(() => window.devicePixelRatio)
+      const expectedDistance = 85 * (1 - 0.5 / pixelRatio)
       const refreshCamValuesCmd: EngineCommand = {
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
@@ -189,7 +194,7 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
           await u.waitForCmdReceive('default_camera_get_settings')
           await u.closeDebugPanel()
         },
-        afterPosition: [0, 42.5, 42.5],
+        afterPosition: [0, expectedDistance, expectedDistance],
         beforePosition: camInitialPosition,
         page,
       })

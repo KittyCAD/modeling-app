@@ -9,9 +9,11 @@ import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { escapeRegExp, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
+test.use({ useTestSettings: true })
+
 test.describe(
   'Can create sketches on all planes and their back sides',
-  { tag: '@desktop' },
+  { tag: '@web' },
   () => {
     const sketchOnPlaneAndBackSideTest = async (
       page: Page,
@@ -122,7 +124,7 @@ test.describe(
 )
 test.describe(
   'Can create sketches on offset planes and their back sides',
-  { tag: '@desktop' },
+  { tag: '@web' },
   () => {
     const sketchOnPlaneAndBackSideTest = async (
       page: Page,
@@ -134,18 +136,17 @@ test.describe(
       clickCoords: { x: number; y: number }
     ) => {
       const u = await getUtils(page)
-      await page.addInitScript(() => {
-        localStorage.setItem(
-          'persistCode',
-          `@settings(defaultLengthUnit = in, kclVersion = 2.0)
+      const initialCode = `@settings(defaultLengthUnit = in, kclVersion = 2.0)
 xyPlane = offsetPlane(XY, offset = 0.05)
 xzPlane = offsetPlane(XZ, offset = 0.05)
 yzPlane = offsetPlane(YZ, offset = 0.05)
 `
-        )
-      })
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
       await u.openDebugPanel()
 
       const coord =
