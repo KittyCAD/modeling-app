@@ -1,5 +1,6 @@
 import type {
   ModelingCmdReq,
+  PostEffectType,
   WebSocketRequest,
   WebSocketResponse,
 } from '@kittycad/lib'
@@ -62,8 +63,8 @@ import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import {
   getViewportBackgroundColor,
+  getViewportPostEffect,
   getViewportTheme,
-  type ViewportRendering,
 } from '@src/lib/settings/viewportRendering'
 import {
   darkModeMatcher,
@@ -212,7 +213,10 @@ export class ConnectionManager extends EventTarget {
     return {
       theme: s.app.theme.current,
       highlightEdges: s.modeling.highlightEdges.current,
-      viewportRendering: s.modeling.viewportRendering.current,
+      viewportRendering: getViewportPostEffect(
+        s.modeling.viewportRendering.current,
+        s.modeling.enableSSAO.current
+      ),
       showScaleGrid: s.modeling.showScaleGrid.current,
       cameraProjection: s.modeling.cameraProjection.current,
       cameraOrbit: s.modeling.cameraOrbit.current,
@@ -666,7 +670,7 @@ export class ConnectionManager extends EventTarget {
     return url
   }
 
-  setViewportRendering(mode: ViewportRendering) {
+  setViewportRendering(mode: PostEffectType) {
     const connection = this.connection
     const useLocalRenderer =
       connection?.geometryOnly ??

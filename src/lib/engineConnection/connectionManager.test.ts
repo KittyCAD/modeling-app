@@ -195,6 +195,22 @@ describe('ConnectionManager', () => {
     expect(manager.settings.viewportRendering).toBe('ssao')
   })
 
+  it.each(['default', 'retrocad', 'phosphor'] as const)(
+    'uses shared SSAO only for the default cloud style: %s',
+    (style) => {
+      const settings = createSettings()
+      settings.modeling.viewportRendering.user = style
+      const manager = createConnectionManager(settings)
+      for (const enableSSAO of [true, false]) {
+        settings.modeling.enableSSAO.user = enableSSAO
+        const url = new URL(manager.generateWebsocketURL())
+        expect(url.searchParams.get('post_effect')).toBe(
+          style === 'default' ? (enableSSAO ? 'ssao' : 'noeffect') : style
+        )
+      }
+    }
+  )
+
   it('skips rendering updates only for the current geometry-only connection', async () => {
     const manager = createConnectionManager()
     const send = vi.fn()

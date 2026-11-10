@@ -227,37 +227,11 @@ function createCoreSettings() {
             })),
         },
       }),
-      viewportRendering: new Setting<ViewportRendering>({
-        title: 'Rendering style',
-        hideOnLevel: 'project',
-        defaultValue: 'ssao',
-        description: 'Choose how streamed models look in the viewport.',
-        validate: isViewportRendering,
-        isEnabled: (context) => !context.modeling.useLocalRenderer.current,
-        hideWhenDisabled: true,
-        commandConfig: {
-          inputType: 'options',
-          defaultValueFromContext: (context) =>
-            context.modeling.viewportRendering.current,
-          options: (_cmdContext, settingsContext) =>
-            viewportRenderingOptions.map((option) => ({
-              ...option,
-              isCurrent:
-                settingsContext.modeling.viewportRendering.shouldShowCurrentLabel(
-                  'user',
-                  option.value
-                ),
-            })),
-        },
-      }),
       enableSSAO: new Setting<boolean>({
         defaultValue: true,
         description:
-          'Whether Screen Space Ambient Occlusion (SSAO) is enabled for local rendering.',
+          'Add ambient occlusion. In cloud rendering, enabling this selects the Default style.',
         validate: (v) => typeof v === 'boolean',
-        // Only the local renderer lets users choose.
-        isEnabled: (context) => context.modeling.useLocalRenderer.current,
-        hideWhenDisabled: true,
       }),
       /**
        * Whether the 3D scene is rendered on this device or streamed as video
@@ -277,6 +251,29 @@ function createCoreSettings() {
         restartRequired: (value, engineCommandManager) =>
           engineCommandManager.connection !== undefined &&
           engineCommandManager.geometryOnly !== value,
+      }),
+      viewportRendering: new Setting<ViewportRendering>({
+        title: 'Rendering style',
+        hideOnLevel: 'project',
+        defaultValue: 'default',
+        description: 'Choose how streamed models look in the viewport.',
+        validate: isViewportRendering,
+        isEnabled: (context) => !context.modeling.useLocalRenderer.current,
+        hideWhenDisabled: true,
+        commandConfig: {
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.modeling.viewportRendering.current,
+          options: (_cmdContext, settingsContext) =>
+            viewportRenderingOptions.map((option) => ({
+              ...option,
+              isCurrent:
+                settingsContext.modeling.viewportRendering.shouldShowCurrentLabel(
+                  'user',
+                  option.value
+                ),
+            })),
+        },
       }),
       backfaceColor: new Setting<string>({
         defaultValue: DEFAULT_BACKFACE_COLOR,

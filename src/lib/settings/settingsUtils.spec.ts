@@ -62,16 +62,44 @@ const createSettingsWithProjectLibraries = () =>
   createSettings(projectLibrariesExtensionSettings)
 
 describe('viewport rendering settings', () => {
-  it.each([true, false])('migrates legacy user SSAO = %s', (enabled) => {
-    const configuration = { settings: { modeling: { enable_ssao: enabled } } }
-    const mode = enabled ? 'ssao' : 'noeffect'
-    expect(
-      configurationToSettingsPayload(configuration).modeling?.viewportRendering
-    ).toBe(mode)
-  })
+  it.each([true, false])(
+    'preserves legacy user SSAO = %s with the default style',
+    (enabled) => {
+      const configuration = { settings: { modeling: { enable_ssao: enabled } } }
+      const settings = createSettings()
+      setSettingsAtLevel(
+        settings,
+        'user',
+        configurationToSettingsPayload(configuration)
+      )
+      expect(settings.modeling.viewportRendering.current).toBe('default')
+      expect(settings.modeling.enableSSAO.current).toBe(enabled)
+    }
+  )
 
-  it.each(['ssao', 'noeffect', 'retrocad', 'phosphor'] as const)(
-    'persists %s independently of local SSAO',
+  it.each(['ssao', 'noeffect'] as const)(
+    'migrates the old %s style to shared SSAO',
+    (style) => {
+      const enabled = style === 'ssao'
+      const configuration = {
+        settings: {
+          modeling: { viewport_rendering: style, enable_ssao: !enabled },
+        },
+      }
+      const payload = configurationToSettingsPayload(configuration)
+      expect(payload.modeling).toMatchObject({
+        viewportRendering: 'default',
+        enableSSAO: enabled,
+      })
+      expect(
+        configurationToSettingsPayload(settingsPayloadToConfiguration(payload))
+          .modeling
+      ).toMatchObject({ viewportRendering: 'default', enableSSAO: enabled })
+    }
+  )
+
+  it.each(['default', 'retrocad', 'phosphor'] as const)(
+    'persists %s independently of shared SSAO',
     (viewportRendering) => {
       for (const enableSSAO of [true, false]) {
         const modeling = {
@@ -88,14 +116,14 @@ describe('viewport rendering settings', () => {
     }
   )
 
-  it('keeps the default stream style after changing local SSAO or resetting the style', () => {
+  it('keeps SSAO disabled when resetting the rendering style to default', () => {
     const configuration = settingsPayloadToConfiguration({
       modeling: { enableSSAO: false, viewportRendering: undefined },
     })
     expect(
       configurationToSettingsPayload(configuration).modeling
     ).toMatchObject({
-      viewportRendering: 'ssao',
+      viewportRendering: 'default',
       enableSSAO: false,
     })
   })

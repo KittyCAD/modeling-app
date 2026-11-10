@@ -1,4 +1,9 @@
-import type { Feature, UnitAngle, UnitLength } from '@kittycad/lib'
+import type {
+  Feature,
+  PostEffectType,
+  UnitAngle,
+  UnitLength,
+} from '@kittycad/lib'
 import type { Registry } from '@kittycad/registry'
 
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
@@ -11,7 +16,6 @@ import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { Themes } from '@src/lib/theme'
 import type { AtLeast, PathValue, Paths } from '@src/lib/types'
 import type { Setting } from '@src/lib/settings/Setting'
-import type { ViewportRendering } from '@src/lib/settings/viewportRendering'
 
 export type RgbaColor = {
   r: number
@@ -23,7 +27,7 @@ export type RgbaColor = {
 export interface SettingsViaQueryString {
   theme: Themes
   highlightEdges: boolean
-  viewportRendering: ViewportRendering
+  viewportRendering: PostEffectType
   showScaleGrid: boolean
   cameraProjection: CameraProjectionType
   cameraOrbit: CameraOrbitType

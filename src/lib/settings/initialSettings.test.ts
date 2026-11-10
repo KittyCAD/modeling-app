@@ -22,7 +22,7 @@ describe('renderer settings', () => {
       ).toBe(!local)
       expect(
         shouldShowSettingInput(enableSSAO as Setting<unknown>, 'user', settings)
-      ).toBe(local)
+      ).toBe(true)
       expect(viewportRendering.current).toBe('retrocad')
       expect(enableSSAO.current).toBe(false)
     }

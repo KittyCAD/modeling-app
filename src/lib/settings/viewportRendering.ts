@@ -1,16 +1,17 @@
 import type { PostEffectType } from '@kittycad/lib'
 import { getThemeColorForEngine, Themes } from '@src/lib/theme'
 
-export type ViewportRendering = PostEffectType
+export type ViewportRendering =
+  | 'default'
+  | Exclude<PostEffectType, 'ssao' | 'noeffect'>
 
 export const viewportRenderingOptions: {
   name: string
   value: ViewportRendering
 }[] = [
-  { name: 'Default (Shaded + ambient occlusion)', value: 'ssao' },
-  { name: 'Shaded', value: 'noeffect' },
+  { name: 'Default', value: 'default' },
   { name: 'Retro CAD', value: 'retrocad' },
-  { name: 'Phosphor / CRT', value: 'phosphor' },
+  { name: 'Phosphor', value: 'phosphor' },
 ]
 
 export function isViewportRendering(
@@ -19,22 +20,30 @@ export function isViewportRendering(
   return viewportRenderingOptions.some((option) => option.value === value)
 }
 
-export function viewportRenderingFromLegacySSAO(
-  enabled: boolean | null | undefined
+export function viewportRenderingFromStoredValue(
+  value: unknown
 ): ViewportRendering | undefined {
-  return enabled == null ? undefined : enabled ? 'ssao' : 'noeffect'
+  if (value === 'ssao' || value === 'noeffect') return 'default'
+  return isViewportRendering(value) ? value : undefined
+}
+
+export function getViewportPostEffect(
+  style: ViewportRendering,
+  enableSSAO: boolean
+): PostEffectType {
+  return style === 'default' ? (enableSSAO ? 'ssao' : 'noeffect') : style
 }
 
 export function getViewportTheme(
   theme: Themes,
-  mode: ViewportRendering
+  mode: ViewportRendering | PostEffectType
 ): Themes {
   return mode === 'retrocad' || mode === 'phosphor' ? Themes.Dark : theme
 }
 
 export function getViewportBackgroundColor(
   theme: Themes,
-  mode: ViewportRendering
+  mode: ViewportRendering | PostEffectType
 ) {
   return mode === 'retrocad' || mode === 'phosphor'
     ? { r: 0, g: 0, b: 0, a: 1 }

@@ -176,7 +176,10 @@ import { resetCameraAfterExecution } from '@src/lib/resetCameraPosition'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { type Themes, getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
-import { getViewportTheme } from '@src/lib/settings/viewportRendering'
+import {
+  getViewportPostEffect,
+  getViewportTheme,
+} from '@src/lib/settings/viewportRendering'
 import type {
   ModelingMachineEvent,
   modelingMachine,
@@ -2861,8 +2864,11 @@ export class KclManager extends File {
       (value) => this.setCursorBlinking(value)
     )
     const theme = computed(() => settings.value.app.theme.currentSignal.value)
-    const viewportRendering = computed(
-      () => settings.value.modeling.viewportRendering.currentSignal.value
+    const viewportRendering = computed(() =>
+      getViewportPostEffect(
+        settings.value.modeling.viewportRendering.currentSignal.value,
+        settings.value.modeling.enableSSAO.currentSignal.value
+      )
     )
     watchValue(
       () => viewportRendering.value,

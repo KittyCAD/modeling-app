@@ -55,7 +55,7 @@ import type { ProjectLibrarySettingDefaultPolicy } from '@src/registry/contracts
 import { resolveProjectLibrarySettingDefaults } from '@src/registry/contracts/projectLibraries'
 import {
   isViewportRendering,
-  viewportRenderingFromLegacySSAO,
+  viewportRenderingFromStoredValue,
 } from '@src/lib/settings/viewportRendering'
 import decamelize from 'decamelize'
 import { NIL as uuidNIL, v4 } from 'uuid'
@@ -493,9 +493,8 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
       { category: 'modeling', field: 'viewportRendering' },
       'viewport_rendering',
       {
-        fromToml: (value) => (isViewportRendering(value) ? value : undefined),
-        // Persist the default too, so resetting it cannot reimport local SSAO.
-        toToml: (value) => (isViewportRendering(value) ? value : 'ssao'),
+        fromToml: viewportRenderingFromStoredValue,
+        toToml: (value) => (isViewportRendering(value) ? value : 'default'),
       }
     ),
     defineMappedAppOnlyField(
@@ -659,6 +658,16 @@ export function configurationToSettingsPayload(
   configuration: DeepPartial<Configuration>,
   extensionSettings: ResolvedExtensionSettings = {}
 ): DeepPartial<SaveSettingsPayload> {
+  const storedStyle = getTomlSettingsSection(
+    configuration?.settings,
+    'modeling'
+  )?.viewport_rendering
+  const enableSSAO =
+    storedStyle === 'ssao'
+      ? true
+      : storedStyle === 'noeffect'
+        ? false
+        : toUndefinedIfNull(configuration?.settings?.modeling?.enable_ssao)
   const payload = mergeSettingsPayloads(
     {
       app: {
@@ -682,12 +691,7 @@ export function configurationToSettingsPayload(
         highlightEdges: toUndefinedIfNull(
           configuration?.settings?.modeling?.highlight_edges
         ),
-        viewportRendering: viewportRenderingFromLegacySSAO(
-          configuration?.settings?.modeling?.enable_ssao
-        ),
-        enableSSAO: toUndefinedIfNull(
-          configuration?.settings?.modeling?.enable_ssao
-        ),
+        enableSSAO,
         backfaceColor: toUndefinedIfNull(
           configuration?.settings?.modeling?.backface_color
         ),

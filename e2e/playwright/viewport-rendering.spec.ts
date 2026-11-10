@@ -3,7 +3,7 @@ import { settingsToToml, tomlToSettings } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
-  'viewport rendering defaults, switches, and persists across reloads',
+  'shared SSAO and cloud rendering styles persist across reloads',
   { tag: '@web' },
   async ({ page, folderSetupFn, fs, homePage, scene }) => {
     // The shared fixture disables SSAO. Remove that override to test the default.
@@ -65,7 +65,7 @@ hide(profile)
       await fs.writeFile(
         await fs.join(project, 'project.toml'),
         new TextEncoder().encode(
-          '[settings.meta]\nid = "a3e7bfb3-df47-4c99-9e9c-b39b586a8615"\n[settings.modeling]\nviewport_rendering = "phosphor"\nenable_ssao = false\n'
+          '[settings.meta]\nid = "a3e7bfb3-df47-4c99-9e9c-b39b586a8615"\n[settings.modeling]\nviewport_rendering = "phosphor"\n'
         )
       )
     })
@@ -94,7 +94,53 @@ hide(profile)
     await expect(
       page.getByRole('heading', { name: 'Rendering style', exact: true })
     ).toBeVisible()
-    await expect(rendering).toHaveValue('ssao')
+    await expect(rendering).toHaveValue('default')
+    await expect(rendering.locator('option')).toHaveText([
+      'Default',
+      'Retro CAD',
+      'Phosphor',
+    ])
+    const ssao = page.locator('input[name="modeling-enableSSAO"]')
+    const toggleSSAO = () => page.locator('label').filter({ has: ssao }).click()
+    await expect(ssao).toBeChecked()
+
+    for (const mode of ['phosphor', 'retrocad']) {
+      const connectionCount = modes.length
+      await scene.waitForExecutionDoneAfter(async () => {
+        await rendering.selectOption(mode)
+        await expect(ssao).not.toBeChecked()
+        await page.getByTestId('settings-close-button').click()
+      })
+      await scene.settled()
+      expect(modes.slice(connectionCount)).toEqual([mode])
+      await scene.expectPixelColor([0, 0, 0], backgroundPoint, 10, {
+        format: 'ratio',
+      })
+      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+      await openSettings()
+      await expect(rendering).toHaveValue(mode)
+
+      await scene.waitForExecutionDoneAfter(async () => {
+        await toggleSSAO()
+        await expect(rendering).toHaveValue('default')
+        await page.getByTestId('settings-close-button').click()
+      })
+      await scene.settled()
+      expect(modes.slice(connectionCount)).toEqual([mode, 'ssao'])
+      await scene.expectPixelColor([249, 249, 249], backgroundPoint, 10, {
+        format: 'ratio',
+      })
+      await openSettings()
+      await expect(ssao).toBeChecked()
+    }
+    await scene.waitForExecutionDoneAfter(async () => {
+      await rendering.selectOption('retrocad')
+      await page.getByTestId('settings-close-button').click()
+    })
+    await scene.settled()
+    await openSettings()
+    await expect(ssao).not.toBeChecked()
+
     const search = page.getByPlaceholder(/^Search settings/)
     await search.fill('Rendering style')
     await expect(
@@ -102,64 +148,34 @@ hide(profile)
     ).toBeVisible()
     await search.press('Escape')
     await search.fill('')
-
+    const connectionCount = modes.length
     const localRenderer = page.locator(
       'input[name="modeling-useLocalRenderer"]'
     )
-    const localSSAO = page.locator('input[name="modeling-enableSSAO"]')
-    await expect(page.getByTestId('enableSSAO')).toHaveCount(0)
     await page.locator('label').filter({ has: localRenderer }).click()
     await expect(localRenderer).toBeChecked()
     await expect(page.getByTestId('viewportRendering')).toHaveCount(0)
+    await expect(page.getByTestId('enableSSAO')).toBeVisible()
+    await toggleSSAO()
+    await expect(ssao).toBeChecked()
     await search.fill('Rendering style')
     await expect(
       page.getByRole('option', { name: /Rendering style/ })
     ).toHaveCount(0)
     await search.press('Escape')
     await search.fill('')
-    await expect(localSSAO).toBeEnabled()
-    await page.locator('label').filter({ has: localSSAO }).click()
-    await expect(localSSAO).not.toBeChecked()
+    await toggleSSAO()
+    await expect(ssao).not.toBeChecked()
     await page.locator('label').filter({ has: localRenderer }).click()
     await expect(localRenderer).not.toBeChecked()
-    await expect(page.getByTestId('enableSSAO')).toHaveCount(0)
-    await expect(rendering).toBeEnabled()
-    await expect(rendering).toHaveValue('ssao')
+    await expect(rendering).toHaveValue('retrocad')
+    await expect(page.getByTestId('enableSSAO')).toBeVisible()
     await page.waitForFunction(() =>
       window.app.settings.actor.getSnapshot().matches('idle')
     )
+    expect(modes).toHaveLength(connectionCount)
     await page.getByTestId('settings-close-button').click()
 
-    modes.length = 0
-    await page.reload()
-    await scene.settled()
-    expect(modes).toEqual(['ssao'])
-    await openSettings()
-    await expect(rendering).toHaveValue('ssao')
-    await expect(page.getByTestId('enableSSAO')).toHaveCount(0)
-    expect(
-      await page.evaluate(
-        () => window.app.settings.get().modeling.enableSSAO.current
-      )
-    ).toBe(false)
-    await expect(rendering.locator('option:checked')).toHaveText(/Default/)
-    await page.getByRole('radio', { name: 'This project' }).click()
-    await expect(rendering).toHaveCount(0)
-    await page.getByRole('radio', { name: 'User' }).click()
-
-    for (const mode of ['noeffect', 'phosphor', 'retrocad']) {
-      await scene.waitForExecutionDoneAfter(async () => {
-        await rendering.selectOption(mode)
-        await page.getByTestId('settings-close-button').click()
-      })
-      await scene.settled()
-      await expect.poll(() => modes.at(-1)).toBe(mode)
-      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
-      await openSettings()
-      await expect(rendering).toHaveValue(mode)
-    }
-
-    await page.getByTestId('settings-close-button').click()
     modes.length = 0
     await page.reload()
     await scene.settled()
@@ -169,18 +185,22 @@ hide(profile)
     })
     await openSettings()
     await expect(rendering).toHaveValue('retrocad')
+    await expect(ssao).not.toBeChecked()
+    await page.getByRole('radio', { name: 'This project' }).click()
+    await expect(rendering).toHaveCount(0)
+    await page.getByRole('radio', { name: 'User' }).click()
 
     await scene.waitForExecutionDoneAfter(async () => {
-      await rendering.selectOption('ssao')
+      await rendering.selectOption('default')
       await page.getByTestId('settings-close-button').click()
     })
     await scene.settled()
-    await expect.poll(() => modes.at(-1)).toBe('ssao')
+    await expect.poll(() => modes.at(-1)).toBe('noeffect')
     await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
     await scene.expectPixelColor([249, 249, 249], backgroundPoint, 10, {
       format: 'ratio',
     })
     await openSettings()
-    await expect(rendering).toHaveValue('ssao')
+    await expect(rendering).toHaveValue('default')
   }
 )
