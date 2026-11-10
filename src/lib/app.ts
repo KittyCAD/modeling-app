@@ -14,7 +14,7 @@ import { ZDSProject } from '@src/lib/projectSession'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
-import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
+import { createProjectCommands } from '@src/lib/homeProjects/commands'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
@@ -539,7 +539,9 @@ export class App implements AppSubsystems {
             provideCommand
           ),
           ...createProjectCommands({
-            app: this,
+            projectOperations: this.projectOperations,
+            projectSession: this.projectSession,
+            projectLibraries: this.projectLibraries,
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
             getCurrentProjectPath: () =>

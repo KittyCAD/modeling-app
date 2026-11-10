@@ -6,7 +6,7 @@ import {
 import { base64ToString } from '@src/lib/base64'
 import type { App } from '@src/lib/app'
 import { useApp } from '@src/lib/boot'
-import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
+import type { ProjectsCommandSchema } from '@src/lib/homeProjects/commands'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
   CMD_GROUP_QUERY_PARAM,
