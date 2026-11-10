@@ -60,10 +60,6 @@ import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import {
-  isErrorWhitelisted,
-  isInterruptedWebKitRequest,
-} from '@e2e/playwright/lib/console-error-whitelist'
-import {
   PLAYWRIGHT_PROJECT_DIRECTORY,
   TEST_SETTINGS,
   TEST_SETTINGS_KEY,
