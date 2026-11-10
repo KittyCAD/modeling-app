@@ -80,7 +80,13 @@ export class ModelingDialogFixture {
           })
         )
       }, value)
-      await expect(input).toHaveText(value)
+      const native = await input.evaluate(
+        (element) =>
+          element instanceof HTMLInputElement ||
+          element instanceof HTMLTextAreaElement
+      )
+      if (native) await expect(input).toHaveValue(value)
+      else await expect(input).toHaveText(value)
     } else if (!empty) {
       await input.press('Backspace')
     }
