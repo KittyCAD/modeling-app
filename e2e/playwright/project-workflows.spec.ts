@@ -1,3 +1,4 @@
+import { setTimeout as delay } from 'node:timers/promises'
 import { randomUUID } from 'node:crypto'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import { expect, test as appTest } from '@e2e/playwright/zoo-test'
@@ -233,6 +234,38 @@ async function expectEditor(page: Page, code: string) {
     useInnerText: true,
   })
 }
+
+test('waits for a project listing that takes seven seconds @web', async ({
+  page,
+  context,
+}, testInfo) => {
+  const storage = await prepareStorage('cloud', page, context, testInfo)
+  await storage.seed('Slow listing', '@settings(kclVersion = 3.0)\n')
+  const listing = Promise.withResolvers<undefined>()
+  let started = false
+  await context.route(/\/user\/projects(?:\?.*)?$/, async (route) => {
+    started = true
+    await listing.promise
+    await route.fallback()
+  })
+  try {
+    await page.reload({ waitUntil: 'domcontentloaded' })
+    await expect.poll(() => started).toBe(true)
+    await expect(
+      page.getByRole('status', { name: 'Loading projects', exact: true })
+    ).toBeVisible()
+    // This exercises the runner's readiness budget, which browser time cannot advance.
+    await Promise.all([
+      storage.home.projectsLoaded(),
+      delay(7_000).then(() => listing.resolve(undefined)),
+    ])
+    await expect(
+      storage.home.projectCard.filter({ hasText: 'Slow listing' })
+    ).toBeVisible()
+  } finally {
+    listing.resolve(undefined)
+  }
+})
 
 test('polls cloud project membership, pauses offline and stops outside the projects view @web', async ({
   page,
