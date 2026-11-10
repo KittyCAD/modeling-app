@@ -1,4 +1,5 @@
 use indexmap::IndexMap;
+use kcl_error::ModuleId;
 use kcl_error::SourceRange;
 use parse_display::Display;
 use parse_display::FromStr;
@@ -90,6 +91,17 @@ pub struct ArtifactPlaneInfo {
     pub x_axis: ArtifactPoint3d,
     pub y_axis: ArtifactPoint3d,
     pub z_axis: ArtifactPoint3d,
+}
+
+/// API-owned RGBA color with channels from 0 to 1, equivalent to the engine
+/// color, avoiding a kcl-api dependency on kittycad-modeling-cmds.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+pub struct ArtifactColor {
+    pub r: f32,
+    pub g: f32,
+    pub b: f32,
+    pub a: f32,
 }
 
 /// API-owned sweep method equivalent to the engine extrusion method, avoiding
@@ -221,6 +233,19 @@ pub struct Plane {
     pub id: ArtifactId,
     pub path_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
+    /// The evaluated transform from plane creation. Origin is in millimeters;
+    /// axes are unitless. Absent for planes only referenced by sketch commands.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub plane_info: Option<ArtifactPlaneInfo>,
+    /// The unscaled plane size in millimeters, before view-dependent scaling.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub size: Option<f64>,
+    /// Visibility after plane creation and subsequent ObjectVisible commands.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub hidden: bool,
+    /// The color from the last PlaneSetColor command, if any.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub color: Option<ArtifactColor>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
@@ -602,6 +627,10 @@ pub struct NamedViewArtifact {
     /// The display name the author gave the view. Required, and unique among
     /// the views declared by the same module.
     pub name: String,
+    /// Defining module id -- the module that calls `view::named`.
+    // TODO: Expose this field when TypeScript adopts the Rust named-view resolver.
+    #[ts(skip)]
+    pub declaring_module_id: ModuleId,
     pub camera: ArtifactCameraView,
     /// Whether objects start visible or hidden, which decides which of the two
     /// lists below can act.

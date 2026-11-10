@@ -221,6 +221,7 @@ mod tests {
             id,
             value_id,
             topology_id: id,
+            tag_update_source_artifact_id: None,
             pattern_source_artifact_id: None,
             best_guess_body_type: None,
             artifact_id: ArtifactId::new(id),

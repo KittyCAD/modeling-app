@@ -1,7 +1,9 @@
 use ahash::AHashMap;
 use ahash::AHashSet;
 use indexmap::IndexMap;
+use kcl_api::Constraint;
 use kcl_api::NodePath;
+use kcl_api::UnitLength;
 use kcl_api::artifact::*;
 use kittycad_modeling_cmds::EnableSketchMode;
 use kittycad_modeling_cmds::FaceIsPlanar;
@@ -25,12 +27,12 @@ use crate::execution::CameraLook;
 use crate::execution::CameraView;
 use crate::execution::NamedViewValue;
 use crate::execution::Orientation;
+use crate::execution::Point3d;
 use crate::execution::Projection;
 use crate::execution::Visibility;
 use crate::execution::cmd_id_ref_to_artifact_id;
 use crate::execution::geometry::PlaneInfo;
 use crate::execution::state::ModuleInfoMap;
-use crate::front::Constraint;
 use crate::modules::ModulePath;
 use crate::parsing::ast::types::BodyItem;
 use crate::parsing::ast::types::ImportPath;
@@ -39,6 +41,8 @@ use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
 use crate::std::sketch::build_reverse_region_mapping;
 
+#[cfg(test)]
+mod engine_tests;
 #[cfg(test)]
 pub(crate) mod mermaid_tests;
 #[cfg(test)]
@@ -135,6 +139,7 @@ pub(crate) fn named_view_artifact(view: &NamedViewValue, code_ref: CodeRef) -> N
     NamedViewArtifact {
         id: view.artifact_id(),
         name: view.name().to_owned(),
+        declaring_module_id: code_ref.range.module_id(),
         camera: artifact_camera_view(view.camera()),
         baseline: artifact_visibility(view.baseline()),
         show_ids,
@@ -288,6 +293,10 @@ fn merge_composite_solid(old: &mut CompositeSolid, new: Artifact) -> Option<Arti
 fn merge_plane(old: &mut Plane, new: Artifact) -> Option<Artifact> {
     let Artifact::Plane(new) = new else { return Some(new) };
     merge_ids(&mut old.path_ids, new.path_ids);
+    old.hidden = new.hidden;
+    old.plane_info = new.plane_info;
+    old.size = new.size;
+    old.color = new.color;
     None
 }
 
@@ -688,12 +697,12 @@ fn build_entity_clone_id_maps(
                     if pending_map.old_child_ids.is_none() && *entity_id == pending_map.old_entity_id {
                         pending_map.old_child_ids = Some(child_ids.clone());
                         if pending_map.source_topology_id == pending_map.old_entity_id {
-                            pending_map.source_topology_child_ids = Some(child_ids.clone());
+                            pending_map.source_topology_child_ids = Some(child_ids);
                         }
                         break;
                     }
                     if pending_map.source_topology_child_ids.is_none() && *entity_id == pending_map.source_topology_id {
-                        pending_map.source_topology_child_ids = Some(child_ids.clone());
+                        pending_map.source_topology_child_ids = Some(child_ids);
                         break;
                     }
                 }
@@ -843,6 +852,7 @@ fn remap_artifact_for_clone(
             id: remap_id_for_clone(source.id, entity_id_map),
             path_ids: remap_ids_for_clone(&source.path_ids, entity_id_map),
             code_ref: clone_code_ref.clone(),
+            ..source.clone()
         }),
         Artifact::Path(source) => Artifact::Path(Path {
             id: remap_id_for_clone(source.id, entity_id_map),
@@ -1345,6 +1355,28 @@ fn mirror_3d_artifact_updates(
     Ok(return_arr)
 }
 
+// Cutting an edge adds faces to an existing body. Record those faces directly so
+// body lookup does not need the consumed 3D edge or its adjacency records.
+fn edge_cut_body_update(
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+    body_id: Uuid,
+    face_ids: Vec<ArtifactId>,
+) -> Option<Artifact> {
+    let sweep = match artifacts.get(&ArtifactId::new(body_id))? {
+        Artifact::Sweep(sweep) => sweep,
+        Artifact::Path(path) => {
+            let Artifact::Sweep(sweep) = artifacts.get(&path.sweep_id?)? else {
+                return None;
+            };
+            sweep
+        }
+        _ => return None,
+    };
+    let mut sweep = sweep.clone();
+    sweep.surface_ids = face_ids;
+    Some(Artifact::Sweep(sweep))
+}
+
 #[allow(clippy::too_many_arguments)]
 fn artifacts_to_update(
     artifacts: &IndexMap<ArtifactId, Artifact>,
@@ -1383,18 +1415,57 @@ fn artifacts_to_update(
                 consumed: false,
             })]);
         }
-        ModelingCmd::MakePlane(_) => {
+        ModelingCmd::MakePlane(plane) => {
             if range.is_synthetic() {
                 return Ok(Vec::new());
             }
             // If we're calling `make_plane` and the code range doesn't end at
             // `0` it's not a default plane, but a custom one from the
             // offsetPlane standard library function.
+            let x_axis = Point3d::new(plane.x_axis.x, plane.x_axis.y, plane.x_axis.z, None);
+            let y_axis = Point3d::new(plane.y_axis.x, plane.y_axis.y, plane.y_axis.z, None);
             return Ok(vec![Artifact::Plane(Plane {
                 id,
                 path_ids: Vec::new(),
                 code_ref,
+                plane_info: Some(artifact_plane_info(&PlaneInfo {
+                    // KCL converts lengths to millimeters before sending engine commands.
+                    origin: Point3d::new(
+                        plane.origin.x.0,
+                        plane.origin.y.0,
+                        plane.origin.z.0,
+                        Some(UnitLength::Millimeters),
+                    ),
+                    x_axis,
+                    y_axis,
+                    z_axis: x_axis.axes_cross_product(&y_axis),
+                })),
+                size: Some(plane.size.0),
+                hidden: plane.hide.unwrap_or_default(),
+                color: None,
             })]);
+        }
+        ModelingCmd::ObjectVisible(visibility) => {
+            if let Some(Artifact::Plane(plane)) = artifacts.get(&ArtifactId::new(visibility.object_id)) {
+                return Ok(vec![Artifact::Plane(Plane {
+                    hidden: visibility.hidden,
+                    ..plane.clone()
+                })]);
+            }
+        }
+        ModelingCmd::PlaneSetColor(set_color) => {
+            if let Some(Artifact::Plane(plane)) = artifacts.get(&ArtifactId::new(set_color.plane_id)) {
+                let color = &set_color.color;
+                return Ok(vec![Artifact::Plane(Plane {
+                    color: Some(ArtifactColor {
+                        r: color.r,
+                        g: color.g,
+                        b: color.b,
+                        a: color.a,
+                    }),
+                    ..plane.clone()
+                })]);
+            }
         }
         ModelingCmd::FaceIsPlanar(FaceIsPlanar { object_id, .. }) => {
             return Ok(vec![Artifact::PlaneOfFace(PlaneOfFace {
@@ -1432,15 +1503,20 @@ fn artifacts_to_update(
                     })]);
                 }
                 Some(_) | None => {
-                    let path_ids = match existing_plane {
-                        Some(Artifact::Plane(Plane { path_ids, .. })) => path_ids.clone(),
-                        _ => Vec::new(),
-                    };
-                    // Create an entirely new plane
-                    return Ok(vec![Artifact::Plane(Plane {
-                        id: entity_id.into(),
-                        path_ids,
-                        code_ref,
+                    return Ok(vec![Artifact::Plane(match existing_plane {
+                        Some(Artifact::Plane(plane)) => Plane {
+                            code_ref,
+                            ..plane.clone()
+                        },
+                        _ => Plane {
+                            id: entity_id.into(),
+                            path_ids: Vec::new(),
+                            code_ref,
+                            plane_info: None,
+                            size: None,
+                            hidden: false,
+                            color: None,
+                        },
                     })]);
                 }
             }
@@ -1486,11 +1562,9 @@ fn artifacts_to_update(
             }));
             let plane = artifacts.get(&ArtifactId::new(*current_plane_id));
             if let Some(Artifact::Plane(plane)) = plane {
-                let plane_code_ref = plane.code_ref.clone();
                 return_arr.push(Artifact::Plane(Plane {
-                    id: (*current_plane_id).into(),
                     path_ids: vec![id],
-                    code_ref: plane_code_ref,
+                    ..plane.clone()
                 }));
             }
             if let Some(Artifact::Wall(wall)) = plane {
@@ -2438,6 +2512,9 @@ fn artifacts_to_update(
                 surface_id: None,
                 code_ref,
             }));
+            if let Some(body) = edge_cut_body_update(artifacts, cmd.object_id, vec![id]) {
+                return_arr.push(body);
+            }
             let consumed_edge = artifacts.get(&edge_id);
             if let Some(Artifact::Segment(consumed_edge)) = consumed_edge {
                 let mut new_segment = consumed_edge.clone();
@@ -2464,6 +2541,9 @@ fn artifacts_to_update(
                 surface_id: None,
                 code_ref,
             }));
+            if let Some(body) = edge_cut_body_update(artifacts, cmd.object_id, vec![id]) {
+                return_arr.push(body);
+            }
             let consumed_edge = artifacts.get(&edge_id);
             if let Some(Artifact::Segment(consumed_edge)) = consumed_edge {
                 let mut new_segment = consumed_edge.clone();
@@ -2476,7 +2556,7 @@ fn artifacts_to_update(
         }
         ModelingCmd::Solid3dCutEdgeReferences(cmd) => {
             let face_ids = std::iter::once(id).chain(cmd.extra_face_ids.iter().copied().map(ArtifactId::new));
-            return Ok(face_ids
+            let mut updates: Vec<_> = face_ids
                 .take(cmd.edges_references.len())
                 .enumerate()
                 .map(|(source_selector_index, face_id)| {
@@ -2490,7 +2570,12 @@ fn artifacts_to_update(
                         code_ref: code_ref.clone(),
                     })
                 })
-                .collect());
+                .collect();
+            let cut_face_ids = updates.iter().map(Artifact::id).collect();
+            if let Some(body) = edge_cut_body_update(artifacts, cmd.object_id, cut_face_ids) {
+                updates.push(body);
+            }
+            return Ok(updates);
         }
         ModelingCmd::EntityMakeHelix(cmd) => {
             let cylinder_id = ArtifactId::new(cmd.cylinder_id);
@@ -2624,9 +2709,19 @@ fn artifacts_to_update(
                 update_csg_input_artifacts(&mut return_arr, artifacts, &input_ids, None, &mut consumed_sweep_ids);
             }
 
-            // Create the new composite solids and update their linked artifacts
+            // A returned solid can reuse an input's artifact graph key.
+            // Apply all input updates first so they cannot overwrite a live output.
             for solid_id in &new_solid_ids {
-                // Create the composite solid
+                update_csg_input_artifacts(
+                    &mut return_arr,
+                    artifacts,
+                    &input_ids,
+                    Some(*solid_id),
+                    &mut consumed_sweep_ids,
+                );
+            }
+
+            for solid_id in &new_solid_ids {
                 return_arr.push(Artifact::CompositeSolid(CompositeSolid {
                     id: *solid_id,
                     consumed: false,
@@ -2638,14 +2733,6 @@ fn artifacts_to_update(
                     composite_solid_id: None,
                     pattern_ids: Vec::new(),
                 }));
-
-                update_csg_input_artifacts(
-                    &mut return_arr,
-                    artifacts,
-                    &input_ids,
-                    Some(*solid_id),
-                    &mut consumed_sweep_ids,
-                );
             }
 
             return Ok(return_arr);
@@ -2662,6 +2749,10 @@ fn artifacts_to_update(
                 .as_ref()
                 .map(|ids| ids.iter().copied().map(ArtifactId::new).collect::<Vec<_>>())
                 .unwrap_or_default();
+            let mut consumed_input_ids = solid_ids.clone();
+            if !imprint.keep_tools {
+                consumed_input_ids.extend_from_slice(&tool_ids);
+            }
 
             let mut new_solid_ids = vec![id];
             let not_cmd_id = move |solid_id: &ArtifactId| *solid_id != id;
@@ -2678,7 +2769,7 @@ fn artifacts_to_update(
             let mut return_arr = Vec::new();
             let mut consumed_sweep_ids = AHashSet::default();
 
-            for input_id in solid_ids.iter().chain(tool_ids.iter()) {
+            for input_id in &consumed_input_ids {
                 let sweep_id = match artifacts.get(input_id) {
                     Some(Artifact::Sweep(sweep)) => Some(sweep.id),
                     Some(Artifact::Path(path)) => path.sweep_id,
@@ -2708,7 +2799,7 @@ fn artifacts_to_update(
                     pattern_ids: Vec::new(),
                 }));
 
-                for input_id in solid_ids.iter().chain(tool_ids.iter()) {
+                for input_id in &consumed_input_ids {
                     if let Some(artifact) = artifacts.get(input_id) {
                         match artifact {
                             Artifact::CompositeSolid(comp) => {

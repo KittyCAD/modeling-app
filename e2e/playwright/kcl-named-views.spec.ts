@@ -4,7 +4,6 @@ import * as fsp from 'fs/promises'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { uuidv4 } from '@src/lib/utils'
-import { NAMED_VIEWS_UI_FEATURE_FLAG } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 
 /** Declared apart from `MAIN_KCL` so a test can remove exactly this view. */
@@ -136,36 +135,7 @@ async function writeProject(dir: string) {
   await fsp.writeFile(join(projectDir, 'panel.kcl'), PANEL_KCL, 'utf-8')
 }
 
-/**
- * DELETE THIS BLOCK when `NAMED_VIEWS_UI_FEATURE_FLAG` is removed. Its claim is
- * that the switcher is absent, which stops being true at that point.
- */
-test.describe('KCL named views, feature flag off', { tag: '@desktop' }, () => {
-  // The switcher's absence is only meaningful when the flag is off. The harness
-  // mocks `/user/features` and returns exactly the flags a spec declares, so
-  // this empty list states that precondition here rather than leaving it to the
-  // fixture default. Granting the flag on the Zoo org cannot reach this test.
-  test.use({ userFeatures: [] })
-
-  test('the view switcher has no rail button and no pane', async ({
-    homePage,
-    scene,
-    page,
-    folderSetupFn,
-  }) => {
-    await folderSetupFn(writeProject)
-    await homePage.openProject('named-views')
-    await scene.settled()
-
-    await expect(page.getByTestId(VIEW_SWITCHER_BUTTON)).toHaveCount(0)
-    await expect(page.locator(VIEW_SWITCHER_PANE)).toHaveCount(0)
-  })
-})
-
 test.describe('KCL named views', { tag: '@desktop' }, () => {
-  // Delete this line when the flag is removed. No test below refers to it.
-  test.use({ userFeatures: [NAMED_VIEWS_UI_FEATURE_FLAG] })
-
   test('the rail button opens and closes the switcher', async ({
     homePage,
     scene,
@@ -232,15 +202,19 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     await scene.settled()
     await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
 
-    const rows = page.locator(VIEW_SWITCHER_PANE).getByTestId('named-view-row')
+    const pane = page.locator(VIEW_SWITCHER_PANE)
+    await expect(pane.getByTestId('named-view-create')).toBeVisible()
+    const rows = pane.getByTestId('named-view-row')
     const defaultView = rows.filter({ hasText: 'Default View' })
     const top = rows.filter({ hasText: 'Top' })
 
-    await top.click()
+    await top.getByRole('button', { name: 'Apply Top', exact: true }).click()
     await expect(top).toHaveAttribute('data-active', 'true')
     await expect(defaultView).toHaveAttribute('data-active', 'false')
 
-    await defaultView.click()
+    await defaultView
+      .getByRole('button', { name: 'Apply Default View', exact: true })
+      .click()
     await expect(defaultView).toHaveAttribute('data-active', 'true')
     await expect(top).toHaveAttribute('data-active', 'false')
   })
@@ -266,7 +240,7 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     const rows = page.locator(VIEW_SWITCHER_PANE).getByTestId('named-view-row')
     const top = rows.filter({ hasText: 'Top' })
 
-    await top.click()
+    await top.getByRole('button', { name: 'Apply Top', exact: true }).click()
     await expect(top).toHaveAttribute('data-active', 'true')
 
     await editor.openPane()
@@ -295,7 +269,7 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     const top = rows.filter({ hasText: 'Top' })
     const defaultView = rows.filter({ hasText: 'Default View' })
 
-    await top.click()
+    await top.getByRole('button', { name: 'Apply Top', exact: true }).click()
     await expect(top).toHaveAttribute('data-active', 'true')
 
     await editor.openPane()
@@ -325,8 +299,7 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     await u.clearCommandLogs()
     await page
       .locator(VIEW_SWITCHER_PANE)
-      .getByTestId('named-view-row')
-      .filter({ hasText: 'TopAt' })
+      .getByRole('button', { name: 'Apply TopAt', exact: true })
       .click()
 
     // Top and bottom take the quaternion route rather than a look-at.
@@ -364,8 +337,7 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     await u.clearCommandLogs()
     await page
       .locator(VIEW_SWITCHER_PANE)
-      .getByTestId('named-view-row')
-      .filter({ hasText: 'IsometricAt' })
+      .getByRole('button', { name: 'Apply IsometricAt', exact: true })
       .click()
 
     await u.waitForCmdReceive('default_camera_set_view')

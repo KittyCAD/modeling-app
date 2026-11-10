@@ -1,7 +1,10 @@
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
-import type { LayoutsWithMetadata } from '@src/lib/layout/types'
+import type {
+  LayoutsWithMetadata,
+  PaneOpenBehavior,
+} from '@src/lib/layout/types'
 import type { OnboardingStatus } from '@src/lib/onboardingPaths'
 import { useRef } from 'react'
 
@@ -224,7 +227,27 @@ function createCoreSettings() {
         description:
           'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.',
         validate: (v) => typeof v === 'boolean',
-        hideOnPlatform: 'both', //for now
+        // Only the local renderer lets users choose.
+        isEnabled: (context) => context.modeling.useLocalRenderer.current,
+      }),
+      /**
+       * Whether the 3D scene is rendered on this device or streamed as video
+       * from the engine. Read once when the scene mounts, because each renderer
+       * needs its own kind of engine session.
+       */
+      useLocalRenderer: new Setting<boolean>({
+        defaultValue: false,
+        hideOnLevel: 'project',
+        description:
+          'Render the 3D scene on this device instead of streaming it as video from the engine. Takes effect after restarting the app.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+        // geometryOnly reads as false without a session, so check for one first.
+        restartRequired: (value, engineCommandManager) =>
+          engineCommandManager.connection !== undefined &&
+          engineCommandManager.geometryOnly !== value,
       }),
       backfaceColor: new Setting<string>({
         defaultValue: DEFAULT_BACKFACE_COLOR,
@@ -331,22 +354,6 @@ function createCoreSettings() {
         hideOnLevel: 'project',
         description:
           'Enable touch events to navigate the 3D scene. When enabled, orbit with one-finger drag, pan with two-finger drag, and zoom with pinch.',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
-      }),
-      /**
-       * Determines if new sketches should use the solver-based sketch mode.
-       * This setting is hidden and defaults to true. It now exists only so
-       * Playwright can set it to false for regression testing.
-       */
-      useSketchSolveMode: new Setting<boolean>({
-        hideOnLevel: 'project',
-        hideOnPlatform: 'both',
-        defaultValue: true,
-        description:
-          'Default to the solver-based sketch mode for all new projects.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -638,11 +645,26 @@ function createCoreSettings() {
     /**
      * App-owned layout settings.
      *
-     * These settings are intentionally hidden from the generic settings UI and
-     * command bar. They persist layout state that should travel through the same
-     * user settings file as plugin and other TypeScript-only settings.
+     * Layout preferences and hidden saved arrangements share the user settings
+     * file with other TypeScript-only settings.
      */
     layout: {
+      paneOpenBehavior: new Setting<PaneOpenBehavior>({
+        defaultValue: 'multiple',
+        description:
+          'Open multiple tabs together or a single tab at a time in each panel group.',
+        hideOnLevel: 'project',
+        validate: (v) => v === 'multiple' || v === 'single',
+        commandConfig: {
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.layout.paneOpenBehavior.current,
+          options: [
+            { name: 'Multiple', value: 'multiple' },
+            { name: 'Single', value: 'single' },
+          ],
+        },
+      }),
       configs: new Setting<LayoutsWithMetadata>({
         defaultValue: {},
         hideOnLevel: 'project',

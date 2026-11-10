@@ -19,6 +19,7 @@ use crate::execution::ConsumedSolidOperation;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
+use crate::execution::NewBodyKind;
 use crate::execution::Solid;
 use crate::execution::annotations;
 use crate::execution::types::RuntimeType;
@@ -116,7 +117,7 @@ pub(crate) async fn inner_union(
     let mut solid = solids[0].clone();
     inherit_face_tags(&mut solid, solids.iter());
     solid.set_id(solid_out_id);
-    solid.become_new_body(solid_out_id, solid_out_id.into());
+    solid.become_new_body(solid_out_id, solid_out_id.into(), NewBodyKind::Replacement);
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
@@ -172,7 +173,7 @@ pub(crate) async fn inner_union(
         let mut new_solid = solid.clone();
         new_solid.set_id(extra_solid_id);
         new_solid.value_id = solid_out_id;
-        new_solid.become_new_body(extra_solid_id, extra_solid_id.into());
+        new_solid.become_new_body(extra_solid_id, extra_solid_id.into(), NewBodyKind::Replacement);
         new_solids.push(new_solid);
     }
 
@@ -214,7 +215,7 @@ pub(crate) async fn inner_intersect(
     let mut solid = solids[0].clone();
     inherit_face_tags(&mut solid, solids.iter());
     solid.set_id(solid_out_id);
-    solid.become_new_body(solid_out_id, solid_out_id.into());
+    solid.become_new_body(solid_out_id, solid_out_id.into(), NewBodyKind::Replacement);
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
@@ -269,7 +270,7 @@ pub(crate) async fn inner_intersect(
         let mut new_solid = solid.clone();
         new_solid.set_id(extra_solid_id);
         new_solid.value_id = solid_out_id;
-        new_solid.become_new_body(extra_solid_id, extra_solid_id.into());
+        new_solid.become_new_body(extra_solid_id, extra_solid_id.into(), NewBodyKind::Replacement);
         new_solids.push(new_solid);
     }
 
@@ -323,7 +324,7 @@ pub(crate) async fn inner_subtract(
                 let first = vec![solid];
                 inherit_face_tags(&mut new_solid, first.into_iter().chain(tools.iter()));
                 new_solid.set_id(output_id);
-                new_solid.become_new_body(output_id, output_id.into());
+                new_solid.become_new_body(output_id, output_id.into(), NewBodyKind::Replacement);
                 new_solid
             })
             .collect::<Vec<_>>();
@@ -382,7 +383,7 @@ pub(crate) async fn inner_subtract(
             inherit_face_tags(&mut new_solid, first.into_iter().chain(tools.iter()));
             new_solid.set_id(output_id);
             new_solid.value_id = solid_out_id;
-            new_solid.become_new_body(output_id, output_id.into());
+            new_solid.become_new_body(output_id, output_id.into(), NewBodyKind::Replacement);
             new_solid
         })
         .collect::<Vec<_>>();
@@ -448,7 +449,7 @@ pub(crate) async fn inner_imprint(
 
     let mut body = targets[0].clone();
     body.set_id(body_out_id);
-    body.become_new_body(body_out_id, body_out_id.into());
+    body.become_new_body(body_out_id, body_out_id.into(), NewBodyKind::Replacement);
     let mut new_solids = vec![body.clone()];
     let separate_bodies = !merge;
 
@@ -458,7 +459,7 @@ pub(crate) async fn inner_imprint(
             let mut new_solid = body.clone();
             new_solid.set_id(extra_solid_id);
             new_solid.value_id = body_out_id;
-            new_solid.become_new_body(extra_solid_id, extra_solid_id.into());
+            new_solid.become_new_body(extra_solid_id, extra_solid_id.into(), NewBodyKind::Replacement);
             new_solids.push(new_solid);
         }
         record_consumed_solids(exec_state, &targets, ConsumedSolidOperation::Split, &new_solids);
@@ -522,7 +523,7 @@ pub(crate) async fn inner_imprint(
         let mut new_solid = body.clone();
         new_solid.set_id(extra_solid_id);
         new_solid.value_id = body_out_id;
-        new_solid.become_new_body(extra_solid_id, extra_solid_id.into());
+        new_solid.become_new_body(extra_solid_id, extra_solid_id.into(), NewBodyKind::Replacement);
         new_solids.push(new_solid);
     }
 

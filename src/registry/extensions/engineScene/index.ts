@@ -6,6 +6,7 @@ import {
   MODE_MODELING_COMMAND_SCOPE,
   provideCommand,
 } from '@src/registry/contracts/commands'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   defineEngineSceneStreamClassName,
   defineEngineSceneViewExtension,
@@ -13,7 +14,6 @@ import {
   engineSceneStreamClassNamesValueSpec,
   engineSceneViewExtensionsValueSpec,
 } from '@src/registry/contracts/engineScene'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   type KeymapItem,
@@ -24,6 +24,7 @@ import {
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
+import { viewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
 import { createElement, lazy, Suspense } from 'react'
 import executionIndicator from './executionIndicator'
 import { measurementToolService } from './measurementToolService'
@@ -32,6 +33,7 @@ import { saveViewportScreenshot } from './saveViewportScreenshot'
 import {
   EngineSceneGizmoViewExtension,
   EngineSceneToolbarViewExtension,
+  EngineSceneModelingDialogViewExtension,
   SketchBackgroundOpacityViewExtension,
   SketchConstraintsToggleViewExtension,
 } from './viewExtensionControls'
@@ -207,7 +209,7 @@ const toolbarViewExtension = defineEngineSceneViewExtension({
 
 const sketchBackgroundOpacityViewExtension = defineEngineSceneViewExtension({
   id: 'engine-scene.sketch-background-opacity',
-  zone: 'bottom-left',
+  zone: 'bottom',
   order: 0,
   Component: SketchBackgroundOpacityViewExtension,
   shouldRegister: isSketchSolveMode,
@@ -215,17 +217,26 @@ const sketchBackgroundOpacityViewExtension = defineEngineSceneViewExtension({
 
 const sketchConstraintsToggleViewExtension = defineEngineSceneViewExtension({
   id: 'engine-scene.sketch-constraints-toggle',
-  zone: 'bottom-left',
+  zone: 'bottom',
   order: 10,
   Component: SketchConstraintsToggleViewExtension,
   shouldRegister: isSketchSolveMode,
 })
 
+const modelingDialogViewExtension = defineEngineSceneViewExtension({
+  id: 'engine-scene.modeling-dialog',
+  zone: 'overlay',
+  order: 0,
+  Component: EngineSceneModelingDialogViewExtension,
+  wrapperClassName: '!pointer-events-none',
+})
+
 const gizmoViewExtension = defineEngineSceneViewExtension({
   id: 'engine-scene.gizmo',
-  zone: 'bottom-right',
-  order: 0,
+  zone: 'bottom',
+  order: 20,
   Component: EngineSceneGizmoViewExtension,
+  wrapperClassName: 'ml-auto',
 })
 
 const EngineSceneMeasurementStatusBarItem = () =>
@@ -257,7 +268,8 @@ const EngineSceneScreenshotStatusBarItem = () =>
  * the scene and the default view chrome rendered around the engine stream.
  */
 const engineSceneExtension = defineRegistryItemFactory((ctx) => {
-  const executionService = ctx.services.signal(executingEditorService)
+  const session = ctx.services.signal(projectSession)
+  const executionService = computed(() => session.value?.executingEditor.value)
   const selectionStatusBarItem = computed(() => {
     const selectionStatusLabel =
       executionService.value?.selectionStatusLabel.value
@@ -353,7 +365,10 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
     provides: [
       provideCommand(
         captureScreenshotCommand(() =>
-          saveViewportScreenshot(ctx.services.get(fileOperationsService))
+          saveViewportScreenshot(
+            ctx.services.get(fileOperationsService),
+            ctx.services.get(viewportScreenshotService)
+          )
         )
       ),
       provideCommand(openMeasureToolCommand),
@@ -389,6 +404,9 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
       ),
       provide(engineSceneViewExtensionsValueSpec, gizmoViewExtension, {
         key: gizmoViewExtension.id,
+      }),
+      provide(engineSceneViewExtensionsValueSpec, modelingDialogViewExtension, {
+        key: modelingDialogViewExtension.id,
       }),
     ],
     uses: [executionIndicator],

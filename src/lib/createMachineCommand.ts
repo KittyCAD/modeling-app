@@ -87,6 +87,8 @@ export function createMachineCommand<
       .filter((c) => c !== null) as Command<T, typeof type, S[typeof type]>[]
   }
 
+  if (commandConfig.available?.(state.context) === false) return null
+
   // Hide commands based on platform or development status by returning `null`
   // so the consumer can filter them out
   if ('hide' in commandConfig) {
@@ -119,6 +121,7 @@ export function createMachineCommand<
       }
     },
     disabled: forceDisable,
+    forceCommandBar: commandConfig.forceCommandBar,
   }
 
   if (commandConfig.args) {
@@ -204,6 +207,7 @@ export function buildCommandArgument<
   const baseCommandArgument = {
     displayName: arg.displayName,
     description: arg.description,
+    documentation: arg.documentation,
     status: arg.status,
     statusMessage: arg.statusMessage,
     required,
@@ -212,6 +216,7 @@ export function buildCommandArgument<
     skip: arg.skip,
     machineActor,
     valueSummary: arg.valueSummary,
+    dialog: arg.dialog,
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {
@@ -231,22 +236,11 @@ export function buildCommandArgument<
       ...baseCommandArgument,
       multiple: arg.multiple,
       selectionTypes: arg.selectionTypes,
+      allowCodeReferences: arg.allowCodeReferences,
       validation: arg.validation,
       clearSelectionFirst: arg.clearSelectionFirst,
       selectionFilter: arg.selectionFilter,
     } satisfies CommandArgument<O, T> & { inputType: 'selection' }
-  } else if (arg.inputType === 'selectionMixed') {
-    return {
-      inputType: arg.inputType,
-      ...baseCommandArgument,
-      multiple: arg.multiple,
-      selectionTypes: arg.selectionTypes,
-      validation: arg.validation,
-      clearSelectionFirst: arg.clearSelectionFirst,
-      allowNoSelection: arg.allowNoSelection,
-      selectionSource: arg.selectionSource,
-      selectionFilter: arg.selectionFilter,
-    } satisfies CommandArgument<O, T> & { inputType: 'selectionMixed' }
   } else if (arg.inputType === 'kcl') {
     return {
       inputType: arg.inputType,
@@ -260,6 +254,8 @@ export function buildCommandArgument<
       defaultValue: arg.defaultValue,
       ...baseCommandArgument,
     } satisfies CommandArgument<O, T> & { inputType: 'kcl' }
+  } else if (arg.inputType === 'camera') {
+    return { inputType: arg.inputType, ...baseCommandArgument }
   } else if (arg.inputType === 'vector3d') {
     return {
       inputType: arg.inputType,

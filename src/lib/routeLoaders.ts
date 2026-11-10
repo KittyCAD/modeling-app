@@ -30,6 +30,10 @@ import { settingsValueSpec } from '@src/registry/contracts/settings'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
+import { hasProjectShellFeature } from '@src/lib/projectSession/next/feature'
+import { waitForUserFeaturesSettled } from '@src/machines/userFeaturesMachine'
+import { readProject } from '@src/lib/projectSession/next/utils'
+import { projectSessionService } from '@src/lib/projectSession/next/contract'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
@@ -72,6 +76,70 @@ export const baseLoader =
     }
 
     return redirect(PATHS.HOME + routerSearch)
+  }
+
+/** Settle the shared feature grant before either experimental route accesses resources. */
+async function canOpenProjectShell(app: App, signal: AbortSignal) {
+  await waitForUserFeaturesSettled(app.userFeatures.actor, undefined, signal)
+  signal.throwIfAborted()
+  return hasProjectShellFeature(app.userFeatures)
+}
+
+/**
+ * `/project/:id` identifies a cloud project by its API ID, never a disk path or
+ * an internal cloud relationship ID. Cloud opening is reserved for a follow-up;
+ * this route must not fall through to filesystem discovery in the meantime.
+ */
+export const projectLoader =
+  ({ app }: { app: App }): LoaderFunction =>
+  async ({ request, params }) => {
+    if (!(await canOpenProjectShell(app, request.signal)))
+      return redirect(PATHS.HOME)
+    if (!params.id)
+      return Promise.reject(new Error('No cloud project ID provided'))
+    return Promise.reject(
+      new Error('Cloud projects are not yet supported by this route')
+    )
+  }
+
+/**
+ * Open the directory identified by `/local/:path`, without opening an editor.
+ * Reading assembles the full tree and optional TOML metadata without creating files
+ * or applying project settings. Files are rejected rather than promoted to their
+ * parent directory. Failed or cancelled discovery leaves the selection intact.
+ */
+export const localLoader =
+  ({ app }: { app: App }): LoaderFunction =>
+  async ({ request, params }) => {
+    if (!(await canOpenProjectShell(app, request.signal)))
+      return redirect(PATHS.HOME)
+    const { path } = params
+    if (!path)
+      return Promise.reject(new Error('No local directory path provided'))
+
+    const assertCurrent = () => request.signal.throwIfAborted()
+    const fileOperations = app.registry.get(fileOperationsService)
+    const projectSessions = app.registry.get(projectSessionService)
+    // A grant can be revoked (and granted again) while discovery is awaiting IO.
+    // Never publish through a captured service that the registry has disposed.
+    const ownsSession = () =>
+      hasProjectShellFeature(app.userFeatures) &&
+      app.registry.optional(projectSessionService) === projectSessions
+
+    const library = await getProjectLibraryOwnership(
+      app.settings.get().app.libraries.current,
+      path
+    )
+    assertCurrent()
+    if (!ownsSession()) return redirect(PATHS.HOME)
+    const project = await readProject(fileOperations, path, {
+      signal: request.signal,
+      library,
+    })
+    assertCurrent()
+    if (!ownsSession()) return redirect(PATHS.HOME)
+    // Consumers retain this session instead of resolving the global selection again.
+    return projectSessions.openProject(project)
   }
 
 export const fileLoader =

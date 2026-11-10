@@ -104,7 +104,7 @@ async fn lego_batches_are_between_begin_and_end_execution(use_cache: bool) {
 
     let program = kcl_lib::Program::parse_no_errs(include_str!("inputs/lego.kcl")).unwrap();
     if use_cache {
-        kcl_lib::bust_cache().await;
+        ctx.bust_cache().await;
     }
     assert!(record_lego_execution(&ctx, &events, &program, use_cache).await > 0);
     if use_cache {

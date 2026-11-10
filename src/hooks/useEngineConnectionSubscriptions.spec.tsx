@@ -74,11 +74,7 @@ test('stores a post-selected primitive before starting a sketch', async () => {
       kclManager,
       rustContext,
       wasmInstance: {},
-      store: {
-        useSketchSolveMode: {
-          current: true,
-        },
-      },
+      store: {},
     },
   })
   getEventForQueryEntityTypeWithPoint.mockResolvedValue(selectionEvent)
@@ -96,11 +92,51 @@ test('stores a post-selected primitive before starting a sketch', async () => {
 
   await waitFor(() => {
     expect(send).toHaveBeenCalledWith(selectionEvent)
-    expect(selectSketchPlane).toHaveBeenCalledWith('face-id', true, kclManager)
+    expect(selectSketchPlane).toHaveBeenCalledWith('face-id', kclManager)
   })
   expect(send.mock.invocationCallOrder[0]).toBeLessThan(
     selectSketchPlane.mock.invocationCallOrder[0]
   )
 
+  unmount()
+})
+
+test('does not overwrite sketch solve segment selection from an engine click', () => {
+  const callbacks = new Map<string, (event: unknown) => void>()
+  const unsubscribe = vi.fn()
+  const send = vi.fn()
+  useModelingContext.mockReturnValue({
+    send,
+    state: { matches: (state: string) => state === 'sketchSolveMode' },
+    context: {
+      engineCommandManager: {
+        subscribeTo: vi.fn(({ event, callback }) => {
+          callbacks.set(event, callback)
+          return unsubscribe
+        }),
+        subscribeToUnreliable: vi.fn(() => unsubscribe),
+      },
+      kclManager: {},
+      rustContext: { planesCreated: { add: vi.fn(() => unsubscribe) } },
+      wasmInstance: {},
+      store: {},
+    },
+  })
+
+  const { unmount } = renderHook(() => useEngineConnectionSubscriptions())
+  act(() => {
+    callbacks.get('query_entity_type_with_point')?.({
+      type: 'query_entity_type_with_point',
+      data: {
+        reference: {
+          type: 'segment',
+          path_id: 'path-id',
+          segment_id: 'segment-id',
+        },
+      },
+    })
+  })
+  expect(getEventForQueryEntityTypeWithPoint).not.toHaveBeenCalled()
+  expect(send).not.toHaveBeenCalled()
   unmount()
 })

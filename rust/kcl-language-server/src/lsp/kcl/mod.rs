@@ -110,7 +110,6 @@ use crate::SourceRange;
 use crate::docs::kcl_doc::ArgData;
 use crate::docs::kcl_doc::ModData;
 use crate::exec::KclValue;
-use crate::execution::cache;
 use crate::lsp::LspSuggestion;
 use crate::lsp::ToLspRange;
 use crate::lsp::backend::Backend as _;
@@ -468,7 +467,10 @@ impl crate::lsp::backend::Backend for Backend {
 
     async fn inner_on_change(&self, params: TextDocumentItem, force: bool) {
         if force {
-            crate::bust_cache().await;
+            let cache = self.executor_ctx().await.as_ref().map(|ctx| ctx.cache.clone());
+            if let Some(cache) = cache {
+                cache.bust_cache().await;
+            }
         }
 
         let filename = params.uri.to_string();
@@ -1174,7 +1176,7 @@ impl LanguageServer for Backend {
 
         match hover {
             Hover::Function { name, range } => {
-                let (sig, docs) = if let Some(Some(result)) = with_cached_var(&name, |value| {
+                let (sig, docs) = if let Some(Some(result)) = with_cached_var(self, &name, |value| {
                     match value {
                         // User-defined function
                         KclValue::Function { value, .. } if !value.is_std() => {
@@ -1291,7 +1293,7 @@ impl LanguageServer for Backend {
                 }),
                 range: Some(range),
             })),
-            Hover::Variable { name, ty: None, range } => Ok(with_cached_var(&name, |value| {
+            Hover::Variable { name, ty: None, range } => Ok(with_cached_var(self, &name, |value| {
                 let mut text: String = format!("```\n{name}");
                 if let Some(ty) = value.principal_type() {
                     text.push_str(&format!(": {}", ty.human_friendly_type()));
@@ -2022,8 +2024,9 @@ fn position_to_char_index(position: Position, code: &str) -> usize {
     std::cmp::min(char_position, end_of_file)
 }
 
-async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {
-    let value = cache::read_old_memory_var(name).await?;
+async fn with_cached_var<T>(backend: &Backend, name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {
+    let cache = backend.executor_ctx().await.as_ref()?.cache.clone();
+    let value = cache.read_old_memory_var(name).await?;
     Some(f(&value))
 }
 
@@ -2032,6 +2035,34 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
+
+    #[tokio::test]
+    async fn cached_variables_are_scoped_to_the_backend_session() {
+        let a = crate::lsp::test_util::kcl_lsp_server_mock_execution().await.unwrap();
+        let b = crate::lsp::test_util::kcl_lsp_server_mock_execution().await.unwrap();
+        let ctx_a = a.executor_ctx().await.as_ref().unwrap().clone();
+        let ctx_b = b.executor_ctx().await.as_ref().unwrap().clone();
+        for (ctx, source) in [
+            (&ctx_a, "@settings(kclVersion = 3.0)\nx = 2"),
+            (&ctx_b, "@settings(kclVersion = 3.0)\nx = 7"),
+        ] {
+            ctx.run_mock(
+                &Program::parse_no_errs(source).unwrap(),
+                &kcl_lib::MockConfig::default(),
+            )
+            .await
+            .unwrap();
+        }
+        assert_ne!(
+            with_cached_var(&a, "x", KclValue::value_str).await,
+            with_cached_var(&b, "x", KclValue::value_str).await,
+        );
+        ctx_a.cache.clear_mem_cache().await;
+        assert!(with_cached_var(&a, "x", |_| ()).await.is_none());
+        assert!(with_cached_var(&b, "x", |_| ()).await.is_some());
+        ctx_a.close().await;
+        ctx_b.close().await;
+    }
 
     #[test]
     fn test_position_to_char_index_first_line() {

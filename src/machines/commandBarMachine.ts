@@ -1,4 +1,3 @@
-import type { KclManager } from '@src/lang/KclManager'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type {
   Command,
@@ -7,7 +6,10 @@ import type {
   CommandReviewValidationDetails,
   KclCommandValue,
 } from '@src/lib/commandTypes'
-import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
+import {
+  getCommandArgumentKclValuesOnly,
+  isModelingDialogCommand,
+} from '@src/lib/commandUtils'
 import { isDesktop } from '@src/lib/isDesktop'
 import { isErr } from '@src/lib/trap'
 import { reportRejection } from '@src/lib/trap'
@@ -66,7 +68,6 @@ export type CommandBarContext = CommandBarInput & {
   reviewValidationError?: string
   reviewValidationDetails?: CommandReviewValidationDetails
   machineManager: MachineManager
-  kclManager?: KclManager
   userFeatures?: UserFeaturesService
 }
 
@@ -83,6 +84,13 @@ export type CommandBarMachineEvent =
       type: 'Submit command'
       output: { argumentsToSubmit: { [x: string]: unknown } }
     }
+  | {
+      type: 'Submit command from dialog'
+      data: {
+        argumentsToSubmit: Record<string, unknown>
+      }
+    }
+  | { type: 'Dialog draft changed' }
   | {
       type: 'Add argument'
       data: { argument: CommandArgumentWithName<unknown> }
@@ -133,7 +141,6 @@ export type CommandBarMachineEvent =
       type: 'Change current argument'
       data: { [x: string]: CommandArgumentWithName<unknown> }
     }
-  | { type: 'Set kclManager'; data: KclManager }
 
 export const commandBarMachine = setup({
   types: {
@@ -152,12 +159,6 @@ export const commandBarMachine = setup({
           ...context.argumentsToSubmit,
           [argName]: argData,
         }
-      },
-    }),
-    'Set kclManager': assign({
-      kclManager: ({ event }) => {
-        assertEvent(event, 'Set kclManager')
-        return event.data
       },
     }),
     'Set userFeatures': assign({
@@ -365,6 +366,34 @@ export const commandBarMachine = setup({
         return args
       },
     }),
+    'Set arguments to submit': assign({
+      argumentsToSubmit: ({ context, event }) => {
+        if (event.type !== 'Submit command from dialog') {
+          return context.argumentsToSubmit
+        }
+        return {
+          ...context.argumentsToSubmit,
+          ...event.data.argumentsToSubmit,
+        }
+      },
+    }),
+    'Clear review validation error': assign({
+      reviewValidationError: undefined,
+      reviewValidationDetails: undefined,
+    }),
+    'Set argument validation error': assign({
+      reviewValidationError: ({ event }) => {
+        if (event.type !== 'xstate.error.actor.validateArguments') return
+        const argName = event.error?.arg?.name
+        return (
+          event.error?.message ||
+          (argName
+            ? `Unable to validate "${argName}".`
+            : 'Unable to validate command arguments.')
+        )
+      },
+      reviewValidationDetails: undefined,
+    }),
   },
   guards: {
     'Command needs review': ({ context }) =>
@@ -416,6 +445,11 @@ export const commandBarMachine = setup({
       )
     },
     'Has selected command': ({ context }) => !!context.selectedCommand,
+    'Command uses dialog': ({ context }) =>
+      isModelingDialogCommand(context.selectedCommand),
+    'Has review validation error': ({ event }) =>
+      event.type === 'xstate.done.actor.validateArguments' &&
+      !!event.output.reviewValidationError,
   },
   actors: {
     'Validate argument': fromPromise(
@@ -453,8 +487,7 @@ export const commandBarMachine = setup({
             context.selectedCommand &&
             (argConfig?.inputType === 'selection' ||
               argConfig?.inputType === 'string' ||
-              argConfig?.inputType === 'options' ||
-              argConfig?.inputType === 'selectionMixed') &&
+              argConfig?.inputType === 'options') &&
             argConfig?.validation
           ) {
             argConfig
@@ -577,6 +610,30 @@ export const commandBarMachine = setup({
                   name: argName,
                 },
               })
+            }
+            if (
+              isModelingDialogCommand(input.selectedCommand) &&
+              'validation' in argConfig &&
+              argConfig.validation &&
+              argValue !== undefined
+            ) {
+              const result = await argConfig.validation({
+                context: input,
+                data: argValue,
+                machineContext: argConfig.machineActor?.getSnapshot().context,
+              })
+              if (result !== true) {
+                return Promise.reject(
+                  Object.assign(
+                    new Error(
+                      typeof result === 'string'
+                        ? result
+                        : `Unable to validate "${argName}".`
+                    ),
+                    { arg: { ...argConfig, name: argName } }
+                  )
+                )
+              }
             }
           } catch (e) {
             console.error('Error validating argument', context, e)
@@ -771,11 +828,32 @@ export const commandBarMachine = setup({
         ],
       },
     },
+    'Checking Arguments for Dialog': {
+      invoke: {
+        src: 'Validate all arguments',
+        id: 'validateArguments',
+        input: ({ context }) => context,
+        onDone: [
+          {
+            target: 'Gathering arguments',
+            guard: 'Has review validation error',
+            actions: ['Set review validation error'],
+          },
+          {
+            target: 'Closed',
+            actions: ['Execute command', 'Clear selected command'],
+          },
+        ],
+        onError: [
+          {
+            target: 'Gathering arguments',
+            actions: ['Set argument validation error'],
+          },
+        ],
+      },
+    },
   },
   on: {
-    'Set kclManager': {
-      actions: 'Set kclManager',
-    },
     'Set userFeatures': {
       actions: 'Set userFeatures',
     },
@@ -796,6 +874,16 @@ export const commandBarMachine = setup({
       actions: ['Find and select command', 'Initialize arguments to submit'],
     },
 
+    'Submit command from dialog': {
+      guard: 'Command uses dialog',
+      target: '.Checking Arguments for Dialog',
+      actions: ['Set arguments to submit', 'Clear current argument'],
+    },
+    'Dialog draft changed': {
+      guard: 'Command uses dialog',
+      target: '.Gathering arguments',
+      actions: ['Clear review validation error'],
+    },
     'Add commands': {
       actions: [
         assign({

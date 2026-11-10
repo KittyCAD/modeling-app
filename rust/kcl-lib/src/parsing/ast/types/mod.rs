@@ -12,6 +12,7 @@ use std::sync::Arc;
 use std::sync::Mutex;
 
 use anyhow::Result;
+use kcl_api::NumericSuffix;
 pub use kcl_api::ast::ItemVisibility;
 use kittycad_modeling_cmds::KclVersion;
 use parse_display::Display;
@@ -50,7 +51,6 @@ pub use crate::parsing::ast::types::condition::ElseIf;
 pub use crate::parsing::ast::types::condition::IfExpression;
 pub use crate::parsing::ast::types::literal_value::LiteralValue;
 pub use crate::parsing::ast::types::none::KclNone;
-use crate::parsing::token::NumericSuffix;
 
 mod condition;
 mod literal_value;

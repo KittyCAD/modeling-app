@@ -1,4 +1,12 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest'
 
 const { mockToast } = vi.hoisted(() => ({
   mockToast: {
@@ -12,23 +20,43 @@ vi.mock('react-hot-toast', () => ({
   default: mockToast,
 }))
 
-import type { CameraViewState } from '@kittycad/lib'
+vi.mock('@src/lib/resetCameraPosition', () => ({
+  resetCameraPosition: vi.fn().mockResolvedValue(undefined),
+}))
+
+vi.mock('@src/lib/isPlaywright', () => ({
+  isPlaywright: () => false,
+}))
+
 import { signal } from '@preact/signals-core'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 
 import type { KclManager } from '@src/lang/KclManager'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import type { Artifact, ExecState, KclNamedViewArtifact } from '@src/lang/wasm'
+import { initialiseWasmNode } from '@src/lang/wasmUtilsNode'
 import {
   activateNamedView,
   activeViewSignal,
-  hasNamedViewsUi,
   isSameView,
   isSketchSessionOpen,
   moduleKeyOf,
   reapplyActiveViewAfterReconnect,
   resetNamedViewSession,
+  startTrackingActiveViewCamera,
 } from '@src/lib/kclNamedViewActivation'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { Signal } from '@src/lib/signal'
+import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
+import { PerspectiveCamera, Vector3 } from 'three'
+
+beforeAll(async () => {
+  await initialiseWasmNode()
+})
+
+beforeEach(() => {
+  vi.mocked(resetCameraPosition).mockClear()
+})
 
 const MAIN_PATH: ModulePath = { type: 'Main' }
 
@@ -37,8 +65,6 @@ const CODE_REF = {
   nodePath: { steps: [] },
   pathToNode: [],
 }
-
-const SAVED_CAMERA = { eye_offset: 42 } as unknown as CameraViewState
 
 /** An unconsumed extrusion, so the universe has one member to report on. */
 function body(id: string): Extract<Artifact, { type: 'sweep' }> {
@@ -113,12 +139,6 @@ function modelingStateIn(stateValue: string): ModelingStateFake {
   } as unknown as ModelingStateFake
 }
 
-function setFlag(enabled: boolean) {
-  ;(window as unknown as { app?: unknown }).app = {
-    userFeatures: { has: () => enabled },
-  }
-}
-
 function flush(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, 0))
 }
@@ -126,26 +146,44 @@ function flush(): Promise<void> {
 function fakes({ isReady = true }: { isReady?: boolean } = {}) {
   const setObjectsHidden = vi.fn().mockResolvedValue(null)
   const setCameraToAxis = vi.fn().mockResolvedValue(undefined)
-  const sendSceneCommand = vi.fn().mockResolvedValue(null)
+  const zoomToFit = vi.fn().mockResolvedValue(undefined)
+  const viewIsometric = vi.fn().mockResolvedValue(undefined)
   const setCameraProjection = vi.fn().mockResolvedValue(undefined)
-  const getCameraView = vi.fn().mockResolvedValue(SAVED_CAMERA)
-  const setCameraView = vi.fn().mockResolvedValue(undefined)
   const engineSceneGenerationSignal = signal(0)
+  const modelingStateSignal = signal<ModelingStateFake>(null)
+  const camera = new PerspectiveCamera()
+  camera.position.z = 1
 
   const raw = {
+    systemDeps: {
+      settings: {
+        getSnapshot: () => ({
+          context: {
+            modeling: { cameraProjection: { current: 'orthographic' } },
+          },
+        }),
+      },
+    },
     execState: execStateWith(),
     errors: [] as unknown[],
-    modelingState: null as ModelingStateFake,
+    get modelingState() {
+      return modelingStateSignal.value
+    },
+    set modelingState(state: ModelingStateFake) {
+      modelingStateSignal.value = state
+    },
+    modelingStateSignal,
     engineSceneGenerationSignal,
-    engineCommandManager: { setObjectsHidden, sendSceneCommand, isReady },
+    engineCommandManager: { setObjectsHidden, isReady },
     sceneInfra: {
       camControls: {
         setCameraToAxis,
         setCameraProjection,
-        getCameraView,
-        setCameraView,
-        target: { x: 0, y: 0, z: 0 },
-        camera: { position: { distanceTo: () => 1 } },
+        zoomToFit,
+        viewIsometric,
+        target: new Vector3(),
+        camera,
+        cameraChange: new Signal(),
       },
     },
   }
@@ -155,9 +193,7 @@ function fakes({ isReady = true }: { isReady?: boolean } = {}) {
     kclManager: raw as unknown as KclManager,
     setObjectsHidden,
     setCameraToAxis,
-    sendSceneCommand,
-    getCameraView,
-    setCameraView,
+    zoomToFit,
     engineSceneGenerationSignal,
   }
 }
@@ -169,26 +205,8 @@ async function activateFront(f: ReturnType<typeof fakes>) {
   })
   f.setObjectsHidden.mockClear()
   f.setCameraToAxis.mockClear()
-  f.sendSceneCommand.mockClear()
+  f.zoomToFit.mockClear()
 }
-
-describe('hasNamedViewsUi', () => {
-  afterEach(() => {
-    delete (window as unknown as { app?: unknown }).app
-  })
-
-  it('is false when no app is on the window', () => {
-    delete (window as unknown as { app?: unknown }).app
-    expect(hasNamedViewsUi()).toBe(false)
-  })
-
-  it('follows the feature flag', () => {
-    setFlag(true)
-    expect(hasNamedViewsUi()).toBe(true)
-    setFlag(false)
-    expect(hasNamedViewsUi()).toBe(false)
-  })
-})
 
 describe('moduleKeyOf', () => {
   it('distinguishes the module kinds and reports an absent path', () => {
@@ -209,9 +227,14 @@ describe('moduleKeyOf', () => {
 
 describe('isSameView', () => {
   it('treats Default View as itself and as nothing else', () => {
-    expect(isSameView(null, null)).toBe(true)
-    expect(isSameView(null, { name: 'Front', moduleKey: 'Main' })).toBe(false)
-    expect(isSameView({ name: 'Front', moduleKey: 'Main' }, null)).toBe(false)
+    expect(isSameView('kclDefault', 'kclDefault')).toBe(true)
+    expect(isSameView('kclDefault', null)).toBe(false)
+    expect(isSameView('kclDefault', { name: 'Front', moduleKey: 'Main' })).toBe(
+      false
+    )
+    expect(isSameView({ name: 'Front', moduleKey: 'Main' }, 'kclDefault')).toBe(
+      false
+    )
   })
 
   it('separates one name declared by two modules', () => {
@@ -262,26 +285,10 @@ describe('activateNamedView', () => {
   })
 
   afterEach(() => {
-    delete (window as unknown as { app?: unknown }).app
     resetNamedViewSession()
   })
 
-  it('sends nothing while the flag is off', async () => {
-    setFlag(false)
-    const f = fakes()
-
-    await activateNamedView({
-      target: { kind: 'declared', view: declaredView('Front') },
-      kclManager: f.kclManager,
-    })
-
-    expect(f.setObjectsHidden).not.toHaveBeenCalled()
-    expect(f.setCameraToAxis).not.toHaveBeenCalled()
-    expect(activeViewSignal.value).toBeNull()
-  })
-
   it('sends nothing while a command would not reach the engine', async () => {
-    setFlag(true)
     const f = fakes({ isReady: false })
 
     await activateNamedView({
@@ -295,7 +302,6 @@ describe('activateNamedView', () => {
   })
 
   it('sends the visibility of every universe member and the camera', async () => {
-    setFlag(true)
     const f = fakes()
 
     await activateNamedView({
@@ -317,7 +323,6 @@ describe('activateNamedView', () => {
   })
 
   it('sends every newly nameable artifact kind to the engine', async () => {
-    setFlag(true)
     const f = fakes()
     const artifacts: Artifact[] = [
       {
@@ -360,93 +365,121 @@ describe('activateNamedView', () => {
     )
   })
 
-  it('sends no camera of its own for Default View', async () => {
-    setFlag(true)
+  it('restores KCL visibility after camera movement without resetting the camera', async () => {
     const f = fakes()
+    f.raw.execState = execStateWith({ bodies: ['body-1', 'body-2'] })
+    f.raw.execState.operations = {
+      map: {
+        0: [
+          {
+            type: 'StdLibCall',
+            name: 'hide',
+            unlabeledArg: {
+              value: { type: 'Solid', value: { artifactId: 'body-1' } },
+              sourceRange: CODE_REF.range,
+            },
+            labeledArgs: {},
+            nodePath: CODE_REF.nodePath,
+            sourceRange: CODE_REF.range,
+          },
+        ],
+      },
+    }
+    await activateFront(f)
+    const controls = f.raw.sceneInfra.camControls
+
+    controls.cameraChange.dispatch()
+    expect(activeViewSignal.value).toEqual({ name: 'Front', moduleKey: 'Main' })
+    expect(f.setObjectsHidden).not.toHaveBeenCalled()
+
+    controls.camera.position.x += 1
+    controls.cameraChange.dispatch()
+    await flush()
+    expect(activeViewSignal.value).toBeNull()
+    expect(resetCameraPosition).not.toHaveBeenCalled()
+    expect(f.setCameraToAxis).not.toHaveBeenCalled()
+    expect(f.setObjectsHidden).toHaveBeenCalledExactlyOnceWith(
+      new Map([
+        ['body-1', true],
+        ['body-2', false],
+      ])
+    )
+
+    // Reconnect can start tracking again when no named view is active.
+    startTrackingActiveViewCamera(f.kclManager)
+    controls.camera.position.x += 1
+    controls.cameraChange.dispatch()
+    await flush()
+    expect(f.setObjectsHidden).toHaveBeenCalledOnce()
 
     await activateNamedView({
       target: { kind: 'kclDefault' },
       kclManager: f.kclManager,
     })
+    expect(resetCameraPosition).toHaveBeenCalledOnce()
+    expect(activeViewSignal.value).toBe('kclDefault')
+    f.setObjectsHidden.mockClear()
 
-    expect(f.setObjectsHidden).toHaveBeenCalledOnce()
-    expect(f.setCameraToAxis).not.toHaveBeenCalled()
-    expect(f.setCameraView).not.toHaveBeenCalled()
+    controls.camera.zoom *= 2
+    controls.cameraChange.dispatch()
+    await flush()
+    expect(activeViewSignal.value).toBeNull()
+    expect(resetCameraPosition).toHaveBeenCalledOnce()
+    expect(f.setObjectsHidden).toHaveBeenCalledExactlyOnceWith(
+      new Map([
+        ['body-1', true],
+        ['body-2', false],
+      ])
+    )
+  })
+
+  it('keeps a view active while applying its camera and reconnecting', async () => {
+    const f = fakes()
+    const controls = f.raw.sceneInfra.camControls
+    f.setCameraToAxis.mockImplementation(async () => {
+      controls.camera.position.x += 1
+      controls.cameraChange.dispatch()
+    })
+    await activateFront(f)
+    await activateFront(f)
+    await reapplyActiveViewAfterReconnect(f.kclManager)
+    expect(activeViewSignal.value).toEqual({ name: 'Front', moduleKey: 'Main' })
+
+    controls.camera.zoom *= 2
+    controls.cameraChange.dispatch()
     expect(activeViewSignal.value).toBeNull()
   })
-})
 
-describe('the pre-activation camera', () => {
-  beforeEach(() => {
-    resetNamedViewSession()
-    setFlag(true)
-  })
-
-  afterEach(() => {
-    delete (window as unknown as { app?: unknown }).app
-    resetNamedViewSession()
-  })
-
-  it('is put back by Default View', async () => {
+  it('restores KCL visibility and the preferred projection for Default View', async () => {
+    const { resetCameraPosition: resetCamera } = await vi.importActual<{
+      resetCameraPosition: typeof resetCameraPosition
+    }>('@src/lib/resetCameraPosition')
+    vi.mocked(resetCameraPosition).mockImplementationOnce(resetCamera)
     const f = fakes()
 
-    await activateNamedView({
-      target: { kind: 'declared', view: declaredView('Front') },
-      kclManager: f.kclManager,
-    })
     await activateNamedView({
       target: { kind: 'kclDefault' },
       kclManager: f.kclManager,
     })
 
-    expect(f.getCameraView).toHaveBeenCalledOnce()
-    expect(f.setCameraView).toHaveBeenCalledWith(SAVED_CAMERA)
-  })
-
-  it('is the one from before the first view, not before the second', async () => {
-    const f = fakes()
-
-    await activateNamedView({
-      target: { kind: 'declared', view: declaredView('Front') },
-      kclManager: f.kclManager,
-    })
-    await activateNamedView({
-      target: { kind: 'declared', view: declaredView('Back') },
-      kclManager: f.kclManager,
-    })
-
-    expect(f.getCameraView).toHaveBeenCalledOnce()
-  })
-
-  it('is not put back twice', async () => {
-    const f = fakes()
-
-    await activateNamedView({
-      target: { kind: 'declared', view: declaredView('Front') },
-      kclManager: f.kclManager,
-    })
-    await activateNamedView({
-      target: { kind: 'kclDefault' },
-      kclManager: f.kclManager,
-    })
-    await activateNamedView({
-      target: { kind: 'kclDefault' },
-      kclManager: f.kclManager,
-    })
-
-    expect(f.setCameraView).toHaveBeenCalledOnce()
+    expect(f.setObjectsHidden).toHaveBeenCalledWith(
+      new Map([['body-1', false]])
+    )
+    expect(f.setCameraToAxis).not.toHaveBeenCalled()
+    expect(
+      f.raw.sceneInfra.camControls.setCameraProjection
+    ).toHaveBeenCalledWith('orthographic')
+    expect(activeViewSignal.value).toBe('kclDefault')
   })
 })
 
 describe('reapplying the active view after an execution', () => {
   beforeEach(() => {
     resetNamedViewSession()
-    setFlag(true)
     mockToast.error.mockClear()
   })
 
   afterEach(() => {
-    delete (window as unknown as { app?: unknown }).app
     resetNamedViewSession()
   })
 
@@ -475,7 +508,7 @@ describe('reapplying the active view after an execution', () => {
 
     expect(f.setObjectsHidden).toHaveBeenCalledOnce()
     expect(f.setCameraToAxis).not.toHaveBeenCalled()
-    expect(f.sendSceneCommand).not.toHaveBeenCalled()
+    expect(f.zoomToFit).not.toHaveBeenCalled()
   })
 
   it('does nothing when the execution reported errors', async () => {
@@ -500,7 +533,7 @@ describe('reapplying the active view after an execution', () => {
     expect(f.setObjectsHidden).toHaveBeenCalledOnce()
   })
 
-  it('does nothing while a version 1 sketch session is open', async () => {
+  it('waits for a version 1 sketch session to close', async () => {
     const f = fakes()
     await activateFront(f)
 
@@ -511,15 +544,14 @@ describe('reapplying the active view after an execution', () => {
     expect(f.setObjectsHidden).not.toHaveBeenCalled()
     expect(activeViewSignal.value).toEqual({ name: 'Front', moduleKey: 'Main' })
 
-    // The sketch session is what stopped it, not a missing effect.
+    // Closing the session applies the rebuild it postponed, with no new run.
     f.raw.modelingState = null
-    f.engineSceneGenerationSignal.value += 1
     await flush()
 
     expect(f.setObjectsHidden).toHaveBeenCalledOnce()
   })
 
-  it('does nothing while a version 2 sketch session is open', async () => {
+  it('waits for a version 2 sketch session to close', async () => {
     const f = fakes()
     await activateFront(f)
 
@@ -529,8 +561,9 @@ describe('reapplying the active view after an execution', () => {
 
     expect(f.setObjectsHidden).not.toHaveBeenCalled()
 
+    // Exiting sketch mode rebuilds the scene before the session closes, and the
+    // executions after it are cache hits that leave the generation alone.
     f.raw.modelingState = null
-    f.engineSceneGenerationSignal.value += 1
     await flush()
 
     expect(f.setObjectsHidden).toHaveBeenCalledOnce()
@@ -553,24 +586,6 @@ describe('reapplying the active view after an execution', () => {
     expect(f.setObjectsHidden).not.toHaveBeenCalled()
     expect(mockToast.error).not.toHaveBeenCalled()
     expect(activeViewSignal.value).toEqual({ name: 'Front', moduleKey: 'Main' })
-  })
-
-  it('does nothing once the flag is off', async () => {
-    const f = fakes()
-    await activateFront(f)
-
-    setFlag(false)
-    f.engineSceneGenerationSignal.value += 1
-    await flush()
-
-    expect(f.setObjectsHidden).not.toHaveBeenCalled()
-
-    // The flag is what stopped it, not a missing effect.
-    setFlag(true)
-    f.engineSceneGenerationSignal.value += 1
-    await flush()
-
-    expect(f.setObjectsHidden).toHaveBeenCalledOnce()
   })
 
   it('does nothing for an exec state no execution produced', async () => {
@@ -621,22 +636,21 @@ describe('reapplying the active view after an execution', () => {
     expect(f.setObjectsHidden).toHaveBeenCalledWith(
       new Map([['body-1', false]])
     )
-    expect(f.setCameraView).toHaveBeenCalledWith(SAVED_CAMERA)
-    expect(activeViewSignal.value).toBeNull()
+    expect(resetCameraPosition).toHaveBeenCalledOnce()
+    expect(activeViewSignal.value).toBe('kclDefault')
     expect(mockToast.error).toHaveBeenCalledOnce()
     expect(mockToast.error.mock.calls[0][0]).toContain('Front')
+    expect(mockToast.error.mock.calls[0][0]).toContain(getKclDefaultViewName())
   })
 })
 
 describe('reapplying the active view after a reconnection', () => {
   beforeEach(() => {
     resetNamedViewSession()
-    setFlag(true)
     mockToast.error.mockClear()
   })
 
   afterEach(() => {
-    delete (window as unknown as { app?: unknown }).app
     resetNamedViewSession()
   })
 
@@ -669,19 +683,24 @@ describe('reapplying the active view after a reconnection', () => {
       new Map([['body-1', false]])
     )
     expect(f.setCameraToAxis).not.toHaveBeenCalled()
-    expect(f.setCameraView).not.toHaveBeenCalled()
+    expect(resetCameraPosition).not.toHaveBeenCalled()
   })
 
   it('keeps the preserved camera when an active named view disappears', async () => {
     const f = fakes()
     await activateFront(f)
+    const cameraChange = f.raw.sceneInfra.camControls.cameraChange
+    const subscribe = vi.spyOn(cameraChange, 'add')
+    const unsubscribe = vi.spyOn(cameraChange, 'remove')
     f.raw.execState = execStateWith({ views: [] })
     const moved = await reapplyActiveViewAfterReconnect(f.kclManager, {
       restoreCamera: false,
     })
     expect(moved).toBe(false)
-    expect(f.setCameraView).not.toHaveBeenCalled()
+    expect(resetCameraPosition).not.toHaveBeenCalled()
     expect(activeViewSignal.value).toBeNull()
+    expect(subscribe).not.toHaveBeenCalled()
+    expect(unsubscribe).toHaveBeenCalledOnce()
     expect(mockToast.error).toHaveBeenCalledOnce()
   })
 
@@ -708,17 +727,6 @@ describe('reapplying the active view after a reconnection', () => {
     expect(activeViewSignal.value).toEqual({ name: 'Front', moduleKey: 'Main' })
   })
 
-  it('leaves the camera to the caller while the flag is off', async () => {
-    const f = fakes()
-    await activateFront(f)
-    setFlag(false)
-
-    const movedTheCamera = await reapplyActiveViewAfterReconnect(f.kclManager)
-
-    expect(movedTheCamera).toBe(false)
-    expect(f.setObjectsHidden).not.toHaveBeenCalled()
-  })
-
   it('falls back to Default View once the view is gone', async () => {
     const f = fakes()
     await activateFront(f)
@@ -727,9 +735,9 @@ describe('reapplying the active view after a reconnection', () => {
     const movedTheCamera = await reapplyActiveViewAfterReconnect(f.kclManager)
 
     expect(movedTheCamera).toBe(true)
-    expect(f.setCameraView).toHaveBeenCalledWith(SAVED_CAMERA)
+    expect(resetCameraPosition).toHaveBeenCalledOnce()
     expect(f.setCameraToAxis).not.toHaveBeenCalled()
-    expect(activeViewSignal.value).toBeNull()
+    expect(activeViewSignal.value).toBe('kclDefault')
     expect(mockToast.error).toHaveBeenCalledOnce()
   })
 })

@@ -52,7 +52,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7.0.1
       - name: Install Node.js
-        uses: actions/setup-node@v7.0.0
+        uses: actions/setup-node@v7.1.0
         with:
           node-version-file: .nvmrc
       - name: Select Rust toolchain
@@ -143,7 +143,7 @@ jobs:
         if: runner.os == 'Linux'
         run: .github/ci-cd-scripts/verify-rust-cache-writable.sh
       - name: Install Node.js
-        uses: actions/setup-node@v7.0.0
+        uses: actions/setup-node@v7.1.0
         with:
           node-version-file: .nvmrc
       - name: Update apt repositories
@@ -315,7 +315,7 @@ jobs:
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Install Nodejs
-        uses: actions/setup-node@v7.0.0
+        uses: actions/setup-node@v7.1.0
         with:
           node-version-file: ".nvmrc"
       - run: echo "HEAD_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV

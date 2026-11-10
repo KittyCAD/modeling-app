@@ -95,6 +95,15 @@ export default function useStateMachineCommands<
           showExperimentalCommands,
         })
       })
+      .map((command) =>
+        command
+          ? {
+              ...command,
+              useModelingDialog:
+                command.groupId === 'modeling' && !command.forceCommandBar,
+            }
+          : command
+      )
       .filter((c) => c !== null) as Command[] // TS isn't smart enough to know this filter removes nulls
 
     commands.send({

@@ -3,21 +3,25 @@
 use std::collections::BTreeMap;
 use std::future::Future;
 use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use anyhow::Result;
 pub use artifact::ArtifactCommand;
 pub(crate) use artifact::EntityCloneInfo;
 pub(crate) use artifact::named_view_artifact;
 pub(crate) use artifact::sketch_block_constraint_type;
+pub use cache::Cache;
 use cache::GlobalState;
-pub use cache::bust_cache;
-pub use cache::clear_mem_cache;
 use futures::future::BoxFuture;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
 pub use kcl_api::DefaultPlanes;
+use kcl_api::Number;
+use kcl_api::Object;
+use kcl_api::ObjectId;
 pub use kcl_api::Operation;
 pub use kcl_api::artifact::Artifact;
 pub use kcl_api::artifact::ArtifactGraph;
@@ -99,16 +103,17 @@ use crate::execution::cad_op::OperationExt;
 use crate::execution::import_graph::Universe;
 use crate::execution::import_graph::UniverseMap;
 use crate::execution::typed_path::TypedPath;
-use crate::front::Number;
-use crate::front::Object;
-use crate::front::ObjectId;
+use crate::front::PointExt;
+use crate::front::SegmentExt;
 use crate::fs::FileManager;
 use crate::fs::FileSystemHandle;
 use crate::modules::ModuleExecutionOutcome;
 use crate::modules::ModuleId;
 use crate::modules::ModulePath;
+use crate::modules::ModulePathExt as _;
 use crate::modules::ModuleRepr;
 use crate::modules::ModuleSource;
+use crate::named_views::values as named_views;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::NodeRef;
@@ -175,11 +180,12 @@ pub(crate) mod kcl_value_view;
 pub(crate) mod machine;
 mod memory;
 mod modeling;
-mod named_views;
+#[cfg(not(target_arch = "wasm32"))]
+mod remote;
 mod sketch_solve;
 mod solver_arc;
 mod state;
-pub mod typed_path;
+pub use kcl_api::typed_path;
 pub(crate) mod types;
 
 pub(crate) const SKETCH_BLOCK_PARAM_ON: &str = "on";
@@ -190,7 +196,7 @@ pub(crate) const SKETCH_OBJECT_META_SKETCH: &str = "sketch";
 /// returning early if it is some kind of early return or stripping off the
 /// control flow otherwise. If it's an early return, it's returned as a
 /// `Result::Ok`.
-macro_rules! control_continue {
+macro_rules! control_normal {
     ($control_flow:expr) => {{
         let cf = $control_flow;
         if cf.is_some_return() {
@@ -201,7 +207,7 @@ macro_rules! control_continue {
     }};
 }
 // Expose the macro to other modules.
-pub(crate) use control_continue;
+pub(crate) use control_normal;
 
 /// Convenience macro for handling [`KclValueControlFlow`] in execution by
 /// returning early if it is some kind of early return or stripping off the
@@ -224,7 +230,7 @@ pub(crate) use early_return;
 pub enum ControlFlowKind {
     /// Normal control flow. Continue to the next step.
     #[default]
-    Continue,
+    Normal,
     /// A `return` statement executed under KCL 3.0: unwind to the nearest
     /// function-call boundary, which absorbs it as the function's result. Never
     /// constructed under older entry points, whose `return` uses
@@ -239,7 +245,7 @@ impl ControlFlowKind {
     /// Returns true if this is any kind of early return.
     pub fn is_some_return(&self) -> bool {
         match self {
-            ControlFlowKind::Continue => false,
+            ControlFlowKind::Normal => false,
             ControlFlowKind::Return => true,
             ControlFlowKind::Exit => true,
         }
@@ -249,16 +255,16 @@ impl ControlFlowKind {
 #[must_use = "You should always handle the control flow value when it is returned"]
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct KclValueControlFlow {
-    /// Use [control_continue] or [Self::into_value] to get the value.
+    /// Use [control_normal] or [Self::into_value] to get the value.
     value: Box<KclValue>,
     pub control: ControlFlowKind,
 }
 
 impl KclValue {
-    pub(crate) fn continue_(self) -> KclValueControlFlow {
+    pub(crate) fn normal(self) -> KclValueControlFlow {
         KclValueControlFlow {
             value: Box::new(self),
-            control: ControlFlowKind::Continue,
+            control: ControlFlowKind::Normal,
         }
     }
 
@@ -387,6 +393,10 @@ pub struct ExecOutcome {
     pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
+    /// The engine scene generation when this outcome was produced: the number of
+    /// runs so far that changed the engine scene. Runs answered from the cache
+    /// and mock runs leave it unchanged.
+    pub engine_scene_generation: usize,
     /// Source code of each module, for rendering issues against the module
     /// their source range points into. Not serialized to keep the WASM
     /// payload small; native callers (e.g. the Python bindings) read it
@@ -398,7 +408,7 @@ pub struct ExecOutcome {
 }
 
 /// Per-segment freedom used by the constraint report. Mirrors
-/// [`crate::front::Freedom`] but adds an `Error` variant for when
+/// [`kcl_api::Freedom`] but adds an `Error` variant for when
 /// a point lookup fails.
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum SegmentFreedom {
@@ -409,12 +419,12 @@ enum SegmentFreedom {
     Error,
 }
 
-impl From<crate::front::Freedom> for SegmentFreedom {
-    fn from(f: crate::front::Freedom) -> Self {
+impl From<kcl_api::Freedom> for SegmentFreedom {
+    fn from(f: kcl_api::Freedom) -> Self {
         match f {
-            crate::front::Freedom::Free => Self::Free,
-            crate::front::Freedom::Fixed => Self::Fixed,
-            crate::front::Freedom::Conflict => Self::Conflict,
+            kcl_api::Freedom::Free => Self::Free,
+            kcl_api::Freedom::Fixed => Self::Fixed,
+            kcl_api::Freedom::Conflict => Self::Conflict,
         }
     }
 }
@@ -487,15 +497,15 @@ pub(crate) fn sketch_constraint_status_for_sketch(
     scene_objects: &[Object],
     sketch_obj: &Object,
 ) -> Option<SketchConstraintStatus> {
-    use crate::front::ObjectKind;
-    use crate::front::Segment;
+    use kcl_api::ObjectKind;
+    use kcl_api::Segment;
 
     let ObjectKind::Sketch(sketch) = &sketch_obj.kind else {
         return None;
     };
 
     // Closure to look up a point's freedom by ObjectId.
-    let lookup = |id: ObjectId| -> Option<crate::front::Freedom> {
+    let lookup = |id: ObjectId| -> Option<kcl_api::Freedom> {
         let obj = scene_objects.get(id.0)?;
         if let ObjectKind::Segment {
             segment: Segment::Point(p),
@@ -635,11 +645,12 @@ impl ExecOutcome {
 }
 
 pub(crate) fn render_sketch_png_from_scene_objects(
-    scene_objects: &[crate::front::Object],
+    scene_objects: &[kcl_api::Object],
     sketch_name: &str,
     instance_index: Option<usize>,
 ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
-    use crate::front::ObjectKind;
+    use kcl_api::ObjectKind;
+
     use crate::tooling::sketch_visualizer::SketchVisualizationError;
 
     let sketches_matching_name = scene_objects
@@ -707,7 +718,7 @@ pub struct MockConfig {
 #[serde(rename_all = "camelCase")]
 pub struct SegmentDragAnchor {
     pub segment_id: ObjectId,
-    pub target: crate::front::Point2d<Number>,
+    pub target: kcl_api::Point2d<Number>,
 }
 
 impl Default for MockConfig {
@@ -916,15 +927,15 @@ impl From<&Expr> for Metadata {
 }
 
 impl Metadata {
-    pub fn to_source_ref(meta: &[Metadata], node_path: Option<NodePath>) -> crate::front::SourceRef {
+    pub fn to_source_ref(meta: &[Metadata], node_path: Option<NodePath>) -> kcl_api::SourceRef {
         if meta.len() == 1 {
             let meta = &meta[0];
-            return crate::front::SourceRef::Simple {
+            return kcl_api::SourceRef::Simple {
                 range: meta.source_range,
                 node_path,
             };
         }
-        crate::front::SourceRef::BackTrace {
+        kcl_api::SourceRef::BackTrace {
             ranges: meta.iter().map(|m| (m.source_range, node_path.clone())).collect(),
         }
     }
@@ -952,15 +963,13 @@ pub enum ContextType {
 #[derive(Clone)]
 pub struct ExecutorContext {
     pub engine: Arc<EngineManager>,
+    /// Shared session cache, also used by associated mock execution.
+    pub cache: Cache,
     pub engine_batch: EngineBatchContext,
     pub fs: FileSystemHandle,
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
     pub execution_callbacks: Option<Arc<dyn ExecutionCallbacks>>,
-    /// Which executor evaluates KCL. Crate-internal: set before the first
-    /// run and immutable during execution (run methods take &self). Cloned
-    /// contexts (fresh roots, Args) inherit the same executor.
-    pub(crate) executor_kind: machine::ExecutorKind,
     /// Call-depth limit for the machine executor's runaway-recursion guard.
     /// Crate-internal policy, not user configuration.
     pub(crate) machine_call_depth_limit: usize,
@@ -968,6 +977,10 @@ pub struct ExecutorContext {
     /// KCL. This might need to be false if the engine server is disabling
     /// rendering because it's in a headless context.
     pub configure_engine_render: bool,
+    /// If the last execution needed order-independent transparency (OIT).
+    /// In a CPU-only engine, this to see if you should enable OIT in the engine.
+    /// In a GPU-enabled engine, this is done for you by the KCL runtime during the `appearance` function.
+    pub(crate) needs_oit: Arc<AtomicBool>,
 }
 
 impl std::fmt::Debug for ExecutorContext {
@@ -977,8 +990,8 @@ impl std::fmt::Debug for ExecutorContext {
             .field("engine_batch", &self.engine_batch)
             .field("settings", &self.settings)
             .field("context_type", &self.context_type)
+            .field("needs_oit", &self.needs_oit)
             .field("execution_callbacks", &self.execution_callbacks)
-            .field("executor_kind", &self.executor_kind)
             .field("machine_call_depth_limit", &self.machine_call_depth_limit)
             .finish()
     }
@@ -1166,7 +1179,15 @@ struct CachedExecution {
     preserve_mem: PreserveMem,
 }
 
+#[cfg_attr(not(target_arch = "wasm32"), bon::bon)]
 impl ExecutorContext {
+    /// Use an existing cache for another handle to the same session, or for
+    /// associated mock execution. Independent sessions must use independent caches.
+    pub fn with_cache(mut self, cache: Cache) -> Self {
+        self.cache = cache;
+        self
+    }
+
     /// Create a new live executor context from an engine and file manager.
     pub fn new_with_engine_and_fs(
         engine: Arc<EngineManager>,
@@ -1175,30 +1196,30 @@ impl ExecutorContext {
     ) -> Self {
         ExecutorContext {
             engine,
+            cache: Cache::default(),
             engine_batch: EngineBatchContext::default(),
             fs,
             settings,
             context_type: ContextType::Live,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         }
     }
 
     fn clone_with_fresh_execution_batch(&self) -> Self {
         Self {
             engine: self.engine.clone(),
+            cache: self.cache.clone(),
             engine_batch: EngineBatchContext::new(),
             fs: self.fs.clone(),
             settings: self.settings.clone(),
             context_type: self.context_type.clone(),
             execution_callbacks: self.execution_callbacks.clone(),
-            // Imported modules execute on this cloned context; keep them on
-            // the executor selected for the run instead of the default.
-            executor_kind: self.executor_kind,
             machine_call_depth_limit: self.machine_call_depth_limit,
             configure_engine_render: true,
+            needs_oit: self.needs_oit.clone(),
         }
     }
 
@@ -1221,6 +1242,17 @@ impl ExecutorContext {
             )
             .await
             .map(|_| ())?;
+
+        if self.needs_oit.load(Ordering::Relaxed) {
+            self.engine
+                .send_modeling_cmd(
+                    &self.engine_batch,
+                    exec_state.next_uuid(),
+                    source_range,
+                    &ModelingCmd::from(mcmd::SetOrderIndependentTransparency::builder().enabled(true).build()),
+                )
+                .await?;
+        }
 
         Ok(())
     }
@@ -1276,11 +1308,7 @@ impl ExecutorContext {
                 },
                 replay: settings.replay.clone(),
                 show_grid: if settings.show_grid { Some(true) } else { None },
-                pool: if settings.geometry_only {
-                    Some("cpu".to_string())
-                } else {
-                    settings.pool.clone()
-                },
+                pool: settings.pool.clone(),
                 geometry_only: Some(settings.geometry_only),
                 pr,
                 unlocked_framerate: None,
@@ -1317,14 +1345,15 @@ impl ExecutorContext {
     pub async fn new_mock(settings: Option<ExecutorSettings>) -> Self {
         ExecutorContext {
             engine: Arc::new(EngineManager::new_mock()),
+            cache: Cache::default(),
             engine_batch: EngineBatchContext::default(),
             fs: crate::fs::new_file_system_handle(FileManager::new()),
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         }
     }
 
@@ -1332,14 +1361,15 @@ impl ExecutorContext {
     pub fn new_mock(engine: Arc<EngineManager>, fs: FileSystemHandle, settings: ExecutorSettings) -> Self {
         ExecutorContext {
             engine,
+            cache: Cache::default(),
             engine_batch: EngineBatchContext::default(),
             fs,
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         }
     }
 
@@ -1354,14 +1384,15 @@ impl ExecutorContext {
 
         Ok(ExecutorContext {
             engine: Arc::new(EngineManager::new_mock()),
+            cache: Cache::default(),
             engine_batch: EngineBatchContext::default(),
             fs,
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         })
     }
 
@@ -1369,14 +1400,15 @@ impl ExecutorContext {
     pub fn new_forwarded_mock(engine: Arc<EngineManager>) -> Self {
         ExecutorContext {
             engine,
+            cache: Cache::default(),
             engine_batch: EngineBatchContext::default(),
             fs: crate::fs::new_file_system_handle(FileManager::new()),
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         }
     }
 
@@ -1392,8 +1424,32 @@ impl ExecutorContext {
         engine_addr: Option<String>,
         kcl_version: KclVersion,
     ) -> Result<Self> {
+        Self::builder()
+            .settings(settings)
+            .maybe_token(token)
+            .maybe_engine_addr(engine_addr)
+            .kcl_version(kcl_version)
+            .build()
+            .await
+    }
+
+    /// Build a native executor with optional client credentials and HTTP/WebSocket headers.
+    /// Resolve `kcl_version` from the entrypoint with `Program::language_version()`.
+    #[cfg(not(target_arch = "wasm32"))]
+    #[builder(finish_fn = build, builder_type = ExecutorContextBuilder)]
+    pub async fn builder(
+        settings: ExecutorSettings,
+        token: Option<String>,
+        engine_addr: Option<String>,
+        kcl_version: KclVersion,
+        headers: Option<BTreeMap<String, String>>,
+    ) -> Result<Self> {
         // Create the client.
-        let client = crate::engine::new_zoo_client(token, engine_addr)?;
+        let client = crate::engine::zoo_client()
+            .maybe_token(token)
+            .maybe_engine_addr(engine_addr)
+            .maybe_headers(headers)
+            .build()?;
 
         let ctx = Self::new(&client, settings, kcl_version).await?;
         Ok(ctx)
@@ -1500,6 +1556,7 @@ impl ExecutorContext {
                 self.settings.geometry_only,
             )
             .await?;
+        self.needs_oit.store(false, Ordering::Relaxed);
         // OIT requires a graphical context with SSAO enabled.
         if !self.settings.geometry_only && self.settings.enable_ssao {
             let cmd_id = exec_state.next_uuid();
@@ -1514,9 +1571,9 @@ impl ExecutorContext {
     }
 
     /// Clear the KCL-lib internal cache and clear the entire engine scene.
-    /// This cache is shared across all executors.
+    /// Only executors sharing this session cache are affected.
     pub async fn bust_cache_and_reset_scene(&self) -> Result<ExecOutcome, KclErrorWithOutputs> {
-        cache::bust_cache().await;
+        self.cache.bust_cache().await;
 
         // Execute an empty program to clear and reset the scene.
         // We specifically want to be returned the objects after the scene is reset.
@@ -1528,9 +1585,9 @@ impl ExecutorContext {
     }
 
     /// Clear the KCL-lib internal cache.
-    /// This cache is shared across all executors.
+    /// Only executors sharing this session cache are affected.
     pub async fn bust_cache(&self) {
-        cache::bust_cache().await;
+        self.cache.bust_cache().await;
     }
 
     async fn prepare_mem(&self, exec_state: &mut ExecState) -> Result<(), KclErrorWithOutputs> {
@@ -1617,7 +1674,7 @@ impl ExecutorContext {
             std_not_yet_added,
             kcl_version,
         };
-        cache::write_old_memory(state).await;
+        self.cache.write_old_memory(state).await;
 
         Ok(outcome)
     }
@@ -1644,7 +1701,7 @@ impl ExecutorContext {
             .set_entry_point_kcl_version(program)
             .map_err(KclErrorWithOutputs::no_outputs)?;
         if use_prev_memory {
-            match cache::read_old_memory().await {
+            match self.cache.read_old_memory().await {
                 Some(mem) if mem.reusable_for(exec_state.entry_point_kcl_version()) => {
                     Self::restore_mock_memory(&mut exec_state, mem, mock_config)?
                 }
@@ -1680,20 +1737,30 @@ impl ExecutorContext {
             exec_fut.await
         };
 
-        if result.is_err() {
-            cache::bust_cache().await;
+        match result {
+            Ok(outcome) => Ok(outcome),
+            Err(mut err) => {
+                self.cache.bust_cache().await;
+                err.engine_scene_generation = Some(self.cache.engine_scene_generation().await);
+                Err(err)
+            }
         }
-        result
     }
 
     async fn run_with_caching_inner(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         let original_program = program.clone();
+        let prepared = self.prepare_cached_execution(program).await;
+        if !matches!(prepared, Ok(PreparedCachedExecution::Cached(_))) {
+            // Anything but a cache hit may have changed the engine scene, even
+            // if it went on to fail.
+            self.cache.bump_engine_scene_generation().await;
+        }
         let CachedExecution {
             program,
             mut exec_state,
             universe_info,
             preserve_mem,
-        } = *match self.prepare_cached_execution(program).await? {
+        } = *match prepared? {
             PreparedCachedExecution::Cached(outcome) => return Ok(*outcome),
             PreparedCachedExecution::Execute(execution) => execution,
         };
@@ -1717,7 +1784,7 @@ impl ExecutorContext {
                 GridScaleBehavior::ScaleWithZoom
             };
 
-            let (program, exec_state, universe_info, preserve_mem) = match cache::read_old_ast().await {
+            let (program, exec_state, universe_info, preserve_mem) = match self.cache.read_old_ast().await {
                 Some(mut cached_state) => {
                     let old = CacheInformation {
                         ast: &cached_state.main.ast,
@@ -1781,11 +1848,12 @@ impl ExecutorContext {
                                     .await
                                     .is_ok()
                                 {
-                                    cache::write_old_ast(GlobalState::with_settings(
-                                        cached_state.clone(),
-                                        self.settings.clone(),
-                                    ))
-                                    .await;
+                                    self.cache
+                                        .write_old_ast(GlobalState::with_settings(
+                                            cached_state.clone(),
+                                            self.settings.clone(),
+                                        ))
+                                        .await;
                                 } else {
                                     reapply_failed = true;
                                 }
@@ -1812,12 +1880,13 @@ impl ExecutorContext {
 
                                 if !clear_scene {
                                     // Return early we don't need to clear the scene.
-                                    cache::write_old_memory(
-                                        cached_state
-                                            .mock_memory_state()
-                                            .map_err(KclErrorWithOutputs::no_outputs)?,
-                                    )
-                                    .await;
+                                    self.cache
+                                        .write_old_memory(
+                                            cached_state
+                                                .mock_memory_state()
+                                                .map_err(KclErrorWithOutputs::no_outputs)?,
+                                        )
+                                        .await;
                                     return cached_state
                                         .into_exec_outcome(self)
                                         .await
@@ -1850,18 +1919,20 @@ impl ExecutorContext {
                                 .is_ok()
                             {
                                 // We need to update the old ast state with the new settings!!
-                                cache::write_old_ast(GlobalState::with_settings(
-                                    cached_state.clone(),
-                                    self.settings.clone(),
-                                ))
-                                .await;
+                                self.cache
+                                    .write_old_ast(GlobalState::with_settings(
+                                        cached_state.clone(),
+                                        self.settings.clone(),
+                                    ))
+                                    .await;
 
-                                cache::write_old_memory(
-                                    cached_state
-                                        .mock_memory_state()
-                                        .map_err(KclErrorWithOutputs::no_outputs)?,
-                                )
-                                .await;
+                                self.cache
+                                    .write_old_memory(
+                                        cached_state
+                                            .mock_memory_state()
+                                            .map_err(KclErrorWithOutputs::no_outputs)?,
+                                    )
+                                    .await;
                                 return cached_state
                                     .into_exec_outcome(self)
                                     .await
@@ -1871,12 +1942,13 @@ impl ExecutorContext {
                             (true, program, None)
                         }
                         CacheResult::NoAction(false) => {
-                            cache::write_old_memory(
-                                cached_state
-                                    .mock_memory_state()
-                                    .map_err(KclErrorWithOutputs::no_outputs)?,
-                            )
-                            .await;
+                            self.cache
+                                .write_old_memory(
+                                    cached_state
+                                        .mock_memory_state()
+                                        .map_err(KclErrorWithOutputs::no_outputs)?,
+                                )
+                                .await;
                             return cached_state
                                 .into_exec_outcome(self)
                                 .await
@@ -1955,14 +2027,15 @@ impl ExecutorContext {
             // Save this as the last successful execution to the cache.
             // Gotcha: `CacheResult::ReExecute.program` may be diff-based, do not save that AST
             // the last-successful AST. Instead, save in the full AST passed in.
-            cache::write_old_ast(GlobalState::new(
-                (*exec_state).clone(),
-                self.settings.clone(),
-                original_program.kcl_version,
-                original_program.ast,
-                result.0,
-            ))
-            .await;
+            self.cache
+                .write_old_ast(GlobalState::new(
+                    (*exec_state).clone(),
+                    self.settings.clone(),
+                    original_program.kcl_version,
+                    original_program.ast,
+                    result.0,
+                ))
+                .await;
 
             let outcome = exec_state
                 .into_exec_outcome(result.0, self)
@@ -2414,7 +2487,7 @@ impl ExecutorContext {
                 std_not_yet_added: exec_state.global.std_not_yet_added.clone(),
                 kcl_version: exec_state.entry_point_kcl_version(),
             };
-            cache::write_old_memory(state).await;
+            ctx.cache.write_old_memory(state).await;
             Ok(())
         }
 
@@ -2680,19 +2753,16 @@ pub(crate) async fn parse_execute_with_project_dir(
     code: &str,
     project_directory: Option<TypedPath>,
 ) -> Result<ExecTestResults, KclError> {
-    // Differential testing: unit tests run under both executors.
-    parse_execute_with_executor_kind(code, project_directory, machine::ExecutorKind::resolve()).await
+    parse_execute_inner(code, project_directory, false).await
 }
 
 /// A mock-engine executor context for tests that need to inspect the context
 /// (e.g. the engine's batch queue) even when execution fails.
 #[cfg(test)]
-pub(crate) fn new_mock_executor_context(
-    project_directory: Option<TypedPath>,
-    executor_kind: machine::ExecutorKind,
-) -> ExecutorContext {
+pub(crate) fn new_mock_executor_context(project_directory: Option<TypedPath>) -> ExecutorContext {
     ExecutorContext {
         engine: Arc::new(EngineManager::new_mock()),
+        cache: Cache::default(),
         engine_batch: EngineBatchContext::default(),
         fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
         settings: ExecutorSettings {
@@ -2701,19 +2771,10 @@ pub(crate) fn new_mock_executor_context(
         },
         context_type: ContextType::Mock,
         execution_callbacks: Default::default(),
-        executor_kind,
         machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         configure_engine_render: true,
+        needs_oit: Default::default(),
     }
-}
-
-#[cfg(test)]
-pub(crate) async fn parse_execute_with_executor_kind(
-    code: &str,
-    project_directory: Option<TypedPath>,
-    executor_kind: machine::ExecutorKind,
-) -> Result<ExecTestResults, KclError> {
-    parse_execute_inner(code, project_directory, executor_kind, false).await
 }
 
 /// Like [`parse_execute_with_project_dir`], but missing names are explained
@@ -2724,19 +2785,18 @@ pub(crate) async fn parse_execute_hinting_all(
     code: &str,
     project_directory: Option<TypedPath>,
 ) -> Result<ExecTestResults, KclError> {
-    parse_execute_inner(code, project_directory, machine::ExecutorKind::resolve(), true).await
+    parse_execute_inner(code, project_directory, true).await
 }
 
 #[cfg(test)]
 async fn parse_execute_inner(
     code: &str,
     project_directory: Option<TypedPath>,
-    executor_kind: machine::ExecutorKind,
     hint_all_not_yet_added: bool,
 ) -> Result<ExecTestResults, KclError> {
     let program = crate::Program::parse_no_errs(code)?;
 
-    let exec_ctxt = new_mock_executor_context(project_directory, executor_kind);
+    let exec_ctxt = new_mock_executor_context(project_directory);
     let mut exec_state = ExecState::new(&exec_ctxt);
     exec_state.global.hint_all_not_yet_added = hint_all_not_yet_added;
     let result = exec_ctxt.run(&program, &mut exec_state).await?;
@@ -3000,15 +3060,62 @@ mod tests {
     }
 
     #[test]
-    fn clone_with_fresh_execution_batch_keeps_executor_selection() {
-        // Imported modules execute on a context created by
-        // clone_with_fresh_execution_batch. They must stay on the executor
-        // selected for the run instead of silently reverting to the default.
-        let mut ctx = new_mock_executor_context(None, machine::ExecutorKind::Machine);
+    fn clone_with_fresh_execution_batch_keeps_call_depth_limit() {
+        let mut ctx = new_mock_executor_context(None);
         ctx.machine_call_depth_limit = 123;
         let cloned = ctx.clone_with_fresh_execution_batch();
-        assert_eq!(cloned.executor_kind, machine::ExecutorKind::Machine);
         assert_eq!(cloned.machine_call_depth_limit, 123);
+    }
+
+    #[tokio::test]
+    async fn appearance_oit_deferral() {
+        for (geometry_only, enable_ssao, opacity) in [
+            (true, true, 60),
+            (false, true, 60),
+            (true, false, 60),
+            (true, true, 100),
+        ] {
+            let ctx = ExecutorContext::new_mock(Some(ExecutorSettings {
+                geometry_only,
+                enable_ssao,
+                ..Default::default()
+            }))
+            .await;
+            let code = format!(
+                r##"@settings(kclVersion = 3.0)
+profile = sketch(on = XY) {{
+  c = circle(center = [var 0mm, var 0mm], start = [var 1mm, var 0mm])
+}}
+body = extrude(region(segments = [profile.c]), length = 2mm)
+appearance(body, color = "#dba09a", opacity = {opacity})
+"##
+            );
+            let program = crate::Program::parse_no_errs(&code).unwrap();
+            let mut state = ExecState::new(&ctx);
+            ctx.run(&program, &mut state).await.unwrap();
+
+            let needs_oit = enable_ssao && opacity < 100;
+            assert_eq!(ctx.needs_oit.load(Ordering::Relaxed), needs_oit);
+            let sent_oit = state.global.root_module_artifacts.commands.iter().any(|command| {
+                matches!(&command.command, ModelingCmd::SetOrderIndependentTransparency(command) if command.enabled == Some(true))
+            });
+            assert_eq!(sent_oit, needs_oit && !geometry_only);
+
+            let cloned = ctx.clone_with_fresh_execution_batch();
+            assert!(Arc::ptr_eq(&ctx.needs_oit, &cloned.needs_oit));
+            for _ in 0..2 {
+                cloned.enable_engine_graphics(&mut state).await.unwrap();
+                assert_eq!(state.geometry_only(), geometry_only);
+                cloned.disable_engine_graphics(&mut state).await.unwrap();
+                assert_eq!(state.geometry_only(), geometry_only);
+                assert_eq!(cloned.needs_oit.load(Ordering::Relaxed), needs_oit);
+            }
+            ctx.send_clear_scene(Some(program.kcl_version), &mut state, SourceRange::synthetic())
+                .await
+                .unwrap();
+            assert!(!cloned.needs_oit.load(Ordering::Relaxed));
+            ctx.close().await;
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3019,10 +3126,7 @@ mod tests {
             .unwrap();
 
         let program = crate::Program::parse_no_errs("import \"cube.obj\" as cube\n\nmodel = cube\n").unwrap();
-        let ctx = new_mock_executor_context(
-            Some(crate::TypedPath(tmpdir.path().into())),
-            machine::ExecutorKind::resolve(),
-        );
+        let ctx = new_mock_executor_context(Some(crate::TypedPath(tmpdir.path().into())));
         let mut exec_state = ExecState::new(&ctx);
         let (main_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
         let outcome = exec_state
@@ -3295,6 +3399,7 @@ mod tests {
         let program = crate::Program::parse_no_errs(main_code).unwrap();
         let ctx = ExecutorContext {
             engine: Arc::new(EngineManager::new_mock()),
+            cache: Cache::default(),
             engine_batch: EngineBatchContext::default(),
             fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
             settings: ExecutorSettings {
@@ -3303,9 +3408,9 @@ mod tests {
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         };
         let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
         let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
@@ -3322,16 +3427,12 @@ mod tests {
         backend: memory::MemoryBackendKind,
     ) -> IndexMap<String, KclValueView> {
         let _backend = memory::MemoryBackendKind::override_for_test(backend);
-        cache::bust_cache().await;
-        clear_mem_cache().await;
 
         let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
         let program = crate::Program::parse_no_errs(code).unwrap();
         ctx.run_with_caching(program.clone()).await.unwrap();
         let cached = ctx.run_with_caching(program).await.unwrap();
 
-        cache::bust_cache().await;
-        clear_mem_cache().await;
         ctx.close().await;
         cached.variables
     }
@@ -3341,7 +3442,6 @@ mod tests {
         backend: memory::MemoryBackendKind,
     ) -> IndexMap<String, KclValueView> {
         let _backend = memory::MemoryBackendKind::override_for_test(backend);
-        clear_mem_cache().await;
 
         let ctx = ExecutorContext::new_mock(None).await;
         let first = crate::Program::parse_no_errs("x = 2").unwrap();
@@ -3358,7 +3458,6 @@ mod tests {
         let program = crate::Program::parse_no_errs(code).unwrap();
         let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
 
-        clear_mem_cache().await;
         ctx.close().await;
         outcome.variables
     }
@@ -3920,7 +4019,6 @@ for var in [{start: [0,0], l: 6, w: 10, h: 3}, {start: [-10,-10], l: 3, w: 5, h:
 
   return myBox
 }
-
 
 for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
   const thisBox = box(var[0], var[1], var[2], var[3])
@@ -4928,13 +5026,8 @@ forever(1)
 "#;
         let result = parse_execute(ast).await;
         let err = result.unwrap_err();
-        // The recursive executor's native-stack cap and the machine
-        // executor's call-depth guard report differently.
         let msg = err.to_string();
-        assert!(
-            msg.contains("stack size exceeded") || msg.contains("Call depth limit"),
-            "actual: {err:?}"
-        );
+        assert!(msg.contains("Call depth limit"), "actual: {err:?}");
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -5025,7 +5118,7 @@ w = f() + f()
         }
 
         // Get the id_generator from the first execution.
-        let id_generator = cache::read_old_ast().await.unwrap().main.exec_state.id_generator;
+        let id_generator = ctx.cache.read_old_ast().await.unwrap().main.exec_state.id_generator;
 
         let code = r#"sketch001 = startSketchOn(XZ)
 |> startProfile(at = [62.74, 206.13])
@@ -5046,7 +5139,7 @@ w = f() + f()
         // Execute the program.
         ctx.run_with_caching(program).await.unwrap();
 
-        let new_id_generator = cache::read_old_ast().await.unwrap().main.exec_state.id_generator;
+        let new_id_generator = ctx.cache.read_old_ast().await.unwrap().main.exec_state.id_generator;
 
         assert_eq!(id_generator, new_id_generator);
     }
@@ -5075,7 +5168,7 @@ w = f() + f()
         // Execute the program.
         ctx.run_with_caching(old_program.clone()).await.unwrap();
 
-        let settings_state = cache::read_old_ast().await.unwrap().settings;
+        let settings_state = ctx.cache.read_old_ast().await.unwrap().settings;
 
         // Ensure the settings are as expected.
         assert_eq!(settings_state, ctx.settings);
@@ -5086,7 +5179,7 @@ w = f() + f()
         // Execute the program.
         ctx.run_with_caching(old_program.clone()).await.unwrap();
 
-        let settings_state = cache::read_old_ast().await.unwrap().settings;
+        let settings_state = ctx.cache.read_old_ast().await.unwrap().settings;
 
         // Ensure the settings are as expected.
         assert_eq!(settings_state, ctx.settings);
@@ -5097,7 +5190,7 @@ w = f() + f()
         // Execute the program.
         ctx.run_with_caching(old_program).await.unwrap();
 
-        let settings_state = cache::read_old_ast().await.unwrap().settings;
+        let settings_state = ctx.cache.read_old_ast().await.unwrap().settings;
 
         // Ensure the settings are as expected.
         assert_eq!(settings_state, ctx.settings);
@@ -5112,7 +5205,8 @@ w = f() + f()
         let result = ctx.run_with_caching(program).await.unwrap();
         assert_number_variable(&result.variables, "x", 2.0);
 
-        let ctx2 = ExecutorContext::new_mock(None).await;
+        // Mock execution must explicitly reuse the live session's memory.
+        let ctx2 = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
         let result = ctx2.run_mock(&program2, &MockConfig::default()).await.unwrap();
         assert_number_variable(&result.variables, "z", 3.0);
@@ -5298,8 +5392,6 @@ solid7 = extrude(r7, length = width)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_memory_restore_preserves_module_maps() {
-        clear_mem_cache().await;
-
         let ctx = ExecutorContext::new_mock(None).await;
         let cold_start = MockConfig {
             use_prev_memory: false,
@@ -5307,14 +5399,14 @@ solid7 = extrude(r7, length = width)
         };
         ctx.run_mock(&crate::Program::empty(), &cold_start).await.unwrap();
 
-        let mut mem = cache::read_old_memory().await.unwrap();
+        let mut mem = ctx.cache.read_old_memory().await.unwrap();
         assert!(
             mem.path_to_source_id.len() > 3,
             "expected prelude imports to populate multiple modules, got {:?}",
             mem.path_to_source_id
         );
         mem.constraint_state.insert(
-            crate::front::ObjectId(1),
+            kcl_api::ObjectId(1),
             indexmap::indexmap! {
                 crate::execution::ConstraintKey::LineCircle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) =>
                     crate::execution::ConstraintState::Tangency(crate::execution::TangencyMode::LineCircle(ezpz::LineSide::Left))
@@ -5333,17 +5425,102 @@ solid7 = extrude(r7, length = width)
         assert_eq!(exec_state.global.module_infos, mem.module_infos);
         assert_eq!(exec_state.mod_local.constraint_state, mem.constraint_state);
 
-        clear_mem_cache().await;
         ctx.close().await;
     }
 
     // These use a live execution context with a mock engine so they exercise
-    // the cache orchestration without a server or API token. Nextest isolates
-    // the process-global caches between tests.
+    // the cache orchestration without a server or API token.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn session_cache_isolates_concurrent_contexts() {
+        let a = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let b = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let program_a = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
+        let program_b = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 7").unwrap();
+        let (outcome_a, outcome_b) = tokio::join!(
+            a.run_with_caching(program_a.clone()),
+            b.run_with_caching(program_b.clone()),
+        );
+        assert_number_variable(&outcome_a.unwrap().variables, "x", 2.0);
+        assert_number_variable(&outcome_b.unwrap().variables, "x", 7.0);
+
+        // Both sessions must retain their own last execution, including when
+        // the next request is a cache hit.
+        assert_eq!(a.cache.read_old_ast().await.unwrap().main.ast, program_a.ast);
+        assert_eq!(b.cache.read_old_ast().await.unwrap().main.ast, program_b.ast);
+        assert_number_variable(&a.run_with_caching(program_a).await.unwrap().variables, "x", 2.0);
+        assert_number_variable(&b.run_with_caching(program_b).await.unwrap().variables, "x", 7.0);
+        a.bust_cache().await;
+        assert!(a.cache.read_old_ast().await.is_none());
+        assert!(b.cache.read_old_ast().await.is_some());
+        a.close().await;
+        b.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn session_cache_shares_clones_and_associated_mock_memory() {
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let program = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
+        ctx.run_with_caching(program).await.unwrap();
+        let clone = ctx.clone();
+        let import_ctx = ctx.clone_with_fresh_execution_batch();
+        assert!(clone.cache.read_old_ast().await.is_some());
+        import_ctx.bust_cache().await;
+        assert!(clone.cache.read_old_ast().await.is_none());
+
+        let mock = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
+        let expression = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\ny = x + 1").unwrap();
+        let outcome = mock.run_mock(&expression, &MockConfig::default()).await.unwrap();
+        assert_number_variable(&outcome.variables, "y", 3.0);
+        assert!(ctx.cache.read_old_memory_var("y").await.is_some());
+
+        // An unrelated mock context cannot see the session's variables.
+        let independent = ExecutorContext::new_mock(None).await;
+        independent
+            .run_mock(&expression, &MockConfig::default())
+            .await
+            .unwrap_err();
+        mock.cache.clear_mem_cache().await;
+        assert!(ctx.cache.read_old_memory().await.is_none());
+        ctx.close().await;
+        mock.close().await;
+        independent.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn session_cache_failure_preserves_partial_mock_memory() {
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let program = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2\nbad = missing").unwrap();
+        ctx.run_with_caching(program).await.unwrap_err();
+        assert!(ctx.cache.read_old_ast().await.is_none());
+        let mock = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
+        let expression = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\ny = x + 1").unwrap();
+        let outcome = mock.run_mock(&expression, &MockConfig::default()).await.unwrap();
+        assert_number_variable(&outcome.variables, "y", 3.0);
+        ctx.close().await;
+        mock.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn engine_scene_generation_skips_cache_hits_and_counts_failures() {
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let program = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
+        let first = ctx.run_with_caching(program.clone()).await.unwrap();
+        assert_eq!(first.engine_scene_generation, 1);
+        let cached = ctx.run_with_caching(program).await.unwrap();
+        assert_eq!(cached.engine_scene_generation, 1, "a cache hit leaves the scene alone");
+
+        let invalid = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = missing").unwrap();
+        let err = ctx.run_with_caching(invalid).await.unwrap_err();
+        assert_eq!(
+            err.engine_scene_generation,
+            Some(2),
+            "a failed run may still change the scene"
+        );
+        ctx.close().await;
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn cached_execution_phases_preserve_edits_settings_and_error_recovery() {
-        cache::bust_cache().await;
-        clear_mem_cache().await;
         let mut ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
         let original = crate::Program::parse_no_errs("@settings(kclVersion = 2.0)\nx = 2").unwrap();
         for _ in 0..2 {
@@ -5358,7 +5535,7 @@ solid7 = extrude(r7, length = width)
             let outcome = ctx.run_with_caching(extended.clone()).await.unwrap();
             assert_number_variable(&outcome.variables, "x", 2.0);
             assert_number_variable(&outcome.variables, "y", 3.0);
-            assert_eq!(cache::read_old_ast().await.unwrap().main.ast.body.len(), 2);
+            assert_eq!(ctx.cache.read_old_ast().await.unwrap().main.ast.body.len(), 2);
         }
 
         // Changing an existing statement requires a fresh execution state.
@@ -5368,25 +5545,22 @@ solid7 = extrude(r7, length = width)
         ctx.settings.highlight_edges = !ctx.settings.highlight_edges;
         let outcome = ctx.run_with_caching(changed).await.unwrap();
         assert_number_variable(&outcome.variables, "y", 5.0);
-        assert_eq!(cache::read_old_ast().await.unwrap().settings, ctx.settings);
+        assert_eq!(ctx.cache.read_old_ast().await.unwrap().settings, ctx.settings);
 
         let invalid = crate::Program::parse_no_errs("@settings(kclVersion = 2.0)\nx = missing").unwrap();
         ctx.run_with_caching(invalid).await.unwrap_err();
         assert!(
-            cache::read_old_ast().await.is_none(),
+            ctx.cache.read_old_ast().await.is_none(),
             "execution errors must invalidate the cache"
         );
         let outcome = ctx.run_with_caching(original).await.unwrap();
         assert_number_variable(&outcome.variables, "x", 2.0);
-        cache::bust_cache().await;
-        clear_mem_cache().await;
+
         ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn cached_execution_phases_recheck_changed_imports() {
-        cache::bust_cache().await;
-        clear_mem_cache().await;
         let project = tempfile::TempDir::with_prefix("kcl_cache_phases").unwrap();
         let imported = project.path().join("values.kcl");
         tokio::fs::write(&imported, "export x = 2").await.unwrap();
@@ -5408,23 +5582,19 @@ solid7 = extrude(r7, length = width)
         ctx.settings.highlight_edges = !ctx.settings.highlight_edges;
         let outcome = ctx.run_with_caching(program.clone()).await.unwrap();
         assert_number_variable(&outcome.variables, "y", 3.0);
-        assert_eq!(cache::read_old_ast().await.unwrap().settings, ctx.settings);
+        assert_eq!(ctx.cache.read_old_ast().await.unwrap().settings, ctx.settings);
 
         tokio::fs::write(&imported, "export x = 7").await.unwrap();
         for _ in 0..2 {
             let outcome = ctx.run_with_caching(program.clone()).await.unwrap();
             assert_number_variable(&outcome.variables, "y", 8.0);
         }
-        cache::bust_cache().await;
-        clear_mem_cache().await;
+
         ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn run_with_caching_no_action_refreshes_mock_memory() {
-        cache::bust_cache().await;
-        clear_mem_cache().await;
-
         let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
         let program = crate::Program::parse_no_errs(
             r#"sketch001 = sketch(on = XY) {
@@ -5435,23 +5605,23 @@ solid7 = extrude(r7, length = width)
         .unwrap();
 
         ctx.run_with_caching(program.clone()).await.unwrap();
-        let baseline_memory = cache::read_old_memory().await.unwrap();
+        let baseline_memory = ctx.cache.read_old_memory().await.unwrap();
         assert!(
             !baseline_memory.scene_objects.is_empty(),
             "expected engine execution to persist full-scene mock memory"
         );
 
-        cache::write_old_memory(cache::SketchModeState::new_for_tests()).await;
-        assert_eq!(cache::read_old_memory().await.unwrap().scene_objects.len(), 0);
+        ctx.cache
+            .write_old_memory(cache::SketchModeState::new_for_tests())
+            .await;
+        assert_eq!(ctx.cache.read_old_memory().await.unwrap().scene_objects.len(), 0);
 
         ctx.run_with_caching(program).await.unwrap();
-        let refreshed_memory = cache::read_old_memory().await.unwrap();
+        let refreshed_memory = ctx.cache.read_old_memory().await.unwrap();
         assert_eq!(refreshed_memory.scene_objects, baseline_memory.scene_objects);
         assert_eq!(refreshed_memory.path_to_source_id, baseline_memory.path_to_source_id);
         assert_eq!(refreshed_memory.id_to_source, baseline_memory.id_to_source);
 
-        cache::bust_cache().await;
-        clear_mem_cache().await;
         ctx.close().await;
     }
 
@@ -5470,7 +5640,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
         let result = ctx.run_with_caching(program).await.unwrap();
         assert_eq!(result.operations.get(&ModuleId::default()).unwrap().len(), 1);
 
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let mock_ctx = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let mock_program = crate::Program::parse_no_errs(code).unwrap();
         let mock_result = mock_ctx.run_mock(&mock_program, &MockConfig::default()).await.unwrap();
         assert_eq!(mock_result.operations.get(&ModuleId::default()).unwrap().len(), 1);
@@ -5794,8 +5964,6 @@ startSketchOn(XY)
     async fn mock_execution_records_entry_point_kcl_version() {
         use futures::FutureExt;
 
-        clear_mem_cache().await;
-
         let ctx = ExecutorContext::new_mock(None).await;
         let fresh_memory = MockConfig {
             use_prev_memory: false,
@@ -5806,7 +5974,7 @@ startSketchOn(XY)
         let v3_program = crate::Program::parse_no_errs("@settings(kclVersion = \"3.0-preview\")\nx = 1\n").unwrap();
         let v2_program = crate::Program::parse_no_errs("@settings(kclVersion = 2.0)\nx = 1\n").unwrap();
 
-        // Close the context and clear the cache even if an assertion panics,
+        // Close the context even if an assertion panics,
         // then let the panic continue.
         let test_result = std::panic::AssertUnwindSafe(async {
             let (exec_state, _) = ctx.run_mock_returning_state(&v3_program, &fresh_memory).await.unwrap();
@@ -5834,7 +6002,6 @@ startSketchOn(XY)
         .catch_unwind()
         .await;
 
-        clear_mem_cache().await;
         ctx.close().await;
         if let Err(panic) = test_result {
             std::panic::resume_unwind(panic);
@@ -5847,8 +6014,6 @@ startSketchOn(XY)
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_execution_applies_v3_semantics() {
         use futures::FutureExt;
-
-        clear_mem_cache().await;
 
         let ctx = ExecutorContext::new_mock(None).await;
         let fresh_memory = MockConfig {
@@ -5873,7 +6038,7 @@ y = if true {
         )
         .unwrap();
 
-        // Close the context and clear the cache even if an assertion panics,
+        // Close the context even if an assertion panics,
         // then let the panic continue.
         let test_result = std::panic::AssertUnwindSafe(async {
             let (exec_state, env) = ctx.run_mock_returning_state(&program, &fresh_memory).await.unwrap();
@@ -5885,7 +6050,6 @@ y = if true {
         .catch_unwind()
         .await;
 
-        clear_mem_cache().await;
         ctx.close().await;
         if let Err(panic) = test_result {
             std::panic::resume_unwind(panic);
@@ -6046,6 +6210,7 @@ face = disc()
             .collect();
         ExecutorContext {
             engine: Arc::new(EngineManager::new_mock()),
+            cache: Cache::default(),
             engine_batch: EngineBatchContext::default(),
             fs: crate::fs::new_file_system_handle(crate::InMemoryFiles::new(files)),
             settings: ExecutorSettings {
@@ -6055,9 +6220,9 @@ face = disc()
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         }
     }
 
@@ -7090,9 +7255,7 @@ assert(total, isEqualTo = 6, error = "reduce total")
 
     /// unwind_return must decrement the machine call depth like a normal
     /// call completion; otherwise sequential early-return calls would
-    /// accumulate depth until the runaway guard trips. The recursive
-    /// executor doesn't use the counter, so the bound is trivially true
-    /// there.
+    /// accumulate depth until the runaway guard trips.
     #[tokio::test(flavor = "multi_thread")]
     async fn early_returns_do_not_leak_machine_call_depth() {
         let code = r#"@settings(kclVersion = "3.0-preview")
@@ -7498,7 +7661,7 @@ x = if false {{
     #[tokio::test(flavor = "multi_thread")]
     async fn error_inside_if_arm_unwinds_balanced_in_v3() {
         // The user's error surfaces (not an internal environment-imbalance
-        // error), on both executors.
+        // error).
         let code = r#"@settings(kclVersion = "3.0-preview")
 fn f() {
   dummy = if true {
@@ -8388,6 +8551,7 @@ type Color { | Red | Green | Red }
         let program = crate::Program::parse_no_errs(main).unwrap();
         let ctx = ExecutorContext {
             engine: Arc::new(EngineManager::new_mock()),
+            cache: Cache::default(),
             engine_batch: EngineBatchContext::default(),
             fs: crate::fs::new_file_system_handle(crate::InMemoryFiles::new(files)),
             settings: ExecutorSettings {
@@ -8396,9 +8560,9 @@ type Color { | Red | Green | Red }
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         };
         let mut exec_state = ExecState::new(&ctx);
         // Close the context even if execution panics, then let the panic
@@ -9912,7 +10076,7 @@ x = [1, 2]: NewT
 
     #[tokio::test(flavor = "multi_thread")]
     async fn not_yet_added_records_whether_the_declaration_is_std() {
-        let ctx = new_mock_executor_context(None, machine::ExecutorKind::resolve());
+        let ctx = new_mock_executor_context(None);
         let mut exec_state = ExecState::new(&ctx);
         let version = |s: &str| annotations::VersionConstraint::parse(s).unwrap();
 
@@ -9996,7 +10160,7 @@ x = [1, 2]: NewT
     /// memory skips the prelude that writes them.
     #[tokio::test(flavor = "multi_thread")]
     async fn std_not_yet_added_records_survive_the_mock_memory_cache() {
-        let ctx = new_mock_executor_context(None, machine::ExecutorKind::resolve());
+        let ctx = new_mock_executor_context(None);
         let mut exec_state = ExecState::new(&ctx);
         let version = |s: &str| annotations::VersionConstraint::parse(s).unwrap();
         let program = crate::Program::parse_no_errs("x = 1").unwrap();
@@ -10074,7 +10238,6 @@ x = [1, 2]: NewT
     /// else invalidates the LSP worker's memory.
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_memory_is_rebuilt_on_a_kcl_version_downgrade() {
-        clear_mem_cache().await;
         let ctx = ExecutorContext::new_mock(None).await;
         let body = "@(added_in = \"3.0\")\nfn newFn() {\n  return 42\n}\n\nanswer = newFn()\n";
 
@@ -10089,7 +10252,6 @@ x = [1, 2]: NewT
             .unwrap_err();
         assert_eq!(err.error.message(), "`newFn` is not defined");
 
-        clear_mem_cache().await;
         ctx.close().await;
     }
 
@@ -10114,7 +10276,6 @@ x = [1, 2]: NewT
     /// under, so an upgrade must rebuild to see newly available functions.
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_memory_is_rebuilt_on_a_kcl_version_upgrade_with_imports() {
-        clear_mem_cache().await;
         let (ctx, _tmpdir) = mock_context_with_modules(&[("dep.kcl", GATED_DEP)]).await;
 
         let outcome = run_mock_reusing_memory(
@@ -10133,13 +10294,11 @@ x = [1, 2]: NewT
         .unwrap();
         assert_eq!(outcome_f64(&outcome, "answer"), 42.0);
 
-        clear_mem_cache().await;
         ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_memory_is_rebuilt_on_a_kcl_version_downgrade_with_imports() {
-        clear_mem_cache().await;
         let (ctx, _tmpdir) = mock_context_with_modules(&[("dep.kcl", GATED_DEP)]).await;
 
         let outcome = run_mock_reusing_memory(
@@ -10158,7 +10317,6 @@ x = [1, 2]: NewT
         .unwrap_err();
         assert_eq!(err.error.message(), "newFn is not defined in module");
 
-        clear_mem_cache().await;
         ctx.close().await;
     }
 
@@ -10167,7 +10325,6 @@ x = [1, 2]: NewT
     /// sketch, which needs the cached memory and cannot rebuild it.
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_memory_is_reused_when_only_other_settings_change() {
-        clear_mem_cache().await;
         let ctx = ExecutorContext::new_mock(None).await;
 
         run_mock_reusing_memory(&ctx, "@settings(kclVersion = 2.0)\nx = 2\n")
@@ -10181,7 +10338,6 @@ x = [1, 2]: NewT
         .unwrap();
         assert_eq!(outcome_f64(&outcome, "y"), 2.0);
 
-        clear_mem_cache().await;
         ctx.close().await;
     }
 
@@ -10189,7 +10345,6 @@ x = [1, 2]: NewT
     /// explicitly is not a change, while declaring another version is.
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_memory_treats_an_undeclared_kcl_version_as_the_default() {
-        clear_mem_cache().await;
         let ctx = ExecutorContext::new_mock(None).await;
 
         run_mock_reusing_memory(&ctx, "x = 2\n").await.unwrap();
@@ -10202,7 +10357,6 @@ x = [1, 2]: NewT
             .unwrap_err();
         assert_eq!(err.error.message(), "`x` is not defined");
 
-        clear_mem_cache().await;
         ctx.close().await;
     }
 }

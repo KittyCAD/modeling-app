@@ -16,6 +16,7 @@ import type { CallExpressionKw, Expr } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { createTextFileIO } from '@src/lib/projectSession/textFileIO'
 import { MachineManager } from '@src/lib/MachineManager'
 import RustContext from '@src/lib/rustContext'
 import { createSettings } from '@src/lib/settings/initialSettings'
@@ -83,10 +84,10 @@ export function createSettledUserFeaturesForTest(): UserFeaturesSettleService {
 // if this runs in vitest the engineCommandManager will run a lite connection mode.
 export async function buildTheWorldAndConnectToEngine({
   webrtc = true,
-  pool,
+  geometryOnly = false,
 }: {
   webrtc?: boolean
-  pool?: 'cpu'
+  geometryOnly?: boolean
 } = {}) {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
   const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
@@ -115,11 +116,14 @@ export async function buildTheWorldAndConnectToEngine({
   const rustContext = new RustContext(
     instancePromise,
     engineCommandManager,
-    settingsActor,
-    0,
-    pool === 'cpu'
+    settingsActor
   )
   const kclManager = new KclManager('some-file', '', {
+    fileOperations: testFileOperations,
+    textFileIO: createTextFileIO(testFileOperations, {
+      watch: () => {},
+      unwatch: () => {},
+    }),
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,
@@ -151,7 +155,8 @@ export async function buildTheWorldAndConnectToEngine({
           }
         },
         unitTestWebrtc: webrtc,
-        unitTestPool: pool,
+        unitTestGeometryOnly: geometryOnly,
+        geometryOnly,
         rustContext: kclManager.rustContext,
       })
       .catch(reportRejection)
@@ -234,6 +239,11 @@ export async function buildTheWorldAndNoEngineConnection(
     settingsActor
   )
   const kclManager = new KclManager('some-file', '', {
+    fileOperations: testFileOperations,
+    textFileIO: createTextFileIO(testFileOperations, {
+      watch: () => {},
+      unwatch: () => {},
+    }),
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,

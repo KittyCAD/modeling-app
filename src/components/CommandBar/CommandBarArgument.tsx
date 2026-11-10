@@ -1,11 +1,11 @@
 import CommandArgOptionInput from '@src/components/CommandBar/CommandArgOptionInput'
 import CommandBarBasicInput from '@src/components/CommandBar/CommandBarBasicInput'
+import CommandBarCameraInput from '@src/components/CommandBar/CommandBarCameraInput'
 import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
 import CommandBarKclInput from '@src/components/CommandBar/CommandBarKclInput'
 import CommandBarPathInput from '@src/components/CommandBar/CommandBarPathInput'
 import CommandBarSelectionInput from '@src/components/CommandBar/CommandBarSelectionInput'
-import CommandBarSelectionMixedInput from '@src/components/CommandBar/CommandBarSelectionMixedInput'
 import CommandBarTextareaInput from '@src/components/CommandBar/CommandBarTextareaInput'
 import CommandBarVector2DInput from '@src/components/CommandBar/CommandBarVector2DInput'
 import CommandBarVector3DInput from '@src/components/CommandBar/CommandBarVector3DInput'
@@ -76,8 +76,17 @@ function ArgumentInput({
 }) {
   const app = useApp()
   const executingEditor = app.project?.executingEditor.value
-  // @ts-ignore
   switch (arg.inputType) {
+    case 'camera':
+      return executingEditor ? (
+        <CommandBarCameraInput
+          arg={arg}
+          onSubmit={onSubmit}
+          executingEditor={executingEditor}
+        />
+      ) : (
+        <NoExecutingEditorWarning />
+      )
     case 'options':
       return (
         <CommandArgOptionInput
@@ -108,18 +117,6 @@ function ArgumentInput({
     case 'selection':
       return executingEditor ? (
         <CommandBarSelectionInput
-          arg={arg}
-          stepBack={stepBack}
-          onSubmit={onSubmit}
-          executingEditor={executingEditor}
-        />
-      ) : (
-        <NoExecutingEditorWarning />
-      )
-
-    case 'selectionMixed':
-      return executingEditor ? (
-        <CommandBarSelectionMixedInput
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}
@@ -190,7 +187,6 @@ function ArgumentInput({
     case 'string':
     case 'color':
     case 'tagDeclarator':
-    default:
       return (
         <CommandBarBasicInput
           arg={arg}

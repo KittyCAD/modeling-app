@@ -40,22 +40,15 @@ vi.mock('@src/lib/boot', () => ({
   }),
 }))
 
-vi.mock('@src/lib/screenshot', async (importOriginal) => {
-  const original = await importOriginal<typeof ScreenshotModule>()
-
-  return {
-    ...original,
-    takeViewportScreenshot: vi.fn(),
-  }
-})
-
-import { Registry } from '@kittycad/registry'
+import {
+  defineRegistryItem,
+  provideService,
+  Registry,
+} from '@kittycad/registry'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
 import { ZookeeperConversation } from '@src/lib/zookeeper/components/ZookeeperConversation'
-import { takeViewportScreenshot } from '@src/lib/screenshot'
-import type * as ScreenshotModule from '@src/lib/screenshot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type {
   Conversation,
@@ -67,11 +60,24 @@ import {
   engineSceneRuntimeExtensionsSlot,
   engineSceneStreamLayersValueSpec,
 } from '@src/registry/contracts/engineScene'
+import { viewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
 import { ZOODLE_BRUSH_SIZE_DEFAULT_PX } from '@src/registry/contracts/zoodle'
+
+const captureViewportScreenshot = vi.fn<() => string>()
 
 const configureTestRegistry = () => {
   const registry = new Registry()
-  registry.configure([engineSceneRuntimeExtensionsSlot.of()])
+  registry.configure([
+    engineSceneRuntimeExtensionsSlot.of(),
+    defineRegistryItem({
+      id: 'test-viewport-screenshot',
+      providesServices: [
+        provideService(viewportScreenshotService, {
+          capture: captureViewportScreenshot,
+        }),
+      ],
+    }),
+  ])
   bootMockState.registry = registry
   return registry
 }
@@ -119,7 +125,11 @@ describe('ZookeeperConversation', () => {
   beforeEach(() => {
     configureTestRegistry()
     window.localStorage.removeItem(MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY)
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:image-preview')
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
   })
+
+  afterEach(() => vi.restoreAllMocks())
 
   test('shows recovery actions after conversation loading gives up', () => {
     const onReconnect = vi.fn()
@@ -193,7 +203,7 @@ describe('ZookeeperConversation', () => {
     expect(screen.getByRole('alert')).not.toHaveTextContent('a last resort')
   })
 
-  test('requires confirmation before resuming an interrupted request', () => {
+  test('shows manual fallback only when an interrupted request is not resuming', () => {
     const onResumeInterruptedTurn = vi.fn()
     const interruptedConversation: Conversation = {
       exchanges: [
@@ -214,29 +224,31 @@ describe('ZookeeperConversation', () => {
       ],
     }
 
-    render(
-      <ZookeeperConversation
-        isLoading={false}
-        conversation={interruptedConversation}
-        interruptedTurnAwaitingResume={true}
-        onResumeInterruptedTurn={onResumeInterruptedTurn}
-        onProcess={() => {}}
-        onClickClearChat={() => {}}
-        onReconnect={() => {}}
-        onCancel={() => {}}
-        needsReconnect={false}
-        contexts={[]}
-        disabled={true}
-        hasPromptCompleted={false}
-        isProcessing={false}
-        queue={[]}
-        onRemoveFromQueue={() => {}}
-        onSteer={() => {}}
-      />
+    const conversationProps = {
+      isLoading: false,
+      conversation: interruptedConversation,
+      interruptedTurnAwaitingResume: true,
+      onResumeInterruptedTurn,
+      onProcess: () => {},
+      onClickClearChat: () => {},
+      onReconnect: () => {},
+      onCancel: () => {},
+      needsReconnect: false,
+      contexts: [],
+      disabled: true,
+      hasPromptCompleted: false,
+      isProcessing: false,
+      queue: [],
+      onRemoveFromQueue: () => {},
+      onSteer: () => {},
+    }
+
+    const { rerender } = render(
+      <ZookeeperConversation {...conversationProps} />
     )
 
     expect(screen.getByRole('status')).toHaveTextContent(
-      'Zookeeper stopped before finishing this request.'
+      'This request was interrupted before it finished.'
     )
     const resumeButton = screen.getByRole('button', {
       name: 'Resume interrupted request',
@@ -246,6 +258,20 @@ describe('ZookeeperConversation', () => {
     expect(
       screen.getByTestId('ml-ephant-conversation-input-button')
     ).toBeDisabled()
+
+    rerender(
+      <ZookeeperConversation
+        {...conversationProps}
+        isResumingInterruptedTurn={true}
+      />
+    )
+
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Resuming your request...'
+    )
+    expect(
+      screen.queryByRole('button', { name: 'Resume interrupted request' })
+    ).not.toBeInTheDocument()
   })
 
   test('shows billing recovery without offering to clear the chat', () => {
@@ -993,7 +1019,7 @@ describe('ZookeeperConversation', () => {
       within(requestBubble).queryByText('Attachments')
     ).not.toBeInTheDocument()
     expect(within(attachments).getByText('Attachments')).toBeInTheDocument()
-    expect(within(attachments).getByText('front-view.png')).toBeInTheDocument()
+    expect(within(attachments).getByTitle('front-view.png')).toBeInTheDocument()
     expect(
       within(attachments).getByText('requirements.pdf')
     ).toBeInTheDocument()
@@ -1052,23 +1078,23 @@ describe('ZookeeperConversation', () => {
 
     const attachments = screen.getByTestId('ml-request-chat-bubble-attachments')
 
-    expect(within(attachments).getByText('front-view.png')).toBeInTheDocument()
+    expect(within(attachments).getByTitle('front-view.png')).toBeInTheDocument()
     expect(
       within(attachments).getByText('requirements.pdf')
     ).toBeInTheDocument()
     expect(
-      within(attachments).queryByText('side-view.jpg')
+      within(attachments).queryByTitle('side-view.jpg')
     ).not.toBeInTheDocument()
 
     fireEvent.click(within(attachments).getByText('+ more'))
 
-    expect(within(attachments).getByText('side-view.jpg')).toBeInTheDocument()
+    expect(within(attachments).getByTitle('side-view.jpg')).toBeInTheDocument()
     expect(within(attachments).getByText('- collapse')).toBeInTheDocument()
 
     fireEvent.click(within(attachments).getByText('- collapse'))
 
     expect(
-      within(attachments).queryByText('side-view.jpg')
+      within(attachments).queryByTitle('side-view.jpg')
     ).not.toBeInTheDocument()
     expect(within(attachments).getByText('+ more')).toBeInTheDocument()
   })
@@ -1315,7 +1341,7 @@ describe('ZookeeperConversation', () => {
 
     beforeEach(() => {
       vi.clearAllMocks()
-      vi.mocked(takeViewportScreenshot).mockReturnValue(
+      captureViewportScreenshot.mockReturnValue(
         'data:image/png;base64,aGVsbG8='
       )
     })
@@ -1364,6 +1390,7 @@ describe('ZookeeperConversation', () => {
     })
 
     test('adds annotated viewport screenshot as an attachment', async () => {
+      const handleProcess = vi.fn()
       const OriginalImage = globalThis.Image
       class MockImage {
         onload: (() => void) | null = null
@@ -1384,7 +1411,7 @@ describe('ZookeeperConversation', () => {
         .mockImplementation(() => {})
       globalThis.Image = MockImage as typeof Image
       try {
-        renderConversation()
+        renderConversation(handleProcess)
 
         fireEvent.click(
           screen.getByTestId('ml-ephant-annotate-screenshot-button')
@@ -1431,8 +1458,14 @@ describe('ZookeeperConversation', () => {
         fireEvent.click(sendButton)
 
         expect(
-          await screen.findByText('annotated-viewport-screenshot.png')
+          await screen.findByRole('img', { name: 'Attachment preview' })
         ).toBeInTheDocument()
+        fireEvent.click(
+          screen.getByTestId('ml-ephant-conversation-input-button')
+        )
+        expect(handleProcess.mock.calls[0][2][0].name).toMatch(
+          /^annotated-viewport-screenshot-[0-9a-f-]{36}\.png$/
+        )
       } finally {
         drawImageSpy.mockRestore()
         globalThis.Image = OriginalImage
@@ -1459,7 +1492,9 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(await screen.findByText('test-image.png')).toBeInTheDocument()
+      expect(
+        await screen.findByRole('img', { name: 'Attachment preview' })
+      ).toBeInTheDocument()
     })
 
     test('shows attached files when files are pasted', async () => {
@@ -1480,6 +1515,112 @@ describe('ZookeeperConversation', () => {
       expect(await screen.findByText('document.pdf')).toBeInTheDocument()
     })
 
+    test('gives pasted images unique names across prompts without changing their contents', async () => {
+      const handleProcess = vi.fn()
+      renderConversation(handleProcess)
+      const textarea = screen.getByTestId('ml-ephant-conversation-input')
+      const file = createMockFile('reference.png', 'image/png', 100)
+
+      for (let i = 0; i < 2; i++) {
+        fireEvent.paste(textarea, { clipboardData: { files: [file] } })
+        fireEvent.click(
+          screen.getByTestId('ml-ephant-conversation-input-button')
+        )
+      }
+
+      const first: File = handleProcess.mock.calls[0][2][0]
+      const second: File = handleProcess.mock.calls[1][2][0]
+      expect(first.name).toMatch(/^image-[0-9a-f-]{36}\.png$/)
+      expect(first.name).not.toBe(second.name)
+      expect(first.type).toBe(file.type)
+      expect(await first.text()).toBe(await file.text())
+    })
+
+    test('gives viewport screenshots unique names across prompts', () => {
+      const handleProcess = vi.fn()
+      renderConversation(handleProcess)
+
+      for (let i = 0; i < 2; i++) {
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Capture viewport screenshot' })
+        )
+        fireEvent.click(
+          screen.getByTestId('ml-ephant-conversation-input-button')
+        )
+      }
+
+      const first: File = handleProcess.mock.calls[0][2][0]
+      const second: File = handleProcess.mock.calls[1][2][0]
+      expect(first.name).toMatch(/^viewport-screenshot-[0-9a-f-]{36}\.png$/)
+      expect(first.name).not.toBe(second.name)
+    })
+
+    test('allows native text paste at the 5,000-character limit', () => {
+      renderConversation()
+
+      const defaultAllowed = fireEvent.paste(
+        screen.getByTestId('ml-ephant-conversation-input'),
+        {
+          clipboardData: {
+            files: [],
+            getData: () => 'a'.repeat(5_000),
+          },
+        }
+      )
+
+      expect(defaultAllowed).toBe(true)
+      expect(
+        screen.queryByRole('button', { name: /^Remove pasted-text-/ })
+      ).not.toBeInTheDocument()
+    })
+
+    test('sends a paste over the limit as an attachment alongside the existing prompt', async () => {
+      const handleProcess = vi.fn()
+      renderConversation(handleProcess)
+      const textarea = screen.getByTestId('ml-ephant-conversation-input')
+      const prompt = 'Use these requirements.'
+      const text = 'first line\r\nsecond line\n'.padEnd(5_001, 'a')
+      fireEvent.change(textarea, { target: { value: prompt } })
+
+      const defaultAllowed = fireEvent.paste(textarea, {
+        clipboardData: { files: [], getData: () => text },
+      })
+
+      expect(defaultAllowed).toBe(false)
+      expect(textarea).toHaveValue(prompt)
+      const preview = await screen.findByText(/^first line second line /)
+      expect(preview.textContent.length).toBeLessThan(256)
+
+      fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+
+      expect(handleProcess).toHaveBeenCalledWith(prompt, undefined, [
+        expect.any(File),
+      ])
+      const file: File = handleProcess.mock.calls[0][2][0]
+      expect(file.name).toMatch(/^pasted-text-[0-9a-f-]{36}\.txt$/)
+      expect(file.type).toBe('text/plain')
+      expect(await file.text()).toBe(text)
+    })
+
+    test('gives large pastes unique filenames across submissions and allows an empty prompt', () => {
+      const handleProcess = vi.fn()
+      renderConversation(handleProcess)
+      const textarea = screen.getByTestId('ml-ephant-conversation-input')
+      for (const text of ['a'.repeat(5_001), 'b'.repeat(5_001)]) {
+        fireEvent.paste(textarea, {
+          clipboardData: { files: [], getData: () => text },
+        })
+        fireEvent.click(
+          screen.getByTestId('ml-ephant-conversation-input-button')
+        )
+      }
+
+      expect(handleProcess).toHaveBeenCalledTimes(2)
+      const firstFile: File = handleProcess.mock.calls[0][2][0]
+      const secondFile: File = handleProcess.mock.calls[1][2][0]
+      expect(firstFile.name).not.toBe(secondFile.name)
+    })
+
     test('allows removing attached files', async () => {
       renderConversation()
 
@@ -1496,19 +1637,23 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(await screen.findByText('removable.png')).toBeInTheDocument()
+      expect(
+        await screen.findByRole('img', { name: 'Attachment preview' })
+      ).toBeInTheDocument()
 
       const removeButton = screen.getByRole('button', {
-        name: /Remove removable.png/i,
+        name: 'Remove image 1',
       })
       fireEvent.click(removeButton)
 
-      expect(screen.queryByText('removable.png')).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('img', { name: 'Attachment preview' })
+      ).not.toBeInTheDocument()
     })
 
-    test('sends attachments with prompt on submit', async () => {
+    test('sends dropped and picked attachments with their original filenames', async () => {
       const handleProcess = vi.fn()
-      renderConversation(handleProcess)
+      const { container } = renderConversation(handleProcess)
 
       const dropContainer = screen
         .getByTestId('ml-ephant-conversation-input')
@@ -1516,6 +1661,7 @@ describe('ZookeeperConversation', () => {
       const textarea = screen.getByTestId('ml-ephant-conversation-input')
 
       const imageFile = createMockFile('attachment.png', 'image/png')
+      const pickedFile = createMockFile('picked.png', 'image/png')
 
       fireEvent.drop(dropContainer, {
         dataTransfer: {
@@ -1523,19 +1669,21 @@ describe('ZookeeperConversation', () => {
           types: ['Files'],
         },
       })
+      fireEvent.change(container.querySelector('input[type="file"]')!, {
+        target: { files: [pickedFile] },
+      })
 
-      expect(await screen.findByText('attachment.png')).toBeInTheDocument()
+      expect(
+        await screen.findAllByRole('img', { name: 'Attachment preview' })
+      ).toHaveLength(2)
 
       fireEvent.input(textarea, { target: { textContent: 'Test prompt' } })
       fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
 
-      expect(handleProcess).toHaveBeenCalledWith(
-        'Test prompt',
-        undefined,
-        expect.arrayContaining([
-          expect.objectContaining({ name: 'attachment.png' }),
-        ])
-      )
+      expect(handleProcess).toHaveBeenCalledWith('Test prompt', undefined, [
+        expect.objectContaining({ name: imageFile.name }),
+        expect.objectContaining({ name: pickedFile.name }),
+      ])
     })
 
     test('clears attachments after submit', async () => {
@@ -1556,12 +1704,16 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(await screen.findByText('will-clear.png')).toBeInTheDocument()
+      expect(
+        await screen.findByRole('img', { name: 'Attachment preview' })
+      ).toBeInTheDocument()
 
       fireEvent.input(textarea, { target: { textContent: 'Test prompt' } })
       fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
 
-      expect(screen.queryByText('will-clear.png')).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('img', { name: 'Attachment preview' })
+      ).not.toBeInTheDocument()
     })
 
     test('does not accept files when disabled', () => {
@@ -1580,7 +1732,9 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(screen.queryByText('disabled-test.png')).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('img', { name: 'Attachment preview' })
+      ).not.toBeInTheDocument()
     })
 
     test('does not accept paste when disabled', () => {
@@ -1596,7 +1750,9 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(screen.queryByText('disabled-paste.png')).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('img', { name: 'Attachment preview' })
+      ).not.toBeInTheDocument()
     })
 
     test('deduplicates files with same name and size', async () => {
@@ -1606,8 +1762,8 @@ describe('ZookeeperConversation', () => {
         .getByTestId('ml-ephant-conversation-input')
         .closest('div')!
 
-      const file1 = createMockFile('duplicate.png', 'image/png', 100)
-      const file2 = createMockFile('duplicate.png', 'image/png', 100)
+      const file1 = createMockFile('duplicate.pdf', 'application/pdf', 100)
+      const file2 = createMockFile('duplicate.pdf', 'application/pdf', 100)
 
       fireEvent.drop(dropContainer, {
         dataTransfer: {
@@ -1616,7 +1772,7 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(await screen.findByText('duplicate.png')).toBeInTheDocument()
+      expect(await screen.findByText('duplicate.pdf')).toBeInTheDocument()
 
       fireEvent.drop(dropContainer, {
         dataTransfer: {
@@ -1626,7 +1782,7 @@ describe('ZookeeperConversation', () => {
       })
 
       // Should still only have one instance
-      const attachments = screen.getAllByText('duplicate.png')
+      const attachments = screen.getAllByText('duplicate.pdf')
       expect(attachments).toHaveLength(1)
     })
 
@@ -1649,7 +1805,9 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(await screen.findByText('image.png')).toBeInTheDocument()
+      expect(
+        await screen.findByRole('img', { name: 'Attachment preview' })
+      ).toBeInTheDocument()
       expect(screen.getByText('doc.pdf')).toBeInTheDocument()
       expect(screen.getByText('drawing.dxf')).toBeInTheDocument()
       expect(screen.getByText('script.js')).toBeInTheDocument()

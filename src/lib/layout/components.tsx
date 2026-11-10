@@ -24,6 +24,7 @@ import type {
   PaneLayout as PaneLayoutType,
   Side,
   SplitLayout as SplitLayoutType,
+  PaneOpenBehavior,
 } from '@src/lib/layout/types'
 import {
   defaultLayout,
@@ -109,6 +110,7 @@ interface LayoutRootNodeProps {
   getLayout: () => Layout | undefined
   setLayout: (layout: Layout) => void
   // Values that affect the layout (pane buttons, menus, etc).
+  paneOpenBehavior?: PaneOpenBehavior
   showDebugPanel: SettingsType['debug']['showPanel']['current']
   notifications: boolean[]
   artifactGraph: ArtifactGraph
@@ -125,6 +127,7 @@ export const LayoutRootNode = memo(
     getLayout,
     setLayout,
     showDebugPanel,
+    paneOpenBehavior = 'multiple',
     enableContextMenus = false,
   }: LayoutRootNodeProps) {
     const getLayoutWithFallback = () => getLayout() || defaultLayout
@@ -156,6 +159,7 @@ export const LayoutRootNode = memo(
       setLayout(
         togglePaneLayoutNode({
           rootLayout: structuredClone(rootLayout),
+          paneOpenBehavior,
           ...props,
         })
       )
@@ -179,6 +183,7 @@ export const LayoutRootNode = memo(
         actionLibrary,
         togglePane,
         showDebugPanel,
+        paneOpenBehavior,
       ]
     )
 
@@ -574,7 +579,7 @@ function NotificationBadge({ pane }: { pane: PaneChild }) {
     <p
       id={`${pane.id}-badge`}
       className={
-        'absolute m-0 p-0 top-0 right-0 min-w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-bl border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
+        'absolute m-0 p-0 top-0 right-0 min-w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-bl border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2]'
       }
       onClick={onClick}
       title={

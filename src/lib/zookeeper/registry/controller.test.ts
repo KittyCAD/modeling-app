@@ -1,9 +1,11 @@
-import { signal } from '@preact/signals-core'
+import { signal, type Signal } from '@preact/signals-core'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import type * as ZookeeperManagerMachineModule from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
+import type { BulkFileWriteProgress } from '@src/machines/systemIO/utils'
 import type * as SystemIOUtilsModule from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
+import toast from 'react-hot-toast'
 import { NIL as uuidNIL } from 'uuid'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -24,6 +26,9 @@ const workerMocks = vi.hoisted(() => ({
     reset: ReturnType<typeof vi.fn>
   }>,
   processors: [] as Array<{
+    hasPendingRequests: boolean
+    fileWriteProgress: Signal<BulkFileWriteProgress | undefined>
+    onQueueIdle: () => void
     dispose: ReturnType<typeof vi.fn>
     handleActorSnapshot: ReturnType<typeof vi.fn>
     reset: ReturnType<typeof vi.fn>
@@ -61,11 +66,17 @@ vi.mock('@src/lib/zookeeper/registry/ZookeeperEditPatchHistory', () => ({
 
 vi.mock('@src/lib/zookeeper/registry/ZookeeperFileRequestProcessor', () => ({
   ZookeeperFileRequestProcessor: class MockZookeeperFileRequestProcessor {
+    hasPendingRequests = false
+    readonly fileWriteProgress = signal<BulkFileWriteProgress | undefined>(
+      undefined
+    )
+    readonly onQueueIdle: () => void
     readonly dispose = vi.fn(async () => undefined)
     readonly handleActorSnapshot = vi.fn()
     readonly reset = vi.fn(async () => undefined)
 
-    constructor() {
+    constructor(deps: { onQueueIdle: () => void }) {
+      this.onQueueIdle = deps.onQueueIdle
       workerMocks.processors.push(this)
     }
   },
@@ -414,6 +425,69 @@ describe('Zookeeper session controller', () => {
       projectFiles: [],
       type: ZookeeperManagerTransitions.MessageSend,
     })
+  })
+
+  it('updates one bottom-center progress notification without a mounted pane', () => {
+    const loading = vi
+      .spyOn(toast, 'loading')
+      .mockReturnValue('file-write-toast')
+    const dismiss = vi.spyOn(toast, 'dismiss')
+    createHarness()
+    const processor = workerMocks.processors.at(-1)!
+
+    processor.fileWriteProgress.value = { written: 0, total: 25 }
+    expect(loading).toHaveBeenLastCalledWith('0 of 25 files written', {
+      id: expect.any(String),
+      position: 'bottom-center',
+    })
+    const toastId = loading.mock.calls[0][1]?.id
+    processor.fileWriteProgress.value = { written: 12, total: 25 }
+    expect(loading).toHaveBeenLastCalledWith('12 of 25 files written', {
+      id: toastId,
+      position: 'bottom-center',
+    })
+    processor.fileWriteProgress.value = undefined
+    expect(dismiss).toHaveBeenLastCalledWith(toastId)
+  })
+
+  it('dismisses progress on session disposal and ignores subsequent updates', async () => {
+    const loading = vi
+      .spyOn(toast, 'loading')
+      .mockReturnValue('file-write-toast')
+    const dismiss = vi.spyOn(toast, 'dismiss')
+    const { controller } = createHarness()
+    const processor = workerMocks.processors.at(-1)!
+    processor.fileWriteProgress.value = { written: 1, total: 25 }
+    const toastId = loading.mock.calls[0][1]?.id
+
+    await controller.dispose()
+    expect(dismiss).toHaveBeenLastCalledWith(toastId)
+    loading.mockClear()
+    processor.fileWriteProgress.value = { written: 2, total: 25 }
+    expect(loading).not.toHaveBeenCalled()
+  })
+
+  it('waits for file edits and editor synchronization before collecting the next prompt', async () => {
+    const { actor, controller } = createHarness({ actorState: 'ready-await' })
+    const processor = workerMocks.processors.at(-1)!
+    processor.hasPendingRequests = true
+    controller.sendOrQueue('use the new files', undefined, [])
+    actor.emit('ready-await', { awaitingResponse: false })
+    await flushPromises()
+    expect(projectFilesMocks.collect).not.toHaveBeenCalled()
+    expect(
+      sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
+    ).toHaveLength(0)
+    expect(controller.queue.value).toHaveLength(1)
+
+    processor.hasPendingRequests = false
+    processor.onQueueIdle()
+    await vi.waitFor(() => {
+      expect(
+        sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
+      ).toHaveLength(1)
+    })
+    expect(controller.queue.value).toHaveLength(0)
   })
 
   it('retains a prompt through a same-project editor readiness gap', async () => {
@@ -861,7 +935,7 @@ describe('Zookeeper session controller', () => {
     ).toHaveLength(0)
   })
 
-  it('can retry ContinueCheck after collecting project files fails', async () => {
+  it('offers manual retry when automatic resume cannot collect project files', async () => {
     const consoleError = vi
       .spyOn(console, 'error')
       .mockImplementation(() => undefined)
@@ -870,11 +944,22 @@ describe('Zookeeper session controller', () => {
       .mockResolvedValueOnce([])
     const { actor, controller } = createHarness()
 
+    actor.emit('ready', {
+      awaitingResponse: true,
+      conversation: interruptedConversation,
+    })
+    actor.emit('await', {
+      abruptlyClosed: true,
+      conversation: interruptedConversation,
+    })
     actor.emit('wait-for-continue-check', {
       conversation: interruptedConversation,
     })
-    controller.resumeInterruptedTurn()
     await flushPromises()
+
+    expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+    expect(controller.isResumingInterruptedTurn.value).toBe(false)
+
     controller.resumeInterruptedTurn()
     await flushPromises()
 
@@ -921,7 +1006,7 @@ describe('Zookeeper session controller', () => {
     }
   )
 
-  it('waits for confirmation before continuing an interrupted turn', async () => {
+  it('keeps manual resume for a turn interrupted before this session', async () => {
     const collectedFiles = deferred<[]>()
     projectFilesMocks.collect.mockReturnValueOnce(collectedFiles.promise)
     const { actor, controller } = createHarness()
@@ -949,6 +1034,234 @@ describe('Zookeeper session controller', () => {
       }),
     ])
     expect(controller.isResumingInterruptedTurn.value).toBe(false)
+  })
+
+  it('automatically resumes an active turn after an unexpected disconnect', async () => {
+    const collectedFiles = deferred<[]>()
+    projectFilesMocks.collect.mockReturnValueOnce(collectedFiles.promise)
+    const { actor, controller } = createHarness()
+
+    actor.emit('ready', {
+      awaitingResponse: true,
+      conversation: interruptedConversation,
+    })
+    actor.emit('await', {
+      abruptlyClosed: true,
+      conversation: interruptedConversation,
+    })
+    actor.emit('wait-for-continue-check', {
+      conversation: interruptedConversation,
+    })
+    actor.emit('wait-for-continue-check', {
+      conversation: interruptedConversation,
+    })
+
+    expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+    expect(controller.isResumingInterruptedTurn.value).toBe(true)
+
+    collectedFiles.resolve([])
+    await flushPromises()
+
+    expect(sentEvents(actor, ZookeeperManagerStates.ContinueCheck)).toEqual([
+      expect.objectContaining({
+        projectName: 'bracket',
+        projectFiles: [],
+      }),
+    ])
+
+    actor.emit('wait-for-continue-check', {
+      conversation: interruptedConversation,
+    })
+    expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+
+    actor.emit('ready', {
+      awaitingResponse: true,
+      conversation: interruptedConversation,
+    })
+    actor.emit('await', {
+      abruptlyClosed: true,
+      conversation: interruptedConversation,
+    })
+    actor.emit('wait-for-continue-check', {
+      conversation: interruptedConversation,
+    })
+    expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+  })
+
+  it.each([false, true])(
+    'keeps billing recovery manual after an active turn (prior network drop: %s)',
+    async (priorNetworkDrop) => {
+      const { actor, controller } = createHarness()
+
+      actor.emit('ready', {
+        awaitingResponse: true,
+        conversation: interruptedConversation,
+      })
+      if (priorNetworkDrop) {
+        actor.emit('await', {
+          abruptlyClosed: true,
+          conversation: interruptedConversation,
+        })
+      }
+      actor.emit('await', {
+        abruptlyClosed: true,
+        setupFailed: true,
+        accessDeniedCode: 'missing_payment_method',
+        conversation: interruptedConversation,
+      })
+      actor.emit('wait-for-continue-check', {
+        conversation: interruptedConversation,
+      })
+      await flushPromises()
+
+      expect(projectFilesMocks.collect).not.toHaveBeenCalled()
+      expect(controller.isResumingInterruptedTurn.value).toBe(false)
+      expect(
+        sentEvents(actor, ZookeeperManagerStates.ContinueCheck)
+      ).toHaveLength(0)
+
+      controller.resumeInterruptedTurn()
+      await flushPromises()
+
+      expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+      expect(
+        sentEvents(actor, ZookeeperManagerStates.ContinueCheck)
+      ).toHaveLength(1)
+    }
+  )
+
+  it('does not resume when reconnecting shows the turn already finished', () => {
+    const { actor } = createHarness()
+    const completedConversation = {
+      exchanges: [
+        {
+          request: { type: 'user', content: 'finish the bracket' },
+          responses: [{ end_of_stream: { whole_response: 'Done.' } }],
+          deltasAggregated: '',
+        },
+      ],
+    } as SnapshotContext['conversation']
+
+    actor.emit('ready', {
+      awaitingResponse: true,
+      conversation: interruptedConversation,
+    })
+    actor.emit('await', {
+      abruptlyClosed: true,
+      conversation: interruptedConversation,
+    })
+    actor.emit('wait-for-continue-check', {
+      conversation: completedConversation,
+    })
+
+    expect(projectFilesMocks.collect).not.toHaveBeenCalled()
+    expect(sentEvents(actor, ZookeeperManagerStates.ContinueCheck)).toEqual([
+      {
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'bracket',
+        projectFiles: [],
+      },
+    ])
+  })
+
+  it('does not resume a turn the user stopped before disconnecting', () => {
+    const { actor, controller } = createHarness()
+
+    actor.emit('ready', {
+      awaitingResponse: true,
+      conversation: interruptedConversation,
+    })
+    controller.cancel()
+    actor.emit('await', {
+      abruptlyClosed: true,
+      conversation: interruptedConversation,
+    })
+    actor.emit('wait-for-continue-check', {
+      conversation: interruptedConversation,
+    })
+
+    expect(projectFilesMocks.collect).not.toHaveBeenCalled()
+  })
+
+  it('does not resume a turn the user stopped while disconnected', () => {
+    const { actor, controller } = createHarness()
+
+    actor.emit('ready', {
+      awaitingResponse: true,
+      conversation: interruptedConversation,
+    })
+    actor.emit('await', {
+      abruptlyClosed: true,
+      conversation: interruptedConversation,
+    })
+    controller.cancel()
+    actor.emit('wait-for-continue-check', {
+      conversation: interruptedConversation,
+    })
+
+    expect(projectFilesMocks.collect).not.toHaveBeenCalled()
+    expect(
+      sentEvents(actor, ZookeeperManagerStates.ContinueCheck)
+    ).toHaveLength(0)
+  })
+
+  it('drops an automatic resume when the user stops during file collection', async () => {
+    const collectedFiles = deferred<[]>()
+    projectFilesMocks.collect.mockReturnValueOnce(collectedFiles.promise)
+    const { actor, controller } = createHarness()
+
+    actor.emit('ready', {
+      awaitingResponse: true,
+      conversation: interruptedConversation,
+    })
+    actor.emit('await', {
+      abruptlyClosed: true,
+      conversation: interruptedConversation,
+    })
+    actor.emit('wait-for-continue-check', {
+      conversation: interruptedConversation,
+    })
+    expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+
+    controller.cancel()
+    collectedFiles.resolve([])
+    await flushPromises()
+
+    expect(
+      sentEvents(actor, ZookeeperManagerStates.ContinueCheck)
+    ).toHaveLength(0)
+  })
+
+  it('waits for pending file writes before automatically resuming', async () => {
+    const { actor } = createHarness()
+    const processor = workerMocks.processors.at(-1)
+    if (!processor) {
+      throw new Error('Missing file request processor')
+    }
+    processor.hasPendingRequests = true
+
+    actor.emit('ready', {
+      awaitingResponse: true,
+      conversation: interruptedConversation,
+    })
+    actor.emit('await', {
+      abruptlyClosed: true,
+      conversation: interruptedConversation,
+    })
+    actor.emit('wait-for-continue-check', {
+      conversation: interruptedConversation,
+    })
+
+    expect(projectFilesMocks.collect).not.toHaveBeenCalled()
+
+    processor.hasPendingRequests = false
+    processor.onQueueIdle()
+    await flushPromises()
+
+    expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+    expect(
+      sentEvents(actor, ZookeeperManagerStates.ContinueCheck)
+    ).toHaveLength(1)
   })
 
   it('invalidates a pending resume after leaving the continue state', async () => {

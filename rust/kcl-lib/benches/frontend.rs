@@ -3,18 +3,18 @@ use std::hint::black_box;
 use criterion::Criterion;
 use criterion::criterion_group;
 use criterion::criterion_main;
+use kcl_api::Expr;
+use kcl_api::Number;
+use kcl_api::NumericSuffix;
+use kcl_api::Point2d;
+use kcl_api::PointCtor;
+use kcl_api::SegmentCtor;
 use kcl_lib::ExecutorContext;
 use kcl_lib::Program;
 use kcl_lib::front::ExistingSegmentCtor;
-use kcl_lib::front::Expr;
 use kcl_lib::front::FrontendState;
-use kcl_lib::front::Number;
-use kcl_lib::front::Point2d;
-use kcl_lib::front::PointCtor;
-use kcl_lib::front::SegmentCtor;
 use kcl_lib::front::SketchApi;
 use kcl_lib::front::Version;
-use kcl_lib::pretty::NumericSuffix;
 
 fn bench_edit_segments(c: &mut Criterion) {
     c.bench_function("bench_edit_segment", move |b| {
@@ -48,7 +48,7 @@ fn bench_edit_segments(c: &mut Criterion) {
                 },
             };
             let segment = SegmentCtor::Point(point_ctor.clone());
-            let sketch_id = kcl_lib::front::ObjectId(1);
+            let sketch_id = kcl_api::ObjectId(1);
             let (_, scene_delta) = frontend
                 .add_segment(&mock_ctx, version, sketch_id, segment, None)
                 .await

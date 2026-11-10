@@ -1,16 +1,17 @@
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import { computed } from '@preact/signals-core'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   nullableStatusBarItem,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { createElement } from 'react'
 import { EngineExecutionStatusTooltip } from './EngineExecutionStatusTooltip'
 import { EXECUTION_INDICATOR_STATUS_BAR_ITEM_ID } from './constants'
 
 const executionIndicator = defineRegistryItemFactory((ctx) => {
-  const executionService = ctx.services.signal(executingEditorService)
+  const session = ctx.services.signal(projectSession)
+  const executionService = computed(() => session.value?.executingEditor.value)
   const statusBarItem = computed(() =>
     nullableStatusBarItem(
       (() => {

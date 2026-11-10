@@ -1,0 +1,29 @@
+@settings(kclVersion = "3.0", defaultLengthUnit = mm)
+
+leftSketch = sketch(on = XY) {
+  bottom = line(start = [var 0, var 0], end = [var 10, var 0])
+  right = line(start = [var 10, var 0], end = [var 10, var 10])
+  top = line(start = [var 10, var 10], end = [var 0, var 10])
+  left = line(start = [var 0, var 10], end = [var 0, var 0])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+}
+
+left = extrude(region(point = [5, 5], sketch = leftSketch), length = 10)
+
+rightSketch = sketch(on = XY) {
+  bottom = line(start = [var 5, var 0], end = [var 15, var 0])
+  right = line(start = [var 15, var 0], end = [var 15, var 10])
+  top = line(start = [var 15, var 10], end = [var 5, var 10])
+  left = line(start = [var 5, var 10], end = [var 5, var 0])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+}
+
+right = extrude(region(point = [10, 5], sketch = rightSketch), length = 10)
+
+result = left | right

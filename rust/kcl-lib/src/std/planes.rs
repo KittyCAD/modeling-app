@@ -1,5 +1,6 @@
 //! Standard library plane helpers.
 
+use kcl_api::SourceRef;
 use kcl_api::UnitLength;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -22,7 +23,6 @@ use crate::execution::Plane;
 use crate::execution::PlaneInfo;
 use crate::execution::PlaneKind;
 use crate::execution::types::RuntimeType;
-use crate::front::SourceRef;
 use crate::std::Args;
 use crate::std::faces::FaceSpecifier;
 
@@ -167,9 +167,9 @@ pub(crate) async fn inner_plane_of(
     let plane_info = plane_info.make_right_handed();
 
     let plane_object_id = exec_state.next_object_id();
-    let plane_object = crate::front::Object {
+    let plane_object = kcl_api::Object {
         id: plane_object_id,
-        kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
+        kind: kcl_api::ObjectKind::Plane(kcl_api::Plane::Object(plane_object_id)),
         label: Default::default(),
         comments: Default::default(),
         artifact_id: ArtifactId::new(plane_id),
@@ -233,9 +233,9 @@ async fn make_offset_plane_in_engine(
     args: &Args,
 ) -> Result<(), KclError> {
     let plane_object_id = exec_state.next_object_id();
-    let plane_object = crate::front::Object {
+    let plane_object = kcl_api::Object {
         id: plane_object_id,
-        kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
+        kind: kcl_api::ObjectKind::Plane(kcl_api::Plane::Object(plane_object_id)),
         label: Default::default(),
         comments: Default::default(),
         artifact_id: plane.artifact_id,

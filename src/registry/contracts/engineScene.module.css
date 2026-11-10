@@ -1,0 +1,32 @@
+.zones {
+  display: grid;
+  grid-template-areas:
+    "top top top"
+    "left . right"
+    "bottom bottom bottom";
+  grid-template-columns: minmax(0, max-content) minmax(0, 1fr) minmax(
+      0,
+      max-content
+    );
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.top {
+  grid-area: top;
+}
+
+.left {
+  grid-area: left;
+  min-height: 0;
+  min-width: 0;
+}
+
+.right {
+  grid-area: right;
+  min-height: 0;
+  min-width: 0;
+}
+
+.bottom {
+  grid-area: bottom;
+}

@@ -50,7 +50,7 @@ import {
   DEFAULT_EXPERIMENTAL_FEATURES,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
-import { getOperationKey } from '@src/lib/featureTreeOperationTree'
+import { getOperationKey } from '@src/lib/featureTree/featureTreeOperationTree'
 import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { markdownMessageElement } from '@src/lib/markdown'
 import { markOnce } from '@src/lib/performance'
@@ -113,14 +113,20 @@ import {
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
-import type { StateFrom, Subscription } from 'xstate'
+import type { StateFrom } from 'xstate'
 
 import {
   addLineHighlight,
   addLineHighlightEvent,
 } from '@src/editor/highlightextension'
 
-import { computed, effect, signal, untracked } from '@preact/signals-core'
+import {
+  computed,
+  effect,
+  signal,
+  untracked,
+  type ReadonlySignal,
+} from '@preact/signals-core'
 import type {
   ApiFile,
   SceneGraphDelta,
@@ -166,7 +172,7 @@ import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import { bracket } from '@src/lib/exampleKcl'
 import { setKclVersion } from '@src/lib/kclVersion'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { resetCameraAfterExecution } from '@src/lib/resetCameraPosition'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { type Themes, getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
@@ -175,8 +181,7 @@ import type {
   modelingMachine,
 } from '@src/machines/modelingMachine'
 import { waitForUserFeaturesSettled } from '@src/machines/userFeaturesMachine'
-import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
-import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import type { ExecutingEditor } from '@src/registry/contracts/projectSession'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
@@ -301,6 +306,13 @@ type ExecutionCompletionResult = {
 
 export enum KclManagerEvents {
   LongExecution = 'long-execution',
+  ExecutionDone = 'execution-done',
+}
+
+export interface KclExecutionDoneDetail {
+  successful: boolean
+  isInterrupted: boolean
+  hasErrors: boolean
 }
 
 declare global {
@@ -348,9 +360,6 @@ export interface PendingFeatureTreeSourceSelection {
 export class KclManager extends File {
   // SYSTEM DEPENDENCIES
 
-  /** Application storage facade used by workflows owned by this manager. */
-  fileOperations?: FileOperationsRegistryService
-
   private _wasmInstance: ModuleType | null = null
   /** in the case of WASM crash, we should ensure the new refreshed WASM module is held here. */
   get wasmInstancePromise() {
@@ -378,7 +387,16 @@ export class KclManager extends File {
   }
   readonly systemDeps: ProjectSystemDeps
   private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
-  private _modelingState: StateFrom<typeof modelingMachine> | null = null
+  /** React publishes modeling snapshots for consumers such as Named Views. */
+  private readonly _modelingState = signal<StateFrom<
+    typeof modelingMachine
+  > | null>(null)
+
+  get modelingStateSignal(): ReadonlySignal<StateFrom<
+    typeof modelingMachine
+  > | null> {
+    return this._modelingState
+  }
 
   // CORE STATE
 
@@ -447,7 +465,7 @@ export class KclManager extends File {
   get hasEditsSinceLastExecutionSignal() {
     return this._hasEditsSinceLastExecution
   }
-  get executingEditorService(): ExecutingEditorService {
+  get execution(): ExecutingEditor {
     return {
       code: this._code,
       hasEditsSinceLastExecution: this._hasEditsSinceLastExecution,
@@ -502,14 +520,20 @@ export class KclManager extends File {
 
   private _execState = signal<ExecState>(emptyExecState())
   /**
-   * Counts the executions that rebuilt the engine scene.
+   * The engine scene generation from the last execution: the number of runs
+   * that changed the engine scene. Runs answered from the cache leave it
+   * unchanged.
    *
    * Sketch-solve syncs and mock executions replace `execState` without sending
    * an engine command.  A consumer that must act only on a rebuilt scene
    * subscribes here rather than to `execStateSignal`.
    */
   private _engineSceneGeneration = signal(0)
-  /** Incremented on every execution completion (success, failure, or cancel). Used so callers can wait for "next" run. */
+  /**
+   * Incremented on every execution completion (success, failure, or cancel),
+   * even if cached.
+   * Used so callers can wait for "next" run.
+   */
   private _executionGeneration = 0
   private _lastExecutionCompletion: ExecutionCompletionResult = {
     generation: 0,
@@ -628,7 +652,7 @@ export class KclManager extends File {
     // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
     // unless the change was initiated by us (the currently running instance).
     const requestedDocumentVersion = this._documentVersion
-    File.ioImplementations
+    this.textFileIO
       .read(path)
       .then((code) => {
         if (requestedDocumentVersion !== this._documentVersion) {
@@ -717,7 +741,9 @@ export class KclManager extends File {
     undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
-  private settingsSubscription: Subscription | undefined = undefined
+  /** Only the executing editor may change the shared engine scene. */
+  private sceneSettingsActive = signal(false)
+  private disposeSettings: (() => void) | undefined
   private _automaticallyRenderEnabled = true
   private _lastKnownFileCode = ''
   private pendingRecoverySnapshot: {
@@ -1021,9 +1047,7 @@ export class KclManager extends File {
     const execState = execStateFromRust(sceneGraphDelta.exec_outcome)
 
     this.diagnostics = []
-    if (options.refreshLintDiagnostics !== false) {
-      void this.refreshSketchSolveLintDiagnostics(code, execState)
-    }
+    this.refreshSketchSolveAst(code, execState, options).catch(reportRejection)
 
     this.execState = execState
     this.lastSuccessfulVariables = execState.variables
@@ -1040,13 +1064,27 @@ export class KclManager extends File {
     void this.updateArtifactGraph(execState.artifactGraph)
   }
 
-  private async refreshSketchSolveLintDiagnostics(
+  private async refreshSketchSolveAst(
     code: string,
-    execState: ExecState
+    execState: ExecState,
+    options: { refreshLintDiagnostics?: boolean }
   ): Promise<void> {
     const instance = await this.systemDeps.wasmInstancePromise
+    if (this.code !== code) {
+      return
+    }
     const parseResult = parse(code, instance)
     if (err(parseResult) || !resultIsOk(parseResult)) {
+      return
+    }
+
+    // Sketch tools skip normal execution, so keep the AST used by the feature
+    // tree aligned with the source and operations returned by the sketch API.
+    this.ast = parseResult.program
+    this._kclProgramVersion.value = parseResult.kclVersion
+    this._astParseFailed = false
+
+    if (options.refreshLintDiagnostics === false) {
       return
     }
 
@@ -1054,7 +1092,6 @@ export class KclManager extends File {
       ast: parseResult.program,
       sourceCode: code,
       instance,
-      rustContext: this.rustContext,
       legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
       edgeRefactorMetadata: execState.edgeRefactorMetadata,
       directTagFilletMetadata: execState.directTagFilletMetadata,
@@ -1405,9 +1442,8 @@ export class KclManager extends File {
         } else {
           await this.executeCode(newCode)
           if (shouldResetCamera) {
-            await resetCameraPosition({
+            await resetCameraAfterExecution({
               sceneInfra: this.sceneInfra,
-              engineCommandManager: this.engineCommandManager,
               settingsActor: this.systemDeps.settings,
             })
           }
@@ -1822,6 +1858,8 @@ export class KclManager extends File {
       })
     }
     providedEditor.markFileCodeAsSynced(diskCode)
+    providedEditor.startWatchingSettings()
+    providedEditor.refreshEditorSettings()
     providedEditor.watch()
     return providedEditor
   }
@@ -1832,7 +1870,7 @@ export class KclManager extends File {
     systemDeps: ProjectSystemDeps,
     fileId = 0
   ) {
-    super(path, fileId)
+    super(path, systemDeps.textFileIO, fileId)
     // Register our additional, KclManager-specific watch event handler
     this.onWatchEvent.push(this.#onWatchEvent)
     this.systemDeps = systemDeps
@@ -1859,11 +1897,6 @@ export class KclManager extends File {
       zookeeperHistoryExtension(),
     ])
     this._editorView = this.createEditorView(initialCode)
-    this.settingsSubscription = this.systemDeps.settings.subscribe(() => {
-      this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
-    })
-    this.unwatchLineWrapping = this.watchLineWrapping()
-    this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
     // TODO: Delete this._code, only derive from the editorView's doc
     this._code.value = initialCode
     this.markFileCodeAsSynced(initialCode)
@@ -1872,6 +1905,8 @@ export class KclManager extends File {
       this._globalHistoryView.subscribeToHistoryChanges(() => {
         this.updateHistoryDepth()
       })
+
+    this.startWatchingSettings()
 
     this.systemDeps.wasmInstancePromise
       .then(async (wasmInstance) => {
@@ -1899,11 +1934,12 @@ export class KclManager extends File {
   public close() {
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
-    this.settingsSubscription?.unsubscribe()
+    this.sceneSettingsActive.value = false
+    this.disposeSettings?.()
+    this.disposeSettings = undefined
     this.disposeGlobalHistorySubscription?.()
     this.flushRecoverySnapshot()
     this.unwatch()
-    this.unwatchLineWrapping?.()
   }
 
   private markFileCodeAsSynced(code: string) {
@@ -2179,7 +2215,6 @@ export class KclManager extends File {
             ast,
             sourceCode: this.code,
             instance: await this.systemDeps.wasmInstancePromise,
-            rustContext: this.rustContext,
             legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
             edgeRefactorMetadata: execState.edgeRefactorMetadata,
             directTagFilletMetadata: execState.directTagFilletMetadata,
@@ -2242,7 +2277,11 @@ export class KclManager extends File {
       this.ast = structuredClone(ast)
       // updateArtifactGraph relies on updated executeState/variables
       await this.updateArtifactGraph(execState.artifactGraph)
-      this._engineSceneGeneration.value += 1
+      // Failed runs report their generation too. It is null only when no run
+      // reached the engine, which leaves the scene as it was.
+      if (execState.engineSceneGeneration !== null) {
+        this._engineSceneGeneration.value = execState.engineSceneGeneration
+      }
       this.dispatchUpdateOperations(
         getOperationsForCurrentFile({
           operationsByModule: execState.operations,
@@ -2269,16 +2308,32 @@ export class KclManager extends File {
       markOnce('code/endExecuteAst')
       this.notifyExecutionCompletion('completed')
 
-      // Update project thumbnail after successful execution
-      if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
-        if (!this.fileOperations) {
-          return
-        }
+      // Update project thumbnail after successful execution. The local renderer
+      // writes its own once the new model is on screen.
+      if (
+        !isInterrupted &&
+        errors.length === 0 &&
+        projectFsManager.dir &&
+        !this.engineCommandManager.geometryOnly
+      ) {
         createThumbnailPNGOnDesktop({
-          fileOperations: this.fileOperations,
+          fileOperations: this.systemDeps.fileOperations,
           projectDirectoryWithoutEndingSlash: projectFsManager.dir,
         })
       }
+
+      this.dispatchEvent(
+        new CustomEvent<KclExecutionDoneDetail>(
+          KclManagerEvents.ExecutionDone,
+          {
+            detail: {
+              successful: !isInterrupted && errors.length === 0,
+              isInterrupted,
+              hasErrors: errors.length > 0,
+            },
+          }
+        )
+      )
     } finally {
       finishExecution()
     }
@@ -2302,6 +2357,12 @@ export class KclManager extends File {
       data: null,
     })
     markOnce('code/endExecuteAst')
+    // The local renderer shows its loading indicator until it hears this.
+    this.dispatchEvent(
+      new CustomEvent<KclExecutionDoneDetail>(KclManagerEvents.ExecutionDone, {
+        detail: { successful: false, isInterrupted: true, hasErrors: false },
+      })
+    )
   }
 
   // DO NOT CALL THIS from codemirror ever.
@@ -2666,10 +2727,10 @@ export class KclManager extends File {
     return false
   }
   get modelingState(): StateFrom<typeof modelingMachine> | null {
-    return this._modelingState
+    return this._modelingState.value
   }
   set modelingState(state: StateFrom<typeof modelingMachine>) {
-    this._modelingState = state
+    this._modelingState.value = state
   }
   get highlightRange(): Array<[number, number]> {
     return this._highlightRange
@@ -2696,13 +2757,13 @@ export class KclManager extends File {
       })
     }
   }
-  async updateTheme(newTheme: Themes) {
+  async updateTheme(newTheme: Themes, updateEngine = true) {
     const resolvedTheme = getResolvedTheme(newTheme)
     const opposingTheme = getOppositeTheme(newTheme)
     this.sceneInfra.theme = opposingTheme
     this.sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
     this.setEditorTheme(resolvedTheme)
-    if (this.engineCommandManager.connection) {
+    if (updateEngine && this.engineCommandManager.connection) {
       return this.engineCommandManager.setTheme(newTheme).catch(reportRejection)
     }
   }
@@ -2731,27 +2792,250 @@ export class KclManager extends File {
       ],
     })
   }
-  private unwatchLineWrapping: (() => void) | undefined
-  private watchLineWrapping = () => {
-    // Settings loads replace Setting instances. Track the actor's current
-    // instance as well as changes to the value within that instance.
-    const setting = signal(
-      getSettingsFromActorContext(this.systemDeps.settings).textEditor
-        .textWrapping
+
+  /** Transfer shared scene settings ownership as a project switches editors. */
+  public setSceneSettingsActive(active: boolean) {
+    if (active) this.startWatchingSettings()
+    this.sceneSettingsActive.value = active
+  }
+
+  private startWatchingSettings() {
+    if (this.disposeSettings) return
+    this.disposeSettings = this.watchSettings()
+  }
+
+  private refreshEditorSettings() {
+    const settings = getSettingsFromActorContext(this.systemDeps.settings)
+    this.setEditorLineWrapping(settings.textEditor.textWrapping.current)
+    this.setCursorBlinking(settings.textEditor.blinkingCursor.current)
+    this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
+    this.updateTheme(settings.app.theme.current, false).catch(reportRejection)
+  }
+
+  private watchSettings() {
+    // Actor snapshots can replace Setting instances. Computed values follow
+    // both those replacements and each Setting's effective value, without
+    // reapplying unchanged values on unrelated actor transitions.
+    const settings = signal(
+      getSettingsFromActorContext(this.systemDeps.settings)
     )
-    const subscription = this.systemDeps.settings.subscribe((snapshot) => {
-      setting.value = snapshot.context.textEditor.textWrapping
+    const subscription = this.systemDeps.settings.subscribe(() => {
+      settings.value = getSettingsFromActorContext(this.systemDeps.settings)
+      this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
     })
-    const dispose = effect(() => {
-      const shouldWrap = setting.value.currentSignal.value
-      untracked(() => this.setEditorLineWrapping(shouldWrap))
-    })
+    this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
+    const disposers: Array<() => void> = []
+    const watchValue = <T>(
+      read: () => T,
+      apply: (value: T) => void,
+      scene = false
+    ) => {
+      const value = computed(read)
+      disposers.push(
+        effect(() => {
+          if (scene && !this.sceneSettingsActive.value) return
+          const current = value.value
+          untracked(() => apply(current))
+        })
+      )
+    }
+
+    watchValue(
+      () => settings.value.textEditor.textWrapping.currentSignal.value,
+      (value) => this.setEditorLineWrapping(value)
+    )
+    watchValue(
+      () => settings.value.textEditor.blinkingCursor.currentSignal.value,
+      (value) => this.setCursorBlinking(value)
+    )
+    const theme = computed(() => settings.value.app.theme.currentSignal.value)
+    watchValue(
+      () => theme.value,
+      (value) => {
+        this.updateTheme(value, false).catch(reportRejection)
+        this.sceneEntitiesManager.updateSketchGrid()
+      }
+    )
+    watchValue(
+      () => theme.value,
+      (value) => {
+        if (this.engineCommandManager.connection) {
+          this.engineCommandManager.setTheme(value).catch(reportRejection)
+        }
+      },
+      true
+    )
+    watchValue(
+      () => settings.value.app.allowOrbitInSketchMode.currentSignal.value,
+      (value) => {
+        this.sceneInfra.camControls._setting_allowOrbitInSketchMode = value
+      }
+    )
+    watchValue(
+      () => settings.value.modeling.cameraProjection.currentSignal.value,
+      (value) => {
+        const controls = this.sceneInfra.camControls
+        if (
+          controls.engineCameraProjection !== value &&
+          !this.modelingState?.matches('Sketch') &&
+          !this.modelingState?.matches('sketchSolveMode')
+        ) {
+          controls.engineCameraProjection = value
+        }
+      },
+      true
+    )
+    const highlightEdges = computed(
+      () => settings.value.modeling.highlightEdges.currentSignal.value
+    )
+    const backfaceColor = computed(
+      () => settings.value.modeling.backfaceColor.currentSignal.value
+    )
+    watchValue(
+      () => highlightEdges.value,
+      (value) => {
+        if (this.engineCommandManager.connection) {
+          this.engineCommandManager
+            .setHighlightEdges(value)
+            .catch(reportRejection)
+        }
+      },
+      true
+    )
+    watchValue(
+      () => backfaceColor.value,
+      (value) => {
+        if (this.engineCommandManager.connection?.connected) {
+          this.engineCommandManager
+            .setDefaultSystemProperties(value)
+            .catch(reportRejection)
+        }
+      },
+      true
+    )
+
+    const showSketchGrid = computed(
+      () => settings.value.modeling.showSketchGrid.currentSignal.value
+    )
+    const fixedSizeGrid = computed(
+      () => settings.value.modeling.fixedSizeGrid.currentSignal.value
+    )
+    const majorGridSpacing = computed(
+      () => settings.value.modeling.majorGridSpacing.currentSignal.value
+    )
+    const minorGridsPerMajor = computed(
+      () => settings.value.modeling.minorGridsPerMajor.currentSignal.value
+    )
+    disposers.push(
+      effect(() => {
+        // Read every grid input even when the grid is currently hidden.
+        const gridSettings = [
+          showSketchGrid.value,
+          fixedSizeGrid.value,
+          majorGridSpacing.value,
+          minorGridsPerMajor.value,
+        ]
+        void gridSettings
+        untracked(() => this.sceneEntitiesManager.updateSketchGrid())
+      })
+    )
+
+    const showScaleGrid = computed(
+      () => settings.value.modeling.showScaleGrid.currentSignal.value
+    )
+    // Inactive editors keep their render baseline current without issuing
+    // engine commands. Opening an editor alone does not request a rerender.
+    let previous = {
+      showScaleGrid: showScaleGrid.peek(),
+      fixedSizeGrid: fixedSizeGrid.peek(),
+      highlightEdges: highlightEdges.peek(),
+      backfaceColor: backfaceColor.peek(),
+    }
+    let pendingCacheClear: Promise<boolean> | undefined
+    disposers.push(
+      effect(() => {
+        const active = this.sceneSettingsActive.value
+        const current = {
+          showScaleGrid: showScaleGrid.value,
+          fixedSizeGrid: fixedSizeGrid.value,
+          highlightEdges: highlightEdges.value,
+          backfaceColor: backfaceColor.value,
+        }
+        // The local renderer draws back faces itself, so the engine scene can stay.
+        const backfaceChanged =
+          current.backfaceColor !== previous.backfaceColor &&
+          !this.engineCommandManager.geometryOnly
+        const engineSettingsChanged =
+          current.showScaleGrid !== previous.showScaleGrid ||
+          current.fixedSizeGrid !== previous.fixedSizeGrid ||
+          current.highlightEdges !== previous.highlightEdges
+        previous = current
+        let cancelled = false
+        untracked(() => {
+          if (!active || !this.engineCommandManager.connection) return
+          const path = this.path
+          const projectPath = this.systemDeps.projectPath.peek()
+          const isCurrent = () =>
+            !cancelled &&
+            this.sceneSettingsActive.peek() &&
+            this.path === path &&
+            this.systemDeps.projectPath.peek() === projectPath
+          const executeIfCurrent = () => {
+            if (isCurrent()) return this.executeCode()
+          }
+          if (backfaceChanged) {
+            const clearCache = () => {
+              if (!isCurrent()) return Promise.resolve(false)
+              return this.rustContext
+                .clearSceneAndBustCache(jsAppSettings(settings.peek()), path)
+                .then(() => true)
+                .catch((error) => {
+                  reportRejection(error)
+                  return false
+                })
+            }
+            // Serialize cache clears, and let later engine-setting updates
+            // wait for the pending clear before rendering the latest values.
+            const pending = pendingCacheClear
+              ? pendingCacheClear.then(clearCache)
+              : clearCache()
+            pendingCacheClear = pending
+            pending
+              .then((success) => {
+                if (pendingCacheClear === pending) pendingCacheClear = undefined
+                // Closing, switching editors/projects, or a newer settings
+                // update invalidates the continuation's ownership of the scene.
+                if (success) return executeIfCurrent()
+              })
+              .catch(reportRejection)
+          } else if (engineSettingsChanged) {
+            if (pendingCacheClear) {
+              pendingCacheClear
+                .then((success) => {
+                  if (success) return executeIfCurrent()
+                })
+                .catch(reportRejection)
+            } else {
+              this.executeCode().catch(reportRejection)
+            }
+          }
+        })
+        return () => {
+          cancelled = true
+        }
+      })
+    )
     return () => {
       subscription.unsubscribe()
-      dispose()
+      for (const dispose of disposers) dispose()
     }
   }
+
   setCursorBlinking(shouldBlink: boolean) {
+    this._editorView.dom.style.setProperty(
+      '--cursor-color',
+      shouldBlink ? 'auto' : 'transparent'
+    )
     this._editorView.dispatch({
       effects: [
         cursorBlinkingCompartment.reconfigure(
@@ -3140,10 +3424,10 @@ export class KclManager extends File {
     if (ranges.length === 0) {
       return
     }
-    if (!this._modelingState || !sceneEntitiesManager) {
+    if (!this.modelingState || !sceneEntitiesManager) {
       return
     }
-    if (this._modelingState.matches({ Sketch: 'Change Tool' })) {
+    if (this.modelingState.matches({ Sketch: 'Change Tool' })) {
       return
     }
     this._isAllTextSelected = viewUpdate.state.selection.ranges.some(
@@ -3588,7 +3872,7 @@ export class KclManager extends File {
     let currentDiskCode: string | null = null
     try {
       currentDiskCode = normalizeLineEndings(
-        await File.ioImplementations.read(requestedPath)
+        await this.textFileIO.read(requestedPath)
       )
     } catch (err: unknown) {
       if (isPathNotFoundError(err)) {

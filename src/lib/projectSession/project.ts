@@ -4,8 +4,7 @@ import { KclManager } from '@src/lang/KclManager'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { FileEntry, Project } from '@src/lib/project'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
+import { resetCameraAfterExecution } from '@src/lib/resetCameraPosition'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
@@ -17,10 +16,16 @@ import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { App } from '@src/lib/app'
 import { File } from '@src/lib/projectSession/file'
+import type { TextFileIO } from '@src/lib/projectSession/textFileIO'
+import { projectSession } from '@src/registry/contracts/projectSession'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 // Each of our singletons has dependencies on _other_ singletons, so importing
 // can easily become cyclic. Each will have its own Singletons type.
 export interface ProjectSystemDeps {
+  /** Storage access for editor-owned export and thumbnail workflows. */
+  fileOperations: FileOperationsRegistryService
+  textFileIO: TextFileIO
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
   commandBar: CommandBarActorType
@@ -63,7 +68,8 @@ export class ZDSProject {
 
   constructor(
     public projectIORefSignal: Signal<Project>,
-    private app: App
+    private app: App,
+    public readonly textFileIO: TextFileIO
   ) {
     this.files = this.collectProjectFiles(projectIORefSignal.value)
     window.electron?.watchFileOn(
@@ -84,7 +90,11 @@ export class ZDSProject {
 
   /** Open a project, with the option to open an initial editor too */
   static async open(projectRef: Signal<Project>, app: App) {
-    return new ZDSProject(projectRef, app)
+    return new ZDSProject(
+      projectRef,
+      app,
+      app.registry.get(projectSession).textFileIO
+    )
   }
 
   get executingPath() {
@@ -97,6 +107,8 @@ export class ZDSProject {
     // TODO: Clear current executing editor's execution status
 
     if (newPath === null) {
+      this.executingEditor.peek()?.setSceneSettingsActive(false)
+      this.#executingPath.value = null
       return
     }
     const foundPathSignal = this.findEditor(newPath)
@@ -107,7 +119,11 @@ export class ZDSProject {
     if (found) {
       // TODO: Reconfigure the editor to be an executing one
     }
+    const previous = this.executingEditor.peek()
+    const changedEditor = previous !== found
+    if (changedEditor) previous?.setSceneSettingsActive(false)
     this.#executingPath.value = foundPathSignal[0]
+    if (changedEditor) found.setSceneSettingsActive(true)
   }
   findEditor(path: string) {
     return Array.from(this.editors.entries()).find(([p]) => p.value === path)
@@ -140,6 +156,8 @@ export class ZDSProject {
     }
 
     const systemDeps: ProjectSystemDeps = {
+      fileOperations: this.app.fileOperations,
+      textFileIO: this.textFileIO,
       wasmInstancePromise: this.app.wasmPromise,
       commandBar: this.app.commands.actor,
       settings: this.app.settings.actor,
@@ -161,6 +179,7 @@ export class ZDSProject {
       if (previousEditorFileIndex > -1) {
         this.files[previousEditorFileIndex] = new File(
           providedEditor.path,
+          this.textFileIO,
           providedEditor.id
         )
       }
@@ -168,7 +187,7 @@ export class ZDSProject {
     const newEditor = await KclManager.fromFile(
       foundFileIndex > -1
         ? this.files[foundFileIndex]
-        : new File(path, this.nextFileId++),
+        : new File(path, this.textFileIO, this.nextFileId++),
       systemDeps,
       providedEditor,
       providedCode,
@@ -193,15 +212,6 @@ export class ZDSProject {
     if (newEditor.path !== path) {
       newEditor.path = path
     }
-
-    // Initialize the editor theme
-    // Subsequent changes are listened for within app.onSettingsUpdate()
-    // TODO: Disassemble onSettingsUpdate, subscribe to changes from subsystems
-    newEditor
-      .updateTheme(
-        getSettingsFromActorContext(this.app.settings.actor).app.theme.current
-      )
-      .catch(reportRejection)
 
     if (!foundEditor) {
       this.set(signal(path), newEditor)
@@ -232,9 +242,8 @@ export class ZDSProject {
     ) {
       await newEditor.executeCode(newEditor.code)
       assertCurrent()
-      await resetCameraPosition({
+      await resetCameraAfterExecution({
         sceneInfra: newEditor.sceneInfra,
-        engineCommandManager: newEditor.engineCommandManager,
         settingsActor: this.app.settings.actor,
       })
     }
@@ -247,11 +256,15 @@ export class ZDSProject {
       console.warn(`Attempted to close nonexistent editor with path "${path}"`)
       return
     }
+    if (this.executingEditor.peek() === foundPathSignal[1]) {
+      this.executingPath = null
+    }
     foundPathSignal[1].close()
     this.editors.delete(foundPathSignal[0])
   }
 
   closeAllEditors() {
+    this.executingPath = null
     for (const editor of this.editors.values()) {
       editor.close()
     }
@@ -277,7 +290,7 @@ export class ZDSProject {
     if (path.endsWith('.kcl')) {
       switch (eventType) {
         case 'add':
-          const newFile = new File(path, this.nextFileId++)
+          const newFile = new File(path, this.textFileIO, this.nextFileId++)
           this.files.push(newFile)
           newFile
             .asRustApiFile()
@@ -316,7 +329,7 @@ export class ZDSProject {
         if (entry.name.endsWith('.kcl')) {
           const id = this.nextFileId++
           const path = entry.path
-          files.push(new File(path, id))
+          files.push(new File(path, this.textFileIO, id))
         } else {
           this.collectProjectFiles(entry, files)
         }
@@ -368,7 +381,11 @@ export class ZDSProject {
         continue
       }
 
-      const newFile = new File(replayFile.absolutePath, this.nextFileId++)
+      const newFile = new File(
+        replayFile.absolutePath,
+        this.textFileIO,
+        this.nextFileId++
+      )
       this.files.push(newFile)
       await editor.rustContext
         .sendAddFile({

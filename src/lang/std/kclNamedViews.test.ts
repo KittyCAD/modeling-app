@@ -1,5 +1,3 @@
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 import type { SweepSubType } from '@rust/kcl-lib/bindings/Artifact'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 
@@ -9,8 +7,8 @@ import {
   engineIdForArtifact,
   engineIdsForVisibility,
   getViewUniverse,
-  KCL_DEFAULT_VIEW_NAME,
   listNamedViews,
+  namedViewsForExport,
   visibilityForKclDefault,
   visibilityForView,
 } from '@src/lang/std/kclNamedViews'
@@ -218,28 +216,86 @@ const rootOnlyFilenames: ExecState['filenames'] = {
   [ROOT_MODULE_ID]: ROOT_PATH,
 }
 
-/** The Rust module holding `RESERVED_DEFAULT_VIEW_NAME`. */
-const NAMED_VIEWS_RS = join(
-  process.cwd(),
-  'rust/kcl-lib/src/execution/named_views.rs'
-)
+describe('namedViewsForExport', () => {
+  it('serializes directed cameras and translates exceptions for both baselines', () => {
+    const hidden = namedView({
+      id: 'hide-body',
+      name: 'Hide body',
+      baseline: 'show',
+      hideIds: ['body-1'],
+    })
+    const shown = namedView({
+      id: 'show-body',
+      name: 'Only body',
+      baseline: 'hide',
+      showIds: ['body-1'],
+    })
+    hidden.camera = {
+      look: {
+        type: 'directed',
+        direction: { x: 0, y: 2, z: 0, units: null },
+        up: { x: 0, y: 1, z: 1, units: null },
+      },
+      target: { x: 10, y: 20, z: 30, units: 'mm' },
+      distance: 8,
+      projection: 'perspective',
+    }
+    shown.camera = hidden.camera
+    const views = namedViewsForExport({
+      artifactGraph: graphOf([
+        path({ id: 'path-1', consumed: true, sweepId: 'body-1' }),
+        sweep({ id: 'body-1', pathId: 'path-1' }),
+        hidden,
+        shown,
+      ]),
+      filenames: rootOnlyFilenames,
+      fallbackDistance: 100,
+    })
 
-describe('KCL_DEFAULT_VIEW_NAME', () => {
-  // Fails when the Rust constant changes without this literal.
-  // `reserved_default_view_name_matches_typescript` covers the other direction.
-  it('matches the name Rust reserves', () => {
-    const source = readFileSync(NAMED_VIEWS_RS, 'utf8')
-    const declaration =
-      /const RESERVED_DEFAULT_VIEW_NAME: &str = "([^"]*)"/.exec(source)
+    const camera = {
+      vantage: { x: 10, y: 12, z: 30 },
+      target: { x: 10, y: 20, z: 30 },
+      up: { x: 0, y: 0, z: 1 },
+      projection: { type: 'perspective' },
+    }
+    expect(JSON.parse(JSON.stringify(views))).toEqual({
+      'Hide body': { ...camera, baseline: 'show', except_ids: ['path-1'] },
+      'Only body': { ...camera, baseline: 'hide', except_ids: ['path-1'] },
+    })
+  })
 
-    expect(
-      declaration,
-      `no RESERVED_DEFAULT_VIEW_NAME declaration found in ${NAMED_VIEWS_RS}`
-    ).not.toBeNull()
-    expect(
-      declaration?.[1],
-      'the reserved default view name is declared on both sides of the wasm boundary and the two have drifted apart; update this literal to match the Rust constant'
-    ).toBe(KCL_DEFAULT_VIEW_NAME)
+  it('preserves same-named views across modules, even with matching filenames', () => {
+    const views = namedViewsForExport({
+      artifactGraph: graphOf([
+        namedView({ id: 'root-front', name: 'Front' }),
+        namedView({ id: 'imported-front', name: 'Front', moduleId: 1 }),
+        namedView({ id: 'other-front', name: 'Front', moduleId: 2 }),
+      ]),
+      filenames: {
+        ...rootOnlyFilenames,
+        1: IMPORTED_PATH,
+        2: {
+          type: 'Local',
+          value: '/project/other/bracket.kcl',
+          original_import_path: 'other/bracket.kcl',
+        },
+      },
+      fallbackDistance: 12,
+    })
+
+    expect(Object.keys(views)).toEqual([
+      'main::Front',
+      'bracket::Front',
+      'bracket::Front (2)',
+    ])
+    expect(views['main::Front']).toEqual({
+      vantage: { x: 0, y: -12, z: 0 },
+      target: { x: 0, y: 0, z: 0 },
+      up: { x: 0, y: 0, z: 1 },
+      projection: { type: 'orthographic' },
+      baseline: 'show',
+      except_ids: [],
+    })
   })
 })
 

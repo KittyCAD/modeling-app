@@ -21,6 +21,7 @@ import type {
   import_file_extensions as ImportFileExtensions,
   is_kcl_empty_or_only_settings as IsKclEmptyOrOnlySettings,
   is_points_ccw as IsPointsCcw,
+  kcl_default_view_name as GetKclDefaultViewName,
   kcl_lint as KclLint,
   kcl_language_version as KclLanguageVersion,
   kcl_settings as KclSettings,
@@ -130,6 +131,10 @@ export const is_kcl_empty_or_only_settings: typeof IsKclEmptyOrOnlySettings = (
 }
 export const get_kcl_version: typeof GetKclVersion = () => {
   return getModule().get_kcl_version()
+}
+/** Returns the default KCL view name from the initialized WASM module. */
+export const getKclDefaultViewName: typeof GetKclDefaultViewName = () => {
+  return getModule().kcl_default_view_name()
 }
 export const serialize_configuration: typeof SerializeConfiguration = (
   ...args

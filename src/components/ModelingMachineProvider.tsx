@@ -1,5 +1,6 @@
 import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
+import { SKETCH_GROUP_SEGMENTS } from '@src/clientSideScene/sceneUtils'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { useSketchModeMenuEnableDisable } from '@src/hooks/useSketchModeMenuEnableDisable'
 import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
@@ -21,7 +22,6 @@ import { useFolders } from '@src/machines/systemIO/hooks'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
-import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import {
   modelingMachineStateToToolbarModeName,
   toolbarModeNameToKeymapScope,
@@ -59,12 +59,7 @@ export const ModelingMachineProvider = ({
   const settingsValues = settings.useSettings()
   const {
     app: { allowOrbitInSketchMode },
-    modeling: {
-      defaultUnit,
-      cameraProjection,
-      cameraOrbit,
-      useSketchSolveMode,
-    },
+    modeling: { defaultUnit, cameraProjection, cameraOrbit },
   } = settingsValues
   const machineApiEnabled = settingsValues.app.machineApi.current
   const commandBarConfig = useMemo(() => {
@@ -129,7 +124,6 @@ export const ModelingMachineProvider = ({
         // React Suspense will await this
         wasmInstance,
         store: {
-          useSketchSolveMode,
           cameraProjection,
           defaultUnit,
         },
@@ -140,28 +134,18 @@ export const ModelingMachineProvider = ({
 
   // Register file menu actions based off modeling send
   const cb = (data: WebContentSendPayload) => {
-    const rootLayout = structuredClone(layout.signal.value)
-    const toggle = (id: DefaultLayoutPaneID) =>
-      layout.set(
-        togglePaneLayoutNode({
-          rootLayout,
-          targetNodeId: id,
-          shouldExpand: true,
-        })
-      )
-
     if (data.menuLabel === 'View.Panes.Feature tree') {
-      toggle(DefaultLayoutPaneID.FeatureTree)
+      layout.openPane(DefaultLayoutPaneID.FeatureTree)
     } else if (data.menuLabel === 'View.Panes.KCL code') {
-      toggle(DefaultLayoutPaneID.Code)
+      layout.openPane(DefaultLayoutPaneID.Code)
     } else if (data.menuLabel === 'View.Panes.Project files') {
-      toggle(DefaultLayoutPaneID.Files)
+      layout.openPane(DefaultLayoutPaneID.Files)
     } else if (data.menuLabel === 'View.Panes.Variables') {
-      toggle(DefaultLayoutPaneID.Variables)
+      layout.openPane(DefaultLayoutPaneID.Variables)
     } else if (data.menuLabel === 'View.Panes.Logs') {
-      toggle(DefaultLayoutPaneID.Logs)
+      layout.openPane(DefaultLayoutPaneID.Logs)
     } else if (data.menuLabel === 'View.Panes.Zookeeper') {
-      toggle(DefaultLayoutPaneID.Zookeeper)
+      layout.openPane(DefaultLayoutPaneID.Zookeeper)
     } else if (data.menuLabel === 'Design.Start sketch') {
       modelingSend({
         type: 'Enter sketch',
@@ -323,9 +307,17 @@ export const ModelingMachineProvider = ({
       if (inSketchMode && targetId) {
         letEngineAnimateAndSyncCamAfter(
           kclManager.engineCommandManager,
-          targetId
+          targetId,
+          kclManager.sceneInfra.camControls,
+          modelingState.context.sketchDetails?.animateTargetIsFace
         )
-          .then(() => {})
+          .then(() =>
+            kclManager.sceneInfra.camControls.transitionToSketch(
+              kclManager.sceneInfra.scene.children.find(
+                (object) => object.userData.type === SKETCH_GROUP_SEGMENTS
+              ) ?? kclManager.sceneEntitiesManager.intersectionPlane
+            )
+          )
           .catch((e) => {
             console.error(
               'failed to sync engine and client scene after disabling allow orbit in sketch mode'

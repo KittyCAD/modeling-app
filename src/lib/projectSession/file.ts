@@ -1,5 +1,6 @@
 import { type Signal, signal } from '@preact/signals-core'
 import type { ApiFile } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { TextFileIO } from '@src/lib/projectSession/textFileIO'
 import { uuidv4 } from '@src/lib/utils'
 
 export class File extends EventTarget {
@@ -30,18 +31,18 @@ export class File extends EventTarget {
   }
 
   read() {
-    return File.ioImplementations.read(this.pathSignal.value)
+    return this.textFileIO.read(this.pathSignal.value)
   }
 
   write(newContent: string) {
-    return File.ioImplementations.write(this.pathSignal.value, newContent)
+    return this.textFileIO.write(this.pathSignal.value, newContent)
   }
 
   watch() {
     if (this.watching || this.path.length < 1) {
       return
     }
-    File.ioImplementations.watch(this.path, this.fileWatcherKey, (e, p) => {
+    this.textFileIO.watch(this.path, this.fileWatcherKey, (e, p) => {
       this.onWatchEvent.map((f) => f(e, p))
     })
     this.watching = true
@@ -51,12 +52,13 @@ export class File extends EventTarget {
     if (!this.watching) {
       return
     }
-    File.ioImplementations.unwatch(this.path, this.fileWatcherKey)
+    this.textFileIO.unwatch(this.path, this.fileWatcherKey)
     this.watching = false
   }
 
   constructor(
     path: string,
+    public readonly textFileIO: TextFileIO,
     public id = 0
   ) {
     super()
@@ -70,15 +72,5 @@ export class File extends EventTarget {
       path: this.pathSignal.value,
       text,
     }))
-  }
-
-  /** Allows environments to swap their implementation of these IO-interfacing functions */
-  static ioImplementations = {
-    read: (_path: string): Promise<string> =>
-      Promise.reject(new Error('File IO has not been configured')),
-    write: (_path: string, _content: string): Promise<void> =>
-      Promise.reject(new Error('File IO has not been configured')),
-    watch: window.electron?.watchFileOn || (() => {}),
-    unwatch: window.electron?.watchFileOff || (() => {}),
   }
 }

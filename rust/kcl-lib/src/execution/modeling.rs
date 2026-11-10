@@ -122,6 +122,21 @@ impl ExecState {
             .await
     }
 
+    /// Add a modeling command to the artifact graph without sending it, for
+    /// commands this engine session can't run. Only used for PlaneSetColor on
+    /// geometry-only engines: delete once
+    /// https://github.com/KittyCAD/engine/pull/5127 is merged.
+    pub(crate) fn record_modeling_cmd(&mut self, mut meta: ModelingCmdMeta<'_>, cmd: ModelingCmd) {
+        let id = meta.id(self.id_generator());
+        self.push_command(ArtifactCommand {
+            cmd_id: id,
+            range: meta.source_range,
+            command: cmd,
+            entity_clone_info: None,
+            omit_from_graph: false,
+        });
+    }
+
     /// Add multiple modeling commands to the batch but don't fire them right
     /// away.
     pub(crate) async fn batch_modeling_cmds(

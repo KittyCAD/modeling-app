@@ -150,6 +150,7 @@ export class ToolbarFixture {
   ) => {
     await this.startSketchPlaneSelection()
     await this.selectDefaultPlane(plane)
+    await expect(this.exitSketchBtn).toBeEnabled()
   }
 
   waitUntilSketchingReady = async () => {

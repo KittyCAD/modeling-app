@@ -23,10 +23,7 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
-// Remove this extension once @kittycad/lib includes the Helix schema variant.
-export type EntityReference =
-  | SdkEntityReference
-  | { type: 'helix'; helix_id: string }
+export type EntityReference = SdkEntityReference
 
 export type DefaultPlaneSelection = {
   name: DefaultPlaneStr
@@ -159,6 +156,7 @@ export interface SketchDetails {
   origin: [number, number, number]
   // face id or plane id, both are strings
   animateTargetId?: string
+  animateTargetIsFace?: boolean
   // this is the expression that was added when as sketch tool was used but not completed
   // i.e first click for the center of the circle, but not the second click for the radius
   // we added a circle to editor, but they bailed out early so we should remove it, set to -1 to ignore
@@ -254,7 +252,6 @@ export type SegmentOverlayPayload =
 export interface Store {
   videoElement?: HTMLVideoElement
   cameraProjection?: Setting<CameraProjectionType>
-  useSketchSolveMode?: Setting<boolean>
   defaultUnit?: Setting<BaseUnit>
 }
 

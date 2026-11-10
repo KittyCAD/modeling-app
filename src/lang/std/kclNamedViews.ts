@@ -1,5 +1,7 @@
 import type { ArtifactVisibility } from '@rust/kcl-lib/bindings/Artifact'
+import type { NamedView } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
+import { Vector3 } from 'three'
 
 import { filterArtifacts } from '@src/lang/std/artifactGraph'
 import type {
@@ -9,14 +11,7 @@ import type {
   ExecState,
   KclNamedViewArtifact,
 } from '@src/lang/wasm'
-
-/**
- * The name of the view a successful execution leaves behind.
- *
- * `RESERVED_DEFAULT_VIEW_NAME` in `rust/kcl-lib/src/execution/named_views.rs`
- * declares the same string. Changing one alone fails a test on each side.
- */
-export const KCL_DEFAULT_VIEW_NAME = 'Default View'
+import { FILE_EXT } from '@src/lib/constants'
 
 /**
  * A KclNamedView is one `view::named` artifact and the module that declared it.
@@ -58,6 +53,115 @@ export function listNamedViews({
       modulePath: filenames[moduleId],
     }
   })
+}
+
+function moduleName(path: ModulePath | undefined): string | undefined {
+  if (path === undefined || path.type === 'Main') {
+    return undefined
+  }
+
+  const file = path.value.replace(/^.*\//, '')
+  return file.endsWith(FILE_EXT) ? file.slice(0, -FILE_EXT.length) : file
+}
+
+/** Uses the same module-qualified labels in the views pane and exports. */
+export function namedViewDisplayNames(views: KclNamedView[]): string[] {
+  const nameCounts = new Map<string, number>()
+  for (const view of views) {
+    const name = view.artifact.name
+    nameCounts.set(name, (nameCounts.get(name) ?? 0) + 1)
+  }
+
+  return views.map((view) => {
+    const name = view.artifact.name
+    const module = moduleName(view.modulePath)
+    const collides = (nameCounts.get(name) ?? 0) > 1
+    return collides && module ? `${module}::${name}` : name
+  })
+}
+
+/** Builds serializable export data without changing the live camera or scene. */
+export function namedViewsForExport({
+  artifactGraph,
+  filenames,
+  fallbackDistance,
+}: {
+  artifactGraph: ArtifactGraph
+  filenames: ExecState['filenames']
+  fallbackDistance: number
+}): Record<string, NamedView> {
+  const namedViews = listNamedViews({ artifactGraph, filenames })
+  const names = namedViewDisplayNames(namedViews)
+  const universe = getViewUniverse(artifactGraph)
+  // Use a JSON object: Map entries are lost by JSON.stringify in export.
+  const views: Record<string, NamedView> = Object.create(null)
+
+  for (const [index, view] of namedViews.entries()) {
+    const { baseline, camera } = view.artifact
+    const target = new Vector3(
+      camera.target?.x ?? 0,
+      camera.target?.y ?? 0,
+      camera.target?.z ?? 0
+    )
+    const distance = camera.distance ?? fallbackDistance
+    let direction: Vector3
+    let viewUp: Vector3
+    if (camera.look.type === 'directed') {
+      direction = new Vector3(
+        camera.look.direction.x,
+        camera.look.direction.y,
+        camera.look.direction.z
+      ).normalize()
+      viewUp = new Vector3(camera.look.up.x, camera.look.up.y, camera.look.up.z)
+    } else {
+      // Directions point from the eye toward the target, in Z-up space.
+      const directions = {
+        front: new Vector3(0, 1, 0),
+        back: new Vector3(0, -1, 0),
+        left: new Vector3(1, 0, 0),
+        right: new Vector3(-1, 0, 0),
+        top: new Vector3(0, 0, -1),
+        bottom: new Vector3(0, 0, 1),
+        isometric: new Vector3(-1, 1, -1).normalize(),
+      }
+      direction = directions[camera.look.orientation]
+      viewUp =
+        camera.look.orientation === 'top'
+          ? new Vector3(0, 1, 0)
+          : camera.look.orientation === 'bottom'
+            ? new Vector3(0, -1, 0)
+            : new Vector3(0, 0, 1)
+    }
+    // Remove any component along the viewing direction to get camera up.
+    viewUp.projectOnPlane(direction).normalize()
+    const vantage = target.clone().addScaledVector(direction, -distance)
+    const visibility = engineIdsForVisibility({
+      visibility: visibilityForView({ universe, view: view.artifact }),
+      universe,
+      artifactGraph,
+    })
+    const exceptIds = [...visibility]
+      .filter(([, hidden]) => (baseline === 'show' ? hidden : !hidden))
+      .map(([id]) => id)
+
+    // Different directories can contain modules with the same filename stem.
+    const name = names[index]
+    let exportName = name
+    for (let suffix = 2; Object.hasOwn(views, exportName); suffix++) {
+      exportName = `${name} (${suffix})`
+    }
+
+    views[exportName] = {
+      vantage: { x: vantage.x, y: vantage.y, z: vantage.z },
+      target: { x: target.x, y: target.y, z: target.z },
+      up: { x: viewUp.x, y: viewUp.y, z: viewUp.z },
+      projection: { type: camera.projection },
+      baseline,
+      except_ids: exceptIds,
+    }
+  }
+
+  return views
 }
 
 /**

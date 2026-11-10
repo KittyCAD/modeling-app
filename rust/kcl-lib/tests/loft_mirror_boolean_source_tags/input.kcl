@@ -1,0 +1,46 @@
+@settings(kclVersion = 3.0)
+
+lower = sketch(on = XY) {
+  edge = circle(start = [30mm, 0mm], center = [20mm, 0mm])
+}
+upper = sketch(on = offsetPlane(XY, offset = 20mm)) {
+  edge = circle(start = [28mm, 0mm], center = [20mm, 0mm])
+}
+lowerRegion = region(segments = [lower.edge])
+upperRegion = region(segments = [upper.edge])
+lofted = loft([lowerRegion, upperRegion], tagStart = $startCap)
+
+bore = sketch(on = XY) {
+  edge = circle(start = [22mm, 0mm], center = [20mm, 0mm])
+}
+cutter = extrude(region(segments = [bore.edge]), length = 25mm)
+sourceBody = subtract(lofted, tools = cutter)[0]
+sourceStartCap = startCap
+
+// Replacements must keep the source region's side tag on the resulting body.
+edgeAfterReplacement = getCommonEdge(faces = [
+  lowerRegion.tags.edge,
+  sourceStartCap
+])
+
+copied = mirror3d(sourceBody, across = YZ)[0]
+
+// A mirrored side face cannot share an edge with the source body's start cap.
+edgeAfterCopy = getCommonEdge(faces = [
+  lowerRegion.tags.edge,
+  sourceStartCap
+])
+
+copyBore = sketch(on = XY) {
+  edge = circle(start = [-16mm, 0mm], center = [-20mm, 0mm])
+}
+copyCutter = extrude(region(segments = [copyBore.edge]), length = 25mm)
+modifiedCopy = subtract(copied, tools = copyCutter)[0]
+
+// Replacing the mirror must still leave the original region's tags alone.
+edgeAfterCopyReplacement = getCommonEdge(faces = [
+  lowerRegion.tags.edge,
+  sourceStartCap
+])
+
+hide([lower, upper, bore, copyBore])

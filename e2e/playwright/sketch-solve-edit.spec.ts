@@ -251,7 +251,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await test.step('Start a new sketch and select a plane', async () => {
         await toolbar.startSketchOnDefaultPlane('Top plane')
-        await editor.expectEditor.toContain('sketch(on = XY) {')
       })
 
       await test.step('Add three line segments', async () => {
@@ -426,9 +425,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await scene.settled()
 
         await toolbar.startSketchOnDefaultPlane('Top plane')
-        await editor.expectEditor.toContain('sketch(on = XY) {')
-        await toolbar.expectToolbarMode.toBe('sketchSolve')
-        await scene.clickNoWhere()
       })
 
       await test.step('Equip the line tool with its keybinding and draw a line', async () => {
@@ -580,9 +576,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await scene.settled()
 
         await toolbar.startSketchOnDefaultPlane('Top plane')
-        await editor.expectEditor.toContain('sketch(on = XY) {')
-        await toolbar.expectToolbarMode.toBe('sketchSolve')
-        await scene.clickNoWhere()
       })
 
       const [lineStart] = scene.makeMouseHelpers(0.35, 0.45, {
@@ -676,7 +669,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await test.step('Start a new sketch and equip line tool', async () => {
         await toolbar.startSketchOnDefaultPlane('Top plane')
-        await editor.expectEditor.toContain('sketch(on = XY) {')
+
         await toolbar.lineBtn.click()
         await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
       })
@@ -1282,7 +1275,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
     await test.step('Start a new sketch and equip center arc', async () => {
       await toolbar.startSketchOnDefaultPlane('Top plane')
-      await editor.expectEditor.toContain('sketch(on = XY) {')
 
       await page.getByRole('button', { name: 'caret down arcs:' }).click()
       await expect(page.getByTestId('dropdown-center-arc')).toBeVisible()
@@ -2124,7 +2116,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     context,
     homePage,
     scene,
-    cmdBar,
+    modelingDialog,
     editor,
     toolbar,
   }) => {
@@ -2145,40 +2137,13 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     await test.step('Extrude region by clicking center', async () => {
       await toolbar.extrudeButton.click()
       await clickCenter()
-      await expect(page.getByText('1 region selected')).toBeVisible()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'sketches',
-        currentArgValue: '',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '',
-          Length: '5',
-        },
-        highlightedHeaderArg: 'Profiles',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'length',
-        currentArgValue: '5',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '1 region',
-          Length: '5',
-        },
-        highlightedHeaderArg: 'length',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '1 region',
-          Length: '5',
-        },
-      })
-      await cmdBar.submit()
+      await expect(modelingDialog.selection('Profiles')).toHaveText('1 region')
+      await modelingDialog.selection('Profiles').click()
+
+      await expect(modelingDialog.input('length')).toHaveText('5')
+
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
     })
 
     await test.step('Expect extrusion', async () => {
@@ -2224,7 +2189,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     context,
     homePage,
     scene,
-    cmdBar,
+    modelingDialog,
     editor,
     toolbar,
   }) => {
@@ -2269,40 +2234,13 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     await test.step('Extrude region by clicking center', async () => {
       await toolbar.extrudeButton.click()
       await clickCenter()
-      await expect(page.getByText('1 region selected')).toBeVisible()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'sketches',
-        currentArgValue: '',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '',
-          Length: '5',
-        },
-        highlightedHeaderArg: 'Profiles',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'length',
-        currentArgValue: '5',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '1 region',
-          Length: '5',
-        },
-        highlightedHeaderArg: 'length',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '1 region',
-          Length: '5',
-        },
-      })
-      await cmdBar.submit()
+      await expect(modelingDialog.selection('Profiles')).toHaveText('1 region')
+      await modelingDialog.selection('Profiles').click()
+
+      await expect(modelingDialog.input('length')).toHaveText('5')
+
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
     })
 
     await test.step('Expect point fallback extrusion with inches as the default unit', async () => {
@@ -2415,7 +2353,7 @@ extrude001 = extrude(profile001, length = 5)`
       await expect(toolbar.exitSketchBtn).toBeEnabled()
       await editor.expectEditor.toContain(
         `
-        sketch002 = sketch(on = faceOf(extrude001, face = line1)) {
+        sketch002 = sketch(on = faceOf(extrude001, face = line3)) {
         }`,
         { shouldNormalise: true }
       )
