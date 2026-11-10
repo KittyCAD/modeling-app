@@ -58,7 +58,10 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
-import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
+import {
+  isErrorWhitelisted,
+  isInterruptedWebKitRequest,
+} from '@e2e/playwright/lib/console-error-whitelist'
 import {
   PLAYWRIGHT_PROJECT_DIRECTORY,
   TEST_SETTINGS,
@@ -1351,14 +1354,14 @@ function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
       return
     }
     if (
-      testInfo?.project.name === 'webkit' &&
-      mainFrameNavigationRequest !== undefined &&
-      exception.name === 'Cannot load blob' &&
-      exception.message.includes('due to access control checks') &&
-      exception.stack?.includes('/src/lib/fs-zds/opfs.ts')
+      isInterruptedWebKitRequest(
+        exception,
+        testInfo?.project.name,
+        mainFrameNavigationRequest !== undefined
+      )
     ) {
-      // WebKit reports interrupted OPFS reads from the old document as page
-      // errors while it unloads; the replacement document is unaffected.
+      // WebKit reports interrupted reads and worker startup from the outgoing
+      // document as page errors. Keep these failures fatal outside navigation.
       return
     }
     // Only disable this environment variable if you want to collect console errors
