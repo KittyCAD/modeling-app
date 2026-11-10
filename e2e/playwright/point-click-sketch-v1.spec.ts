@@ -44,7 +44,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
       })
       await test.step('Set length', async () => {
         await expect(modelingDialog.input('length')).toHaveText('5')
-        await modelingDialog.fillInput('length', '4')
+        await modelingDialog.input('length').fill('4')
 
         await expect(modelingDialog.options('body type')).toBeVisible()
         await modelingDialog
@@ -55,7 +55,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
       await test.step('Set end tag', async () => {
         await modelingDialog.advanced.click()
         await expect(modelingDialog.input('tag end')).toBeVisible()
-        await modelingDialog.fillInput('tag end', 'myEndTag')
+        await modelingDialog.input('tag end').fill('myEndTag')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
       })
@@ -402,7 +402,7 @@ sketch002 = startSketchOn(plane001)
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.advanced.click()
       await expect(modelingDialog.input('v degree')).toBeVisible()
-      await modelingDialog.fillInput('v degree', '3')
+      await modelingDialog.input('v degree').fill('3')
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -590,7 +590,7 @@ extrude001 = extrude(sketch001, length = -12)
       )
       await operationButton.dblclick({ button: 'left' })
       await expect(modelingDialog.input('radius')).toHaveText(oldValue)
-      await modelingDialog.fillInput('radius', newValue)
+      await modelingDialog.input('radius').fill(newValue)
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -646,7 +646,7 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
       const operationButton = await toolbar.getFeatureTreeOperation('Fillet', 0)
       await operationButton.dblclick({ button: 'left' })
       await expect(modelingDialog.input('radius')).toHaveText('5')
-      await modelingDialog.fillInput('radius', '20')
+      await modelingDialog.input('radius').fill('20')
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -668,9 +668,9 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
       modelingDialog,
     }) => {
       const initialCode = `@settings(defaultLengthUnit = in)
-    sketch001 = startSketchOn(XZ)
-      |> circle(center = [0, 0], radius = 30)
-    extrude001 = extrude(sketch001, length = 30)`
+sketch001 = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 30)
+extrude001 = extrude(sketch001, length = 30)`
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
@@ -881,7 +881,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
       )
       await operationButton.dblclick({ button: 'left' })
       await expect(modelingDialog.input('angle')).toHaveText('360deg')
-      await modelingDialog.fillInput('angle', newAngle)
+      await modelingDialog.input('angle').fill(newAngle)
       await modelingDialog.variableCheckbox('angle').check()
       await expect(page.getByPlaceholder('Variable name')).toHaveValue(
         'angle001'
@@ -1052,7 +1052,7 @@ extrude001 = extrude(profile001, length = 1)`
       await modelingDialog.selection('Objects').click()
 
       await expect(modelingDialog.input('color')).toBeVisible()
-      await modelingDialog.fillInput('color', '#ff0000') // uppercase doesn't work here
+      await modelingDialog.input('color').fill('#ff0000') // uppercase doesn't work here
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -1069,7 +1069,7 @@ extrude001 = extrude(profile001, length = 1)`
       const op = await toolbar.getFeatureTreeOperation('Appearance', 0)
       await op.dblclick({ button: 'left' })
       await expect(modelingDialog.input('color')).toBeVisible()
-      await modelingDialog.fillInput('color', '#00ff00')
+      await modelingDialog.input('color').fill('#00ff00')
 
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
@@ -1131,7 +1131,7 @@ solid001 = extrude(sketch001, length = 5)`
             KCL_DEFAULT_INSTANCES
           )
           // Update instances from DEFAULT to 8
-          await modelingDialog.fillInput('instances', '8')
+          await modelingDialog.input('instances').fill('8')
         })
 
         await test.step('Configure axis', async () => {
@@ -1143,7 +1143,7 @@ solid001 = extrude(sketch001, length = 5)`
         await test.step('Configure center', async () => {
           await expect(modelingDialog.input('center')).toHaveText('[0, 0, 0]')
           // Update center from [0, 0, 0] to [5, 0, 0]
-          await modelingDialog.fillInput('center', '[5, 0, 0]')
+          await modelingDialog.input('center').fill('[5, 0, 0]')
         })
 
         await test.step('Review basic parameters', async () => {
@@ -1158,7 +1158,7 @@ solid001 = extrude(sketch001, length = 5)`
             'Use defaults'
           )
           // Update arc degrees from 360deg to 180
-          await modelingDialog.fillInput('arc degrees', '180')
+          await modelingDialog.input('arc degrees').fill('180')
 
           // Review changes to arc degrees
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1216,7 +1216,7 @@ solid001 = extrude(sketch001, length = 5)`
         await test.step('Edit center', async () => {
           await expect(modelingDialog.input('center')).toHaveText('[5, 0, 0]')
           // Update center from [5, 0, 0] to [5, 3+4, 0]
-          await modelingDialog.fillInput('center', '[5, 3+4, 0]')
+          await modelingDialog.input('center').fill('[5, 3+4, 0]')
 
           // Review changes to center
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1225,7 +1225,7 @@ solid001 = extrude(sketch001, length = 5)`
         await test.step('Edit instances', async () => {
           await expect(modelingDialog.input('instances')).toHaveText('8')
           // Update instances from 8 to 12
-          await modelingDialog.fillInput('instances', '12')
+          await modelingDialog.input('instances').fill('12')
 
           // Review changes to instances
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1244,7 +1244,7 @@ solid001 = extrude(sketch001, length = 5)`
         await test.step('Edit arc degrees', async () => {
           await expect(modelingDialog.input('arc degrees')).toHaveText('180')
           // Update arc degrees from 180 to 270
-          await modelingDialog.fillInput('arc degrees', '270')
+          await modelingDialog.input('arc degrees').fill('270')
 
           // Review changes to arc degrees
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1347,7 +1347,7 @@ solid001 = extrude(sketch001, length = 5)`
             KCL_DEFAULT_INSTANCES
           )
           // Update instances from DEFAULT to 6
-          await modelingDialog.fillInput('instances', '6')
+          await modelingDialog.input('instances').fill('6')
         })
 
         await test.step('Configure distance', async () => {
@@ -1355,7 +1355,7 @@ solid001 = extrude(sketch001, length = 5)`
             KCL_DEFAULT_LENGTH
           )
           // Update distance from KCL_DEFAULT_LENGTH to 8
-          await modelingDialog.fillInput('distance', '8')
+          await modelingDialog.input('distance').fill('8')
         })
 
         await test.step('Configure axis', async () => {
@@ -1414,7 +1414,7 @@ solid001 = extrude(sketch001, length = 5)`
         await test.step('Edit instances parameter', async () => {
           await expect(modelingDialog.input('instances')).toHaveText('6')
           // Update instances from 6 to 4
-          await modelingDialog.fillInput('instances', '4')
+          await modelingDialog.input('instances').fill('4')
 
           // Review changes to instances
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1423,7 +1423,7 @@ solid001 = extrude(sketch001, length = 5)`
         await test.step('Edit distance parameter', async () => {
           await expect(modelingDialog.input('distance')).toHaveText('8')
           // Update distance from 8 to 12
-          await modelingDialog.fillInput('distance', '12')
+          await modelingDialog.input('distance').fill('12')
 
           // Review changes to distance
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1517,7 +1517,7 @@ extrude001 = extrude(sketch001, length = 30)
         await test.step('Configure tolerance', async () => {
           await expect(modelingDialog.input('tolerance')).toHaveText('0.1in')
           // Set tolerance to 0.1in
-          await modelingDialog.fillInput('tolerance', '0.1in')
+          await modelingDialog.input('tolerance').fill('0.1in')
         })
 
         await test.step('Review basic parameters', async () => {
@@ -1532,7 +1532,7 @@ extrude001 = extrude(sketch001, length = 30)
             'Use defaults'
           )
           // Update precision from 3 to 5
-          await modelingDialog.fillInput('precision', '5')
+          await modelingDialog.input('precision').fill('5')
 
           // Review changes to precision
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1544,7 +1544,7 @@ extrude001 = extrude(sketch001, length = 30)
             'Use defaults'
           )
           // Update frame position from [0, 0] to [10, 10]
-          await modelingDialog.fillInput('frame position', '[10, 10]')
+          await modelingDialog.input('frame position').fill('[10, 10]')
 
           // Review changes to frame position
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1566,7 +1566,7 @@ extrude001 = extrude(sketch001, length = 30)
             'Use defaults'
           )
           // Update font size to 12mm
-          await modelingDialog.fillInput('font size', '12mm')
+          await modelingDialog.input('font size').fill('12mm')
 
           // Review changes to font size
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1603,7 +1603,7 @@ extrude001 = extrude(sketch001, length = 30)
         await test.step('Edit tolerance', async () => {
           await expect(modelingDialog.input('tolerance')).toHaveText('0.1in')
           // Update tolerance from 0.1in to 0.2in
-          await modelingDialog.fillInput('tolerance', '0.2in')
+          await modelingDialog.input('tolerance').fill('0.2in')
 
           // Review changes to tolerance
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1623,7 +1623,7 @@ extrude001 = extrude(sketch001, length = 30)
             '[10, 10]'
           )
           // Update frame position from [10, 10] to [20, 30]
-          await modelingDialog.fillInput('frame position', '[20, 30]')
+          await modelingDialog.input('frame position').fill('[20, 30]')
 
           // Review changes to frame position
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1644,7 +1644,7 @@ extrude001 = extrude(sketch001, length = 30)
         await test.step('Edit font size', async () => {
           await expect(modelingDialog.input('font size')).toHaveText('12mm')
           // Update font size from 48 to 24
-          await modelingDialog.fillInput('font size', '24')
+          await modelingDialog.input('font size').fill('24')
 
           // Review changes to font size
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1742,7 +1742,7 @@ extrude001 = extrude(sketch001, length = 30)
             'Use defaults'
           )
           // Update frame position from [0, 0] to [5, 0]
-          await modelingDialog.fillInput('frame position', '[5, 0]')
+          await modelingDialog.input('frame position').fill('[5, 0]')
 
           // Review changes to frame position
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1764,7 +1764,7 @@ extrude001 = extrude(sketch001, length = 30)
             'Use defaults'
           )
           // Update font size to 12mm
-          await modelingDialog.fillInput('font size', '12mm')
+          await modelingDialog.input('font size').fill('12mm')
 
           // Review changes to font size
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1797,7 +1797,7 @@ extrude001 = extrude(sketch001, length = 30)
           await expect(modelingDialog.input('name')).toBeVisible()
           // Update name from A to B
           await expect(modelingDialog.input('name')).toBeVisible()
-          await modelingDialog.fillInput('name', 'B')
+          await modelingDialog.input('name').fill('B')
 
           // Review changes to name
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1808,7 +1808,7 @@ extrude001 = extrude(sketch001, length = 30)
             '[5, 0]'
           )
           // Update frame position from [5, 0] to [10, 5]
-          await modelingDialog.fillInput('frame position', '[10, 5]')
+          await modelingDialog.input('frame position').fill('[10, 5]')
 
           // Review changes to frame position
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1829,7 +1829,7 @@ extrude001 = extrude(sketch001, length = 30)
         await test.step('Edit font size', async () => {
           await expect(modelingDialog.input('font size')).toHaveText('12mm')
           // Update font size from 48 to 32
-          await modelingDialog.fillInput('font size', '32')
+          await modelingDialog.input('font size').fill('32')
 
           // Review changes to font size
           await expect(modelingDialog.submitButton).toBeEnabled()
