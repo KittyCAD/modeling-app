@@ -982,7 +982,13 @@ export const doExport = async (
   }
   await cmdBar.submit()
 
-  await expect(page.getByText('Exported successfully')).toBeVisible()
+  await expect(
+    page.getByText(
+      process.env.TARGET === 'web'
+        ? 'Download started'
+        : 'Exported successfully'
+    )
+  ).toBeVisible()
 
   if (exportFrom === 'sidebarButton' || exportFrom === 'commandBar') {
     return {
