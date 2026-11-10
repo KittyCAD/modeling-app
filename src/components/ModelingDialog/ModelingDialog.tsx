@@ -37,6 +37,8 @@ import { useDialogSelection } from '@src/components/ModelingDialog/useDialogSele
 import { ArgumentHelp } from '@src/components/ModelingDialog/ArgumentHelp'
 import { CommandHelp } from '@src/components/ModelingDialog/CommandHelp'
 
+import { ExtrudePreview } from '@src/components/ModelingDialog/ExtrudePreview'
+
 export default function ModelingDialog({
   containerRef,
   kclManager,
@@ -515,6 +517,15 @@ export default function ModelingDialog({
         className="flex min-h-0 flex-col text-xs"
       >
         <div className="flex min-h-0 flex-col gap-3 overflow-y-auto p-3">
+          {!initializing && command.name === 'Extrude' && (
+            <ExtrudePreview
+              kcl={kclManager}
+              context={state.context}
+              draft={selection.draft}
+              save={save}
+              containerRef={containerRef}
+            />
+          )}
           {initializing ? (
             <p>Loading arguments...</p>
           ) : (

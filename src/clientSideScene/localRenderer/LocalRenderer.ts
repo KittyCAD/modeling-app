@@ -178,6 +178,82 @@ export class LocalRenderer {
   private readonly disposers: (() => void)[] = []
   private animationFrameId = -1
   private currentModel: Object3D | null = null
+  private operationPreview: Object3D | null = null
+  private operationPreviewVersion = 0
+
+  getExtrudeFrame(regionId: string, originalDistance?: number) {
+    let mesh = this.targetsByEntityId
+      .get(regionId)
+      ?.find((mesh) => mesh.userData.isSketchRegion)
+    let normalSign = 1
+    if (!mesh && originalDistance && Number.isFinite(originalDistance)) {
+      const path = this.kclManager.artifactGraph.get(regionId)
+      const sweep =
+        path?.type === 'path' && path.sweepId
+          ? this.kclManager.artifactGraph.get(path.sweepId)
+          : undefined
+      const start =
+        sweep?.type === 'sweep' &&
+        sweep.surfaceIds
+          .map((id) => this.kclManager.artifactGraph.get(id))
+          .find((face) => face?.type === 'cap' && face.subType === 'start')
+      if (start) {
+        mesh = this.targetsByEntityId.get(start.id)?.[0]
+        // The start cap faces away from the extrusion, including negative lengths.
+        normalSign = -Math.sign(originalDistance)
+      }
+    }
+    if (!mesh) return undefined
+    const point = getEntityPoint(mesh.geometry, 'face')
+    const normals = mesh.geometry.getAttribute('normal')
+    if (!point || !normals?.count) return undefined
+    mesh.updateWorldMatrix(true, false)
+    point.applyMatrix4(mesh.matrixWorld)
+    const normal = new Vector3()
+      .fromBufferAttribute(normals, 0)
+      .transformDirection(mesh.matrixWorld)
+    return {
+      origin: new Vector3(point.x, -point.z, point.y).multiplyScalar(1000),
+      normal: new Vector3(normal.x, -normal.z, normal.y)
+        .normalize()
+        .multiplyScalar(normalSign),
+    }
+  }
+
+  /** A whole proposed scene is displayed without replacing authoritative picking data. */
+  async showOperationPreview(bytes: Uint8Array, isCurrent: () => boolean) {
+    const version = ++this.operationPreviewVersion
+    const gltf = await this.gltfLoader.parseAsync(bytes.slice().buffer, '')
+    if (
+      this.disposed ||
+      version !== this.operationPreviewVersion ||
+      !isCurrent() ||
+      !this.gpu
+    ) {
+      disposeObject3D(gltf.scene)
+      return
+    }
+    this.removeOperationPreview()
+    this.operationPreview = gltf.scene
+    if (this.currentModel) this.currentModel.visible = false
+    this.gpu.scene.add(gltf.scene)
+    this.invalidateBaseRender()
+  }
+
+  clearOperationPreview() {
+    this.operationPreviewVersion++
+    this.removeOperationPreview()
+    this.invalidateBaseRender()
+  }
+
+  private removeOperationPreview() {
+    if (this.operationPreview) {
+      this.operationPreview.removeFromParent()
+      disposeObject3D(this.operationPreview)
+      this.operationPreview = null
+    }
+    if (this.currentModel) this.currentModel.visible = true
+  }
   private readonly gltfLoader = new GLTFLoader()
   // Shared by all model materials, so a new color doesn't rebuild their shaders.
   private readonly backfaceColor = uniform(new Color())
@@ -1060,6 +1136,7 @@ export class LocalRenderer {
   }
 
   private clearModel() {
+    this.clearOperationPreview()
     const { gpu } = this
     this.loadedSceneGeneration = null
     this.engineEntityReferences.clear()
