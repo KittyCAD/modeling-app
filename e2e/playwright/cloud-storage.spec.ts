@@ -17,7 +17,7 @@ test(
     await setup(context, page, testInfo)
     const root = `/__zoo_cloud__/${projectId}`
     await page.goto(`/file/${encodeURIComponent(`${root}/main.kcl`)}`)
-    await expect(page.locator('.cm-content').first()).toBeVisible()
+    await page.locator('.cm-content').first().waitFor({ state: 'visible' })
     await page.evaluate(
       (id) => window.app.layout.openPane(id),
       DefaultLayoutPaneID.Files
@@ -89,7 +89,7 @@ test(
     await page.goto(
       `/file/${encodeURIComponent(`/__zoo_cloud__/${projectId}/main.kcl`)}`
     )
-    await expect(page.locator('.cm-content').first()).toBeVisible()
+    await page.locator('.cm-content').first().waitFor({ state: 'visible' })
     const release = await page.evaluateHandle(() => {
       const project = window.app.project
       if (!project) throw new Error('Missing project')
@@ -157,7 +157,7 @@ test(
     await page.goto(
       `/file/${encodeURIComponent(`/__zoo_cloud__/${projectId}/main.kcl`)}`
     )
-    await expect(page.locator('.cm-content').first()).toBeVisible()
+    await page.locator('.cm-content').first().waitFor({ state: 'visible' })
     const clockStart = new Date()
     await page.clock.install({ time: clockStart })
     await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
@@ -213,7 +213,7 @@ test(
     await page.goto(
       `/file/${encodeURIComponent(`/__zoo_cloud__/${projectId}/main.kcl`)}`
     )
-    await expect(page.locator('.cm-content').first()).toBeVisible()
+    await page.locator('.cm-content').first().waitFor({ state: 'visible' })
     const promptState = await page.evaluateHandle(async () => {
       const modulePath = '/src/lib/zookeeper/zookeeperPromptState.ts'
       const { zookeeperPromptRunningSignal } = await import(modulePath)
@@ -279,7 +279,7 @@ for (const kind of ['file', 'directory']) {
       await setup(context, page, testInfo)
       const root = `/__zoo_cloud__/${projectId}`
       await page.goto(`/file/${encodeURIComponent(`${root}/main.kcl`)}`)
-      await expect(page.locator('.cm-content').first()).toBeVisible()
+      await page.locator('.cm-content').first().waitFor({ state: 'visible' })
       await page.evaluate(
         (id) => window.app.layout.openPane(id),
         DefaultLayoutPaneID.Files
@@ -346,7 +346,7 @@ for (const kind of ['file', 'directory']) {
           })
         ).toBe(false)
         await page.reload({ waitUntil: 'domcontentloaded' })
-        await expect(page.locator('.cm-content').first()).toBeVisible()
+        await page.locator('.cm-content').first().waitFor({ state: 'visible' })
         await expect
           .poll(() =>
             page.evaluate(
@@ -390,7 +390,7 @@ test(
       return root
     })
     await page.goto(`/file/${encodeURIComponent(`${root}/main.kcl`)}`)
-    await expect(page.locator('.cm-content').first()).toBeVisible()
+    await page.locator('.cm-content').first().waitFor({ state: 'visible' })
     await page.evaluate(
       (id) => window.app.layout.openPane(id),
       DefaultLayoutPaneID.Files
@@ -478,6 +478,7 @@ test(
       .getByTestId('project-link')
       .filter({ has: page.getByText('Cloud memory model', { exact: true }) })
       .click()
+    await page.locator('.cm-content').first().waitFor({ state: 'visible' })
     await expect(page).toHaveURL(/__zoo_cloud__.*main\.kcl/)
     const root = `/__zoo_cloud__/${projectId}`
     await page.evaluate(async (root) => {
@@ -610,6 +611,7 @@ test(
       .getByTestId('project-link')
       .filter({ has: page.getByText('Cloud memory model', { exact: true }) })
       .click()
+    await page.locator('.cm-content').first().waitFor({ state: 'visible' })
     await expect(page).toHaveURL(/main\.kcl/)
     await page.evaluate(
       (ids) => {
