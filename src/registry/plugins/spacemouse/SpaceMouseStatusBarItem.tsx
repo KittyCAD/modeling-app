@@ -55,9 +55,14 @@ export function SpaceMouseStatusBarItem() {
           name={details.icon}
           className={`h-4 w-4 shrink-0 ${status === 'connecting' ? 'animate-spin' : ''}`}
         />
-        <span>SpaceMouse: {label}</span>
       </button>
-      <Tooltip position="top-left">{description}</Tooltip>
+      <Tooltip
+        position="top-left"
+        contentClassName="max-w-xs whitespace-normal text-left"
+      >
+        <div className="font-semibold">SpaceMouse: {label}</div>
+        <div>{description}</div>
+      </Tooltip>
     </div>
   )
 }

@@ -143,14 +143,22 @@ describe('SpaceMouse connection', () => {
     const { controller } = setupController()
     activeSpaceMouseController.value = controller
     const view = render(createElement(SpaceMouseStatusBarItem))
-    fireEvent.click(screen.getByRole('button', { name: /Connect SpaceMouse/ }))
+    const connectButton = screen.getByRole('button', {
+      name: /Connect SpaceMouse/,
+    })
+    expect(connectButton).not.toHaveTextContent('SpaceMouse')
+    fireEvent.click(connectButton)
     await vi.waitFor(() => expect(FakeDriver.instances).toHaveLength(1))
-    expect(screen.getByText('SpaceMouse: Connecting')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /SpaceMouse: Connecting/ })
+    ).toBeDisabled()
     const sdk = FakeDriver.instances[0]
     sdk.client.onConnect()
     expect(success).not.toHaveBeenCalled()
     await act(async () => sdk.client.on3dmouseCreated())
-    expect(await screen.findByText('SpaceMouse: Connected')).toBeInTheDocument()
+    expect(
+      await screen.findByRole('button', { name: /SpaceMouse: Connected/ })
+    ).toBeEnabled()
     expect(success).toHaveBeenCalledWith('SpaceMouse connected.', {
       id: 'spacemouse-connected',
     })
@@ -159,7 +167,9 @@ describe('SpaceMouse connection', () => {
     fireEvent.click(
       screen.getByRole('button', { name: /Disconnect SpaceMouse/ })
     )
-    expect(screen.getByText('SpaceMouse: Disconnected')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /SpaceMouse: Disconnected/ })
+    ).toBeEnabled()
     view.unmount()
     controller.dispose()
   })
