@@ -7,19 +7,40 @@ import {
 } from '@src/lib/fs-zds/cloud/directories'
 
 describe('cloud empty directory metadata', () => {
-  it('round-trips generated directory paths deterministically', () => {
-    const segment = fc.stringMatching(/^[a-zA-Z0-9_-]{1,20}$/)
-    const path = fc
-      .array(segment, { minLength: 1, maxLength: 5 })
-      .map((parts) => posix.join(...parts))
+  const paths = fc.array(
+    fc
+      .array(
+        fc.constantFrom('parts', 'café', '空', 'with space', '🙂', '..hidden'),
+        {
+          minLength: 1,
+          maxLength: 5,
+        }
+      )
+      .map((segments) => posix.join(...segments)),
+    { maxLength: 20 }
+  )
+
+  it('encodes a sorted, duplicate-free JSON array that other clients can read', () => {
     fc.assert(
-      fc.property(fc.array(path), (paths) => {
-        expect(decodeCloudDirectories(encodeCloudDirectories(paths))).toEqual(
-          [...new Set(paths)].sort()
+      fc.property(paths, (directories) => {
+        const encoded = encodeCloudDirectories(directories)
+        expect(JSON.parse(new TextDecoder().decode(encoded))).toEqual(
+          [...new Set(directories)].sort()
         )
-        expect(encodeCloudDirectories(paths.toReversed())).toEqual(
-          encodeCloudDirectories(paths)
+        expect(encodeCloudDirectories(directories.toReversed())).toEqual(
+          encoded
         )
+      })
+    )
+  })
+
+  it('reads stored JSON independently of the encoder, preserving first-seen directory order', () => {
+    fc.assert(
+      fc.property(paths, (directories) => {
+        const stored = new TextEncoder().encode(JSON.stringify(directories))
+        expect(decodeCloudDirectories(stored)).toEqual([
+          ...new Set(directories),
+        ])
       })
     )
   })
@@ -32,9 +53,9 @@ describe('cloud empty directory metadata', () => {
     'C:/escape',
     '.zoo-directories.json/nested',
     'nul\0path',
-  ])('rejects unsafe directory %s', (path) => {
+  ])('rejects unsafe stored directory %s', (path) => {
     expect(() =>
-      decodeCloudDirectories(encodeCloudDirectories([path]))
+      decodeCloudDirectories(new TextEncoder().encode(JSON.stringify([path])))
     ).toThrow('invalid project path')
   })
   it.each(['{}', '[1]', 'null', 'not json'])(
