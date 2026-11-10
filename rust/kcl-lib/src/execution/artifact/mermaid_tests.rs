@@ -203,7 +203,7 @@ impl ArtifactMermaidExt for Artifact {
             }
             Artifact::Plane(_) => Vec::new(),
             Artifact::Path(a) => {
-                let mut ids = vec![a.plane_id];
+                let mut ids: Vec<_> = a.plane_id.into_iter().collect();
                 if let Some(sketch_block_id) = a.sketch_block_id {
                     ids.push(sketch_block_id);
                 }

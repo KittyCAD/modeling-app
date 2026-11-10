@@ -8,6 +8,64 @@ KCL sketch blocks define 2D geometry and the relationships that control it.
 Start a block on a base plane or supported face, add sketch geometry inside the
 braces, then apply constraints to express design intent.
 
+For a route that changes planes, use the experimental `startPath3d`, `line3d`,
+`arc3d`, and `tangentialArc3d` functions outside a sketch block. A `Path3d` has world coordinates,
+no sketch plane, and no constraints. Its segments form one continuous path:
+
+```kcl
+@settings(kclVersion = 3.0, experimentalFeatures = allow)
+
+route = startPath3d(at = [0mm, 0mm, 0mm])
+  |> line3d(end = [0mm, 0mm, 20mm])
+  |> arc3d(interiorAbsolute = [5mm, 0mm, 25mm], endAbsolute = [10mm, 0mm, 20mm])
+  |> line3d(end = [0mm, 10mm, -20mm])
+
+profile = sketch(on = XY) {
+  section = circle(start = [2mm, 0mm], center = [0mm, 0mm])
+}
+sectionRegion = region(point = [0mm, 0mm], sketch = profile)
+body = sweep(sectionRegion, path = route)
+```
+
+`line3d` takes exactly one of `end` (an offset) or `endAbsolute` (a world
+coordinate). `arc3d` passes through `interiorAbsolute` and ends at
+`endAbsolute`; those points and the current endpoint determine the arc's
+plane and direction. The points must be distinct and non-collinear.
+
+Use `tangentialArc3d(end = [10mm, 0mm, 10mm])` after a line or arc to
+infer the bend from its incoming tangent and endpoint. Like `line3d`, it accepts
+exactly one of `end` or `endAbsolute`. The endpoint must be off the incoming
+tangent line. It keeps the start tangent when you move the preceding segment;
+a following line still needs to match the arc's exit direction.
+
+Author a route with straight lines, then round its interior corners with
+`pathFillet`. Endpoint edits recompute both tangent joins at each bend:
+
+```kcl
+@settings(kclVersion = 3.0, experimentalFeatures = allow)
+
+route = startPath3d(at = [0mm, 0mm, 0mm])
+  |> line3d(endAbsolute = [0mm, 0mm, 60mm])
+  |> line3d(endAbsolute = [15mm, 25mm, 65mm])
+  |> pathFillet(radius = 10mm)
+```
+
+This trims both legs at each corner and inserts a circular arc. One radius
+applies to all interior line-line corners. The radius must leave a nonzero straight
+portion on every segment, including segments shared by neighboring fillets.
+Existing arcs keep their authored points, radius, and traversal. Joins involving
+arcs must already be tangent; sharp line-arc and arc-arc joins are rejected.
+Straight continuations are retained; reversals and closed routes are rejected.
+The original route is consumed and hidden; use the
+returned rounded `Path3d` for further segments or as a `sweep` trajectory.
+Sweeping complex rounded routes has a reported folding issue under
+investigation; successful execution alone does not establish shape correctness.
+
+Always pass the value returned by the most recent segment call. Complete the
+route before using it in `sweep`; a swept path cannot be extended. These paths
+are edited in code and appear as **3D Path** features. They do not create
+sketch regions and cannot be used as extrusion or revolve profiles.
+
 ```kcl
 @settings(kclVersion = 3.0)
 

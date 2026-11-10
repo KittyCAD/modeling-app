@@ -214,6 +214,9 @@ pub enum OpKclValue {
     Solid {
         value: Box<OpSolid>,
     },
+    Path3d {
+        artifact_id: ArtifactId,
+    },
     Helix {
         value: Box<OpHelix>,
     },

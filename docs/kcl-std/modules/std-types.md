@@ -24,6 +24,7 @@ does.
 * [`GdtAnnotation`](/docs/kcl-std/types/std-types-GdtAnnotation)
 * [`Helix`](/docs/kcl-std/types/std-types-Helix)
 * [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
+* [`Path3d`](/docs/kcl-std/types/std-types-Path3d)
 * [`Plane`](/docs/kcl-std/types/std-types-Plane)
 * [`Point2d`](/docs/kcl-std/types/std-types-Point2d)
 * [`Point3d`](/docs/kcl-std/types/std-types-Point3d)
