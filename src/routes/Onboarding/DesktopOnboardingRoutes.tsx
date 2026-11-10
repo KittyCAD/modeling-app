@@ -81,7 +81,11 @@ function Welcome() {
     // Navigate to the `main.kcl` file
     app.projectSession
       .openFile(
-        fsZds.join(app.projectLibraries.projectDirectoryPath, projectName, 'main.kcl'),
+        fsZds.join(
+          app.projectLibraries.projectDirectoryPath,
+          projectName,
+          'main.kcl'
+        ),
         onboardingProjectOpenOptions(app, projectName, thisOnboardingStatus)
       )
       .catch(reportRejection)
@@ -305,7 +309,11 @@ function FeatureTreePane() {
     }
     app.projectSession
       .openFile(
-        fsZds.join(app.projectLibraries.projectDirectoryPath, projectName, generatedFileName),
+        fsZds.join(
+          app.projectLibraries.projectDirectoryPath,
+          projectName,
+          generatedFileName
+        ),
         onboardingProjectOpenOptions(app, projectName, thisOnboardingStatus)
       )
       .catch(reportRejection)
@@ -433,7 +441,11 @@ function PromptToEdit() {
     }
     app.projectSession
       .openFile(
-        fsZds.join(app.projectLibraries.projectDirectoryPath, projectName, 'main.kcl'),
+        fsZds.join(
+          app.projectLibraries.projectDirectoryPath,
+          projectName,
+          'main.kcl'
+        ),
         onboardingProjectOpenOptions(app, projectName, thisOnboardingStatus)
       )
       .catch(reportRejection)
@@ -706,7 +718,10 @@ function onboardingProjectOpenOptions(
   onboardingStatus: string
 ) {
   return {
-    projectPath: fsZds.join(app.projectLibraries.projectDirectoryPath, projectName),
+    projectPath: fsZds.join(
+      app.projectLibraries.projectDirectoryPath,
+      projectName
+    ),
     subRoute: joinRouterPaths(String(PATHS.ONBOARDING), onboardingStatus),
   }
 }
