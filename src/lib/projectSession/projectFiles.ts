@@ -10,9 +10,9 @@ import { isErr } from '@src/lib/trap'
 import {
   isExcludedProjectPath,
   normalizeRelativePath as normalizeUploadRelativePath,
-} from '@src/lib/fs-zds/cloud/paths'
+} from '@src/lib/cloudProjects/runtime/paths'
 
-import type { ProjectArchiveFile } from '@src/lib/fs-zds/cloud/types'
+import type { ProjectArchiveFile } from '@src/lib/cloudProjects/runtime/types'
 
 import fsZds from '@src/lib/fs-zds'
 
