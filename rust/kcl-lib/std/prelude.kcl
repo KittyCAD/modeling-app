@@ -159,7 +159,7 @@ export CW = "cw": string
 ///     |> sweep(path = helixPath)
 /// ```
 ///
-/// ```kcl,no3d,gpu,legacySketch
+/// ```kcl,no3d,legacySketch
 /// // Create a helix on a cylinder.
 ///
 /// part001 = startSketchOn(XY)
