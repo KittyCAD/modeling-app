@@ -699,7 +699,7 @@ test.describe(
 
     test(
       'Assembly gets reexecuted when imported models are updated externally',
-      { tag: ['@skipLocalEngine', '@localRenderer'] },
+      { tag: '@skipLocalEngine' },
       async ({
         folderSetupFn,
         page,

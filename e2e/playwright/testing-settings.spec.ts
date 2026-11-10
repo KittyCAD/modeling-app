@@ -700,7 +700,7 @@ test.describe(
 
     test(
       `Changing system theme preferences should not override fixed light theme`,
-      { tag: ['@macos', '@windows', '@localRenderer'] },
+      { tag: ['@macos', '@windows'] },
       async ({ page, homePage, tronApp }) => {
         if (!tronApp) throwTronAppMissing()
 

@@ -805,11 +805,15 @@ extrude001 = extrude(sketch001, length = 30)`
     })
   }
 
-  test(
-    'Revolve point-and-click',
-    { tag: '@localRenderer' },
-    async ({ page, homePage, scene, editor, toolbar, modelingDialog }) => {
-      const initialCode = `sketch001 = startSketchOn(XZ)
+  test('Revolve point-and-click', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+  }) => {
+    const initialCode = `sketch001 = startSketchOn(XZ)
   |> startProfile(at = [-102.57, 101.72])
   |> angledLine(angle = 0deg, length = 202.6, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 202.6, tag = $rectangleSegmentB001)
@@ -819,77 +823,76 @@ extrude001 = extrude(sketch001, length = 30)`
 extrude001 = extrude(sketch001, length = 50)
 sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
   |> circle(center = [-11.34, 10.0], radius = 8.69)`
-      const newCodeToFind =
-        'revolve001 = revolve(  sketch002,  angle = 360deg,  axis = rectangleSegmentA001,  bodyType = SURFACE,)'
+    const newCodeToFind =
+      'revolve001 = revolve(  sketch002,  angle = 360deg,  axis = rectangleSegmentA001,  bodyType = SURFACE,)'
 
-      await page.setBodyDimensions({ width: 1200, height: 800 })
-      await homePage.goToModelingScene()
+    await page.setBodyDimensions({ width: 1200, height: 800 })
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
+    await resetView(scene)
+
+    await test.step('Add revolve feature via point-and-click', async () => {
+      // select line of code
+      const codeToSelection = `center = [-11.34, 10.0]`
+      // revolve
+      await editor.scrollToText(codeToSelection)
+      await page.getByText(codeToSelection).click()
+      await toolbar.revolveButton.click()
+      await modelingDialog.selection('Profiles').click()
+
+      await expect(modelingDialog.options('axis or edge')).toBeVisible()
+      await modelingDialog
+        .options('axis or edge')
+        .selectOption({ label: 'Edge' })
+      await modelingDialog.selection('Edge').click()
+      const lineCodeToSelection = `angledLine(angle = 0deg, length = 202.6, tag = $rectangleSegmentA001)`
+      await editor.selectText(lineCodeToSelection)
+
+      await expect(modelingDialog.input('angle')).toHaveText('360deg')
+
+      await expect(modelingDialog.options('body type')).toBeVisible()
+      await modelingDialog
+        .options('body type')
+        .selectOption({ label: 'Surface' })
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
+
+      await editor.expectEditor.toContain(newCodeToFind)
+    })
+
+    await test.step('Edit revolve feature via feature tree selection', async () => {
       await scene.settled()
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', initialCode)
+      const newAngle = '180deg'
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'Revolve',
+        0
       )
-      await resetView(scene)
+      await operationButton.dblclick({ button: 'left' })
+      await expect(modelingDialog.input('angle')).toHaveText('360deg')
+      await modelingDialog.input('angle').fill(newAngle)
+      await modelingDialog.variableCheckbox('angle').check()
+      await expect(page.getByPlaceholder('Variable name')).toHaveValue(
+        'angle001'
+      )
 
-      await test.step('Add revolve feature via point-and-click', async () => {
-        // select line of code
-        const codeToSelection = `center = [-11.34, 10.0]`
-        // revolve
-        await editor.scrollToText(codeToSelection)
-        await page.getByText(codeToSelection).click()
-        await toolbar.revolveButton.click()
-        await modelingDialog.selection('Profiles').click()
-
-        await expect(modelingDialog.options('axis or edge')).toBeVisible()
-        await modelingDialog
-          .options('axis or edge')
-          .selectOption({ label: 'Edge' })
-        await modelingDialog.selection('Edge').click()
-        const lineCodeToSelection = `angledLine(angle = 0deg, length = 202.6, tag = $rectangleSegmentA001)`
-        await editor.selectText(lineCodeToSelection)
-
-        await expect(modelingDialog.input('angle')).toHaveText('360deg')
-
-        await expect(modelingDialog.options('body type')).toBeVisible()
-        await modelingDialog
-          .options('body type')
-          .selectOption({ label: 'Surface' })
-        await expect(modelingDialog.submitButton).toBeEnabled()
-        await modelingDialog.submit()
-
-        await editor.expectEditor.toContain(newCodeToFind)
-      })
-
-      await test.step('Edit revolve feature via feature tree selection', async () => {
-        await scene.settled()
-        const newAngle = '180deg'
-        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const operationButton = await toolbar.getFeatureTreeOperation(
-          'Revolve',
-          0
-        )
-        await operationButton.dblclick({ button: 'left' })
-        await expect(modelingDialog.input('angle')).toHaveText('360deg')
-        await modelingDialog.input('angle').fill(newAngle)
-        await modelingDialog.variableCheckbox('angle').check()
-        await expect(page.getByPlaceholder('Variable name')).toHaveValue(
-          'angle001'
-        )
-
-        await modelingDialog
-          .options('sketch axis')
-          .selectOption({ label: 'X Axis' })
-        await expect(modelingDialog.submitButton).toBeEnabled()
-        await modelingDialog.submit()
-        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-        await editor.expectEditor.toContain('angle001 = ' + newAngle)
-        await editor.expectEditor.toContain(
-          newCodeToFind
-            .replace('angle = 360deg', 'angle = angle001')
-            .replace('axis = rectangleSegmentA001', 'axis = X')
-        )
-      })
-    }
-  )
+      await modelingDialog
+        .options('sketch axis')
+        .selectOption({ label: 'X Axis' })
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await editor.expectEditor.toContain('angle001 = ' + newAngle)
+      await editor.expectEditor.toContain(
+        newCodeToFind
+          .replace('angle = 360deg', 'angle = angle001')
+          .replace('axis = rectangleSegmentA001', 'axis = X')
+      )
+    })
+  })
 
   test(
     'Flip Surface point-and-click',

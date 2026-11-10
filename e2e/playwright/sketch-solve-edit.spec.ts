@@ -136,95 +136,99 @@ ${code}`
 }
 
 test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
-  test(
-    "can edit an existing sketch and edit it's segments",
-    { tag: '@localRenderer' },
-    async ({ page, context, homePage, scene, cmdBar, editor, toolbar }) => {
-      await test.step('Set up the app with test code', async () => {
-        await context.addInitScript(async (code) => {
-          localStorage.setItem('persistCode', code)
-        }, TEST_CODE)
+  test("can edit an existing sketch and edit it's segments", async ({
+    page,
+    context,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+    toolbar,
+  }) => {
+    await test.step('Set up the app with test code', async () => {
+      await context.addInitScript(async (code) => {
+        localStorage.setItem('persistCode', code)
+      }, TEST_CODE)
 
-        await page.setBodyDimensions({ width: 1200, height: 500 })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
 
-        await homePage.goToModelingScene()
-        await scene.settled()
+      await homePage.goToModelingScene()
+      await scene.settled()
 
-        await editor.expectEditor.toContain('sketch(on = XZ)')
+      await editor.expectEditor.toContain('sketch(on = XZ)')
+    })
+
+    await test.step('Place cursor in sketch block and verify Edit Sketch button', async () => {
+      await editor.scrollToText('line(start = [var -0.88mm, var 0.54mm]')
+      await page.getByText('line(start = [var -0.88mm, var 0.54mm]').click()
+
+      await expect(
+        page.getByRole('button', { name: 'Edit Sketch' })
+      ).toBeVisible()
+    })
+
+    await test.step('Open feature tree and enter sketch edit mode', async () => {
+      await toolbar.openFeatureTreePane()
+      await expect(page.getByText('Building feature tree')).not.toBeVisible({
+        timeout: 10000,
       })
 
-      await test.step('Place cursor in sketch block and verify Edit Sketch button', async () => {
-        await editor.scrollToText('line(start = [var -0.88mm, var 0.54mm]')
-        await page.getByText('line(start = [var -0.88mm, var 0.54mm]').click()
+      const solveSketchOperation = await toolbar.getFeatureTreeOperation(
+        'newSketch',
+        0
+      )
+      await solveSketchOperation.dblclick()
 
-        await expect(
-          page.getByRole('button', { name: 'Edit Sketch' })
-        ).toBeVisible()
-      })
+      await page.waitForTimeout(600)
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+    })
 
-      await test.step('Open feature tree and enter sketch edit mode', async () => {
-        await toolbar.openFeatureTreePane()
-        await expect(page.getByText('Building feature tree')).not.toBeVisible({
-          timeout: 10000,
-        })
+    await test.step('Verify point handles are visible', async () => {
+      const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
+      await expect(pointHandles).toHaveCount(9)
+    })
 
-        const solveSketchOperation = await toolbar.getFeatureTreeOperation(
-          'newSketch',
-          0
-        )
-        await solveSketchOperation.dblclick()
+    await test.step('Drag point segment 13 down', async () => {
+      const segmentBox = await scene.getBoundingBoxOrThrow(
+        '[data-segment_id="14"]'
+      )
 
-        await page.waitForTimeout(600)
-        await expect(toolbar.exitSketchBtn).toBeEnabled()
-      })
+      const centerX = segmentBox.x + segmentBox.width / 2
+      const centerY = segmentBox.y + segmentBox.height / 2
 
-      await test.step('Verify point handles are visible', async () => {
-        const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
-        await expect(pointHandles).toHaveCount(9)
-      })
+      const lineToEdit = getCodeLine({ code: TEST_CODE, line: 9 })
+      await editor.expectEditor.toContain(lineToEdit)
 
-      await test.step('Drag point segment 13 down', async () => {
-        const segmentBox = await scene.getBoundingBoxOrThrow(
-          '[data-segment_id="14"]'
-        )
+      await page.mouse.move(centerX, centerY)
+      await page.mouse.down()
+      await page.mouse.move(centerX, centerY + 50, { steps: 5 })
+      await page.mouse.up()
 
-        const centerX = segmentBox.x + segmentBox.width / 2
-        const centerY = segmentBox.y + segmentBox.height / 2
+      await page.waitForTimeout(500)
 
-        const lineToEdit = getCodeLine({ code: TEST_CODE, line: 9 })
-        await editor.expectEditor.toContain(lineToEdit)
+      await editor.expectEditor.not.toContain(lineToEdit)
+    })
 
-        await page.mouse.move(centerX, centerY)
-        await page.mouse.down()
-        await page.mouse.move(centerX, centerY + 50, { steps: 5 })
-        await page.mouse.up()
+    await test.step('Drag line segment by dragging midpoint between points 8 and 9 down', async () => {
+      const midpoint = await getMidpointBetweenSegments(scene, '9', '10')
 
-        await page.waitForTimeout(500)
+      const lineToEdit = getCodeLine({ code: TEST_CODE, line: 6 })
+      await editor.expectEditor.toContain(lineToEdit)
 
-        await editor.expectEditor.not.toContain(lineToEdit)
-      })
+      await page.mouse.move(midpoint.x, midpoint.y)
+      await page.mouse.down()
+      await page.mouse.move(midpoint.x, midpoint.y + 50, { steps: 5 })
+      await page.mouse.up()
 
-      await test.step('Drag line segment by dragging midpoint between points 8 and 9 down', async () => {
-        const midpoint = await getMidpointBetweenSegments(scene, '9', '10')
+      await page.waitForTimeout(500)
 
-        const lineToEdit = getCodeLine({ code: TEST_CODE, line: 6 })
-        await editor.expectEditor.toContain(lineToEdit)
-
-        await page.mouse.move(midpoint.x, midpoint.y)
-        await page.mouse.down()
-        await page.mouse.move(midpoint.x, midpoint.y + 50, { steps: 5 })
-        await page.mouse.up()
-
-        await page.waitForTimeout(500)
-
-        await editor.expectEditor.not.toContain(lineToEdit)
-      })
-    }
-  )
+      await editor.expectEditor.not.toContain(lineToEdit)
+    })
+  })
 
   test(
     'add new sketch, add segments and verify a constraint can be added',
-    { tag: ['@web', '@localRenderer'] },
+    { tag: '@web' },
     async ({ page, context, homePage, scene, cmdBar, editor, toolbar }) => {
       const INITIAL_CODE = ''
       const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
@@ -409,7 +413,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
   test(
     'sketch solve tool hotkeys equip tools and update the sketch',
-    { tag: ['@web', '@localRenderer'] },
+    { tag: '@web' },
     async ({ page, context, homePage, scene, editor, toolbar }) => {
       await test.step('Set up the app and enter sketch solve mode', async () => {
         await context.addInitScript(() => {
@@ -560,7 +564,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
   test(
     'horizontal and vertical hotkeys constrain the draft line while drawing',
-    { tag: ['@web', '@localRenderer'] },
+    { tag: '@web' },
     async ({ page, context, homePage, scene, editor, toolbar }) => {
       await test.step('Set up the app and enter sketch solve mode', async () => {
         await context.addInitScript(() => {
@@ -641,7 +645,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
   test(
     'unequipping line tool should not drop committed segments from the scene',
-    { tag: ['@web', '@localRenderer'] },
+    { tag: '@web' },
     async ({ page, context, homePage, scene, cmdBar, editor, toolbar }) => {
       const INITIAL_CODE = ''
       const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
@@ -725,222 +729,223 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     }
   )
 
-  test(
-    'undo still works after mixing point-click edits with direct kcl edits in sketch solve mode',
-    { tag: '@localRenderer' },
-    async ({ page, context, homePage, scene, cmdBar, editor, toolbar }) => {
-      const INITIAL_CODE = `sketch001 = sketch(on = XY) {
+  test('undo still works after mixing point-click edits with direct kcl edits in sketch solve mode', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+    toolbar,
+  }) => {
+    const INITIAL_CODE = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -11.38mm, var 3.66mm], end = [var -11.5mm, var 0.43mm])
 }
 `
-      const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
-      const getLineCount = (code: string) =>
-        (code.match(/line\(/g) ?? []).length
-      const pressUndo = async () => {
-        await page.keyboard.press('ControlOrMeta+z')
-      }
-      const pressRedo = async () => {
-        await page.keyboard.press('ControlOrMeta+Shift+z')
-      }
+    const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
+    const getLineCount = (code: string) => (code.match(/line\(/g) ?? []).length
+    const pressUndo = async () => {
+      await page.keyboard.press('ControlOrMeta+z')
+    }
+    const pressRedo = async () => {
+      await page.keyboard.press('ControlOrMeta+Shift+z')
+    }
 
-      const addCommittedLine = async (
-        start: [number, number],
-        end: [number, number],
-        options: { shouldUnequip?: boolean } = {}
-      ) => {
-        const shouldUnequip = options.shouldUnequip ?? true
+    const addCommittedLine = async (
+      start: [number, number],
+      end: [number, number],
+      options: { shouldUnequip?: boolean } = {}
+    ) => {
+      const shouldUnequip = options.shouldUnequip ?? true
+      await toolbar.lineBtn.click()
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
+
+      let previousCode = await editor.getCurrentCode()
+      const [lineStart] = scene.makeMouseHelpers(start[0], start[1], {
+        format: 'ratio',
+      })
+      const [lineEnd] = scene.makeMouseHelpers(end[0], end[1], {
+        format: 'ratio',
+      })
+
+      await lineStart()
+      previousCode = await waitForCodeChange(page, previousCode)
+      await lineEnd()
+      const committedCode = await waitForCodeChange(page, previousCode)
+
+      if (shouldUnequip) {
         await toolbar.lineBtn.click()
-        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
-
-        let previousCode = await editor.getCurrentCode()
-        const [lineStart] = scene.makeMouseHelpers(start[0], start[1], {
-          format: 'ratio',
-        })
-        const [lineEnd] = scene.makeMouseHelpers(end[0], end[1], {
-          format: 'ratio',
-        })
-
-        await lineStart()
-        previousCode = await waitForCodeChange(page, previousCode)
-        await lineEnd()
-        const committedCode = await waitForCodeChange(page, previousCode)
-
-        if (shouldUnequip) {
-          await toolbar.lineBtn.click()
-          await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
-        }
-
-        return committedCode
+        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
       }
 
-      await test.step('Set up the app with initial sketch code and enable sketch solve mode', async () => {
-        await context.addInitScript(
-          async ({ code }) => {
-            localStorage.setItem('persistCode', code)
-          },
-          {
-            code: INITIAL_CODE,
-          }
-        )
+      return committedCode
+    }
 
-        await page.setBodyDimensions({ width: 1200, height: 600 })
-        await homePage.goToModelingScene()
-        await scene.settled()
-        await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
-      })
-
-      await test.step('Enter sketch edit mode', async () => {
-        await toolbar.openFeatureTreePane()
-        await expect(page.getByText('Building feature tree')).not.toBeVisible({
-          timeout: 10000,
-        })
-        const sketchOperation = await toolbar.getFeatureTreeOperation(
-          'sketch001',
-          0
-        )
-        await sketchOperation.dblclick()
-        await page.waitForTimeout(600)
-        await expect(toolbar.exitSketchBtn).toBeEnabled()
-        await expect(pointHandles).toHaveCount(2)
-      })
-
-      const initialCode = await editor.getCurrentCode()
-
-      await test.step('Add a second line, unequip, and verify committed state', async () => {
-        const codeWithCommittedLine2 = await addCommittedLine(
-          [0.72, 0.32],
-          [0.82, 0.46],
-          { shouldUnequip: true }
-        )
-
-        expect(getLineCount(codeWithCommittedLine2)).toBe(2)
-        await expect(pointHandles).toHaveCount(4)
-
-        const codeAfterUnequip = await editor.getCurrentCode()
-        expect(getLineCount(codeAfterUnequip)).toBe(2)
-        await expect(pointHandles).toHaveCount(4)
-      })
-
-      const codeBeforeFirstPointClickEdit = await editor.getCurrentCode()
-
-      await test.step('Add a third line and assert code plus scene', async () => {
-        const codeAfterFirstPointClickEdit = await addCommittedLine(
-          [0.63, 0.24],
-          [0.69, 0.63],
-          { shouldUnequip: true }
-        )
-
-        expect(normaliseCode(codeAfterFirstPointClickEdit)).not.toBe(
-          normaliseCode(codeBeforeFirstPointClickEdit)
-        )
-        expect(getLineCount(codeAfterFirstPointClickEdit)).toBe(3)
-        await expect(pointHandles).toHaveCount(6)
-      })
-
-      const codeAfterFirstPointClickEdit = await editor.getCurrentCode()
-
-      await test.step('Directly remove line2 in the editor and wait for execution', async () => {
-        const lineToRemove = codeAfterFirstPointClickEdit
-          .split('\n')
-          .find(
-            (line) =>
-              line.includes('line(') &&
-              !line.includes('line1 = line(') &&
-              line.trim() !== '}'
-          )
-        expect(lineToRemove).toBeDefined()
-        if (!lineToRemove) {
-          throw new Error('Expected added line to exist before direct edit')
+    await test.step('Set up the app with initial sketch code and enable sketch solve mode', async () => {
+      await context.addInitScript(
+        async ({ code }) => {
+          localStorage.setItem('persistCode', code)
+        },
+        {
+          code: INITIAL_CODE,
         }
+      )
 
-        await editor.replaceCodeByTyping(`${lineToRemove}\n`, '')
-        await expect(pointHandles).toHaveCount(4)
+      await page.setBodyDimensions({ width: 1200, height: 600 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
+    })
 
-        const codeAfterDirectEdit = await editor.getCurrentCode()
-        expect(getLineCount(codeAfterDirectEdit)).toBe(2)
-        expect(normaliseCode(codeAfterDirectEdit)).not.toBe(
-          normaliseCode(codeAfterFirstPointClickEdit)
-        )
-        await expect(pointHandles).toHaveCount(4)
+    await test.step('Enter sketch edit mode', async () => {
+      await toolbar.openFeatureTreePane()
+      await expect(page.getByText('Building feature tree')).not.toBeVisible({
+        timeout: 10000,
       })
+      const sketchOperation = await toolbar.getFeatureTreeOperation(
+        'sketch001',
+        0
+      )
+      await sketchOperation.dblclick()
+      await page.waitForTimeout(600)
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+      await expect(pointHandles).toHaveCount(2)
+    })
+
+    const initialCode = await editor.getCurrentCode()
+
+    await test.step('Add a second line, unequip, and verify committed state', async () => {
+      const codeWithCommittedLine2 = await addCommittedLine(
+        [0.72, 0.32],
+        [0.82, 0.46],
+        { shouldUnequip: true }
+      )
+
+      expect(getLineCount(codeWithCommittedLine2)).toBe(2)
+      await expect(pointHandles).toHaveCount(4)
+
+      const codeAfterUnequip = await editor.getCurrentCode()
+      expect(getLineCount(codeAfterUnequip)).toBe(2)
+      await expect(pointHandles).toHaveCount(4)
+    })
+
+    const codeBeforeFirstPointClickEdit = await editor.getCurrentCode()
+
+    await test.step('Add a third line and assert code plus scene', async () => {
+      const codeAfterFirstPointClickEdit = await addCommittedLine(
+        [0.63, 0.24],
+        [0.69, 0.63],
+        { shouldUnequip: true }
+      )
+
+      expect(normaliseCode(codeAfterFirstPointClickEdit)).not.toBe(
+        normaliseCode(codeBeforeFirstPointClickEdit)
+      )
+      expect(getLineCount(codeAfterFirstPointClickEdit)).toBe(3)
+      await expect(pointHandles).toHaveCount(6)
+    })
+
+    const codeAfterFirstPointClickEdit = await editor.getCurrentCode()
+
+    await test.step('Directly remove line2 in the editor and wait for execution', async () => {
+      const lineToRemove = codeAfterFirstPointClickEdit
+        .split('\n')
+        .find(
+          (line) =>
+            line.includes('line(') &&
+            !line.includes('line1 = line(') &&
+            line.trim() !== '}'
+        )
+      expect(lineToRemove).toBeDefined()
+      if (!lineToRemove) {
+        throw new Error('Expected added line to exist before direct edit')
+      }
+
+      await editor.replaceCodeByTyping(`${lineToRemove}\n`, '')
+      await expect(pointHandles).toHaveCount(4)
 
       const codeAfterDirectEdit = await editor.getCurrentCode()
+      expect(getLineCount(codeAfterDirectEdit)).toBe(2)
+      expect(normaliseCode(codeAfterDirectEdit)).not.toBe(
+        normaliseCode(codeAfterFirstPointClickEdit)
+      )
+      await expect(pointHandles).toHaveCount(4)
+    })
 
-      await test.step('Make one more point-click edit and assert code plus scene', async () => {
-        const codeAfterSecondPointClickEdit = await addCommittedLine(
-          [0.33, 0.64],
-          [0.4, 0.28],
-          { shouldUnequip: false }
-        )
+    const codeAfterDirectEdit = await editor.getCurrentCode()
 
-        expect(normaliseCode(codeAfterSecondPointClickEdit)).not.toBe(
-          normaliseCode(codeAfterDirectEdit)
-        )
-        expect(getLineCount(codeAfterSecondPointClickEdit)).toBe(3)
-        await expect(pointHandles).toHaveCount(6)
-      })
+    await test.step('Make one more point-click edit and assert code plus scene', async () => {
+      const codeAfterSecondPointClickEdit = await addCommittedLine(
+        [0.33, 0.64],
+        [0.4, 0.28],
+        { shouldUnequip: false }
+      )
 
-      const codeAfterSecondPointClickEdit = await editor.getCurrentCode()
+      expect(normaliseCode(codeAfterSecondPointClickEdit)).not.toBe(
+        normaliseCode(codeAfterDirectEdit)
+      )
+      expect(getLineCount(codeAfterSecondPointClickEdit)).toBe(3)
+      await expect(pointHandles).toHaveCount(6)
+    })
 
-      await test.step('Undo the last point-click edit, the direct edit, and the first point-click edit', async () => {
-        await pressUndo()
-        const codeAfterUndo1 = await waitForCodeChange(
-          page,
-          codeAfterSecondPointClickEdit
-        )
-        expect(normaliseCode(codeAfterUndo1)).toBe(
-          normaliseCode(codeAfterDirectEdit)
-        )
-        expect(getLineCount(codeAfterUndo1)).toBe(2)
-        await expect(pointHandles).toHaveCount(4)
+    const codeAfterSecondPointClickEdit = await editor.getCurrentCode()
 
-        await pressUndo()
-        const codeAfterUndo2 = await waitForCodeChange(page, codeAfterUndo1)
-        expect(normaliseCode(codeAfterUndo2)).toBe(
-          normaliseCode(codeAfterFirstPointClickEdit)
-        )
-        expect(getLineCount(codeAfterUndo2)).toBe(3)
-        await expect(pointHandles).toHaveCount(6)
+    await test.step('Undo the last point-click edit, the direct edit, and the first point-click edit', async () => {
+      await pressUndo()
+      const codeAfterUndo1 = await waitForCodeChange(
+        page,
+        codeAfterSecondPointClickEdit
+      )
+      expect(normaliseCode(codeAfterUndo1)).toBe(
+        normaliseCode(codeAfterDirectEdit)
+      )
+      expect(getLineCount(codeAfterUndo1)).toBe(2)
+      await expect(pointHandles).toHaveCount(4)
 
-        await pressUndo()
-        const codeAfterUndo3 = await waitForCodeChange(page, codeAfterUndo2)
-        expect(normaliseCode(codeAfterUndo3)).toBe(
-          normaliseCode(codeBeforeFirstPointClickEdit)
-        )
-        expect(normaliseCode(codeAfterUndo3)).not.toBe(
-          normaliseCode(initialCode)
-        )
-        expect(getLineCount(codeAfterUndo3)).toBe(2)
-        await expect(pointHandles).toHaveCount(4)
+      await pressUndo()
+      const codeAfterUndo2 = await waitForCodeChange(page, codeAfterUndo1)
+      expect(normaliseCode(codeAfterUndo2)).toBe(
+        normaliseCode(codeAfterFirstPointClickEdit)
+      )
+      expect(getLineCount(codeAfterUndo2)).toBe(3)
+      await expect(pointHandles).toHaveCount(6)
 
-        await pressRedo()
-        const codeAfterRedo1 = await waitForCodeChange(page, codeAfterUndo3)
-        expect(normaliseCode(codeAfterRedo1)).toBe(
-          normaliseCode(codeAfterFirstPointClickEdit)
-        )
-        expect(getLineCount(codeAfterRedo1)).toBe(3)
-        await expect(pointHandles).toHaveCount(6)
+      await pressUndo()
+      const codeAfterUndo3 = await waitForCodeChange(page, codeAfterUndo2)
+      expect(normaliseCode(codeAfterUndo3)).toBe(
+        normaliseCode(codeBeforeFirstPointClickEdit)
+      )
+      expect(normaliseCode(codeAfterUndo3)).not.toBe(normaliseCode(initialCode))
+      expect(getLineCount(codeAfterUndo3)).toBe(2)
+      await expect(pointHandles).toHaveCount(4)
 
-        await pressRedo()
-        const codeAfterRedo2 = await waitForCodeChange(page, codeAfterRedo1)
-        expect(normaliseCode(codeAfterRedo2)).toBe(
-          normaliseCode(codeAfterDirectEdit)
-        )
-        expect(getLineCount(codeAfterRedo2)).toBe(2)
-        await expect(pointHandles).toHaveCount(4)
+      await pressRedo()
+      const codeAfterRedo1 = await waitForCodeChange(page, codeAfterUndo3)
+      expect(normaliseCode(codeAfterRedo1)).toBe(
+        normaliseCode(codeAfterFirstPointClickEdit)
+      )
+      expect(getLineCount(codeAfterRedo1)).toBe(3)
+      await expect(pointHandles).toHaveCount(6)
 
-        await pressRedo()
-        const codeAfterRedo3 = await waitForCodeChange(page, codeAfterRedo2)
-        expect(normaliseCode(codeAfterRedo3)).toBe(
-          normaliseCode(codeAfterSecondPointClickEdit)
-        )
-        expect(getLineCount(codeAfterRedo3)).toBe(3)
-        await expect
-          .poll(async () => [6, 8].includes(await pointHandles.count()))
-          .toBe(true)
-      })
-    }
-  )
+      await pressRedo()
+      const codeAfterRedo2 = await waitForCodeChange(page, codeAfterRedo1)
+      expect(normaliseCode(codeAfterRedo2)).toBe(
+        normaliseCode(codeAfterDirectEdit)
+      )
+      expect(getLineCount(codeAfterRedo2)).toBe(2)
+      await expect(pointHandles).toHaveCount(4)
+
+      await pressRedo()
+      const codeAfterRedo3 = await waitForCodeChange(page, codeAfterRedo2)
+      expect(normaliseCode(codeAfterRedo3)).toBe(
+        normaliseCode(codeAfterSecondPointClickEdit)
+      )
+      expect(getLineCount(codeAfterRedo3)).toBe(3)
+      await expect
+        .poll(async () => [6, 8].includes(await pointHandles.count()))
+        .toBe(true)
+    })
+  })
 
   test(
     'treats fresh direct editor sketch executions as derived source updates',
@@ -1237,440 +1242,440 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     }
   )
 
-  test(
-    'undoing center arcs removes one arc at a time in sketch solve mode',
-    { tag: '@localRenderer' },
-    async ({ page, context, homePage, scene, cmdBar, editor, toolbar }) => {
-      const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
-      const INITIAL_CODE = ''
+  test('undoing center arcs removes one arc at a time in sketch solve mode', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+    toolbar,
+  }) => {
+    const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
+    const INITIAL_CODE = ''
 
-      await test.step('Set up app with sketch solve mode enabled', async () => {
-        await context.addInitScript(
-          async ({ code }) => {
-            localStorage.setItem('persistCode', code)
-          },
-          {
-            code: INITIAL_CODE,
-          }
-        )
-
-        await page.setBodyDimensions({ width: 1200, height: 500 })
-        await homePage.goToModelingScene()
-        await scene.settled()
-      })
-
-      await test.step('Start a new sketch and equip center arc', async () => {
-        await toolbar.startSketchOnDefaultPlane('Top plane')
-
-        await page.getByRole('button', { name: 'caret down arcs:' }).click()
-        await expect(page.getByTestId('dropdown-center-arc')).toBeVisible()
-        await page.getByTestId('dropdown-center-arc').click()
-      })
-
-      const addCenterArc = async ({
-        center,
-        start,
-        end,
-        previousCode,
-      }: {
-        center: [number, number]
-        start: [number, number]
-        end: [number, number]
-        previousCode: string
-      }) => {
-        const [clickCenter] = scene.makeMouseHelpers(center[0], center[1], {
-          format: 'ratio',
-        })
-        const [clickStart] = scene.makeMouseHelpers(start[0], start[1], {
-          format: 'ratio',
-        })
-        const [clickEnd] = scene.makeMouseHelpers(end[0], end[1], {
-          format: 'ratio',
-        })
-
-        await clickCenter()
-        await clickStart()
-        let nextCode = await waitForCodeChange(page, previousCode)
-        await clickEnd()
-        nextCode = await waitForCodeChange(page, nextCode)
-        return nextCode
-      }
-
-      const pressUndo = async () => {
-        await page.keyboard.down('Control')
-        await page.keyboard.press('KeyZ')
-        await page.keyboard.up('Control')
-      }
-
-      const getCodeCounts = (code: string) => ({
-        arcs: (code.match(/arc\(/g) ?? []).length,
-        circles: (code.match(/circle\(/g) ?? []).length,
-        lines: (code.match(/line\(/g) ?? []).length,
-        coincidents: (code.match(/coincident\(/g) ?? []).length,
-        tangents: (code.match(/tangent\(/g) ?? []).length,
-      })
-
-      let previousCode = await editor.getCurrentCode()
-      const codeAfterSketchStart = previousCode
-
-      await test.step('Add three center arcs and undo three times', async () => {
-        previousCode = await addCenterArc({
-          center: [0.25, 0.4],
-          start: [0.35, 0.4],
-          end: [0.31, 0.48],
-          previousCode,
-        })
-        const codeAfterArc1 = previousCode
-        expect((codeAfterArc1.match(/arc\(/g) ?? []).length).toBe(1)
-        await expect(pointHandles).toHaveCount(3)
-
-        previousCode = await addCenterArc({
-          center: [0.55, 0.35],
-          start: [0.65, 0.35],
-          end: [0.62, 0.43],
-          previousCode,
-        })
-        const codeAfterArc2 = previousCode
-        expect((codeAfterArc2.match(/arc\(/g) ?? []).length).toBe(2)
-        await expect(pointHandles).toHaveCount(6)
-
-        previousCode = await addCenterArc({
-          center: [0.45, 0.65],
-          start: [0.55, 0.65],
-          end: [0.52, 0.74],
-          previousCode,
-        })
-        const codeAfterArc3 = previousCode
-        expect((codeAfterArc3.match(/arc\(/g) ?? []).length).toBe(3)
-        await expect(pointHandles).toHaveCount(9)
-
-        await pressUndo()
-        await expect(page.locator('.cm-content')).not.toHaveText(codeAfterArc3)
-        const codeAfterUndo1 = await editor.getCurrentCode()
-        expect(normaliseCode(codeAfterUndo1)).toBe(normaliseCode(codeAfterArc2))
-        expect((codeAfterUndo1.match(/arc\(/g) ?? []).length).toBe(2)
-        expect(
-          (codeAfterUndo1.match(/sketch\(on\s*=\s*XY\)\s*\{/g) ?? []).length
-        ).toBe(1)
-        await expect(pointHandles).toHaveCount(6)
-
-        await pressUndo()
-        await expect(page.locator('.cm-content')).not.toHaveText(codeAfterUndo1)
-        const codeAfterUndo2 = await editor.getCurrentCode()
-        expect(normaliseCode(codeAfterUndo2)).toBe(normaliseCode(codeAfterArc1))
-        expect((codeAfterUndo2.match(/arc\(/g) ?? []).length).toBe(1)
-        expect(
-          (codeAfterUndo2.match(/sketch\(on\s*=\s*XY\)\s*\{/g) ?? []).length
-        ).toBe(1)
-        await expect(pointHandles).toHaveCount(3)
-
-        await pressUndo()
-        await expect(page.locator('.cm-content')).not.toHaveText(codeAfterUndo2)
-        const codeAfterUndo3 = await editor.getCurrentCode()
-        expect(normaliseCode(codeAfterUndo3)).toBe(
-          normaliseCode(codeAfterSketchStart)
-        )
-        expect((codeAfterUndo3.match(/arc\(/g) ?? []).length).toBe(0)
-        expect(
-          (codeAfterUndo3.match(/sketch\(on\s*=\s*XY\)\s*\{/g) ?? []).length
-        ).toBe(1)
-        await expect(pointHandles).toHaveCount(0)
-
-        previousCode = await addCenterArc({
-          center: [0.25, 0.4],
-          start: [0.35, 0.4],
-          end: [0.31, 0.48],
-          previousCode: codeAfterUndo3,
-        })
-        const codeAfterAddingNewArcPostUndo = previousCode
-        expect(normaliseCode(codeAfterAddingNewArcPostUndo)).toBe(
-          normaliseCode(codeAfterArc1)
-        )
-        expect(
-          (codeAfterAddingNewArcPostUndo.match(/arc\(/g) ?? []).length
-        ).toBe(1)
-        expect(
-          (
-            codeAfterAddingNewArcPostUndo.match(
-              /sketch\(on\s*=\s*XY\)\s*\{/g
-            ) ?? []
-          ).length
-        ).toBe(1)
-
-        await toolbar.lineBtn.click()
-        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
-
-        const [line1Start] = scene.makeMouseHelpers(0.62, 0.3, {
-          format: 'ratio',
-        })
-        const [line1End] = scene.makeMouseHelpers(0.72, 0.3, {
-          format: 'ratio',
-        })
-        const [line2End] = scene.makeMouseHelpers(0.72, 0.42, {
-          format: 'ratio',
-        })
-        const [line3End] = scene.makeMouseHelpers(0.62, 0.42, {
-          format: 'ratio',
-        })
-
-        await line1Start()
-        previousCode = await waitForCodeChange(
-          page,
-          codeAfterAddingNewArcPostUndo
-        )
-
-        await line1End()
-        previousCode = await waitForCodeChange(page, previousCode)
-        let counts = getCodeCounts(previousCode)
-        expect(counts.arcs).toBe(1)
-        expect(counts.lines).toBe(1)
-        expect(counts.coincidents).toBe(0)
-        await expect(pointHandles).toHaveCount(5)
-
-        await line2End()
-        previousCode = await waitForCodeChange(page, previousCode)
-        counts = getCodeCounts(previousCode)
-        expect(counts.lines).toBe(2)
-        expect(counts.coincidents).toBe(1)
-        await expect(pointHandles).toHaveCount(7)
-
-        await line3End()
-        previousCode = await waitForCodeChange(page, previousCode)
-        const codeAfterThreeLines = previousCode
-        counts = getCodeCounts(codeAfterThreeLines)
-        expect(counts.lines).toBe(3)
-        expect(counts.coincidents).toBe(2)
-        await expect(pointHandles).toHaveCount(9)
-
-        await toolbar.lineBtn.click()
-        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
-
-        const codeAfterUnequipLineTool = await editor.getCurrentCode()
-        counts = getCodeCounts(codeAfterUnequipLineTool)
-        expect(counts.lines).toBe(3)
-        expect(counts.coincidents).toBe(2)
-
-        const pointHandleCountBeforeLineUndo = await pointHandles.count()
-
-        await pressUndo()
-        const codeAfterLineUndo = await editor.getCurrentCode()
-        counts = getCodeCounts(codeAfterLineUndo)
-        expect(counts.arcs).toBe(1)
-        expect(counts.lines).toBe(2)
-        expect(counts.coincidents).toBe(1)
-        await expect(pointHandles).toHaveCount(
-          pointHandleCountBeforeLineUndo - 2
-        )
-
-        await pressUndo()
-        const codeAfterSecondLineUndo = await editor.getCurrentCode()
-        counts = getCodeCounts(codeAfterSecondLineUndo)
-        expect(counts.arcs).toBe(1)
-        expect(counts.lines).toBe(1)
-        expect(counts.coincidents).toBe(0)
-        await expect(pointHandles).toHaveCount(
-          pointHandleCountBeforeLineUndo - 4
-        )
-
-        await toolbar.lineBtn.click()
-        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
-
-        const [newLineStart] = scene.makeMouseHelpers(0.72, 0.3, {
-          format: 'ratio',
-        })
-        const [newLineEnd] = scene.makeMouseHelpers(0.8, 0.38, {
-          format: 'ratio',
-        })
-
-        await newLineStart()
-        previousCode = await waitForCodeChange(page, codeAfterSecondLineUndo)
-
-        await newLineEnd()
-        previousCode = await waitForCodeChange(page, previousCode)
-
-        await toolbar.lineBtn.click()
-        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
-
-        const codeAfterAddingLinePostUndo = await editor.getCurrentCode()
-        counts = getCodeCounts(codeAfterAddingLinePostUndo)
-        expect(counts.arcs).toBe(1)
-        expect(counts.lines).toBe(2)
-        expect(counts.coincidents).toBe(1)
-        expect(
-          (
-            codeAfterAddingLinePostUndo.match(/sketch\(on\s*=\s*XY\)\s*\{/g) ??
-            []
-          ).length
-        ).toBe(1)
-        await expect(pointHandles).toHaveCount(
-          pointHandleCountBeforeLineUndo - 2
-        )
-
-        const codeBeforePointDrag = await editor.getCurrentCode()
-        const pointDragCountsBefore = getCodeCounts(codeBeforePointDrag)
-        const pointHandleCountBeforePointDrag = await pointHandles.count()
-        const firstPointHandleBox = await pointHandles.first().boundingBox()
-        expect(firstPointHandleBox).not.toBeNull()
-        if (!firstPointHandleBox) {
-          throw new Error('Expected first point handle to have a bounding box')
+    await test.step('Set up app with sketch solve mode enabled', async () => {
+      await context.addInitScript(
+        async ({ code }) => {
+          localStorage.setItem('persistCode', code)
+        },
+        {
+          code: INITIAL_CODE,
         }
+      )
 
-        const firstPointHandleX =
-          firstPointHandleBox.x + firstPointHandleBox.width / 2
-        const firstPointHandleY =
-          firstPointHandleBox.y + firstPointHandleBox.height / 2
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+    })
 
-        await page.mouse.move(firstPointHandleX, firstPointHandleY)
-        await page.mouse.down()
-        await page.mouse.move(firstPointHandleX + 40, firstPointHandleY + 30, {
-          steps: 5,
-        })
-        await page.mouse.up()
-        await page.waitForTimeout(300)
+    await test.step('Start a new sketch and equip center arc', async () => {
+      await toolbar.startSketchOnDefaultPlane('Top plane')
 
-        const codeAfterPointDrag = await waitForCodeChange(
-          page,
-          codeBeforePointDrag
-        )
-        counts = getCodeCounts(codeAfterPointDrag)
-        expect(normaliseCode(codeAfterPointDrag)).not.toBe(
-          normaliseCode(codeBeforePointDrag)
-        )
-        expect(counts).toEqual(pointDragCountsBefore)
-        await expect(pointHandles).toHaveCount(pointHandleCountBeforePointDrag)
+      await page.getByRole('button', { name: 'caret down arcs:' }).click()
+      await expect(page.getByTestId('dropdown-center-arc')).toBeVisible()
+      await page.getByTestId('dropdown-center-arc').click()
+    })
 
-        await pressUndo()
-        const codeAfterPointDragUndo = await editor.getCurrentCode()
-        expect(normaliseCode(codeAfterPointDragUndo)).toBe(
-          normaliseCode(codeBeforePointDrag)
-        )
-        await expect(pointHandles).toHaveCount(pointHandleCountBeforePointDrag)
-
-        const circleCodeBefore = await editor.getCurrentCode()
-        const circleCountsBefore = getCodeCounts(circleCodeBefore)
-        const circlePointHandlesBefore = await pointHandles.count()
-
-        await toolbar.circleBtn.click()
-        await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
-
-        const [circleCenterClick] = scene.makeMouseHelpers(0.24, 0.72, {
-          format: 'ratio',
-        })
-        const [circleRadiusClick] = scene.makeMouseHelpers(0.31, 0.8, {
-          format: 'ratio',
-        })
-
-        await circleCenterClick()
-        previousCode = await waitForCodeChange(page, circleCodeBefore)
-        await circleRadiusClick()
-        const circleCodeAfter = await waitForCodeChange(page, previousCode)
-        counts = getCodeCounts(circleCodeAfter)
-        expect(counts.circles).toBe(circleCountsBefore.circles + 1)
-        expect(await pointHandles.count()).toBeGreaterThan(
-          circlePointHandlesBefore
-        )
-
-        await pressUndo()
-        const circleCodeAfterUndo = await editor.getCurrentCode()
-        expect(normaliseCode(circleCodeAfterUndo)).toBe(
-          normaliseCode(circleCodeBefore)
-        )
-        const circleHandlesAfterUndo = await pointHandles.count()
-        expect(circleHandlesAfterUndo).toBeGreaterThanOrEqual(
-          circlePointHandlesBefore - 1
-        )
-        expect(circleHandlesAfterUndo).toBeLessThanOrEqual(
-          circlePointHandlesBefore + 1
-        )
-
-        const tangentialCodeBefore = await editor.getCurrentCode()
-        const tangentialCountsBefore = getCodeCounts(tangentialCodeBefore)
-        const tangentialPointHandlesBefore = await pointHandles.count()
-
-        await toolbar.selectTangentialArc()
-
-        const [tangentialStartClick] = scene.makeMouseHelpers(0.8, 0.38, {
-          format: 'ratio',
-        })
-        const [tangentialEndClick] = scene.makeMouseHelpers(0.88, 0.48, {
-          format: 'ratio',
-        })
-
-        await tangentialStartClick()
-        previousCode = await waitForCodeChange(page, tangentialCodeBefore)
-        await tangentialEndClick()
-        const tangentialCodeAfter = await waitForCodeChange(page, previousCode)
-        counts = getCodeCounts(tangentialCodeAfter)
-        expect(counts.arcs).toBe(tangentialCountsBefore.arcs + 1)
-        expect(counts.coincidents).toBe(tangentialCountsBefore.coincidents + 1)
-        expect(counts.tangents).toBe(tangentialCountsBefore.tangents + 1)
-        expect(await pointHandles.count()).toBeGreaterThan(
-          tangentialPointHandlesBefore
-        )
-
-        await pressUndo()
-        const tangentialCodeAfterUndo = await editor.getCurrentCode()
-        expect(normaliseCode(tangentialCodeAfterUndo)).toBe(
-          normaliseCode(tangentialCodeBefore)
-        )
-        const tangentialHandlesAfterUndo = await pointHandles.count()
-        expect(tangentialHandlesAfterUndo).toBeGreaterThanOrEqual(
-          tangentialPointHandlesBefore - 1
-        )
-        expect(tangentialHandlesAfterUndo).toBeLessThanOrEqual(
-          tangentialPointHandlesBefore + 1
-        )
-
-        const threePointCodeBefore = await editor.getCurrentCode()
-        const threePointCountsBefore = getCodeCounts(threePointCodeBefore)
-        const threePointHandlesBefore = await pointHandles.count()
-
-        await toolbar.selectThreePointArc()
-
-        const [threePointStartClick] = scene.makeMouseHelpers(0.34, 0.58, {
-          format: 'ratio',
-        })
-        const [threePointThroughClick] = scene.makeMouseHelpers(0.42, 0.48, {
-          format: 'ratio',
-        })
-        const [threePointEndClick] = scene.makeMouseHelpers(0.5, 0.58, {
-          format: 'ratio',
-        })
-
-        await threePointStartClick()
-        previousCode = await waitForCodeChange(page, threePointCodeBefore)
-        await threePointThroughClick()
-        previousCode = await waitForCodeChange(page, previousCode)
-        await threePointEndClick()
-        const threePointCodeAfter = await waitForCodeChange(page, previousCode)
-        counts = getCodeCounts(threePointCodeAfter)
-        expect(counts.arcs).toBe(threePointCountsBefore.arcs + 1)
-        expect(counts.coincidents).toBe(threePointCountsBefore.coincidents)
-        expect(await pointHandles.count()).toBeGreaterThan(
-          threePointHandlesBefore
-        )
-
-        await pressUndo()
-        const threePointCodeAfterUndo = await editor.getCurrentCode()
-        expect(normaliseCode(threePointCodeAfterUndo)).toBe(
-          normaliseCode(threePointCodeBefore)
-        )
-        const threePointHandlesAfterUndo = await pointHandles.count()
-        expect(threePointHandlesAfterUndo).toBeGreaterThanOrEqual(
-          threePointHandlesBefore - 1
-        )
-        expect(threePointHandlesAfterUndo).toBeLessThanOrEqual(
-          threePointHandlesBefore + 1
-        )
+    const addCenterArc = async ({
+      center,
+      start,
+      end,
+      previousCode,
+    }: {
+      center: [number, number]
+      start: [number, number]
+      end: [number, number]
+      previousCode: string
+    }) => {
+      const [clickCenter] = scene.makeMouseHelpers(center[0], center[1], {
+        format: 'ratio',
       })
-    }
-  )
+      const [clickStart] = scene.makeMouseHelpers(start[0], start[1], {
+        format: 'ratio',
+      })
+      const [clickEnd] = scene.makeMouseHelpers(end[0], end[1], {
+        format: 'ratio',
+      })
 
-  test(
-    'constraints can be added and undone one at a time in sketch solve mode',
-    { tag: '@localRenderer' },
-    async ({ page, context, homePage, scene, cmdBar, editor, toolbar }) => {
-      const CONSTRAINT_TEST_CODE = `sketch001 = sketch(on = XY) {
+      await clickCenter()
+      await clickStart()
+      let nextCode = await waitForCodeChange(page, previousCode)
+      await clickEnd()
+      nextCode = await waitForCodeChange(page, nextCode)
+      return nextCode
+    }
+
+    const pressUndo = async () => {
+      await page.keyboard.down('Control')
+      await page.keyboard.press('KeyZ')
+      await page.keyboard.up('Control')
+    }
+
+    const getCodeCounts = (code: string) => ({
+      arcs: (code.match(/arc\(/g) ?? []).length,
+      circles: (code.match(/circle\(/g) ?? []).length,
+      lines: (code.match(/line\(/g) ?? []).length,
+      coincidents: (code.match(/coincident\(/g) ?? []).length,
+      tangents: (code.match(/tangent\(/g) ?? []).length,
+    })
+
+    let previousCode = await editor.getCurrentCode()
+    const codeAfterSketchStart = previousCode
+
+    await test.step('Add three center arcs and undo three times', async () => {
+      previousCode = await addCenterArc({
+        center: [0.25, 0.4],
+        start: [0.35, 0.4],
+        end: [0.31, 0.48],
+        previousCode,
+      })
+      const codeAfterArc1 = previousCode
+      expect((codeAfterArc1.match(/arc\(/g) ?? []).length).toBe(1)
+      await expect(pointHandles).toHaveCount(3)
+
+      previousCode = await addCenterArc({
+        center: [0.55, 0.35],
+        start: [0.65, 0.35],
+        end: [0.62, 0.43],
+        previousCode,
+      })
+      const codeAfterArc2 = previousCode
+      expect((codeAfterArc2.match(/arc\(/g) ?? []).length).toBe(2)
+      await expect(pointHandles).toHaveCount(6)
+
+      previousCode = await addCenterArc({
+        center: [0.45, 0.65],
+        start: [0.55, 0.65],
+        end: [0.52, 0.74],
+        previousCode,
+      })
+      const codeAfterArc3 = previousCode
+      expect((codeAfterArc3.match(/arc\(/g) ?? []).length).toBe(3)
+      await expect(pointHandles).toHaveCount(9)
+
+      await pressUndo()
+      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterArc3)
+      const codeAfterUndo1 = await editor.getCurrentCode()
+      expect(normaliseCode(codeAfterUndo1)).toBe(normaliseCode(codeAfterArc2))
+      expect((codeAfterUndo1.match(/arc\(/g) ?? []).length).toBe(2)
+      expect(
+        (codeAfterUndo1.match(/sketch\(on\s*=\s*XY\)\s*\{/g) ?? []).length
+      ).toBe(1)
+      await expect(pointHandles).toHaveCount(6)
+
+      await pressUndo()
+      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterUndo1)
+      const codeAfterUndo2 = await editor.getCurrentCode()
+      expect(normaliseCode(codeAfterUndo2)).toBe(normaliseCode(codeAfterArc1))
+      expect((codeAfterUndo2.match(/arc\(/g) ?? []).length).toBe(1)
+      expect(
+        (codeAfterUndo2.match(/sketch\(on\s*=\s*XY\)\s*\{/g) ?? []).length
+      ).toBe(1)
+      await expect(pointHandles).toHaveCount(3)
+
+      await pressUndo()
+      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterUndo2)
+      const codeAfterUndo3 = await editor.getCurrentCode()
+      expect(normaliseCode(codeAfterUndo3)).toBe(
+        normaliseCode(codeAfterSketchStart)
+      )
+      expect((codeAfterUndo3.match(/arc\(/g) ?? []).length).toBe(0)
+      expect(
+        (codeAfterUndo3.match(/sketch\(on\s*=\s*XY\)\s*\{/g) ?? []).length
+      ).toBe(1)
+      await expect(pointHandles).toHaveCount(0)
+
+      previousCode = await addCenterArc({
+        center: [0.25, 0.4],
+        start: [0.35, 0.4],
+        end: [0.31, 0.48],
+        previousCode: codeAfterUndo3,
+      })
+      const codeAfterAddingNewArcPostUndo = previousCode
+      expect(normaliseCode(codeAfterAddingNewArcPostUndo)).toBe(
+        normaliseCode(codeAfterArc1)
+      )
+      expect((codeAfterAddingNewArcPostUndo.match(/arc\(/g) ?? []).length).toBe(
+        1
+      )
+      expect(
+        (
+          codeAfterAddingNewArcPostUndo.match(/sketch\(on\s*=\s*XY\)\s*\{/g) ??
+          []
+        ).length
+      ).toBe(1)
+
+      await toolbar.lineBtn.click()
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
+
+      const [line1Start] = scene.makeMouseHelpers(0.62, 0.3, {
+        format: 'ratio',
+      })
+      const [line1End] = scene.makeMouseHelpers(0.72, 0.3, {
+        format: 'ratio',
+      })
+      const [line2End] = scene.makeMouseHelpers(0.72, 0.42, {
+        format: 'ratio',
+      })
+      const [line3End] = scene.makeMouseHelpers(0.62, 0.42, {
+        format: 'ratio',
+      })
+
+      await line1Start()
+      previousCode = await waitForCodeChange(
+        page,
+        codeAfterAddingNewArcPostUndo
+      )
+
+      await line1End()
+      previousCode = await waitForCodeChange(page, previousCode)
+      let counts = getCodeCounts(previousCode)
+      expect(counts.arcs).toBe(1)
+      expect(counts.lines).toBe(1)
+      expect(counts.coincidents).toBe(0)
+      await expect(pointHandles).toHaveCount(5)
+
+      await line2End()
+      previousCode = await waitForCodeChange(page, previousCode)
+      counts = getCodeCounts(previousCode)
+      expect(counts.lines).toBe(2)
+      expect(counts.coincidents).toBe(1)
+      await expect(pointHandles).toHaveCount(7)
+
+      await line3End()
+      previousCode = await waitForCodeChange(page, previousCode)
+      const codeAfterThreeLines = previousCode
+      counts = getCodeCounts(codeAfterThreeLines)
+      expect(counts.lines).toBe(3)
+      expect(counts.coincidents).toBe(2)
+      await expect(pointHandles).toHaveCount(9)
+
+      await toolbar.lineBtn.click()
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
+
+      const codeAfterUnequipLineTool = await editor.getCurrentCode()
+      counts = getCodeCounts(codeAfterUnequipLineTool)
+      expect(counts.lines).toBe(3)
+      expect(counts.coincidents).toBe(2)
+
+      const pointHandleCountBeforeLineUndo = await pointHandles.count()
+
+      await pressUndo()
+      const codeAfterLineUndo = await editor.getCurrentCode()
+      counts = getCodeCounts(codeAfterLineUndo)
+      expect(counts.arcs).toBe(1)
+      expect(counts.lines).toBe(2)
+      expect(counts.coincidents).toBe(1)
+      await expect(pointHandles).toHaveCount(pointHandleCountBeforeLineUndo - 2)
+
+      await pressUndo()
+      const codeAfterSecondLineUndo = await editor.getCurrentCode()
+      counts = getCodeCounts(codeAfterSecondLineUndo)
+      expect(counts.arcs).toBe(1)
+      expect(counts.lines).toBe(1)
+      expect(counts.coincidents).toBe(0)
+      await expect(pointHandles).toHaveCount(pointHandleCountBeforeLineUndo - 4)
+
+      await toolbar.lineBtn.click()
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
+
+      const [newLineStart] = scene.makeMouseHelpers(0.72, 0.3, {
+        format: 'ratio',
+      })
+      const [newLineEnd] = scene.makeMouseHelpers(0.8, 0.38, {
+        format: 'ratio',
+      })
+
+      await newLineStart()
+      previousCode = await waitForCodeChange(page, codeAfterSecondLineUndo)
+
+      await newLineEnd()
+      previousCode = await waitForCodeChange(page, previousCode)
+
+      await toolbar.lineBtn.click()
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
+
+      const codeAfterAddingLinePostUndo = await editor.getCurrentCode()
+      counts = getCodeCounts(codeAfterAddingLinePostUndo)
+      expect(counts.arcs).toBe(1)
+      expect(counts.lines).toBe(2)
+      expect(counts.coincidents).toBe(1)
+      expect(
+        (codeAfterAddingLinePostUndo.match(/sketch\(on\s*=\s*XY\)\s*\{/g) ?? [])
+          .length
+      ).toBe(1)
+      await expect(pointHandles).toHaveCount(pointHandleCountBeforeLineUndo - 2)
+
+      const codeBeforePointDrag = await editor.getCurrentCode()
+      const pointDragCountsBefore = getCodeCounts(codeBeforePointDrag)
+      const pointHandleCountBeforePointDrag = await pointHandles.count()
+      const firstPointHandleBox = await pointHandles.first().boundingBox()
+      expect(firstPointHandleBox).not.toBeNull()
+      if (!firstPointHandleBox) {
+        throw new Error('Expected first point handle to have a bounding box')
+      }
+
+      const firstPointHandleX =
+        firstPointHandleBox.x + firstPointHandleBox.width / 2
+      const firstPointHandleY =
+        firstPointHandleBox.y + firstPointHandleBox.height / 2
+
+      await page.mouse.move(firstPointHandleX, firstPointHandleY)
+      await page.mouse.down()
+      await page.mouse.move(firstPointHandleX + 40, firstPointHandleY + 30, {
+        steps: 5,
+      })
+      await page.mouse.up()
+      await page.waitForTimeout(300)
+
+      const codeAfterPointDrag = await waitForCodeChange(
+        page,
+        codeBeforePointDrag
+      )
+      counts = getCodeCounts(codeAfterPointDrag)
+      expect(normaliseCode(codeAfterPointDrag)).not.toBe(
+        normaliseCode(codeBeforePointDrag)
+      )
+      expect(counts).toEqual(pointDragCountsBefore)
+      await expect(pointHandles).toHaveCount(pointHandleCountBeforePointDrag)
+
+      await pressUndo()
+      const codeAfterPointDragUndo = await editor.getCurrentCode()
+      expect(normaliseCode(codeAfterPointDragUndo)).toBe(
+        normaliseCode(codeBeforePointDrag)
+      )
+      await expect(pointHandles).toHaveCount(pointHandleCountBeforePointDrag)
+
+      const circleCodeBefore = await editor.getCurrentCode()
+      const circleCountsBefore = getCodeCounts(circleCodeBefore)
+      const circlePointHandlesBefore = await pointHandles.count()
+
+      await toolbar.circleBtn.click()
+      await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
+
+      const [circleCenterClick] = scene.makeMouseHelpers(0.24, 0.72, {
+        format: 'ratio',
+      })
+      const [circleRadiusClick] = scene.makeMouseHelpers(0.31, 0.8, {
+        format: 'ratio',
+      })
+
+      await circleCenterClick()
+      previousCode = await waitForCodeChange(page, circleCodeBefore)
+      await circleRadiusClick()
+      const circleCodeAfter = await waitForCodeChange(page, previousCode)
+      counts = getCodeCounts(circleCodeAfter)
+      expect(counts.circles).toBe(circleCountsBefore.circles + 1)
+      expect(await pointHandles.count()).toBeGreaterThan(
+        circlePointHandlesBefore
+      )
+
+      await pressUndo()
+      const circleCodeAfterUndo = await editor.getCurrentCode()
+      expect(normaliseCode(circleCodeAfterUndo)).toBe(
+        normaliseCode(circleCodeBefore)
+      )
+      const circleHandlesAfterUndo = await pointHandles.count()
+      expect(circleHandlesAfterUndo).toBeGreaterThanOrEqual(
+        circlePointHandlesBefore - 1
+      )
+      expect(circleHandlesAfterUndo).toBeLessThanOrEqual(
+        circlePointHandlesBefore + 1
+      )
+
+      const tangentialCodeBefore = await editor.getCurrentCode()
+      const tangentialCountsBefore = getCodeCounts(tangentialCodeBefore)
+      const tangentialPointHandlesBefore = await pointHandles.count()
+
+      await toolbar.selectTangentialArc()
+
+      const [tangentialStartClick] = scene.makeMouseHelpers(0.8, 0.38, {
+        format: 'ratio',
+      })
+      const [tangentialEndClick] = scene.makeMouseHelpers(0.88, 0.48, {
+        format: 'ratio',
+      })
+
+      await tangentialStartClick()
+      previousCode = await waitForCodeChange(page, tangentialCodeBefore)
+      await tangentialEndClick()
+      const tangentialCodeAfter = await waitForCodeChange(page, previousCode)
+      counts = getCodeCounts(tangentialCodeAfter)
+      expect(counts.arcs).toBe(tangentialCountsBefore.arcs + 1)
+      expect(counts.coincidents).toBe(tangentialCountsBefore.coincidents + 1)
+      expect(counts.tangents).toBe(tangentialCountsBefore.tangents + 1)
+      expect(await pointHandles.count()).toBeGreaterThan(
+        tangentialPointHandlesBefore
+      )
+
+      await pressUndo()
+      const tangentialCodeAfterUndo = await editor.getCurrentCode()
+      expect(normaliseCode(tangentialCodeAfterUndo)).toBe(
+        normaliseCode(tangentialCodeBefore)
+      )
+      const tangentialHandlesAfterUndo = await pointHandles.count()
+      expect(tangentialHandlesAfterUndo).toBeGreaterThanOrEqual(
+        tangentialPointHandlesBefore - 1
+      )
+      expect(tangentialHandlesAfterUndo).toBeLessThanOrEqual(
+        tangentialPointHandlesBefore + 1
+      )
+
+      const threePointCodeBefore = await editor.getCurrentCode()
+      const threePointCountsBefore = getCodeCounts(threePointCodeBefore)
+      const threePointHandlesBefore = await pointHandles.count()
+
+      await toolbar.selectThreePointArc()
+
+      const [threePointStartClick] = scene.makeMouseHelpers(0.34, 0.58, {
+        format: 'ratio',
+      })
+      const [threePointThroughClick] = scene.makeMouseHelpers(0.42, 0.48, {
+        format: 'ratio',
+      })
+      const [threePointEndClick] = scene.makeMouseHelpers(0.5, 0.58, {
+        format: 'ratio',
+      })
+
+      await threePointStartClick()
+      previousCode = await waitForCodeChange(page, threePointCodeBefore)
+      await threePointThroughClick()
+      previousCode = await waitForCodeChange(page, previousCode)
+      await threePointEndClick()
+      const threePointCodeAfter = await waitForCodeChange(page, previousCode)
+      counts = getCodeCounts(threePointCodeAfter)
+      expect(counts.arcs).toBe(threePointCountsBefore.arcs + 1)
+      expect(counts.coincidents).toBe(threePointCountsBefore.coincidents)
+      expect(await pointHandles.count()).toBeGreaterThan(
+        threePointHandlesBefore
+      )
+
+      await pressUndo()
+      const threePointCodeAfterUndo = await editor.getCurrentCode()
+      expect(normaliseCode(threePointCodeAfterUndo)).toBe(
+        normaliseCode(threePointCodeBefore)
+      )
+      const threePointHandlesAfterUndo = await pointHandles.count()
+      expect(threePointHandlesAfterUndo).toBeGreaterThanOrEqual(
+        threePointHandlesBefore - 1
+      )
+      expect(threePointHandlesAfterUndo).toBeLessThanOrEqual(
+        threePointHandlesBefore + 1
+      )
+    })
+  })
+
+  test('constraints can be added and undone one at a time in sketch solve mode', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+    toolbar,
+  }) => {
+    const CONSTRAINT_TEST_CODE = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -11.38mm, var 3.66mm], end = [var -11.5mm, var 0.43mm])
   line2 = line(start = [var -10.75mm, var 2.17mm], end = [var -9.21mm, var 2.05mm])
   line3 = line(start = [var -10.86mm, var 0.39mm], end = [var -9.48mm, var 0.39mm])
@@ -1692,296 +1697,300 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 }
 `
 
-      await test.step('Set up app with existing sketch code in sketch solve mode', async () => {
-        await context.addInitScript(
-          async ({ code }) => {
-            localStorage.setItem('persistCode', code)
-          },
-          {
-            code: CONSTRAINT_TEST_CODE,
-          }
-        )
+    await test.step('Set up app with existing sketch code in sketch solve mode', async () => {
+      await context.addInitScript(
+        async ({ code }) => {
+          localStorage.setItem('persistCode', code)
+        },
+        {
+          code: CONSTRAINT_TEST_CODE,
+        }
+      )
 
-        await page.setBodyDimensions({ width: 1400, height: 900 })
-        await homePage.goToModelingScene()
-        await scene.settled()
-        await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
+      await page.setBodyDimensions({ width: 1400, height: 900 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
+    })
+
+    await test.step('Enter sketch edit mode', async () => {
+      await toolbar.openFeatureTreePane()
+      await expect(page.getByText('Building feature tree')).not.toBeVisible({
+        timeout: 10000,
       })
+      const sketchOperation = await toolbar.getFeatureTreeOperation(
+        'sketch001',
+        0
+      )
+      await sketchOperation.dblclick()
+      await page.waitForTimeout(600)
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+    })
 
-      await test.step('Enter sketch edit mode', async () => {
-        await toolbar.openFeatureTreePane()
-        await expect(page.getByText('Building feature tree')).not.toBeVisible({
+    const pressUndo = async () => {
+      await page.keyboard.down('Control')
+      await page.keyboard.press('KeyZ')
+      await page.keyboard.up('Control')
+    }
+
+    const clickMidpoint = async (id1: string, id2: string) => {
+      const midpoint = await getMidpointBetweenSegments(scene, id1, id2)
+      await page.mouse.click(midpoint.x, midpoint.y)
+    }
+
+    const clickPoint = async (segmentId: string) => {
+      await clickSegmentById(page, scene, segmentId)
+    }
+
+    const initialCode = await editor.getCurrentCode()
+    const getHandleIds = async () =>
+      await page
+        .locator('[data-segment_id]')
+        .evaluateAll((els) =>
+          els
+            .map((el) => el.getAttribute('data-segment_id'))
+            .filter((value): value is string => Boolean(value))
+        )
+    const initialHandleIds = await getHandleIds()
+
+    const expectBackToInitialCode = async (changedCode: string) => {
+      await pressUndo()
+      const undoneCode = await waitForCodeChange(page, changedCode)
+      expect(normaliseCode(undoneCode)).toBe(normaliseCode(initialCode))
+      await expect
+        .poll(async () => JSON.stringify(await getHandleIds()), {
           timeout: 10000,
         })
-        const sketchOperation = await toolbar.getFeatureTreeOperation(
-          'sketch001',
-          0
-        )
-        await sketchOperation.dblclick()
-        await page.waitForTimeout(600)
-        await expect(toolbar.exitSketchBtn).toBeEnabled()
-      })
+        .toBe(JSON.stringify(initialHandleIds))
+    }
 
-      const pressUndo = async () => {
-        await page.keyboard.down('Control')
-        await page.keyboard.press('KeyZ')
-        await page.keyboard.up('Control')
-      }
+    const applyConstraintStep = async ({
+      label,
+      select,
+      apply,
+      assertChanged,
+      applyBeforeSelect = false,
+      cleanupAfterStep,
+    }: {
+      label: string
+      select: () => Promise<void>
+      apply: () => Promise<void>
+      assertChanged: (code: string) => void
+      applyBeforeSelect?: boolean
+      cleanupAfterStep?: () => Promise<void>
+    }) => {
+      await test.step(label, async () => {
+        await scene.clickNoWhere()
+        const codeBefore = await editor.getCurrentCode()
+        expect(normaliseCode(codeBefore)).toBe(normaliseCode(initialCode))
 
-      const clickMidpoint = async (id1: string, id2: string) => {
-        const midpoint = await getMidpointBetweenSegments(scene, id1, id2)
-        await page.mouse.click(midpoint.x, midpoint.y)
-      }
+        if (applyBeforeSelect) {
+          await apply()
+          await select()
+        } else {
+          await select()
+          await apply()
+        }
 
-      const clickPoint = async (segmentId: string) => {
-        await clickSegmentById(page, scene, segmentId)
-      }
+        const changedCode = await waitForCodeChange(page, codeBefore)
+        assertChanged(changedCode)
+        await expectNoUnsupportedSelectionToast(page)
 
-      const initialCode = await editor.getCurrentCode()
-      const getHandleIds = async () =>
-        await page
-          .locator('[data-segment_id]')
-          .evaluateAll((els) =>
-            els
-              .map((el) => el.getAttribute('data-segment_id'))
-              .filter((value): value is string => Boolean(value))
-          )
-      const initialHandleIds = await getHandleIds()
-
-      const expectBackToInitialCode = async (changedCode: string) => {
-        await pressUndo()
-        const undoneCode = await waitForCodeChange(page, changedCode)
-        expect(normaliseCode(undoneCode)).toBe(normaliseCode(initialCode))
-        await expect
-          .poll(async () => JSON.stringify(await getHandleIds()), {
-            timeout: 10000,
-          })
-          .toBe(JSON.stringify(initialHandleIds))
-      }
-
-      const applyConstraintStep = async ({
-        label,
-        select,
-        apply,
-        assertChanged,
-        applyBeforeSelect = false,
-        cleanupAfterStep,
-      }: {
-        label: string
-        select: () => Promise<void>
-        apply: () => Promise<void>
-        assertChanged: (code: string) => void
-        applyBeforeSelect?: boolean
-        cleanupAfterStep?: () => Promise<void>
-      }) => {
-        await test.step(label, async () => {
-          await scene.clickNoWhere()
-          const codeBefore = await editor.getCurrentCode()
-          expect(normaliseCode(codeBefore)).toBe(normaliseCode(initialCode))
-
-          if (applyBeforeSelect) {
-            await apply()
-            await select()
-          } else {
-            await select()
-            await apply()
-          }
-
-          const changedCode = await waitForCodeChange(page, codeBefore)
-          assertChanged(changedCode)
-          await expectNoUnsupportedSelectionToast(page)
-
-          await expectBackToInitialCode(changedCode)
-          await scene.clickNoWhere()
-          if (cleanupAfterStep) {
-            await cleanupAfterStep()
-          } else if (applyBeforeSelect) {
-            await page.keyboard.press('Escape')
-          }
-        })
-      }
-
-      await applyConstraintStep({
-        label: 'coincident 1',
-        select: async () => {
-          await clickPoint('5')
-          await clickMidpoint('2', '3')
-        },
-        apply: async () => {
-          await selectSketchSolveConstraintFromDropdown(page, 'coincident')
-        },
-        applyBeforeSelect: true,
-        assertChanged: (code) => {
-          expect((code.match(/coincident\(/g) ?? []).length).toBe(1)
-        },
-      })
-
-      await applyConstraintStep({
-        label: 'coincident 2',
-        select: async () => {
-          await clickPoint('3')
-          await clickPoint('8')
-        },
-        apply: async () => {
-          await selectSketchSolveConstraintFromDropdown(page, 'coincident')
-        },
-        applyBeforeSelect: true,
-        assertChanged: (code) => {
-          expect((code.match(/coincident\(/g) ?? []).length).toBe(1)
-        },
-      })
-
-      await applyConstraintStep({
-        label: 'coincident 3 points',
-        select: async () => {
-          await clickPoint('3')
-          await clickPoint('8')
-          await clickPoint('11')
-        },
-        apply: async () => {
-          await page.getByTestId('coincident').click()
-        },
-        assertChanged: (code) => {
-          expect((code.match(/coincident\(/g) ?? []).length).toBe(1)
-          expect(code).toMatch(/coincident\(\[[^\]]*,[^\]]*,[^\]]+\]\)/)
-        },
-      })
-
-      await applyConstraintStep({
-        label: 'tangent',
-        select: async () => {
-          await clickMidpoint('11', '12')
-          await clickMidpoint('14', '15')
-        },
-        apply: async () => {
-          await selectSketchSolveConstraintFromDropdown(page, 'Tangent')
-        },
-        applyBeforeSelect: true,
-        assertChanged: (code) => {
-          expect((code.match(/tangent\(/g) ?? []).length).toBe(1)
-        },
-      })
-
-      await applyConstraintStep({
-        label: 'parallel',
-        select: async () => {
-          await clickMidpoint('18', '19')
-          await clickMidpoint('21', '22')
-        },
-        apply: async () => {
-          await selectSketchSolveConstraintFromDropdown(page, 'Parallel')
-        },
-        applyBeforeSelect: true,
-        assertChanged: (code) => {
-          expect((code.match(/parallel\(/g) ?? []).length).toBe(1)
-        },
-      })
-
-      await applyConstraintStep({
-        label: 'perpendicular',
-        select: async () => {
-          await clickMidpoint('24', '25')
-          await clickMidpoint('27', '28')
-        },
-        apply: async () => {
-          await selectSketchSolveConstraintFromDropdown(page, 'Perpendicular')
-        },
-        applyBeforeSelect: true,
-        assertChanged: (code) => {
-          expect((code.match(/perpendicular\(/g) ?? []).length).toBe(1)
-        },
-      })
-
-      await applyConstraintStep({
-        label: 'equal length',
-        select: async () => {
-          await clickMidpoint('30', '31')
-          await clickMidpoint('33', '34')
-        },
-        apply: async () => {
-          await selectSketchSolveConstraintFromDropdown(page, 'equalLength')
-        },
-        applyBeforeSelect: true,
-        assertChanged: (code) => {
-          expect((code.match(/equalLength\(/g) ?? []).length).toBe(1)
-        },
-      })
-
-      await applyConstraintStep({
-        label: 'vertical',
-        select: async () => {
-          await clickMidpoint('36', '37')
-        },
-        apply: async () => {
-          await selectSketchSolveConstraintFromDropdown(page, 'vertical')
-        },
-        applyBeforeSelect: true,
-        assertChanged: (code) => {
-          expect((code.match(/vertical\(/g) ?? []).length).toBe(1)
-        },
-      })
-
-      await applyConstraintStep({
-        label: 'horizontal',
-        select: async () => {
-          await clickMidpoint('39', '40')
-        },
-        apply: async () => {
-          await selectSketchSolveConstraintFromDropdown(page, 'Horizontal')
-        },
-        applyBeforeSelect: true,
-        assertChanged: (code) => {
-          expect((code.match(/horizontal\(/g) ?? []).length).toBe(1)
-        },
-      })
-
-      await applyConstraintStep({
-        label: 'fixed',
-        select: async () => {
-          await clickPoint('42')
-        },
-        apply: async () => {
-          await selectSketchSolveConstraintFromDropdown(page, 'Fixed')
-        },
-        applyBeforeSelect: true,
-        assertChanged: (code) => {
-          expect(code).toMatch(/fixed\(|coincident\(/)
-        },
-      })
-
-      await applyConstraintStep({
-        label: 'length',
-        select: async () => {
-          await clickMidpoint('43', '44')
-        },
-        apply: async () => {
-          await page.getByTestId('Dimension').click()
-        },
-        assertChanged: (code) => {
-          expect((code.match(/distance\(/g) ?? []).length).toBe(1)
-        },
-      })
-
-      await applyConstraintStep({
-        label: 'construction',
-        select: async () => {
-          await clickMidpoint('52', '53')
-        },
-        apply: async () => {
-          await page.getByTestId('construction').click()
-        },
-        assertChanged: (code) => {
-          expect(code).toContain('construction = true')
-        },
+        await expectBackToInitialCode(changedCode)
+        await scene.clickNoWhere()
+        if (cleanupAfterStep) {
+          await cleanupAfterStep()
+        } else if (applyBeforeSelect) {
+          await page.keyboard.press('Escape')
+        }
       })
     }
-  )
 
-  test(
-    'trim operations can be undone in sketch solve mode',
-    { tag: '@localRenderer' },
-    async ({ page, context, homePage, scene, cmdBar, editor, toolbar }) => {
-      const TRIM_TEST_CODE = `sketch001 = sketch(on = YZ) {
+    await applyConstraintStep({
+      label: 'coincident 1',
+      select: async () => {
+        await clickPoint('5')
+        await clickMidpoint('2', '3')
+      },
+      apply: async () => {
+        await selectSketchSolveConstraintFromDropdown(page, 'coincident')
+      },
+      applyBeforeSelect: true,
+      assertChanged: (code) => {
+        expect((code.match(/coincident\(/g) ?? []).length).toBe(1)
+      },
+    })
+
+    await applyConstraintStep({
+      label: 'coincident 2',
+      select: async () => {
+        await clickPoint('3')
+        await clickPoint('8')
+      },
+      apply: async () => {
+        await selectSketchSolveConstraintFromDropdown(page, 'coincident')
+      },
+      applyBeforeSelect: true,
+      assertChanged: (code) => {
+        expect((code.match(/coincident\(/g) ?? []).length).toBe(1)
+      },
+    })
+
+    await applyConstraintStep({
+      label: 'coincident 3 points',
+      select: async () => {
+        await clickPoint('3')
+        await clickPoint('8')
+        await clickPoint('11')
+      },
+      apply: async () => {
+        await page.getByTestId('coincident').click()
+      },
+      assertChanged: (code) => {
+        expect((code.match(/coincident\(/g) ?? []).length).toBe(1)
+        expect(code).toMatch(/coincident\(\[[^\]]*,[^\]]*,[^\]]+\]\)/)
+      },
+    })
+
+    await applyConstraintStep({
+      label: 'tangent',
+      select: async () => {
+        await clickMidpoint('11', '12')
+        await clickMidpoint('14', '15')
+      },
+      apply: async () => {
+        await selectSketchSolveConstraintFromDropdown(page, 'Tangent')
+      },
+      applyBeforeSelect: true,
+      assertChanged: (code) => {
+        expect((code.match(/tangent\(/g) ?? []).length).toBe(1)
+      },
+    })
+
+    await applyConstraintStep({
+      label: 'parallel',
+      select: async () => {
+        await clickMidpoint('18', '19')
+        await clickMidpoint('21', '22')
+      },
+      apply: async () => {
+        await selectSketchSolveConstraintFromDropdown(page, 'Parallel')
+      },
+      applyBeforeSelect: true,
+      assertChanged: (code) => {
+        expect((code.match(/parallel\(/g) ?? []).length).toBe(1)
+      },
+    })
+
+    await applyConstraintStep({
+      label: 'perpendicular',
+      select: async () => {
+        await clickMidpoint('24', '25')
+        await clickMidpoint('27', '28')
+      },
+      apply: async () => {
+        await selectSketchSolveConstraintFromDropdown(page, 'Perpendicular')
+      },
+      applyBeforeSelect: true,
+      assertChanged: (code) => {
+        expect((code.match(/perpendicular\(/g) ?? []).length).toBe(1)
+      },
+    })
+
+    await applyConstraintStep({
+      label: 'equal length',
+      select: async () => {
+        await clickMidpoint('30', '31')
+        await clickMidpoint('33', '34')
+      },
+      apply: async () => {
+        await selectSketchSolveConstraintFromDropdown(page, 'equalLength')
+      },
+      applyBeforeSelect: true,
+      assertChanged: (code) => {
+        expect((code.match(/equalLength\(/g) ?? []).length).toBe(1)
+      },
+    })
+
+    await applyConstraintStep({
+      label: 'vertical',
+      select: async () => {
+        await clickMidpoint('36', '37')
+      },
+      apply: async () => {
+        await selectSketchSolveConstraintFromDropdown(page, 'vertical')
+      },
+      applyBeforeSelect: true,
+      assertChanged: (code) => {
+        expect((code.match(/vertical\(/g) ?? []).length).toBe(1)
+      },
+    })
+
+    await applyConstraintStep({
+      label: 'horizontal',
+      select: async () => {
+        await clickMidpoint('39', '40')
+      },
+      apply: async () => {
+        await selectSketchSolveConstraintFromDropdown(page, 'Horizontal')
+      },
+      applyBeforeSelect: true,
+      assertChanged: (code) => {
+        expect((code.match(/horizontal\(/g) ?? []).length).toBe(1)
+      },
+    })
+
+    await applyConstraintStep({
+      label: 'fixed',
+      select: async () => {
+        await clickPoint('42')
+      },
+      apply: async () => {
+        await selectSketchSolveConstraintFromDropdown(page, 'Fixed')
+      },
+      applyBeforeSelect: true,
+      assertChanged: (code) => {
+        expect(code).toMatch(/fixed\(|coincident\(/)
+      },
+    })
+
+    await applyConstraintStep({
+      label: 'length',
+      select: async () => {
+        await clickMidpoint('43', '44')
+      },
+      apply: async () => {
+        await page.getByTestId('Dimension').click()
+      },
+      assertChanged: (code) => {
+        expect((code.match(/distance\(/g) ?? []).length).toBe(1)
+      },
+    })
+
+    await applyConstraintStep({
+      label: 'construction',
+      select: async () => {
+        await clickMidpoint('52', '53')
+      },
+      apply: async () => {
+        await page.getByTestId('construction').click()
+      },
+      assertChanged: (code) => {
+        expect(code).toContain('construction = true')
+      },
+    })
+  })
+
+  test('trim operations can be undone in sketch solve mode', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+    toolbar,
+  }) => {
+    const TRIM_TEST_CODE = `sketch001 = sketch(on = YZ) {
   line1 = line(start = [var -8.66mm, var 2.52mm], end = [var -8.77mm, var -2.76mm])
   line(start = [var -6.49mm, var 2.4mm], end = [var -6.45mm, var -2.72mm])
   line2 = line(start = [var -10mm, var -0.31mm], end = [var -5.38mm, var 0.2mm])
@@ -1991,96 +2000,95 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
   line6 = line(start = [var 7.23mm, var -3.78mm], end = [var 5.7mm, var -2.52mm])
 }
 `
-      const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
+    const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
 
-      await test.step('Set up app with trim fixture in sketch solve mode', async () => {
-        await context.addInitScript(
-          async ({ code }) => {
-            localStorage.setItem('persistCode', code)
-          },
-          {
-            code: TRIM_TEST_CODE,
-          }
-        )
+    await test.step('Set up app with trim fixture in sketch solve mode', async () => {
+      await context.addInitScript(
+        async ({ code }) => {
+          localStorage.setItem('persistCode', code)
+        },
+        {
+          code: TRIM_TEST_CODE,
+        }
+      )
 
-        await page.setBodyDimensions({ width: 1400, height: 900 })
-        await homePage.goToModelingScene()
-        await scene.settled()
-        await editor.expectEditor.toContain('sketch001 = sketch(on = YZ) {')
+      await page.setBodyDimensions({ width: 1400, height: 900 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await editor.expectEditor.toContain('sketch001 = sketch(on = YZ) {')
+    })
+
+    await test.step('Enter sketch edit mode and equip trim tool', async () => {
+      await toolbar.openFeatureTreePane()
+      await expect(page.getByText('Building feature tree')).not.toBeVisible({
+        timeout: 10000,
       })
+      const sketchOperation = await toolbar.getFeatureTreeOperation(
+        'sketch001',
+        0
+      )
+      await sketchOperation.dblclick()
+      await page.waitForTimeout(600)
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+      await page.getByTestId('trim').click()
+    })
 
-      await test.step('Enter sketch edit mode and equip trim tool', async () => {
-        await toolbar.openFeatureTreePane()
-        await expect(page.getByText('Building feature tree')).not.toBeVisible({
-          timeout: 10000,
-        })
-        const sketchOperation = await toolbar.getFeatureTreeOperation(
-          'sketch001',
-          0
-        )
-        await sketchOperation.dblclick()
-        await page.waitForTimeout(600)
-        await expect(toolbar.exitSketchBtn).toBeEnabled()
-        await page.getByTestId('trim').click()
-      })
-
-      const pressUndo = async () => {
-        await page.keyboard.down('Control')
-        await page.keyboard.press('KeyZ')
-        await page.keyboard.up('Control')
-      }
-      const getHandleIds = async () =>
-        await page
-          .locator('[data-segment_id]')
-          .evaluateAll((els) =>
-            els
-              .map((el) => el.getAttribute('data-segment_id'))
-              .filter((value): value is string => Boolean(value))
-          )
-
-      const initialCode = await editor.getCurrentCode()
-      const initialHandleCount = await pointHandles.count()
-      const initialHandleIds = await getHandleIds()
-
-      await test.step('Trim first region and undo', async () => {
-        await dragBetweenRatios(page, scene, [0.1467, 0.4583], [0.1454, 0.5452])
-
-        const trimmedCode = await waitForCodeChange(page, initialCode)
-        expect(normaliseCode(trimmedCode)).not.toBe(normaliseCode(initialCode))
-
-        const handleCountAfterTrim = await pointHandles.count()
-        const handleIdsAfterTrim = await getHandleIds()
-        expect(
-          handleCountAfterTrim !== initialHandleCount ||
-            normaliseCode(handleIdsAfterTrim.join(',')) !==
-              normaliseCode(initialHandleIds.join(','))
-        ).toBe(true)
-
-        await pressUndo()
-        const undoneCode = await waitForCodeChange(page, trimmedCode)
-        expect(normaliseCode(undoneCode)).toBe(normaliseCode(initialCode))
-        await expect(pointHandles).toHaveCount(initialHandleCount)
-      })
-
-      await test.step('Trim second region and undo', async () => {
-        const codeBeforeSecondTrim = await editor.getCurrentCode()
-        expect(normaliseCode(codeBeforeSecondTrim)).toBe(
-          normaliseCode(initialCode)
-        )
-
-        await dragBetweenRatios(page, scene, [0.6697, 0.469], [0.8689, 0.5833])
-
-        const trimmedCode = await waitForCodeChange(page, codeBeforeSecondTrim)
-        expect(normaliseCode(trimmedCode)).not.toBe(
-          normaliseCode(codeBeforeSecondTrim)
-        )
-
-        await pressUndo()
-        const undoneCode = await waitForCodeChange(page, trimmedCode)
-        expect(normaliseCode(undoneCode)).toBe(normaliseCode(initialCode))
-      })
+    const pressUndo = async () => {
+      await page.keyboard.down('Control')
+      await page.keyboard.press('KeyZ')
+      await page.keyboard.up('Control')
     }
-  )
+    const getHandleIds = async () =>
+      await page
+        .locator('[data-segment_id]')
+        .evaluateAll((els) =>
+          els
+            .map((el) => el.getAttribute('data-segment_id'))
+            .filter((value): value is string => Boolean(value))
+        )
+
+    const initialCode = await editor.getCurrentCode()
+    const initialHandleCount = await pointHandles.count()
+    const initialHandleIds = await getHandleIds()
+
+    await test.step('Trim first region and undo', async () => {
+      await dragBetweenRatios(page, scene, [0.1467, 0.4583], [0.1454, 0.5452])
+
+      const trimmedCode = await waitForCodeChange(page, initialCode)
+      expect(normaliseCode(trimmedCode)).not.toBe(normaliseCode(initialCode))
+
+      const handleCountAfterTrim = await pointHandles.count()
+      const handleIdsAfterTrim = await getHandleIds()
+      expect(
+        handleCountAfterTrim !== initialHandleCount ||
+          normaliseCode(handleIdsAfterTrim.join(',')) !==
+            normaliseCode(initialHandleIds.join(','))
+      ).toBe(true)
+
+      await pressUndo()
+      const undoneCode = await waitForCodeChange(page, trimmedCode)
+      expect(normaliseCode(undoneCode)).toBe(normaliseCode(initialCode))
+      await expect(pointHandles).toHaveCount(initialHandleCount)
+    })
+
+    await test.step('Trim second region and undo', async () => {
+      const codeBeforeSecondTrim = await editor.getCurrentCode()
+      expect(normaliseCode(codeBeforeSecondTrim)).toBe(
+        normaliseCode(initialCode)
+      )
+
+      await dragBetweenRatios(page, scene, [0.6697, 0.469], [0.8689, 0.5833])
+
+      const trimmedCode = await waitForCodeChange(page, codeBeforeSecondTrim)
+      expect(normaliseCode(trimmedCode)).not.toBe(
+        normaliseCode(codeBeforeSecondTrim)
+      )
+
+      await pressUndo()
+      const undoneCode = await waitForCodeChange(page, trimmedCode)
+      expect(normaliseCode(undoneCode)).toBe(normaliseCode(initialCode))
+    })
+  })
 
   const square = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -2.05mm, var -1.99mm], end = [var 2.1mm, var -1.99mm])

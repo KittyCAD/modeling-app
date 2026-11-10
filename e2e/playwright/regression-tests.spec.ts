@@ -18,7 +18,7 @@ const bracket = fs.readFileSync(
   'utf8'
 )
 
-test.describe('Regression tests', { tag: ['@web', '@localRenderer'] }, () => {
+test.describe('Regression tests', { tag: '@web' }, () => {
   test('can start sketches after creating and switching KCL files', async ({
     page,
     homePage,
@@ -672,35 +672,35 @@ extrude002 = extrude(profile002, length = 150)`
     })
   })
 
-  test(
-    `Toolbar doesn't show modeling tools during sketch plane selection animation`,
-    { tag: '@localRenderer' },
-    async ({ page, homePage, toolbar }) => {
-      await test.step('Load an empty file', async () => {
-        await page.addInitScript(async () => {
-          localStorage.setItem('persistCode', '')
-        })
-        await page.setBodyDimensions({ width: 1200, height: 500 })
-        await homePage.goToModelingScene()
+  test(`Toolbar doesn't show modeling tools during sketch plane selection animation`, async ({
+    page,
+    homePage,
+    toolbar,
+  }) => {
+    await test.step('Load an empty file', async () => {
+      await page.addInitScript(async () => {
+        localStorage.setItem('persistCode', '')
       })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+    })
 
-      await test.step('Start sketch and select a plane', async () => {
-        await toolbar.expectToolbarMode.toBe('modeling')
-        // Click the start sketch button
-        await toolbar.startSketchPlaneSelection()
+    await test.step('Start sketch and select a plane', async () => {
+      await toolbar.expectToolbarMode.toBe('modeling')
+      // Click the start sketch button
+      await toolbar.startSketchPlaneSelection()
 
-        // Click on a default plane at position [700, 200]
-        await page.mouse.click(700, 200)
+      // Click on a default plane at position [700, 200]
+      await page.mouse.click(700, 200)
 
-        // Check that the modeling toolbar doesn't appear during the animation
-        // The animation typically takes around 500ms, so we'll check for a second
-        await toolbar.expectToolbarMode.not.toBe('modeling')
+      // Check that the modeling toolbar doesn't appear during the animation
+      // The animation typically takes around 500ms, so we'll check for a second
+      await toolbar.expectToolbarMode.not.toBe('modeling')
 
-        // After animation completes, we should see the sketching toolbar.
-        await toolbar.expectToolbarMode.toBe('sketchSolve')
-      })
-    }
-  )
+      // After animation completes, we should see the sketching toolbar.
+      await toolbar.expectToolbarMode.toBe('sketchSolve')
+    })
+  })
 
   test(
     `Delete via feature tree then open code pane, never crash`,

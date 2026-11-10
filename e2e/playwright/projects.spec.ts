@@ -141,7 +141,7 @@ test(
 
 test(
   'open a file in a project works and renders, open another file in different project with errors, it should clear the scene',
-  { tag: ['@desktop', '@localRenderer'] },
+  { tag: '@desktop' },
   async ({
     homePage,
     toolbar,
@@ -228,7 +228,7 @@ test(
 
 test(
   'open a file in a project works and renders, open another file in different project that is empty, it should clear the scene',
-  { tag: ['@desktop', '@localRenderer'] },
+  { tag: '@desktop' },
   async ({
     toolbar,
     editor,
@@ -276,7 +276,7 @@ test(
 
 test(
   'open a file in a project works and renders, open empty file, it should clear the scene',
-  { tag: ['@desktop', '@localRenderer'] },
+  { tag: '@desktop' },
   async ({
     scene,
     cmdBar,
@@ -327,7 +327,7 @@ test(
 
 test(
   'open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
-  { tag: ['@desktop', '@localRenderer'] },
+  { tag: '@desktop' },
   async ({
     scene,
     cmdBar,

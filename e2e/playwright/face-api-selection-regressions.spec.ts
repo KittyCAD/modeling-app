@@ -196,29 +196,30 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     })
   }
 
-  test(
-    'selects a standalone helix from the viewport',
-    { tag: '@localRenderer' },
-    async ({ page, scene, cmdBar, editor, tronApp, homePage }) => {
-      if (tronApp) await tronApp.cleanProjectDir()
-      await page.setBodyDimensions({ width: 1200, height: 800 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', standaloneHelixCode)
-      )
-      await editor.closePane()
-      await scene.moveCameraTo({ x: 24, y: -24, z: 18 }, { x: 0, y: 0, z: 10 })
+  test('selects a standalone helix from the viewport', async ({
+    page,
+    scene,
+    cmdBar,
+    editor,
+    tronApp,
+    homePage,
+  }) => {
+    if (tronApp) await tronApp.cleanProjectDir()
+    await page.setBodyDimensions({ width: 1200, height: 800 })
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', standaloneHelixCode)
+    )
+    await editor.closePane()
+    await scene.moveCameraTo({ x: 24, y: -24, z: 18 }, { x: 0, y: 0, z: 10 })
 
-      const [clickHelix] = scene.makeMouseHelpers(0.5875, 0.5883, {
-        format: 'ratio',
-      })
-      await clickHelix()
-      await expect(page.getByTestId('selection-status')).toContainText(
-        '1 helix'
-      )
-    }
-  )
+    const [clickHelix] = scene.makeMouseHelpers(0.5875, 0.5883, {
+      format: 'ratio',
+    })
+    await clickHelix()
+    await expect(page.getByTestId('selection-status')).toContainText('1 helix')
+  })
 
   test('selects a standalone helix after opening Translate @localRenderer', async ({
     page,

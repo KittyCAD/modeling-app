@@ -9,16 +9,17 @@ const bracket = fs.readFileSync(
 )
 
 test.describe('Testing selections', { tag: '@desktop' }, () => {
-  test(
-    "Extrude button should be disabled if there's no extrudable geometry when nothing is selected",
-    { tag: '@localRenderer' },
-    async ({ page, editor, homePage }) => {
-      const u = await getUtils(page)
+  test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({
+    page,
+    editor,
+    homePage,
+  }) => {
+    const u = await getUtils(page)
 
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `sketch001 = startSketchOn(XZ)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
     |> startProfile(at = [3.29, 7.86])
     |> line(end = [2.48, 2.44])
     |> line(end = [2.66, 1.17])
@@ -33,35 +34,35 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     |> close()
   extrude001 = extrude(sketch001, length = 10)
     `
-        )
-      })
+      )
+    })
 
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.waitForAuthentication()
-      await homePage.goToModelingScene()
-      await u.waitForPageLoad()
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.waitForAuthentication()
+    await homePage.goToModelingScene()
+    await u.waitForPageLoad()
 
-      // wait for execution done
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
+    // wait for execution done
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
 
-      const selectUnExtrudable = async () => {
-        await editor.scrollToText(`line(end = [4.99, -0.46], tag = $seg01)`)
-        await page.getByText(`line(end = [4.99, -0.46], tag = $seg01)`).click()
-      }
-      const clickEmpty = () => page.mouse.click(700, 460)
-      await selectUnExtrudable()
-      // expect extrude button to be enabled, since we don't guard
-      // until the extrude button is clicked
-      await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
+    const selectUnExtrudable = async () => {
+      await editor.scrollToText(`line(end = [4.99, -0.46], tag = $seg01)`)
+      await page.getByText(`line(end = [4.99, -0.46], tag = $seg01)`).click()
+    }
+    const clickEmpty = () => page.mouse.click(700, 460)
+    await selectUnExtrudable()
+    // expect extrude button to be enabled, since we don't guard
+    // until the extrude button is clicked
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
 
-      await clickEmpty()
+    await clickEmpty()
 
-      // expect active line to contain nothing
-      await expect(page.locator('.cm-activeLine')).toHaveText('')
+    // expect active line to contain nothing
+    await expect(page.locator('.cm-activeLine')).toHaveText('')
 
-      const codeToAdd = `${await u.codeLocator.allInnerTexts()}
+    const codeToAdd = `${await u.codeLocator.allInnerTexts()}
   sketch002 = startSketchOn(extrude001, face = $seg01)
     |> startProfile(at = [-12.94, 6.6])
     |> line(end = [2.45, -0.2])
@@ -69,21 +70,20 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
   `
-      await u.codeLocator.fill(codeToAdd)
+    await u.codeLocator.fill(codeToAdd)
 
-      await selectUnExtrudable()
-      // expect extrude button to be enabled, since we don't guard
-      // until the extrude button is clicked
-      await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
+    await selectUnExtrudable()
+    // expect extrude button to be enabled, since we don't guard
+    // until the extrude button is clicked
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
 
-      await clickEmpty()
-      await expect(page.locator('.cm-activeLine')).toHaveText('')
-      // there's not extrudable geometry, so button should be enabled
-      await expect(
-        page.getByRole('button', { name: 'Extrude' })
-      ).not.toBeDisabled()
-    }
-  )
+    await clickEmpty()
+    await expect(page.locator('.cm-activeLine')).toHaveText('')
+    // there's not extrudable geometry, so button should be enabled
+    await expect(
+      page.getByRole('button', { name: 'Extrude' })
+    ).not.toBeDisabled()
+  })
 
   test('Testing selections (and hovers) work on sketches when NOT in sketch mode', async ({
     page,

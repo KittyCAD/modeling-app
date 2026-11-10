@@ -8,7 +8,7 @@ const waitForSettingsIdle = (page: Page) =>
 
 test.describe(
   'Modern sketch snap to grid',
-  { tag: ['@desktop', '@web', '@localRenderer'] },
+  { tag: ['@desktop', '@web'] },
   () => {
     test('snaps solver sketch points to the visible grid with feedback', async ({
       page,
@@ -151,187 +151,183 @@ test.describe(
   }
 )
 
-test.describe(
-  'Sketch grid settings',
-  { tag: ['@desktop', '@web', '@localRenderer'] },
-  () => {
-    test('shows, updates, and persists the modern sketch grid', async ({
-      page,
-      homePage,
-      toolbar,
-      scene,
-      editor,
-    }) => {
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-      await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
-      await scene.settled()
-      await editor.replaceCode(
-        '',
-        '@settings(kclVersion = 2.0)\n\nsketch001 = sketch(on = XY) {}'
-      )
-      await editor.expectEditor.toContain('sketch001')
-      await scene.settled()
+test.describe('Sketch grid settings', { tag: ['@desktop', '@web'] }, () => {
+  test('shows, updates, and persists the modern sketch grid', async ({
+    page,
+    homePage,
+    toolbar,
+    scene,
+    editor,
+  }) => {
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.goToModelingScene()
+    await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
+    await scene.settled()
+    await editor.replaceCode(
+      '',
+      '@settings(kclVersion = 2.0)\n\nsketch001 = sketch(on = XY) {}'
+    )
+    await editor.expectEditor.toContain('sketch001')
+    await scene.settled()
 
-      const commands = page.getByRole('button', { name: 'Commands' })
-      const setBooleanSetting = async (
-        setting: 'fixedSizeGrid' | 'highlightEdges' | 'showSketchGrid',
-        value: 'On' | 'Off'
-      ) => {
-        const expectedValue = value === 'On'
-        const currentValue = () =>
-          page.evaluate(
-            (setting) => window.app.settings.get().modeling[setting].current,
-            setting
-          )
-        await waitForSettingsIdle(page)
-        if ((await currentValue()) === expectedValue) {
-          return
-        }
-
-        await commands.click()
-        await page
-          .getByRole('option', {
-            name: `Settings · modeling · ${setting.replace(
-              /[A-Z]/g,
-              (letter) => ` ${letter.toLowerCase()}`
-            )}`,
-          })
-          .click()
-        await page.getByRole('option', { name: value }).click()
-        await expect.poll(currentValue).toBe(expectedValue)
-        await waitForSettingsIdle(page)
-      }
-      const setOrthographicCamera = async () => {
-        await waitForSettingsIdle(page)
-        await commands.click()
-        await page
-          .getByRole('option', {
-            name: 'Settings · modeling · camera projection',
-          })
-          .click()
-        await page.getByRole('option', { name: 'Orthographic' }).click()
-        await waitForSettingsIdle(page)
-      }
-      const fixedSizeGridEnabled = () =>
+    const commands = page.getByRole('button', { name: 'Commands' })
+    const setBooleanSetting = async (
+      setting: 'fixedSizeGrid' | 'highlightEdges' | 'showSketchGrid',
+      value: 'On' | 'Off'
+    ) => {
+      const expectedValue = value === 'On'
+      const currentValue = () =>
         page.evaluate(
-          () => window.app.settings.get().modeling.fixedSizeGrid.current
+          (setting) => window.app.settings.get().modeling[setting].current,
+          setting
         )
-      const sketchGridEnabled = () =>
-        page.evaluate(
-          () => window.app.settings.get().modeling.showSketchGrid.current
-        )
-
-      await setOrthographicCamera()
-      await expect
-        .poll(() =>
-          page.evaluate(
-            () => window.app.settings.get().modeling.cameraProjection.current
-          )
-        )
-        .toBe('orthographic')
-      await setBooleanSetting('showSketchGrid', 'Off')
-      await setBooleanSetting('fixedSizeGrid', 'On')
-
-      await toolbar.openFeatureTreePane()
-      const sketchOperation = await toolbar.getFeatureTreeOperation(
-        'sketch001',
-        0
-      )
-      await sketchOperation.dblclick()
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
-      await toolbar.closeFeatureTreePane()
-      await expect
-        .poll(
-          () =>
-            page.evaluate(
-              () =>
-                window.app.singletons.kclManager.sceneInfra.camControls.camera
-                  .type
-            ),
-          { timeout: 15_000 }
-        )
-        .toBe('OrthographicCamera')
-
-      const sketchGridVisible = () =>
-        page.evaluate(
-          () =>
-            window.app.singletons.kclManager.sceneEntitiesManager.axisGroup?.children.find(
-              (child) => child.name === 'InfiniteGridRenderer'
-            )?.visible
-        )
-      await expect.poll(sketchGridVisible).toBe(false)
-
-      const [openSketchMenu] = scene.makeMouseHelpers(0.8, 0.2, {
-        format: 'ratio',
-      })
-      await openSketchMenu({ shouldRightClick: true })
-      const viewMenu = page.getByTestId('view-controls-menu')
-      const showSketchGrid = viewMenu.getByRole('button', {
-        name: 'Show Sketch Grid',
-      })
-      const snapToGrid = viewMenu.getByRole('button', { name: 'Snap to Grid' })
-      await expect(showSketchGrid).toBeVisible()
-      await expect(snapToGrid).toBeVisible()
-      const sketchMenuItemLabels = await viewMenu
-        .getByRole('button')
-        .allTextContents()
-      expect(
-        sketchMenuItemLabels.findIndex((label) =>
-          label.includes('Show Sketch Grid')
-        )
-      ).toBe(
-        sketchMenuItemLabels.findIndex((label) =>
-          label.includes('Snap to Grid')
-        ) - 1
-      )
       await waitForSettingsIdle(page)
-      await showSketchGrid.click()
+      if ((await currentValue()) === expectedValue) {
+        return
+      }
+
+      await commands.click()
+      await page
+        .getByRole('option', {
+          name: `Settings · modeling · ${setting.replace(
+            /[A-Z]/g,
+            (letter) => ` ${letter.toLowerCase()}`
+          )}`,
+        })
+        .click()
+      await page.getByRole('option', { name: value }).click()
+      await expect.poll(currentValue).toBe(expectedValue)
       await waitForSettingsIdle(page)
-      await expect.poll(sketchGridEnabled).toBe(true)
-      await expect.poll(sketchGridVisible).toBe(true)
-
-      await page.evaluate(async () => {
-        const kclManager = window.app.singletons.kclManager
-        const camera = kclManager.sceneInfra.camControls.camera
-        if (!('isOrthographicCamera' in camera)) {
-          throw new Error('Expected an orthographic sketch camera')
-        }
-        const pixelsPerBaseUnit =
-          kclManager.sceneInfra.getPixelsPerBaseUnit(camera)
-        camera.zoom = (camera.zoom / pixelsPerBaseUnit) * 0.000001
-        camera.updateProjectionMatrix()
-        await kclManager.sceneEntitiesManager.onCamChange()
-      })
-      await expect.poll(sketchGridVisible).toBe(false)
-      await setBooleanSetting('highlightEdges', 'Off')
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
-      await expect.poll(sketchGridVisible).toBe(false)
-
-      await setBooleanSetting('fixedSizeGrid', 'Off')
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
-      await expect.poll(sketchGridVisible).toBe(true)
-
-      await setBooleanSetting('highlightEdges', 'On')
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
-      await expect.poll(sketchGridVisible).toBe(true)
-
-      await toolbar.exitSketchBtn.click()
-      await expect(toolbar.startSketchBtn).toBeEnabled()
-      await page.reload()
-      await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 30_000 })
-      await scene.settled()
-      await expect.poll(sketchGridEnabled).toBe(true)
-      await expect.poll(fixedSizeGridEnabled).toBe(false)
-
-      await toolbar.openFeatureTreePane()
-      const reloadedSketchOperation = await toolbar.getFeatureTreeOperation(
-        'sketch001',
-        0
+    }
+    const setOrthographicCamera = async () => {
+      await waitForSettingsIdle(page)
+      await commands.click()
+      await page
+        .getByRole('option', {
+          name: 'Settings · modeling · camera projection',
+        })
+        .click()
+      await page.getByRole('option', { name: 'Orthographic' }).click()
+      await waitForSettingsIdle(page)
+    }
+    const fixedSizeGridEnabled = () =>
+      page.evaluate(
+        () => window.app.settings.get().modeling.fixedSizeGrid.current
       )
-      await reloadedSketchOperation.dblclick()
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
-      await expect.poll(sketchGridVisible).toBe(true)
+    const sketchGridEnabled = () =>
+      page.evaluate(
+        () => window.app.settings.get().modeling.showSketchGrid.current
+      )
+
+    await setOrthographicCamera()
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => window.app.settings.get().modeling.cameraProjection.current
+        )
+      )
+      .toBe('orthographic')
+    await setBooleanSetting('showSketchGrid', 'Off')
+    await setBooleanSetting('fixedSizeGrid', 'On')
+
+    await toolbar.openFeatureTreePane()
+    const sketchOperation = await toolbar.getFeatureTreeOperation(
+      'sketch001',
+      0
+    )
+    await sketchOperation.dblclick()
+    await expect(toolbar.exitSketchBtn).toBeEnabled()
+    await toolbar.closeFeatureTreePane()
+    await expect
+      .poll(
+        () =>
+          page.evaluate(
+            () =>
+              window.app.singletons.kclManager.sceneInfra.camControls.camera
+                .type
+          ),
+        { timeout: 15_000 }
+      )
+      .toBe('OrthographicCamera')
+
+    const sketchGridVisible = () =>
+      page.evaluate(
+        () =>
+          window.app.singletons.kclManager.sceneEntitiesManager.axisGroup?.children.find(
+            (child) => child.name === 'InfiniteGridRenderer'
+          )?.visible
+      )
+    await expect.poll(sketchGridVisible).toBe(false)
+
+    const [openSketchMenu] = scene.makeMouseHelpers(0.8, 0.2, {
+      format: 'ratio',
     })
-  }
-)
+    await openSketchMenu({ shouldRightClick: true })
+    const viewMenu = page.getByTestId('view-controls-menu')
+    const showSketchGrid = viewMenu.getByRole('button', {
+      name: 'Show Sketch Grid',
+    })
+    const snapToGrid = viewMenu.getByRole('button', { name: 'Snap to Grid' })
+    await expect(showSketchGrid).toBeVisible()
+    await expect(snapToGrid).toBeVisible()
+    const sketchMenuItemLabels = await viewMenu
+      .getByRole('button')
+      .allTextContents()
+    expect(
+      sketchMenuItemLabels.findIndex((label) =>
+        label.includes('Show Sketch Grid')
+      )
+    ).toBe(
+      sketchMenuItemLabels.findIndex((label) =>
+        label.includes('Snap to Grid')
+      ) - 1
+    )
+    await waitForSettingsIdle(page)
+    await showSketchGrid.click()
+    await waitForSettingsIdle(page)
+    await expect.poll(sketchGridEnabled).toBe(true)
+    await expect.poll(sketchGridVisible).toBe(true)
+
+    await page.evaluate(async () => {
+      const kclManager = window.app.singletons.kclManager
+      const camera = kclManager.sceneInfra.camControls.camera
+      if (!('isOrthographicCamera' in camera)) {
+        throw new Error('Expected an orthographic sketch camera')
+      }
+      const pixelsPerBaseUnit =
+        kclManager.sceneInfra.getPixelsPerBaseUnit(camera)
+      camera.zoom = (camera.zoom / pixelsPerBaseUnit) * 0.000001
+      camera.updateProjectionMatrix()
+      await kclManager.sceneEntitiesManager.onCamChange()
+    })
+    await expect.poll(sketchGridVisible).toBe(false)
+    await setBooleanSetting('highlightEdges', 'Off')
+    await expect(toolbar.exitSketchBtn).toBeEnabled()
+    await expect.poll(sketchGridVisible).toBe(false)
+
+    await setBooleanSetting('fixedSizeGrid', 'Off')
+    await expect(toolbar.exitSketchBtn).toBeEnabled()
+    await expect.poll(sketchGridVisible).toBe(true)
+
+    await setBooleanSetting('highlightEdges', 'On')
+    await expect(toolbar.exitSketchBtn).toBeEnabled()
+    await expect.poll(sketchGridVisible).toBe(true)
+
+    await toolbar.exitSketchBtn.click()
+    await expect(toolbar.startSketchBtn).toBeEnabled()
+    await page.reload()
+    await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 30_000 })
+    await scene.settled()
+    await expect.poll(sketchGridEnabled).toBe(true)
+    await expect.poll(fixedSizeGridEnabled).toBe(false)
+
+    await toolbar.openFeatureTreePane()
+    const reloadedSketchOperation = await toolbar.getFeatureTreeOperation(
+      'sketch001',
+      0
+    )
+    await reloadedSketchOperation.dblclick()
+    await expect(toolbar.exitSketchBtn).toBeEnabled()
+    await expect.poll(sketchGridVisible).toBe(true)
+  })
+})
