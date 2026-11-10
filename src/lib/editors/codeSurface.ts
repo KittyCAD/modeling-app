@@ -1,3 +1,4 @@
+import { createEditorCleanup } from '@src/lib/editors/lifecycle'
 import {
   Compartment,
   EditorState,
@@ -6,7 +7,12 @@ import {
 } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { isolateHistory } from '@codemirror/commands'
-import { batch, computed, type ReadonlySignal } from '@preact/signals-core'
+import {
+  batch,
+  computed,
+  untracked,
+  type ReadonlySignal,
+} from '@preact/signals-core'
 import type {
   CodeEditorExtension,
   EditorViewHost,
@@ -16,7 +22,8 @@ import { editorMatchContext, matchesEditor } from '@src/lib/editors/matching'
 /** Each Code surface owns its DOM and selection; only text changes enter document history. */
 export function createCodeSurface(
   host: EditorViewHost,
-  contributions: ReadonlySignal<readonly CodeEditorExtension[]>
+  contributions: ReadonlySignal<readonly CodeEditorExtension[]>,
+  run: <T>(callback: () => T) => T
 ) {
   const { editor } = host
   const compartment = new Compartment()
@@ -86,28 +93,54 @@ export function createCodeSurface(
       ])
     })
   )
-  const instances = new WeakMap<CodeEditorExtension, Extension>()
+  const instances = new Map<
+    CodeEditorExtension,
+    { extension: Extension; resources: ReturnType<typeof createEditorCleanup> }
+  >()
+  host.onDispose(() => {
+    for (const instance of instances.values()) instance.resources.dispose()
+    instances.clear()
+  })
   const matching = computed(() =>
-    contributions.value
-      .filter((contribution) =>
-        matchesEditor(contribution.matches, editorMatchContext(editor))
-      )
-      .map((contribution) => {
-        let extension = instances.get(contribution)
-        if (!extension) {
-          extension =
-            typeof contribution.extensions === 'function'
-              ? contribution.extensions({ ...host, view })
-              : contribution.extensions
-          instances.set(contribution, extension)
-        }
-        return extension
-      })
+    contributions.value.filter((contribution) =>
+      matchesEditor(contribution.matches, editorMatchContext(editor))
+    )
   )
   let current: readonly Extension[] = []
   const apply = () => {
     if (closed) return
-    const next = matching.peek()
+    const definitions = matching.peek()
+    for (const [definition, instance] of instances) {
+      if (!definitions.includes(definition)) {
+        instances.delete(definition)
+        instance.resources.dispose()
+      }
+    }
+    const next = definitions.map((definition) => {
+      const existing = instances.get(definition)
+      if (existing) return existing.extension
+      const resources = createEditorCleanup()
+      try {
+        const provided = definition.extensions
+        const extension =
+          typeof provided === 'function'
+            ? run(() =>
+                provided({
+                  ...host,
+                  view,
+                  onDispose: (callback) =>
+                    resources.onDispose(() => run(callback)),
+                })
+              )
+            : provided
+        instances.set(definition, { extension, resources })
+        return extension
+      } catch (cause) {
+        resources.dispose()
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw -- Mode initialization reports the failed factory after releasing its partial resources.
+        throw cause
+      }
+    })
     if (
       next.length === current.length &&
       next.every((extension, index) => extension === current[index])
@@ -120,7 +153,7 @@ export function createCodeSurface(
   host.onDispose(
     matching.subscribe(() => {
       if (!updating) {
-        apply()
+        untracked(apply)
         return
       }
       if (queued) return

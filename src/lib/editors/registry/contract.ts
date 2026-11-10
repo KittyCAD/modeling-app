@@ -26,7 +26,7 @@ export interface Editor {
   readonly classification: ReadonlySignal<EditorClassification | undefined>
   /** Current buffer text, independent of mounted panes and execution results. */
   readonly contents: ReadonlySignal<string>
-  /** Canonical document and history; Code surfaces own their selections separately. */
+  /** Canonical document and history. Its selection is history bookkeeping; live Code selections belong to view instances. */
   readonly state: EditorState
   readonly signal: AbortSignal
   dispatch: (...specs: TransactionSpec[]) => void
@@ -61,7 +61,7 @@ export interface EditorLanguage {
 export interface EditorResourceHost {
   editor: Editor
   /**
-   * Runs once in reverse registration order when the mode closes or initialization fails.
+   * Runs once in reverse registration order when this resource owner closes or initialization fails.
    * Synchronous setup and cleanup cannot change editor/view ownership, sources, or mode choices.
    * Cleanup owns resources, not other buffers; one failure does not skip later callbacks.
    * Register synchronous ownership here, including cleanup for asynchronous work.

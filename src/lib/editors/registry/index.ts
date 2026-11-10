@@ -222,7 +222,9 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
       provide(
         editorViewValueSpec,
         defineEditorView((host) => {
-          const view = createCodeSurface(host, codeExtensions)
+          const view = createCodeSurface(host, codeExtensions, (callback) =>
+            contextBoundary.run(callback)
+          )
           const signal = host.instance.codeView as Signal<
             NativeEditorView | undefined
           >

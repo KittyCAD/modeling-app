@@ -1,6 +1,7 @@
 import '@src/lib/projectSession/next/testFeature'
+import { EditorState } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
-import { Registry, defineRegistryItem, provide } from '@kittycad/registry'
+import { Registry, Slot, defineRegistryItem, provide } from '@kittycad/registry'
 import { beforeAll, afterEach, expect, it, vi } from 'vitest'
 import editorsExtension from '@src/lib/editors/registry'
 import {
@@ -114,4 +115,38 @@ it('preserves Code selection events for argument picking without moving another 
   expect(picked).toHaveBeenCalledWith(first.id, 11)
   expect(picked).not.toHaveBeenCalledWith(second.id, expect.anything())
   expect(second.codeView.peek()!.state.selection.main.anchor).toBe(0)
+})
+
+it('releases Code contribution resources on withdrawal and reacquires them per surface', () => {
+  const slot = new Slot()
+  const release = vi.fn()
+  const contribution = defineRegistryItem({
+    provides: [
+      provide(codeEditorExtensionValueSpec, {
+        id: 'resource',
+        matches: '*',
+        extensions: ({ onDispose }) => {
+          onDispose(release)
+          return EditorState.tabSize.of(8)
+        },
+      }),
+    ],
+  })
+  registry = new Registry()
+  registry.configure([editorsExtension, slot.of(contribution)])
+  const editors = registry.get(editorsService)
+  const editor = editors.createEditor('original')
+  const first = editors.createView(editor)
+  const second = editors.createView(editor)
+  registry.reconfigure(slot, [])
+  expect(release).toHaveBeenCalledTimes(2)
+  expect(first.codeView.peek()!.state.tabSize).toBe(4)
+  expect(editor.signal.aborted).toBe(false)
+  registry.reconfigure(slot, [contribution])
+  expect(second.codeView.peek()!.state.tabSize).toBe(8)
+  editors.closeView(first.id)
+  expect(release).toHaveBeenCalledTimes(3)
+  expect(second.codeView.peek()!.state.doc.toString()).toBe('original')
+  editors.closeView(second.id)
+  expect(release).toHaveBeenCalledTimes(4)
 })
