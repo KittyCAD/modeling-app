@@ -1,6 +1,6 @@
 import { signal } from '@preact/signals-core'
 import { isCommandVisibleInSearch } from '@src/components/CommandBar/commandSearchVisibility'
-import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
+import { createProjectCommands } from '@src/lib/homeProjects/commands'
 import type { CommandArgumentOption } from '@src/lib/commandTypes'
 import type { Project } from '@src/lib/project'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
@@ -37,7 +37,7 @@ function createProject({
   }
 }
 
-function createApp(folders: Project[] = []) {
+function createCommandDependencies(folders: Project[] = []) {
   return {
     projectLibraries: {
       projectDirectoryPath: '/projects',
@@ -47,12 +47,15 @@ function createApp(folders: Project[] = []) {
     projectOperations: {
       projects: signal(folders),
       createProject: vi.fn(async () => createProject({ name: 'created' })),
-      renameProject: vi.fn(async () => undefined),
+      renameProject: vi.fn(async (path: string, title: string) => ({
+        path,
+        title,
+      })),
       deleteProject: vi.fn(async () => undefined),
       writeFiles: vi.fn(async () => ['/projects/demo/main.kcl']),
     },
     projectSession: { openFile: vi.fn(async () => {}) },
-  } as unknown as Parameters<typeof createProjectCommands>[0]['app']
+  }
 }
 
 function createLibrary(
@@ -135,7 +138,7 @@ function projectOptions(
 describe('project command config', () => {
   it('keeps URL import registered but hidden from search', () => {
     const commands = createProjectCommands({
-      app: createApp(),
+      ...createCommandDependencies(),
     })
     const importCommand = commands.find(
       (command) => command.name === 'Import file from URL'
@@ -147,9 +150,9 @@ describe('project command config', () => {
   })
 
   it('creates project directories from project titles', () => {
-    const app = createApp()
+    const dependencies = createCommandDependencies()
     const commands = createProjectCommands({
-      app,
+      ...dependencies,
     })
     const createCommand = commands.find(
       (command) => command.name === 'Create project'
@@ -159,7 +162,7 @@ describe('project command config', () => {
       name: ' My Cool Project! ',
     })
 
-    expect(app.projectOperations.createProject).toHaveBeenCalledWith({
+    expect(dependencies.projectOperations.createProject).toHaveBeenCalledWith({
       directory: '/projects',
       name: 'my-cool-project',
       title: 'My Cool Project!',
@@ -167,13 +170,13 @@ describe('project command config', () => {
   })
 
   it('creates projects through the selected library target', () => {
-    const app = createApp()
+    const dependencies = createCommandDependencies()
     const library = createLibrary('client-projects', 'Client Projects')
     const createProject = {
       run: vi.fn(),
     }
     const commands = createProjectCommands({
-      app,
+      ...dependencies,
       getCreateProjectLibraryTargets: () => [
         {
           library,
@@ -195,17 +198,17 @@ describe('project command config', () => {
       requestedProjectName: 'client-gear',
       requestedProjectTitle: 'Client Gear!',
     })
-    expect(app.projectOperations.createProject).not.toHaveBeenCalled()
+    expect(dependencies.projectOperations.createProject).not.toHaveBeenCalled()
   })
 
   it('creates projects through the only library target when the picker is hidden', async () => {
-    const app = createApp()
+    const dependencies = createCommandDependencies()
     const library = createLibrary('client-projects', 'Client Projects')
     const createProjectOperation = {
       run: vi.fn(async () => createProject({ name: 'client-gear' })),
     }
     const commands = createProjectCommands({
-      app,
+      ...dependencies,
       getCreateProjectLibraryTargets: () => [
         {
           library,
@@ -233,12 +236,12 @@ describe('project command config', () => {
       requestedProjectName: 'client-gear',
       requestedProjectTitle: 'Client Gear!',
     })
-    expect(app.projectOperations.createProject).not.toHaveBeenCalled()
+    expect(dependencies.projectOperations.createProject).not.toHaveBeenCalled()
   })
 
   it('defaults create project to the current library context', () => {
     const commands = createProjectCommands({
-      app: createApp(),
+      ...createCommandDependencies(),
       getCurrentProjectLibraryId: () => 'client-projects',
       getCreateProjectLibraryTargets: () => [
         {
@@ -280,7 +283,7 @@ describe('project command config', () => {
 
   it('shows a prepopulated library picker when creating into multiple libraries', () => {
     const commands = createProjectCommands({
-      app: createApp(),
+      ...createCommandDependencies(),
       getCreateProjectLibraryTargets: () => [
         {
           library: createLibrary('default-projects', 'Default Projects'),
@@ -326,14 +329,14 @@ describe('project command config', () => {
   })
 
   it('labels existing project options by title while submitting directory names', () => {
-    const app = createApp([
+    const dependencies = createCommandDependencies([
       createProject({
         name: 'bracket-directory',
         title: 'Display Bracket',
       }),
     ])
     const commands = createProjectCommands({
-      app,
+      ...dependencies,
     })
 
     const openCommand = commands.find(
@@ -370,14 +373,14 @@ describe('project command config', () => {
   })
 
   it('renames project titles without replacing the project directory identifier', () => {
-    const app = createApp([
+    const dependencies = createCommandDependencies([
       createProject({
         name: 'bracket-directory',
         title: 'Display Bracket',
       }),
     ])
     const commands = createProjectCommands({
-      app,
+      ...dependencies,
     })
     const renameCommand = commands.find(
       (command) => command.name === 'Rename project'
@@ -402,7 +405,7 @@ describe('project command config', () => {
       newName: 'Retitled Bracket',
     })
 
-    expect(app.projectOperations.renameProject).toHaveBeenCalledWith(
+    expect(dependencies.projectOperations.renameProject).toHaveBeenCalledWith(
       '/projects/bracket-directory',
       'Retitled Bracket'
     )
@@ -417,7 +420,7 @@ describe('project command config', () => {
       libraryIds: ['client-projects'],
     })
     const commands = createProjectCommands({
-      app: createApp([
+      ...createCommandDependencies([
         createProject({
           name: 'default-project',
           title: 'Default Project',
@@ -499,7 +502,7 @@ describe('project command config', () => {
         readWriteAccess: true,
       }
       const commands = createProjectCommands({
-        app: createApp(),
+        ...createCommandDependencies(),
         getCurrentProjectDirectoryName: () => 'bracket',
         getCurrentProjectPath: () => clientProject.localProjectPath,
         getProjectLibraries: () => libraries,
@@ -545,7 +548,7 @@ describe('project command config', () => {
   )
 
   it('opens, renames, and deletes home project entries through project actions', async () => {
-    const app = createApp()
+    const dependencies = createCommandDependencies()
     const homeProject = createHomeProject({
       id: 'local:/client-projects/bracket',
       title: 'Client Bracket',
@@ -555,7 +558,7 @@ describe('project command config', () => {
     })
     const homeProjectActions = createHomeProjectActions()
     const commands = createProjectCommands({
-      app,
+      ...dependencies,
       getHomeProjectActions: () => homeProjectActions,
       getHomeProjectEntries: () => [homeProject],
     })
@@ -591,7 +594,9 @@ describe('project command config', () => {
         'Updated Client Bracket'
       )
       expect(homeProjectActions.delete).toHaveBeenCalledWith(homeProject)
-      expect(app.projectOperations.createProject).not.toHaveBeenCalled()
+      expect(
+        dependencies.projectOperations.createProject
+      ).not.toHaveBeenCalled()
     } finally {
       window.location.hash = ''
     }
@@ -612,7 +617,7 @@ describe('project command config', () => {
       deleteRemoteOnDelete: false,
     } satisfies HomeProjectEntry
     const commands = createProjectCommands({
-      app: createApp(),
+      ...createCommandDependencies(),
       getHomeProjectActions: () => createHomeProjectActions(),
       getHomeProjectEntries: () => [homeProject],
     })
@@ -641,7 +646,7 @@ describe('project command config', () => {
   })
 
   it('moves home project entries to a selected library through project actions', async () => {
-    const app = createApp()
+    const dependencies = createCommandDependencies()
     const sourceLibrary = createLibrary('client-projects', 'Client Projects')
     const targetLibrary = createLibrary(
       'cloud-personal',
@@ -668,7 +673,7 @@ describe('project command config', () => {
       })),
     })
     const commands = createProjectCommands({
-      app,
+      ...dependencies,
       getHomeProjectActions: () => homeProjectActions,
       getHomeProjectEntries: () => [homeProject],
     })
@@ -760,7 +765,7 @@ describe('project command config', () => {
       homeProject,
       targetLibrary.id
     )
-    expect(app.projectOperations.createProject).not.toHaveBeenCalled()
+    expect(dependencies.projectOperations.createProject).not.toHaveBeenCalled()
   })
 
   it('defaults home project rename titles from the selected entry', () => {
@@ -772,7 +777,7 @@ describe('project command config', () => {
       libraryIds: ['client-projects'],
     })
     const commands = createProjectCommands({
-      app: createApp(),
+      ...createCommandDependencies(),
       getHomeProjectActions: () => createHomeProjectActions(),
       getHomeProjectEntries: () => [homeProject],
     })
@@ -795,7 +800,7 @@ describe('project command config', () => {
   })
 
   it('marks the current project directory option as current', () => {
-    const app = createApp([
+    const dependencies = createCommandDependencies([
       createProject({
         name: 'bracket-directory',
         title: 'Display Bracket',
@@ -806,7 +811,7 @@ describe('project command config', () => {
       }),
     ])
     const commands = createProjectCommands({
-      app,
+      ...dependencies,
       getCurrentProjectDirectoryName: () => 'bracket-directory',
     })
     const renameCommand = commands.find(

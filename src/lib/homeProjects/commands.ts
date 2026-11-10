@@ -1,4 +1,5 @@
-import type { App } from '@src/lib/app'
+import type { ProjectOperationsService } from '@src/lib/projectSession/projectOperations'
+import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
 import fsZds from '@src/lib/fs-zds'
 import { reportRejection } from '@src/lib/trap'
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
@@ -26,6 +27,7 @@ import type {
 } from '@src/registry/contracts/homeProjects'
 import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 import type {
+  ProjectLibrariesService,
   ProjectLibraryCreateProjectInput,
   ProjectLibraryOperation,
 } from '@src/registry/contracts/projectLibraries'
@@ -64,7 +66,9 @@ interface HomeProjectCommandTarget {
 }
 
 export function createProjectCommands({
-  app,
+  projectOperations,
+  projectSession,
+  projectLibraries,
   getCurrentProjectDirectoryName,
   getCurrentProjectPath,
   getCurrentProjectLibraryId,
@@ -73,7 +77,16 @@ export function createProjectCommands({
   getHomeProjectActions,
   getHomeProjectEntries,
 }: {
-  app: Pick<App, 'projectOperations' | 'projectSession' | 'projectLibraries'>
+  projectOperations: Pick<
+    ProjectOperationsService,
+    | 'projects'
+    | 'createProject'
+    | 'renameProject'
+    | 'deleteProject'
+    | 'writeFiles'
+  >
+  projectSession: Pick<ProjectSessionService, 'openFile'>
+  projectLibraries: ProjectLibrariesService
   getCurrentProjectDirectoryName?: () => string | undefined
   getCurrentProjectPath?: () => string | undefined
   getCurrentProjectLibraryId?: () => string | undefined
@@ -82,9 +95,9 @@ export function createProjectCommands({
   getHomeProjectActions?: () => HomeProjectActionsService | undefined
   getHomeProjectEntries?: () => readonly HomeProjectEntry[] | undefined
 }) {
-  const folderSnapshot = () => app.projectOperations.projects.value
+  const folderSnapshot = () => projectOperations.projects.value
   const defaultProjectFolderNameSnapshot = () =>
-    app.projectLibraries.defaultProjectName
+    projectLibraries.defaultProjectName
 
   const currentProjectDirectoryNameSnapshot = () =>
     getCurrentProjectDirectoryName?.()
@@ -319,9 +332,9 @@ export function createProjectCommands({
           })
         }
 
-        app.projectSession
+        projectSession
           .openFile(
-            fsZds.join(app.projectLibraries.projectDirectoryPath, record.name)
+            fsZds.join(projectLibraries.projectDirectoryPath, record.name)
           )
           .catch(reportRejection)
       }
@@ -380,14 +393,14 @@ export function createProjectCommands({
           })
         }
 
-        app.projectOperations
+        projectOperations
           .createProject({
-            directory: app.projectLibraries.projectDirectoryPath,
+            directory: projectLibraries.projectDirectoryPath,
             name: requestedProjectName,
             title: requestedProjectTitle,
           })
           .then((project) =>
-            app.projectSession.openFile(project.default_file, {
+            projectSession.openFile(project.default_file, {
               projectPath: project.path,
             })
           )
@@ -512,11 +525,11 @@ export function createProjectCommands({
           return target.actions.delete(target.project)
         }
 
-        app.projectOperations
+        projectOperations
           .deleteProject(
-            fsZds.join(app.projectLibraries.projectDirectoryPath, record.name)
+            fsZds.join(projectLibraries.projectDirectoryPath, record.name)
           )
-          .then(() => app.projectLibraries.refreshProjects())
+          .then(() => projectLibraries.refreshProjects())
           .catch(reportRejection)
       }
     },
@@ -568,15 +581,15 @@ export function createProjectCommands({
           : window.location.pathname
         const isOnHomePage = pathname.startsWith(PATHS.HOME)
         const path = fsZds.join(
-          app.projectLibraries.projectDirectoryPath,
+          projectLibraries.projectDirectoryPath,
           record.oldName
         )
-        app.projectOperations
+        projectOperations
           .renameProject(path, record.newName)
           .then(async () => {
-            await app.projectLibraries.refreshProjects()
+            await projectLibraries.refreshProjects()
             if (!isOnHomePage)
-              await app.projectSession.openFile(path, { projectPath: path })
+              await projectSession.openFile(path, { projectPath: path })
           })
           .catch(reportRejection)
       }
@@ -647,16 +660,16 @@ export function createProjectCommands({
     onSubmit: (record) => {
       if (record) {
         const root = fsZds.join(
-          app.projectLibraries.projectDirectoryPath,
-          record.projectName || app.projectLibraries.defaultProjectName
+          projectLibraries.projectDirectoryPath,
+          record.projectName || projectLibraries.defaultProjectName
         )
-        app.projectOperations
+        projectOperations
           .writeFiles(root, [
             { path: record.name, contents: record.code ?? '' },
           ])
           .then(async (paths) => {
-            await app.projectLibraries.refreshProjects()
-            await app.projectSession.openFile(paths[0], { projectPath: root })
+            await projectLibraries.refreshProjects()
+            await projectSession.openFile(paths[0], { projectPath: root })
           })
           .catch(reportRejection)
       }
