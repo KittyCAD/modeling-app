@@ -146,30 +146,27 @@ part001 = startSketchOn(XZ)
       await expect(page.locator('.cm-activeLine')).toContainText(expectedCode)
     }
   })
-  test("Various pipe expressions should and shouldn't allow edit and or extrude", async ({
-    page,
-    homePage,
-    toolbar,
-    scene,
-    cmdBar,
-  }) => {
-    const u = await getUtils(page)
-    const selectionsSnippets = {
-      extrudeAndEditBlocked: '|> startProfile(at = [10.81, 32.99])',
-      extrudeAndEditBlockedInFunction: '|> startProfile(at = pos)',
-      extrudeAndEditAllowed: '|> startProfile(at = [15.72, 4.7])',
-      editOnly: '|> startProfile(at = [15.79, -14.6])',
-    }
-    await page.addInitScript(
-      async ({
-        extrudeAndEditBlocked,
-        extrudeAndEditBlockedInFunction,
-        extrudeAndEditAllowed,
-        editOnly,
-      }: any) => {
-        localStorage.setItem(
-          'persistCode',
-          `part001 = startSketchOn(XZ)
+  test(
+    "Various pipe expressions should and shouldn't allow edit and or extrude",
+    { tag: '@localRenderer' },
+    async ({ page, homePage, toolbar, scene, cmdBar }) => {
+      const u = await getUtils(page)
+      const selectionsSnippets = {
+        extrudeAndEditBlocked: '|> startProfile(at = [10.81, 32.99])',
+        extrudeAndEditBlockedInFunction: '|> startProfile(at = pos)',
+        extrudeAndEditAllowed: '|> startProfile(at = [15.72, 4.7])',
+        editOnly: '|> startProfile(at = [15.79, -14.6])',
+      }
+      await page.addInitScript(
+        async ({
+          extrudeAndEditBlocked,
+          extrudeAndEditBlockedInFunction,
+          extrudeAndEditAllowed,
+          editOnly,
+        }: any) => {
+          localStorage.setItem(
+            'persistCode',
+            `part001 = startSketchOn(XZ)
   ${extrudeAndEditBlocked}
   |> line(end = [25.96, 2.93])
   |> line(end = [5.25, -5.72])
@@ -203,54 +200,55 @@ part001 = startSketchOn(XZ)
 
     yohey([15.79, -34.6])
     `
-        )
-      },
-      selectionsSnippets
-    )
-    await page.setBodyDimensions({ width: 1200, height: 1000 })
+          )
+        },
+        selectionsSnippets
+      )
+      await page.setBodyDimensions({ width: 1200, height: 1000 })
 
-    await homePage.goToModelingScene()
-    await scene.settled()
+      await homePage.goToModelingScene()
+      await scene.settled()
 
-    // wait for execution done
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
+      // wait for execution done
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
 
-    // wait for start sketch as a proxy for the stream being ready
-    await expect(toolbar.startSketchBtn).not.toBeDisabled()
+      // wait for start sketch as a proxy for the stream being ready
+      await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
-    await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
-    // expect extrude button to be enabled, since we don't guard
-    // until the extrude button is clicked
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
+      await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
+      // expect extrude button to be enabled, since we don't guard
+      // until the extrude button is clicked
+      await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
 
-    await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
-    await expect(
-      page.getByRole('button', { name: 'Extrude' })
-    ).not.toBeDisabled()
-    await expect(
-      page.getByRole('button', { name: 'Edit Sketch' })
-    ).toBeDisabled()
+      await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
+      await expect(
+        page.getByRole('button', { name: 'Extrude' })
+      ).not.toBeDisabled()
+      await expect(
+        page.getByRole('button', { name: 'Edit Sketch' })
+      ).toBeDisabled()
 
-    await page.getByText(selectionsSnippets.editOnly).click()
-    // expect extrude button to be enabled, since we don't guard
-    // until the extrude button is clicked
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
-    await expect(
-      page.getByRole('button', { name: 'Edit Sketch' })
-    ).toBeDisabled()
+      await page.getByText(selectionsSnippets.editOnly).click()
+      // expect extrude button to be enabled, since we don't guard
+      // until the extrude button is clicked
+      await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
+      await expect(
+        page.getByRole('button', { name: 'Edit Sketch' })
+      ).toBeDisabled()
 
-    await page
-      .getByText(selectionsSnippets.extrudeAndEditBlockedInFunction)
-      .click()
-    // expect extrude button to be enabled, since we don't guard
-    // until the extrude button is clicked
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
-    await expect(
-      page.getByRole('button', { name: 'Edit Sketch' })
-    ).not.toBeVisible()
-  })
+      await page
+        .getByText(selectionsSnippets.extrudeAndEditBlockedInFunction)
+        .click()
+      // expect extrude button to be enabled, since we don't guard
+      // until the extrude button is clicked
+      await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
+      await expect(
+        page.getByRole('button', { name: 'Edit Sketch' })
+      ).not.toBeVisible()
+    }
+  )
 
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`"View KCL source code" right click menu in scene ${rendererTag}`, async ({
