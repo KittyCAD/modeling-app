@@ -261,17 +261,10 @@ class SessionController implements ZookeeperSessionController {
   }
 
   migrateKcl() {
-    const snapshot = this.actor.getSnapshot()
-    if (
-      !this.active ||
-      this.isClearingChatSignal.peek() ||
-      this.activeSubmission !== undefined ||
-      this.queueSignal.peek().length > 0 ||
-      !this.isReadyForPrompt(snapshot)
-    ) {
+    if (!this.active || this.isClearingChatSignal.peek()) {
       return
     }
-    const project = this.getReadyZdsProject()?.projectIORefSignal.value
+    const project = this.getProject()
     if (!project) return
 
     const projectId = project.cloudProjectId
@@ -285,6 +278,7 @@ class SessionController implements ZookeeperSessionController {
     }
     const requestId = crypto.randomUUID()
     this.queueSignal.value = [
+      ...this.queueSignal.peek(),
       {
         id: requestId,
         text: 'Migrate this project to KCL 3.0.',
@@ -295,7 +289,7 @@ class SessionController implements ZookeeperSessionController {
         },
       },
     ]
-    this.flushQueue(snapshot)
+    this.flushQueue(this.actor.getSnapshot())
   }
 
   removeQueued(id: string) {
