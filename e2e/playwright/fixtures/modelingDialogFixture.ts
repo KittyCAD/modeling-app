@@ -53,7 +53,13 @@ export class ModelingDialogFixture {
     await input.press('ControlOrMeta+A')
     if (value) {
       await this.page.keyboard.insertText(value)
-      await expect(input).toHaveText(value)
+      const native = await input.evaluate(
+        (element) =>
+          element instanceof HTMLInputElement ||
+          element instanceof HTMLTextAreaElement
+      )
+      if (native) await expect(input).toHaveValue(value)
+      else await expect(input).toHaveText(value)
     } else {
       await input.press('Backspace')
     }
