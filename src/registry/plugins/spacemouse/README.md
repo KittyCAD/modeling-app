@@ -7,16 +7,23 @@ the local renderer merged in [#14506](https://github.com/KittyCAD/modeling-app/p
 
 1. Install and start the [3Dconnexion driver](https://3dconnexion.com/us/drivers/).
 2. Enable **Use Local Renderer** in user modeling settings and restart the app.
-3. Enable **SpaceMouse** in **Settings > Plugins**.
-4. Open a model, right-click the viewport, and select **Connect SpaceMouse**.
-   In a browser, allow local network access if prompted.
+3. Enable **SpaceMouse** in **Settings > Modeling**.
+4. Open a model. The plugin attempts to connect automatically on desktop.
+   In a browser, use **Connect SpaceMouse** in the viewport's right-click menu
+   for the first connection and allow local network access if prompted. Later
+   modeling views connect automatically when loopback permission is granted.
 5. Click the viewport to give it focus, then move the puck. Use the driver to
    adjust navigation mode, sensitivity, and axis preferences.
 
-Use **Disconnect SpaceMouse**, disable the plugin, or leave the modeling view to
-close the session. Input is ignored while the viewport is unfocused, while
-dragging with the regular mouse, and when using the streamed renderer. Sketch
-rotation follows **Allow Orbit in Sketch Mode**.
+Use **Disconnect SpaceMouse**, turn off the SpaceMouse setting, or leave the
+modeling view to close the session. Input is ignored while the viewport is
+unfocused, while dragging with the regular mouse, and when using the streamed
+renderer. Sketch rotation follows **Allow Orbit in Sketch Mode**.
+
+Automatic connection failures do not show a toast or retry in a loop. Use
+**Connect SpaceMouse** to retry; a manual disconnect lasts until the modeling
+view closes or SpaceMouse is re-enabled. Browsers that cannot query loopback
+permission keep the manual connection action.
 
 ## Connection and camera
 

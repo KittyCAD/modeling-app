@@ -2,11 +2,12 @@ import { Registry, pluginsValueSpec } from '@kittycad/registry'
 import { engineSceneViewExtensionsValueSpec } from '@src/registry/contracts/engineScene'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { viewControlMenuSectionsValueSpec } from '@src/registry/contracts/viewControlMenu'
+import { zdsPluginActivationSettingsValueSpec } from '@src/registry/createZdsPlugin'
 import { describe, expect, it } from 'vitest'
 import spaceMouse from '.'
 
 describe('SpaceMouse plugin', () => {
-  it('is off by default and contributes controls only while enabled', async () => {
+  it('is off by default under Modeling and contributes controls only while enabled', async () => {
     const registry = new Registry()
     registry.configure([spaceMouse])
 
@@ -19,9 +20,20 @@ describe('SpaceMouse plugin', () => {
       throw new Error('Expected SpaceMouse plugin')
     }
 
-    expect(
-      registry.get(settingsValueSpec).plugins.spacemouse.createSetting().default
-    ).toBe(false)
+    const settings = registry.get(settingsValueSpec)
+    expect(settings.modeling.spaceMouse.createSetting().default).toBe(false)
+    expect(settings.plugins?.spacemouse).toBeUndefined()
+    expect(settings.modeling.spaceMouse.userToml).toMatchObject({
+      sectionKey: 'plugins',
+      tomlKey: 'spacemouse',
+    })
+    expect(registry.get(zdsPluginActivationSettingsValueSpec)).toContainEqual(
+      expect.objectContaining({
+        pluginId: 'spacemouse',
+        category: 'modeling',
+        settingName: 'spaceMouse',
+      })
+    )
     expect(registry.get(plugin.service).active.value).toBe(false)
     expect(registry.get(engineSceneViewExtensionsValueSpec)).toEqual([])
     expect(registry.get(viewControlMenuSectionsValueSpec)).toEqual([])

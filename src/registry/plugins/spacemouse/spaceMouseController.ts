@@ -1,4 +1,5 @@
 import { signal } from '@preact/signals-core'
+import { isDesktop } from '@src/lib/isDesktop'
 import { isErr } from '@src/lib/trap'
 import {
   DriverSpaceMouseController,
@@ -22,14 +23,35 @@ export const activeSpaceMouseController = signal<SpaceMouseController | null>(
 export class SpaceMouseController {
   private driver: DriverSpaceMouseController | null = null
   private disposed = false
+  private connectionRevision = 0
 
   constructor(
     readonly cameraControls: SpaceMouseCameraControls,
     private readonly scene: SpaceMouseScene
   ) {}
 
+  async autoConnect(): Promise<undefined | Error> {
+    if (this.disposed || !this.cameraControls.localCameraMode) return
+    const revision = this.connectionRevision
+    if (!isDesktop()) {
+      try {
+        const permission = await navigator.permissions.query({
+          // @ts-expect-error Chrome's loopback permission is not in lib.dom yet.
+          name: 'loopback-network',
+        })
+        if (permission.state !== 'granted') return
+      } catch {
+        // Unsupported permission queries need the manual Connect action.
+        return
+      }
+    }
+    if (revision !== this.connectionRevision) return
+    return this.connect()
+  }
+
   async connect(): Promise<undefined | Error> {
     if (this.disposed || this.driver) return
+    this.connectionRevision += 1
     spaceMouseState.value = { status: 'connecting' }
     const driver = new DriverSpaceMouseController(
       this.cameraControls,
@@ -52,6 +74,7 @@ export class SpaceMouseController {
   }
 
   disconnect() {
+    this.connectionRevision += 1
     const driver = this.driver
     this.driver = null
     driver?.dispose()

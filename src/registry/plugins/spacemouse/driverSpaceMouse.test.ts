@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { runInNewContext } from 'node:vm'
+import { isDesktop } from '@src/lib/isDesktop'
 import { Signal } from '@src/lib/signal'
 import {
   Box3,
@@ -20,6 +21,7 @@ import vendorSource from '@public/vendor/3dconnexion.min.js?raw'
 vi.mock('/vendor/3dconnexion.min.js?url', () => ({
   default: '/vendor/3dconnexion.min.js',
 }))
+vi.mock('@src/lib/isDesktop', () => ({ isDesktop: vi.fn(() => false) }))
 
 class FakeDriver {
   static instances: FakeDriver[] = []
@@ -84,6 +86,8 @@ beforeEach(() => {
   vi.spyOn(document, 'hasFocus').mockReturnValue(true)
   vi.stubGlobal('_3Dconnexion', FakeDriver)
   FakeDriver.instances = []
+  vi.mocked(isDesktop).mockReturnValue(false)
+  spaceMouseState.value = { status: 'disconnected' }
 })
 
 afterEach(() => {
@@ -91,6 +95,93 @@ afterEach(() => {
   vi.restoreAllMocks()
   vi.unstubAllGlobals()
   document.body.replaceChildren()
+})
+
+describe('SpaceMouse automatic connection', () => {
+  function setupController() {
+    const { driver, controls, scene } = setup()
+    driver.dispose()
+    const controller = new SpaceMouseController(controls, scene)
+    return { controller, controls }
+  }
+
+  it('connects on desktop without taking keyboard focus from an editor', async () => {
+    vi.mocked(isDesktop).mockReturnValue(true)
+    const { controller } = setupController()
+    const editor = document.createElement('input')
+    document.body.appendChild(editor)
+    editor.focus()
+
+    const connection = controller.autoConnect()
+    await vi.waitFor(() => expect(FakeDriver.instances).toHaveLength(1))
+    const sdk = FakeDriver.instances[0]
+    sdk.client.onConnect()
+    sdk.client.on3dmouseCreated()
+    expect(await connection).toBeUndefined()
+    expect(spaceMouseState.value.status).toBe('connected')
+    expect(document.activeElement).toBe(editor)
+    controller.dispose()
+  })
+
+  it.each(['prompt', 'denied', 'unsupported'])(
+    'keeps connection manual when browser permission is %s',
+    async (state) => {
+      vi.stubGlobal('navigator', {
+        permissions: {
+          query: vi.fn(() =>
+            state === 'unsupported'
+              ? Promise.reject(new TypeError('Unknown permission'))
+              : Promise.resolve({ state })
+          ),
+        },
+      })
+      const { controller } = setupController()
+      await controller.autoConnect()
+      expect(FakeDriver.instances).toHaveLength(0)
+      expect(spaceMouseState.value.status).toBe('disconnected')
+      controller.dispose()
+    }
+  )
+
+  it('connects in a browser with loopback permission already granted', async () => {
+    const query = vi.fn().mockResolvedValue({ state: 'granted' })
+    vi.stubGlobal('navigator', {
+      permissions: { query },
+    })
+    const { controller } = setupController()
+    const connection = controller.autoConnect()
+    await vi.waitFor(() => expect(FakeDriver.instances).toHaveLength(1))
+    FakeDriver.instances[0].client.on3dmouseCreated()
+    expect(await connection).toBeUndefined()
+    expect(query).toHaveBeenCalledWith({
+      name: 'loopback-network',
+    })
+    controller.dispose()
+  })
+
+  it('skips streamed views', async () => {
+    vi.mocked(isDesktop).mockReturnValue(true)
+    const { controller, controls } = setupController()
+    controls.localCameraMode = false
+    await controller.autoConnect()
+    expect(FakeDriver.instances).toHaveLength(0)
+    controller.dispose()
+  })
+
+  it('honors a disconnect while browser permission is being checked', async () => {
+    const permission = Promise.withResolvers<{ state: PermissionState }>()
+    vi.stubGlobal('navigator', {
+      permissions: { query: vi.fn(() => permission.promise) },
+    })
+    const { controller } = setupController()
+    const connection = controller.autoConnect()
+    controller.disconnect()
+    permission.resolve({ state: 'granted' })
+    await connection
+    expect(FakeDriver.instances).toHaveLength(0)
+    expect(spaceMouseState.value.status).toBe('disconnected')
+    controller.dispose()
+  })
 })
 
 describe('SpaceMouse local camera', () => {
