@@ -8,6 +8,10 @@ import { reportRejection } from '@src/lib/trap'
 import { routerService } from '@src/registry/contracts/router'
 
 /** External changes refresh the current project; mutations refresh their own callers. */
+// TODO: Move useFileSystemWatcher into ProjectSessionService so the session owns
+// watcher setup and teardown independently of React. Keep this wrapper while
+// registration and cleanup depend on hooks; removing it before that migration
+// would stop native filesystem events from refreshing the project tree.
 export function ProjectFileWatcher() {
   useSignals()
   const app = useApp()
