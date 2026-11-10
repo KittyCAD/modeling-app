@@ -181,6 +181,12 @@ test.describe(
       await page.getByTestId('create-file-button').click()
       await page.getByTestId('file-rename-field').fill('existing')
       await page.keyboard.press('Enter')
+      await expect(
+        filePaneScroll.getByRole('treeitem', {
+          name: 'existing-1.kcl',
+          exact: true,
+        })
+      ).toBeEnabled({ timeout: 30_000 })
       await expect(page).toHaveURL(/existing-1\.kcl$/)
       expect(await fs.readFile(startingFilePath, 'utf8')).toBe(existingContents)
       await expect(
