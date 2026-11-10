@@ -9,9 +9,9 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 test(
   'Units menu',
   { tag: ['@desktop', '@localRenderer'] },
-  async ({ page, homePage }) => {
+  async ({ page, homePage, scene }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.goToModelingScene()
+    await scene.waitForExecutionDoneAfter(() => homePage.goToModelingScene())
 
     const unitsMenuButton = page.getByTestId('units-menu')
     await expect(unitsMenuButton).toBeVisible()
@@ -21,7 +21,7 @@ test(
     const millimetersButton = page.getByRole('button', { name: 'Millimeters' })
 
     await expect(millimetersButton).toBeVisible()
-    await millimetersButton.click()
+    await scene.waitForExecutionDoneAfter(() => millimetersButton.click())
 
     // Look out for the toast message
     const toastMessage = page.getByText('Updated per-file units to mm.')
