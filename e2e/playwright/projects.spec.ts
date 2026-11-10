@@ -735,7 +735,7 @@ test.describe(
         await expect(projectSidebarToggle).toContainText(projectRenamedName)
       })
     })
-  
+
     test(`Delete from project page`, async ({
       context,
       page,
@@ -967,7 +967,7 @@ test.describe(
         )
       }
     )
-  
+
     test(`Delete from home page`, async ({
       context,
       page,

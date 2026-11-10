@@ -525,7 +525,19 @@ function AppProjectCard({
     <UiProjectCard
       {...props}
       rootRef={cardRef}
-      title={projectName}
+      title={
+        <span className="flex items-center gap-2">
+          <span className="min-w-0 flex-1 truncate">{projectName}</span>
+          <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center text-chalkboard-60 dark:text-chalkboard-30">
+            {isOpening && (
+              <span role="status" aria-label={`Opening project ${projectName}`}>
+                <Spinner aria-hidden="true" className="h-4 w-4" />
+                <span className="sr-only">Opening project...</span>
+              </span>
+            )}
+          </span>
+        </span>
+      }
       titleText={projectName}
       canOpen={canOpen && !isOpening}
       aria-busy={isOpening}
@@ -664,16 +676,6 @@ function AppProjectCard({
           }
         >
           {children}
-          {isOpening && (
-            <span
-              role="status"
-              aria-label={`Opening project ${projectName}`}
-              className="absolute inset-0 z-20 flex items-center justify-center gap-2 bg-chalkboard-10/80 dark:bg-chalkboard-100/80"
-            >
-              <Spinner aria-hidden="true" className="h-6 w-6" />
-              <span>Opening project...</span>
-            </span>
-          )}
         </Link>
       )}
     />
