@@ -149,6 +149,7 @@ async function prepare(
         projectPath
       )
       await navigate(`/file/${encodeURIComponent(filePath)}`)
+      await page.locator('.cm-content').first().waitFor({ state: 'visible' })
     },
     destinationDirectory: localDestination.path,
   }
@@ -235,6 +236,7 @@ for (const [source, destination] of [
         expect(files[0]).toContain('keep = "yes"')
         expect(files[1]).toBe('nested bytes')
         await page.reload({ waitUntil: 'domcontentloaded' })
+        await page.locator('.cm-content').first().waitFor({ state: 'visible' })
         await expect(page.locator('.cm-content').first()).toContainText(
           '// original'
         )
