@@ -411,7 +411,7 @@ export class ConnectionManager extends EventTarget {
     callbackOnUnitTestingConnection?: (message: string) => void
     unitTestWebrtc?: boolean
     unitTestGeometryOnly?: boolean
-    rustContext?: RustContext
+    rustContext?: Pick<RustContext, 'sendResponse'>
     geometryOnly?: boolean
     kclVersion?: KclVersion
     prepareForReconnect?: (signal: AbortSignal) => Promise<undefined | Error>
@@ -1131,7 +1131,7 @@ export class ConnectionManager extends EventTarget {
   }
 
   // this.connection.websocket.addEventListener('message') handler
-  createMessageHandler(rustContext?: RustContext) {
+  createMessageHandler(rustContext?: Pick<RustContext, 'sendResponse'>) {
     return (event: MessageEvent) => {
       let message: WebSocketResponse | null = null
 

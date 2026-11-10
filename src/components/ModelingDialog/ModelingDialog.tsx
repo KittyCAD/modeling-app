@@ -37,6 +37,8 @@ import { useDialogSelection } from '@src/components/ModelingDialog/useDialogSele
 import { ArgumentHelp } from '@src/components/ModelingDialog/ArgumentHelp'
 import { CommandHelp } from '@src/components/ModelingDialog/CommandHelp'
 
+import { ExtrudePreview } from '@src/components/ModelingDialog/ExtrudePreview'
+
 export default function ModelingDialog({
   containerRef,
   kclManager,
@@ -527,6 +529,15 @@ export default function ModelingDialog({
                 {advanced.map(renderField)}
               </div>
             </details>
+          )}
+          {!initializing && command.name === 'Extrude' && (
+            <ExtrudePreview
+              kcl={kclManager}
+              context={state.context}
+              draft={selection.draft}
+              save={save}
+              containerRef={containerRef}
+            />
           )}
         </div>
         <footer className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-chalkboard-30 p-3 dark:border-chalkboard-70">
