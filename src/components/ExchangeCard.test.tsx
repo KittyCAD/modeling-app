@@ -227,7 +227,7 @@ describe('ExchangeCard replay attachments', () => {
     expect(screen.getByTestId('zookeeper-activity-card')).toHaveClass(
       'zk-activity-card-running'
     )
-    expect(screen.queryByText('Read main.kcl')).not.toBeInTheDocument()
+    expect(screen.getByText('Read main.kcl')).toBeVisible()
     expect(
       screen.queryByText('Read main.kcl · Running')
     ).not.toBeInTheDocument()
@@ -298,7 +298,7 @@ describe('ExchangeCard replay attachments', () => {
     )
   })
 
-  test('keeps tool labels and legacy reasoning out of the compact status', () => {
+  test('shows a tool label beneath the placeholder without exposing legacy reasoning', () => {
     render(
       <ExchangeCard
         {...exchangeProps}
@@ -323,7 +323,7 @@ describe('ExchangeCard replay attachments', () => {
     )
 
     expect(screen.getByText('Working…')).toBeVisible()
-    expect(screen.queryByText('Read main.kcl')).not.toBeInTheDocument()
+    expect(screen.getByText('Read main.kcl')).toBeVisible()
     expect(screen.queryByText('Internal model text')).not.toBeInTheDocument()
   })
 
@@ -424,6 +424,17 @@ describe('ExchangeCard replay attachments', () => {
     expect(screen.getByTestId('zookeeper-activity-card')).toHaveTextContent(
       'Inspecting the project.'
     )
+    expect(screen.getByText('Read main.kcl')).toBeVisible()
+    rerender(
+      <ExchangeCard
+        {...exchangeProps}
+        request={request}
+        responses={[first, tool, second]}
+      />
+    )
+    expect(screen.getByTestId('zookeeper-activity-card')).toHaveTextContent(
+      'Building the bracket.'
+    )
     expect(screen.queryByText('Read main.kcl')).not.toBeInTheDocument()
     rerender(
       <ExchangeCard
@@ -441,7 +452,7 @@ describe('ExchangeCard replay attachments', () => {
       screen.queryByText('Inspecting the project.')
     ).not.toBeInTheDocument()
     expect(screen.queryByText('Read main.kcl')).not.toBeInTheDocument()
-    expect(screen.queryByText('Validated main.kcl')).not.toBeInTheDocument()
+    expect(screen.getByText('Validated main.kcl')).toBeVisible()
 
     fireEvent.click(screen.getByRole('button', { name: /View activity/ }))
     const history =

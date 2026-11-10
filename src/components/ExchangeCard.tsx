@@ -549,11 +549,15 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   const hasActivity =
     hasRecordedActivity || (!isEndOfStream && props.isLastResponse)
   let latestCommentary: string | undefined
+  let latestToolLabel: string | undefined
   for (let index = props.responses.length - 1; index >= 0; index--) {
     const activity = parseZookeeperActivity(props.responses[index])
     if (activity?.kind === 'commentary' && activity.text.trim() !== '') {
       latestCommentary = activity.text
       break
+    }
+    if (activity?.kind === 'tool' && latestToolLabel === undefined) {
+      latestToolLabel = activity.label || activity.name.replaceAll('_', ' ')
     }
   }
   const progressStatus = latestCommentary ?? 'Working…'
@@ -590,6 +594,14 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
                   <span className="line-clamp-2 text-center font-medium">
                     {progressStatus}
                   </span>
+                  {latestToolLabel && (
+                    <span
+                      className="mt-1 block truncate text-center text-[11px] text-chalkboard-60 dark:text-chalkboard-40"
+                      title={latestToolLabel}
+                    >
+                      {latestToolLabel}
+                    </span>
+                  )}
                   <span
                     aria-hidden="true"
                     className="mt-2 block h-1 w-full animate-shimmer rounded-full bg-chalkboard-40 dark:bg-chalkboard-30"
