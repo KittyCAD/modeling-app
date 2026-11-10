@@ -55,8 +55,6 @@ function CommandArgOptionInput({
   // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   const initialQuery = useMemo(() => '', [arg.options, argName])
   const [query, setQuery] = useState(initialQuery)
-  const [filteredOptions, setFilteredOptions] =
-    useState<typeof resolvedOptions>()
 
   // Create a new Fuse instance when the options change
   const fuse = useMemo(
@@ -93,12 +91,13 @@ function CommandArgOptionInput({
     inputRef?.current?.dispatchEvent(downArrowEvent)
   }, [])
 
-  // Filter the options based on the query,
-  // resetting the query when the options change
-  useEffect(() => {
-    const results = fuse.search(query).map((result) => result.item)
-    setFilteredOptions(query.length > 0 ? results : resolvedOptions)
-  }, [query, resolvedOptions, fuse])
+  const filteredOptions = useMemo(
+    () =>
+      query.length > 0
+        ? fuse.search(query).map((result) => result.item)
+        : resolvedOptions,
+    [query, resolvedOptions, fuse]
+  )
 
   function handleSelectOption(option: CommandArgumentOption<unknown>) {
     // We deal with the whole option object internally
@@ -177,7 +176,7 @@ function CommandArgOptionInput({
             autoFocus
           />
         </div>
-        {filteredOptions?.length ? (
+        {filteredOptions.length ? (
           <Combobox.Options
             static
             className="overflow-y-auto max-h-96 cursor-pointer"
@@ -185,9 +184,14 @@ function CommandArgOptionInput({
               shouldSubmitOnChange.current = true
             }}
           >
-            {filteredOptions?.map((option) => (
+            {filteredOptions.map((option) => (
               <Combobox.Option
-                key={option.name}
+                key={
+                  typeof option.value === 'string' ||
+                  typeof option.value === 'number'
+                    ? `value:${option.value}`
+                    : `index:${resolvedOptions.indexOf(option)}`
+                }
                 value={option}
                 disabled={option.disabled}
                 className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"

@@ -1,11 +1,50 @@
+import fc from 'fast-check'
+import { createProjectForTest } from '@src/lib/projectTestUtils'
 import {
+  homeProjectDisplayNameExists,
+  findHomeProjectByPath,
   homeProjectEntryFromProject,
   shouldDeleteRemoteOnHomeProjectDelete,
   shouldPreserveRemoteOnHomeProjectDelete,
 } from '@src/lib/homeProjects'
 import type { FileMetadata, Project } from '@src/lib/project'
 import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
-import { describe, expect, test } from 'vitest'
+import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
+import { describe, expect, test, vi } from 'vitest'
+
+test('resolves local and cloud Home entries without matching a different project', () => {
+  const local: HomeProjectEntry = {
+    id: 'local',
+    source: 'local',
+    status: 'local',
+    name: 'local',
+    localProjectPath: '/projects/local',
+    readWriteAccess: true,
+  }
+  const remote: HomeProjectEntry = {
+    id: 'cloud:one',
+    source: 'remote',
+    status: 'cloud-only',
+    name: 'one',
+    remoteProjectId: 'one',
+    readWriteAccess: true,
+  }
+  const cloudPathFor = vi.fn((id: string) => `/__zoo_cloud__/${id}`)
+  const entries = [local, remote]
+  expect(
+    findHomeProjectByPath(entries, local.localProjectPath!, cloudPathFor)
+  ).toBe(local)
+  expect(cloudPathFor).not.toHaveBeenCalled()
+  expect(
+    findHomeProjectByPath(entries, '/__zoo_cloud__/one', cloudPathFor)
+  ).toBe(remote)
+  expect(
+    findHomeProjectByPath(entries, '/__zoo_cloud__/two', cloudPathFor)
+  ).toBeUndefined()
+  expect(
+    findHomeProjectByPath(entries, '/projects/local/nested', cloudPathFor)
+  ).toBeUndefined()
+})
 
 function metadata(modified: number): FileMetadata {
   return {
@@ -20,15 +59,12 @@ function metadata(modified: number): FileMetadata {
 
 describe('homeProjectEntryFromProject', () => {
   test('uses the newest child modified time for local project cards', () => {
-    const project = {
+    const project = createProjectForTest('/projects/project', {
       name: 'project',
-      path: '/projects/project',
       title: 'Project',
       default_file: '/projects/project/main.kcl',
-      readWriteAccess: true,
       metadata: metadata(10),
       kcl_file_count: 1,
-      directory_count: 0,
       children: [
         {
           name: 'main.kcl',
@@ -37,24 +73,20 @@ describe('homeProjectEntryFromProject', () => {
           children: null,
         },
       ],
-    } satisfies Project
+    }) satisfies Project
 
     expect(homeProjectEntryFromProject(project).modified).toBe(50)
   })
 
   test('marks cloud-type project snapshots as remote-deleting Home cards', () => {
-    const project = {
+    const project = createProjectForTest('/projects/project', {
       name: 'project',
-      path: '/projects/project',
       default_file: '/projects/project/main.kcl',
-      readWriteAccess: true,
       metadata: metadata(10),
       kcl_file_count: 1,
-      directory_count: 0,
-      children: [],
       cloudProjectId: 'remote-123',
       libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
-    } satisfies Project
+    }) satisfies Project
 
     expect(homeProjectEntryFromProject(project).deleteRemoteOnDelete).toBe(true)
   })
@@ -102,5 +134,54 @@ describe('Home project deletion policy', () => {
         deleteRemoteOnDelete: true,
       })
     ).toBe(false)
+  })
+})
+
+describe('project title uniqueness within libraries', () => {
+  test('renaming away and back accepts a title shared with another library', () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1 }),
+        fc.uuid(),
+        fc.uuid(),
+        (title, localLibrary, cloudLibrary) => {
+          fc.pre(localLibrary !== cloudLibrary)
+          const local: HomeProjectEntry = {
+            id: 'local',
+            source: 'local',
+            status: 'local',
+            name: 'local',
+            title: 'Renamed',
+            libraryIds: [localLibrary],
+            readWriteAccess: true,
+          }
+          const cloud: HomeProjectEntry = {
+            id: 'cloud',
+            source: 'remote',
+            status: 'cloud-only',
+            name: 'cloud',
+            title,
+            libraryIds: [cloudLibrary],
+            readWriteAccess: true,
+          }
+          const entries = [local, cloud]
+          expect(
+            homeProjectDisplayNameExists({
+              entries,
+              requestedName: title.replace('.kcl', ''),
+              projectId: local.id,
+            })
+          ).toBe(false)
+          cloud.libraryIds = [localLibrary, cloudLibrary]
+          expect(
+            homeProjectDisplayNameExists({
+              entries,
+              requestedName: title.replace('.kcl', ''),
+              projectId: local.id,
+            })
+          ).toBe(true)
+        }
+      )
+    )
   })
 })

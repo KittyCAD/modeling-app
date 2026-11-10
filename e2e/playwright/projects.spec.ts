@@ -1,3 +1,5 @@
+import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   closeOnboardingModalIfPresent,
@@ -111,15 +113,7 @@ test(
   async ({ scene, cmdBar, context, page, fs, folderSetupFn }, testInfo) => {
     await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
-      await fs.mkdir(bracketDir, { recursive: true })
-      const testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl')
-      )
-
-      await fs.writeFile(
-        path.join(bracketDir, 'main.kcl'),
-        new Uint8Array(testFileData)
-      )
+      await seedProjectFromFixture(fs, bracketDir, 'cylinder-inches.kcl')
     })
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -242,14 +236,7 @@ test(
   }) => {
     await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
-      await fs.mkdir(bracketDir, { recursive: true })
-      const testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl')
-      )
-      await fs.writeFile(
-        path.join(bracketDir, 'main.kcl'),
-        new Uint8Array(testFileData)
-      )
+      await seedProjectFromFixture(fs, bracketDir, 'cylinder-inches.kcl')
       const emptyDir = path.join(dir, 'empty')
       await fs.mkdir(emptyDir, { recursive: true })
       await fs.writeFile(path.join(emptyDir, 'main.kcl'), new Uint8Array())
@@ -290,14 +277,7 @@ test(
   }) => {
     await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
-      await fs.mkdir(bracketDir, { recursive: true })
-      const testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl')
-      )
-      await fs.writeFile(
-        path.join(bracketDir, 'main.kcl'),
-        new Uint8Array(testFileData)
-      )
+      await seedProjectFromFixture(fs, bracketDir, 'cylinder-inches.kcl')
       await fs.writeFile(path.join(bracketDir, 'empty.kcl'), new Uint8Array())
     })
 
@@ -341,14 +321,7 @@ test(
   }) => {
     await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
-      await fs.mkdir(bracketDir, { recursive: true })
-      const testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl')
-      )
-      await fs.writeFile(
-        path.join(bracketDir, 'main.kcl'),
-        new Uint8Array(testFileData)
-      )
+      await seedProjectFromFixture(fs, bracketDir, 'cylinder-inches.kcl')
 
       const brokenFileData = await nodeFs.readFile(
         executorInputPath('broken-code-test.kcl')
@@ -669,7 +642,7 @@ test.describe(`Project management commands`, { tag: ['@desktop'] }, () => {
     folderSetupFn,
   }, testInfo) => {
     const projectName = `my_project_to_rename`
-    await folderSetupFn(async (dir) => {
+    const { dir } = await folderSetupFn(async (dir) => {
       await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
       const testFileData = await nodeFs.readFile(
         'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl'
@@ -723,6 +696,11 @@ test.describe(`Project management commands`, { tag: ['@desktop'] }, () => {
     const projectSidebarToggle = page.getByTestId('project-sidebar-toggle')
     await test.step(`Check the project was renamed (check breadcrumb)`, async () => {
       await expect(projectSidebarToggle).toBeVisible()
+      await expect(projectSidebarToggle).toContainText(projectRenamedName)
+      const directories = await fs.readdir(dir)
+      expect(directories).toContain(projectName)
+      expect(directories).not.toContain(projectRenamedName)
+      await page.reload()
       await expect(projectSidebarToggle).toContainText(projectRenamedName)
     })
   })
@@ -778,6 +756,7 @@ test.describe(`Project management commands`, { tag: ['@desktop'] }, () => {
     })
 
     await test.step(`Check the project was deleted and we navigated home`, async () => {
+      await new HomePageFixture(page).projectsLoaded()
       await expect(noProjectsMessage).toBeVisible()
     })
   })
@@ -910,6 +889,10 @@ test.describe(`Project management commands`, { tag: ['@desktop'] }, () => {
           data: { level: 'user', value: libraries },
         })
       }, libraries)
+      await page.getByTestId('app-logo').click()
+      await expect(
+        page.getByRole('heading', { name: 'Project Libraries', exact: true })
+      ).toBeVisible()
       await expect(
         homePage.projectCardTitle.filter({ hasText: 'Bracket' })
       ).toHaveCount(2)
@@ -1001,6 +984,7 @@ test.describe(`Project management commands`, { tag: ['@desktop'] }, () => {
 
     await test.step(`Check the project was deleted`, async () => {
       await expect(projectHomeLink).not.toBeVisible()
+      await new HomePageFixture(page).projectsLoaded()
       await expect(noProjectsMessage).toBeVisible()
     })
   })
@@ -1539,6 +1523,7 @@ test(
     })
 
     await test.step('We can change back to the original root project directory', async () => {
+      await homePage.projectsLoaded()
       await expect(
         page.getByTestId('project-directory-settings-link')
       ).toBeVisible()
@@ -1993,3 +1978,13 @@ test.describe('Project id', { tag: ['@desktop'] }, () => {
     })
   })
 })
+
+async function seedProjectFromFixture(
+  fs: PromisifiedZooDesignStudioFS,
+  projectPath: string,
+  fixtureName: string
+) {
+  await fs.mkdir(projectPath, { recursive: true })
+  const data = await nodeFs.readFile(executorInputPath(fixtureName))
+  await fs.writeFile(path.join(projectPath, 'main.kcl'), new Uint8Array(data))
+}

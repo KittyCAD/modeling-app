@@ -58,7 +58,10 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
-import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
+import {
+  isErrorWhitelisted,
+  isInterruptedWebKitRequest,
+} from '@e2e/playwright/lib/console-error-whitelist'
 import {
   PLAYWRIGHT_PROJECT_DIRECTORY,
   TEST_SETTINGS,
@@ -718,6 +721,16 @@ export async function getUtils(page: Page, test_?: typeof test) {
         await page.getByTestId('create-file-button').click()
         await page.getByTestId('file-rename-field').fill(name)
         await page.keyboard.press('Enter')
+        await expect
+          .poll(() =>
+            page.evaluate((name) => {
+              const current = window.app.project?.executingPath
+              const basename = current ? window.fsZds.basename(current) : ''
+              return basename === name || basename === `${name}.kcl`
+            }, name)
+          )
+          .toBe(true)
+        await expect(page.locator(editorSelector)).toBeEditable()
       })
     },
 
@@ -1341,14 +1354,14 @@ function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
       return
     }
     if (
-      testInfo?.project.name === 'webkit' &&
-      mainFrameNavigationRequest !== undefined &&
-      exception.name === 'Cannot load blob' &&
-      exception.message.includes('due to access control checks') &&
-      exception.stack?.includes('/src/lib/fs-zds/opfs.ts')
+      isInterruptedWebKitRequest(
+        exception,
+        testInfo?.project.name,
+        mainFrameNavigationRequest !== undefined
+      )
     ) {
-      // WebKit reports interrupted OPFS reads from the old document as page
-      // errors while it unloads; the replacement document is unaffected.
+      // WebKit reports interrupted reads and worker startup from the outgoing
+      // document as page errors. Keep these failures fatal outside navigation.
       return
     }
     // Only disable this environment variable if you want to collect console errors
@@ -1425,7 +1438,9 @@ export async function createProject({
 
 export async function goToHomePageFromModeling(page: Page) {
   await page.getByTestId('app-logo').click()
-  await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+  await expect(
+    page.getByRole('heading', { name: 'Project Libraries' })
+  ).toBeVisible()
 }
 
 export function executorInputPath(fileName: string): string {

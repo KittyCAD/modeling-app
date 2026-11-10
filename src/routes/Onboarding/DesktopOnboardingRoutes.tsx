@@ -1,3 +1,8 @@
+import { newKclFile } from '@src/lang/project'
+import type { App } from '@src/lib/app'
+import { selectCommand } from '@src/lib/commandUtils'
+import fsZds from '@src/lib/fs-zds'
+import { isErr, reportRejection } from '@src/lib/trap'
 import { Spinner } from '@src/components/Spinner'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useApp } from '@src/lib/boot'
@@ -13,7 +18,6 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
   OnboardingButtons,
   OnboardingCard,
@@ -58,12 +62,12 @@ const onboardingComponents: Record<DesktopOnboardingPath, React.JSX.Element> = {
 }
 
 function useOnboardingProjectIO() {
-  const { project, systemIOActor } = useApp()
-  return { projectName: project?.name, systemIOActor }
+  const app = useApp()
+  return { projectName: app.project?.name, app }
 }
 
 function Welcome() {
-  const { projectName, systemIOActor } = useOnboardingProjectIO()
+  const { projectName, app } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop'
 
   // Ensure panes are closed
@@ -75,18 +79,13 @@ function Welcome() {
       return
     }
     // Navigate to the `main.kcl` file
-    systemIOActor.send({
-      type: SystemIOMachineEvents.navigateToFile,
-      data: {
-        requestedProjectName: projectName,
-        requestedFileName: 'main.kcl',
-        requestedSubRoute: joinRouterPaths(
-          String(PATHS.ONBOARDING),
-          thisOnboardingStatus
-        ),
-      },
-    })
-  }, [systemIOActor, projectName])
+    app.projectSession
+      .openFile(
+        fsZds.join(app.projectDirectoryPath, projectName, 'main.kcl'),
+        onboardingProjectOpenOptions(app, projectName, thisOnboardingStatus)
+      )
+      .catch(reportRejection)
+  }, [app, projectName])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -106,7 +105,7 @@ function Welcome() {
 }
 
 function Scene() {
-  const { projectName, systemIOActor } = useOnboardingProjectIO()
+  const { projectName, app } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/scene'
   const currentFilePath = useAbsoluteFilePath()
   const isBlankFileOpen = Boolean(currentFilePath?.endsWith('blank.kcl'))
@@ -129,37 +128,45 @@ function Scene() {
     if (isBlankFileOpen) {
       return
     }
+    const project = app.project
+    if (!project) return
     let cancelled = false
     setIsBlankSceneReady(false)
     // Create if necessary and navigate to the `blank.kcl` file
-    systemIOActor.send({
-      type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
-      data: {
-        requestedProjectName: projectName,
-        requestedFileNameWithExtension: 'blank.kcl',
-        files: [
-          {
-            requestedProjectName: projectName,
-            requestedFileName: 'blank.kcl',
-            requestedCode: '',
-          },
-        ],
-        override: true,
-        requestedSubRoute: joinRouterPaths(
-          String(PATHS.ONBOARDING),
-          thisOnboardingStatus
-        ),
-        onSuccess: () => {
-          if (!cancelled) {
-            setIsBlankSceneReady(true)
-          }
-        },
-      },
-    })
+    app.wasmPromise
+      .then((wasm) => {
+        if (cancelled || app.project !== project) return []
+        const contents = newKclFile(
+          undefined,
+          app.settings.actor.getSnapshot().context.modeling.defaultUnit.current,
+          wasm
+        )
+        if (isErr(contents)) return Promise.reject(contents)
+        return app.projectOperations.writeFiles(
+          project.path,
+          [{ path: 'blank.kcl', contents }],
+          { overwrite: true }
+        )
+      })
+      .then(async (paths) => {
+        if (cancelled || app.project !== project) return
+        await app.refreshProjects()
+        if (cancelled || app.project !== project) return
+        await app.projectSession.openFile(paths[0], {
+          ...onboardingProjectOpenOptions(
+            app,
+            projectName,
+            thisOnboardingStatus
+          ),
+          projectPath: project.path,
+        })
+        if (!cancelled) setIsBlankSceneReady(true)
+      })
+      .catch(reportRejection)
     return () => {
       cancelled = true
     }
-  }, [systemIOActor, projectName, isBlankFileOpen])
+  }, [app, projectName, isBlankFileOpen])
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -280,7 +287,7 @@ function ZookeeperPrompt() {
 }
 
 function FeatureTreePane() {
-  const { projectName, systemIOActor } = useOnboardingProjectIO()
+  const { projectName, app } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/feature-tree-pane'
   const generatedFileName = 'main.kcl'
@@ -296,18 +303,13 @@ function FeatureTreePane() {
     if (!projectName) {
       return
     }
-    systemIOActor.send({
-      type: SystemIOMachineEvents.navigateToFile,
-      data: {
-        requestedProjectName: projectName,
-        requestedFileName: generatedFileName,
-        requestedSubRoute: joinRouterPaths(
-          String(PATHS.ONBOARDING),
-          thisOnboardingStatus
-        ),
-      },
-    })
-  }, [systemIOActor, projectName])
+    app.projectSession
+      .openFile(
+        fsZds.join(app.projectDirectoryPath, projectName, generatedFileName),
+        onboardingProjectOpenOptions(app, projectName, thisOnboardingStatus)
+      )
+      .catch(reportRejection)
+  }, [app, projectName])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">
@@ -417,7 +419,7 @@ function OtherPanes() {
 }
 
 function PromptToEdit() {
-  const { projectName, systemIOActor } = useOnboardingProjectIO()
+  const { projectName, app } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/prompt-to-edit'
 
   // Highlight the zookeeper button if it's present
@@ -429,18 +431,13 @@ function PromptToEdit() {
     if (!projectName) {
       return
     }
-    systemIOActor.send({
-      type: SystemIOMachineEvents.navigateToFile,
-      data: {
-        requestedProjectName: projectName,
-        requestedFileName: 'main.kcl',
-        requestedSubRoute: joinRouterPaths(
-          String(PATHS.ONBOARDING),
-          thisOnboardingStatus
-        ),
-      },
-    })
-  }, [systemIOActor, projectName])
+    app.projectSession
+      .openFile(
+        fsZds.join(app.projectDirectoryPath, projectName, 'main.kcl'),
+        onboardingProjectOpenOptions(app, projectName, thisOnboardingStatus)
+      )
+      .catch(reportRejection)
+  }, [app, projectName])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 p-8 grid justify-center items-center">
@@ -488,18 +485,15 @@ function PromptToEditPrompt() {
   )
   useOnModelingCmdGroupReadyOnce(() => {
     setIsReady(true)
-    commands.send({
-      type: 'Find and select command',
-      data: {
-        groupId: 'modeling',
-        name: 'Prompt-to-edit',
-        argDefaultValues: {
-          selection: {
-            graphSelections: [],
-            otherSelections: [],
-          } satisfies Selections,
-          prompt,
-        },
+    selectCommand(commands, {
+      groupId: 'modeling',
+      name: 'Prompt-to-edit',
+      argDefaultValues: {
+        selection: {
+          graphSelections: [],
+          otherSelections: [],
+        } satisfies Selections,
+        prompt,
       },
     })
   }, [])
@@ -537,7 +531,7 @@ function PromptToEditPrompt() {
 }
 
 function PromptToEditResult() {
-  const { projectName, systemIOActor } = useOnboardingProjectIO()
+  const { projectName, app } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/prompt-to-edit-result'
 
@@ -549,25 +543,21 @@ function PromptToEditResult() {
       return
     }
     // Navigate to the `main.kcl` file
-    systemIOActor.send({
-      type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
-      data: {
-        requestedProjectName: projectName,
-        files: [
-          {
-            requestedFileName: 'main.kcl',
-            requestedProjectName: projectName,
-            requestedCode: modifiedColdPlate,
-          },
-        ],
-        override: true,
-        requestedSubRoute: joinRouterPaths(
-          String(PATHS.ONBOARDING),
-          thisOnboardingStatus
-        ),
-      },
-    })
-  }, [systemIOActor, projectName])
+    app.projectOperations
+      .writeFiles(
+        fsZds.join(app.projectDirectoryPath, projectName),
+        [{ path: 'main.kcl', contents: modifiedColdPlate }],
+        { overwrite: true }
+      )
+      .then(async () => {
+        await app.refreshProjects()
+        await app.projectSession.openFile(
+          fsZds.join(app.projectDirectoryPath, projectName),
+          onboardingProjectOpenOptions(app, projectName, thisOnboardingStatus)
+        )
+      })
+      .catch(reportRejection)
+  }, [app, projectName])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">
@@ -709,3 +699,14 @@ export const desktopOnboardingRoutes: DesktopOnboardingRoute[] = [
     element: onboardingComponents[path],
   })),
 ]
+
+function onboardingProjectOpenOptions(
+  app: App,
+  projectName: string,
+  onboardingStatus: string
+) {
+  return {
+    projectPath: fsZds.join(app.projectDirectoryPath, projectName),
+    subRoute: joinRouterPaths(String(PATHS.ONBOARDING), onboardingStatus),
+  }
+}

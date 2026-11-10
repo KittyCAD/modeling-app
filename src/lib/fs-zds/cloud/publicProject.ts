@@ -1,0 +1,387 @@
+import { base64ToBytes } from '@src/lib/base64'
+import { projects } from '@kittycad/lib'
+import {
+  firstExistingProjectFile,
+  readProjectZip,
+} from '@src/lib/fs-zds/cloud/archiveContents'
+
+import env from '@src/env'
+import {
+  ASK_TO_OPEN_QUERY_PARAM,
+  PROJECT_ENTRYPOINT,
+  PROJECT_ID_QUERY_PARAM,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
+import { webSafePathSplit } from '@src/lib/paths'
+import { sanitizeProjectName } from '@src/lib/projectName'
+import { err, isErr } from '@src/lib/trap'
+import { isArray } from '@src/lib/utils'
+type RequestedProjectFile = {
+  requestedProjectName: string
+  requestedFileName: string
+  requestedData: Uint8Array<ArrayBuffer>
+}
+
+const DEFAULT_IMPORTED_PROJECT_NAME = 'shared-project'
+const PROJECT_DOWNLOAD_FORMAT = 'zip'
+
+type DownloadedProjectArchive = {
+  archive: ArrayBuffer
+  contentDisposition: string | null
+}
+
+export function createOpenProjectIdUrl(projectId: string) {
+  const origin = env().VITE_ZOO_SITE_APP_URL
+  const searchParams = new URLSearchParams({
+    [PROJECT_ID_QUERY_PARAM]: projectId,
+    [ASK_TO_OPEN_QUERY_PARAM]: String(true),
+  })
+
+  return new URL(`?${searchParams.toString()}`, origin)
+}
+
+export async function getPublicProjectNameById(
+  projectId: string
+): Promise<string | Error> {
+  const client = createKCClient()
+  const result = await kcCall(() =>
+    projects.get_public_project({
+      client,
+      id: projectId,
+    })
+  )
+
+  if (err(result)) {
+    return result
+  }
+
+  return sanitizeProjectName(
+    result.title || DEFAULT_IMPORTED_PROJECT_NAME,
+    DEFAULT_IMPORTED_PROJECT_NAME
+  )
+}
+
+export async function downloadProjectById(projectId: string): Promise<
+  | {
+      projectName: string
+      files: RequestedProjectFile[]
+      entrypointFilePath?: string
+    }
+  | Error
+> {
+  try {
+    const archive = await downloadProjectArchiveById(projectId)
+    if (err(archive)) return archive
+    return await parseDownloadedProject(archive)
+  } catch (error) {
+    return error instanceof Error
+      ? error
+      : new Error('The shared project download could not be opened.')
+  }
+}
+
+async function downloadProjectArchiveById(
+  projectId: string
+): Promise<DownloadedProjectArchive | Error> {
+  const result = await kcCall(() =>
+    projects.download_public_project({
+      client: createKCClient(),
+      id: projectId,
+      format: PROJECT_DOWNLOAD_FORMAT,
+    })
+  )
+  if (err(result)) return result
+  return {
+    archive: await result.arrayBuffer(),
+    contentDisposition: result.headers.get('content-disposition'),
+  }
+}
+
+async function parseDownloadedProject({
+  archive,
+  contentDisposition,
+}: {
+  archive: ArrayBuffer
+  contentDisposition: string | null
+}): Promise<
+  | {
+      projectName: string
+      files: RequestedProjectFile[]
+      entrypointFilePath?: string
+    }
+  | Error
+> {
+  const zipResult = await parseZipArchive({
+    archive,
+    contentDisposition,
+  })
+  if (!isErr(zipResult)) {
+    return zipResult
+  }
+
+  const jsonResult = parseJsonArchive(archive)
+  if (!isErr(jsonResult)) {
+    return jsonResult
+  }
+
+  return zipResult
+}
+
+async function parseZipArchive({
+  archive,
+  contentDisposition,
+}: {
+  archive: ArrayBuffer
+  contentDisposition: string | null
+}): Promise<
+  | {
+      projectName: string
+      files: RequestedProjectFile[]
+      entrypointFilePath?: string
+    }
+  | Error
+> {
+  const entries = await readProjectZip(archive)
+
+  if (entries.length === 0) {
+    return new Error('The shared project download did not contain any files.')
+  }
+
+  const rootDirectory = getCommonArchiveRoot(
+    entries.map((entry) => entry.relativePath)
+  )
+  const projectName = sanitizeProjectName(
+    rootDirectory ||
+      getFilenameStemFromContentDisposition(contentDisposition) ||
+      DEFAULT_IMPORTED_PROJECT_NAME,
+    DEFAULT_IMPORTED_PROJECT_NAME
+  )
+
+  const files = entries.map((entry) => ({
+    requestedProjectName: projectName,
+    requestedFileName: stripArchiveRoot(entry.relativePath, rootDirectory),
+    requestedData: entry.data,
+  }))
+
+  const entrypointFilePath = getRequiredProjectEntrypoint(files)
+  if (err(entrypointFilePath)) {
+    return entrypointFilePath
+  }
+
+  return {
+    projectName,
+    files,
+    entrypointFilePath,
+  }
+}
+
+function parseJsonArchive(archive: ArrayBuffer):
+  | {
+      projectName: string
+      files: RequestedProjectFile[]
+      entrypointFilePath?: string
+    }
+  | Error {
+  let parsed:
+    | {
+        projectName?: string
+        name?: string
+        files?:
+          | Array<{
+              path?: string
+              name?: string
+              content?: string
+              data?: string
+              encoding?: 'base64' | 'utf-8'
+            }>
+          | Record<string, string>
+      }
+    | undefined
+
+  try {
+    const decoded = new TextDecoder().decode(new Uint8Array(archive))
+    parsed = JSON.parse(decoded) as typeof parsed
+  } catch {
+    return new Error('The shared project download was not valid JSON.')
+  }
+
+  const projectName = sanitizeProjectName(
+    parsed?.projectName || parsed?.name || DEFAULT_IMPORTED_PROJECT_NAME,
+    DEFAULT_IMPORTED_PROJECT_NAME
+  )
+  const files = coerceJsonFiles(parsed?.files, projectName)
+
+  if (files.length === 0) {
+    return new Error('The shared project download did not contain any files.')
+  }
+
+  const entrypointFilePath = getRequiredProjectEntrypoint(files)
+  if (err(entrypointFilePath)) {
+    return entrypointFilePath
+  }
+
+  return {
+    projectName,
+    files,
+    entrypointFilePath,
+  }
+}
+
+function getRequiredProjectEntrypoint(files: RequestedProjectFile[]) {
+  const projectSettingsFile = files.find((file) => {
+    return file.requestedFileName === PROJECT_SETTINGS_FILE_NAME
+  })
+
+  const configuredEntrypoint = projectSettingsFile
+    ? getProjectTomlDefaultFile(projectSettingsFile.requestedData)
+    : undefined
+
+  return (
+    firstExistingProjectFile(
+      new Set(files.map((file) => file.requestedFileName)),
+      configuredEntrypoint,
+      PROJECT_ENTRYPOINT
+    ) ??
+    files.find((file) => file.requestedFileName.endsWith('.kcl'))
+      ?.requestedFileName ??
+    new Error('The shared project did not include an openable KCL entry file.')
+  )
+}
+
+function getProjectTomlDefaultFile(fileData: Uint8Array<ArrayBuffer>) {
+  const toml = new TextDecoder().decode(fileData)
+  const matchedDefaultFile = toml.match(
+    /^\s*default_file\s*=\s*["']([^"']+)["']/m
+  )?.[1]
+
+  if (!matchedDefaultFile) {
+    return undefined
+  }
+
+  return normalizeArchivePath(matchedDefaultFile)
+}
+
+function coerceJsonFiles(
+  files:
+    | Array<{
+        path?: string
+        name?: string
+        content?: string
+        data?: string
+        encoding?: 'base64' | 'utf-8'
+      }>
+    | Record<string, string>
+    | undefined,
+  projectName: string
+): RequestedProjectFile[] {
+  if (!files) {
+    return []
+  }
+
+  if (isArray(files)) {
+    return files.flatMap((file) => {
+      const requestedFileName = normalizeArchivePath(
+        file.path || file.name || ''
+      )
+      const contents = file.data ?? file.content ?? ''
+
+      if (!requestedFileName) {
+        return []
+      }
+
+      return [
+        {
+          requestedProjectName: projectName,
+          requestedFileName,
+          requestedData:
+            file.encoding === 'base64'
+              ? base64ToBytes(contents)
+              : new TextEncoder().encode(contents),
+        },
+      ]
+    })
+  }
+
+  return Object.entries(files).flatMap(([path, contents]) => {
+    const requestedFileName = normalizeArchivePath(path)
+    if (!requestedFileName) {
+      return []
+    }
+
+    return [
+      {
+        requestedProjectName: projectName,
+        requestedFileName,
+        requestedData: new TextEncoder().encode(contents),
+      },
+    ]
+  })
+}
+
+function getCommonArchiveRoot(paths: string[]) {
+  const normalizedPaths = paths
+    .map((path) => normalizeArchivePath(path))
+    .filter(Boolean)
+
+  if (normalizedPaths.length === 0) {
+    return undefined
+  }
+
+  const firstSegments = normalizedPaths.map((path) => {
+    return webSafePathSplit(path)[0] || ''
+  })
+  const [firstSegment] = firstSegments
+
+  if (
+    firstSegment &&
+    firstSegments.every((segment) => segment === firstSegment) &&
+    normalizedPaths.every((path) => path.includes('/'))
+  ) {
+    return firstSegment
+  }
+
+  return undefined
+}
+
+function stripArchiveRoot(path: string, rootDirectory?: string) {
+  const normalized = normalizeArchivePath(path)
+
+  if (!rootDirectory) {
+    return normalized
+  }
+
+  return normalized.replace(new RegExp(`^${escapeRegExp(rootDirectory)}/`), '')
+}
+
+function getFilenameStemFromContentDisposition(
+  contentDisposition: string | null
+) {
+  if (!contentDisposition) {
+    return undefined
+  }
+
+  const utf8Match = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i)
+  if (utf8Match?.[1]) {
+    return stripFileExtension(decodeURIComponent(utf8Match[1]))
+  }
+
+  const quotedMatch = contentDisposition.match(/filename=\"?([^\";]+)\"?/i)
+  if (quotedMatch?.[1]) {
+    return stripFileExtension(quotedMatch[1])
+  }
+
+  return undefined
+}
+
+function normalizeArchivePath(path: string) {
+  return path.replace(/^\/+|\/+$/g, '').replace(/\\/g, '/')
+}
+
+function stripFileExtension(filename: string) {
+  return filename.replace(/\.[^.]+$/, '')
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}

@@ -1,9 +1,9 @@
 import { tmpdir } from 'node:os'
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
 import {
-  createFileOperationsRuntime,
-  type FileOperationsRuntime,
-} from '@src/lib/fileSystem/runtime'
+  createFileOperationsScheduler,
+  type FileOperationsScheduler,
+} from '@src/lib/fileSystem/scheduler'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import nodeFileSystem from '@src/lib/fs-zds/nodefs'
 import fc from 'fast-check'
@@ -52,16 +52,18 @@ const decodeVersion = (contents: Uint8Array): VersionedContents =>
   JSON.parse(new TextDecoder().decode(contents)) as VersionedContents
 
 /**
- * Model the guarantees owned by one coordinator runtime. A backing adapter
+ * Model the guarantees owned by one coordinator scheduler. A backing adapter
  * must separately guarantee that an individual successful write is atomic;
- * cross-runtime ordering requires a shared platform or server authority.
+ * cross-scheduler ordering requires a shared platform or server authority.
  */
 describe('coordinated filesystem operation properties on NodeFS', () => {
-  const runtimes: FileOperationsRuntime[] = []
+  const schedulers: FileOperationsScheduler[] = []
   const roots: string[] = []
 
   afterEach(async () => {
-    await Promise.all(runtimes.splice(0).map((runtime) => runtime.dispose()))
+    await Promise.all(
+      schedulers.splice(0).map((scheduler) => scheduler.dispose())
+    )
     await Promise.all(
       roots
         .splice(0)
@@ -78,8 +80,8 @@ describe('coordinated filesystem operation properties on NodeFS', () => {
     )
     roots.push(root)
     await nodeFileSystem.impl.mkdir(root, { recursive: true })
-    const runtime = createFileOperationsRuntime(nodeFileSystem.impl)
-    runtimes.push(runtime)
+    const scheduler = createFileOperationsScheduler(nodeFileSystem.impl)
+    schedulers.push(scheduler)
     let index = 0
 
     await fc.assert(
@@ -88,9 +90,9 @@ describe('coordinated filesystem operation properties on NodeFS', () => {
         async (contents) => {
           const path = nodeFileSystem.impl.join(root, `${index++}.kcl`)
 
-          await runtime.operations.writeFile(path, contents)
+          await scheduler.operations.writeFile(path, contents)
 
-          expect([...(await runtime.operations.readFile(path))]).toEqual([
+          expect([...(await scheduler.operations.readFile(path))]).toEqual([
             ...new TextEncoder().encode(contents),
           ])
         }
@@ -151,11 +153,11 @@ describe('coordinated filesystem operation properties on NodeFS', () => {
                 committed.push(revision)
               },
             }
-            const runtime = createFileOperationsRuntime(backing)
-            runtimes.push(runtime)
+            const scheduler = createFileOperationsScheduler(backing)
+            schedulers.push(scheduler)
 
             const writes = operations.map(({ payload }, revision) =>
-              runtime.operations.writeFile(
+              scheduler.operations.writeFile(
                 path,
                 encodeVersion(revision, payload)
               )
@@ -168,7 +170,7 @@ describe('coordinated filesystem operation properties on NodeFS', () => {
               }
 
               const observed = decodeVersion(
-                await runtime.operations.readFile(path)
+                await scheduler.operations.readFile(path)
               )
               expect(observed.revision).toBeGreaterThanOrEqual(revision)
               expect(observed).toEqual(
@@ -193,7 +195,9 @@ describe('coordinated filesystem operation properties on NodeFS', () => {
             expect(committed).toEqual(successfulRevisions)
 
             const expectedRevision = successfulRevisions.at(-1) ?? -1
-            const final = decodeVersion(await runtime.operations.readFile(path))
+            const final = decodeVersion(
+              await scheduler.operations.readFile(path)
+            )
             expect(final).toEqual(
               expectedRevision === -1
                 ? { revision: -1, payload: [] }

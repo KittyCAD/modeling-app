@@ -33,7 +33,6 @@ import {
 } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import { prepareEditCommand } from '@src/lib/featureTree'
-import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import {
   getEngineRegionSelectionFromPoint,
   normalizeEntityReference,
@@ -69,7 +68,7 @@ interface ConnectionStreamProps {
 }
 
 export const ConnectionStream = (props: ConnectionStreamProps) => {
-  const { settings, project, wasmPromise, commands, fileOperations } = useApp()
+  const { settings, project, wasmPromise, commands } = useApp()
   const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
   const engineCommandManager = kclManager.engineCommandManager
@@ -310,38 +309,32 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       ]
     )
 
+  const connectToEngine = () => {
+    setShowManualConnect(false)
+    tryConnecting({
+      authToken: props.authToken || '',
+      videoWrapperRef,
+      setAppState,
+      videoRef,
+      setIsSceneReady,
+      isConnecting,
+      numberOfConnectionAttempts,
+      timeToConnect: TIME_TO_CONNECT,
+      setShowManualConnect,
+      sceneInfra,
+      settingsActor: settings.actor,
+    }).catch((e) => {
+      console.warn(e)
+      setShowManualConnect(true)
+    })
+  }
+
   // TODO: Handle PingPong checks
 
   const onPageMountedParams = useMemo(
     () => ({
       callback: () => {
-        setShowManualConnect(false)
-        tryConnecting({
-          authToken: props.authToken || '',
-          videoWrapperRef,
-          setAppState,
-          videoRef,
-          setIsSceneReady,
-          isConnecting,
-          numberOfConnectionAttempts,
-          timeToConnect: TIME_TO_CONNECT,
-          setShowManualConnect,
-          sceneInfra,
-          settingsActor: settings.actor,
-        })
-          .then(() => {
-            // Take a screen shot after the page mounts and zoom to fit runs
-            if (projectIORef && projectIORef.path) {
-              createThumbnailPNGOnDesktop({
-                fileOperations,
-                projectDirectoryWithoutEndingSlash: projectIORef.path,
-              })
-            }
-          })
-          .catch((e) => {
-            console.warn(e)
-            setShowManualConnect(true)
-          })
+        connectToEngine()
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -392,23 +385,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     // It needs to have been in an idle state first!
     if (!isIdle.current) return
     isIdle.current = false
-    setShowManualConnect(false)
-    tryConnecting({
-      authToken: props.authToken || '',
-      videoWrapperRef,
-      setAppState,
-      videoRef,
-      setIsSceneReady,
-      isConnecting,
-      numberOfConnectionAttempts,
-      timeToConnect: TIME_TO_CONNECT,
-      setShowManualConnect,
-      sceneInfra,
-      settingsActor: settings.actor,
-    }).catch((e) => {
-      console.warn(e)
-      setShowManualConnect(true)
-    })
+    connectToEngine()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnecting, numberOfConnectionAttempts, props.authToken, settings])
 
@@ -434,23 +411,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             }
           )
         }
-        setShowManualConnect(false)
-        tryConnecting({
-          authToken: props.authToken || '',
-          videoWrapperRef,
-          setAppState,
-          videoRef,
-          setIsSceneReady,
-          isConnecting,
-          numberOfConnectionAttempts,
-          timeToConnect: TIME_TO_CONNECT,
-          setShowManualConnect,
-          sceneInfra,
-          settingsActor: settings.actor,
-        }).catch((e) => {
-          console.warn(e)
-          setShowManualConnect(true)
-        })
+        connectToEngine()
       },
       infiniteDetectionLoopCallback: (code: string | undefined) => {
         // Also exhaust any retry already running when the close budget is spent.
@@ -482,23 +443,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     () => ({
       engineCommandManager,
       callback: () => {
-        setShowManualConnect(false)
-        tryConnecting({
-          authToken: props.authToken || '',
-          videoWrapperRef,
-          setAppState,
-          videoRef,
-          setIsSceneReady,
-          isConnecting,
-          numberOfConnectionAttempts,
-          timeToConnect: TIME_TO_CONNECT,
-          setShowManualConnect,
-          sceneInfra,
-          settingsActor: settings.actor,
-        }).catch((e) => {
-          console.warn(e)
-          setShowManualConnect(true)
-        })
+        connectToEngine()
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -510,23 +455,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     () => ({
       callback: (eventType: EngineDisconnectEvent) => {
         reportEngineDisconnect(eventType)
-        setShowManualConnect(false)
-        tryConnecting({
-          authToken: props.authToken || '',
-          videoWrapperRef,
-          setAppState,
-          videoRef,
-          setIsSceneReady,
-          isConnecting,
-          numberOfConnectionAttempts,
-          timeToConnect: TIME_TO_CONNECT,
-          setShowManualConnect,
-          sceneInfra,
-          settingsActor: settings.actor,
-        }).catch((e) => {
-          console.warn(e)
-          setShowManualConnect(true)
-        })
+        connectToEngine()
       },
       engineCommandManager,
     }),
@@ -556,23 +485,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       },
       connect: () => {
         if (engineCommandManager.lastConnectionError?.terminal) return
-        setShowManualConnect(false)
-        tryConnecting({
-          authToken: props.authToken || '',
-          videoWrapperRef,
-          setAppState,
-          videoRef,
-          setIsSceneReady,
-          isConnecting,
-          numberOfConnectionAttempts,
-          timeToConnect: TIME_TO_CONNECT,
-          setShowManualConnect,
-          sceneInfra,
-          settingsActor: settings.actor,
-        }).catch((e) => {
-          console.warn(e)
-          setShowManualConnect(true)
-        })
+        connectToEngine()
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -677,23 +590,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           callback={() => {
             abnormalCloseRetries.current = 0
             numberOfConnectionAttempts.current = 0
-            setShowManualConnect(false)
-            tryConnecting({
-              authToken: props.authToken || '',
-              videoWrapperRef,
-              setAppState,
-              videoRef,
-              setIsSceneReady,
-              isConnecting,
-              numberOfConnectionAttempts,
-              timeToConnect: TIME_TO_CONNECT,
-              setShowManualConnect,
-              sceneInfra,
-              settingsActor: settings.actor,
-            }).catch((e) => {
-              console.warn(e)
-              setShowManualConnect(true)
-            })
+            connectToEngine()
           }}
         >
           Connecting and setting up scene...

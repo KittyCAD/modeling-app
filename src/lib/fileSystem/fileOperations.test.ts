@@ -1,3 +1,4 @@
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import { tmpdir } from 'node:os'
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
 import {
@@ -9,9 +10,9 @@ import {
 } from '@src/lib/fileSystem/fileOperations'
 import { fileSystemLayer } from '@src/lib/fileSystem/fileSystem'
 import {
-  createFileOperationsRuntime,
-  type FileOperationsRuntime,
-} from '@src/lib/fileSystem/runtime'
+  createFileOperationsScheduler,
+  type FileOperationsScheduler,
+} from '@src/lib/fileSystem/scheduler'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import nodeFileSystem from '@src/lib/fs-zds/nodefs'
 import * as Effect from 'effect/Effect'
@@ -59,7 +60,7 @@ function mockReadFile(
 }
 
 describe('Effect filesystem operations', () => {
-  const runtimes: FileOperationsRuntime[] = []
+  const schedulers: FileOperationsScheduler[] = []
   const roots: string[] = []
 
   beforeEach(() => {
@@ -67,7 +68,9 @@ describe('Effect filesystem operations', () => {
   })
 
   afterEach(async () => {
-    await Promise.all(runtimes.splice(0).map((runtime) => runtime.dispose()))
+    await Promise.all(
+      schedulers.splice(0).map((scheduler) => scheduler.dispose())
+    )
     await Promise.all(
       roots
         .splice(0)
@@ -75,6 +78,29 @@ describe('Effect filesystem operations', () => {
           nodeFileSystem.impl.rm(root, { recursive: true, force: true })
         )
     )
+    vi.useRealTimers()
+  })
+
+  it('drains submitted writes before disposing the scheduler', async () => {
+    const gate = createGate()
+    const writeFile = vi.fn(async () => {
+      await gate.promise
+    })
+    const scheduler = createScheduler({ ...nodeFileSystem.impl, writeFile })
+    const write = scheduler.operations.writeFile(
+      '/tmp/zds-scheduler-drain.kcl',
+      ''
+    )
+    const disposed = vi.fn()
+    const disposal = scheduler.dispose().then(disposed)
+    await vi.waitFor(() => expect(writeFile).toHaveBeenCalledOnce())
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(disposed).not.toHaveBeenCalled()
+    expect(writeFile).toHaveBeenCalledOnce()
+    gate.open()
+    await Promise.all([write, disposal])
+    expect(disposed).toHaveBeenCalledOnce()
   })
 
   const testPath = (...parts: string[]) => {
@@ -84,10 +110,10 @@ describe('Effect filesystem operations', () => {
     return nodeFileSystem.impl.join(...parts)
   }
 
-  const createRuntime = (backing: IZooDesignStudioFS) => {
-    const runtime = createFileOperationsRuntime(backing)
-    runtimes.push(runtime)
-    return runtime
+  const createScheduler = (backing: IZooDesignStudioFS) => {
+    const scheduler = createFileOperationsScheduler(backing)
+    schedulers.push(scheduler)
+    return scheduler
   }
 
   it('runs mutations for one path in submission order', async () => {
@@ -111,21 +137,24 @@ describe('Effect filesystem operations', () => {
         events.push(`end:${value}`)
       },
     }
-    const runtime = createRuntime(backing)
+    const scheduler = createScheduler(backing)
 
-    const first = runtime.operations.writeFile(
+    const first = scheduler.operations.writeFile(
       path,
       new TextEncoder().encode('first')
     )
     await vi.waitFor(() => expect(events).toEqual(['start:first']))
     const secondContents = new TextEncoder().encode('second')
-    const second = runtime.operations.writeFile(path, secondContents)
+    const second = scheduler.operations.writeFile(path, secondContents)
 
     await vi.waitFor(async () =>
-      expect(await runtime.operations.pending()).toBe(2)
+      expect(await scheduler.operations.pending()).toBe(2)
     )
     secondContents.fill('x'.charCodeAt(0))
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
     expect(events).toEqual(['start:first'])
+    await expect(scheduler.operations.pending()).resolves.toBe(2)
 
     firstWrite.open()
     await Promise.all([first, second])
@@ -136,7 +165,7 @@ describe('Effect filesystem operations', () => {
       'start:second',
       'end:second',
     ])
-    await expect(runtime.operations.pending()).resolves.toBe(0)
+    await expect(scheduler.operations.pending()).resolves.toBe(0)
   })
 
   it('owns mutable bytes when file operation Effects are constructed', async () => {
@@ -191,15 +220,15 @@ describe('Effect filesystem operations', () => {
     const malformedPath = testPath(root, 'malformed.kcl')
     const text = 'café 🐈 — 図面'
     await nodeFileSystem.impl.mkdir(root, { recursive: true })
-    const runtime = createRuntime(nodeFileSystem.impl)
+    const scheduler = createScheduler(nodeFileSystem.impl)
 
-    await runtime.operations.writeFile(textPath, text)
-    await runtime.operations.writeFile(
+    await scheduler.operations.writeFile(textPath, text)
+    await scheduler.operations.writeFile(
       bytesPath,
       new TextEncoder().encode(text)
     )
-    await runtime.operations.createFile(malformedPath, '\ud800')
-    const uniquePath = await runtime.operations.createUniqueFile(
+    await scheduler.operations.createFile(malformedPath, '\ud800')
+    const uniquePath = await scheduler.operations.createUniqueFile(
       root,
       { stem: 'generated', extension: '.kcl' },
       'λ'
@@ -207,10 +236,10 @@ describe('Effect filesystem operations', () => {
 
     const [textBytes, explicitBytes, malformedBytes, uniqueBytes] =
       await Promise.all([
-        runtime.operations.readFile(textPath),
-        runtime.operations.readFile(bytesPath),
-        runtime.operations.readFile(malformedPath),
-        runtime.operations.readFile(uniquePath),
+        scheduler.operations.readFile(textPath),
+        scheduler.operations.readFile(bytesPath),
+        scheduler.operations.readFile(malformedPath),
+        scheduler.operations.readFile(uniquePath),
       ])
 
     expect([...textBytes]).toEqual([...explicitBytes])
@@ -221,9 +250,9 @@ describe('Effect filesystem operations', () => {
 
   it('forwards explicit copy collision policy to the backing', async () => {
     const copy = vi.fn<IZooDesignStudioFS['cp']>()
-    const runtime = createRuntime({ ...nodeFileSystem.impl, cp: copy })
+    const scheduler = createScheduler({ ...nodeFileSystem.impl, cp: copy })
 
-    await runtime.operations.copy('/source', '/destination', {
+    await scheduler.operations.copy('/source', '/destination', {
       overwrite: false,
     })
 
@@ -258,14 +287,14 @@ describe('Effect filesystem operations', () => {
         }
       },
     }
-    const runtime = createRuntime(backing)
+    const scheduler = createScheduler(backing)
 
-    const first = runtime.operations.writeFile(
+    const first = scheduler.operations.writeFile(
       firstPath,
       new TextEncoder().encode('first')
     )
     await vi.waitFor(() => expect(started).toEqual(['first.kcl']))
-    const second = runtime.operations.writeFile(
+    const second = scheduler.operations.writeFile(
       secondPath,
       new TextEncoder().encode('second')
     )
@@ -304,12 +333,12 @@ describe('Effect filesystem operations', () => {
         events.push('write:end')
       },
     }
-    const runtime = createRuntime(backing)
+    const scheduler = createScheduler(backing)
     const expected = new TextEncoder().encode('complete next version')
 
-    const write = runtime.operations.writeFile(path, expected)
+    const write = scheduler.operations.writeFile(path, expected)
     await writeStarted.promise
-    const read = runtime.operations.readFile(path)
+    const read = scheduler.operations.readFile(path)
     setTimeout(finishWrite.open, 0)
 
     await expect(read).resolves.toEqual(expected)
@@ -343,15 +372,15 @@ describe('Effect filesystem operations', () => {
         events.push('write:end')
       },
     }
-    const runtime = createRuntime(backing)
+    const scheduler = createScheduler(backing)
 
-    const write = runtime.operations.writeFile(
+    const write = scheduler.operations.writeFile(
       blockedPath,
       new TextEncoder().encode('blocked')
     )
     await writeStarted.promise
 
-    await expect(runtime.operations.readFile(readablePath)).resolves.toEqual(
+    await expect(scheduler.operations.readFile(readablePath)).resolves.toEqual(
       new TextEncoder().encode('readable')
     )
     expect(events).toEqual(['write:start', 'read'])
@@ -388,11 +417,11 @@ describe('Effect filesystem operations', () => {
         return nodeFileSystem.impl.readdir(path)
       },
     }
-    const runtime = createRuntime(backing)
+    const scheduler = createScheduler(backing)
 
-    const create = runtime.operations.createDirectory(child)
+    const create = scheduler.operations.createDirectory(child)
     await createStarted.promise
-    const read = runtime.operations.readDirectory(root)
+    const read = scheduler.operations.readDirectory(root)
     setTimeout(finishCreate.open, 0)
 
     await expect(read).resolves.toEqual(['parts'])
@@ -427,14 +456,14 @@ describe('Effect filesystem operations', () => {
         return nodeFileSystem.impl.mkdir(path, options)
       },
     }
-    const runtime = createRuntime(backing)
+    const scheduler = createScheduler(backing)
 
-    const read = runtime.operations.readDirectory(projects)
+    const read = scheduler.operations.readDirectory(projects)
     await readStarted.promise
-    const create = runtime.operations.createDirectory(target)
+    const create = scheduler.operations.createDirectory(target)
 
     await vi.waitFor(async () =>
-      expect(await runtime.operations.pending()).toBe(1)
+      expect(await scheduler.operations.pending()).toBe(1)
     )
     expect(events).toEqual(['read:start'])
     finishRead.open()
@@ -479,19 +508,19 @@ describe('Effect filesystem operations', () => {
         await nodeFileSystem.impl.rename(source, target)
       },
     }
-    const runtime = createRuntime(backing)
+    const scheduler = createScheduler(backing)
 
-    const write = runtime.operations.writeFile(
+    const write = scheduler.operations.writeFile(
       path,
       new TextEncoder().encode('updated')
     )
     await writeStarted.promise
-    const rename = runtime.operations.rename(project, destination)
+    const rename = scheduler.operations.rename(project, destination)
     setTimeout(finishWrite.open, 0)
 
     await Promise.all([write, rename])
     expect(events).toEqual(['write:start', 'write:end', 'rename'])
-    const written = await runtime.operations.readFile(
+    const written = await scheduler.operations.readFile(
       nodeFileSystem.impl.join(destination, 'src', 'main.kcl')
     )
     expect(new TextDecoder().decode(written)).toBe('updated')
@@ -542,11 +571,11 @@ describe('Effect filesystem operations', () => {
         await nodeFileSystem.impl.rm(path, options)
       },
     }
-    const runtime = createRuntime(backing)
+    const scheduler = createScheduler(backing)
 
-    const write = runtime.operations.writeFile(sourceFile, 'updated')
+    const write = scheduler.operations.writeFile(sourceFile, 'updated')
     await writeStarted.promise
-    const move = runtime.operations.move(project, destination)
+    const move = scheduler.operations.move(project, destination)
     setTimeout(finishWrite.open, 0)
 
     await Promise.all([write, move])
@@ -557,12 +586,10 @@ describe('Effect filesystem operations', () => {
       'copy',
       'remove',
     ])
-    expect(
-      new TextDecoder().decode(
-        await runtime.operations.readFile(destinationFile)
-      )
-    ).toBe('updated')
-    await expect(runtime.operations.exists(project)).resolves.toBe(false)
+    expect(await readTextFile(scheduler.operations, destinationFile)).toBe(
+      'updated'
+    )
+    await expect(scheduler.operations.exists(project)).resolves.toBe(false)
   })
 
   it('makes a project rename wait for a read beneath the project', async () => {
@@ -592,11 +619,11 @@ describe('Effect filesystem operations', () => {
         events.push('rename')
       },
     }
-    const runtime = createRuntime(backing)
+    const scheduler = createScheduler(backing)
 
-    const read = runtime.operations.readFile(path)
+    const read = scheduler.operations.readFile(path)
     await readStarted.promise
-    const rename = runtime.operations.rename(project, destination)
+    const rename = scheduler.operations.rename(project, destination)
     setTimeout(finishRead.open, 0)
 
     await Promise.all([read, rename])
@@ -621,11 +648,11 @@ describe('Effect filesystem operations', () => {
         events.push('write')
       },
     }
-    const runtime = createRuntime(backing)
+    const scheduler = createScheduler(backing)
 
-    const access = runtime.operations.canReadWrite(path)
+    const access = scheduler.operations.canReadWrite(path)
     await accessStarted.promise
-    const write = runtime.operations.writeFile(path, 'updated')
+    const write = scheduler.operations.writeFile(path, 'updated')
     setTimeout(finishAccess.open, 0)
 
     await Promise.all([access, write])
@@ -655,13 +682,13 @@ describe('Effect filesystem operations', () => {
         }
       },
     }
-    const runtime = createRuntime(backing)
+    const scheduler = createScheduler(backing)
 
-    const first = runtime.operations.writeFile(
+    const first = scheduler.operations.writeFile(
       path,
       new TextEncoder().encode('first')
     )
-    const second = runtime.operations.writeFile(
+    const second = scheduler.operations.writeFile(
       path,
       new TextEncoder().encode('second')
     )
@@ -671,7 +698,7 @@ describe('Effect filesystem operations', () => {
     )
     await expect(second).resolves.toBeUndefined()
     expect(events).toEqual(['attempt:1', 'attempt:2'])
-    await expect(runtime.operations.pending()).resolves.toBe(0)
+    await expect(scheduler.operations.pending()).resolves.toBe(0)
     expect(clientErrorMocks.reportClientError).toHaveBeenCalledWith(
       expect.objectContaining({
         code: 'file_operations_error',
@@ -700,12 +727,12 @@ describe('Effect filesystem operations', () => {
       )
     )
     const path = testPath(root, 'parts')
-    const runtime = createRuntime(nodeFileSystem.impl)
+    const scheduler = createScheduler(nodeFileSystem.impl)
 
-    await runtime.operations.createDirectory(path)
+    await scheduler.operations.createDirectory(path)
 
     await expect(
-      runtime.operations.createDirectory(path)
+      scheduler.operations.createDirectory(path)
     ).rejects.toBeInstanceOf(FileAlreadyExists)
     expect(clientErrorMocks.reportClientError).not.toHaveBeenCalled()
   })
@@ -717,12 +744,12 @@ describe('Effect filesystem operations', () => {
         `zds-file-operations-unique-directory-${crypto.randomUUID()}`
       )
     )
-    const runtime = createRuntime(nodeFileSystem.impl)
+    const scheduler = createScheduler(nodeFileSystem.impl)
 
     const created = await Promise.all([
-      runtime.operations.createUniqueDirectory(root, 'untitled'),
-      runtime.operations.createUniqueDirectory(root, 'untitled'),
-      runtime.operations.createUniqueDirectory(root, 'untitled'),
+      scheduler.operations.createUniqueDirectory(root, 'untitled'),
+      scheduler.operations.createUniqueDirectory(root, 'untitled'),
+      scheduler.operations.createUniqueDirectory(root, 'untitled'),
     ])
 
     expect(created).toEqual([
@@ -730,7 +757,7 @@ describe('Effect filesystem operations', () => {
       nodeFileSystem.impl.join(root, 'untitled-1'),
       nodeFileSystem.impl.join(root, 'untitled-2'),
     ])
-    await expect(runtime.operations.readDirectory(root)).resolves.toEqual([
+    await expect(scheduler.operations.readDirectory(root)).resolves.toEqual([
       'untitled',
       'untitled-1',
       'untitled-2',
@@ -746,12 +773,15 @@ describe('Effect filesystem operations', () => {
     )
     const path = testPath(root, 'main.kcl')
     await nodeFileSystem.impl.mkdir(root, { recursive: true })
-    const runtime = createRuntime(nodeFileSystem.impl)
+    const scheduler = createScheduler(nodeFileSystem.impl)
 
-    await runtime.operations.createFile(path, new TextEncoder().encode('first'))
+    await scheduler.operations.createFile(
+      path,
+      new TextEncoder().encode('first')
+    )
 
     await expect(
-      runtime.operations.createFile(path, new TextEncoder().encode('second'))
+      scheduler.operations.createFile(path, new TextEncoder().encode('second'))
     ).rejects.toEqual(
       expect.objectContaining({
         _tag: 'FileAlreadyExists',
@@ -759,9 +789,7 @@ describe('Effect filesystem operations', () => {
         path,
       })
     )
-    expect(
-      new TextDecoder().decode(await runtime.operations.readFile(path))
-    ).toBe('first')
+    expect(await readTextFile(scheduler.operations, path)).toBe('first')
   })
 
   it('uses strict creation without an existence preflight', async () => {
@@ -772,14 +800,14 @@ describe('Effect filesystem operations', () => {
     const writeFile = vi
       .fn<IZooDesignStudioFS['writeFile']>()
       .mockRejectedValue(collision)
-    const runtime = createRuntime({
+    const scheduler = createScheduler({
       ...nodeFileSystem.impl,
       stat,
       writeFile,
     })
 
     await expect(
-      runtime.operations.createFile('/project/main.kcl', 'code')
+      scheduler.operations.createFile('/project/main.kcl', 'code')
     ).rejects.toEqual(
       expect.objectContaining({
         _tag: 'FileAlreadyExists',
@@ -805,7 +833,7 @@ describe('Effect filesystem operations', () => {
     const extensionArbitrary = fc.constantFrom('', '.kcl', '.step', '.prt.1')
     const occupiedCountArbitrary = fc.integer({ min: 0, max: 4 })
     const countArbitrary = fc.integer({ min: 1, max: 6 })
-    const runtime = createRuntime(nodeFileSystem.impl)
+    const scheduler = createScheduler(nodeFileSystem.impl)
 
     await fc.assert(
       fc.asyncProperty(
@@ -831,7 +859,7 @@ describe('Effect filesystem operations', () => {
             )
 
           for (let index = 0; index < occupiedCount; index++) {
-            await runtime.operations.createFile(
+            await scheduler.operations.createFile(
               candidatePath(index),
               new TextEncoder().encode(`occupied-${index}`)
             )
@@ -839,7 +867,7 @@ describe('Effect filesystem operations', () => {
 
           const created = await Promise.all(
             contents.map((content) =>
-              runtime.operations.createUniqueFile(
+              scheduler.operations.createUniqueFile(
                 root,
                 { stem, extension },
                 content
@@ -857,13 +885,13 @@ describe('Effect filesystem operations', () => {
           )
           await Promise.all(
             created.map(async (path, index) => {
-              const written = await runtime.operations.readFile(path)
+              const written = await scheduler.operations.readFile(path)
               expect(new TextDecoder().decode(written)).toBe(String(index))
             })
           )
           await Promise.all(
             Array.from({ length: occupiedCount }, async (_, index) => {
-              const written = await runtime.operations.readFile(
+              const written = await scheduler.operations.readFile(
                 candidatePath(index)
               )
               expect(new TextDecoder().decode(written)).toBe(

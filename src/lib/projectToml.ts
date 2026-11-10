@@ -1,3 +1,4 @@
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import { serializeProjectConfiguration } from '@src/lang/wasm'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import { readProjectSettingsFile } from '@src/lib/desktop'
@@ -26,9 +27,7 @@ export async function getProjectTomlContents({
 
   if (readExistingFile) {
     try {
-      return new TextDecoder().decode(
-        await fileOperations.readFile(projectTomlPath)
-      )
+      return await readTextFile(fileOperations, projectTomlPath)
     } catch {}
   }
 

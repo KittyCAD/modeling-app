@@ -1,3 +1,4 @@
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import { tmpdir } from 'node:os'
 import { Registry } from '@kittycad/registry'
 import nodeFileSystem from '@src/lib/fs-zds/nodefs'
@@ -21,7 +22,7 @@ describe('file operations extension', () => {
     )
   })
 
-  it('mounts one file operations runtime behind the registry capability', async () => {
+  it('mounts one file operations scheduler behind the registry capability', async () => {
     const root = nodeFileSystem.impl.join(
       tmpdir(),
       `zds-effect-file-operations-registry-${crypto.randomUUID()}`
@@ -35,9 +36,7 @@ describe('file operations extension', () => {
     const operations = registry.get(fileOperationsService)
     await operations.writeFile(file, 'line([0, 0], [1, 1])')
 
-    expect(new TextDecoder().decode(await operations.readFile(file))).toBe(
-      'line([0, 0], [1, 1])'
-    )
+    expect(await readTextFile(operations, file)).toBe('line([0, 0], [1, 1])')
     await expect(operations.exists(file)).resolves.toBe(true)
     await expect(operations.stat(file)).resolves.toMatchObject({
       kind: 'file',

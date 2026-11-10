@@ -142,18 +142,18 @@ test.describe(
         .poll(
           async () =>
             await page.evaluate(() => {
-              const snapshot = window.app.systemIOActor.getSnapshot()
               return {
-                hasFolders: snapshot.context.folders !== undefined,
-                state: snapshot.value,
+                hasFolders:
+                  window.app.projectOperations.projects.value.length > 0,
+                pending: window.app.projectOperations.pending.value,
               }
             }),
           {
             timeout: 30_000,
-            message: 'SystemIO should finish initial browser folder load',
+            message: 'The initial project listing should complete',
           }
         )
-        .toMatchObject({ hasFolders: true, state: 'idle' })
+        .toMatchObject({ hasFolders: true, pending: 0 })
 
       const filePaneScroll = page.getByTestId('file-pane-scroll-container')
       const partsFolder = filePaneScroll.getByRole('treeitem', {
@@ -174,23 +174,21 @@ test.describe(
       await expect(page).toHaveURL(
         new RegExp(`/file/${encodeURIComponent(startingFilePath)}$`)
       )
-      await page.evaluate(() => {
-        const appWindow = window as any
-        const systemIOActor = window.app.systemIOActor as any
-        const originalSend = systemIOActor.send.bind(systemIOActor)
-        appWindow.__setProjectDirectoryPathEvents = []
-        systemIOActor.send = (event: any) => {
-          if (event?.type === 'set project directory path') {
-            appWindow.__setProjectDirectoryPathEvents.push(event)
-          }
-          return originalSend(event)
-        }
-      })
-      await page.evaluate(() => {
-        window.app.systemIOActor.send({
-          type: 'read folders from project directory' as any,
+      await page.evaluate(() => window.app.refreshProjects())
+
+      // Reusing a name allocates a sibling and leaves the original bytes intact.
+      const existingContents = await fs.readFile(startingFilePath, 'utf8')
+      await page.getByTestId('create-file-button').click()
+      await page.getByTestId('file-rename-field').fill('existing')
+      await page.keyboard.press('Enter')
+      await expect(page).toHaveURL(/existing-1\.kcl$/)
+      expect(await fs.readFile(startingFilePath, 'utf8')).toBe(existingContents)
+      await expect(
+        filePaneScroll.getByRole('treeitem', {
+          name: 'existing.kcl',
+          exact: true,
         })
-      })
+      ).toBeVisible()
 
       await page.getByTestId('create-file-button').click()
       await page.getByTestId('file-rename-field').fill('nested-file')
@@ -222,19 +220,6 @@ test.describe(
           }
         )
         .toBeTruthy()
-      await expect
-        .poll(
-          async () =>
-            await page.evaluate(
-              () => (window as any).__setProjectDirectoryPathEvents.length
-            ),
-          {
-            timeout: 5_000,
-            message:
-              'Same-project file navigation should not restart project directory reads',
-          }
-        )
-        .toBe(0)
     })
   }
 )
@@ -437,10 +422,7 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
     const treeItem = (name: string) =>
       filePaneScroll.getByRole('treeitem', { name, exact: true })
     const projectDirectoryPath = () =>
-      page.evaluate(
-        () =>
-          window.app.systemIOActor.getSnapshot().context.projectDirectoryPath
-      )
+      page.evaluate(() => window.app.projectDirectoryPath)
     const nestedProjectSettingsFile = async () =>
       fs.join(nestedDir, PROJECT_SETTINGS_FILE_NAME)
 
@@ -806,31 +788,9 @@ test.describe('Renaming in the file tree', { tag: ['@desktop'] }, () => {
     scene,
     cmdBar,
   }, testInfo) => {
-    const { dir } = await folderSetupFn(async (dir) => {
-      await fs.mkdir(await fs.join(dir, 'Test Project'), { recursive: true })
-      await fs.mkdir(await fs.join(dir, 'Test Project', 'folderToRename'), {
-        recursive: true,
-      })
-      const testData = await nodeFsP.readFile(
-        executorInputPath('basic_fillet_cube_end.kcl')
-      )
-      await fs.writeFile(
-        await fs.join(dir, 'Test Project', 'main.kcl'),
-        testData
-      )
-      const testData2 = await nodeFsP.readFile(
-        executorInputPath('cylinder.kcl')
-      )
-      await fs.writeFile(
-        await fs.join(
-          dir,
-          'Test Project',
-          'folderToRename',
-          'someFileWithin.kcl'
-        ),
-        testData2
-      )
-    })
+    const { dir } = await folderSetupFn((dir) =>
+      seedProjectWithNestedFile(fs, dir, 'Test Project', 'folderToRename')
+    )
 
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
@@ -899,31 +859,9 @@ test.describe('Renaming in the file tree', { tag: ['@desktop'] }, () => {
     scene,
     cmdBar,
   }, testInfo) => {
-    const { dir } = await folderSetupFn(async (dir) => {
-      await fs.mkdir(await fs.join(dir, 'Test Project'), { recursive: true })
-      await fs.mkdir(await fs.join(dir, 'Test Project', 'folderToRename'), {
-        recursive: true,
-      })
-      const testData = await nodeFsP.readFile(
-        executorInputPath('basic_fillet_cube_end.kcl')
-      )
-      await fs.writeFile(
-        await fs.join(dir, 'Test Project', 'main.kcl'),
-        testData
-      )
-      const testData2 = await nodeFsP.readFile(
-        executorInputPath('cylinder.kcl')
-      )
-      await fs.writeFile(
-        await fs.join(
-          dir,
-          'Test Project',
-          'folderToRename',
-          'someFileWithin.kcl'
-        ),
-        testData2
-      )
-    })
+    const { dir } = await folderSetupFn((dir) =>
+      seedProjectWithNestedFile(fs, dir, 'Test Project', 'folderToRename')
+    )
 
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
@@ -1111,32 +1049,9 @@ test.describe(
       scene,
       cmdBar,
     }, testInfo) => {
-      await folderSetupFn(async (dir) => {
-        await fs.mkdir(await fs.join(dir, 'Test Project'), { recursive: true })
-        await fs.mkdir(await fs.join(dir, 'Test Project', 'folderToDelete'), {
-          recursive: true,
-        })
-        const testData = await nodeFsP.readFile(
-          executorInputPath('basic_fillet_cube_end.kcl')
-        )
-        await fs.writeFile(
-          await fs.join(dir, 'Test Project', 'main.kcl'),
-          testData
-        )
-
-        const testData2 = await nodeFsP.readFile(
-          executorInputPath('cylinder.kcl')
-        )
-        await fs.writeFile(
-          await fs.join(
-            dir,
-            'Test Project',
-            'folderToDelete',
-            'someFileWithin.kcl'
-          ),
-          testData2
-        )
-      })
+      await folderSetupFn((dir) =>
+        seedProjectWithNestedFile(fs, dir, 'Test Project', 'folderToDelete')
+      )
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
@@ -1182,32 +1097,9 @@ test.describe(
       scene,
       cmdBar,
     }, testInfo) => {
-      await folderSetupFn(async (dir) => {
-        await fs.mkdir(await fs.join(dir, 'Test Project'), { recursive: true })
-        await fs.mkdir(await fs.join(dir, 'Test Project', 'folderToDelete'), {
-          recursive: true,
-        })
-        const testData = await nodeFsP.readFile(
-          executorInputPath('basic_fillet_cube_end.kcl')
-        )
-        await fs.writeFile(
-          await fs.join(dir, 'Test Project', 'main.kcl'),
-          testData
-        )
-
-        const testData2 = await nodeFsP.readFile(
-          executorInputPath('cylinder.kcl')
-        )
-        await fs.writeFile(
-          await fs.join(
-            dir,
-            'Test Project',
-            'folderToDelete',
-            'someFileWithin.kcl'
-          ),
-          testData2
-        )
-      })
+      await folderSetupFn((dir) =>
+        seedProjectWithNestedFile(fs, dir, 'Test Project', 'folderToDelete')
+      )
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
@@ -1259,34 +1151,9 @@ test(
   { tag: '@desktop' },
   async ({ folderSetupFn, page, fs, scene, cmdBar }, testInfo) => {
     const TEST_PROJECT_NAME = 'Test Project'
-    const { dir: projectsDirName } = await folderSetupFn(async (dir) => {
-      await fs.mkdir(await fs.join(dir, TEST_PROJECT_NAME), {
-        recursive: true,
-      })
-      await fs.mkdir(await fs.join(dir, TEST_PROJECT_NAME, 'folderToDelete'), {
-        recursive: true,
-      })
-      const testData = await nodeFsP.readFile(
-        executorInputPath('basic_fillet_cube_end.kcl')
-      )
-      await fs.writeFile(
-        await fs.join(dir, TEST_PROJECT_NAME, 'main.kcl'),
-        testData
-      )
-
-      const testData2 = await nodeFsP.readFile(
-        executorInputPath('cylinder.kcl')
-      )
-      await fs.writeFile(
-        await fs.join(
-          dir,
-          TEST_PROJECT_NAME,
-          'folderToDelete',
-          'someFileWithin.kcl'
-        ),
-        testData2
-      )
-    })
+    const { dir: projectsDirName } = await folderSetupFn((dir) =>
+      seedProjectWithNestedFile(fs, dir, TEST_PROJECT_NAME, 'folderToDelete')
+    )
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
 
@@ -1319,10 +1186,12 @@ test(
     })
 
     await test.step('Check the app is back on the home view', async () => {
-      const projectsDirLink = page.getByTestId(
-        'project-directory-settings-link'
-      )
-      await expect(projectsDirLink).toBeVisible()
+      await expect(
+        page.getByRole('heading', { name: 'Project Libraries' })
+      ).toBeVisible()
+      await expect(
+        page.getByRole('region', { name: 'Projects library', exact: true })
+      ).toContainText('No projects')
     })
   }
 )
@@ -1501,3 +1370,24 @@ test.describe(
     })
   }
 )
+
+async function seedProjectWithNestedFile(
+  fs: PromisifiedZooDesignStudioFS,
+  dir: string,
+  projectName: string,
+  folderName: string
+) {
+  await fs.mkdir(await fs.join(dir, projectName), { recursive: true })
+  await fs.mkdir(await fs.join(dir, projectName, folderName), {
+    recursive: true,
+  })
+  const main = await nodeFsP.readFile(
+    executorInputPath('basic_fillet_cube_end.kcl')
+  )
+  await fs.writeFile(await fs.join(dir, projectName, 'main.kcl'), main)
+  const nested = await nodeFsP.readFile(executorInputPath('cylinder.kcl'))
+  await fs.writeFile(
+    await fs.join(dir, projectName, folderName, 'someFileWithin.kcl'),
+    nested
+  )
+}

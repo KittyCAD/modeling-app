@@ -1,0 +1,636 @@
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
+import type * as ArchiveModule from '@src/lib/fs-zds/cloud/archive'
+import { parseProjectArchive } from '@src/lib/fs-zds/cloud/archive'
+import { posix } from '@chainner/node-path'
+import { createFileOperationsServices } from '@src/registry/extensions/fileOperations'
+import * as api from '@src/lib/fs-zds/cloud/api'
+import nodefs from '@src/lib/fs-zds/nodefs'
+import { publishCurrentProject } from '@src/registry/extensions/fileOperations/publication'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@src/lib/fs-zds/cloud/api', async (original) => ({
+  CloudApiError: (await original<typeof api>()).CloudApiError,
+  getRemoteProject: vi.fn(),
+  getRemoteProjectVersion: vi.fn(),
+  downloadRemoteProjectArchive: vi.fn(),
+  updateRemoteProject: vi.fn(),
+  createRemoteProject: vi.fn(),
+  deleteRemoteProject: vi.fn(),
+  listRemoteProjects: vi.fn(),
+  getRemoteProjectThumbnailUrl: vi.fn(),
+}))
+vi.mock('@src/registry/extensions/fileOperations/publication', () => ({
+  publishCurrentProject: vi.fn(),
+}))
+vi.mock('@src/lib/fs-zds/cloud/archive', async (original) => ({
+  ...(await original<typeof ArchiveModule>()),
+  parseProjectArchive: vi.fn(async () => [
+    { relativePath: 'main.kcl', data: new TextEncoder().encode('original') },
+    {
+      relativePath: 'project.toml',
+      data: new TextEncoder().encode('[project]\ntitle = "Test"'),
+    },
+  ]),
+}))
+
+const remote = {
+  id: 'one',
+  revision: '1',
+  description: '',
+  category_ids: [],
+  files: [
+    { id: 'main-1', relative_path: 'main.kcl', byte_size: 8 },
+    { id: 'toml-1', relative_path: 'project.toml', byte_size: 24 },
+  ],
+}
+const schedulers: ReturnType<typeof createFileOperationsServices>[] = []
+beforeEach(() => {
+  vi.mocked(parseProjectArchive).mockResolvedValue([
+    { relativePath: 'main.kcl', data: new TextEncoder().encode('original') },
+    {
+      relativePath: 'project.toml',
+      data: new TextEncoder().encode('[project]\ntitle = "Test"'),
+    },
+  ])
+  vi.mocked(api.listRemoteProjects).mockResolvedValue([remote])
+  vi.mocked(api.getRemoteProjectThumbnailUrl).mockResolvedValue(
+    'data:image/png;base64,dGh1bWI='
+  )
+  vi.mocked(api.getRemoteProject).mockResolvedValue(remote)
+  vi.mocked(api.getRemoteProjectVersion).mockImplementation(
+    async (_config, project, revision) => ({ ...project, revision })
+  )
+  vi.mocked(api.updateRemoteProject).mockResolvedValue({
+    ...remote,
+    revision: '2',
+  })
+  vi.mocked(api.downloadRemoteProjectArchive).mockResolvedValue(
+    new ArrayBuffer(0)
+  )
+})
+afterEach(async () => {
+  await Promise.all(schedulers.splice(0).map((r) => r.dispose()))
+  vi.clearAllMocks()
+  vi.useRealTimers()
+})
+const setup = (accountId?: () => string) => {
+  const diskWrite = vi.fn()
+  const services = createFileOperationsServices(
+    { ...nodefs.impl, ...posix, writeFile: diskWrite },
+    () => ({ enabled: true, accountId: accountId?.() })
+  )
+  schedulers.push(services)
+  return {
+    storage: { ...services.cloud, operations: services.operations },
+    diskWrite,
+  }
+}
+
+describe('memory cloud storage', () => {
+  it('keeps all content off disk and resolves writes after cloud acknowledgement', async () => {
+    const { storage, diskWrite } = setup()
+    const root = await storage.openProject('one')
+    const gate = Promise.withResolvers<typeof remote>()
+    vi.mocked(api.updateRemoteProject).mockReturnValueOnce(gate.promise)
+    const write = storage.operations.writeFile(
+      posix.join(root, 'main.kcl'),
+      'changed'
+    )
+    await vi.waitFor(() =>
+      expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+    )
+    expect(storage.saves.value.get('one')?.state).toBe('saving')
+    expect(
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
+    ).toBe('changed')
+    gate.resolve({ ...remote, revision: '2' })
+    await write
+    expect(storage.saves.value.get('one')?.state).toBe('saved')
+    expect(diskWrite).not.toHaveBeenCalled()
+    expect(api.updateRemoteProject).toHaveBeenCalledWith(
+      expect.objectContaining({ expectedRevision: '1' })
+    )
+  })
+
+  it.each(['file lock', 'directory membership', 'directory creation'] as const)(
+    'cancels stale mutations waiting for %s after cloud reconciliation',
+    async (kind) => {
+      const { storage } = setup()
+      const root = await storage.openProject('one')
+      const file = posix.join(root, 'main.kcl')
+      const gate = Promise.withResolvers<typeof remote>()
+      vi.mocked(api.updateRemoteProject).mockReturnValueOnce(gate.promise)
+      const first = storage.operations.writeFile(
+        kind === 'file lock' ? file : posix.join(root, 'new.kcl'),
+        'first edit'
+      )
+      await vi.waitFor(() =>
+        expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+      )
+      const second =
+        kind === 'directory creation'
+          ? storage.operations.createDirectory(
+              posix.join(root, 'new-directory')
+            )
+          : storage.operations.writeFile(
+              kind === 'file lock' ? file : posix.join(root, 'another.kcl'),
+              'stale queued edit'
+            )
+      const canceled = expect(second).rejects.toMatchObject({
+        operation: 'validate-mutation',
+        cause: expect.objectContaining({
+          message: 'Cloud snapshot changed; queued operation canceled.',
+        }),
+      })
+      await vi.waitFor(async () =>
+        expect(await storage.operations.pending()).toBeGreaterThanOrEqual(3)
+      )
+      vi.mocked(api.getRemoteProject).mockResolvedValue({
+        ...remote,
+        revision: '3',
+      })
+      vi.mocked(parseProjectArchive).mockResolvedValue([
+        {
+          relativePath: 'main.kcl',
+          data: new TextEncoder().encode('cloud truth'),
+        },
+      ])
+      gate.reject(new api.CloudApiError(409, 'Revision changed'))
+      await first
+      await canceled
+      expect(await readTextFile(storage.operations, file)).toBe('cloud truth')
+      expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+      expect(storage.saves.value.get('one')?.state).toBe('saved')
+      await storage.operations.writeFile(file, 'fresh edit')
+      expect(api.updateRemoteProject).toHaveBeenLastCalledWith(
+        expect.objectContaining({ expectedRevision: '3' })
+      )
+    }
+  )
+
+  it('retains failed edits in memory and retries with the acknowledged revision', async () => {
+    const { storage } = setup()
+    const root = await storage.openProject('one')
+    vi.mocked(api.updateRemoteProject).mockRejectedValueOnce(
+      new Error('Conflict')
+    )
+    await expect(
+      storage.operations.writeFile(posix.join(root, 'main.kcl'), 'unsaved')
+    ).rejects.toMatchObject({
+      cause: expect.objectContaining({ message: 'Conflict' }),
+    })
+    expect(storage.saves.value.get('one')?.state).toBe('failed')
+    expect(
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
+    ).toBe('unsaved')
+    await storage.retry('one')
+    expect(api.updateRemoteProject).toHaveBeenLastCalledWith(
+      expect.objectContaining({ expectedRevision: '1' })
+    )
+  })
+
+  it('commits a bulk mutation once and sends exact deletion intent', async () => {
+    const { storage } = setup()
+    const root = await storage.openProject('one')
+    await storage.batch(root, async (operations) => {
+      await operations.writeFile(
+        posix.join(root, 'new.bin'),
+        new Uint8Array([0, 255])
+      )
+      await operations.remove(posix.join(root, 'main.kcl'))
+    })
+    expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+    expect(api.updateRemoteProject).toHaveBeenCalledWith(
+      expect.objectContaining({ deletedPaths: ['main.kcl'] })
+    )
+  })
+
+  it.each(['file', 'directory'])(
+    'deletes a cloud %s against the parent project revision without writing a local archive',
+    async (kind) => {
+      vi.mocked(parseProjectArchive).mockResolvedValueOnce([
+        { relativePath: 'main.kcl', data: new TextEncoder().encode('main') },
+        {
+          relativePath: 'parts/handle.kcl',
+          data: new TextEncoder().encode('handle'),
+        },
+        {
+          relativePath: 'parts/nested/note.md',
+          data: new TextEncoder().encode('note'),
+        },
+      ])
+      const { storage, diskWrite } = setup()
+      const root = await storage.openProject('one')
+      const deletedPaths =
+        kind === 'file'
+          ? ['parts/handle.kcl']
+          : ['parts/handle.kcl', 'parts/nested/note.md']
+      const target = posix.join(
+        root,
+        kind === 'file' ? 'parts/handle.kcl' : 'parts'
+      )
+
+      await storage.operations.remove(target)
+
+      expect(api.updateRemoteProject).toHaveBeenCalledExactlyOnceWith(
+        expect.objectContaining({
+          expectedRevision: '1',
+          deletedPaths,
+          files: expect.not.arrayContaining([
+            expect.objectContaining({ relativePath: 'parts/handle.kcl' }),
+          ]),
+        })
+      )
+      expect(await storage.operations.exists(target)).toBe(false)
+      expect(
+        await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
+      ).toBe('main')
+      expect(diskWrite).not.toHaveBeenCalled()
+    }
+  )
+
+  it('serializes saves against the latest acknowledged revision', async () => {
+    const { storage } = setup()
+    const root = await storage.openProject('one')
+    const gate = Promise.withResolvers<typeof remote>()
+    vi.mocked(api.updateRemoteProject).mockReturnValueOnce(gate.promise)
+    const first = storage.operations.writeFile(
+      posix.join(root, 'main.kcl'),
+      'first'
+    )
+    await vi.waitFor(() =>
+      expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+    )
+    const second = storage.operations.writeFile(
+      posix.join(root, 'main.kcl'),
+      'second'
+    )
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+    expect(storage.saves.value.get('one')?.state).toBe('saving')
+    gate.resolve({ ...remote, revision: '2' })
+    await Promise.all([first, second])
+    expect(
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
+    ).toBe('second')
+    expect(
+      vi
+        .mocked(api.updateRemoteProject)
+        .mock.calls.map(([input]) => input.expectedRevision)
+    ).toEqual(['1', '2'])
+  })
+  it('does not expose a project response received after switching accounts', async () => {
+    let accountId = 'first'
+    const { storage } = setup(() => accountId)
+    const gate = Promise.withResolvers<typeof remote>()
+    vi.mocked(api.getRemoteProject).mockReturnValueOnce(gate.promise)
+    const opening = storage.openProject('one')
+    await vi.waitFor(() => expect(api.getRemoteProject).toHaveBeenCalledOnce())
+    accountId = 'second'
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(storage.projects.value).toEqual([])
+    gate.resolve(remote)
+    await expect(opening).rejects.toThrow('Cloud account changed')
+    expect(await storage.operations.exists(storage.pathFor('one'))).toBe(false)
+    expect(storage.projects.value).toEqual([])
+  })
+
+  it('rejects archive traversal before hydrating any files', async () => {
+    const { storage } = setup()
+    vi.mocked(parseProjectArchive).mockResolvedValueOnce([
+      { relativePath: 'main.kcl', data: new Uint8Array([1]) },
+      { relativePath: '../outside.kcl', data: new Uint8Array([2]) },
+    ])
+    await expect(storage.openProject('one')).rejects.toThrow(
+      'outside its project'
+    )
+    expect(await storage.operations.exists(storage.pathFor('one'))).toBe(false)
+  })
+  it('moves a file with one save and does not retry filesystem work after a rejected acknowledgement', async () => {
+    const { storage } = setup()
+    const root = await storage.openProject('one')
+    const source = posix.join(root, 'main.kcl')
+    const destination = posix.join(root, 'nested', 'renamed.kcl')
+    vi.mocked(api.updateRemoteProject).mockRejectedValueOnce(
+      new Error('Revision conflict')
+    )
+    await expect(storage.operations.move(source, destination)).rejects.toThrow(
+      'Revision conflict'
+    )
+    expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+    expect(api.updateRemoteProject).toHaveBeenCalledWith(
+      expect.objectContaining({ deletedPaths: ['main.kcl'] })
+    )
+    expect(await storage.operations.exists(source)).toBe(false)
+    expect(await readTextFile(storage.operations, destination)).toBe('original')
+    expect(storage.saves.value.get('one')?.state).toBe('failed')
+  })
+
+  it('publishes a serialized memory snapshot without deadlocking a queued edit', async () => {
+    const { storage } = setup()
+    const root = await storage.openProject('one')
+    const started = Promise.withResolvers<undefined>()
+    const gate = Promise.withResolvers<undefined>()
+    vi.mocked(publishCurrentProject).mockImplementationOnce(async (args) => {
+      expect(args.expectedRevision).toBe('1')
+      expect(args.deletedPaths).toEqual([])
+      started.resolve(undefined)
+      await gate.promise
+      expect(await args.fileOperations.readDirectory(root)).toEqual([
+        'main.kcl',
+        'project.toml',
+      ])
+      expect(
+        await readTextFile(args.fileOperations, posix.join(root, 'main.kcl'))
+      ).toBe('original')
+      return { remoteProjectId: 'one' }
+    })
+    const publication = storage.publishCurrentProject({
+      fileOperations: storage.operations,
+      token: 'token',
+      remoteProjectId: 'one',
+      project: undefined,
+      currentFilePath: posix.join(root, 'main.kcl'),
+      currentFileContents: 'original',
+      wasmInstance: {} as ModuleType,
+      submission: { title: 'Published', description: '', categoryIds: [] },
+    })
+    await started.promise
+    const write = storage.operations.writeFile(
+      posix.join(root, 'main.kcl'),
+      'after publication'
+    )
+    await vi.waitFor(() => expect(storage.pending()).toBe(2))
+    vi.mocked(api.getRemoteProject).mockResolvedValueOnce({
+      ...remote,
+      revision: '3',
+    })
+    gate.resolve(undefined)
+    await Promise.all([publication, write])
+    expect(api.updateRemoteProject).toHaveBeenLastCalledWith(
+      expect.objectContaining({ expectedRevision: '3' })
+    )
+  })
+
+  it('loads thumbnails only for visible cards and shares requests between watchers', async () => {
+    const { storage, diskWrite } = setup()
+    await storage.listProjects()
+    expect(api.getRemoteProjectThumbnailUrl).not.toHaveBeenCalled()
+    const gate = Promise.withResolvers<string>()
+    vi.mocked(api.getRemoteProjectThumbnailUrl).mockReturnValueOnce(
+      gate.promise
+    )
+    const stopFirst = storage.watchThumbnail('one')
+    const stopSecond = storage.watchThumbnail('one')
+    expect(api.getRemoteProjectThumbnailUrl).toHaveBeenCalledOnce()
+    stopFirst()
+    gate.resolve('data:image/png;base64,Zmlyc3Q=')
+    await vi.waitFor(() =>
+      expect(storage.thumbnails.value.get('one')).toBe(
+        'data:image/png;base64,Zmlyc3Q='
+      )
+    )
+    stopSecond()
+    const stopThird = storage.watchThumbnail('one')
+    expect(api.getRemoteProjectThumbnailUrl).toHaveBeenCalledOnce()
+    stopThird()
+    expect(diskWrite).not.toHaveBeenCalled()
+  })
+
+  it.each([false, true])(
+    'does not retry a missing thumbnail on scroll (completed offscreen: %s)',
+    async (offscreen) => {
+      const { storage } = setup()
+      await storage.listProjects()
+      // The API turns a thumbnail 404 into undefined.
+      const gate = Promise.withResolvers<string | undefined>()
+      vi.mocked(api.getRemoteProjectThumbnailUrl).mockReturnValueOnce(
+        gate.promise
+      )
+      const stop = storage.watchThumbnail('one')
+      if (offscreen) stop()
+      gate.resolve(undefined)
+      await gate.promise
+      await Promise.resolve()
+      await Promise.resolve()
+      stop()
+      await storage.listProjects()
+      const stopAgain = storage.watchThumbnail('one')
+      expect(api.getRemoteProjectThumbnailUrl).toHaveBeenCalledOnce()
+      expect(storage.thumbnails.value.has('one')).toBe(false)
+
+      vi.mocked(api.listRemoteProjects).mockResolvedValueOnce([
+        { ...remote, revision: '2' },
+      ])
+      await storage.listProjects()
+      await vi.waitFor(() =>
+        expect(storage.thumbnails.value.get('one')).toBe(
+          'data:image/png;base64,dGh1bWI='
+        )
+      )
+      expect(api.getRemoteProjectThumbnailUrl).toHaveBeenCalledTimes(2)
+      stopAgain()
+    }
+  )
+
+  it('refreshes a visible thumbnail when project metadata changes and ignores an older result', async () => {
+    const { storage } = setup()
+    await storage.listProjects()
+    const old = Promise.withResolvers<string>()
+    vi.mocked(api.getRemoteProjectThumbnailUrl).mockReturnValueOnce(old.promise)
+    const stop = storage.watchThumbnail('one')
+    vi.mocked(api.listRemoteProjects).mockResolvedValueOnce([
+      { ...remote, revision: '2' },
+    ])
+    await storage.listProjects()
+    await vi.waitFor(() =>
+      expect(storage.thumbnails.value.get('one')).toBe(
+        'data:image/png;base64,dGh1bWI='
+      )
+    )
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(storage.thumbnails.value.get('one')).toBe(
+      'data:image/png;base64,dGh1bWI='
+    )
+    old.resolve('old-thumbnail')
+    await old.promise
+    await Promise.resolve()
+    expect(storage.thumbnails.value.get('one')).toBe(
+      'data:image/png;base64,dGh1bWI='
+    )
+    expect(api.getRemoteProjectThumbnailUrl).toHaveBeenCalledTimes(2)
+    stop()
+  })
+
+  it('does not publish thumbnail results for an account that has signed out', async () => {
+    let accountId = 'first'
+    const { storage } = setup(() => accountId)
+    await storage.listProjects()
+    const gate = Promise.withResolvers<string>()
+    vi.mocked(api.getRemoteProjectThumbnailUrl).mockReturnValueOnce(
+      gate.promise
+    )
+    const stop = storage.watchThumbnail('one')
+    accountId = 'second'
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(storage.thumbnails.value.size).toBe(0)
+    gate.resolve('private-thumbnail')
+    await gate.promise
+    await Promise.resolve()
+    expect(storage.thumbnails.value.size).toBe(0)
+    stop()
+  })
+  it('refreshes additions, binary contents, and deletions without uploading or touching disk', async () => {
+    const { storage, diskWrite } = setup()
+    const root = await storage.openProject('one')
+    const changes = vi.fn()
+    storage.subscribe(changes)
+    vi.mocked(api.getRemoteProject).mockResolvedValue({
+      ...remote,
+      revision: '3',
+      files: [
+        { id: 'new-3', relative_path: 'nested/new.bin', byte_size: 2 },
+        { id: 'toml-3', relative_path: 'project.toml', byte_size: 7 },
+      ],
+    })
+    vi.mocked(parseProjectArchive).mockResolvedValueOnce([
+      { relativePath: 'nested/new.bin', data: new Uint8Array([0, 255]) },
+      {
+        relativePath: 'project.toml',
+        data: new TextEncoder().encode('updated'),
+      },
+    ])
+    await storage.refreshProject('one')
+    expect(await storage.operations.exists(posix.join(root, 'main.kcl'))).toBe(
+      false
+    )
+    expect(
+      await storage.operations.readFile(posix.join(root, 'nested/new.bin'))
+    ).toEqual(new Uint8Array([0, 255]))
+    expect(changes).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        { path: posix.join(root, 'main.kcl'), eventType: 'unlink' },
+        { path: posix.join(root, 'nested/new.bin'), eventType: 'add' },
+      ])
+    )
+    expect(api.updateRemoteProject).not.toHaveBeenCalled()
+    expect(diskWrite).not.toHaveBeenCalled()
+    await storage.operations.writeFile(posix.join(root, 'project.toml'), 'next')
+    expect(api.updateRemoteProject).toHaveBeenCalledWith(
+      expect.objectContaining({ expectedRevision: '3' })
+    )
+  })
+
+  it('preserves failed local edits rather than refreshing over them', async () => {
+    const { storage } = setup()
+    const root = await storage.openProject('one')
+    vi.mocked(api.updateRemoteProject).mockRejectedValueOnce(
+      new Error('Conflict')
+    )
+    await expect(
+      storage.operations.writeFile(posix.join(root, 'main.kcl'), 'unsaved')
+    ).rejects.toMatchObject({
+      cause: expect.objectContaining({ message: 'Conflict' }),
+    })
+    vi.mocked(api.downloadRemoteProjectArchive).mockClear()
+    await expect(storage.refreshProject('one')).rejects.toThrow(
+      'preserve unsaved changes'
+    )
+    expect(
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
+    ).toBe('unsaved')
+    expect(api.downloadRemoteProjectArchive).not.toHaveBeenCalled()
+    expect(storage.saves.value.get('one')?.state).toBe('failed')
+  })
+
+  it('keeps the entire previous snapshot when download validation fails', async () => {
+    const { storage } = setup()
+    const root = await storage.openProject('one')
+    vi.mocked(api.getRemoteProject).mockResolvedValueOnce({
+      ...remote,
+      revision: '2',
+      files: [{ id: 'main-2', relative_path: 'main.kcl', byte_size: 1 }],
+    })
+    vi.mocked(parseProjectArchive).mockResolvedValueOnce([
+      { relativePath: 'main.kcl', data: new Uint8Array([1]) },
+      { relativePath: '../escape.kcl', data: new Uint8Array([2]) },
+    ])
+    await expect(storage.refreshProject('one')).rejects.toThrow(
+      'does not match the selected version files'
+    )
+    expect(
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
+    ).toBe('original')
+    expect(storage.saves.value.get('one')?.state).toBe('saved')
+  })
+
+  it('discards a fetched snapshot after its session is replaced', async () => {
+    const { storage } = setup()
+    const root = await storage.openProject('one')
+    vi.mocked(api.getRemoteProject).mockResolvedValueOnce({
+      ...remote,
+      revision: '2',
+    })
+    const gate = Promise.withResolvers<ArrayBuffer>()
+    vi.mocked(api.downloadRemoteProjectArchive).mockReturnValueOnce(
+      gate.promise
+    )
+    let current = true
+    const refresh = storage.refreshProject('one', () => current)
+    await vi.waitFor(() =>
+      expect(api.downloadRemoteProjectArchive).toHaveBeenCalledTimes(2)
+    )
+    current = false
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(storage.projects.value[0].revision).toBe('1')
+    expect(
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
+    ).toBe('original')
+    gate.resolve(new ArrayBuffer(0))
+    await refresh
+    expect(
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
+    ).toBe('original')
+    expect(storage.projects.value[0].revision).toBe('1')
+  })
+
+  it('fetches the mutation version metadata for refresh and uses that revision for the next save', async () => {
+    const { storage } = setup()
+    const root = await storage.openProject('one')
+    vi.mocked(api.getRemoteProject).mockClear()
+    await storage.refreshProject('one', () => true, 'latest-mutation')
+    expect(api.getRemoteProject).not.toHaveBeenCalled()
+    expect(storage.projects.value[0].revision).toBe('latest-mutation')
+    await storage.operations.writeFile(
+      posix.join(root, 'main.kcl'),
+      'next edit'
+    )
+    expect(api.updateRemoteProject).toHaveBeenCalledWith(
+      expect.objectContaining({ expectedRevision: 'latest-mutation' })
+    )
+  })
+
+  it('accepts each incoming revision without rechecking or retrying the download', async () => {
+    const { storage } = setup()
+    await storage.openProject('one')
+    vi.mocked(api.getRemoteProject).mockClear()
+    vi.mocked(api.downloadRemoteProjectArchive).mockClear()
+    vi.mocked(api.getRemoteProject)
+      .mockResolvedValueOnce({ ...remote, revision: '2' })
+      .mockResolvedValue({ ...remote, revision: '3' })
+    await storage.refreshProject('one')
+    expect(storage.projects.value[0].revision).toBe('2')
+    expect(api.getRemoteProject).toHaveBeenCalledTimes(1)
+    expect(api.downloadRemoteProjectArchive).toHaveBeenCalledTimes(1)
+    await storage.refreshProject('one')
+    expect(storage.projects.value[0].revision).toBe('3')
+    expect(api.getRemoteProject).toHaveBeenCalledTimes(2)
+    expect(api.downloadRemoteProjectArchive).toHaveBeenCalledTimes(2)
+  })
+})

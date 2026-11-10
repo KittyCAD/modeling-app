@@ -1,3 +1,4 @@
+import { posix } from 'node:path'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
@@ -6,6 +7,12 @@ import {
   getDefaultKclFileForDir,
   getProjectInfo,
   listProjects,
+  writeEnvironmentFile,
+  writeTelemetryFile,
+  writeRawTelemetryFile,
+  writeEnvironmentConfigurationToken,
+  writeEnvironmentConfigurationKittycadWebSocketUrl,
+  writeEnvironmentConfigurationZookeeperWebSocketUrl,
   readEnvironmentConfigurationFile,
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
@@ -250,6 +257,65 @@ describe('desktop utilities', () => {
   })
 
   describe('listProjects', () => {
+    it('does not create an entrypoint during read-only project discovery', async () => {
+      const { instance } = await buildTheWorldNode()
+      const projectPath = '/test/projects/project-without-kcl-files'
+      const originalStat = mockElectron.stat.getMockImplementation()!
+      mockElectron.stat.mockImplementation((path: string) =>
+        path === `${projectPath}/main.kcl`
+          ? Promise.reject('ENOENT')
+          : originalStat(path)
+      )
+      await getDefaultKclFileForDir(
+        testFileOperations,
+        projectPath,
+        {
+          name: 'empty',
+          path: projectPath,
+          children: [],
+          metadata: null,
+        },
+        await instance,
+        false
+      )
+      expect(mockElectron.writeFile).not.toHaveBeenCalled()
+    })
+
+    it('descends into KCL-named directories when choosing an entrypoint', async () => {
+      const { instance } = await buildTheWorldNode()
+      const projectPath = '/test/projects/project-without-kcl-files'
+      const folder = `${projectPath}/folder.kcl`
+      const nested = `${folder}/part.kcl`
+      const originalStat = mockElectron.stat.getMockImplementation()!
+      mockElectron.stat.mockImplementation((path: string) =>
+        path.endsWith('/main.kcl')
+          ? Promise.reject('ENOENT')
+          : originalStat(path === folder ? projectPath : path)
+      )
+      await expect(
+        getDefaultKclFileForDir(
+          {
+            ...testFileOperations,
+            stat: (path) =>
+              testFileOperations.stat(path === folder ? projectPath : path),
+          },
+          projectPath,
+          {
+            name: 'project-without-kcl-files',
+            path: projectPath,
+            children: [
+              {
+                name: 'folder.kcl',
+                path: folder,
+                children: [{ name: 'part.kcl', path: nested, children: null }],
+              },
+            ],
+          },
+          await instance
+        )
+      ).resolves.toBe(nested)
+    })
+
     it('preserves main.kcl created after discovery observed an empty project', async () => {
       const { instance } = await buildTheWorldNode()
       const projectPath = '/test/projects/project-without-kcl-files'
@@ -586,6 +652,98 @@ describe('desktop utilities', () => {
       const actual = await readEnvironmentFile(testFileOperations)
       mockElectron.packageJson.name = ''
       expect(actual).toBe(expected)
+    })
+  })
+
+  it('places environment and telemetry files beside the test settings file', async () => {
+    const operations = {
+      ...testFileOperations,
+      createDirectory: vi.fn().mockResolvedValue(undefined),
+    }
+    for (const write of [
+      writeEnvironmentFile,
+      writeTelemetryFile,
+      writeRawTelemetryFile,
+    ]) {
+      mockElectron.getAppTestProperty.mockResolvedValueOnce(
+        '/isolated/settings.toml'
+      )
+      mockElectron.path.resolve.mockImplementationOnce((...parts: string[]) =>
+        posix.resolve(...parts)
+      )
+      await write(operations, 'contents')
+    }
+    expect(mockElectron.writeFile.mock.calls.map(([path]) => path)).toEqual([
+      '/isolated/environment.txt',
+      '/isolated/boot.txt',
+      '/isolated/raw-metrics.txt',
+    ])
+  })
+
+  describe('environment configuration updates', () => {
+    const cases = [
+      {
+        setter: writeEnvironmentConfigurationToken,
+        field: 'token',
+        value: ' value ',
+        environment: 'development',
+      },
+      {
+        setter: writeEnvironmentConfigurationKittycadWebSocketUrl,
+        field: 'kittycadWebSocketUrl',
+        value: 'value',
+        environment: ' development ',
+      },
+      {
+        setter: writeEnvironmentConfigurationZookeeperWebSocketUrl,
+        field: 'zookeeperWebSocketUrl',
+        value: 'value',
+        environment: ' development ',
+      },
+    ]
+    const original = {
+      domain: 'existing-domain',
+      token: 'old-token',
+      kittycadWebSocketUrl: 'old-engine',
+      zookeeperWebSocketUrl: 'old-zookeeper',
+    }
+
+    it.each(cases)(
+      'preserves other fields and the trimming policy for $field',
+      async ({ setter, field, value, environment }) => {
+        mockElectron.readFile.mockResolvedValue(JSON.stringify(original))
+        const operations = {
+          ...testFileOperations,
+          createDirectory: vi.fn().mockResolvedValue(undefined),
+        }
+        await setter(operations, ' development ', ' value ')
+        const [path, contents] = mockElectron.writeFile.mock.calls[0]
+        expect(path).toBe(`/appData/-local/envs/${environment}.json`)
+        expect(JSON.parse(contents)).toEqual({ ...original, [field]: value })
+      }
+    )
+
+    it('propagates a failed write without reporting success', async () => {
+      mockElectron.readFile.mockResolvedValue(JSON.stringify(original))
+      const failure = new Error('write denied')
+      const operations = {
+        ...testFileOperations,
+        createDirectory: vi.fn().mockResolvedValue(undefined),
+        writeFile: vi.fn().mockRejectedValue(failure),
+      }
+      const log = vi.spyOn(console, 'log').mockImplementation(() => {})
+      try {
+        await expect(
+          writeEnvironmentConfigurationToken(
+            operations,
+            'development',
+            'new-token'
+          )
+        ).rejects.toBe(failure)
+        expect(log).not.toHaveBeenCalled()
+      } finally {
+        log.mockRestore()
+      }
     })
   })
 

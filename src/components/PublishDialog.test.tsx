@@ -1,7 +1,7 @@
 import { Popover } from '@headlessui/react'
 import type { MarkdownEditorActions } from '@kittycad/ui-components'
 import { PublishDialog } from '@src/components/PublishDialog'
-import type { CurrentProjectPublicationDetails } from '@src/lib/share'
+import type { CurrentProjectPublicationDetails } from '@src/registry/contracts/fileOperations'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -116,13 +116,13 @@ describe('PublishDialog', () => {
         <PublishDialog
           onSubmit={vi.fn()}
           accountUrl="https://zoo.dev/account"
-          willMoveProjectToCloud={true}
+          willCloneProjectToCloud={true}
         />
       </Popover>
     )
 
     const cloudMoveWarning = screen.getByText(
-      /Publishing will also move this project from its current folder to your Personal Cloud library/
+      /Publishing creates a new project in Personal Cloud/
     )
     expect(cloudMoveWarning).toBeInTheDocument()
     expect(cloudMoveWarning).toHaveClass(

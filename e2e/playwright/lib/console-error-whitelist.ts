@@ -294,3 +294,28 @@ export const isErrorWhitelisted = (exception: Error) => {
 
   return foundItem !== undefined
 }
+
+export function isInterruptedWebKitRequest(
+  exception: Pick<Error, 'name' | 'message' | 'stack'>,
+  project: string | undefined,
+  isNavigating: boolean
+): boolean {
+  if (
+    project !== 'webkit' ||
+    !isNavigating ||
+    !exception.message.includes('due to access control checks')
+  ) {
+    return false
+  }
+  const stack = exception.stack ?? ''
+  if (exception.name === 'Cannot load blob') {
+    return (
+      stack.includes('/src/lib/fs-zds/opfs.ts:') ||
+      stack.includes('/src/lib/screenshot.ts:')
+    )
+  }
+  return (
+    exception.name === 'Cannot load http' &&
+    stack.includes('/src/lib/fs-zds/opfsWorker.ts?worker&inline:')
+  )
+}

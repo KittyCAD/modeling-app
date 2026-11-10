@@ -1,3 +1,5 @@
+import type { CloudStorageService } from '@src/registry/contracts/fileOperations'
+import { cloudStorageService } from '@src/registry/contracts/fileOperations'
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import {
   computed,
@@ -42,9 +44,9 @@ import {
   settingsService,
 } from '@src/registry/contracts/settings'
 import {
-  type SystemIORegistryService,
-  systemIOService,
-} from '@src/registry/contracts/systemIO'
+  type ProjectOperationsService,
+  projectOperationsService,
+} from '@src/registry/contracts/fileOperations'
 import { lazy, Suspense } from 'react'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
 
@@ -58,12 +60,13 @@ const ZookeeperConversationPaneWrapper = lazy(async () => {
 type ZookeeperRuntime = ReturnType<typeof createZookeeperRuntime>
 
 type ZookeeperRuntimeServices = {
+  cloudStorage?: ReadonlySignal<CloudStorageService | undefined>
   auth: ReadonlySignal<AuthRegistryService | undefined>
   billing: ReadonlySignal<BillingRegistryService | undefined>
   fileOperations: ReadonlySignal<FileOperationsRegistryService | undefined>
   projectSession: ReadonlySignal<ProjectSessionService | undefined>
   settings: ReadonlySignal<SettingsRegistryService | undefined>
-  systemIO: ReadonlySignal<SystemIORegistryService | undefined>
+  projectOperations: ReadonlySignal<ProjectOperationsService | undefined>
 }
 
 type ZookeeperSessionControllerModule = {
@@ -214,7 +217,8 @@ export function createZookeeperRuntime(
     const billing = services.billing.value
     const fileOperations = services.fileOperations.value
     const settings = services.settings.value
-    const systemIO = services.systemIO.value
+    const projectOperations = services.projectOperations.value
+    const projectSession = services.projectSession.value
     const project = currentZdsProject.value
     const projectRef = project?.projectIORefSignal?.value
     const projectPath = projectRef?.path
@@ -279,7 +283,8 @@ export function createZookeeperRuntime(
       !apiToken.trim() ||
       !billing ||
       !fileOperations ||
-      !systemIO
+      !projectOperations ||
+      !projectSession
     ) {
       return
     }
@@ -307,11 +312,13 @@ export function createZookeeperRuntime(
             getEnvironmentNameFromEnv(env())
           ),
           fileOperations,
+          cloudStorage: services.cloudStorage?.value,
           kclManager: next.kclManager,
           project: next.project,
           projectId: next.projectId,
           projectPath: next.projectPath,
-          systemIO,
+          projectOperations,
+          session: projectSession,
         })
         if (disposed || activation !== next) {
           disposeController(controller, next.projectPath, next.kclManager)
@@ -417,9 +424,10 @@ export const zookeeperRuntimeRegistryItem = defineRegistryItemFactory((ctx) => {
     auth: ctx.services.signal(authService),
     billing: ctx.services.signal(billingService),
     fileOperations: ctx.services.signal(fileOperationsService),
+    cloudStorage: ctx.services.signal(cloudStorageService),
     projectSession: ctx.services.signal(projectSession),
     settings: ctx.services.signal(settingsService),
-    systemIO: ctx.services.signal(systemIOService),
+    projectOperations: ctx.services.signal(projectOperationsService),
   })
 
   const PaneOutlet = (props: AreaTypeComponentProps) => (

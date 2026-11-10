@@ -1,0 +1,93 @@
+import { pollProjectList } from '@src/lib/projectListPolling'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+describe('projects list polling lifecycle', () => {
+  let stop: (() => void) | undefined
+  beforeEach(() => {
+    vi.useFakeTimers()
+    vi.spyOn(Math, 'random').mockReturnValue(0.5)
+    vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible')
+    vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true)
+  })
+  afterEach(() => {
+    stop?.()
+    stop = undefined
+    vi.restoreAllMocks()
+    vi.useRealTimers()
+  })
+
+  it('never overlaps a seven-second request, including focus events, and stops on disposal', async () => {
+    const gate = Promise.withResolvers<boolean>()
+    const check = vi.fn(() => gate.promise)
+    const onError = vi.fn()
+    stop = pollProjectList(check, onError)
+    await vi.advanceTimersByTimeAsync(0)
+    window.dispatchEvent(new Event('focus'))
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(check).toHaveBeenCalledOnce()
+    stop()
+    gate.resolve(false)
+    await vi.advanceTimersByTimeAsync(60_000)
+    window.dispatchEvent(new Event('focus'))
+    await vi.advanceTimersByTimeAsync(0)
+    expect(check).toHaveBeenCalledOnce()
+    expect(onError).not.toHaveBeenCalled()
+  })
+
+  it('pauses while hidden or offline and checks immediately on return and focus', async () => {
+    const check = vi.fn(async () => false)
+    stop = pollProjectList(check, vi.fn())
+    await vi.advanceTimersByTimeAsync(0)
+    expect(check).toHaveBeenCalledOnce()
+    vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
+    document.dispatchEvent(new Event('visibilitychange'))
+    await vi.advanceTimersByTimeAsync(60_000)
+    window.dispatchEvent(new Event('focus'))
+    await vi.advanceTimersByTimeAsync(0)
+    expect(check).toHaveBeenCalledOnce()
+    vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible')
+    document.dispatchEvent(new Event('visibilitychange'))
+    await vi.advanceTimersByTimeAsync(0)
+    expect(check).toHaveBeenCalledTimes(2)
+    vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
+    window.dispatchEvent(new Event('offline'))
+    await vi.advanceTimersByTimeAsync(60_000)
+    expect(check).toHaveBeenCalledTimes(2)
+    vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true)
+    window.dispatchEvent(new Event('online'))
+    await vi.advanceTimersByTimeAsync(0)
+    expect(check).toHaveBeenCalledTimes(3)
+    window.dispatchEvent(new Event('focus'))
+    await vi.advanceTimersByTimeAsync(0)
+    expect(check).toHaveBeenCalledTimes(4)
+  })
+
+  it('checks visibility at request time even before browser events arrive', async () => {
+    const check = vi.fn(async () => false)
+    stop = pollProjectList(check, vi.fn())
+    await vi.advanceTimersByTimeAsync(0)
+    vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(check).toHaveBeenCalledOnce()
+    vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true)
+    vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(check).toHaveBeenCalledOnce()
+  })
+
+  it('backs off after a failure and retries without losing the poll loop', async () => {
+    const error = new Error('No network')
+    const check = vi
+      .fn<() => Promise<boolean>>()
+      .mockRejectedValueOnce(error)
+      .mockResolvedValue(false)
+    const onError = vi.fn()
+    stop = pollProjectList(check, onError)
+    await vi.advanceTimersByTimeAsync(0)
+    expect(onError).toHaveBeenCalledWith(error)
+    await vi.advanceTimersByTimeAsync(2_999)
+    expect(check).toHaveBeenCalledOnce()
+    await vi.advanceTimersByTimeAsync(1)
+    expect(check).toHaveBeenCalledTimes(2)
+  })
+})

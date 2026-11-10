@@ -73,6 +73,7 @@ export const moduleFsViaModuleImport = async (backing: StorageBacking) => {
   const impl = await moduleFsViaObject(backing)
 
   // Do not destroy the reference, but instead, reassign some of its properties.
+  delete _impl.isSameEntry
   Object.assign(_impl, impl)
 
   // ts can't know if this is actually an fs backing even right after the

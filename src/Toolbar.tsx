@@ -156,8 +156,15 @@ const Toolbar_ = memo(
       )?.keystrokes ?? [UNRENDERED_EXECUTE_HOTKEY],
       platform
     )
+    const sketchSolveIsExiting = useSelector(
+      props.state.children.sketchSolveMachine,
+      (snapshot) =>
+        isSketchSolveSnapshot(snapshot) &&
+        (snapshot.matches('exiting with cleanup') ||
+          snapshot.matches('exiting'))
+    )
     const disableSketchToolbar =
-      isSketchToolbarTransitioning(props.state) &&
+      (isSketchToolbarTransitioning(props.state) || sketchSolveIsExiting) &&
       (toolbarConfigurationName === 'sketching' ||
         toolbarConfigurationName === 'sketchSolve')
 

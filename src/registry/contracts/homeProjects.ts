@@ -1,3 +1,4 @@
+import type { ReadonlySignal } from '@preact/signals-core'
 import {
   defineContract,
   defineService,
@@ -6,7 +7,16 @@ import {
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import { uniqueStrings } from '@src/lib/stringUtils'
 import { isArray } from '@src/lib/utils'
-import type { CloudProjectDuplicateRisk } from '@src/registry/contracts/cloudSync'
+type CloudProjectDuplicateRisk =
+  | 'exact'
+  | 'divergent'
+  | 'pending'
+  | 'conflicted'
+  | 'unreadable'
+  | 'tombstoned'
+  | 'sync-excluded'
+  | 'no-sync-base'
+  | 'unknown'
 
 export type HomeProjectSource = 'local' | 'remote'
 
@@ -103,19 +113,30 @@ export type HomeProjectRenameOptions = {
   notify?: boolean
 }
 
-export interface HomeProjectMoveToLibraryTarget {
+export interface HomeProjectCloneToLibraryTarget {
   library: ProjectLibrary
   sourceLibrary: ProjectLibrary
 }
 
+export type HomeProjectAction =
+  | 'Opening'
+  | 'Renaming'
+  | 'Deleting'
+  | 'Duplicating'
+  | 'Cloning'
+  | 'Separating'
+
 export interface HomeProjectActionsService {
+  readonly pendingActions: ReadonlySignal<
+    ReadonlyMap<string, HomeProjectAction>
+  >
   /** Keep a remote thumbnail current only while its card is in view. */
   watchRemoteThumbnail: (remoteProjectId: string) => (() => void) | undefined
   canOpen: (project: HomeProjectEntry) => boolean
   canDuplicate: (project: HomeProjectEntry) => boolean
   canRename: (project: HomeProjectEntry) => boolean
   canDelete: (project: HomeProjectEntry) => boolean
-  canMoveToLibrary: (project: HomeProjectEntry) => boolean
+  canCloneToLibrary: (project: HomeProjectEntry) => boolean
   canReviewDuplicateRealizations: (project: HomeProjectEntry) => boolean
   canSeparateProjectCopies: (project: HomeProjectEntry) => boolean
   open: (
@@ -128,12 +149,13 @@ export interface HomeProjectActionsService {
     options?: HomeProjectRenameOptions
   ) => Promise<void>
   delete: (project: HomeProjectEntry) => Promise<void>
-  getMoveToLibraryTargets: (
+  getCloneToLibraryTargets: (
     project: HomeProjectEntry
-  ) => readonly HomeProjectMoveToLibraryTarget[]
-  moveToLibrary: (
+  ) => readonly HomeProjectCloneToLibraryTarget[]
+  cloneToLibrary: (
     project: HomeProjectEntry,
-    targetLibraryId: string
+    targetLibraryId: string,
+    options?: { title?: string }
   ) => Promise<HomeProjectOpenResult | undefined>
   deleteDuplicateRealizations: (
     project: HomeProjectEntry,
@@ -197,6 +219,22 @@ export const homeProjectsContract = defineContract({
   homeProjectActionsService: defineService<HomeProjectActionsService>(
     'home-project-actions'
   ),
+  homeProjectSettledLibraryIdsValueSpec: defineValueSpec<
+    readonly string[],
+    readonly string[]
+  >({
+    name: 'home-project-settled-library-ids',
+    defaultValue: [],
+    combine: (contributions) => uniqueStrings(contributions.flat()),
+  }),
+  homeProjectLoadingLibraryIdsValueSpec: defineValueSpec<
+    readonly string[],
+    readonly string[]
+  >({
+    name: 'home-project-loading-library-ids',
+    defaultValue: [],
+    combine: (contributions) => uniqueStrings(contributions.flat()),
+  }),
   homeProjectEntriesValueSpec: defineValueSpec<
     HomeProjectEntryContributionGroup,
     HomeProjectEntry[]
@@ -207,5 +245,9 @@ export const homeProjectsContract = defineContract({
   }),
 })
 
-export const { homeProjectActionsService, homeProjectEntriesValueSpec } =
-  homeProjectsContract
+export const {
+  homeProjectActionsService,
+  homeProjectEntriesValueSpec,
+  homeProjectLoadingLibraryIdsValueSpec,
+  homeProjectSettledLibraryIdsValueSpec,
+} = homeProjectsContract

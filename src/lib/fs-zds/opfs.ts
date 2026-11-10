@@ -1,10 +1,15 @@
 import path from 'path'
 import { reportClientError } from '@src/lib/clientErrors'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import { conservativePathLockKey } from '@src/lib/fileSystem/pathLocking'
 // The Origin Private File System. Used for browser environments.
 import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import { resolveOPFSHandle as walk } from '@src/lib/fs-zds/opfsHandle'
-import OPFSWriteWorker from '@src/lib/fs-zds/opfsWriteWorker.ts?worker'
+import OPFSWorker from '@src/lib/fs-zds/opfsWorker.ts?worker&inline'
+import type {
+  OPFSWorkerRequest,
+  OPFSWorkerResponse,
+} from '@src/lib/fs-zds/opfsWorker'
 
 // Holds onto directory metadata that is not stored by the File System API.
 const META_FILE = '._meta'
@@ -41,57 +46,44 @@ const isMetaFileDirectoryData = (x: unknown): x is MetaFileDirectoryData => {
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type OPFSOptions = {}
 
-type OPFSWriteWorkerRequest = {
-  id: number
-  type: 'write-file'
-  targetPath: string
-  data: Uint8Array<ArrayBuffer>
-}
-
-type OPFSWriteWorkerResponse =
-  | { id: number; ok: true }
-  | { id: number; ok: false; error: string }
-
-const pendingWorkerWrites = new Map<
+const pendingWorkerRequests = new Map<
   number,
   {
-    resolve: () => void
+    resolve: (data?: Uint8Array<ArrayBuffer>) => void
     reject: (reason?: unknown) => void
   }
 >()
 
-let writeWorkerId = 0
-let opfsWriteWorker: Worker | null = null
+let workerRequestId = 0
+let opfsWorker: Worker | null = null
 
-const getOPFSWriteWorker = () => {
-  if (opfsWriteWorker) return opfsWriteWorker
+const getOPFSWorker = () => {
+  if (opfsWorker) return opfsWorker
 
-  opfsWriteWorker = new OPFSWriteWorker({ name: 'opfs-write' })
-  opfsWriteWorker.onmessage = (
-    event: MessageEvent<OPFSWriteWorkerResponse>
-  ) => {
-    const pending = pendingWorkerWrites.get(event.data.id)
+  opfsWorker = new OPFSWorker({ name: 'opfs-io' })
+  opfsWorker.onmessage = (event: MessageEvent<OPFSWorkerResponse>) => {
+    const pending = pendingWorkerRequests.get(event.data.id)
     if (!pending) return
 
-    pendingWorkerWrites.delete(event.data.id)
+    pendingWorkerRequests.delete(event.data.id)
     if (event.data.ok) {
-      pending.resolve()
+      pending.resolve(event.data.data)
       return
     }
 
     pending.reject(event.data.error)
   }
 
-  return opfsWriteWorker
+  return opfsWorker
 }
 
 const writeFileViaWorker = (
   targetPath: string,
   data: Uint8Array<ArrayBuffer>
 ): Promise<void> => {
-  const worker = getOPFSWriteWorker()
-  const id = writeWorkerId++
-  const request: OPFSWriteWorkerRequest = {
+  const worker = getOPFSWorker()
+  const id = workerRequestId++
+  const request: OPFSWorkerRequest = {
     id,
     type: 'write-file',
     targetPath,
@@ -99,8 +91,23 @@ const writeFileViaWorker = (
   }
 
   return new Promise((resolve, reject) => {
-    pendingWorkerWrites.set(id, { resolve, reject })
+    pendingWorkerRequests.set(id, { resolve: () => resolve(), reject })
     worker.postMessage(request)
+  })
+}
+
+const readFileViaWorker = (
+  targetPath: string
+): Promise<Uint8Array<ArrayBuffer>> => {
+  const worker = getOPFSWorker()
+  const id = workerRequestId++
+  return new Promise((resolve, reject) => {
+    pendingWorkerRequests.set(id, {
+      resolve: (data) =>
+        data ? resolve(data) : reject(new Error('Missing OPFS read response')),
+      reject,
+    })
+    worker.postMessage({ id, type: 'read-file', targetPath })
   })
 }
 
@@ -228,8 +235,10 @@ const readdir = async (path: string) => {
   if (dir === undefined) return []
   if (!(dir instanceof FileSystemDirectoryHandle)) return []
   let entries = []
-  for await (let [name] of dir.entries()) {
-    entries.push(name)
+  for await (const [name] of dir.entries()) {
+    // Adapter-owned timestamps are not project contents. Rebuilding a directory
+    // changes them, so exposing them also makes content-based redo unstable.
+    if (name !== META_FILE) entries.push(name)
   }
   return entries
 }
@@ -239,44 +248,24 @@ type ReadFileReturn<T> = T extends 'utf8' | { encoding: 'utf-8' }
   ? string
   : Uint8Array
 
-const readFileTry = async <T extends ReadFileOptions>(
-  attemptN: number,
-  handle: FileSystemFileHandle,
-  options?: T
-): Promise<ReadFileReturn<T>> => {
-  try {
-    const file = await handle.getFile()
-
-    if (options === 'utf8' || options?.encoding === 'utf-8') {
-      return (await file.text()) as ReadFileReturn<T>
-    }
-
-    return new Uint8Array(await file.arrayBuffer()) as ReadFileReturn<T>
-  } catch (e: unknown) {
-    console.error(e)
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (attemptN === 3) {
-          return reject(e)
-        }
-        void readFileTry<T>(attemptN + 1, handle, options).then(resolve)
-      }, attemptN * 1000)
-    })
-  }
-}
-
 const readFile = async <T extends ReadFileOptions>(
   targetPath: string,
   options?: T
 ): Promise<ReadFileReturn<T>> => {
-  const handle = await walk(targetPath)
-  if (handle === undefined) return Promise.reject('ENOENT')
-
-  if (handle instanceof FileSystemFileHandle) {
-    return readFileTry(0, handle, options)
-  }
-
-  return Promise.reject()
+  // Sync access handles exclude writable streams too. Use the existing writer
+  // lock so metadata reads cannot race a write through Window.createWritable.
+  const read = () => readFileViaWorker(targetPath)
+  const data = navigator.locks
+    ? await navigator.locks.request(
+        `zds-opfs-write:${path.resolve(targetPath)}`,
+        read
+      )
+    : await read()
+  return (
+    options === 'utf8' || options?.encoding === 'utf-8'
+      ? new TextDecoder().decode(data)
+      : data
+  ) as ReadFileReturn<T>
 }
 
 const mkdir = async (targetPath: string, options?: { recursive: boolean }) => {
@@ -439,6 +428,33 @@ const access = async (_path: string, _bitflags: number): Promise<undefined> => {
   return undefined
 }
 
+const isSameEntry = async (
+  source: string,
+  destination: string
+): Promise<boolean> => {
+  const [left, right] = await Promise.all([walk(source), walk(destination)])
+  if (!left || !right) return Promise.reject('ENOENT')
+  if (await left.isSameEntry(right)) return true
+  if (left.kind !== right.kind) return false
+
+  // WebKit compares handle path strings, so aliases on macOS can compare false.
+  // OPFS has no links: two successful lookups in the same directory identify
+  // one entry when its listing contains exactly one matching folded name.
+  const sourceParent = path.dirname(source)
+  const destinationParent = path.dirname(destination)
+  if (sourceParent === source || destinationParent === destination) return false
+  const key = conservativePathLockKey(path.basename(source))
+  if (key !== conservativePathLockKey(path.basename(destination))) return false
+  if (!(await isSameEntry(sourceParent, destinationParent))) return false
+  const parent = await walk(sourceParent)
+  if (!(parent instanceof FileSystemDirectoryHandle)) return false
+  let matches = 0
+  for await (const [name] of parent.entries()) {
+    if (conservativePathLockKey(name) === key) matches++
+  }
+  return matches === 1
+}
+
 // Kind of a misnomer coming from NodeJS. This should be called `move`.
 const rename = async (
   sourcePath: string,
@@ -446,6 +462,24 @@ const rename = async (
 ): Promise<undefined> => {
   const handle = await walk(sourcePath)
   if (handle === undefined) return Promise.reject('ENOENT')
+  if (path.resolve(sourcePath) === path.resolve(targetPath)) return
+
+  const move = (
+    handle as typeof handle & {
+      move?: (parent: FileSystemDirectoryHandle, name: string) => Promise<void>
+    }
+  ).move
+  if (move) {
+    const parent = await walk(path.dirname(targetPath))
+    if (!parent) return Promise.reject('ENOENT')
+    if (!(parent instanceof FileSystemDirectoryHandle))
+      return Promise.reject('ENOTDIR')
+    await move.call(handle, parent, path.basename(targetPath))
+    return
+  }
+  const target = await walk(targetPath)
+  if (target && (await isSameEntry(sourcePath, targetPath)))
+    return Promise.reject('ENOTSUP')
 
   if (handle instanceof FileSystemFileHandle) {
     await cp(sourcePath, targetPath)
@@ -523,16 +557,17 @@ const impl: IZooDesignStudioFS = {
   writeFile,
   readdir,
   stat,
+  isSameEntry,
   mkdir,
   rm,
   detach: async () => {
-    if (!opfsWriteWorker) return
-    opfsWriteWorker.terminate()
-    opfsWriteWorker = null
-    for (const pending of pendingWorkerWrites.values()) {
+    if (!opfsWorker) return
+    opfsWorker.terminate()
+    opfsWorker = null
+    for (const pending of pendingWorkerRequests.values()) {
       pending.reject('OPFS worker detached')
     }
-    pendingWorkerWrites.clear()
+    pendingWorkerRequests.clear()
   },
   attach: async () => {},
 }

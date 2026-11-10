@@ -1,3 +1,4 @@
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import fsZds from '@src/lib/fs-zds'
 
 import { webSafePathSplit } from '@src/lib/pathUtils'
@@ -28,8 +29,7 @@ export function fileOperationsGitignoreFs(
   return {
     join: fsZds.join,
     relative: fsZds.relative,
-    readFile: async (path) =>
-      new TextDecoder().decode(await fileOperations.readFile(path)),
+    readFile: async (path) => await readTextFile(fileOperations, path),
   }
 }
 

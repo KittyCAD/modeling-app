@@ -77,7 +77,7 @@ function runTestForTheme(mode: Themes) {
       },
     })
 
-    await folderSetupFn(async (dir: string) => {
+    await folderSetupFn(async () => {
       const userDir = await fs.join(
         await fs.getPath('appData'),
         'dev.zoo.modeling-app-local'
@@ -85,9 +85,6 @@ function runTestForTheme(mode: Themes) {
       await fs.mkdir(userDir, { recursive: true })
       const userSettingsPath = await fs.resolve(userDir, 'settings.toml')
       await fs.writeFile(userSettingsPath, new TextEncoder().encode(tomlStr))
-
-      const projectDir = await fs.join(dir, 'demo-project')
-      await fs.mkdir(projectDir, { recursive: true })
     })
 
     const [rectCorner1] = scene.makeMouseHelpers(0.24, 0.28, {
@@ -98,7 +95,7 @@ function runTestForTheme(mode: Themes) {
     })
 
     await page.setViewportSize(SCREENSHOT_SIZE)
-    await homePage.openProject('demo-project')
+    await homePage.createAndGoToProject('demo-project')
     await scene.settled()
     await waitForThemeApplied(page, mode)
     let step = 1

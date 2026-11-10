@@ -203,6 +203,7 @@ export const machine = setup({
           }
 
           // Call the addSegment method using the rustContext from context
+          await rustContext.prepareForSketchInsertion()
           const result = await rustContext.addSegment(
             0, // version - TODO: Get this from actual context
             sketchId, // sketchId from context

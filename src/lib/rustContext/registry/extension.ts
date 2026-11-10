@@ -9,6 +9,7 @@ import {
   type RustContextRegistryService,
   rustContextService,
 } from '@src/lib/rustContext/registry/contract'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { settingsService } from '@src/registry/contracts/settings'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 
@@ -30,7 +31,15 @@ export const rustContextExtension = defineRegistryItemFactory((ctx) => {
       context: new RustContext(
         wasmPromise,
         engineConnection.manager,
-        settings.actor
+        settings.actor,
+        0,
+        false,
+        async () => {
+          await ctx.services
+            .optional(projectSession)
+            ?.getProject()
+            ?.prepareForSketchInsertion()
+        }
       ),
     }
     return service

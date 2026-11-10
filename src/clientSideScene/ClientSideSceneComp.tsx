@@ -1,3 +1,4 @@
+import { selectCommand } from '@src/lib/commandUtils'
 import { Popover } from '@headlessui/react'
 import {
   type CSSProperties,
@@ -128,12 +129,17 @@ export const ClientSideScene = ({
     const onMouseUp = toSync(sceneInfra.onMouseUp, reportRejection)
     container.addEventListener('mouseup', onMouseUp)
 
-    // Detect canvas size changes
+    // Resizing the canvas and labels writes layout. Defer those writes until
+    // the next frame so they cannot trigger another resize in this delivery.
+    let resizeFrame: number | undefined
     const observer = new ResizeObserver(() => {
-      // This is called initially too, not just on resize
-      sceneInfra.onCanvasResized()
-      sceneInfra.camControls.onWindowResize()
-      sceneEntitiesManager.onCamChange().catch(reportRejection)
+      if (resizeFrame !== undefined) return
+      resizeFrame = window.requestAnimationFrame(() => {
+        resizeFrame = undefined
+        sceneInfra.onCanvasResized()
+        sceneInfra.camControls.onWindowResize()
+        sceneEntitiesManager.onCamChange().catch(reportRejection)
+      })
     })
     observer.observe(container)
 
@@ -163,6 +169,7 @@ export const ClientSideScene = ({
       cleanupSketchSolveGroup(sceneInfra)
 
       observer.disconnect()
+      if (resizeFrame !== undefined) window.cancelAnimationFrame(resizeFrame)
       media.removeEventListener('change', handleChange)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -665,17 +672,14 @@ const ConstraintSymbol = ({
         // disabled={implicitDesc} TODO why does this change styles that are hard to override?
         onClick={toSync(async () => {
           if (!isConstrained) {
-            commands.send({
-              type: 'Find and select command',
-              data: {
-                name: 'Constrain with named value',
-                groupId: 'modeling',
-                argDefaultValues: {
-                  currentValue: {
-                    pathToNode,
-                    variableName: varName,
-                    valueText: value,
-                  },
+            selectCommand(commands, {
+              name: 'Constrain with named value',
+              groupId: 'modeling',
+              argDefaultValues: {
+                currentValue: {
+                  pathToNode,
+                  variableName: varName,
+                  valueText: value,
                 },
               },
             })
@@ -824,12 +828,9 @@ export const CamDebugSettings = () => {
         type="checkbox"
         checked={camSettings.type === 'perspective'}
         onChange={() =>
-          commands.send({
-            type: 'Find and select command',
-            data: {
-              groupId: 'settings',
-              name: 'modeling.cameraProjection',
-            },
+          selectCommand(commands, {
+            groupId: 'settings',
+            name: 'modeling.cameraProjection',
           })
         }
       />

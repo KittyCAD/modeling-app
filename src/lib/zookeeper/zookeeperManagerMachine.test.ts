@@ -1,3 +1,4 @@
+import { createProjectForTest } from '@src/lib/projectTestUtils'
 import type {
   AttachmentRef,
   ClientErrorReport,
@@ -26,6 +27,7 @@ import {
   ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS,
   ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS,
   ZookeeperConversationToMarkdown,
+  type ZookeeperManagerActor,
   type ZookeeperManagerContext,
   type ZookeeperManagerEvents,
   ZookeeperManagerStates,
@@ -38,6 +40,7 @@ import {
   ZOOKEEPER_MAX_MESSAGE_BYTES,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import * as zookeeperPromptRequest from '@src/lib/zookeeper/zookeeperPromptRequest'
+import * as projectFileTransport from '@src/lib/zookeeper/projectFileTransport'
 import { S } from '@src/machines/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -291,16 +294,12 @@ describe('completed live edit retention', () => {
     actor.send({
       type: ZookeeperManagerTransitions.MessageSend,
       prompt: 'Next turn',
-      projectForPromptOutput: {
+      projectForPromptOutput: createProjectForTest('/demo', {
         name: 'demo',
-        path: '/demo',
         children: [currentFile.entry],
         default_file: currentFile.entry.path,
-        directory_count: 0,
         kcl_file_count: 1,
-        metadata: null,
-        readWriteAccess: true,
-      },
+      }),
       applicationProjectDirectory: '/',
       fileSelectedDuringPrompting: currentFile,
       projectFiles: [],
@@ -972,27 +971,7 @@ describe('zookeeperManagerMachine', () => {
       })
 
       const socket = ControllableSetupWebSocket.instances[0]
-      socket.open()
-      await vi.waitFor(() => {
-        expect(socket.sentPayloads).toContain(
-          JSON.stringify({ type: 'list_modes' })
-        )
-      })
-      socket.receive({
-        conversation_id: { conversation_id: 'conversation-id' },
-      })
-
-      await waitFor(actor, (state) =>
-        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
-      )
-      actor.send({
-        type: ZookeeperManagerStates.ContinueCheck,
-        projectName: 'zoo-project',
-        projectFiles: [],
-      })
-      await waitFor(actor, (state) =>
-        state.matches(ZookeeperManagerStates.Ready)
-      )
+      await completeSetupToReady(actor, socket)
 
       socket.receive({
         access_denied: {
@@ -1032,27 +1011,7 @@ describe('zookeeperManagerMachine', () => {
       })
 
       const socket = ControllableSetupWebSocket.instances[0]
-      socket.open()
-      await vi.waitFor(() => {
-        expect(socket.sentPayloads).toContain(
-          JSON.stringify({ type: 'list_modes' })
-        )
-      })
-      socket.receive({
-        conversation_id: { conversation_id: 'conversation-id' },
-      })
-
-      await waitFor(actor, (state) =>
-        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
-      )
-      actor.send({
-        type: ZookeeperManagerStates.ContinueCheck,
-        projectName: 'zoo-project',
-        projectFiles: [],
-      })
-      await waitFor(actor, (state) =>
-        state.matches(ZookeeperManagerStates.Ready)
-      )
+      await completeSetupToReady(actor, socket)
 
       expect(socket.readyState).toBe(ControllableSetupWebSocket.OPEN)
       expect(socket.close).not.toHaveBeenCalled()
@@ -1245,18 +1204,7 @@ describe('zookeeperManagerMachine', () => {
           refParentSend: vi.fn(),
         })
         const socket = ControllableSetupWebSocket.instances[0]
-        socket.open()
-        await vi.waitFor(() => {
-          expect(socket.sentPayloads).toContain(
-            JSON.stringify({ type: 'list_modes' })
-          )
-        })
-        socket.receive({
-          conversation_id: { conversation_id: 'conversation-id' },
-        })
-        await waitFor(actor, (state) =>
-          state.matches(ZookeeperManagerStates.WaitForContinueCheck)
-        )
+        await completeSetupToContinueCheck(actor, socket)
 
         socket.bufferedAmount = ZOOKEEPER_MAX_MESSAGE_BYTES / 2
         for (let interval = 0; interval < 12; interval += 1) {
@@ -1298,18 +1246,7 @@ describe('zookeeperManagerMachine', () => {
           refParentSend: vi.fn(),
         })
         const socket = ControllableSetupWebSocket.instances[0]
-        socket.open()
-        await vi.waitFor(() => {
-          expect(socket.sentPayloads).toContain(
-            JSON.stringify({ type: 'list_modes' })
-          )
-        })
-        socket.receive({
-          conversation_id: { conversation_id: 'conversation-id' },
-        })
-        await waitFor(actor, (state) =>
-          state.matches(ZookeeperManagerStates.WaitForContinueCheck)
-        )
+        await completeSetupToContinueCheck(actor, socket)
 
         socket.bufferedAmount = ZOOKEEPER_MAX_MESSAGE_BYTES / 2
         await vi.advanceTimersByTimeAsync(
@@ -1399,6 +1336,142 @@ describe('zookeeperManagerMachine', () => {
     })
   })
 
+  it.each([
+    ['local', false],
+    ['cloud', false],
+    ['local', true],
+    ['cloud', true],
+  ] as const)(
+    'sends project files on prompts and resume (%s, SDK project tools: %s)',
+    async (storage, sdkHasProjectTools) => {
+      const selectTransport = projectFileTransport.usesCloudProjectTools
+      vi.spyOn(
+        projectFileTransport,
+        'usesCloudProjectTools'
+      ).mockImplementation((projectId) =>
+        selectTransport(projectId, sdkHasProjectTools)
+      )
+      const cloudTools = storage === 'cloud' && sdkHasProjectTools
+      const ws = new TestSocket() as TestWebSocket
+      const send = vi.fn()
+      ws.send = send
+      const { kclManager, engineCommandManager, instance } =
+        await buildTheWorldAndNoEngineConnection(true)
+      const binaryFile = new Blob([new Uint8Array([0, 255, 128])])
+      const readBinary = vi.spyOn(binaryFile, 'arrayBuffer')
+      const slowRead = storage === 'cloud' && !sdkHasProjectTools
+      if (slowRead) {
+        vi.useFakeTimers()
+        readBinary.mockImplementation(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 7_000))
+          return new Uint8Array([0, 255, 128]).buffer
+        })
+      }
+      const projectFiles: FileMeta[] = [
+        {
+          type: 'kcl',
+          relPath: 'parts/main.kcl',
+          absPath: '/demo/parts/main.kcl',
+          fileContents: '@settings(kclVersion = 3.0)\n',
+          execStateFileNamesIndex: 0,
+        },
+        { type: 'other', relPath: 'assets/reference.bin', data: binaryFile },
+      ]
+      const context = {
+        ...zookeeperDefaultContext({}),
+        ws,
+        conversation: {
+          exchanges: [
+            {
+              request: { type: 'user' as const, content: 'Inspect' },
+              responses: [],
+              deltasAggregated: '',
+            },
+          ],
+        },
+      }
+      const prompt: Extract<
+        ZookeeperManagerEvents,
+        { type: ZookeeperManagerTransitions.MessageSend }
+      > = {
+        type: ZookeeperManagerTransitions.MessageSend,
+        prompt: 'Inspect the project',
+        projectForPromptOutput: createProjectForTest('/demo', {
+          name: 'demo',
+          default_file: '/demo/parts/main.kcl',
+          directory_count: 1,
+          kcl_file_count: 1,
+          ...(storage === 'cloud' ? { cloudProjectId: 'remote-one' } : {}),
+        }),
+        applicationProjectDirectory: '/demo',
+        fileSelectedDuringPrompting: {
+          entry: {
+            name: 'main.kcl',
+            path: '/demo/parts/main.kcl',
+            children: null,
+          },
+          content: '@settings(kclVersion = 3.0)\n',
+        },
+        projectFiles,
+        selections: null,
+        artifactGraph: new Map(),
+        kclManager,
+        engineCommandManager,
+        wasmInstance: instance,
+        additionalFiles: [new File(['reference'], 'reference.txt')],
+      }
+      const resume: Extract<
+        ZookeeperManagerEvents,
+        { type: ZookeeperManagerStates.ContinueCheck }
+      > = {
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'demo',
+        projectId: `${storage}:remote-one`,
+        projectFiles,
+        activeFile: 'parts/main.kcl',
+      }
+      for (const event of [prompt, resume]) {
+        const logic = zookeeperManagerMachine.implementations.actors[event.type]
+        if (!logic || !('transition' in logic))
+          throw new Error('Missing request actor')
+        const actor = createActor(logic, { input: { context, event } })
+        const result = toPromise(actor)
+        const sentBefore = send.mock.calls.length
+        actor.start()
+        if (slowRead) {
+          await vi.advanceTimersByTimeAsync(6_999)
+          expect(send).toHaveBeenCalledTimes(sentBefore)
+          await vi.advanceTimersByTimeAsync(1)
+        }
+        await result
+      }
+      const requests = send.mock.calls
+        .map(([payload]) =>
+          typeof payload === 'string'
+            ? JSON.parse(payload)
+            : msgpack.decode(payload)
+        )
+        .filter((request) => request.type !== 'system')
+      expect(requests).toHaveLength(2)
+      for (const request of requests) {
+        expect(request.project_id).toMatch(new RegExp(`^${storage}:`))
+        expect(request.active_file).toBe('parts/main.kcl')
+        expect(request.current_files).toEqual(
+          cloudTools
+            ? {}
+            : {
+                'parts/main.kcl': Array.from(
+                  new TextEncoder().encode('@settings(kclVersion = 3.0)\n')
+                ),
+                'assets/reference.bin': [0, 255, 128],
+              }
+        )
+      }
+      expect(readBinary).toHaveBeenCalledTimes(cloudTools ? 0 : 2)
+      expect(requests[0].additional_files[0].name).toBe('reference.txt')
+    }
+  )
+
   it('rejects oversized encoded prompts before sending anything', async () => {
     const encode = vi
       .spyOn(msgpack, 'encode')
@@ -1411,16 +1484,11 @@ describe('zookeeperManagerMachine', () => {
     const event: ZookeeperManagerEvents = {
       type: ZookeeperManagerTransitions.MessageSend,
       prompt: 'Inspect the project',
-      projectForPromptOutput: {
+      projectForPromptOutput: createProjectForTest('/demo', {
         name: 'demo',
-        path: '/demo',
-        children: [],
         default_file: '/demo/main.kcl',
-        directory_count: 0,
         kcl_file_count: 1,
-        metadata: null,
-        readWriteAccess: true,
-      },
+      }),
       applicationProjectDirectory: '/',
       fileSelectedDuringPrompting: {
         entry: {
@@ -1683,27 +1751,7 @@ describe('zookeeperManagerMachine', () => {
       })
 
       const socket = ControllableSetupWebSocket.instances[0]
-      socket.open()
-      await vi.waitFor(() => {
-        expect(socket.sentPayloads).toContain(
-          JSON.stringify({ type: 'list_modes' })
-        )
-      })
-      socket.receive({
-        conversation_id: { conversation_id: 'conversation-id' },
-      })
-      await waitFor(actor, (state) =>
-        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
-      )
-
-      actor.send({
-        type: ZookeeperManagerStates.ContinueCheck,
-        projectName: 'zoo-project',
-        projectFiles: [],
-      })
-      await waitFor(actor, (state) =>
-        state.matches(ZookeeperManagerStates.Ready)
-      )
+      await completeSetupToReady(actor, socket)
 
       socket.closeWithCode(
         ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE,
@@ -2441,3 +2489,213 @@ describe('zookeeperManagerMachine', () => {
     })
   })
 })
+
+describe('mirrored conversation messages', () => {
+  const actors: ReturnType<typeof createZookeeperManagerActor>[] = []
+  beforeEach(() => {
+    ControllableSetupWebSocket.instances = []
+    vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+  })
+  afterEach(() => {
+    for (const actor of actors.splice(0)) actor.stop()
+    vi.unstubAllGlobals()
+    vi.restoreAllMocks()
+  })
+
+  const user = (content: string, correlation_id = 'peer-prompt') => ({
+    type: 'user',
+    content,
+    correlation_id,
+    current_files: {},
+    source_ranges: [],
+  })
+  const reasoning = {
+    reasoning: { type: 'markdown', content: 'Checking the model.' },
+  }
+  const final = { end_of_stream: { whole_response: 'Finished.' } }
+  const toolOutput = {
+    tool_output: {
+      result: {
+        type: 'project_write_file',
+        call_id: 'peer-write',
+        project_id: 'cloud:one',
+        ok: true,
+        output: {
+          id: 'one',
+          revision: '2',
+          path: 'main.kcl',
+          contents: 'x = 2',
+          encoding: 'utf-8',
+        },
+      },
+    },
+  }
+
+  async function connect(format: 'json' | 'msgpack') {
+    const actor = createActor(zookeeperManagerMachine, {
+      input: { apiToken: 'token' },
+    }).start()
+    actors.push(actor)
+    actor.send({
+      type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+      conversationId: 'conversation-id',
+      refParentSend: (event) => actor.send(event),
+    })
+    const socket = ControllableSetupWebSocket.instances[0]
+    socket.open()
+    await vi.waitFor(() =>
+      expect(socket.sentPayloads).toContain(
+        JSON.stringify({ type: 'list_modes' })
+      )
+    )
+    const receive = (payload: unknown) => {
+      if (format === 'json') socket.receive(payload)
+      else
+        socket.dispatchEvent(
+          new MessageEvent('message', {
+            data: Uint8Array.from(msgpack.encode(payload)).buffer,
+          })
+        )
+    }
+    const finishSetup = async () => {
+      receive({ conversation_id: { conversation_id: 'conversation-id' } })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+    }
+    const ready = async () => {
+      await finishSetup()
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'demo',
+        projectFiles: [],
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+    }
+    return { actor, socket, receive, finishSetup, ready }
+  }
+
+  it.each(['json', 'msgpack'] as const)(
+    'reflects a user, reasoning, and replies over %s without resending them',
+    async (format) => {
+      const { actor, socket, receive, ready } = await connect(format)
+      await ready()
+      receive(user('Previous question', 'previous-prompt'))
+      receive({ delta: { delta: 'Previous answer' } })
+      receive({ end_of_stream: { whole_response: 'Previous answer' } })
+      const sent = [...socket.sentPayloads]
+
+      receive(user('Make it brown'))
+      expect(actor.getSnapshot().context.awaitingResponse).toBe(true)
+      receive(reasoning)
+      const active = actor.getSnapshot().context.conversation?.exchanges.at(-1)
+      expect(active?.request).toMatchObject({ content: 'Make it brown' })
+      expect(active?.responses).toEqual([reasoning])
+      receive(toolOutput)
+      expect(actor.getSnapshot().context.cloudProjectChange).toEqual({
+        callId: 'peer-write',
+        projectId: 'one',
+        revision: '2',
+      })
+      expect(
+        actor.getSnapshot().context.conversation?.exchanges.at(-1)?.responses
+      ).toEqual([reasoning, toolOutput])
+      receive({ delta: { delta: 'Finished.' } })
+      receive(final)
+
+      const context = actor.getSnapshot().context
+      expect(context.conversation?.exchanges).toHaveLength(2)
+      expect(context.conversation?.exchanges[0].request).toMatchObject({
+        content: 'Previous question',
+      })
+      expect(context.conversation?.exchanges[0].deltasAggregated).toBe(
+        'Previous answer'
+      )
+      expect(context.conversation?.exchanges[1]).toMatchObject({
+        request: user('Make it brown'),
+        responses: [reasoning, toolOutput, final],
+        deltasAggregated: 'Finished.',
+      })
+      expect(context.awaitingResponse).toBe(false)
+      expect(socket.sentPayloads).toEqual(sent)
+
+      receive(user('Make it brown'))
+      expect(actor.getSnapshot().context.conversation?.exchanges).toHaveLength(
+        2
+      )
+      expect(actor.getSnapshot().context.awaitingResponse).toBe(false)
+    }
+  )
+
+  it.each(['json', 'msgpack'] as const)(
+    'buffers reflected user messages and reasoning during %s setup',
+    async (format) => {
+      const { actor, receive, finishSetup } = await connect(format)
+      receive(user('Make it brown'))
+      receive(reasoning)
+      receive({ delta: { delta: 'Finished.' } })
+      receive(final)
+      await finishSetup()
+      expect(actor.getSnapshot().context.conversation?.exchanges).toMatchObject(
+        [
+          {
+            request: user('Make it brown'),
+            responses: [reasoning, final],
+            deltasAggregated: 'Finished.',
+          },
+        ]
+      )
+    }
+  )
+
+  it('keeps reasoning and replies received before the editor is Ready', async () => {
+    const { actor, receive, finishSetup } = await connect('json')
+    await finishSetup()
+    receive(user('Make it brown'))
+    receive(reasoning)
+    expect(actor.getSnapshot().context.awaitingResponse).toBe(true)
+    receive({ delta: { delta: 'Finished.' } })
+    receive(final)
+    expect(actor.getSnapshot().context.conversation?.exchanges).toMatchObject([
+      {
+        request: user('Make it brown'),
+        responses: [reasoning, final],
+        deltasAggregated: 'Finished.',
+      },
+    ])
+    expect(actor.getSnapshot().context.awaitingResponse).toBe(false)
+  })
+})
+
+async function completeSetupToReady(
+  actor: ZookeeperManagerActor,
+  socket: ControllableSetupWebSocket
+) {
+  await completeSetupToContinueCheck(actor, socket)
+  actor.send({
+    type: ZookeeperManagerStates.ContinueCheck,
+    projectName: 'zoo-project',
+    projectFiles: [],
+  })
+  await waitFor(actor, (state) => state.matches(ZookeeperManagerStates.Ready))
+}
+
+async function completeSetupToContinueCheck(
+  actor: ZookeeperManagerActor,
+  socket: ControllableSetupWebSocket
+) {
+  socket.open()
+  await vi.waitFor(() => {
+    expect(socket.sentPayloads).toContain(
+      JSON.stringify({ type: 'list_modes' })
+    )
+  })
+  socket.receive({
+    conversation_id: { conversation_id: 'conversation-id' },
+  })
+  await waitFor(actor, (state) =>
+    state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+  )
+}

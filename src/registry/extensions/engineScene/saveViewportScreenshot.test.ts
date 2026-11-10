@@ -19,7 +19,7 @@ vi.mock('@src/lib/screenshot', () => ({
 }))
 vi.mock('react-hot-toast', () => ({ default: toast }))
 
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import {
   saveViewportScreenshot,
   VIEWPORT_SCREENSHOT_FILE_NAME,

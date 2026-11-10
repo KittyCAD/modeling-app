@@ -51,6 +51,13 @@ export const machine = setup({
     },
   },
   actors: {
+    addFirstDraftPoint: fromPromise(
+      async (args: Parameters<typeof addDraftPointActor>[0]) => {
+        if (!('error' in args.input))
+          await args.input.rustContext.prepareForSketchInsertion()
+        return addDraftPointActor(args)
+      }
+    ),
     addDraftPoint: fromPromise(addDraftPointActor),
     createArc: fromPromise(createArcActor),
     finalizeArc: fromPromise(finalizeArcActor),
@@ -99,7 +106,7 @@ export const machine = setup({
 
     'Adding first point': {
       invoke: {
-        src: 'addDraftPoint',
+        src: 'addFirstDraftPoint',
         input: ({ event, context }) => {
           assertEvent(event, 'add point')
           return {

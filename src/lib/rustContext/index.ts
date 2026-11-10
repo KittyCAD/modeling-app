@@ -54,7 +54,8 @@ export default class RustContext {
     private readonly engineCommandManager: ConnectionManager,
     public readonly settingsActor: SettingsActorType,
     private projectId = 0,
-    private readonly geometryOnly = false
+    private readonly geometryOnly = false,
+    private readonly beforeSketchInsertion?: () => Promise<void>
   ) {
     this.initialization = this.createContextFromWasm()
     void this.initialization.catch((error: unknown) => {
@@ -370,6 +371,11 @@ export default class RustContext {
       const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
+  }
+
+  /** Call once before a tool first generates source, never between draft mutations. */
+  async prepareForSketchInsertion() {
+    await this.beforeSketchInsertion?.()
   }
 
   /** Add a new sketch and enter sketch mode. */

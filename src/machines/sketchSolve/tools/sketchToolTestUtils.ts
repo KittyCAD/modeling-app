@@ -287,6 +287,7 @@ export function createMockSceneInfra(): SceneInfra {
 
 export function createMockRustContext(): RustContext {
   return {
+    prepareForSketchInsertion: vi.fn().mockResolvedValue(undefined),
     addSegment: vi.fn(),
     addConstraint: vi.fn(),
     chainSegment: vi.fn(),

@@ -1,3 +1,4 @@
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import { KEYMAP_FILE_NAME } from '@src/lib/constants'
 import { getAppSettingsFilePath } from '@src/lib/desktop'
 import { FileNotFound } from '@src/lib/fileSystem/fileOperations'
@@ -34,9 +35,7 @@ export async function readUserKeymapFile(
     return Promise.reject(error)
   }
 
-  const content = new TextDecoder().decode(
-    await fileOperations.readFile(keymapFilePath)
-  )
+  const content = await readTextFile(fileOperations, keymapFilePath)
   return parsePersistedKeymap(parse(content))
 }
 
