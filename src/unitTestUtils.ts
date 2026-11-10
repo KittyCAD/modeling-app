@@ -116,9 +116,7 @@ export async function buildTheWorldAndConnectToEngine({
   const rustContext = new RustContext(
     instancePromise,
     engineCommandManager,
-    settingsActor,
-    0,
-    geometryOnly
+    settingsActor
   )
   const kclManager = new KclManager('some-file', '', {
     fileOperations: testFileOperations,
@@ -158,6 +156,7 @@ export async function buildTheWorldAndConnectToEngine({
         },
         unitTestWebrtc: webrtc,
         unitTestGeometryOnly: geometryOnly,
+        geometryOnly,
         rustContext: kclManager.rustContext,
       })
       .catch(reportRejection)

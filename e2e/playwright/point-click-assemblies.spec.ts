@@ -239,12 +239,20 @@ test.describe(
       const selectedObjects = selectionType === 'scene' ? '1 path' : '1 other'
       async function selectBracket() {
         if (selectionType === 'scene') {
+          if (test.info().tags.includes('@localRenderer')) {
+            // Give the dialog room to move away from the projected face.
+            await toolbar.closePane(DefaultLayoutPaneID.Code)
+            await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+          }
           // The bracket is only visible in the lower-right of the default view
           if (await modelingDialog.locator.isVisible()) {
             await modelingDialog.moveTo({ x: 0, y: 80 })
           }
-          const [clickBracketInScene] = scene.makeMouseHelpers(0.75, 0.92, {
-            format: 'ratio',
+          const [clickBracketInScene] = await scene.makeSelectionHelpers({
+            kind: 'face',
+            // The end cap stays visible when the bracket rotates.
+            index: 2,
+            stream: { x: 0.75, y: 0.92, format: 'ratio' },
           })
           await clickBracketInScene()
           await expect(toolbar.selectionStatus).toContainText(/1 (path|face)/)
@@ -294,6 +302,18 @@ test.describe(
         await scene.settled()
       })
 
+      // The local camera still frames the empty assembly after inserting a part.
+      if (test.info().tags.includes('@localRenderer')) {
+        await expect(page.getByTestId('local-renderer-loading')).toBeHidden({
+          timeout: 30_000,
+        })
+        await page.evaluate(() =>
+          window.app.singletons.kclManager.sceneInfra.camControls.zoomToFit({
+            padding: 0.1,
+          })
+        )
+      }
+
       await test.step('Set translate on module', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.selectTransform('translate')
@@ -304,7 +324,7 @@ test.describe(
         )
 
         await expect(modelingDialog.input('x')).toHaveText('5')
-        await modelingDialog.input('x').fill('1')
+        await modelingDialog.fillInput('x', '1')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
@@ -321,7 +341,7 @@ test.describe(
         await op.dblclick()
         await expect(modelingDialog.submitButton).toBeEnabled()
 
-        await modelingDialog.input('y').fill('2')
+        await modelingDialog.fillInput('y', '2')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
@@ -364,7 +384,7 @@ test.describe(
         await expect(modelingDialog.submitButton).toBeEnabled()
 
         await expect(modelingDialog.input('factor')).toHaveText('1.1')
-        await modelingDialog.input('factor').fill('1.2')
+        await modelingDialog.fillInput('factor', '1.2')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
@@ -508,21 +528,8 @@ test.describe(
       await expect(page.getByTestId('context-menu-set-scale')).not.toBeVisible()
     })
 
-    test(`Import the bracket part into an assembly and transform it (scene selection)`, async ({
-      context,
-      page,
-      homePage,
-      scene,
-      editor,
-      toolbar,
-      cmdBar,
-      modelingDialog,
-      tronApp,
-      folderSetupFn,
-    }) => {
-      if (!tronApp) throwTronAppMissing()
-      test.slow()
-      await testBracketInsertionThenTransformsThenDeletion(
+    for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+      test(`Import the bracket part into an assembly and transform it (scene selection) ${rendererTag}`, async ({
         context,
         page,
         homePage,
@@ -531,10 +538,25 @@ test.describe(
         toolbar,
         cmdBar,
         modelingDialog,
-        'scene',
-        folderSetupFn
-      )
-    })
+        tronApp,
+        folderSetupFn,
+      }) => {
+        if (!tronApp) throwTronAppMissing()
+        test.slow()
+        await testBracketInsertionThenTransformsThenDeletion(
+          context,
+          page,
+          homePage,
+          scene,
+          editor,
+          toolbar,
+          cmdBar,
+          modelingDialog,
+          'scene',
+          folderSetupFn
+        )
+      })
+    }
 
     test(
       `Import foreign parts into assembly and delete them`,

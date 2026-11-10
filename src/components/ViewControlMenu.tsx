@@ -78,7 +78,6 @@ export function useViewControlMenuItems() {
         onClick={() => {
           resetCameraPosition({
             sceneInfra: kclManager.sceneInfra,
-            engineCommandManager: kclManager.engineCommandManager,
             settingsActor: settings.actor,
           }).catch(reportRejection)
         }}
