@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import {
   RouterProvider,
   createMemoryRouter,
@@ -128,15 +128,30 @@ describe('ErrorPage', () => {
 
   it('checks automatically and keeps desktop updates available after a route error', async () => {
     mocks.isDesktop.mockReturnValue(true)
-    setAutoUpdateReady({ version: '1.2.3' })
     renderErrorPage(new Error('unrelated failure'))
+
+    await screen.findByRole('heading', { name: 'An unexpected error occurred' })
+    expect(
+      screen.queryByText(
+        'An update is available, which could help with this issue.'
+      )
+    ).toBeNull()
+
+    act(() => {
+      setAutoUpdateReady({ version: '1.2.3' })
+    })
 
     expect(
       await screen.findByRole('button', {
         name: 'Restart to update to v1.2.3',
       })
     ).toBeVisible()
-    expect(screen.getByRole('link', { name: 'v1.0.0' })).toBeVisible()
+    expect(
+      screen.getByText(
+        'An update is available, which could help with this issue.'
+      )
+    ).toBeVisible()
+    expect(screen.queryByRole('link', { name: 'v1.0.0' })).toBeNull()
     expect(
       screen.queryByRole('button', { name: 'Check for updates' })
     ).toBeNull()
