@@ -26,9 +26,9 @@ the status bar item to retry; a manual disconnect lasts until the modeling
 view closes or SpaceMouse is re-enabled. Browsers that cannot query loopback
 permission keep the manual connection action.
 
-The global status bar item shows the connection state while SpaceMouse is
-enabled. Manual connections show a success toast once the navigation controller
-is ready; automatic connections update the status bar without a toast.
+The global status bar icon shows connection details on hover while SpaceMouse
+is enabled. Manual connections show a success toast once the navigation
+controller is ready; automatic connections update the status bar without a toast.
 
 ## Connection and camera
 
