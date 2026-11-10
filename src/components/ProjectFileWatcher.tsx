@@ -134,7 +134,7 @@ export function ProjectFileWatcher() {
         else reportRejection(error)
       },
     })
-    const stopActivity = cloud.subscribeActivity((projectId) => {
+    const stopActivity = cloud.subscribeProjectChanges((projectId) => {
       if (projectId === id) poller.activity()
     })
     let wasRunning = zookeeperPromptRunningSignal.peek()
