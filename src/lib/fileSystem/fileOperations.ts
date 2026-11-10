@@ -4,6 +4,7 @@ import {
 } from '@src/lib/fileSystem/fileNames'
 import {
   type FileStat,
+  type StatOptions,
   FileSystem,
   type FileSystemError,
   fileSystemError,
@@ -65,7 +66,10 @@ export interface FileOperationsService {
   readonly pending: Effect.Effect<number>
   readonly pendingChanges: Stream.Stream<number>
   /** Observe one path while coordinated mutations of it are excluded. */
-  readonly stat: (path: string) => Effect.Effect<FileStat, FileSystemError>
+  readonly stat: (
+    path: string,
+    options?: StatOptions
+  ) => Effect.Effect<FileStat, FileSystemError>
   /** Check read/write access while coordinated mutations of this path wait. */
   readonly canReadWrite: (
     path: string
@@ -398,7 +402,8 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
     return FileOperations.of({
       pending: SubscriptionRef.get(pending),
       pendingChanges: pending.changes,
-      stat: (path) => coordinateRead(path, fileSystem.stat(path)),
+      stat: (path, options) =>
+        coordinateRead(path, fileSystem.stat(path, options)),
       canReadWrite: (path) =>
         coordinateRead(path, fileSystem.canReadWrite(path)),
       exists: (path) => coordinateRead(path, fileSystem.exists(path)),
@@ -480,8 +485,10 @@ export const fileOperationChanges = FileOperations.pipe(
   Stream.unwrap
 )
 
-export const stat = (path: string) =>
-  FileOperations.pipe(Effect.flatMap((operations) => operations.stat(path)))
+export const stat = (path: string, options?: StatOptions) =>
+  FileOperations.pipe(
+    Effect.flatMap((operations) => operations.stat(path, options))
+  )
 
 export const canReadWrite = (path: string) =>
   FileOperations.pipe(
@@ -572,6 +579,7 @@ export {
   FileOperationUnsupported,
   FilePermissionDenied,
   type FileStat,
+  type StatOptions,
   type FileSystemError,
   type FileSystemOperation,
 } from '@src/lib/fileSystem/fileSystem'
