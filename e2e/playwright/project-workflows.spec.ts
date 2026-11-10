@@ -241,6 +241,7 @@ for (const cached of [false, true]) {
     page,
     context,
   }, testInfo) => {
+    if (cached) await page.clock.install()
     const storage = await prepareStorage('cloud', page, context, testInfo)
     await storage.seed('Slow listing', blankCode)
     if (cached) {
@@ -250,9 +251,9 @@ for (const cached of [false, true]) {
         storage.home.projectCard.filter({ hasText: 'Slow listing' })
       ).toBeVisible()
       await storage.seed('Added during refresh', blankCode)
-      const time = new Date()
-      await page.clock.install({ time })
-      await page.clock.pauseAt(new Date(time.getTime() + 1_000))
+      await page.clock.pauseAt(
+        new Date((await page.evaluate(() => Date.now())) + 1_000)
+      )
       await expect(
         page.getByRole('button', { name: 'Refresh projects' })
       ).toBeEnabled()
