@@ -140,10 +140,12 @@ function runTestForTheme(mode: Themes) {
       await toolbar.exitSketchBtn.click()
       await expect(toolbar.startSketchBtn).not.toBeDisabled()
       await scene.settled()
+      await toolbar.extrudeButton.hover()
       await expect(
-        page.getByRole('tooltip').filter({
-          hasText: 'Extrude',
-        })
+        page
+          .getByRole('tooltip')
+          .filter({ hasText: 'Extrude' })
+          .getByRole('link', { name: 'Open KCL docs' })
       ).toBeVisible()
 
       await expect(page).toHaveScreenshot(
