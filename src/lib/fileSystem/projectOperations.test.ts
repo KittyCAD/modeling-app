@@ -1,169 +1,269 @@
 import { posix } from '@chainner/node-path'
 import { createProjectOperations } from '@src/lib/fileSystem/projectOperations'
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
-import { describe, expect, it, vi } from 'vitest'
+import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
+import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
+import noopfs from '@src/lib/fs-zds/noopfs'
+import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
+import { createProjectForTest } from '@src/lib/projectTestUtils'
+import type { Project } from '@src/lib/project'
+import fc from 'fast-check'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lib/fs-zds', () => ({ default: posix }))
-
+// File-edit tests leave project-title policy to its own tests.
 vi.mock('@src/lib/desktop', () => ({
   ensureProjectTomlTitle: vi.fn(async () => {}),
 }))
+vi.mock('@src/lib/projectLibraries/directoryScanner', () => ({
+  readProjectsFromProjectDirectory: vi.fn(),
+}))
 
-describe('project file operations', () => {
-  it.each(['/project', '/project/', '/project/.', '/project/nested/..'])(
-    'rejects an edit targeting the project root %s before any mutation',
-    async (rootPath) => {
-      for (const contents of [null, 'replacement']) {
-        const writeFile = vi.fn()
-        const remove = vi.fn()
-        const projects = createProjectOperations({
-          operations: { ...testFileOperations, writeFile, remove },
-          wasm: vi.fn(),
-        })
-        await expect(
-          projects.applyEdits('/project', [
-            { path: '/project/keep.kcl', contents: null },
-            { path: rootPath, contents },
-          ])
-        ).rejects.toThrow('inside its project')
-        expect(writeFile).not.toHaveBeenCalled()
-        expect(remove).not.toHaveBeenCalled()
-        expect(projects.pending.value).toBe(0)
-      }
+let memory: ReturnType<typeof createMemoryFileSystem>
+let runtime: ReturnType<typeof createFileOperationsRuntime>
+
+beforeEach(async () => {
+  vi.mocked(readProjectsFromProjectDirectory).mockReset()
+  memory = createMemoryFileSystem({ ...noopfs.impl, ...posix })
+  await memory.mkdir('/project', { recursive: true })
+  await memory.mkdir('/outside', { recursive: true })
+  await memory.writeFile('/project/keep.kcl', new TextEncoder().encode('keep'))
+  await memory.writeFile('/outside/private.bin', new Uint8Array([42]))
+  runtime = createFileOperationsRuntime(memory)
+})
+afterEach(async () => {
+  await runtime?.dispose()
+  vi.useRealTimers()
+})
+
+const invalidPaths = fc.constantFrom(
+  '/project',
+  '/project/',
+  '/project/.',
+  '/project/nested/..',
+  '/outside/private.bin',
+  '/project-other/private.bin',
+  '/project/../outside/private.bin'
+)
+
+describe('project file operations on MemoryFS', () => {
+  it('rejects an invalid path anywhere in an edit batch without changing storage', async () => {
+    const projects = createProjectOperations({
+      operations: runtime.operations,
+      wasm: vi.fn(),
+    })
+    await fc.assert(
+      fc.asyncProperty(
+        fc.array(fc.string(), { maxLength: 5 }),
+        invalidPaths,
+        fc.boolean(),
+        fc.nat(),
+        async (contents, path, deleting, position) => {
+          const edits = contents.map((contents, index) => ({
+            path: `/project/new-${index}.kcl`,
+            contents,
+          }))
+          const bad = { path, contents: deleting ? null : 'replacement' }
+          const insertAt = position % (edits.length + 1)
+          await expect(
+            projects.applyEdits('/project', [
+              { path: '/project/keep.kcl', contents: null },
+              ...edits.slice(0, insertAt),
+              bad,
+              ...edits.slice(insertAt),
+            ])
+          ).rejects.toThrow(/inside its project|outside its project/)
+          expect(await memory.readdir('/project')).toEqual(['keep.kcl'])
+          expect(await memory.readFile('/project/keep.kcl', 'utf8')).toBe(
+            'keep'
+          )
+          expect(await memory.readFile('/outside/private.bin')).toEqual(
+            new Uint8Array([42])
+          )
+          expect(projects.pending.value).toBe(0)
+        }
+      )
+    )
+  })
+
+  it('keeps the newer project listing when an older request finishes last', async () => {
+    const older = Promise.withResolvers<Project[]>()
+    const newer = Promise.withResolvers<Project[]>()
+    vi.mocked(readProjectsFromProjectDirectory)
+      .mockReturnValueOnce(older.promise)
+      .mockReturnValueOnce(newer.promise)
+    const projects = createProjectOperations({
+      operations: runtime.operations,
+      wasm: vi.fn(),
+    })
+    const first = projects.listProjects('/older')
+    await vi.waitFor(() =>
+      expect(readProjectsFromProjectDirectory).toHaveBeenCalledWith(
+        expect.objectContaining({ projectDirectoryPath: '/older' })
+      )
+    )
+    const second = projects.listProjects('/newer')
+    const newest = createProjectForTest('/newer/bracket', { name: 'bracket' })
+    newer.resolve([newest])
+    await second
+    expect(projects.projects.value).toEqual([newest])
+    older.resolve([createProjectForTest('/older/gear', { name: 'gear' })])
+    await first
+    expect(projects.projects.value).toEqual([newest])
+    expect(projects.pending.value).toBe(0)
+  })
+
+  it('deletes a project while unrelated discovery is still pending', async () => {
+    const listing = Promise.withResolvers<Project[]>()
+    vi.mocked(readProjectsFromProjectDirectory).mockReturnValueOnce(
+      listing.promise
+    )
+    const projects = createProjectOperations({
+      operations: runtime.operations,
+      wasm: vi.fn(),
+    })
+    const discovery = projects.listProjects('/outside')
+    try {
+      await projects.deleteProject('/project')
+      await expect(memory.stat('/project')).rejects.toMatchObject({
+        code: 'ENOENT',
+      })
+      expect(await memory.readFile('/outside/private.bin')).toEqual(
+        new Uint8Array([42])
+      )
+      expect(projects.pending.value).toBe(1)
+    } finally {
+      listing.resolve([])
+      await discovery
+    }
+    expect(projects.pending.value).toBe(0)
+  })
+
+  it.each(['edits', 'import'] as const)(
+    'owns submitted %s bytes and stays pending until the batch acknowledges them',
+    async (method) => {
+      await fc.assert(
+        fc.asyncProperty(
+          fc.uint8Array({ maxLength: 256 }),
+          async (contents) => {
+            const start = Promise.withResolvers<undefined>()
+            const written = Promise.withResolvers<undefined>()
+            const acknowledged = Promise.withResolvers<undefined>()
+            const projects = createProjectOperations({
+              operations: runtime.operations,
+              wasm: vi.fn(),
+              batch: async (_root, run) => {
+                await start.promise
+                const result = await run(runtime.operations)
+                written.resolve(undefined)
+                await acknowledged.promise
+                return result
+              },
+            })
+            const submitted = new Uint8Array(contents)
+            let finished = false
+            const saving = (
+              method === 'edits'
+                ? projects.applyEdits('/project', [
+                    { path: '/project/copied.bin', contents: submitted },
+                  ])
+                : projects.writeFiles(
+                    '/project',
+                    [{ path: 'copied.bin', contents: submitted }],
+                    { overwrite: true }
+                  )
+            ).then(() => {
+              finished = true
+            })
+            try {
+              submitted.fill(9)
+              start.resolve(undefined)
+              await written.promise
+              expect(await memory.readFile('/project/copied.bin')).toEqual(
+                contents
+              )
+              vi.useFakeTimers()
+              await vi.advanceTimersByTimeAsync(7_000)
+              expect(finished).toBe(false)
+              expect(projects.pending.value).toBe(1)
+              acknowledged.resolve(undefined)
+              await saving
+              expect(finished).toBe(true)
+              expect(projects.pending.value).toBe(0)
+            } finally {
+              vi.useRealTimers()
+              start.resolve(undefined)
+              acknowledged.resolve(undefined)
+              await saving
+            }
+          }
+        ),
+        { numRuns: 30 }
+      )
     }
   )
 
-  it('validates all paths before writing any files', async () => {
-    const writeFile = vi.fn()
+  it('does not delete existing files when a preceding write fails', async () => {
+    const failure = new Error('Write failed')
     const projects = createProjectOperations({
-      operations: { ...testFileOperations, writeFile },
+      operations: {
+        ...runtime.operations,
+        writeFile: async () => Promise.reject(failure),
+      },
       wasm: vi.fn(),
     })
     await expect(
       projects.applyEdits('/project', [
-        { path: '/project/main.kcl', contents: 'new' },
-        { path: '/other/private.kcl', contents: null },
+        { path: '/project/keep.kcl', contents: null },
+        { path: '/project/new.kcl', contents: 'new' },
       ])
-    ).rejects.toThrow('outside its project')
-    expect(writeFile).not.toHaveBeenCalled()
+    ).rejects.toBe(failure)
+    expect(await memory.readdir('/project')).toEqual(['keep.kcl'])
+    expect(await memory.readFile('/project/keep.kcl', 'utf8')).toBe('keep')
     expect(projects.pending.value).toBe(0)
-    expect(projects.failure.value).toBeInstanceOf(Error)
   })
 
-  it('owns submitted bytes and awaits the bulk persistence boundary', async () => {
-    const gate = Promise.withResolvers<undefined>()
-    const events: string[] = []
-    const writeFile = vi.fn(async (_path: string, bytes: unknown) => {
-      events.push(`write:${String(bytes)}`)
-    })
+  it('creates nested files and removes only the requested file', async () => {
     const projects = createProjectOperations({
-      operations: {
-        ...testFileOperations,
-        createDirectory: async () => {},
-        exists: async () => true,
-        stat: async () => ({
-          kind: 'directory',
-          device: 0,
-          inode: 0,
-          size: 0,
-          accessedAt: 0,
-          modifiedAt: 0,
-          changedAt: 0,
-          createdAt: 0,
-        }),
-        writeFile,
-        remove: async () => {
-          events.push('remove')
-        },
-      },
+      operations: runtime.operations,
       wasm: vi.fn(),
-      batch: async (_root, run) => {
-        await gate.promise
-        const result = await run({
-          ...testFileOperations,
-          createDirectory: async () => {},
-          writeFile,
-          remove: async () => {
-            events.push('remove')
-          },
-        })
-        events.push('commit')
-        return result
-      },
     })
-    const changes = vi.fn()
-    const unsubscribe = projects.subscribe(changes)
-    const bytes = new Uint8Array([1, 2])
-    const completed = projects.applyEdits('/project', [
-      { path: '/project/new.kcl', contents: bytes },
-      { path: '/project/old.kcl', contents: null },
+    await projects.applyEdits('/project', [
+      { path: '/project/keep.kcl', contents: null },
+      { path: '/project/parts/new.kcl', contents: 'new contents' },
     ])
-    bytes.fill(9)
-    expect(projects.pending.value).toBe(1)
-    expect(changes).not.toHaveBeenCalled()
-    gate.resolve(undefined)
-    await completed
-    expect(events).toEqual(['write:1,2', 'remove', 'commit'])
-    expect(changes).toHaveBeenCalledOnce()
-    expect(projects.pending.value).toBe(0)
-    unsubscribe()
+    await expect(memory.stat('/project/keep.kcl')).rejects.toMatchObject({
+      code: 'ENOENT',
+    })
+    expect(await memory.readFile('/project/parts/new.kcl', 'utf8')).toBe(
+      'new contents'
+    )
+    expect(await memory.readFile('/outside/private.bin')).toEqual(
+      new Uint8Array([42])
+    )
   })
-  it('rejects an import traversal before writing any project files', async () => {
-    const writeFile = vi.fn()
+
+  it.each([
+    '../outside/private.bin',
+    '../../outside/private.bin',
+    'nested/../../outside/private.bin',
+  ])('rejects import traversal %s before changing any files', async (path) => {
     const projects = createProjectOperations({
-      operations: { ...testFileOperations, writeFile },
+      operations: runtime.operations,
       wasm: vi.fn(),
     })
     await expect(
       projects.writeFiles(
         '/project',
         [
-          { path: 'nested/valid.kcl', contents: '' },
-          { path: '../../outside.bin', contents: new Uint8Array([1]) },
+          { path: 'nested/new.kcl', contents: 'new' },
+          { path, contents: new Uint8Array([9]) },
         ],
         { overwrite: true }
       )
     ).rejects.toThrow('outside its project')
-    expect(writeFile).not.toHaveBeenCalled()
-  })
-
-  it('owns imported bytes and waits for the batch acknowledgement', async () => {
-    const gate = Promise.withResolvers<undefined>()
-    const written: Uint8Array[] = []
-    const projects = createProjectOperations({
-      operations: {
-        ...testFileOperations,
-        exists: vi.fn(async () => true),
-        writeFile: vi.fn(async (_path, contents) => {
-          written.push(contents as Uint8Array)
-        }),
-      },
-      wasm: vi.fn(),
-      batch: async (_root, run) => {
-        const operations = {
-          ...testFileOperations,
-          createDirectory: vi.fn(async () => {}),
-          exists: vi.fn(async () => true),
-          writeFile: vi.fn(async (_path: string, contents: unknown) => {
-            written.push(contents as Uint8Array)
-          }),
-        }
-        await gate.promise
-        return run(operations)
-      },
-    })
-    const bytes = new Uint8Array([0, 255])
-    const complete = vi.fn()
-    const importing = projects
-      .writeFiles('/project', [{ path: 'part.bin', contents: bytes }], {
-        overwrite: true,
-      })
-      .then(complete)
-    bytes.fill(3)
-    expect(complete).not.toHaveBeenCalled()
-    gate.resolve(undefined)
-    await importing
-    expect(written).toEqual([new Uint8Array([0, 255])])
-    expect(complete).toHaveBeenCalledOnce()
+    expect(await memory.readdir('/project')).toEqual(['keep.kcl'])
+    expect(await memory.readFile('/outside/private.bin')).toEqual(
+      new Uint8Array([42])
+    )
   })
 })
