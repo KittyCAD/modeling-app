@@ -60,13 +60,19 @@ test.describe(
         await resetView(scene)
         await toolbar.closePane(DefaultLayoutPaneID.Code)
 
-        // Test coordinates for selection - these might need adjustment based on actual scene layout
+        // Select the cylinder cap and an unobscured face of the other solid.
         const cylinderPoint = { x: 592, y: 174 }
+        const secondObjectPoint = { x: 500, y: 300 }
 
         // Create mouse helpers for selecting objects
         const [clickFirstObject] = scene.makeMouseHelpers(
           cylinderPoint.x,
           cylinderPoint.y,
+          { steps: 10 }
+        )
+        const [clickSecondObject] = scene.makeMouseHelpers(
+          secondObjectPoint.x,
+          secondObjectPoint.y,
           { steps: 10 }
         )
 
@@ -82,12 +88,13 @@ test.describe(
             'aria-label',
             commandName
           )
+          const targets = modelingDialog.selection(
+            operationName === 'split' ? 'Targets' : 'Solids'
+          )
+          await expect(targets).toHaveAttribute('aria-pressed', 'true')
           // Select first object in the scene, expect there to be a pixel diff from the selection color change
           await clickFirstObject({ pixelDiff: 50 })
-          await page.waitForTimeout(1000)
-
-          // Select the second solid by name; its small faces vary with viewport size.
-          await toolbar.openFeatureTreePane()
+          await expect(targets).toHaveText('1 sweep')
 
           // For subtract, select the tool separately.
           if (operationName !== 'subtract') {
@@ -95,10 +102,14 @@ test.describe(
             await page.keyboard.down('Shift')
           } else {
             await modelingDialog.selection('Tools').click()
+            await expect(modelingDialog.selection('Tools')).toHaveAttribute(
+              'aria-pressed',
+              'true'
+            )
           }
 
           // Select second object
-          await (await toolbar.getFeatureTreeOperation('extrude006', 0)).click()
+          await clickSecondObject({ pixelDiff: 50 })
           await page.keyboard.up('Shift')
 
           await page.waitForTimeout(1000)
