@@ -314,9 +314,6 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         })
       ) {
         const message = `Project with title "${requestedName}" already exists`
-        if (options?.notify !== false) {
-          toast.error(message)
-        }
         return Promise.reject(new Error(message))
       }
 
