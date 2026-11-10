@@ -123,6 +123,12 @@ function runTestForTheme(mode: Themes) {
       await toolbar.rectangleBtn.click()
       await rectCorner1()
       await rectCorner2()
+      await expect
+        .poll(async () => {
+          const code = await editor.getCurrentCode()
+          return (code.match(/\bline\(/g) ?? []).length
+        })
+        .toBe(4)
 
       await expect(page).toHaveScreenshot(
         screenshotName(step++, 'sketch-drawn', mode),
