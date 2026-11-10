@@ -700,6 +700,106 @@ for (const kind of ['local', 'cloud'] as const) {
         expect(missingArtifacts).toEqual([])
       })
 
+      test('disables Exit Sketch immediately and throughout slow cleanup and engine handoff', async ({
+        page,
+        context,
+      }, testInfo) => {
+        const storage = await prepareStorage(kind, page, context, testInfo, {
+          modeling: true,
+        })
+        const scene = new SceneFixture(page)
+        const toolbar = new ToolbarFixture(page)
+        await storage.seed(
+          'Slow sketch exit',
+          `${blankCode}profile = sketch(on = XY) {
+  line(start = [var 0mm, var 0mm], end = [var 2mm, var 2mm])
+}
+`
+        )
+        await storage.refresh()
+        await storage.home.openProject('Slow sketch exit')
+        await scene.settled()
+        await toolbar.openFeatureTreePane()
+        await (await toolbar.getFeatureTreeOperation('profile', 0)).dblclick()
+        await expect(toolbar.exitSketchBtn).toBeEnabled()
+        await expect(
+          page.locator('[data-handle="sketch-point-handle"]')
+        ).toHaveCount(2)
+        const pending = await page.evaluateHandle(() => {
+          const editor = window.app.singletons.kclManager
+          const rust = editor.rustContext
+          const exitSketch = rust.exitSketch
+          const executeCode = editor.executeCode
+          const exit = Promise.withResolvers<undefined>()
+          const execution = Promise.withResolvers<undefined>()
+          let exitCalls = 0
+          let executing = false
+          rust.exitSketch = async (...args) => {
+            exitCalls++
+            await exit.promise
+            return exitSketch.apply(rust, args)
+          }
+          editor.executeCode = async (...args) => {
+            executing = true
+            await execution.promise
+            return executeCode.apply(editor, args)
+          }
+          return {
+            exitCalls: () => exitCalls,
+            executing: () => executing,
+            releaseExit: () => exit.resolve(undefined),
+            releaseExecution: () => execution.resolve(undefined),
+            restore: () => {
+              rust.exitSketch = exitSketch
+              editor.executeCode = executeCode
+            },
+          }
+        })
+        await page.clock.install()
+        try {
+          await toolbar.exitSketchBtn.click()
+          await expect
+            .poll(() => pending.evaluate((p) => p.exitCalls()))
+            .toBe(1)
+          await expect(toolbar.exitSketchBtn).toBeDisabled()
+          await page.clock.pauseAt(
+            new Date((await page.evaluate(() => Date.now())) + 1_000)
+          )
+          await page.clock.runFor(7_000)
+          await expect(toolbar.exitSketchBtn).toBeDisabled()
+          expect(
+            await page.evaluate(
+              () => window.app.singletons.kclManager.isExecuting
+            )
+          ).toBe(false)
+          await page.clock.resume()
+          await pending.evaluate((p) => p.releaseExit())
+          await expect
+            .poll(() => pending.evaluate((p) => p.executing()))
+            .toBe(true)
+          // The child has finished cleanup, but the parent still owns the exit.
+          await expect(toolbar.exitSketchBtn).toBeDisabled()
+          await page.clock.pauseAt(
+            new Date((await page.evaluate(() => Date.now())) + 1_000)
+          )
+          await page.clock.runFor(7_000)
+          await expect(toolbar.exitSketchBtn).toBeDisabled()
+          expect(await pending.evaluate((p) => p.exitCalls())).toBe(1)
+          await page.clock.resume()
+          await pending.evaluate((p) => p.releaseExecution())
+          await expect(toolbar.exitSketchBtn).not.toBeVisible()
+          await expect(toolbar.startSketchBtn).toBeEnabled()
+        } finally {
+          await page.clock.resume()
+          await pending.evaluate((p) => {
+            p.releaseExit()
+            p.releaseExecution()
+            p.restore()
+          })
+          await pending.dispose()
+        }
+      })
+
       test('previews circle code before the radius click without saving unfinished circles', async ({
         page,
         context,
