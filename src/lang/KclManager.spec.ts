@@ -592,6 +592,49 @@ describe('KclManager storage checks before sketch insertion', () => {
     }
   )
 
+  it.each(['local', 'cloud'] as const)(
+    'keeps unsaved %s sketch source available while storage is slow',
+    async (kind) => {
+      const { app, kclManager, schedule } = await setup()
+      vi.useFakeTimers()
+      const gate = Promise.withResolvers<string>()
+      const read = vi
+        .spyOn(kclManager.textFileIO, 'read')
+        .mockReturnValue(gate.promise)
+      const write = vi.spyOn(kclManager.textFileIO, 'write')
+      const refresh = vi.fn(async () => {
+        await gate.promise
+      })
+      kclManager.updateCodeEditor('width = 2', {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      })
+      let ready = false
+      const insertion = kclManager
+        .refreshFileBeforeSketchInsertion(
+          kind === 'cloud' ? refresh : undefined
+        )
+        .then(() => {
+          ready = true
+        })
+      try {
+        await vi.advanceTimersByTimeAsync(7_000)
+        expect(ready).toBe(true)
+        expect(kclManager.code).toBe('width = 2')
+        expect(kclManager.hasUnsavedLocalChanges()).toBe(true)
+        expect(read).not.toHaveBeenCalled()
+        expect(write).not.toHaveBeenCalled()
+        expect(refresh).not.toHaveBeenCalled()
+        expect(schedule).not.toHaveBeenCalled()
+      } finally {
+        gate.resolve('width = 1')
+        await insertion.catch(() => undefined)
+        app.dispose()
+        vi.useRealTimers()
+      }
+    }
+  )
+
   it('synchronizes newer text already loaded by a watcher before generating geometry', async () => {
     const { app, kclManager, schedule, execute } = await setup()
     vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('width = 2')

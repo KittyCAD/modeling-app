@@ -713,8 +713,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await expect(pointHandles).toHaveCount(4)
 
         await moveDraftLine()
-        const codeWithDraftLine = await waitForCodeChange(page, codeAfterLine2)
-        expect(getLineCount(codeWithDraftLine)).toBe(3)
+        await expect
+          .poll(async () => getLineCount(await editor.getCurrentCode()))
+          .toBe(3)
         await expect(pointHandles).toHaveCount(6)
       })
 
@@ -1334,8 +1335,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         end: [0.31, 0.48],
         previousCode,
       })
-      const codeAfterArc1 = previousCode
-      expect((codeAfterArc1.match(/arc\(/g) ?? []).length).toBe(1)
+      await expect
+        .poll(async () => getCodeCounts(await editor.getCurrentCode()).arcs)
+        .toBe(1)
+      const codeAfterArc1 = await editor.getCurrentCode()
       await expect(pointHandles).toHaveCount(3)
 
       previousCode = await addCenterArc({
@@ -1344,8 +1347,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         end: [0.62, 0.43],
         previousCode,
       })
-      const codeAfterArc2 = previousCode
-      expect((codeAfterArc2.match(/arc\(/g) ?? []).length).toBe(2)
+      await expect
+        .poll(async () => getCodeCounts(await editor.getCurrentCode()).arcs)
+        .toBe(2)
+      const codeAfterArc2 = await editor.getCurrentCode()
       await expect(pointHandles).toHaveCount(6)
 
       previousCode = await addCenterArc({
@@ -1354,8 +1359,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         end: [0.52, 0.74],
         previousCode,
       })
-      const codeAfterArc3 = previousCode
-      expect((codeAfterArc3.match(/arc\(/g) ?? []).length).toBe(3)
+      await expect
+        .poll(async () => getCodeCounts(await editor.getCurrentCode()).arcs)
+        .toBe(3)
+      const codeAfterArc3 = await editor.getCurrentCode()
       await expect(pointHandles).toHaveCount(9)
 
       await pressUndo()
@@ -1449,10 +1456,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await line3End()
       previousCode = await waitForCodeChange(page, previousCode)
-      const codeAfterThreeLines = previousCode
-      counts = getCodeCounts(codeAfterThreeLines)
-      expect(counts.lines).toBe(3)
-      expect(counts.coincidents).toBe(2)
+      await expect
+        .poll(async () => getCodeCounts(await editor.getCurrentCode()))
+        .toMatchObject({ lines: 3, coincidents: 2 })
       await expect(pointHandles).toHaveCount(9)
 
       await toolbar.lineBtn.click()
