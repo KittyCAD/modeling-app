@@ -144,10 +144,7 @@ export function createCloudFileSystem(
       : []
     return plan.merge(downloaded)
   }
-  const hydrate = async (
-    id: string,
-    archive: readonly ProjectArchiveFile[]
-  ) => {
+  const hydrate = (id: string, archive: readonly ProjectArchiveFile[]) => {
     replaceCloudSnapshot(memory, pathFor(id), archive)
   }
   const acknowledge = (
@@ -209,12 +206,12 @@ export function createCloudFileSystem(
       submitted !== undefined && sameSnapshot(submitted, archive)
     if (sameContents) {
       // Keep staged thumbnail bytes in memory too, without replacing editor source.
-      await hydrate(id, archive)
+      hydrate(id, archive)
       acknowledge(id, remote, archive)
       return
     }
     if (submitted && !alreadyInvalidated) project.generation += 1
-    await hydrate(id, archive)
+    hydrate(id, archive)
     acknowledge(id, remote, archive)
     for (const listener of reconciliationListeners)
       listener(pathFor(id), archive)
@@ -223,7 +220,7 @@ export function createCloudFileSystem(
   const commit = async (
     id: string,
     snapshot?: ProjectArchiveFile[],
-    requestConfig = config()
+    requestConfig = { ...config() }
   ) => {
     const project = opened.get(id)
     if (!project) return Promise.reject(new Error('Cloud project is not open.'))
@@ -291,7 +288,7 @@ export function createCloudFileSystem(
     if (deleting.has(id)) return Promise.reject(deletingError())
     const project = opened.get(id)
     if (!project) return Promise.reject(new Error('Cloud project is not open.'))
-    const requestConfig = config()
+    const requestConfig = { ...config() }
     if (project.owner !== requestConfig.accountId)
       return Promise.reject(
         new Error('Reload to open cloud projects after changing accounts.')
@@ -484,7 +481,7 @@ export function createCloudFileSystem(
       return Promise.reject(
         new Error('Cloud deletion belongs to a different project or account.')
       )
-    const requestConfig = config()
+    const requestConfig = { ...config() }
     const entries = await downloadDeletedCloudEntries(
       requestConfig,
       project.remote,
@@ -626,7 +623,7 @@ export function createCloudFileSystem(
           )
     const pending = opening.get(id)
     if (pending) return pending
-    const requestConfig = config()
+    const requestConfig = { ...config() }
     const result = (async () => {
       await ready
       const remote = await api.getRemoteProject(requestConfig, id)
@@ -639,7 +636,7 @@ export function createCloudFileSystem(
         return Promise.reject(
           new Error('Cloud account changed while opening project.')
         )
-      await hydrate(id, archive)
+      hydrate(id, archive)
       acknowledge(id, remote, archive)
       return pathFor(id)
     })().finally(() => opening.delete(id))
@@ -651,7 +648,7 @@ export function createCloudFileSystem(
     if (pending) return pending
     const request = (async () => {
       if (isOffline()) return Promise.reject(offlineError())
-      const requestConfig = config()
+      const requestConfig = { ...config() }
       const existing = opened.get(id)
       if (existing && existing.owner !== requestConfig.accountId)
         return Promise.reject(
@@ -691,13 +688,19 @@ export function createCloudFileSystem(
     archive: readonly ProjectArchiveFile[]
   ) => {
     if (isOffline()) return Promise.reject(offlineError())
+    const requestConfig = { ...config() }
+    const captured = archive.map((file) => ({
+      relativePath: file.relativePath,
+      data: new Uint8Array(file.data),
+    }))
     await ready
+    if (config().accountId !== requestConfig.accountId)
+      return Promise.reject(new Error('Cloud account changed before creation.'))
     const filesWithTitle = withUpdatedProjectTomlInArchiveFiles(
-      [...archive],
+      captured,
       (contents) => prepareProjectTomlForDuplication(contents, title, v4())
     )
     if (filesWithTitle instanceof Error) return Promise.reject(filesWithTitle)
-    const requestConfig = config()
     if (isOffline()) return Promise.reject(offlineError())
     const remote = await api.createRemoteProject(
       requestConfig,
@@ -706,7 +709,7 @@ export function createCloudFileSystem(
     )
     if (config().accountId !== requestConfig.accountId)
       return Promise.reject(new Error('Cloud account changed during creation.'))
-    await hydrate(remote.id, filesWithTitle)
+    hydrate(remote.id, filesWithTitle)
     acknowledge(remote.id, remote, filesWithTitle)
     return { id: remote.id, path: pathFor(remote.id) }
   }
@@ -717,7 +720,7 @@ export function createCloudFileSystem(
     projectsLoading: computed(() => pendingProjectLists.value > 0),
     listProjects: async () => {
       const generation = ++listGeneration
-      const requestConfig = config()
+      const requestConfig = { ...config() }
       pendingProjectLists.value = pendingProjectLists.peek() + 1
       try {
         const result = await api.listRemoteProjects(requestConfig)
@@ -801,7 +804,7 @@ export function createCloudFileSystem(
     ): Promise<CloudProjectUpdate> => {
       const pending = polling.get(id)
       if (pending) return pending
-      const requestConfig = config()
+      const requestConfig = { ...config() }
       const project = opened.get(id)
       if (!project || project.owner !== requestConfig.accountId)
         return Promise.reject(
@@ -854,7 +857,7 @@ export function createCloudFileSystem(
           async (previousState) => {
             if (previousState?.state === 'failed' || !safe()) return
             clearThumbnail(id)
-            await hydrate(id, archive)
+            hydrate(id, archive)
             acknowledge(id, remote, archive)
             refreshed = true
           },
@@ -893,7 +896,7 @@ export function createCloudFileSystem(
             String(opened.get(id)?.remote.revision) === revision
           )
             return
-          const requestConfig = config()
+          const requestConfig = { ...config() }
           const remote =
             revision === undefined
               ? await api.getRemoteProject(requestConfig, id)
@@ -909,7 +912,7 @@ export function createCloudFileSystem(
             )
           if (!archive || !isCurrent()) return
           clearThumbnail(id)
-          await hydrate(id, archive)
+          hydrate(id, archive)
           acknowledge(id, remote, archive)
         },
         { persist: false, reportSaveFailure: false }
@@ -931,7 +934,7 @@ export function createCloudFileSystem(
           await collect(pathFor(id)),
           title
         )
-        await hydrate(id, archive)
+        hydrate(id, archive)
       })
     },
     duplicateProject: async (id: string, title: string) => {

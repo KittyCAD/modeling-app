@@ -4,6 +4,7 @@ import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import { posix, win32 } from '@chainner/node-path'
 import * as api from '@src/lib/fs-zds/cloud/api'
 import { parseProjectArchive } from '@src/lib/fs-zds/cloud/archive'
+import type * as CloudArchive from '@src/lib/fs-zds/cloud/archive'
 import { createCloudFileSystem } from '@src/lib/fs-zds/cloud'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import noopfs from '@src/lib/fs-zds/noopfs'
@@ -19,7 +20,8 @@ vi.mock('@src/lib/fs-zds/cloud/api', async (original) => ({
   createRemoteProject: vi.fn(),
   deleteRemoteProject: vi.fn(),
 }))
-vi.mock('@src/lib/fs-zds/cloud/archive', () => ({
+vi.mock('@src/lib/fs-zds/cloud/archive', async (original) => ({
+  ...(await original<typeof CloudArchive>()),
   parseProjectArchive: vi.fn(),
 }))
 const remote = {
@@ -35,6 +37,26 @@ const remote = {
       sha256: 'main-hash',
     },
   ],
+}
+const createdProject: Awaited<ReturnType<typeof api.createRemoteProject>> = {
+  ...remote,
+  id: 'created',
+  files: [],
+  access: {
+    can_delete: true,
+    can_edit: true,
+    can_manage_organization: false,
+    scope: 'personal',
+  },
+  created_at: '2026-11-09T00:00:00Z',
+  updated_at: '2026-11-09T00:00:00Z',
+  entrypoint_path: 'main.kcl',
+  metadata_revision: '1',
+  preview_status: 'pending',
+  project_toml_path: 'project.toml',
+  publication: { has_unpublished_changes: false },
+  publication_status: 'private',
+  title: 'Created project',
 }
 const encoder = new TextEncoder()
 const remoteSnapshot = (
@@ -92,6 +114,82 @@ describe.each([
     instances.push(fs)
     return { fs, diskWrite, diskRemove }
   }
+
+  it('captures project creation bytes and membership before asynchronous initialization', async () => {
+    const { fs } = setup()
+    const gate = Promise.withResolvers<typeof createdProject>()
+    vi.mocked(api.createRemoteProject).mockReturnValueOnce(gate.promise)
+    const data = new Uint8Array([1, 2, 3])
+    const archive = [{ relativePath: 'data.bin', data }]
+    const creating = fs.createProject('Owned archive', archive)
+    data.fill(255)
+    archive.push({ relativePath: 'late.bin', data: new Uint8Array([4]) })
+    await vi.waitFor(() =>
+      expect(api.createRemoteProject).toHaveBeenCalledOnce()
+    )
+    vi.useFakeTimers()
+    const settled = vi.fn()
+    void creating.then(settled)
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(settled).not.toHaveBeenCalled()
+    gate.resolve(createdProject)
+    const result = await creating
+    expect(await fs.readFile(paths.join(result.path, 'data.bin'))).toEqual(
+      new Uint8Array([1, 2, 3])
+    )
+    await expect(
+      fs.readFile(paths.join(result.path, 'late.bin'))
+    ).rejects.toMatchObject({ code: 'ENOENT' })
+    const submitted = vi.mocked(api.createRemoteProject).mock.calls.at(-1)![2]
+    expect(
+      submitted.find((file) => file.relativePath === 'data.bin')?.data
+    ).toEqual(new Uint8Array([1, 2, 3]))
+    expect(submitted.some((file) => file.relativePath === 'late.bin')).toBe(
+      false
+    )
+  })
+
+  it('rejects project creation when its account changes during initialization', async () => {
+    let account = 'first'
+    const { fs } = setup(() => account)
+    vi.mocked(api.createRemoteProject).mockResolvedValueOnce(createdProject)
+    const creating = fs.createProject('Account-owned project', [
+      { relativePath: 'data.bin', data: new Uint8Array([1]) },
+    ])
+    account = 'second'
+    await expect(creating).rejects.toThrow('account changed before creation')
+    expect(api.createRemoteProject).not.toHaveBeenCalled()
+    expect(fs.projects.peek()).toEqual([])
+  })
+
+  it('keeps a save bound to its original account when the configuration object is mutated in place', async () => {
+    const settings = { enabled: true, accountId: 'first' }
+    const fs = createCloudFileSystem(
+      { ...noopfs.impl, ...paths },
+      () => settings
+    )
+    instances.push(fs)
+    const root = await fs.openProject('one')
+    const file = paths.join(root, 'main.kcl')
+    const gate = Promise.withResolvers<typeof remote>()
+    vi.mocked(api.updateRemoteProject).mockReturnValueOnce(gate.promise)
+    const saving = fs.writeFile(file, encoder.encode('first account edit'))
+    const rejected = expect(saving).rejects.toThrow(
+      'account changed during save'
+    )
+    await vi.waitFor(() =>
+      expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+    )
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    settings.accountId = 'second'
+    gate.resolve({ ...remote, revision: '2' })
+    await rejected
+    await expect(fs.readFile(file)).rejects.toThrow('different account')
+    expect(
+      fs.projects.peek().find((project) => project.id === 'one')?.revision
+    ).toBe('1')
+  })
 
   it.each(['success', 'failure'] as const)(
     'reports a seven-second project list request through %s and retry',

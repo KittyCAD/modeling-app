@@ -164,43 +164,66 @@ test(
     await expect(page.locator('.cm-content').first()).toBeVisible()
     await installPausedClock(page)
     for (const state of ['hidden', 'offline']) {
-      await page.evaluate((state) => {
-        if (state === 'hidden') {
-          Object.defineProperty(document, 'visibilityState', {
-            configurable: true,
-            value: 'hidden',
+      const releaseProbe = Promise.withResolvers<undefined>()
+      let probeStarted = false
+      await context.route(
+        (url) => url.pathname === `/user/projects/${projectId}`,
+        async (route) => {
+          probeStarted = true
+          await releaseProbe.promise
+          await route.fallback()
+        },
+        { times: 1 }
+      )
+      try {
+        await page.evaluate(() => window.dispatchEvent(new Event('focus')))
+        await expect
+          .poll(async () => {
+            await page.clock.runFor(2_000)
+            return probeStarted
           })
-          document.dispatchEvent(new Event('visibilitychange'))
-        } else {
-          Object.defineProperty(navigator, 'onLine', {
-            configurable: true,
-            value: false,
-          })
-          window.dispatchEvent(new Event('offline'))
-        }
-      }, state)
-      // Allow a probe that was already in flight to settle before counting.
-      await expect.poll(() => metadataRequests.size).toBe(0)
-      const before = remote.reads.metadata
-      await page.clock.runFor(120_000)
-      expect(remote.reads.metadata).toBe(before)
-      await page.evaluate((state) => {
-        if (state === 'hidden') {
-          Object.defineProperty(document, 'visibilityState', {
-            configurable: true,
-            value: 'visible',
-          })
-          document.dispatchEvent(new Event('visibilitychange'))
-        } else {
-          Object.defineProperty(navigator, 'onLine', {
-            configurable: true,
-            value: true,
-          })
-          window.dispatchEvent(new Event('online'))
-        }
-      }, state)
-      await page.clock.runFor(1)
-      await expect.poll(() => remote.reads.metadata).toBeGreaterThan(before)
+          .toBe(true)
+        await page.evaluate((state) => {
+          if (state === 'hidden') {
+            Object.defineProperty(document, 'visibilityState', {
+              configurable: true,
+              value: 'hidden',
+            })
+            document.dispatchEvent(new Event('visibilitychange'))
+          } else {
+            Object.defineProperty(navigator, 'onLine', {
+              configurable: true,
+              value: false,
+            })
+            window.dispatchEvent(new Event('offline'))
+          }
+        }, state)
+        releaseProbe.resolve(undefined)
+        // Drain this known probe before measuring the paused interval.
+        await expect.poll(() => metadataRequests.size).toBe(0)
+        const before = remote.reads.metadata
+        await page.clock.runFor(120_000)
+        expect(remote.reads.metadata).toBe(before)
+        await page.evaluate((state) => {
+          if (state === 'hidden') {
+            Object.defineProperty(document, 'visibilityState', {
+              configurable: true,
+              value: 'visible',
+            })
+            document.dispatchEvent(new Event('visibilitychange'))
+          } else {
+            Object.defineProperty(navigator, 'onLine', {
+              configurable: true,
+              value: true,
+            })
+            window.dispatchEvent(new Event('online'))
+          }
+        }, state)
+        await page.clock.runFor(1)
+        await expect.poll(() => remote.reads.metadata).toBeGreaterThan(before)
+      } finally {
+        releaseProbe.resolve(undefined)
+      }
     }
   }
 )

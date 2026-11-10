@@ -10,7 +10,11 @@ import {
   openProjectLibrary,
   selectProjectLibraries,
 } from '@e2e/playwright/lib/appTestUtils'
-import { mockClientErrorReports, setup } from '@e2e/playwright/test-utils'
+import {
+  mockClientErrorReports,
+  setup,
+  waitForAppLoad,
+} from '@e2e/playwright/test-utils'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import {
   getDefaultCloudProjectLibrarySetting,
@@ -43,6 +47,7 @@ export async function prepareStorage(
   if (process.env.TARGET === 'web') await setup(context, page, testInfo)
   const navigate = (route: string) => navigateToAppRoute(page, route)
   await navigate('/home')
+  await waitForAppLoad(page)
   const home = new HomePageFixture(page)
   await expect(page.getByTestId('home-header')).toBeVisible()
   const fs = FsFixture(page)
