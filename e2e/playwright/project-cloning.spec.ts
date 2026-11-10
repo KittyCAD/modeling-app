@@ -5,7 +5,11 @@ import {
   uploadedProject,
 } from '@e2e/playwright/lib/cloudStorageFixture'
 import { projectToml } from '@e2e/playwright/lib/cloudProjectTestUtils'
-import { mockClientErrorReports, setup } from '@e2e/playwright/test-utils'
+import {
+  mockClientErrorReports,
+  setup,
+  waitForAppLoad,
+} from '@e2e/playwright/test-utils'
 import { getDefaultCloudProjectLibrarySetting } from '@src/lib/projectLibraries'
 import type { BrowserContext, Page, TestInfo } from '@playwright/test'
 
@@ -47,6 +51,7 @@ async function prepare(
   }
   await navigate('/home')
   await expect(page.getByTestId('home-header')).toBeVisible()
+  await waitForAppLoad(page)
   const localSource = {
     type: 'directory' as const,
     title: 'Source',
@@ -103,7 +108,6 @@ async function prepare(
     name: `Open ${sourceLibrary.title} library`,
     exact: true,
   })
-  await expect(openLibrary).toBeVisible()
   await openLibrary.click()
   const card = page
     .getByTestId('project-link')
