@@ -2,7 +2,7 @@ import { computed, Signal } from '@preact/signals-core'
 
 /**
  * Expose a service through readonly properties, guarded methods, and readonly
- * signals. Nested ordinary objects remain the service owner's responsibility.
+ * signals. Nested ordinary objects and method results are returned unwrapped.
  */
 export function protect<T extends object>(
   implementation: T,
@@ -32,8 +32,9 @@ export function protect<T extends object>(
     return exposed
   }
 
-  // A separate extensible target permits wrapped values even when the original
-  // properties are frozen. `get` on a frozen target must return its exact value.
+  // Proxy `get` must return the exact value of a non-configurable, non-writable
+  // data property. A separate target lets frozen implementations expose wrapped
+  // methods and signals without violating that rule or modifying the original.
   return new Proxy<T>(Object.create(Object.getPrototypeOf(implementation)), {
     get: (_, key) => read(key),
     has: (_, key) => Reflect.has(implementation, key),

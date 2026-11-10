@@ -48,7 +48,7 @@ function originFor(key: Key, path: ItemPath): Origin {
   }
 }
 
-/** Retained ownership is separate from replaceable children and their bindings. */
+/** `replace` changes `children` while retaining `instance` and its cleanup. */
 interface Mounted {
   readonly instance: Instance
   readonly children: readonly Item[]
@@ -155,7 +155,9 @@ export class Registry implements ScopeHost {
     }
     this.phase = 'acquiring'
     const next = new Map<Key, Mounted>()
-    // Pair each cell's stable `clear` callback with the commit for this attempt.
+    // Facets capture their typed sources in commit closures. This registry can
+    // publish different Facet input types together without reconstructing pairs.
+    // A cell's stable `clear` callback identifies Facets removed by this change.
     const writes = new Map<() => void, () => void>()
     const registrations: { precedence: number; install: () => void }[] = []
     const debugItems: DebugItem[] = []
