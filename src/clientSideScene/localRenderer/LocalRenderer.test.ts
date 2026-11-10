@@ -9,13 +9,13 @@ import { Themes } from '@src/lib/theme'
 import {
   Group,
   Mesh,
-  MeshStandardMaterial,
   type OrthographicCamera,
   PerspectiveCamera,
   Scene,
   Vector3,
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { MeshStandardNodeMaterial } from 'three/webgpu'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lang/KclManager', () => ({
@@ -146,8 +146,9 @@ function fixture(
     {
       theme: Themes.Light,
       enableSSAO: false,
-      highlightEdges: false,
+      shouldHighlightEdges: false,
       fixedSizeGrid: true,
+      backfaceColor: '#00D5FF',
       onModelLoadSettled,
     }
   )
@@ -300,6 +301,25 @@ describe('local GLB loading', () => {
     f.renderer.dispose()
   })
 
+  it.each<[EntityType[], boolean]>([
+    [['object'], true],
+    [['curve'], true],
+    [['edge'], false],
+    [['solid3d'], false],
+    [['face', 'object'], false],
+  ])('includes standalone curves for filter %j: %s', (filter, included) => {
+    const f = fixture()
+    f.state.currentModel = new Group()
+    f.manager.selectionFilter.value = filter
+    f.state.rebuildSelectionTargets()
+    expect(f.gpu.integerIdPicker.setTargets.mock.lastCall?.[3]).toEqual(
+      included
+        ? { source: f.gpu.sketchLineRenderer.lines, targets: [] }
+        : undefined
+    )
+    f.renderer.dispose()
+  })
+
   function selectionFixture() {
     const f = planeFixture()
     const model = new Group()
@@ -360,6 +380,7 @@ describe('local GLB loading', () => {
         type: 'gltf',
         storage: 'binary',
         presentation: 'compact',
+        include_uuids: true,
         extras: ['sketches', 'regions'],
       },
       { settings: { modeling: { base_unit: 'mm' } } }
@@ -368,7 +389,7 @@ describe('local GLB loading', () => {
     expect(mesh).toBeInstanceOf(Mesh)
     if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
     expect(mesh.geometry.getAttribute('position').count).toBe(3)
-    expect(mesh.material).toBeInstanceOf(MeshStandardMaterial)
+    expect(mesh.material).toBeInstanceOf(MeshStandardNodeMaterial)
     expect(mesh.material.metalness).toBe(0.3)
     expect(mesh.material.roughness).toBe(0.4)
     expect(resetCameraPosition).toHaveBeenCalledExactlyOnceWith({
@@ -376,6 +397,26 @@ describe('local GLB loading', () => {
       settingsActor: f.manager.systemDeps.settings,
     })
     expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
+    f.renderer.dispose()
+  })
+
+  it('keeps planes in fit bounds until their visibility update follows the model load', async () => {
+    const f = fixture()
+    f.gpu.planeRenderer.updateDefaultPlanes(f.manager.rustContext.defaultPlanes)
+    f.done()
+    await vi.waitFor(() => expect(f.renderer.isLoadedSceneCurrent()).toBe(true))
+    const model = f.state.currentModel
+    if (!model) throw new Error('Missing model')
+    model.scale.setScalar(0.001)
+
+    const boundsWithPlanes = f.renderer.getFitBounds()
+    expect(f.renderer.hasVisibleDefaultPlanes).toBe(true)
+    f.renderer.setDefaultPlaneVisibility({ xy: false, xz: false, yz: false })
+    expect(f.renderer.hasVisibleDefaultPlanes).toBe(false)
+    const modelBounds = f.renderer.getFitBounds()
+    expect(modelBounds?.getSize(new Vector3()).length()).toBeLessThan(
+      boundsWithPlanes?.getSize(new Vector3()).length() ?? 0
+    )
     f.renderer.dispose()
   })
 
@@ -401,6 +442,7 @@ describe('local GLB loading', () => {
     f.manager.rustContext.export.mockReturnValueOnce(pending.promise)
     const parse = vi.spyOn(GLTFLoader.prototype, 'parseAsync')
     f.done()
+    expect(f.renderer.isLoadedSceneCurrent()).toBe(false)
     f.manager.isExecutingSignal.value = true
     pending.resolve([triangleGlb()])
     await pending.promise
@@ -409,6 +451,7 @@ describe('local GLB loading', () => {
     expect(f.onModelLoadSettled).not.toHaveBeenCalled()
     f.done()
     await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+    expect(f.renderer.isLoadedSceneCurrent()).toBe(true)
     f.renderer.dispose()
   })
 

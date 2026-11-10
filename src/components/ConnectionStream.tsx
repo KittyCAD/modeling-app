@@ -199,30 +199,38 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             }
             const selectedEntityRef = normalizeEntityReference(result.reference)
             let entityId: string | undefined
-            if (selectedEntityRef?.type === 'plane')
-              entityId = selectedEntityRef.plane_id
-            else if (selectedEntityRef?.type === 'face')
-              entityId = selectedEntityRef.face_id
-            else if (selectedEntityRef?.type === 'solid2d')
-              entityId = selectedEntityRef.solid2d_id
-            else if (selectedEntityRef?.type === 'solid3d')
-              entityId = selectedEntityRef.solid3d_id
-            else if (selectedEntityRef?.type === 'solid2d_edge')
-              entityId = selectedEntityRef.edge_id
-            else if (selectedEntityRef?.type === 'segment')
-              entityId = selectedEntityRef.segment_id
-            else if (selectedEntityRef?.type === 'region')
-              entityId = selectedEntityRef.region_id
-            else if (
-              selectedEntityRef?.type === 'edge' &&
-              selectedEntityRef.side_faces[0]
-            ) {
-              entityId = selectedEntityRef.side_faces[0]
-            } else if (
-              selectedEntityRef?.type === 'vertex' &&
-              selectedEntityRef.side_faces[0]
-            ) {
-              entityId = selectedEntityRef.side_faces[0]
+            switch (selectedEntityRef?.type) {
+              case 'annotation':
+                entityId = selectedEntityRef.annotation_id
+                break
+              case 'plane':
+                entityId = selectedEntityRef.plane_id
+                break
+              case 'face':
+                entityId = selectedEntityRef.face_id
+                break
+              case 'solid2d':
+                entityId = selectedEntityRef.solid2d_id
+                break
+              case 'solid3d':
+                entityId = selectedEntityRef.solid3d_id
+                break
+              case 'solid2d_edge':
+                entityId = selectedEntityRef.edge_id
+                break
+              case 'segment':
+                entityId = selectedEntityRef.segment_id
+                break
+              case 'region':
+                entityId = selectedEntityRef.region_id
+                break
+              case 'edge':
+              case 'vertex':
+                entityId = selectedEntityRef.side_faces[0]
+                break
+              case 'helix':
+              case undefined:
+                break
             }
             if (!entityId) {
               return
@@ -661,8 +669,9 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         <LocalWebGPUScene
           theme={theme}
           enableSSAO={settingsValues.modeling.enableSSAO.current}
-          highlightEdges={settingsValues.modeling.highlightEdges.current}
+          shouldHighlightEdges={settingsValues.modeling.highlightEdges.current}
           fixedSizeGrid={settingsValues.modeling.fixedSizeGrid.current}
+          backfaceColor={settingsValues.modeling.backfaceColor.current}
         />
       )}
       <ClientSideScene

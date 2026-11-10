@@ -1,2 +1,1 @@
-[test_graphics.EngineRender]
-reason = "Bounding box differs in geometry-only mode"
+test_graphics = "CpuEngineRender"

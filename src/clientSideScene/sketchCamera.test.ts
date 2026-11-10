@@ -37,7 +37,7 @@ describe('engine-style sketch framing', () => {
     expect(up.distanceTo(new Vector3(0, 1, 0))).toBeLessThan(1e-8)
   })
 
-  it('targets a body face centre in base units without flipping the face normal', () => {
+  it('targets a body face centre in world millimetres without flipping the face normal', () => {
     const scene = new Group()
     scene.scale.setScalar(25.4)
     const sketch = new Group()
@@ -45,7 +45,7 @@ describe('engine-style sketch framing', () => {
     scene.add(sketch)
     const eye = new Vector3(0, 0, -100)
     const frame = getSketchCameraFrame(sketch, eye, new Vector3(1, 2, 3))
-    const expected = new Vector3(1, 2, 3).multiplyScalar(25.4)
+    const expected = new Vector3(1, 2, 3)
     expect(frame.target.distanceTo(expected)).toBeLessThan(1e-8)
     expect(frame.distance).toBeCloseTo(eye.distanceTo(expected))
     expect(frame.quaternion.angleTo(sketch.quaternion)).toBeLessThan(1e-8)

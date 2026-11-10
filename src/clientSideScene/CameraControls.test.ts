@@ -331,37 +331,41 @@ describe('local sketch camera transition', () => {
     expect(controls.camera.position.z).toBeCloseTo(250)
   })
 
-  it('uses the engine face centre rather than the sketch origin', async () => {
-    vi.stubGlobal('matchMedia', () => ({ matches: true }))
-    const { manager, controls, sendSceneCommand } = setup()
-    const scene = new Group()
-    scene.scale.setScalar(25.4)
-    const sketch = new Group()
-    scene.add(sketch)
-    await letEngineAnimateAndSyncCamAfter(manager, 'face-id', controls, true)
-    sendSceneCommand.mockResolvedValueOnce({
-      success: true,
-      resp: {
-        type: 'modeling',
-        data: {
-          modeling_response: {
-            type: 'face_get_center',
-            data: { pos: { x: 10, y: 20, z: 30 } },
+  it.each([1, 25.4, 1000])(
+    'uses the engine face centre in millimetres with a scene scale of %d',
+    async (scale) => {
+      vi.stubGlobal('matchMedia', () => ({ matches: true }))
+      const { manager, controls, sendSceneCommand } = setup()
+      const scene = new Group()
+      scene.scale.setScalar(scale)
+      const sketch = new Group()
+      scene.add(sketch)
+      await letEngineAnimateAndSyncCamAfter(manager, 'face-id', controls, true)
+      sendSceneCommand.mockResolvedValueOnce({
+        success: true,
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response: {
+              type: 'face_get_center',
+              data: { pos: { x: 10, y: 20, z: 30 } },
+            },
           },
         },
-      },
-    })
-    await controls.transitionToSketch(sketch)
-    expect(sendSceneCommand).toHaveBeenCalledWith(
-      expect.objectContaining({
-        cmd: { type: 'face_get_center', object_id: 'face-id' },
       })
-    )
-    expect(controls.target.toArray()).toEqual([254, 508, 762])
-    expect(controls.camera.quaternion.angleTo(sketch.quaternion)).toBeLessThan(
-      1e-8
-    )
-  })
+      await controls.transitionToSketch(sketch)
+      expect(sendSceneCommand).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cmd: { type: 'face_get_center', object_id: 'face-id' },
+        })
+      )
+      // Engine face centres are already in world millimetres, unlike sketch coordinates.
+      expect(controls.target.toArray()).toEqual([10, 20, 30])
+      expect(
+        controls.camera.quaternion.angleTo(sketch.quaternion)
+      ).toBeLessThan(1e-8)
+    }
+  )
 
   it('ignores a face-centre response after leaving sketch mode', async () => {
     const { controls, sendSceneCommand } = setup()

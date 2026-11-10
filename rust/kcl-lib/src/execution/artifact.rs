@@ -294,12 +294,9 @@ fn merge_plane(old: &mut Plane, new: Artifact) -> Option<Artifact> {
     let Artifact::Plane(new) = new else { return Some(new) };
     merge_ids(&mut old.path_ids, new.path_ids);
     old.hidden = new.hidden;
-    if new.plane_info.is_some() {
-        old.plane_info = new.plane_info;
-    }
-    if new.size.is_some() {
-        old.size = new.size;
-    }
+    old.plane_info = new.plane_info;
+    old.size = new.size;
+    old.color = new.color;
     None
 }
 
@@ -1445,12 +1442,27 @@ fn artifacts_to_update(
                 })),
                 size: Some(plane.size.0),
                 hidden: plane.hide.unwrap_or_default(),
+                color: None,
             })]);
         }
         ModelingCmd::ObjectVisible(visibility) => {
             if let Some(Artifact::Plane(plane)) = artifacts.get(&ArtifactId::new(visibility.object_id)) {
                 return Ok(vec![Artifact::Plane(Plane {
                     hidden: visibility.hidden,
+                    ..plane.clone()
+                })]);
+            }
+        }
+        ModelingCmd::PlaneSetColor(set_color) => {
+            if let Some(Artifact::Plane(plane)) = artifacts.get(&ArtifactId::new(set_color.plane_id)) {
+                let color = &set_color.color;
+                return Ok(vec![Artifact::Plane(Plane {
+                    color: Some(ArtifactColor {
+                        r: color.r,
+                        g: color.g,
+                        b: color.b,
+                        a: color.a,
+                    }),
                     ..plane.clone()
                 })]);
             }
@@ -1503,6 +1515,7 @@ fn artifacts_to_update(
                             plane_info: None,
                             size: None,
                             hidden: false,
+                            color: None,
                         },
                     })]);
                 }

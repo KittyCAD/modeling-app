@@ -29,6 +29,7 @@ export type KITTYCAD_GLTF_SKETCH_REGION = {
   outerLoop: number
   holeLoops?: number[]
   regionId?: string
+  sketchId?: string
 }
 
 export type KITTYCAD_GLTF_BREP = {

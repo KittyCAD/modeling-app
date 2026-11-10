@@ -61,10 +61,13 @@ export class PlaneRenderer {
   private readonly materials: (MeshBasicNodeMaterial | Line2NodeMaterial)[] = []
   private readonly labels: PlaneLabel[] = []
   private readonly labelGeometries: PlaneGeometry[] = []
+  // Offset plane materials with no appearance(color)
   private readonly offsetMaterials = createPlaneMaterials(
     new Color(0.6, 0.6, 0.6),
     0.3
   )
+  // Offset planes colored with appearance(), rebuilt with the offset planes.
+  private colorMaterials: ReturnType<typeof createPlaneMaterials>[] = []
   private scale = 1
 
   constructor(private theme: ResolvedTheme) {
@@ -120,6 +123,7 @@ export class PlaneRenderer {
       plane.group.removeFromParent()
       this.planes.delete(id)
     }
+    this.disposeColorMaterials()
     for (const artifact of artifacts.values()) {
       if (
         artifact.type !== 'plane' ||
@@ -136,9 +140,23 @@ export class PlaneRenderer {
           new Vector3(zAxis.x, zAxis.y, zAxis.z)
         )
         .setPosition(origin.x, origin.y, origin.z)
-      this.addPlane(artifact.id, transform, artifact.size, this.offsetMaterials)
+      let materials = this.offsetMaterials
+      if (artifact.color) {
+        const { r, g, b, a } = artifact.color
+        materials = createPlaneMaterials(new Color(r, g, b), a)
+        this.colorMaterials.push(materials)
+      }
+      this.addPlane(artifact.id, transform, artifact.size, materials)
     }
     this.applyScale()
+  }
+
+  private disposeColorMaterials() {
+    for (const { fillMaterial, borderMaterial } of this.colorMaterials) {
+      fillMaterial.dispose()
+      borderMaterial.dispose()
+    }
+    this.colorMaterials = []
   }
 
   private addPlane(
@@ -240,6 +258,7 @@ export class PlaneRenderer {
     this.borderGeometry.dispose()
     this.labelGeometries.forEach((geometry) => geometry.dispose())
     this.materials.forEach((material) => material.dispose())
+    this.disposeColorMaterials()
     this.labels.forEach(({ texture }) => texture.dispose())
   }
 

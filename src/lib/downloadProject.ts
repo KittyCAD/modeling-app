@@ -106,7 +106,22 @@ async function downloadProjectArchiveById(
     return result
   }
 
-  return result as DownloadedProjectArchive
+  const payload: unknown = result
+  if (
+    typeof payload === 'object' &&
+    payload !== null &&
+    'archive' in payload &&
+    payload.archive instanceof ArrayBuffer &&
+    'contentDisposition' in payload &&
+    (payload.contentDisposition === null ||
+      typeof payload.contentDisposition === 'string')
+  ) {
+    return {
+      archive: payload.archive,
+      contentDisposition: payload.contentDisposition,
+    }
+  }
+  return new Error('The project download did not return an archive.')
 }
 
 function ensureProjectIdDownloadFormat(input: RequestInfo | URL) {

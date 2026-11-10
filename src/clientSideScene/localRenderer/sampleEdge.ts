@@ -128,15 +128,20 @@ export function sampleEdge(
         return new Vector3(p.x / p.w, p.y / p.w, p.z / p.w)
       }
 
-      const start = evaluate(t0)
-      const end = evaluate(t1)
-
-      points = [start]
-      subdivide(evaluate, t0, start, t1, end, 0, points)
-
-      if (points.length > MAX_SEGMENTS + 1) {
-        points = sampleUniformly(evaluate, t0, t1, MAX_SEGMENTS)
+      // Sampling across the whole curve can miss complete turns between probes.
+      const interiorKnots = knots.filter(
+        (k, i) =>
+          k > Math.min(t0, t1) && k < Math.max(t0, t1) && k !== knots[i - 1]
+      )
+      if (t1 < t0) interiorKnots.reverse()
+      const boundaries = [t0, ...interiorKnots, t1]
+      points = [evaluate(t0)]
+      for (let i = 1; i < boundaries.length; i++) {
+        const a = points[points.length - 1]
+        const b = evaluate(boundaries[i])
+        subdivide(evaluate, boundaries[i - 1], a, boundaries[i], b, 0, points)
       }
+
       break
     }
 
