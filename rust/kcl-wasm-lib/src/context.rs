@@ -59,6 +59,67 @@ pub(crate) enum ExecutionMode {
     Mock,
 }
 
+/// A disposable runtime for a separately owned geometry-only engine connection.
+/// It has no project/editor callbacks and never shares the model's interpreter cache.
+#[wasm_bindgen]
+pub struct PreviewContext {
+    context: Context,
+}
+
+#[wasm_bindgen]
+impl PreviewContext {
+    #[wasm_bindgen(constructor)]
+    pub fn new(
+        engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
+        fs_manager: kcl_lib::wasm_engine::FileSystemManager,
+    ) -> Result<Self, JsValue> {
+        Ok(Self {
+            context: Context::new(engine_manager, fs_manager, None)?,
+        })
+    }
+
+    #[wasm_bindgen(js_name = sendResponse)]
+    pub async fn send_response(&self, data: js_sys::Uint8Array) {
+        self.context.send_response(data).await;
+    }
+
+    /// Execute and export atomically with respect to other preview requests.
+    /// The caller must supply a dedicated connection, not the editor connection.
+    /// Every candidate starts from an empty scene; checkpoint reuse is separate work.
+    #[wasm_bindgen]
+    pub async fn render(&self, ast_json: &str, path: Option<String>, settings: &str) -> Result<JsValue, JsValue> {
+        let result = self.render_typed(ast_json, path, settings).await;
+        result.map_err(|message| JsValue::from_str(&message))
+    }
+
+    async fn render_typed(&self, ast_json: &str, path: Option<String>, settings: &str) -> Result<JsValue, String> {
+        if !self.context.engine_manager.geometry_only() {
+            return Err("Preview execution requires a dedicated geometry-only engine connection.".into());
+        }
+        let program: Program = serde_json::from_str(ast_json).map_err(|error| error.to_string())?;
+        let (mut owner, ctx) = self
+            .context
+            .executor_for_operation(settings, path.as_deref(), ExecutionMode::Engine)
+            .await
+            .map_err(|error| error.error.to_string())?;
+        ctx.bust_cache_and_reset_scene()
+            .await
+            .map_err(|error| error.to_string())?;
+        let outcome = owner
+            .engine_execute(&ctx, program.fill_node_paths())
+            .await
+            .map_err(|error| error.error.to_string())?;
+        if let Some(error) = outcome.exec_outcome.errors().next() {
+            return Err(error.message.clone());
+        }
+        let format =
+            serde_json::from_str(r#"{"type":"gltf","storage":"binary","presentation":"compact","include_uuids":true}"#)
+                .map_err(|error| format!("Invalid preview export format: {error}"))?;
+        let files = ctx.export(format).await.map_err(|error| error.to_string())?;
+        JsValue::from_serde(&files).map_err(|error| error.to_string())
+    }
+}
+
 #[wasm_bindgen]
 impl Context {
     #[wasm_bindgen(constructor)]
