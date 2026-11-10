@@ -2063,14 +2063,22 @@ export async function getEventForQueryEntityTypeWithPoint(
   const patternArtifact = entityId
     ? getPatternArtifactForCopyId(entityId, artifactGraph)
     : undefined
+  // Legacy profile faces correspond one-to-one with copied paths.
+  const faceIndex =
+    patternArtifact &&
+    entityId &&
+    patternArtifact.copyFaceIds.length === patternArtifact.copyIds.length
+      ? patternArtifact.copyFaceIds.indexOf(entityId)
+      : -1
+  const copyId = faceIndex >= 0 ? patternArtifact?.copyIds[faceIndex] : entityId
   const patternCopyIndex =
-    patternArtifact?.type === 'pattern' && entityId
-      ? patternArtifact.copyIds.indexOf(entityId) + 1
-      : 0
+    patternArtifact && copyId
+      ? getPatternCopyOutputIndex(copyId, patternArtifact, artifactGraph)
+      : undefined
   const selection: Selection = {
     entityRef,
     codeRef: codeRefs?.[0],
-    ...(patternArtifact && patternCopyIndex > 0
+    ...(patternArtifact && patternCopyIndex !== undefined
       ? {
           artifact: patternArtifact,
           patternIndex: patternCopyIndex,

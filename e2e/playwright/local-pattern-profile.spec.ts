@@ -55,6 +55,76 @@ test('selects individual legacy pattern profiles @localRenderer @web', async ({
   }
 })
 
+for (const arrayInput of [false, true]) {
+  test(`extrudes one legacy copy (array: ${arrayInput}) @localRenderer @web`, async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+  }) => {
+    const secondProfile = legacy
+      .slice(legacy.indexOf('profile001 ='), legacy.indexOf('copies ='))
+      .replace('profile001', 'profile002')
+      .replace('[0, 0]', '[0, 10]')
+    const code = arrayInput
+      ? legacy
+          .replace('copies =', secondProfile + 'copies =')
+          .replace(
+            'patternLinear2d(profile001,',
+            'patternLinear2d([profile001, profile002],'
+          )
+      : legacy
+    await page.setBodyDimensions({ width: 1200, height: 800 })
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
+    await editor.closePane()
+    await scene.moveCameraTo({ x: 10, y: 7.5, z: 65 }, { x: 10, y: 7.5, z: 0 })
+    const index = await page.evaluate(
+      async (inputIndex) => {
+        const manager = window.app.singletons.kclManager
+        const pattern = [...manager.artifactGraph.values()].filter(
+          (a) => a.type === 'pattern'
+        )[inputIndex]
+        if (pattern?.type !== 'pattern' || !manager.sceneInfra.localRenderer)
+          throw new Error('Expected pattern')
+        const faces = (
+          await manager.sceneInfra.localRenderer.getProjectedEntities()
+        ).filter((e) => e.kind === 'face' && e.visible)
+        return faces.findIndex((f) => f.id === pattern.copyFaceIds[0])
+      },
+      arrayInput ? 1 : 0
+    )
+    expect(index).toBeGreaterThanOrEqual(0)
+    const [click] = await scene.findFace(index, { visible: true })
+    await click()
+    await toolbar.extrudeButton.click()
+    await expect(modelingDialog.submitButton).toBeEnabled()
+    await modelingDialog.submit()
+    await scene.settled()
+    await editor.expectEditor.toContain(
+      `extrude(copies[${arrayInput ? 4 : 1}], length = 5)`
+    )
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () =>
+            [...window.app.singletons.kclManager.artifactGraph.values()].filter(
+              (a) => a.type === 'sweep'
+            ).length
+        )
+      )
+      .toBe(1)
+    await expect
+      .poll(() =>
+        page.evaluate(() => window.app.singletons.kclManager.diagnostics)
+      )
+      .toEqual([])
+  })
+}
+
 const regionCases = [
   {
     name: 'KCL 3.0',
