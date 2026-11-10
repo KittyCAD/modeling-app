@@ -1,4 +1,3 @@
-import type { Request } from '@playwright/test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { expect, test } from '@e2e/playwright/base-test'
 import { mockClientErrorReports, setup } from '@e2e/playwright/test-utils'
@@ -140,65 +139,82 @@ test(
   'pauses cloud polling while hidden or offline and checks immediately on return',
   { tag: '@web' },
   async ({ context, page }, testInfo) => {
-    const metadataRequests = new Set<Request>()
-    page.on('request', (request) => {
-      if (
-        request.method() === 'GET' &&
-        new URL(request.url()).pathname === `/user/projects/${projectId}`
-      ) {
-        metadataRequests.add(request)
-      }
-    })
-    page.on('requestfinished', (request) => metadataRequests.delete(request))
-    page.on('requestfailed', (request) => metadataRequests.delete(request))
     await mockClientErrorReports(context)
-    const remote = await mockCloudStorage(context)
+    await mockCloudStorage(context)
     await setup(context, page, testInfo)
     await page.goto(
       `/file/${encodeURIComponent(`/__zoo_cloud__/${projectId}/main.kcl`)}`
     )
     await page.locator('.cm-content').first().waitFor({ state: 'visible' })
-    const clockStart = new Date()
-    await page.clock.install({ time: clockStart })
-    await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
-    for (const state of ['hidden', 'offline']) {
-      await page.evaluate((state) => {
-        if (state === 'hidden') {
-          Object.defineProperty(document, 'visibilityState', {
-            configurable: true,
-            value: 'hidden',
-          })
-          document.dispatchEvent(new Event('visibilitychange'))
-        } else {
-          Object.defineProperty(navigator, 'onLine', {
-            configurable: true,
-            value: false,
-          })
-          window.dispatchEvent(new Event('offline'))
+    const time = new Date()
+    await page.clock.install({ time })
+    await page.clock.pauseAt(new Date(time.getTime() + 1_000))
+    const probes = await page.evaluateHandle((projectId) => {
+      const originalFetch = window.fetch
+      let started = 0
+      // Publication status uses the same URL; revision probes carry a cancellation signal.
+      window.fetch = (input, init) => {
+        const url = input instanceof Request ? input.url : input.toString()
+        const method =
+          init?.method ?? (input instanceof Request ? input.method : 'GET')
+        if (
+          method === 'GET' &&
+          init?.signal &&
+          new URL(url, location.href).pathname === `/user/projects/${projectId}`
+        ) {
+          started += 1
         }
-      }, state)
-      // Allow a probe that was already in flight to settle before counting.
-      await expect.poll(() => metadataRequests.size).toBe(0)
-      const before = remote.reads.metadata
-      await page.clock.runFor(120_000)
-      expect(remote.reads.metadata).toBe(before)
-      await page.evaluate((state) => {
-        if (state === 'hidden') {
-          Object.defineProperty(document, 'visibilityState', {
-            configurable: true,
-            value: 'visible',
-          })
-          document.dispatchEvent(new Event('visibilitychange'))
-        } else {
-          Object.defineProperty(navigator, 'onLine', {
-            configurable: true,
-            value: true,
-          })
-          window.dispatchEvent(new Event('online'))
-        }
-      }, state)
-      await page.clock.runFor(1)
-      await expect.poll(() => remote.reads.metadata).toBeGreaterThan(before)
+        return originalFetch(input, init)
+      }
+      return {
+        count: () => started,
+        restore: () => {
+          window.fetch = originalFetch
+        },
+      }
+    }, projectId)
+    try {
+      for (const state of ['hidden', 'offline']) {
+        await page.evaluate((state) => {
+          if (state === 'hidden') {
+            Object.defineProperty(document, 'visibilityState', {
+              configurable: true,
+              value: 'hidden',
+            })
+            document.dispatchEvent(new Event('visibilitychange'))
+          } else {
+            Object.defineProperty(navigator, 'onLine', {
+              configurable: true,
+              value: false,
+            })
+            window.dispatchEvent(new Event('offline'))
+          }
+        }, state)
+        const before = await probes.evaluate((probes) => probes.count())
+        await page.clock.runFor(120_000)
+        expect(await probes.evaluate((probes) => probes.count())).toBe(before)
+        await page.evaluate((state) => {
+          if (state === 'hidden') {
+            Object.defineProperty(document, 'visibilityState', {
+              configurable: true,
+              value: 'visible',
+            })
+            document.dispatchEvent(new Event('visibilitychange'))
+          } else {
+            Object.defineProperty(navigator, 'onLine', {
+              configurable: true,
+              value: true,
+            })
+            window.dispatchEvent(new Event('online'))
+          }
+        }, state)
+        await page.clock.runFor(1)
+        await expect
+          .poll(() => probes.evaluate((probes) => probes.count()))
+          .toBeGreaterThan(before)
+      }
+    } finally {
+      await probes.evaluate((probes) => probes.restore())
     }
   }
 )
