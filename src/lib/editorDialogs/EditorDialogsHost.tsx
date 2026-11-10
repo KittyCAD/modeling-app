@@ -1,6 +1,5 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { Draggable } from '@kittycad/ui-components'
-import { redo, undo } from '@codemirror/commands'
 import { Suspense, useEffect, useRef } from 'react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import type { EditorDialogsService } from '@src/lib/editorDialogs/registry/contract'
@@ -16,7 +15,7 @@ export function EditorDialogsHost({
   const dialog = dialogs.active.value
   useEffect(() => () => dialogs.close(), [dialogs])
   if (!dialog) return null
-  const state = dialog.editors.viewState(dialog.editor).value
+  const state = dialog.editors.viewState(dialog.instance).value
   const Surface =
     state.binding.type === 'ready' ? state.binding.Component : undefined
   return (
@@ -54,13 +53,17 @@ export function EditorDialogsHost({
         onKeyDownCapture={(event) => {
           if (
             (event.metaKey || event.ctrlKey) &&
-            ['z', 'y'].includes(event.key.toLowerCase())
+            ['z', 'y'].includes(event.key.toLowerCase()) &&
+            !(
+              event.target instanceof HTMLElement &&
+              event.target.closest('[data-editor-code]')
+            )
           ) {
             event.preventDefault()
             event.stopPropagation()
-            ;(event.shiftKey || event.key.toLowerCase() === 'y' ? redo : undo)(
-              dialog.editor.view
-            )
+            if (event.shiftKey || event.key.toLowerCase() === 'y')
+              dialog.editor.redo()
+            else dialog.editor.undo()
           }
           if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
             event.preventDefault()
@@ -72,7 +75,11 @@ export function EditorDialogsHost({
         <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-auto">
           <Suspense fallback={<p role="status">Loading editor…</p>}>
             {Surface ? (
-              <Surface editor={dialog.editor} active />
+              <Surface
+                editor={dialog.editor}
+                instance={dialog.instance}
+                active
+              />
             ) : (
               <p role="status">Loading mode…</p>
             )}
@@ -93,7 +100,7 @@ export function EditorDialogsHost({
               aria-label="Dialog mode"
               value={state.selected?.id ?? ''}
               onChange={(event) =>
-                dialog.editors.setView(dialog.editor.id, event.target.value)
+                dialog.editors.setView(dialog.instance.id, event.target.value)
               }
               className="m-0 rounded border border-3 bg-transparent px-2 py-1"
             >

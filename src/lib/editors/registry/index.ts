@@ -133,7 +133,8 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
       )
         closeEditor(record.instance.editor.id)
     },
-    createEditor: (contents = '', options) => service.openEditor(undefined, contents, options),
+    createEditor: (contents = '', options) =>
+      service.openEditor(undefined, contents, options),
     openEditor: (src, contents, options) => {
       contextBoundary.assertCanManageEditors()
       // eslint-disable-next-line suggest-no-throw/suggest-no-throw -- This synchronous API cannot produce an editor after shutdown.

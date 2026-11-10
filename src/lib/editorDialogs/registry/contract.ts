@@ -1,6 +1,10 @@
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
-import type { Editor, EditorsService } from '@src/lib/editors/registry/contract'
+import type {
+  Editor,
+  EditorsService,
+  EditorViewInstance,
+} from '@src/lib/editors/registry/contract'
 import type {
   Executor,
   ExecutorCapability,
@@ -27,6 +31,7 @@ export interface ActiveEditorDialog {
   id: string
   title: string
   editor: Editor
+  instance: EditorViewInstance
   editors: EditorsService
   executor: Executor
   error: ReadonlySignal<Error | undefined>

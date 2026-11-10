@@ -54,6 +54,7 @@ export function createEditorDialogs(
         const unbind = options.bind?.(editor)
         if (unbind) resources.onDispose(unbind)
         const executor = registry.get(executorsService).createExecutor(editor)
+        const instance = editors.createView(editor)
         const submitting = signal(false)
         const submissionError = signal<Error | undefined>(undefined)
         resources.onDispose(
@@ -80,6 +81,7 @@ export function createEditorDialogs(
           id: crypto.randomUUID(),
           title: options.title,
           editor,
+          instance,
           editors,
           executor,
           error,
@@ -89,13 +91,13 @@ export function createEditorDialogs(
           submit: async () => {
             const data = result.peek()
             if (!data || submitting.peek() || active.peek() !== dialog) return
-            const document = editor.view.state.doc
+            const document = editor.state.doc
             submitting.value = true
             submissionError.value = undefined
             try {
               const prepared = await options.prepareSubmit(data)
               if (active.peek() !== dialog) return
-              if (editor.view.state.doc !== document) {
+              if (editor.state.doc !== document) {
                 submissionError.value = new Error(
                   'The draft changed during review. Submit again to review its current contents.'
                 )

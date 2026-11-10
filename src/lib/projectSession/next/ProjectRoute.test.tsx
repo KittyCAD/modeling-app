@@ -32,7 +32,11 @@ import {
   vi,
 } from 'vitest'
 
-const registry = vi.hoisted(() => ({ get: vi.fn(), signal: vi.fn() }))
+const registry = vi.hoisted(() => ({
+  get: vi.fn(),
+  optional: vi.fn(),
+  signal: vi.fn(),
+}))
 const commands = vi.hoisted(() => ({ send: vi.fn() }))
 // "Next"-era panes can access ordinary editor views, but no modeling singleton.
 vi.mock('@src/lib/boot', () => ({ useApp: () => ({ registry, commands }) }))
@@ -76,6 +80,9 @@ describe('project screen', () => {
       }),
     ])
     registry.get.mockImplementation((service) => services.get(service))
+    registry.optional.mockImplementation((service) =>
+      services.optional(service)
+    )
     registry.signal.mockImplementation((spec) => services.signal(spec))
   })
   afterEach(() => {
@@ -117,6 +124,9 @@ describe('project screen', () => {
       service === projectSessionService
         ? { currentSession, listFiles: () => [] }
         : services.get(service)
+    )
+    registry.optional.mockImplementation((service) =>
+      services.optional(service)
     )
     registry.signal.mockImplementation((service) =>
       service === projectSessionService

@@ -23,8 +23,8 @@ export function setArgument(editor: Editor, name: string, value: unknown) {
   if (values instanceof Error) return values
   if (JSON.stringify(values[name]) === JSON.stringify(value)) return
   const contents = JSON.stringify({ ...values, [name]: value }, null, 2)
-  editor.view.dispatch({
-    changes: documentChanges(editor.view.state.doc, contents),
+  editor.dispatch({
+    changes: documentChanges(editor.state.doc, contents),
     userEvent: 'input.form',
   })
 }

@@ -427,7 +427,7 @@ it('opens Extrude as a temporary editor and submits its untouched default from C
   const dialogs = registry.get(editorDialogsService)
   await vi.waitFor(() => expect(dialogs.active.peek()).toBeDefined())
   const dialog = dialogs.active.peek()!
-  dialog.editors.setView(dialog.editor.id, 'editors.code')
+  dialog.editors.setView(dialog.instance.id, 'editors.code')
   render(createElement(EditorDialogsHost, { dialogs }))
   await vi.waitFor(() =>
     expect(screen.getByRole('button', { name: 'Submit' })).toBeEnabled()

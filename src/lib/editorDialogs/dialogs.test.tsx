@@ -1,7 +1,6 @@
 import { signal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import { fireEvent, render, screen, waitFor, act } from '@testing-library/react'
-import { undo } from '@codemirror/commands'
 import { createEditorDialogs } from '@src/lib/editorDialogs/dialogs'
 import { EditorDialogsHost } from '@src/lib/editorDialogs/EditorDialogsHost'
 import { defineEditorView } from '@src/lib/editors/views'
@@ -85,7 +84,7 @@ it('shares form edits and undo with Code mode, and submits from Code', async () 
     amount: '12',
   })
   act(() => {
-    undo(dialog.editor.view)
+    dialog.editor.undo()
   })
   expect(parseArgumentDocument(dialog.editor.contents.peek())).toEqual({
     amount: 5,
@@ -102,7 +101,7 @@ it('keeps malformed Code intact across mode switches until the user repairs it',
   const { dialog } = setup()
   await screen.findByRole('textbox', { name: 'Amount' })
   act(() => {
-    dialog.editor.view.dispatch({
+    dialog.editor.dispatch({
       changes: {
         from: 0,
         to: dialog.editor.contents.peek().length,
@@ -134,7 +133,8 @@ it.each(['cancel', 'edit'] as const)(
     )
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }))
     await waitFor(() => expect(prepare).toHaveBeenCalled())
-    const destroy = vi.spyOn(dialog.editor.view, 'destroy')
+    const destroy = vi.fn()
+    dialog.editor.signal.addEventListener('abort', destroy, { once: true })
     act(() => {
       if (change === 'cancel') dialog.cancel()
       else setArgument(dialog.editor, 'amount', 9)
