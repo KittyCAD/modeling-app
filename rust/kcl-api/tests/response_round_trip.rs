@@ -210,7 +210,8 @@ fn numeric_values_round_trip_inside_untagged_response() {
             labeled_args: IndexMap::from([(
                 "end".to_owned(),
                 OpArg::new(OpKclValue::Array { value: values }, Default::default()),
-            )]),
+            )])
+            .into(),
             node_path: Default::default(),
             source_range: Default::default(),
             stdlib_entry_source_range: None,
