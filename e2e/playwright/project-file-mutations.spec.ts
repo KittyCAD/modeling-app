@@ -127,9 +127,8 @@ for (const backing of ['local', 'cloud'] as const) {
           .poll(() => read('components/live.kcl'))
           .toContain('saved after moving')
         await page.reload()
-        await expect(page.locator('.cm-content').first()).toContainText(
-          'saved after moving'
-        )
+        await editor.waitFor({ state: 'visible' })
+        await expect(editor).toContainText('saved after moving')
       })
       await test.step('an empty folder survives reloading either backing', async () => {
         await page.getByTestId('create-folder-button').click()
