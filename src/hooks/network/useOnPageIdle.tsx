@@ -7,9 +7,11 @@ import { useEffect, useRef } from 'react'
 export const useOnPageIdle = ({
   startCallback,
   idleCallback,
+  enabled = true,
 }: {
   startCallback: () => void
   idleCallback: () => void
+  enabled?: boolean
 }) => {
   const { settings } = useApp()
   const { kclManager } = useSingletons()
@@ -43,6 +45,10 @@ export const useOnPageIdle = ({
   }, [streamIdleMode])
 
   useEffect(() => {
+    if (!enabled) {
+      return
+    }
+
     // Check every 1 second to see if you are idle.
     const interval = setInterval(() => {
       void (async () => {
@@ -114,10 +120,12 @@ export const useOnPageIdle = ({
       idleCheckVersion.current += 1
       clearInterval(interval)
     }
-  }, [kclManager])
+  }, [enabled, kclManager])
 
   useEffect(() => {
-    if (!idleTimeMsRef.current) return
+    if (!enabled || !idleTimeMsRef.current) {
+      return
+    }
 
     const onAnyInput = () => {
       idleCheckVersion.current += 1
@@ -166,5 +174,5 @@ export const useOnPageIdle = ({
       window.document.removeEventListener('touchend', onAnyInput)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager, streamIdleMode])
+  }, [enabled, kclManager, streamIdleMode])
 }
