@@ -78,6 +78,7 @@ for (const backing of ['local', 'cloud'] as const) {
       await navigate(
         `/file/${encodeURIComponent(await fs.join(root, 'main.kcl'))}`
       )
+      await page.locator('.cm-content').first().waitFor({ state: 'visible' })
       const u = await getUtils(page)
       await u.openFilePanel()
       await u.openKclCodePanel()
@@ -140,7 +141,7 @@ for (const backing of ['local', 'cloud'] as const) {
             .poll(() => remote.project.files['.zoo-directories.json'])
             .toContain('empty-folder')
         await page.reload()
-        await expect(row('empty-folder')).toBeVisible()
+        await row('empty-folder').waitFor({ state: 'visible' })
       })
       await test.step('moving the entrypoint updates its durable metadata', async () => {
         await row('main.kcl').click()
@@ -155,6 +156,7 @@ for (const backing of ['local', 'cloud'] as const) {
           .toContain('default_file = "components/main.kcl"')
         await page.reload()
         await expect(page).toHaveURL(movedEntrypoint)
+        await page.locator('.cm-content').first().waitFor({ state: 'visible' })
         await expect(page.locator('.cm-content').first()).toContainText(
           'value = 100'
         )
