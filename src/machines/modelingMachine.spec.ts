@@ -106,7 +106,7 @@ beforeAll(async () => {
   setTestWorld(worldWithoutEngine)
 })
 
-describe('STEP schema export requests', () => {
+describe('export requests', () => {
   async function exportFormat(data: ModelingCommandSchema['Export']) {
     const world = worldWithoutEngine
     const program = assertParse(
@@ -173,19 +173,36 @@ describe('STEP schema export requests', () => {
     }
   )
 
-  const otherFormats: ModelingCommandSchema['Export']['type'][] = [
-    'gltf',
-    'obj',
-    'stl',
-    'ply',
-    'fbx',
-  ]
+  const otherFormats = [
+    ['gltf', 'embedded'],
+    ['obj', undefined],
+    ['stl', 'binary'],
+    ['ply', 'binary_big_endian'],
+    ['fbx', 'binary'],
+  ] as const
   it.each(otherFormats)(
-    'omits a stale STEP schema when exporting %s',
-    async (type) => {
-      const format = await exportFormat({ type, schema: StepSchema.Ap214 })
+    'sends only the selected format options when exporting %s',
+    async (type, storage) => {
+      const format = await exportFormat({
+        type,
+        schema: StepSchema.Ap214,
+        fbxStorage: 'binary',
+        gltfStorage: 'embedded',
+        stlStorage: 'binary',
+        plyStorage: 'binary_big_endian',
+      })
       expect(format).toMatchObject({ type })
-      expect(format).not.toHaveProperty('schema')
+      if (storage === undefined) expect(format).not.toHaveProperty('storage')
+      else expect(format).toHaveProperty('storage', storage)
+      for (const field of [
+        'schema',
+        'fbxStorage',
+        'gltfStorage',
+        'stlStorage',
+        'plyStorage',
+      ]) {
+        expect(format).not.toHaveProperty(field)
+      }
     }
   )
 })

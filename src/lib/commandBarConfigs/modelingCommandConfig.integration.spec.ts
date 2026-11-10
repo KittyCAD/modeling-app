@@ -112,7 +112,6 @@ describe('STEP schema export options', () => {
       'ap214',
       'ap242',
     ])
-    expect(options.find((option) => option.isCurrent)?.value).toBe('ap242')
   })
 
   it.each(['step', 'gltf', 'obj', 'stl', 'ply', 'fbx', undefined])(

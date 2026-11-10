@@ -11,6 +11,7 @@ import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/model
 import { validateSolidEdgeSelections } from '@src/lang/modifyAst/validateSolidEdgeSelections'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
+import { exportOptions } from '@src/lib/commandBarConfigs/exportOptions'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
   modelingStdLibCommandArgs,
@@ -27,7 +28,7 @@ import type {
   KclCommandValue,
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
-import { isKclCommandValue } from '@src/lib/commandUtils'
+import { enumOptions, isKclCommandValue } from '@src/lib/commandUtils'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   KCL_AXIS_X,
@@ -57,7 +58,7 @@ import {
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import { isEnginePrimitiveSelection, isSelections } from '@src/lib/selections'
-import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { baseUnitLabels } from '@src/lib/settings/settingsTypes'
 import { STEP_SCHEMA_LABELS, StepSchema } from '@src/lib/stepSchema'
 import { err } from '@src/lib/trap'
 import { hasProperty } from '@src/lib/utils'
@@ -78,15 +79,15 @@ export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLi
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
-type ExtractStorageTypes<T> = T extends { storage?: infer U }
-  ? NonNullable<U>
-  : never
-type StorageUnion = ExtractStorageTypes<OutputFormat>
 type ExportOptionalArg = 'up' | 'scale'
 
 const exportOptionalArgSupportByType: Partial<
   Record<OutputTypeKey, Partial<Record<ExportOptionalArg, boolean>>>
 > = {
+  fbx: {
+    up: false,
+    scale: false,
+  },
   gltf: {
     up: false,
     scale: false,
@@ -264,7 +265,10 @@ export type ModelingCommandSchema = {
   'Enter sketch': { forceNewSketch?: boolean }
   Export: {
     type: OutputTypeKey
-    storage?: StorageUnion
+    fbxStorage?: Extract<OutputFormat, { type: 'fbx' }>['storage']
+    gltfStorage?: Extract<OutputFormat, { type: 'gltf' }>['storage']
+    stlStorage?: Extract<OutputFormat, { type: 'stl' }>['storage']
+    plyStorage?: Extract<OutputFormat, { type: 'ply' }>['storage']
     schema?: StepSchema
     up?: AxisDirectionPair['axis']
     scale?: UnitLength
@@ -466,7 +470,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   ],
   Export: {
-    forceCommandBar: true,
     description: 'Export the current model.',
     icon: 'floppyDiskArrow',
     needsReview: true,
@@ -475,76 +478,51 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'options',
         defaultValue: 'gltf',
         required: true,
-        options: [
-          { name: 'glTF', isCurrent: true, value: 'gltf' },
-          { name: 'OBJ', isCurrent: false, value: 'obj' },
-          { name: 'STL', isCurrent: false, value: 'stl' },
-          { name: 'STEP', isCurrent: false, value: 'step' },
-          { name: 'PLY', isCurrent: false, value: 'ply' },
-        ],
+        options: enumOptions(exportOptions.type),
       },
-      storage: {
+      fbxStorage: {
+        displayName: 'Storage',
         inputType: 'options',
-        defaultValue: (c) => {
-          switch (c.argumentsToSubmit.type) {
-            case 'gltf':
-              return 'binary'
-            case 'stl':
-              return 'ascii'
-            case 'ply':
-              return 'ascii'
-            default:
-              return undefined
-          }
-        },
+        defaultValue: 'binary',
         skip: true,
         required: (commandContext) =>
-          ['gltf', 'stl', 'ply'].includes(
-            commandContext.argumentsToSubmit.type as string
-          ),
+          commandContext.argumentsToSubmit.type === 'fbx',
         hidden: (commandContext) =>
-          !['gltf', 'stl', 'ply'].includes(
-            commandContext.argumentsToSubmit.type as string
-          ),
-        options: (commandContext) => {
-          const type = commandContext.argumentsToSubmit.type as
-            | OutputTypeKey
-            | undefined
-
-          switch (type) {
-            case 'gltf':
-              return [
-                { name: 'binary', isCurrent: true, value: 'binary' },
-                { name: 'embedded', isCurrent: false, value: 'embedded' },
-                { name: 'standard', isCurrent: false, value: 'standard' },
-              ]
-            case 'stl':
-              return [
-                { name: 'binary', isCurrent: false, value: 'binary' },
-                { name: 'ascii', isCurrent: true, value: 'ascii' },
-              ]
-            case 'ply':
-              return [
-                { name: 'ascii', isCurrent: true, value: 'ascii' },
-                {
-                  name: 'binary_big_endian',
-                  isCurrent: false,
-                  value: 'binary_big_endian',
-                },
-                {
-                  name: 'binary_little_endian',
-                  isCurrent: false,
-                  value: 'binary_little_endian',
-                },
-              ]
-            case undefined:
-            case 'step':
-            case 'obj':
-            case 'fbx':
-            default:
-              return []
-          }
-        },
+          commandContext.argumentsToSubmit.type !== 'fbx',
+        options: enumOptions(exportOptions.fbxStorage),
+      },
+      gltfStorage: {
+        displayName: 'Storage',
+        inputType: 'options',
+        defaultValue: 'binary',
+        skip: true,
+        required: (commandContext) =>
+          commandContext.argumentsToSubmit.type === 'gltf',
+        hidden: (commandContext) =>
+          commandContext.argumentsToSubmit.type !== 'gltf',
+        options: enumOptions(exportOptions.gltfStorage),
+      },
+      stlStorage: {
+        displayName: 'Storage',
+        inputType: 'options',
+        defaultValue: 'ascii',
+        skip: true,
+        required: (commandContext) =>
+          commandContext.argumentsToSubmit.type === 'stl',
+        hidden: (commandContext) =>
+          commandContext.argumentsToSubmit.type !== 'stl',
+        options: enumOptions(exportOptions.stlStorage),
+      },
+      plyStorage: {
+        displayName: 'Storage',
+        inputType: 'options',
+        defaultValue: 'ascii',
+        skip: true,
+        required: (commandContext) =>
+          commandContext.argumentsToSubmit.type === 'ply',
+        hidden: (commandContext) =>
+          commandContext.argumentsToSubmit.type !== 'ply',
+        options: enumOptions(exportOptions.plyStorage),
       },
       schema: {
         inputType: 'options',
@@ -554,15 +532,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: StepSchema.Ap242,
         hidden: (commandContext) =>
           commandContext.argumentsToSubmit.type !== 'step',
-        options: (commandContext) => {
-          const schema =
-            commandContext.argumentsToSubmit.schema ?? StepSchema.Ap242
-          return Object.values(StepSchema).map((value) => ({
-            name: STEP_SCHEMA_LABELS[value],
-            value,
-            isCurrent: schema === value,
-          }))
-        },
+        options: enumOptions(STEP_SCHEMA_LABELS),
       },
       up: {
         inputType: 'options',
@@ -575,16 +545,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             'up'
           ),
         defaultValue: 'z',
-        options: (commandContext) => {
-          const currentUp =
-            (commandContext.argumentsToSubmit.up as
-              | AxisDirectionPair['axis']
-              | undefined) ?? 'z'
-          return [
-            { name: 'Z+', isCurrent: currentUp === 'z', value: 'z' },
-            { name: 'Y+', isCurrent: currentUp === 'y', value: 'y' },
-          ]
-        },
+        options: enumOptions(exportOptions.up),
         valueSummary: (value) =>
           value === undefined ? 'Z+' : `${value.toUpperCase()}+`,
       },
@@ -607,28 +568,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             DEFAULT_DEFAULT_LENGTH_UNIT
           )
         },
-        options: (commandContext, machineContext) => {
-          const submittedScale = commandContext.argumentsToSubmit.scale
-          const resolvedSubmittedScale =
-            typeof submittedScale === 'function'
-              ? (
-                  submittedScale as (
-                    context: typeof commandContext
-                  ) => UnitLength
-                )(commandContext)
-              : (submittedScale as UnitLength | undefined)
-
-          const currentScale =
-            resolvedSubmittedScale ??
-            machineContext?.store.defaultUnit?.current ??
-            DEFAULT_DEFAULT_LENGTH_UNIT
-
-          return baseUnitsUnion.map((unit) => ({
-            name: baseUnitLabels[unit],
-            value: unit,
-            isCurrent: unit === currentScale,
-          }))
-        },
+        options: enumOptions(baseUnitLabels),
       },
     },
   },
