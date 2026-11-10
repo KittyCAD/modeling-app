@@ -145,13 +145,9 @@ export function createFileOperationsServices(
         await import('@src/registry/extensions/fileOperations/publication')
       ).getCloudPublicationStatuses(config().token),
     downloadProjectById: async (id: string) =>
-      (await import('@src/lib/fs-zds/cloud/publicProject')).downloadProjectById(
-        id
-      ),
-    getPublicProjectNameById: async (id: string) =>
-      (
-        await import('@src/lib/fs-zds/cloud/publicProject')
-      ).getPublicProjectNameById(id),
+      (await import('@src/lib/fs-zds/cloud/project')).downloadProjectById(id),
+    getProjectNameById: async (id: string) =>
+      (await import('@src/lib/fs-zds/cloud/project')).getProjectNameById(id),
     publishCurrentProject: async (args: PublishCurrentProjectArgs) => {
       const id =
         args.remoteProjectId ??
