@@ -10,9 +10,8 @@ import { MachineManager } from '@src/lib/MachineManager'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { createViewerExtrudeCommand } from '@src/lib/kcl/extrudeCommand'
 import { createKclSession } from '@src/lib/kcl/session'
-import { history, redo, undo } from '@codemirror/commands'
 import { EditorSelection } from '@codemirror/state'
-import { EditorView } from '@codemirror/view'
+import { createEditorDocument } from '@src/lib/editors/document'
 import { signal } from '@preact/signals-core'
 import { createLocalName, createVariableDeclaration } from '@src/lang/create'
 import { assertParse, execStateFromRust, recast } from '@src/lang/wasm'
@@ -93,29 +92,26 @@ s = sketch(on = XY) {
       false
     )
   )
-  const text = signal(contents)
+  const backing = createEditorDocument(contents)
+  cleanup.push(backing.dispose)
   const source = signal<string | undefined>('/project/main.kcl')
   const edits: { from: number; to: number }[][] = []
-  const view = new EditorView({
-    doc: contents,
-    extensions: [
-      history(),
-      EditorView.updateListener.of((update) => {
-        if (!update.docChanged) return
-        text.value = update.state.doc.toString()
-        const changes: { from: number; to: number }[] = []
-        update.changes.iterChanges((from, to) => changes.push({ from, to }))
-        edits.push(changes)
-      }),
-    ],
-  })
-  cleanup.push(() => view.destroy())
+  cleanup.push(
+    backing.document.subscribe((transaction) => {
+      if (!transaction.docChanged) return
+      const changes: { from: number; to: number }[] = []
+      transaction.changes.iterChanges((from, to) => changes.push({ from, to }))
+      edits.push(changes)
+    })
+  )
   const editor: Editor = {
+    ...backing.document,
+    get state() {
+      return backing.document.state
+    },
     id: Symbol(),
     src: source,
-    contents: text,
     classification: signal({ languageId: 'kcl' }),
-    view,
   }
   let snapshot: KclModelSnapshot | undefined = {
     src: source.peek(),
@@ -195,7 +191,7 @@ s = sketch(on = XY) {
 it('uses the shared stdlib definition and codemod to extrude a region with one transaction of separate edits', async () => {
   const fixture = await model()
   const anchor = fixture.contents.indexOf('radius(c)')
-  fixture.editor.view.dispatch({ selection: EditorSelection.cursor(anchor) })
+  fixture.editor.dispatch({ selection: EditorSelection.cursor(anchor) })
   const prepared = await prepareStdlibExtrude(fixture.input)
   if (prepared instanceof Error) throw prepared
   expect(fixture.editor.contents.value).toBe(fixture.contents)
@@ -210,7 +206,7 @@ it('uses the shared stdlib definition and codemod to extrude a region with one t
   const changed = fixture.editor.contents.value
   expect(changed).toContain('depth = 12mm')
   expect(changed).toContain('length = depth')
-  expect(changed.slice(fixture.editor.view.state.selection.main.head)).toMatch(
+  expect(changed.slice(fixture.editor.state.selection.main.head)).toMatch(
     /^radius\(c\)/
   )
   const outcome = execStateFromRust(
@@ -222,9 +218,9 @@ it('uses the shared stdlib definition and codemod to extrude a region with one t
     )
   )
   expect(outcome.variables.extrude001?.type).toBe('Solid')
-  expect(undo(fixture.editor.view)).toBe(true)
+  expect(fixture.editor.undo()).toBe(true)
   expect(fixture.editor.contents.value).toBe(fixture.contents)
-  expect(redo(fixture.editor.view)).toBe(true)
+  expect(fixture.editor.redo()).toBe(true)
   expect(fixture.editor.contents.value).toBe(changed)
 })
 
@@ -235,7 +231,7 @@ it.each(['edit', 'rename', 'execution', 'close'] as const)(
     const prepared = await prepareStdlibExtrude(fixture.input)
     if (prepared instanceof Error) throw prepared
     if (change === 'edit')
-      fixture.editor.view.dispatch({
+      fixture.editor.dispatch({
         changes: { from: fixture.contents.length, insert: '// newer edit\n' },
       })
     if (change === 'rename') fixture.source.value = '/project/renamed.kcl'

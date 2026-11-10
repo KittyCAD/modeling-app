@@ -160,7 +160,11 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
       provide(
         editorViewValueSpec,
         defineEditorView((host) => {
-          const context = executionContext(capability, () => services.get(executorsService), { shared: false })(host)
+          const context = executionContext(
+            capability,
+            () => services.get(executorsService),
+            { shared: false }
+          )(host)
           const target = {
             id: crypto.randomUUID(),
             editor: host.editor,

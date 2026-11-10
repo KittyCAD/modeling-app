@@ -45,7 +45,7 @@ export async function prepareStdlibExtrude({
   ) => Promise<Error | undefined>
 }) {
   const snapshot = getExecution()
-  const document = editor.view.state.doc
+  const document = editor.state.doc
   const source = editor.src.peek()
   if (
     !snapshot ||
@@ -54,7 +54,8 @@ export async function prepareStdlibExtrude({
   )
     return new Error('Execute the current buffer before preparing Extrude')
   const isCurrent = () =>
-    editor.view.state.doc === document &&
+    !editor.signal.aborted &&
+    editor.state.doc === document &&
     editor.src.peek() === source &&
     getExecution() === snapshot
   const parsed = parse(snapshot.contents, wasmInstance)
@@ -105,7 +106,7 @@ export async function prepareStdlibExtrude({
           'The buffer or execution changed before applying Extrude'
         )
       if (!changes.empty)
-        editor.view.dispatch({
+        editor.dispatch({
           changes,
           annotations: [
             Transaction.userEvent.of('input.modeling.extrude'),

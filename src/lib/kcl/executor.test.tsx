@@ -132,7 +132,8 @@ it.each([false, true])(
 
 it('owns a distinct scene session for each Modeling view of one document', () => {
   const execution = createKclExecution(
-    async () => new Error('No engine needed for ownership')
+    async () => new Error('No engine needed for ownership'),
+    async () => fakeKclRuntime()
   )
   const registry = new Registry()
   const bound: Executor[] = []

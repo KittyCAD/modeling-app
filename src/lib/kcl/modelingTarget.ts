@@ -12,7 +12,8 @@ export function currentModel(
   target: ModelingTarget
 ): KclModelSnapshot | undefined {
   const snapshot = target.session.snapshot.peek()
-  return snapshot &&
+  return !target.editor.signal.aborted &&
+    snapshot &&
     snapshot.src === target.editor.src.peek() &&
     snapshot.contents === target.editor.contents.peek()
     ? snapshot
