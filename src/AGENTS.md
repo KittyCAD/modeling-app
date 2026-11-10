@@ -96,10 +96,9 @@ make check
 npm run test:unit -- src/path/to/file.test.ts
 ```
 
-Before a broad PR, run:
+Before a broad PR, run all tests including web e2e (headless):
 
 ```sh
 make check
-npm run test:unit
-npm run test:integration
+make test
 ```

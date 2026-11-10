@@ -1,3 +1,4 @@
+import type { LocalRenderer } from '@src/clientSideScene/localRenderer/LocalRenderer'
 import { writeProjectThumbnailFile } from '@src/lib/desktop'
 import { getVisibleElementRect } from '@src/lib/viewportElement'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
@@ -43,7 +44,7 @@ const getVisibleCanvasCrop = (canvas: HTMLCanvasElement) => {
 }
 
 const drawVisibleVideoStream = (
-  video: HTMLVideoElement,
+  frameSource: HTMLVideoElement | HTMLCanvasElement,
   canvas: HTMLCanvasElement,
   targetCanvas: HTMLCanvasElement
 ) => {
@@ -60,7 +61,7 @@ const drawVisibleVideoStream = (
     return null
   }
 
-  fullContext.drawImage(video, 0, 0, fullCanvas.width, fullCanvas.height)
+  fullContext.drawImage(frameSource, 0, 0, fullCanvas.width, fullCanvas.height)
   targetCanvas.width = crop.sourceWidth
   targetCanvas.height = crop.sourceHeight
   const targetContext = targetCanvas.getContext('2d')
@@ -82,6 +83,28 @@ const drawVisibleVideoStream = (
   return crop
 }
 
+/** Copies the frame before returning, and encodes it afterwards. */
+function encodeVisibleFrame(
+  frameSource: HTMLVideoElement | HTMLCanvasElement,
+  canvas: HTMLCanvasElement
+): Promise<Blob | null> {
+  const frameCanvas = document.createElement('canvas')
+  const crop = drawVisibleVideoStream(frameSource, canvas, frameCanvas)
+  if (!crop) {
+    return Promise.resolve(null)
+  }
+  return new Promise((resolve, reject) => {
+    // Serialize thumbnails asynchronously so PNG encoding does not block input.
+    frameCanvas.toBlob((blob) => {
+      if (blob) {
+        resolve(blob)
+      } else {
+        reject(new Error('Failed to encode project thumbnail'))
+      }
+    }, 'image/png')
+  })
+}
+
 async function takeScreenshotOfVideoStreamCanvas(): Promise<Blob | null> {
   const canvas = document.querySelector('[data-engine]')
   const video = document.getElementById('video-stream')
@@ -91,44 +114,45 @@ async function takeScreenshotOfVideoStreamCanvas(): Promise<Blob | null> {
     canvas instanceof HTMLCanvasElement &&
     video instanceof HTMLVideoElement
   ) {
-    const videoCanvas = document.createElement('canvas')
-    const crop = drawVisibleVideoStream(video, canvas, videoCanvas)
-    if (!crop) {
-      return null
-    }
-    return new Promise((resolve, reject) => {
-      // Serialize thumbnails asynchronously so PNG encoding does not block input.
-      videoCanvas.toBlob((blob) => {
-        if (blob) {
-          resolve(blob)
-        } else {
-          reject(new Error('Failed to encode project thumbnail'))
-        }
-      }, 'image/png')
-    })
+    return encodeVisibleFrame(video, canvas)
   } else {
     return null
   }
 }
 
 /**
- * Captures the video stream canvas composited with the gizmo overlay,
- * matching what the user sees in the modeling viewport.
+ * Draws the visible part of the 3D scene: from the local renderer if there is
+ * one, else from the video.
  */
-export function takeViewportScreenshot(): string {
+const drawVisibleScene = (
+  targetCanvas: HTMLCanvasElement,
+  localRenderer?: LocalRenderer | null
+) => {
+  if (localRenderer) {
+    return localRenderer.readFrame((renderedCanvas) =>
+      drawVisibleVideoStream(renderedCanvas, renderedCanvas, targetCanvas)
+    )
+  }
   const canvas = document.querySelector('[data-engine]')
   const video = document.getElementById('video-stream')
   if (
-    !canvas ||
-    !video ||
-    !(canvas instanceof HTMLCanvasElement) ||
-    !(video instanceof HTMLVideoElement)
+    canvas instanceof HTMLCanvasElement &&
+    video instanceof HTMLVideoElement
   ) {
-    return ''
+    return drawVisibleVideoStream(video, canvas, targetCanvas)
   }
+  return null
+}
 
+/**
+ * Captures the 3D scene composited with the gizmo overlay, matching what the
+ * user sees in the modeling viewport.
+ */
+export function takeViewportScreenshot(
+  localRenderer?: LocalRenderer | null
+): string {
   const compositeCanvas = document.createElement('canvas')
-  const crop = drawVisibleVideoStream(video, canvas, compositeCanvas)
+  const crop = drawVisibleScene(compositeCanvas, localRenderer)
   const ctx = compositeCanvas.getContext('2d')
   if (!crop) return ''
   if (!ctx) return ''
@@ -171,16 +195,19 @@ export function dataUrlToFile(dataUrl: string, fileName: string): File | Error {
 export function createThumbnailPNGOnDesktop({
   fileOperations,
   projectDirectoryWithoutEndingSlash,
+  renderedCanvas,
 }: {
   fileOperations: FileOperationsRegistryService
   projectDirectoryWithoutEndingSlash: string
+  /**
+   * A canvas the local renderer drew in this same task, used instead of the
+   * video stream. WebGPU and WebGL canvases read back blank afterwards, so it
+   * is copied before this returns.
+   */
+  renderedCanvas?: HTMLCanvasElement
 }) {
-  setTimeout(() => {
-    if (!projectDirectoryWithoutEndingSlash) {
-      return
-    }
-    // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
-    takeScreenshotOfVideoStreamCanvas()
+  const save = (screenshot: Promise<Blob | null>) => {
+    screenshot
       .then(async (thumbnail) => {
         if (!thumbnail) return
         await writeProjectThumbnailFile(
@@ -195,5 +222,18 @@ export function createThumbnailPNGOnDesktop({
         )
         console.error(e)
       })
+  }
+  if (renderedCanvas) {
+    if (projectDirectoryWithoutEndingSlash) {
+      save(encodeVisibleFrame(renderedCanvas, renderedCanvas))
+    }
+    return
+  }
+  setTimeout(() => {
+    if (!projectDirectoryWithoutEndingSlash) {
+      return
+    }
+    // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
+    save(takeScreenshotOfVideoStreamCanvas())
   }, 500)
 }

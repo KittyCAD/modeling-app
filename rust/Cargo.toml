@@ -28,11 +28,11 @@ dashmap = { version = "6.2.1" }
 http = "1"
 indexmap = "2.13.1"
 ezpz = "0.2.29"
-kittycad = { version = "0.5.7", default-features = false, features = [
+kittycad = { version = "0.6.0", default-features = false, features = [
   "js",
   "requests",
 ] }
-kittycad-modeling-cmds = { version = "0.2.254", features = [
+kittycad-modeling-cmds = { version = "0.2.259", features = [
   "ts-rs",
   "websocket",
 ] }

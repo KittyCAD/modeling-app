@@ -1,6 +1,24 @@
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { describe, expect, it } from 'vitest'
 
+describe('renderer settings', () => {
+  it('enables the controls for the selected renderer and keeps both preferences', () => {
+    const settings = createSettings()
+    const { useLocalRenderer, viewportRendering, enableSSAO } =
+      settings.modeling
+    viewportRendering.user = 'retrocad'
+    enableSSAO.user = false
+
+    for (const local of [true, false, true]) {
+      useLocalRenderer.user = local
+      expect(viewportRendering.isEnabled(settings)).toBe(!local)
+      expect(enableSSAO.isEnabled(settings)).toBe(local)
+      expect(viewportRendering.current).toBe('retrocad')
+      expect(enableSSAO.current).toBe(false)
+    }
+  })
+})
+
 describe('layout setting commands', () => {
   it('defaults the pane behavior command to the current preference', () => {
     const settings = createSettings()

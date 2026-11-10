@@ -56,7 +56,6 @@ import { resolveProjectLibrarySettingDefaults } from '@src/registry/contracts/pr
 import {
   isViewportRendering,
   viewportRenderingFromLegacySSAO,
-  viewportRenderingHasSSAO,
 } from '@src/lib/settings/viewportRendering'
 import decamelize from 'decamelize'
 import { NIL as uuidNIL, v4 } from 'uuid'
@@ -495,7 +494,8 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
       'viewport_rendering',
       {
         fromToml: (value) => (isViewportRendering(value) ? value : undefined),
-        toToml: (value) => (isViewportRendering(value) ? value : undefined),
+        // Persist the default too, so resetting it cannot reimport local SSAO.
+        toToml: (value) => (isViewportRendering(value) ? value : 'ssao'),
       }
     ),
     defineMappedAppOnlyField(
@@ -519,6 +519,10 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
     defineBooleanAppOnlyField(
       { category: 'modeling', field: 'enableTouchControls' },
       'enable_touch_controls'
+    ),
+    defineBooleanAppOnlyField(
+      { category: 'modeling', field: 'useLocalRenderer' },
+      'use_local_renderer'
     ),
     defineBooleanAppOnlyField(
       { category: 'modeling', field: 'showSketchGrid' },
@@ -681,6 +685,9 @@ export function configurationToSettingsPayload(
         viewportRendering: viewportRenderingFromLegacySSAO(
           configuration?.settings?.modeling?.enable_ssao
         ),
+        enableSSAO: toUndefinedIfNull(
+          configuration?.settings?.modeling?.enable_ssao
+        ),
         backfaceColor: toUndefinedIfNull(
           configuration?.settings?.modeling?.backface_color
         ),
@@ -738,8 +745,8 @@ export function settingsPayloadToConfiguration(
     highlight_edges: toUndefinedIfNull(
       configurationWithLegacyProjectDirectory?.modeling?.highlightEdges
     ),
-    enable_ssao: viewportRenderingHasSSAO(
-      configurationWithLegacyProjectDirectory?.modeling?.viewportRendering
+    enable_ssao: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.modeling?.enableSSAO
     ),
     backface_color: toUndefinedIfNull(
       configurationWithLegacyProjectDirectory?.modeling?.backfaceColor
@@ -838,6 +845,7 @@ export function projectConfigurationToSettingsPayload(
       modeling: {
         defaultUnit: configuration?.settings?.modeling?.base_unit ?? undefined,
         highlightEdges: configuration?.settings?.modeling?.highlight_edges,
+        enableSSAO: configuration?.settings?.modeling?.enable_ssao,
         fixedSizeGrid: toUndefinedIfNull(
           configuration?.settings?.modeling?.fixed_size_grid
         ),
@@ -875,6 +883,7 @@ export function settingsPayloadToProjectConfiguration(
   const typedModelingSection = compactRecord({
     base_unit: configuration?.modeling?.defaultUnit,
     highlight_edges: configuration?.modeling?.highlightEdges,
+    enable_ssao: configuration?.modeling?.enableSSAO,
     fixed_size_grid: configuration?.modeling?.fixedSizeGrid,
   })
 

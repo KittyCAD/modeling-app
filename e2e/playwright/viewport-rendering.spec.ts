@@ -16,6 +16,10 @@ test(
     delete settings.settings?.modeling?.enable_ssao
     settings.settings = {
       ...settings.settings,
+      modeling: {
+        ...settings.settings?.modeling,
+        use_local_renderer: false,
+      },
       app: {
         ...settings.settings?.app,
         appearance: { theme: 'light' },
@@ -88,6 +92,34 @@ hide(profile)
     })
     await openSettings()
     await expect(rendering).toHaveValue('ssao')
+
+    const localRenderer = page.locator(
+      'input[name="modeling-useLocalRenderer"]'
+    )
+    const localSSAO = page.locator('input[name="modeling-enableSSAO"]')
+    await expect(localSSAO).toBeDisabled()
+    await page.locator('label').filter({ has: localRenderer }).click()
+    await expect(localRenderer).toBeChecked()
+    await expect(rendering).toBeDisabled()
+    await expect(localSSAO).toBeEnabled()
+    await page.locator('label').filter({ has: localSSAO }).click()
+    await expect(localSSAO).not.toBeChecked()
+    await page.locator('label').filter({ has: localRenderer }).click()
+    await expect(localRenderer).not.toBeChecked()
+    await expect(rendering).toBeEnabled()
+    await expect(rendering).toHaveValue('ssao')
+    await page.waitForFunction(() =>
+      window.app.settings.actor.getSnapshot().matches('idle')
+    )
+    await page.getByTestId('settings-close-button').click()
+
+    modes.length = 0
+    await page.reload()
+    await scene.settled()
+    expect(modes).toEqual(['ssao'])
+    await openSettings()
+    await expect(rendering).toHaveValue('ssao')
+    await expect(localSSAO).not.toBeChecked()
     await expect(rendering.locator('option:checked')).toHaveText(/Default/)
     await page.getByRole('radio', { name: 'This project' }).click()
     await expect(rendering).toHaveCount(0)

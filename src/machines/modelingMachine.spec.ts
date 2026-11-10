@@ -29,7 +29,11 @@ import { StepSchema } from '@src/lib/stepSchema'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import { modelingMachine } from '@src/machines/modelingMachine'
+import {
+  modelingMachine,
+  positionLocalSketchSolveCamera,
+} from '@src/machines/modelingMachine'
+import type { DefaultPlane } from '@src/machines/modelingSharedTypes'
 import {
   dummyInitSketchGraphDelta,
   generateModelingMachineDefaultContext,
@@ -80,7 +84,12 @@ function setTestWorld(world: TestWorld) {
  */
 function useEngineWorld() {
   beforeAll(async () => {
-    setTestWorld(await buildTheWorldAndConnectToEngine({ webrtc: false }))
+    setTestWorld(
+      await buildTheWorldAndConnectToEngine({
+        webrtc: false,
+        geometryOnly: true,
+      })
+    )
   })
 
   afterAll(() => {
@@ -159,6 +168,7 @@ describe('STEP schema export requests', () => {
           forward: { axis: 'z', direction: 'positive' },
           up: { axis: 'y', direction: 'positive' },
         },
+        views: {},
       })
     }
   )
@@ -1604,6 +1614,7 @@ p3 = [342.51, 216.38],
               resetMouseListeners: vi.fn(),
               setCallbacks: vi.fn(),
               camControls: {
+                cancelSketchCameraTransition: vi.fn(),
                 enablePan: true,
                 enableRotate: true,
                 syncDirection: 'engineToClient',
@@ -1812,6 +1823,7 @@ sketch001 = sketch(on = YZ) {
               resetMouseListeners: vi.fn(),
               setCallbacks: vi.fn(),
               camControls: {
+                cancelSketchCameraTransition: vi.fn(),
                 enablePan: true,
                 enableRotate: true,
                 syncDirection: 'engineToClient',
@@ -1877,6 +1889,7 @@ sketch001 = sketch(on = YZ) {
             resetMouseListeners: vi.fn(),
             setCallbacks: vi.fn(),
             camControls: {
+              cancelSketchCameraTransition: vi.fn(),
               enablePan: true,
               enableRotate: true,
               syncDirection: 'engineToClient',
@@ -2095,5 +2108,42 @@ sketch001 = sketch(on = YZ) {
         'clientToEngine'
       )
     })
+  })
+})
+
+describe('positionLocalSketchSolveCamera', () => {
+  it('orients the sketch before aiming the camera at it', async () => {
+    const order: string[] = []
+    const sketchSolveGroup = {}
+    const plane: DefaultPlane = {
+      type: 'defaultPlane',
+      plane: 'XZ',
+      planeId: 'plane-id',
+      zAxis: [0, -1, 0],
+      yAxis: [0, 0, 1],
+    }
+    const initSketchSolveEntityOrientation = vi.fn(() => {
+      order.push('orient sketch')
+    })
+    const transitionToSketch = vi.fn(async () => {
+      order.push('aim camera')
+    })
+    const signal = new AbortController().signal
+
+    await positionLocalSketchSolveCamera(
+      {
+        sceneEntitiesManager: {
+          sketchSolveGroup,
+          initSketchSolveEntityOrientation,
+        },
+        sceneInfra: { camControls: { transitionToSketch } },
+      } as unknown as KclManager,
+      plane,
+      signal
+    )
+
+    expect(order).toEqual(['orient sketch', 'aim camera'])
+    expect(initSketchSolveEntityOrientation).toHaveBeenCalledWith(plane)
+    expect(transitionToSketch).toHaveBeenCalledWith(sketchSolveGroup, signal)
   })
 })

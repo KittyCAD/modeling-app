@@ -69,6 +69,45 @@ describe('viewport rendering settings', () => {
       configurationToSettingsPayload(configuration).modeling?.viewportRendering
     ).toBe(mode)
   })
+
+  it.each(['ssao', 'noeffect', 'retrocad', 'phosphor'] as const)(
+    'persists %s independently of local SSAO',
+    (viewportRendering) => {
+      for (const enableSSAO of [true, false]) {
+        const modeling = {
+          viewportRendering,
+          enableSSAO,
+          useLocalRenderer: true,
+        }
+        const configuration = settingsPayloadToConfiguration({ modeling })
+        expect(configuration.settings?.modeling?.enable_ssao).toBe(enableSSAO)
+        expect(
+          configurationToSettingsPayload(configuration).modeling
+        ).toMatchObject(modeling)
+      }
+    }
+  )
+
+  it('keeps the default stream style after changing local SSAO or resetting the style', () => {
+    const configuration = settingsPayloadToConfiguration({
+      modeling: { enableSSAO: false, viewportRendering: undefined },
+    })
+    expect(
+      configurationToSettingsPayload(configuration).modeling
+    ).toMatchObject({
+      viewportRendering: 'ssao',
+      enableSSAO: false,
+    })
+  })
+
+  it('preserves project SSAO without overriding the user stream style', () => {
+    const configuration = settingsPayloadToProjectConfiguration({
+      modeling: { enableSSAO: false, viewportRendering: 'phosphor' },
+    })
+    const payload = projectConfigurationToSettingsPayload(configuration)
+    expect(payload.modeling?.enableSSAO).toBe(false)
+    expect(payload.modeling?.viewportRendering).toBeUndefined()
+  })
 })
 
 describe('testing settings initialization', () => {
@@ -347,6 +386,7 @@ describe('project settings serialization regression', () => {
             mouseControls: 'OnShape',
             gizmoType: 'axis',
             enableTouchControls: false,
+            useLocalRenderer: false,
             showSketchGrid: true,
             snapToGrid: true,
             majorGridSpacing: 2.5,
@@ -386,6 +426,7 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).toContain('mouse_controls = "onshape"')
     expect(serializedToml).toContain('gizmo_type = "axis"')
     expect(serializedToml).toContain('enable_touch_controls = false')
+    expect(serializedToml).toContain('use_local_renderer = false')
     expect(serializedToml).toContain('show_sketch_grid = true')
     expect(serializedToml).toContain('snap_to_grid = true')
     expect(serializedToml).toContain('major_grid_spacing = 2.5')
@@ -843,6 +884,22 @@ describe('project settings serialization regression', () => {
     const parsedPayload = configurationToSettingsPayload(parsedConfiguration)
     expect(parsedPayload.debug?.showPanel).toBe(true)
     expect(parsedPayload.debug?.showModelingMachineState).toBe(false)
+  })
+
+  it('loads the saved renderer choice from the modeling section', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    const parsedConfiguration = parseAppSettings(
+      '[settings.modeling]\nuse_local_renderer = false\n',
+      wasmInstance
+    )
+    if (parsedConfiguration instanceof Error) {
+      throw parsedConfiguration
+    }
+
+    const parsedPayload = configurationToSettingsPayload(parsedConfiguration)
+    expect(parsedPayload.modeling?.useLocalRenderer).toBe(false)
   })
 
   it('preserves debug settings through the project debug section', async () => {

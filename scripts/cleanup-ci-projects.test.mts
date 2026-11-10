@@ -161,11 +161,17 @@ interface SharePage {
 
 // Exercise the actual CLI and SDK transport without giving the subprocess a real
 // credential or allowing it to contact the API.
-function cleanupWithSharePages(pages: SharePage[]) {
+function cleanupWithSharePages(
+  pages: SharePage[],
+  projectPages: SharePage[] = [
+    { body: { items: [eligibleProject], next_page: null } },
+  ]
+) {
   const preload = `
     import assert from 'node:assert/strict'
     const project = ${JSON.stringify(eligibleProject)}
     const pages = ${JSON.stringify(pages)}
+    const projectPages = ${JSON.stringify(projectPages)}
     const requests = []
     globalThis.fetch = async (input, init) => {
       const request = new Request(input, init)
@@ -175,8 +181,11 @@ function cleanupWithSharePages(pages: SharePage[]) {
       assert.equal(request.redirect, 'error')
       requests.push({ method: request.method, path: url.pathname, token: url.searchParams.get('page_token') })
       if (url.pathname === '/user') return Response.json({ id: 'ci-account', is_service_account: true })
-      // Keep the project-list fixture on the legacy contract until API #4800.
-      if (url.pathname === '/user/projects') return Response.json([project])
+      if (url.pathname === '/user/projects') {
+        const page = projectPages.shift()
+        assert.ok(page, 'unexpected projects request')
+        return Response.json(page.body, { status: page.status ?? 200 })
+      }
       if (url.pathname === '/user/projects/' + project.id + '/share-links') {
         const page = pages.shift()
         assert.ok(page, 'unexpected share-links request')
@@ -320,4 +329,31 @@ test('CLI rejects an empty later-page body without deleting', () => {
   assert.equal(result.status, 1, result.stderr)
   assert.match(result.stderr, /JSON/)
   assert.doesNotMatch(result.stdout, /"method":"DELETE"/)
+})
+
+test('CLI waits for a complete project inventory before considering deletions', () => {
+  const result = cleanupWithSharePages(
+    [{ body: { items: [], next_page: null } }],
+    [
+      { body: { items: [eligibleProject], next_page: 'projects-two' } },
+      { body: { items: [], next_page: null } },
+    ]
+  )
+  assert.equal(result.status, 0, result.stderr)
+  assert.match(result.stdout, /"token":"projects-two"/)
+  assert.match(result.stdout, /1 eligible projects; 1 deleted/)
+})
+
+test('CLI rejects incomplete or obsolete project inventories without deleting', () => {
+  for (const inventory of [
+    [{ body: [eligibleProject] }],
+    [
+      { body: { items: [eligibleProject], next_page: 'projects-two' } },
+      { body: { message: 'Unavailable' }, status: 503 },
+    ],
+  ]) {
+    const result = cleanupWithSharePages([], inventory)
+    assert.equal(result.status, 1, result.stderr)
+    assert.doesNotMatch(result.stdout, /"method":"DELETE"|share-links/)
+  }
 })

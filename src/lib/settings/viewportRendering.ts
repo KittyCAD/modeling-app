@@ -25,12 +25,6 @@ export function viewportRenderingFromLegacySSAO(
   return enabled == null ? undefined : enabled ? 'ssao' : 'noeffect'
 }
 
-export function viewportRenderingHasSSAO(
-  mode: ViewportRendering | undefined
-): boolean | undefined {
-  return mode === undefined ? undefined : mode === 'ssao'
-}
-
 export function getViewportTheme(
   theme: Themes,
   mode: ViewportRendering

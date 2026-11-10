@@ -73,7 +73,8 @@ export function createFileOperationsRuntime(
 
   const operations: FileOperationsRegistryService = {
     pending: () => runRuntimePromise(pendingFileOperations),
-    stat: (path) => runFileOperationsPromise('stat', statOperation(path)),
+    stat: (path, options) =>
+      runFileOperationsPromise('stat', statOperation(path, options)),
     canReadWrite: (path) =>
       runFileOperationsPromise('access', canReadWriteOperation(path)),
     exists: (path) => runFileOperationsPromise('exists', existsOperation(path)),

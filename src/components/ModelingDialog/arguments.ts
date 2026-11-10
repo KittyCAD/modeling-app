@@ -101,6 +101,8 @@ export async function initializeArguments(
         value = (options.find((option) => option.isCurrent) ?? options[0])
           ?.value
       }
+      if (value === undefined && arg.inputType === 'color' && isRequired)
+        value = '#000000'
     }
     values[name] = value
   }
@@ -140,8 +142,12 @@ export async function resolveArguments(
     const { isRequired } = evaluateCommandArgumentFlags(arg, current)
     let value = resolved[name]
     if (arg.inputType === 'selection') {
-      if (context.argumentsToSubmit.nodeToEdit)
-        value = context.argumentsToSubmit[name]
+      if (context.argumentsToSubmit.nodeToEdit) {
+        // Edit collectors are read-only. Their original references can use
+        // legacy selection types that the creation collector does not accept.
+        resolved[name] = context.argumentsToSubmit[name]
+        continue
+      }
       let selection = isSelections(value) && hasValue(value) ? value : undefined
       if (selection && artifactGraph && !context.argumentsToSubmit.nodeToEdit) {
         selection = coerceSelectionsForBodyOnlySelectionTypes(

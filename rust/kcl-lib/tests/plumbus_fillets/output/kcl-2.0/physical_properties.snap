@@ -7,12 +7,12 @@ description: Physical properties plumbus_fillets.kcl
     "center": {
       "x": 0.0,
       "y": 6.083615127142231,
-      "z": 3.749999999999997
+      "z": 3.5
     },
     "dimensions": {
       "x": 62.13250516799596,
       "y": 64.16723025428446,
-      "z": 12.500000000000009
+      "z": 13.0
     },
     "unit": "mm"
   },

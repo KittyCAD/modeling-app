@@ -5,6 +5,7 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
   return { ...actual, reportClientError }
 })
 
+import type { ModelingCmdReq } from '@kittycad/lib'
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
 import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
@@ -18,6 +19,8 @@ import {
   type EngineDisconnectEventDetail,
 } from '@src/lib/engineConnection/utils'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { Themes } from '@src/lib/theme'
+import { createSettings } from '@src/lib/settings/initialSettings'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 class ReconnectTestWebSocket extends EventTarget {
@@ -42,10 +45,10 @@ class ReconnectTestWebSocket extends EventTarget {
   }
 }
 
-function createConnectionManager() {
+function createConnectionManager(settings = createSettings()) {
   return new ConnectionManager({
     settingsActor: {
-      getSnapshot: () => ({ context: {} }),
+      getSnapshot: () => ({ context: settings }),
     } as unknown as SettingsActorType,
   })
 }
@@ -68,6 +71,7 @@ function addConnectedState(manager: ConnectionManager) {
     disconnectAll: vi.fn(),
   } as unknown as Connection
   manager.started = true
+  return manager.connection
 }
 
 function startConnectionManager(
@@ -114,6 +118,113 @@ describe('ConnectionManager', () => {
     expect(requestReconnect).toHaveBeenCalledOnce()
   })
 
+  it.each([true, false])(
+    'does not reconnect a local session with the local preference set to %s',
+    (useLocalRenderer) => {
+      const settings = createSettings()
+      settings.modeling.useLocalRenderer.user = useLocalRenderer
+      const manager = createConnectionManager(settings)
+      const requestReconnect = vi.fn()
+      manager.connection = {
+        geometryOnly: true,
+        url: 'wss://example.test/modeling?geometry_only=true&webrtc=false',
+        requestReconnect,
+      } as unknown as Connection
+
+      for (const mode of [
+        'ssao',
+        'retrocad',
+        'phosphor',
+        'noeffect',
+      ] as const) {
+        manager.setViewportRendering(mode)
+      }
+      expect(requestReconnect).not.toHaveBeenCalled()
+    }
+  )
+
+  it('does not start a disconnected local session when the stream style changes', () => {
+    const settings = createSettings()
+    settings.modeling.useLocalRenderer.user = true
+    const manager = createConnectionManager(settings)
+    const online = vi.spyOn(manager, 'online')
+
+    manager.setViewportRendering('retrocad')
+    expect(online).not.toHaveBeenCalled()
+  })
+
+  it('keeps using stream settings until the renderer restart happens', () => {
+    const settings = createSettings()
+    settings.modeling.useLocalRenderer.user = true
+    const manager = createConnectionManager(settings)
+    const requestReconnect = vi.fn()
+    manager.connection = {
+      geometryOnly: false,
+      url: 'wss://example.test/modeling?post_effect=ssao',
+      requestReconnect,
+    } as unknown as Connection
+
+    manager.setViewportRendering('retrocad')
+    expect(requestReconnect).toHaveBeenCalledOnce()
+  })
+
+  it('uses geometry-only URL parameters without engine render settings', () => {
+    const manager = createConnectionManager()
+    vi.spyOn(manager, 'settings', 'get').mockReturnValue({
+      theme: Themes.Light,
+      viewportRendering: 'ssao',
+      showScaleGrid: true,
+      highlightEdges: true,
+      cameraProjection: 'perspective',
+      cameraOrbit: 'spherical',
+      backfaceColor: '#ffffff',
+    })
+
+    // The same manager can construct either kind of session after a mode change.
+    for (const geometryOnly of [true, false, true]) {
+      const url = new URL(manager.generateWebsocketURL(geometryOnly, '2.0'))
+      expect(url.searchParams.get('webrtc')).toBe(geometryOnly ? 'false' : null)
+      expect(url.searchParams.get('kcl_version')).toBe('2.0')
+      expect(url.searchParams.get('geometry_only')).toBe(
+        geometryOnly ? 'true' : null
+      )
+      expect(url.searchParams.has('post_effect')).toBe(!geometryOnly)
+      expect(url.searchParams.has('show_grid')).toBe(!geometryOnly)
+      expect(url.searchParams.has('video_res_width')).toBe(true)
+    }
+    expect(manager.settings.viewportRendering).toBe('ssao')
+  })
+
+  it('skips rendering updates only for the current geometry-only connection', async () => {
+    const manager = createConnectionManager()
+    const send = vi.fn()
+    const sendSceneCommand = vi
+      .spyOn(manager, 'sendSceneCommand')
+      .mockResolvedValue(null)
+
+    for (const geometryOnly of [true, false, true]) {
+      addConnectedState(manager)
+      manager.connection = {
+        ...manager.connection,
+        geometryOnly,
+        deferredConnection: { promise: Promise.resolve() },
+        send,
+      } as unknown as Connection
+      sendSceneCommand.mockClear()
+      send.mockClear()
+
+      expect(manager.geometryOnly).toBe(geometryOnly)
+      await manager.setTheme(Themes.Light)
+      await manager.setDefaultSystemProperties('#ffffff')
+      await manager.setHighlightEdges(true)
+      await manager.setShowScaleGrid(true)
+      await manager.handleResize({ width: 512, height: 512 })
+
+      expect(sendSceneCommand).toHaveBeenCalledTimes(geometryOnly ? 0 : 5)
+      expect(send).toHaveBeenCalledTimes(geometryOnly ? 0 : 1)
+    }
+  })
+
   it('warns when Engine rejects a modeling command', async () => {
     const manager = createConnectionManager()
     manager.connection = {} as Connection
@@ -158,6 +269,53 @@ describe('ConnectionManager', () => {
       metadata: { pendingCommandCount: 2 },
     })
   })
+
+  it.each([
+    { type: 'begin_execution', enable_render: true },
+    { type: 'end_execution' },
+  ] satisfies ModelingCmdReq['cmd'][])(
+    'allows $type after interruption while blocking modeling work',
+    async (boundary) => {
+      const manager = createConnectionManager()
+      addConnectedState(manager)
+      manager.executionIsStale = true
+      const sendCommand = vi.spyOn(manager, 'sendCommand').mockResolvedValue([
+        {
+          success: true,
+          request_id: 'boundary',
+          resp: {
+            type: 'modeling',
+            data: { modeling_response: { type: boundary.type, data: {} } },
+          },
+        },
+      ])
+      const sendModeling = (id: string, cmd: ModelingCmdReq['cmd']) =>
+        manager.sendModelingCommandFromWasm(
+          id,
+          '[0,0,0]',
+          JSON.stringify({ type: 'modeling_cmd_req', cmd_id: id, cmd }),
+          '{}'
+        )
+
+      await expect(
+        sendModeling('stale', { type: 'scene_clear_all' })
+      ).rejects.toBe(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
+      expect(sendCommand).not.toHaveBeenCalled()
+
+      await expect(sendModeling('boundary', boundary)).resolves.toBeInstanceOf(
+        Uint8Array
+      )
+      expect(sendCommand).toHaveBeenCalledExactlyOnceWith('boundary', {
+        command: {
+          type: 'modeling_cmd_req',
+          cmd_id: 'boundary',
+          cmd: boundary,
+        },
+        range: [0, 0, 0],
+        idToRangeMap: {},
+      })
+    }
+  )
 
   function reconnectHarness() {
     const manager = createConnectionManager()

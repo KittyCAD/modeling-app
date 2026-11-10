@@ -230,8 +230,9 @@ function createCoreSettings() {
       viewportRendering: new Setting<ViewportRendering>({
         hideOnLevel: 'project',
         defaultValue: 'ssao',
-        description: 'Choose how models look in the viewport.',
+        description: 'Choose how streamed models look in the viewport.',
         validate: isViewportRendering,
+        isEnabled: (context) => !context.modeling.useLocalRenderer.current,
         commandConfig: {
           inputType: 'options',
           defaultValueFromContext: (context) =>
@@ -246,6 +247,33 @@ function createCoreSettings() {
                 ),
             })),
         },
+      }),
+      enableSSAO: new Setting<boolean>({
+        defaultValue: true,
+        description:
+          'Whether Screen Space Ambient Occlusion (SSAO) is enabled for local rendering.',
+        validate: (v) => typeof v === 'boolean',
+        // Only the local renderer lets users choose.
+        isEnabled: (context) => context.modeling.useLocalRenderer.current,
+      }),
+      /**
+       * Whether the 3D scene is rendered on this device or streamed as video
+       * from the engine. Read once when the scene mounts, because each renderer
+       * needs its own kind of engine session.
+       */
+      useLocalRenderer: new Setting<boolean>({
+        defaultValue: false,
+        hideOnLevel: 'project',
+        description:
+          'Render the 3D scene on this device instead of streaming it as video from the engine. Takes effect after restarting the app.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+        // geometryOnly reads as false without a session, so check for one first.
+        restartRequired: (value, engineCommandManager) =>
+          engineCommandManager.connection !== undefined &&
+          engineCommandManager.geometryOnly !== value,
       }),
       backfaceColor: new Setting<string>({
         defaultValue: DEFAULT_BACKFACE_COLOR,

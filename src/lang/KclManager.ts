@@ -172,7 +172,7 @@ import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import { bracket } from '@src/lib/exampleKcl'
 import { setKclVersion } from '@src/lib/kclVersion'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { resetCameraAfterExecution } from '@src/lib/resetCameraPosition'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { type Themes, getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
@@ -307,6 +307,13 @@ type ExecutionCompletionResult = {
 
 export enum KclManagerEvents {
   LongExecution = 'long-execution',
+  ExecutionDone = 'execution-done',
+}
+
+export interface KclExecutionDoneDetail {
+  successful: boolean
+  isInterrupted: boolean
+  hasErrors: boolean
 }
 
 declare global {
@@ -523,7 +530,11 @@ export class KclManager extends File {
    * subscribes here rather than to `execStateSignal`.
    */
   private _engineSceneGeneration = signal(0)
-  /** Incremented on every execution completion (success, failure, or cancel). Used so callers can wait for "next" run. */
+  /**
+   * Incremented on every execution completion (success, failure, or cancel),
+   * even if cached.
+   * Used so callers can wait for "next" run.
+   */
   private _executionGeneration = 0
   private _lastExecutionCompletion: ExecutionCompletionResult = {
     generation: 0,
@@ -1432,9 +1443,8 @@ export class KclManager extends File {
         } else {
           await this.executeCode(newCode)
           if (shouldResetCamera) {
-            await resetCameraPosition({
+            await resetCameraAfterExecution({
               sceneInfra: this.sceneInfra,
-              engineCommandManager: this.engineCommandManager,
               settingsActor: this.systemDeps.settings,
             })
           }
@@ -2299,13 +2309,32 @@ export class KclManager extends File {
       markOnce('code/endExecuteAst')
       this.notifyExecutionCompletion('completed')
 
-      // Update project thumbnail after successful execution
-      if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
+      // Update project thumbnail after successful execution. The local renderer
+      // writes its own once the new model is on screen.
+      if (
+        !isInterrupted &&
+        errors.length === 0 &&
+        projectFsManager.dir &&
+        !this.engineCommandManager.geometryOnly
+      ) {
         createThumbnailPNGOnDesktop({
           fileOperations: this.systemDeps.fileOperations,
           projectDirectoryWithoutEndingSlash: projectFsManager.dir,
         })
       }
+
+      this.dispatchEvent(
+        new CustomEvent<KclExecutionDoneDetail>(
+          KclManagerEvents.ExecutionDone,
+          {
+            detail: {
+              successful: !isInterrupted && errors.length === 0,
+              isInterrupted,
+              hasErrors: errors.length > 0,
+            },
+          }
+        )
+      )
     } finally {
       finishExecution()
     }
@@ -2329,6 +2358,12 @@ export class KclManager extends File {
       data: null,
     })
     markOnce('code/endExecuteAst')
+    // The local renderer shows its loading indicator until it hears this.
+    this.dispatchEvent(
+      new CustomEvent<KclExecutionDoneDetail>(KclManagerEvents.ExecutionDone, {
+        detail: { successful: false, isInterrupted: true, hasErrors: false },
+      })
+    )
   }
 
   // DO NOT CALL THIS from codemirror ever.
@@ -2725,9 +2760,18 @@ export class KclManager extends File {
   }
   async updateTheme(newTheme: Themes, updateEngine = true) {
     const resolvedTheme = getResolvedTheme(newTheme)
-    const mode = getSettingsFromActorContext(this.systemDeps.settings).modeling
-      .viewportRendering.current
-    const opposingTheme = getOppositeTheme(getViewportTheme(newTheme, mode))
+    const settings = getSettingsFromActorContext(this.systemDeps.settings)
+    const useLocalRenderer =
+      this.engineCommandManager.connection?.geometryOnly ??
+      settings.modeling.useLocalRenderer.current
+    const opposingTheme = getOppositeTheme(
+      useLocalRenderer
+        ? newTheme
+        : getViewportTheme(
+            newTheme,
+            settings.modeling.viewportRendering.current
+          )
+    )
     this.sceneInfra.theme = opposingTheme
     this.sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
     this.setEditorTheme(resolvedTheme)
@@ -2941,7 +2985,10 @@ export class KclManager extends File {
           highlightEdges: highlightEdges.value,
           backfaceColor: backfaceColor.value,
         }
-        const backfaceChanged = current.backfaceColor !== previous.backfaceColor
+        // The local renderer draws back faces itself, so the engine scene can stay.
+        const backfaceChanged =
+          current.backfaceColor !== previous.backfaceColor &&
+          !this.engineCommandManager.geometryOnly
         const engineSettingsChanged =
           current.showScaleGrid !== previous.showScaleGrid ||
           current.fixedSizeGrid !== previous.fixedSizeGrid ||

@@ -115,7 +115,10 @@ function installFetchMock({
     const method = getFetchMethod(input, init)
 
     if (url === `${baseUrl}/user/projects` && method === 'GET') {
-      return jsonResponse([remoteProjectPayload(remoteRevision)])
+      return jsonResponse({
+        items: [remoteProjectPayload(remoteRevision)],
+        next_page: null,
+      })
     }
 
     if (url === `${baseUrl}/user/projects` && method === 'POST') {
