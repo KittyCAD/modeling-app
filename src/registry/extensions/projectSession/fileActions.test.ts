@@ -1,4 +1,9 @@
 import { posix } from '@chainner/node-path'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import {
+  projectStorageProvidersValueSpec,
+  type ProjectStorage,
+} from '@src/lib/projectSession/storage'
 import {
   defineRegistryItem,
   provide,
@@ -25,6 +30,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 vi.mock('@src/lib/fs-zds', () => ({ default: posix }))
 vi.mock('@src/lib/desktop', () => ({
   getProjectInfo: vi.fn(),
+  writeProjectThumbnailFile: vi.fn(async () => {}),
 }))
 vi.mock('@src/lib/activeTextFile', () => ({
   flushActiveTextFileWrite: vi.fn(async () => {}),
@@ -63,7 +69,7 @@ function createProject(path = '/project/parts/main.kcl') {
   } as unknown as ZDSProject
   return { project, filePath, flush }
 }
-function setup() {
+function setup(storage?: ProjectStorage) {
   const exists = vi.fn(async () => false)
   const rename = vi.fn(async () => {})
   const router = createRouterRegistryService()
@@ -75,6 +81,9 @@ function setup() {
     defineRegistryItem({
       provides: [
         provide(wasmPromiseValueSpec, Promise.resolve({} as ModuleType)),
+        ...(storage
+          ? [provide(projectStorageProvidersValueSpec, () => storage)]
+          : []),
       ],
       providesServices: [
         provideService(fileOperationsService, {
@@ -119,7 +128,8 @@ describe('direct project session file actions', () => {
       expect(getProjectInfo).toHaveBeenCalledWith(
         expect.anything(),
         '/project',
-        expect.anything()
+        expect.anything(),
+        { createMissingEntrypoint: true }
       )
       expect(s.project.projectIORefSignal.value).toMatchObject({
         title: 'Fresh',
@@ -233,4 +243,58 @@ describe('direct project session file actions', () => {
     await renaming
     expect(next.filePath.value).toBe('/project/parts/main.kcl')
   })
+})
+
+function storageForTest(): ProjectStorage {
+  return {
+    root: '/project',
+    writeAvailability: signal({ writable: true }),
+    externalChanges: 'snapshot',
+    deletionHistory: 'storage',
+    createMissingEntrypoint: false,
+    watch: vi.fn(() => vi.fn()),
+    batch: vi.fn(async (_path, run) => run({ ...testFileOperations })),
+    refresh: vi.fn(async () => {}),
+    retry: vi.fn(async () => {}),
+    editorChanged: vi.fn(),
+    writeThumbnail: vi.fn(async () => {}),
+  }
+}
+
+it('releases captured watchers when a watch is replaced, removed, or the session is disposed', () => {
+  const storage = storageForTest()
+  const first = vi.fn()
+  const second = vi.fn()
+  const third = vi.fn()
+  vi.mocked(storage.watch)
+    .mockReturnValueOnce(first)
+    .mockReturnValueOnce(second)
+    .mockReturnValueOnce(third)
+  const s = setup(storage)
+  const io = s.session.textFileIO
+  io.watch('/project/main.kcl', 'editor', vi.fn())
+  io.watch('/project/main.kcl', 'editor', vi.fn())
+  expect(first).toHaveBeenCalledOnce()
+  expect(second).not.toHaveBeenCalled()
+  io.unwatch('/project/main.kcl', 'editor')
+  expect(second).toHaveBeenCalledOnce()
+  io.watch('/project/other.kcl', 'editor', vi.fn())
+  s.registry[Symbol.dispose]()
+  registries.splice(registries.indexOf(s.registry), 1)
+  expect(third).toHaveBeenCalledOnce()
+})
+
+it('uses the provider entrypoint policy when refreshing a project', async () => {
+  const s = setup(storageForTest())
+  vi.mocked(getProjectInfo).mockResolvedValueOnce(metadata('Snapshot'))
+  await s.session.refreshProject()
+  expect(getProjectInfo).toHaveBeenCalledWith(
+    expect.anything(),
+    '/project',
+    expect.anything(),
+    { createMissingEntrypoint: false }
+  )
+  expect(s.session.project.peek()?.projectIORefSignal.peek().title).toBe(
+    'Snapshot'
+  )
 })

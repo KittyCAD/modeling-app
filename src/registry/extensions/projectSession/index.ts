@@ -1,5 +1,9 @@
+import {
+  projectStorageProvidersValueSpec,
+  type ProjectStorage,
+} from '@src/lib/projectSession/storage'
 import fsZds from '@src/lib/fs-zds'
-import { getProjectInfo } from '@src/lib/desktop'
+import { getProjectInfo, writeProjectThumbnailFile } from '@src/lib/desktop'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
   PROJECT_ID_QUERY_PARAM,
@@ -62,14 +66,55 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   let textFileIO: TextFileIO | undefined
   const electron = window.electron
 
+  const watchers = new Map<string, () => void>()
+  const storageFor = (path: string): ProjectStorage => {
+    for (const resolve of ctx.valueSpecs.get(
+      projectStorageProvidersValueSpec
+    )) {
+      const storage = resolve(path)
+      if (storage) return storage
+    }
+    return {
+      root: path,
+      writeAvailability: computed(() => ({ writable: true })),
+      externalChanges: 'files',
+      deletionHistory: 'archive',
+      createMissingEntrypoint: true,
+      watch: (path, key, onEvent) => {
+        electron?.watchFileOn(path, key, onEvent)
+        return () => electron?.watchFileOff(path, key)
+      },
+      batch: (_path, run) => run(ctx.services.get(fileOperationsService)),
+      refresh: async () => {},
+      retry: async () => {},
+      editorChanged: () => {},
+      writeThumbnail: (bytes) =>
+        writeProjectThumbnailFile(
+          ctx.services.get(fileOperationsService),
+          bytes,
+          path
+        ),
+    }
+  }
+
   const serviceImpl: ProjectSessionService = {
+    storageFor,
+    editorChanged: (path) => storageFor(path).editorChanged(path),
+    writeThumbnail: (path, bytes) => storageFor(path).writeThumbnail(bytes),
     get textFileIO() {
       return (textFileIO ??= createTextFileIO(
         ctx.services.get(fileOperationsService),
         {
-          watch: (path, key, onEvent) =>
-            electron?.watchFileOn(path, key, onEvent),
-          unwatch: (path, key) => electron?.watchFileOff(path, key),
+          watch: (path, key, onEvent) => {
+            const watchKey = `${key}:${path}`
+            watchers.get(watchKey)?.()
+            watchers.set(watchKey, storageFor(path).watch(path, key, onEvent))
+          },
+          unwatch: (path, key) => {
+            const watchKey = `${key}:${path}`
+            watchers.get(watchKey)?.()
+            watchers.delete(watchKey)
+          },
         }
       ))
     },
@@ -83,7 +128,11 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       const refreshed = await getProjectInfo(
         ctx.services.get(fileOperationsService),
         current.path,
-        await wasm
+        await wasm,
+        {
+          createMissingEntrypoint: storageFor(current.path)
+            .createMissingEntrypoint,
+        }
       )
       if (project.peek() !== current || refreshGeneration !== generation) return
       current.projectIORefSignal.value = {
@@ -181,7 +230,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
             fsZds.relative(source, path.peek())
           )
       }
-      await rename(operations)
+      await storageFor(source).batch(source, rename)
     },
     project,
     executingEditor,
@@ -202,6 +251,10 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   return {
     id: 'project-session-extension',
     providesServices: [provideService(projectSession, serviceImpl)],
+    dispose: () => {
+      for (const stop of watchers.values()) stop()
+      watchers.clear()
+    },
   }
 }, 'project-session-extension')
 

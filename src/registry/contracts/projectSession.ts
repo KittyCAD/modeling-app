@@ -1,3 +1,4 @@
+import type { ProjectStorage } from '@src/lib/projectSession/storage'
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal, Signal } from '@preact/signals-core'
 import type { Project } from '@src/lib/project'
@@ -34,6 +35,10 @@ export interface ExecutingEditor {
  * fields delegate to this service while call sites are migrated.
  */
 export interface ProjectSessionService {
+  /** Resolve storage capabilities for the captured path without selecting a backend in callers. */
+  storageFor: (path: string) => ProjectStorage
+  editorChanged: (path: string) => void
+  writeThumbnail: (projectPath: string, bytes: Uint8Array) => Promise<void>
   /** Reload the captured project's tree; stale results never replace another session. */
   refreshProject: () => Promise<Project | undefined>
   /** Navigate through the router and resolve when its loader completes. */
