@@ -477,6 +477,40 @@ describe('switching files', () => {
     })
   })
 
+  it.each([
+    { description: 'malformed UTF-8', contents: new Uint8Array([0xff]) },
+    {
+      description: 'binary control characters',
+      contents: new TextEncoder().encode('before\0after'),
+    },
+  ])(
+    'rejects cloud replacement containing $description and cancels stale saves',
+    async ({ contents }) => {
+      vi.useFakeTimers()
+      mocks.readFile.mockResolvedValueOnce('old')
+      await mod.openActiveTextFile(fileOperations, '/proj/note.md')
+      mod.scheduleActiveTextFileWrite(
+        fileOperations,
+        '/proj/note.md',
+        'local edit'
+      )
+
+      mod.adoptCloudTextSnapshot(
+        '/proj',
+        new Map([['/proj/note.md', contents]])
+      )
+
+      expect(mod.activeTextFileSignal.value).toMatchObject({
+        path: '/proj/note.md',
+        status: 'error',
+        text: '',
+        error: 'This file is binary or is not UTF-8 text.',
+      })
+      await vi.advanceTimersByTimeAsync(7_000)
+      expect(mocks.writeFile).not.toHaveBeenCalled()
+    }
+  )
+
   it('does not warn when a cloud conflict confirms an already accepted text save', async () => {
     vi.useFakeTimers()
     mocks.readFile.mockResolvedValue('old')

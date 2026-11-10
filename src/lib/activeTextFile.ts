@@ -169,14 +169,15 @@ export function adoptCloudTextSnapshot(
     activeTextFileSignal.value = null
     return
   }
-  try {
-    activeTextFileSignal.value = {
-      ...active,
-      status: 'ready',
-      text: decoder.decode(contents),
-    }
-  } catch {
-    setActiveTextFileError(active.path, active.name, UNSUPPORTED_TEXT_MESSAGE)
+  const text = decodeTextFile(contents)
+  if (isErr(text)) {
+    setActiveTextFileError(active.path, active.name, text.message)
+    return
+  }
+  activeTextFileSignal.value = {
+    ...active,
+    status: 'ready',
+    text,
   }
 }
 
