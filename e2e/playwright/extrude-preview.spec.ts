@@ -20,8 +20,7 @@ test('previews extrusion distance without writing until Submit @web @localRender
   const original = await editor.getCurrentCode()
   await editor.closePane()
   await toolbar.extrudeButton.click()
-  const [selectRegion] = await scene.findFace(0)
-  await selectRegion()
+  await editor.selectText('region001 = region')
   await expect(modelingDialog.selection('Profiles')).toHaveText('1 region')
   await modelingDialog.locator
     .getByRole('checkbox', { name: 'Live preview (experimental)' })
@@ -54,8 +53,7 @@ test('previews extrusion distance without writing until Submit @web @localRender
   await editor.expectEditor.toBe(original)
 
   await toolbar.extrudeButton.click()
-  const [selectAgain] = await scene.findFace(0)
-  await selectAgain()
+  await editor.selectText('region001 = region')
   await modelingDialog.locator
     .getByRole('checkbox', { name: 'Live preview (experimental)' })
     .check()
@@ -67,6 +65,21 @@ test('previews extrusion distance without writing until Submit @web @localRender
   await modelingDialog.submit()
   await scene.settled()
   await editor.expectEditor.toContain('length = 8mm')
+  const committed = await editor.getCurrentCode()
+  await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+  await modelingDialog.locator
+    .getByRole('checkbox', { name: 'Live preview (experimental)' })
+    .check()
+  await modelingDialog.input('length').fill('-12mm')
+  await expect(modelingDialog.locator.getByRole('status')).toHaveText(
+    'Preview (-12mm)',
+    { timeout: 60_000 }
+  )
+  await expect(handle).toContainText('-12mm')
+  await editor.expectEditor.toBe(committed)
+  await modelingDialog.cancelButton.click()
+  await expect(handle).not.toBeAttached()
+  await editor.expectEditor.toBe(committed)
   await page.keyboard.press('ControlOrMeta+z')
   await scene.settled()
   await editor.expectEditor.toBe(original)

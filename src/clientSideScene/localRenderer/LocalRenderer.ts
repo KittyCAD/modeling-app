@@ -181,10 +181,28 @@ export class LocalRenderer {
   private operationPreview: Object3D | null = null
   private operationPreviewVersion = 0
 
-  getExtrudeFrame(regionId: string) {
-    const mesh = this.targetsByEntityId
+  getExtrudeFrame(regionId: string, originalDistance?: number) {
+    let mesh = this.targetsByEntityId
       .get(regionId)
       ?.find((mesh) => mesh.userData.isSketchRegion)
+    let normalSign = 1
+    if (!mesh && originalDistance && Number.isFinite(originalDistance)) {
+      const path = this.kclManager.artifactGraph.get(regionId)
+      const sweep =
+        path?.type === 'path' && path.sweepId
+          ? this.kclManager.artifactGraph.get(path.sweepId)
+          : undefined
+      const start =
+        sweep?.type === 'sweep' &&
+        sweep.surfaceIds
+          .map((id) => this.kclManager.artifactGraph.get(id))
+          .find((face) => face?.type === 'cap' && face.subType === 'start')
+      if (start) {
+        mesh = this.targetsByEntityId.get(start.id)?.[0]
+        // The start cap faces away from the extrusion, including negative lengths.
+        normalSign = -Math.sign(originalDistance)
+      }
+    }
     if (!mesh) return undefined
     const point = getEntityPoint(mesh.geometry, 'face')
     const normals = mesh.geometry.getAttribute('normal')
@@ -196,7 +214,9 @@ export class LocalRenderer {
       .transformDirection(mesh.matrixWorld)
     return {
       origin: new Vector3(point.x, -point.z, point.y).multiplyScalar(1000),
-      normal: new Vector3(normal.x, -normal.z, normal.y).normalize(),
+      normal: new Vector3(normal.x, -normal.z, normal.y)
+        .normalize()
+        .multiplyScalar(normalSign),
     }
   }
 

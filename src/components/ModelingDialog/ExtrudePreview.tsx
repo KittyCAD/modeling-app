@@ -4,6 +4,8 @@ import {
   resolveArguments,
 } from '@src/components/ModelingDialog/arguments'
 import type { KclManager } from '@src/lang/KclManager'
+import { resolveToCodeRef } from '@src/lang/queryAst'
+import type { PathToNode } from '@src/lang/wasm'
 import { runModelingCodemod } from '@src/lang/modifyAst/modelingCodemod'
 import { useApp } from '@src/lib/boot'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
@@ -66,18 +68,38 @@ export function ExtrudePreview({
   const selection = isSelections(sketches) ? sketches : undefined
   const region = selection?.otherSelections.find(isEngineRegionSelection)
   const reference = selection?.graphSelections[0]?.entityRef
+  const artifact = selection?.graphSelections[0]
+    ? resolveToCodeRef(selection.graphSelections[0], kcl.artifactGraph)
+        ?.artifact
+    : undefined
   const regionId =
     region?.id ??
-    (reference?.type === 'region' ? reference.region_id : undefined)
+    (reference?.type === 'region' ? reference.region_id : undefined) ??
+    (artifact?.type === 'path' && artifact.subType === 'region'
+      ? artifact.id
+      : undefined)
   const count = selection
     ? selection.graphSelections.length + selection.otherSelections.length
     : 0
-  const frame = regionId && renderer?.getExtrudeFrame(regionId)
-  const supported =
-    count === 1 &&
-    !!frame &&
-    !context.argumentsToSubmit.nodeToEdit &&
-    !baseline.ast.body.some((statement) => statement.type === 'ImportStatement')
+  const originalDistance = literalDistance(
+    fieldText(invocation.argumentsToSubmit.length),
+    kcl.fileSettings.defaultLengthUnit ?? 'mm'
+  )
+  const frame =
+    regionId &&
+    renderer?.getExtrudeFrame(regionId, originalDistance?.millimeters)
+  const unavailable = !renderer
+    ? 'Enable Local Rendering in Settings to preview.'
+    : baseline.ast.body.some(
+          (statement) => statement.type === 'ImportStatement'
+        )
+      ? 'Preview does not yet support imported files.'
+      : count !== 1 || !regionId
+        ? 'Select one closed region to preview.'
+        : !frame
+          ? 'The profile plane is unavailable for dragging.'
+          : ''
+  const supported = !unavailable
   const distance = literalDistance(
     fieldText(draft.length),
     kcl.fileSettings.defaultLengthUnit ?? 'mm'
@@ -115,7 +137,9 @@ export function ExtrudePreview({
             new Error('Select one region and enter a distance.')
           )
         if (
-          args.method !== 'NEW' ||
+          (args.method !== undefined &&
+            args.method !== 'NEW' &&
+            args.method !== 'MERGE') ||
           (args.bodyType !== undefined && args.bodyType !== 'SOLID') ||
           [
             'to',
@@ -131,7 +155,7 @@ export function ExtrudePreview({
           args.symmetric === true
         )
           return Promise.reject(
-            new Error('Preview supports a new solid with one distance.')
+            new Error('Preview supports a solid with one distance.')
           )
         const wasm = await kcl.wasmInstancePromise
         const result = await runModelingCodemod({
@@ -139,8 +163,13 @@ export function ExtrudePreview({
           commandArgs: {
             sketches: args.sketches,
             length: args.length,
-            method: 'NEW',
-            bodyType: 'SOLID',
+            method: args.method,
+            bodyType: args.bodyType,
+            hideSeams:
+              typeof args.hideSeams === 'boolean' ? args.hideSeams : undefined,
+            nodeToEdit: invocation.argumentsToSubmit.nodeToEdit as
+              | PathToNode
+              | undefined,
           },
           kclManager: kcl,
           wasmInstance: wasm,
@@ -202,15 +231,14 @@ export function ExtrudePreview({
     pending.invalidate()
     if (!supported) {
       renderer?.clearOperationPreview()
-      setStatus('Select one closed region to preview.')
+      setStatus(unavailable)
       return
     }
     setStatus('Updating preview...')
     pending.update(JSON.parse(draftKey))
-  }, [draftKey, enabled, supported, renderer, source])
+  }, [draftKey, enabled, supported, unavailable, renderer, source])
 
-  if (!IS_STAGING_OR_DEBUG || !renderer || context.argumentsToSubmit.nodeToEdit)
-    return null
+  if (!IS_STAGING_OR_DEBUG) return null
   return (
     <div className="flex flex-col gap-1 border-t border-chalkboard-30 pt-2">
       <label className="flex items-center gap-2">
@@ -219,7 +247,10 @@ export function ExtrudePreview({
           checked={enabled}
           disabled={!enabled && (!supported || !validBaseline)}
           onChange={(event) => {
-            if (event.target.checked) {
+            if (
+              event.target.checked &&
+              !invocation.argumentsToSubmit.nodeToEdit
+            ) {
               save('method', 'NEW')
               save('bodyType', 'SOLID')
             }
@@ -228,11 +259,11 @@ export function ExtrudePreview({
         />
         Live preview (experimental)
       </label>
-      {enabled && (
+      {(enabled || unavailable) && (
         <output aria-live="polite">
           {!validBaseline
             ? 'The model changed. Reopen Extrude to preview.'
-            : status}
+            : unavailable || status}
         </output>
       )}
       {enabled &&

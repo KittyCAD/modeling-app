@@ -517,6 +517,15 @@ export default function ModelingDialog({
         className="flex min-h-0 flex-col text-xs"
       >
         <div className="flex min-h-0 flex-col gap-3 overflow-y-auto p-3">
+          {!initializing && command.name === 'Extrude' && (
+            <ExtrudePreview
+              kcl={kclManager}
+              context={state.context}
+              draft={selection.draft}
+              save={save}
+              containerRef={containerRef}
+            />
+          )}
           {initializing ? (
             <p>Loading arguments...</p>
           ) : (
@@ -529,15 +538,6 @@ export default function ModelingDialog({
                 {advanced.map(renderField)}
               </div>
             </details>
-          )}
-          {!initializing && command.name === 'Extrude' && (
-            <ExtrudePreview
-              kcl={kclManager}
-              context={state.context}
-              draft={selection.draft}
-              save={save}
-              containerRef={containerRef}
-            />
           )}
         </div>
         <footer className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-chalkboard-30 p-3 dark:border-chalkboard-70">

@@ -7,6 +7,7 @@ import { Signal } from '@src/lib/signal'
 import { defaultSelectionFilter } from '@src/lib/selectionFilterUtils'
 import { Themes } from '@src/lib/theme'
 import {
+  PlaneGeometry,
   Group,
   Mesh,
   type OrthographicCamera,
@@ -181,12 +182,51 @@ describe('local GLB loading', () => {
   })
   afterEach(() => vi.restoreAllMocks())
 
+  it.each([5, -5])(
+    'recovers a consumed profile frame for an existing %s mm extrusion',
+    (length) => {
+      const f = fixture()
+      const cap = new Mesh(new PlaneGeometry(0.01, 0.01))
+      cap.userData.faceUuid = 'start-cap'
+      cap.position.set(0.01, 0.02, 0.03)
+      f.state.currentModel = new Group().add(cap)
+      f.manager.artifactGraph.set('region', {
+        type: 'path',
+        id: 'region',
+        sweepId: 'extrusion',
+      } as Artifact)
+      f.manager.artifactGraph.set('extrusion', {
+        type: 'sweep',
+        id: 'extrusion',
+        surfaceIds: ['start-cap'],
+      } as Artifact)
+      f.manager.artifactGraph.set('start-cap', {
+        type: 'cap',
+        id: 'start-cap',
+        subType: 'start',
+      } as Artifact)
+      f.state.rebuildSelectionTargets()
+      const frame = f.renderer.getExtrudeFrame('region', length)
+      expect(frame?.normal.x).toBeCloseTo(0)
+      expect(frame?.normal.y).toBeCloseTo(Math.sign(length))
+      expect(frame?.normal.z).toBeCloseTo(0)
+      expect(frame?.origin.y).toBeCloseTo(-30)
+      expect(frame?.origin.z).toBeGreaterThan(15)
+      expect(frame?.origin.z).toBeLessThan(25)
+      expect(f.renderer.getExtrudeFrame('region')).toBeUndefined()
+      f.renderer.dispose()
+    }
+  )
+
   it('keeps the committed model intact while showing and cancelling a proposed scene', async () => {
     const f = fixture()
     const baseline = new Group()
     f.state.currentModel = baseline
     f.gpu.scene.add(baseline)
-    await f.renderer.showOperationPreview(new Uint8Array(triangleGlb().contents), () => true)
+    await f.renderer.showOperationPreview(
+      new Uint8Array(triangleGlb().contents),
+      () => true
+    )
     expect(baseline.visible).toBe(false)
     expect(f.state.currentModel).toBe(baseline)
     expect(f.gpu.scene.children).toHaveLength(2)
@@ -198,7 +238,10 @@ describe('local GLB loading', () => {
 
   it('does not display geometry after a preview loses ownership', async () => {
     const f = fixture()
-    await f.renderer.showOperationPreview(new Uint8Array(triangleGlb().contents), () => false)
+    await f.renderer.showOperationPreview(
+      new Uint8Array(triangleGlb().contents),
+      () => false
+    )
     expect(f.gpu.scene.children).toHaveLength(0)
     f.renderer.dispose()
   })
