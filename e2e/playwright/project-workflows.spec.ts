@@ -490,8 +490,8 @@ for (const kind of ['local', 'cloud'] as const) {
         const pending = await page.evaluateHandle(() => {
           const editor = window.app.singletons.kclManager
           const rust = editor.rustContext
-          const exitSketch = rust.exitSketch
-          const executeCode = editor.executeCode
+          const exitSketch = rust.exitSketch.bind(rust)
+          const executeCode = editor.executeCode.bind(editor)
           const exit = Promise.withResolvers<undefined>()
           const execution = Promise.withResolvers<undefined>()
           let exitCalls = 0
@@ -499,12 +499,12 @@ for (const kind of ['local', 'cloud'] as const) {
           rust.exitSketch = async (...args) => {
             exitCalls++
             await exit.promise
-            return exitSketch.apply(rust, args)
+            return exitSketch(...args)
           }
           editor.executeCode = async (...args) => {
             executing = true
             await execution.promise
-            return executeCode.apply(editor, args)
+            return executeCode(...args)
           }
           return {
             exitCalls: () => exitCalls,
@@ -1776,6 +1776,8 @@ for (const kind of ['local', 'cloud'] as const) {
                         : Promise.resolve()
                     if (action === 'rename') await acquired.promise
                     const prototype = FileSystemDirectoryHandle.prototype
+                    // Invoke the retained native method with each intercepted handle.
+                    // eslint-disable-next-line @typescript-eslint/unbound-method
                     const removeEntry = prototype.removeEntry
                     let started = false
                     if (action === 'delete')
@@ -1868,8 +1870,8 @@ for (const kind of ['local', 'cloud'] as const) {
           } finally {
             gate.resolve(undefined)
             if (local) {
-              await local.evaluate((gate) => {
-                gate.release()
+              await local.evaluate(async (gate) => {
+                await gate.release()
                 gate.restore()
               })
               await local.dispose()

@@ -832,6 +832,102 @@ describe.each([
     expect(api.updateRemoteProject).toHaveBeenCalledOnce()
   })
 
+  it.each(['success', 'failure'] as const)(
+    'excludes new mutations during a seven-second project deletion (%s)',
+    async (outcome) => {
+      const { fs } = setup()
+      const root = await fs.openProject('one')
+      const path = paths.join(root, 'main.kcl')
+      const gate = Promise.withResolvers<undefined>()
+      vi.mocked(api.deleteRemoteProject).mockReturnValueOnce(gate.promise)
+      const deleting = fs.deleteProject('one')
+      const deletionResult =
+        outcome === 'success'
+          ? expect(deleting).resolves.toBeUndefined()
+          : expect(deleting).rejects.toThrow('Deletion failed')
+      await vi.waitFor(() =>
+        expect(api.deleteRemoteProject).toHaveBeenCalledOnce()
+      )
+      vi.useFakeTimers()
+      try {
+        await vi.advanceTimersByTimeAsync(7_000)
+        await expect(
+          fs.writeFile(path, encoder.encode('late edit'))
+        ).rejects.toThrow('being deleted')
+        await expect(
+          fs.stageThumbnail(root, new Uint8Array([1]))
+        ).rejects.toThrow('being deleted')
+        expect(await fs.readFile(path, 'utf8')).toBe(
+          '@settings(kclVersion = 3.0)\n'
+        )
+        expect(api.updateRemoteProject).not.toHaveBeenCalled()
+      } finally {
+        if (outcome === 'success') gate.resolve(undefined)
+        else gate.reject(new Error('Deletion failed'))
+        await deletionResult
+      }
+      if (outcome === 'success') {
+        await expect(fs.readFile(path)).rejects.toMatchObject({
+          code: 'ENOENT',
+        })
+        expect(fs.projects.peek()).toEqual([])
+      } else {
+        await fs.writeFile(path, encoder.encode('retry edit'))
+        expect(await fs.readFile(path, 'utf8')).toBe('retry edit')
+        expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+      }
+    }
+  )
+
+  it('waits for an in-flight open before deleting and shares concurrent deletion requests', async () => {
+    const { fs } = setup()
+    const metadata = Promise.withResolvers<typeof remote>()
+    vi.mocked(api.getRemoteProject).mockReturnValueOnce(metadata.promise)
+    const opening = fs.openProject('one')
+    const deleting = fs.deleteProject('one')
+    expect(fs.deleteProject('one')).toBe(deleting)
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(api.deleteRemoteProject).not.toHaveBeenCalled()
+    metadata.resolve(remote)
+    const root = await opening
+    await deleting
+    expect(api.deleteRemoteProject).toHaveBeenCalledOnce()
+    await expect(fs.stat(root)).rejects.toMatchObject({ code: 'ENOENT' })
+    expect(fs.projects.peek()).toEqual([])
+  })
+
+  it('drains accepted saves before deletion and waits for deletion on detach', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    const upload = Promise.withResolvers<typeof remote>()
+    const deletion = Promise.withResolvers<undefined>()
+    vi.mocked(api.updateRemoteProject).mockReturnValueOnce(upload.promise)
+    vi.mocked(api.deleteRemoteProject).mockReturnValueOnce(deletion.promise)
+    const saving = fs.writeFile(
+      paths.join(root, 'main.kcl'),
+      encoder.encode('accepted edit')
+    )
+    await vi.waitFor(() =>
+      expect(api.updateRemoteProject).toHaveBeenCalledOnce()
+    )
+    const deleting = fs.deleteProject('one')
+    const disposed = vi.fn()
+    const detach = fs.detach().then(disposed)
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(api.deleteRemoteProject).not.toHaveBeenCalled()
+    expect(disposed).not.toHaveBeenCalled()
+    upload.resolve({ ...remote, revision: '2' })
+    await saving
+    await vi.advanceTimersByTimeAsync(0)
+    expect(api.deleteRemoteProject).toHaveBeenCalledOnce()
+    expect(disposed).not.toHaveBeenCalled()
+    deletion.resolve(undefined)
+    await Promise.all([deleting, detach])
+    expect(disposed).toHaveBeenCalledOnce()
+  })
+
   it('cancels delayed thumbnail uploads before deleting a cloud project', async () => {
     const { fs } = setup()
     const root = await fs.openProject('one')

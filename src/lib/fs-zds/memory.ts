@@ -1,65 +1,123 @@
 import type {
+  CopyOptions,
   IStat,
   IZooDesignStudioFS,
   WriteFileOptions,
-  CopyOptions,
 } from '@src/lib/fs-zds/interface'
 
-interface MemoryEntry {
-  data?: Uint8Array<ArrayBuffer>
-  modified: number
-  inode: number
+interface EntryMetadata {
+  readonly inode: number
+  readonly modified: number
 }
+type MemoryEntry = EntryMetadata &
+  (
+    | { readonly kind: 'file'; readonly bytes: Uint8Array<ArrayBuffer> }
+    | { readonly kind: 'directory'; readonly children: Set<string> }
+  )
 
-/** A filesystem backed exclusively by owned bytes. It never accesses disk or OPFS. */
-export function createMemoryFileSystem(
-  paths: IZooDesignStudioFS
-): IZooDesignStudioFS & {
+export interface MemoryFileSystem extends IZooDesignStudioFS {
   replaceDirectory: (
     root: string,
-    files: readonly { path: string; data: Uint8Array }[]
+    files: readonly { path: string; data: Uint8Array }[],
+    directories?: readonly string[]
   ) => void
-} {
+}
+
+/** Owned bytes and indexed directory membership, with synchronous snapshot publication. */
+export function createMemoryFileSystem(
+  paths: IZooDesignStudioFS
+): MemoryFileSystem {
   const entries = new Map<string, MemoryEntry>()
-  let inode = 0
-  const error = (code: string, path: string) =>
-    Object.assign(new Error(`${code}: ${path}`), { code })
-  const key = (path: string) => paths.resolve(path)
-  const get = (path: string) => {
-    const entry = entries.get(key(path))
+  let nextInode = 0
+  const within = (root: string, target: string) =>
+    target === root ||
+    target.startsWith(root.endsWith(paths.sep) ? root : `${root}${paths.sep}`)
+  const fail = (code: string, path: string): never => {
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-    if (!entry) throw error('ENOENT', path)
-    return entry
+    throw Object.assign(new Error(`${code}: ${path}`), { code })
   }
-  const makeEntry = (data?: Uint8Array): MemoryEntry => ({
-    data: data ? new Uint8Array(data) : undefined,
+  const metadata = (): EntryMetadata => ({
+    inode: ++nextInode,
     modified: Date.now(),
-    inode: ++inode,
   })
-  const children = (path: string) =>
-    [...entries.keys()].filter(
-      (candidate) =>
-        candidate !== key(path) && paths.dirname(candidate) === key(path)
-    )
-  const mkdir = async (
-    path: string,
-    options?: { recursive?: boolean }
-  ): Promise<undefined> => {
-    path = key(path)
-    const current = entries.get(path)
-    if (current) {
-      if (current.data) return Promise.reject(error('ENOTDIR', path))
-      if (!options?.recursive) return Promise.reject(error('EEXIST', path))
+  const directory = (): MemoryEntry => ({
+    ...metadata(),
+    kind: 'directory',
+    children: new Set(),
+  })
+  const file = (bytes: Uint8Array): MemoryEntry => ({
+    ...metadata(),
+    kind: 'file',
+    bytes: new Uint8Array(bytes),
+  })
+  const get = (path: string): MemoryEntry =>
+    entries.get(path) ?? fail('ENOENT', path)
+  const children = (path: string): Set<string> => {
+    const entry = get(path)
+    return entry.kind === 'directory' ? entry.children : fail('ENOTDIR', path)
+  }
+  const put = (path: string, entry: MemoryEntry) => {
+    const parent = paths.dirname(path)
+    if (parent !== path) children(parent).add(path)
+    entries.set(path, entry)
+  }
+  const ensureDirectory = (path: string, recursive: boolean): void => {
+    const existing = entries.get(path)
+    if (existing) {
+      if (existing.kind !== 'directory') fail('ENOTDIR', path)
+      if (!recursive) fail('EEXIST', path)
       return
     }
     const parent = paths.dirname(path)
     if (parent !== path && !entries.has(parent)) {
-      if (!options?.recursive) return Promise.reject(error('ENOENT', parent))
-      await mkdir(parent, options)
+      if (!recursive) fail('ENOENT', parent)
+      ensureDirectory(parent, true)
     }
-    if (parent !== path && get(parent).data)
-      return Promise.reject(error('ENOTDIR', parent))
-    entries.set(path, makeEntry())
+    put(path, directory())
+  }
+  const subtree = (path: string): [string, MemoryEntry][] => {
+    const result: [string, MemoryEntry][] = []
+    const pending = [path]
+    while (pending.length) {
+      const current = pending.pop()!
+      const entry = get(current)
+      result.push([current, entry])
+      if (entry.kind === 'directory') pending.push(...entry.children)
+    }
+    return result
+  }
+  const remove = (path: string) => {
+    const contents = subtree(path)
+    const parent = paths.dirname(path)
+    if (parent !== path) children(parent).delete(path)
+    for (const [name] of contents) entries.delete(name)
+  }
+  const write = (
+    path: string,
+    bytes: Uint8Array,
+    options?: WriteFileOptions
+  ) => {
+    const existing = entries.get(path)
+    if (existing && options?.flag === 'wx') fail('EEXIST', path)
+    if (existing?.kind === 'directory') fail('EISDIR', path)
+    put(path, file(bytes))
+  }
+  const copy = (
+    source: string,
+    destination: string,
+    options?: CopyOptions
+  ): void => {
+    const entry = get(source)
+    if (options?.force === false && entries.has(destination))
+      fail('EEXIST', destination)
+    if (entry.kind === 'file') {
+      write(destination, entry.bytes)
+      return
+    }
+    if (!options?.recursive) fail('EISDIR', source)
+    ensureDirectory(destination, true)
+    for (const child of entry.children)
+      copy(child, paths.join(destination, paths.basename(child)), options)
   }
   async function readFile(
     path: string,
@@ -71,156 +129,128 @@ export function createMemoryFileSystem(
     path: string,
     options?: unknown
   ): Promise<string | Uint8Array> {
-    const data = get(path).data
-    if (!data) return Promise.reject(error('EISDIR', path))
-    return options ? new TextDecoder().decode(data) : new Uint8Array(data)
-  }
-  const writeFile = async (
-    path: string,
-    bytes: Uint8Array,
-    options?: WriteFileOptions
-  ) => {
-    path = key(path)
-    if (options?.flag === 'wx' && entries.has(path))
-      return Promise.reject(error('EEXIST', path))
-    if (entries.has(path) && !get(path).data)
-      return Promise.reject(error('EISDIR', path))
-    if (get(paths.dirname(path)).data)
-      return Promise.reject(error('ENOTDIR', paths.dirname(path)))
-    entries.set(path, makeEntry(bytes))
-  }
-  const rm = async (
-    path: string,
-    options?: { recursive?: boolean; force?: boolean }
-  ) => {
-    path = key(path)
-    if (!entries.has(path) && options?.force) return
-    get(path)
-    const descendants = [...entries.keys()].filter((p) =>
-      p.startsWith(`${path}${paths.sep}`)
-    )
-    if (descendants.length && !options?.recursive)
-      return Promise.reject(error('ENOTEMPTY', path))
-    for (const descendant of descendants) entries.delete(descendant)
-    entries.delete(path)
-  }
-  const cp = async (
-    source: string,
-    destination: string,
-    options?: CopyOptions
-  ): Promise<void> => {
-    source = key(source)
-    destination = key(destination)
-    if (
-      destination === source ||
-      destination.startsWith(`${source}${paths.sep}`)
-    )
-      return Promise.reject(error('EINVAL', destination))
-    const entry = get(source)
-    if (options?.force === false && entries.has(destination))
-      return Promise.reject(error('EEXIST', destination))
-    if (entry.data) await writeFile(destination, entry.data)
-    else {
-      if (!options?.recursive) return Promise.reject(error('EISDIR', source))
-      await mkdir(destination, { recursive: true })
-      for (const child of children(source))
-        await cp(child, paths.join(destination, paths.basename(child)), options)
-    }
+    const entry = get(paths.resolve(path))
+    if (entry.kind !== 'file') return fail('EISDIR', path)
+    return options
+      ? new TextDecoder().decode(entry.bytes)
+      : new Uint8Array(entry.bytes)
   }
   return {
     ...paths,
     isSameEntry: undefined,
-    replaceDirectory: (root, files) => {
-      root = key(root)
-      const next = new Map<string, MemoryEntry>([[root, makeEntry()]])
-      for (const file of files) {
-        const path = key(file.path)
-        if (!path.startsWith(`${root}${paths.sep}`)) {
-          // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-          throw error('EINVAL', path)
-        }
-        next.set(path, makeEntry(file.data))
-        let parent = paths.dirname(path)
-        while (parent !== root) {
-          if (next.get(parent)?.data) {
-            // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-            throw error('ENOTDIR', parent)
-          }
-          next.set(parent, next.get(parent) ?? makeEntry())
-          parent = paths.dirname(parent)
-        }
-      }
-      // Validate file/directory collisions before publishing the new tree.
-      for (const path of next.keys()) {
-        if (path !== root && next.get(paths.dirname(path))?.data) {
-          // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-          throw error('ENOTDIR', path)
-        }
-      }
-      for (const path of entries.keys())
-        if (path === root || path.startsWith(`${root}${paths.sep}`))
-          entries.delete(path)
-      for (const [path, entry] of next) entries.set(path, entry)
-    },
     readFile,
-    writeFile,
-    mkdir,
-    rm,
-    cp,
+    writeFile: async (path, bytes, options) =>
+      write(paths.resolve(path), bytes, options),
+    mkdir: async (path, options?: { recursive?: boolean }) => {
+      ensureDirectory(paths.resolve(path), options?.recursive ?? false)
+      return undefined
+    },
+    rm: async (path, options?: { recursive?: boolean; force?: boolean }) => {
+      path = paths.resolve(path)
+      if (!entries.has(path) && options?.force) return
+      const entry = get(path)
+      if (
+        entry.kind === 'directory' &&
+        entry.children.size &&
+        !options?.recursive
+      )
+        return fail('ENOTEMPTY', path)
+      remove(path)
+    },
+    cp: async (source, destination, options) => {
+      source = paths.resolve(source)
+      destination = paths.resolve(destination)
+      if (within(source, destination)) return fail('EINVAL', destination)
+      copy(source, destination, options)
+    },
     rename: async (source, destination) => {
-      source = key(source)
-      destination = key(destination)
+      source = paths.resolve(source)
+      destination = paths.resolve(destination)
       const entry = get(source)
       if (source === destination) return
-      const prefix = source.endsWith(paths.sep)
-        ? source
-        : `${source}${paths.sep}`
-      if (destination.startsWith(prefix))
-        return Promise.reject(error('EINVAL', destination))
-      if (get(paths.dirname(destination)).data)
-        return Promise.reject(error('ENOTDIR', paths.dirname(destination)))
+      if (within(source, destination)) return fail('EINVAL', destination)
+      children(paths.dirname(destination))
       const target = entries.get(destination)
       if (target) {
-        if (entry.data && !target.data)
-          return Promise.reject(error('EISDIR', destination))
-        if (!entry.data && target.data)
-          return Promise.reject(error('ENOTDIR', destination))
-        if (!target.data && children(destination).length)
-          return Promise.reject(error('ENOTEMPTY', destination))
+        if (entry.kind !== target.kind)
+          return fail(
+            target.kind === 'file' ? 'ENOTDIR' : 'EISDIR',
+            destination
+          )
+        if (target.kind === 'directory' && target.children.size)
+          return fail('ENOTEMPTY', destination)
       }
-
-      // Check every collision before moving entries synchronously. Rename retains
-      // inode identity and never exposes a partially copied or removed subtree.
-      const moved = [...entries].filter(
-        ([path]) => path === source || path.startsWith(prefix)
-      )
-      entries.delete(destination)
-      for (const [path] of moved) entries.delete(path)
-      for (const [path, value] of moved)
+      const moved = subtree(source)
+      const relocated = (path: string) =>
+        paths.join(destination, paths.relative(source, path))
+      remove(source)
+      if (target) remove(destination)
+      for (const [path, value] of moved) {
+        // Directory membership changes with the path; inode and file bytes retain identity.
         entries.set(
-          path === source
-            ? destination
-            : paths.join(destination, paths.relative(source, path)),
-          value
+          relocated(path),
+          value.kind === 'file'
+            ? value
+            : {
+                ...value,
+                children: new Set([...value.children].map(relocated)),
+              }
         )
+      }
+      children(paths.dirname(destination)).add(destination)
     },
-    readdir: async (path) => {
-      if (get(path).data) return Promise.reject(error('ENOTDIR', path))
-      return children(path).map((child) => paths.basename(child))
+    replaceDirectory: (root, files, directories = []) => {
+      root = paths.resolve(root)
+      // Construct and validate a detached subtree before publishing any changes.
+      const next = new Map<string, MemoryEntry>([[root, directory()]])
+      const addDirectory = (path: string): void => {
+        const existing = next.get(path)
+        if (existing) {
+          if (existing.kind !== 'directory') fail('ENOTDIR', path)
+          return
+        }
+        addDirectory(paths.dirname(path))
+        next.set(path, directory())
+      }
+      const contained = (path: string) => {
+        path = paths.resolve(path)
+        if (path === root || !within(root, path)) fail('EINVAL', path)
+        return path
+      }
+      for (const path of directories) addDirectory(contained(path))
+      for (const item of files) {
+        const path = contained(item.path)
+        if (next.has(path)) fail('EEXIST', path)
+        addDirectory(paths.dirname(path))
+        next.set(path, file(item.data))
+      }
+      for (const [path] of next) {
+        if (path === root) continue
+        const parent = next.get(paths.dirname(path))!
+        if (parent.kind !== 'directory') fail('ENOTDIR', path)
+        else parent.children.add(path)
+      }
+      // Ensure the root's parent exists, as it would for ordinary directory creation.
+      const parent = paths.dirname(root)
+      if (parent !== root) ensureDirectory(parent, true)
+      if (entries.has(root)) remove(root)
+      for (const [path, entry] of next) entries.set(path, entry)
+      if (parent !== root) children(parent).add(root)
     },
+    readdir: async (path) =>
+      [...children(paths.resolve(path))].map((child) => paths.basename(child)),
     stat: async (path): Promise<IStat> => {
-      const entry = get(path)
-      const mode = entry.data ? 0o100644 : 0o40755
+      const entry = get(paths.resolve(path))
       const time = entry.modified
       return {
         dev: 0,
         ino: entry.inode,
-        mode,
+        mode: entry.kind === 'file' ? 0o100644 : 0o40755,
         nlink: 1,
         uid: 0,
         gid: 0,
         rdev: 0,
-        size: entry.data?.byteLength ?? 0,
+        size: entry.kind === 'file' ? entry.bytes.byteLength : 0,
         blksize: 4096,
         blocks: 0,
         atimeMs: time,
@@ -234,7 +264,7 @@ export function createMemoryFileSystem(
       }
     },
     access: async (path) => {
-      get(path)
+      get(paths.resolve(path))
     },
     getPath: async () =>
       Promise.reject(

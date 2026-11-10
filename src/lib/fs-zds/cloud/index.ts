@@ -1,4 +1,9 @@
 import {
+  collectCloudSnapshot,
+  replaceCloudSnapshot,
+  sameSnapshot,
+} from '@src/lib/fs-zds/cloud/snapshot'
+import {
   downloadDeletedCloudEntries,
   isDeletedCloudPath,
   type CloudFileDeletion,
@@ -6,7 +11,6 @@ import {
 import {
   CLOUD_DIRECTORIES_FILE,
   decodeCloudDirectories,
-  encodeCloudDirectories,
 } from '@src/lib/fs-zds/cloud/directories'
 import { subscribeToSet } from '@src/lib/utils'
 import { incrementMapCounter } from '@src/lib/utils'
@@ -92,6 +96,8 @@ export function createCloudFileSystem(
     pendingThumbnails.delete(id)
   }
   const opening = new Map<string, Promise<string>>()
+  const deleting = new Map<string, Promise<void>>()
+  const deletingError = () => new Error('Cloud project is being deleted.')
   const reconciliationListeners = new Set<
     (root: string, files: readonly ProjectArchiveFile[]) => void
   >()
@@ -113,41 +119,7 @@ export function createCloudFileSystem(
   const notify = (changed: readonly CloudFileChange[]) => {
     for (const listener of listeners) listener(changed)
   }
-  const collect = async (
-    directory: string,
-    base = directory,
-    emptyDirectories: string[] = []
-  ): Promise<ProjectArchiveFile[]> => {
-    const result: ProjectArchiveFile[] = []
-    const names = (await memory.readdir(directory)).filter(
-      (name) => directory !== base || name !== CLOUD_DIRECTORIES_FILE
-    )
-    if (directory !== base && names.length === 0)
-      emptyDirectories.push(
-        paths.relative(base, directory).replaceAll('\\', '/')
-      )
-    for (const name of names) {
-      const path = paths.join(directory, name)
-      if (((await memory.stat(path)).mode & 0o170000) === 0o040000)
-        result.push(...(await collect(path, base, emptyDirectories)))
-      else
-        result.push({
-          relativePath: paths.relative(base, path).replaceAll('\\', '/'),
-          data: await memory.readFile(path),
-        })
-    }
-    if (directory === base) {
-      const metadataPath = paths.join(base, CLOUD_DIRECTORIES_FILE)
-      if (emptyDirectories.length) {
-        const data = encodeCloudDirectories(emptyDirectories)
-        await memory.writeFile(metadataPath, data)
-        result.push({ relativePath: CLOUD_DIRECTORIES_FILE, data })
-      } else {
-        await memory.rm(metadataPath, { force: true })
-      }
-    }
-    return result
-  }
+  const collect = (directory: string) => collectCloudSnapshot(memory, directory)
   const downloadRefresh = async (
     requestConfig: CloudApiConfig,
     id: string,
@@ -176,39 +148,7 @@ export function createCloudFileSystem(
     id: string,
     archive: readonly ProjectArchiveFile[]
   ) => {
-    const projectRoot = pathFor(id)
-    // Validate the complete archive before inserting any bytes.
-    const entries = archive.map((file) => {
-      const path = paths.resolve(projectRoot, file.relativePath)
-      if (!getContainedRelativePath(paths, projectRoot, path)) {
-        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-        throw new Error('Cloud archive contains a path outside its project.')
-      }
-      return { path, data: file.data }
-    })
-    const directoryMetadata = archive.find(
-      (file) => file.relativePath === CLOUD_DIRECTORIES_FILE
-    )
-    const directories = directoryMetadata
-      ? decodeCloudDirectories(directoryMetadata.data)
-      : []
-    // Validate file/directory collisions before replacing the live snapshot.
-    for (const directory of directories)
-      if (
-        archive.some(
-          (file) =>
-            directory === file.relativePath ||
-            directory.startsWith(`${file.relativePath}/`)
-        )
-      )
-        return Promise.reject(
-          new Error('Cloud directory metadata conflicts with a file.')
-        )
-    memory.replaceDirectory(projectRoot, entries)
-    for (const directory of directories)
-      await memory.mkdir(paths.join(projectRoot, directory), {
-        recursive: true,
-      })
+    replaceCloudSnapshot(memory, pathFor(id), archive)
   }
   const acknowledge = (
     id: string,
@@ -265,19 +205,8 @@ export function createCloudFileSystem(
       return Promise.reject(
         new Error('Cloud project changed during reconciliation.')
       )
-    const submittedByPath = new Map(
-      submitted?.map((file) => [file.relativePath, file.data])
-    )
     const sameContents =
-      submitted !== undefined &&
-      archive.length === submitted.length &&
-      archive.every((file) => {
-        const bytes = submittedByPath.get(file.relativePath)
-        return (
-          bytes?.length === file.data.length &&
-          bytes.every((byte, index) => byte === file.data[index])
-        )
-      })
+      submitted !== undefined && sameSnapshot(submitted, archive)
     if (sameContents) {
       // Keep staged thumbnail bytes in memory too, without replacing editor source.
       await hydrate(id, archive)
@@ -359,6 +288,7 @@ export function createCloudFileSystem(
     } = {}
   ): Promise<T> => {
     if (isOffline()) return Promise.reject(offlineError())
+    if (deleting.has(id)) return Promise.reject(deletingError())
     const project = opened.get(id)
     if (!project) return Promise.reject(new Error('Cloud project is not open.'))
     const requestConfig = config()
@@ -682,9 +612,11 @@ export function createCloudFileSystem(
           project.queue.catch(() => undefined)
         )
       )
+      await Promise.allSettled([...deleting.values()])
     },
   }
   const openProject = (id: string): Promise<string> => {
+    if (deleting.has(id)) return Promise.reject(deletingError())
     const existing = opened.get(id)
     if (existing)
       return existing.owner === config().accountId
@@ -714,35 +646,45 @@ export function createCloudFileSystem(
     opening.set(id, result)
     return result
   }
-  const deleteProject = async (id: string) => {
-    if (isOffline()) return Promise.reject(offlineError())
-    const requestConfig = config()
-    const project = opened.get(id)
-    if (project && project.owner !== requestConfig.accountId)
-      return Promise.reject(
-        new Error('Cloud project belongs to a different account.')
-      )
-    // A delayed preview must not race the project's deletion request.
-    clearTimeout(pendingThumbnails.get(id)?.timer)
-    await project?.queue.catch(() => undefined)
-    if (isOffline()) return Promise.reject(offlineError())
-    if (config().accountId !== requestConfig.accountId)
-      return Promise.reject(new Error('Cloud account changed before deletion.'))
-    await api.deleteRemoteProject(requestConfig, id)
-    if (config().accountId !== requestConfig.accountId)
-      return Promise.reject(new Error('Cloud account changed during deletion.'))
-    // Releasing an in-memory mount cannot remove any historical disk mirror.
-    if (opened.has(id))
-      await memory.rm(pathFor(id), { recursive: true, force: true })
-    clearThumbnail(id)
-    opened.delete(id)
-    activityVersions.delete(id)
-    const remainingSaves = new Map(saves.peek())
-    remainingSaves.delete(id)
-    saves.value = remainingSaves
-    listGeneration += 1
-    projects.value = projects.peek().filter((project) => project.id !== id)
-    notify([{ path: pathFor(id), eventType: 'unlinkDir' }])
+  const deleteProject = (id: string): Promise<void> => {
+    const pending = deleting.get(id)
+    if (pending) return pending
+    const request = (async () => {
+      if (isOffline()) return Promise.reject(offlineError())
+      const requestConfig = config()
+      const existing = opened.get(id)
+      if (existing && existing.owner !== requestConfig.accountId)
+        return Promise.reject(
+          new Error('Cloud project belongs to a different account.')
+        )
+      clearTimeout(pendingThumbnails.get(id)?.timer)
+      // An opening request and every accepted save finish before deletion reaches the API.
+      await opening.get(id)?.catch(() => undefined)
+      await opened.get(id)?.queue.catch(() => undefined)
+      if (isOffline()) return Promise.reject(offlineError())
+      if (config().accountId !== requestConfig.accountId)
+        return Promise.reject(
+          new Error('Cloud account changed before deletion.')
+        )
+      await api.deleteRemoteProject(requestConfig, id)
+      if (config().accountId !== requestConfig.accountId)
+        return Promise.reject(
+          new Error('Cloud account changed during deletion.')
+        )
+      if (opened.has(id))
+        await memory.rm(pathFor(id), { recursive: true, force: true })
+      clearThumbnail(id)
+      opened.delete(id)
+      activityVersions.delete(id)
+      const remainingSaves = new Map(saves.peek())
+      remainingSaves.delete(id)
+      saves.value = remainingSaves
+      listGeneration += 1
+      projects.value = projects.peek().filter((project) => project.id !== id)
+      notify([{ path: pathFor(id), eventType: 'unlinkDir' }])
+    })().finally(() => deleting.delete(id))
+    deleting.set(id, request)
+    return request
   }
   const createProject = async (
     title: string,
@@ -827,6 +769,7 @@ export function createCloudFileSystem(
     stageThumbnail: async (path: string, bytes: Uint8Array) => {
       if (isOffline()) return
       const id = idFor(path)
+      if (deleting.has(id)) return Promise.reject(deletingError())
       const project = opened.get(id)
       if (!project || project.owner !== config().accountId)
         return Promise.reject(
@@ -869,7 +812,9 @@ export function createCloudFileSystem(
       const controller = new AbortController()
       const timeout = setTimeout(() => controller.abort(), 60_000)
       const current = () =>
-        config().accountId === requestConfig.accountId && opened.has(id)
+        config().accountId === requestConfig.accountId &&
+        opened.has(id) &&
+        !deleting.has(id)
       const unchanged: CloudProjectUpdate = { changed: false, refreshed: false }
       const request = (async (): Promise<CloudProjectUpdate> => {
         const remote = await api.getRemoteProject(
