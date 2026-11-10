@@ -44,7 +44,29 @@ export function createRegionMeshes(
   const material = new MeshBasicNodeMaterial({ side: DoubleSide })
   material.visible = false
   const meshes = regions.flatMap((region) => {
-    const geometry = region.regionId && createRegionGeometry(region, brep)
+    const path = region.sketchId && artifactGraph.get(region.sketchId)
+    const legacy =
+      path &&
+      path.type === 'path' &&
+      path.subType === 'sketch' &&
+      !path.sketchBlockId
+    const holeEdges = new Map<number, number[]>()
+    if (legacy && !region.holeLoops?.length) {
+      // Legacy Boolean holes are exported as sketch boundaries, not region hole loops.
+      for (const segment of gltf.userData.KITTYCAD?.sketches ?? []) {
+        if (
+          segment.sketchId !== region.sketchId ||
+          segment.holeIndex === undefined
+        )
+          continue
+        const edges = holeEdges.get(segment.holeIndex) ?? []
+        edges.push(segment.edge)
+        holeEdges.set(segment.holeIndex, edges)
+      }
+    }
+    const geometry =
+      region.regionId &&
+      createRegionGeometry(region, brep, [...holeEdges.values()])
     if (!geometry) {
       return []
     }
@@ -52,13 +74,7 @@ export function createRegionMeshes(
     mesh.name = `region_${region.regionId}`
     mesh.userData.faceUuid = region.regionId
 
-    const path = region.sketchId && artifactGraph.get(region.sketchId)
-    if (
-      path &&
-      path.type === 'path' &&
-      path.subType === 'sketch' &&
-      !path.sketchBlockId
-    ) {
+    if (legacy) {
       // Legacy profiles export internal regions that the engine cannot query.
       // Select their existing profile face instead.
       mesh.userData.faceUuid = path.solid2dId ?? region.regionId
@@ -74,7 +90,8 @@ export function createRegionMeshes(
 
 function createRegionGeometry(
   region: KITTYCAD_GLTF_SKETCH_REGION,
-  brep: KITTYCAD_GLTF_BREP
+  brep: KITTYCAD_GLTF_BREP,
+  holeEdges: number[][]
 ) {
   const plane: RegionPlane = {
     origin: new Vector3(...region.planeOrigin),
@@ -86,8 +103,11 @@ function createRegionGeometry(
   if (contour.length < 3) {
     return null
   }
-  const holes = (region.holeLoops ?? [])
-    .map((loop) => toPlane(sampleLoop(brep, loop), plane))
+  const holes = [
+    ...(region.holeLoops ?? []).map((loop) => sampleLoop(brep, loop)),
+    ...holeEdges.map((edges) => sampleEdges(brep, edges)),
+  ]
+    .map((points) => toPlane(points, plane))
     .filter((hole) => hole.length >= 3)
   // Triangulation expects the outline counter-clockwise and holes clockwise.
   if (ShapeUtils.isClockWise(contour)) {
@@ -131,9 +151,18 @@ function fromPlane(points: Vector2[], { origin, xAxis, yAxis }: RegionPlane) {
 
 // The points around one boundary loop, without repeating the closing point.
 function sampleLoop(brep: KITTYCAD_GLTF_BREP, loopIndex: number) {
+  return sampleEdges(
+    brep,
+    (brep.loops[loopIndex]?.edges ?? []).flatMap((entry) =>
+      entry ? [entry[0]] : []
+    )
+  )
+}
+
+function sampleEdges(brep: KITTYCAD_GLTF_BREP, edges: number[]) {
   const parts: Vector3[][] = []
-  for (const entry of brep.loops[loopIndex]?.edges ?? []) {
-    const edge = entry && brep.edges[entry[0]]
+  for (const index of edges) {
+    const edge = brep.edges[index]
     const curve = edge && brep.curves3D[edge.curve[0]]
     if (!edge || !curve) {
       continue
