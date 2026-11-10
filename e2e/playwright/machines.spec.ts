@@ -31,7 +31,7 @@ async function setMachineApiEnabled(page: Page, enabled: boolean) {
 
 test(
   'When machine-api server not found butt is disabled and shows the reason',
-  { tag: '@desktop' },
+  { tag: ['@desktop', '@localRenderer'] },
   async ({ page, scene, cmdBar, folderSetupFn }, testInfo) => {
     await folderSetupFn(async (dir) => {
       const bracketDir = join(dir, 'bracket')
@@ -69,7 +69,7 @@ test(
 
 test(
   'When machine-api server not found home screen & project status shows the reason',
-  { tag: '@desktop' },
+  { tag: ['@desktop', '@localRenderer'] },
   async ({ page, scene, cmdBar, folderSetupFn }, testInfo) => {
     await folderSetupFn(async (dir) => {
       const bracketDir = join(dir, 'bracket')
@@ -106,7 +106,7 @@ test(
 
 test(
   'Machine API service turns on when the setting is enabled',
-  { tag: '@desktop' },
+  { tag: ['@desktop', '@localRenderer'] },
   async ({ page }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
 

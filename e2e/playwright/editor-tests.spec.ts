@@ -33,7 +33,7 @@ async function selectCompletionOption(page: Page, label: string) {
   throw new Error(`Could not select autocomplete option "${label}"`)
 }
 
-test.describe('Editor tests', { tag: '@desktop' }, () => {
+test.describe('Editor tests', { tag: ['@desktop', '@localRenderer'] }, () => {
   test('can comment out code with ctrl+/', async ({ page, homePage }) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -1307,7 +1307,7 @@ sketch001 = startSketchOn(XZ)
 
 test(
   'Undo/redo recovers deleted files interleaved with code edits',
-  { tag: '@web' },
+  { tag: ['@web', '@localRenderer'] },
   async ({ page, homePage, toolbar, editor, folderSetupFn, fs, scene }) => {
     await folderSetupFn(async (dir) => {
       const projectDir = await fs.join(dir, 'History Project')

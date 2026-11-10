@@ -6,34 +6,38 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test('Units menu', { tag: '@desktop' }, async ({ page, homePage }) => {
-  await page.setBodyDimensions({ width: 1200, height: 500 })
-  await homePage.goToModelingScene()
+test(
+  'Units menu',
+  { tag: ['@desktop', '@localRenderer'] },
+  async ({ page, homePage }) => {
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.goToModelingScene()
 
-  const unitsMenuButton = page.getByTestId('units-menu')
-  await expect(unitsMenuButton).toBeVisible()
-  await expect(unitsMenuButton).toContainText('in')
+    const unitsMenuButton = page.getByTestId('units-menu')
+    await expect(unitsMenuButton).toBeVisible()
+    await expect(unitsMenuButton).toContainText('in')
 
-  await unitsMenuButton.click()
-  const millimetersButton = page.getByRole('button', { name: 'Millimeters' })
+    await unitsMenuButton.click()
+    const millimetersButton = page.getByRole('button', { name: 'Millimeters' })
 
-  await expect(millimetersButton).toBeVisible()
-  await millimetersButton.click()
+    await expect(millimetersButton).toBeVisible()
+    await millimetersButton.click()
 
-  // Look out for the toast message
-  const toastMessage = page.getByText('Updated per-file units to mm.')
-  await expect(toastMessage).toBeVisible()
+    // Look out for the toast message
+    const toastMessage = page.getByText('Updated per-file units to mm.')
+    await expect(toastMessage).toBeVisible()
 
-  // Verify that the popover has closed
-  await expect(millimetersButton).not.toBeAttached()
+    // Verify that the popover has closed
+    await expect(millimetersButton).not.toBeAttached()
 
-  // Verify that the button label has updated
-  await expect(unitsMenuButton).toContainText('mm')
-})
+    // Verify that the button label has updated
+    await expect(unitsMenuButton).toContainText('mm')
+  }
+)
 
 test(
   'Successful export shows a success toast',
-  { tag: ['@desktop', '@skipLocalEngine'] },
+  { tag: ['@desktop', '@skipLocalEngine', '@localRenderer'] },
   async ({ page, homePage, cmdBar, tronApp }, testInfo) => {
     // FYI this test doesn't work with only engine running locally
     // And you will need to have the KittyCAD CLI installed
@@ -102,7 +106,7 @@ part001 = startSketchOn(-XZ)
 
 test(
   'Paste should not work unless an input is focused',
-  { tag: '@desktop' },
+  { tag: ['@desktop', '@localRenderer'] },
   async ({ page, homePage }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
@@ -146,7 +150,7 @@ test(
 
 test(
   'Keyboard shortcuts can be viewed through the help menu',
-  { tag: '@desktop' },
+  { tag: ['@desktop', '@localRenderer'] },
   async ({ page, homePage }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
@@ -170,7 +174,7 @@ test(
 
 test(
   'Delete key does not navigate back',
-  { tag: '@desktop' },
+  { tag: ['@desktop', '@localRenderer'] },
   async ({ page, homePage }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()

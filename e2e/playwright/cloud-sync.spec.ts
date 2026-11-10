@@ -50,7 +50,7 @@ async function expectCloudSyncHomeReady(page: Page) {
 
 test(
   'syncs an edit queued during first upload with the real development API',
-  { tag: ['@web'] },
+  { tag: ['@web', '@localRenderer'] },
   async ({ context, page, request, firstUploadProject }, testInfo) => {
     const apiUrl = 'https://api.dev.zoo.dev'
     const headers = { Authorization: `Bearer ${token}` }
@@ -153,7 +153,7 @@ test(
 
 test(
   'creates a multi-file sample in Personal Cloud from Home',
-  { tag: ['@web'] },
+  { tag: ['@web', '@localRenderer'] },
   async ({ context, page }, testInfo) => {
     const createdProject: CloudProject = {
       id: 'created-sample-project',
@@ -215,7 +215,7 @@ test(
 
 test(
   'streams remote-only projects into an empty local list and materializes opened clones',
-  { tag: ['@web'] },
+  { tag: ['@web', '@localRenderer'] },
   async ({ context, page }, testInfo) => {
     const remoteProjects: CloudProject[] = [
       {
@@ -344,7 +344,7 @@ test(
 
 test(
   'opens a shared project in Personal Cloud when no project is already open',
-  { tag: ['@web'] },
+  { tag: ['@web', '@localRenderer'] },
   async ({ context, page }, testInfo) => {
     const publicProjectId = 'aquarium-shared-project'
     const publicProjectTitle = '!!!'
@@ -490,7 +490,7 @@ test(
 
 test(
   'streams cloud projects without replacing the local-first home list',
-  { tag: ['@web'] },
+  { tag: ['@web', '@localRenderer'] },
   async ({ context, page }, testInfo) => {
     const remoteOnlyProject: CloudProject = {
       id: 'remote-only-project',
