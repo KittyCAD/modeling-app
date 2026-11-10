@@ -1048,6 +1048,10 @@ describe('ProjectCard', () => {
         expect(
           screen.getByRole('status', { name: 'Renaming project New title' })
         ).toBeVisible()
+        expect(screen.getByTestId('project-link')).toHaveAttribute(
+          'aria-disabled',
+          'true'
+        )
         fireEvent.click(screen.getByTestId('project-link'))
         expect(projectActions.open).not.toHaveBeenCalled()
         fireEvent.contextMenu(screen.getByTestId('project-link'))
@@ -1065,6 +1069,10 @@ describe('ProjectCard', () => {
           await gate.promise.catch(() => undefined)
         })
         expect(screen.queryByRole('status')).not.toBeInTheDocument()
+        expect(screen.getByTestId('project-link')).toHaveAttribute(
+          'aria-disabled',
+          'false'
+        )
         expect(screen.getByTestId('project-title')).toHaveTextContent(
           'Old cloud title'
         )

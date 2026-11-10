@@ -681,6 +681,7 @@ function AppProjectCard({
         <Link
           {...linkProps}
           to={openHref}
+          aria-disabled={!canOpen || isBusy}
           title={
             projectShellEnabled && canOpen && project.localProjectPath
               ? 'Shift-click to open without an editor'
