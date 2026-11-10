@@ -1322,6 +1322,7 @@ for (const kind of ['local', 'cloud'] as const) {
           context,
         }, testInfo) => {
           test.setTimeout(180_000)
+          if (kind === 'cloud') await page.clock.install()
           const storage = await prepareStorage(kind, page, context, testInfo, {
             modeling: true,
           })
@@ -1350,9 +1351,9 @@ for (const kind of ['local', 'cloud'] as const) {
             await storage.home.openProject('Rendered project')
             if (kind === 'cloud') {
               await expect.poll(() => downloadStarted).toBe(true)
-              const clockStart = new Date()
-              await page.clock.install({ time: clockStart })
-              await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+              await page.clock.pauseAt(
+                new Date((await page.evaluate(() => Date.now())) + 1_000)
+              )
               await page.clock.runFor(7_000)
               expect(storage.remote.uploads).toHaveLength(0)
               expect(
@@ -1388,11 +1389,9 @@ for (const kind of ['local', 'cloud'] as const) {
               data: { level: 'user', value: 'dark' },
             })
           )
-          await expect
-            .poll(() =>
-              page.evaluate(() => window.app.settings.actor.getSnapshot().value)
-            )
-            .toBe('idle')
+          await page.waitForFunction(() =>
+            window.app.settings.actor.getSnapshot().matches('idle')
+          )
           expect(storage.remote.uploads).toHaveLength(uploads)
           await storage.replace(
             firstRoot,
