@@ -108,15 +108,15 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
         options.subRoute ?? ''
       )
       const settings = ctx.services.optional(settingsService)?.get()
-      if (
+      const isStaleOnboardingNavigation = Boolean(
         settings &&
-        !shouldNavigateToRequestedPath({
-          currentPathname: location.pathname,
-          onboardingStatus: settings.app.onboardingStatus.current,
-          requestedPath: target,
-        })
+          !shouldNavigateToRequestedPath({
+            currentPathname: location.pathname,
+            onboardingStatus: settings.app.onboardingStatus.current,
+            requestedPath: target,
+          })
       )
-        return
+      if (isStaleOnboardingNavigation) return
       const current = project.peek()
       const editor = current?.executingEditor.peek()
       const lsp = ctx.services.optional(lspService)
