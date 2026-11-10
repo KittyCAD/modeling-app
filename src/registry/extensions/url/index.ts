@@ -5,6 +5,7 @@ import {
 } from '@kittycad/registry'
 import { effect } from '@preact/signals-core'
 import { isErr } from '@src/lib/trap'
+import { routerService } from '@src/registry/contracts/router'
 import {
   type ParsedUrlContribution,
   type UrlAdapter,
@@ -17,10 +18,12 @@ import {
 
 /**
  * Owns one startup snapshot and one publication effect for the contributions
- * present at start. No location subscription or React Router dependency.
+ * present at start. Navigation invalidates publication without becoming new
+ * initialization input.
  */
 export function createUrlRegistryService(
-  getContributions: () => readonly UrlContribution[]
+  getContributions: () => readonly UrlContribution[],
+  getNavigation?: () => unknown
 ) {
   const cancellation = new AbortController()
   let started: Promise<void> | undefined
@@ -70,6 +73,9 @@ export function createUrlRegistryService(
     const publishers = contributions.filter((item) => item.serialize)
     if (publishers.length === 0) return
     stopPublication = effect(() => {
+      // Legacy routing can replace the query without changing application state.
+      // Track its signal only to republish; parsing remains startup-only.
+      getNavigation?.()
       const query: Record<string, string | undefined> = Object.create(null)
       for (const contribution of publishers) {
         const values = contribution.serialize?.()
@@ -94,8 +100,9 @@ export function createUrlRegistryService(
 }
 
 export const urlExtension = defineRegistryItemFactory((ctx) => {
-  const { service, dispose } = createUrlRegistryService(() =>
-    ctx.valueSpecs.get(urlContributionsValueSpec)
+  const { service, dispose } = createUrlRegistryService(
+    () => ctx.valueSpecs.get(urlContributionsValueSpec),
+    () => ctx.services.optional(routerService)?.location.value
   )
   return {
     id: 'url-extension',
