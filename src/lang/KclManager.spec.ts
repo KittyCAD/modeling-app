@@ -2545,3 +2545,21 @@ describe('reconnect execution queue', () => {
     expect(kclManager.isExecuting).toBe(false)
   })
 })
+
+it('finishes editor execution before notifying scene renderers', async () => {
+  const { app, kclManager } = createKclManagerTestHarness()
+  const completionStates: boolean[] = []
+  kclManager.engineCommandManager.started = true
+  vi.spyOn(kclManager.rustContext, 'execute').mockResolvedValue(
+    kclManager.execState
+  )
+  kclManager.addEventListener('execution-done', () => {
+    completionStates.push(kclManager.isExecuting)
+  })
+  try {
+    await kclManager.executeAst({ ast: createEmptyAst() })
+    expect(completionStates).toEqual([false])
+  } finally {
+    app.dispose()
+  }
+})
