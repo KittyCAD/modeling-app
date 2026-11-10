@@ -353,15 +353,23 @@ export const fileLoader =
     await waitFor(settingsActor, (state) => state.matches('idle'))
     assertCurrent()
 
+    // Test seeds must reach storage too: sketch insertion reads the saved file.
+    const providedCode =
+      window.electron?.process.env.NODE_ENV === 'test'
+        ? kclManager.localStoragePersistCode()
+        : undefined
+    if (providedCode !== undefined) {
+      await app.fileOperations.writeFile(
+        currentFilePath || PROJECT_ENTRYPOINT,
+        providedCode
+      )
+      assertCurrent()
+    }
     const projectRef = await app.openProject(project, assertCurrent)
     await projectRef.openEditor(
       currentFilePath || PROJECT_ENTRYPOINT,
       app.singletons.kclManager,
-      // If persistCode in localStorage is present, it'll persist that code
-      // through *anything*. INTENDED FOR TESTS.
-      window.electron?.process.env.NODE_ENV === 'test'
-        ? kclManager.localStoragePersistCode()
-        : undefined,
+      undefined,
       true,
       assertCurrent
     )

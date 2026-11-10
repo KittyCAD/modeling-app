@@ -402,6 +402,10 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = .1)`
     await homePage.goToModelingScene()
     await scene.settled()
 
+    await expect
+      .poll(() => page.evaluate(() => window.app.singletons.kclManager.read()))
+      .toBe(code)
+
     const [clickOnInnerFace] = scene.makeMouseHelpers(0.6, 0.4, {
       format: 'ratio',
     })
