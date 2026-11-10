@@ -1,19 +1,18 @@
+import { mkdtemp } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
 import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
-import { projectFilesContract } from '@src/lib/fileSystem/testSupport/projectFilesContract'
+import { projectFilesContract } from '@src/lib/projectSession/testSupport/projectFilesContract'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
-import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import nodefs from '@src/lib/fs-zds/nodefs'
 import { beforeAll } from 'vitest'
 
-// The collector uses process-wide path helpers; its I/O uses the memory fixture.
 beforeAll(() =>
   moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
 )
 
-projectFilesContract('project file collection on MemoryFS', async () => {
-  const fs = createMemoryFileSystem(nodefs.impl)
-  const root = fs.resolve('/project-files-contract', crypto.randomUUID())
-  await fs.mkdir(root, { recursive: true })
+projectFilesContract('project file collection on NodeFS', async () => {
+  const fs = nodefs.impl
+  const root = await mkdtemp(fs.join(tmpdir(), 'zds-project-files-'))
   const runtime = createFileOperationsRuntime(fs)
   return {
     fs,

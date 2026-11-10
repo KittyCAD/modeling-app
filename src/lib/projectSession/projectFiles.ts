@@ -1,6 +1,7 @@
 import { isNonNullable } from '@src/lib/utils'
 import toast from 'react-hot-toast'
 import type { ExecState } from '@src/lang/wasm'
+import { ZOOKEEPER_PROJECT_SIZE_WARNING_BYTES } from '@src/lib/zookeeper/constants'
 import { FILE_EXT } from '@src/lib/constants'
 import { FileNotFound } from '@src/lib/fileSystem/fileOperations'
 import type { Project } from '@src/lib/project'
@@ -235,8 +236,10 @@ export const collectProjectFiles = async (args: {
       skipMissing: args.skipUnreadableFiles !== false,
     })
     projectFiles = (await Promise.all(filePromises)).filter(isNonNullable)
-    const MB64 = 2 ** 20 * 64
-    if (args.warnIfProjectExceeds64Mb !== false && uploadSize > MB64) {
+    if (
+      args.warnIfProjectExceeds64Mb !== false &&
+      uploadSize > ZOOKEEPER_PROJECT_SIZE_WARNING_BYTES
+    ) {
       toast.error(
         'Your project exceeds 64Mb, this will slow down Zookeeper.\nPlease remove any unnecessary files.'
       )
