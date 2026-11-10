@@ -37,7 +37,7 @@ export function createOpenProjectIdUrl(projectId: string) {
   return new URL(`?${searchParams.toString()}`, origin)
 }
 
-export async function getPublicProjectNameById(
+export async function getProjectNameById(
   projectId: string
 ): Promise<string | Error> {
   const client = createKCClient()
