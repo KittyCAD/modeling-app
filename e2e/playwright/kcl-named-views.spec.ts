@@ -136,151 +136,145 @@ async function writeProject(dir: string) {
 }
 
 test.describe('KCL named views', { tag: '@desktop' }, () => {
-  test('the rail button opens and closes the switcher', async ({
-    homePage,
-    scene,
-    toolbar,
-    page,
-    folderSetupFn,
-  }) => {
-    await folderSetupFn(writeProject)
-    await homePage.openProject('named-views')
-    await scene.settled()
+  test(
+    'the rail button opens and closes the switcher',
+    { tag: '@localRenderer' },
+    async ({ homePage, scene, toolbar, page, folderSetupFn }) => {
+      await folderSetupFn(writeProject)
+      await homePage.openProject('named-views')
+      await scene.settled()
 
-    await expect(page.getByTestId(VIEW_SWITCHER_BUTTON)).toBeVisible()
-    await expect(page.locator(VIEW_SWITCHER_PANE)).toHaveCount(0)
+      await expect(page.getByTestId(VIEW_SWITCHER_BUTTON)).toBeVisible()
+      await expect(page.locator(VIEW_SWITCHER_PANE)).toHaveCount(0)
 
-    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
-    await expect(page.locator(VIEW_SWITCHER_PANE)).toBeVisible()
+      await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
+      await expect(page.locator(VIEW_SWITCHER_PANE)).toBeVisible()
 
-    await toolbar.closePane(DefaultLayoutPaneID.NamedViews)
-    await expect(page.locator(VIEW_SWITCHER_PANE)).toHaveCount(0)
-  })
+      await toolbar.closePane(DefaultLayoutPaneID.NamedViews)
+      await expect(page.locator(VIEW_SWITCHER_PANE)).toHaveCount(0)
+    }
+  )
 
-  test('numbers the rows from 1, lists Default View first, and prefixes a name two modules declare', async ({
-    homePage,
-    scene,
-    toolbar,
-    page,
-    folderSetupFn,
-  }) => {
-    await folderSetupFn(writeProject)
-    await homePage.openProject('named-views')
-    await scene.settled()
-    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
+  test(
+    'numbers the rows from 1, lists Default View first, and prefixes a name two modules declare',
+    { tag: '@localRenderer' },
+    async ({ homePage, scene, toolbar, page, folderSetupFn }) => {
+      await folderSetupFn(writeProject)
+      await homePage.openProject('named-views')
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
 
-    const labels = page
-      .locator(VIEW_SWITCHER_PANE)
-      .getByTestId('named-view-label')
-    const numbers = page
-      .locator(VIEW_SWITCHER_PANE)
-      .getByTestId('named-view-number')
-    const rows = page.locator(VIEW_SWITCHER_PANE).getByTestId('named-view-row')
+      const labels = page
+        .locator(VIEW_SWITCHER_PANE)
+        .getByTestId('named-view-label')
+      const numbers = page
+        .locator(VIEW_SWITCHER_PANE)
+        .getByTestId('named-view-number')
+      const rows = page
+        .locator(VIEW_SWITCHER_PANE)
+        .getByTestId('named-view-row')
 
-    // Graph insertion order: the `import` executes before the local
-    // declarations, so the imported view is registered first.
-    await expect(labels).toHaveText([
-      'Default View',
-      'panel::Front',
-      'main::Front',
-      'Top',
-    ])
-    // The number is the row's position in the list, so `Default View` is 1.
-    await expect(numbers).toHaveText(['1', '2', '3', '4'])
-    await expect(rows.first()).toHaveAttribute('data-active', 'true')
-  })
+      // Graph insertion order: the `import` executes before the local
+      // declarations, so the imported view is registered first.
+      await expect(labels).toHaveText([
+        'Default View',
+        'panel::Front',
+        'main::Front',
+        'Top',
+      ])
+      // The number is the row's position in the list, so `Default View` is 1.
+      await expect(numbers).toHaveText(['1', '2', '3', '4'])
+      await expect(rows.first()).toHaveAttribute('data-active', 'true')
+    }
+  )
 
-  test('activating a view moves the active marker and returns it', async ({
-    homePage,
-    scene,
-    toolbar,
-    page,
-    folderSetupFn,
-  }) => {
-    await folderSetupFn(writeProject)
-    await homePage.openProject('named-views')
-    await scene.settled()
-    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
+  test(
+    'activating a view moves the active marker and returns it',
+    { tag: '@localRenderer' },
+    async ({ homePage, scene, toolbar, page, folderSetupFn }) => {
+      await folderSetupFn(writeProject)
+      await homePage.openProject('named-views')
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
 
-    const pane = page.locator(VIEW_SWITCHER_PANE)
-    await expect(pane.getByTestId('named-view-create')).toBeVisible()
-    const rows = pane.getByTestId('named-view-row')
-    const defaultView = rows.filter({ hasText: 'Default View' })
-    const top = rows.filter({ hasText: 'Top' })
+      const pane = page.locator(VIEW_SWITCHER_PANE)
+      await expect(pane.getByTestId('named-view-create')).toBeVisible()
+      const rows = pane.getByTestId('named-view-row')
+      const defaultView = rows.filter({ hasText: 'Default View' })
+      const top = rows.filter({ hasText: 'Top' })
 
-    await top.getByRole('button', { name: 'Apply Top', exact: true }).click()
-    await expect(top).toHaveAttribute('data-active', 'true')
-    await expect(defaultView).toHaveAttribute('data-active', 'false')
+      await top.getByRole('button', { name: 'Apply Top', exact: true }).click()
+      await expect(top).toHaveAttribute('data-active', 'true')
+      await expect(defaultView).toHaveAttribute('data-active', 'false')
 
-    await defaultView
-      .getByRole('button', { name: 'Apply Default View', exact: true })
-      .click()
-    await expect(defaultView).toHaveAttribute('data-active', 'true')
-    await expect(top).toHaveAttribute('data-active', 'false')
-  })
+      await defaultView
+        .getByRole('button', { name: 'Apply Default View', exact: true })
+        .click()
+      await expect(defaultView).toHaveAttribute('data-active', 'true')
+      await expect(top).toHaveAttribute('data-active', 'false')
+    }
+  )
 
   /**
    * Guards the active-view pointer against an execution, not the reapply. The
    * scene the reapply sends is covered by the unit tests, which can read the
    * batch; nothing in the DOM reports engine visibility.
    */
-  test('an edit leaves the active view marked', async ({
-    homePage,
-    scene,
-    toolbar,
-    editor,
-    page,
-    folderSetupFn,
-  }) => {
-    await folderSetupFn(writeProject)
-    await homePage.openProject('named-views')
-    await scene.settled()
-    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
+  test(
+    'an edit leaves the active view marked',
+    { tag: '@localRenderer' },
+    async ({ homePage, scene, toolbar, editor, page, folderSetupFn }) => {
+      await folderSetupFn(writeProject)
+      await homePage.openProject('named-views')
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
 
-    const rows = page.locator(VIEW_SWITCHER_PANE).getByTestId('named-view-row')
-    const top = rows.filter({ hasText: 'Top' })
+      const rows = page
+        .locator(VIEW_SWITCHER_PANE)
+        .getByTestId('named-view-row')
+      const top = rows.filter({ hasText: 'Top' })
 
-    await top.getByRole('button', { name: 'Apply Top', exact: true }).click()
-    await expect(top).toHaveAttribute('data-active', 'true')
+      await top.getByRole('button', { name: 'Apply Top', exact: true }).click()
+      await expect(top).toHaveAttribute('data-active', 'true')
 
-    await editor.openPane()
-    await editor.replaceCode('', MAIN_KCL + SIDE_VIEW_KCL)
+      await editor.openPane()
+      await editor.replaceCode('', MAIN_KCL + SIDE_VIEW_KCL)
 
-    // The new row is the signal that the execution finished and the pane read
-    // the graph it produced.
-    await expect(rows.filter({ hasText: 'Side' })).toHaveCount(1)
-    await expect(top).toHaveAttribute('data-active', 'true')
-  })
+      // The new row is the signal that the execution finished and the pane read
+      // the graph it produced.
+      await expect(rows.filter({ hasText: 'Side' })).toHaveCount(1)
+      await expect(top).toHaveAttribute('data-active', 'true')
+    }
+  )
 
-  test('deleting the active view returns to Default View and says so', async ({
-    homePage,
-    scene,
-    toolbar,
-    editor,
-    page,
-    folderSetupFn,
-  }) => {
-    await folderSetupFn(writeProject)
-    await homePage.openProject('named-views')
-    await scene.settled()
-    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
+  test(
+    'deleting the active view returns to Default View and says so',
+    { tag: '@localRenderer' },
+    async ({ homePage, scene, toolbar, editor, page, folderSetupFn }) => {
+      await folderSetupFn(writeProject)
+      await homePage.openProject('named-views')
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
 
-    const rows = page.locator(VIEW_SWITCHER_PANE).getByTestId('named-view-row')
-    const top = rows.filter({ hasText: 'Top' })
-    const defaultView = rows.filter({ hasText: 'Default View' })
+      const rows = page
+        .locator(VIEW_SWITCHER_PANE)
+        .getByTestId('named-view-row')
+      const top = rows.filter({ hasText: 'Top' })
+      const defaultView = rows.filter({ hasText: 'Default View' })
 
-    await top.getByRole('button', { name: 'Apply Top', exact: true }).click()
-    await expect(top).toHaveAttribute('data-active', 'true')
+      await top.getByRole('button', { name: 'Apply Top', exact: true }).click()
+      await expect(top).toHaveAttribute('data-active', 'true')
 
-    await editor.openPane()
-    await editor.replaceCode('', MAIN_KCL_WITHOUT_TOP)
+      await editor.openPane()
+      await editor.replaceCode('', MAIN_KCL_WITHOUT_TOP)
 
-    await expect(top).toHaveCount(0)
-    await expect(defaultView).toHaveAttribute('data-active', 'true')
-    await expect(
-      page.getByText('The view "Top" is no longer in this program.')
-    ).toBeVisible()
-  })
+      await expect(top).toHaveCount(0)
+      await expect(defaultView).toHaveAttribute('data-active', 'true')
+      await expect(
+        page.getByText('The view "Top" is no longer in this program.')
+      ).toBeVisible()
+    }
+  )
 
   test('a Top view centres on its own target, not the current one', async ({
     homePage,

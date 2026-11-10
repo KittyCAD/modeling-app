@@ -3,7 +3,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 for (const treatment of ['fillet', 'chamfer'] as const) {
   test(
     `annotates a ${treatment} face selected in the feature tree`,
-    { tag: '@web' },
+    { tag: ['@web', '@localRenderer'] },
     async ({
       page,
       homePage,

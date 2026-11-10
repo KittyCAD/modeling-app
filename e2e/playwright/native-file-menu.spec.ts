@@ -34,7 +34,7 @@ async function expectModelingNativeMenuReady(page: Page) {
 
 test.describe(
   'Native menu window routing',
-  { tag: ['@desktop', '@macos', '@windows'] },
+  { tag: ['@desktop', '@macos', '@windows', '@localRenderer'] },
   () => {
     test('View menu opens the code pane without closing it on repeated selection', async ({
       page,
@@ -113,7 +113,7 @@ test.describe(
  */
 test.describe(
   'Native file menu',
-  { tag: ['@desktop', '@macos', '@windows'] },
+  { tag: ['@desktop', '@macos', '@windows', '@localRenderer'] },
   () => {
     test('Home page', async ({
       tronApp,

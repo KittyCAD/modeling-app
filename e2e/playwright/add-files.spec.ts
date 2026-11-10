@@ -4,7 +4,7 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test(
   'Home: creates a sample project from the command palette',
-  { tag: ['@web'] },
+  { tag: ['@web', '@localRenderer'] },
   async ({ page, homePage, cmdBar, editor, toolbar }) => {
     await homePage.projectsLoaded()
     await page.keyboard.press('ControlOrMeta+k')
@@ -20,7 +20,7 @@ test(
   }
 )
 
-test.describe('Local Drive picker', () => {
+test.describe('Local Drive picker', { tag: '@localRenderer' }, () => {
   test(
     'Web: opens the picker and adds a local file',
     { tag: '@web' },
