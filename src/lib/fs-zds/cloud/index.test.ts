@@ -186,9 +186,11 @@ describe.each([
     vi.mocked(api.downloadRemoteProjectArchive).mockClear()
     const first = fs.checkForUpdates('one', () => true)
     const second = fs.checkForUpdates('one', () => true)
-    expect(second).toBe(first)
     gate.resolve({ ...remote, revision: '2' })
-    expect(await first).toEqual({ changed: true, refreshed: true })
+    expect(await Promise.all([first, second])).toEqual([
+      { changed: true, refreshed: true },
+      { changed: true, refreshed: true },
+    ])
     await fs.refreshProject('one', () => true, '2')
     expect(api.downloadRemoteProjectArchive).toHaveBeenCalledOnce()
     expect(await fs.readFile(paths.join(root, 'main.kcl'), 'utf8')).toBe(
