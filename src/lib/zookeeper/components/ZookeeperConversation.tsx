@@ -54,6 +54,7 @@ export interface ZookeeperConversationProps {
     attachments: File[]
   ) => void
   onCancel: () => void
+  onMigrateKcl?: () => void
   onClickClearChat: () => void
   onReconnect: () => void
   onCheckBilling?: () => void
@@ -296,6 +297,7 @@ interface ZookeeperConversationInputProps {
   contexts: ZookeeperManagerPromptContext[]
   onProcess: ZookeeperConversationProps['onProcess']
   onCancel: ZookeeperConversationProps['onCancel']
+  onMigrateKcl?: ZookeeperConversationProps['onMigrateKcl']
   hasPromptCompleted: ZookeeperConversationProps['hasPromptCompleted']
   disabled?: boolean
   needsReconnect: boolean
@@ -682,6 +684,18 @@ export const ZookeeperConversationInput = (
             modeOptions={props.modeOptions}
           />
           <div className="flex flex-none flex-row gap-1">
+            {props.onMigrateKcl && (
+              <ActionButton
+                Element="button"
+                type="button"
+                className="h-7 whitespace-nowrap disabled:opacity-60"
+                onClick={props.onMigrateKcl}
+                disabled={props.disabled}
+                tabIndex={0}
+              >
+                Migrate to KCL 3
+              </ActionButton>
+            )}
             {props.isProcessing && (
               <button
                 data-testid="ml-ephant-conversation-cancel-button"
@@ -924,6 +938,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
               initialMlCopilotMode={props.initialMlCopilotMode}
               onMlCopilotModeChange={props.onMlCopilotModeChange}
               onCancel={props.onCancel}
+              onMigrateKcl={props.onMigrateKcl}
               defaultPrompt={props.defaultPrompt}
               hasAlreadySentPrompts={hasMessages}
               isProcessing={props.isProcessing}

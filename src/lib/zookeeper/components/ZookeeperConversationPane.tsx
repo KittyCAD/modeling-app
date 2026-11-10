@@ -23,6 +23,7 @@ import { useSearchParams } from 'react-router-dom'
 
 export const ZookeeperConversationPane = (props: {
   controller: ZookeeperSessionController
+  canMigrateKcl?: boolean
   selectionRanges: ModelingMachineContext['selectionRanges']
   zookeeperMode: SettingsType['app']['zookeeperMode']
   userAvatarSrc?: string
@@ -211,6 +212,9 @@ export const ZookeeperConversationPane = (props: {
               : undefined
         }
         onCancel={() => controller.cancel()}
+        onMigrateKcl={
+          props.canMigrateKcl ? () => controller.migrateKcl() : undefined
+        }
         disabled={
           needsReconnect ||
           isClearingChat ||
