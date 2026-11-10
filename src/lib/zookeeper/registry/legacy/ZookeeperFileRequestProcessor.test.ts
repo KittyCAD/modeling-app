@@ -172,7 +172,13 @@ describe.each(['local', 'cloud'] as const)('legacy edits (%s)', (storage) => {
     expect(s.applyEdits.mock.calls[0][1]).toEqual([
       { path: '/workspace/demo/main.kcl', contents: 'edit-1' },
     ])
-    expect(s.editor.updateCodeEditor).toHaveBeenCalled()
+    expect(s.editor.updateCodeEditor).toHaveBeenCalledWith(
+      'edit-1',
+      expect.objectContaining({
+        shouldWriteToDisk: false,
+        shouldExecute: false,
+      })
+    )
     expect(s.onApplied).toHaveBeenCalledOnce()
   })
 
@@ -382,8 +388,8 @@ describe.each(['local', 'cloud'] as const)('legacy edits (%s)', (storage) => {
     expect(s.onApplied).toHaveBeenCalledOnce()
   })
 
-  it.each(['project', 'editor'] as const)(
-    'never finishes a dispatched write against a replaced %s',
+  it.each(['project', 'editor', 'session'] as const)(
+    'does not update stale UI after a dispatched write against a replaced %s',
     async (changed) => {
       const s = setup()
       const writing = gate()
@@ -392,10 +398,16 @@ describe.each(['local', 'cloud'] as const)('legacy edits (%s)', (storage) => {
       await vi.waitFor(() => expect(s.applyEdits).toHaveBeenCalledOnce())
       if (changed === 'project')
         s.state.project = { ...s.state.project, path: '/workspace/other' }
-      else s.state.editorCurrent = false
+      else if (changed === 'editor') s.state.editorCurrent = false
+      else s.state.sessionCurrent = false
       writing.resolve(undefined)
       await s.idle()
-      expect(s.history.complete).not.toHaveBeenCalled()
+      // Persisted writes still finish their undo history if the editor remains current.
+      expect(s.history.complete).toHaveBeenCalledTimes(
+        changed === 'session' ? 1 : 0
+      )
+      expect(s.session.refreshProject).not.toHaveBeenCalled()
+      expect(s.onApplied).not.toHaveBeenCalled()
       expect(s.session.openFile).not.toHaveBeenCalled()
       expect(s.editor.updateCodeEditor).not.toHaveBeenCalled()
       expect(s.applyEdits.mock.calls[0][0]).toBe('/workspace/demo')

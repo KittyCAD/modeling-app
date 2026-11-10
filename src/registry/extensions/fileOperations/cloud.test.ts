@@ -79,13 +79,18 @@ describe('memory cloud storage', () => {
     const root = await storage.openProject('one')
     const gate = Promise.withResolvers<typeof remote>()
     vi.mocked(api.updateRemoteProject).mockReturnValueOnce(gate.promise)
-    const write = storage.operations.writeFile(
-      posix.join(root, 'main.kcl'),
-      'changed'
-    )
+    let finished = false
+    const write = storage.operations
+      .writeFile(posix.join(root, 'main.kcl'), 'changed')
+      .then(() => {
+        finished = true
+      })
     await vi.waitFor(() =>
       expect(api.updateRemoteProject).toHaveBeenCalledOnce()
     )
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(finished).toBe(false)
     expect(storage.saves.value.get('one')?.state).toBe('saving')
     expect(
       new TextDecoder().decode(
@@ -192,6 +197,12 @@ describe('memory cloud storage', () => {
       )
       await operations.remove(posix.join(root, 'main.kcl'))
     })
+    expect(
+      await storage.operations.readFile(posix.join(root, 'new.bin'))
+    ).toEqual(new Uint8Array([0, 255]))
+    expect(await storage.operations.exists(posix.join(root, 'main.kcl'))).toBe(
+      false
+    )
     expect(api.updateRemoteProject).toHaveBeenCalledOnce()
     expect(api.updateRemoteProject).toHaveBeenCalledWith(
       expect.objectContaining({ deletedPaths: ['main.kcl'] })
@@ -359,17 +370,26 @@ describe('memory cloud storage', () => {
       submission: { title: 'Published', description: '', categoryIds: [] },
     })
     await started.promise
-    const write = storage.operations.writeFile(
-      posix.join(root, 'main.kcl'),
-      'after publication'
-    )
-    await vi.waitFor(() => expect(storage.pending()).toBe(2))
+    let written = false
+    const write = storage.operations
+      .writeFile(posix.join(root, 'main.kcl'), 'after publication')
+      .then(() => {
+        written = true
+      })
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(written).toBe(false)
     vi.mocked(api.getRemoteProject).mockResolvedValueOnce({
       ...remote,
       revision: '3',
     })
     gate.resolve(undefined)
     await Promise.all([publication, write])
+    expect(
+      new TextDecoder().decode(
+        await storage.operations.readFile(posix.join(root, 'main.kcl'))
+      )
+    ).toBe('after publication')
     expect(api.updateRemoteProject).toHaveBeenLastCalledWith(
       expect.objectContaining({ expectedRevision: '3' })
     )
