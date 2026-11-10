@@ -120,16 +120,17 @@ export class HomePageFixture {
       .first()
     const projectLink = this.page.getByTestId('project-link').first()
     const noProjects = this.page.getByTestId('projects-none')
-    await expect(
-      projectLink.or(noProjects).or(libraryLink).first()
-    ).toBeVisible()
+    // Initial listing is I/O readiness; use the configured action budget.
+    await projectLink.or(noProjects).or(libraryLink).first().waitFor({
+      state: 'visible',
+    })
     // A single library may be selected automatically while this fixture runs.
     // Query and activate the link in one browser turn, before it can disappear.
     await libraryLink.evaluateAll((links) => {
       const link = links[0]
       if (link instanceof HTMLAnchorElement) link.click()
     })
-    await expect(projectLink.or(noProjects)).toBeVisible()
+    await projectLink.or(noProjects).first().waitFor({ state: 'visible' })
   }
 
   createAndGoToProject = async (projectTitle = 'untitled') => {
