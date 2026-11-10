@@ -1,4 +1,3 @@
-import { computed } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useAppState } from '@src/AppState'
 import { ActionButton } from '@src/components/ActionButton'
@@ -98,9 +97,8 @@ const Toolbar_ = memo(
     const keymapTree = keymap.keymap.value
     const { kclManager } = useSingletons()
     const platform = usePlatform()
-    const executionService = computed(() =>
-      app.registry.optional(projectSession)
-    ).value?.executingEditor.value
+    const executionService =
+      app.registry.optional(projectSession)?.executingEditor.value
     const keymapScopes = app.registry.observe(keymapScopesFacet).value
     const toolbarConfig = useToolbarConfig()
     const wasmInstance = use(kclManager.wasmInstancePromise)

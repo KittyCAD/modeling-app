@@ -137,19 +137,19 @@ export const projectExplorerContract = contract({
     ProjectExplorerProjectMenuItem,
     ProjectExplorerProjectMenuItem[]
   >('project-explorer-project-menu-items', (inputs) =>
-    inputs.length ? ((items) => items.toSorted(byOrder))(inputs) : []
+    inputs.toSorted(byOrder)
   ),
   projectExplorerProjectBreadcrumbBadgesFacet: new Facet<
     ProjectExplorerProjectBreadcrumbBadge,
     ProjectExplorerProjectBreadcrumbBadge[]
   >('project-explorer-project-breadcrumb-badges', (inputs) =>
-    inputs.length ? ((items) => items.toSorted(byOrder))(inputs) : []
+    inputs.toSorted(byOrder)
   ),
   projectExplorerRowContextMenuItemsFacet: new Facet<
     ProjectExplorerRowContextMenuItem,
     ProjectExplorerRowContextMenuItem[]
   >('project-explorer-row-context-menu-items', (inputs) =>
-    inputs.length ? ((items) => items.toSorted(byOrder))(inputs) : []
+    inputs.toSorted(byOrder)
   ),
 })
 

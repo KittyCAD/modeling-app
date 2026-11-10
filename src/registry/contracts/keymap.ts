@@ -715,14 +715,11 @@ export const keymapContract = contract({
   keymapEventOwnersFacet: new Facet<
     KeymapEventOwner,
     readonly KeymapEventOwner[]
-  >('keymap.event-owners', (inputs) =>
-    inputs.length ? ((items) => items)(inputs) : []
-  ),
+  >('keymap.event-owners', (inputs) => inputs),
   keymapService: service<KeymapService>('keymap.service'),
-  keymapFacet: new Facet<KeymapContribution, KeymapTree>('keymap', (inputs) =>
-    inputs.length
-      ? createKeymapTreeFromContributions(inputs)
-      : createKeymapTree([])
+  keymapFacet: new Facet<KeymapContribution, KeymapTree>(
+    'keymap',
+    createKeymapTreeFromContributions
   ),
   keymapScopesFacet: commandScopesFacet,
 })
