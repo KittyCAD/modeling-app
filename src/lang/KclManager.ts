@@ -2340,6 +2340,7 @@ export class KclManager extends File {
         })
       }
 
+      if (isCurrent()) this.isExecuting = false
       this.dispatchEvent(
         new CustomEvent<KclExecutionDoneDetail>(
           KclManagerEvents.ExecutionDone,
