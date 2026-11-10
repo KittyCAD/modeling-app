@@ -131,6 +131,11 @@ export class HomePageFixture {
       if (link instanceof HTMLAnchorElement) link.click()
     })
     await projectLink.or(noProjects).first().waitFor({ state: 'visible' })
+    // Cached cards can be visible before the current refresh completes.
+    await this.page
+      .getByRole('button', { name: 'Refresh projects' })
+      .and(this.page.locator('[aria-busy="false"]'))
+      .waitFor({ state: 'visible' })
   }
 
   createAndGoToProject = async (projectTitle = 'untitled') => {
