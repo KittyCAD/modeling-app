@@ -244,7 +244,12 @@ export class ConnectionManager extends EventTarget {
     this.lastConnectionError = undefined
   }
 
+  completedExecutionCommandCount = 0
+  private executionCommandIds = new Set<string>()
+
   trackExecution(): () => void {
+    this.completedExecutionCommandCount = 0
+    this.executionCommandIds.clear()
     const execution = Symbol('execution')
     this.activeExecutions.add(execution)
 
@@ -1092,6 +1097,10 @@ export class ConnectionManager extends EventTarget {
       return promise
     }
 
+    if (!isSceneCommand && this.activeExecutions.size > 0) {
+      this.executionCommandIds.add(id)
+    }
+
     this.pendingCommands[id] = {
       resolve: wrappedResolved,
       reject: wrappedReject,
@@ -1208,6 +1217,15 @@ export class ConnectionManager extends EventTarget {
           delete this.pendingCommands[message.request_id || '']
         }
         return
+      }
+
+      if (this.executionCommandIds.delete(message.request_id)) {
+        this.completedExecutionCommandCount +=
+          message.resp.type === 'modeling_batch'
+            ? Object.keys(message.resp.data.responses).length
+            : message.resp.type === 'modeling'
+              ? 1
+              : 0
       }
 
       pending.resolve([message])

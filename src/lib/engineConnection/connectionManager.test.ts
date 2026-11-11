@@ -152,6 +152,70 @@ describe('ConnectionManager', () => {
     }
   })
 
+  it('counts individual commands in completed batches for the current execution', async () => {
+    const manager = createConnectionManager()
+    manager.connection = { send: vi.fn() } as unknown as Connection
+    const receive = manager.createMessageHandler()
+    const finishFirst = manager.trackExecution()
+    const request = (id: string) => ({
+      cmd_id: id,
+      cmd: { type: 'scene_clear_all' as const },
+    })
+    const send = (id: string, isSceneCommand = false) =>
+      manager.sendCommand(
+        id,
+        {
+          command: {
+            type: 'modeling_cmd_batch_req',
+            batch_id: id,
+            requests: [request(`${id}-1`), request(`${id}-2`)],
+            responses: true,
+          },
+          range: [0, 0, 0],
+          idToRangeMap: {},
+        },
+        isSceneCommand
+      )
+    const complete = (id: string) =>
+      receive(
+        new MessageEvent('message', {
+          data: JSON.stringify({
+            success: true,
+            request_id: id,
+            resp: {
+              type: 'modeling_batch',
+              data: {
+                responses: {
+                  [`${id}-1`]: { response: { type: 'empty', data: {} } },
+                  [`${id}-2`]: { response: { type: 'empty', data: {} } },
+                },
+              },
+            },
+          }),
+        })
+      )
+    const first = send('first')
+    const late = send('late')
+    complete('first')
+    await first
+    expect(manager.completedExecutionCommandCount).toBe(2)
+    finishFirst()
+    const finishSecond = manager.trackExecution()
+    expect(manager.completedExecutionCommandCount).toBe(0)
+    complete('late')
+    await late
+    expect(manager.completedExecutionCommandCount).toBe(0)
+    const scene = send('scene', true)
+    complete('scene')
+    await scene
+    expect(manager.completedExecutionCommandCount).toBe(0)
+    const second = send('second')
+    complete('second')
+    await second
+    expect(manager.completedExecutionCommandCount).toBe(2)
+    finishSecond()
+  })
+
   it('warns when Engine rejects a modeling command', async () => {
     const manager = createConnectionManager()
     manager.connection = {} as Connection

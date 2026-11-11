@@ -518,6 +518,8 @@ export class KclManager extends File {
   }
   livePathsToWatch = signal<string[]>([])
 
+  readonly estimatedCommandCount = signal<number | null>(null)
+
   private _execState = signal<ExecState>(emptyExecState())
   private stopNamedViewInvalidation: (() => void) | undefined
   /**
@@ -2212,12 +2214,42 @@ export class KclManager extends File {
       this.beginLiveOperationUpdates(currentExecutionId)
 
       const codeThatExecuted = this.code
+      const estimateStartedAt = performance.now()
+      this.estimatedCommandCount.value = null
+      if (this.engineCommandManager.geometryOnly) {
+        try {
+          this.estimatedCommandCount.value =
+            await this.rustContext.estimateCommandCount(
+              ast,
+              jsAppSettings(this.systemDeps.settings),
+              this.path
+            )
+        } catch (error) {
+          // A failed estimate must not prevent real execution.
+          console.warn('Command-count estimate unavailable', error)
+        }
+      }
+
+      const executionStartedAt = performance.now()
       const { logs, errors, execState, isInterrupted } = await executeAst({
         ast,
         path: this.path,
         rustContext: this.rustContext,
         callbacks: this.createExecutionCallbacks(currentExecutionId),
       })
+
+      if (this.engineCommandManager.geometryOnly) {
+        console.debug(
+          '[Local renderer progress] Execution finished',
+          JSON.stringify({
+            estimateMs: executionStartedAt - estimateStartedAt,
+            executionMs: performance.now() - executionStartedAt,
+            estimatedCommands: this.estimatedCommandCount.peek(),
+            completedCommands:
+              this.engineCommandManager.completedExecutionCommandCount,
+          })
+        )
+      }
 
       const livePathsToWatch = Object.values(execState.filenames)
         .filter((file) => {

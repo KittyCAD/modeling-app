@@ -188,6 +188,20 @@ export default class RustContext {
     }
   }
 
+  /** Estimate execution work using an isolated mock run. */
+  async estimateCommandCount(
+    node: Node<Program>,
+    settings: DeepPartial<Configuration>,
+    path?: string
+  ): Promise<number> {
+    const instance = await this._checkContextInstance()
+    return instance.estimateCommandCount(
+      JSON.stringify(node),
+      path,
+      JSON.stringify(settings)
+    )
+  }
+
   /** Execute a program with in mock mode. */
   async executeMock(
     node: Node<Program>,

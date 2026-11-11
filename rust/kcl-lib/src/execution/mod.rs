@@ -1641,6 +1641,32 @@ impl ExecutorContext {
         Ok(())
     }
 
+    /// Count mock engine commands using the eager import traversal of a real run.
+    /// Whole-module imports can create geometry even when their values are unused.
+    pub async fn estimate_command_count(&self, program: &crate::Program) -> Result<usize, KclErrorWithOutputs> {
+        if !self.is_mock() {
+            return Err(KclErrorWithOutputs::no_outputs(KclError::internal(
+                "Command estimation requires a mock executor".to_owned(),
+            )));
+        }
+        let mut ctx = self.clone();
+        ctx.cache = Cache::default();
+        ctx.execution_callbacks = None;
+        ctx.configure_engine_render = false;
+        let mut state = ExecState::new_mock(
+            &ctx,
+            &MockConfig {
+                use_prev_memory: false,
+                freedom_analysis: false,
+                ..Default::default()
+            },
+        );
+        let before = ctx.engine.stats().commands_batched.load(Ordering::Relaxed);
+        ctx.run(program, &mut state).await?;
+        let after = ctx.engine.stats().commands_batched.load(Ordering::Relaxed);
+        Ok(after.saturating_sub(before))
+    }
+
     pub async fn run_mock(
         &self,
         program: &crate::Program,
@@ -6206,6 +6232,34 @@ face = disc()
 "#;
         let result = execute_with_modules(main, &[("dep.kcl", &dep)]).await.unwrap();
         assert_eq!(emitted_region_versions_everywhere(&result), vec![RegionVersion::V1]);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn command_estimate_includes_unreferenced_transitive_imports() {
+        let main = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nimport \"assembly.kcl\" as assembly\n")
+            .unwrap();
+        let assembly = "@settings(kclVersion = 3.0)\nimport \"part.kcl\" as part\n";
+        let part = r#"@settings(kclVersion = 3.0)
+profile = sketch(on = XY) {
+  c = circle(center = [var 0mm, var 0mm], start = [var 1mm, var 0mm])
+}
+body = extrude(region(segments = [profile.c]), length = 5mm)
+"#;
+        let ctx = versioned_modules_context(&[("assembly.kcl", assembly), ("part.kcl", part)]);
+        let empty_ctx = versioned_modules_context(&[
+            ("assembly.kcl", assembly),
+            ("part.kcl", "@settings(kclVersion = 3.0)\nx = 1\n"),
+        ]);
+        let empty_count = empty_ctx.estimate_command_count(&main).await.unwrap();
+        let count = ctx.estimate_command_count(&main).await.unwrap();
+        assert!(
+            count > empty_count,
+            "Imported geometry must contribute commands: {count} <= {empty_count}"
+        );
+        assert_eq!(ctx.estimate_command_count(&main).await.unwrap(), count);
+        assert!(ctx.cache.read_old_memory().await.is_none());
+        ctx.close().await;
+        empty_ctx.close().await;
     }
 
     /// Builds a mock-engine context whose project directory holds `modules`
