@@ -859,14 +859,15 @@ export class CameraControls {
 
   useOrthographicCamera = () => {
     if (!this.useClientOrthographicCamera()) return
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_set_orthographic',
-      },
-    })
+    if (!this.localCameraMode) {
+      this.engineCommandManager
+        .sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: { type: 'default_camera_set_orthographic' },
+        })
+        .catch(reportRejection)
+    }
     this.onCameraChange()
   }
   private createPerspectiveCamera = () => {
@@ -1629,7 +1630,8 @@ export class CameraControls {
       console.warn(
         'setCameraToQuaternion is not designed for engineToClient syncDirection.'
       )
-    const distance = sketch?.distance ?? this.target.distanceTo(this.camera.position)
+    const distance =
+      sketch?.distance ?? this.target.distanceTo(this.camera.position)
     this.camera.position
       .set(0, 0, 1)
       .applyQuaternion(targetQuaternion)
@@ -1816,7 +1818,10 @@ export class CameraControls {
 
   onCameraChange = (forceUpdate = false) => {
     this.updateCameraClippingPlanes()
-    if (!this.localCameraMode && (this.syncDirection === 'clientToEngine' || forceUpdate)) {
+    if (
+      !this.localCameraMode &&
+      (this.syncDirection === 'clientToEngine' || forceUpdate)
+    ) {
       this.updateEngineCamera({
         quaternion: this.camera.quaternion,
         position: this.camera.position,
@@ -2107,7 +2112,8 @@ export async function enterSketchModeAndSyncCamera(
   onFace = false
 ) {
   if (engineCommandManager.geometryOnly) {
-    if (!cameraControls) return Promise.reject(new Error('Missing local sketch camera'))
+    if (!cameraControls)
+      return Promise.reject(new Error('Missing local sketch camera'))
     cameraControls.requestSketchCameraTransition(onFace ? entityId : undefined)
     await sendCameraCommand(engineCommandManager, {
       type: 'modeling_cmd_req',

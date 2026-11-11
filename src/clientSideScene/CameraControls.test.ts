@@ -1,4 +1,9 @@
-import type { CameraViewState, BatchResponse, OkModelingCmdResponse, WebSocketResponse } from '@kittycad/lib'
+import type {
+  CameraViewState,
+  BatchResponse,
+  OkModelingCmdResponse,
+  WebSocketResponse,
+} from '@kittycad/lib'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { promiseFactory } from '@src/lib/utils'
 import {
@@ -36,15 +41,22 @@ function makeConnectionManager(
 ) {
   return {
     streamDimensions,
-    sendSceneCommand: vi.fn().mockImplementation(async (command: EngineCommand) => {
-      if (command.type === 'modeling_cmd_batch_req') return cameraBatchAcknowledgement(command)
-      if (command.type === 'modeling_cmd_req' &&
-        (command.cmd.type === 'enable_sketch_mode' || command.cmd.type === 'sketch_mode_disable' ||
-         command.cmd.type === 'default_camera_look_at' || command.cmd.type === 'default_camera_perspective_settings')) {
-        return cameraAcknowledgement(command.cmd.type)
-      }
-      return undefined
-    }),
+    sendSceneCommand: vi
+      .fn()
+      .mockImplementation(async (command: EngineCommand) => {
+        if (command.type === 'modeling_cmd_batch_req')
+          return cameraBatchAcknowledgement(command)
+        if (
+          command.type === 'modeling_cmd_req' &&
+          (command.cmd.type === 'enable_sketch_mode' ||
+            command.cmd.type === 'sketch_mode_disable' ||
+            command.cmd.type === 'default_camera_look_at' ||
+            command.cmd.type === 'default_camera_perspective_settings')
+        ) {
+          return cameraAcknowledgement(command.cmd.type)
+        }
+        return undefined
+      }),
     subscribeTo: vi.fn(),
     subscribeToUnreliable: vi.fn(),
   } as unknown as ConnectionManager
@@ -54,20 +66,13 @@ function unusedSettings(): never {
   throw new Error('Settings are not used by viewport projection updates')
 }
 
-/** What was sent, leaving out the client telling the engine where its camera is. */
-function commandsBesidesCameraPushes(
+/** Commands issued by camera controls, including any unsupported graphics commands. */
+function sentCommandTypes(
   send: MockInstance<ConnectionManager['sendSceneCommand']>
 ) {
-  return send.mock.calls
-    .map(([command]) =>
-      command.type === 'modeling_cmd_req' ? command.cmd.type : command.type
-    )
-    .filter(
-      (type) =>
-        type !== 'default_camera_look_at' &&
-        type !== 'default_camera_set_orthographic' &&
-        type !== 'default_camera_set_perspective'
-    )
+  return send.mock.calls.map(([command]) =>
+    command.type === 'modeling_cmd_req' ? command.cmd.type : command.type
+  )
 }
 
 describe('local canvas spherical orbit', () => {
@@ -149,7 +154,7 @@ describe('local canvas spherical orbit', () => {
         1e-6
       )
       controls.onMouseUp(pointer(512, 2980))
-      expect(commandsBesidesCameraPushes(send)).toEqual([])
+      expect(sentCommandTypes(send)).toEqual([])
     }
   )
 
@@ -797,7 +802,6 @@ describe('camera frame ownership', () => {
   })
 })
 
-
 describe('CameraControls viewport projection', () => {
   it('uses the normalized displayed viewport instead of delayed stream dimensions', () => {
     const displayDimensions = { width: 655, height: 836 }
@@ -862,9 +866,7 @@ describe('local sketch camera transition', () => {
     await enterSketchModeAndSyncCamera(manager, 'plane-id', controls)
     await controls.transitionToSketch(sketch)
 
-    expect(commandsBesidesCameraPushes(sendSceneCommand)).toEqual([
-      'enable_sketch_mode',
-    ])
+    expect(sentCommandTypes(sendSceneCommand)).toEqual(['enable_sketch_mode'])
     expect(sendSceneCommand).toHaveBeenCalledWith(
       expect.objectContaining({
         cmd: expect.objectContaining({
@@ -872,7 +874,8 @@ describe('local sketch camera transition', () => {
           adjust_camera: false,
           animated: false,
         }),
-      })
+      }),
+      true
     )
     expect(controls.camera).toBeInstanceOf(OrthographicCamera)
     expect(controls.camera.zoom).toBeCloseTo(20 / expectedHalfHeight)
@@ -905,7 +908,7 @@ describe('local sketch camera transition', () => {
     expect(visibleHalfHeight).toBeCloseTo(expectedHalfHeight / 2)
     expect(camera.near).toBe(1)
     expect(camera.far).toBe(10000)
-    expect(commandsBesidesCameraPushes(sendSceneCommand)).toEqual([
+    expect(sentCommandTypes(sendSceneCommand)).toEqual([
       'enable_sketch_mode',
       'sketch_mode_disable',
     ])
@@ -1020,13 +1023,32 @@ describe('local sketch camera transition', () => {
     expect(controls.camera.far).toBe(2000)
   })
 
-  it('does not apply a transition after its sketch actor is cancelled', async () => {
-    const { controls } = setup()
+  it('does not apply a face-centre response after its sketch actor is cancelled', async () => {
+    const { controls, sendSceneCommand } = setup()
+    const response = promiseFactory<WebSocketResponse>()
+    sendSceneCommand.mockReturnValueOnce(response.promise)
     const abort = new AbortController()
-    controls.requestSketchCameraTransition()
+    controls.requestSketchCameraTransition('face-id')
+    const pending = controls.transitionToSketch(new Group(), abort.signal)
+    const rejected = expect(pending).rejects.toMatchObject({
+      name: 'AbortError',
+    })
     abort.abort()
-    await expect(controls.transitionToSketch(new Group(), abort.signal)).rejects.toMatchObject({ name: 'AbortError' })
+    response.resolve({
+      success: true,
+      resp: {
+        type: 'modeling',
+        data: {
+          modeling_response: {
+            type: 'face_get_center',
+            data: { pos: { x: 1, y: 2, z: 3 } },
+          },
+        },
+      },
+    })
+    await rejected
     expect(controls.camera).toBeInstanceOf(PerspectiveCamera)
+    expect(controls.target.toArray()).toEqual([0, 0, 0])
   })
 
   it('does not queue a stale transition when sketch entry responds after cancellation', async () => {
@@ -1138,6 +1160,7 @@ describe('hover queries', () => {
     local: boolean,
     syncDirection: CameraControls['syncDirection']
   ) {
+    vi.useFakeTimers()
     const video = document.createElement('video')
     video.id = 'video-stream'
     document.body.append(video)
@@ -1157,6 +1180,7 @@ describe('hover queries', () => {
         pointerType: 'mouse',
       })
     )
+    vi.advanceTimersToNextFrame()
     return send.mock.calls.filter(
       ([command]) =>
         command.type === 'modeling_cmd_req' &&

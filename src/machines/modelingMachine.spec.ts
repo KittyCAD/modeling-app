@@ -35,7 +35,6 @@ import {
   modelingMachine,
   positionLocalSketchSolveCamera,
 } from '@src/machines/modelingMachine'
-import type { DefaultPlane } from '@src/machines/modelingSharedTypes'
 import {
   dummyInitSketchGraphDelta,
   generateModelingMachineDefaultContext,
