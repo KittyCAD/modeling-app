@@ -41,6 +41,7 @@ describe('settingsMachine', () => {
       fileOperations: testFileOperations,
       wasmInstancePromise,
       deferredEvents: [],
+      pendingRestart: 'modeling.useLocalRenderer',
     }
 
     expect(getOnlySettingsFromContext(context)).toEqual(settings)

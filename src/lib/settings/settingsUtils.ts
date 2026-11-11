@@ -45,7 +45,7 @@ import type {
   SettingsLevel,
 } from '@src/lib/settings/settingsTypes'
 import { appThemeToTheme } from '@src/lib/theme'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -1152,7 +1152,7 @@ export async function saveSettings(
   allSettings: SettingsType,
   extensionSettings: ResolvedExtensionSettings = {},
   projectPath?: string
-) {
+): Promise<undefined | Error> {
   // Make sure we have wasm initialized.
   const wasmInstance = await initPromise
 
@@ -1172,8 +1172,8 @@ export async function saveSettings(
     settingsPayloadToConfiguration(jsAppSettings, extensionSettings),
     wasmInstance
   )
-  if (err(appTomlString)) {
-    return
+  if (isErr(appTomlString)) {
+    return appTomlString
   }
 
   // Write the app settings.
@@ -1191,8 +1191,8 @@ export async function saveSettings(
     projectPath,
     wasmInstance
   )
-  if (err(existingProjectSettings)) {
-    return
+  if (isErr(existingProjectSettings)) {
+    return existingProjectSettings
   }
 
   const mergedProjectSettings = replaceProjectSettingsPreservingMetadata(
@@ -1203,8 +1203,8 @@ export async function saveSettings(
     mergedProjectSettings,
     wasmInstance
   )
-  if (err(projectTomlString)) {
-    return
+  if (isErr(projectTomlString)) {
+    return projectTomlString
   }
 
   // Write the project settings.
