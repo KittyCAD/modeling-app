@@ -37,7 +37,11 @@ export interface ProjectStorage {
     path: string,
     run: (operations: FileOperationsRegistryService) => Promise<T>
   ) => Promise<T>
-  refresh: (isCurrent: () => boolean, revision?: string) => Promise<{ readonly refreshed: boolean } | void>
+  /** Report when adopted contents need the project to rebuild its Rust snapshot. */
+  refresh: (
+    isCurrent: () => boolean,
+    revision?: string
+  ) => Promise<{ readonly refreshed: boolean } | undefined>
   retry: () => Promise<void>
   editorChanged: (path: string) => void
   writeThumbnail: (bytes: Uint8Array) => Promise<void>

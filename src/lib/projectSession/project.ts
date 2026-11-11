@@ -1,4 +1,3 @@
-
 import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
 import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'

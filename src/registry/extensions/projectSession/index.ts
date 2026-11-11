@@ -112,7 +112,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
         return () => electron?.watchFileOff(path, key)
       },
       batch: (_path, run) => run(ctx.services.get(fileOperationsService)),
-      refresh: async () => {},
+      refresh: async () => undefined,
       retry: async () => {},
       editorChanged: () => {},
       writeThumbnail: (bytes) =>
@@ -389,7 +389,12 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       provide(statusBarLocalItemsValueSpec, {
         id: 'file-save-status',
         order: 20,
-        component: () => createElement(Suspense, { fallback: null }, createElement(FileSaveStatus)),
+        component: () =>
+          createElement(
+            Suspense,
+            { fallback: null },
+            createElement(FileSaveStatus)
+          ),
       }),
     ],
     providesServices: [provideService(projectSession, serviceImpl)],

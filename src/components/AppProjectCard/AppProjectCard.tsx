@@ -544,7 +544,10 @@ function AppProjectCard({
           <span className="min-w-0 flex-1 truncate">{projectName}</span>
           <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center text-chalkboard-60 dark:text-chalkboard-30">
             {pendingAction && (
-              <span role="status" aria-label={`${pendingAction} project ${projectName}`}>
+              <span
+                role="status"
+                aria-label={`${pendingAction} project ${projectName}`}
+              >
                 <Spinner aria-hidden="true" className="h-4 w-4" />
                 <span className="sr-only">{pendingAction} project...</span>
               </span>

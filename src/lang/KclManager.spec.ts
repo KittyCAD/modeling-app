@@ -1148,7 +1148,7 @@ describe('KclManager storage checks before sketch insertion', () => {
       .spyOn(kclManager.textFileIO, 'write')
       .mockImplementation(async () => {
         await gate.promise
-        kclManager.adoptCloudSnapshot('/project', 'width = 99')
+        kclManager.adoptStorageSnapshot('/project', 'width = 99')
       })
     try {
       setEditorBuffer(kclManager, 'width = 2')
@@ -1538,6 +1538,7 @@ describe('KclManager live operation updates', () => {
         )
         const writeThumbnail = vi.fn(async () => {})
         editor.systemDeps.projectSession = {
+          storageFor: (path) => app.projectSession.storageFor(path),
           editorChanged: vi.fn(),
           writeThumbnail,
         }
@@ -3204,7 +3205,7 @@ describe('KclManager diagnostics', () => {
         .spyOn(kclManager.textFileIO, 'write')
         .mockImplementation(async () => {
           await gate.promise
-          kclManager.adoptCloudSnapshot('/project', 'target')
+          kclManager.adoptStorageSnapshot('/project', 'target')
           if (outcome === 'failure')
             throw new Error('Superseded acknowledgement failed')
         })

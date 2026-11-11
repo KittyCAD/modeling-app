@@ -1648,10 +1648,9 @@ export class KclManager extends File {
       this.path === path &&
       this.fileSelectionGeneration === generation
     if (!path) return
-    if (this.systemDeps.project.peek()?.cloudProjectId && isOffline())
-      return Promise.reject(
-        new Error('Reconnect before adding sketch geometry.')
-      )
+    const availability = this.storage?.writeAvailability.peek()
+    if (availability && !availability.writable)
+      return Promise.reject(new Error(availability.reason))
     if (
       this.hasUnsavedLocalChanges() ||
       this.timeoutWriter !== undefined ||
