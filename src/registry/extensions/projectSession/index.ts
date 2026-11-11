@@ -92,7 +92,14 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       root: path,
       writeAvailability: computed(() => ({ writable: true })),
       externalChanges: 'files',
-      deletionHistory: 'archive',
+      removeWithHistory: async (path) => {
+        const operations = ctx.services.get(fileOperationsService)
+        const snapshot = await operations.removeWithSnapshot(path)
+        return {
+          undo: () => operations.replayDeletion(snapshot, true),
+          redo: () => operations.replayDeletion(snapshot, false),
+        }
+      },
       createMissingEntrypoint: true,
       watch: (path, key, onEvent) => {
         electron?.watchFileOn(path, key, onEvent)
@@ -149,6 +156,34 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     storageFor,
     retrySave: () =>
       retryProjectSave({ getProject: () => project.peek(), storageFor }),
+    deleteEntry: async (path) => {
+      const current = project.peek()
+      if (!current) return
+      if (
+        getContainedRelativePath(
+          { relative: fsZds.relative, sep: fsZds.sep },
+          current.path,
+          path
+        ) === undefined
+      )
+        return new Error('The file belongs to a different project.')
+      try {
+        for (const editor of current.editors.values()) {
+          if (!(await editor.flushWriteToFile()))
+            return new Error('Save pending edits before deleting a file.')
+          if (project.peek() !== current) return
+        }
+        await flushActiveTextFileWrite()
+        if (project.peek() !== current) return
+        const deletion = await storageFor(path).removeWithHistory(path)
+        if (project.peek() !== current) return
+        return { ...deletion, projectPath: current.path }
+      } catch (error) {
+        return error instanceof Error
+          ? error
+          : new Error('Deleting the file failed.')
+      }
+    },
     editorChanged: (path) => storageFor(path).editorChanged(path),
     writeThumbnail: (path, bytes) => storageFor(path).writeThumbnail(bytes),
     get textFileIO() {

@@ -4,7 +4,7 @@ import noopfs from '@src/lib/fs-zds/noopfs'
 import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import { createProjectForTest } from '@src/lib/projectTestUtils'
 import { posix } from '@chainner/node-path'
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import {
   projectStorageProvidersValueSpec,
   type ProjectStorage,
@@ -36,7 +36,7 @@ import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { cloudProjectSessionExtension } from '@src/lib/cloudProjects/registry/session'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
 import { createRouterRegistryService } from '@src/registry/extensions/router'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, assert, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lib/fs-zds', () => ({ default: posix }))
 vi.mock('@src/lib/desktop', () => ({
@@ -71,13 +71,18 @@ function createProject(path = '/project/parts/main.kcl') {
   } as unknown as KclManager
   const project = {
     path: '/project',
+    editors: new Map([[0, editor]]),
     projectIORefSignal: signal(metadata()),
     executingPathSignal: signal(filePath),
     executingEditor: signal(editor),
   } as unknown as ZDSProject
   return { project, filePath, flush, resetForFileSwitch }
 }
-function setup(cloud?: CloudStorageService, storage?: ProjectStorage) {
+function setup(
+  cloud?: CloudStorageService,
+  storage?: ProjectStorage,
+  operations?: FileOperationsRegistryService
+) {
   if (cloud) {
     cloud = Object.assign(
       {
@@ -112,12 +117,16 @@ function setup(cloud?: CloudStorageService, storage?: ProjectStorage) {
           : []),
       ],
       providesServices: [
-        provideService(fileOperationsService, {
-          exists,
-          rename,
-          readFile,
-          writeFile,
-        } as unknown as FileOperationsRegistryService),
+        provideService(
+          fileOperationsService,
+          operations ??
+            ({
+              exists,
+              rename,
+              readFile,
+              writeFile,
+            } as unknown as FileOperationsRegistryService)
+        ),
         provideService(routerService, router),
         ...(cloud ? [provideService(cloudStorageService, cloud)] : []),
       ],
@@ -562,7 +571,10 @@ function storageForTest(): ProjectStorage {
     root: '/project',
     writeAvailability: signal({ writable: true }),
     externalChanges: 'snapshot',
-    deletionHistory: 'storage',
+    removeWithHistory: vi.fn(async () => ({
+      undo: vi.fn(async () => {}),
+      redo: vi.fn(async () => {}),
+    })),
     createMissingEntrypoint: false,
     watch: vi.fn(() => vi.fn()),
     batch: vi.fn(async (_path, run) => run({ ...testFileOperations })),
@@ -609,4 +621,106 @@ it('uses the provider entrypoint policy when refreshing a project', async () => 
   expect(s.session.project.peek()?.projectIORefSignal.peek().title).toBe(
     'Snapshot'
   )
+})
+
+describe('project deletion through storage capabilities', () => {
+  it('deletes and restores real memory-backed files without a cloud service', async () => {
+    const memory = createMemoryFileSystem({ ...noopfs.impl, ...posix })
+    await memory.mkdir('/project/parts', { recursive: true })
+    await memory.writeFile(
+      '/project/parts/main.kcl',
+      new TextEncoder().encode('original contents')
+    )
+    const scheduler = createFileOperationsScheduler(memory)
+    const s = setup(undefined, undefined, scheduler.operations)
+    try {
+      const deletion = await s.session.deleteEntry('/project/parts')
+      assert(deletion && !(deletion instanceof Error))
+      await expect(scheduler.operations.exists('/project/parts')).resolves.toBe(
+        false
+      )
+      await deletion.undo()
+      expect(
+        new TextDecoder().decode(
+          await scheduler.operations.readFile('/project/parts/main.kcl')
+        )
+      ).toBe('original contents')
+      await deletion.redo()
+      await expect(scheduler.operations.exists('/project/parts')).resolves.toBe(
+        false
+      )
+    } finally {
+      await scheduler.dispose()
+    }
+  })
+
+  it('waits for a seven-second editor save before deleting through its backing', async () => {
+    vi.useFakeTimers()
+    const storage = storageForTest()
+    const s = setup(undefined, storage)
+    const saving = Promise.withResolvers<boolean>()
+    s.flush.mockReturnValue(saving.promise)
+    try {
+      const deleting = s.session.deleteEntry('/project/parts')
+      await vi.advanceTimersByTimeAsync(7_000)
+      expect(storage.removeWithHistory).not.toHaveBeenCalled()
+      saving.resolve(true)
+      const deletion = await deleting
+      assert(deletion && !(deletion instanceof Error))
+      expect(storage.removeWithHistory).toHaveBeenCalledWith('/project/parts')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('keeps the file when unsaved edits cannot be persisted', async () => {
+    const storage = storageForTest()
+    const s = setup(undefined, storage)
+    s.flush.mockResolvedValue(false)
+    await expect(
+      s.session.deleteEntry('/project/parts')
+    ).resolves.toBeInstanceOf(Error)
+    expect(storage.removeWithHistory).not.toHaveBeenCalled()
+  })
+
+  it.each(['save', 'deletion'] as const)(
+    'does not attach history to a replacement project after a slow %s',
+    async (phase) => {
+      vi.useFakeTimers()
+      const storage = storageForTest()
+      const s = setup(undefined, storage)
+      const pending = Promise.withResolvers<undefined>()
+      if (phase === 'save')
+        s.flush.mockImplementation(async () => {
+          await pending.promise
+          return true
+        })
+      else
+        vi.mocked(storage.removeWithHistory).mockImplementation(async () => {
+          await pending.promise
+          return { undo: vi.fn(async () => {}), redo: vi.fn(async () => {}) }
+        })
+      try {
+        const deleting = s.session.deleteEntry('/project/parts')
+        await vi.advanceTimersByTimeAsync(7_000)
+        s.session.setProject(createProject().project)
+        pending.resolve(undefined)
+        await expect(deleting).resolves.toBeUndefined()
+        if (phase === 'save')
+          expect(storage.removeWithHistory).not.toHaveBeenCalled()
+      } finally {
+        vi.useRealTimers()
+      }
+    }
+  )
+
+  it('rejects a path in a neighboring project before flushing or deleting', async () => {
+    const storage = storageForTest()
+    const s = setup(undefined, storage)
+    await expect(
+      s.session.deleteEntry('/project-other/main.kcl')
+    ).resolves.toBeInstanceOf(Error)
+    expect(s.flush).not.toHaveBeenCalled()
+    expect(storage.removeWithHistory).not.toHaveBeenCalled()
+  })
 })

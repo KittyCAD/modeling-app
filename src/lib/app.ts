@@ -53,7 +53,6 @@ import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engine
 import {
   type FileOperationsRegistryService,
   fileOperationsService,
-  cloudStorageService,
   projectOperationsService,
 } from '@src/registry/contracts/fileOperations'
 import {
@@ -372,7 +371,6 @@ export class App implements AppSubsystems {
       const disposeFSHistory = buildFSHistoryExtension(
         {
           fileOperations: this.fileOperations,
-          cloudStorage: this.registry.get(cloudStorageService),
           projectSession: this.projectSession,
           projectLibraries: this.projectLibraries,
         },

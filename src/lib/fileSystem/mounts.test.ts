@@ -428,10 +428,10 @@ it('routes Windows mount roots independently of drive and directory casing', asy
 
 it('uses replacement mount contributions without losing the local backing', async () => {
   const memory = createMemoryFileSystem({ ...noopfs.impl, ...posix })
-  const backing = createFileOperationsRuntime(memory)
+  const backing = createFileOperationsScheduler(memory)
   const localMemory = createMemoryFileSystem({ ...noopfs.impl, ...posix })
   await localMemory.mkdir('/projects', { recursive: true })
-  const local = createFileOperationsRuntime(localMemory)
+  const local = createFileOperationsScheduler(localMemory)
   await memory.mkdir('/projects', { recursive: true })
   await memory.writeFile(
     '/projects/main.kcl',

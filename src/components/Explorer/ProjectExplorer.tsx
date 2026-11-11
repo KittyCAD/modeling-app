@@ -1,4 +1,3 @@
-import { flushActiveTextFileWrite } from '@src/lib/activeTextFile'
 import { newKclFile } from '@src/lang/project'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { CustomIconName } from '@src/components/CustomIcon'
@@ -1027,39 +1026,20 @@ export const ProjectExplorer = ({
               canNavigate
 
             const current = app.project
-            const cloud = registry.optional(cloudStorageService)
             void runFileTreeMutation(async () => {
               if (!current) return
-              const isCloud =
-                cloud && child.path.startsWith(`${cloud.root}${fsZds.sep}`)
-              for (const editor of current.editors.values()) {
-                if (!(await editor.flushWriteToFile()))
-                  return Promise.reject(
-                    new Error('Save pending edits before deleting a file.')
-                  )
-              }
-              await flushActiveTextFileWrite()
-              if (app.project !== current) return
-              const deletion = isCloud
-                ? fsFileDeletion({
-                    kind: 'cloud',
-                    projectPath: current.path,
-                    snapshot: await cloud.deletePathWithRevision(child.path),
-                  })
-                : fsFileDeletion({
-                    kind: 'local',
-                    projectPath: current.path,
-                    snapshot: await fileOperations.removeWithSnapshot(
-                      child.path
-                    ),
-                  })
+              const deletion = await app.projectSession.deleteEntry(child.path)
+              if (isErr(deletion)) return Promise.reject(deletion)
+              if (!deletion) return
               if (app.project !== current) return
               if (shouldWeNavigate)
                 await app.projectSession.openFile(project.default_file, {
                   projectPath: project.path,
                 })
               if (deletion && app.project === current)
-                current.executingEditor.peek()?.addGlobalHistoryEvent(deletion)
+                current.executingEditor
+                  .peek()
+                  ?.addGlobalHistoryEvent(fsFileDeletion(deletion))
               toast.success('Deleted successfully')
             })
           },

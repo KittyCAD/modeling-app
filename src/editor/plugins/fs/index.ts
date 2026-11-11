@@ -1,11 +1,7 @@
-import type {
-  CloudStorageService,
-  FileOperationsRegistryService,
-} from '@src/registry/contracts/fileOperations'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type { ProjectLibrariesService } from '@src/registry/contracts/projectLibraries'
 import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
-import type { MemoryFileDeletion } from '@src/lib/fileSystem/deletionHistory'
-import type { CloudFileDeletion } from '@src/lib/fs-zds/cloud/deletion'
+import type { ProjectDeletion } from '@src/lib/projectSession/storage'
 import { trap } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 import { invertedEffects } from '@codemirror/commands'
@@ -24,19 +20,8 @@ type FSEffectProps = {
   requestedProjectName: string
   requestedFileName?: string
 }
-type FileDeletion =
-  | {
-      readonly kind: 'cloud'
-      readonly projectPath: string
-      readonly snapshot: CloudFileDeletion
-    }
-  | {
-      readonly kind: 'local'
-      readonly projectPath: string
-      readonly snapshot: MemoryFileDeletion
-    }
 const fileDeletion = StateEffect.define<{
-  deletion: FileDeletion
+  deletion: ProjectDeletion
   restore: boolean
 }>()
 const moveFile = StateEffect.define<FSEffectProps>()
@@ -56,8 +41,8 @@ const h = <T>(e: StateEffect<T>): TransactionSpecNoChanges => ({
   annotations: [fsIgnoreAnnotationType.of(true)],
 })
 
-/** History holds a cloud revision reference or a local snapshot in memory. */
-export const fsFileDeletion = (deletion: FileDeletion) =>
+/** History retains the backing-owned deletion without choosing a storage implementation. */
+export const fsFileDeletion = (deletion: ProjectDeletion) =>
   h(fileDeletion.of({ deletion, restore: false }))
 /** CodeMirror transaction to mark a "move" file action */
 export const fsMoveFile = (props: FSEffectProps) => h(moveFile.of(props))
@@ -70,17 +55,12 @@ export const fsMoveFile = (props: FSEffectProps) => h(moveFile.of(props))
 export function buildFSHistoryExtension(
   {
     fileOperations,
-    cloudStorage,
     projectLibraries,
     projectSession,
   }: {
     fileOperations: Pick<
       FileOperationsRegistryService,
       'move' | 'replayDeletion'
-    >
-    cloudStorage: Pick<
-      CloudStorageService,
-      'restoreDeletedPath' | 'redoPathDeletion'
     >
     projectLibraries: Pick<ProjectLibrariesService, 'refreshProjects'>
     projectSession: Pick<ProjectSessionService, 'getProject' | 'refreshProject'>
@@ -104,13 +84,8 @@ export function buildFSHistoryExtension(
               return Promise.reject(
                 new Error('The deletion belongs to a different project.')
               )
-            if (deletion.kind === 'cloud') {
-              const cloud = cloudStorage
-              if (restore) await cloud.restoreDeletedPath(deletion.snapshot)
-              else await cloud.redoPathDeletion(deletion.snapshot)
-            } else {
-              await fileOperations.replayDeletion(deletion.snapshot, restore)
-            }
+            if (restore) await deletion.undo()
+            else await deletion.redo()
             if (projectSession.getProject() !== current) return
             await projectSession.refreshProject()
             await current.reloadFilesFromStorage(

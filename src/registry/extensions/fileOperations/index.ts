@@ -27,7 +27,11 @@ export function createFileOperationsServices(
   mounts: () => readonly FileOperationsMount[] = () => []
 ) {
   const scheduler = createFileOperationsScheduler(paths)
-  const mounted = createMountedFileOperations(scheduler.operations, paths, mounts)
+  const mounted = createMountedFileOperations(
+    scheduler.operations,
+    paths,
+    mounts
+  )
   return {
     operations: mounted.operations,
     projects: createProjectOperations({
