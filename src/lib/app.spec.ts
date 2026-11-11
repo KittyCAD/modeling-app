@@ -702,6 +702,50 @@ describe('project system', () => {
     }
   })
 
+  it('enables and disables pyOrigami through user settings before opening a project', async () => {
+    const app = createAppForTest({
+      userFeatures: createUserFeaturesForTest(
+        new Set(['zds_project_shell_refactor'])
+      ),
+    })
+    try {
+      await waitForSettingsIdle(app)
+      expect(
+        app.registry.get(projectSessionService).currentSession.value
+      ).toBeUndefined()
+      const plugin = app.registry
+        .get(pluginsValueSpec)
+        .find(({ id }) => id === 'pyorigami')
+      if (!plugin) throw new Error('Missing pyOrigami plugin')
+      const toggle = app.registry.get(plugin.service)
+      expect(toggle.active.value).toBe(false)
+
+      app.settings.actor.send({
+        type: 'set.plugins.pyorigami',
+        data: { level: 'user', value: true },
+        doNotPersist: true,
+      })
+      await waitForSettingsIdle(app)
+      await expect.poll(() => toggle.active.value).toBe(true)
+      expect(
+        getChangedSettingsAtLevel(app.settings.get(), 'user').plugins
+      ).toMatchObject({ pyorigami: true })
+
+      app.settings.actor.send({
+        type: 'set.plugins.pyorigami',
+        data: { level: 'user', value: false },
+        doNotPersist: true,
+      })
+      await waitForSettingsIdle(app)
+      await expect.poll(() => toggle.active.value).toBe(false)
+      expect(
+        getChangedSettingsAtLevel(app.settings.get(), 'user').plugins?.pyorigami
+      ).toBeUndefined()
+    } finally {
+      app.dispose()
+    }
+  })
+
   it('lets Playwright keep cloud sync off while Personal Cloud stays available', async () => {
     localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
     const userFeatures = createUserFeaturesForTest(new Set())

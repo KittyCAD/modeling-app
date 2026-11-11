@@ -1,0 +1,57 @@
+.overlay {
+  @apply absolute inset-0;
+  pointer-events: none;
+}
+.field {
+  position: absolute;
+  pointer-events: auto;
+}
+.activate {
+  @apply absolute inset-0 m-0 w-full h-full rounded-sm border border-transparent shadow-none;
+  background: transparent;
+  color: #111;
+}
+.placeholder {
+  opacity: 0;
+}
+.activate:hover,
+.activate:focus-visible {
+  @apply border-primary outline-none;
+  background: #fff;
+}
+.activate:hover .placeholder,
+.activate:focus-visible .placeholder {
+  opacity: 1;
+}
+.activate[aria-disabled="true"] {
+  cursor: default;
+}
+/* Editing surfaces are drawn on white diagram paper in both app themes. */
+.input {
+  @apply absolute inset-x-0 top-0 m-0 w-full rounded-sm border border-primary outline outline-1 outline-primary px-1 py-0 shadow-sm;
+  height: 100%;
+  min-height: 24px;
+  background: #fff;
+  color: #111;
+  font: 12px / 1.4 sans-serif;
+}
+.fieldError {
+  @apply relative top-full z-10 mt-1 p-2 rounded border b-4 bg-default text-1 text-xs shadow;
+}
+.addStep {
+  @apply absolute bottom-3 right-4 m-0 rounded border b-4 bg-default text-1 px-3 py-1 text-xs shadow-sm;
+  pointer-events: auto;
+}
+.status {
+  @apply absolute top-2 right-3 z-10 m-0 rounded bg-2 px-2 py-1 text-xs text-2;
+  pointer-events: none;
+}
+
+.title .input {
+  font: bold 24px / 1.1 sans-serif;
+  text-align: center;
+}
+.empty .placeholder {
+  opacity: 0.45;
+  font: 11px / 1.3 sans-serif;
+}
