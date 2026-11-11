@@ -744,9 +744,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   test(
     'if you fixup kcl errors you clear lints',
     { tag: '@localRenderer' },
-    async ({ page, homePage,
-      scene,
-    }) => {
+    async ({ page, homePage, scene }) => {
       const u = await getUtils(page)
       await page.addInitScript(async () => {
         localStorage.setItem(
@@ -775,9 +773,9 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await editedLine.click()
       await expect(u.codeLocator).toBeFocused()
 
-        await expect(
-          page.locator('.cm-lint-marker-error').first()
-        ).not.toBeVisible()
+      await expect(
+        page.locator('.cm-lint-marker-error').first()
+      ).not.toBeVisible()
       await page.keyboard.press('End')
       await page.keyboard.press('Backspace')
 

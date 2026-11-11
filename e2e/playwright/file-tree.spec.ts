@@ -182,18 +182,20 @@ test.describe(
       })
       await expect(partsFolder).toBeVisible()
       await partsFolder.click()
-      await filePaneScroll
-        .getByRole('treeitem', { name: 'existing.kcl', exact: true })
-        .click()
       const startingFilePath = await fs.join(
         dir,
         'browser-file-tree-project',
         'parts',
         'existing.kcl'
       )
-      await expect(page).toHaveURL(
-        new RegExp(`/file/${encodeURIComponent(startingFilePath)}$`)
-      )
+      await Promise.all([
+        page.waitForURL(
+          new RegExp(`/file/${encodeURIComponent(startingFilePath)}$`)
+        ),
+        filePaneScroll
+          .getByRole('treeitem', { name: 'existing.kcl', exact: true })
+          .click(),
+      ])
       await page.evaluate(() => window.app.projectLibraries.refreshProjects())
 
       // Reusing a name allocates a sibling and leaves the original bytes intact.
