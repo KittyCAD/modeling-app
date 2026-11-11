@@ -144,6 +144,10 @@ test(
     const dataTransfer = await page.evaluateHandle((contents) => {
       const data = new DataTransfer()
       data.items.add(new File([contents], 'notes.txt', { type: 'text/plain' }))
+      // Synthetic files have no backing filesystem entry in WebKit.
+      Object.defineProperty(data.items[0], 'webkitGetAsEntry', {
+        value: () => null,
+      })
       return data
     }, contents)
 
