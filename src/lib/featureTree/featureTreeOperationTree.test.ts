@@ -7,6 +7,8 @@ import {
 import {
   buildOperationTree,
   findSameVisibleStdLibOperationAfterSourceChange,
+  getOperationTreeNodeKey,
+  type OperationTreeNode,
 } from '@src/lib/featureTree/featureTreeOperationTree'
 import { describe, expect, it } from 'vitest'
 
@@ -353,5 +355,26 @@ describe('findSameVisibleStdLibOperationAfterSourceChange', () => {
     })
 
     expect(result).toBeUndefined()
+  })
+})
+
+describe('feature tree React keys', () => {
+  it('distinguishes repeated executions at the same source range', () => {
+    const first = createVariableDeclarationOperation([10, 20, 0], 'corner')
+    const second = createVariableDeclarationOperation([10, 20, 0], 'corner')
+    const call = createStdLibCallOperation('edgeId', [30, 40, 0])
+    const lists: OperationTreeNode[][] = [
+      [first, second],
+      [call, { ...call }],
+      [
+        [first, call],
+        [second, { ...call }],
+      ],
+    ]
+    for (const siblings of lists) {
+      const keys = siblings.map(getOperationTreeNodeKey)
+      expect(new Set(keys).size).toBe(siblings.length)
+      expect(siblings.map(getOperationTreeNodeKey)).toEqual(keys)
+    }
   })
 })
