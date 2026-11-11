@@ -215,6 +215,20 @@ describe('opfs', () => {
     )
   })
 
+  test('keeps adapter-owned metadata out of directory membership', async () => {
+    const project = addProjectWithMeta('{"mtimeMs":1}')
+    project.addFile('main.kcl', 'code')
+    project.addFile('._metadata', 'user file')
+    project.addDirectory('empty')
+    const opfs = await getOpfs()
+    expect((await opfs.impl.readdir(projectPath)).sort()).toEqual([
+      '._metadata',
+      'empty',
+      'main.kcl',
+    ])
+    expect(await opfs.impl.readFile(metaPath, 'utf8')).toBe('{"mtimeMs":1}')
+  })
+
   test('repairs empty directory metadata during stat', async () => {
     addProjectWithMeta('')
     const opfs = await getOpfs()

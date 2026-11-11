@@ -48,6 +48,7 @@ export type FileSystemOperation =
   | 'rename'
   | 'stat'
   | 'write-file'
+  | 'validate-mutation'
 
 interface FileSystemErrorDetails {
   readonly operation: FileSystemOperation

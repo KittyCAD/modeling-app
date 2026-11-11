@@ -1,3 +1,9 @@
+import { posix } from '@chainner/node-path'
+import { defineRegistryItem, provide, Slot } from '@kittycad/registry'
+import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
+import noopfs from '@src/lib/fs-zds/noopfs'
+import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
+import { fileOperationsMountsValueSpec } from '@src/registry/contracts/fileOperations'
 import { tmpdir } from 'node:os'
 import { Registry } from '@kittycad/registry'
 import nodeFileSystem from '@src/lib/fs-zds/nodefs'
@@ -45,4 +51,47 @@ describe('file operations extension', () => {
     await expect(operations.readDirectory(root)).resolves.toEqual(['main.kcl'])
     await expect(operations.pending()).resolves.toBe(0)
   })
+})
+
+it('routes through registry mount replacements without replacing the file service', async () => {
+  const paths = { ...noopfs.impl, ...posix }
+  const disk = createMemoryFileSystem(paths)
+  const memory = createMemoryFileSystem(paths)
+  await disk.mkdir('/projects', { recursive: true })
+  await memory.mkdir('/projects', { recursive: true })
+  await disk.writeFile('/projects/main.kcl', new TextEncoder().encode('disk'))
+  await memory.writeFile(
+    '/projects/main.kcl',
+    new TextEncoder().encode('memory')
+  )
+  const runtime = createFileOperationsRuntime(memory)
+  const registry = new Registry()
+  const slot = new Slot()
+  registry.configure([createFileOperationsExtension(disk), slot.of()])
+  try {
+    const files = registry.get(fileOperationsService)
+    expect(
+      new TextDecoder().decode(await files.readFile('/projects/main.kcl'))
+    ).toBe('disk')
+    registry.reconfigure(slot, [
+      defineRegistryItem({
+        provides: [
+          provide(fileOperationsMountsValueSpec, {
+            root: '/projects',
+            operations: runtime.operations,
+          }),
+        ],
+      }),
+    ])
+    expect(
+      new TextDecoder().decode(await files.readFile('/projects/main.kcl'))
+    ).toBe('memory')
+    registry.reconfigure(slot, [])
+    expect(
+      new TextDecoder().decode(await files.readFile('/projects/main.kcl'))
+    ).toBe('disk')
+  } finally {
+    await registry.disposeAsync()
+    await runtime.dispose()
+  }
 })
