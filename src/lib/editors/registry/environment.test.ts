@@ -25,6 +25,7 @@ import {
 import { PROJECT_SHELL_FEATURE } from '@src/lib/projectSession/next/feature'
 import editorsExtension from '@src/lib/editors/registry'
 import markdownExtension from '@src/lib/markdown/registry'
+import pngExtension from '@src/lib/png/registry'
 import {
   editorTabIndicatorValueSpec,
   editorViewValueSpec,
@@ -68,6 +69,7 @@ describe('experimental editor registration', () => {
         executorsExtension,
         savingExtension,
         markdownExtension,
+        pngExtension,
       ])
       registry.get(userFeaturesService)
       await Promise.resolve()
@@ -78,6 +80,9 @@ describe('experimental editor registration', () => {
           .some(({ id }) => id === 'save.persistToDisk')
       ).toBe(enabled)
       expect(registry.get(editorViewValueSpec).length > 0).toBe(enabled)
+      expect(
+        registry.get(editorViewValueSpec).some(({ id }) => id === 'png.image')
+      ).toBe(enabled)
       expect(registry.get(editorTabIndicatorValueSpec).length > 0).toBe(enabled)
       expect(
         registry
