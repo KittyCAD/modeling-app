@@ -1,9 +1,12 @@
 import { isArray, isRecord } from '@src/lib/utils'
 import { Box3, Material, Mesh, type Object3D, Plane, Vector3 } from 'three'
 
-// glTF positions are in meters. Keep the distance tolerance independent of model
-// size so a large assembly cannot make separate nearby surfaces coplanar.
-const PLANE_DISTANCE_TOLERANCE = 1e-7
+// glTF positions are in meters. Keep tolerances independent of model size.
+const PLANAR_VERTEX_TOLERANCE = 1e-7
+// Engine EXTRUSION_CUT_BIAS extends negative sketch-on-face extrusions by
+// 0.001 mm. Treat that allowance as a rendering tie too, plus 1 nm for rounding.
+// This remains fixed in meters; it must not grow with the model's size.
+const COPLANAR_DISTANCE_TOLERANCE = 1.001e-6
 const PLANE_NORMAL_TOLERANCE = 1e-6
 
 type PlanarFace = {
@@ -151,7 +154,7 @@ function* faceDepthBiasSteps(
       if (
         !Number.isFinite(a.lengthSq()) ||
         (!analyticPlane &&
-          Math.abs(normal.dot(a) - distance) > PLANE_DISTANCE_TOLERANCE)
+          Math.abs(normal.dot(a) - distance) > PLANAR_VERTEX_TOLERANCE)
       ) {
         planar = false
         break
@@ -169,7 +172,7 @@ function* faceDepthBiasSteps(
     const coordinates = [face.normal.x, face.normal.y, face.normal.z].map(
       (value) => Math.floor(value / PLANE_NORMAL_TOLERANCE)
     )
-    coordinates.push(Math.floor(face.distance / PLANE_DISTANCE_TOLERANCE))
+    coordinates.push(Math.floor(face.distance / COPLANAR_DISTANCE_TOLERANCE))
     let match: PlanarFace[] | undefined
     for (let x = -1; x <= 1 && !match; x++)
       for (let y = -1; y <= 1 && !match; y++)
@@ -199,12 +202,12 @@ function* faceDepthBiasSteps(
                     Math.abs(delta.x) * halfSize.x +
                     Math.abs(delta.y) * halfSize.y +
                     Math.abs(delta.z) * halfSize.z <=
-                  PLANE_DISTANCE_TOLERANCE
+                  COPLANAR_DISTANCE_TOLERANCE
                 )
               }
               return (
                 delta.length() <= PLANE_NORMAL_TOLERANCE &&
-                Math.abs(distanceDelta) <= PLANE_DISTANCE_TOLERANCE &&
+                Math.abs(distanceDelta) <= COPLANAR_DISTANCE_TOLERANCE &&
                 agreesOver(first.bounds) &&
                 agreesOver(face.bounds)
               )
@@ -219,7 +222,9 @@ function* faceDepthBiasSteps(
         const key = [face.normal.x, face.normal.y, face.normal.z].map((value) =>
           Math.floor((sign * value) / PLANE_NORMAL_TOLERANCE)
         )
-        key.push(Math.floor((sign * face.distance) / PLANE_DISTANCE_TOLERANCE))
+        key.push(
+          Math.floor((sign * face.distance) / COPLANAR_DISTANCE_TOLERANCE)
+        )
         const bucketKey = key.join(':')
         const bucket = buckets.get(bucketKey) ?? []
         bucket.push(group)
@@ -235,8 +240,6 @@ function* faceDepthBiasSteps(
     const bounds = new Box3()
     for (const face of group) bounds.union(face.bounds)
     const size = bounds.getSize(new Vector3())
-    const axis =
-      size.x >= size.y && size.x >= size.z ? 'x' : size.y >= size.z ? 'y' : 'z'
     const normal = group[0].normal
     const projectionAxes: Array<'x' | 'y' | 'z'> =
       Math.abs(normal.x) >= Math.abs(normal.y) &&
@@ -245,6 +248,10 @@ function* faceDepthBiasSteps(
         : Math.abs(normal.y) >= Math.abs(normal.z)
           ? ['x', 'z']
           : ['x', 'y']
+    const axis =
+      size[projectionAxes[0]] >= size[projectionAxes[1]]
+        ? projectionAxes[0]
+        : projectionAxes[1]
     const sorted = [...group].sort(
       (a, b) => a.bounds.min[axis] - b.bounds.min[axis]
     )
@@ -259,14 +266,14 @@ function* faceDepthBiasSteps(
     const active: number[] = []
     for (let i = 0; i < sorted.length; i++) {
       const currentBounds = sorted[i].bounds
-        .clone()
-        .expandByScalar(PLANE_DISTANCE_TOLERANCE)
       for (let j = active.length - 1; j >= 0; j--) {
         const previous = active[j]
         if (sorted[previous].bounds.max[axis] < currentBounds.min[axis]) {
           active.splice(j, 1)
         } else if (
-          currentBounds.intersectsBox(sorted[previous].bounds) &&
+          // Plane distance was checked above using analytic data when present.
+          // Test overlap in the plane only: Float32 mesh rounding along its
+          // normal must not reject the engine's extrusion allowance again.
           projectionAxes.every(
             (axis) =>
               Math.min(
@@ -277,7 +284,7 @@ function* faceDepthBiasSteps(
                   sorted[i].bounds.min[axis],
                   sorted[previous].bounds.min[axis]
                 ) >
-              PLANE_DISTANCE_TOLERANCE
+              PLANAR_VERTEX_TOLERANCE
           )
         ) {
           parent[find(i)] = find(previous)
