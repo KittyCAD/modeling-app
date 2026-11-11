@@ -34,6 +34,9 @@ describe('solid face depth priority', () => {
       expect(cap.material.polygonOffsetUnits).toBe(0)
       expect(beam.material).not.toBe(cap.material)
       expect(beam.material.polygonOffset).toBe(true)
+      expect(beam.material.polygonOffsetFactor).toBeGreaterThan(
+        cap.material.polygonOffsetFactor
+      )
       expect(cap.position.toArray()).toEqual([0, 0, 0])
     }
   )

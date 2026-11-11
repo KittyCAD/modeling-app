@@ -10,7 +10,7 @@ import { Themes } from '@src/lib/theme'
 import {
   Group,
   Mesh,
-  type OrthographicCamera,
+  OrthographicCamera,
   PerspectiveCamera,
   Scene,
   Vector3,
@@ -407,6 +407,26 @@ describe('local GLB loading', () => {
       f.renderer.dispose()
     }
   )
+
+  it('fits orthographic depth before a pick that arrives ahead of the next frame', async () => {
+    const f = planeFixture()
+    const camera = new OrthographicCamera(-16, 16, 16, -16, -10000, 10000)
+    camera.position.set(0, 30, 0)
+    camera.up.set(0, 0, -1)
+    camera.lookAt(0, 0, 0)
+    f.state.previewCamera = camera
+    // scheduleRender is mocked: the pointer event arrives before the queued
+    // animation frame can prepare the camera used by the visible render.
+    f.picker.pick.mockImplementationOnce(async () => {
+      expect(camera.near).toBeGreaterThan(0)
+      expect(camera.far).toBeLessThan(100)
+      return { target: null, stale: false }
+    })
+    await f.pick()
+    const invalidations = f.picker.invalidate.mock.calls.length
+    await f.pick()
+    expect(f.picker.invalidate).toHaveBeenCalledTimes(invalidations)
+  })
 
   it('exports once after successful execution and loads standard geometry/materials', async () => {
     const f = fixture()

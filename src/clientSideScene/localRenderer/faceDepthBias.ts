@@ -48,8 +48,8 @@ export function exportedFacePlane(surface: unknown): Plane | undefined {
 // Smaller faces win depth ties so a face contained in another remains visible
 // and selectable. Measure tessellated area, not triangle count or bounding-box
 // area: tessellation density varies, and a circle can lie in any plane.
-// Positive, constant offsets keep regions and edges ahead of solid faces and
-// avoid large slope-dependent offsets at grazing angles.
+// Positive offsets keep regions and edges ahead of solid faces. The slope
+// term stays small to limit displacement at grazing angles.
 export function applyFaceDepthBias(
   root: Object3D,
   planes?: ReadonlyMap<Mesh, Plane>
@@ -334,7 +334,9 @@ function* faceDepthBiasSteps(
       if (!material) {
         material = source.clone()
         material.polygonOffset = true
-        material.polygonOffsetFactor = 0
+        // A small slope term covers rasterization differences between coplanar
+        // triangles in angled orthographic views; constant units alone do not.
+        material.polygonOffsetFactor = rank / 256
         // Leave room for interpolation differences between a large triangle
         // and the finer tessellation of a contained face.
         material.polygonOffsetUnits = rank * 16

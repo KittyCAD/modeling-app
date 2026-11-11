@@ -16,6 +16,7 @@ describe('IntegerIdPicker', () => {
     const back = new Mesh(undefined, new MeshStandardNodeMaterial())
     back.material.polygonOffset = true
     back.material.polygonOffsetUnits = 4
+    back.material.polygonOffsetFactor = 1 / 256
     const model = new Scene()
     model.add(front, back)
     const render = vi.fn()
@@ -46,6 +47,13 @@ describe('IntegerIdPicker', () => {
             .polygonOffsetUnits
       )
     ).toEqual([4, 0])
+    expect(
+      proxies.map(
+        (proxy) =>
+          (isArray(proxy.material) ? proxy.material[0] : proxy.material)
+            .polygonOffsetFactor
+      )
+    ).toEqual([1 / 256, 0])
     picker.dispose()
   })
 
