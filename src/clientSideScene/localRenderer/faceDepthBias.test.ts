@@ -1,6 +1,9 @@
 import {
   CircleGeometry,
   Group,
+  Euler,
+  Matrix4,
+  Vector3,
   Mesh,
   PlaneGeometry,
   SphereGeometry,
@@ -10,6 +13,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   applyFaceDepthBias,
   applyFaceDepthBiasDeferred,
+  exportedFacePlane,
 } from '@src/clientSideScene/localRenderer/faceDepthBias'
 
 describe('solid face depth priority', () => {
@@ -127,6 +131,94 @@ describe('solid face depth priority', () => {
     expect(
       largerFaces.every((face) => face.material.polygonOffsetUnits === 16)
     ).toBe(true)
+  })
+
+  it('does not increase a local offset when distant faces share the plane', () => {
+    const root = new Group()
+    const shared = new MeshStandardNodeMaterial()
+    const large = new Mesh(new PlaneGeometry(20, 20), shared)
+    const small = new Mesh(new PlaneGeometry(1, 1), shared)
+    large.userData.bodyMeshIndex = 0
+    small.userData.bodyMeshIndex = 1
+    root.add(large, small)
+    for (let i = 0; i < 100; i++) {
+      const remote = new Mesh(new PlaneGeometry(2 + i / 20, 2 + i / 20), shared)
+      remote.userData.bodyMeshIndex = i + 2
+      remote.position.x = 100 + i * 20
+      root.add(remote)
+    }
+    applyFaceDepthBias(root)
+    expect(large.material.polygonOffsetUnits).toBe(16)
+    expect(small.material).toBe(shared)
+    for (const remote of root.children.slice(2)) {
+      if (remote instanceof Mesh) expect(remote.material).toBe(shared)
+    }
+  })
+
+  it('does not connect a chain of tiles that only share edges', () => {
+    const root = new Group()
+    const material = new MeshStandardNodeMaterial()
+    for (let i = 0; i < 100; i++) {
+      const face = new Mesh(new PlaneGeometry(1, 1 + i), material)
+      face.position.x = i
+      face.userData.bodyMeshIndex = i
+      root.add(face)
+    }
+    applyFaceDepthBias(root)
+    for (const face of root.children)
+      if (face instanceof Mesh) expect(face.material).toBe(material)
+  })
+
+  it('uses analytic export planes when Float32 rounding makes tilted vertices nonplanar', () => {
+    const root = new Group()
+    const material = new MeshStandardNodeMaterial()
+    const rotation = new Matrix4().makeRotationFromEuler(
+      new Euler(0.37, 0.73, 0)
+    )
+    const large = new Mesh(
+      new PlaneGeometry(10, 10, 8, 8).applyMatrix4(rotation),
+      material
+    )
+    const small = new Mesh(
+      new PlaneGeometry(1, 1, 8, 8).applyMatrix4(rotation),
+      material
+    )
+    large.userData.bodyMeshIndex = 0
+    small.userData.bodyMeshIndex = 1
+    root.add(large, small)
+    applyFaceDepthBias(root)
+    expect(large.material).toBe(material)
+    const normal = new Vector3(0, 0, 1).transformDirection(rotation)
+    const plane = exportedFacePlane({
+      type: 'plane',
+      plane: { normal: normal.toArray(), point: [0, 0, 0] },
+    })
+    if (!plane) throw new Error('Missing analytic plane')
+    applyFaceDepthBias(
+      root,
+      new Map([
+        [large, plane],
+        [small, plane],
+      ])
+    )
+    expect(large.material.polygonOffsetUnits).toBe(16)
+    expect(small.material).toBe(material)
+  })
+
+  it('reads axes-based analytic planes and ignores curved or malformed surface data', () => {
+    const axes = exportedFacePlane({
+      type: 'plane',
+      plane: { axes: { x: [1, 0, 0], y: [0, 1, 0] }, origin: [0, 0, 2] },
+    })
+    expect(axes?.normal.toArray()).toEqual([0, 0, 1])
+    expect(axes?.constant).toBe(-2)
+    expect(exportedFacePlane({ type: 'nurbs' })).toBeUndefined()
+    expect(
+      exportedFacePlane({
+        type: 'plane',
+        plane: { normal: [0, 0, 0], point: [0, 0, 0] },
+      })
+    ).toBeUndefined()
   })
 
   it('accounts for world transforms and indexed and non-indexed tessellation', () => {

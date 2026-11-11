@@ -1,5 +1,5 @@
-import { isArray } from '@src/lib/utils'
-import { Box3, Material, Mesh, type Object3D, Vector3 } from 'three'
+import { isArray, isRecord } from '@src/lib/utils'
+import { Box3, Material, Mesh, type Object3D, Plane, Vector3 } from 'three'
 
 // glTF positions are in meters. Keep the distance tolerance independent of model
 // size so a large assembly cannot make separate nearby surfaces coplanar.
@@ -14,13 +14,47 @@ type PlanarFace = {
   bounds: Box3
 }
 
+// Export versions use either normal/point or axes/origin for analytic planes.
+// These values retain the engine's precision instead of the mesh's Float32 one.
+export function exportedFacePlane(surface: unknown): Plane | undefined {
+  if (
+    !isRecord(surface) ||
+    surface.type !== 'plane' ||
+    !isRecord(surface.plane)
+  )
+    return
+  const vector = (value: unknown) => {
+    if (!isArray(value) || value.length !== 3) return
+    const [x, y, z] = value
+    if (
+      typeof x !== 'number' ||
+      typeof y !== 'number' ||
+      typeof z !== 'number' ||
+      ![x, y, z].every(Number.isFinite)
+    )
+      return
+    return new Vector3(x, y, z)
+  }
+  const plane = surface.plane
+  const axes = isRecord(plane.axes) ? plane.axes : undefined
+  const x = vector(plane.xAxis ?? axes?.x)
+  const y = vector(plane.yAxis ?? axes?.y)
+  const normal = vector(plane.normal) ?? (x && y ? x.cross(y) : undefined)
+  const point = vector(plane.point ?? plane.origin)
+  if (!normal || !point || normal.lengthSq() === 0) return
+  return new Plane().setFromNormalAndCoplanarPoint(normal.normalize(), point)
+}
+
 // Smaller faces win depth ties so a face contained in another remains visible
 // and selectable. Measure tessellated area, not triangle count or bounding-box
 // area: tessellation density varies, and a circle can lie in any plane.
 // Positive, constant offsets keep regions and edges ahead of solid faces and
 // avoid large slope-dependent offsets at grazing angles.
-export function applyFaceDepthBias(root: Object3D) {
-  for (const _step of faceDepthBiasSteps(root)) {
+export function applyFaceDepthBias(
+  root: Object3D,
+  planes?: ReadonlyMap<Mesh, Plane>
+) {
+  for (const _step of faceDepthBiasSteps(root, planes)) {
     // Synchronous entry point for callers that do not need to yield.
   }
 }
@@ -30,12 +64,13 @@ export function applyFaceDepthBias(root: Object3D) {
 export async function applyFaceDepthBiasDeferred(
   root: Object3D,
   isCurrent: () => boolean,
-  yieldToBrowser = () => new Promise<void>((resolve) => setTimeout(resolve, 0))
+  yieldToBrowser = () => new Promise<void>((resolve) => setTimeout(resolve, 0)),
+  planes?: ReadonlyMap<Mesh, Plane>
 ): Promise<boolean> {
   await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
   await yieldToBrowser()
   if (!isCurrent()) return false
-  const steps = faceDepthBiasSteps(root)
+  const steps = faceDepthBiasSteps(root, planes)
   let sliceStart = performance.now()
   while (isCurrent()) {
     const step = steps.next()
@@ -49,7 +84,10 @@ export async function applyFaceDepthBiasDeferred(
   return false
 }
 
-function* faceDepthBiasSteps(root: Object3D): Generator<void, boolean> {
+function* faceDepthBiasSteps(
+  root: Object3D,
+  planes?: ReadonlyMap<Mesh, Plane>
+): Generator<void, boolean> {
   root.updateWorldMatrix(true, true)
   const planarFaces: PlanarFace[] = []
   const triangleNormal = new Vector3()
@@ -100,6 +138,11 @@ function* faceDepthBiasSteps(root: Object3D): Generator<void, boolean> {
     if (!normal || !Number.isFinite(area) || area <= 0) continue
     // Use the largest triangle for a stable candidate plane, then check every
     // vertex, including vertices in degenerate triangles before that triangle.
+    const analyticPlane = planes?.get(object)
+    if (analyticPlane) {
+      normal = analyticPlane.normal
+      distance = -analyticPlane.constant
+    }
     let planar = true
     const bounds = new Box3()
     for (let i = 0; i < positions.count; i++) {
@@ -107,7 +150,8 @@ function* faceDepthBiasSteps(root: Object3D): Generator<void, boolean> {
       bounds.expandByPoint(a)
       if (
         !Number.isFinite(a.lengthSq()) ||
-        Math.abs(normal.dot(a) - distance) > PLANE_DISTANCE_TOLERANCE
+        (!analyticPlane &&
+          Math.abs(normal.dot(a) - distance) > PLANE_DISTANCE_TOLERANCE)
       ) {
         planar = false
         break
@@ -184,8 +228,76 @@ function* faceDepthBiasSteps(root: Object3D): Generator<void, boolean> {
     }
     yield
   }
-  const ranks = new Map<Mesh, number>()
+  // Coplanar but distant faces cannot compete for pixels. Split each plane
+  // into components of overlapping bounds before assigning any depth ranks.
+  const overlappingGroups: PlanarFace[][] = []
   for (const group of groups) {
+    const bounds = new Box3()
+    for (const face of group) bounds.union(face.bounds)
+    const size = bounds.getSize(new Vector3())
+    const axis =
+      size.x >= size.y && size.x >= size.z ? 'x' : size.y >= size.z ? 'y' : 'z'
+    const normal = group[0].normal
+    const projectionAxes: Array<'x' | 'y' | 'z'> =
+      Math.abs(normal.x) >= Math.abs(normal.y) &&
+      Math.abs(normal.x) >= Math.abs(normal.z)
+        ? ['y', 'z']
+        : Math.abs(normal.y) >= Math.abs(normal.z)
+          ? ['x', 'z']
+          : ['x', 'y']
+    const sorted = [...group].sort(
+      (a, b) => a.bounds.min[axis] - b.bounds.min[axis]
+    )
+    const parent = sorted.map((_, index) => index)
+    const find = (index: number): number => {
+      while (parent[index] !== index) {
+        parent[index] = parent[parent[index]]
+        index = parent[index]
+      }
+      return index
+    }
+    const active: number[] = []
+    for (let i = 0; i < sorted.length; i++) {
+      const currentBounds = sorted[i].bounds
+        .clone()
+        .expandByScalar(PLANE_DISTANCE_TOLERANCE)
+      for (let j = active.length - 1; j >= 0; j--) {
+        const previous = active[j]
+        if (sorted[previous].bounds.max[axis] < currentBounds.min[axis]) {
+          active.splice(j, 1)
+        } else if (
+          currentBounds.intersectsBox(sorted[previous].bounds) &&
+          projectionAxes.every(
+            (axis) =>
+              Math.min(
+                sorted[i].bounds.max[axis],
+                sorted[previous].bounds.max[axis]
+              ) -
+                Math.max(
+                  sorted[i].bounds.min[axis],
+                  sorted[previous].bounds.min[axis]
+                ) >
+              PLANE_DISTANCE_TOLERANCE
+          )
+        ) {
+          parent[find(i)] = find(previous)
+        }
+        yield
+      }
+      active.push(i)
+      yield
+    }
+    const components = new Map<number, PlanarFace[]>()
+    for (let i = 0; i < sorted.length; i++) {
+      const root = find(i)
+      const component = components.get(root) ?? []
+      component.push(sorted[i])
+      components.set(root, component)
+    }
+    overlappingGroups.push(...components.values())
+  }
+  const ranks = new Map<Mesh, number>()
+  for (const group of overlappingGroups) {
     group.sort(
       (a, b) =>
         a.area - b.area ||

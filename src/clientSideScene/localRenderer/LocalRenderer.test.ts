@@ -1,3 +1,4 @@
+import type { KITTYCAD_GLTF } from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
 import type { EntityType } from '@kittycad/lib'
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
@@ -30,7 +31,10 @@ vi.mock('@src/lib/resetCameraPosition', () => ({
   resetCameraPosition: vi.fn(async () => {}),
 }))
 
-import { LocalRenderer } from '@src/clientSideScene/localRenderer/LocalRenderer'
+import {
+  LocalRenderer,
+  assignFaceUuids,
+} from '@src/clientSideScene/localRenderer/LocalRenderer'
 import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type { Artifact } from '@src/lang/wasm'
@@ -167,6 +171,41 @@ function fixture(
   }
   return { renderer, state, gpu, manager, done, onModelLoadSettled }
 }
+
+describe('exported face planes', () => {
+  it('associates analytic surface data with the matching face mesh', () => {
+    const mesh = new Mesh()
+    const scene = new Group()
+    scene.add(mesh)
+    const gltf = {
+      scene,
+      parser: {
+        json: { meshes: [{ primitives: [{}] }] },
+        associations: new Map([[mesh, { meshes: 0, primitives: 0 }]]),
+      },
+      userData: {
+        gltfExtensions: {
+          KITTYCAD_boundary_representation: {
+            solids: [{ mesh: 0, shells: [[0, 1]] }],
+            shells: [{ faces: [[0, 1]] }],
+            faces: [
+              {
+                surface: [0, 1],
+                extras: { KITTYCAD: { uuid: 'planar-face' } },
+              },
+            ],
+            surfaces: [
+              { type: 'plane', plane: { normal: [0, 0, 1], point: [0, 0, 2] } },
+            ],
+          },
+        },
+      },
+    } as unknown as KITTYCAD_GLTF
+    const planes = assignFaceUuids(gltf)
+    expect(mesh.userData.faceUuid).toBe('planar-face')
+    expect(planes.get(mesh)?.constant).toBe(-2)
+  })
+})
 
 describe('local GLB loading', () => {
   beforeEach(() => {

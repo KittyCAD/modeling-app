@@ -1,4 +1,7 @@
-import { applyFaceDepthBiasDeferred } from '@src/clientSideScene/localRenderer/faceDepthBias'
+import {
+  applyFaceDepthBiasDeferred,
+  exportedFacePlane,
+} from '@src/clientSideScene/localRenderer/faceDepthBias'
 import type {
   EntityReference,
   EntityType,
@@ -51,6 +54,7 @@ import {
   type Object3D,
   OrthographicCamera,
   PerspectiveCamera,
+  type Plane,
   Scene,
   Texture,
   Vector3,
@@ -1336,7 +1340,7 @@ export class LocalRenderer {
 
       this.clearModel()
 
-      assignFaceUuids(gltf)
+      const facePlanes = assignFaceUuids(gltf)
       this.currentModel = gltf.scene
       const { gpu } = this
       gpu?.scene.add(gltf.scene)
@@ -1361,7 +1365,12 @@ export class LocalRenderer {
       this.onModelLoadSettled?.(true)
       const model = gltf.scene
       const isModelCurrent = () => !this.disposed && this.currentModel === model
-      void applyFaceDepthBiasDeferred(model, isModelCurrent)
+      void applyFaceDepthBiasDeferred(
+        model,
+        isModelCurrent,
+        undefined,
+        facePlanes
+      )
         .then((applied) => {
           if (!applied || !isModelCurrent()) return
           this.rebuildSelectionTargets()
@@ -1485,12 +1494,13 @@ function fillEmptyBrepArrays(gltf: KITTYCAD_GLTF) {
 
 /** Attach B-rep face IDs to the corresponding glTF primitive meshes. */
 export function assignFaceUuids(gltf: KITTYCAD_GLTF) {
+  const planes = new Map<Mesh, Plane>()
   const brep = gltf.userData.gltfExtensions?.KITTYCAD_boundary_representation
   if (!brep) {
     console.warn(
       '[LocalWebGPUScene] The model has no B-rep data, so its faces and edges cannot be selected.'
     )
-    return
+    return planes
   }
   const faceIdsBySolidMesh = new Map<number, number[]>()
 
@@ -1528,5 +1538,10 @@ export function assignFaceUuids(gltf: KITTYCAD_GLTF) {
     const face = faceIndex === undefined ? undefined : brep.faces[faceIndex]
     const uuid = face?.extras?.KITTYCAD?.uuid
     if (uuid) object.userData.faceUuid = uuid
+    const plane = exportedFacePlane(
+      face ? brep.surfaces[face.surface[0]] : undefined
+    )
+    if (plane) planes.set(object, plane)
   })
+  return planes
 }
