@@ -64,4 +64,10 @@ hide(profile)`
   await scene.waitForExecutionDoneAfter(() => modelingDialog.submit())
   await editor.expectEditor.toContain('gdt::distance(')
   await editor.expectEditor.toContain('framePosition = [5, 5]')
+  const source = await page.evaluate(
+    () => window.app.singletons.kclManager.code
+  )
+  expect(source.slice(source.indexOf('gdt::distance('))).toContain(
+    'framePlane = XZ'
+  )
 })

@@ -73,6 +73,37 @@ function getSelectionsFromGdtData(
   return undefined
 }
 
+function hasOnlyGdtEdgeSelections(selections: Selections | undefined): boolean {
+  if (
+    !selections ||
+    selections.graphSelections.length + selections.otherSelections.length === 0
+  )
+    return false
+  return (
+    selections.graphSelections.every(({ entityRef, artifact }) => {
+      if (entityRef)
+        return (
+          entityRef.type === 'edge' ||
+          entityRef.type === 'solid2d_edge' ||
+          entityRef.type === 'segment'
+        )
+      return (
+        artifact?.type === 'sweepEdge' ||
+        artifact?.type === 'primitiveEdge' ||
+        artifact?.type === 'edgeCutEdge' ||
+        artifact?.type === 'segment'
+      )
+    }) &&
+    selections.otherSelections.every(
+      (selection) =>
+        typeof selection === 'object' &&
+        'type' in selection &&
+        selection.type === 'enginePrimitive' &&
+        selection.primitiveType === 'edge'
+    )
+  )
+}
+
 function visitAstNodes(value: unknown, onNode: (node: unknown) => void): void {
   if (typeof value !== 'object' || value === null) {
     return
@@ -514,8 +545,21 @@ function getDefaultGdtFrameDefaultsFromNormal(
 }
 
 export function getDefaultGdtFramePlaneFromBoundingBox(
-  dimensions: BoundingBox['dimensions']
+  dimensions: BoundingBox['dimensions'],
+  selectionKind: 'face' | 'edge' = 'face'
 ): GdtFramePlane | undefined {
+  if (selectionKind === 'edge') {
+    const values = AXES.map((axis) => dimensions[axis])
+    if (values.some((value) => !Number.isFinite(value) || value < 0))
+      return undefined
+    const longest = Math.max(...values)
+    if (longest === 0) return undefined
+    const thinThreshold =
+      Math.min(...values) + longest * AXIS_INFERENCE_TOLERANCE
+    if (dimensions.z <= thinThreshold) return KCL_PLANE_XY
+    if (dimensions.y <= thinThreshold) return KCL_PLANE_XZ
+    return KCL_PLANE_YZ
+  }
   const axis = getDecisiveAxis(
     {
       x: dimensions.x,
@@ -773,7 +817,8 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
 
   if (!hasResolvedFramePlane && selectionBoundingBox) {
     const framePlaneFromBoundingBox = getDefaultGdtFramePlaneFromBoundingBox(
-      selectionBoundingBox.dimensions
+      selectionBoundingBox.dimensions,
+      hasOnlyGdtEdgeSelections(selections) ? 'edge' : 'face'
     )
 
     if (framePlaneFromBoundingBox) {

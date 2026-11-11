@@ -288,6 +288,27 @@ describe('GD&T frame defaults', () => {
     ).toBeUndefined()
   })
 
+  it('uses planes containing the selected edge direction', () => {
+    expect(
+      getDefaultGdtFramePlaneFromBoundingBox({ x: 4, y: 0, z: 0 }, 'edge')
+    ).toBe('XY')
+    expect(
+      getDefaultGdtFramePlaneFromBoundingBox({ x: 0, y: 4, z: 0 }, 'edge')
+    ).toBe('XY')
+    expect(
+      getDefaultGdtFramePlaneFromBoundingBox({ x: 0, y: 0, z: 4 }, 'edge')
+    ).toBe('XZ')
+    expect(
+      getDefaultGdtFramePlaneFromBoundingBox({ x: 4, y: 0, z: 8 }, 'edge')
+    ).toBe('XZ')
+    expect(
+      getDefaultGdtFramePlaneFromBoundingBox({ x: 0, y: 4, z: 8 }, 'edge')
+    ).toBe('YZ')
+    expect(
+      getDefaultGdtFramePlaneFromBoundingBox({ x: 0, y: 0, z: 0 }, 'edge')
+    ).toBeUndefined()
+  })
+
   it('gets engine entity ids from GD&T selections', () => {
     const selections: Selections = {
       graphSelections: [

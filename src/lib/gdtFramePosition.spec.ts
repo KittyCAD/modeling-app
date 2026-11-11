@@ -148,12 +148,14 @@ it.each([
     model: block,
     edge: '{ sideFaces = [body.sketch.tags.bottom, body.faces.capEnd] }',
     position: '[10, 10]',
+    plane: undefined,
   },
   {
     name: 'vertical',
     model: block,
     edge: '{ sideFaces = [body.sketch.tags.bottom, body.sketch.tags.left] }',
     position: '[5, 5]',
+    plane: 'XZ',
   },
   {
     name: 'circular',
@@ -166,10 +168,11 @@ body = extrude(disk, length = 5mm, tagEnd = $capEnd)
 `,
     edge: '{ sideFaces = [body.sketch.tags.rim, body.faces.capEnd] }',
     position: undefined,
+    plane: undefined,
   },
 ])(
   'uses the selected $name edge bounds when creating and editing a distance',
-  async ({ model, edge, position }) => {
+  async ({ model, edge, position, plane }) => {
     const code =
       model +
       `gdt::distance(edges = [${edge}], tolerance = 0.1mm, fontSize = 1mm)`
@@ -271,6 +274,7 @@ body = extrude(disk, length = 5mm, tagEnd = $capEnd)
       const createdCode = recast(created.modifiedAst, world.instance)
       if (isErr(createdCode)) throw createdCode
       if (position) expect(createdCode).toContain(`framePosition = ${position}`)
+      if (plane) expect(createdCode).toContain(`framePlane = ${plane}`)
       const output = recast(edited.modifiedAst, world.instance)
       if (isErr(output)) throw output
       expect(output.replace(/\s/g, '')).toContain(
@@ -278,6 +282,7 @@ body = extrude(disk, length = 5mm, tagEnd = $capEnd)
       )
       expect(output).toContain('fontSize = 1mm')
       if (position) expect(output).toContain(`framePosition = ${position}`)
+      if (plane) expect(output).toContain(`framePlane = ${plane}`)
       await getAstAndArtifactGraph(output, world.instance, world.kclManager)
       expect(world.kclManager.errors).toEqual([])
     } finally {
