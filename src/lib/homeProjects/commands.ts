@@ -1,3 +1,7 @@
+import type { ProjectOperationsService } from '@src/lib/projectSession/projectOperations'
+import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
+import fsZds from '@src/lib/fs-zds'
+import { reportRejection } from '@src/lib/trap'
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
@@ -17,19 +21,18 @@ import {
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
 import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 import type {
+  ProjectLibrariesService,
   ProjectLibraryCreateProjectInput,
   ProjectLibraryOperation,
 } from '@src/registry/contracts/projectLibraries'
 import toast from 'react-hot-toast'
-import type { ActorRefFrom, ContextFrom } from 'xstate'
+import type { ContextFrom } from 'xstate'
 export type ProjectsCommandSchema = {
   'Create project': {
     name: string
@@ -63,7 +66,9 @@ interface HomeProjectCommandTarget {
 }
 
 export function createProjectCommands({
-  systemIOActor,
+  projectOperations,
+  projectSession,
+  projectLibraries,
   getCurrentProjectDirectoryName,
   getCurrentProjectPath,
   getCurrentProjectLibraryId,
@@ -72,7 +77,16 @@ export function createProjectCommands({
   getHomeProjectActions,
   getHomeProjectEntries,
 }: {
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  projectOperations: Pick<
+    ProjectOperationsService,
+    | 'projects'
+    | 'createProject'
+    | 'renameProject'
+    | 'deleteProject'
+    | 'writeFiles'
+  >
+  projectSession: Pick<ProjectSessionService, 'openFile'>
+  projectLibraries: ProjectLibrariesService
   getCurrentProjectDirectoryName?: () => string | undefined
   getCurrentProjectPath?: () => string | undefined
   getCurrentProjectLibraryId?: () => string | undefined
@@ -81,21 +95,9 @@ export function createProjectCommands({
   getHomeProjectActions?: () => HomeProjectActionsService | undefined
   getHomeProjectEntries?: () => readonly HomeProjectEntry[] | undefined
 }) {
-  /**
-   * Helper functions instead of importing these due to circular deps.
-   * unable to resolve this in a cleaner way at the moment.
-   * This is safe in terms of logic but visually ugly.
-   * TODO: https://github.com/KittyCAD/modeling-app/issues/6032
-   */
-  const folderSnapshot = () => {
-    const { folders } = systemIOActor.getSnapshot().context
-    return folders
-  }
-
-  const defaultProjectFolderNameSnapshot = () => {
-    const { defaultProjectFolderName } = systemIOActor.getSnapshot().context
-    return defaultProjectFolderName
-  }
+  const folderSnapshot = () => projectOperations.projects.value
+  const defaultProjectFolderNameSnapshot = () =>
+    projectLibraries.defaultProjectName
 
   const currentProjectDirectoryNameSnapshot = () =>
     getCurrentProjectDirectoryName?.()
@@ -330,10 +332,11 @@ export function createProjectCommands({
           })
         }
 
-        systemIOActor.send({
-          type: SystemIOMachineEvents.navigateToProject,
-          data: { requestedProjectName: record.name },
-        })
+        projectSession
+          .openFile(
+            fsZds.join(projectLibraries.projectDirectoryPath, record.name)
+          )
+          .catch(reportRejection)
       }
     },
     args: {
@@ -390,13 +393,18 @@ export function createProjectCommands({
           })
         }
 
-        systemIOActor.send({
-          type: SystemIOMachineEvents.createProject,
-          data: {
-            requestedProjectName,
-            requestedProjectTitle,
-          },
-        })
+        projectOperations
+          .createProject({
+            directory: projectLibraries.projectDirectoryPath,
+            name: requestedProjectName,
+            title: requestedProjectTitle,
+          })
+          .then((project) =>
+            projectSession.openFile(project.default_file, {
+              projectPath: project.path,
+            })
+          )
+          .catch(reportRejection)
       }
     },
     args: {
@@ -517,10 +525,12 @@ export function createProjectCommands({
           return target.actions.delete(target.project)
         }
 
-        systemIOActor.send({
-          type: SystemIOMachineEvents.deleteProject,
-          data: { requestedProjectName: record.name },
-        })
+        projectOperations
+          .deleteProject(
+            fsZds.join(projectLibraries.projectDirectoryPath, record.name)
+          )
+          .then(() => projectLibraries.refreshProjects())
+          .catch(reportRejection)
       }
     },
     reviewMessage: ({ argumentsToSubmit }) => {
@@ -570,14 +580,18 @@ export function createProjectCommands({
           ? hash.replace(/^#/, '')
           : window.location.pathname
         const isOnHomePage = pathname.startsWith(PATHS.HOME)
-        systemIOActor.send({
-          type: SystemIOMachineEvents.renameProject,
-          data: {
-            requestedProjectName: record.newName,
-            projectName: record.oldName,
-            redirect: !isOnHomePage, // only redirect when renaming from within a project
-          },
-        })
+        const path = fsZds.join(
+          projectLibraries.projectDirectoryPath,
+          record.oldName
+        )
+        projectOperations
+          .renameProject(path, record.newName)
+          .then(async () => {
+            await projectLibraries.refreshProjects()
+            if (!isOnHomePage)
+              await projectSession.openFile(path, { projectPath: path })
+          })
+          .catch(reportRejection)
       }
     },
     args: {
@@ -645,14 +659,19 @@ export function createProjectCommands({
     needsReview: true,
     onSubmit: (record) => {
       if (record) {
-        systemIOActor.send({
-          type: SystemIOMachineEvents.importFileFromURL,
-          data: {
-            requestedProjectName: record.projectName,
-            requestedCode: record.code,
-            requestedFileNameWithExtension: record.name,
-          },
-        })
+        const root = fsZds.join(
+          projectLibraries.projectDirectoryPath,
+          record.projectName || projectLibraries.defaultProjectName
+        )
+        projectOperations
+          .writeFiles(root, [
+            { path: record.name, contents: record.code ?? '' },
+          ])
+          .then(async (paths) => {
+            await projectLibraries.refreshProjects()
+            await projectSession.openFile(paths[0], { projectPath: root })
+          })
+          .catch(reportRejection)
       }
     },
     args: {

@@ -18,6 +18,7 @@ import {
   setOperationsEffect,
 } from '@src/editor/plugins/operations'
 import { KclManager } from '@src/lang/KclManager'
+import { KCLError } from '@src/lang/errors'
 import { File } from '@src/lib/projectSession'
 import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { createSettings } from '@src/lib/settings/initialSettings'
@@ -26,15 +27,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { waitFor } from 'xstate'
 
 const clientErrorMocks = vi.hoisted(() => ({
-  reportSystemIOError: vi.fn(),
+  reportFileOperationError: vi.fn(),
 }))
 const toastMocks = vi.hoisted(() => ({
   success: vi.fn(),
   error: vi.fn(),
 }))
 
-vi.mock('@src/machines/systemIO/errorReporting', () => ({
-  reportSystemIOError: clientErrorMocks.reportSystemIOError,
+vi.mock('@src/lib/fileSystem/operationErrors', () => ({
+  reportFileOperationError: clientErrorMocks.reportFileOperationError,
 }))
 vi.mock('react-hot-toast', () => ({
   default: toastMocks,
@@ -1035,6 +1036,88 @@ describe('KclManager file switching', () => {
 })
 
 describe('KclManager diagnostics', () => {
+  it.each([
+    { cloud: false, returnToOriginal: false },
+    { cloud: true, returnToOriginal: false },
+    { cloud: false, returnToOriginal: true },
+    { cloud: true, returnToOriginal: true },
+  ])(
+    'ignores a late missing-import error (cloud: $cloud, return to original file: $returnToOriginal)',
+    async ({ cloud, returnToOriginal }) => {
+      vi.useFakeTimers()
+      const mainCode =
+        '@settings(kclVersion = 3.0)\nimport value from "deleted.kcl"\n'
+      const healthyCode =
+        '@settings(kclVersion = 3.0)\nexport healthyValue = 23\n'
+      const { app, kclManager } = createKclManagerTestHarness(mainCode)
+      const root = cloud ? '/__zoo_cloud__/project' : '/project'
+      kclManager.path = `${root}/main.kcl`
+      const pendingError = createDeferred<undefined>()
+      const state = emptyExecState()
+      const missingImport = new KCLError(
+        'io',
+        `could not find file ${root}/deleted.kcl`,
+        [0, 1, 0],
+        [],
+        [],
+        state.variables,
+        state.operations,
+        state.artifactGraph,
+        {},
+        null
+      )
+      kclManager.engineCommandManager.started = true
+      vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue(healthyCode)
+      vi.spyOn(kclManager, 'flushWriteToFile').mockResolvedValue(true)
+      vi.spyOn(
+        kclManager.rustContext,
+        'waitForAllEngineModelingCommands'
+      ).mockResolvedValue(undefined)
+      const execute = vi
+        .spyOn(kclManager.rustContext, 'execute')
+        .mockImplementationOnce(async () => {
+          await pendingError.promise
+          return Promise.reject(missingImport)
+        })
+        .mockResolvedValue(state)
+      const oldExecution = kclManager.executeAst({ ast: createEmptyAst() })
+      try {
+        await vi.waitFor(() => expect(execute).toHaveBeenCalledOnce())
+        await KclManager.fromFile(
+          new File(`${root}/healthy.kcl`, kclManager.textFileIO, 2),
+          kclManager.systemDeps,
+          kclManager,
+          undefined,
+          { shouldSyncRustOnOpen: false }
+        )
+        if (returnToOriginal)
+          await KclManager.fromFile(
+            new File(`${root}/main.kcl`, kclManager.textFileIO, 1),
+            kclManager.systemDeps,
+            kclManager,
+            undefined,
+            { shouldSyncRustOnOpen: false }
+          )
+        const ast = await kclManager.safeParse(healthyCode)
+        if (!ast) throw new Error('Expected healthy module to parse')
+        await kclManager.executeAst({ ast })
+        expect(kclManager.diagnostics).toEqual([])
+        await vi.advanceTimersByTimeAsync(7_000)
+        pendingError.resolve(undefined)
+        await oldExecution
+        expect(kclManager.path).toBe(
+          `${root}/${returnToOriginal ? 'main' : 'healthy'}.kcl`
+        )
+        expect(kclManager.diagnostics).toEqual([])
+      } finally {
+        pendingError.resolve(undefined)
+        await oldExecution
+        app.dispose()
+        vi.useRealTimers()
+      }
+    }
+  )
+
   // Compare the diagnostic data exactly; renderMessage only changes its display.
   const withoutRenderMessage = (diagnostics: Diagnostic[]) =>
     diagnostics.map((diagnostic) => {
@@ -2314,7 +2397,7 @@ describe('KclManager diagnostics', () => {
       })
     ).rejects.toBe(error)
 
-    expect(clientErrorMocks.reportSystemIOError).toHaveBeenCalledWith({
+    expect(clientErrorMocks.reportFileOperationError).toHaveBeenCalledWith({
       error,
       operation: 'save_kcl_file',
       risk: 'write',
@@ -2326,10 +2409,10 @@ describe('KclManager diagnostics', () => {
       },
     })
     expect(
-      JSON.stringify(clientErrorMocks.reportSystemIOError.mock.calls)
+      JSON.stringify(clientErrorMocks.reportFileOperationError.mock.calls)
     ).not.toContain(path)
     expect(
-      JSON.stringify(clientErrorMocks.reportSystemIOError.mock.calls)
+      JSON.stringify(clientErrorMocks.reportFileOperationError.mock.calls)
     ).not.toContain(newCode)
   })
 
@@ -2355,7 +2438,7 @@ describe('KclManager diagnostics', () => {
       })
     ).rejects.toBe(error)
 
-    expect(clientErrorMocks.reportSystemIOError).not.toHaveBeenCalled()
+    expect(clientErrorMocks.reportFileOperationError).not.toHaveBeenCalled()
   })
 
   it('restores the local recovery snapshot when reopening a file after unsaved edits', async () => {
@@ -2461,4 +2544,22 @@ describe('reconnect execution queue', () => {
     expect(kclManager.executeIsStale).toBeNull()
     expect(kclManager.isExecuting).toBe(false)
   })
+})
+
+it('finishes editor execution before notifying scene renderers', async () => {
+  const { app, kclManager } = createKclManagerTestHarness()
+  const completionStates: boolean[] = []
+  kclManager.engineCommandManager.started = true
+  vi.spyOn(kclManager.rustContext, 'execute').mockResolvedValue(
+    kclManager.execState
+  )
+  kclManager.addEventListener('execution-done', () => {
+    completionStates.push(kclManager.isExecuting)
+  })
+  try {
+    await kclManager.executeAst({ ast: createEmptyAst() })
+    expect(completionStates).toEqual([false])
+  } finally {
+    app.dispose()
+  }
 })

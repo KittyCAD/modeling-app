@@ -1,4 +1,5 @@
 import { PROJECT_SHELL_FEATURE } from '@src/lib/projectSession/next/feature'
+import { canReadWriteDirectory } from '@src/lib/desktop'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { Announcements } from '@src/components/Announcements'
@@ -41,15 +42,9 @@ import { getSortFunction } from '@src/lib/sorting'
 import { reportRejection } from '@src/lib/trap'
 import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import {
-  useCanReadWriteProjectDirectory,
-  useFolders,
-  useState as useSystemIOState,
-} from '@src/machines/systemIO/hooks'
-import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import { HOME_COMMAND_SCOPE } from '@src/registry/contracts/commands'
-import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import { type FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectActionsService,
   type HomeProjectEntry,
@@ -317,13 +312,29 @@ const Home = () => {
 
   const navigate = useNavigate()
   const location = useLocation()
-  const readWriteProjectDir = useCanReadWriteProjectDirectory()
+  const [readWriteProjectDir, setReadWriteProjectDir] = useState<{
+    value: boolean
+    error: unknown
+  }>({ value: true, error: undefined })
+  const directory = app.projectLibraries.projectDirectoryPath
+  useEffect(() => {
+    let active = true
+    if (directory)
+      void canReadWriteDirectory(app.fileOperations, directory)
+        .then((access) => {
+          if (active) setReadWriteProjectDir(access)
+        })
+        .catch(reportRejection)
+    return () => {
+      active = false
+    }
+  }, [app, directory])
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = auth.useToken()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = billing.useContext()
 
-  const projects = useFolders()
+  const localProjectsLoaded = app.projectOperations.pending.value === 0
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
   const projectStatuses = useProjectStatuses(homeProjectEntries, apiToken)
   const homeSidebarItems = registry.signal(homeSidebarItemsValueSpec).value
@@ -477,16 +488,7 @@ const Home = () => {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
     if (data.menuLabel === 'File.Create project') {
-      commands.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Create project',
-          argDefaultValues: {
-            name: settingsValues.projects.defaultProjectName.current,
-          },
-        },
-      })
+      openCreateProjectCommand()
     } else if (data.menuLabel === 'File.Open project') {
       commands.send({
         type: 'Find and select command',
@@ -561,6 +563,18 @@ const Home = () => {
       })
     }
   }
+  const openCreateProjectCommand = () =>
+    commands.send({
+      type: 'Find and select command',
+      data: {
+        groupId: 'projects',
+        name: 'Create project',
+        argDefaultValues: selectedProjectLibrary
+          ? { libraryId: selectedProjectLibrary.id }
+          : undefined,
+      },
+    })
+
   useMenuListener(cb)
 
   // Cancel all KCL executions while on the home page
@@ -652,20 +666,7 @@ const Home = () => {
             <li className="contents">
               <ActionButton
                 Element="button"
-                onClick={() =>
-                  commands.send({
-                    type: 'Find and select command',
-                    data: {
-                      groupId: 'projects',
-                      name: 'Create project',
-                      argDefaultValues: selectedProjectLibrary
-                        ? {
-                            libraryId: selectedProjectLibrary.id,
-                          }
-                        : undefined,
-                    },
-                  })
-                }
+                onClick={openCreateProjectCommand}
                 className={sidebarButtonClasses}
                 iconStart={{
                   icon: 'plus',
@@ -755,7 +756,7 @@ const Home = () => {
             projectShellEnabled={projectShellEnabled}
             searchResults={searchResults ?? []}
             projects={scopedHomeProjectEntries}
-            localProjectsLoaded={projects !== undefined}
+            localProjectsLoaded={localProjectsLoaded}
             query={query}
             sort={sort}
             projectStatuses={projectStatuses}
@@ -773,7 +774,7 @@ const Home = () => {
             libraries={projectLibraries}
             searchResults={searchResults ?? []}
             projects={homeProjectEntries}
-            localProjectsLoaded={projects !== undefined}
+            localProjectsLoaded={localProjectsLoaded}
             query={query}
             sort={sort}
             projectStatuses={projectStatuses}
@@ -831,15 +832,6 @@ interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
   projectLibraryTypes: ReadonlyMap<string, ProjectLibraryTypeContribution>
 }
 
-function shouldShowLoadingMoreProjects(
-  state: ReturnType<typeof useSystemIOState>
-) {
-  return (
-    state.matches(SystemIOMachineStates.readingFolders) &&
-    !state.context.hasListedProjects
-  )
-}
-
 function ProjectLibraryOverview({
   projectShellEnabled,
   libraries,
@@ -857,7 +849,6 @@ function ProjectLibraryOverview({
   projectLibraryTypes,
   ...rest
 }: ProjectLibraryOverviewProps) {
-  const state = useSystemIOState()
   const libraryRows = libraries
     .map((library) => {
       const libraryProjects = getHomeProjectEntriesForLibrary(
@@ -878,7 +869,7 @@ function ProjectLibraryOverview({
       }
     })
     .filter(({ projects }) => query.length === 0 || projects.length > 0)
-  const loadingMore = shouldShowLoadingMoreProjects(state) ? (
+  const loadingMore = !localProjectsLoaded ? (
     <div className="py-4">
       <Loading isDummy={true}>Loading more projects...</Loading>
     </div>
@@ -996,9 +987,8 @@ function ProjectGrid({
   projectLibraryEmptyTestId,
   ...rest
 }: ProjectGridProps) {
-  const state = useSystemIOState()
   const sortedSearchResults = searchResults.toSorted(getSortFunction(sort))
-  const loadingMore = shouldShowLoadingMoreProjects(state) ? (
+  const loadingMore = !localProjectsLoaded ? (
     <div className="py-4">
       <Loading isDummy={true}>Loading more projects...</Loading>
     </div>

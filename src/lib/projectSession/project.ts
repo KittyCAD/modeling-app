@@ -1,3 +1,4 @@
+import { isPathNotFoundError } from '@src/lib/desktop'
 import { type Signal, signal, computed } from '@preact/signals-core'
 import type { ApiFile } from '@rust/kcl-lib/bindings/FrontendApi'
 import { KclManager } from '@src/lang/KclManager'
@@ -100,9 +101,6 @@ export class ZDSProject {
   get executingPath() {
     return this.#executingPath.value?.value ?? null
   }
-  get executingPathSignal() {
-    return this.#executingPath
-  }
   set executingPath(newPath: string | null) {
     // TODO: Clear current executing editor's execution status
 
@@ -124,6 +122,9 @@ export class ZDSProject {
     if (changedEditor) previous?.setSceneSettingsActive(false)
     this.#executingPath.value = foundPathSignal[0]
     if (changedEditor) found.setSceneSettingsActive(true)
+  }
+  get executingPathSignal() {
+    return this.#executingPath
   }
   findEditor(path: string) {
     return Array.from(this.editors.entries()).find(([p]) => p.value === path)
@@ -326,7 +327,7 @@ export class ZDSProject {
   ): File[] => {
     if (fileOrDir.children) {
       for (let entry of fileOrDir.children) {
-        if (entry.name.endsWith('.kcl')) {
+        if (entry.children === null && entry.name.endsWith('.kcl')) {
           const id = this.nextFileId++
           const path = entry.path
           files.push(new File(path, this.textFileIO, id))
@@ -341,7 +342,23 @@ export class ZDSProject {
 
   /** Get all the KCL files in this project as a flat array. */
   private async getAllKclFiles(): Promise<ApiFile[]> {
-    return Promise.all(this.files.map((file) => file.asRustApiFile()))
+    const missing = new Set<File>()
+    const files = await Promise.all(
+      this.files.map(async (file) => {
+        try {
+          return await file.asRustApiFile()
+        } catch (error) {
+          if (!isPathNotFoundError(error)) return Promise.reject(error)
+          // Deletion may precede its watch notification, including in OPFS.
+          // A missing dependency belongs to the executor's diagnostics, not a
+          // failed snapshot rebuild that leaves the previous file active.
+          missing.add(file)
+          return undefined
+        }
+      })
+    )
+    this.files = this.files.filter((file) => !missing.has(file))
+    return files.filter((file) => file !== undefined)
   }
 
   /**

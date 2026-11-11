@@ -288,7 +288,8 @@ test.describe(
     test(
       `Load desktop app with no settings file`,
       { tag: ['@macos', '@windows', '@localRenderer'] },
-      async ({ page }, testInfo) => {
+      async ({ page, homePage }, testInfo) => {
+        await homePage.projectsLoaded()
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         // Selectors and constants
@@ -308,7 +309,7 @@ test.describe(
     test(
       `Load desktop app with a settings file, but no project directory setting`,
       { tag: ['@macos', '@windows', '@localRenderer'] },
-      async ({ page, tronApp }) => {
+      async ({ page, tronApp, homePage }) => {
         if (!tronApp) throwTronAppMissing()
 
         await tronApp.cleanProjectDir({
@@ -317,6 +318,7 @@ test.describe(
           },
         })
 
+        await homePage.projectsLoaded()
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         // Selectors and constants
@@ -336,9 +338,10 @@ test.describe(
     test(
       'project settings reload on external change',
       { tag: ['@macos', '@windows', '@localRenderer'] },
-      async ({ page, toolbar, folderSetupFn }) => {
+      async ({ page, toolbar, folderSetupFn, homePage }) => {
         const { dir: projectDirName } = await folderSetupFn(async () => {})
 
+        await homePage.projectsLoaded()
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         const projectDirLink = page.getByTestId(
