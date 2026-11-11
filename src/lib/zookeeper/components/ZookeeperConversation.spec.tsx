@@ -381,6 +381,43 @@ describe('ZookeeperConversation', () => {
     expect(screen.getByRole('link', { name: actionLabel })).toBeInTheDocument()
   })
 
+  test('allows migration while busy and follows ordinary input availability', () => {
+    const onMigrateKcl = vi.fn()
+    const props = {
+      isLoading: false,
+      conversation: { exchanges: [] },
+      onProcess: vi.fn(),
+      onMigrateKcl,
+      onClickClearChat: vi.fn(),
+      onReconnect: vi.fn(),
+      onCancel: vi.fn(),
+      needsReconnect: false,
+      contexts: [],
+      hasPromptCompleted: false,
+      isProcessing: true,
+      queue: [],
+      onRemoveFromQueue: vi.fn(),
+      onSteer: vi.fn(),
+    }
+    const { rerender } = render(<ZookeeperConversation {...props} />)
+    const button = screen.getByRole('button', { name: 'Migrate to KCL 3' })
+
+    expect(button).toBeEnabled()
+    fireEvent.click(button)
+    expect(onMigrateKcl).toHaveBeenCalledOnce()
+    expect(props.onProcess).not.toHaveBeenCalled()
+
+    rerender(<ZookeeperConversation {...props} disabled={true} />)
+    expect(button).toBeDisabled()
+    fireEvent.click(button)
+    expect(onMigrateKcl).toHaveBeenCalledOnce()
+
+    rerender(<ZookeeperConversation {...props} onMigrateKcl={undefined} />)
+    expect(
+      screen.queryByRole('button', { name: 'Migrate to KCL 3' })
+    ).not.toBeInTheDocument()
+  })
+
   test('shows setup progress while loading a conversation', () => {
     render(
       <ZookeeperConversation

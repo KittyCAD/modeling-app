@@ -1,5 +1,6 @@
 import type {
   AttachmentRef,
+  KclMigrationRequest,
   MlCopilotAccessDeniedCode,
   MlCopilotClientMessage,
   MlCopilotFile,
@@ -376,6 +377,7 @@ export type ZookeeperManagerEvents =
       wasmInstance: ModuleType
       mode?: MlCopilotModeId
       additionalFiles?: File[]
+      migration?: Pick<KclMigrationRequest, 'request_id' | 'project_snapshot'>
     }
   | {
       type: ZookeeperManagerStates.ContinueCheck
@@ -1599,7 +1601,7 @@ export const zookeeperManagerMachine = setup({
       const requestData = await constructZookeeperUserPromptRequest({
         conversationId: context.conversationId ?? '',
         prompt: event.prompt,
-        selections: event.selections,
+        selections: event.migration ? null : event.selections,
         applicationProjectDirectory: event.applicationProjectDirectory,
         projectFiles: event.projectFiles,
         artifactGraph: event.artifactGraph,
@@ -1646,7 +1648,26 @@ export const zookeeperManagerMachine = setup({
         ...(additionalFiles ? { additional_files: additionalFiles } : {}),
       }
 
-      const encodedRequest = msgpackEncode(request, { ignoreUndefined: true })
+      let wireRequest: MlCopilotClientMessageWithDiscoveredMode = request
+      if (event.migration) {
+        if (!requestData.activeFile) {
+          return Promise.reject(
+            new Error('No KCL entrypoint selected for migration.')
+          )
+        }
+        wireRequest = {
+          type: 'migrate_kcl',
+          request: {
+            ...event.migration,
+            target: '3.0',
+            entrypoint: requestData.activeFile,
+            current_files: filesAsByteArrays,
+          },
+        }
+      }
+      const encodedRequest = msgpackEncode(wireRequest, {
+        ignoreUndefined: true,
+      })
       if (encodedRequest.byteLength > ZOOKEEPER_MAX_MESSAGE_BYTES) {
         return Promise.reject(new ZookeeperProjectTooLargeError())
       }
@@ -2060,6 +2081,9 @@ export const zookeeperManagerMachine = setup({
                     assertEvent(event, [
                       ZookeeperManagerTransitions.ResponseReceive,
                     ])
+
+                    // Admission metadata does not change conversation or completion state.
+                    if ('kcl_migration_operation' in event.response) return {}
 
                     if ('attachments_error' in event.response) {
                       const { prompt_id, seq, indices, detail } =

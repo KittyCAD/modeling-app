@@ -209,6 +209,7 @@ describe('completed live edit retention', () => {
     await waitFor(actor, (state) => state.matches(ZookeeperManagerStates.Ready))
     return {
       actor,
+      ws,
       receive: (response: MlCopilotServerMessage) =>
         actor.send({
           type: ZookeeperManagerTransitions.ResponseReceive,
@@ -219,6 +220,102 @@ describe('completed live edit retention', () => {
       exchange: () => actor.getSnapshot().context.conversation?.exchanges[0],
     }
   }
+
+  it('sends a typed migration while keeping ordinary display and completion', async () => {
+    const { actor, ws, receive } = await ready()
+    receive(answer('Ready'))
+    const send = vi.spyOn(ws, 'send')
+    const code = '@settings(kclVersion = 2.0)'
+    const projectSnapshot = {
+      project_id: 'local:demo',
+      snapshot_id: 'snapshot-1',
+    }
+    const files = {
+      'parts/main.kcl': Array.from(new TextEncoder().encode(code)),
+    }
+    vi.spyOn(
+      zookeeperPromptRequest,
+      'constructZookeeperUserPromptRequest'
+    ).mockResolvedValueOnce({
+      body: {
+        prompt: 'Migrate this project to KCL 3.0.',
+        project_name: 'demo',
+      },
+      activeFile: 'parts/main.kcl',
+      files: Object.entries(files).map(([name, data]) => ({
+        name,
+        data: new Blob([new Uint8Array(data)]),
+      })),
+    })
+    const { kclManager, engineCommandManager, instance } =
+      await buildTheWorldAndNoEngineConnection(true)
+    actor.send({
+      type: ZookeeperManagerTransitions.MessageSend,
+      prompt: 'Migrate this project to KCL 3.0.',
+      projectForPromptOutput: {
+        name: 'demo',
+        path: '/demo',
+        children: [],
+        default_file: '/demo/parts/main.kcl',
+        directory_count: 0,
+        kcl_file_count: 1,
+        metadata: null,
+        readWriteAccess: true,
+      },
+      applicationProjectDirectory: '/',
+      fileSelectedDuringPrompting: {
+        entry: {
+          name: 'main.kcl',
+          path: '/demo/parts/main.kcl',
+          children: null,
+        },
+        content: code,
+      },
+      projectFiles: [],
+      selections: null,
+      artifactGraph: new Map(),
+      kclManager,
+      engineCommandManager,
+      wasmInstance: instance,
+      migration: { request_id: 'request-1', project_snapshot: projectSnapshot },
+    })
+    await waitFor(actor, (state) => state.context.awaitingResponse)
+    expect(send).toHaveBeenCalledOnce()
+    const payload: unknown = send.mock.calls[0][0]
+    if (!(payload instanceof Uint8Array))
+      throw new Error('Expected MessagePack payload')
+    expect(msgpack.decode(payload)).toEqual({
+      type: 'migrate_kcl',
+      request: {
+        request_id: 'request-1',
+        project_snapshot: projectSnapshot,
+        target: '3.0',
+        entrypoint: 'parts/main.kcl',
+        current_files: files,
+      },
+    })
+    expect(
+      actor.getSnapshot().context.conversation?.exchanges.at(-1)?.request
+    ).toMatchObject({
+      type: 'user',
+      content: 'Migrate this project to KCL 3.0.',
+    })
+    const before = actor.getSnapshot().context
+    receive({
+      kcl_migration_operation: {
+        operation: {
+          id: 'request-1',
+          project_snapshot: projectSnapshot,
+          target: '3.0',
+          deadline: '2026-11-10T12:00:00Z',
+          status: 'running',
+        },
+      },
+    })
+    expect(actor.getSnapshot().context).toEqual(before)
+    receive(answer('Migrated and validated.'))
+    expect(actor.getSnapshot().context.awaitingResponse).toBe(false)
+  })
 
   it('releases applied snapshots at the final answer without changing visible messages or the worker payload', async () => {
     const { receive, applied, exchange } = await ready()

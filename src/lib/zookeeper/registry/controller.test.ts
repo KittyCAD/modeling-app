@@ -427,6 +427,49 @@ describe('Zookeeper session controller', () => {
     })
   })
 
+  it('queues migration after ordinary prompts until the actor is ready', async () => {
+    const { actor, controller } = createHarness({
+      actorState: 'ready-await',
+      actorContext: { awaitingResponse: true },
+    })
+    controller.sendOrQueue('finish the bracket', undefined, [])
+    controller.migrateKcl()
+    const submission = controller.queue.value[1]
+    expect(controller.queue.value).toHaveLength(2)
+    expect(projectFilesMocks.collect).not.toHaveBeenCalled()
+
+    actor.emit('ready-await', { awaitingResponse: false })
+
+    await vi.waitFor(() => {
+      expect(
+        sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
+      ).toHaveLength(2)
+    })
+    expect(
+      sentEvents(actor, ZookeeperManagerTransitions.MessageSend).map(
+        ({ prompt }) => prompt
+      )
+    ).toEqual(['finish the bracket', 'Migrate this project to KCL 3.0.'])
+    expect(projectFilesMocks.collect).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        skipUnreadableFiles: false,
+      })
+    )
+    expect(
+      sentEvents(actor, ZookeeperManagerTransitions.MessageSend)[1]
+    ).toMatchObject({
+      prompt: 'Migrate this project to KCL 3.0.',
+      additionalFiles: [],
+      migration: {
+        request_id: submission.id,
+        project_snapshot: {
+          project_id: `local:${projectId}`,
+          snapshot_id: submission.id,
+        },
+      },
+    })
+  })
+
   it('updates one bottom-center progress notification without a mounted pane', () => {
     const loading = vi
       .spyOn(toast, 'loading')
