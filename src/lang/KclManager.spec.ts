@@ -5,6 +5,8 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { KclErrorWithOutputs } from '@rust/kcl-lib/bindings/KclErrorWithOutputs'
+import type { ResolvedViewBatch } from '@rust/kcl-lib/bindings/ResolvedViewBatch'
 import { lineWrappingCompartment } from '@src/editor'
 import {
   artifactGraphField,
@@ -20,7 +22,7 @@ import { File } from '@src/lib/projectSession'
 import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { Themes } from '@src/lib/theme'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { waitFor } from 'xstate'
 
 const clientErrorMocks = vi.hoisted(() => ({
@@ -43,10 +45,11 @@ import {
   createKclManagerTestHarness,
   getLatestDispatchedDiagnostics,
 } from '@src/lang/testHelpers/kclManagerTestHarness'
-import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
+import type { Artifact, ArtifactGraph, ExecState } from '@src/lang/wasm'
 import { defaultNodePath, emptyExecState } from '@src/lang/wasm'
 import { getOperationVariableName } from '@src/lib/operations'
 import { createSceneGraphDelta } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 function createDeferred<T>() {
   let resolve!: (value: T) => void
@@ -57,6 +60,38 @@ function createDeferred<T>() {
   })
 
   return { promise, resolve, reject }
+}
+
+function resolvedViews(objectId: string): ResolvedViewBatch {
+  return {
+    defaultView: { [objectId]: false },
+    namedViews: [],
+    failures: [],
+  }
+}
+
+function engineExecutionError(): KclErrorWithOutputs {
+  return {
+    error: {
+      kind: 'engine',
+      details: {
+        msg: 'Engine execution failed',
+        sourceRanges: [[0, 0, 0]],
+        backtrace: [],
+      },
+    },
+    nonFatal: [],
+    variables: {},
+    operations: { map: {} },
+    artifactCommands: [],
+    artifactGraph: { map: {}, itemCount: 0 },
+    refactorMetadata: [],
+    sceneGraph: null,
+    filenames: {},
+    sourceFiles: {},
+    defaultPlanes: null,
+    engineSceneGeneration: 2,
+  }
 }
 
 async function flushPromises(count = 2) {
@@ -567,6 +602,329 @@ describe('KclManager live operation updates', () => {
   })
 })
 
+describe('KclManager resolved views', () => {
+  let kclManager: KclManager
+  let instance: ModuleType
+
+  beforeEach(async () => {
+    ;({ kclManager } = createKclManagerTestHarness())
+    instance = await kclManager.wasmInstancePromise
+    kclManager.engineCommandManager.started = true
+    vi.spyOn(
+      kclManager.rustContext,
+      'waitForAllEngineModelingCommands'
+    ).mockResolvedValue(undefined)
+  })
+
+  afterEach(() => {
+    kclManager.close()
+    vi.restoreAllMocks()
+  })
+
+  async function executeActualViews(namedViews: ResolvedViewBatch) {
+    const delta = createSceneGraphDelta([])
+    delta.exec_outcome.namedViews = namedViews
+    vi.spyOn(instance.Context.prototype, 'execute').mockResolvedValueOnce(delta)
+    await kclManager.executeAst({ ast: createEmptyAst() })
+  }
+
+  it('stores actual results and replaces them with a resolved empty Default', async () => {
+    expect(kclManager.execState.namedViews).toBeNull()
+    const first = resolvedViews('first-object')
+    await executeActualViews(first)
+    expect(kclManager.execState.namedViews).toBe(first)
+
+    const empty: ResolvedViewBatch = {
+      defaultView: {},
+      namedViews: [],
+      failures: [],
+    }
+    await executeActualViews(empty)
+    expect(kclManager.execState.namedViews).toBe(empty)
+  })
+
+  it('preserves valid results when an individual view produces an error diagnostic', async () => {
+    const views = resolvedViews('valid-object')
+    views.failures.push({
+      artifactId: 'failed-view',
+      name: 'Front',
+      moduleId: 7,
+      sourceRange: [0, 0, 0],
+      error: { type: 'missingModulePath', moduleId: 7 },
+    })
+    const delta = createSceneGraphDelta([])
+    delta.exec_outcome.namedViews = views
+    delta.exec_outcome.issues = [
+      {
+        message: 'Could not resolve named view Front',
+        sourceRange: [0, 0, 0],
+        severity: 'Error',
+        suggestion: null,
+        tag: 'None',
+      },
+    ]
+    vi.spyOn(instance.Context.prototype, 'execute').mockResolvedValueOnce(delta)
+
+    await kclManager.executeAst({ ast: createEmptyAst() })
+
+    expect(kclManager.execState.namedViews).toBe(views)
+    expect(kclManager.errors).toEqual([])
+  })
+
+  it('preserves the latest actual batch when an earlier mock completes', async () => {
+    await executeActualViews(resolvedViews('first-object'))
+    const pending = createDeferred<ExecState>()
+    const executeMock = vi
+      .spyOn(kclManager.rustContext, 'executeMock')
+      .mockReturnValueOnce(pending.promise)
+    const mockExecution = kclManager.executeAstMock(createEmptyAst())
+    await vi.waitFor(() => expect(executeMock).toHaveBeenCalledOnce())
+
+    const latest = resolvedViews('latest-object')
+    await executeActualViews(latest)
+    const mockState = emptyExecState()
+    mockState.variables = { updated: { type: 'Bool', value: true } }
+    pending.resolve(mockState)
+    await mockExecution
+
+    expect(kclManager.execState.namedViews).toBe(latest)
+    expect(kclManager.variables).toBe(mockState.variables)
+  })
+
+  it('clears results on an actual failure and does not restore them from a late mock', async () => {
+    await executeActualViews(resolvedViews('old-object'))
+    const pending = createDeferred<ExecState>()
+    const executeMock = vi
+      .spyOn(kclManager.rustContext, 'executeMock')
+      .mockReturnValueOnce(pending.promise)
+    const mockExecution = kclManager.executeAstMock(createEmptyAst())
+    await vi.waitFor(() => expect(executeMock).toHaveBeenCalledOnce())
+
+    vi.spyOn(instance.Context.prototype, 'execute').mockRejectedValueOnce(
+      engineExecutionError()
+    )
+    await kclManager.executeAst({ ast: createEmptyAst() })
+    expect(kclManager.execState.namedViews).toBeNull()
+
+    pending.resolve(emptyExecState())
+    await mockExecution
+    expect(kclManager.execState.namedViews).toBeNull()
+  })
+
+  it('does not invalidate actual results when mock execution fails', async () => {
+    const views = resolvedViews('existing-object')
+    await executeActualViews(views)
+    const invalidate = vi.spyOn(
+      kclManager.rustContext.namedViewsInvalidated,
+      'dispatch'
+    )
+    vi.spyOn(instance.Context.prototype, 'executeMock').mockRejectedValueOnce(
+      engineExecutionError()
+    )
+
+    await kclManager.executeAstMock(createEmptyAst())
+
+    expect(kclManager.execState.namedViews).toBe(views)
+    expect(invalidate).not.toHaveBeenCalled()
+  })
+
+  it('does not accept a cancelled actual execution', async () => {
+    const previous = resolvedViews('previous-object')
+    await executeActualViews(previous)
+    const pending = createDeferred<SceneGraphDelta>()
+    const execute = vi
+      .spyOn(instance.Context.prototype, 'execute')
+      .mockClear()
+      .mockReturnValueOnce(pending.promise)
+    const execution = kclManager.executeAst({
+      ast: createEmptyAst(),
+      executionId: 123,
+    })
+    await vi.waitFor(() => expect(execute).toHaveBeenCalledOnce())
+    kclManager.cancelAllExecutions()
+    const delta = createSceneGraphDelta([])
+    delta.exec_outcome.namedViews = resolvedViews('cancelled-object')
+    pending.resolve(delta)
+    await execution
+
+    expect(kclManager.execState.namedViews).toBe(previous)
+  })
+
+  it('distinguishes actual Sketch Solve results from outcomes without a batch', async () => {
+    const previous = resolvedViews('previous-object')
+    await executeActualViews(previous)
+    const delta = createSceneGraphDelta([])
+    kclManager.syncSketchSolveOutcome('', delta, {
+      refreshLintDiagnostics: false,
+    })
+    expect(kclManager.execState.namedViews).toBe(previous)
+
+    const latest = resolvedViews('latest-object')
+    delta.exec_outcome.namedViews = latest
+    kclManager.syncSketchSolveOutcome('', delta, {
+      refreshLintDiagnostics: false,
+    })
+    expect(kclManager.execState.namedViews).toBe(latest)
+
+    kclManager.rustContext.namedViewsInvalidated.dispatch()
+    delta.exec_outcome.namedViews = null
+    kclManager.syncSketchSolveOutcome('', delta, {
+      refreshLintDiagnostics: false,
+    })
+    expect(kclManager.execState.namedViews).toBeNull()
+  })
+
+  it('clears results when program synchronization reports execution failure', async () => {
+    await executeActualViews(resolvedViews('old-object'))
+    vi.spyOn(
+      instance.Context.prototype,
+      'hack_set_program'
+    ).mockResolvedValueOnce({
+      type: 'ExecFailure',
+      error: engineExecutionError(),
+    })
+
+    const result = await kclManager.rustContext.hackSetProgram(
+      createEmptyAst(),
+      {}
+    )
+
+    expect(result.type).toBe('ExecFailure')
+    expect(kclManager.execState.namedViews).toBeNull()
+  })
+
+  it.each([
+    'program synchronization',
+    'sketch creation',
+    'sketch deletion',
+    'sketch exit',
+  ])('clears results when %s rejects', async (operation) => {
+    await executeActualViews(resolvedViews('old-object'))
+    let execution: Promise<unknown>
+    if (operation === 'program synchronization') {
+      vi.spyOn(
+        instance.Context.prototype,
+        'hack_set_program'
+      ).mockRejectedValueOnce(engineExecutionError())
+      execution = kclManager.rustContext.hackSetProgram(createEmptyAst(), {})
+    } else if (operation === 'sketch creation') {
+      vi.spyOn(instance.Context.prototype, 'new_sketch').mockRejectedValueOnce(
+        engineExecutionError()
+      )
+      execution = kclManager.rustContext.newSketch(0, 0, 0, {
+        on: { default: 'xy' },
+      })
+    } else if (operation === 'sketch deletion') {
+      vi.spyOn(
+        instance.Context.prototype,
+        'delete_sketch'
+      ).mockRejectedValueOnce(engineExecutionError())
+      execution = kclManager.rustContext.deleteSketch(0, 1, {})
+    } else {
+      vi.spyOn(instance.Context.prototype, 'exit_sketch').mockRejectedValueOnce(
+        engineExecutionError()
+      )
+      execution = kclManager.rustContext.exitSketch(0, 1)
+    }
+
+    await expect(execution).rejects.toMatchObject({ kind: 'engine' })
+    expect(kclManager.execState.namedViews).toBeNull()
+  })
+
+  it.each(['program synchronization', 'sketch creation'])(
+    'clears results when %s returns unusable checkpoint metadata',
+    async (operation) => {
+      await executeActualViews(resolvedViews('old-object'))
+      const delta = createSceneGraphDelta([])
+      const checkpointId = BigInt(Number.MAX_SAFE_INTEGER) + 1n
+      let execution: Promise<unknown>
+      if (operation === 'program synchronization') {
+        vi.spyOn(
+          instance.Context.prototype,
+          'hack_set_program'
+        ).mockResolvedValueOnce({
+          type: 'Success',
+          execOutcome: delta.exec_outcome,
+          sceneGraph: delta.new_graph,
+          checkpointId,
+        })
+        execution = kclManager.rustContext.hackSetProgram(createEmptyAst(), {})
+      } else {
+        vi.spyOn(
+          instance.Context.prototype,
+          'new_sketch'
+        ).mockResolvedValueOnce({
+          sourceDelta: { text: '' },
+          sceneGraphDelta: delta,
+          sketchId: 1,
+          checkpointId,
+        })
+        execution = kclManager.rustContext.newSketch(0, 0, 0, {
+          on: { default: 'xy' },
+        })
+      }
+
+      await expect(execution).rejects.toThrow('outside the safe integer range')
+      expect(kclManager.execState.namedViews).toBeNull()
+    }
+  )
+
+  it('clears results when a project is opened', async () => {
+    await executeActualViews(resolvedViews('old-project-object'))
+    vi.spyOn(instance.Context.prototype, 'open_project').mockResolvedValueOnce(
+      undefined
+    )
+
+    await kclManager.rustContext.sendOpenProject(null, [])
+
+    expect(kclManager.execState.namedViews).toBeNull()
+  })
+
+  it('clears results when resetting the scene fails', async () => {
+    await executeActualViews(resolvedViews('old-object'))
+    vi.spyOn(
+      instance.Context.prototype,
+      'bustCacheAndResetScene'
+    ).mockRejectedValueOnce(engineExecutionError())
+
+    await expect(
+      kclManager.rustContext.clearSceneAndBustCache({})
+    ).rejects.toMatchObject({ kind: 'engine' })
+    expect(kclManager.execState.namedViews).toBeNull()
+  })
+
+  it('clears results and removes its invalidation listener when closed', async () => {
+    await executeActualViews(resolvedViews('old-object'))
+    const observer = vi.fn()
+    const stopObserving = kclManager.execStateSignal.subscribe(observer)
+
+    kclManager.close()
+    expect(kclManager.execState.namedViews).toBeNull()
+    observer.mockClear()
+    kclManager.rustContext.namedViewsInvalidated.dispatch()
+    expect(observer).not.toHaveBeenCalled()
+    stopObserving()
+  })
+
+  it('resumes invalidation when a closed manager is reused for another file', async () => {
+    await executeActualViews(resolvedViews('old-file-object'))
+    kclManager.close()
+    await KclManager.fromFile(
+      new File('reopened.kcl', kclManager.textFileIO),
+      kclManager.systemDeps,
+      kclManager,
+      '',
+      { shouldSyncRustOnOpen: false }
+    )
+    expect(kclManager.execState.namedViews).toBeNull()
+    await executeActualViews(resolvedViews('new-file-object'))
+
+    kclManager.rustContext.namedViewsInvalidated.dispatch()
+
+    expect(kclManager.execState.namedViews).toBeNull()
+  })
+})
+
 describe('KclManager sketch outcomes', () => {
   it('resolves a new sketch name without executing the editor code', async () => {
     const { kclManager } = createKclManagerTestHarness()
@@ -620,6 +978,7 @@ describe('KclManager file switching', () => {
     const previousArtifactGraph = createArtifactGraphWithPreviousFileEntry()
     const previousExecState = {
       ...emptyExecState(),
+      namedViews: resolvedViews('previous-file-object'),
       artifactGraph: previousArtifactGraph,
       operations: { map: { 0: [previousOperation] } },
     }
@@ -652,6 +1011,7 @@ describe('KclManager file switching', () => {
 
     kclManager.switchedFiles = true
 
+    expect(kclManager.execState.namedViews).toBeNull()
     expect(kclManager.operationsByModule).toStrictEqual(
       emptyExecState().operations
     )

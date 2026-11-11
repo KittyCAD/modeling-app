@@ -5,7 +5,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
   test(
     'simulate network down and network little widget',
-    { tag: '@skipLocalEngine' },
+    { tag: ['@skipLocalEngine', '@localRenderer'] },
     async ({ page, homePage, toolbar, scene, cmdBar }) => {
       const networkToggleConnectedText = page.getByText(
         'Network health (Strong)'

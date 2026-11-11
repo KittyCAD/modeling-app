@@ -162,6 +162,12 @@ npm run playwright -- install webkit
 npm run test:e2e:web:webkit
 ```
 
+Local WebKit tests use two workers on `http://localhost:3000` and
+`http://localhost:5173`, both allowed by the development API CORS policy. The
+second origin proxies the same app; separate origins isolate WebKit's shared
+OPFS storage. Keep both ports free in CI. Use `-- --workers=1` to compare with
+a serial run. Runs against `VERCEL_BASE_URL` remain single-worker.
+
 #### Snapshot tests (Google Chrome on Ubuntu only)
 
 If you are running Ubuntu locally, in a VM, or using GitHub Codespaces:

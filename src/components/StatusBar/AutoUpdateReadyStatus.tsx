@@ -1,15 +1,17 @@
 import { ActionButton } from '@src/components/ActionButton'
 import { MarkdownText } from '@src/components/MarkdownText'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
-import Tooltip from '@src/components/Tooltip'
+import Tooltip, { type TooltipProps } from '@src/components/Tooltip'
 import type { AutoUpdateReady } from '@src/lib/autoUpdate'
 
 export function AutoUpdateReadyStatus({
   onRestart,
   update,
+  tooltipPosition = 'top-left',
 }: {
   onRestart: () => void
   update: AutoUpdateReady
+  tooltipPosition?: TooltipProps['position']
 }) {
   const releaseNotes = update.releaseNotes?.trim() ?? ''
   const hasReleaseNotes = releaseNotes.length > 0
@@ -29,7 +31,7 @@ export function AutoUpdateReadyStatus({
       {hasReleaseNotes && (
         <Tooltip
           data-testid="auto-update-release-notes-tooltip"
-          position="top-left"
+          position={tooltipPosition}
           wrapperClassName="z-50 pointer-events-auto"
           contentClassName="max-w-[28rem] text-left pb-0"
           inert={false}

@@ -601,8 +601,8 @@ export class SceneFixture {
     )
   }
 
-  /** Forces a refresh of the camera position and target displayed
-   *  in the debug panel and then returns the values of the fields
+  /** Read the active renderer camera, using the debug panel
+   *  precision of two decimal places in both modes.
    */
   async getCameraInfo() {
     if (await this.usesLocalRenderer()) {
@@ -611,11 +611,10 @@ export class SceneFixture {
         await new Promise<void>((resolve) =>
           requestAnimationFrame(() => resolve())
         )
-        const controls = window.app.singletons.kclManager.sceneInfra.camControls
-        return {
-          position: controls.camera.position.toArray(),
-          target: controls.target.toArray(),
-        }
+        const { position, target } =
+          window.app.singletons.kclManager.sceneInfra.camControls
+            .reactCameraProperties
+        return { position, target }
       })
     }
     await openAndClearDebugPanel(this.page)
