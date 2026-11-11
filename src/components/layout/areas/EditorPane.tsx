@@ -13,6 +13,7 @@ import {
 } from '@codemirror/view'
 import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
+import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
@@ -33,6 +34,10 @@ import {
 import { useApp, useSingletons } from '@src/lib/boot'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import {
+  isExtensionARelevantExtension,
+  toProjectRelativePath,
+} from '@src/lib/paths'
 import { getResolvedTheme } from '@src/lib/theme'
 import { reportRejection, trap } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
@@ -43,7 +48,8 @@ import {
   keymapService,
 } from '@src/registry/contracts/keymap'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
-import { useEffect, useRef } from 'react'
+import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import { use, useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import styles from './KclEditorMenu.module.css'
 
@@ -162,7 +168,8 @@ function TextFileEditor({
 }: {
   activeTextFile: ActiveTextFile
 }) {
-  const { fileOperations, settings } = useApp()
+  useSignals()
+  const { commands, fileOperations, settings, registry, project } = useApp()
   const settingsValues = settings.useSettings()
   const resolvedTheme = getResolvedTheme(settingsValues.app.theme.current)
   const editorParent = useRef<HTMLDivElement>(null)
@@ -240,9 +247,49 @@ function TextFileEditor({
   }
 
   if (activeTextFile.status === 'error') {
+    const currentProject = project?.projectIORefSignal.value
+    const currentFile = project?.executingFileEntry.value
+    const wasmPromise = registry.signal(wasmPromiseValueSpec).value
+    const wasm = wasmPromise ? use(wasmPromise) : undefined
+    const canImport =
+      currentProject?.readWriteAccess &&
+      currentFile &&
+      currentFile.path !== activeTextFile.path &&
+      wasm &&
+      isExtensionARelevantExtension(activeTextFile.path, [
+        'kcl',
+        ...wasm.import_file_extensions(),
+      ])
+
     return (
-      <div className="h-full p-3 text-sm text-destroy-80">
-        Failed to open {activeTextFile.name}: {activeTextFile.error}
+      <div className="h-full p-3 text-sm">
+        <p className="text-destroy-80">
+          Failed to open {activeTextFile.name}: {activeTextFile.error}
+        </p>
+        {canImport && (
+          <ActionButton
+            Element="button"
+            className="mt-3 py-2"
+            tabIndex={0}
+            onClick={() => {
+              commands.send({
+                type: 'Find and select command',
+                data: {
+                  name: 'Import',
+                  groupId: 'code',
+                  argDefaultValues: {
+                    path: toProjectRelativePath(
+                      currentProject.path,
+                      activeTextFile.path
+                    ),
+                  },
+                },
+              })
+            }}
+          >
+            Import in current file
+          </ActionButton>
+        )}
       </div>
     )
   }
