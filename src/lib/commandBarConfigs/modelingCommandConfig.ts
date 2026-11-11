@@ -21,6 +21,7 @@ import {
   STD_LIB_COMMANDS,
   STD_LIB_ENUMS,
   stdLibEnumOptions,
+  stdLibConstantOptions,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import type {
   CommandArgumentConfig,
@@ -132,10 +133,7 @@ const objectSelection: {
 }
 
 // For all surface modeling commands
-const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
-  name: capitaliseFC(value.toLowerCase()),
-  value,
-}))
+const kclBodyTypeOptions = stdLibConstantOptions(KCL_PRELUDE_BODY_TYPE_VALUES)
 
 export function profileSelectionRequiresBodyType({
   argumentsToSubmit,
@@ -854,10 +852,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           method: {
             inputType: 'options',
             required: extrudeSelectionRequiresMethod,
-            options: KCL_PRELUDE_EXTRUDE_METHOD_VALUES.map((value) => ({
-              name: capitaliseFC(value.toLowerCase()),
-              value,
-            })),
+            options: stdLibConstantOptions(KCL_PRELUDE_EXTRUDE_METHOD_VALUES),
           },
           bodyType: {
             inputType: 'options',
@@ -900,10 +895,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         relativeTo: {
           dialog: { advanced: true },
           inputType: 'options',
-          options: [
-            { name: 'Sketch Plane', value: 'SKETCH_PLANE' },
-            { name: 'Trajectory Curve', value: 'TRAJECTORY' },
-          ],
+          options: stdLibConstantOptions(['SKETCH_PLANE', 'TRAJECTORY'], {
+            module: 'sweep',
+            labels: {
+              SKETCH_PLANE: 'Sketch Plane',
+              TRAJECTORY: 'Trajectory Curve',
+            },
+          }),
         },
         translateProfileToPath: {
           inputType: 'boolean',

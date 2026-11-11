@@ -1,5 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { resolveArguments } from '@src/components/ModelingDialog/arguments'
+import { stdLibConstantOptions } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
+import { stdLibCommandArgs } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import { assertParse } from '@src/lang/wasm'
 import type { Command } from '@src/lib/commandTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -42,7 +44,8 @@ describe('resolveArguments', () => {
   async function resolve(
     args: NonNullable<Command['args']>,
     draft: Record<string, unknown>,
-    existing: Record<string, unknown> = {}
+    existing: Record<string, unknown> = {},
+    editedOptions?: ReadonlySet<string>
   ) {
     const command: Command = {
       name: 'Test command',
@@ -61,7 +64,9 @@ describe('resolveArguments', () => {
       },
       draft,
       world.rustContext,
-      assertParse('@settings(kclVersion = 3.0)\nvalue = 1', world.instance)
+      assertParse('@settings(kclVersion = 3.0)\nvalue = 1', world.instance),
+      undefined,
+      editedOptions
     )
   }
 
@@ -131,6 +136,89 @@ describe('resolveArguments', () => {
     expect(result.nodeToEdit).toEqual(nodeToEdit)
     expect(result.hiddenMetadata).toBe('preserve this without parsing(')
     expect(result.selection).toBe(original)
+  })
+
+  it('omits matching optional choices and preserves other input types', async () => {
+    const bodyType = {
+      inputType: 'options',
+      required: false,
+      options: stdLibConstantOptions(['SOLID', 'SURFACE']),
+      kclDefault:
+        stdLibCommandArgs<Record<string, unknown>>('extrude').bodyType
+          .kclDefault,
+    } satisfies NonNullable<Command['args']>[string]
+    const result = await resolve(
+      {
+        defaultChoice: bodyType,
+        otherChoice: bodyType,
+        requiredChoice: { ...bodyType, required: true },
+        boolean: { inputType: 'boolean', required: false, kclDefault: false },
+        angle: {
+          inputType: 'kcl',
+          required: false,
+          kclDefault: { value: 360, suffix: 'Deg' },
+        },
+        text: { inputType: 'string', required: false, kclDefault: 'hello' },
+      },
+      {
+        defaultChoice: 'SOLID',
+        otherChoice: 'SURFACE',
+        requiredChoice: 'SOLID',
+        boolean: false,
+        angle: '360deg',
+        text: 'hello',
+      }
+    )
+    assertNotErr(result)
+    expect(result.defaultChoice).toBeUndefined()
+    expect(result.otherChoice).toBe('SURFACE')
+    expect(result.requiredChoice).toBe('SOLID')
+    expect(result.boolean).toBe(false)
+    expect(result.angle).toMatchObject({ valueText: '360deg' })
+    expect(result.text).toBe('hello')
+  })
+
+  it('preserves untouched options and expressions when editing', async () => {
+    const bodyType = {
+      inputType: 'options',
+      required: false,
+      options: stdLibConstantOptions(['SOLID', 'SURFACE']),
+      kclDefault: 'solid',
+    } satisfies NonNullable<Command['args']>[string]
+    const result = await resolve(
+      { unchanged: bodyType, edited: bodyType, expression: bodyType },
+      { unchanged: 'SOLID', edited: 'SOLID', expression: 'bodyType001' },
+      { nodeToEdit: ['body', 0] },
+      new Set(['edited'])
+    )
+    expect(result).toMatchObject({
+      unchanged: 'SOLID',
+      edited: undefined,
+      expression: 'bodyType001',
+    })
+  })
+
+  it('preserves legacy sweep modes with context-dependent defaults', async () => {
+    const metadata = stdLibCommandArgs<Record<string, unknown>>('sweep', {
+      includeDeprecated: ['relativeTo'],
+    })
+    expect(metadata.relativeTo.kclDefault).toBeUndefined()
+    const result = await resolve(
+      {
+        relativeTo: {
+          inputType: 'options',
+          required: false,
+          options: stdLibConstantOptions(['SKETCH_PLANE', 'TRAJECTORY'], {
+            module: 'sweep',
+          }),
+          kclDefault: metadata.relativeTo.kclDefault,
+        },
+      },
+      { relativeTo: 'TRAJECTORY' },
+      { nodeToEdit: ['body', 0], version: 2, relativeTo: 'SKETCH_PLANE' },
+      new Set(['relativeTo'])
+    )
+    expect(result).toMatchObject({ version: 2, relativeTo: 'TRAJECTORY' })
   })
 
   it('validates visible inputs and omits blank optional values', async () => {

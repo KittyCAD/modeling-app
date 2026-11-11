@@ -14,6 +14,7 @@ import {
 import { isErr } from '@src/lib/trap'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { getDefaultOptionIndex } from '@src/components/ModelingDialog/defaults'
 
 export type DialogField = {
   name: string
@@ -115,7 +116,8 @@ export async function resolveArguments(
   values: Record<string, unknown>,
   rustContext: RustContext,
   ast: Node<Program>,
-  artifactGraph?: ArtifactGraph
+  artifactGraph?: ArtifactGraph,
+  editedOptions?: ReadonlySet<string>
 ): Promise<Record<string, unknown> | Error> {
   const resolved = { ...context.argumentsToSubmit, ...values }
   // Creation dialogs retain inactive drafts. Keep those out of the payload,
@@ -194,7 +196,22 @@ export async function resolveArguments(
       return new Error(`Enter ${arg.displayName || name}.`)
     resolved[name] = value
   }
-  return resolved
+  // Normalize after validation so dependent requirements see the complete draft.
+  const current = { ...context, argumentsToSubmit: resolved }
+  const normalized = { ...resolved }
+  for (const { name, arg, required } of getDialogFields(current)) {
+    if (arg.inputType !== 'options' || required) continue
+    if (resolved.nodeToEdit && !editedOptions?.has(name)) continue
+    const choices =
+      typeof arg.options === 'function'
+        ? arg.options(current, arg.machineActor?.getSnapshot().context)
+        : arg.options
+    const defaultIndex = getDefaultOptionIndex(arg, choices)
+    if (defaultIndex >= 0 && resolved[name] === choices[defaultIndex].value) {
+      normalized[name] = undefined
+    }
+  }
+  return normalized
 }
 
 export function fieldText(value: unknown): string {

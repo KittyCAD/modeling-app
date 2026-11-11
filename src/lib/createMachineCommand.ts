@@ -208,6 +208,7 @@ export function buildCommandArgument<
     displayName: arg.displayName,
     description: arg.description,
     documentation: arg.documentation,
+    kclDefault: arg.kclDefault,
     status: arg.status,
     statusMessage: arg.statusMessage,
     required,

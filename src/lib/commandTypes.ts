@@ -9,6 +9,7 @@ import type {
 } from 'xstate'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { LiteralValue } from '@rust/kcl-lib/bindings/LiteralValue'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { Artifact } from '@src/lang/std/artifactGraph'
@@ -199,6 +200,8 @@ export type CommandArgumentConfig<
   description?: string
   /** Reference documentation shown on demand, separate from command-bar hints. */
   documentation?: string
+  /** Declared KCL default when omitted, separate from tool prepopulation. */
+  kclDefault?: LiteralValue
   status?: CommandArgumentStatus
   statusMessage?: string
   required: CommandArgumentRequired<C>
@@ -380,6 +383,8 @@ export type CommandArgument<
   description?: string
   /** Reference documentation shown on demand, separate from command-bar hints. */
   documentation?: string
+  /** Declared KCL default when omitted, separate from tool prepopulation. */
+  kclDefault?: LiteralValue
   status?: CommandArgumentStatus
   statusMessage?: string
   required:
@@ -573,4 +578,6 @@ export type CommandArgumentOption<A> = {
   readonly isCurrent?: boolean
   readonly disabled?: boolean
   readonly value: A
+  /** Literal represented by a KCL constant such as SOLID. */
+  readonly kclValue?: LiteralValue
 }

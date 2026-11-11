@@ -626,6 +626,13 @@ function stdLibCommandArgsForConfig(config: StdLibCommandDriftConfig) {
 }
 
 describe('stdlib command arg derivation', () => {
+  it('keeps declared KCL defaults separate from tool prepopulation', () => {
+    const extrude = stdLibCommandArgs<Record<string, unknown>>('extrude')
+    expect(extrude.bodyType.kclDefault).toBe('solid')
+    expect(extrude.bodyType).not.toHaveProperty('defaultValue')
+    expect(extrude.method.kclDefault).toBeUndefined()
+  })
+
   it('derives enum options while keeping UI defaults and labels', () => {
     const values = STD_LIB_ENUMS['view::Visibility']
     const options = stdLibEnumOptions(values, 'Hide', { Hide: 'Hide all' })
