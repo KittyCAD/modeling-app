@@ -932,7 +932,11 @@ test.describe(
       const renameInput = page.getByPlaceholder(originalFolderName)
       const newFolderName = 'newFolderName'
       const checkUnRenamedFolderFS = async () => {
-        const folderPath = await fs.join(dir, 'Test Project', originalFolderName)
+        const folderPath = await fs.join(
+          dir,
+          'Test Project',
+          originalFolderName
+        )
         return await exists(fs, folderPath)
       }
       const checkRenamedFolderFS = async () => {
@@ -1004,7 +1008,11 @@ test.describe(
       const renameInput = page.getByPlaceholder(originalFolderName)
       const newFolderName = 'newFolderName'
       const checkUnRenamedFolderFS = async () => {
-        const folderPath = await fs.join(dir, 'Test Project', originalFolderName)
+        const folderPath = await fs.join(
+          dir,
+          'Test Project',
+          originalFolderName
+        )
         return await exists(fs, folderPath)
       }
       const checkRenamedFolderFS = async () => {

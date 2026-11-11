@@ -4,7 +4,10 @@ import type { FileOperationsRegistryService } from '@src/registry/contracts/file
 
 /** Write a file after ensuring its parent directory exists. */
 export async function writeFileWithParents(
-  operations: FileOperationsRegistryService,
+  operations: Pick<
+    FileOperationsRegistryService,
+    'createDirectory' | 'stat' | 'writeFile'
+  >,
   path: string,
   contents: string | Uint8Array
 ): Promise<void> {

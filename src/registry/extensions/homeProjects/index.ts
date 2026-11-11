@@ -457,7 +457,7 @@ const cloneProjectToLibraryProjectMenuItem = defineRegistryItemFactory(
     const findProject = (projectPath: string) =>
       findHomeProjectByPath(
         ctx.valueSpecs.get(homeProjectEntriesValueSpec),
-        projectPath,
+        projectPath
       )
 
     return {

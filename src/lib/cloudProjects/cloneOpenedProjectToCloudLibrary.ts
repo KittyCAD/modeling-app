@@ -84,7 +84,7 @@ export async function updateProjectTitleForPublication({
   title: string
 }): Promise<true | Error> {
   try {
-  const homeProject = findHomeProjectByPath(entries, projectPath)
+    const homeProject = findHomeProjectByPath(entries, projectPath)
     if (!actions || !homeProject || !actions.canRename(homeProject)) {
       return new Error('The open project title could not be updated.')
     }

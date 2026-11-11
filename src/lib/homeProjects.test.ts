@@ -29,12 +29,8 @@ test('resolves local and cloud Home entries without matching a different project
     readWriteAccess: true,
   }
   const entries = [local, remote]
-  expect(
-    findHomeProjectByPath(entries, local.localProjectPath!)
-  ).toBe(local)
-  expect(
-    findHomeProjectByPath(entries, '/provider-projects/one')
-  ).toBe(remote)
+  expect(findHomeProjectByPath(entries, local.localProjectPath!)).toBe(local)
+  expect(findHomeProjectByPath(entries, '/provider-projects/one')).toBe(remote)
   expect(
     findHomeProjectByPath(entries, '/provider-projects/two')
   ).toBeUndefined()

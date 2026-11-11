@@ -4,7 +4,10 @@ import {
   CLOUD_DIRECTORIES_FILE,
   decodeCloudDirectories,
 } from '@src/lib/cloudProjects/runtime/directories'
-import type { CloudApiConfig, RemoteProject } from '@src/lib/cloudProjects/runtime/types'
+import type {
+  CloudApiConfig,
+  RemoteProject,
+} from '@src/lib/cloudProjects/runtime/types'
 
 /** History retains an authoritative revision reference, never a content copy. */
 export interface CloudFileDeletion {

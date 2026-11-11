@@ -5,7 +5,10 @@ import { v4 } from 'uuid'
 
 /** Publish a populated project by renaming its hidden sibling directory. */
 export async function createStagedProject(
-  operations: FileOperationsRegistryService,
+  operations: Pick<
+    FileOperationsRegistryService,
+    'createDirectory' | 'rename' | 'remove'
+  >,
   projectPath: string,
   populate: (temporaryPath: string) => Promise<void>
 ): Promise<void> {

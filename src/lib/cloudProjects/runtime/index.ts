@@ -1,3 +1,4 @@
+import { isErr } from '@src/lib/trap'
 import {
   downloadDeletedCloudEntries,
   isDeletedCloudPath,
@@ -163,6 +164,7 @@ export function createCloudProjectRuntime(
       remote,
       await collect(pathFor(id))
     )
+    if (isErr(plan)) return Promise.reject(plan)
     if (!canDownload()) return
     const downloaded = plan.selected.length
       ? await downloadArchive(
@@ -173,7 +175,9 @@ export function createCloudProjectRuntime(
           signal
         )
       : []
-    return plan.merge(downloaded)
+    const merged = plan.merge(downloaded)
+    if (isErr(merged)) return Promise.reject(merged)
+    return merged
   }
   const hydrate = async (
     id: string,

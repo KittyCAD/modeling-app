@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
 import fc from 'fast-check'
-import { describe, expect, it } from 'vitest'
+import { assert, describe, expect, it } from 'vitest'
 import { planCloudRefresh } from '@src/lib/cloudProjects/runtime/refresh'
 import { parseProjectArchive } from '@src/lib/cloudProjects/runtime/archive'
 import type {
@@ -62,6 +62,7 @@ describe('cloud refresh planning invariants', () => {
           project('new', after),
           before
         )
+        assert(!(plan instanceof Error))
         const expected = entries
           .filter(
             ({ before, after }) =>
@@ -75,10 +76,10 @@ describe('cloud refresh planning invariants', () => {
         const downloaded = after
           .filter((file) => expected.includes(file.relativePath))
           .reverse()
+        const merged = plan.merge(downloaded)
+        assert(!(merged instanceof Error))
         expect(
-          new Map(
-            plan.merge(downloaded).map((file) => [file.relativePath, file.data])
-          )
+          new Map(merged.map((file) => [file.relativePath, file.data]))
         ).toEqual(new Map(after.map((file) => [file.relativePath, file.data])))
       }),
       { numRuns: 200 }
@@ -92,6 +93,7 @@ describe('cloud refresh planning invariants', () => {
       project('new', files),
       files
     )
+    assert(!(plan instanceof Error))
     expect(plan.selected).toEqual([])
     expect(plan.merge([])).toEqual(files)
   })
@@ -100,16 +102,18 @@ describe('cloud refresh planning invariants', () => {
     const files = [file('nested/a.bin')]
     const next = project('new', files)
     next.files[0].sha256 = undefined
-    expect(
-      planCloudRefresh(project('old', files), next, files).selected
-    ).toEqual(next.files)
+    const plan = planCloudRefresh(project('old', files), next, files)
+    assert(!(plan instanceof Error))
+    expect(plan.selected).toEqual(next.files)
   })
 
   it('reuses an immutable file in the same version even without a hash', () => {
     const files = [file('nested/a.bin')]
     const same = project('old', files)
     same.files[0].sha256 = undefined
-    expect(planCloudRefresh(same, same, files).selected).toEqual([])
+    const plan = planCloudRefresh(same, same, files)
+    assert(!(plan instanceof Error))
+    expect(plan.selected).toEqual([])
   })
 
   it.each(['missing', 'extra', 'duplicate', 'wrong-size'] as const)(
@@ -121,6 +125,7 @@ describe('cloud refresh planning invariants', () => {
         project('new', next),
         []
       )
+      assert(!(plan instanceof Error))
       const downloaded =
         failure === 'missing'
           ? []
@@ -129,7 +134,7 @@ describe('cloud refresh planning invariants', () => {
             : failure === 'duplicate'
               ? [...next, ...next]
               : [file('new.bin', [0])]
-      expect(() => plan.merge(downloaded)).toThrow('Cloud refresh archive')
+      expect(plan.merge(downloaded)).toBeInstanceOf(Error)
     }
   )
 
@@ -141,20 +146,18 @@ describe('cloud refresh planning invariants', () => {
     'nested//file.kcl',
     'nested\\file.kcl',
   ])('rejects unsafe or noncanonical metadata path %s', (path) => {
-    expect(() =>
+    expect(
       planCloudRefresh(project('old', []), project('new', [file(path)]), [])
-    ).toThrow('invalid or duplicate')
+    ).toBeInstanceOf(Error)
   })
 
   it('rejects missing metadata and duplicate paths or file IDs before selecting downloads', () => {
-    expect(() =>
-      planCloudRefresh({ id: 'one' }, project('new', []), [])
-    ).toThrow('requires project file metadata')
+    expect(planCloudRefresh({ id: 'one' }, project('new', []), [])).toEqual(
+      new Error('Cloud refresh requires project file metadata.')
+    )
     const next = project('new', [file('a'), file('b')])
     next.files[1].id = next.files[0].id
-    expect(() => planCloudRefresh(project('old', []), next, [])).toThrow(
-      'invalid or duplicate'
-    )
+    expect(planCloudRefresh(project('old', []), next, [])).toBeInstanceOf(Error)
   })
 })
 
