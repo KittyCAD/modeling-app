@@ -98,8 +98,10 @@ function validateZipDirectory(
 }
 
 // JSZip exposes internalStream at runtime but omits it from its JSZipObject declarations.
-type StreamingZipEntry = JSZip.JSZipObject & {
-  internalStream(type: 'uint8array'): JSZip.JSZipStreamHelper<Uint8Array>
+declare module 'jszip' {
+  interface JSZipObject {
+    internalStream(type: 'uint8array'): JSZip.JSZipStreamHelper<Uint8Array>
+  }
 }
 
 function readZipEntry(
@@ -107,7 +109,7 @@ function readZipEntry(
   maxBytes: number
 ): Promise<Uint8Array<ArrayBuffer>> {
   return new Promise((resolve, reject) => {
-    const stream = (entry as StreamingZipEntry).internalStream('uint8array')
+    const stream = entry.internalStream('uint8array')
     const chunks: Uint8Array[] = []
     let size = 0
     let stopped = false
