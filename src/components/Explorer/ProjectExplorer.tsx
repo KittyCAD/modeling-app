@@ -269,16 +269,17 @@ export const ProjectExplorer = ({
     setIsFileTreeMutationPending(isPending)
   }, [])
 
-  const runFileTreeMutation = useCallback(
-    (run: () => Promise<unknown>) => {
-      setFileTreeMutationPending(true)
-      void run()
-        .then(() => app.projectLibraries.refreshProjects())
-        .catch(trap)
-        .finally(() => setFileTreeMutationPending(false))
-    },
-    [app, setFileTreeMutationPending]
-  )
+  async function runFileTreeMutation(run: () => Promise<unknown>) {
+    setFileTreeMutationPending(true)
+    try {
+      await run()
+      await app.projectLibraries.refreshProjects()
+    } catch (error) {
+      trap(error)
+    } finally {
+      setFileTreeMutationPending(false)
+    }
+  }
 
   // fake row is used for new files or folders, you should not be able to have multiple fake rows for creation
   const [fakeRow, setFakeRow] = useState<{
@@ -710,65 +711,67 @@ export const ProjectExplorer = ({
     }
   }, [keymap])
 
-  const handleExternalFileDrop = useCallback(
-    async (dataTransfer: DataTransfer, target: FileExplorerEntry | null) => {
-      if (readOnly || isFileTreeInteractionDisabledRef.current) {
-        return
+  async function handleExternalFileDrop(
+    dataTransfer: DataTransfer,
+    target: FileExplorerEntry | null
+  ) {
+    if (readOnly || isFileTreeInteractionDisabledRef.current) {
+      return
+    }
+
+    const supportedFiles: { file: File; relativePath: string }[] = []
+    // Collect all entries/files synchronously first
+    // DataTransferItemList becomes invalid after async operations
+    const entries: FileSystemEntry[] = []
+    const fallbackFiles: File[] = []
+    const failedEntryNames: string[] = []
+
+    const items = Array.from(dataTransfer.items)
+    for (const item of items) {
+      if (item.kind !== 'file') {
+        continue
       }
 
-      const supportedFiles: { file: File; relativePath: string }[] = []
-      // Collect all entries/files synchronously first
-      // DataTransferItemList becomes invalid after async operations
-      const entries: FileSystemEntry[] = []
-      const fallbackFiles: File[] = []
-      const failedEntryNames: string[] = []
-
-      const items = Array.from(dataTransfer.items)
-      for (const item of items) {
-        if (item.kind !== 'file') {
-          continue
-        }
-
-        const entry = item.webkitGetAsEntry?.()
-        if (entry) {
-          entries.push(entry)
-        } else {
-          const file = item.getAsFile()
-          if (file) {
-            fallbackFiles.push(file)
-          }
-        }
-      }
-
-      // Now process entries asynchronously
-      for (const entry of entries) {
-        try {
-          const result = await collectDroppedFiles(entry, '')
-          supportedFiles.push(...result.supported)
-        } catch (e) {
-          console.error('Failed to collect dropped files:', entry?.name, e)
-          failedEntryNames.push(entry?.name || 'dropped item')
+      const entry = item.webkitGetAsEntry?.()
+      if (entry) {
+        entries.push(entry)
+      } else {
+        const file = item.getAsFile()
+        if (file) {
+          fallbackFiles.push(file)
         }
       }
-      if (failedEntryNames.length > 0) {
-        const maxToShow = 3
-        const shown = failedEntryNames.slice(0, maxToShow).join(', ')
-        const remaining = failedEntryNames.length - maxToShow
-        const message =
-          remaining > 0
-            ? `Failed to import ${failedEntryNames.length} items (${shown}, and ${remaining} more).`
-            : `Failed to import ${failedEntryNames.length} items (${shown}).`
-        toast.error(message)
-      }
+    }
 
-      // Process fallback files (browsers without webkitGetAsEntry support)
-      for (const file of fallbackFiles) {
-        supportedFiles.push({ file, relativePath: '' })
+    // Now process entries asynchronously
+    for (const entry of entries) {
+      try {
+        const result = await collectDroppedFiles(entry, '')
+        supportedFiles.push(...result.supported)
+      } catch (e) {
+        console.error('Failed to collect dropped files:', entry?.name, e)
+        failedEntryNames.push(entry?.name || 'dropped item')
       }
+    }
+    if (failedEntryNames.length > 0) {
+      const maxToShow = 3
+      const shown = failedEntryNames.slice(0, maxToShow).join(', ')
+      const remaining = failedEntryNames.length - maxToShow
+      const message =
+        remaining > 0
+          ? `Failed to import ${failedEntryNames.length} items (${shown}, and ${remaining} more).`
+          : `Failed to import ${failedEntryNames.length} items (${shown}).`
+      toast.error(message)
+    }
 
-      // Copy supported files to the target directory
-      if (supportedFiles.length > 0) {
-        setFileTreeMutationPending(true)
+    // Process fallback files (browsers without webkitGetAsEntry support)
+    for (const file of fallbackFiles) {
+      supportedFiles.push({ file, relativePath: '' })
+    }
+
+    // Copy supported files to the target directory
+    if (supportedFiles.length > 0) {
+      await runFileTreeMutation(async () => {
         const targetPath = getDropTargetPath(target, project.path)
         const createdDirs = new Set<string>()
         for (const { file, relativePath } of supportedFiles) {
@@ -808,23 +811,12 @@ export const ProjectExplorer = ({
           setOpenedRows(newOpenedRows)
         }
 
-        // Refresh the explorer to show the new files
-        app.projectLibraries.refreshProjects().catch(reportRejection)
-
         toast.success(
           `Imported ${supportedFiles.length} file${supportedFiles.length > 1 ? 's' : ''}.`
         )
-      }
-    },
-    [
-      readOnly,
-      fileOperations,
-      project.path,
-      wasmInstance,
-      app,
-      setFileTreeMutationPending,
-    ]
-  )
+      })
+    }
+  }
 
   const handleDragOverTarget = useCallback(
     (entry: FileExplorerEntry | null) => {
@@ -931,7 +923,7 @@ export const ProjectExplorer = ({
         '-copy-'
       )
       if (result && result.src && result.target) {
-        runFileTreeMutation(() =>
+        void runFileTreeMutation(() =>
           fileOperations.copy(result.src, result.target, { overwrite: false })
         )
       } else {
@@ -1038,7 +1030,7 @@ export const ProjectExplorer = ({
               setFileTreeMutationPending(true)
               toArchivePath(src)
                 .then((target) => {
-                  runFileTreeMutation(async () => {
+                  void runFileTreeMutation(async () => {
                     await fileOperations.move(src, target)
                     setLastRecursiveMoveTarget(target)
                     if (app.project?.path === project.path)
@@ -1067,7 +1059,7 @@ export const ProjectExplorer = ({
               setFileTreeMutationPending(true)
               toArchivePath(src)
                 .then((target) => {
-                  runFileTreeMutation(async () => {
+                  void runFileTreeMutation(async () => {
                     await fileOperations.move(src, target)
                     setLastRecursiveMoveTarget(target)
                     toast.success('Archived successfully')
@@ -1143,7 +1135,7 @@ export const ProjectExplorer = ({
               )
               if (result && result.src && result.target) {
                 const { src, target } = result
-                runFileTreeMutation(async () => {
+                void runFileTreeMutation(async () => {
                   await fileOperations.move(src, target)
                   setLastRecursiveMoveTarget(target)
                   toast.success('Moved successfully')
@@ -1192,7 +1184,7 @@ export const ProjectExplorer = ({
               if (requestedName !== name) {
                 if (row.isFake) {
                   // create
-                  runFileTreeMutation(() =>
+                  void runFileTreeMutation(() =>
                     fileOperations.createDirectory(
                       joinOSPaths(
                         getParentAbsolutePath(row.path),
@@ -1219,7 +1211,7 @@ export const ProjectExplorer = ({
                     canNavigate
 
                   if (shouldWeNavigate && file && file.path) {
-                    runFileTreeMutation(async () => {
+                    void runFileTreeMutation(async () => {
                       await app.projectSession.rename(oldPath, newPath)
                       if (app.project?.path === project.path)
                         await app.projectSession.openFile(
@@ -1228,7 +1220,7 @@ export const ProjectExplorer = ({
                         )
                     })
                   } else {
-                    runFileTreeMutation(() =>
+                    void runFileTreeMutation(() =>
                       app.projectSession.rename(oldPath, newPath)
                     )
                   }
@@ -1276,7 +1268,7 @@ export const ProjectExplorer = ({
                   .flushWriteToFile()
                   .then((saved) => {
                     if (!saved) return
-                    runFileTreeMutation(async () => {
+                    void runFileTreeMutation(async () => {
                       const extension = fsZds.extname(fileName)
                       const createdPath = await fileOperations.createUniqueFile(
                         getParentAbsolutePath(requestedAbsolutePath),
@@ -1296,7 +1288,7 @@ export const ProjectExplorer = ({
                   .catch(reportRejection)
               } else {
                 // Non-KCL files stay empty; the KCL caller supplies its own settings.
-                runFileTreeMutation(() =>
+                void runFileTreeMutation(() =>
                   fileOperations.createFile(requestedAbsolutePath, contents)
                 )
               }
@@ -1317,7 +1309,7 @@ export const ProjectExplorer = ({
               const shouldWeNavigate =
                 requestedAbsoluteFilePathWithExtension === file?.path &&
                 canNavigate
-              runFileTreeMutation(async () => {
+              void runFileTreeMutation(async () => {
                 const destination = joinOSPaths(
                   getParentAbsolutePath(row.path),
                   fileName

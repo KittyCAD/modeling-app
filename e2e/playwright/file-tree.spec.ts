@@ -99,6 +99,80 @@ test(
   }
 )
 
+test(
+  'finishes importing dropped files before enabling the explorer again',
+  { tag: ['@web', '@desktop', '@localRenderer'] },
+  async ({ page, folderSetupFn, fs, homePage, toolbar }) => {
+    const projectName = 'external-file-drop'
+    const contents = 'Contents imported from a dropped file.'
+    const { dir } = await folderSetupFn(async (dir) => {
+      const projectPath = await fs.join(dir, projectName)
+      await fs.mkdir(projectPath, { recursive: true })
+      await fs.writeFile(
+        await fs.join(projectPath, 'main.kcl'),
+        new TextEncoder().encode('@settings(kclVersion = 3.0)\n')
+      )
+    })
+    await homePage.openProject(projectName)
+    await toolbar.openPane(DefaultLayoutPaneID.Files)
+    const mainFile = page.getByRole('treeitem', {
+      name: 'main.kcl',
+      exact: true,
+    })
+    await expect(mainFile).toBeEnabled()
+
+    // Hold the browser file read so the busy state is observable before the
+    // real import and project refresh finish.
+    const fileRead = await page.evaluateHandle(() => {
+      // eslint-disable-next-line @typescript-eslint/unbound-method -- Called with the original File receiver below.
+      const original = File.prototype.arrayBuffer
+      let release = () => {}
+      const pending = new Promise<void>((resolve) => {
+        release = resolve
+      })
+      File.prototype.arrayBuffer = async function () {
+        if (this.name === 'notes.txt') await pending
+        return original.call(this)
+      }
+      return {
+        release: () => {
+          File.prototype.arrayBuffer = original
+          release()
+        },
+      }
+    })
+    const dataTransfer = await page.evaluateHandle((contents) => {
+      const data = new DataTransfer()
+      data.items.add(new File([contents], 'notes.txt', { type: 'text/plain' }))
+      return data
+    }, contents)
+
+    try {
+      await mainFile.dispatchEvent('drop', { dataTransfer })
+      const importedFile = page.getByRole('treeitem', {
+        name: 'notes.txt',
+        exact: true,
+      })
+      await expect(mainFile).toBeDisabled()
+      await fileRead.evaluate(({ release }) => release())
+      await expect(importedFile).toBeVisible()
+      expect(
+        await fs.readFile(await fs.join(dir, projectName, 'notes.txt'), 'utf8')
+      ).toBe(contents)
+
+      await expect(importedFile).toBeEnabled()
+      await importedFile.click()
+      await expect(page.locator('#code-pane').getByRole('textbox')).toHaveText(
+        contents
+      )
+    } finally {
+      await fileRead.evaluate(({ release }) => release())
+      await fileRead.dispose()
+      await dataTransfer.dispose()
+    }
+  }
+)
+
 test.describe(
   'desktop fixture isolation',
   { tag: ['@desktop', '@localRenderer'] },
