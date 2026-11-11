@@ -274,6 +274,7 @@ const withGdtDefaults = <
         artifactGraph: kclManager.artifactGraph,
         sourceCode: kclManager.code,
         outputUnit: kclManager.fileSettings.defaultLengthUnit,
+        isDistance: commandName === 'GDT Distance',
         wasmInstance,
       })
 

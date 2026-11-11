@@ -63,7 +63,7 @@ hide(profile)`
   await page.getByTestId('dropdown-gdt-distance').click()
   await scene.waitForExecutionDoneAfter(() => modelingDialog.submit())
   await editor.expectEditor.toContain('gdt::distance(')
-  await editor.expectEditor.toContain('framePosition = [5, 5]')
+  await editor.expectEditor.toContain('framePosition = [0, 5]')
   const source = await page.evaluate(
     () => window.app.singletons.kclManager.code
   )

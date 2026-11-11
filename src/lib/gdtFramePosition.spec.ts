@@ -147,14 +147,14 @@ it.each([
     name: 'straight',
     model: block,
     edge: '{ sideFaces = [body.sketch.tags.bottom, body.faces.capEnd] }',
-    position: '[10, 10]',
+    position: '[0, 10]',
     plane: undefined,
   },
   {
     name: 'vertical',
     model: block,
     edge: '{ sideFaces = [body.sketch.tags.bottom, body.sketch.tags.left] }',
-    position: '[5, 5]',
+    position: '[0, 5]',
     plane: 'XZ',
   },
   {

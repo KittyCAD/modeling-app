@@ -749,6 +749,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   artifactGraph,
   sourceCode,
   outputUnit = DEFAULT_DEFAULT_LENGTH_UNIT,
+  isDistance = false,
   wasmInstance,
 }: {
   data: T
@@ -757,6 +758,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   artifactGraph?: ArtifactGraph
   sourceCode?: string
   outputUnit?: UnitLength
+  isDistance?: boolean
   wasmInstance: ModuleType
 }): Promise<T> {
   const selections = getSelectionsFromGdtData(data)
@@ -843,7 +845,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
     nextData = {
       ...nextData,
       framePosition: createFramePositionCommandValue(
-        averageDimension * xSign,
+        isDistance ? 0 : averageDimension * xSign,
         averageDimension * ySign,
         wasmInstance
       ),

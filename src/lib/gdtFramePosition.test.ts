@@ -99,6 +99,7 @@ describe('GD&T edge selection bounds', () => {
     expect(getPlanarFaceEntityIdsForGdtSelections(data.objects)).toEqual([])
     const result = await withDefaultGdtFrameDefaults({
       data,
+      isDistance: true,
       engineCommandManager: { sendSceneCommand },
       wasmInstance,
     })
@@ -122,7 +123,7 @@ describe('GD&T edge selection bounds', () => {
         },
       })
     )
-    expect(result.framePosition?.valueText).toBe('[10, 10]')
+    expect(result.framePosition?.valueText).toBe('[0, 10]')
   })
 
   it.each([
