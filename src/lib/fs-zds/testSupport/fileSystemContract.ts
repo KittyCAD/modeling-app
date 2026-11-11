@@ -33,6 +33,29 @@ export function fileSystemContract(
   }
 
   describe(name, () => {
+    it('preserves file identity across overwrites and distinguishes new entries', async () => {
+      await fc.assert(
+        fc.asyncProperty(bytes, bytes, (original, replacement) =>
+          usingFixture(async ({ fs, root }) => {
+            const file = fs.join(root, 'identity.bin')
+            await fs.writeFile(file, original)
+            const before = await fs.stat(file)
+            await fs.writeFile(file, replacement)
+            expect((await fs.stat(file)).ino).toBe(before.ino)
+            expect(Uint8Array.from(await fs.readFile(file))).toEqual(
+              replacement
+            )
+            // Keep the old entry alive so disk filesystems cannot reuse its inode.
+            const moved = fs.join(root, 'old-identity.bin')
+            await fs.rename(file, moved)
+            await fs.writeFile(file, original)
+            expect((await fs.stat(file)).ino).not.toBe(before.ino)
+          })
+        ),
+        { numRuns: 50 }
+      )
+    })
+
     it('renames over an existing file without changing source identity', async () => {
       await fc.assert(
         fc.asyncProperty(bytes, bytes, (contents, previous) =>

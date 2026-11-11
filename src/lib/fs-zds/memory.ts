@@ -31,11 +31,16 @@ export function createMemoryFileSystem(
     if (!entry) throw error('ENOENT', path)
     return entry
   }
-  const makeEntry = (data?: Uint8Array): MemoryEntry => ({
+  const makeEntry = (
+    data?: Uint8Array,
+    previous?: MemoryEntry
+  ): MemoryEntry => ({
     data: data ? new Uint8Array(data) : undefined,
     modified: Date.now(),
-    inode: ++inode,
+    inode: previous?.inode ?? ++inode,
   })
+  const descendantPrefix = (path: string) =>
+    path.endsWith(paths.sep) ? path : `${path}${paths.sep}`
   const children = (path: string) =>
     [...entries.keys()].filter(
       (candidate) =>
@@ -87,7 +92,7 @@ export function createMemoryFileSystem(
       return Promise.reject(error('EISDIR', path))
     if (get(paths.dirname(path)).data)
       return Promise.reject(error('ENOTDIR', paths.dirname(path)))
-    entries.set(path, makeEntry(bytes))
+    entries.set(path, makeEntry(bytes, entries.get(path)))
   }
   const rm = async (
     path: string,
@@ -96,8 +101,8 @@ export function createMemoryFileSystem(
     path = key(path)
     if (!entries.has(path) && options?.force) return
     get(path)
-    const descendants = [...entries.keys()].filter((p) =>
-      p.startsWith(`${path}${paths.sep}`)
+    const descendants = [...entries.keys()].filter(
+      (p) => p.startsWith(descendantPrefix(path)) && p !== path
     )
     if (descendants.length && !options?.recursive)
       return Promise.reject(error('ENOTEMPTY', path))
@@ -113,7 +118,7 @@ export function createMemoryFileSystem(
     destination = key(destination)
     if (
       destination === source ||
-      destination.startsWith(`${source}${paths.sep}`)
+      destination.startsWith(descendantPrefix(source))
     )
       return Promise.reject(error('EINVAL', destination))
     const entry = get(source)
@@ -131,10 +136,18 @@ export function createMemoryFileSystem(
     ...paths,
     replaceDirectory: (root, files) => {
       root = key(root)
+      for (let ancestor = root; ; ancestor = paths.dirname(ancestor)) {
+        if (entries.get(ancestor)?.data) {
+          // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+          throw error('ENOTDIR', ancestor)
+        }
+        if (paths.dirname(ancestor) === ancestor) break
+      }
+      const prefix = descendantPrefix(root)
       const next = new Map<string, MemoryEntry>([[root, makeEntry()]])
       for (const file of files) {
         const path = key(file.path)
-        if (!path.startsWith(`${root}${paths.sep}`)) {
+        if (path === root || !path.startsWith(prefix)) {
           // eslint-disable-next-line suggest-no-throw/suggest-no-throw
           throw error('EINVAL', path)
         }
@@ -157,8 +170,7 @@ export function createMemoryFileSystem(
         }
       }
       for (const path of entries.keys())
-        if (path === root || path.startsWith(`${root}${paths.sep}`))
-          entries.delete(path)
+        if (path === root || path.startsWith(prefix)) entries.delete(path)
       for (const [path, entry] of next) entries.set(path, entry)
     },
     readFile,
@@ -171,9 +183,7 @@ export function createMemoryFileSystem(
       destination = key(destination)
       const entry = get(source)
       if (source === destination) return
-      const prefix = source.endsWith(paths.sep)
-        ? source
-        : `${source}${paths.sep}`
+      const prefix = descendantPrefix(source)
       if (destination.startsWith(prefix))
         return Promise.reject(error('EINVAL', destination))
       if (get(paths.dirname(destination)).data)
