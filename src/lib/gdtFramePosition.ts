@@ -4,7 +4,10 @@ import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { createArrayExpression, createLiteral } from '@src/lang/create'
 import { toUtf16 } from '@src/lang/errors'
+import { entityReferenceKey } from '@src/lang/queryAst'
+import { engineIdForArtifact } from '@src/lang/std/kclNamedViews'
 import type {
+  ArtifactGraph,
   ArtifactId,
   CallExpressionKw,
   Expr,
@@ -20,9 +23,13 @@ import {
   KCL_PLANE_YZ,
 } from '@src/lib/constants'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
+import { getEngineTopologyFallbackNormalized } from '@src/lib/primitiveBodySelection'
 import { isArray, roundOff, uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  EntityReference,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 
 type Axis = 'x' | 'y' | 'z'
@@ -196,6 +203,12 @@ export function getEngineEntityIdsForGdtSelections(
       return [selection.engineEntityId]
     }
 
+    const reference = selection.entityRef
+    if (reference?.type === 'face') return [reference.face_id]
+    if (reference?.type === 'segment') return [reference.segment_id]
+    if (reference?.type === 'solid2d_edge') return [reference.edge_id]
+    if (reference?.type === 'edge') return []
+
     const artifact = selection.artifact
     if (!artifact?.id) {
       return []
@@ -212,7 +225,17 @@ export function getEngineEntityIdsForGdtSelections(
     ]
   })
 
-  return deduplicateArtifactIds(entityIds)
+  return deduplicateArtifactIds([
+    ...entityIds,
+    ...selections.otherSelections.flatMap((selection) =>
+      typeof selection === 'object' &&
+      'type' in selection &&
+      selection.type === 'enginePrimitive' &&
+      (selection.primitiveType === 'face' || selection.primitiveType === 'edge')
+        ? [selection.entityId]
+        : []
+    ),
+  ])
 }
 
 export function getPlanarFaceEntityIdsForGdtSelections(
@@ -223,6 +246,10 @@ export function getPlanarFaceEntityIdsForGdtSelections(
   }
 
   const entityIds = selections.graphSelections.flatMap((selection) => {
+    if (selection.entityRef?.type === 'face') {
+      return [selection.engineEntityId ?? selection.entityRef.face_id]
+    }
+    if (selection.entityRef?.type === 'edge') return []
     const artifact = selection.artifact
 
     if (artifact?.type === 'pattern') {
@@ -246,6 +273,141 @@ export function getPlanarFaceEntityIdsForGdtSelections(
     return []
   })
 
+  return deduplicateArtifactIds([
+    ...entityIds,
+    ...selections.otherSelections.flatMap((selection) =>
+      typeof selection === 'object' &&
+      'type' in selection &&
+      selection.type === 'enginePrimitive' &&
+      selection.primitiveType === 'face'
+        ? [selection.entityId]
+        : []
+    ),
+  ])
+}
+
+async function getGdtEdgeIdFromFaces(
+  reference: Extract<EntityReference, { type: 'edge' }>,
+  engineCommandManager: Pick<ConnectionManager, 'sendSceneCommand'>,
+  artifactGraph: ArtifactGraph | undefined
+): Promise<ArtifactId | undefined> {
+  const faceId = (id: string) => {
+    const artifact = artifactGraph?.get(id)
+    return artifact?.type === 'segment' ? (artifact.surfaceId ?? id) : id
+  }
+  const sideFaces = reference.side_faces.map(faceId)
+  if (sideFaces.length !== 2) return undefined
+  const parent = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: { type: 'entity_get_parent_id', entity_id: sideFaces[0] },
+  })
+  if (!isModelingResponse(parent)) return undefined
+  const parentResult = parent.resp.data.modeling_response
+  if (parentResult.type !== 'entity_get_parent_id') return undefined
+  const common = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'solid3d_get_common_edge',
+      object_id: parentResult.data.entity_id,
+      face_ids: sideFaces,
+    },
+  })
+  if (!isModelingResponse(common)) return undefined
+  const commonResult = common.resp.data.modeling_response
+  if (
+    commonResult.type !== 'solid3d_get_common_edge' ||
+    !commonResult.data.edge
+  )
+    return undefined
+  const edgeId = commonResult.data.edge
+  const resolved = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: { type: 'query_entity_type', entity_id: edgeId },
+  })
+  if (!isModelingResponse(resolved)) return undefined
+  const resolvedResult = resolved.resp.data.modeling_response
+  if (resolvedResult.type !== 'query_entity_type') return undefined
+  return entityReferenceKey(resolvedResult.data.reference) ===
+    entityReferenceKey({
+      ...reference,
+      side_faces: sideFaces,
+      end_faces: reference.end_faces?.map(faceId),
+    })
+    ? edgeId
+    : undefined
+}
+
+async function getBoundingBoxEntityIdsForGdtSelections(
+  selections: Selections | undefined,
+  engineCommandManager: Pick<ConnectionManager, 'sendSceneCommand'>,
+  artifactGraph: ArtifactGraph | undefined
+): Promise<ArtifactId[]> {
+  const entityIds = getEngineEntityIdsForGdtSelections(selections)
+  for (const selection of selections?.graphSelections ?? []) {
+    const reference = selection.entityRef
+    if (reference?.type !== 'edge' || selection.engineEntityId) {
+      continue
+    }
+    const fallback = reference.topology_fallback
+    const topology =
+      getEngineTopologyFallbackNormalized(selection) ??
+      (fallback
+        ? {
+            parentId: fallback.parent_id,
+            primitiveIndex: fallback.primitive_index,
+          }
+        : undefined)
+    try {
+      if (!topology) {
+        const edgeId = await getGdtEdgeIdFromFaces(
+          reference,
+          engineCommandManager,
+          artifactGraph
+        )
+        if (!edgeId) return []
+        entityIds.push(edgeId)
+        continue
+      }
+      if (
+        !Number.isInteger(topology.primitiveIndex) ||
+        topology.primitiveIndex < 0 ||
+        topology.primitiveIndex > 0xffffffff
+      )
+        return []
+      const parentArtifact = artifactGraph?.get(topology.parentId)
+      const objectId =
+        artifactGraph &&
+        (parentArtifact?.type === 'sweep' ||
+          parentArtifact?.type === 'compositeSolid')
+          ? engineIdForArtifact({
+              id: topology.parentId,
+              artifact: parentArtifact,
+              artifactGraph,
+            })
+          : topology.parentId
+      const response = await engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'solid3d_get_edge_uuid',
+          object_id: objectId,
+          edge_index: topology.primitiveIndex,
+        },
+      })
+      if (!isModelingResponse(response)) return []
+      const result = response.resp.data.modeling_response
+      if (result.type === 'solid3d_get_edge_uuid') {
+        entityIds.push(result.data.edge_id)
+      } else {
+        return []
+      }
+    } catch {
+      return []
+    }
+  }
   return deduplicateArtifactIds(entityIds)
 }
 
@@ -443,7 +605,7 @@ function getNormalFromPlanarFace(face: FaceIsPlanar): Point3d | undefined {
 }
 
 async function getPlanarFaceNormal(
-  engineCommandManager: ConnectionManager,
+  engineCommandManager: Pick<ConnectionManager, 'sendSceneCommand'>,
   entityId: ArtifactId
 ): Promise<Point3d | undefined> {
   try {
@@ -475,7 +637,7 @@ async function getDefaultGdtFrameDefaultsFromSelectionNormals({
   engineCommandManager,
   selections,
 }: {
-  engineCommandManager: ConnectionManager
+  engineCommandManager: Pick<ConnectionManager, 'sendSceneCommand'>
   selections: Selections | undefined
 }): Promise<GdtFrameDefaultsFromNormal | undefined> {
   const faceEntityIds = getPlanarFaceEntityIdsForGdtSelections(selections)
@@ -501,7 +663,7 @@ async function getBoundingBoxForGdtEntities({
   outputUnit,
   includeEntireScene = false,
 }: {
-  engineCommandManager: ConnectionManager
+  engineCommandManager: Pick<ConnectionManager, 'sendSceneCommand'>
   entityIds: ArtifactId[]
   outputUnit: UnitLength
   includeEntireScene?: boolean
@@ -540,19 +702,20 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   data,
   engineCommandManager,
   ast,
+  artifactGraph,
   sourceCode,
   outputUnit = DEFAULT_DEFAULT_LENGTH_UNIT,
   wasmInstance,
 }: {
   data: T
-  engineCommandManager: ConnectionManager
+  engineCommandManager: Pick<ConnectionManager, 'sendSceneCommand'>
   ast?: Node<Program>
+  artifactGraph?: ArtifactGraph
   sourceCode?: string
   outputUnit?: UnitLength
   wasmInstance: ModuleType
 }): Promise<T> {
   const selections = getSelectionsFromGdtData(data)
-  const entityIds = getEngineEntityIdsForGdtSelections(selections)
   const existingFontSize = data.fontSize
     ? undefined
     : getExistingGdtFontSize(ast, sourceCode)
@@ -599,7 +762,11 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   const selectionBoundingBox = needsSelectionBoundingBox
     ? await getBoundingBoxForGdtEntities({
         engineCommandManager,
-        entityIds,
+        entityIds: await getBoundingBoxEntityIdsForGdtSelections(
+          selections,
+          engineCommandManager,
+          artifactGraph
+        ),
         outputUnit,
       })
     : undefined

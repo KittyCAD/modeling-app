@@ -1,3 +1,4 @@
+import type { OkModelingCmdResponse, WebSocketResponse } from '@kittycad/lib'
 import type { Artifact, Expr } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -13,7 +14,10 @@ import {
   withDefaultGdtFrameDefaults,
 } from '@src/lib/gdtFramePosition'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  EntityReference,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -37,6 +41,150 @@ const kclValue = (valueText: string): KclCommandValue => ({
 function testFramePosition(): KclCommandValue {
   return kclValue('[1, 2]')
 }
+
+function engineResponse(
+  modeling_response: OkModelingCmdResponse
+): WebSocketResponse {
+  return {
+    success: true,
+    resp: { type: 'modeling', data: { modeling_response } },
+  }
+}
+
+function edgeData(
+  reference: EntityReference
+): ModelingCommandSchema['GDT Distance'] {
+  return {
+    objects: {
+      graphSelections: [
+        { entityRef: reference, codeRef: { range: [0, 1, 0], pathToNode: [] } },
+      ],
+      otherSelections: [],
+    },
+    tolerance: kclValue('0.1mm'),
+    fontSize: kclValue('1mm'),
+    framePlane: 'XY',
+  }
+}
+
+const edgeBounds = engineResponse({
+  type: 'bounding_box',
+  data: { center: { x: 5, y: 0, z: 0 }, dimensions: { x: 10, y: 0, z: 0 } },
+})
+
+describe('GD&T edge selection bounds', () => {
+  it('uses the topology primitive index, not the edge-reference disambiguation index', async () => {
+    const sendSceneCommand = vi
+      .fn<ConnectionManager['sendSceneCommand']>()
+      .mockResolvedValueOnce(
+        engineResponse({
+          type: 'solid3d_get_edge_uuid',
+          data: { edge_id: 'selected-edge' },
+        })
+      )
+      .mockResolvedValueOnce(edgeBounds)
+    const data = edgeData({
+      type: 'edge',
+      side_faces: ['wall', 'cap'],
+      index: 1,
+      topology_fallback: { parent_id: 'body', primitive_index: 7 },
+    })
+    data.objects.graphSelections[0].artifact = testArtifact({
+      type: 'pattern',
+      id: 'pattern',
+      copyIds: ['whole-copy'],
+      copyFaceIds: ['other-face'],
+      copyEdgeIds: ['other-edge'],
+    })
+    expect(getPlanarFaceEntityIdsForGdtSelections(data.objects)).toEqual([])
+    const result = await withDefaultGdtFrameDefaults({
+      data,
+      engineCommandManager: { sendSceneCommand },
+      wasmInstance,
+    })
+    expect(sendSceneCommand).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        cmd: {
+          type: 'solid3d_get_edge_uuid',
+          object_id: 'body',
+          edge_index: 7,
+        },
+      })
+    )
+    expect(sendSceneCommand).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        cmd: {
+          type: 'bounding_box',
+          entity_ids: ['selected-edge'],
+          output_unit: 'mm',
+        },
+      })
+    )
+    expect(result.framePosition?.valueText).toBe('[10, 10]')
+  })
+
+  it.each([
+    { type: 'edge', side_faces: ['cap', 'wall'], index: 1 },
+    { type: 'edge', side_faces: ['cap', 'wall'], end_faces: ['different-end'] },
+  ] satisfies EntityReference[])(
+    'rejects a common edge with different disambiguation: %j',
+    async (reference) => {
+      const sendSceneCommand = vi
+        .fn<ConnectionManager['sendSceneCommand']>()
+        .mockResolvedValueOnce(
+          engineResponse({
+            type: 'entity_get_parent_id',
+            data: { entity_id: 'body' },
+          })
+        )
+        .mockResolvedValueOnce(
+          engineResponse({
+            type: 'solid3d_get_common_edge',
+            data: { edge: 'wrong-edge' },
+          })
+        )
+        .mockResolvedValueOnce(
+          engineResponse({ type: 'query_entity_type', data: { reference } })
+        )
+      const data = edgeData({ type: 'edge', side_faces: ['wall', 'cap'] })
+      const result = await withDefaultGdtFrameDefaults({
+        data,
+        engineCommandManager: { sendSceneCommand },
+        wasmInstance,
+      })
+      expect(result.framePosition).toBeUndefined()
+      expect(sendSceneCommand).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          cmd: expect.objectContaining({ type: 'bounding_box' }),
+        })
+      )
+    }
+  )
+
+  it('does not use partial or whole-scene bounds when an edge lookup fails', async () => {
+    const sendSceneCommand = vi
+      .fn<ConnectionManager['sendSceneCommand']>()
+      .mockRejectedValue(new Error('Edge unavailable'))
+    const data = edgeData({
+      type: 'edge',
+      side_faces: ['wall', 'cap'],
+      topology_fallback: { parent_id: 'body', primitive_index: 7 },
+    })
+    data.objects.graphSelections.push({
+      entityRef: { type: 'solid2d_edge', edge_id: 'other-edge' },
+      codeRef: { range: [0, 1, 0], pathToNode: [] },
+    })
+    const result = await withDefaultGdtFrameDefaults({
+      data,
+      engineCommandManager: { sendSceneCommand },
+      wasmInstance,
+    })
+    expect(result.framePosition).toBeUndefined()
+    expect(sendSceneCommand).toHaveBeenCalledOnce()
+  })
+})
 
 function gdtProgramWithFontSizes(fontSizes: string[]) {
   let sourceCode = ''
@@ -143,8 +291,11 @@ describe('GD&T frame defaults', () => {
   it('gets engine entity ids from GD&T selections', () => {
     const selections: Selections = {
       graphSelections: [
+        { entityRef: { type: 'face', face_id: 'reference-only-cap' } },
         {
           codeRef: { range: [0, 1, 0], pathToNode: [] },
+          engineEntityId: 'selected-cap',
+          entityRef: { type: 'face', face_id: 'cap-1' },
           artifact: testArtifact({
             type: 'cap',
             id: 'cap-1',
@@ -165,7 +316,8 @@ describe('GD&T frame defaults', () => {
     }
 
     expect(getEngineEntityIdsForGdtSelections(selections)).toEqual([
-      'cap-1',
+      'reference-only-cap',
+      'selected-cap',
       'copy-1',
       'copy-face-1',
       'copy-edge-1',
@@ -175,6 +327,7 @@ describe('GD&T frame defaults', () => {
   it('gets planar face ids from GD&T selections', () => {
     const selections: Selections = {
       graphSelections: [
+        { entityRef: { type: 'face', face_id: 'reference-only-cap' } },
         {
           codeRef: { range: [0, 1, 0], pathToNode: [] },
           artifact: testArtifact({ type: 'cap', id: 'cap-1' }),
@@ -207,11 +360,39 @@ describe('GD&T frame defaults', () => {
     }
 
     expect(getPlanarFaceEntityIdsForGdtSelections(selections)).toEqual([
+      'reference-only-cap',
       'cap-1',
       'selected-wall-face',
       'edge-cut-surface-1',
       'edge-cut-1',
       'copy-face-1',
+    ])
+  })
+
+  it('uses primitive face and edge selections without treating edges as faces', () => {
+    const selections: Selections = {
+      graphSelections: [],
+      otherSelections: [
+        {
+          type: 'enginePrimitive',
+          primitiveType: 'face',
+          primitiveIndex: 2,
+          entityId: 'face-1',
+        },
+        {
+          type: 'enginePrimitive',
+          primitiveType: 'edge',
+          primitiveIndex: 3,
+          entityId: 'edge-1',
+        },
+      ],
+    }
+    expect(getEngineEntityIdsForGdtSelections(selections)).toEqual([
+      'face-1',
+      'edge-1',
+    ])
+    expect(getPlanarFaceEntityIdsForGdtSelections(selections)).toEqual([
+      'face-1',
     ])
   })
 
@@ -279,7 +460,7 @@ describe('GD&T frame defaults', () => {
       data,
       engineCommandManager: {
         sendSceneCommand,
-      } as unknown as ConnectionManager,
+      },
       outputUnit: 'cm',
       wasmInstance,
     })
@@ -351,7 +532,7 @@ describe('GD&T frame defaults', () => {
       data,
       engineCommandManager: {
         sendSceneCommand,
-      } as unknown as ConnectionManager,
+      },
       wasmInstance,
     })
 
@@ -423,7 +604,7 @@ describe('GD&T frame defaults', () => {
       data,
       engineCommandManager: {
         sendSceneCommand,
-      } as unknown as ConnectionManager,
+      },
       wasmInstance: {} as ModuleType,
     })
 
@@ -486,7 +667,7 @@ describe('GD&T frame defaults', () => {
       data,
       engineCommandManager: {
         sendSceneCommand,
-      } as unknown as ConnectionManager,
+      },
       wasmInstance: {} as ModuleType,
     })
 
@@ -532,7 +713,7 @@ describe('GD&T frame defaults', () => {
       data,
       engineCommandManager: {
         sendSceneCommand,
-      } as unknown as ConnectionManager,
+      },
       wasmInstance: {} as ModuleType,
     })
 
@@ -597,7 +778,7 @@ describe('GD&T frame defaults', () => {
       data,
       engineCommandManager: {
         sendSceneCommand,
-      } as unknown as ConnectionManager,
+      },
       wasmInstance: {} as ModuleType,
     })
 
@@ -606,21 +787,26 @@ describe('GD&T frame defaults', () => {
 
   it('preserves explicit frame defaults and fontSize', async () => {
     const sendSceneCommand = vi.fn()
-    const framePosition = testFramePosition()
-    const fontSize = kclValue('2mm')
+    const framePosition = kclValue('[0mm, 0mm]')
+    const fontSize = kclValue('textHeight')
     const data = {
       name: 'A',
       framePosition,
       framePlane: 'YZ',
       fontSize,
-      faces: { graphSelections: [], otherSelections: [] },
+      faces: {
+        graphSelections: [
+          { entityRef: { type: 'face', face_id: 'selected-face' } },
+        ],
+        otherSelections: [],
+      },
     } as ModelingCommandSchema['GDT Datum']
 
     const result = await withDefaultGdtFrameDefaults({
       data,
       engineCommandManager: {
         sendSceneCommand,
-      } as unknown as ConnectionManager,
+      },
       wasmInstance: {} as ModuleType,
     })
 
@@ -644,7 +830,7 @@ describe('GD&T frame defaults', () => {
       data,
       engineCommandManager: {
         sendSceneCommand,
-      } as unknown as ConnectionManager,
+      },
       ast,
       sourceCode,
       wasmInstance: {} as ModuleType,

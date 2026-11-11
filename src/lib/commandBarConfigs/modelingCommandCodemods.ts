@@ -271,6 +271,7 @@ const withGdtDefaults = <
         data: args as GdtCommandData,
         engineCommandManager: kclManager.engineCommandManager,
         ast,
+        artifactGraph: kclManager.artifactGraph,
         sourceCode: kclManager.code,
         outputUnit: kclManager.fileSettings.defaultLengthUnit,
         wasmInstance,
