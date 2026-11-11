@@ -205,7 +205,14 @@ function TextFileEditor({
 }) {
   useSignals()
   const app = useApp()
-  const { commands, fileOperations, settings, registry, project, projectSession } = app
+  const {
+    commands,
+    fileOperations,
+    settings,
+    registry,
+    project,
+    projectSession,
+  } = app
   const settingsValues = settings.useSettings()
   const resolvedTheme = getResolvedTheme(settingsValues.app.theme.current)
   const editorParent = useRef<HTMLDivElement>(null)

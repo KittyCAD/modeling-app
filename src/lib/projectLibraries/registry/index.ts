@@ -662,6 +662,12 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   }
 
   const operations: ProjectLibraryTypeOperations = {
+    refresh: {
+      run: ({ library }) => {
+        refreshLocalProjectRealizations(library)
+        return undefined
+      },
+    },
     createProject: {
       run: async ({
         library,

@@ -211,6 +211,10 @@ export interface ProjectLibraryCloneProjectToOperation
 }
 
 export interface ProjectLibraryTypeOperations {
+  refresh?: ProjectLibraryOperation<
+    { library: ProjectLibrary },
+    Error | undefined
+  >
   createProject?: ProjectLibraryOperation<
     ProjectLibraryCreateProjectInput,
     Project | undefined

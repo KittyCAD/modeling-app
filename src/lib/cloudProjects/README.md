@@ -13,12 +13,16 @@ cloud API access, and recovery lifecycle. It uses `fs-zds/memory` for file bytes
 - `registry/extension.ts` wires authentication and contributes the mount and cloud
   service. `registry/library.ts` contributes the Cloud library and its operations,
   including project storage addresses and thumbnail watchers for Home entries.
+  Its refresh operation owns cloud connectivity and listing policy; Home invokes
+  the selected library's refresh capability for both cloud and directory storage.
 - `storage.ts` binds a cloud path to a `ProjectStorage` handle. Editors consume
   write availability, save state, watch events, and refresh through that handle;
   they do not derive storage policy from a cloud ID or path prefix.
 - `registry/session.ts` owns connectivity listeners and reconciliation delivery.
   The project session owns applying an authoritative snapshot to editor buffers,
-  the project tree, and Rust, including guards against superseded work.
+  the project tree, and Rust, including guards against superseded work. It also
+  owns save retry and editor readback; the save badge only displays status and
+  invokes the session action.
 - `polling.ts` and `registry/polling.ts` own remote revision checks for the current
   project opening. Descriptive tree refreshes do not restart the poller; closing
   or replacing the opening disposes it. Dirty buffers postpone adoption.
@@ -30,6 +34,8 @@ The generic file-operations service routes paths to contributed mounts and asks
 those mounts to batch edits when required. Each provider owns its runtime's
 lifetime. Project sessions release their watch subscriptions; the cloud registry
 items release their listeners, pollers, and runtime on disposal.
+The project-session storage watcher owns backing-change refreshes independently
+of React, and ignores callbacks from replaced or disposed project openings.
 
 Cloud identity remains explicit where it is part of a user workflow or external
 protocol, such as library entries, routes, publishing, and Zookeeper tool results.

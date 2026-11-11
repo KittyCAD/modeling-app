@@ -1,35 +1,37 @@
-import type { App } from '@src/lib/app'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
-import type { Project } from '@src/lib/project'
 import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
-import {
-  homeProjectActionsService,
-  homeProjectEntriesValueSpec,
+import type {
+  HomeProjectActionsService,
+  HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
 import type { NavigateFunction } from 'react-router-dom'
 
 /** Create a cloud project without changing the source, then open the new project. */
 export async function cloneOpenedProjectToCloudLibrary({
-  app,
-  project,
+  actions,
+  entries,
+  projectPath,
   navigate,
   title,
 }: {
-  app: App
-  project: Project
+  actions:
+    | Pick<
+        HomeProjectActionsService,
+        'getCloneToLibraryTargets' | 'cloneToLibrary'
+      >
+    | undefined
+  entries: readonly HomeProjectEntry[]
+  projectPath: string
   navigate: NavigateFunction
   title: string
 }): Promise<{ defaultFile: string; projectPath: string } | Error> {
-  const actions = app.registry.optional(homeProjectActionsService)
-  const homeProject = app.registry
-    .get(homeProjectEntriesValueSpec)
-    .find(
-      (entry) =>
-        entry.localProjectPath === project.path ||
-        entry.projectPath === project.path
-    )
+  const homeProject = entries.find(
+    (entry) =>
+      entry.localProjectPath === projectPath ||
+      entry.projectPath === projectPath
+  )
   const cloudLibraryTarget = homeProject
     ? actions
         ?.getCloneToLibraryTargets(homeProject)
@@ -72,23 +74,22 @@ export async function cloneOpenedProjectToCloudLibrary({
  * already owns it and completes before publication snapshots any files.
  */
 export async function updateProjectTitleForPublication({
-  app,
-  project,
+  actions,
+  entries,
+  projectPath,
   title,
 }: {
-  app: App
-  project: Project
+  actions: Pick<HomeProjectActionsService, 'canRename' | 'rename'> | undefined
+  entries: readonly HomeProjectEntry[]
+  projectPath: string
   title: string
 }): Promise<true | Error> {
   try {
-    const actions = app.registry.optional(homeProjectActionsService)
-    const homeProject = app.registry
-      .get(homeProjectEntriesValueSpec)
-      .find(
-        (entry) =>
-          entry.localProjectPath === project.path ||
-          entry.projectPath === project.path
-      )
+    const homeProject = entries.find(
+      (entry) =>
+        entry.localProjectPath === projectPath ||
+        entry.projectPath === projectPath
+    )
     if (!actions || !homeProject || !actions.canRename(homeProject)) {
       return new Error('The open project title could not be updated.')
     }

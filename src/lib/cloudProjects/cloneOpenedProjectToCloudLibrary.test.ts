@@ -1,87 +1,123 @@
-import type { App } from '@src/lib/app'
-import type { Project } from '@src/lib/project'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
 } from '@src/lib/projectLibraries'
-import { cloneOpenedProjectToCloudLibrary } from '@src/lib/cloudProjects/cloneOpenedProjectToCloudLibrary'
+import {
+  cloneOpenedProjectToCloudLibrary,
+  updateProjectTitleForPublication,
+} from '@src/lib/cloudProjects/cloneOpenedProjectToCloudLibrary'
 import type {
-  HomeProjectActionsService,
   HomeProjectEntry,
   HomeProjectCloneToLibraryTarget,
 } from '@src/registry/contracts/homeProjects'
-import {
-  homeProjectActionsService,
-  homeProjectEntriesValueSpec,
-} from '@src/registry/contracts/homeProjects'
 import { expect, test, vi } from 'vitest'
 
-const { writeProjectTitleToProjectToml } = vi.hoisted(() => ({
-  writeProjectTitleToProjectToml: vi.fn().mockResolvedValue(undefined),
-}))
+const source: HomeProjectEntry = Object.freeze({
+  id: 'local:example',
+  source: 'local',
+  status: 'local',
+  name: 'example',
+  title: 'Original example',
+  localProjectPath: '/projects/example',
+  readWriteAccess: true,
+})
+const cloudTarget: HomeProjectCloneToLibraryTarget = {
+  library: {
+    id: 'personal-cloud',
+    title: 'Personal Cloud',
+    path: '/cloud',
+    type: CLOUD_PROJECT_LIBRARY_TYPE,
+  },
+  sourceLibrary: {
+    id: 'directory',
+    title: 'Local projects',
+    path: '/projects',
+    type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+  },
+}
 
-vi.mock('@src/lib/desktop', () => ({
-  writeProjectTitleToProjectToml,
-}))
-
-test('clones an open directory project without closing or retitling the source', async () => {
-  const project = {
-    path: '/projects/example',
-    libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
-  } as Project
-  const homeProject = {
-    localProjectPath: project.path,
-    name: 'example',
-  } as HomeProjectEntry
-  const cloudLibraryTarget = {
-    library: {
-      id: 'personal-cloud',
-      type: CLOUD_PROJECT_LIBRARY_TYPE,
+function setup() {
+  return {
+    actions: {
+      getCloneToLibraryTargets: () => [cloudTarget],
+      cloneToLibrary: vi.fn(async () => ({
+        defaultFile: '/cloud/example/main.kcl',
+        localProjectPath: '/cloud/example',
+      })),
+      canRename: () => true,
+      rename: vi.fn(async () => {}),
     },
-  } as HomeProjectCloneToLibraryTarget
-  const cloneToLibrary = vi.fn().mockResolvedValue({
-    defaultFile: '/cloud/example/main.kcl',
-    localProjectPath: '/cloud/example',
-  })
-  const actions = {
-    getCloneToLibraryTargets: vi.fn().mockReturnValue([cloudLibraryTarget]),
-    cloneToLibrary,
-  } as unknown as HomeProjectActionsService
-  const closeProject = vi.fn()
-  const clearProjectSettings = vi.fn()
-  const fileOperations = {} as App['fileOperations']
-  const app = {
-    closeProject,
-    fileOperations,
-    settings: { actor: { send: clearProjectSettings } },
-    registry: {
-      optional: (service: unknown) =>
-        service === homeProjectActionsService ? actions : undefined,
-      get: (valueSpec: unknown) =>
-        valueSpec === homeProjectEntriesValueSpec ? [homeProject] : [],
-    },
-  } as unknown as App
-  const navigate = vi.fn().mockResolvedValue(undefined)
-
-  await expect(
-    cloneOpenedProjectToCloudLibrary({
-      app,
-      project,
-      navigate,
-      title: 'Published example',
-    })
-  ).resolves.toEqual({
-    defaultFile: '/cloud/example/main.kcl',
-    projectPath: '/cloud/example',
-  })
-
-  expect(closeProject).not.toHaveBeenCalled()
-  expect(clearProjectSettings).not.toHaveBeenCalled()
-  expect(writeProjectTitleToProjectToml).not.toHaveBeenCalled()
-  expect(cloneToLibrary).toHaveBeenCalledWith(homeProject, 'personal-cloud', {
+    entries: [source],
+    projectPath: '/projects/example',
     title: 'Published example',
+    navigate: vi.fn(async () => {}),
+  }
+}
+
+test('clones and opens a cloud copy without retitling the source', async () => {
+  const dependencies = setup()
+  await expect(cloneOpenedProjectToCloudLibrary(dependencies)).resolves.toEqual(
+    {
+      defaultFile: '/cloud/example/main.kcl',
+      projectPath: '/cloud/example',
+    }
+  )
+  expect(dependencies.actions.cloneToLibrary).toHaveBeenCalledWith(
+    source,
+    'personal-cloud',
+    { title: 'Published example' }
+  )
+  expect(dependencies.actions.rename).not.toHaveBeenCalled()
+  expect(source.title).toBe('Original example')
+  expect(dependencies.navigate).toHaveBeenCalledWith(
+    '/file/%2Fcloud%2Fexample%2Fmain.kcl'
+  )
+  expect(dependencies.actions.cloneToLibrary).toHaveBeenCalledBefore(
+    dependencies.navigate
+  )
+})
+
+test('keeps the source open when cloning fails', async () => {
+  const dependencies = setup()
+  const failure = new Error('Upload failed')
+  dependencies.actions.cloneToLibrary.mockRejectedValue(failure)
+  await expect(cloneOpenedProjectToCloudLibrary(dependencies)).resolves.toBe(
+    failure
+  )
+  expect(dependencies.navigate).not.toHaveBeenCalled()
+  expect(dependencies.actions.rename).not.toHaveBeenCalled()
+})
+
+test('updates only the open project title before publication', async () => {
+  const dependencies = setup()
+  dependencies.entries.unshift({
+    ...source,
+    id: 'other',
+    localProjectPath: '/projects/other',
   })
-  expect(navigate).toHaveBeenCalledOnce()
-  expect(navigate).toHaveBeenCalledWith('/file/%2Fcloud%2Fexample%2Fmain.kcl')
-  expect(cloneToLibrary).toHaveBeenCalledBefore(navigate)
+  await expect(updateProjectTitleForPublication(dependencies)).resolves.toBe(
+    true
+  )
+  expect(dependencies.actions.rename).toHaveBeenCalledExactlyOnceWith(
+    source,
+    'Published example',
+    { notify: false }
+  )
+})
+
+test('does not rename a project whose publication title is already saved', async () => {
+  const dependencies = { ...setup(), title: 'Original example' }
+  await expect(updateProjectTitleForPublication(dependencies)).resolves.toBe(
+    true
+  )
+  expect(dependencies.actions.rename).not.toHaveBeenCalled()
+})
+
+test('reports an unavailable rename rather than publishing with an unsaved title', async () => {
+  const dependencies = setup()
+  dependencies.actions.canRename = () => false
+  await expect(
+    updateProjectTitleForPublication(dependencies)
+  ).resolves.toBeInstanceOf(Error)
+  expect(dependencies.actions.rename).not.toHaveBeenCalled()
 })

@@ -29,6 +29,7 @@ import { authService } from '@src/registry/contracts/auth'
 import { routerService } from '@src/registry/contracts/router'
 import { pollProjectList } from '@src/lib/projectListPolling'
 import { PATHS } from '@src/lib/paths'
+import { isOffline } from '@src/lib/networkStatus'
 
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 
@@ -183,6 +184,25 @@ export default defineRegistryItemFactory((ctx) => {
         defaultSetting: getDefaultCloudProjectLibrarySetting(),
         readRealizations: async () => [],
         operations: {
+          refresh: {
+            run: async () => {
+              if (isOffline())
+                return new Error(
+                  'Connect to the internet to refresh cloud projects.'
+                )
+              if (!auth.peek()?.isLoggedIn.peek())
+                return new Error('Sign in to refresh cloud projects.')
+              const storage = cloud()
+              if (storage.projectsLoading.peek()) return
+              try {
+                await storage.listProjects()
+              } catch (cause) {
+                return new Error('Could not refresh projects. Try again.', {
+                  cause,
+                })
+              }
+            },
+          },
           createProject: {
             run: async ({
               requestedProjectTitle,

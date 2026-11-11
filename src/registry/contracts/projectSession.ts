@@ -36,6 +36,8 @@ export interface ExecutingEditor {
  */
 export interface ProjectSessionService {
   storageFor: (path: string) => ProjectStorage
+  /** Retry persistence and reconcile saved contents only with the owning editor. */
+  retrySave: () => Promise<Error | undefined>
   /** Adopt an authoritative storage snapshot without applying it to a replacement session. */
   applyStorageSnapshot: (
     root: string,

@@ -36,6 +36,8 @@ import {
   type ProjectStorage,
 } from '@src/lib/projectSession/storage'
 import type { ZDSProject } from '@src/lib/projectSession'
+import projectStorageWatcher from '@src/lib/projectSession/registry/storageWatcher'
+import { retryProjectSave } from '@src/lib/projectSession/retrySave'
 import {
   createTextFileIO,
   type TextFileIO,
@@ -140,6 +142,8 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
         .catch(reportRejection)
     },
     storageFor,
+    retrySave: () =>
+      retryProjectSave({ getProject: () => project.peek(), storageFor }),
     editorChanged: (path) => storageFor(path).editorChanged(path),
     writeThumbnail: (path, bytes) => storageFor(path).writeThumbnail(bytes),
     get textFileIO() {
@@ -308,5 +312,5 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
 
 export default defineRegistryItem({
   id: 'project-session',
-  uses: [projectSessionExtension],
+  uses: [projectSessionExtension, projectStorageWatcher],
 })

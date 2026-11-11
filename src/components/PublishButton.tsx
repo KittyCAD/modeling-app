@@ -35,6 +35,10 @@ import { err } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 import { keymapService } from '@src/registry/contracts/keymap'
+import {
+  homeProjectActionsService,
+  homeProjectEntriesValueSpec,
+} from '@src/registry/contracts/homeProjects'
 
 import {
   MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE,
@@ -217,8 +221,9 @@ function PublishPopoverContent({
           publicationFilePath
         )
         const created = await cloneOpenedProjectToCloudLibrary({
-          app,
-          project,
+          actions: app.registry.optional(homeProjectActionsService),
+          entries: app.registry.get(homeProjectEntriesValueSpec),
+          projectPath: project.path,
           navigate,
           title: publicationTitle,
         })
@@ -248,8 +253,9 @@ function PublishPopoverContent({
         }
       } else {
         const updatedTitle = await updateProjectTitleForPublication({
-          app,
-          project,
+          actions: app.registry.optional(homeProjectActionsService),
+          entries: app.registry.get(homeProjectEntriesValueSpec),
+          projectPath: project.path,
           title: publicationTitle,
         })
         if (err(updatedTitle)) {
