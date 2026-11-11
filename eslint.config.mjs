@@ -17,6 +17,7 @@ import noDirectFsZdsIo from './src/eslint/rules/no-direct-fszds-io.mjs'
 import noInternalFileSystemImports from './src/eslint/rules/no-internal-file-system-imports.mjs'
 import noReactRouterHooks from './src/eslint/rules/no-react-router-hooks.mjs'
 import interactionExpectations from './src/eslint/rules/interaction-expectations.mjs'
+import requireCatalogEntrypoints from './src/eslint/rules/require-catalog-entrypoints.mjs'
 
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
@@ -25,6 +26,10 @@ const compat = new FlatCompat({
 })
 
 export default defineConfig([
+  {
+    files: ['src/registry/catalog.ts', 'src/registry/electronPlugins.ts'],
+    rules: { 'zds/require-catalog-entrypoints': 'error' },
+  },
   globalIgnores([
     'rust/**/*.ts',
     '!rust/kcl-language-server/client/src/**/*.ts',
@@ -56,6 +61,7 @@ export default defineConfig([
       zds: {
         rules: {
           'interaction-expectations': interactionExpectations,
+          'require-catalog-entrypoints': requireCatalogEntrypoints,
           'no-codemirror-printable-keymap-keystrokes':
             noCodemirrorPrintableKeymapKeystrokes,
           'no-direct-fszds-io': noDirectFsZdsIo,
