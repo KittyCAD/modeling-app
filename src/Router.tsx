@@ -3,6 +3,7 @@ import RootLayout from '@src/Root'
 import { CommandBar } from '@src/components/CommandBar/CommandBar'
 import { ErrorPage } from '@src/components/ErrorPage'
 import Loading from '@src/components/Loading'
+import MasqueradeBanner from '@src/components/MasqueradeBanner'
 import { MachineApiController } from '@src/components/MachineApiController'
 import ModelingMachineProvider from '@src/components/ModelingMachineProvider'
 import ModelingPageProvider from '@src/components/ModelingPageProvider'
@@ -248,6 +249,7 @@ export const Router = () => {
 
   return (
     <NetworkContext.Provider value={networkStatus}>
+      <MasqueradeBanner />
       <MachineApiController />
       <RouterProvider router={router} />
     </NetworkContext.Provider>
