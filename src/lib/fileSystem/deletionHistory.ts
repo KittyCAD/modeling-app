@@ -101,21 +101,42 @@ export function replayDeletion(
       if (!restore) yield* fs.remove(deletion.path)
     } else if (restore) {
       const created: Entry[] = []
+      let attempted: Entry | undefined
       yield* Effect.gen(function* () {
         for (const entry of deletion.entries) {
+          attempted = entry
           if (entry.kind === 'directory') yield* fs.makeDirectory(entry.path)
           else yield* fs.createFile(entry.path, ownFileContents(entry.bytes))
           created.push(entry)
+          attempted = undefined
         }
       }).pipe(
         Effect.catchAll((error) =>
           // Roll back our partial restoration only if nothing else changed it.
           captureDeletion(fs, paths, deletion.path).pipe(
-            Effect.flatMap((current) =>
-              sameContents(current, { path: deletion.path, entries: created })
+            Effect.flatMap((current) => {
+              const failed = attempted
+              const partial = current.entries.find(
+                (entry) => entry.path === failed?.path
+              )
+              // Exclusive creation can fail after writing a prefix of the file.
+              // A collision is never ours; unexpected bytes or siblings also
+              // prevent rollback, just like changes to completed entries.
+              if (
+                error._tag !== 'FileAlreadyExists' &&
+                failed?.kind === 'file' &&
+                partial?.kind === 'file' &&
+                partial.bytes.length <= failed.bytes.length &&
+                partial.bytes.every((byte, i) => byte === failed.bytes[i])
+              )
+                created.push(partial)
+              return sameContents(current, {
+                path: deletion.path,
+                entries: created,
+              })
                 ? fs.remove(deletion.path)
                 : Effect.void
-            ),
+            }),
             Effect.catchAll(() => Effect.void),
             Effect.zipRight(Effect.fail(error))
           )

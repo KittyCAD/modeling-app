@@ -125,6 +125,123 @@ for (const kind of ['disk', 'memory'] as const) {
       }
     })
 
+    it.each(['file', 'folder'] as const)(
+      'rolls back a partly written %s restoration and allows retry',
+      async (entryKind) => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.uint8Array({ minLength: 2, maxLength: 64 }),
+            fc.nat(),
+            async (bytes, offset) => {
+              const f = await fixture()
+              try {
+                const target = join(f.root, 'deleted')
+                const file = entryKind === 'file' ? target : join(target, 'b')
+                if (entryKind === 'folder') {
+                  await f.operations.createDirectory(target)
+                  await f.operations.createFile(join(target, 'a'), 'first')
+                }
+                await f.operations.createFile(file, bytes)
+                await f.operations.createFile(join(f.root, 'unrelated'), 'keep')
+                const deletion = await f.operations.removeWithSnapshot(target)
+                const originalWrite = f.backing.writeFile
+                const write = vi
+                  .spyOn(f.backing, 'writeFile')
+                  .mockImplementation(async (path, data, options) => {
+                    if (path !== file) return originalWrite(path, data, options)
+                    await originalWrite(
+                      path,
+                      data.subarray(0, offset % (data.length + 1)),
+                      options
+                    )
+                    throw new Error('storage unavailable')
+                  })
+                try {
+                  await expect(
+                    f.operations.replayDeletion(deletion, true)
+                  ).rejects.toBeDefined()
+                } finally {
+                  write.mockRestore()
+                }
+                expect(await f.operations.exists(target)).toBe(false)
+                await f.operations.replayDeletion(deletion, true)
+                expect(
+                  Uint8Array.from(await f.operations.readFile(file))
+                ).toEqual(bytes)
+                if (entryKind === 'folder')
+                  expect(await f.operations.readDirectory(target)).toEqual([
+                    'a',
+                    'b',
+                  ])
+                expect(
+                  new TextDecoder().decode(
+                    await f.operations.readFile(join(f.root, 'unrelated'))
+                  )
+                ).toBe('keep')
+              } finally {
+                await f.dispose()
+              }
+            }
+          ),
+          {
+            numRuns: 30,
+            examples: [
+              [new Uint8Array([1, 2, 3]), 0],
+              [new Uint8Array([1, 2, 3]), 1],
+              [new Uint8Array([1, 2, 3]), 3],
+            ],
+          }
+        )
+      }
+    )
+
+    it.each(['collision', 'changed file', 'added sibling'])(
+      'preserves unexpected contents after a failed restore: %s',
+      async (failure) => {
+        const f = await fixture()
+        try {
+          const target = join(f.root, 'folder')
+          const file = join(target, 'file')
+          await f.operations.createDirectory(target)
+          await f.operations.createFile(file, 'original')
+          const deletion = await f.operations.removeWithSnapshot(target)
+          const originalWrite = f.backing.writeFile
+          const replacement = failure === 'changed file' ? 'replacement' : 'o'
+          const write = vi
+            .spyOn(f.backing, 'writeFile')
+            .mockImplementationOnce(async (path) => {
+              await originalWrite(path, new TextEncoder().encode(replacement))
+              if (failure === 'added sibling')
+                await originalWrite(
+                  join(target, 'external'),
+                  new Uint8Array([42])
+                )
+              throw Object.assign(new Error('write failed'), {
+                code: failure === 'collision' ? 'EEXIST' : 'EIO',
+              })
+            })
+          try {
+            await expect(
+              f.operations.replayDeletion(deletion, true)
+            ).rejects.toBeDefined()
+          } finally {
+            write.mockRestore()
+          }
+          expect(
+            new TextDecoder().decode(await f.operations.readFile(file))
+          ).toBe(replacement)
+          if (failure === 'added sibling')
+            expect(
+              Uint8Array.from(
+                await f.operations.readFile(join(target, 'external'))
+              )
+            ).toEqual(new Uint8Array([42]))
+        } finally {
+          await f.dispose()
+        }
+      }
+    )
+
     it('does not overwrite reused paths or redo over changed or added contents', async () => {
       const f = await fixture()
       try {
