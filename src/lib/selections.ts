@@ -73,6 +73,7 @@ import {
   getOriginalSegmentArtifact,
   getSegmentArtifactForEdgeCut,
   getPatternArtifactForCopyId,
+  getPatternCopyOutputIndex,
   getSketchBlockForArtifact,
   getSketchBlockForPathArtifact,
   getSolid2dCodeRef,
@@ -1962,6 +1963,31 @@ export async function getEventForQueryEntityTypeWithPoint(
   const skipRegionSelectionForTopologyEdge =
     entityRef.type === 'edge' && engineTopologyFallbackResolved !== undefined
 
+  // Pattern copies have no separate path artifact; retain their owning instance.
+  if (entityRef.type === 'region' && engineTopologyFallbackEarly) {
+    const pathId = engineTopologyFallbackEarly.parentId
+    const pattern = getPatternArtifactForCopyId(pathId, artifactGraph)
+    const patternIndex = pattern
+      ? getPatternCopyOutputIndex(pathId, pattern, artifactGraph)
+      : undefined
+    if (pattern && patternIndex !== undefined) {
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: {
+            entityRef,
+            artifact: pattern,
+            codeRef: pattern.codeRef,
+            patternIndex,
+            engineEntityId: entityRef.region_id,
+            engineTopologyFallback: engineTopologyFallbackEarly,
+          },
+        },
+      }
+    }
+  }
+
   // Try segment references first, then the point fallback below.
   if (entityRef.type === 'region') {
     const regionSelection = await getEngineRegionSelectionFromSegments(
@@ -2037,14 +2063,22 @@ export async function getEventForQueryEntityTypeWithPoint(
   const patternArtifact = entityId
     ? getPatternArtifactForCopyId(entityId, artifactGraph)
     : undefined
+  // Legacy profile faces correspond one-to-one with copied paths.
+  const faceIndex =
+    patternArtifact &&
+    entityId &&
+    patternArtifact.copyFaceIds.length === patternArtifact.copyIds.length
+      ? patternArtifact.copyFaceIds.indexOf(entityId)
+      : -1
+  const copyId = faceIndex >= 0 ? patternArtifact?.copyIds[faceIndex] : entityId
   const patternCopyIndex =
-    patternArtifact?.type === 'pattern' && entityId
-      ? patternArtifact.copyIds.indexOf(entityId) + 1
-      : 0
+    patternArtifact && copyId
+      ? getPatternCopyOutputIndex(copyId, patternArtifact, artifactGraph)
+      : undefined
   const selection: Selection = {
     entityRef,
     codeRef: codeRefs?.[0],
-    ...(patternArtifact && patternCopyIndex > 0
+    ...(patternArtifact && patternCopyIndex !== undefined
       ? {
           artifact: patternArtifact,
           patternIndex: patternCopyIndex,
@@ -2725,6 +2759,8 @@ export function getSelectionCountByType(
           break
         }
         case 'region':
+          if (inlineArtifact?.type === 'pattern')
+            incrementOrInitializeSelectionType('engineRegion')
           break
       }
     } else if (inlineArtifact?.type === 'helix') {

@@ -3,6 +3,7 @@ import {
   type ResolvedGraphSelection,
   coerceSelectionsToBody,
   getArtifactFromRange,
+  getPatternCopyOutputIndex,
   getBodiesFromArtifactGraph,
   getCommonFacesForEdge,
   getSketchBlockForArtifact,
@@ -22,6 +23,46 @@ const codeRef = {
   pathToNode: [],
   nodePath: { steps: [] },
 }
+
+describe('getPatternCopyOutputIndex', () => {
+  it.each([0, 1])('includes earlier inputs before copy %s', (copyIndex) => {
+    const first: Extract<Artifact, { type: 'pattern' }> = {
+      type: 'pattern',
+      id: 'first',
+      subType: 'transform',
+      sourceId: 'source-a',
+      copyIds: ['copy-a-1', 'copy-a-2'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+      codeRef,
+    }
+    const second: Extract<Artifact, { type: 'pattern' }> = {
+      ...first,
+      id: 'second',
+      sourceId: 'source-b',
+      copyIds: ['copy-b-1', 'copy-b-2'],
+    }
+    const unrelated: Extract<Artifact, { type: 'pattern' }> = {
+      ...first,
+      id: 'unrelated',
+      codeRef: { ...codeRef, range: [100, 200, 0] },
+    }
+    const graph: ArtifactGraph = new Map([
+      [unrelated.id, unrelated],
+      [first.id, first],
+      [second.id, second],
+    ])
+    expect(
+      getPatternCopyOutputIndex(first.copyIds[copyIndex], first, graph)
+    ).toBe(copyIndex + 1)
+    expect(
+      getPatternCopyOutputIndex(second.copyIds[copyIndex], second, graph)
+    ).toBe(copyIndex + 4)
+    expect(
+      getPatternCopyOutputIndex('unknown-copy', second, graph)
+    ).toBeUndefined()
+  })
+})
 
 function createSourceSegmentGraph(suffix = ''): {
   artifactGraph: ArtifactGraph

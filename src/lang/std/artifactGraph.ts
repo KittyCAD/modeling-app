@@ -196,6 +196,30 @@ export function getPatternArtifactForCopyId(
   )
 }
 
+/** Each input contributes its original followed by its copies to the pattern output. */
+export function getPatternCopyOutputIndex(
+  copyId: ArtifactId,
+  pattern: Extract<Artifact, { type: 'pattern' }>,
+  artifactGraph: ArtifactGraph
+): number | undefined {
+  const copyIndex = pattern.copyIds.indexOf(copyId)
+  if (copyIndex < 0) return undefined
+
+  let offset = 0
+  for (const artifact of artifactGraph.values()) {
+    if (artifact.id === pattern.id) break
+    if (
+      artifact.type === 'pattern' &&
+      artifact.codeRef.range.every(
+        (value, index) => value === pattern.codeRef.range[index]
+      )
+    ) {
+      offset += artifact.copyIds.length + 1
+    }
+  }
+  return offset + copyIndex + 1
+}
+
 export function expandPlane(
   plane: PlaneArtifact,
   artifactGraph: ArtifactGraph

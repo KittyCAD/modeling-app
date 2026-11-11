@@ -3474,6 +3474,88 @@ describe('mixed entity-reference selection highlighting', () => {
 })
 
 describe('getSelectionTypeDisplayText', () => {
+  test.each([0, 1])(
+    'preserves the parent instance of copied region %s',
+    async (index) => {
+      const { instance } = await buildTheWorldAndNoEngineConnection()
+      const code =
+        'region001 = 0\ncopies = patternLinear2d(region001, instances = 3, distance = 8, axis = X)'
+      const ast = assertParse(code, instance)
+      const range = [
+        code.indexOf('patternLinear2d'),
+        code.length,
+        0,
+      ] as SourceRange
+      const codeRef = {
+        range,
+        pathToNode: getNodePathFromSourceRange(ast, range),
+        nodePath: { steps: [] },
+      }
+      const pattern = {
+        type: 'pattern',
+        id: 'pattern',
+        subType: 'transform',
+        sourceId: 'source-region-path',
+        copyIds: ['copy-path-1', 'copy-path-2'],
+        copyFaceIds: [],
+        copyEdgeIds: [],
+        codeRef,
+      } satisfies Extract<Artifact, { type: 'pattern' }>
+      const reference = {
+        type: 'region' as const,
+        region_id: `copy-region-${index}`,
+        topology_fallback: {
+          parent_id: pattern.copyIds[index],
+          primitive_index: 1,
+        },
+      }
+      const event = await getEventForQueryEntityTypeWithPoint(
+        { entity_id: reference.region_id, reference },
+        {
+          engineCommandManager: {
+            sendSceneCommand: vi.fn(async () => ({
+              resp: {
+                type: 'modeling',
+                data: { modeling_response: { type: 'empty' } },
+              },
+            })),
+          } as any,
+          kclManager: {
+            ast,
+            artifactGraph: new Map([[pattern.id, pattern]]),
+          } as any,
+          rustContext: { defaultPlanes: null } as any,
+          wasmInstance: instance,
+        }
+      )
+      expect(event).toMatchObject({
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: {
+            artifact: pattern,
+            codeRef,
+            entityRef: { type: 'region', region_id: reference.region_id },
+            engineEntityId: reference.region_id,
+            patternIndex: index + 1,
+          },
+        },
+      })
+      if (
+        event?.type === 'Set selection' &&
+        event.data.selectionType === 'singleCodeCursor'
+      ) {
+        expect(
+          getSelectionTypeDisplayText(
+            ast,
+            { graphSelections: [event.data.selection], otherSelections: [] },
+            new Map([[pattern.id, pattern]])
+          )
+        ).toBe('1 region')
+      }
+    }
+  )
+
   test('preserves the clicked pattern copy identity in viewport selections', async () => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
     const code = `body001 = 0

@@ -74,4 +74,34 @@ describe('exported region selection identity', () => {
       for (const material of [mesh.material].flat()) material.dispose()
     }
   )
+  it.each([0, 1])(
+    'uses the own face ID for patterned profile copy %s',
+    (index) => {
+      const gltf = exportedCircle()
+      gltf.userData.KITTYCAD!.regions![0].sketchId = `copy-path-${index}`
+      const graph = new Map<string, Artifact>([
+        [
+          'pattern',
+          {
+            type: 'pattern',
+            id: 'pattern',
+            subType: 'transform',
+            codeRef: {
+              range: [0, 0, 0],
+              pathToNode: [],
+              nodePath: { steps: [] },
+            },
+            sourceId: 'profile-path',
+            copyIds: ['copy-path-0', 'copy-path-1'],
+            copyFaceIds: ['copy-face-0', 'copy-face-1'],
+            copyEdgeIds: [],
+          },
+        ],
+      ])
+      const [mesh] = createRegionMeshes(gltf, graph)
+      expect(mesh.userData.faceUuid).toBe(`copy-face-${index}`)
+      mesh.geometry.dispose()
+      for (const material of [mesh.material].flat()) material.dispose()
+    }
+  )
 })
