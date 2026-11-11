@@ -8,6 +8,8 @@ import { PNG } from 'pngjs'
 // Local camera changes can leave the gizmo between orientations. Locate its
 // visible coloured axis head, reflecting through the origin for negative axes,
 // so the click follows the control while the expected camera pose stays fixed.
+// TODO: After https://github.com/KittyCAD/modeling-app/pull/14856 lands,
+// verify fixed-position clicks and remove this helper and the PNG import.
 async function localAxisPosition(
   gizmo: Locator,
   axis: 'x' | 'y' | 'z',
