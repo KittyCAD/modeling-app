@@ -18,6 +18,20 @@ export function comparePathLockKeys(left: string, right: string): number {
 }
 
 /**
+ * Fold lock IDs, never filesystem paths. Case-sensitive entries may share a lock;
+ * backend existence checks still distinguish them. This also covers canonical
+ * Unicode spellings and case aliases without probing or writing to the volume.
+ */
+export function conservativePathLockKey(path: string): string {
+  return path
+    .normalize('NFD')
+    .toLowerCase()
+    .toUpperCase()
+    .toLowerCase()
+    .normalize('NFD')
+}
+
+/**
  * Builds a stable, duplicate-free lock plan for one or more mutation targets.
  */
 export function pathLockRequirements(

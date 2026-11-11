@@ -152,7 +152,7 @@ async function readProjectTomlMetadata(
   }
 }
 
-async function ensureProjectTomlTitle({
+export async function ensureProjectTomlTitle({
   fileOperations,
   projectPath,
   title,

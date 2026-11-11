@@ -1,4 +1,8 @@
 import {
+  createMountedFileOperations,
+  type FileOperationsMount,
+} from '@src/lib/fileSystem/mounts'
+import {
   defineRegistryItem,
   defineRegistryItemFactory,
   provideService,
@@ -6,11 +10,34 @@ import {
 import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
 import fsZds from '@src/lib/fs-zds'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
-import { fileOperationsService } from '@src/registry/contracts/fileOperations'
+import {
+  fileOperationsService,
+  fileOperationsMountsValueSpec,
+} from '@src/registry/contracts/fileOperations'
+
+/** Coordinates contributed backings while their providers retain ownership of their runtimes. */
+export function createFileOperationsServices(
+  backing: IZooDesignStudioFS,
+  mounts: () => readonly FileOperationsMount[] = () => []
+) {
+  const runtime = createFileOperationsRuntime(backing)
+  const mounted = createMountedFileOperations(
+    runtime.operations,
+    backing,
+    mounts
+  )
+  return {
+    operations: mounted.operations,
+    batch: mounted.batch,
+    dispose: runtime.dispose,
+  }
+}
 
 export const createFileOperationsExtension = (backing: IZooDesignStudioFS) =>
-  defineRegistryItemFactory(() => {
-    const fileOperations = createFileOperationsRuntime(backing)
+  defineRegistryItemFactory((ctx) => {
+    const fileOperations = createFileOperationsServices(backing, () =>
+      ctx.valueSpecs.get(fileOperationsMountsValueSpec)
+    )
 
     return {
       id: 'file-operations-extension',
