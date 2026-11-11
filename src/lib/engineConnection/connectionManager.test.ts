@@ -264,7 +264,15 @@ describe('ConnectionManager', () => {
 
   it('skips rendering updates only for the current geometry-only connection', async () => {
     const manager = createConnectionManager()
-    const send = vi.fn()
+    const send = vi.spyOn(manager, 'sendCommand').mockResolvedValue([
+      {
+        success: true,
+        resp: {
+          type: 'modeling',
+          data: { modeling_response: { type: 'reconfigure_stream', data: {} } },
+        },
+      },
+    ])
     const sendSceneCommand = vi
       .spyOn(manager, 'sendSceneCommand')
       .mockResolvedValue(null)
@@ -275,7 +283,6 @@ describe('ConnectionManager', () => {
         ...manager.connection,
         geometryOnly,
         deferredConnection: { promise: Promise.resolve() },
-        send,
       } as unknown as Connection
       sendSceneCommand.mockClear()
       send.mockClear()
@@ -285,7 +292,10 @@ describe('ConnectionManager', () => {
       await manager.setDefaultSystemProperties('#ffffff')
       await manager.setHighlightEdges(true)
       await manager.setShowScaleGrid(true)
-      await manager.handleResize({ width: 512, height: 512 })
+      await manager.handleResize({
+        width: manager.streamDimensions.width + 32,
+        height: 512,
+      })
 
       expect(sendSceneCommand).toHaveBeenCalledTimes(geometryOnly ? 0 : 5)
       expect(send).toHaveBeenCalledTimes(geometryOnly ? 0 : 1)
