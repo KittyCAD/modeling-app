@@ -1296,7 +1296,6 @@ export class LocalRenderer {
     }
     this.rebuildSelectionTargets()
     try {
-      const exportStartedAt = performance.now()
       const files = await this.kclManager.rustContext.export(
         {
           type: 'gltf',
@@ -1309,7 +1308,6 @@ export class LocalRenderer {
         },
         jsAppSettings(this.kclManager.systemDeps.settings)
       )
-      const exportFinishedAt = performance.now()
       if (!isCurrent()) return
 
       const file = files?.find((file) => file.name.endsWith('.glb'))
@@ -1325,7 +1323,6 @@ export class LocalRenderer {
         bytes.buffer,
         ''
       )) as KITTYCAD_GLTF
-      const parseFinishedAt = performance.now()
       console.log('local renderer glTF', gltf.parser.json, gltf)
       gltf.scene ??= new Group() // A sketch-only model has no scene
       fillEmptyBrepArrays(gltf)
@@ -1360,16 +1357,6 @@ export class LocalRenderer {
       this.resetCameraIfPending()
       this.invalidateBaseRender()
       this.loadedSceneGeneration = sceneGeneration
-      console.debug(
-        '[Local renderer progress] Model ready',
-        JSON.stringify({
-          sceneGeneration,
-          exportAndTransferMs: exportFinishedAt - exportStartedAt,
-          parseMs: parseFinishedAt - exportFinishedAt,
-          sceneSetupMs: performance.now() - parseFinishedAt,
-          glbBytes: bytes.byteLength,
-        })
-      )
       this.onModelLoadSettled?.(true)
     } catch (error) {
       if (isCurrent()) this.handleModelLoadError(error)

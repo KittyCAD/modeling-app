@@ -1,3 +1,4 @@
+import type { CommandProgressPlan } from '@src/lib/engineConnection/executionProgress'
 import type { WebSocketResponse } from '@kittycad/lib'
 
 import { encode as msgpackEncode } from '@msgpack/msgpack'
@@ -188,18 +189,19 @@ export default class RustContext {
     }
   }
 
-  /** Estimate execution work using an isolated mock run. */
-  async estimateCommandCount(
+  async estimateCommandPlan(
     node: Node<Program>,
     settings: DeepPartial<Configuration>,
     path?: string
-  ): Promise<number> {
+  ): Promise<CommandProgressPlan> {
     const instance = await this._checkContextInstance()
-    return instance.estimateCommandCount(
-      JSON.stringify(node),
-      path,
-      JSON.stringify(settings)
-    )
+    return JSON.parse(
+      await instance.estimateCommandPlan(
+        JSON.stringify(node),
+        path,
+        JSON.stringify(settings)
+      )
+    ) as CommandProgressPlan
   }
 
   /** Execute a program with in mock mode. */

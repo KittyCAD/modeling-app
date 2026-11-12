@@ -728,6 +728,42 @@ describe('KclManager resolved views', () => {
     expect(invalidate).not.toHaveBeenCalled()
   })
 
+  it.each(['file switch', 'cancellation'] as const)(
+    'does not start actual execution after %s during command estimation',
+    async (change) => {
+      vi.spyOn(
+        kclManager.engineCommandManager,
+        'geometryOnly',
+        'get'
+      ).mockReturnValue(true)
+      const pending = createDeferred<{ count: number; milestones: [] }>()
+      const estimate = vi
+        .spyOn(kclManager.rustContext, 'estimateCommandPlan')
+        .mockReturnValueOnce(pending.promise)
+      const execute = vi
+        .spyOn(kclManager.rustContext, 'execute')
+        .mockResolvedValue(emptyExecState())
+      const completed = vi.fn()
+      kclManager.addEventListener('execution-done', completed)
+      const execution = kclManager.executeAst({
+        ast: createEmptyAst(),
+        executionId: 124,
+      })
+      await vi.waitFor(() => expect(estimate).toHaveBeenCalledOnce())
+      if (change === 'file switch') kclManager.path = '/other/main.kcl'
+      else kclManager.cancelAllExecutions()
+      pending.resolve({ count: 1, milestones: [] })
+      await execution
+      expect(execute).not.toHaveBeenCalled()
+      expect(kclManager.isExecuting).toBe(false)
+      expect(completed).toHaveBeenCalledOnce()
+      expect(completed.mock.calls[0][0].detail).toMatchObject({
+        isInterrupted: true,
+        successful: false,
+      })
+    }
+  )
+
   it('does not accept a cancelled actual execution', async () => {
     const previous = resolvedViews('previous-object')
     await executeActualViews(previous)

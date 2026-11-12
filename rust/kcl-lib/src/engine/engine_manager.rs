@@ -433,7 +433,7 @@ impl EngineManager {
 
         // Add cmd to the batch.
         batch_context.push(req, source_range).await;
-        self.stats().commands_batched.fetch_add(1, Relaxed);
+        self.stats().record_command(source_range, cmd);
 
         Ok(())
     }
@@ -453,7 +453,9 @@ impl EngineManager {
         for cmd in cmds {
             extended_cmds.push((WebSocketRequest::ModelingCmdReq(cmd.clone()), source_range));
         }
-        self.stats().commands_batched.fetch_add(extended_cmds.len(), Relaxed);
+        for cmd in cmds {
+            self.stats().record_command(source_range, &cmd.cmd);
+        }
         batch_context.extend(extended_cmds).await;
 
         Ok(())
@@ -476,7 +478,7 @@ impl EngineManager {
 
         // Add cmd to the batch end.
         batch_context.insert_end(id, req, source_range).await;
-        self.stats().commands_batched.fetch_add(1, Relaxed);
+        self.stats().record_command(source_range, cmd);
         Ok(())
     }
 
@@ -498,7 +500,7 @@ impl EngineManager {
             }),
             source_range,
         ));
-        self.stats().commands_batched.fetch_add(1, Relaxed);
+        self.stats().record_command(source_range, cmd);
 
         // Flush the batch queue.
         self.run_batch(requests, source_range).await

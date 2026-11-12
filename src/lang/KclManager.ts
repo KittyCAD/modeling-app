@@ -310,6 +310,7 @@ export enum KclManagerEvents {
 }
 
 export interface KclExecutionDoneDetail {
+  path?: string
   successful: boolean
   isInterrupted: boolean
   hasErrors: boolean
@@ -2214,42 +2215,54 @@ export class KclManager extends File {
       this.beginLiveOperationUpdates(currentExecutionId)
 
       const codeThatExecuted = this.code
-      const estimateStartedAt = performance.now()
+      const pathThatExecuted = this.path
       this.estimatedCommandCount.value = null
       if (this.engineCommandManager.geometryOnly) {
         try {
-          this.estimatedCommandCount.value =
-            await this.rustContext.estimateCommandCount(
-              ast,
-              jsAppSettings(this.systemDeps.settings),
-              this.path
-            )
+          const plan = await this.rustContext.estimateCommandPlan(
+            ast,
+            jsAppSettings(this.systemDeps.settings),
+            this.path
+          )
+          this.estimatedCommandCount.value = plan.count
+          this.engineCommandManager.executionProgress.setPlan(plan)
         } catch (error) {
           // A failed estimate must not prevent real execution.
           console.warn('Command-count estimate unavailable', error)
         }
       }
 
-      const executionStartedAt = performance.now()
+      if (
+        this.path !== pathThatExecuted ||
+        this._cancelTokens.get(currentExecutionId)
+      ) {
+        this.endLiveOperationUpdates()
+        this._cancelTokens.delete(currentExecutionId)
+        markOnce('code/endExecuteAst')
+        this.notifyExecutionCompletion('cancelled')
+        this.isExecuting = false
+        this.dispatchEvent(
+          new CustomEvent<KclExecutionDoneDetail>(
+            KclManagerEvents.ExecutionDone,
+            {
+              detail: {
+                path: pathThatExecuted,
+                successful: false,
+                isInterrupted: true,
+                hasErrors: false,
+              },
+            }
+          )
+        )
+        return
+      }
+
       const { logs, errors, execState, isInterrupted } = await executeAst({
         ast,
-        path: this.path,
+        path: pathThatExecuted,
         rustContext: this.rustContext,
         callbacks: this.createExecutionCallbacks(currentExecutionId),
       })
-
-      if (this.engineCommandManager.geometryOnly) {
-        console.debug(
-          '[Local renderer progress] Execution finished',
-          JSON.stringify({
-            estimateMs: executionStartedAt - estimateStartedAt,
-            executionMs: performance.now() - executionStartedAt,
-            estimatedCommands: this.estimatedCommandCount.peek(),
-            completedCommands:
-              this.engineCommandManager.completedExecutionCommandCount,
-          })
-        )
-      }
 
       const livePathsToWatch = Object.values(execState.filenames)
         .filter((file) => {
@@ -2380,6 +2393,7 @@ export class KclManager extends File {
           KclManagerEvents.ExecutionDone,
           {
             detail: {
+              path: pathThatExecuted,
               successful: !isInterrupted && errors.length === 0,
               isInterrupted,
               hasErrors: errors.length > 0,

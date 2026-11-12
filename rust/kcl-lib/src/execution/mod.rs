@@ -1641,9 +1641,11 @@ impl ExecutorContext {
         Ok(())
     }
 
-    /// Count mock engine commands using the eager import traversal of a real run.
-    /// Whole-module imports can create geometry even when their values are unused.
-    pub async fn estimate_command_count(&self, program: &crate::Program) -> Result<usize, KclErrorWithOutputs> {
+    /// Capture source milestones as well as counts for alignment with live work.
+    pub async fn estimate_command_plan(
+        &self,
+        program: &crate::Program,
+    ) -> Result<crate::engine::CommandProgressPlan, KclErrorWithOutputs> {
         if !self.is_mock() {
             return Err(KclErrorWithOutputs::no_outputs(KclError::internal(
                 "Command estimation requires a mock executor".to_owned(),
@@ -1661,10 +1663,25 @@ impl ExecutorContext {
                 ..Default::default()
             },
         );
+        if let Ok(mut trace) = ctx.engine.stats().progress_trace.lock() {
+            *trace = Some(Vec::new());
+        }
         let before = ctx.engine.stats().commands_batched.load(Ordering::Relaxed);
-        ctx.run(program, &mut state).await?;
+        let result = ctx.run(program, &mut state).await;
+        let milestones = ctx
+            .engine
+            .stats()
+            .progress_trace
+            .lock()
+            .ok()
+            .and_then(|mut trace| trace.take())
+            .unwrap_or_default();
+        result?;
         let after = ctx.engine.stats().commands_batched.load(Ordering::Relaxed);
-        Ok(after.saturating_sub(before))
+        Ok(crate::engine::CommandProgressPlan {
+            count: after.saturating_sub(before),
+            milestones,
+        })
     }
 
     pub async fn run_mock(
@@ -6250,16 +6267,43 @@ body = extrude(region(segments = [profile.c]), length = 5mm)
             ("assembly.kcl", assembly),
             ("part.kcl", "@settings(kclVersion = 3.0)\nx = 1\n"),
         ]);
-        let empty_count = empty_ctx.estimate_command_count(&main).await.unwrap();
-        let count = ctx.estimate_command_count(&main).await.unwrap();
+        let empty_count = empty_ctx.estimate_command_plan(&main).await.unwrap().count;
+        let count = ctx.estimate_command_plan(&main).await.unwrap().count;
         assert!(
             count > empty_count,
             "Imported geometry must contribute commands: {count} <= {empty_count}"
         );
-        assert_eq!(ctx.estimate_command_count(&main).await.unwrap(), count);
+        assert_eq!(ctx.estimate_command_plan(&main).await.unwrap().count, count);
         assert!(ctx.cache.read_old_memory().await.is_none());
         ctx.close().await;
         empty_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn command_estimate_includes_mapped_edge_lookups() {
+        let program = crate::Program::parse_no_errs(r#"@settings(kclVersion = 3.0)
+profile = sketch(on = XY) {
+  c = circle(center = [var 0mm, var 0mm], start = [var 10mm, var 0mm])
+}
+body = extrude(region(segments = [profile.c]), length = 5mm)
+edges = map([0mm, 1mm, 2mm], f = fn(@x) {
+  return edgeId(body, closestTo = [x, 10mm, 0mm])
+})
+"#).unwrap();
+        let ctx = versioned_modules_context(&[]);
+        let plan = ctx.estimate_command_plan(&program).await.unwrap();
+        let closest = plan.milestones.iter().filter(|m| m.command == "closest_edge").count();
+        let metadata = plan
+            .milestones
+            .iter()
+            .filter(|m| m.command == "query_entity_type")
+            .count();
+        assert_eq!(closest, 3, "The mapped edge lookups must be present in the mock plan");
+        assert_eq!(closest, metadata);
+        assert_eq!(plan.count, plan.milestones.len());
+        assert!(plan.milestones.iter().any(|m| m.command == "extrude"));
+        assert!(ctx.engine.stats().progress_trace.lock().unwrap().is_none());
+        ctx.close().await;
     }
 
     /// Builds a mock-engine context whose project directory holds `modules`

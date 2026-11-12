@@ -1,3 +1,4 @@
+import { ExecutionProgress } from '@src/lib/engineConnection/executionProgress'
 import type {
   ModelingCmdReq,
   WebSocketRequest,
@@ -244,10 +245,12 @@ export class ConnectionManager extends EventTarget {
     this.lastConnectionError = undefined
   }
 
+  readonly executionProgress = new ExecutionProgress()
   completedExecutionCommandCount = 0
   private executionCommandIds = new Set<string>()
 
   trackExecution(): () => void {
+    this.executionProgress.reset()
     this.completedExecutionCommandCount = 0
     this.executionCommandIds.clear()
     const execution = Symbol('execution')
@@ -1099,6 +1102,14 @@ export class ConnectionManager extends EventTarget {
 
     if (!isSceneCommand && this.activeExecutions.size > 0) {
       this.executionCommandIds.add(id)
+      const command = message.command
+      const ranges =
+        command.type === 'modeling_cmd_batch_req'
+          ? command.requests.map(
+              (request) => message.idToRangeMap[request.cmd_id] ?? message.range
+            )
+          : [message.range]
+      this.executionProgress.register(id, ranges)
     }
 
     this.pendingCommands[id] = {
@@ -1220,6 +1231,7 @@ export class ConnectionManager extends EventTarget {
       }
 
       if (this.executionCommandIds.delete(message.request_id)) {
+        this.executionProgress.complete(message.request_id)
         this.completedExecutionCommandCount +=
           message.resp.type === 'modeling_batch'
             ? Object.keys(message.resp.data.responses).length

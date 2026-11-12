@@ -152,6 +152,14 @@ async fn inner_edge_id(
     // Handle mock execution
     let no_engine_commands = args.ctx.no_engine_commands().await;
     let edge_id = if no_engine_commands {
+        args.ctx
+            .engine
+            .stats()
+            .record_mock_query(args.source_range, "solid3d_get_edge_uuid");
+        args.ctx
+            .engine
+            .stats()
+            .record_mock_query(args.source_range, "query_entity_type");
         exec_state.next_uuid()
     } else {
         let edge_uuid_response = exec_state
@@ -211,6 +219,14 @@ async fn inner_edge_id_by_point(
     // Handle mock execution
     let no_engine_commands = args.ctx.no_engine_commands().await;
     let edge_id = if no_engine_commands {
+        args.ctx
+            .engine
+            .stats()
+            .record_mock_query(args.source_range, "closest_edge");
+        args.ctx
+            .engine
+            .stats()
+            .record_mock_query(args.source_range, "query_entity_type");
         exec_state.next_uuid()
     } else {
         let edge_uuid_response = exec_state

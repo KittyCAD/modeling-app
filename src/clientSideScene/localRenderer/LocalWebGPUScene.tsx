@@ -43,27 +43,12 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
     if (isExecuting) {
       setIsAwaitingModel(true)
       setProgress(0)
-      const startedAt = performance.now()
-      let reachedEnd = false
       const intervalId = window.setInterval(() => {
         const total = kclManager.estimatedCommandCount.peek()
         if (total && total > 0) {
-          const completed =
-            kclManager.engineCommandManager.completedExecutionCommandCount
-          if (!reachedEnd && completed / total >= 0.95) {
-            reachedEnd = true
-            console.debug(
-              '[Local renderer progress] Bar reached end',
-              JSON.stringify({
-                elapsedMs: performance.now() - startedAt,
-                estimatedCommands: total,
-                completedCommands: completed,
-              })
-            )
-          }
-          setProgress((previous) =>
-            Math.max(previous, Math.min(0.95, completed / total))
-          )
+          const fraction =
+            kclManager.engineCommandManager.executionProgress.fraction
+          setProgress((previous) => Math.max(previous, fraction))
         }
       }, COMMAND_PROGRESS_POLL_MS)
       return () => window.clearInterval(intervalId)
