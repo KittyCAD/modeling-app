@@ -63,6 +63,7 @@ use crate::std::args::TyF64;
 
 #[cfg(test)]
 mod roundtrip_tests;
+pub(crate) mod serde_helpers;
 
 pub type KclObjectFields = HashMap<String, KclValue>;
 
@@ -481,9 +482,9 @@ pub enum FunctionBody {
     Kcl(EnvironmentRef),
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum TypeDef {
-    RustRepr(PrimitiveType, StdFnProps),
+    RustRepr(PrimitiveType, #[serde(with = "serde_helpers::std_fn_props")] StdFnProps),
     Alias(RuntimeType),
     /// Shared rather than owned so that every value of the enum points at the
     /// one declaration object, and so that reading the type out of memory,

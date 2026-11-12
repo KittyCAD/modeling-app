@@ -7,6 +7,7 @@ use kcl_api::UnitAngle;
 use kcl_api::UnitLength;
 use kcmc::shared::BodyType;
 use kittycad_modeling_cmds as kcmc;
+use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
 
@@ -55,7 +56,7 @@ use crate::std::sweep::SweepPath;
 const ERROR_STRING_SKETCH_TO_SOLID_HELPER: &str =
     "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`";
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct TyF64 {
