@@ -537,7 +537,7 @@ solid = extrude(disk, length = 10mm)
 
 @requires_engine
 @pytest.mark.asyncio
-async def test_kcl_session_snapshot_cloned_transparent_solid_cpu_only(tmp_path):
+async def test_kcl_session_snapshot_cloned_transparent_solid_cpu_only():
     code = """
 @settings(kclVersion = 3.0)
 
@@ -559,7 +559,8 @@ clone(extrude001) |> translate(x = 1)
         assert len(snapshots) == 1
         image = bytes(snapshots[0])
         assert image.startswith(b"\x89PNG\r\n\x1a\n")
-        (tmp_path / "cloned_transparent_solid.png").write_bytes(image)
+        with open(os.path.join(files_dir, "cloned_transparent_solid.png"), "wb") as f:
+            f.write(image)
 
 
 @pytest.mark.asyncio
