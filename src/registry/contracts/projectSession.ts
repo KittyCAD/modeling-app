@@ -1,5 +1,7 @@
+import type { ProjectStorage } from '@src/lib/projectSession/storage'
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal, Signal } from '@preact/signals-core'
+import type { Project } from '@src/lib/project'
 import type { ZDSProject } from '@src/lib/projectSession'
 import type { TextFileIO } from '@src/lib/projectSession/textFileIO'
 
@@ -33,6 +35,23 @@ export interface ExecutingEditor {
  * fields delegate to this service while call sites are migrated.
  */
 export interface ProjectSessionService {
+  /** Resolve storage capabilities for the captured path without selecting a backend in callers. */
+  storageFor: (path: string) => ProjectStorage
+  editorChanged: (path: string) => void
+  writeThumbnail: (projectPath: string, bytes: Uint8Array) => Promise<void>
+  /** Reload the captured project's tree; stale results never replace another session. */
+  refreshProject: () => Promise<Project | undefined>
+  /** Navigate through the router and resolve when its loader completes. */
+  openFile: (
+    path: string,
+    options?: {
+      projectPath?: string
+      subRoute?: string
+      clearProjectId?: boolean
+    }
+  ) => Promise<void>
+  /** Flush an affected editor, rename on storage, then update its owned path. */
+  rename: (source: string, destination: string) => Promise<void>
   readonly textFileIO: TextFileIO
   /** The current editor capability; absent when the session has no executing editor. */
   readonly executingEditor: ReadonlySignal<ExecutingEditor | undefined>

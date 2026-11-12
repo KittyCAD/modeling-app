@@ -744,7 +744,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   test(
     'if you fixup kcl errors you clear lints',
     { tag: '@localRenderer' },
-    async ({ page, homePage }) => {
+    async ({ page, homePage, scene }) => {
       const u = await getUtils(page)
       await page.addInitScript(async () => {
         localStorage.setItem(
@@ -760,14 +760,18 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
-      await homePage.goToModelingScene()
+      await scene.waitForExecutionDoneAfter(() => homePage.goToModelingScene())
 
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
       await u.codeLocator.click()
 
-      await page.getByText(' |> line(end = [2.48, 2.44])').click()
+      const editedLine = page
+        .locator('.cm-line')
+        .filter({ hasText: '|> line(end = [2.48, 2.44]' })
+      await editedLine.click()
+      await expect(u.codeLocator).toBeFocused()
 
       await expect(
         page.locator('.cm-lint-marker-error').first()
@@ -775,8 +779,10 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.keyboard.press('End')
       await page.keyboard.press('Backspace')
 
+      await expect(editedLine).toHaveText('    |> line(end = [2.48, 2.44]')
       await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
       await page.keyboard.type(')')
+      await expect(editedLine).toHaveText('    |> line(end = [2.48, 2.44])')
       await expect(
         page.locator('.cm-lint-marker-error').first()
       ).not.toBeVisible()

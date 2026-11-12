@@ -1,3 +1,4 @@
+import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
@@ -642,6 +643,13 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         project,
         requestedName,
       })
+      const session = ctx.services.optional(projectSession)
+      if (
+        session &&
+        project.localProjectPath &&
+        session.project.peek()?.path === project.localProjectPath
+      )
+        await session.refreshProject()
       if (options?.notify !== false) {
         toast.success(
           `Successfully renamed "${getHomeProjectDisplayName(project)}" to "${requestedName}"`

@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => ({
   stat: vi.fn(),
   writeFile: vi.fn<(path: string, data: Uint8Array) => Promise<void>>(),
   basename: vi.fn((path: string) => path.slice(path.lastIndexOf('/') + 1)),
-  reportSystemIOError: vi.fn(),
+  reportFileOperationError: vi.fn(),
 }))
 
 vi.mock('@src/lib/fs-zds', () => ({
@@ -28,8 +28,8 @@ vi.mock('@src/lib/desktop', () => ({
       (error as { code?: string }).code === 'ENOENT'),
 }))
 
-vi.mock('@src/machines/systemIO/errorReporting', () => ({
-  reportSystemIOError: mocks.reportSystemIOError,
+vi.mock('@src/lib/fileSystem/operationErrors', () => ({
+  reportFileOperationError: mocks.reportFileOperationError,
 }))
 
 const importModule = () => import('@src/lib/activeTextFile')
@@ -273,7 +273,7 @@ describe('scheduleActiveTextFileWrite', () => {
     await vi.advanceTimersByTimeAsync(1000)
 
     expect(mocks.writeFile).toHaveBeenCalledTimes(1)
-    expect(mocks.reportSystemIOError).not.toHaveBeenCalled()
+    expect(mocks.reportFileOperationError).not.toHaveBeenCalled()
   })
 
   it('reports autosave failures without including the path or contents', async () => {
@@ -289,7 +289,7 @@ describe('scheduleActiveTextFileWrite', () => {
     )
     await vi.advanceTimersByTimeAsync(1000)
 
-    expect(mocks.reportSystemIOError).toHaveBeenCalledWith({
+    expect(mocks.reportFileOperationError).toHaveBeenCalledWith({
       error,
       operation: 'save_text_file',
       risk: 'write',
@@ -299,12 +299,12 @@ describe('scheduleActiveTextFileWrite', () => {
         contentLength: 16,
       },
     })
-    expect(JSON.stringify(mocks.reportSystemIOError.mock.calls)).not.toContain(
-      '/proj/readme.md'
-    )
-    expect(JSON.stringify(mocks.reportSystemIOError.mock.calls)).not.toContain(
-      'private contents'
-    )
+    expect(
+      JSON.stringify(mocks.reportFileOperationError.mock.calls)
+    ).not.toContain('/proj/readme.md')
+    expect(
+      JSON.stringify(mocks.reportFileOperationError.mock.calls)
+    ).not.toContain('private contents')
   })
 })
 

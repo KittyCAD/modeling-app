@@ -99,6 +99,84 @@ test(
   }
 )
 
+test(
+  'finishes importing dropped files before enabling the explorer again',
+  { tag: ['@web', '@desktop', '@localRenderer'] },
+  async ({ page, folderSetupFn, fs, homePage, toolbar }) => {
+    const projectName = 'external-file-drop'
+    const contents = 'Contents imported from a dropped file.'
+    const { dir } = await folderSetupFn(async (dir) => {
+      const projectPath = await fs.join(dir, projectName)
+      await fs.mkdir(projectPath, { recursive: true })
+      await fs.writeFile(
+        await fs.join(projectPath, 'main.kcl'),
+        new TextEncoder().encode('@settings(kclVersion = 3.0)\n')
+      )
+    })
+    await homePage.openProject(projectName)
+    await toolbar.openPane(DefaultLayoutPaneID.Files)
+    const mainFile = page.getByRole('treeitem', {
+      name: 'main.kcl',
+      exact: true,
+    })
+    await expect(mainFile).toBeEnabled()
+
+    // Hold the browser file read so the busy state is observable before the
+    // real import and project refresh finish.
+    const fileRead = await page.evaluateHandle(() => {
+      // eslint-disable-next-line @typescript-eslint/unbound-method -- Called with the original File receiver below.
+      const original = File.prototype.arrayBuffer
+      let release = () => {}
+      const pending = new Promise<void>((resolve) => {
+        release = resolve
+      })
+      File.prototype.arrayBuffer = async function () {
+        if (this.name === 'notes.txt') await pending
+        return original.call(this)
+      }
+      return {
+        release: () => {
+          File.prototype.arrayBuffer = original
+          release()
+        },
+      }
+    })
+    const dataTransfer = await page.evaluateHandle((contents) => {
+      const data = new DataTransfer()
+      data.items.add(new File([contents], 'notes.txt', { type: 'text/plain' }))
+      // Synthetic files have no backing filesystem entry in WebKit.
+      Object.defineProperty(data.items[0], 'webkitGetAsEntry', {
+        value: () => null,
+      })
+      return data
+    }, contents)
+
+    try {
+      await mainFile.dispatchEvent('drop', { dataTransfer })
+      const importedFile = page.getByRole('treeitem', {
+        name: 'notes.txt',
+        exact: true,
+      })
+      await expect(mainFile).toBeDisabled()
+      await fileRead.evaluate(({ release }) => release())
+      await expect(importedFile).toBeVisible()
+      expect(
+        await fs.readFile(await fs.join(dir, projectName, 'notes.txt'), 'utf8')
+      ).toBe(contents)
+
+      await expect(importedFile).toBeEnabled()
+      await importedFile.click()
+      await expect(page.locator('#code-pane').getByRole('textbox')).toHaveText(
+        contents
+      )
+    } finally {
+      await fileRead.evaluate(({ release }) => release())
+      await fileRead.dispose()
+      await dataTransfer.dispose()
+    }
+  }
+)
+
 test.describe(
   'desktop fixture isolation',
   { tag: ['@desktop', '@localRenderer'] },
@@ -162,18 +240,18 @@ test.describe(
         .poll(
           async () =>
             await page.evaluate(() => {
-              const snapshot = window.app.systemIOActor.getSnapshot()
               return {
-                hasFolders: snapshot.context.folders !== undefined,
-                state: snapshot.value,
+                hasFolders:
+                  window.app.projectOperations.projects.value.length > 0,
+                pending: window.app.projectOperations.pending.value,
               }
             }),
           {
             timeout: 30_000,
-            message: 'SystemIO should finish initial browser folder load',
+            message: 'The initial project listing should complete',
           }
         )
-        .toMatchObject({ hasFolders: true, state: 'idle' })
+        .toMatchObject({ hasFolders: true, pending: 0 })
 
       const filePaneScroll = page.getByTestId('file-pane-scroll-container')
       const partsFolder = filePaneScroll.getByRole('treeitem', {
@@ -182,35 +260,41 @@ test.describe(
       })
       await expect(partsFolder).toBeVisible()
       await partsFolder.click()
-      await filePaneScroll
-        .getByRole('treeitem', { name: 'existing.kcl', exact: true })
-        .click()
       const startingFilePath = await fs.join(
         dir,
         'browser-file-tree-project',
         'parts',
         'existing.kcl'
       )
-      await expect(page).toHaveURL(
-        new RegExp(`/file/${encodeURIComponent(startingFilePath)}$`)
-      )
-      await page.evaluate(() => {
-        const appWindow = window as any
-        const systemIOActor = window.app.systemIOActor as any
-        const originalSend = systemIOActor.send.bind(systemIOActor)
-        appWindow.__setProjectDirectoryPathEvents = []
-        systemIOActor.send = (event: any) => {
-          if (event?.type === 'set project directory path') {
-            appWindow.__setProjectDirectoryPathEvents.push(event)
-          }
-          return originalSend(event)
-        }
-      })
-      await page.evaluate(() => {
-        window.app.systemIOActor.send({
-          type: 'read folders from project directory' as any,
+      await Promise.all([
+        page.waitForURL(
+          new RegExp(`/file/${encodeURIComponent(startingFilePath)}$`)
+        ),
+        filePaneScroll
+          .getByRole('treeitem', { name: 'existing.kcl', exact: true })
+          .click(),
+      ])
+      await page.evaluate(() => window.app.projectLibraries.refreshProjects())
+
+      // Reusing a name allocates a sibling and leaves the original bytes intact.
+      const existingContents = await fs.readFile(startingFilePath, 'utf8')
+      await page.getByTestId('create-file-button').click()
+      await page.getByTestId('file-rename-field').fill('existing')
+      await page.keyboard.press('Enter')
+      await expect(
+        filePaneScroll.getByRole('treeitem', {
+          name: 'existing-1.kcl',
+          exact: true,
         })
-      })
+      ).toBeEnabled({ timeout: 30_000 })
+      await expect(page).toHaveURL(/existing-1\.kcl$/)
+      expect(await fs.readFile(startingFilePath, 'utf8')).toBe(existingContents)
+      await expect(
+        filePaneScroll.getByRole('treeitem', {
+          name: 'existing.kcl',
+          exact: true,
+        })
+      ).toBeVisible()
 
       await page.getByTestId('create-file-button').click()
       await page.getByTestId('file-rename-field').fill('nested-file')
@@ -242,19 +326,6 @@ test.describe(
           }
         )
         .toBeTruthy()
-      await expect
-        .poll(
-          async () =>
-            await page.evaluate(
-              () => (window as any).__setProjectDirectoryPathEvents.length
-            ),
-          {
-            timeout: 5_000,
-            message:
-              'Same-project file navigation should not restart project directory reads',
-          }
-        )
-        .toBe(0)
     })
   }
 )
@@ -463,10 +534,7 @@ test.describe(
       const treeItem = (name: string) =>
         filePaneScroll.getByRole('treeitem', { name, exact: true })
       const projectDirectoryPath = () =>
-        page.evaluate(
-          () =>
-            window.app.systemIOActor.getSnapshot().context.projectDirectoryPath
-        )
+        page.evaluate(() => window.app.projectLibraries.projectDirectoryPath)
       const nestedProjectSettingsFile = async () =>
         fs.join(nestedDir, PROJECT_SETTINGS_FILE_NAME)
 
