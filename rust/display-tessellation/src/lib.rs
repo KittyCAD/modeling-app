@@ -57,8 +57,9 @@ fn basis(knots: &[f64], count: usize, order: usize, t: f64) -> Result<Vec<f64>, 
     // Native trim evaluation can land a few ulps outside a surface knot domain.
     let t = t.clamp(start, end);
     let mut b = vec![0.0; count + order - 1];
+    let at_end = t == knots[count];
     for i in 0..b.len() {
-        if (knots[i] <= t && t < knots[i + 1]) || (t == knots[count] && i == count - 1) {
+        if (at_end && i == count - 1) || (!at_end && knots[i] <= t && t < knots[i + 1]) {
             b[i] = 1.0;
         }
     }
@@ -88,7 +89,8 @@ fn rational(points: impl IntoIterator<Item = (Point, f64)>) -> Result<Point, Str
         }
         weight += w;
     }
-    if weight.abs() < 1e-15 {
+    // Uniform scaling of homogeneous weights does not change the geometry.
+    if weight == 0.0 {
         return Err("Singular NURBS weight".into());
     }
     let p = sum.map(|x| x / weight);
@@ -682,6 +684,52 @@ mod tests {
     }
 
     #[test]
+    fn unclamped_curve_endpoint_preserves_finite_geometry() {
+        let curve: Curve = serde_json::from_value(serde_json::json!({
+            "type": "nurbs", "nurbs": {
+                "controlPoints": [[0, 0.25], [0.1, 0.25], [0.2, 0.25], [0.3, 0.25]],
+                "weights": [1e308, 1e308, 1e308, 1e308], "order": 3,
+                "knotVector": [-2, -1, 0, 1, 2, 3, 4]
+            }
+        }))
+        .unwrap();
+        let point = curve.evaluate(2.0).unwrap();
+        assert!(
+            (point[0] - 0.25).abs() < 1e-12 && (point[1] - 0.25).abs() < 1e-12,
+            "{point:?}"
+        );
+        assert_eq!(
+            basis(&[-2., -1., 0., 1., 2., 3., 4.], 4, 3, 2.).unwrap(),
+            vec![0., 0., 0.5, 0.5]
+        );
+    }
+
+    #[test]
+    fn rational_geometry_is_invariant_to_weight_scale() {
+        let expected = sample().brep.surfaces[1].evaluate([0.5, 0.5]).unwrap();
+        for scale in [1e-20, 1e20] {
+            let mut input = sample();
+            let Surface::Nurbs { nurbs } = &mut input.brep.surfaces[1] else {
+                panic!("Expected NURBS");
+            };
+            for weight in &mut nurbs.weights {
+                *weight *= scale;
+            }
+            let actual = input.brep.surfaces[1].evaluate([0.5, 0.5]).unwrap();
+            for (a, b) in actual.into_iter().zip(expected) {
+                assert!((a - b).abs() < 1e-12);
+            }
+            let curve: Curve = serde_json::from_value(serde_json::json!({
+                "type": "nurbs", "nurbs": { "controlPoints": [[0, 0], [1, 1]],
+                    "weights": [scale, scale], "order": 2, "knotVector": [0, 0, 1, 1] }
+            }))
+            .unwrap();
+            assert_eq!(curve.evaluate(0.5).unwrap(), [0.5, 0.5]);
+        }
+        assert!(rational([([1., 1., 1.], 0.)]).unwrap_err().contains("Singular"));
+    }
+
+    #[test]
     fn circle_trace_preserves_its_local_axes() {
         let curve: Curve = serde_json::from_str(
             r#"{"type":"circle","circle":{"origin":[2,3],"radius":2,"xAxis":[0,1],"yAxis":[-1,0]}}"#,
@@ -768,7 +816,7 @@ mod tests {
     fn domain_roundoff_is_clamped_but_real_out_of_bounds_is_rejected() {
         let knots = [1.0, 1.0, 29.284271247461906, 29.284271247461906];
         assert_eq!(basis(&knots, 2, 2, 29.28427124746191).unwrap(), vec![0.0, 1.0]);
-        assert!(basis(&knots, 2, 2, 29.285).is_err());
+        basis(&knots, 2, 2, 29.285).unwrap_err();
         assert_eq!(
             basis(&[80.0, 80.0, 120.0, 120.0], 2, 2, 120.00000000000507).unwrap(),
             vec![0.0, 1.0]

@@ -57,6 +57,9 @@ jobs:
           SKIP_WASM_OPT: ${{ inputs.skip_wasm_opt && 'true' || '' }}
         run: ./scripts/build-wasm.sh
 
+      - name: Build preview tessellator Wasm
+        run: wasm-pack build rust/display-tessellation --release --target web --out-dir pkg -- --locked
+
       - name: Use committed TypeScript bindings
         shell: bash
         run: |
@@ -73,6 +76,13 @@ jobs:
           retention-days: 7
           path: |
             rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: prepared-display-tessellation
+          retention-days: 7
+          if-no-files-found: error
+          path: rust/display-tessellation/pkg/display_tessellation*
 
       - uses: actions/upload-artifact@v7
         with:

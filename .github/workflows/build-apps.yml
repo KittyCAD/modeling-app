@@ -43,6 +43,11 @@ jobs:
           name: prepared-wasm
           path: rust/kcl-wasm-lib/pkg
 
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-display-tessellation
+          path: rust/display-tessellation/pkg
+
       - name: Set staging version, product name, release notes, and icons
         if: ${{ env.IS_STAGING == 'true' }}
         env:
@@ -92,6 +97,7 @@ jobs:
             package.json
             electron-builder.yml
             rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
+            rust/display-tessellation/pkg/display_tessellation*
             release-notes.md
             assets/icon.ico
             assets/icon.png
@@ -143,6 +149,8 @@ jobs:
           cp prepared-files/rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-files/rust/kcl-wasm-lib/pkg/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
+          mkdir rust/display-tessellation/pkg
+          cp prepared-files/rust/display-tessellation/pkg/display_tessellation* rust/display-tessellation/pkg
           cp prepared-files/release-notes.md release-notes.md
           cp prepared-files/assets/icon.ico assets/icon.ico
           cp prepared-files/assets/icon.png assets/icon.png

@@ -55,6 +55,24 @@ async function drain() {
           bodies?: { brep: unknown }[]
           errors?: string[]
         } = JSON.parse(request.snapshot)
+        if (input.version !== 1) {
+          self.postMessage({
+            id: request.id,
+            error: 'Unsupported native B-rep snapshot version',
+          })
+          continue
+        }
+        if (
+          (input.bodies !== undefined ||
+            input.coordinateSystem !== undefined) &&
+          input.coordinateSystem !== 'z-up'
+        ) {
+          self.postMessage({
+            id: request.id,
+            error: 'Unsupported native B-rep coordinate system',
+          })
+          continue
+        }
         const jsonParsedAt = performance.now()
         if (input.errors?.length)
           console.warn(

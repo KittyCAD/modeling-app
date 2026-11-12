@@ -133,6 +133,8 @@ jobs:
           cp prepared-wasm/kcl_wasm_lib_bg.wasm public
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
+          mkdir rust/display-tessellation/pkg
+          cp prepared-display-tessellation/display_tessellation* rust/display-tessellation/pkg
 
       - name: Copy prepared ts-rs bindings
         run: |

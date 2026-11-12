@@ -70,9 +70,19 @@ runs:
         name: prepared-wasm-interaction-base
         path: apps/base/rust/kcl-wasm-lib/pkg
     - uses: actions/download-artifact@v8
+      if: hashFiles('apps/base/rust/display-tessellation/Cargo.toml') != ''
+      with:
+        name: prepared-display-tessellation-interaction-base
+        path: apps/base/rust/display-tessellation/pkg
+    - uses: actions/download-artifact@v8
       with:
         name: prepared-wasm-interaction-candidate
         path: apps/candidate/rust/kcl-wasm-lib/pkg
+    - uses: actions/download-artifact@v8
+      if: hashFiles('apps/candidate/rust/display-tessellation/Cargo.toml') != ''
+      with:
+        name: prepared-display-tessellation-interaction-candidate
+        path: apps/candidate/rust/display-tessellation/pkg
     - uses: actions/download-artifact@v8
       with:
         name: prepared-ts-rs-bindings-interaction-base
