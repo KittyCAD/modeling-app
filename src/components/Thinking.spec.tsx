@@ -445,8 +445,8 @@ describe('Thinking', () => {
     ).not.toBeInTheDocument()
     expect(screen.queryByText('Reading main.kcl')).not.toBeInTheDocument()
     const activityView = screen.getByTestId('ml-response-thinking-view')
-    expect(activityView).toHaveStyle({ maxHeight: '20lh' })
-    expect(activityView).toHaveClass('overflow-auto')
+    expect(activityView).not.toHaveStyle({ maxHeight: '20lh' })
+    expect(activityView).toHaveClass('overflow-visible')
     expect(activityView).not.toHaveClass('border', 'shadow-md')
 
     thoughts.push(

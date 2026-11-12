@@ -1241,10 +1241,10 @@ export const Thinking = (
       data-testid="ml-response-thinking-view"
       ref={refViewFull}
       role="region"
-      style={{ maxHeight: '20lh' }}
+      style={hasStructuredActivity ? undefined : { maxHeight: '20lh' }}
       className={
         hasStructuredActivity
-          ? `relative select-text overflow-auto text-2 text-xs bg-2 rounded-md px-3 py-2 ${!userHasManuallyScrolled ? 'scrollbar-hide' : ''}`
+          ? 'relative select-text overflow-visible text-2 text-xs bg-2 rounded-md px-3 py-2'
           : `relative select-text overflow-auto text-2 text-xs bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md ${!userHasManuallyScrolled ? 'scrollbar-hide' : ''}`
       }
       onScroll={onReasoningScroll}

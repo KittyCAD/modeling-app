@@ -274,7 +274,7 @@ describe('ExchangeCard replay attachments', () => {
       screen.getByText('Read main.kcl · Running').closest('details')
     ).toBeNull()
     expect(screen.getByTestId('ml-response-thinking-view')).toHaveClass(
-      'overflow-auto'
+      'overflow-visible'
     )
     expect(screen.getByTestId('ml-response-thinking-view')).toHaveTextContent(
       'Checking the project.'
