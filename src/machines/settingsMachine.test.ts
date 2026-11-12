@@ -1,8 +1,6 @@
 import type { MachineManager } from '@src/lib/MachineManager'
-import { effect } from '@preact/signals-core'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import { createSettings } from '@src/lib/settings/initialSettings'
-import { getViewportPostEffect } from '@src/lib/settings/viewportRendering'
 import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 import * as settingsUtils from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -25,15 +23,15 @@ afterEach(() => vi.restoreAllMocks())
 
 describe('settingsMachine', () => {
   it.each([
-    ['retrocad', 'user'],
-    ['phosphor', 'user'],
-    ['retrocad', 'project'],
-    ['phosphor', 'project'],
+    ['retrocad', true],
+    ['phosphor', true],
+    ['retrocad', false],
+    ['phosphor', false],
   ] as const)(
-    'couples %s and SSAO at the %s level in one update',
-    async (style, level) => {
+    'preserves the SSAO preference across %s style changes when initially %s',
+    async (style, enabled) => {
       const initialSettings = createSettings()
-      initialSettings.modeling.enableSSAO[level] = true
+      initialSettings.modeling.enableSSAO.user = enabled
       const wasmInstancePromise = Promise.resolve({} as ModuleType)
       const commandBarActor = createActor(commandBarMachine, {
         input: {
@@ -45,7 +43,6 @@ describe('settingsMachine', () => {
       const persisted: Array<{
         style: string
         ssao: boolean
-        projectSSAO?: boolean
         level?: string
       }> = []
       const actor = createActor(
@@ -56,7 +53,6 @@ describe('settingsMachine', () => {
               persisted.push({
                 style: input.context.modeling.viewportRendering.current,
                 ssao: input.context.modeling.enableSSAO.current,
-                projectSSAO: input.context.modeling.enableSSAO.project,
                 level: input.level,
               })
               return undefined
@@ -77,15 +73,6 @@ describe('settingsMachine', () => {
           },
         }
       ).start()
-      const effects: string[] = []
-      const stopObserving = effect(() => {
-        effects.push(
-          getViewportPostEffect(
-            initialSettings.modeling.viewportRendering.currentSignal.value,
-            initialSettings.modeling.enableSSAO.currentSignal.value
-          )
-        )
-      })
       try {
         await waitFor(actor, (snapshot) => snapshot.matches('idle'))
         actor.send({
@@ -93,64 +80,57 @@ describe('settingsMachine', () => {
           data: { level: 'user', value: style },
         })
         await waitFor(actor, (snapshot) => snapshot.matches('idle'))
-        expect(effects).toEqual(['ssao', style])
         expect(persisted.at(-1)).toEqual({
           style,
-          ssao: false,
-          projectSSAO: level === 'project' ? false : undefined,
-          level: undefined,
+          ssao: enabled,
+          level: 'user',
         })
+
+        for (const local of [true, false]) {
+          actor.send({
+            type: 'set.modeling.useLocalRenderer',
+            data: { level: 'user', value: local },
+          })
+          await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+          expect(persisted.at(-1)).toEqual({
+            style,
+            ssao: enabled,
+            level: 'user',
+          })
+        }
 
         actor.send({
           type: 'set.modeling.enableSSAO',
-          data: { level, value: true },
+          data: { level: 'user', value: !enabled },
         })
         await waitFor(actor, (snapshot) => snapshot.matches('idle'))
-        expect(effects).toEqual(['ssao', style, 'ssao'])
-        expect(persisted.at(-1)).toMatchObject({
-          style: 'default',
-          ssao: true,
-          level,
+        expect(persisted.at(-1)).toEqual({
+          style,
+          ssao: !enabled,
+          level: 'user',
         })
-
         actor.send({
           type: 'set.modeling.viewportRendering',
-          data: { level: 'user', value: style },
-        })
-        actor.send({
-          type: 'set.modeling.useLocalRenderer',
-          data: { level: 'user', value: true },
-        })
-        actor.send({
-          type: 'set.modeling.enableSSAO',
-          data: { level, value: true },
+          data: { level: 'user', value: 'default' },
         })
         await waitFor(actor, (snapshot) => snapshot.matches('idle'))
-        expect(persisted.at(-1)).toMatchObject({ style, ssao: true })
-
-        actor.send({
-          type: 'set.modeling.useLocalRenderer',
-          data: { level: 'user', value: false },
-        })
-        await waitFor(actor, (snapshot) => snapshot.matches('idle'))
-        expect(persisted.at(-1)).toMatchObject({
-          style,
-          ssao: false,
-          level: undefined,
+        expect(persisted.at(-1)).toEqual({
+          style: 'default',
+          ssao: !enabled,
+          level: 'user',
         })
 
         const restored = createSettings()
         restored.modeling.viewportRendering.user = style
-        restored.modeling.enableSSAO[level] = true
+        restored.modeling.enableSSAO.user = enabled
         actor.send({ type: 'Set all settings', settings: restored })
         expect(actor.getSnapshot().context.modeling.enableSSAO.current).toBe(
-          false
+          enabled
         )
         expect(
           actor.getSnapshot().context.modeling.viewportRendering.current
         ).toBe(style)
       } finally {
-        stopObserving()
         actor.stop()
         commandBarActor.stop()
       }

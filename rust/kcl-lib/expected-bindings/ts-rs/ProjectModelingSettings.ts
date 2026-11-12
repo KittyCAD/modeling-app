@@ -16,7 +16,8 @@ base_unit?: UnitLength | null,
  */
 highlight_edges?: DefaultTrue, 
 /**
- * Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
+ * Legacy Screen Space Ambient Occlusion (SSAO) setting.
+ * Zoo Design Studio ignores this project setting. Use the user-level `enable_ssao` setting instead.
  */
 enable_ssao?: DefaultTrue, 
 /**

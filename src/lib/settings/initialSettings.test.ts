@@ -23,9 +23,20 @@ describe('renderer settings', () => {
       expect(
         shouldShowSettingInput(enableSSAO as Setting<unknown>, 'user', settings)
       ).toBe(true)
+      expect(enableSSAO.isEnabled(settings)).toBe(local)
+      expect(
+        shouldShowSettingInput(
+          enableSSAO as Setting<unknown>,
+          'project',
+          settings
+        )
+      ).toBe(false)
       expect(viewportRendering.current).toBe('retrocad')
       expect(enableSSAO.current).toBe(false)
     }
+    useLocalRenderer.user = false
+    viewportRendering.user = 'default'
+    expect(enableSSAO.isEnabled(settings)).toBe(true)
   })
 })
 

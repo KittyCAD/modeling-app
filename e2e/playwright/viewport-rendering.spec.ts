@@ -65,7 +65,7 @@ hide(profile)
       await fs.writeFile(
         await fs.join(project, 'project.toml'),
         new TextEncoder().encode(
-          '[settings.meta]\nid = "a3e7bfb3-df47-4c99-9e9c-b39b586a8615"\n[settings.modeling]\nviewport_rendering = "phosphor"\n'
+          '[settings.meta]\nid = "a3e7bfb3-df47-4c99-9e9c-b39b586a8615"\n[settings.modeling]\nviewport_rendering = "phosphor"\nenable_ssao = false\n'
         )
       )
     })
@@ -108,7 +108,8 @@ hide(profile)
       const connectionCount = modes.length
       await scene.waitForExecutionDoneAfter(async () => {
         await rendering.selectOption(mode)
-        await expect(ssao).not.toBeChecked()
+        await expect(ssao).toBeChecked()
+        await expect(ssao).toBeDisabled()
         await page.getByTestId('settings-close-button').click()
       })
       await scene.settled()
@@ -121,8 +122,8 @@ hide(profile)
       await expect(rendering).toHaveValue(mode)
 
       await scene.waitForExecutionDoneAfter(async () => {
-        await toggleSSAO()
-        await expect(rendering).toHaveValue('default')
+        await rendering.selectOption('default')
+        await expect(ssao).toBeEnabled()
         await page.getByTestId('settings-close-button').click()
       })
       await scene.settled()
@@ -139,7 +140,8 @@ hide(profile)
     })
     await scene.settled()
     await openSettings()
-    await expect(ssao).not.toBeChecked()
+    await expect(ssao).toBeChecked()
+    await expect(ssao).toBeDisabled()
 
     const search = page.getByPlaceholder(/^Search settings/)
     await search.fill('Rendering style')
@@ -155,8 +157,7 @@ hide(profile)
     await page.locator('label').filter({ has: localRenderer }).click()
     await expect(localRenderer).toBeChecked()
     await expect(page.getByTestId('viewportRendering')).toHaveCount(0)
-    await expect(page.getByTestId('enableSSAO')).toBeVisible()
-    await toggleSSAO()
+    await expect(ssao).toBeEnabled()
     await expect(ssao).toBeChecked()
     await search.fill('Rendering style')
     await expect(
@@ -164,16 +165,44 @@ hide(profile)
     ).toHaveCount(0)
     await search.press('Escape')
     await search.fill('')
-    await toggleSSAO()
-    await expect(ssao).not.toBeChecked()
-    await page.locator('label').filter({ has: localRenderer }).click()
-    await expect(localRenderer).not.toBeChecked()
-    await expect(rendering).toHaveValue('retrocad')
-    await expect(page.getByTestId('enableSSAO')).toBeVisible()
     await page.waitForFunction(() =>
       window.app.settings.actor.getSnapshot().matches('idle')
     )
     expect(modes).toHaveLength(connectionCount)
+    expect(
+      await page.evaluate(() => window.engineCommandManager.geometryOnly)
+    ).toBe(false)
+    await page.getByTestId('settings-close-button').click()
+
+    await page.reload()
+    await scene.settled()
+    expect(
+      await page.evaluate(() => window.engineCommandManager.geometryOnly)
+    ).toBe(true)
+    await openSettings()
+    await expect(ssao).toBeChecked()
+    await expect(ssao).toBeEnabled()
+    await toggleSSAO()
+    await expect(ssao).not.toBeChecked()
+    await page.waitForFunction(() =>
+      window.app.settings.actor.getSnapshot().matches('idle')
+    )
+    await page.getByTestId('settings-close-button').click()
+    await page.reload()
+    await scene.settled()
+    await openSettings()
+    await expect(ssao).not.toBeChecked()
+    await page.locator('label').filter({ has: localRenderer }).click()
+    await expect(localRenderer).not.toBeChecked()
+    await expect(rendering).toHaveValue('retrocad')
+    await expect(ssao).not.toBeChecked()
+    await expect(ssao).toBeDisabled()
+    await page.waitForFunction(() =>
+      window.app.settings.actor.getSnapshot().matches('idle')
+    )
+    expect(
+      await page.evaluate(() => window.engineCommandManager.geometryOnly)
+    ).toBe(true)
     await page.getByTestId('settings-close-button').click()
 
     modes.length = 0
@@ -188,6 +217,7 @@ hide(profile)
     await expect(ssao).not.toBeChecked()
     await page.getByRole('radio', { name: 'This project' }).click()
     await expect(rendering).toHaveCount(0)
+    await expect(ssao).toHaveCount(0)
     await page.getByRole('radio', { name: 'User' }).click()
 
     await scene.waitForExecutionDoneAfter(async () => {
@@ -202,5 +232,7 @@ hide(profile)
     })
     await openSettings()
     await expect(rendering).toHaveValue('default')
+    await expect(ssao).toBeEnabled()
+    await expect(ssao).not.toBeChecked()
   }
 )

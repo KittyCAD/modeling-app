@@ -32,6 +32,7 @@ import {
   getAllCurrentSettings,
   getChangedSettingsAtLevel,
   hiddenOnPlatform,
+  jsAppSettings,
   mergeProjectConfiguration,
   projectConfigurationToSettingsPayload,
   replaceProjectSettingsPreservingMetadata,
@@ -128,14 +129,53 @@ describe('viewport rendering settings', () => {
     })
   })
 
-  it('preserves project SSAO without overriding the user stream style', () => {
-    const configuration = settingsPayloadToProjectConfiguration({
-      modeling: { enableSSAO: false, viewportRendering: 'phosphor' },
-    })
-    const payload = projectConfigurationToSettingsPayload(configuration)
-    expect(payload.modeling?.enableSSAO).toBe(false)
-    expect(payload.modeling?.viewportRendering).toBeUndefined()
-  })
+  it.each([true, false])(
+    'ignores legacy project SSAO = %s',
+    async (enabled) => {
+      const wasmInstance = await loadAndInitialiseWasmInstance(
+        join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+      )
+      const configuration = parseProjectSettings(
+        `[settings.modeling]\nenable_ssao = ${enabled}\nviewport_rendering = "phosphor"\n`,
+        wasmInstance
+      )
+      if (configuration instanceof Error) throw configuration
+      const settings = createSettings()
+      settings.modeling.enableSSAO.user = !enabled
+      const payload = projectConfigurationToSettingsPayload(configuration)
+      setSettingsAtLevel(settings, 'project', payload)
+      expect(payload.modeling?.enableSSAO).toBeUndefined()
+      expect(payload.modeling?.viewportRendering).toBeUndefined()
+      expect(settings.modeling.enableSSAO.current).toBe(!enabled)
+      expect(settings.modeling.viewportRendering.current).toBe('default')
+      const saved = settingsPayloadToProjectConfiguration({
+        modeling: { enableSSAO: enabled },
+      })
+      expect(saved.settings?.modeling?.enable_ssao).toBeUndefined()
+    }
+  )
+
+  it.each(['default', 'retrocad', 'phosphor'] as const)(
+    'sends effective cloud SSAO for %s without changing the saved preference',
+    (style) => {
+      const settings = createSettings()
+      settings.modeling.viewportRendering.user = style
+      for (const local of [true, false]) {
+        settings.modeling.useLocalRenderer.user = local
+        for (const enabled of [true, false]) {
+          settings.modeling.enableSSAO.user = enabled
+          expect(jsAppSettings(settings).settings?.modeling?.enable_ssao).toBe(
+            enabled && style === 'default'
+          )
+          expect(settings.modeling.enableSSAO.current).toBe(enabled)
+          expect(
+            settingsPayloadToConfiguration(getAllCurrentSettings(settings))
+              .settings?.modeling?.enable_ssao
+          ).toBe(enabled)
+        }
+      }
+    }
+  )
 })
 
 describe('testing settings initialization', () => {

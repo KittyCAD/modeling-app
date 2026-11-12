@@ -229,9 +229,13 @@ function createCoreSettings() {
       }),
       enableSSAO: new Setting<boolean>({
         defaultValue: true,
+        hideOnLevel: 'project',
         description:
-          'Add ambient occlusion. In cloud rendering, enabling this selects the Default style.',
+          'Add ambient occlusion. Unavailable with Retro CAD and Phosphor in cloud rendering.',
         validate: (v) => typeof v === 'boolean',
+        isEnabled: (context) =>
+          context.modeling.useLocalRenderer.current ||
+          context.modeling.viewportRendering.current === 'default',
       }),
       /**
        * Whether the 3D scene is rendered on this device or streamed as video

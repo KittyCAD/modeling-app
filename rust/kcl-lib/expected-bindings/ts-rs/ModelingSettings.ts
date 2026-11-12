@@ -29,6 +29,8 @@ camera_orbit?: CameraOrbitType | null,
 highlight_edges?: DefaultTrue | null, 
 /**
  * Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
+ * In Zoo Design Studio this is a user-only preference, shared by local and cloud rendering.
+ * Retro CAD and Phosphor temporarily disable cloud SSAO without changing this preference.
  */
 enable_ssao?: DefaultTrue | null, 
 /**

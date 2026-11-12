@@ -54,6 +54,7 @@ import type { FileOperationsRegistryService } from '@src/registry/contracts/file
 import type { ProjectLibrarySettingDefaultPolicy } from '@src/registry/contracts/projectLibraries'
 import { resolveProjectLibrarySettingDefaults } from '@src/registry/contracts/projectLibraries'
 import {
+  getViewportPostEffect,
   isViewportRendering,
   viewportRenderingFromStoredValue,
 } from '@src/lib/settings/viewportRendering'
@@ -849,7 +850,6 @@ export function projectConfigurationToSettingsPayload(
       modeling: {
         defaultUnit: configuration?.settings?.modeling?.base_unit ?? undefined,
         highlightEdges: configuration?.settings?.modeling?.highlight_edges,
-        enableSSAO: configuration?.settings?.modeling?.enable_ssao,
         fixedSizeGrid: toUndefinedIfNull(
           configuration?.settings?.modeling?.fixed_size_grid
         ),
@@ -887,7 +887,6 @@ export function settingsPayloadToProjectConfiguration(
   const typedModelingSection = compactRecord({
     base_unit: configuration?.modeling?.defaultUnit,
     highlight_edges: configuration?.modeling?.highlightEdges,
-    enable_ssao: configuration?.modeling?.enableSSAO,
     fixed_size_grid: configuration?.modeling?.fixedSizeGrid,
   })
 
@@ -1424,7 +1423,15 @@ export function getSettingsFromActorContext(
 
 export function jsAppSettings(s: SettingsType | SettingsActorType) {
   const settings = 'send' in s ? getSettingsFromActorContext(s) : s
-  return settingsPayloadToConfiguration(getAllCurrentSettings(settings))
+  const payload = getAllCurrentSettings(settings)
+  // Rust uses SSAO for streaming only. The local renderer reads the saved
+  // preference directly, including while a renderer restart is pending.
+  payload.modeling.enableSSAO =
+    getViewportPostEffect(
+      settings.modeling.viewportRendering.current,
+      settings.modeling.enableSSAO.current
+    ) === 'ssao'
+  return settingsPayloadToConfiguration(payload)
 }
 
 /**

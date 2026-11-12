@@ -1,5 +1,4 @@
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
-import { batch } from '@preact/signals-core'
 import {
   createSettingsCommand,
   settingsWithCommandConfigs,
@@ -91,14 +90,6 @@ export type SettingsMachineContext = SettingsMachineInput & {
 }
 
 export type SettingsActorType = ActorRefFrom<typeof settingsMachine>
-
-function disableSSAOForCustomCloudStyle(settings: SettingsType) {
-  const { useLocalRenderer, viewportRendering, enableSSAO } = settings.modeling
-  if (useLocalRenderer.current || viewportRendering.current === 'default')
-    return
-  enableSSAO.user = false
-  if (enableSSAO.project !== undefined) enableSSAO.project = false
-}
 
 export const settingsMachine = setup({
   types: {
@@ -366,9 +357,6 @@ export const settingsMachine = setup({
       else if ('output' in event) return event.output || context
       else return context
     }),
-    normalizeRenderingSettings: ({ context }) => {
-      batch(() => disableSSAOForCustomCloudStyle(context))
-    },
     setSettingAtLevel: assign(({ context, event }) => {
       if (!('data' in event)) return {}
       const { level, value } = event.data
@@ -379,19 +367,8 @@ export const settingsMachine = setup({
         string,
       ]
 
-      batch(() => {
-        // @ts-ignore
-        context[category][setting][level] = value
-
-        if (
-          settingPath === 'modeling.enableSSAO' &&
-          value === true &&
-          !context.modeling.useLocalRenderer.current
-        ) {
-          context.modeling.viewportRendering.user = 'default'
-        }
-        if (category === 'modeling') disableSSAOForCustomCloudStyle(context)
-      })
+      // @ts-ignore
+      context[category][setting][level] = value
 
       const newContext = {
         ...context,
@@ -600,7 +577,6 @@ export const settingsMachine = setup({
         'Set all settings': {
           actions: [
             'setAllSettings',
-            'normalizeRenderingSettings',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
@@ -648,7 +624,6 @@ export const settingsMachine = setup({
           target: 'idle',
           actions: [
             'setAllSettings',
-            'normalizeRenderingSettings',
             'flushDeferredSettingsEvents',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
@@ -706,17 +681,6 @@ export const settingsMachine = setup({
             level = event.level
           } else if ('data' in event && 'level' in event.data) {
             level = event.data.level
-            const settingPath =
-              event.type === '*'
-                ? event.data.path
-                : event.type.replace(/^set\./, '')
-            if (
-              settingPath === 'modeling.viewportRendering' ||
-              settingPath === 'modeling.useLocalRenderer'
-            ) {
-              // Custom cloud styles also turn off an existing project SSAO override.
-              level = undefined
-            }
           }
 
           if (
@@ -755,7 +719,6 @@ export const settingsMachine = setup({
           target: 'idle',
           actions: [
             'setAllSettings',
-            'normalizeRenderingSettings',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
@@ -786,7 +749,6 @@ export const settingsMachine = setup({
           target: 'idle',
           actions: [
             'setAllSettings',
-            'normalizeRenderingSettings',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
