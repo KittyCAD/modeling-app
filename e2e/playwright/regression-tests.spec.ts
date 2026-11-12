@@ -183,6 +183,7 @@ extrude001 = extrude(sketch001, length = 50)
     ).toBeVisible()
 
     // change 5 to 67
+    await u.openKclCodePanel()
     await page.locator('#code-mirror-override').getByText('myVar').click()
     await page.keyboard.press('End')
     await page.keyboard.press('Backspace')
@@ -425,6 +426,7 @@ extrude002 = extrude(profile002, length = 150)`
       await expect(exportingToastMessage).not.toBeVisible()
 
       // Click the code editor
+      await page.getByTestId('code-pane-button').click()
       await page.locator('.cm-content').click()
 
       await page.waitForTimeout(2000)

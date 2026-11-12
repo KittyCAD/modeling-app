@@ -85,6 +85,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
         editor.replaceCode('', edgeTreatmentCode)
       )
       await editor.closePane()
+      await toolbar.closeFeatureTreePane()
       await scene.moveCameraTo(
         { x: -3.14, y: -11, z: 16.25 },
         { x: 15, y: 10, z: 6 }
@@ -129,6 +130,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
         editor.replaceCode('', shellCode)
       )
       await editor.closePane()
+      await toolbar.closeFeatureTreePane()
       await scene.moveCameraTo({ x: 48, y: -38, z: 34 }, { x: 15, y: 11, z: 7 })
 
       const [clickShellRimEdge] = await scene.makeSelectionHelpers({
@@ -170,6 +172,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
         editor.replaceCode('', csgSurfaceExtrudeCode)
       )
       await editor.closePane()
+      await toolbar.closeFeatureTreePane()
       await scene.moveCameraTo({ x: 48, y: -42, z: 34 }, { x: 13, y: 9, z: 5 })
 
       const [clickOuterCsgEdge] = await scene.makeSelectionHelpers({
@@ -201,6 +204,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     scene,
     cmdBar,
     editor,
+    toolbar,
     tronApp,
     homePage,
   }) => {
@@ -212,6 +216,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
       editor.replaceCode('', standaloneHelixCode)
     )
     await editor.closePane()
+    await toolbar.closeFeatureTreePane()
     await scene.moveCameraTo({ x: 24, y: -24, z: 18 }, { x: 0, y: 0, z: 10 })
 
     const [clickHelix] = scene.makeMouseHelpers(0.5875, 0.5883, {

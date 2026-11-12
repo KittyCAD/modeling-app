@@ -1,8 +1,6 @@
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
-import {
-  PLAYWRIGHT_LAYOUT_SETTINGS,
-  settingsToToml,
-} from '@e2e/playwright/test-utils'
+import { settingsToToml } from '@e2e/playwright/test-utils'
+import { playwrightPluginSettings } from '@e2e/playwright/storageStates'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import { Themes } from '@src/lib/theme'
@@ -34,13 +32,13 @@ async function waitForThemeApplied(page: Page, mode: Themes) {
 
 test(
   'Create a sketch in a new project: light theme',
-  { tag: '@snapshot' },
+  { tag: ['@snapshot', '@zookeeper'] },
   runTestForTheme(Themes.Light)
 )
 
 test(
   'Create a sketch in a new project: dark theme',
-  { tag: '@snapshot' },
+  { tag: ['@snapshot', '@zookeeper'] },
   runTestForTheme(Themes.Dark)
 )
 
@@ -65,9 +63,26 @@ function runTestForTheme(mode: Themes) {
     fs,
     folderSetupFn,
   }: SnapshotTestContext) => {
+    // Keep the balance and status bar width independent of the test account.
+    await page.route('**/user/payment/balance?*', (route) =>
+      route.fulfill({ json: { amount_due_after_credits: 0 } })
+    )
+    await page.route('**/user/payment/subscriptions', (route) =>
+      route.fulfill({
+        json: {
+          modeling_app: {
+            name: 'pro',
+            type: { type: 'individual' },
+            zoo_tools_included: ['modeling_app'],
+            endpoints_included: ['ml'],
+          },
+        },
+      })
+    )
+
     const tomlStr = settingsToToml({
       settings: {
-        ...PLAYWRIGHT_LAYOUT_SETTINGS,
+        plugins: playwrightPluginSettings({ zookeeperEnabled: true }),
         app: {
           onboarding_status: 'dismissed',
           appearance: {
@@ -106,6 +121,42 @@ function runTestForTheme(mode: Themes) {
     await test.step('Create a project', async () => {
       await toolbar.openFeatureTreePane()
       await editor.openPane()
+      await expect(
+        page
+          .getByTestId('app-header')
+          .getByRole('button', { name: 'Zookeeper', exact: true })
+      ).toBeVisible()
+
+      await expect(
+        page.getByTestId('billing-remaining-bar').getByTestId('infinity')
+      ).toBeVisible()
+
+      // Freeze the welcome videos so playback does not change the snapshots.
+      const welcomeVideos = page
+        .getByTestId('ml-ephant-conversation-welcome')
+        .locator('video')
+      await expect(welcomeVideos).toHaveCount(3)
+      await welcomeVideos.evaluateAll((videos) => {
+        for (const video of videos) {
+          if (video instanceof HTMLVideoElement) {
+            video.autoplay = false
+            video.pause()
+            video.currentTime = 0
+          }
+        }
+      })
+      await expect
+        .poll(() =>
+          welcomeVideos.evaluateAll((videos) =>
+            videos.every(
+              (video) =>
+                video instanceof HTMLVideoElement &&
+                !video.seeking &&
+                video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA
+            )
+          )
+        )
+        .toBe(true)
 
       await expect(page).toHaveScreenshot(
         screenshotName(step++, 'project-created', mode),
@@ -126,6 +177,8 @@ function runTestForTheme(mode: Themes) {
       await toolbar.rectangleBtn.click()
       await rectCorner1()
       await rectCorner2()
+      await editor.expectEditor.toContain('horizontal(')
+      await editor.scrollToBottom()
 
       await expect(page).toHaveScreenshot(
         screenshotName(step++, 'sketch-drawn', mode),
@@ -137,6 +190,8 @@ function runTestForTheme(mode: Themes) {
       await toolbar.exitSketchBtn.click()
       await expect(toolbar.startSketchBtn).not.toBeDisabled()
       await scene.settled()
+      await editor.scrollToBottom()
+      await toolbar.extrudeButton.hover()
       await expect(
         page.getByRole('tooltip').filter({
           hasText: 'Extrude',

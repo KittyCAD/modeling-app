@@ -219,11 +219,12 @@ openSketch = sketch(on = XY) {
         editor.replaceCode('', initialCode)
       )
       // Match the cursor position of an initially loaded file.
-      await editor.scrollToText('closedSketch = sketch(on = XZ) {')
+      await editor.scrollToText('closedSketch = sketch(on = XZ) {', true)
 
       await test.step(`Double-click on the closed sketch`, async () => {
         await scene.settled()
         await editor.closePane()
+        await toolbar.closeFeatureTreePane()
         // Selecting the closed region keeps the sketch header active on entry.
         const [, moveToCircle, dblClickCircle] =
           await scene.makeSelectionHelpers({
@@ -443,7 +444,8 @@ plane001 = offsetPlane(YZ, offset = 10)`
     toolbar,
     modelingDialog,
   }) => {
-    const initialCode = `sketch001 = sketch(on = XZ) {
+    const initialCode = `@settings(defaultLengthUnit = mm)
+sketch001 = sketch(on = XZ) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 100mm])
   line2 = line(start = [var 0mm, var 100mm], end = [var 100mm, var 0mm])
   coincident([line1.end, line2.start])
@@ -454,9 +456,7 @@ plane001 = offsetPlane(YZ, offset = 10)`
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 100)`
 
-    // One dumb hardcoded screen pixel value to click on the sweepEdge, can't think of another way?
-    const testPoint = { x: 564, y: 371 }
-    const [clickOnEdge] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+    const clickOnEdge = () => scene.clickWorldPoint({ x: 50, y: -100, z: 50 })
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
@@ -468,6 +468,8 @@ extrude001 = extrude(region001, length = 100)`
 
     await test.step(`Fill the modeling dialog`, async () => {
       await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.closeFeatureTreePane()
+      await toolbar.closePane(DefaultLayoutPaneID.Files)
       await toolbar.helixButton.click()
       await modelingDialog.options('mode').selectOption({ label: 'Edge' })
       await modelingDialog.selection('Edge').click()
@@ -507,6 +509,8 @@ extrude001 = extrude(region001, length = 100)`
         { shouldNormalise: true }
       )
       await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.closeFeatureTreePane()
+      await toolbar.closePane(DefaultLayoutPaneID.Files)
     })
 
     await test.step(`Edit helix through the feature tree`, async () => {
@@ -543,6 +547,8 @@ extrude001 = extrude(region001, length = 100)`
         { shouldNormalise: true }
       )
       await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.closeFeatureTreePane()
+      await toolbar.closePane(DefaultLayoutPaneID.Files)
     })
 
     await test.step('Delete helix via feature tree selection', async () => {
@@ -1252,7 +1258,8 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line2, cap
       modelingDialog,
     }) => {
       // Create a cube with small edges that will cause some fillets to fail
-      const initialCode = `sketch001 = sketch(on = XY) {
+      const initialCode = `@settings(defaultLengthUnit = mm)
+sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var -1mm])
   line2 = line(start = [var 0mm, var -1mm], end = [var -10mm, var -1mm])
   coincident([line1.end, line2.start])
@@ -1266,10 +1273,6 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line2, cap
 }
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 5)`
-      // Locators
-      // TODO: find a way to select sweepEdges in a different way
-      const edgeLocation = { x: 617, y: 283 }
-
       // Setup
       await test.step(`Initial test setup`, async () => {
         await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -1285,18 +1288,15 @@ extrude001 = extrude(region001, length = 5)`
       await test.step('Select edges and apply oversized fillet', async () => {
         await test.step(`Select the edge`, async () => {
           await toolbar.closePane(DefaultLayoutPaneID.Code)
+          await toolbar.closeFeatureTreePane()
 
-          const [clickOnTheEdge] = await scene.makeSelectionHelpers({
-            kind: 'edge',
-            // The shared sweep edge of region001.tags.line1 and line3.
-            index: 2,
-            stream: {
-              x: edgeLocation.x,
-              y: edgeLocation.y,
-              format: 'pixels',
-            },
-          })
-          await clickOnTheEdge()
+          // The shared sweep edge of region001.tags.line1 and line3.
+          if (rendererTag === '@localRenderer') {
+            const [clickOnTheEdge] = await scene.findEdge(2)
+            await clickOnTheEdge()
+          } else {
+            await scene.clickWorldPoint({ x: 0, y: 0, z: 2.5 })
+          }
         })
 
         await test.step(`Apply fillet`, async () => {
@@ -2113,7 +2113,8 @@ hide(sketch001)`
     toolbar,
     modelingDialog,
   }) => {
-    const initialCode = `sketch001 = sketch(on = XZ) {
+    const initialCode = `@settings(defaultLengthUnit = mm)
+sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -102.57mm, var 101.72mm], end = [var 100.03mm, var 101.72mm])
   line2 = line(start = [var 100.03mm, var 101.72mm], end = [var 100.03mm, var -100.88mm])
   coincident([line1.end, line2.start])
@@ -2168,10 +2169,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         .options('axis or edge')
         .selectOption({ label: 'Edge' })
       await modelingDialog.selection('Edge').click()
-      const [clickOnFirstEdge] = scene.makeMouseHelpers(0.5, 0.28, {
-        format: 'ratio',
-      })
-      await clickOnFirstEdge()
+      await scene.clickWorldPoint({ x: 0, y: -50, z: 101.72 })
 
       await expect(modelingDialog.input('angle')).toHaveText('360deg')
 
@@ -2274,7 +2272,7 @@ profile002 = startProfile(sketch002, at = [-1, 0])
   |> ${secondSurfaceEdge}
   |> extrude(length = 2, bodyType = SURFACE)
   |> flipSurface()`
-      const blendDeclaration = `blend001 = blend([  getBoundedEdge(profile001, edge = seg01),  getBoundedEdge(profile002, edge = seg02)])`
+      const blendDeclaration = `blend001 = blend([  getBoundedEdge(profile001, edge = seg01),  getBoundedEdge(profile002, edge = seg02) ])`
 
       async function selectEdgesFromBothSurfaces() {
         await editor.selectText(firstSurfaceEdge)

@@ -55,7 +55,7 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     await selectUnExtrudable()
     // expect extrude button to be enabled, since we don't guard
     // until the extrude button is clicked
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
+    await expect(page.getByTestId('extrude')).toBeEnabled()
 
     await clickEmpty()
 
@@ -75,14 +75,12 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     await selectUnExtrudable()
     // expect extrude button to be enabled, since we don't guard
     // until the extrude button is clicked
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
+    await expect(page.getByTestId('extrude')).toBeEnabled()
 
     await clickEmpty()
     await expect(page.locator('.cm-activeLine')).toHaveText('')
     // there's not extrudable geometry, so button should be enabled
-    await expect(
-      page.getByRole('button', { name: 'Extrude' })
-    ).not.toBeDisabled()
+    await expect(page.getByTestId('extrude')).not.toBeDisabled()
   })
 
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
@@ -224,15 +222,14 @@ part001 = startSketchOn(XZ)
       // wait for start sketch as a proxy for the stream being ready
       await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
+      await u.openKclCodePanel()
       await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
       // expect extrude button to be enabled, since we don't guard
       // until the extrude button is clicked
-      await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
+      await expect(page.getByTestId('extrude')).toBeEnabled()
 
       await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
-      await expect(
-        page.getByRole('button', { name: 'Extrude' })
-      ).not.toBeDisabled()
+      await expect(page.getByTestId('extrude')).not.toBeDisabled()
       await expect(
         page.getByRole('button', { name: 'Edit Sketch' })
       ).toBeDisabled()
@@ -240,7 +237,7 @@ part001 = startSketchOn(XZ)
       await page.getByText(selectionsSnippets.editOnly).click()
       // expect extrude button to be enabled, since we don't guard
       // until the extrude button is clicked
-      await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
+      await expect(page.getByTestId('extrude')).toBeEnabled()
       await expect(
         page.getByRole('button', { name: 'Edit Sketch' })
       ).toBeDisabled()
@@ -250,7 +247,7 @@ part001 = startSketchOn(XZ)
         .click()
       // expect extrude button to be enabled, since we don't guard
       // until the extrude button is clicked
-      await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
+      await expect(page.getByTestId('extrude')).toBeEnabled()
       await expect(
         page.getByRole('button', { name: 'Edit Sketch' })
       ).not.toBeVisible()
@@ -321,7 +318,8 @@ part001 = startSketchOn(XZ)
     })
   }
 
-  const innerShellCode = `sketch001 = startSketchOn(XZ)
+  const innerShellCode = `@settings(defaultLengthUnit = mm)
+sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> xLine(length = 5)
   |> line(endAbsolute = [0, 5])
@@ -432,7 +430,6 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = .1)`
         .poll(() => editor.getCurrentCode())
         .toBe(`@settings(kclVersion = 2.0)
 
-
 rectangleSketch = sketch(on = XY) {
   line1 = line(start = [var 0.42mm, var 0.91mm], end = [var 3.1mm, var 0.91mm])
   line2 = line(start = [var 3.1mm, var 0.91mm], end = [var 3.1mm, var 4.36mm])
@@ -452,7 +449,6 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = .1)
 face001 = faceOf(shell001, face = faceId(shell001, index = 7))
 sketch001 = sketch(on = face001) {
 }
-
 `)
     })
   }

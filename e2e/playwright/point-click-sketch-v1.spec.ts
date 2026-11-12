@@ -224,7 +224,8 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
     toolbar,
     modelingDialog,
   }) => {
-    const initialCode = `sketch001 = startSketchOn(XZ)
+    const initialCode = `@settings(defaultLengthUnit = mm)
+sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [0, 0])
 |> yLine(length = 100)
 |> line(endAbsolute = [100, 0])
@@ -232,12 +233,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
 |> close()
 extrude001 = extrude(profile001, length = 100)`
 
-    // One dumb hardcoded screen pixel value to click on the sweepEdge, can't think of another way?
-    const testPoint = { x: 564, y: 371 }
-    const [clickOnEdge, moveToEdge] = scene.makeMouseHelpers(
-      testPoint.x,
-      testPoint.y
-    )
+    const clickOnEdge = () => scene.clickWorldPoint({ x: 0, y: -100, z: 50 })
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
@@ -249,10 +245,11 @@ extrude001 = extrude(profile001, length = 100)`
 
     await test.step(`Fill the modeling dialog`, async () => {
       await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.closeFeatureTreePane()
+      await toolbar.closePane(DefaultLayoutPaneID.Files)
       await toolbar.helixButton.click()
       await modelingDialog.options('mode').selectOption({ label: 'Edge' })
       await modelingDialog.selection('Edge').click()
-      await moveToEdge()
       await clickOnEdge()
       await expect(modelingDialog.selection('Edge')).toHaveText('1 edge')
       await modelingDialog.fillInput('revolutions', '20')
@@ -285,6 +282,8 @@ extrude001 = extrude(profile001, length = 100)`
         { shouldNormalise: true }
       )
       await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.closeFeatureTreePane()
+      await toolbar.closePane(DefaultLayoutPaneID.Files)
     })
 
     await test.step(`Edit helix through the feature tree`, async () => {
@@ -320,6 +319,8 @@ extrude001 = extrude(profile001, length = 100)`
         { shouldNormalise: true }
       )
       await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.closeFeatureTreePane()
+      await toolbar.closePane(DefaultLayoutPaneID.Files)
     })
 
     await test.step('Delete helix via feature tree selection', async () => {
@@ -824,7 +825,7 @@ extrude001 = extrude(sketch001, length = 50)
 sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
   |> circle(center = [-11.34, 10.0], radius = 8.69)`
     const newCodeToFind =
-      'revolve001 = revolve(  sketch002,  angle = 360deg,  axis = rectangleSegmentA001,  bodyType = SURFACE,)'
+      'revolve001 = revolve(  sketch002,  angle = 360deg,  axis = rectangleSegmentA001,  bodyType = SURFACE, )'
 
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
@@ -860,7 +861,9 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
       await expect(modelingDialog.submitButton).toBeEnabled()
       await modelingDialog.submit()
 
-      await editor.expectEditor.toContain(newCodeToFind)
+      await editor.expectEditor.toContain(newCodeToFind, {
+        shouldNormalise: true,
+      })
     })
 
     await test.step('Edit revolve feature via feature tree selection', async () => {

@@ -11,12 +11,12 @@ import {
   DefaultLayoutToolbarID,
   defaultLayoutConfig,
 } from '@src/lib/layout/configs/default'
-import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
 import type { Layout } from '@src/lib/layout/types'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
 import {
   createLayoutWithMetadata,
   findLayoutChildNode,
+  setOpenPanes,
   togglePaneLayoutNode,
 } from '@src/lib/layout/utils'
 import { createSettings } from '@src/lib/settings/initialSettings'
@@ -193,7 +193,7 @@ describe('layout extension', () => {
     const service = createSettingsService({ settings })
 
     const savedLayout = togglePaneLayoutNode({
-      rootLayout: structuredClone(playwrightLayoutConfig),
+      rootLayout: setOpenPanes(structuredClone(defaultLayoutConfig), ['code']),
       targetNodeId: 'variables',
       shouldExpand: true,
       paneOpenBehavior: settings.layout.paneOpenBehavior.current,
@@ -272,14 +272,14 @@ describe('layout extension', () => {
     ])
     expect(toolbar()).toMatchObject({ activeIndices: [0], sizes: [100] })
     layout.reset()
-    expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
+    expect(toolbar()).toMatchObject({ activeIndices: [0], sizes: [100] })
   })
 
   it('opens panes idempotently without changing sibling sizes or previous snapshots', () => {
     const settings = createSettings()
     settings.layout.configs.user = {
       default: createLayoutWithMetadata(
-        structuredClone(playwrightLayoutConfig)
+        setOpenPanes(structuredClone(defaultLayoutConfig), ['code'])
       ),
     }
     registry = new Registry()
@@ -331,7 +331,7 @@ describe('layout extension', () => {
     expect(layout.openPane('variables')).toEqual(resized)
   })
 
-  it('provides the app layout service from runtime, settings, and feature services', () => {
+  it('uses the standard app layout when Playwright is enabled', () => {
     registry = new Registry()
     registry.configure([
       defineRegistryItem({
@@ -357,8 +357,8 @@ describe('layout extension', () => {
 
     const layout = registry.get(layoutService)
 
-    expect(layout.get()).toEqual(playwrightLayoutConfig)
-    expect(layout.signal.value).toEqual(playwrightLayoutConfig)
+    expect(layout.get()).toEqual(defaultLayoutConfig)
+    expect(layout.signal.value).toEqual(defaultLayoutConfig)
     expect(layout).toMatchObject({
       applyContributions: expect.any(Function),
     })

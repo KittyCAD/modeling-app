@@ -1,13 +1,8 @@
-import { defineRegistryItemFactory, provide } from '@kittycad/registry'
-import { computed } from '@preact/signals-core'
-import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-import { getOpenPanes } from '@src/lib/layout/utils'
+import { defineRegistryItem, provide } from '@kittycad/registry'
+import { ZookeeperHeaderButton } from '@src/lib/zookeeper/components/ZookeeperHeaderButton'
 import { zookeeperRuntimeRegistryItem } from '@src/lib/zookeeper/registry/runtime'
-import { layoutService } from '@src/registry/contracts/layout'
-import {
-  nullableStatusBarItem,
-  statusBarLocalItemsValueSpec,
-} from '@src/registry/contracts/statusBar'
+import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
+import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { createElement, lazy, Suspense } from 'react'
 
@@ -25,36 +20,34 @@ const ZookeeperCreditsStatusBarItem = () =>
     createElement(ZookeeperCreditsMenu)
   )
 
-const zookeeperCreditsStatusBarItem = defineRegistryItemFactory((ctx) => {
-  const layout = ctx.services.signal(layoutService)
-  const item = computed(() => {
-    const layoutSystem = layout.value
-
-    return nullableStatusBarItem(
-      layoutSystem &&
-        getOpenPanes({ rootLayout: layoutSystem.signal.value }).includes(
-          DefaultLayoutPaneID.Zookeeper
-        )
-        ? {
-            id: 'zookeeper-credits',
-            scopes: ['file'],
-            component: ZookeeperCreditsStatusBarItem,
-          }
-        : null
-    )
-  })
-
-  return {
-    id: 'zookeeper.credits-status-bar-item',
-    provides: [provide(statusBarLocalItemsValueSpec, item)],
-  }
-}, 'zookeeper.credits-status-bar-item')
+const zookeeperCreditsStatusBarItem = defineRegistryItem({
+  id: 'zookeeper.credits-status-bar-item',
+  provides: [
+    provide(statusBarLocalItemsValueSpec, {
+      id: 'zookeeper-credits',
+      scopes: ['file'],
+      component: ZookeeperCreditsStatusBarItem,
+    }),
+  ],
+})
 
 const zookeeper = createZdsPlugin({
   id: 'zookeeper',
   title: 'Zookeeper',
   description: 'AI-assisted modeling conversation and project editing tools.',
-  items: [zookeeperRuntimeRegistryItem, zookeeperCreditsStatusBarItem],
+  items: [
+    zookeeperRuntimeRegistryItem,
+    zookeeperCreditsStatusBarItem,
+    defineRegistryItem({
+      provides: [
+        provide(appHeaderItemsValueSpec, {
+          id: 'zookeeper.toggle',
+          order: 110,
+          Component: ZookeeperHeaderButton,
+        }),
+      ],
+    }),
+  ],
   defaultSetting: 'core',
 })
 

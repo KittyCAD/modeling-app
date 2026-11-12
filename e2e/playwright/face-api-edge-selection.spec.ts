@@ -84,7 +84,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
         const [clickProfile] = await scene.makeSelectionHelpers({
           kind: 'face',
           index: 2,
-          stream: { x: 0.4671, y: 0.75, format: 'ratio' },
+          stream: { x: 0.4751, y: 0.75, format: 'ratio' },
         })
         await clickProfile()
         await expect(modelingDialog.selection('Profiles')).toHaveText(
@@ -104,7 +104,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
         const [clickEdge, mv] = await scene.makeSelectionHelpers({
           kind: 'edge',
           index: 3,
-          stream: { x: 0.0625, y: 0.422, format: 'ratio', steps: 5 },
+          stream: { x: 0.1692, y: 0.422, format: 'ratio', steps: 5 },
         })
         await mv()
         await clickEdge()
@@ -145,12 +145,8 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
           'aria-pressed',
           'true'
         )
-        const [clickProfile2] = await scene.makeSelectionHelpers({
-          kind: 'face',
-          index: 3,
-          stream: { x: 0.3816, y: 0.4, format: 'ratio' },
-        })
-        await clickProfile2()
+        // Select the center of profile005 in the YZ plane.
+        await scene.clickWorldPoint({ x: 0, y: -7.82, z: 13.15 })
         await expect(modelingDialog.selection('Profiles')).toHaveText(
           '1 profile'
         )
@@ -169,7 +165,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
         await modelingDialog.moveTo({ x: 0, y: 80 })
         // Keep the original point on this thin edge: its projected midpoint
         // currently picks the neighbouring profile instead.
-        const [clickEdge2] = scene.makeMouseHelpers(0.6748, 0.6455, {
+        const [clickEdge2] = scene.makeMouseHelpers(0.6322, 0.6455, {
           format: 'ratio',
         })
         await clickEdge2()
@@ -230,7 +226,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       const [clickEdge] = await scene.makeSelectionHelpers({
         kind: 'edge',
         index: 3,
-        stream: { x: 0.1709, y: 0.4864, format: 'ratio' },
+        stream: { x: 0.2511, y: 0.4864, format: 'ratio' },
       })
       await clickEdge()
 
@@ -279,10 +275,9 @@ hide(sketch001)`
     await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await editor.expectEditor.toContain('surface001 = extrude')
     await editor.closePane()
+    await toolbar.closeFeatureTreePane()
 
-    const [clickSurfaceEdge] = scene.makeMouseHelpers(0.7513, 0.3071, {
-      format: 'ratio',
-    })
+    const clickSurfaceEdge = () => scene.clickWorldPoint({ x: 10, y: 0, z: 10 })
     await clickSurfaceEdge()
     await expect(toolbar.selectionStatus).toContainText('1 edge')
 

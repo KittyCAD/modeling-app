@@ -42,70 +42,37 @@ export class EditorFixture {
         timeout = 5_000,
       }: { shouldNormalise?: boolean; timeout?: number } = {}
     ) => {
-      const wasPaneOpen = await this.checkIfPaneIsOpen()
-      if (!wasPaneOpen) {
-        await this.openPane()
-      }
-      const resetPane = async () => {
-        if (!wasPaneOpen) {
-          await this.closePane()
-        }
-      }
-
-      await this.scrollToBottom()
-      if (!shouldNormalise) {
-        const result = not
-          ? await expect(this.codeContent).not.toContainText(code, { timeout })
-          : await expect(this.codeContent).toContainText(code, { timeout })
-
-        await resetPane()
-        return result
-      }
-      if (typeof code !== 'string') {
+      if (shouldNormalise && typeof code !== 'string') {
         throw new Error(
           'The `shouldNormalise` option does not work with a RegExp value for `code` argument'
         )
       }
-      const normalisedCode = code.replaceAll(/\s+/g, '').trim()
-      const expectStart = expect.poll(
+      const normalise = (text: string) =>
+        text.replaceAll(/\s+/g, shouldNormalise ? '' : ' ').trim()
+      const expected = typeof code === 'string' ? normalise(code) : code
+      // CodeMirror only mounts visible lines. Read the whole document without
+      // changing the pane state or depending on the editor's height.
+      const actual = expect.poll(
         async () => {
-          const editorText = await this.codeContent.textContent()
-          return editorText?.replaceAll(/\s+/g, '').trim()
+          const text = await this.getCurrentCode()
+          return typeof expected === 'string' ? normalise(text) : text
         },
-        {
-          timeout,
-        }
+        { timeout }
       )
-      if (not) {
-        const result = await expectStart.not.toContain(normalisedCode)
-        await resetPane()
-        return result
-      }
-      const result = await expectStart.toContain(normalisedCode)
-      await resetPane()
-      return result
+      const assertion = not ? actual.not : actual
+      return typeof expected === 'string'
+        ? assertion.toContain(expected)
+        : assertion.toMatch(expected)
     }
   expectEditor = {
     toContain: this._expectEditorToContain(),
     not: { toContain: this._expectEditorToContain(true) },
     toBe: async (code: string) => {
-      const currentCode = await this.getCurrentCode()
-      return expect(currentCode).toBe(code)
+      return expect.poll(this.getCurrentCode).toBe(code)
     },
   }
-  getCurrentCode = async () => {
-    const isOpen = await this.checkIfPaneIsOpen()
-    if (isOpen) {
-      await this.scrollToBottom()
-      return await this.codeContent.innerText()
-    }
-
-    await this.openPane()
-    await this.scrollToBottom()
-    const code = await this.codeContent.innerText()
-    await this.closePane()
-    return code
-  }
+  getCurrentCode = async () =>
+    this.page.evaluate(() => window.app.singletons.kclManager.code)
   snapshot = async (options?: { timeout?: number; name?: string }) => {
     const wasPaneOpen = await this.checkIfPaneIsOpen()
     if (!wasPaneOpen) {
@@ -150,10 +117,12 @@ export class EditorFixture {
   private _getActiveLines = async () =>
     (await this.activeLine.allInnerTexts()).map((l) => l.trim())
   expectActiveLinesToBe = async (lines: Array<string>) => {
+    await this.openPane()
     await expect.poll(this._getActiveLines).toEqual(lines.map((l) => l.trim()))
   }
   /** assert all editor state EXCEPT the code content */
   expectState = async (expectedState: EditorState) => {
+    await this.openPane()
     await expect
       .poll(async () => {
         const [activeLines, highlightedCode, diagnostics] = await Promise.all([
@@ -177,9 +146,8 @@ export class EditorFixture {
       })
   }
   replaceCode = async (findCode: string, replaceCode: string) => {
-    const lines = await this.page.locator('.cm-line').all()
-
-    let code = (await Promise.all(lines.map((c) => c.textContent()))).join('\n')
+    await this.openPane()
+    let code = await this.getCurrentCode()
     if (!findCode) {
       code = replaceCode
     } else {
@@ -236,9 +204,9 @@ export class EditorFixture {
         const index = editorView.state.doc.toString().indexOf(args.text)
         editorView.focus()
         editorView.dispatch({
-          selection: window.EditorSelection.create([
-            window.EditorSelection.cursor(index),
-          ]),
+          ...(args.placeCursor
+            ? { selection: window.EditorSelection.cursor(index) }
+            : {}),
           effects: [
             window.EditorView.scrollIntoView(
               window.EditorSelection.range(index, index + 1)
@@ -250,21 +218,9 @@ export class EditorFixture {
     )
   }
   async selectText(text: string) {
-    // First make sure the code pane is open
-    const wasPaneOpen = await this.checkIfPaneIsOpen()
-    if (!wasPaneOpen) {
-      await this.openPane()
-    }
+    await this.scrollToText(text)
 
-    // Use Playwright's built-in text selection on the code content
-    // it seems to only select whole divs, which works out to align with syntax highlighting
-    // for code mirror, so you can probably select "sketch002 = startSketchOn(XZ)"
-    // but less so for exactly "sketch002 = startS"
+    // Select the rendered text after scrolling it into CodeMirror's viewport.
     await this.codeContent.getByText(text).first().selectText()
-
-    // Reset pane state if needed
-    if (!wasPaneOpen) {
-      await this.closePane()
-    }
   }
 }

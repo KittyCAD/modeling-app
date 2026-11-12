@@ -62,7 +62,17 @@ const persistentWebKitTest = playwrightTest.extend({
     await provide(origin)
   },
   context: async (
-    { baseURL, browserName, headless, launchOptions, playwright },
+    {
+      baseURL,
+      browserName,
+      headless,
+      launchOptions,
+      playwright,
+      userAgent,
+      viewport,
+      isMobile,
+      hasTouch,
+    },
     provide
   ) => {
     if (browserName !== 'webkit') {
@@ -77,6 +87,10 @@ const persistentWebKitTest = playwrightTest.extend({
     const context = await playwright.webkit.launchPersistentContext('', {
       ...desktopSafari,
       ...launchOptions,
+      userAgent,
+      viewport,
+      isMobile,
+      hasTouch,
       baseURL,
       headless,
     })

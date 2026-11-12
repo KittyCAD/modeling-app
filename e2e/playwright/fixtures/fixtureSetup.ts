@@ -38,7 +38,6 @@ import {
   playwrightProjectLibraries,
 } from '@e2e/playwright/storageStates'
 import {
-  PLAYWRIGHT_LAYOUT_SETTINGS,
   PLAYWRIGHT_TEST_SCOPE_KEY,
   getUtils,
   settingsToToml,
@@ -559,7 +558,6 @@ export class ElectronZoo {
           ...playwrightPluginSettings(),
           ...appSettingsPlugins,
         },
-        ...PLAYWRIGHT_LAYOUT_SETTINGS,
         app: {
           ...TEST_SETTINGS.app,
           libraries: playwrightProjectLibraries(this.projectDirName),

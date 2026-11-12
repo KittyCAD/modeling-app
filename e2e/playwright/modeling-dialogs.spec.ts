@@ -39,7 +39,7 @@ sketch001 = sketch(on = XZ) {
       const [selectProfile] = await scene.makeSelectionHelpers({
         kind: 'face',
         index: 0,
-        stream: { x: 0.38, y: 0.6, format: 'ratio' },
+        stream: { x: 0.5, y: 0.6, format: 'ratio' },
       })
       await page.keyboard.down('Shift')
       try {
