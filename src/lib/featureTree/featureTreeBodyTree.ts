@@ -49,11 +49,76 @@ export function buildBodyOperationTree(
           : []
       )
   )
+  const patternByCopyId = new Map<
+    string,
+    Extract<BodyArtifact, { type: 'pattern' }>
+  >()
+  const bodyIdByPatternId = new Map<string, string>()
+  for (const artifact of graph.values()) {
+    if (artifact.type === 'pattern') {
+      for (const copyId of artifact.copyIds)
+        patternByCopyId.set(copyId, artifact)
+    }
+    if (artifact.type === 'sweep' || artifact.type === 'compositeSolid') {
+      for (const patternId of artifact.patternIds ?? []) {
+        bodyIdByPatternId.set(patternId, artifact.id)
+      }
+    }
+  }
+  function sourceBodyId(id: string, visited = new Set<string>()): string {
+    if (visited.has(id)) return id
+    visited.add(id)
+    const artifact = graph.get(id)
+    const pattern =
+      patternByCopyId.get(id) ??
+      (artifact?.type === 'pattern' ? artifact : undefined)
+    if (pattern) {
+      const sourceId = sourceBodyId(pattern.sourceId, visited)
+      const source = graph.get(sourceId)
+      return source?.type === 'sweep' || source?.type === 'compositeSolid'
+        ? sourceId
+        : (bodyIdByPatternId.get(pattern.id) ?? sourceId)
+    }
+    if (artifact?.type === 'path' && artifact.sweepId) {
+      return sourceBodyId(artifact.sweepId, visited)
+    }
+    return id
+  }
+  const groupedBodies = new Map<string, BodyArtifact>()
+  const patternsByBody = new Map<
+    string,
+    Set<Extract<BodyArtifact, { type: 'pattern' }>>
+  >()
+  for (const [id, artifact] of bodies) {
+    const pattern =
+      artifact.type === 'pattern' ? artifact : patternByCopyId.get(id)
+    if (!pattern) {
+      groupedBodies.set(id, artifact)
+      continue
+    }
+    const sourceId = sourceBodyId(pattern.id)
+    const source = graph.get(sourceId)
+    groupedBodies.set(
+      sourceId,
+      source?.type === 'sweep' || source?.type === 'compositeSolid'
+        ? source
+        : pattern
+    )
+    const patterns = patternsByBody.get(sourceId) ?? new Set()
+    patterns.add(pattern)
+    patternsByBody.set(sourceId, patterns)
+  }
   const assigned = new Set<OperationTreeNode>()
-  const branches = Array.from(bodies, ([id, artifact]) => {
+  const branches = Array.from(groupedBodies, ([id, artifact]) => {
+    const patterns =
+      patternsByBody.get(id) ??
+      new Set<Extract<BodyArtifact, { type: 'pattern' }>>()
     const ancestors = new Map<string, Artifact>()
     const beforeById = new Map<string, number>()
-    const pending = [{ id: artifact.id, before: Infinity }]
+    const pending = [artifact, ...patterns].map((artifact) => ({
+      id: artifact.id,
+      before: Infinity,
+    }))
     while (pending.length > 0) {
       const entry = pending.pop()
       if (!entry || (beforeById.get(entry.id) ?? -1) >= entry.before) continue
@@ -73,6 +138,10 @@ export function buildBodyOperationTree(
       )
     }
     beforeById.set(id, Infinity)
+    for (const pattern of patterns) {
+      beforeById.set(pattern.id, Infinity)
+      for (const copyId of pattern.copyIds) beforeById.set(copyId, Infinity)
+    }
 
     const matches = (operation: Operation): boolean => {
       if (!('sourceRange' in operation)) return false

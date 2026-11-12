@@ -148,7 +148,7 @@ describe('body feature hierarchy', () => {
     expect(tree.branches[0].operations).toEqual(nodes)
   })
 
-  it('preserves each pattern instance identity and its contributing history', () => {
+  it('keeps pattern copies and their edits in the source body history', () => {
     const a = sweep('a', 10, 'path')
     const pattern: BodyArtifact = {
       type: 'pattern',
@@ -160,7 +160,7 @@ describe('body feature hierarchy', () => {
       subType: 'linear',
       codeRef: codeRef(20),
     }
-    const nodes = [call(10), call(20)]
+    const nodes = [call(10), call(20), call(30, 'copy1')]
     const tree = buildBodyOperationTree(
       nodes,
       new Map([
@@ -170,14 +170,57 @@ describe('body feature hierarchy', () => {
       ]),
       graph(a, pattern)
     )
-    expect(tree.branches.map((branch) => branch.id)).toEqual([
-      'a',
-      'copy1',
-      'copy2',
-    ])
-    expect(
-      tree.branches.every((branch) => branch.operations.length === 2)
-    ).toBe(true)
+    expect(tree.branches.map((branch) => branch.id)).toEqual(['a'])
+    expect(tree.branches[0].artifact).toBe(a)
+    expect(tree.branches[0].operations).toEqual(nodes)
+    expect(tree.operations).toEqual([])
+  })
+
+  it('groups nested 3D patterns without combining unrelated source bodies', () => {
+    const a = { ...sweep('a', 10, 'path'), patternIds: ['first'] }
+    const b = sweep('b', 40)
+    const path: Artifact = {
+      type: 'path',
+      id: 'path',
+      subType: 'sketch',
+      planeId: 'xy',
+      segIds: [],
+      consumed: false,
+      trajectorySweepId: null,
+      codeRef: codeRef(0),
+    }
+    const first: Extract<BodyArtifact, { type: 'pattern' }> = {
+      type: 'pattern',
+      id: 'first',
+      sourceId: 'path',
+      copyIds: ['copy1'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+      subType: 'linear',
+      codeRef: codeRef(20),
+    }
+    const second: Extract<BodyArtifact, { type: 'pattern' }> = {
+      ...first,
+      id: 'second',
+      sourceId: 'copy1',
+      copyIds: ['copy2'],
+      subType: 'circular',
+      codeRef: codeRef(30),
+    }
+    const nodes = [call(10), call(20), call(30), call(40)]
+    const tree = buildBodyOperationTree(
+      nodes,
+      new Map<string, BodyArtifact>([
+        ['a', first],
+        ['copy1', first],
+        ['copy2', second],
+        ['b', b],
+      ]),
+      graph(a, b, path, first, second)
+    )
+    expect(tree.branches.map((branch) => branch.id)).toEqual(['a', 'b'])
+    expect(tree.branches[0].operations).toEqual(nodes.slice(0, 3))
+    expect(tree.branches[1].operations).toEqual([nodes[3]])
   })
 
   it('retains the module hierarchy and leaves unrelated module features at the root', () => {
