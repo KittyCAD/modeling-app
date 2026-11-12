@@ -1,4 +1,8 @@
 import { queryModelingCommand } from '@src/lib/engineConnection/utils'
+import {
+  getCircularFramePosition,
+  type CircularFrameGeometry,
+} from '@src/lib/gdtCircularFrame'
 import type { BoundingBox, FaceIsPlanar, Point3d } from '@kittycad/lib'
 
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
@@ -535,6 +539,8 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   sourceCode,
   outputUnit = DEFAULT_DEFAULT_LENGTH_UNIT,
   wasmInstance,
+  circularGeometry,
+  variables,
 }: {
   data: T
   engineCommandManager: ConnectionManager
@@ -542,6 +548,8 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   sourceCode?: string
   outputUnit?: UnitLength
   wasmInstance: ModuleType
+  circularGeometry?: CircularFrameGeometry
+  variables?: VariableMap
 }): Promise<T> {
   const selections = getSelectionsFromGdtData(data)
   const entityIds = getEngineEntityIdsForGdtSelections(selections)
@@ -555,6 +563,33 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
           ...data,
           fontSize: existingFontSize,
         }
+  const withCircularPlacement = (current: T): T => {
+    if (!circularGeometry) return current
+    const framePlane = data.framePlane ?? circularGeometry.framePlane
+    const position =
+      !data.framePosition && typeof framePlane === 'string'
+        ? getCircularFramePosition(
+            circularGeometry,
+            framePlane,
+            baseUnitToMm(outputUnit),
+            getGdtFontHeight(current.fontSize, outputUnit, variables)
+          )
+        : undefined
+    return {
+      ...current,
+      framePlane,
+      ...(position
+        ? {
+            framePosition: createFramePositionCommandValue(
+              roundOff(position[0], 4),
+              roundOff(position[1], 4),
+              wasmInstance
+            ),
+          }
+        : {}),
+    }
+  }
+  nextData = withCircularPlacement(nextData)
   let hasResolvedFramePlane = Boolean(nextData.framePlane)
   let framePositionSigns: GdtFramePositionSigns | undefined
   const shouldQueryNormalDefaults =
@@ -655,7 +690,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
     }
   }
 
-  return nextData
+  return withCircularPlacement(nextData)
 }
 
 function getDistanceFramePlaneFromDirection(

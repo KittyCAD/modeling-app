@@ -21,7 +21,10 @@ import {
   createPrimitiveEdgeExpression,
   entityReferenceToEdgeRefPayload,
 } from '@src/lang/modifyAst/edges'
-import { isFaceArtifact } from '@src/lang/modifyAst/faces'
+import {
+  insertFacePrimitiveVariablesAndOffsetPathToNode,
+  isFaceArtifact,
+} from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import type { DistanceFrameDefaults } from '@src/lib/gdtFramePosition'
 import {
@@ -49,7 +52,11 @@ import {
 } from '@src/lib/primitiveBodySelection'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  EnginePrimitiveSelection,
+  Selection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 
 const GDT_LABELED_SELECTION_ARG_NAMES = [
   'faces',
@@ -57,6 +64,7 @@ const GDT_LABELED_SELECTION_ARG_NAMES = [
   'from',
   'to',
   'face',
+  'target',
 ] as const
 
 function setCallInAst(args: Parameters<typeof setBaseCallInAst>[0]) {
@@ -1286,6 +1294,7 @@ export function addDistanceGdt({
   artifactGraph,
   objects,
   edges,
+  dimensionFunction = 'distance',
   frameDefaults = [],
   tolerance,
   wasmInstance,
@@ -1300,6 +1309,7 @@ export function addDistanceGdt({
   artifactGraph: ArtifactGraph
   objects?: Selections
   edges?: Selections
+  dimensionFunction?: 'distance' | 'diameter' | 'radius'
   /** One default frame per measurement, in selection order (one for a pair). */
   frameDefaults?: DistanceFrameDefaults[]
   tolerance?: KclCommandValue
@@ -1323,7 +1333,16 @@ export function addDistanceGdt({
 
   const targetSelections = mNodeToEdit
     ? []
-    : getEdgeSelections(selections).filter(
+    : [
+        ...getEdgeSelections(selections),
+        ...(dimensionFunction === 'distance'
+          ? []
+          : selections.otherSelections.filter(
+              (selection): selection is EnginePrimitiveSelection =>
+                isEnginePrimitiveSelection(selection) &&
+                selection.primitiveType === 'face'
+            )),
+      ].filter(
         (selection) =>
           isEnginePrimitiveSelection(selection) ||
           getEdgeRefPayloadFromSelection(selection) !== null ||
@@ -1381,6 +1400,20 @@ export function addDistanceGdt({
   }
   for (const selection of targetSelections) {
     const primitive = isEnginePrimitiveSelection(selection)
+    if (primitive && selection.primitiveType === 'face') {
+      const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
+        enginePrimitives: [selection],
+        artifactGraph,
+        modifiedAst,
+        wasmInstance,
+        useLatestBody: true,
+      })
+      if (err(result)) return result
+      if (result.faceExprs.length !== 1)
+        return new Error('Could not resolve the selected circular face.')
+      targets.push({ kind: 'face', expr: result.faceExprs[0] })
+      continue
+    }
     const payload = primitive ? null : getEdgeRefPayloadFromSelection(selection)
     const topology = primitive
       ? {
@@ -1391,7 +1424,9 @@ export function addDistanceGdt({
     // Match fillet/chamfer: prefer adjacent-face references, then primitive topology.
     if (
       topology &&
-      (!payload?.side_faces.length ||
+      ((dimensionFunction !== 'distance' &&
+        (payload?.index !== undefined || payload?.end_faces?.length)) ||
+        !payload?.side_faces.length ||
         [...payload.side_faces, ...(payload.end_faces ?? [])].some((id) => {
           const face = artifactGraph.get(id)
           return !face || face.type === 'primitiveFace'
@@ -1416,7 +1451,16 @@ export function addDistanceGdt({
         body.artifact = merged
         body.codeRef = merged.codeRef
       }
-      const bodyExpr = bodyExpression(body, true)
+      const cutId =
+        !primitive && selection.artifact?.type === 'edgeCutEdge'
+          ? selection.artifact.edgeCutId
+          : undefined
+      const cut = cutId ? artifactGraph.get(cutId) : undefined
+      const owner =
+        body.artifact?.type === 'sweep' && cut?.type === 'edgeCut'
+          ? { artifact: cut, codeRef: cut.codeRef }
+          : body
+      const bodyExpr = bodyExpression(owner, true)
       if (err(bodyExpr)) return bodyExpr
       targets.push({
         kind: 'edge',
@@ -1481,8 +1525,13 @@ export function addDistanceGdt({
     })
   }
 
-  const mode = getDistanceMeasurementMode(targets)
+  const mode =
+    dimensionFunction !== 'distance' && targets.length === 1
+      ? 'lengths'
+      : getDistanceMeasurementMode(targets)
   if (err(mode)) return mode
+  if (dimensionFunction !== 'distance' && targets.length !== 1)
+    return new Error('Select exactly one circular edge or cylindrical face.')
 
   // Name variable-less bodies after tag lookups, before argument insertions shift paths.
   for (const [index, name] of unnamedBodies) {
@@ -1530,9 +1579,14 @@ export function addDistanceGdt({
     })
     if (err(defaults)) return defaults
     const labeledArgs: LabeledArg[] =
-      mode === 'lengths'
-        ? [createLabeledArg('edges', createArrayExpression(exprs))]
-        : [createLabeledArg('from', exprs[0]), createLabeledArg('to', exprs[1])]
+      dimensionFunction !== 'distance'
+        ? [createLabeledArg('target', exprs[0])]
+        : mode === 'lengths'
+          ? [createLabeledArg('edges', createArrayExpression(exprs))]
+          : [
+              createLabeledArg('from', exprs[0]),
+              createLabeledArg('to', exprs[1]),
+            ]
     if (tolerance !== undefined)
       labeledArgs.push(
         createLabeledArg('tolerance', valueOrVariable(tolerance))
@@ -1543,7 +1597,7 @@ export function addDistanceGdt({
       )
     labeledArgs.push(...defaults.labeledArgs, ...styleResult.labeledArgs)
     const call = createCallExpressionStdLibKw(
-      stdLibCall.name,
+      dimensionFunction === 'distance' ? stdLibCall.name : dimensionFunction,
       null,
       labeledArgs,
       undefined,

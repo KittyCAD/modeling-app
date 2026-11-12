@@ -2694,6 +2694,8 @@ export function getSelectionCountByType(
           incrementOrInitializeSelectionType('path')
         }
       }
+    } else if (inlineArtifact?.type === 'edgeCutEdge') {
+      incrementOrInitializeSelectionType('edgeCutEdge')
     } else if (inlineArtifact?.type === 'helix') {
       incrementOrInitializeSelectionType('helix')
     } else if (
