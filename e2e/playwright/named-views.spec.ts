@@ -3,6 +3,8 @@ import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
 
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+import type { Page } from '@playwright/test'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 
 import {
   createProject,
@@ -66,6 +68,17 @@ function tomlStringMakeTestDataNotAsFragile(toml: string): string {
   return perProjectSettingsToToml(settings)
 }
 
+async function prepareNamedViewCamera(page: Page, scene: SceneFixture) {
+  await page.evaluate(async () => {
+    const editor = window.app.project?.executingEditor.value
+    if (!editor) throw new Error('No executing editor')
+    await editor.flushPendingEditorExecution()
+  })
+  await scene.settled()
+  // Named-view persistence must not depend on a transient startup camera pose.
+  await scene.moveCameraTo({ x: 20, y: -20, z: 20 })
+}
+
 test.describe('Named view tests', { tag: '@desktop' }, () => {
   test.fail(runningOnWindows(), 'Windows line endings break snapshot matching')
   test('Verify named view gets created', async ({
@@ -78,7 +91,7 @@ test.describe('Named view tests', { tag: '@desktop' }, () => {
 
     // Create and load project
     await createProject({ name: projectName, page })
-    await scene.settled()
+    await prepareNamedViewCamera(page, scene)
 
     // Create named view
     const projectDirName = testInfo.outputPath('electron-test-projects-dir')
@@ -101,7 +114,7 @@ test.describe('Named view tests', { tag: '@desktop' }, () => {
     await expect(async () => {
       let exists = await fileExists(tempProjectSettingsFilePath)
       expect(exists).toBe(true)
-    }).toPass()
+    }).toPass({ timeout: 10_000 })
 
     await expect(async () => {
       // Read project.toml into memory
@@ -113,7 +126,7 @@ test.describe('Named view tests', { tag: '@desktop' }, () => {
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
       expect(tomlString).toMatchSnapshot('verify-named-view-gets-created.toml')
-    }).toPass()
+    }).toPass({ timeout: 10_000 })
   })
   test('Verify named view gets deleted', async ({
     cmdBar,
@@ -125,7 +138,7 @@ test.describe('Named view tests', { tag: '@desktop' }, () => {
 
     // Create project and go into the project
     await createProject({ name: projectName, page })
-    await scene.settled()
+    await prepareNamedViewCamera(page, scene)
 
     // Create a new named view
     await cmdBar.openCmdBar()
@@ -148,7 +161,7 @@ test.describe('Named view tests', { tag: '@desktop' }, () => {
     await expect(async () => {
       let exists = await fileExists(tempProjectSettingsFilePath)
       expect(exists).toBe(true)
-    }).toPass()
+    }).toPass({ timeout: 10_000 })
 
     await expect(async () => {
       // Read project.toml into memory
@@ -159,7 +172,7 @@ test.describe('Named view tests', { tag: '@desktop' }, () => {
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
       expect(tomlString).toMatchSnapshot('verify-named-view-gets-created.toml')
-    }).toPass()
+    }).toPass({ timeout: 10_000 })
 
     // Delete a named view
     await cmdBar.openCmdBar()
@@ -179,7 +192,7 @@ test.describe('Named view tests', { tag: '@desktop' }, () => {
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
       expect(tomlString).toMatchSnapshot('verify-named-view-gets-deleted.toml')
-    }).toPass()
+    }).toPass({ timeout: 10_000 })
   })
   test('Verify named view gets loaded', async ({
     cmdBar,
@@ -191,7 +204,7 @@ test.describe('Named view tests', { tag: '@desktop' }, () => {
 
     // Create project and go into the project
     await createProject({ name: projectName, page })
-    await scene.settled()
+    await prepareNamedViewCamera(page, scene)
 
     // Create a new named view
     await cmdBar.openCmdBar()
@@ -214,7 +227,7 @@ test.describe('Named view tests', { tag: '@desktop' }, () => {
     await expect(async () => {
       let exists = await fileExists(tempProjectSettingsFilePath)
       expect(exists).toBe(true)
-    }).toPass()
+    }).toPass({ timeout: 10_000 })
 
     await expect(async () => {
       // Read project.toml into memory
@@ -225,7 +238,7 @@ test.describe('Named view tests', { tag: '@desktop' }, () => {
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
       expect(tomlString).toMatchSnapshot('verify-named-view-gets-created.toml')
-    }).toPass()
+    }).toPass({ timeout: 10_000 })
 
     // Create a load a named view
     await cmdBar.openCmdBar()
@@ -249,7 +262,7 @@ test.describe('Named view tests', { tag: '@desktop' }, () => {
 
     // Create and load project
     await createProject({ name: projectName, page })
-    await scene.settled()
+    await prepareNamedViewCamera(page, scene)
 
     // Create named view
     const projectDirName = testInfo.outputPath('electron-test-projects-dir')
@@ -283,7 +296,7 @@ test.describe('Named view tests', { tag: '@desktop' }, () => {
     await expect(async () => {
       let exists = await fileExists(tempProjectSettingsFilePath)
       expect(exists).toBe(true)
-    }).toPass()
+    }).toPass({ timeout: 10_000 })
 
     await expect(async () => {
       // Read project.toml into memory
@@ -296,6 +309,6 @@ test.describe('Named view tests', { tag: '@desktop' }, () => {
       expect(tomlString).toMatchSnapshot(
         'verify-two-named-view-gets-created.toml'
       )
-    }).toPass()
+    }).toPass({ timeout: 10_000 })
   })
 })
