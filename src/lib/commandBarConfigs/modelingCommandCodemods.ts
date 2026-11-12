@@ -1,4 +1,9 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import {
+  getDimensionFunction,
+  resolveDimensionSelections,
+} from '@src/lib/gdtDimension'
+import { getCircularFrameGeometryForEntity } from '@src/lib/gdtCircularFrame'
 import { validateSolidEdgeSelections } from '@src/lang/modifyAst/validateSolidEdgeSelections'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
@@ -86,6 +91,7 @@ import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/mod
 import {
   withDefaultGdtFrameDefaults,
   getDistanceFrameDefaults,
+  getEngineEntityIdsForGdtSelections,
 } from '@src/lib/gdtFramePosition'
 import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -308,7 +314,43 @@ const distanceCodemod = defineModelingCodemod<
     }
     // Edit selections are display-only; preserve the original arguments and omissions.
     if (args.nodeToEdit) return addDistanceGdt(addCodemodArgs(args, context))
-    const objects = args.objects
+    const objects = await resolveDimensionSelections(
+      args.objects,
+      kclManager.engineCommandManager
+    )
+    if (isErr(objects)) return objects
+    const dimensionFunction = await getDimensionFunction(
+      objects,
+      kclManager.engineCommandManager
+    )
+    if (dimensionFunction !== 'distance') {
+      const id = getEngineEntityIdsForGdtSelections(objects)[0]
+      const picked =
+        objects.graphSelections[0] ??
+        objects.otherSelections.find(isEnginePrimitiveSelection)
+      const geometry =
+        id && picked
+          ? await getCircularFrameGeometryForEntity(
+              kclManager.engineCommandManager,
+              id,
+              isEdgeSelection(picked)
+            )
+          : undefined
+      const data = await withDefaultGdtFrameDefaults({
+        data: { ...args, objects },
+        engineCommandManager: kclManager.engineCommandManager,
+        ast,
+        sourceCode: kclManager.code,
+        outputUnit: kclManager.fileSettings.defaultLengthUnit,
+        wasmInstance,
+        circularGeometry: geometry,
+        variables: kclManager.variables,
+      })
+      return addDistanceGdt({
+        ...addCodemodArgs(data, context),
+        dimensionFunction,
+      })
+    }
     const targets = getEdgeSelections(objects)
     const mode = getDistanceMeasurementMode(
       targets.map((selection) => ({
