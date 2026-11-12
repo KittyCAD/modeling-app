@@ -420,6 +420,7 @@ describe('ExchangeCard replay attachments', () => {
       screen.getByRole('button', { name: /View activity/ })
     ).toHaveAttribute('aria-expanded', 'false')
     expect(screen.queryByTestId('ml-response-chat-bubble')).toBeNull()
+    expect(screen.getByRole('button', { name: /Clear chat/ })).toBeVisible()
   })
 
   test('updates the same collapsed card when the first commentary arrives', () => {

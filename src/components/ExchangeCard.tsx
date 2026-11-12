@@ -447,7 +447,8 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
 
   return hasTransientRetry ||
     infoItemsFilteredNulls.length > 0 ||
-    shouldShowResponseBubble ? (
+    shouldShowResponseBubble ||
+    (props.isLastResponse && props.showThinkingPlaceholder === false) ? (
     <>
       {hasTransientRetry && (
         <p
