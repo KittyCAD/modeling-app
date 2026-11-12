@@ -160,15 +160,17 @@ impl EngineBatchContext {
     }
 }
 
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, serde::Serialize, ts_rs::TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct CommandProgressMilestone {
     pub command: String,
     pub source_range: SourceRange,
 }
 
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, serde::Serialize, ts_rs::TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct CommandProgressPlan {
     pub count: usize,
     pub milestones: Vec<CommandProgressMilestone>,

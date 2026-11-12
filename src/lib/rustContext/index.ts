@@ -1,4 +1,4 @@
-import type { CommandProgressPlan } from '@src/lib/engineConnection/executionProgress'
+import type { CommandProgressPlan } from '@rust/kcl-lib/bindings/CommandProgressPlan'
 import type { WebSocketResponse } from '@kittycad/lib'
 
 import { encode as msgpackEncode } from '@msgpack/msgpack'

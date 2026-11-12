@@ -1,9 +1,5 @@
-import type { SourceRange } from '@src/lang/wasm'
-
-export interface CommandProgressPlan {
-  count: number
-  milestones: { command: string; sourceRange: SourceRange }[]
-}
+import type { CommandProgressPlan } from '@rust/kcl-lib/bindings/CommandProgressPlan'
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 
 interface Stage {
   range: SourceRange
