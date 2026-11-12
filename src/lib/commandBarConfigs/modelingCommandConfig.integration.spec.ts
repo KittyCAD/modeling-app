@@ -157,7 +157,7 @@ describe('GDT tolerance defaults', () => {
     const objects = command.args?.objects
     if (!objects || objects.inputType !== 'selection')
       throw new Error('Expected dimension selection')
-    expect(command.displayName).toBe('Dimension')
+    expect(command.displayName).toBe('GD&T Dimension')
     const counts = getSelectionCountByType(assertParse('', instance), {
       graphSelections: [
         {
