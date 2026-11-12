@@ -1663,11 +1663,55 @@ impl ExecutorContext {
                 ..Default::default()
             },
         );
+        let mut program = program.clone();
+        let mut preserve_mem = PreserveMem::Normal;
+        if let Some(cached) = self.cache.read_old_ast().await {
+            let old = CacheInformation {
+                ast: &cached.main.ast,
+                settings: &cached.settings,
+                kcl_version: cached.kcl_version,
+            };
+            let new = CacheInformation {
+                ast: &program.ast,
+                settings: &self.settings,
+                kcl_version: program.kcl_version,
+            };
+            match cache::get_changed_program(old, new).await {
+                CacheResult::ReExecute {
+                    clear_scene: false,
+                    reapply_settings: false,
+                    program: changed,
+                } => {
+                    state = cached.reconstitute_exec_state(&ctx);
+                    // Ordinary state clones share variable memory with the live executor.
+                    *state.mut_stack() = cached
+                        .main
+                        .exec_state
+                        .stack
+                        .deep_clone()
+                        .map_err(KclErrorWithOutputs::no_outputs)?;
+                    state
+                        .mut_stack()
+                        .restore_env(cached.main.result_env)
+                        .map_err(KclErrorWithOutputs::no_outputs)?;
+                    state.mod_local.freedom_analysis = false;
+                    program.ast = changed;
+                    preserve_mem = PreserveMem::Always;
+                }
+                CacheResult::NoAction(false) => {
+                    return Ok(crate::engine::CommandProgressPlan {
+                        count: 0,
+                        milestones: Vec::new(),
+                    });
+                }
+                _ => {}
+            }
+        }
         if let Ok(mut trace) = ctx.engine.stats().progress_trace.lock() {
             *trace = Some(Vec::new());
         }
         let before = ctx.engine.stats().commands_batched.load(Ordering::Relaxed);
-        let result = ctx.run(program, &mut state).await;
+        let result = ctx.run_concurrent(&program, &mut state, None, preserve_mem).await;
         let milestones = ctx
             .engine
             .stats()
@@ -6277,6 +6321,76 @@ body = extrude(region(segments = [profile.c]), length = 5mm)
         assert!(ctx.cache.read_old_memory().await.is_none());
         ctx.close().await;
         empty_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn command_estimate_reuses_cached_prefix_without_mutating_it() {
+        let source = r#"@settings(kclVersion = 3.0)
+profile = sketch(on = XY) {
+  c = circle(center = [var 0mm, var 0mm], start = [var 10mm, var 0mm])
+}
+body = extrude(region(segments = [profile.c]), length = 5mm)
+"#;
+        let original = crate::Program::parse_no_errs(source).unwrap();
+        let extended = crate::Program::parse_no_errs(&format!(
+            "{source}previewColor = \"#123456\"\nappearance(body, color = previewColor)\n"
+        ))
+        .unwrap();
+        let mut mock = versioned_modules_context(&[]);
+        mock.settings.geometry_only = true;
+        let mut state = ExecState::new_mock(&mock, &MockConfig::default());
+        let (env, _) = mock.run(&original, &mut state).await.unwrap();
+        mock.cache
+            .write_old_ast(GlobalState::new(
+                state,
+                mock.settings.clone(),
+                original.kcl_version,
+                original.ast.clone(),
+                env,
+            ))
+            .await;
+        let live = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), mock.settings.clone())
+            .with_cache(mock.cache.clone());
+        // A mock/live mode mismatch makes the cache request settings reapplication.
+        mock.settings.geometry_only = false;
+        assert!(
+            mock.estimate_command_plan(&extended)
+                .await
+                .unwrap()
+                .milestones
+                .iter()
+                .any(|m| m.command == "extrude")
+        );
+        mock.settings.geometry_only = true;
+        for _ in 0..2 {
+            let plan = mock.estimate_command_plan(&extended).await.unwrap();
+            assert!(!plan.milestones.iter().any(|m| m.command == "extrude"));
+            assert!(
+                plan.milestones
+                    .iter()
+                    .any(|m| m.command == "object_set_material_params_pbr")
+            );
+
+            let cached = live.cache.read_old_ast().await.unwrap();
+            assert_eq!(cached.main.ast, original.ast);
+            assert!(
+                !cached
+                    .main
+                    .exec_state
+                    .variables(cached.main.result_env)
+                    .unwrap()
+                    .contains_key("previewColor")
+            );
+            assert_eq!(live.cache.engine_scene_generation().await, 0);
+        }
+        live.run_with_caching(extended.clone()).await.unwrap();
+        assert_eq!(mock.estimate_command_plan(&extended).await.unwrap().count, 0);
+        let changed = crate::Program::parse_no_errs(&source.replace("length = 5mm", "length = 6mm")).unwrap();
+        let plan = mock.estimate_command_plan(&changed).await.unwrap();
+        assert!(plan.milestones.iter().any(|m| m.command == "extrude"));
+        assert_eq!(live.cache.read_old_ast().await.unwrap().main.ast, extended.ast);
+        live.close().await;
+        mock.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
