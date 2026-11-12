@@ -20,6 +20,9 @@ mac:
       description: Zoo KCL File
       role: Editor
       rank: Owner
+  fileOptions:
+    files:
+      - '!node_modules/win-ca/lib/roots.exe'
 win:
   artifactName: '${productName}-${version}-universal-${os}.${ext}'
   target:
@@ -28,6 +31,7 @@ win:
         - x64
         - arm64
   icon: assets/icon.ico
+  verifyUpdateCodeSignature: false
   fileAssociations:
     - ext: kcl
       name: kcl
@@ -54,6 +58,9 @@ linux:
       mimeType: text/vnd.zoo.kcl
       description: Zoo KCL File
       role: Editor
+  fileOptions:
+    files:
+      - '!node_modules/win-ca/lib/roots.exe'
 publish:
   - provider: generic
     url: 'https://dl.zoo.dev/releases/design-studio'
@@ -68,6 +75,7 @@ fileOptions:
   files:
     - .vite/**
     - '!node_modules/win-ca/pem/**'
+    - '!node_modules/win-ca/lib/**/*.node'
     - '!node_modules/*esbuild/**'
     - '!node_modules/@napi-rs/**'
   extraResources:

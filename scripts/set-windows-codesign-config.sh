@@ -26,3 +26,4 @@ yq -i '.win.sign.publisherName = env(AZURE_TRUSTED_SIGNING_PUBLISHER_NAME)' $CON
 yq -i '.win.sign.fileDigest = "SHA256"' $CONFIG_FILE
 yq -i '.win.sign.timestampDigest = "SHA256"' $CONFIG_FILE
 yq -i '.win.sign.timestampRfc3161 = "http://timestamp.acs.microsoft.com"' $CONFIG_FILE
+yq -i '.win.verifyUpdateCodeSignature = true' $CONFIG_FILE
