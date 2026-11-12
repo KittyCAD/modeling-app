@@ -6281,7 +6281,8 @@ body = extrude(region(segments = [profile.c]), length = 5mm)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn command_estimate_includes_mapped_edge_lookups() {
-        let program = crate::Program::parse_no_errs(r#"@settings(kclVersion = 3.0)
+        let program = crate::Program::parse_no_errs(
+            r#"@settings(kclVersion = 3.0)
 profile = sketch(on = XY) {
   c = circle(center = [var 0mm, var 0mm], start = [var 10mm, var 0mm])
 }
@@ -6289,7 +6290,9 @@ body = extrude(region(segments = [profile.c]), length = 5mm)
 edges = map([0mm, 1mm, 2mm], f = fn(@x) {
   return edgeId(body, closestTo = [x, 10mm, 0mm])
 })
-"#).unwrap();
+"#,
+        )
+        .unwrap();
         let ctx = versioned_modules_context(&[]);
         let plan = ctx.estimate_command_plan(&program).await.unwrap();
         let closest = plan.milestones.iter().filter(|m| m.command == "closest_edge").count();

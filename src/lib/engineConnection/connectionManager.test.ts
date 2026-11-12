@@ -199,20 +199,25 @@ describe('ConnectionManager', () => {
     complete('first')
     await first
     expect(manager.completedExecutionCommandCount).toBe(2)
+    expect(manager.executionProgress.fraction).toBeGreaterThan(0)
     finishFirst()
     const finishSecond = manager.trackExecution()
     expect(manager.completedExecutionCommandCount).toBe(0)
+    expect(manager.executionProgress.fraction).toBe(0)
     complete('late')
     await late
     expect(manager.completedExecutionCommandCount).toBe(0)
+    expect(manager.executionProgress.fraction).toBe(0)
     const scene = send('scene', true)
     complete('scene')
     await scene
     expect(manager.completedExecutionCommandCount).toBe(0)
+    expect(manager.executionProgress.fraction).toBe(0)
     const second = send('second')
     complete('second')
     await second
     expect(manager.completedExecutionCommandCount).toBe(2)
+    expect(manager.executionProgress.fraction).toBeGreaterThan(0)
     finishSecond()
   })
 

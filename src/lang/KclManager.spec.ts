@@ -729,6 +729,25 @@ describe('KclManager resolved views', () => {
     expect(invalidate).not.toHaveBeenCalled()
   })
 
+  it('continues actual execution when command estimation fails', async () => {
+    vi.spyOn(
+      kclManager.engineCommandManager,
+      'geometryOnly',
+      'get'
+    ).mockReturnValue(true)
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    vi.spyOn(kclManager.rustContext, 'estimateCommandPlan').mockRejectedValue(
+      new Error('Estimate unavailable')
+    )
+    const execute = vi
+      .spyOn(kclManager.rustContext, 'execute')
+      .mockResolvedValue(emptyExecState())
+    await kclManager.executeAst({ ast: createEmptyAst() })
+    expect(execute).toHaveBeenCalledOnce()
+    expect(kclManager.estimatedCommandCount.value).toBeNull()
+    expect(kclManager.isExecuting).toBe(false)
+  })
+
   it.each(['file switch', 'cancellation'] as const)(
     'does not start actual execution after %s during command estimation',
     async (change) => {
