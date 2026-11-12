@@ -462,6 +462,8 @@ const ActionGroup = (props: {
   isDone: boolean
   children: ReactNode
 }) => {
+  const [isOpen, setIsOpen] = useState(true)
+
   if (props.items.length === 1 && props.items[0].kind === 'tool') {
     return <>{props.children}</>
   }
@@ -492,7 +494,11 @@ const ActionGroup = (props: {
       : ''
 
   return (
-    <details className="group/actions py-1">
+    <details
+      className="group/actions py-1"
+      open={isOpen}
+      onToggle={(event) => setIsOpen(event.currentTarget.open)}
+    >
       <summary className="flex cursor-pointer list-none items-center gap-2 text-chalkboard-70 dark:text-chalkboard-30 [&::-webkit-details-marker]:hidden">
         <span aria-hidden="true">
           <CustomIcon name="gear" className="h-4 w-4 shrink-0" />

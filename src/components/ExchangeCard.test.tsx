@@ -281,6 +281,65 @@ describe('ExchangeCard replay attachments', () => {
     )
   })
 
+  test('opens grouped tool rows with one click on View activity', () => {
+    render(
+      <ExchangeCard
+        {...exchangeProps}
+        request={{ type: 'user', content: 'Inspect the project' }}
+        responses={[
+          {
+            reasoning: {
+              type: 'markdown',
+              content:
+                ZOOKEEPER_ACTIVITY_PREFIX +
+                JSON.stringify({
+                  kind: 'commentary',
+                  text: 'Checking the project.',
+                }),
+            },
+          },
+          {
+            reasoning: {
+              type: 'markdown',
+              content:
+                ZOOKEEPER_ACTIVITY_PREFIX +
+                JSON.stringify({
+                  kind: 'tool',
+                  call_id: 'call-1',
+                  name: 'read_project_file',
+                  status: 'completed',
+                  label: 'Read main.kcl',
+                }),
+            },
+          },
+          {
+            reasoning: {
+              type: 'markdown',
+              content:
+                ZOOKEEPER_ACTIVITY_PREFIX +
+                JSON.stringify({
+                  kind: 'tool',
+                  call_id: 'call-2',
+                  name: 'write_project_file',
+                  status: 'completed',
+                  label: 'Edited main.kcl',
+                }),
+            },
+          },
+        ]}
+      />
+    )
+
+    expect(screen.queryByText('Read main.kcl')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /View activity/ }))
+
+    expect(screen.getByText('Read main.kcl')).toBeVisible()
+    expect(screen.getByText('Edited main.kcl')).toBeVisible()
+    expect(
+      screen.getByText('Read files, edited files').closest('details')
+    ).toHaveAttribute('open')
+  })
+
   test('shows an activity card immediately, before any response arrives', () => {
     render(
       <ExchangeCard

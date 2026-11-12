@@ -496,19 +496,19 @@ describe('Thinking', () => {
       'Activated 3 skills, read user selections, listed project files'
     )
     const group = summary.closest('details')
-    expect(group).not.toHaveAttribute('open')
-    expect(screen.getByText('Activating skill: kcl-modeling')).not.toBeVisible()
-
-    fireEvent.click(summary)
     expect(group).toHaveAttribute('open')
     expect(screen.getByText('Activating skill: kcl-modeling')).toBeVisible()
     expect(screen.getByText('Activating skill: kcl-knowledge')).toBeVisible()
     expect(
       screen.getByText('Activating skill: kcl-mechanical-engineering')
     ).toBeVisible()
+
+    fireEvent.click(summary)
+    expect(group).not.toHaveAttribute('open')
+    expect(screen.getByText('Activating skill: kcl-modeling')).not.toBeVisible()
   })
 
-  test('keeps tool batches folded as new commentary and tool events arrive', () => {
+  test('opens tool batches by default and preserves manual collapse as events arrive', () => {
     const thoughts: MlCopilotServerMessage[] = [
       activity({ kind: 'commentary', text: 'Inspecting the project.' }),
       activity({
@@ -555,23 +555,25 @@ describe('Thinking', () => {
 
     const groupSummary = screen.getByText('Read files, edited files')
     const group = groupSummary.closest('details')
-    expect(group).not.toHaveAttribute('open')
-    expect(screen.getByText('Read main.kcl')).not.toBeVisible()
-    expect(screen.getByText('Edited main.kcl')).not.toBeVisible()
+    expect(group).toHaveAttribute('open')
+    expect(screen.getByText('Read main.kcl')).toBeVisible()
+    expect(screen.getByText('Edited main.kcl')).toBeVisible()
 
     thoughts.push(
       activity({ kind: 'commentary', text: 'Validating the model.' })
     )
     rerender(view())
 
-    expect(group).not.toHaveAttribute('open')
-    expect(screen.getByText('Validating the model.')).toBeVisible()
-    expect(screen.getByText('Read main.kcl')).not.toBeVisible()
-    fireEvent.click(groupSummary)
     expect(group).toHaveAttribute('open')
+    expect(screen.getByText('Validating the model.')).toBeVisible()
     expect(screen.getByText('Read main.kcl')).toBeVisible()
-    expect(screen.getByText('Edited main.kcl')).toBeVisible()
-    expect(screen.getByText('Updated Project File (main.kcl)')).toBeVisible()
+    fireEvent.click(groupSummary)
+    expect(group).not.toHaveAttribute('open')
+    expect(screen.getByText('Read main.kcl')).not.toBeVisible()
+    expect(screen.getByText('Edited main.kcl')).not.toBeVisible()
+    expect(
+      screen.getByText('Updated Project File (main.kcl)')
+    ).not.toBeVisible()
     expect(screen.queryByText('Wrote main.kcl')).not.toBeInTheDocument()
 
     thoughts.push(
@@ -587,10 +589,11 @@ describe('Thinking', () => {
     rerender(view())
     expect(screen.getByText('Validated project')).toBeVisible()
     expect(screen.getByText('Validated project').closest('details')).toBeNull()
-    expect(group).toHaveAttribute('open')
+    expect(group).not.toHaveAttribute('open')
 
     rerender(view(true))
     expect(screen.getByText('Validated project')).toBeVisible()
+    expect(group).not.toHaveAttribute('open')
   })
 
   test('labels unfinished tool activity as stopped after an interrupted turn', () => {
