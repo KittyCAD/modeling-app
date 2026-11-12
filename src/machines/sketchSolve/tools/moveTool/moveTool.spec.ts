@@ -824,6 +824,7 @@ function createSceneGraphDelta(objects: Array<ApiObject>): SceneGraphDelta {
       variables: {},
       operations: emptyOperationsByModule(),
       artifactGraph: { map: {}, itemCount: 0 },
+      namedViews: null,
       filenames: {},
       defaultPlanes: null,
       refactorMetadata: [],

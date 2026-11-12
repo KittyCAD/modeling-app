@@ -15,7 +15,7 @@ const kcl3 = kcl2.replace('2.0', '"3.0-preview"')
 
 test(
   'synchronizes the engine KCL version on connect, file switches, and edits',
-  { tag: ['@web', '@desktop'] },
+  { tag: ['@web', '@desktop', '@localRenderer'] },
   async ({ page, folderSetupFn, fs, homePage, toolbar, editor, scene }) => {
     await folderSetupFn(async (dir) => {
       const project = await fs.join(dir, 'engine-kcl-version')

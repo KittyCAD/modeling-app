@@ -34,7 +34,7 @@ async function expectModelingNativeMenuReady(page: Page) {
 
 test.describe(
   'Native menu window routing',
-  { tag: ['@desktop', '@macos', '@windows'] },
+  { tag: ['@desktop', '@macos', '@windows', '@localRenderer'] },
   () => {
     test('View menu opens the code pane without closing it on repeated selection', async ({
       page,
@@ -113,7 +113,7 @@ test.describe(
  */
 test.describe(
   'Native file menu',
-  { tag: ['@desktop', '@macos', '@windows'] },
+  { tag: ['@desktop', '@macos', '@windows', '@localRenderer'] },
   () => {
     test('Home page', async ({
       tronApp,
@@ -152,7 +152,9 @@ test.describe(
         await homePage.isNativeFileMenuCreated()
         await nativeMenu.click('File.Create project')
         await cmdBar.toBeOpened()
-        await cmdBar.expectArgValue('untitled')
+        await expect(page.getByRole('textbox', { name: 'Title' })).toHaveValue(
+          'untitled'
+        )
       })
       await test.step('Home.File.Open project', async () => {
         await page.reload()
@@ -168,18 +170,21 @@ test.describe(
         await homePage.isNativeFileMenuCreated()
         await nativeMenu.click('File.Preferences.User settings')
         await openSettingsExpectText(page, 'The overall appearance of the app')
+        await page.getByTestId('settings-close-button').click()
       })
       await test.step('Home.File.Preferences.Keybindings', async () => {
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
         await nativeMenu.click('File.Preferences.Keybindings')
         await expectKeybindingsSettingsVisible(page)
+        await page.getByTestId('settings-close-button').click()
       })
       await test.step('Home.File.Preferences.User default units', async () => {
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
         await nativeMenu.click('File.Preferences.User default units')
         await openSettingsExpectLocator(page, '#defaultUnit')
+        await page.getByTestId('settings-close-button').click()
       })
       await test.step('Home.File.Preferences.Theme', async () => {
         await page.reload()
@@ -211,6 +216,7 @@ test.describe(
         await homePage.isNativeFileMenuCreated()
         await nativeMenu.click('Edit.Change project directory')
         await openSettingsExpectLocator(page, '#libraries')
+        await page.getByTestId('settings-close-button').click()
       })
 
       await test.step('Home.View.Command Palette...', async () => {

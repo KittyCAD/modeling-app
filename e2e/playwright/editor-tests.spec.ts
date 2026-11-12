@@ -5,7 +5,13 @@ import {
   TEST_COLORS,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import {
+  cacheModelCode,
+  cacheSceneReceipt,
+  waitForExecutedModel,
+} from '@e2e/playwright/lib/cache-model'
 import type { Page } from '@playwright/test'
+import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { uuidv4 } from '@src/lib/utils'
 import fsp from 'fs/promises'
@@ -33,199 +39,249 @@ async function selectCompletionOption(page: Page, label: string) {
   throw new Error(`Could not select autocomplete option "${label}"`)
 }
 
+async function editorCacheReceipt(page: Page) {
+  await page.evaluate(async () => {
+    const editor = window.app.project?.executingEditor.value
+    if (!editor) throw new Error('No executing editor')
+    await editor.flushPendingEditorExecution()
+    if (editor.isExecuting || editor.hasErrors())
+      throw new Error('The final editor execution must succeed')
+  })
+  const model = await cacheSceneReceipt(page)
+  if (model.bodyId === null || model.engineSceneGeneration === null)
+    throw new Error(
+      'The executed model must contain a solid and scene generation'
+    )
+  return {
+    ...model,
+    bodyId: model.bodyId,
+    engineSceneGeneration: model.engineSceneGeneration,
+  }
+}
+
 test.describe('Editor tests', { tag: '@desktop' }, () => {
-  test('can comment out code with ctrl+/', async ({ page, homePage }) => {
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+  test(
+    'can comment out code with ctrl+/',
+    { tag: '@localRenderer' },
+    async ({ page, homePage }) => {
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await homePage.goToModelingScene()
+      await homePage.goToModelingScene()
 
-    // check no error to begin with
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      // check no error to begin with
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-    await u.codeLocator.click()
-    await page.keyboard.type(`sketch001 = startSketchOn(XY)
+      await u.codeLocator.click()
+      await page.keyboard.type(`sketch001 = startSketchOn(XY)
     |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
     |> close()`)
 
-    await page.keyboard.down('ControlOrMeta')
-    await page.keyboard.press('/')
-    await page.keyboard.up('ControlOrMeta')
+      await page.keyboard.down('ControlOrMeta')
+      await page.keyboard.press('/')
+      await page.keyboard.up('ControlOrMeta')
 
-    await expect(page.locator('.cm-content')).toHaveText(
-      `@settings(defaultLengthUnit = in, kclVersion = 3.0)
+      await expect(page.locator('.cm-content')).toHaveText(
+        `@settings(defaultLengthUnit = in, kclVersion = 3.0)
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
   // |> close()`.replaceAll('\n', '')
-    )
+      )
 
-    // uncomment the code
-    await page.keyboard.down('ControlOrMeta')
-    await page.keyboard.press('/')
-    await page.keyboard.up('ControlOrMeta')
+      // uncomment the code
+      await page.keyboard.down('ControlOrMeta')
+      await page.keyboard.press('/')
+      await page.keyboard.up('ControlOrMeta')
 
-    await expect(page.locator('.cm-content')).toHaveText(
-      `@settings(defaultLengthUnit = in, kclVersion = 3.0)
+      await expect(page.locator('.cm-content')).toHaveText(
+        `@settings(defaultLengthUnit = in, kclVersion = 3.0)
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
   |> close()`.replaceAll('\n', '')
-    )
-  })
-
-  test('ensure we use the cache, and do not re-execute', async ({
-    homePage,
-    page,
-  }) => {
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-
-    await homePage.goToModelingScene()
-    await u.waitForPageLoad()
-
-    await u.codeLocator.click()
-    await page.keyboard.type(`sketch001 = startSketchOn(XY)
-  |> startProfile(at = [-10, -10])
-  |> line(end = [20, 0])
-  |> line(end = [0, 20])
-  |> line(end = [-20, 0])
-  |> close()`)
-
-    // Ensure we execute the first time.
-    await u.openDebugPanel()
-    await expect
-      .poll(() =>
-        page.locator('[data-receive-command-type="set_kcl_version"]').count()
       )
-      .toBe(2)
-    await expect
-      .poll(() => page.locator('[data-message-type="execution-done"]').count())
-      .toBe(2)
+    }
+  )
 
-    // Add whitespace to the end of the code.
-    await u.codeLocator.click()
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('Home')
-    await page.keyboard.type('    ')
-    await page.keyboard.press('Enter')
-    await page.keyboard.type('    ')
+  test.describe('Cache reuse', () => {
+    test.use({ mockApiRoutes: false })
 
-    // Ensure we don't execute the second time.
-    await u.openDebugPanel()
-    // Make sure we didn't clear the scene.
-    await expect(
-      page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(3)
-    await expect(
-      page.locator('[data-receive-command-type="set_kcl_version"]')
-    ).toHaveCount(2)
+    test('typing interrupts a running model and renders the latest edit', async ({
+      page,
+      homePage,
+      scene,
+      editor,
+    }) => {
+      await homePage.goToModelingScene()
+      await scene.settled()
+      const slowCode = `${cacheModelCode}
+cloud = patternCircular3d(body, instances = 10, axis = X, center = [20, 2, 20])
+  |> patternCircular3d(instances = 10, axis = Y, center = [0, 20, 0])
+  |> patternCircular3d(instances = 10, axis = Z, center = [100, 10, 10])
+`
+      await editor.codeContent.fill(slowCode)
+      await page.waitForFunction(() => {
+        const editor = window.app.project?.executingEditor.value
+        return (
+          editor?.isExecuting &&
+          Object.values(editor.engineCommandManager.pendingCommands).some(
+            ({ isSceneCommand }) => !isSceneCommand
+          )
+        )
+      })
+
+      const interrupted = await page.evaluate(async (code) => {
+        const editor = window.app.project?.executingEditor.value
+        if (!editor?.isExecuting) throw new Error('The old run must be active')
+        const commands = Object.values(
+          editor.engineCommandManager.pendingCommands
+        ).filter(({ isSceneCommand }) => !isSceneCommand)
+        if (!commands.length) throw new Error('No active modeling commands')
+        // Observe real pending RPCs and edit in the same browser task, so an
+        // engine reply cannot race between capturing the run and changing it.
+        const settled = Promise.allSettled(
+          commands.map(({ promise }) => promise)
+        )
+        editor.editorView.dispatch({
+          changes: {
+            from: 0,
+            to: editor.editorView.state.doc.length,
+            insert: code,
+          },
+        })
+        return (await settled).map((result) =>
+          result.status === 'rejected' ? result.reason : null
+        )
+      }, cacheModelCode)
+      expect(interrupted.length).toBeGreaterThan(0)
+      for (const result of interrupted) {
+        expect(result).toEqual([
+          {
+            success: false,
+            errors: [
+              {
+                error_code: 'internal_api',
+                message: EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+              },
+            ],
+          },
+        ])
+      }
+      await waitForExecutedModel(page, cacheModelCode)
+      await expect(editor.codeContent).toContainText('radiusValue = 10mm')
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+    })
+
+    for (const { title, editedCode, appendScalar } of [
+      {
+        title: 'ensure we use the cache, and do not re-execute',
+        editedCode: `${cacheModelCode}\n    \n`,
+        appendScalar: false,
+      },
+      {
+        title: 'ensure we use the cache, and do not clear on append',
+        editedCode: `${cacheModelCode}\nx = 1\n`,
+        appendScalar: true,
+      },
+    ]) {
+      test(
+        title,
+        { tag: '@localRenderer' },
+        async ({ homePage, page, scene, editor }) => {
+          await page.setBodyDimensions({ width: 1000, height: 500 })
+          await homePage.goToModelingScene()
+          await scene.settled()
+          await editor.replaceCode('', cacheModelCode)
+          const before = await editorCacheReceipt(page)
+          expect(before.code).toBe(cacheModelCode)
+          expect(before.lastSuccessfulCode).toBe(cacheModelCode)
+          expect(before.artifacts.length).toBeGreaterThan(0)
+          expect(before.engineBodyIds).toContain(before.bodyId)
+          expect(before.publishedGeneration).toBe(before.engineSceneGeneration)
+
+          await page.evaluate(() => {
+            const editor = window.app.project?.executingEditor.value
+            if (!editor) throw new Error('No executing editor')
+            editor.engineCommandManager.clearCommandLogs()
+          })
+          // One native editor transaction isolates cache reuse from intermediate
+          // programs while typing, such as the undefined expression `x`.
+          await editor.replaceCode('', editedCode)
+          const after = await editorCacheReceipt(page)
+          expect(after.code).toBe(editedCode)
+          expect(after.lastSuccessfulCode).toBe(editedCode)
+          expect(after.executions).toBe(1)
+          expect(after.commands).not.toContain('set_kcl_version')
+          expect(after.commands).not.toContain('scene_clear_all')
+          expect(after.bodyId).toBe(before.bodyId)
+          expect(after.engineBodyIds).toEqual(before.engineBodyIds)
+          expect(after.artifacts).toEqual(before.artifacts)
+          expect(after.publishedGeneration).toBe(after.engineSceneGeneration)
+          if (appendScalar) {
+            expect(after.scalar).toMatchObject({ type: 'Number', value: 1 })
+            expect(after.engineSceneGeneration).toBeGreaterThan(
+              before.engineSceneGeneration
+            )
+          } else {
+            expect(after.engineSceneGeneration).toBe(
+              before.engineSceneGeneration
+            )
+          }
+        }
+      )
+    }
   })
 
-  test('ensure we use the cache, and do not clear on append', async ({
-    homePage,
-    page,
-    scene,
-    cmdBar,
-  }) => {
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+  test(
+    'if you click the format button it formats your code',
+    { tag: '@localRenderer' },
+    async ({ page, homePage }) => {
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await homePage.waitForAuthentication()
-    await homePage.goToModelingScene()
-    await scene.settled()
+      await homePage.goToModelingScene()
 
-    await u.codeLocator.click()
-    await page.keyboard.type(`sketch001 = startSketchOn(XY)
-  |> startProfile(at = [-10, -10])
-  |> line(end = [20, 0])
-  |> line(end = [0, 20])
-  |> line(end = [-20, 0])
-  |> close()`)
+      // check no error to begin with
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-    // Ensure we execute the first time.
-    await u.openDebugPanel()
-    await expect(
-      page.locator('[data-receive-command-type="set_kcl_version"]')
-    ).toHaveCount(2)
-    await expect(
-      page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(2)
-
-    // Add whitespace to the end of the code.
-    await u.codeLocator.click()
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('End')
-    await page.keyboard.press('Enter')
-    await page.keyboard.press('Enter')
-    await page.keyboard.type('x = 1')
-    await page.keyboard.press('Enter')
-
-    await u.openDebugPanel()
-    await expect(
-      page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(3)
-    await expect(
-      page.locator('[data-receive-command-type="set_kcl_version"]')
-    ).toHaveCount(2)
-  })
-
-  test('if you click the format button it formats your code', async ({
-    page,
-    homePage,
-  }) => {
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-
-    await homePage.goToModelingScene()
-
-    // check no error to begin with
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-
-    await u.codeLocator.click()
-    await page.keyboard.type(`sketch001 = startSketchOn(XY)
+      await u.codeLocator.click()
+      await page.keyboard.type(`sketch001 = startSketchOn(XY)
     |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
     |> close()`)
-    await page.locator('#code-pane button:first-child').click()
-    await page.locator('button:has-text("Format code")').click()
+      await page.locator('#code-pane button:first-child').click()
+      await page.locator('button:has-text("Format code")').click()
 
-    await expect(page.locator('.cm-content')).toHaveText(
-      `@settings(defaultLengthUnit = in, kclVersion = 3.0)
+      await expect(page.locator('.cm-content')).toHaveText(
+        `@settings(defaultLengthUnit = in, kclVersion = 3.0)
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
   |> close()`.replaceAll('\n', '')
-    )
-  })
+      )
+    }
+  )
 
-  test('F2 can rename a variable', async ({ page, homePage, scene }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `myVARName = 100
+  test(
+    'F2 can rename a variable',
+    { tag: '@localRenderer' },
+    async ({ page, homePage, scene }) => {
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `myVARName = 100
 
 a1 = startSketchOn(offsetPlane(XY, offset = 10))
   |> startProfile(at = [0, 0])
@@ -235,42 +291,42 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   |> yLine(length = 100.0)
   |> close()
   |> extrude(length = 12)`
-      )
-    })
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+        )
+      })
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await homePage.goToModelingScene()
-    await scene.connectionEstablished()
+      await homePage.goToModelingScene()
+      await scene.connectionEstablished()
 
-    // check no error to begin with
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      // check no error to begin with
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-    await u.codeLocator.click()
+      await u.codeLocator.click()
 
-    // Move the cursor to the start of the code
-    await page.keyboard.press('ControlOrMeta+Home')
-    await page.keyboard.press('ArrowRight')
+      // Move the cursor to the start of the code
+      await page.keyboard.press('ControlOrMeta+Home')
+      await page.keyboard.press('ArrowRight')
 
-    await page.waitForTimeout(100)
+      await page.waitForTimeout(100)
 
-    // Press F2 to rename the variable
-    await page.keyboard.press('F2')
+      // Press F2 to rename the variable
+      await page.keyboard.press('F2')
 
-    // Wait for the rename box.
-    await expect(page.locator('.cm-rename-popup')).toBeVisible()
+      // Wait for the rename box.
+      await expect(page.locator('.cm-rename-popup')).toBeVisible()
 
-    // Make sure we are focused on the rename box
-    await expect(page.locator('.cm-rename-popup input')).toBeFocused()
+      // Make sure we are focused on the rename box
+      await expect(page.locator('.cm-rename-popup input')).toBeFocused()
 
-    // Type the new name
-    await page.keyboard.type('myNewName')
-    // Press Enter to accept the rename
-    await page.keyboard.press('Enter')
+      // Type the new name
+      await page.keyboard.type('myNewName')
+      // Press Enter to accept the rename
+      await page.keyboard.press('Enter')
 
-    // Ensure we have the new name
-    await expect(page.locator('.cm-content')).toHaveText(
-      `myNewName = 100
+      // Ensure we have the new name
+      await expect(page.locator('.cm-content')).toHaveText(
+        `myNewName = 100
 
 a1 = startSketchOn(offsetPlane(XY, offset = 10))
   |> startProfile(at = [0, 0])
@@ -280,293 +336,301 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   |> yLine(length = 100.0)
   |> close()
   |> extrude(length = 12)`.replaceAll('\n', '')
-    )
-  })
+      )
+    }
+  )
 
-  test('if you click the format button it formats your code and executes so lints are still there', async ({
-    page,
-    homePage,
-  }) => {
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+  test(
+    'if you click the format button it formats your code and executes so lints are still there',
+    { tag: '@localRenderer' },
+    async ({ page, homePage }) => {
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await homePage.goToModelingScene()
+      await homePage.goToModelingScene()
 
-    // check no error to begin with
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      // check no error to begin with
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-    await u.codeLocator.click()
-    await page.keyboard.type(`my_var =  1+2`)
+      await u.codeLocator.click()
+      await page.keyboard.type(`my_var =  1+2`)
 
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
 
-    // error in guter
-    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
+      // error in guter
+      await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
 
-    // error text on hover
-    await page.hover('.cm-lint-marker-info')
-    await expect(
-      page.getByText('Identifiers should be lowerCamelCase').first()
-    ).toBeVisible()
+      // error text on hover
+      await page.hover('.cm-lint-marker-info')
+      await expect(
+        page.getByText('Identifiers should be lowerCamelCase').first()
+      ).toBeVisible()
 
-    await page.locator('#code-pane button:first-child').click()
-    await page.locator('button:has-text("Format code")').click()
+      await page.locator('#code-pane button:first-child').click()
+      await page.locator('button:has-text("Format code")').click()
 
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
 
-    await expect(page.locator('.cm-content')).toHaveText(
-      `@settings(defaultLengthUnit = in, kclVersion = 3.0)
+      await expect(page.locator('.cm-content')).toHaveText(
+        `@settings(defaultLengthUnit = in, kclVersion = 3.0)
 my_var = 1 + 2`.replaceAll('\n', '')
-    )
+      )
 
-    // error in guter
-    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
+      // error in guter
+      await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
 
-    // error text on hover
-    await page.hover('.cm-lint-marker-info')
-    await expect(
-      page.getByText('Identifiers should be lowerCamelCase').first()
-    ).toBeVisible()
-  })
+      // error text on hover
+      await page.hover('.cm-lint-marker-info')
+      await expect(
+        page.getByText('Identifiers should be lowerCamelCase').first()
+      ).toBeVisible()
+    }
+  )
 
-  test('fold gutters work', async ({ page, homePage }) => {
-    const fullCode = `sketch001 = startSketchOn(XY)
+  test(
+    'fold gutters work',
+    { tag: '@localRenderer' },
+    async ({ page, homePage }) => {
+      const fullCode = `sketch001 = startSketchOn(XY)
    |> startProfile(at = [-10, -10])
    |> line(end = [20, 0])
    |> line(end = [0, 20])
    |> line(end = [-20, 0])
    |> close()`
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XY)
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `sketch001 = startSketchOn(XY)
    |> startProfile(at = [-10, -10])
    |> line(end = [20, 0])
    |> line(end = [0, 20])
    |> line(end = [-20, 0])
    |> close()`
+        )
+      })
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+
+      await homePage.goToModelingScene()
+
+      // TODO: Jess needs to fix this but you have to mod the code to get them to show
+      // up, its an annoying codemirror thing.
+      await page.locator('.cm-content').click()
+      await page.keyboard.press('ArrowDown')
+      await page.keyboard.press('ArrowDown')
+      await page.keyboard.press('ArrowDown')
+      await page.keyboard.press('ArrowDown')
+      await page.keyboard.press('ArrowDown')
+      await page.keyboard.press('Enter')
+
+      const foldGutterFoldLine = page.locator('[title="Fold line"]')
+      const foldGutterUnfoldLine = page.locator('[title="Unfold line"]')
+
+      await expect(page.locator('.cm-content')).toHaveText(fullCode)
+
+      // check no error to begin with
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+      // Make sure we have a fold gutter
+      await expect(foldGutterFoldLine).toBeVisible()
+      await expect(foldGutterUnfoldLine).not.toBeVisible()
+
+      // Collapse the code
+      await foldGutterFoldLine.click()
+
+      await expect(page.locator('.cm-content')).toHaveText(
+        `sketch001 = startSketchOn(XY)…   `
       )
-    })
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+      await expect(page.locator('.cm-content')).not.toHaveText(fullCode)
+      await expect(foldGutterFoldLine).not.toBeVisible()
+      await expect(foldGutterUnfoldLine.nth(1)).toBeVisible()
 
-    await homePage.goToModelingScene()
+      // Expand the code
+      await foldGutterUnfoldLine.nth(1).click()
+      await expect(page.locator('.cm-content')).toHaveText(fullCode)
 
-    // TODO: Jess needs to fix this but you have to mod the code to get them to show
-    // up, its an annoying codemirror thing.
-    await page.locator('.cm-content').click()
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('Enter')
+      // Delete all the code.
+      await page.locator('.cm-content').click()
+      // Select all
+      await page.keyboard.press('ControlOrMeta+A')
+      await page.keyboard.press('Backspace')
 
-    const foldGutterFoldLine = page.locator('[title="Fold line"]')
-    const foldGutterUnfoldLine = page.locator('[title="Unfold line"]')
+      await expect(page.locator('.cm-content')).toHaveText(``)
+      await expect(page.locator('.cm-content')).not.toHaveText(fullCode)
 
-    await expect(page.locator('.cm-content')).toHaveText(fullCode)
+      await expect(foldGutterUnfoldLine).not.toBeVisible()
+      await expect(foldGutterFoldLine).not.toBeVisible()
+    }
+  )
 
-    // check no error to begin with
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-
-    // Make sure we have a fold gutter
-    await expect(foldGutterFoldLine).toBeVisible()
-    await expect(foldGutterUnfoldLine).not.toBeVisible()
-
-    // Collapse the code
-    await foldGutterFoldLine.click()
-
-    await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XY)…   `
-    )
-    await expect(page.locator('.cm-content')).not.toHaveText(fullCode)
-    await expect(foldGutterFoldLine).not.toBeVisible()
-    await expect(foldGutterUnfoldLine.nth(1)).toBeVisible()
-
-    // Expand the code
-    await foldGutterUnfoldLine.nth(1).click()
-    await expect(page.locator('.cm-content')).toHaveText(fullCode)
-
-    // Delete all the code.
-    await page.locator('.cm-content').click()
-    // Select all
-    await page.keyboard.press('ControlOrMeta+A')
-    await page.keyboard.press('Backspace')
-
-    await expect(page.locator('.cm-content')).toHaveText(``)
-    await expect(page.locator('.cm-content')).not.toHaveText(fullCode)
-
-    await expect(foldGutterUnfoldLine).not.toBeVisible()
-    await expect(foldGutterFoldLine).not.toBeVisible()
-  })
-
-  test('hover over functions shows function description', async ({
-    page,
-    homePage,
-  }) => {
-    const u = await getUtils(page)
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XY)
+  test(
+    'hover over functions shows function description',
+    { tag: '@localRenderer' },
+    async ({ page, homePage }) => {
+      const u = await getUtils(page)
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `sketch001 = startSketchOn(XY)
     |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
     |> close()`
-      )
-    })
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+        )
+      })
+      await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await homePage.goToModelingScene()
+      await homePage.goToModelingScene()
 
-    // check no error to begin with
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      // check no error to begin with
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
 
-    // focus the editor
-    await u.codeLocator.click()
+      // focus the editor
+      await u.codeLocator.click()
 
-    // Hover over  the startSketchOn function
-    await page.getByText('startSketchOn').hover()
-    await expect(page.locator('.hover-tooltip')).toBeVisible()
-    await expect(
-      page.getByText(
-        'Start a new 2-dimensional sketch on a specific plane or face'
-      )
-    ).toBeVisible()
+      // Hover over  the startSketchOn function
+      await page.getByText('startSketchOn').hover()
+      await expect(page.locator('.hover-tooltip')).toBeVisible()
+      await expect(
+        page.getByText(
+          'Start a new 2-dimensional sketch on a specific plane or face'
+        )
+      ).toBeVisible()
 
-    // Hover over the line function
-    await page.getByText('line').first().hover()
-    await expect(page.locator('.hover-tooltip')).toBeVisible()
-    await expect(
-      page.getByText('Extend the current sketch with a new straight line.')
-    ).toBeVisible()
-  })
+      // Hover over the line function
+      await page.getByText('line').first().hover()
+      await expect(page.locator('.hover-tooltip')).toBeVisible()
+      await expect(
+        page.getByText('Extend the current sketch with a new straight line.')
+      ).toBeVisible()
+    }
+  )
 
-  test('if you use the format keyboard binding it formats your code', async ({
-    page,
-    homePage,
-  }) => {
-    const u = await getUtils(page)
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XY)
+  test(
+    'if you use the format keyboard binding it formats your code',
+    { tag: '@localRenderer' },
+    async ({ page, homePage }) => {
+      const u = await getUtils(page)
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `sketch001 = startSketchOn(XY)
     |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
     |> close()`
-      )
-      localStorage.setItem('disableAxis', 'true')
-    })
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+        )
+        localStorage.setItem('disableAxis', 'true')
+      })
+      await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await homePage.goToModelingScene()
+      await homePage.goToModelingScene()
 
-    // check no error to begin with
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      // check no error to begin with
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
 
-    // focus the editor
-    await u.codeLocator.click()
+      // focus the editor
+      await u.codeLocator.click()
 
-    // Hit alt+shift+f to format the code
-    await page.keyboard.press('Alt+Shift+KeyF')
+      // Hit alt+shift+f to format the code
+      await page.keyboard.press('Alt+Shift+KeyF')
 
-    await expect(
-      page.locator('.cm-content')
-    ).toHaveText(`sketch001 = startSketchOn(XY)
+      await expect(
+        page.locator('.cm-content')
+      ).toHaveText(`sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
   |> close()`)
-  })
+    }
+  )
 
-  test('if you use the format keyboard binding it formats your code and executes so lints are shown', async ({
-    page,
-    homePage,
-  }) => {
-    const u = await getUtils(page)
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch_001 = startSketchOn(XY)
+  test(
+    'if you use the format keyboard binding it formats your code and executes so lints are shown',
+    { tag: '@localRenderer' },
+    async ({ page, homePage }) => {
+      const u = await getUtils(page)
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `sketch_001 = startSketchOn(XY)
     |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
     |> close()`
-      )
-      localStorage.setItem('disableAxis', 'true')
-    })
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+        )
+        localStorage.setItem('disableAxis', 'true')
+      })
+      await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await homePage.goToModelingScene()
+      await homePage.goToModelingScene()
 
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
 
-    // error in guter
-    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
+      // error in guter
+      await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
 
-    // error text on hover
-    await page.hover('.cm-lint-marker-info')
-    await expect(
-      page.getByText('Identifiers should be lowerCamelCase').first()
-    ).toBeVisible()
+      // error text on hover
+      await page.hover('.cm-lint-marker-info')
+      await expect(
+        page.getByText('Identifiers should be lowerCamelCase').first()
+      ).toBeVisible()
 
-    // focus the editor
-    await u.codeLocator.click()
+      // focus the editor
+      await u.codeLocator.click()
 
-    // Hit alt+shift+f to format the code
-    await page.keyboard.press('Alt+Shift+KeyF')
+      // Hit alt+shift+f to format the code
+      await page.keyboard.press('Alt+Shift+KeyF')
 
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
 
-    await expect(
-      page.locator('.cm-content')
-    ).toHaveText(`sketch_001 = startSketchOn(XY)
+      await expect(
+        page.locator('.cm-content')
+      ).toHaveText(`sketch_001 = startSketchOn(XY)
   |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
   |> close()`)
 
-    // error in guter
-    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
+      // error in guter
+      await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
 
-    // error text on hover
-    await page.hover('.cm-lint-marker-info')
-    await expect(
-      page.getByText('Identifiers should be lowerCamelCase').first()
-    ).toBeVisible()
-  })
+      // error text on hover
+      await page.hover('.cm-lint-marker-info')
+      await expect(
+        page.getByText('Identifiers should be lowerCamelCase').first()
+      ).toBeVisible()
+    }
+  )
 
-  test('you can accept the suggestion from a lint', async ({
-    page,
-    homePage,
-    scene,
-  }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `a1 = startSketchOn({
+  test(
+    'you can accept the suggestion from a lint',
+    { tag: '@localRenderer' },
+    async ({ page, homePage, scene }) => {
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `a1 = startSketchOn({
        origin = { x = 0, y = 0, z = 0 },
        xAxis = { x = 1, y = 0, z = 0 },
        yAxis = { x = 0, y = 12, z = 0 },
@@ -578,32 +642,32 @@ my_var = 1 + 2`.replaceAll('\n', '')
   |> yLine(length = 100.0)
   |> close()
   |> extrude(length = 3.14)`
-      )
-    })
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+        )
+      })
+      await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await homePage.goToModelingScene()
+      await homePage.goToModelingScene()
 
-    await scene.connectionEstablished()
+      await scene.connectionEstablished()
 
-    await expect(page.locator('.cm-lint-marker-info')).toBeVisible()
+      await expect(page.locator('.cm-lint-marker-info')).toBeVisible()
 
-    // error in gutter
-    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
+      // error in gutter
+      await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
 
-    // error text on hover
-    await page.hover('.cm-lint-marker-info')
-    await expect(
-      page.getByText('offsetPlane should be used').first()
-    ).toBeVisible()
+      // error text on hover
+      await page.hover('.cm-lint-marker-info')
+      await expect(
+        page.getByText('offsetPlane should be used').first()
+      ).toBeVisible()
 
-    // select the line that's causing the error and delete it
-    // accept the change
-    await page.getByText('use offsetPlane instead').click()
+      // select the line that's causing the error and delete it
+      // accept the change
+      await page.getByText('use offsetPlane instead').click()
 
-    // Ensure we have the new code
-    await expect(page.locator('.cm-content')).toHaveText(
-      `a1 = startSketchOn(offsetPlane(XY, offset = 12))
+      // Ensure we have the new code
+      await expect(page.locator('.cm-content')).toHaveText(
+        `a1 = startSketchOn(offsetPlane(XY, offset = 12))
   |> startProfile(at = [0, 0])
   |> line(end = [100.0, 0])
   |> yLine(length = -100.0)
@@ -611,18 +675,18 @@ my_var = 1 + 2`.replaceAll('\n', '')
   |> yLine(length = 100.0)
   |> close()
   |> extrude(length = 3.14)`.replaceAll('\n', '')
-    )
-  })
+      )
+    }
+  )
 
-  test('signature help triggered by comma', async ({
-    page,
-    homePage,
-    scene,
-  }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `myVARName = 100
+  test(
+    'signature help triggered by comma',
+    { tag: '@localRenderer' },
+    async ({ page, homePage, scene }) => {
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `myVARName = 100
 
 a1 = startSketchOn(offsetPlane(XY, offset = 10))
   |> startProfile(at = [0, 0])
@@ -632,53 +696,54 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   |> yLine(length = 100.0)
   |> close()
   |> extrude(length = 12`
-      )
-    })
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-
-    await homePage.goToModelingScene()
-
-    await scene.connectionEstablished()
-
-    // Wait for the linter diagnostics to populate, a good proxy that the LSP is ready.
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-
-    // Expect the signature help to NOT be visible
-    await expect(page.locator('.cm-signature-tooltip')).not.toBeVisible()
-
-    // Click in the editor
-    await page.locator('.cm-content').click()
-
-    // Go to the end of the code
-    await page.keyboard.press('ControlOrMeta+End')
-    // Type a comma
-    await page.keyboard.press(',')
-
-    // Wait for the signature help to show
-    const signatureTooltip = page.locator('.cm-signature-tooltip')
-    await expect(signatureTooltip).toBeVisible()
-
-    // Make sure the parameters are correct
-    await expect(signatureTooltip).toContainText('sketches:')
-
-    // Long signatures should wrap inside the tooltip instead of overflowing.
-    await expect
-      .poll(async () => {
-        return await signatureTooltip.evaluate(
-          (tooltip) => tooltip.scrollWidth <= tooltip.clientWidth + 1
         )
       })
-      .toBe(true)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    // Make sure the tooltip goes away after a timeout.
-    await expect(signatureTooltip).not.toBeVisible({
-      timeout: 15_000,
-    })
-  })
+      await homePage.goToModelingScene()
+
+      await scene.connectionEstablished()
+
+      // Wait for the linter diagnostics to populate, a good proxy that the LSP is ready.
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+      // Expect the signature help to NOT be visible
+      await expect(page.locator('.cm-signature-tooltip')).not.toBeVisible()
+
+      // Click in the editor
+      await page.locator('.cm-content').click()
+
+      // Go to the end of the code
+      await page.keyboard.press('ControlOrMeta+End')
+      // Type a comma
+      await page.keyboard.press(',')
+
+      // Wait for the signature help to show
+      const signatureTooltip = page.locator('.cm-signature-tooltip')
+      await expect(signatureTooltip).toBeVisible()
+
+      // Make sure the parameters are correct
+      await expect(signatureTooltip).toContainText('sketches:')
+
+      // Long signatures should wrap inside the tooltip instead of overflowing.
+      await expect
+        .poll(async () => {
+          return await signatureTooltip.evaluate(
+            (tooltip) => tooltip.scrollWidth <= tooltip.clientWidth + 1
+          )
+        })
+        .toBe(true)
+
+      // Make sure the tooltip goes away after a timeout.
+      await expect(signatureTooltip).not.toBeVisible({
+        timeout: 15_000,
+      })
+    }
+  )
 
   test(
     'if you write kcl with lint errors you get lints',
-    { tag: '@web' },
+    { tag: ['@web', '@localRenderer'] },
     async ({ page, homePage, scene }) => {
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -722,55 +787,63 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     }
   )
 
-  test('if you fixup kcl errors you clear lints', async ({
-    page,
-    homePage,
-  }) => {
-    const u = await getUtils(page)
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XZ)
+  test(
+    'if you fixup kcl errors you clear lints',
+    { tag: '@localRenderer' },
+    async ({ page, homePage, scene }) => {
+      const u = await getUtils(page)
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `sketch001 = startSketchOn(XZ)
     |> startProfile(at = [3.29, 7.86])
     |> line(end = [2.48, 2.44])
     |> line(end = [2.66, 1.17])
     |> close()
     `
-      )
-    })
+        )
+      })
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await homePage.goToModelingScene()
+      await scene.waitForExecutionDoneAfter(() => homePage.goToModelingScene())
 
-    // check no error to begin with
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      // check no error to begin with
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-    await u.codeLocator.click()
+      await u.codeLocator.click()
 
-    await page.getByText(' |> line(end = [2.48, 2.44])').click()
+      const editedLine = page
+        .locator('.cm-line')
+        .filter({ hasText: '|> line(end = [2.48, 2.44]' })
+      await editedLine.click()
+      await expect(u.codeLocator).toBeFocused()
 
-    await expect(
-      page.locator('.cm-lint-marker-error').first()
-    ).not.toBeVisible()
-    await page.keyboard.press('End')
-    await page.keyboard.press('Backspace')
+      await expect(
+        page.locator('.cm-lint-marker-error').first()
+      ).not.toBeVisible()
+      await page.keyboard.press('End')
+      await page.keyboard.press('Backspace')
 
-    await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
-    await page.keyboard.type(')')
-    await expect(
-      page.locator('.cm-lint-marker-error').first()
-    ).not.toBeVisible()
-  })
+      await expect(editedLine).toHaveText('    |> line(end = [2.48, 2.44]')
+      await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
+      await page.keyboard.type(')')
+      await expect(editedLine).toHaveText('    |> line(end = [2.48, 2.44])')
+      await expect(
+        page.locator('.cm-lint-marker-error').first()
+      ).not.toBeVisible()
+    }
+  )
 
   test(
     'if you write invalid kcl you get inlined errors',
-    { tag: '@web' },
-    async ({ page, homePage }) => {
+    { tag: ['@web', '@localRenderer'] },
+    async ({ page, homePage, scene }) => {
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
 
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -794,6 +867,8 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.keyboard.press('Enter')
       await page.keyboard.type('bottomAng = 25')
       await page.keyboard.press('Enter')
+
+      await scene.connectionEstablished()
 
       // error in guter
       await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
@@ -845,15 +920,14 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     }
   )
 
-  test('if your kcl gets an error from the engine it is inlined', async ({
-    context,
-    page,
-    homePage,
-  }) => {
-    await context.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `box = startSketchOn(XY)
+  test(
+    'if your kcl gets an error from the engine it is inlined',
+    { tag: '@localRenderer' },
+    async ({ context, page, homePage, scene }) => {
+      await context.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `box = startSketchOn(XY)
     |> startProfile(at = [0, 0])
     |> line(end = [0, 10])
     |> line(end = [10, 0])
@@ -872,158 +946,165 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     angle = 90deg
     )
     `
-      )
-    })
+        )
+      })
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await homePage.goToModelingScene()
+      await homePage.goToModelingScene()
+      await scene.settled({ expectError: true })
 
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
 
-    // error text on hover
-    await page.hover('.cm-lint-marker-error')
-    const searchText =
-      'sketch profile must lie entirely on one side of the revolution axis'
-    await expect(page.getByText(searchText)).toBeVisible()
-  })
+      // error text on hover
+      await page.hover('.cm-lint-marker-error')
+      const searchText =
+        'sketch profile must lie entirely on one side of the revolution axis'
+      await expect(page.getByText(searchText)).toBeVisible()
+    }
+  )
   test.describe('Autocomplete works', () => {
-    test('with enter/click to accept the completion', async ({
-      page,
-      homePage,
-    }) => {
-      const u = await getUtils(page)
-      // const PUR = 400 / 37.5 //pixeltoUnitRatio
-      await page.setBodyDimensions({ width: 1200, height: 500 })
+    test(
+      'with enter/click to accept the completion',
+      { tag: '@localRenderer' },
+      async ({ page, homePage }) => {
+        const u = await getUtils(page)
+        // const PUR = 400 / 37.5 //pixeltoUnitRatio
+        await page.setBodyDimensions({ width: 1200, height: 500 })
 
-      await homePage.goToModelingScene()
+        await homePage.goToModelingScene()
 
-      // tests clicking on an option, selection the first option
-      // and arrowing down to an option
+        // tests clicking on an option, selection the first option
+        // and arrowing down to an option
 
-      await u.codeLocator.click()
-      await page.keyboard.type('sketch001 = start')
+        await u.codeLocator.click()
+        await page.keyboard.type('sketch001 = start')
 
-      // expect there to be some auto complete options
-      // exact number depends on the KCL stdlib, so let's just check it's > 0 for now.
-      await expect(async () => {
-        const children = await page.locator('.cm-completionLabel').count()
-        expect(children).toBeGreaterThan(0)
-      }).toPass()
-      // this makes sure we can accept a completion with click
-      await page.getByText('startSketchOn').click()
-      await page.keyboard.type('XZ')
-      await page.keyboard.press('Tab')
-      await page.keyboard.press('Enter')
-      await page.keyboard.type('  |> startProfi')
-      // expect there be a single auto complete option that we can just hit enter on
-      await expect(page.locator('.cm-completionLabel')).toBeVisible()
-      await page.waitForTimeout(100)
-      await page.keyboard.press('Enter') // accepting the auto complete, not a new line
+        // expect there to be some auto complete options
+        // exact number depends on the KCL stdlib, so let's just check it's > 0 for now.
+        await expect(async () => {
+          const children = await page.locator('.cm-completionLabel').count()
+          expect(children).toBeGreaterThan(0)
+        }).toPass()
+        // this makes sure we can accept a completion with click
+        await page.getByText('startSketchOn').click()
+        await page.keyboard.type('XZ')
+        await page.keyboard.press('Tab')
+        await page.keyboard.press('Enter')
+        await page.keyboard.type('  |> startProfi')
+        // expect there be a single auto complete option that we can just hit enter on
+        await expect(page.locator('.cm-completionLabel')).toBeVisible()
+        await page.waitForTimeout(100)
+        await page.keyboard.press('Enter') // accepting the auto complete, not a new line
 
-      await page.keyboard.type('12')
-      await page.waitForTimeout(100)
-      await page.keyboard.press('Tab')
-      await page.waitForTimeout(100)
-      await page.keyboard.press('Tab')
-      await page.waitForTimeout(100)
-      await page.keyboard.press('Enter')
-      await page.waitForTimeout(100)
-      await page.keyboard.type('  |> lin')
+        await page.keyboard.type('12')
+        await page.waitForTimeout(100)
+        await page.keyboard.press('Tab')
+        await page.waitForTimeout(100)
+        await page.keyboard.press('Tab')
+        await page.waitForTimeout(100)
+        await page.keyboard.press('Enter')
+        await page.waitForTimeout(100)
+        await page.keyboard.type('  |> lin')
 
-      await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
-      await page.waitForTimeout(100)
-      await selectCompletionOption(page, 'xLine')
-      await page.keyboard.press('Enter')
-      // finish line with comment
-      await page.keyboard.type('5')
-      await page.waitForTimeout(100)
-      await page.keyboard.press('Tab')
+        await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
+        await page.waitForTimeout(100)
+        await selectCompletionOption(page, 'xLine')
+        await page.keyboard.press('Enter')
+        // finish line with comment
+        await page.keyboard.type('5')
+        await page.waitForTimeout(100)
+        await page.keyboard.press('Tab')
 
-      await page.keyboard.type(' // ')
-      // Since we need to parse the ast to know we are in a comment we gotta hang tight.
-      await page.waitForTimeout(700)
-      await page.keyboard.type('lin ')
-      await page.waitForTimeout(200)
-      // there shouldn't be any auto complete options for 'lin' in the comment
-      await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
+        await page.keyboard.type(' // ')
+        // Since we need to parse the ast to know we are in a comment we gotta hang tight.
+        await page.waitForTimeout(700)
+        await page.keyboard.type('lin ')
+        await page.waitForTimeout(200)
+        // there shouldn't be any auto complete options for 'lin' in the comment
+        await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
-      await expect(page.locator('.cm-content')).toHaveText(
-        `@settings(defaultLengthUnit = in, kclVersion = 3.0)
+        await expect(page.locator('.cm-content')).toHaveText(
+          `@settings(defaultLengthUnit = in, kclVersion = 3.0)
 sketch001 = startSketchOn(XZ)
     |> startProfile(at = [0, 12])
     |> xLine(length = 5) // lin`.replaceAll('\n', '')
-      )
+        )
 
-      // expect there to be no KCL errors
-      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
-    })
+        // expect there to be no KCL errors
+        await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+      }
+    )
 
-    test('with tab to accept the completion', async ({ page, homePage }) => {
-      const u = await getUtils(page)
-      // const PUR = 400 / 37.5 //pixeltoUnitRatio
-      await page.setBodyDimensions({ width: 1200, height: 500 })
+    test(
+      'with tab to accept the completion',
+      { tag: '@localRenderer' },
+      async ({ page, homePage }) => {
+        const u = await getUtils(page)
+        // const PUR = 400 / 37.5 //pixeltoUnitRatio
+        await page.setBodyDimensions({ width: 1200, height: 500 })
 
-      await homePage.goToModelingScene()
+        await homePage.goToModelingScene()
 
-      // this test might be brittle as we add and remove functions
-      // but should also be easy to update.
-      // tests clicking on an option, selection the first option
-      // and arrowing down to an option
+        // this test might be brittle as we add and remove functions
+        // but should also be easy to update.
+        // tests clicking on an option, selection the first option
+        // and arrowing down to an option
 
-      await u.codeLocator.click()
-      await page.keyboard.type('sketch001 = startSketchO')
-      await page.waitForTimeout(100)
+        await u.codeLocator.click()
+        await page.keyboard.type('sketch001 = startSketchO')
+        await page.waitForTimeout(100)
 
-      // Make sure just hitting tab will take the only one left
-      await expect(page.locator('.cm-completionLabel')).toHaveCount(1)
-      await page.waitForTimeout(500)
-      await page.keyboard.press('Tab')
-      await page.waitForTimeout(500)
-      await page.keyboard.type('XZ')
-      await page.keyboard.press('Tab')
-      await page.keyboard.press('Enter')
-      await page.keyboard.type('  |> startProfi')
-      // expect there be a single auto complete option that we can just hit enter on
-      await expect(page.locator('.cm-completionLabel')).toBeVisible()
-      await page.waitForTimeout(100)
-      await page.keyboard.press('Tab') // accepting the auto complete, not a new line
-      await page.waitForTimeout(100)
-      await page.keyboard.type('12')
-      await page.waitForTimeout(100)
-      await page.keyboard.press('Tab')
-      await page.waitForTimeout(100)
-      await page.keyboard.press('Tab')
-      await page.waitForTimeout(100)
-      await page.keyboard.press('Enter')
-      await page.waitForTimeout(100)
-      await page.keyboard.type('  |> lin')
+        // Make sure just hitting tab will take the only one left
+        await expect(page.locator('.cm-completionLabel')).toHaveCount(1)
+        await page.waitForTimeout(500)
+        await page.keyboard.press('Tab')
+        await page.waitForTimeout(500)
+        await page.keyboard.type('XZ')
+        await page.keyboard.press('Tab')
+        await page.keyboard.press('Enter')
+        await page.keyboard.type('  |> startProfi')
+        // expect there be a single auto complete option that we can just hit enter on
+        await expect(page.locator('.cm-completionLabel')).toBeVisible()
+        await page.waitForTimeout(100)
+        await page.keyboard.press('Tab') // accepting the auto complete, not a new line
+        await page.waitForTimeout(100)
+        await page.keyboard.type('12')
+        await page.waitForTimeout(100)
+        await page.keyboard.press('Tab')
+        await page.waitForTimeout(100)
+        await page.keyboard.press('Tab')
+        await page.waitForTimeout(100)
+        await page.keyboard.press('Enter')
+        await page.waitForTimeout(100)
+        await page.keyboard.type('  |> lin')
 
-      await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
-      await page.waitForTimeout(100)
-      await selectCompletionOption(page, 'xLine')
-      // finish line with comment
-      await page.keyboard.press('Tab')
-      await page.waitForTimeout(100)
-      await page.keyboard.type('5')
-      await page.waitForTimeout(100)
-      await page.keyboard.press('Tab')
+        await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
+        await page.waitForTimeout(100)
+        await selectCompletionOption(page, 'xLine')
+        // finish line with comment
+        await page.keyboard.press('Tab')
+        await page.waitForTimeout(100)
+        await page.keyboard.type('5')
+        await page.waitForTimeout(100)
+        await page.keyboard.press('Tab')
 
-      await page.keyboard.type(' // ')
-      // Since we need to parse the ast to know we are in a comment we gotta hang tight.
-      await page.waitForTimeout(700)
-      await page.keyboard.type('lin ')
-      await page.waitForTimeout(200)
-      // there shouldn't be any auto complete options for 'lin' in the comment
-      await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
+        await page.keyboard.type(' // ')
+        // Since we need to parse the ast to know we are in a comment we gotta hang tight.
+        await page.waitForTimeout(700)
+        await page.keyboard.type('lin ')
+        await page.waitForTimeout(200)
+        // there shouldn't be any auto complete options for 'lin' in the comment
+        await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
-      await expect(page.locator('.cm-content')).toHaveText(
-        `@settings(defaultLengthUnit = in, kclVersion = 3.0)
+        await expect(page.locator('.cm-content')).toHaveText(
+          `@settings(defaultLengthUnit = in, kclVersion = 3.0)
 sketch001 = startSketchOn(XZ)
     |> startProfile(at = [0, 12])
     |> xLine(length = 5) // lin`.replaceAll('\n', '')
-      )
-    })
+        )
+      }
+    )
   })
   test('Can undo a click and point extrude with ctrl+z', async ({
     page,
@@ -1102,43 +1183,42 @@ sketch001 = startSketchOn(XZ)
   |> close()`)
   })
 
-  test(`Can import a local OBJ file`, async ({
-    page,
-    scene,
-    cmdBar,
-    folderSetupFn,
-  }) => {
-    await folderSetupFn(async (dir) => {
-      const bracketDir = join(dir, 'cube')
-      await fsp.mkdir(bracketDir, { recursive: true })
-      await fsp.copyFile(
-        executorInputPath('cube.obj'),
-        join(bracketDir, 'cube.obj')
-      )
-      await fsp.writeFile(join(bracketDir, 'main.kcl'), '')
-    })
+  test(
+    `Can import a local OBJ file`,
+    { tag: '@localRenderer' },
+    async ({ page, scene, cmdBar, folderSetupFn }) => {
+      await folderSetupFn(async (dir) => {
+        const bracketDir = join(dir, 'cube')
+        await fsp.mkdir(bracketDir, { recursive: true })
+        await fsp.copyFile(
+          executorInputPath('cube.obj'),
+          join(bracketDir, 'cube.obj')
+        )
+        await fsp.writeFile(join(bracketDir, 'main.kcl'), '')
+      })
 
-    const viewportSize = { width: 1200, height: 500 }
-    await page.setBodyDimensions(viewportSize)
+      const viewportSize = { width: 1200, height: 500 }
+      await page.setBodyDimensions(viewportSize)
 
-    // Locators and constants
-    const u = await getUtils(page)
-    const projectLink = page.getByRole('link', { name: 'cube' })
-    const errorIndicators = page.locator('.cm-lint-marker-error')
+      // Locators and constants
+      const u = await getUtils(page)
+      const projectLink = page.getByRole('link', { name: 'cube' })
+      const errorIndicators = page.locator('.cm-lint-marker-error')
 
-    await test.step(`Open the empty file`, async () => {
-      await projectLink.click()
-      await scene.settled()
-    })
-    await test.step(`Write the import function line`, async () => {
-      await u.codeLocator.fill(`import 'cube.obj'\ncube`)
-      await page.waitForTimeout(800)
-    })
-    await test.step(`Verify that we see no errors`, async () => {
-      await scene.settled()
-      await expect(errorIndicators).toHaveCount(0)
-    })
-  })
+      await test.step(`Open the empty file`, async () => {
+        await projectLink.click()
+        await scene.settled()
+      })
+      await test.step(`Write the import function line`, async () => {
+        await u.codeLocator.fill(`import 'cube.obj'\ncube`)
+        await page.waitForTimeout(800)
+      })
+      await test.step(`Verify that we see no errors`, async () => {
+        await scene.settled()
+        await expect(errorIndicators).toHaveCount(0)
+      })
+    }
+  )
 
   test('Rectangle tool panning with middle click', async ({
     page,
@@ -1273,7 +1353,7 @@ sketch001 = startSketchOn(XZ)
 
   test(
     'syntax errors still show when reopening KCL pane',
-    { tag: '@web' },
+    { tag: ['@web', '@localRenderer'] },
     async ({ page, homePage, scene, cmdBar }) => {
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1307,7 +1387,7 @@ sketch001 = startSketchOn(XZ)
 
 test(
   'Undo/redo recovers deleted files interleaved with code edits',
-  { tag: '@web' },
+  { tag: ['@web', '@localRenderer'] },
   async ({ page, homePage, toolbar, editor, folderSetupFn, fs, scene }) => {
     await folderSetupFn(async (dir) => {
       const projectDir = await fs.join(dir, 'History Project')

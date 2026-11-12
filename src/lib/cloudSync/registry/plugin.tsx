@@ -1,3 +1,4 @@
+import { settingsService } from '@src/registry/contracts/settings'
 import { Popover } from '@headlessui/react'
 import {
   defineRegistryItemFactory,
@@ -75,7 +76,6 @@ import {
 } from '@src/lib/revealInFileExplorer'
 import { getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
   type AppHeaderItemProps,
   appHeaderItemsValueSpec,
@@ -87,6 +87,7 @@ import {
 import {
   type FileOperationsRegistryService,
   fileOperationsService,
+  projectOperationsService,
 } from '@src/registry/contracts/fileOperations'
 import {
   type ProjectExplorerProjectBreadcrumbBadgeComponentProps,
@@ -103,7 +104,6 @@ import {
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
-import { systemIOService } from '@src/registry/contracts/systemIO'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { useEffect, useState } from 'react'
@@ -1337,19 +1337,19 @@ const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
  */
 export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const fileOperations = () => ctx.services.get(fileOperationsService)
-  const systemIO = ctx.services.signal(systemIOService)
+  const projectOperations = ctx.services.signal(projectOperationsService)
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
     new Error('Missing WASM promise registry value.')
 
-  // A materialized cloud project can be listed either by System IO (when the
-  // cloud folder is the app's project directory, e.g. on web) or by the
-  // configured Personal Cloud library scan (e.g. on desktop). Refresh both so
-  // local mutations show up regardless of which surface owns the entry.
+  // Refresh both the default project listing and configured library discovery.
   const refreshLocalCloudProjectEntries = () => {
-    systemIO.value?.actor.send({
-      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-    })
+    const directory = ctx.services.optional(settingsService)?.get().app
+      .projectDirectory.current
+    if (directory)
+      void projectOperations.value
+        ?.listProjects(directory)
+        .catch(reportRejection)
     invalidateProjectLibraryRealizations()
   }
 

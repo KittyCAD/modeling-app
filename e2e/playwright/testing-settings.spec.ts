@@ -50,7 +50,7 @@ test.describe(
   () => {
     test(
       'Stored settings are validated and fall back to defaults',
-      { tag: ['@macos', '@windows'] },
+      { tag: ['@macos', '@windows', '@localRenderer'] },
       async ({ page, homePage, tronApp }) => {
         if (!tronApp) throwTronAppMissing()
 
@@ -88,7 +88,7 @@ test.describe(
 
     test(
       'Keybindings display the correct hotkey for Command Palette',
-      { tag: ['@macos', '@windows'] },
+      { tag: ['@macos', '@windows', '@localRenderer'] },
       async ({ page, homePage }) => {
         const u = await getUtils(page)
         await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -119,178 +119,177 @@ test.describe(
       }
     )
 
-    test('User settings can be reset', async ({
-      page,
-      homePage,
-      scene,
-      folderSetupFn,
-    }) => {
-      const settingValues: Record<string, UnitLength> = {
-        default: 'mm',
-        // Our playwright config sets the user value to `in`
-        user: 'in',
-        project: 'cm',
-      }
-      const projectSettings = settingsToToml({
-        settings: {
-          meta: {
-            // BUG: IF YOU DON'T INCLUDE THIS ZOOKEEPER SEEMS TO DELETE YOUR PROJECT SETTINGS FILE NEAT.
-            id: uuidv4(),
+    test(
+      'User settings can be reset',
+      { tag: '@localRenderer' },
+      async ({ page, homePage, scene, folderSetupFn }) => {
+        const settingValues: Record<string, UnitLength> = {
+          default: 'mm',
+          // Our playwright config sets the user value to `in`
+          user: 'in',
+          project: 'cm',
+        }
+        const projectSettings = settingsToToml({
+          settings: {
+            meta: {
+              // BUG: IF YOU DON'T INCLUDE THIS ZOOKEEPER SEEMS TO DELETE YOUR PROJECT SETTINGS FILE NEAT.
+              id: uuidv4(),
+            },
+            modeling: {
+              base_unit: settingValues.project,
+            },
           },
-          modeling: {
-            base_unit: settingValues.project,
-          },
-        },
-      })
-      await folderSetupFn(async (dir) => {
-        const testProjectDir = path.join(dir, 'test')
-        await Promise.all([fsp.mkdir(testProjectDir, { recursive: true })])
-        await Promise.all([
-          fsp.writeFile(path.join(testProjectDir, 'main.kcl'), '', 'utf8'),
-          fsp.writeFile(
-            path.join(testProjectDir, 'project.toml'),
-            projectSettings,
-            'utf8'
-          ),
-        ])
-      })
-      await test.step('Setup', async () => {
-        await homePage.openProject('test')
-        await scene.connectionEstablished()
-      })
-
-      // Selectors and constants
-      const resetButton = (level: SettingsLevel) =>
-        page.getByRole('button', {
-          name: `Reset ${level}-level settings`,
         })
-      const settingInput = page.locator('#defaultUnit').getByRole('combobox')
+        await folderSetupFn(async (dir) => {
+          const testProjectDir = path.join(dir, 'test')
+          await Promise.all([fsp.mkdir(testProjectDir, { recursive: true })])
+          await Promise.all([
+            fsp.writeFile(path.join(testProjectDir, 'main.kcl'), '', 'utf8'),
+            fsp.writeFile(
+              path.join(testProjectDir, 'project.toml'),
+              projectSettings,
+              'utf8'
+            ),
+          ])
+        })
+        await test.step('Setup', async () => {
+          await homePage.openProject('test')
+          await scene.connectionEstablished()
+        })
 
-      const resetToast = (level: SettingsLevel) =>
-        page.getByText(`${level}-level settings were reset`)
+        // Selectors and constants
+        const resetButton = (level: SettingsLevel) =>
+          page.getByRole('button', {
+            name: `Reset ${level}-level settings`,
+          })
+        const settingInput = page.locator('#defaultUnit').getByRole('combobox')
 
-      await test.step(`Open the settings modal`, async () => {
-        await page.getByRole('link', { name: 'Settings' }).last().click()
-        await expect(
-          page.getByRole('heading', { name: 'Settings', exact: true })
-        ).toBeVisible()
-      })
+        const resetToast = (level: SettingsLevel) =>
+          page.getByText(`${level}-level settings were reset`)
 
-      await test.step('Check settings initial values', async () => {
-        await settingsSwitchTab(page)('proj')
-        await settingInput.scrollIntoViewIfNeeded()
-        await expect(settingInput).toHaveValue(settingValues.project)
+        await test.step(`Open the settings modal`, async () => {
+          await page.getByRole('link', { name: 'Settings' }).last().click()
+          await expect(
+            page.getByRole('heading', { name: 'Settings', exact: true })
+          ).toBeVisible()
+        })
 
-        await settingsSwitchTab(page)('user')
-        await expect(settingInput).toHaveValue(settingValues.user)
-      })
-
-      await test.step('Reset user settings', async () => {
-        // Click the reset settings button.
-        await resetButton('user').scrollIntoViewIfNeeded()
-        await resetButton('user').click()
-
-        await expect(resetToast('user')).toBeVisible()
-        await expect(resetToast('user')).not.toBeVisible()
-
-        // Verify it is now set to the inherited default value
-        await settingInput.scrollIntoViewIfNeeded()
-        await expect(settingInput).toHaveValue(settingValues.default)
-
-        await test.step('Check that the project settings did not change', async () => {
+        await test.step('Check settings initial values', async () => {
           await settingsSwitchTab(page)('proj')
+          await settingInput.scrollIntoViewIfNeeded()
           await expect(settingInput).toHaveValue(settingValues.project)
-        })
-      })
-    })
 
-    test('Project settings can be reset', async ({
-      page,
-      homePage,
-      scene,
-      folderSetupFn,
-    }) => {
-      const settingValues = {
-        default: 'mm',
-        // Our playwright config sets the user value to `in`
-        user: 'in',
-        project: 'cm',
-      }
-      const projectSettings = settingsToToml({
-        settings: {
-          meta: {
-            // BUG: IF YOU DON'T INCLUDE THIS ZOOKEEPER SEEMS TO DELETE YOUR PROJECT SETTINGS FILE NEAT.
-            id: uuidv4(),
-          },
-          modeling: {
-            base_unit: 'cm',
-          },
-        },
-      })
-      await folderSetupFn(async (dir) => {
-        const testProjectDir = path.join(dir, 'test')
-        await Promise.all([fsp.mkdir(testProjectDir, { recursive: true })])
-        await Promise.all([
-          fsp.writeFile(path.join(testProjectDir, 'other.kcl'), '', 'utf8'),
-          fsp.writeFile(
-            path.join(testProjectDir, 'project.toml'),
-            projectSettings,
-            'utf8'
-          ),
-        ])
-      })
-      await test.step('Setup', async () => {
-        await homePage.openProject('test')
-        await scene.connectionEstablished()
-      })
-
-      // Selectors and constants
-      const resetButton = (level: SettingsLevel) =>
-        page.getByRole('button', {
-          name: `Reset ${level}-level settings`,
-        })
-      const settingInput = page.locator('#defaultUnit').getByRole('combobox')
-      const resetToast = (level: SettingsLevel) =>
-        page.getByText(`${level}-level settings were reset`)
-
-      await test.step(`Open the settings modal`, async () => {
-        await page.getByRole('link', { name: 'Settings' }).last().click()
-        await expect(
-          page.getByRole('heading', { name: 'Settings', exact: true })
-        ).toBeVisible()
-      })
-
-      await test.step('Check settings initial values', async () => {
-        await settingsSwitchTab(page)('user')
-        await expect(settingInput).toHaveValue(settingValues.user)
-        // Verify we're looking at the project-level settings
-        await settingsSwitchTab(page)('proj')
-        await expect(settingInput).toHaveValue(settingValues.project)
-      })
-
-      await test.step('Reset project settings', async () => {
-        // Click the reset settings button.
-        await resetButton('project').scrollIntoViewIfNeeded()
-        await resetButton('project').click()
-
-        await expect(resetToast('project')).toBeVisible()
-        await expect(resetToast('project')).not.toBeVisible()
-
-        // Verify it is now set to the inherited user value
-        await settingInput.scrollIntoViewIfNeeded()
-        await expect(settingInput).toHaveValue(settingValues.user)
-
-        await test.step('Check that the user settings did not change', async () => {
           await settingsSwitchTab(page)('user')
           await expect(settingInput).toHaveValue(settingValues.user)
         })
-      })
-    })
+
+        await test.step('Reset user settings', async () => {
+          // Click the reset settings button.
+          await resetButton('user').scrollIntoViewIfNeeded()
+          await resetButton('user').click()
+
+          await expect(resetToast('user')).toBeVisible()
+          await expect(resetToast('user')).not.toBeVisible()
+
+          // Verify it is now set to the inherited default value
+          await settingInput.scrollIntoViewIfNeeded()
+          await expect(settingInput).toHaveValue(settingValues.default)
+
+          await test.step('Check that the project settings did not change', async () => {
+            await settingsSwitchTab(page)('proj')
+            await expect(settingInput).toHaveValue(settingValues.project)
+          })
+        })
+      }
+    )
+
+    test(
+      'Project settings can be reset',
+      { tag: '@localRenderer' },
+      async ({ page, homePage, scene, folderSetupFn }) => {
+        const settingValues = {
+          default: 'mm',
+          // Our playwright config sets the user value to `in`
+          user: 'in',
+          project: 'cm',
+        }
+        const projectSettings = settingsToToml({
+          settings: {
+            meta: {
+              // BUG: IF YOU DON'T INCLUDE THIS ZOOKEEPER SEEMS TO DELETE YOUR PROJECT SETTINGS FILE NEAT.
+              id: uuidv4(),
+            },
+            modeling: {
+              base_unit: 'cm',
+            },
+          },
+        })
+        await folderSetupFn(async (dir) => {
+          const testProjectDir = path.join(dir, 'test')
+          await Promise.all([fsp.mkdir(testProjectDir, { recursive: true })])
+          await Promise.all([
+            fsp.writeFile(path.join(testProjectDir, 'other.kcl'), '', 'utf8'),
+            fsp.writeFile(
+              path.join(testProjectDir, 'project.toml'),
+              projectSettings,
+              'utf8'
+            ),
+          ])
+        })
+        await test.step('Setup', async () => {
+          await homePage.openProject('test')
+          await scene.connectionEstablished()
+        })
+
+        // Selectors and constants
+        const resetButton = (level: SettingsLevel) =>
+          page.getByRole('button', {
+            name: `Reset ${level}-level settings`,
+          })
+        const settingInput = page.locator('#defaultUnit').getByRole('combobox')
+        const resetToast = (level: SettingsLevel) =>
+          page.getByText(`${level}-level settings were reset`)
+
+        await test.step(`Open the settings modal`, async () => {
+          await page.getByRole('link', { name: 'Settings' }).last().click()
+          await expect(
+            page.getByRole('heading', { name: 'Settings', exact: true })
+          ).toBeVisible()
+        })
+
+        await test.step('Check settings initial values', async () => {
+          await settingsSwitchTab(page)('user')
+          await expect(settingInput).toHaveValue(settingValues.user)
+          // Verify we're looking at the project-level settings
+          await settingsSwitchTab(page)('proj')
+          await expect(settingInput).toHaveValue(settingValues.project)
+        })
+
+        await test.step('Reset project settings', async () => {
+          // Click the reset settings button.
+          await resetButton('project').scrollIntoViewIfNeeded()
+          await resetButton('project').click()
+
+          await expect(resetToast('project')).toBeVisible()
+          await expect(resetToast('project')).not.toBeVisible()
+
+          // Verify it is now set to the inherited user value
+          await settingInput.scrollIntoViewIfNeeded()
+          await expect(settingInput).toHaveValue(settingValues.user)
+
+          await test.step('Check that the user settings did not change', async () => {
+            await settingsSwitchTab(page)('user')
+            await expect(settingInput).toHaveValue(settingValues.user)
+          })
+        })
+      }
+    )
 
     test(
       `Load desktop app with no settings file`,
-      { tag: ['@macos', '@windows'] },
-      async ({ page }, testInfo) => {
+      { tag: ['@macos', '@windows', '@localRenderer'] },
+      async ({ page, homePage }, testInfo) => {
+        await homePage.projectsLoaded()
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         // Selectors and constants
@@ -309,8 +308,8 @@ test.describe(
 
     test(
       `Load desktop app with a settings file, but no project directory setting`,
-      { tag: ['@macos', '@windows'] },
-      async ({ page, tronApp }) => {
+      { tag: ['@macos', '@windows', '@localRenderer'] },
+      async ({ page, tronApp, homePage }) => {
         if (!tronApp) throwTronAppMissing()
 
         await tronApp.cleanProjectDir({
@@ -319,6 +318,7 @@ test.describe(
           },
         })
 
+        await homePage.projectsLoaded()
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         // Selectors and constants
@@ -337,10 +337,11 @@ test.describe(
 
     test(
       'project settings reload on external change',
-      { tag: ['@macos', '@windows'] },
-      async ({ page, toolbar, folderSetupFn }) => {
+      { tag: ['@macos', '@windows', '@localRenderer'] },
+      async ({ page, toolbar, folderSetupFn, homePage }) => {
         const { dir: projectDirName } = await folderSetupFn(async () => {})
 
+        await homePage.projectsLoaded()
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         const projectDirLink = page.getByTestId(
@@ -390,7 +391,7 @@ test.describe(
 
     test(
       `Closing settings modal should go back to the original file being viewed`,
-      { tag: ['@macos', '@windows'] },
+      { tag: ['@macos', '@windows', '@localRenderer'] },
       async ({ page, folderSetupFn }, testInfo) => {
         await folderSetupFn(async (dir) => {
           const bracketDir = join(dir, 'project-000')
@@ -457,7 +458,7 @@ test.describe(
 
     test(
       'Opening and closing settings does not re-execute the code',
-      { tag: ['@macos', '@windows'] },
+      { tag: ['@macos', '@windows', '@localRenderer'] },
       async ({ page, homePage, scene }) => {
         await homePage.goToModelingScene()
         await scene.settled()
@@ -494,7 +495,7 @@ test.describe(
 
     test(
       'Navigating Home while project settings are open lands on Home',
-      { tag: ['@macos', '@windows'] },
+      { tag: ['@macos', '@windows', '@localRenderer'] },
       async ({ page, homePage }) => {
         await homePage.goToModelingScene()
 
@@ -523,7 +524,7 @@ test.describe(
 
     test(
       'Changing modeling default unit',
-      { tag: ['@macos', '@windows'] },
+      { tag: ['@macos', '@windows', '@localRenderer'] },
       async ({ page, homePage, scene, folderSetupFn }) => {
         const projectName = 'units-project'
         let projectSettingsPath = ''
@@ -642,63 +643,83 @@ test.describe(
       }
     )
 
-    test(
-      `Changing system theme preferences (via media query) should update UI and stream`,
-      { tag: ['@macos', '@windows'] },
-      async ({ page, homePage, tronApp }) => {
-        if (!tronApp) throwTronAppMissing()
+    for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+      test(
+        `Changing system theme preferences (via media query) should update UI and stream ${rendererTag}`,
+        { tag: ['@macos', '@windows'] },
+        async ({ page, homePage, tronApp }) => {
+          if (!tronApp) throwTronAppMissing()
 
-        await tronApp.cleanProjectDir({
-          // Override the settings so that the theme is set to `system`
-          ...TEST_SETTINGS_DEFAULT_THEME,
-        })
+          await tronApp.cleanProjectDir({
+            // Override the settings so that the theme is set to `system`
+            ...TEST_SETTINGS_DEFAULT_THEME,
+          })
 
-        const u = await getUtils(page)
+          const u = await getUtils(page)
 
-        // Selectors and constants
-        const darkBackgroundCss = 'oklch(0.3012 0 264.48)'
-        const lightBackgroundCss = 'oklch(0.9911 0 264.48)'
-        const darkBackgroundColor: [number, number, number] = [50, 40, 51] // planes are on
-        const lightBackgroundColor: [number, number, number] = [227, 222, 230] // planes are on
-        const streamBackgroundColorTolerance = 20
-        const streamBackgroundPixelIsColor = async (
-          color: [number, number, number]
-        ) => {
-          return u.getGreatestPixDiff({ x: 1000, y: 200 }, color)
+          // Selectors and constants
+          const darkBackgroundCss = 'oklch(0.3012 0 264.48)'
+          const lightBackgroundCss = 'oklch(0.9911 0 264.48)'
+          const darkBackgroundColor: [number, number, number] = [50, 40, 51] // planes are on
+          const lightBackgroundColor: [number, number, number] = [227, 222, 230] // planes are on
+          const backgroundColorTolerance = 20
+          const backgroundPixelIsColor = async (
+            streamColor: [number, number, number],
+            localColor: [number, number, number]
+          ) => {
+            const local = await page.evaluate(
+              () => window.engineCommandManager.geometryOnly
+            )
+            // Probe clear canvas in local mode; the old point includes translucent
+            // stream planes whose colours differ between renderers.
+            return u.getGreatestPixDiff(
+              local ? { x: 1180, y: 20 } : { x: 1000, y: 200 },
+              local ? localColor : streamColor
+            )
+          }
+          const toolbar = page
+            .locator('menu')
+            .filter({ hasText: 'Start Sketch' })
+
+          await test.step(`Test setup`, async () => {
+            await page.emulateMedia({ colorScheme: 'light' })
+            await page.setBodyDimensions({ width: 1200, height: 500 })
+            await homePage.goToModelingScene()
+            await u.waitForPageLoad()
+            await page.waitForTimeout(1000)
+            await expect(toolbar).toBeVisible()
+          })
+
+          await test.step(`Check the background color is light before`, async () => {
+            await expect(toolbar).toHaveCSS(
+              'background-color',
+              lightBackgroundCss
+            )
+            await expect
+              .poll(() =>
+                backgroundPixelIsColor(lightBackgroundColor, [250, 250, 250])
+              )
+              .toBeLessThanOrEqual(backgroundColorTolerance)
+          })
+
+          await test.step(`Change media query preference to dark, emulating dusk with system theme`, async () => {
+            await page.emulateMedia({ colorScheme: 'dark' })
+          })
+
+          await test.step(`Check the background color is dark after`, async () => {
+            await expect(toolbar).toHaveCSS(
+              'background-color',
+              darkBackgroundCss
+            )
+            await expect
+              .poll(() =>
+                backgroundPixelIsColor(darkBackgroundColor, [30, 30, 30])
+              )
+              .toBeLessThanOrEqual(backgroundColorTolerance)
+          })
         }
-        const toolbar = page.locator('menu').filter({ hasText: 'Start Sketch' })
-
-        await test.step(`Test setup`, async () => {
-          await page.emulateMedia({ colorScheme: 'light' })
-          await page.setBodyDimensions({ width: 1200, height: 500 })
-          await homePage.goToModelingScene()
-          await u.waitForPageLoad()
-          await page.waitForTimeout(1000)
-          await expect(toolbar).toBeVisible()
-        })
-
-        await test.step(`Check the background color is light before`, async () => {
-          await expect(toolbar).toHaveCSS(
-            'background-color',
-            lightBackgroundCss
-          )
-          await expect
-            .poll(() => streamBackgroundPixelIsColor(lightBackgroundColor))
-            .toBeLessThanOrEqual(streamBackgroundColorTolerance)
-        })
-
-        await test.step(`Change media query preference to dark, emulating dusk with system theme`, async () => {
-          await page.emulateMedia({ colorScheme: 'dark' })
-        })
-
-        await test.step(`Check the background color is dark after`, async () => {
-          await expect(toolbar).toHaveCSS('background-color', darkBackgroundCss)
-          await expect
-            .poll(() => streamBackgroundPixelIsColor(darkBackgroundColor))
-            .toBeLessThanOrEqual(streamBackgroundColorTolerance)
-        })
-      }
-    )
+      )
+    }
 
     test(
       `Changing system theme preferences should not override fixed light theme`,
@@ -872,7 +893,7 @@ test.describe(
 
     test(
       `Change inline units setting`,
-      { tag: ['@macos', '@windows'] },
+      { tag: ['@macos', '@windows', '@localRenderer'] },
       async ({ page, homePage, editor, folderSetupFn }) => {
         const u = await getUtils(page)
         const initialInlineUnits = 'yd'
@@ -926,7 +947,7 @@ fn cube`
 
     test(
       `Enable and disable inline experimental features`,
-      { tag: ['@macos', '@windows'] },
+      { tag: ['@macos', '@windows', '@localRenderer'] },
       async ({ page, homePage, context, editor, scene, cmdBar, toolbar }) => {
         const initialCode = `startSketchOn(XY)`
         await test.step('Settle the scene', async () => {

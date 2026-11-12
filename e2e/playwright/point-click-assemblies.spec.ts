@@ -465,68 +465,74 @@ test.describe(
       })
     }
 
-    test(`Module feature tree items are source-only`, async ({
-      page,
-      homePage,
-      scene,
-      editor,
-      toolbar,
-      cmdBar,
-      tronApp,
-      folderSetupFn,
-    }) => {
-      if (!tronApp) throwTronAppMissing()
-      test.slow()
-
-      const projectName = 'assembly'
-      await folderSetupFn(async (dir) => {
-        const bracketDir = path.join(dir, projectName)
-        await fsp.mkdir(bracketDir, { recursive: true })
-        await Promise.all([
-          fsp.copyFile(
-            path.join('public', 'kcl-samples', 'bracket', 'main.kcl'),
-            path.join(bracketDir, 'bracket.kcl')
-          ),
-          fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
-        ])
-      })
-      await page.setBodyDimensions({ width: 1200, height: 800 })
-      await homePage.openProject(projectName)
-      await scene.settled()
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-
-      await insertPartIntoAssembly(
-        'bracket.kcl',
-        'bracket',
+    test(
+      `Module feature tree items are source-only`,
+      { tag: '@localRenderer' },
+      async ({
+        page,
+        homePage,
+        scene,
+        editor,
         toolbar,
         cmdBar,
-        page
-      )
+        tronApp,
+        folderSetupFn,
+      }) => {
+        if (!tronApp) throwTronAppMissing()
+        test.slow()
 
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(
-        `
+        const projectName = 'assembly'
+        await folderSetupFn(async (dir) => {
+          const bracketDir = path.join(dir, projectName)
+          await fsp.mkdir(bracketDir, { recursive: true })
+          await Promise.all([
+            fsp.copyFile(
+              path.join('public', 'kcl-samples', 'bracket', 'main.kcl'),
+              path.join(bracketDir, 'bracket.kcl')
+            ),
+            fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
+          ])
+        })
+        await page.setBodyDimensions({ width: 1200, height: 800 })
+        await homePage.openProject(projectName)
+        await scene.settled()
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+
+        await insertPartIntoAssembly(
+          'bracket.kcl',
+          'bracket',
+          toolbar,
+          cmdBar,
+          page
+        )
+
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(
+          `
           import "bracket.kcl" as bracket
         `,
-        { shouldNormalise: true }
-      )
-      await scene.settled()
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
+          { shouldNormalise: true }
+        )
+        await scene.settled()
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
 
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      await toolbar.openFeatureTreeOperationContextMenu('bracket', 0)
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.openFeatureTreeOperationContextMenu('bracket', 0)
 
-      await expect(page.getByText('View KCL source code')).toBeVisible()
-      await expect(page.getByTestId('context-menu-delete')).not.toBeVisible()
-      await expect(page.getByTestId('context-menu-clone')).not.toBeVisible()
-      await expect(
-        page.getByTestId('context-menu-set-translate')
-      ).not.toBeVisible()
-      await expect(
-        page.getByTestId('context-menu-set-rotate')
-      ).not.toBeVisible()
-      await expect(page.getByTestId('context-menu-set-scale')).not.toBeVisible()
-    })
+        await expect(page.getByText('View KCL source code')).toBeVisible()
+        await expect(page.getByTestId('context-menu-delete')).not.toBeVisible()
+        await expect(page.getByTestId('context-menu-clone')).not.toBeVisible()
+        await expect(
+          page.getByTestId('context-menu-set-translate')
+        ).not.toBeVisible()
+        await expect(
+          page.getByTestId('context-menu-set-rotate')
+        ).not.toBeVisible()
+        await expect(
+          page.getByTestId('context-menu-set-scale')
+        ).not.toBeVisible()
+      }
+    )
 
     for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
       test(`Import the bracket part into an assembly and transform it (scene selection) ${rendererTag}`, async ({
@@ -560,7 +566,7 @@ test.describe(
 
     test(
       `Import foreign parts into assembly and delete them`,
-      { tag: '@skipLocalEngine' },
+      { tag: ['@skipLocalEngine', '@localRenderer'] },
       async ({
         folderSetupFn,
         page,
@@ -593,12 +599,30 @@ test.describe(
               ),
               fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
             ])
+            // Valid trailing whitespace pushes the STEP file beyond the editor's size limit.
+            await fsp.appendFile(
+              path.join(bracketDir, 'cube.step'),
+              ' '.repeat(1024 * 1024)
+            )
           })
           await homePage.openProject(projectName)
           await scene.settled()
         })
 
         await test.step('Import step part as module', async () => {
+          await toolbar.openPane(DefaultLayoutPaneID.Files)
+          await toolbar.openFile('cube.step')
+          await expect(
+            page.getByText('Text files larger than 1 MiB cannot be edited.', {
+              exact: false,
+            })
+          ).toBeVisible()
+          await expect(
+            page.locator('#code-pane').getByRole('button', {
+              name: 'Import in current file',
+              exact: true,
+            })
+          ).toBeVisible()
           await insertPartIntoAssembly(
             'cube.step',
             'cube',
@@ -620,7 +644,7 @@ test.describe(
           await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
         })
 
-        await test.step('Import second foreign part from the context menu', async () => {
+        await test.step('Import second foreign part from the binary-file preview', async () => {
           await toolbar.openPane(DefaultLayoutPaneID.Files)
           await toolbar.expectFileTreeState([
             'folder.prt',
@@ -628,7 +652,6 @@ test.describe(
             'cube.step',
             'main.kcl',
           ])
-          const importPrompt = page.getByText('Import into my current file')
           const importAction = page.getByRole('button', {
             name: 'Import in current file',
             exact: true,
@@ -639,18 +662,19 @@ test.describe(
           })
           await folder.click()
           await expect(folder).toHaveAttribute('aria-expanded', 'true')
-          await expect(importPrompt).not.toBeVisible()
           await folder.click({ button: 'right' })
           await expect(page.getByTestId('context-menu-rename')).toBeVisible()
           await expect(importAction).not.toBeVisible()
           await page.keyboard.press('Escape')
 
           await toolbar.openFile(complexPlmFileName)
-          await expect(importPrompt).not.toBeVisible()
           await page
-            .getByRole('treeitem', { name: complexPlmFileName, exact: true })
-            .click({ button: 'right' })
-          await importAction.click()
+            .locator('#code-pane')
+            .getByRole('button', {
+              name: 'Import in current file',
+              exact: true,
+            })
+            .click()
 
           // Check getPathFilenameInVariableCase output
           const parsedValueFromFile =
@@ -776,55 +800,59 @@ foreign
       }
     )
 
-    test(`Point-and-click clone`, async ({
-      folderSetupFn,
-      page,
-      homePage,
-      scene,
-      editor,
-      toolbar,
-      cmdBar,
-      tronApp,
-    }) => {
-      if (!tronApp) throwTronAppMissing()
+    test(
+      `Point-and-click clone`,
+      { tag: '@localRenderer' },
+      async ({
+        folderSetupFn,
+        page,
+        homePage,
+        scene,
+        editor,
+        toolbar,
+        cmdBar,
+        tronApp,
+      }) => {
+        if (!tronApp) throwTronAppMissing()
 
-      const projectName = 'assembly'
-      const cloneLine = `clone001 = clone(washer)`
+        const projectName = 'assembly'
+        const cloneLine = `clone001 = clone(washer)`
 
-      await test.step('Setup parts and expect imported model', async () => {
-        await folderSetupFn(async (dir) => {
-          const projectDir = path.join(dir, projectName)
-          await fsp.mkdir(projectDir, { recursive: true })
-          await Promise.all([
-            fsp.copyFile(
-              path.join('public', 'kcl-samples', 'washer', 'main.kcl'),
-              path.join(projectDir, 'washer.kcl')
-            ),
-            fsp.writeFile(
-              path.join(projectDir, 'main.kcl'),
-              `import "washer.kcl" as washer`
-            ),
-          ])
+        await test.step('Setup parts and expect imported model', async () => {
+          await folderSetupFn(async (dir) => {
+            const projectDir = path.join(dir, projectName)
+            await fsp.mkdir(projectDir, { recursive: true })
+            await Promise.all([
+              fsp.copyFile(
+                path.join('public', 'kcl-samples', 'washer', 'main.kcl'),
+                path.join(projectDir, 'washer.kcl')
+              ),
+              fsp.writeFile(
+                path.join(projectDir, 'main.kcl'),
+                `import "washer.kcl" as washer`
+              ),
+            ])
+          })
+          await page.setBodyDimensions({ width: 1000, height: 500 })
+          await homePage.openProject(projectName)
+          await scene.settled()
+          await toolbar.closePane(DefaultLayoutPaneID.Code)
         })
-        await page.setBodyDimensions({ width: 1000, height: 500 })
-        await homePage.openProject(projectName)
-        await scene.settled()
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-      })
 
-      await test.step('Module feature tree items do not offer clone', async () => {
-        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        await toolbar.openFeatureTreeOperationContextMenu('washer', 0)
-        await expect(page.getByText('View KCL source code')).toBeVisible()
-        await expect(page.getByTestId('context-menu-clone')).not.toBeVisible()
-        await page.keyboard.press('Escape')
-        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await test.step('Module feature tree items do not offer clone', async () => {
+          await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+          await toolbar.openFeatureTreeOperationContextMenu('washer', 0)
+          await expect(page.getByText('View KCL source code')).toBeVisible()
+          await expect(page.getByTestId('context-menu-clone')).not.toBeVisible()
+          await page.keyboard.press('Escape')
+          await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
 
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.not.toContain(cloneLine, {
-          shouldNormalise: true,
+          await toolbar.openPane(DefaultLayoutPaneID.Code)
+          await editor.expectEditor.not.toContain(cloneLine, {
+            shouldNormalise: true,
+          })
         })
-      })
-    })
+      }
+    )
   }
 )

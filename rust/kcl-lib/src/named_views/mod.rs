@@ -12,10 +12,13 @@ pub use kcl_api::artifact::ArtifactProjection;
 pub use kcl_api::modules::ModulePath;
 pub use kcl_error::ModuleId;
 pub use resolver::NamedViewInfo;
-pub use resolver::NamedViewResolver;
+pub use resolver::NamedViewResolutionFailure;
+pub use resolver::ResolvedNamedView;
 pub use resolver::ResolvedView;
+pub use resolver::ResolvedViewBatch;
 pub use resolver::ViewResolutionError;
 pub use resolver::ViewTarget;
+pub(crate) use resolver::resolve_all;
 pub use visibility::engine_id_for_artifact;
 
 mod resolver;
