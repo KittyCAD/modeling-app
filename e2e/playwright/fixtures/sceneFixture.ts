@@ -121,7 +121,10 @@ export class SceneFixture {
   public startEditSketchBtn!: Locator
   public appHeader!: Locator
 
-  constructor(page: Page) {
+  constructor(
+    page: Page,
+    private readonly expectedLocalRenderer?: boolean
+  ) {
     this.page = page
     this.streamWrapper = page.getByTestId('stream')
     this.networkToggleConnected = page
@@ -133,6 +136,104 @@ export class SceneFixture {
       .or(page.getByRole('button', { name: 'Edit Sketch' }))
     this.appHeader = this.page.getByTestId('app-header')
   }
+  /** Read current CSS viewport coordinates; refresh after camera or model changes. */
+  getProjectedEntities = async () =>
+    this.page.evaluate(async () => {
+      const view = window.app.singletons.kclManager.sceneInfra.localRenderer
+      if (!view)
+        throw new Error('Projected entities require the local renderer')
+      return view.getProjectedEntities()
+    })
+
+  findEdge = (
+    index: number,
+    options?: { timeout?: number; visible?: boolean }
+  ) => this.findEntity('edge', index, options)
+
+  findFace = (
+    index: number,
+    options?: { timeout?: number; visible?: boolean }
+  ) => this.findEntity('face', index, options)
+
+  /**
+   * Both modes share the same mouse actions; only the selection point differs.
+   * Keep the legacy stream coordinate beside its equivalent local entity index
+   * so the stream branch can be removed when streaming is retired.
+   */
+  makeSelectionHelpers = async ({
+    kind,
+    index,
+    stream,
+    timeout,
+    visible,
+  }: {
+    kind: 'edge' | 'face'
+    index: number
+    stream: { x: number; y: number; format: 'pixels' | 'ratio'; steps?: number }
+    timeout?: number
+    visible?: boolean
+  }) =>
+    (await this.usesLocalRenderer())
+      ? this.findEntity(kind, index, { timeout, visible })
+      : this.makeMouseHelpers(stream.x, stream.y, {
+          format: stream.format,
+          steps: stream.steps,
+        })
+
+  private usesLocalRenderer = async () =>
+    this.expectedLocalRenderer ??
+    this.page.evaluate(() => window.engineCommandManager.geometryOnly)
+
+  /** Index is zero-based within entities filtered by kind and visibility. */
+  private findEntity = async (
+    kind: 'edge' | 'face',
+    index: number,
+    {
+      timeout = 30_000,
+      visible = true,
+    }: { timeout?: number; visible?: boolean } = {}
+  ) => {
+    if (!Number.isInteger(index) || index < 0) {
+      throw new Error('Entity index must be a non-negative integer')
+    }
+    const lookup = async () =>
+      (await this.getProjectedEntities()).filter(
+        (entity) => entity.kind === kind && entity.visible === visible
+      )[index]
+    // Pane resizing and camera updates can settle after the UI action completes.
+    let entity: Awaited<ReturnType<typeof lookup>> | undefined
+    await expect
+      .poll(
+        async () => {
+          const next = await lookup()
+          const stable =
+            next !== undefined &&
+            entity?.id === next.id &&
+            entity.x === next.x &&
+            entity.y === next.y
+          entity = next
+          return stable
+        },
+        { timeout }
+      )
+      .toBe(true)
+    if (!entity) {
+      throw new Error(
+        `Missing projected ${kind} at index ${index} (visible: ${visible})`
+      )
+    }
+    const bounds = await this.streamWrapper.boundingBox()
+    if (!bounds || bounds.width <= 0 || bounds.height <= 0) {
+      throw new Error('No stream to click')
+    }
+    // Projected coordinates are viewport pixels; mouse helpers use stream ratios.
+    return this.makeMouseHelpers(
+      (entity.x - bounds.x) / bounds.width,
+      (entity.y - bounds.y) / bounds.height,
+      { format: 'ratio' }
+    )
+  }
+
   private _serialiseScene = async (): Promise<SceneSerialised> => {
     const camera = await this.getCameraInfo()
 
@@ -435,13 +536,16 @@ export class SceneFixture {
     await this.page.mouse.click(pointOnYAxis.x, pointOnYAxis.y)
   }
 
+  /** Camera poses use the shared camera's engine-world coordinates (millimeters). */
   moveCameraTo = async (
     pos: { x: number; y: number; z: number },
-    target: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 }
+    target: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 },
+    { waitForImageChange = true }: { waitForImageChange?: boolean } = {}
   ) => {
-    await doAndWaitForImageDiff(
-      this.page,
-      () =>
+    // Streaming still owns its camera on the engine and needs the rendered
+    // frame to arrive. Local rendering updates the frontend camera directly.
+    if (!(await this.usesLocalRenderer())) {
+      const moveCamera = () =>
         sendSceneCommand(this.page, {
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
@@ -451,14 +555,57 @@ export class SceneFixture {
             center: target,
             up: { x: 0, y: 0, z: 1 },
           },
-        }),
-      300
+        })
+      if (waitForImageChange) {
+        await doAndWaitForImageDiff(this.page, moveCamera, 300)
+      } else {
+        await moveCamera()
+      }
+      return
+    }
+    // Initial model loading fits the local camera; let it finish before
+    // applying an explicit pose so that fit cannot overwrite the test's view.
+    await expect(
+      this.page.getByTestId('local-renderer-loading')
+    ).not.toBeVisible({
+      timeout: 30_000,
+    })
+    await this.page.evaluate(
+      ({ pos, target }) => {
+        const controls = window.app.singletons.kclManager.sceneInfra.camControls
+        const camera = controls.camera
+        camera.position.set(pos.x, pos.y, pos.z)
+        controls.target.set(target.x, target.y, target.z)
+        camera.up.set(0, 0, 1)
+        camera.lookAt(controls.target)
+        // Preserve the framing implied by the legacy vantage/center distance.
+        if ('top' in camera) {
+          const distance = camera.position.distanceTo(controls.target)
+          const fov = controls.perspectiveFovBeforeOrtho
+          const halfHeight = distance * Math.tan((fov * Math.PI) / 360)
+          camera.zoom = (camera.top - camera.bottom) / (2 * halfHeight)
+        }
+        camera.updateProjectionMatrix()
+        camera.updateMatrixWorld(true)
+        // Recomputes clip planes for the new distance and notifies listeners.
+        controls.onCameraChange()
+      },
+      { pos, target }
     )
   }
-  /** Forces a refresh of the camera position and target displayed
-   *  in the debug panel and then returns the values of the fields
+
+  /** Read the active renderer camera, using the debug panel
+   *  precision of two decimal places in both modes.
    */
   async getCameraInfo() {
+    if (await this.usesLocalRenderer()) {
+      return this.page.evaluate(() => {
+        const { position, target } =
+          window.app.singletons.kclManager.sceneInfra.camControls
+            .reactCameraProperties
+        return { position, target }
+      })
+    }
     await openAndClearDebugPanel(this.page)
     await sendCustomCmd(this.page, {
       type: 'modeling_cmd_req',
@@ -510,6 +657,25 @@ export class SceneFixture {
       })
     }
     await expect(this.startEditSketchBtn).toBeVisible()
+    // Renderer-tagged suites must exercise different renderers, even if the
+    // rollout default changes or a setting fails to apply. Once the scene is
+    // loaded, verify both the mounted frontend renderer and the engine's
+    // geometry-only mode; otherwise both suites could pass using one renderer.
+    if (this.expectedLocalRenderer !== undefined) {
+      await expect
+        .poll(() =>
+          this.page.evaluate(
+            () =>
+              window.app.singletons.kclManager.sceneInfra.localRenderer !== null
+          )
+        )
+        .toBe(this.expectedLocalRenderer)
+      await expect
+        .poll(() =>
+          this.page.evaluate(() => window.engineCommandManager.geometryOnly)
+        )
+        .toBe(this.expectedLocalRenderer)
+    }
   }
 
   waitForExecutionDoneAfter = async (

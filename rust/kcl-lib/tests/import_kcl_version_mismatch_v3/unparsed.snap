@@ -4,7 +4,7 @@ description: Result of unparsing import_kcl_version_mismatch_v3.kcl
 ---
 // KCL 3.0: an imported file may not declare a kclVersion that differs from
 // the entry point's.
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 import width from "dep.kcl"
 

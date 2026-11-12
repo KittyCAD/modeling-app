@@ -27,9 +27,7 @@ export function CodemodReviewDiff({
       >
         <CustomIcon
           name="caretDown"
-          className={`h-4 w-4 shrink-0 transition-transform ${
-            expanded ? '' : '-rotate-90'
-          }`}
+          className={`h-4 w-4 shrink-0 ${expanded ? '' : '-rotate-90'}`}
         />
         <span className="font-medium">Code changes</span>
       </button>

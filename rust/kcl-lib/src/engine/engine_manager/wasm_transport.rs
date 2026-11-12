@@ -27,6 +27,9 @@ extern "C" {
     #[wasm_bindgen(constructor)]
     pub fn new() -> EngineCommandManager;
 
+    #[wasm_bindgen(method, getter, js_name = geometryOnly)]
+    pub fn geometry_only(this: &EngineCommandManager) -> bool;
+
     #[wasm_bindgen(method, js_name = fireModelingCommandFromWasm, catch)]
     fn fire_modeling_cmd_from_wasm(
         this: &EngineCommandManager,

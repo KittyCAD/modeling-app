@@ -55,10 +55,11 @@ impl ExecutorContext {
             .inner_send_modeling_cmd(
                 id,
                 range,
-                WebSocketRequest::ExecKclProject {
-                    request_id: id,
-                    project: request,
-                },
+                WebSocketRequest::exec_kcl_project(
+                    id,
+                    request,
+                    kittycad_modeling_cmds::exec_kcl::ExecKclParams::default(),
+                ),
                 Default::default(),
             )
             .await
@@ -347,6 +348,7 @@ impl UploadedProject {
                 map: response.operations,
             },
             artifact_graph: response.artifact_graph,
+            named_views: None,
             scene_objects: response.scene_objects,
             source_range_to_object: Default::default(),
             var_solutions: Default::default(),

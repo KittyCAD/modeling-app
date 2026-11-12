@@ -1,6 +1,6 @@
 // This tests early-return semantics under KCL 3.0: an
 // executed return immediately terminates the enclosing function body.
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 fn simple() {
   return 1

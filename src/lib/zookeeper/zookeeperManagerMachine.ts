@@ -1459,23 +1459,23 @@ export const zookeeperManagerMachine = setup({
                   continue
                 }
 
-                if ('error' in responseReplay || 'info' in responseReplay) {
-                  maybeReplayedExchanges.push({
-                    responses: [responseReplay],
+                // Find the last exchange or create an empty one and add it
+                let lastExchange = maybeReplayedExchanges.at(-1)
+                if (lastExchange === undefined) {
+                  lastExchange = {
+                    responses: [],
                     deltasAggregated: '',
-                  })
-                  continue
+                  }
+                  maybeReplayedExchanges.push(lastExchange)
                 }
 
-                const lastExchange = maybeReplayedExchanges.slice(-1)[0] ?? {
-                  responses: [],
-                }
-
-                // Instead we transform a end_of_stream into a delta!
+                // The UI reads answer text from deltasAggregated. Replay skips
+                // individual deltas, so restore that field from the full answer.
                 if ('end_of_stream' in responseReplay) {
                   lastExchange.deltasAggregated =
                     responseReplay.end_of_stream.whole_response ?? ''
                 }
+
                 lastExchange.responses.push(responseReplay)
               }
             }

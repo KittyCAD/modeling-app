@@ -152,7 +152,7 @@ async function readProjectTomlMetadata(
   }
 }
 
-async function ensureProjectTomlTitle({
+export async function ensureProjectTomlTitle({
   fileOperations,
   projectPath,
   title,
@@ -585,7 +585,8 @@ export async function getDefaultKclFileForDir(
   fileOperations: FileOperationsRegistryService,
   projectDir: string,
   file: FileEntry,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  createMissingEntrypoint = true
 ) {
   // Make sure the dir is a directory.
   const isFileEntryDir = await statIsDirectory(fileOperations, projectDir)
@@ -601,7 +602,7 @@ export async function getDefaultKclFileForDir(
       // Find a kcl file in the directory.
       if (file.children) {
         for (const entry of file.children) {
-          if (entry.name.endsWith('.kcl')) {
+          if (entry.children === null && entry.name.endsWith('.kcl')) {
             return fsZds.join(projectDir, entry.name)
           } else if ((entry.children?.length ?? 0) > 0) {
             // Recursively find a kcl file in the directory.
@@ -609,10 +610,12 @@ export async function getDefaultKclFileForDir(
               fileOperations,
               entry.path,
               entry,
-              wasmInstance
+              wasmInstance,
+              createMissingEntrypoint
             )
           }
         }
+        if (!createMissingEntrypoint) return defaultFilePath
         // If we didn't find a kcl file, create one.
         const configuration = await readAppSettingsFile(
           fileOperations,
@@ -685,7 +688,8 @@ const directoryCount = (file: FileEntry) => {
 export async function getProjectInfo(
   fileOperations: FileOperationsRegistryService,
   projectPath: string,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  options: { createMissingEntrypoint?: boolean } = {}
 ): Promise<Project> {
   // Check the directory.
   let stats: FileStat | undefined
@@ -693,9 +697,7 @@ export async function getProjectInfo(
     stats = await fileOperations.stat(projectPath)
   } catch (e) {
     if (isPathNotFoundError(e)) {
-      return Promise.reject(
-        new Error(`Project directory does not exist: ${projectPath}`)
-      )
+      return Promise.reject(e)
     }
   }
 
@@ -740,7 +742,8 @@ export async function getProjectInfo(
       fileOperations,
       projectPath,
       walked,
-      wasmInstance
+      wasmInstance,
+      options.createMissingEntrypoint
     )
   }
   const projectTomlMetadata = canReadWriteProjectPath
@@ -773,7 +776,6 @@ export async function overwriteProjectTomlWithNewSettings(
   tomlStr: string
 ): Promise<void> {
   const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
-  await ensureDirectory(fileOperations, projectPath)
   if (err(tomlStr)) {
     return Promise.reject(tomlStr)
   }
@@ -786,11 +788,15 @@ export async function overwriteProjectTomlWithNewSettings(
       existingProjectToml,
       tomlStr
     )
+    if (projectToml === existingProjectToml) {
+      return
+    }
   } catch (error) {
     if (!isPathNotFoundError(error)) {
       return Promise.reject(error)
     }
   }
+  await ensureDirectory(fileOperations, projectPath)
   return fileOperations.writeFile(projectSettingsFilePath, projectToml)
 }
 

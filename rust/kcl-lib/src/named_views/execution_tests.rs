@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::path::PathBuf;
 
 use indexmap::IndexMap;
@@ -21,9 +22,10 @@ use crate::named_views::ArtifactPoint3d;
 use crate::named_views::ArtifactProjection;
 use crate::named_views::ModuleId;
 use crate::named_views::ModulePath;
-use crate::named_views::NamedViewResolver;
 use crate::named_views::Operation;
+use crate::named_views::ResolvedNamedView;
 use crate::named_views::ResolvedView;
+use crate::named_views::ResolvedViewBatch;
 use crate::named_views::ViewResolutionError;
 use crate::named_views::ViewTarget;
 use crate::util::RetryConfig;
@@ -33,7 +35,11 @@ fn assert_execution_succeeded(outcome: &ExecOutcome) {
     let errors = outcome.errors().collect::<Vec<_>>();
     assert!(
         errors.is_empty(),
-        "resolver fixture must execute without errors: {errors:#?}"
+        "results fixture must execute without errors: {errors:#?}"
+    );
+    assert!(
+        results(outcome).failures().is_empty(),
+        "valid execution must calculate every declared view"
     );
 }
 
@@ -42,13 +48,13 @@ async fn execute(code: &str, current_file: Option<PathBuf>) -> ExecOutcome {
         crate::test_server::execute_with_exec_outcome(code, current_file.clone())
     })
     .await
-    .unwrap_or_else(|error| panic!("resolver fixture must execute against the geometry engine: {error}"));
+    .unwrap_or_else(|error| panic!("results fixture must execute against the geometry engine: {error}"));
     assert_execution_succeeded(&outcome);
     outcome
 }
 
 async fn execute_cached(current_file: PathBuf, versions: &[String]) -> Vec<ExecOutcome> {
-    let first = Program::parse_no_errs(&versions[0]).expect("cached resolver fixture must parse");
+    let first = Program::parse_no_errs(&versions[0]).expect("cached results fixture must parse");
     let outcomes = execute_with_retries(&RetryConfig::default(), || async {
         let ctx = crate::test_server::new_context(
             true,
@@ -56,15 +62,15 @@ async fn execute_cached(current_file: PathBuf, versions: &[String]) -> Vec<ExecO
             true,
             first
                 .language_version()
-                .expect("resolver fixture must specify a KCL version"),
+                .expect("results fixture must specify a KCL version"),
         )
         .await
-        .expect("cached resolver fixture must connect to the geometry engine");
+        .expect("cached results fixture must connect to the geometry engine");
         ctx.bust_cache().await;
         let result = async {
             let mut outcomes = Vec::new();
             for code in versions {
-                let program = Program::parse_no_errs(code).expect("cached resolver fixture must parse");
+                let program = Program::parse_no_errs(code).expect("cached results fixture must parse");
                 outcomes.push(ctx.run_with_caching(program).await?);
             }
             Ok::<_, KclErrorWithOutputs>(outcomes)
@@ -74,7 +80,7 @@ async fn execute_cached(current_file: PathBuf, versions: &[String]) -> Vec<ExecO
         result
     })
     .await
-    .unwrap_or_else(|error| panic!("cached resolver fixture must execute: {error}"));
+    .unwrap_or_else(|error| panic!("cached results fixture must execute: {error}"));
     for outcome in &outcomes {
         assert_execution_succeeded(outcome);
     }
@@ -85,13 +91,13 @@ fn variable<'a>(outcome: &'a ExecOutcome, name: &str) -> &'a KclValue {
     outcome
         .test_program_memory
         .get(name)
-        .unwrap_or_else(|| panic!("resolver fixture must define variable {name}"))
+        .unwrap_or_else(|| panic!("results fixture must define variable {name}"))
 }
 
 fn solid<'a>(outcome: &'a ExecOutcome, name: &str) -> &'a Solid {
     variable(outcome, name)
         .as_solid()
-        .unwrap_or_else(|| panic!("resolver fixture variable {name} must hold a solid"))
+        .unwrap_or_else(|| panic!("results fixture variable {name} must hold a solid"))
 }
 
 fn sketch_id(outcome: &ExecOutcome, name: &str) -> Uuid {
@@ -101,13 +107,15 @@ fn sketch_id(outcome: &ExecOutcome, name: &str) -> Uuid {
         .and_then(KclValue::as_object)
         .and_then(|metadata| metadata.get(SKETCH_OBJECT_META_SKETCH))
         .and_then(KclValue::as_sketch)
-        .unwrap_or_else(|| panic!("resolver fixture variable {name} must contain sketch-block metadata"))
+        .unwrap_or_else(|| panic!("results fixture variable {name} must contain sketch-block metadata"))
         .id
 }
 
-fn resolver(outcome: &ExecOutcome) -> NamedViewResolver<'_> {
-    NamedViewResolver::new(&outcome.artifact_graph, &outcome.operations.map, &outcome.filenames)
-        .expect("real execution must provide a module path for every named view")
+fn results(outcome: &ExecOutcome) -> &ResolvedViewBatch {
+    outcome
+        .named_views
+        .as_ref()
+        .expect("actual execution must calculate views")
 }
 
 fn module_id(outcome: &ExecOutcome, filename: &str) -> ModuleId {
@@ -128,16 +136,24 @@ fn named_target(name: &str, module_id: ModuleId) -> ViewTarget {
     }
 }
 
-fn assert_visibility(outcome: &ExecOutcome, target: ViewTarget, decisions: &[(Uuid, bool)]) -> ResolvedView {
-    let resolved = resolver(outcome)
-        .resolve(&target)
-        .unwrap_or_else(|error| panic!("resolver must select {target:?}: {error}"));
+fn assert_visibility(
+    outcome: &ExecOutcome,
+    target: ViewTarget,
+    decisions: &[(Uuid, bool)],
+) -> Option<ResolvedNamedView> {
+    let results = results(outcome);
+    let resolved = results
+        .get(&target)
+        .unwrap_or_else(|error| panic!("results must contain {target:?}: {error}"));
     assert_eq!(
         resolved.visibility(),
         &decisions.iter().copied().collect::<IndexMap<_, _>>(),
         "{target:?} must return complete decisions using runtime engine IDs (true means hidden)"
     );
-    resolved
+    match resolved {
+        ResolvedView::Default { .. } => None,
+        ResolvedView::Named(view) => Some(view.clone()),
+    }
 }
 
 fn named_view_id(outcome: &ExecOutcome, variable: &str) -> ArtifactId {
@@ -161,8 +177,7 @@ fn plane_id(outcome: &ExecOutcome, variable: &str) -> Uuid {
 }
 
 fn assert_resolution(outcome: &ExecOutcome) {
-    let resolver = NamedViewResolver::new(&outcome.artifact_graph, &outcome.operations.map, &outcome.filenames)
-        .expect("real execution must provide a module path for every named view");
+    let results = results(outcome);
     let imported_module = outcome
         .filenames
         .iter()
@@ -171,7 +186,7 @@ fn assert_resolution(outcome: &ExecOutcome) {
             _ => None,
         })
         .expect("execution must register panel.kcl in the filename map");
-    let views = resolver.list();
+    let views = results.list_named_views();
     assert_eq!(
         views.len(),
         2,
@@ -181,10 +196,18 @@ fn assert_resolution(outcome: &ExecOutcome) {
         views
             .iter()
             .map(|view| (view.name.as_str(), view.module_id))
-            .collect::<Vec<_>>(),
-        vec![("Front", imported_module), ("Front", ModuleId::default())],
-        "same-named views must retain their declaring modules in registration order"
+            .collect::<HashSet<_>>(),
+        HashSet::from([("Front", imported_module), ("Front", ModuleId::default())]),
+        "same-named views must retain their declaring modules"
     );
+    let imported_view = views
+        .iter()
+        .find(|view| view.module_id == imported_module)
+        .expect("the imported view must be listed");
+    let local_view = views
+        .iter()
+        .find(|view| view.module_id == ModuleId::default())
+        .expect("the root-module view must be listed");
     for view in &views {
         assert_eq!(
             view.module_path, outcome.filenames[&view.module_id],
@@ -193,7 +216,7 @@ fn assert_resolution(outcome: &ExecOutcome) {
         );
     }
     assert_eq!(
-        views[1].artifact_id,
+        local_view.artifact_id,
         named_view_id(outcome, "localFront"),
         "the root-module selection must identify its declared view value"
     );
@@ -206,18 +229,18 @@ fn assert_resolution(outcome: &ExecOutcome) {
     );
     for (view, orientation, decisions) in [
         (
-            &views[0],
+            imported_view,
             ArtifactOrientation::Front,
             [(imported_plane, false), (local_plane, true)],
         ),
         (
-            &views[1],
+            local_view,
             ArtifactOrientation::Back,
             [(imported_plane, true), (local_plane, false)],
         ),
     ] {
-        let resolved = resolver
-            .resolve(&ViewTarget::Named {
+        let resolved = results
+            .get(&ViewTarget::Named {
                 name: view.name.clone(),
                 module_id: view.module_id,
             })
@@ -228,9 +251,10 @@ fn assert_resolution(outcome: &ExecOutcome) {
             "view in module {} must show only its own plane (false means visible)",
             view.module_id
         );
-        let ResolvedView::Named { camera_intent, .. } = resolved else {
+        let ResolvedView::Named(named_view) = resolved else {
             panic!("named selection must return ResolvedView::Named; received {resolved:?}");
         };
+        let ResolvedNamedView { camera_intent, .. } = named_view;
         assert_eq!(
             camera_intent.look,
             ArtifactCameraLook::Oriented { orientation },
@@ -238,8 +262,8 @@ fn assert_resolution(outcome: &ExecOutcome) {
         );
     }
 
-    let default = resolver
-        .resolve(&ViewTarget::Default)
+    let default = results
+        .get(&ViewTarget::Default)
         .expect("default resolution must succeed for real execution output");
     assert!(
         matches!(default, ResolvedView::Default { .. }),
@@ -345,7 +369,7 @@ hideAll = view::named(
     );
     let outcome = execute(&code, Some("tests/named_views_baseline_show/input.kcl".into())).await;
     assert_eq!(
-        resolver(&outcome).list().len(),
+        results(&outcome).list_named_views().len(),
         4,
         "execution must declare all four visibility combinations"
     );
@@ -386,14 +410,16 @@ hideAll = view::named(
         ],
     );
 
-    let directed = resolver(&outcome)
-        .resolve(&named_target("Hide except plate", ModuleId::default()))
+    let calculated = results(&outcome);
+    let directed = calculated
+        .get(&named_target("Hide except plate", ModuleId::default()))
         .expect("the directed view must resolve");
-    let ResolvedView::Named { camera_intent, .. } = directed else {
+    let ResolvedView::Named(named_view) = directed else {
         panic!("the directed view must return ResolvedView::Named; received {directed:?}");
     };
+    let ResolvedNamedView { camera_intent, .. } = named_view;
     assert_eq!(
-        *camera_intent,
+        **camera_intent,
         ArtifactCameraView {
             look: ArtifactCameraLook::Directed {
                 direction: ArtifactPoint3d {
@@ -416,14 +442,15 @@ hideAll = view::named(
         },
         "resolution must preserve normalized directions and millimeter camera lengths from actual execution"
     );
-    let oriented = resolver(&outcome)
-        .resolve(&named_target("Show all", ModuleId::default()))
+    let oriented = calculated
+        .get(&named_target("Show all", ModuleId::default()))
         .expect("the minimally authored camera must resolve");
-    let ResolvedView::Named { camera_intent, .. } = oriented else {
+    let ResolvedView::Named(named_view) = oriented else {
         panic!("the oriented view must return ResolvedView::Named; received {oriented:?}");
     };
+    let ResolvedNamedView { camera_intent, .. } = named_view;
     assert_eq!(
-        *camera_intent,
+        **camera_intent,
         ArtifactCameraView {
             look: ArtifactCameraLook::Oriented {
                 orientation: ArtifactOrientation::Front
@@ -444,7 +471,7 @@ async fn default_without_declarations_reads_hide_arrays_across_modules() {
     )
     .await;
     assert!(
-        resolver(&outcome).list().is_empty(),
+        results(&outcome).list_named_views().is_empty(),
         "the default-only fixture must declare no named views"
     );
     let resolved = assert_visibility(
@@ -458,7 +485,7 @@ async fn default_without_declarations_reads_hide_arrays_across_modules() {
         ],
     );
     assert!(
-        matches!(resolved, ResolvedView::Default { .. }),
+        resolved.is_none(),
         "default-only execution must return no camera intent"
     );
 }
@@ -470,8 +497,8 @@ async fn transitive_imports_and_helper_calls_preserve_declaring_modules() {
         Some("tests/named_view_resolver_execution/transitive.kcl".into()),
     )
     .await;
-    let resolver = resolver(&outcome);
-    let views = resolver.list();
+    let results = results(&outcome);
+    let views = results.list_named_views();
     let panel_module = module_id(&outcome, "panel.kcl");
     let helper_module = module_id(&outcome, "helper.kcl");
     assert_eq!(
@@ -479,10 +506,18 @@ async fn transitive_imports_and_helper_calls_preserve_declaring_modules() {
         2,
         "re-exporting and rebinding must not register additional declarations"
     );
+    let panel_view = views
+        .iter()
+        .find(|view| view.module_id == panel_module)
+        .expect("the panel view must be listed");
+    let helper_view = views
+        .iter()
+        .find(|view| view.module_id == helper_module)
+        .expect("the helper's view must be listed");
     for variable in ["panelFront", "importedFront", "reboundFront"] {
         assert_eq!(
             named_view_id(&outcome, variable),
-            views[0].artifact_id,
+            panel_view.artifact_id,
             "{variable} must retain the original declaration's artifact identity"
         );
     }
@@ -490,16 +525,19 @@ async fn transitive_imports_and_helper_calls_preserve_declaring_modules() {
         views
             .iter()
             .map(|view| (view.name.as_str(), view.module_id))
-            .collect::<Vec<_>>(),
-        [("Front", panel_module), ("Front", helper_module)],
+            .collect::<HashSet<_>>(),
+        HashSet::from([("Front", panel_module), ("Front", helper_module)]),
         "view identity must use the module containing view::named rather than an importer or caller"
     );
     assert_eq!(
-        views[1].artifact_id,
+        helper_view.artifact_id,
         named_view_id(&outcome, "helperFront"),
         "the helper must return its registered view"
     );
-    for (view, orientation) in views.iter().zip([ArtifactOrientation::Front, ArtifactOrientation::Top]) {
+    for (view, orientation) in [
+        (panel_view, ArtifactOrientation::Front),
+        (helper_view, ArtifactOrientation::Top),
+    ] {
         assert_eq!(
             view.module_path, outcome.filenames[&view.module_id],
             "discovered paths must identify declaring modules"
@@ -509,9 +547,10 @@ async fn transitive_imports_and_helper_calls_preserve_declaring_modules() {
             named_target(&view.name, view.module_id),
             &[(plane_id(&outcome, "panelPlane"), false)],
         );
-        let ResolvedView::Named { camera_intent, .. } = resolved else {
+        let Some(named_view) = resolved else {
             panic!("selection of {view:?} must return ResolvedView::Named; received {resolved:?}");
         };
+        let ResolvedNamedView { camera_intent, .. } = named_view;
         assert_eq!(
             camera_intent.look,
             ArtifactCameraLook::Oriented { orientation },
@@ -519,12 +558,12 @@ async fn transitive_imports_and_helper_calls_preserve_declaring_modules() {
         );
     }
     assert_eq!(
-        resolver.resolve(&named_target("Front", module_id(&outcome, "reexport.kcl"))),
+        results.get(&named_target("Front", module_id(&outcome, "reexport.kcl"))),
         Err(ViewResolutionError::NotFound),
         "a re-export must not become the declaring module"
     );
     assert_eq!(
-        resolver.resolve(&named_target("Front", ModuleId::default())),
+        results.get(&named_target("Front", ModuleId::default())),
         Err(ViewResolutionError::NotFound),
         "calling the helper must not register its declaration in the caller's module"
     );
@@ -550,7 +589,7 @@ localFront = view::named(
         &[before.to_owned(), after],
     )
     .await;
-    let initial_views = resolver(&outcomes[0]).list();
+    let initial_views = results(&outcomes[0]).list_named_views();
     assert_eq!(
         initial_views.len(),
         1,
@@ -575,7 +614,12 @@ localFront = view::named(
     );
     assert_resolution(&outcomes[1]);
     assert_eq!(
-        resolver(&outcomes[1]).list()[0].artifact_id,
+        results(&outcomes[1])
+            .list_named_views()
+            .iter()
+            .find(|view| view.module_id == initial_views[0].module_id)
+            .expect("the cached imported view must remain listed")
+            .artifact_id,
         initial_views[0].artifact_id,
         "appending a declaration must preserve the cached imported view's artifact identity"
     );
@@ -608,7 +652,7 @@ selected = view::named(
         (&outcomes[0], "Front", ArtifactOrientation::Front, false),
         (&outcomes[1], "Rear", ArtifactOrientation::Back, true),
     ] {
-        let views = resolver(outcome).list();
+        let views = results(outcome).list_named_views();
         assert_eq!(
             views.len(),
             1,
@@ -631,9 +675,10 @@ selected = view::named(
                 (plane_id(outcome, "secondPlane"), !first_hidden),
             ],
         );
-        let ResolvedView::Named { camera_intent, .. } = resolved else {
+        let Some(named_view) = resolved else {
             panic!("cached selection of {name} must return ResolvedView::Named; received {resolved:?}");
         };
+        let ResolvedNamedView { camera_intent, .. } = named_view;
         assert_eq!(
             camera_intent.look,
             ArtifactCameraLook::Oriented { orientation },
@@ -641,7 +686,7 @@ selected = view::named(
         );
     }
     assert_eq!(
-        resolver(&outcomes[1]).resolve(&named_target("Front", ModuleId::default())),
+        results(&outcomes[1]).get(&named_target("Front", ModuleId::default())),
         Err(ViewResolutionError::NotFound),
         "the previous display name must no longer resolve after editing"
     );

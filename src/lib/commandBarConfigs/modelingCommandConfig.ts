@@ -58,6 +58,7 @@ import {
 import type { components } from '@src/lib/machine-api'
 import { isEnginePrimitiveSelection, isSelections } from '@src/lib/selections'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { STEP_SCHEMA_LABELS, StepSchema } from '@src/lib/stepSchema'
 import { err } from '@src/lib/trap'
 import { hasProperty } from '@src/lib/utils'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
@@ -77,7 +78,9 @@ export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLi
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
-type ExtractStorageTypes<T> = T extends { storage: infer U } ? U : never
+type ExtractStorageTypes<T> = T extends { storage?: infer U }
+  ? NonNullable<U>
+  : never
 type StorageUnion = ExtractStorageTypes<OutputFormat>
 type ExportOptionalArg = 'up' | 'scale'
 
@@ -262,6 +265,7 @@ export type ModelingCommandSchema = {
   Export: {
     type: OutputTypeKey
     storage?: StorageUnion
+    schema?: StepSchema
     up?: AxisDirectionPair['axis']
     scale?: UnitLength
   }
@@ -542,6 +546,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           }
         },
       },
+      schema: {
+        inputType: 'options',
+        displayName: 'Schema',
+        required: false,
+        prepopulate: true,
+        defaultValue: StepSchema.Ap242,
+        hidden: (commandContext) =>
+          commandContext.argumentsToSubmit.type !== 'step',
+        options: (commandContext) => {
+          const schema =
+            commandContext.argumentsToSubmit.schema ?? StepSchema.Ap242
+          return Object.values(StepSchema).map((value) => ({
+            name: STEP_SCHEMA_LABELS[value],
+            value,
+            isCurrent: schema === value,
+          }))
+        },
+      },
       up: {
         inputType: 'options',
         displayName: 'Up',
@@ -681,6 +703,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             inputType: 'options',
             required: true,
             defaultValue: 'oriented',
+            documentation:
+              '**Oriented** uses a standard camera orientation, such as Front, Top, or Isometric.\n\n**Directed** saves a custom camera view. Orbit, pan, and zoom to the view you want, then click **Capture camera**.',
             options: [
               STD_LIB_COMMANDS['view::oriented'],
               STD_LIB_COMMANDS['view::directed'],
@@ -978,7 +1002,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               selectedCommand?: { useModelingDialog?: boolean }
             }) =>
               context.selectedCommand?.useModelingDialog === true &&
-              context.argumentsToSubmit.axisOrEdge === 'Edge',
+              context.argumentsToSubmit.axisOrEdge === 'Edge' &&
+              !isEditingNode(context),
             inputType: 'options',
             displayName: 'Sketch Axis',
             options: [
@@ -1931,6 +1956,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Flatness': {
+    displayName: 'GD&T Flatness',
     icon: 'gdtFlatness',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1953,6 +1979,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Straightness': {
+    displayName: 'GD&T Straightness',
     icon: 'gdtStraightness',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1977,6 +2004,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Circularity': {
+    displayName: 'GD&T Circularity',
     icon: 'gdtCircularity',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2001,6 +2029,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Cylindricity': {
+    displayName: 'GD&T Cylindricity',
     icon: 'gdtCylindricity',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2025,6 +2054,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Datum': {
+    displayName: 'GD&T Datum',
     icon: 'gdtDatum',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2052,6 +2082,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Position': {
+    displayName: 'GD&T Position',
     icon: 'gdtPosition',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2077,6 +2108,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Profile': {
+    displayName: 'GD&T Profile',
     // Keep a shared description: edge selections create profileLine,
     // while face selections create profileSurface.
     description:
@@ -2106,6 +2138,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Distance': {
+    displayName: 'GD&T Distance',
     icon: 'dimension',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2130,6 +2163,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Perpendicularity': {
+    displayName: 'GD&T Perpendicularity',
     icon: 'perpendicular',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2154,6 +2188,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'GDT Angularity': {
+    displayName: 'GD&T Angularity',
     icon: 'angle',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2179,6 +2214,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Concentricity': {
+    displayName: 'GD&T Concentricity',
     icon: 'gdtConcentricity',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2207,6 +2243,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Symmetry': {
+    displayName: 'GD&T Symmetry',
     icon: 'gdtSymmetry',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2235,6 +2272,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Runout': {
+    displayName: 'GD&T Runout',
     icon: 'gdtRunout',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2263,6 +2301,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Parallelism': {
+    displayName: 'GD&T Parallelism',
     icon: 'parallel',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2288,6 +2327,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Annotation': {
+    displayName: 'GD&T Annotation',
     icon: 'text',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2315,6 +2355,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Note': {
+    displayName: 'GD&T Note',
     icon: 'note',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(

@@ -137,12 +137,17 @@ export default function AxisGizmo() {
       }
     }
     const onAxisClick = (axisName: AxisNames) => {
+      const cameraControls = sceneInfra.camControls
       isHoverRefreshPausedRef.current = true
       resetRayCast()
-      void sceneInfra.camControls
+      cameraControls.hoverPickingDisabled = true
+      void cameraControls
         .updateCameraToAxis(axisName)
         .catch(reportRejection)
-        .finally(refreshHoverAfterCameraUpdate)
+        .finally(() => {
+          cameraControls.hoverPickingDisabled = false
+          refreshHoverAfterCameraUpdate()
+        })
     }
 
     const { disposeMouseEvents } = initializeMouseEvents(

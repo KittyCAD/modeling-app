@@ -69,18 +69,60 @@ fn engine_id_for_sweep(sweep: &Sweep, artifact_graph: &ArtifactGraph) -> Artifac
     }
 }
 
-pub(super) fn visibility_for_view(artifact_graph: &ArtifactGraph, view: &NamedViewArtifact) -> IndexMap<Uuid, bool> {
-    let exceptions = match view.baseline {
-        ArtifactVisibility::Show => &view.hide_ids,
-        ArtifactVisibility::Hide => &view.show_ids,
-    };
-    visibility_for_baseline(artifact_graph, view.baseline, &exceptions.iter().copied().collect())
+/// Artifacts eligible for view visibility changes, mapped to engine object UUIDs.
+///
+/// Artifact IDs are retained to match view exceptions.
+#[derive(Debug)]
+pub(super) struct VisibilityTargets {
+    members: IndexMap<ArtifactId, Uuid>,
 }
 
-pub(super) fn visibility_for_default(
-    artifact_graph: &ArtifactGraph,
-    operations: &IndexMap<ModuleId, Vec<Operation>>,
-) -> IndexMap<Uuid, bool> {
+impl VisibilityTargets {
+    pub(super) fn new(artifact_graph: &ArtifactGraph) -> Self {
+        Self {
+            members: collect_visibility_targets(artifact_graph)
+                .into_iter()
+                .filter_map(|(id, artifact)| {
+                    engine_id_for_artifact(id, artifact, artifact_graph).map(|object_id| (id, object_id))
+                })
+                .collect(),
+        }
+    }
+
+    pub(super) fn for_named_view(&self, view: &NamedViewArtifact) -> IndexMap<Uuid, bool> {
+        let exceptions = match view.baseline {
+            ArtifactVisibility::Show => &view.hide_ids,
+            ArtifactVisibility::Hide => &view.show_ids,
+        };
+        self.compute_visibility(view.baseline, &exceptions.iter().copied().collect())
+    }
+
+    pub(super) fn for_default_view(&self, hidden_ids: &HashSet<ArtifactId>) -> IndexMap<Uuid, bool> {
+        self.compute_visibility(ArtifactVisibility::Show, hidden_ids)
+    }
+
+    fn compute_visibility(
+        &self,
+        baseline: ArtifactVisibility,
+        exceptions: &HashSet<ArtifactId>,
+    ) -> IndexMap<Uuid, bool> {
+        self.members
+            .iter()
+            .map(|(id, object_id)| {
+                let hidden = match baseline {
+                    ArtifactVisibility::Show => exceptions.contains(id),
+                    ArtifactVisibility::Hide => !exceptions.contains(id),
+                };
+                (*object_id, hidden)
+            })
+            .fold(IndexMap::new(), |mut visibility, (object_id, hidden)| {
+                *visibility.entry(object_id).or_insert(false) |= hidden;
+                visibility
+            })
+    }
+}
+
+pub(super) fn hidden_ids_from_operations(operations: &IndexMap<ModuleId, Vec<Operation>>) -> HashSet<ArtifactId> {
     let mut hidden_ids = HashSet::new();
     for operation in operations.values().flatten() {
         // Include `hide` calls even when `is_error` is true,
@@ -95,49 +137,27 @@ pub(super) fn visibility_for_default(
             collect_artifact_ids(arg.value(), &mut hidden_ids);
         }
     }
-
-    visibility_for_baseline(artifact_graph, ArtifactVisibility::Show, &hidden_ids)
+    hidden_ids
 }
 
-fn visibility_for_baseline(
-    artifact_graph: &ArtifactGraph,
-    baseline: ArtifactVisibility,
-    exceptions: &HashSet<ArtifactId>,
-) -> IndexMap<Uuid, bool> {
-    view_universe(artifact_graph)
-        .into_iter()
-        .filter_map(|(id, artifact)| {
-            let object_id = engine_id_for_artifact(id, artifact, artifact_graph)?;
-            let hidden = match baseline {
-                ArtifactVisibility::Show => exceptions.contains(&id),
-                ArtifactVisibility::Hide => !exceptions.contains(&id),
-            };
-            Some((object_id, hidden))
-        })
-        .fold(IndexMap::new(), |mut visibility, (object_id, hidden)| {
-            *visibility.entry(object_id).or_insert(false) |= hidden;
-            visibility
-        })
-}
-
-fn view_universe(artifact_graph: &ArtifactGraph) -> IndexMap<ArtifactId, &Artifact> {
-    // only consider elements of artifact_graph what we can independenty hide
-    let mut universe: IndexMap<_, _> = artifact_graph
+fn collect_visibility_targets(artifact_graph: &ArtifactGraph) -> IndexMap<ArtifactId, &Artifact> {
+    // Include artifacts that can be hidden independently.
+    let mut targets: IndexMap<_, _> = artifact_graph
         .iter()
         .filter_map(|(id, artifact)| is_independently_hideable(artifact).then_some((*id, artifact)))
         .collect();
 
-    // get patterns--they are special. We need to add the results of the pattern (the clones)
+    // Include pattern copies only when their source body is eligible.
     let patterns = artifact_graph.values().filter_map(|artifact| match artifact {
         Artifact::Pattern(pattern) => Some((artifact, pattern)),
         _ => None,
     });
     for (artifact, pattern) in patterns {
-        if source_body_for_pattern(pattern, artifact_graph).is_some_and(|source| universe.contains_key(&source.id())) {
-            universe.extend(pattern.copy_ids.iter().map(|id| (*id, artifact)));
+        if source_body_for_pattern(pattern, artifact_graph).is_some_and(|source| targets.contains_key(&source.id())) {
+            targets.extend(pattern.copy_ids.iter().map(|id| (*id, artifact)));
         }
     }
-    universe
+    targets
 }
 
 fn is_independently_hideable(artifact: &Artifact) -> bool {

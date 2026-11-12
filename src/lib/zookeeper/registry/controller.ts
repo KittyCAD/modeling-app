@@ -25,9 +25,10 @@ import {
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { activeFileRelativeToProject } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
-import { collectProjectFiles } from '@src/machines/systemIO/utils'
+import { collectProjectFiles } from '@src/lib/projectSession/projectFiles'
 import { S } from '@src/machines/utils'
-import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
+import type { ProjectOperationsService } from '@src/lib/projectSession/projectOperations'
+import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import toast from 'react-hot-toast'
 import { NIL as uuidNIL } from 'uuid'
@@ -42,7 +43,8 @@ export interface ZookeeperSessionControllerDependencies {
   project: ReadonlySignal<ZDSProject | undefined>
   projectId: string | undefined
   projectPath: string
-  systemIO: SystemIORegistryService
+  session: Pick<ProjectSessionService, 'refreshProject' | 'openFile'>
+  projectOperations: Pick<ProjectOperationsService, 'applyEdits'>
 }
 
 export interface QueuedMessage {
@@ -112,7 +114,10 @@ class SessionController implements ZookeeperSessionController {
   private readonly persistenceOperations = new Set<Promise<void>>()
   private reconnectAfterLookup = false
   private reconnectTimer: ReturnType<typeof setTimeout> | undefined
+  private autoResumeAfterDisconnect = false
+  private autoResumeAttemptedForTurn = false
   private resumeInterruptedTurnPending = false
+  private userStoppedTurn = false
   private savedConversationId: string | undefined
   private readonly savingConversationIds = new Set<string>()
   private steeredId: string | null = null
@@ -146,7 +151,8 @@ class SessionController implements ZookeeperSessionController {
       },
       isSessionCurrent: () => this.active && this.getZdsProject() !== undefined,
       kclManager: deps.kclManager,
-      systemIOActor: deps.systemIO.actor,
+      session: deps.session,
+      projectOperations: deps.projectOperations,
       onQueueIdle: () => {
         const snapshot = this.actor.getSnapshot()
         this.continueCheck(snapshot, this.resumeInterruptedTurnPending)
@@ -257,14 +263,25 @@ class SessionController implements ZookeeperSessionController {
     if (!this.active) {
       return
     }
+    this.stopPendingResume()
     this.steeredId = id
     this.actor.send({ type: ZookeeperManagerTransitions.Interrupt })
   }
 
   cancel() {
     if (this.active) {
+      this.stopPendingResume()
       this.actor.send({ type: ZookeeperManagerTransitions.Cancel })
     }
+  }
+
+  private stopPendingResume() {
+    this.userStoppedTurn = true
+    this.autoResumeAfterDisconnect = false
+    this.resumeInterruptedTurnPending = false
+    this.isResumingInterruptedTurnSignal.value = false
+    this.continueCheckGeneration += 1
+    this.continueCheckInFlight = false
   }
 
   checkBillingAccess() {
@@ -324,6 +341,7 @@ class SessionController implements ZookeeperSessionController {
     ) {
       return
     }
+    this.userStoppedTurn = false
     this.resumeInterruptedTurnPending = true
     this.isResumingInterruptedTurnSignal.value = true
     this.continueCheck(snapshot, true)
@@ -338,6 +356,8 @@ class SessionController implements ZookeeperSessionController {
     this.activeSubmission = undefined
     this.continueCheckGeneration += 1
     this.continueCheckInFlight = false
+    this.autoResumeAfterDisconnect = false
+    this.autoResumeAttemptedForTurn = false
     this.resumeInterruptedTurnPending = false
     this.isResumingInterruptedTurnSignal.value = false
     this.reconnectAfterLookup = false
@@ -546,6 +566,8 @@ class SessionController implements ZookeeperSessionController {
       return false
     }
 
+    this.userStoppedTurn = false
+    this.autoResumeAttemptedForTurn = false
     this.actor.send({
       type: ZookeeperManagerTransitions.MessageSend,
       prompt,
@@ -570,6 +592,18 @@ class SessionController implements ZookeeperSessionController {
   private handleSnapshot(snapshot: ZookeeperSnapshot) {
     if (!this.active) {
       return
+    }
+
+    if (snapshot.context.setupFailed) {
+      this.autoResumeAfterDisconnect = false
+    } else if (
+      snapshot.context.abruptlyClosed &&
+      this.wasPromptRunning &&
+      !this.userStoppedTurn &&
+      !this.autoResumeAttemptedForTurn &&
+      hasBeenInterruptedOnLast(snapshot.context.conversation?.exchanges ?? [])
+    ) {
+      this.autoResumeAfterDisconnect = true
     }
 
     try {
@@ -732,6 +766,19 @@ class SessionController implements ZookeeperSessionController {
       this.isResumingInterruptedTurnSignal.value = false
       return
     }
+    const interrupted = hasBeenInterruptedOnLast(
+      snapshot.context.conversation?.exchanges ?? []
+    )
+    if (
+      interrupted &&
+      this.autoResumeAfterDisconnect &&
+      !this.userStoppedTurn
+    ) {
+      this.autoResumeAfterDisconnect = false
+      this.autoResumeAttemptedForTurn = true
+      this.resumeInterruptedTurnPending = true
+      this.isResumingInterruptedTurnSignal.value = true
+    }
     if (
       this.continueCheckInFlight ||
       this.fileRequestProcessor.hasPendingRequests
@@ -739,10 +786,8 @@ class SessionController implements ZookeeperSessionController {
       return
     }
 
-    const interrupted = hasBeenInterruptedOnLast(
-      snapshot.context.conversation?.exchanges ?? []
-    )
     if (!interrupted) {
+      this.autoResumeAfterDisconnect = false
       const project = this.getProject()
       if (!project) {
         return
@@ -754,7 +799,7 @@ class SessionController implements ZookeeperSessionController {
       })
       return
     }
-    if (!resumeInterruptedTurn) {
+    if (!resumeInterruptedTurn && !this.resumeInterruptedTurnPending) {
       return
     }
 
@@ -769,7 +814,7 @@ class SessionController implements ZookeeperSessionController {
     const kclManager = this.deps.kclManager
     const editorCode = kclManager.code
     const editorPath = kclManager.path
-    this.isResumingInterruptedTurnSignal.value = resumeInterruptedTurn
+    this.isResumingInterruptedTurnSignal.value = true
     void collectProjectFiles({
       fileOperations: this.deps.fileOperations,
       selectedFileContents: editorCode,

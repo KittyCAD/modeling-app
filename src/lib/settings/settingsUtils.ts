@@ -59,6 +59,7 @@ import { NIL as uuidNIL, v4 } from 'uuid'
 const INITIALISM_MAPPING: Record<string, string> = {
   api: 'API',
   id: 'ID',
+  ssao: 'SSAO',
   ui: 'UI',
   url: 'URL',
 }
@@ -505,6 +506,10 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
     defineBooleanAppOnlyField(
       { category: 'modeling', field: 'enableTouchControls' },
       'enable_touch_controls'
+    ),
+    defineBooleanAppOnlyField(
+      { category: 'modeling', field: 'useLocalRenderer' },
+      'use_local_renderer'
     ),
     defineBooleanAppOnlyField(
       { category: 'modeling', field: 'showSketchGrid' },

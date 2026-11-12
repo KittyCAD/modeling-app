@@ -30,10 +30,11 @@ describe('PublishDialog', () => {
   beforeEach(() => {
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: vi.fn().mockResolvedValue([category]),
-      })
+      vi
+        .fn<typeof fetch>()
+        .mockImplementation(async () =>
+          Response.json({ items: [category], next_page: null })
+        )
     )
   })
 
@@ -194,10 +195,9 @@ describe('PublishDialog', () => {
       sort_order: 19,
       is_active: false,
     })
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: vi.fn().mockResolvedValue(categories),
-    } as unknown as Response)
+    vi.mocked(fetch).mockResolvedValueOnce(
+      Response.json({ items: categories, next_page: null })
+    )
 
     render(
       <Popover>
@@ -211,10 +211,13 @@ describe('PublishDialog', () => {
     expect(await screen.findByText('Category 17')).toBeVisible()
     expect(screen.getAllByRole('checkbox')).toHaveLength(18)
     expect(screen.queryByText('Inactive Makeathon')).not.toBeInTheDocument()
-    expect(fetch).toHaveBeenCalledWith(expect.any(String), {
-      cache: 'no-cache',
-      signal: expect.any(AbortSignal),
-    })
+    expect(fetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        cache: 'no-cache',
+        signal: expect.any(AbortSignal),
+      })
+    )
   })
 
   it('makes categories from later pages available for publishing', async () => {
@@ -238,7 +241,10 @@ describe('PublishDialog', () => {
     ).toBeVisible()
     expect(fetch).toHaveBeenLastCalledWith(
       expect.stringContaining('/projects/categories?page_token=more'),
-      { cache: 'no-cache', signal: expect.any(AbortSignal) }
+      expect.objectContaining({
+        cache: 'no-cache',
+        signal: expect.any(AbortSignal),
+      })
     )
   })
 

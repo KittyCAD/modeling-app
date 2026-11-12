@@ -10,6 +10,7 @@ import {
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
 } from '@src/lib/desktop'
+import { getProjectContents } from '@src/lib/projectSession/next/utils'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { FileAlreadyExists } from '@src/lib/fileSystem/fileOperations'
@@ -249,6 +250,41 @@ describe('desktop utilities', () => {
   })
 
   describe('listProjects', () => {
+    it('descends into KCL-named directories when choosing an entrypoint', async () => {
+      const { instance } = await buildTheWorldNode()
+      const projectPath = '/test/projects/project-without-kcl-files'
+      const folder = `${projectPath}/folder.kcl`
+      const nested = `${folder}/part.kcl`
+      const originalStat = mockElectron.stat.getMockImplementation()!
+      mockElectron.stat.mockImplementation((path: string) =>
+        path.endsWith('/main.kcl')
+          ? Promise.reject('ENOENT')
+          : originalStat(path === folder ? projectPath : path)
+      )
+      await expect(
+        getDefaultKclFileForDir(
+          {
+            ...testFileOperations,
+            stat: (path) =>
+              testFileOperations.stat(path === folder ? projectPath : path),
+          },
+          projectPath,
+          {
+            name: 'project-without-kcl-files',
+            path: projectPath,
+            children: [
+              {
+                name: 'folder.kcl',
+                path: folder,
+                children: [{ name: 'part.kcl', path: nested, children: null }],
+              },
+            ],
+          },
+          await instance
+        )
+      ).resolves.toBe(nested)
+    })
+
     it('preserves main.kcl created after discovery observed an empty project', async () => {
       const { instance } = await buildTheWorldNode()
       const projectPath = '/test/projects/project-without-kcl-files'
@@ -376,6 +412,33 @@ describe('desktop utilities', () => {
         'environment.txt',
         'directory1',
       ])
+    })
+
+    it('reads the complete project tree without creating settings or default files', async () => {
+      const contents = await getProjectContents(
+        testFileOperations,
+        '/test/projects/valid-project'
+      )
+
+      expect(contents.name).toBe('valid-project')
+      expect(contents.children.map((child) => child.name)).toContain(
+        'directory1'
+      )
+      expect(
+        contents.children
+          ?.find((child) => child.name === '.hidden-dir')
+          ?.children?.map((child) => child.name)
+      ).toEqual(['secret.txt'])
+      expect(contents.children.map((child) => child.name)).toEqual(
+        expect.arrayContaining([
+          'project.toml',
+          'settings.toml',
+          '.gitignore',
+          'dist',
+          'notes.txt',
+        ])
+      )
+      expect(mockElectron.writeFile).not.toHaveBeenCalled()
     })
 
     it('reads project title and ids from project.toml metadata', async () => {

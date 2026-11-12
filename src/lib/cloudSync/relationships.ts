@@ -91,8 +91,21 @@ type RelationshipContext = {
   realizations: readonly ProjectLibraryRealization[]
 }
 
+const CLOUD_PROJECT_RELATIONSHIP_ID_PREFIX = 'cloud:'
+
+export function parseCloudProjectRelationshipId(
+  id: string
+): string | undefined {
+  if (!id.startsWith(CLOUD_PROJECT_RELATIONSHIP_ID_PREFIX)) {
+    return undefined
+  }
+
+  const remoteProjectId = id.slice(CLOUD_PROJECT_RELATIONSHIP_ID_PREFIX.length)
+  return remoteProjectId || undefined
+}
+
 function cloudProjectRelationshipId(remoteProjectId: string) {
-  return `cloud:${remoteProjectId}`
+  return `${CLOUD_PROJECT_RELATIONSHIP_ID_PREFIX}${remoteProjectId}`
 }
 
 function realizationIsInCloudLibrary(realization: ProjectLibraryRealization) {

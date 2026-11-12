@@ -1,9 +1,9 @@
+import { reportRejection } from '@src/lib/trap'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
 import {
-  getParentAbsolutePath,
   getRouterSearchFromRequestUrl,
   PATHS,
   parseProjectRoute,
@@ -11,16 +11,9 @@ import {
 } from '@src/lib/paths'
 import { getProjectLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
-import {
-  getOnboardingChildRoute,
-  isRequestedFileLoaded,
-} from '@src/lib/routeLoaderNavigation'
+import { getOnboardingChildRoute } from '@src/lib/routeLoaderNavigation'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import type { HomeLoaderData } from '@src/lib/types'
-import {
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   projectLibrarySettingDefaultPoliciesValueSpec,
@@ -30,6 +23,10 @@ import { settingsValueSpec } from '@src/registry/contracts/settings'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
+import { hasProjectShellFeature } from '@src/lib/projectSession/next/feature'
+import { waitForUserFeaturesSettled } from '@src/machines/userFeaturesMachine'
+import { readProject } from '@src/lib/projectSession/next/utils'
+import { projectSessionService } from '@src/lib/projectSession/next/contract'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
@@ -74,6 +71,70 @@ export const baseLoader =
     return redirect(PATHS.HOME + routerSearch)
   }
 
+/** Settle the shared feature grant before either experimental route accesses resources. */
+async function canOpenProjectShell(app: App, signal: AbortSignal) {
+  await waitForUserFeaturesSettled(app.userFeatures.actor, undefined, signal)
+  signal.throwIfAborted()
+  return hasProjectShellFeature(app.userFeatures)
+}
+
+/**
+ * `/project/:id` identifies a cloud project by its API ID, never a disk path or
+ * an internal cloud relationship ID. Cloud opening is reserved for a follow-up;
+ * this route must not fall through to filesystem discovery in the meantime.
+ */
+export const projectLoader =
+  ({ app }: { app: App }): LoaderFunction =>
+  async ({ request, params }) => {
+    if (!(await canOpenProjectShell(app, request.signal)))
+      return redirect(PATHS.HOME)
+    if (!params.id)
+      return Promise.reject(new Error('No cloud project ID provided'))
+    return Promise.reject(
+      new Error('Cloud projects are not yet supported by this route')
+    )
+  }
+
+/**
+ * Open the directory identified by `/local/:path`, without opening an editor.
+ * Reading assembles the full tree and optional TOML metadata without creating files
+ * or applying project settings. Files are rejected rather than promoted to their
+ * parent directory. Failed or cancelled discovery leaves the selection intact.
+ */
+export const localLoader =
+  ({ app }: { app: App }): LoaderFunction =>
+  async ({ request, params }) => {
+    if (!(await canOpenProjectShell(app, request.signal)))
+      return redirect(PATHS.HOME)
+    const { path } = params
+    if (!path)
+      return Promise.reject(new Error('No local directory path provided'))
+
+    const assertCurrent = () => request.signal.throwIfAborted()
+    const fileOperations = app.registry.get(fileOperationsService)
+    const projectSessions = app.registry.get(projectSessionService)
+    // A grant can be revoked (and granted again) while discovery is awaiting IO.
+    // Never publish through a captured service that the registry has disposed.
+    const ownsSession = () =>
+      hasProjectShellFeature(app.userFeatures) &&
+      app.registry.optional(projectSessionService) === projectSessions
+
+    const library = await getProjectLibraryOwnership(
+      app.settings.get().app.libraries.current,
+      path
+    )
+    assertCurrent()
+    if (!ownsSession()) return redirect(PATHS.HOME)
+    const project = await readProject(fileOperations, path, {
+      signal: request.signal,
+      library,
+    })
+    assertCurrent()
+    if (!ownsSession()) return redirect(PATHS.HOME)
+    // Consumers retain this session instead of resolving the global selection again.
+    return projectSessions.openProject(project)
+  }
+
 export const fileLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async (routerData) => {
@@ -83,7 +144,6 @@ export const fileLoader =
     } = app
     const { kclManager } = app.singletons
     const { params } = routerData
-
     // Old web bookmarks encode /browser/... as the file route's id. These
     // paths no longer identify projects, so return home before filesystem I/O.
     if (params.id?.startsWith('/browser')) {
@@ -225,44 +285,12 @@ export const fileLoader =
     )
     assertCurrent()
 
-    const requestedFileName =
-      app.systemIOActor.getSnapshot().context.requestedFileName
-    if (
-      isRequestedFileLoaded({
-        requestedFileName,
-        projectName,
-        projectPath,
-        currentFilePath,
-      })
-    ) {
-      requestedFileName.onProjectLoaderComplete?.()
-    }
-
-    const requestedProjectDirectoryPath =
-      projectRef.projectIORefSignal.value.libraryPath ??
-      getParentAbsolutePath(project.path)
-    const systemIOSnapshot = app.systemIOActor.getSnapshot()
-    // Same-directory file navigation should not restart SystemIO's own
-    // post-mutation folder refresh.
-    const shouldSyncProjectDirectory =
-      requestedProjectDirectoryPath !==
-        systemIOSnapshot.context.projectDirectoryPath ||
-      (systemIOSnapshot.matches(SystemIOMachineStates.idle) &&
-        systemIOSnapshot.context.folders === undefined)
-    if (shouldSyncProjectDirectory) {
-      app.systemIOActor.send({
-        type: SystemIOMachineEvents.setProjectDirectoryPath,
-        data: {
-          requestedProjectDirectoryPath,
-        },
-      })
-    }
+    void app.projectLibraries.refreshProjects().catch(reportRejection)
   }
 
 // Loads the settings and by extension the projects in the default directory
 // and returns them to the Home route, along with any errors that occurred
 
-// Should also clear currently loaded projects in SystemIO. They may be stale.
 export const homeLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async (): Promise<HomeLoaderData | Response> => {

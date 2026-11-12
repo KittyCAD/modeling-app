@@ -1203,8 +1203,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -3.271340065307273,
-          "y": 32.34700106978268,
+          "x": -3.2714981841212047,
+          "y": 32.34698507793137,
           "z": 0.0
         }
       }
@@ -1225,17 +1225,17 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000000007049916206369744,
+            "x": 0.000000000000007754907827006718,
             "y": -0.0
           },
-          "radius": 32.512000000483,
+          "radius": 32.512000000009586,
           "start": {
             "unit": "degrees",
-            "value": 95.7748431655091
+            "value": 95.77512323925224
           },
           "end": {
             "unit": "degrees",
-            "value": 188.10729226579136
+            "value": 188.1074556585883
           },
           "relative": false
         }
@@ -1248,8 +1248,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 23.087227462069087,
-          "y": -26.37465890170054,
+          "x": 23.087102674389183,
+          "y": -26.374768133659284,
           "z": 0.0
         }
       }
@@ -1266,14 +1266,14 @@ description: Artifact commands artificial-heart.kcl
             "x": -0.0,
             "y": -0.0
           },
-          "radius": 35.05200000094671,
+          "radius": 35.052000000029636,
           "start": {
             "unit": "degrees",
-            "value": -48.80251022148211
+            "value": -48.8027813058592
           },
           "end": {
             "unit": "degrees",
-            "value": -21.46367252196093
+            "value": -21.46366512291583
           },
           "relative": false
         }
@@ -1286,8 +1286,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 1.2039394610216354,
-          "y": 30.469456157890725,
+          "x": 1.2041209087638785,
+          "y": 30.469159153132846,
           "z": 0.0
         }
       }
@@ -1301,17 +1301,17 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -2.760285918176547,
-            "y": 27.29277277326525
+            "x": -2.7603381944054,
+            "y": 27.292767486141766
           },
-          "radius": 5.0800000180348945,
+          "radius": 5.080000000278753,
           "start": {
             "unit": "degrees",
-            "value": 38.706513463662944
+            "value": 38.70229749236604
           },
           "end": {
             "unit": "degrees",
-            "value": 95.7737918649563
+            "value": 95.7749917213221
           },
           "relative": false
         }
@@ -1324,8 +1324,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 32.621135220272414,
-          "y": -12.825920666396833,
+          "x": 32.621136876581986,
+          "y": -12.825916453778389,
           "z": 0.0
         }
       }
@@ -1339,17 +1339,17 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 27.89340967186794,
-            "y": -10.967154639273149
+            "x": 27.893432780686037,
+            "y": -10.967095864878445
           },
-          "radius": 5.0800000004552714,
+          "radius": 5.080000000006855,
           "start": {
             "unit": "degrees",
-            "value": -21.46290834852768
+            "value": -21.463569591648504
           },
           "end": {
             "unit": "degrees",
-            "value": 38.70288020634042
+            "value": 38.701843345126136
           },
           "relative": false
         }
@@ -1362,8 +1362,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 17.859824969803363,
-          "y": -27.270817466543573,
+          "x": 17.860904419544447,
+          "y": -27.27154126107894,
           "z": 0.0
         }
       }
@@ -1377,17 +1377,17 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 19.741394097475574,
-            "y": -22.552120593306437
+            "x": 19.741163466522902,
+            "y": -22.55232247445764
           },
-          "radius": 5.0800002523333685,
+          "radius": 5.0800000039117865,
           "start": {
             "unit": "degrees",
-            "value": -111.73952387815586
+            "value": -111.72361849677358
           },
           "end": {
             "unit": "degrees",
-            "value": -48.804633158227475
+            "value": -48.80304663918528
           },
           "relative": false
         }
@@ -1400,8 +1400,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -32.18706585902426,
-          "y": -4.585077468047026,
+          "x": -32.187052783417336,
+          "y": -4.585169257242598,
           "z": 0.0
         }
       }
@@ -1415,32 +1415,19 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -27.157882277273007,
-            "y": -3.8683399975973893
+            "x": -27.15783146837279,
+            "y": -3.8686966717013767
           },
-          "radius": 5.080000009892021,
+          "radius": 5.0800000001506405,
           "start": {
             "unit": "degrees",
-            "value": -171.8890721856215
+            "value": -171.89208990239226
           },
           "end": {
             "unit": "degrees",
-            "value": -111.71035686216136
+            "value": -111.71997261189618
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -29.03704900121456,
-          "y": -8.58799394609805,
-          "z": 0.0
         }
       }
     },
@@ -1453,8 +1440,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 17.85982496980336,
-            "y": -27.270817466543576,
+            "x": 17.860904419544443,
+            "y": -27.271541261078944,
             "z": 0.0
           },
           "relative": false
@@ -1468,8 +1455,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 31.85783647069192,
-          "y": -7.790722652281108,
+          "x": 31.857917060764667,
+          "y": -7.790735621899515,
           "z": 0.0
         }
       }
@@ -1483,8 +1470,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.2039394610216392,
-            "y": 30.46945615789073,
+            "x": 1.2041209087638831,
+            "y": 30.469159153132846,
             "z": 0.0
           },
           "relative": false
@@ -1513,8 +1500,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.00000000000000000024431413905482955,
-            "y": 0.0000000000000000030927947264215504
+            "x": 0.00000000000000000018592383852776483,
+            "y": 0.0000000000000000003404308578885764
           },
           "radius": 15.493999999999998,
           "start": {
@@ -1694,7 +1681,7 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.00000000000000002669004540542594,
+          "x": -0.000000000000000007140679708467878,
           "y": -17.779999999999998,
           "z": 0.0
         }
@@ -1716,7 +1703,7 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000000026847368845328645,
+            "x": 0.000000000000000007282277501879334,
             "y": -19.049999999999997,
             "z": 0.0
           },
@@ -1733,32 +1720,19 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 11.401575074760157,
-            "y": -19.048189473607664
+            "x": 11.401079635587458,
+            "y": -19.04954738767167
           },
-          "radius": 11.401575218512479,
+          "radius": 11.401079644571603,
           "start": {
             "unit": "degrees",
-            "value": -179.9909016500417
+            "value": -179.99772541048884
           },
           "end": {
             "unit": "degrees",
-            "value": -68.97143432648
+            "value": -68.96611498543211
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 23.135071381698182,
-          "y": -27.99820617861604,
-          "z": 0.0
         }
       }
     },
@@ -1771,17 +1745,17 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 24.941614478449697,
-            "y": -54.259193489256084
+            "x": 24.941728816405707,
+            "y": -54.259509418937114
           },
-          "radius": 26.323051732084902,
+          "radius": 26.322793523441423,
           "start": {
             "unit": "degrees",
-            "value": 93.93528541251435
+            "value": 111.0357418192521
           },
           "end": {
             "unit": "degrees",
-            "value": 111.03599295624743
+            "value": 93.93547179411124
           },
           "relative": false
         }
@@ -1975,7 +1949,10 @@ description: Artifact commands artificial-heart.kcl
         "sectional": false,
         "tolerance": 0.0000001,
         "body_type": "solid",
-        "relative_to": "trajectory_curve"
+        "relative_to": null,
+        "version": 2,
+        "translate_profile_to_path": false,
+        "orient_profile_perpendicular": false
       }
     },
     {
@@ -2127,7 +2104,7 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.000000000000012059673036937999,
+          "x": -0.000000000000000010205766422822083,
           "y": 17.779999999999998,
           "z": 0.0
         }
@@ -2149,7 +2126,7 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000012115064948435507,
+            "x": 0.00000000000000001062736947835861,
             "y": 19.049999999999997,
             "z": 0.0
           },
@@ -2166,32 +2143,19 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 12.292097682357756,
-            "y": 19.048300122602672
+            "x": 12.292336111792393,
+            "y": 19.049575023741625
           },
-          "radius": 12.292097799895986,
+          "radius": 12.29233611913863,
           "start": {
             "unit": "degrees",
-            "value": 179.99207655174467
+            "value": 179.99801914414257
           },
           "end": {
             "unit": "degrees",
-            "value": 83.99999999999892
+            "value": 84.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 13.576971763433198,
-          "y": 31.273060407731908,
-          "z": 0.0
         }
       }
     },
@@ -2204,17 +2168,17 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 33.419430109352746,
-            "y": 219.99715806305224
+            "x": 33.41461049389198,
+            "y": 219.998505378844
           },
-          "radius": 189.76434909915096,
+          "radius": 189.7636538591731,
           "start": {
             "unit": "degrees",
-            "value": -96.00202878856017
+            "value": -96.00050768943005
           },
           "end": {
             "unit": "degrees",
-            "value": -93.87753037033856
+            "value": -93.87609161502324
           },
           "relative": false
         }
@@ -2408,7 +2372,10 @@ description: Artifact commands artificial-heart.kcl
         "sectional": false,
         "tolerance": 0.0000001,
         "body_type": "solid",
-        "relative_to": "trajectory_curve"
+        "relative_to": null,
+        "version": 2,
+        "translate_profile_to_path": false,
+        "orient_profile_perpendicular": false
       }
     },
     {
@@ -2563,7 +2530,7 @@ description: Artifact commands artificial-heart.kcl
         "path": "[uuid]",
         "to": {
           "x": 38.099999999999994,
-          "y": 6.350000000000001,
+          "y": 6.35,
           "z": 0.0
         }
       }
@@ -2601,7 +2568,7 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 12.436155422624678,
+            "x": 12.435569959789428,
             "y": 8.89,
             "z": 0.0
           },
@@ -2618,32 +2585,19 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 12.435168122090293,
-            "y": 13.235418977664661
+            "x": 12.435446524088908,
+            "y": 13.236204728406982
           },
-          "radius": 4.345419089824425,
+          "radius": 4.34620473015982,
           "start": {
             "unit": "degrees",
-            "value": -89.98698211770862
+            "value": -89.99837275390345
           },
           "end": {
             "unit": "degrees",
-            "value": -158.80024982547798
+            "value": -158.78351399490586
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 8.383823500071156,
-          "y": 11.664026283356515,
-          "z": 0.0
         }
       }
     },
@@ -2656,8 +2610,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 6.106294994979952,
-            "y": 17.528191615967348,
+            "x": 6.1066586842036195,
+            "y": 17.528267288245743,
             "z": 0.0
           },
           "relative": false
@@ -2673,8 +2627,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000000000000000004325272045783167,
-            "y": 17.528191615967348,
+            "x": -0.0000000000000000000000000000052811054617788784,
+            "y": 17.528267288245743,
             "z": 0.0
           },
           "relative": false
@@ -2688,8 +2642,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 38.099999999999994,
-          "y": -6.350000000000001,
+          "x": 38.09999999999999,
+          "y": -6.349999999999998,
           "z": 0.0
         }
       }
@@ -2703,8 +2657,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.099999999999994,
-            "y": -8.889999999999715,
+            "x": 38.09999999999999,
+            "y": -8.889999999999997,
             "z": 0.0
           },
           "relative": false
@@ -2720,8 +2674,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 12.436155370154395,
-            "y": -8.889999999999135,
+            "x": 12.435569952928995,
+            "y": -8.889999999999992,
             "z": 0.0
           },
           "relative": false
@@ -2737,32 +2691,19 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 12.435168122090051,
-            "y": -13.23541897766471
+            "x": 12.435446524088904,
+            "y": -13.236204728406982
           },
-          "radius": 4.3454190898134195,
+          "radius": 4.346204730159633,
           "start": {
             "unit": "degrees",
-            "value": 89.98698280954336
+            "value": 89.99837284434412
           },
           "end": {
             "unit": "degrees",
-            "value": 158.8002504897548
+            "value": 158.78351407911737
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 8.38382348183707,
-          "y": -11.664026330321285,
-          "z": 0.0
         }
       }
     },
@@ -2775,8 +2716,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 6.106294994980226,
-            "y": -17.528191615967348,
+            "x": 6.106658684203619,
+            "y": -17.528267288245743,
             "z": 0.0
           },
           "relative": false
@@ -2792,8 +2733,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0000000000000000000000000043037254575945655,
-            "y": -17.528191615967348,
+            "x": -0.0000000000000000000000000000052812760424609066,
+            "y": -17.528267288245743,
             "z": 0.0
           },
           "relative": false
@@ -2807,8 +2748,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 10.160000000000002,
-          "y": 0.00000000000000012914955125958342,
+          "x": 10.16,
+          "y": 0.0000000000000000001278204383344118,
           "z": 0.0
         }
       }
@@ -2822,7 +2763,7 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 10.160000000000002,
+            "x": 10.16,
             "y": 6.35,
             "z": 0.0
           },
@@ -2840,7 +2781,7 @@ description: Artifact commands artificial-heart.kcl
           "type": "line",
           "end": {
             "x": 38.099999999999994,
-            "y": 6.350000000000001,
+            "y": 6.35,
             "z": 0.0
           },
           "relative": false
@@ -2854,8 +2795,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.000000000000000000000000004325261786583357,
-          "y": 17.528191615967348,
+          "x": -0.00000000000000000000000000000528110431623102,
+          "y": 17.528267288245743,
           "z": 0.0
         }
       }
@@ -2869,8 +2810,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000000000000000004318079590520423,
-            "y": -17.528191615967348,
+            "x": -0.000000000000000000000000000005281161176458363,
+            "y": -17.528267288245743,
             "z": 0.0
           },
           "relative": false
@@ -2885,7 +2826,7 @@ description: Artifact commands artificial-heart.kcl
         "path": "[uuid]",
         "to": {
           "x": 10.16,
-          "y": 0.00000000000000012914955125983076,
+          "y": 0.00000000000000000012782043833441194,
           "z": 0.0
         }
       }
@@ -2899,8 +2840,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 10.159999999999998,
-            "y": -6.350000000000001,
+            "x": 10.16,
+            "y": -6.349999999999998,
             "z": 0.0
           },
           "relative": false
@@ -2916,8 +2857,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.099999999999994,
-            "y": -6.350000000000001,
+            "x": 38.09999999999999,
+            "y": -6.349999999999998,
             "z": 0.0
           },
           "relative": false
@@ -3062,8 +3003,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.9182388606345637,
-          "y": -18.032537982674324,
+          "x": -0.9177016128047496,
+          "y": -18.032861700183147,
           "z": 0.0
         }
       }
@@ -3084,17 +3025,17 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 12.060212486551748,
-            "y": 3.5053615700346747
+            "x": 12.060212486551734,
+            "y": 3.5053615700346943
           },
-          "radius": 25.14600001021762,
+          "radius": 25.14600000015965,
           "start": {
             "unit": "degrees",
-            "value": -121.07260699507218
+            "value": -121.07117781650375
           },
           "end": {
             "unit": "degrees",
-            "value": -0.9950865697668126
+            "value": -0.9956855624100848
           },
           "relative": false
         }
@@ -3107,8 +3048,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.918238860634561,
-          "y": -14.987462017325685,
+          "x": 0.9177016128047496,
+          "y": -14.987138299816852,
           "z": 0.0
         }
       }
@@ -3122,17 +3063,17 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000000001762479051592436,
+            "x": 0.0000000000000001762479051592436,
             "y": -16.509999999999998
           },
-          "radius": 1.7780001445065825,
+          "radius": 1.7780000022579145,
           "start": {
             "unit": "degrees",
-            "value": 58.905926160472156
+            "value": 58.92613882755348
           },
           "end": {
             "unit": "degrees",
-            "value": 238.90592616047218
+            "value": 238.92613882755344
           },
           "relative": false
         }
@@ -3145,8 +3086,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.9182388606345607,
-          "y": -14.987462017325685,
+          "x": 0.9177016128047497,
+          "y": -14.987138299816852,
           "z": 0.0
         }
       }
@@ -3160,17 +3101,17 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 12.060212486551743,
-            "y": 3.505361570034669
+            "x": 12.060212486551745,
+            "y": 3.505361570034683
           },
-          "radius": 21.590000011900546,
+          "radius": 21.590000000185945,
           "start": {
             "unit": "degrees",
-            "value": -121.06907127930984
+            "value": -121.07073585199517
           },
           "end": {
             "unit": "degrees",
-            "value": -0.9965684475861192
+            "value": -0.9958707973310956
           },
           "relative": false
         }
@@ -3185,17 +3126,17 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 35.424683473951085,
-            "y": 3.0992582119360934
+            "x": 35.42468346429574,
+            "y": 3.099258212104049
           },
-          "radius": 1.7780000253838544,
+          "radius": 1.7780000003966239,
           "start": {
             "unit": "degrees",
-            "value": 179.0139105454732
+            "value": 179.00543907818158
           },
           "end": {
             "unit": "degrees",
-            "value": -0.9860894545270449
+            "value": -0.994560921818394
           },
           "relative": false
         }
@@ -3652,8 +3593,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -29.63484519952827,
-          "y": 29.634845199528137,
+          "x": -29.634845199528204,
+          "y": 29.634845199528204,
           "z": 0.0
         }
       }
@@ -3674,32 +3615,19 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -58.37323521827325,
-            "y": 0.899596043430862
+            "x": -58.3718610912073,
+            "y": 0.898221916364727
           },
-          "radius": 40.64000006068516,
+          "radius": 40.640000000948206,
           "start": {
             "unit": "degrees",
-            "value": 44.99686885716394
+            "value": 44.99960860646257
           },
           "end": {
             "unit": "degrees",
-            "value": 210.17313074197438
+            "value": 210.1684606788657
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -93.50694616520929,
-          "y": -19.526660689834923,
-          "z": 0.0
         }
       }
     },
@@ -3712,8 +3640,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -53.0469793917674,
-            "y": -89.13133609170097,
+            "x": -53.04749110656302,
+            "y": -89.1316335512544,
             "z": 0.0
           },
           "relative": false
@@ -4034,7 +3962,10 @@ description: Artifact commands artificial-heart.kcl
         "sectional": false,
         "tolerance": 0.0000001,
         "body_type": "solid",
-        "relative_to": "trajectory_curve"
+        "relative_to": null,
+        "version": 2,
+        "translate_profile_to_path": false,
+        "orient_profile_perpendicular": false
       }
     },
     {
@@ -4161,7 +4092,10 @@ description: Artifact commands artificial-heart.kcl
         "sectional": false,
         "tolerance": 0.0000001,
         "body_type": "solid",
-        "relative_to": "trajectory_curve"
+        "relative_to": null,
+        "version": 2,
+        "translate_profile_to_path": false,
+        "orient_profile_perpendicular": false
       }
     },
     {
@@ -4288,7 +4222,7 @@ description: Artifact commands artificial-heart.kcl
         "path": "[uuid]",
         "to": {
           "x": 20.32,
-          "y": -0.000000000000013040593805228561,
+          "y": -0.000000000000000010648730522883833,
           "z": 0.0
         }
       }
@@ -4310,7 +4244,7 @@ description: Artifact commands artificial-heart.kcl
           "type": "line",
           "end": {
             "x": 21.59,
-            "y": 0.00000000000001295058652593475,
+            "y": 0.000000000000000010586974917532565,
             "z": 0.0
           },
           "relative": false
@@ -4326,32 +4260,19 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 21.5919966224465,
-            "y": -26.003254105252438
+            "x": 21.590249601844874,
+            "y": -26.004859447827105
           },
-          "radius": 26.003254181906343,
+          "radius": 26.004859449024984,
           "start": {
             "unit": "degrees",
-            "value": 90.0043993739698
+            "value": 90.00054994076389
           },
           "end": {
             "unit": "degrees",
-            "value": 26.280628048042402
+            "value": 26.286511955764738
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 44.90745530107332,
-          "y": -14.489843663709777,
-          "z": 0.0
         }
       }
     },
@@ -4364,17 +4285,17 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 468.6092668183275,
-            "y": 194.80306833765695
+            "x": 468.60914905720205,
+            "y": 194.80280083753837
           },
-          "radius": 472.5745952725502,
+          "radius": 472.57504318832105,
           "start": {
             "unit": "degrees",
-            "value": -153.71234369709225
+            "value": -153.71260950883556
           },
           "end": {
             "unit": "degrees",
-            "value": -147.71084099618443
+            "value": -147.71085791208776
           },
           "relative": false
         }
@@ -4592,8 +4513,10 @@ description: Artifact commands artificial-heart.kcl
         "sectional": false,
         "tolerance": 0.0000001,
         "body_type": "solid",
-        "relative_to": "sketch_plane",
-        "version": 2
+        "relative_to": null,
+        "version": 2,
+        "translate_profile_to_path": false,
+        "orient_profile_perpendicular": false
       }
     },
     {
@@ -4921,8 +4844,10 @@ description: Artifact commands artificial-heart.kcl
         "sectional": false,
         "tolerance": 0.0000001,
         "body_type": "solid",
-        "relative_to": "sketch_plane",
-        "version": 2
+        "relative_to": null,
+        "version": 2,
+        "translate_profile_to_path": false,
+        "orient_profile_perpendicular": false
       }
     },
     {
@@ -5268,8 +5193,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -5.42471466293427,
-          "y": 31.09179981792518,
+          "x": -5.424875393765311,
+          "y": 31.092399673552965,
           "z": 0.0
         }
       }
@@ -5290,8 +5215,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.7233016491180577,
-            "y": 24.7420400057042,
+            "x": -3.723414111338791,
+            "y": 24.7424597204259,
             "z": 0.0
           },
           "relative": false
@@ -5305,8 +5230,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 3.7233018291014353,
-          "y": 24.742040677411307,
+          "x": 3.723414156324759,
+          "y": 24.742459888315828,
           "z": 0.0
         }
       }
@@ -5320,8 +5245,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 5.424714334747353,
-            "y": 31.091798593114945,
+            "x": 5.424875311700784,
+            "y": 31.092399367284003,
             "z": 0.0
           },
           "relative": false
@@ -5335,8 +5260,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -3.723301649118055,
-          "y": 24.7420400057042,
+          "x": -3.7234141113387897,
+          "y": 24.742459720425902,
           "z": 0.0
         }
       }
@@ -5350,55 +5275,17 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -1.2700000000000007,
-            "y": 25.399999999999995
-          },
-          "radius": 2.5400000660746236,
-          "start": {
-            "unit": "degrees",
-            "value": -164.9869311265686
-          },
-          "end": {
-            "unit": "degrees",
-            "value": -91.54211350886114
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 1.3383562012011663,
-          "y": 22.86091994973959,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 1.2699999999999991,
+            "x": -1.2700000000000005,
             "y": 25.4
           },
-          "radius": 2.54000001414824,
+          "radius": 2.540000004129662,
           "start": {
             "unit": "degrees",
-            "value": -88.45787609393308
+            "value": -164.99673277972434
           },
           "end": {
             "unit": "degrees",
-            "value": -15.013053186967348
+            "value": -91.54665551676062
           },
           "relative": false
         }
@@ -5411,8 +5298,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -1.3383557404471127,
-          "y": 22.860919937286663,
+          "x": 1.3385571355251942,
+          "y": 22.860925380446442,
           "z": 0.0
         }
       }
@@ -5426,17 +5313,17 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.000000000000042299497238218464,
-            "y": 72.38958004798945
+            "x": 1.2699999999999996,
+            "y": 25.4
           },
-          "radius": 49.54673923125022,
+          "radius": 2.5400000008843437,
           "start": {
             "unit": "degrees",
-            "value": -91.54786096562373
+            "value": -88.45334188418533
           },
           "end": {
             "unit": "degrees",
-            "value": -88.45213850136645
+            "value": -15.003263299520016
           },
           "relative": false
         }
@@ -5449,8 +5336,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -3.0717225202677185,
-          "y": 34.28802109383742,
+          "x": -1.338557020347646,
+          "y": 22.86092537733351,
           "z": 0.0
         }
       }
@@ -5464,17 +5351,55 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -2.9714773719376217,
+            "x": 0.000000000000010046130594076885,
+            "y": 72.38962570387037
+          },
+          "radius": 49.54678486978357,
+          "start": {
+            "unit": "degrees",
+            "value": -91.5480923840657
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -88.45190748269465
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -3.0720246409722582,
+          "y": 34.28800911283783,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -2.9714773719376213,
             "y": 31.75
           },
-          "radius": 2.5400000319935905,
+          "radius": 2.5400000019996445,
           "start": {
             "unit": "degrees",
-            "value": 92.26185667163284
+            "value": 92.2686770838349
           },
           "end": {
             "unit": "degrees",
-            "value": 195.01867800995066
+            "value": 195.00466950283018
           },
           "relative": false
         }
@@ -5487,8 +5412,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 5.424714334747349,
-          "y": 31.091798593114945,
+          "x": 5.42487531170078,
+          "y": 31.092399367284003,
           "z": 0.0
         }
       }
@@ -5502,32 +5427,19 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 2.9714773719376217,
+            "x": 2.9714773719376213,
             "y": 31.75
           },
-          "radius": 2.5400001353782167,
+          "radius": 2.5400000084611394,
           "start": {
             "unit": "degrees",
-            "value": -15.018706613103033
+            "value": -15.004676655169753
           },
           "end": {
             "unit": "degrees",
-            "value": 87.73814845690417
+            "value": 87.7313241988536
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 3.071722293091238,
-          "y": 34.28802110284638,
-          "z": 0.0
         }
       }
     },
@@ -5540,17 +5452,17 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.00000000000014945822357503855,
-            "y": -43.180714893620454
+            "x": 0.0000000002556965833511171,
+            "y": -43.1807147825184
           },
-          "radius": 77.52961069640523,
+          "radius": 77.52961059085544,
           "start": {
             "unit": "degrees",
-            "value": 87.72934754660903
+            "value": 87.72912396940988
           },
           "end": {
             "unit": "degrees",
-            "value": 92.27065262141024
+            "value": 92.27087607261318
           },
           "relative": false
         }
@@ -5563,7 +5475,7 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.9721989902377604,
+          "x": -2.9716577767589474,
           "y": 36.82999999999998,
           "z": 0.0
         }
@@ -5581,14 +5493,14 @@ description: Artifact commands artificial-heart.kcl
             "x": -2.9714773719376186,
             "y": 31.75
           },
-          "radius": 5.080000051253227,
+          "radius": 5.080000003203319,
           "start": {
             "unit": "degrees",
-            "value": 90.00813891392508
+            "value": 90.00203473127198
           },
           "end": {
             "unit": "degrees",
-            "value": 194.99716969238028
+            "value": 194.99929240858603
           },
           "relative": false
         }
@@ -5601,8 +5513,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -6.177000950834999,
-          "y": 24.085564071111303,
+          "x": -6.176927636296581,
+          "y": 24.085290457529002,
           "z": 0.0
         }
       }
@@ -5617,16 +5529,16 @@ description: Artifact commands artificial-heart.kcl
           "type": "arc",
           "center": {
             "x": -1.2700000000000038,
-            "y": 25.399999999999995
+            "y": 25.4
           },
-          "radius": 5.080000014040259,
+          "radius": 5.080000000877501,
           "start": {
             "unit": "degrees",
-            "value": -165.00425984754546
+            "value": -165.00106498047464
           },
           "end": {
             "unit": "degrees",
-            "value": -90.00000243937768
+            "value": -90.00000183342077
           },
           "relative": false
         }
@@ -5639,8 +5551,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 1.2699996606118886,
-          "y": 20.320000000000014,
+          "x": 1.2699997895454838,
+          "y": 20.320000000000007,
           "z": 0.0
         }
       }
@@ -5657,14 +5569,14 @@ description: Artifact commands artificial-heart.kcl
             "x": 1.2699999999999994,
             "y": 25.4
           },
-          "radius": 5.079999999999996,
+          "radius": 5.079999999999995,
           "start": {
             "unit": "degrees",
-            "value": -90.00000382785558
+            "value": -90.00000237365266
           },
           "end": {
             "unit": "degrees",
-            "value": -14.99652518378779
+            "value": -14.99913128603075
           },
           "relative": false
         }
@@ -5677,8 +5589,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 7.8784578224262924,
-          "y": 30.435487562777137,
+          "x": 7.878399882878909,
+          "y": 30.435271329442546,
           "z": 0.0
         }
       }
@@ -5692,17 +5604,17 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 2.971477371937621,
+            "x": 2.9714773719376204,
             "y": 31.75
           },
-          "radius": 5.080000008768857,
+          "radius": 5.080000000548044,
           "start": {
             "unit": "degrees",
-            "value": -14.996633507071303
+            "value": -14.999158369891019
           },
           "end": {
             "unit": "degrees",
-            "value": 89.99186384876965
+            "value": 89.99796595968746
           },
           "relative": false
         }
@@ -5715,8 +5627,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -7.8784455182591415,
-          "y": 30.4354416430002,
+          "x": -7.87839680701227,
+          "y": 30.435259850151983,
           "z": 0.0
         }
       }
@@ -5730,8 +5642,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -6.177000950835008,
-            "y": 24.085564071111303,
+            "x": -6.17692763629659,
+            "y": 24.085290457529,
             "z": 0.0
           },
           "relative": false
@@ -5745,8 +5657,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 6.176982936248281,
-          "y": 24.085496839758317,
+          "x": 6.176923132450934,
+          "y": 24.08527364894813,
           "z": 0.0
         }
       }
@@ -5760,8 +5672,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.878457822426296,
-            "y": 30.435487562777137,
+            "x": 7.878399882878915,
+            "y": 30.435271329442546,
             "z": 0.0
           },
           "relative": false
@@ -5775,7 +5687,7 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -1.2700002162818782,
+          "x": -1.2700001625560873,
           "y": 20.32,
           "z": 0.0
         }
@@ -5790,7 +5702,7 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.2699996606118886,
+            "x": 1.2699997895454838,
             "y": 20.320000000000007,
             "z": 0.0
           },
@@ -5805,7 +5717,7 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.9721989902377604,
+          "x": -2.9716577767589474,
           "y": 36.829999999999984,
           "z": 0.0
         }
@@ -5820,7 +5732,7 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.972198745289711,
+            "x": 2.9716577154966033,
             "y": 36.829999999999984,
             "z": 0.0
           },

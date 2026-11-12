@@ -1,18 +1,20 @@
+import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import {
   defineRegistryItem,
   pluginsValueSpec,
+  provideService,
   Registry,
   type RegistryItem,
   Slot,
 } from '@kittycad/registry'
-import { computed, effect, type Signal, signal } from '@preact/signals-core'
+import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { KclManager } from '@src/lang/KclManager'
 import { ZDSProject } from '@src/lib/projectSession'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
-import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
+import { createProjectCommands } from '@src/lib/homeProjects/commands'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
@@ -20,10 +22,10 @@ import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
-import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
 import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
+import { takeViewportScreenshot } from '@src/lib/screenshot'
 import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { onActiveWasmInstance } from '@src/lib/wasmLifecycle'
@@ -32,10 +34,6 @@ import {
   type PreparedZookeeperPatchFileReplay,
 } from '@src/lib/zookeeper/editorPlugin'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
-import {
-  type SystemIOActor,
-  SystemIOMachineEvents,
-} from '@src/machines/systemIO/utils'
 import {
   UserFeaturesTransition,
   userFeaturesContextHas,
@@ -55,6 +53,7 @@ import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engine
 import {
   type FileOperationsRegistryService,
   fileOperationsService,
+  projectOperationsService,
 } from '@src/registry/contracts/fileOperations'
 import {
   homeProjectActionsService,
@@ -68,6 +67,7 @@ import { keymapService } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import {
   getProjectLibraryCreateProjectOperation,
+  projectLibrariesService,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import {
@@ -78,11 +78,11 @@ import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
-import { systemIOService } from '@src/registry/contracts/systemIO'
 import {
   type UserFeaturesRegistryService,
   userFeaturesService,
 } from '@src/registry/contracts/userFeatures'
+import { viewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import {
   type ZdsPluginActivationSetting,
@@ -92,9 +92,11 @@ import {
   appRegistryOverridesSlot,
   coreRegistryItems,
 } from '@src/registry/registry'
-import type { SnapshotFrom, Subscription } from 'xstate'
+import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
+import type { SnapshotFrom } from 'xstate'
 
 const appCommandsSlot = new Slot()
+const appViewportScreenshotSlot = new Slot()
 
 type AppRegistryOptions = {
   registryOverrides?: readonly RegistryItem[]
@@ -165,7 +167,7 @@ export class App implements AppSubsystems {
 
   declare readonly interactionPerformance?: InteractionPerformanceService
 
-  private get projectSession(): ProjectSessionService {
+  public get projectSession(): ProjectSessionService {
     return this.registry.get(projectSession)
   }
   public get projectSignal(): Signal<ZDSProject | undefined> {
@@ -209,12 +211,12 @@ export class App implements AppSubsystems {
   layout: AppLayoutSystem
   /** The registry system for the application */
   registry: AppRegistrySystem
-  /**
-   * The interface to reading/writing to IO.
-   * TODO: We have agreed to move away from this XState approach, towards a class + signals approach.
-   */
-  get systemIOActor(): SystemIOActor {
-    return this.registry.get(systemIOService).actor
+  get projectOperations() {
+    return this.registry.get(projectOperationsService)
+  }
+
+  get projectLibraries() {
+    return this.registry.get(projectLibrariesService)
   }
 
   private activeWasmInstance: ModuleType | undefined
@@ -270,6 +272,7 @@ export class App implements AppSubsystems {
     appRegistry.configure([
       appRegistryOverridesSlot.of(...registryOverrides),
       appCommandsSlot.of(),
+      appViewportScreenshotSlot.of(),
       engineSceneRuntimeExtensionsSlot.of(),
       ...coreRegistryItems,
     ])
@@ -353,8 +356,6 @@ export class App implements AppSubsystems {
     }
   }
 
-  private unsubscribeSystemIO: Subscription | undefined
-
   async openProject(
     projectIORef: Project,
     assertCurrent: () => void = () => {}
@@ -386,7 +387,11 @@ export class App implements AppSubsystems {
       }
 
       const disposeFSHistory = buildFSHistoryExtension(
-        this.systemIOActor,
+        {
+          fileOperations: this.fileOperations,
+          projectSession: this.projectSession,
+          projectLibraries: this.projectLibraries,
+        },
         executingEditor
       )
       const disposeZookeeperHistory = buildZookeeperHistoryExtension({
@@ -417,9 +422,7 @@ export class App implements AppSubsystems {
         onProjectFilesReplay: async (replayFiles) => {
           await project.syncReplayedFilesToRust(replayFiles)
           if (zookeeperReplayChangesProjectFileSet(replayFiles)) {
-            this.systemIOActor.send({
-              type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-            })
+            this.projectLibraries.refreshProjects().catch(reportRejection)
           }
         },
       })
@@ -427,28 +430,6 @@ export class App implements AppSubsystems {
       return () => {
         disposeFSHistory()
         disposeZookeeperHistory()
-      }
-    })
-
-    // TODO: Rework the systemIOActor to fit into the system better,
-    // so that the project doesn't need to subscribe to it.
-    this.unsubscribeSystemIO?.unsubscribe()
-    this.unsubscribeSystemIO = this.systemIOActor.subscribe(({ context }) => {
-      const foundProject = (context.folders ?? []).find(
-        (p) =>
-          p.name === projectIORefSignal.value.name &&
-          p.path === projectIORefSignal.value.path
-      )
-      if (foundProject && projectIORefSignal.value !== foundProject) {
-        projectIORefSignal.value = {
-          ...foundProject,
-          ...(projectIORefSignal.value.libraryPath
-            ? { libraryPath: projectIORefSignal.value.libraryPath }
-            : {}),
-          ...(projectIORefSignal.value.libraryType
-            ? { libraryType: projectIORefSignal.value.libraryType }
-            : {}),
-        }
       }
     })
 
@@ -483,10 +464,9 @@ export class App implements AppSubsystems {
   }
 
   closeProject() {
+    this.registry.optional(projectSessionService)?.closeProject()
     this.disposeProjectHistoryExtensions?.()
     this.disposeProjectHistoryExtensions = undefined
-    this.unsubscribeSystemIO?.unsubscribe()
-    this.unsubscribeSystemIO = undefined
     this.setCloudSyncOpenedProject(undefined)
     this.project?.close()
     this.project = undefined
@@ -559,7 +539,9 @@ export class App implements AppSubsystems {
             provideCommand
           ),
           ...createProjectCommands({
-            systemIOActor: this.systemIOActor,
+            projectOperations: this.projectOperations,
+            projectSession: this.projectSession,
+            projectLibraries: this.projectLibraries,
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
             getCurrentProjectPath: () =>
@@ -760,19 +742,29 @@ export class App implements AppSubsystems {
     // TODO: Remove this and make the app handle no executing editor,
     // so we don't need to stub with empty strings
     const kclManager = new KclManager('', '', {
-      machineManager: this.machineManager,
-      project: computed(() => this.project?.projectIORefSignal.value),
       fileOperations: this.fileOperations,
       textFileIO: this.projectSession.textFileIO,
       settings: this.settings.actor,
       wasmInstancePromise: this.wasmPromise,
       commandBar: this.commands.actor,
+      projectPath: signal(''),
       engineCommandManager: this.engineCommandManager,
       rustContext: this.rustContext,
       userFeatures: this.userFeatures,
       keymap: this.registry.get(keymapService),
     })
 
+    this.registry.reconfigure(appViewportScreenshotSlot, [
+      defineRegistryItem({
+        id: 'app.viewport-screenshot',
+        providesServices: [
+          provideService(viewportScreenshotService, {
+            capture: () =>
+              takeViewportScreenshot(kclManager.sceneInfra.localRenderer),
+          }),
+        ],
+      }),
+    ])
     this.registry.get(lspService).attachKclManager(kclManager)
 
     return {

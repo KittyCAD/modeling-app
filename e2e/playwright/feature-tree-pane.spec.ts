@@ -65,210 +65,129 @@ hidden001 = hide([cylinder, extrude001])
 `
 
 test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
-  test('User can go to definition and go to function definition', async ({
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-    page,
-    folderSetupFn,
-  }) => {
-    await folderSetupFn(async (dir) => {
-      const bracketDir = join(dir, 'test-sample')
-      await fsp.mkdir(bracketDir, { recursive: true })
-      await fsp.writeFile(
-        join(bracketDir, 'main.kcl'),
-        FEATURE_TREE_EXAMPLE_CODE,
-        'utf-8'
-      )
-    })
-
-    await test.step('setup test', async () => {
-      await homePage.expectState({
-        projectCards: [
-          {
-            title: 'test-sample',
-            fileCount: 1,
-          },
-        ],
-        sortBy: 'last-modified-desc',
+  test(
+    'User can go to definition and go to function definition',
+    { tag: '@localRenderer' },
+    async ({
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+      page,
+      folderSetupFn,
+    }) => {
+      await folderSetupFn(async (dir) => {
+        const bracketDir = join(dir, 'test-sample')
+        await fsp.mkdir(bracketDir, { recursive: true })
+        await fsp.writeFile(
+          join(bracketDir, 'main.kcl'),
+          FEATURE_TREE_EXAMPLE_CODE,
+          'utf-8'
+        )
       })
-      await homePage.openProject('test-sample')
-      await scene.connectionEstablished()
-      await scene.settled()
 
-      await toolbar.openFeatureTreePane()
-      await expect
-        .poll(() => page.getByText('Feature tree').count())
-        .toBeGreaterThan(1)
-    })
+      await test.step('setup test', async () => {
+        await homePage.expectState({
+          projectCards: [
+            {
+              title: 'test-sample',
+              fileCount: 1,
+            },
+          ],
+          sortBy: 'last-modified-desc',
+        })
+        await homePage.openProject('test-sample')
+        await scene.connectionEstablished()
+        await scene.settled()
 
-    async function testViewSource({
-      operationName,
-      operationIndex,
-      expectedActiveLine,
-    }: {
-      operationName: string
-      operationIndex: number
-      expectedActiveLine: string
-    }) {
-      await test.step(`Go to definition of the ${operationName}`, async () => {
-        await toolbar.viewSourceOnOperation(operationName, operationIndex)
+        await toolbar.openFeatureTreePane()
+        await expect
+          .poll(() => page.getByText('Feature tree').count())
+          .toBeGreaterThan(1)
+      })
+
+      async function testViewSource({
+        operationName,
+        operationIndex,
+        expectedActiveLine,
+      }: {
+        operationName: string
+        operationIndex: number
+        expectedActiveLine: string
+      }) {
+        await test.step(`Go to definition of the ${operationName}`, async () => {
+          await toolbar.viewSourceOnOperation(operationName, operationIndex)
+          await editor.expectState({
+            highlightedCode: '',
+            diagnostics: [],
+            activeLines: [expectedActiveLine],
+          })
+          await expect(
+            editor.activeLine.first(),
+            `${operationName} code should be scrolled into view`
+          ).toBeVisible()
+        })
+      }
+
+      await testViewSource({
+        operationName: 'plane001',
+        operationIndex: 0,
+        expectedActiveLine: 'plane001 = offsetPlane(XY, offset = 10)',
+      })
+      await testViewSource({
+        operationName: 'extrude001',
+        operationIndex: 0,
+        expectedActiveLine: 'extrude001 = extrude(sketch002, length = 10)',
+      })
+      await testViewSource({
+        operationName: 'revolve001',
+        operationIndex: 0,
+        expectedActiveLine: 'revolve001 = revolve(sketch001, axis = X)',
+      })
+      await testViewSource({
+        operationName: 'Triangle',
+        operationIndex: 0,
+        expectedActiveLine: 'triangle()',
+      })
+
+      await test.step('Go to definition on the triangle function', async () => {
+        await toolbar.goToDefinitionOnOperation('Triangle', 0)
         await editor.expectState({
           highlightedCode: '',
           diagnostics: [],
-          activeLines: [expectedActiveLine],
+          activeLines: ['export fn triangle() {'],
         })
         await expect(
           editor.activeLine.first(),
-          `${operationName} code should be scrolled into view`
+          'Triangle function definition should be scrolled into view'
         ).toBeVisible()
       })
     }
+  )
 
-    await testViewSource({
-      operationName: 'plane001',
-      operationIndex: 0,
-      expectedActiveLine: 'plane001 = offsetPlane(XY, offset = 10)',
-    })
-    await testViewSource({
-      operationName: 'extrude001',
-      operationIndex: 0,
-      expectedActiveLine: 'extrude001 = extrude(sketch002, length = 10)',
-    })
-    await testViewSource({
-      operationName: 'revolve001',
-      operationIndex: 0,
-      expectedActiveLine: 'revolve001 = revolve(sketch001, axis = X)',
-    })
-    await testViewSource({
-      operationName: 'Triangle',
-      operationIndex: 0,
-      expectedActiveLine: 'triangle()',
-    })
-
-    await test.step('Go to definition on the triangle function', async () => {
-      await toolbar.goToDefinitionOnOperation('Triangle', 0)
-      await editor.expectState({
-        highlightedCode: '',
-        diagnostics: [],
-        activeLines: ['export fn triangle() {'],
+  test(
+    'Set appearance menu works on function-created bodies',
+    { tag: '@localRenderer' },
+    async ({
+      homePage,
+      scene,
+      toolbar,
+      modelingDialog,
+      page,
+      editor,
+      folderSetupFn,
+    }) => {
+      await folderSetupFn(async (dir) => {
+        const sampleDir = join(dir, 'test-sample')
+        await fsp.mkdir(sampleDir, { recursive: true })
+        await fsp.writeFile(
+          join(sampleDir, 'main.kcl'),
+          FEATURE_TREE_FUNCTION_BODY_APPEARANCE_CODE,
+          'utf-8'
+        )
       })
-      await expect(
-        editor.activeLine.first(),
-        'Triangle function definition should be scrolled into view'
-      ).toBeVisible()
-    })
-  })
 
-  test('Set appearance menu works on function-created bodies', async ({
-    homePage,
-    scene,
-    toolbar,
-    cmdBar,
-    page,
-    editor,
-    folderSetupFn,
-  }) => {
-    await folderSetupFn(async (dir) => {
-      const sampleDir = join(dir, 'test-sample')
-      await fsp.mkdir(sampleDir, { recursive: true })
-      await fsp.writeFile(
-        join(sampleDir, 'main.kcl'),
-        FEATURE_TREE_FUNCTION_BODY_APPEARANCE_CODE,
-        'utf-8'
-      )
-    })
-
-    await homePage.expectState({
-      projectCards: [
-        {
-          title: 'test-sample',
-          fileCount: 1,
-        },
-      ],
-      sortBy: 'last-modified-desc',
-    })
-    await homePage.openProject('test-sample')
-    await scene.settled()
-    await toolbar.openFeatureTreePane()
-
-    const cylinderOperation = toolbar.featureTreePane
-      .getByRole('button', { name: /test/i })
-      .first()
-    await expect(cylinderOperation).toBeVisible()
-    await cylinderOperation.click({ button: 'right' })
-
-    const setAppearanceMenuItem = page.getByTestId(
-      'context-menu-set-appearance'
-    )
-    await expect(setAppearanceMenuItem).toBeVisible()
-    await expect(setAppearanceMenuItem).toBeEnabled()
-    await setAppearanceMenuItem.click()
-
-    await cmdBar.expectState({
-      commandName: 'Appearance',
-      currentArgKey: 'objects',
-      currentArgValue: '',
-      headerArguments: {
-        Objects: '',
-        Color: '',
-      },
-      highlightedHeaderArg: 'objects',
-      stage: 'arguments',
-    })
-
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      commandName: 'Appearance',
-      currentArgKey: 'color',
-      currentArgValue: '',
-      headerArguments: {
-        Objects: '1 other',
-        Color: '',
-      },
-      highlightedHeaderArg: 'color',
-      stage: 'arguments',
-    })
-
-    // Fill color, submit, and verify code updated
-    await cmdBar.currentArgumentInput.fill('#00ff00')
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      commandName: 'Appearance',
-      headerArguments: {
-        Objects: '1 other',
-        Color: '#00ff00',
-      },
-      stage: 'review',
-    })
-    await cmdBar.submit()
-    await scene.settled()
-    await editor.expectEditor.toContain('appearance(test, color = "#00ff00")')
-  })
-
-  test('User can hide and unhide bodies and helix from panes', async ({
-    context,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-    page,
-    fs,
-    folderSetupFn,
-  }) => {
-    await folderSetupFn(async (dir) => {
-      const sampleDir = join(dir, 'test-sample')
-      await fs.mkdir(sampleDir, { recursive: true })
-      await fs.writeFile(
-        join(sampleDir, 'main.kcl'),
-        new TextEncoder().encode(FEATURE_TREE_VISIBILITY_CODE)
-      )
-    })
-
-    await test.step('setup test', async () => {
       await homePage.expectState({
         projectCards: [
           {
@@ -279,278 +198,323 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
         sortBy: 'last-modified-desc',
       })
       await homePage.openProject('test-sample')
-      await editor.expectEditor.toContain('hidden001 = hide', {
-        timeout: 15_000,
-      })
       await scene.settled()
-      await toolbar.closePane(DefaultLayoutPaneID.Debug)
       await toolbar.openFeatureTreePane()
-    })
 
-    const bodiesPane = page.locator('#bodies-list-pane')
+      const cylinderOperation = toolbar.featureTreePane
+        .getByRole('button', { name: /test/i })
+        .first()
+      await expect(cylinderOperation).toBeVisible()
+      await cylinderOperation.click({ button: 'right' })
 
-    await test.step('Verify both bodies are hidden', async () => {
-      await expect(bodiesPane).toBeVisible({ timeout: 15_000 })
-      const bodyToggles = bodiesPane.getByTestId(
-        'feature-tree-visibility-toggle'
+      const setAppearanceMenuItem = page.getByTestId(
+        'context-menu-set-appearance'
       )
-      await expect(bodyToggles).toHaveCount(2, { timeout: 15_000 })
-      for (let i = 0; i < 2; i++) {
-        await expect(
-          bodyToggles.nth(i).locator('svg[aria-label="eye crossed out"]')
-        ).toBeVisible()
-      }
-    })
+      await expect(setAppearanceMenuItem).toBeVisible()
+      await expect(setAppearanceMenuItem).toBeEnabled()
+      await setAppearanceMenuItem.click()
 
-    await test.step('Unhide cylinder from the bodies pane', async () => {
-      const bodyToggles = bodiesPane.getByTestId(
-        'feature-tree-visibility-toggle'
-      )
-      await scene.waitForExecutionDoneAfter(() => bodyToggles.first().click())
-    })
+      await modelingDialog.selection('Objects').click()
 
-    await test.step('Verify extrude001 is still hidden via KCL', async () => {
-      await editor.expectEditor.toContain(/hide\(\s*\[\s*extrude001\s*\]\s*\)/)
-    })
+      await expect(modelingDialog.input('color')).toBeVisible()
 
-    await test.step('Hide helix001 from the Feature Tree', async () => {
-      const helixButton = await toolbar.getFeatureTreeOperation('helix001', 0)
-      const helixRow = helixButton.locator('..')
-      await helixRow.hover()
-      await scene.waitForExecutionDoneAfter(() =>
-        helixRow.getByTestId('feature-tree-visibility-toggle').click()
-      )
-    })
+      // Fill color, submit, and verify code updated
+      await modelingDialog.input('color').fill('#00ff00')
 
-    await test.step('Verify helix001 is hidden via KCL', async () => {
-      await editor.expectEditor.toContain(/hide\(\s*(?:\[\s*)?helix001/)
-    })
-
-    await test.step('Hide cylinder again from the bodies pane', async () => {
-      const bodyRow = bodiesPane.getByRole('button', { name: 'Body 1' })
-      const bodyToggle = bodyRow
-        .locator('..')
-        .getByTestId('feature-tree-visibility-toggle')
-      await bodyRow.hover()
-      await scene.waitForExecutionDoneAfter(() => bodyToggle.click())
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await modelingDialog.submit()
       await scene.settled()
-    })
+      await editor.expectEditor.toContain('appearance(test, color = "#00ff00")')
+    }
+  )
 
-    await test.step('Verify cylinder is hidden via standalone hide(cylinder)', async () => {
-      await editor.expectEditor.toContain(/hide\(\s*cylinder\s*\)/)
-    })
-  })
+  test(
+    'User can hide and unhide bodies and helix from panes',
+    { tag: '@localRenderer' },
+    async ({
+      context,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+      page,
+      fs,
+      folderSetupFn,
+    }) => {
+      await folderSetupFn(async (dir) => {
+        const sampleDir = join(dir, 'test-sample')
+        await fs.mkdir(sampleDir, { recursive: true })
+        await fs.writeFile(
+          join(sampleDir, 'main.kcl'),
+          new TextEncoder().encode(FEATURE_TREE_VISIBILITY_CODE)
+        )
+      })
 
-  test(`User can edit an extrude operation from the feature tree`, async ({
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-    page,
-    folderSetupFn,
-  }) => {
-    const initialInput = '23'
-    const initialCode = `sketch001 = startSketchOn(XZ)
+      await test.step('setup test', async () => {
+        await homePage.expectState({
+          projectCards: [
+            {
+              title: 'test-sample',
+              fileCount: 1,
+            },
+          ],
+          sortBy: 'last-modified-desc',
+        })
+        await homePage.openProject('test-sample')
+        await editor.expectEditor.toContain('hidden001 = hide', {
+          timeout: 15_000,
+        })
+        await scene.settled()
+        await toolbar.closePane(DefaultLayoutPaneID.Debug)
+        await toolbar.openFeatureTreePane()
+      })
+
+      const bodiesPane = page.locator('#bodies-list-pane')
+
+      await test.step('Verify both bodies are hidden', async () => {
+        await expect(bodiesPane).toBeVisible({ timeout: 15_000 })
+        const bodyToggles = bodiesPane.getByTestId(
+          'feature-tree-visibility-toggle'
+        )
+        await expect(bodyToggles).toHaveCount(2, { timeout: 15_000 })
+        for (let i = 0; i < 2; i++) {
+          await expect(
+            bodyToggles.nth(i).locator('svg[aria-label="eye crossed out"]')
+          ).toBeVisible()
+        }
+      })
+
+      await test.step('Unhide cylinder from the bodies pane', async () => {
+        const bodyToggles = bodiesPane.getByTestId(
+          'feature-tree-visibility-toggle'
+        )
+        await scene.waitForExecutionDoneAfter(() => bodyToggles.first().click())
+      })
+
+      await test.step('Verify extrude001 is still hidden via KCL', async () => {
+        await editor.expectEditor.toContain(
+          /hide\(\s*\[\s*extrude001\s*\]\s*\)/
+        )
+      })
+
+      await test.step('Hide helix001 from the Feature Tree', async () => {
+        const helixButton = await toolbar.getFeatureTreeOperation('helix001', 0)
+        const helixRow = helixButton.locator('..')
+        await helixRow.hover()
+        await scene.waitForExecutionDoneAfter(() =>
+          helixRow.getByTestId('feature-tree-visibility-toggle').click()
+        )
+      })
+
+      await test.step('Verify helix001 is hidden via KCL', async () => {
+        await editor.expectEditor.toContain(/hide\(\s*(?:\[\s*)?helix001/)
+      })
+
+      await test.step('Hide cylinder again from the bodies pane', async () => {
+        const bodyRow = bodiesPane.getByRole('button', { name: 'Body 1' })
+        const bodyToggle = bodyRow
+          .locator('..')
+          .getByTestId('feature-tree-visibility-toggle')
+        await bodyRow.hover()
+        await scene.waitForExecutionDoneAfter(() => bodyToggle.click())
+        await scene.settled()
+      })
+
+      await test.step('Verify cylinder is hidden via standalone hide(cylinder)', async () => {
+        await editor.expectEditor.toContain(/hide\(\s*cylinder\s*\)/)
+      })
+    }
+  )
+
+  test(
+    `User can edit an extrude operation from the feature tree`,
+    { tag: '@localRenderer' },
+    async ({
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+      modelingDialog,
+      page,
+      folderSetupFn,
+    }) => {
+      const initialInput = '23'
+      const initialCode = `sketch001 = startSketchOn(XZ)
       |> circle(center = [0, 0], radius = 5)
       renamedExtrude = extrude(sketch001, length = ${initialInput})`
-    const newParameterName = 'length001'
-    const expectedCode = `${newParameterName} = 23
+      const newParameterName = 'length001'
+      const expectedCode = `${newParameterName} = 23
     sketch001 = startSketchOn(XZ)
       |> circle(center = [0, 0], radius = 5)
             renamedExtrude = extrude(sketch001, length = ${newParameterName})`
-    const editedParameterValue = '23 * 2'
+      const editedParameterValue = '23 * 2'
 
-    await folderSetupFn(async (dir) => {
-      const testDir = join(dir, 'test-sample')
-      await fsp.mkdir(testDir, { recursive: true })
-      await fsp.writeFile(join(testDir, 'main.kcl'), initialCode, 'utf-8')
-    })
+      await folderSetupFn(async (dir) => {
+        const testDir = join(dir, 'test-sample')
+        await fsp.mkdir(testDir, { recursive: true })
+        await fsp.writeFile(join(testDir, 'main.kcl'), initialCode, 'utf-8')
+      })
 
-    await test.step('setup test', async () => {
-      await homePage.expectState({
-        projectCards: [
-          {
-            title: 'test-sample',
-            fileCount: 1,
+      await test.step('setup test', async () => {
+        await homePage.expectState({
+          projectCards: [
+            {
+              title: 'test-sample',
+              fileCount: 1,
+            },
+          ],
+          sortBy: 'last-modified-desc',
+        })
+        await homePage.openProject('test-sample')
+        await scene.settled()
+        await toolbar.openFeatureTreePane()
+      })
+
+      await test.step('Double click on the extrude operation', async () => {
+        await (await toolbar.getFeatureTreeOperation('renamedExtrude', 0))
+          .first()
+          .dblclick()
+        await editor.expectState({
+          highlightedCode: '',
+          diagnostics: [],
+          activeLines: [
+            `renamedExtrude = extrude(sketch001, length = ${initialInput})`,
+          ],
+        })
+
+        await expect(modelingDialog.input('length')).toHaveText(initialInput)
+      })
+
+      await test.step('Add a parameter for distance argument and submit', async () => {
+        await expect(modelingDialog.input('length')).toBeVisible()
+        await modelingDialog.variableCheckbox('length').click()
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await scene.waitForExecutionDoneAfter(() => modelingDialog.submit())
+        await editor.expectState({
+          highlightedCode: '',
+          diagnostics: [],
+          activeLines: [
+            `renamedExtrude = extrude(sketch001, length = ${newParameterName})`,
+          ],
+        })
+        await editor.expectEditor.toContain(expectedCode, {
+          shouldNormalise: true,
+        })
+      })
+
+      await test.step('Edit the parameter via the feature tree', async () => {
+        const parameter = await toolbar.getFeatureTreeOperation('length001', 0)
+        await parameter.dblclick()
+        await cmdBar.expectState({
+          commandName: 'Edit parameter',
+          currentArgKey: 'value',
+          currentArgValue: '23',
+          headerArguments: {
+            Name: newParameterName,
+            Value: '23',
           },
-        ],
-        sortBy: 'last-modified-desc',
-      })
-      await homePage.openProject('test-sample')
-      await scene.settled()
-      await toolbar.openFeatureTreePane()
-    })
-
-    await test.step('Double click on the extrude operation', async () => {
-      await (await toolbar.getFeatureTreeOperation('renamedExtrude', 0))
-        .first()
-        .dblclick()
-      await editor.expectState({
-        highlightedCode: '',
-        diagnostics: [],
-        activeLines: [
-          `renamedExtrude = extrude(sketch001, length = ${initialInput})`,
-        ],
-      })
-      await cmdBar.clickHeaderArgument('length')
-      await cmdBar.expectState({
-        commandName: 'Extrude',
-        stage: 'arguments',
-        currentArgKey: 'length',
-        currentArgValue: initialInput,
-        headerArguments: {
-          Length: initialInput,
-        },
-        highlightedHeaderArg: 'length',
-      })
-    })
-
-    await test.step('Add a parameter for distance argument and submit', async () => {
-      await expect(cmdBar.currentArgumentInput).toBeVisible()
-      await cmdBar.variableCheckbox.click()
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          // The calculated value is shown in the argument summary
-          Length: initialInput,
-        },
-        commandName: 'Extrude',
-      })
-      await scene.waitForExecutionDoneAfter(() => cmdBar.progressCmdBar())
-      await editor.expectState({
-        highlightedCode: '',
-        diagnostics: [],
-        activeLines: [
-          `renamedExtrude = extrude(sketch001, length = ${newParameterName})`,
-        ],
-      })
-      await editor.expectEditor.toContain(expectedCode, {
-        shouldNormalise: true,
-      })
-    })
-
-    await test.step('Edit the parameter via the feature tree', async () => {
-      const parameter = await toolbar.getFeatureTreeOperation('length001', 0)
-      await parameter.dblclick()
-      await cmdBar.expectState({
-        commandName: 'Edit parameter',
-        currentArgKey: 'value',
-        currentArgValue: '23',
-        headerArguments: {
-          Name: newParameterName,
-          Value: '23',
-        },
-        stage: 'arguments',
-        highlightedHeaderArg: 'value',
-      })
-      await cmdBar.argumentInput
-        .locator('[contenteditable]')
-        .fill(editedParameterValue)
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Edit parameter',
-        headerArguments: {
-          Name: newParameterName,
-          Value: '46', // Shows calculated result
-        },
-      })
-      await cmdBar.progressCmdBar()
-      await editor.expectEditor.toContain(editedParameterValue)
-    })
-
-    await test.step('Edit the parameter value in the editor', async () => {
-      await editor.replaceCode('23 * 2', '42')
-      await editor.expectEditor.toContain('= 42')
-      await page.evaluate(() =>
-        window.app.singletons.kclManager.flushPendingEditorExecution()
-      )
-      // The parameter value should be updated in the feature tree.
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'length001',
-        0
-      )
-      await expect(operationButton.getByTestId('value-detail')).toContainText(
-        '42'
-      )
-    })
-  })
-  test(`User can edit an offset plane operation from the feature tree`, async ({
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-    folderSetupFn,
-  }) => {
-    const testCode = (value: string) =>
-      `p1 = offsetPlane(XY, offset = ${value})`
-    const initialInput = '10'
-    const initialCode = testCode(initialInput)
-    const newInput = '5 + 10'
-    const expectedCode = testCode(newInput)
-    await folderSetupFn(async (dir) => {
-      const testDir = join(dir, 'test-sample')
-      await fsp.mkdir(testDir, { recursive: true })
-      await fsp.writeFile(join(testDir, 'main.kcl'), initialCode, 'utf-8')
-    })
-
-    await test.step('setup test', async () => {
-      await homePage.expectState({
-        projectCards: [
-          {
-            title: 'test-sample',
-            fileCount: 1,
+          stage: 'arguments',
+          highlightedHeaderArg: 'value',
+        })
+        await cmdBar.argumentInput
+          .locator('[contenteditable]')
+          .fill(editedParameterValue)
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          commandName: 'Edit parameter',
+          headerArguments: {
+            Name: newParameterName,
+            Value: '46', // Shows calculated result
           },
-        ],
-        sortBy: 'last-modified-desc',
+        })
+        await cmdBar.progressCmdBar()
+        await editor.expectEditor.toContain(editedParameterValue)
       })
-      await homePage.openProject('test-sample')
-      await scene.settled()
-      await toolbar.openFeatureTreePane()
-    })
 
-    await test.step('Double click on the offset plane operation', async () => {
-      const opButton = await toolbar.getFeatureTreeOperation('p1', 0)
-      await opButton.dblclick()
-      await editor.expectState({
-        highlightedCode: '',
-        diagnostics: [],
-        activeLines: [initialCode],
+      await test.step('Edit the parameter value in the editor', async () => {
+        await editor.replaceCode('23 * 2', '42')
+        await editor.expectEditor.toContain('= 42')
+        await page.evaluate(() =>
+          window.app.singletons.kclManager.flushPendingEditorExecution()
+        )
+        // The parameter value should be updated in the feature tree.
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'length001',
+          0
+        )
+        await expect(operationButton.getByTestId('value-detail')).toContainText(
+          '42'
+        )
       })
-      await cmdBar.expectState({
-        commandName: 'Offset Plane',
-        stage: 'arguments',
-        currentArgKey: 'offset',
-        currentArgValue: initialInput,
-        headerArguments: {
-          Offset: initialInput,
-        },
-        highlightedHeaderArg: 'offset',
+    }
+  )
+  test(
+    `User can edit an offset plane operation from the feature tree`,
+    { tag: '@localRenderer' },
+    async ({
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      modelingDialog,
+      folderSetupFn,
+    }) => {
+      const testCode = (value: string) =>
+        `p1 = offsetPlane(XY, offset = ${value})`
+      const initialInput = '10'
+      const initialCode = testCode(initialInput)
+      const newInput = '5 + 10'
+      const expectedCode = testCode(newInput)
+      await folderSetupFn(async (dir) => {
+        const testDir = join(dir, 'test-sample')
+        await fsp.mkdir(testDir, { recursive: true })
+        await fsp.writeFile(join(testDir, 'main.kcl'), initialCode, 'utf-8')
       })
-    })
 
-    await test.step('Edit the offset argument and submit', async () => {
-      await expect(cmdBar.currentArgumentInput).toBeVisible()
-      await cmdBar.currentArgumentInput.locator('.cm-content').fill(newInput)
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Offset: '15',
-        },
-        commandName: 'Offset Plane',
+      await test.step('setup test', async () => {
+        await homePage.expectState({
+          projectCards: [
+            {
+              title: 'test-sample',
+              fileCount: 1,
+            },
+          ],
+          sortBy: 'last-modified-desc',
+        })
+        await homePage.openProject('test-sample')
+        await scene.settled()
+        await toolbar.openFeatureTreePane()
       })
-      await cmdBar.progressCmdBar()
-      await editor.expectState({
-        highlightedCode: '',
-        diagnostics: [],
-        activeLines: [expectedCode],
+
+      await test.step('Double click on the offset plane operation', async () => {
+        const opButton = await toolbar.getFeatureTreeOperation('p1', 0)
+        await opButton.dblclick()
+        await editor.expectState({
+          highlightedCode: '',
+          diagnostics: [],
+          activeLines: [initialCode],
+        })
+        await expect(modelingDialog.input('offset')).toHaveText(initialInput)
       })
-    })
-  })
+
+      await test.step('Edit the offset argument and submit', async () => {
+        await expect(modelingDialog.input('offset')).toBeVisible()
+        await modelingDialog.input('offset').fill(newInput)
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
+        await editor.expectState({
+          highlightedCode: '',
+          diagnostics: [],
+          activeLines: [expectedCode],
+        })
+      })
+    }
+  )
 
   test(`Delete sketch on offset plane and all profiles from feature tree`, async ({
     page,

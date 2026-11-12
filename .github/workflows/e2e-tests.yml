@@ -226,6 +226,7 @@ jobs:
     needs: [build-wasm]
     if: ${{ !cancelled() && needs.build-wasm.result == 'success' && !inputs.grep }}
     runs-on: ${{ matrix.config.os }}
+    continue-on-error: ${{ matrix.config.optional == true && github.repository != 'kittycad/modeling-app' }}
     env:
       OS_NAME: ${{ contains(matrix.config.os, 'ubuntu') && 'ubuntu' || (contains(matrix.config.os, 'windows') && 'windows' || 'macos') }}
     strategy:
@@ -242,6 +243,7 @@ jobs:
             label: macos
             test_script: test:e2e:web:webkit
             playwright_cache_path: ~/Library/Caches/ms-playwright
+            optional: true # WebKit coverage is non-blocking for external callers
           - os: namespace-profile-windows-8-cores
             label: windows
             test_script: test:e2e:web
