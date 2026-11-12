@@ -1030,7 +1030,7 @@ export const ProjectExplorer = ({
               app.projectSession.storageFor(project.path).deletionHistory ===
               'storage'
             ) {
-              runFileTreeMutation(async () => {
+              void runFileTreeMutation(async () => {
                 // Storage-owned history retains the previous revision; archive entries
                 // need an archive move and an archive-based history event.
                 await fileOperations.remove(child.path)
