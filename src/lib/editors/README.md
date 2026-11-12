@@ -10,6 +10,17 @@ Closing one view leaves other views of its editor alive. Closing the last view
 releases the document and its capabilities. Hiding or remounting the pane does not
 close its views. Project shutdown releases all documents and presentations.
 
+Every mounted editor view exposes its host element independently of its mode.
+Clicking a noninteractive background focuses that host; focusable controls retain
+their normal focus behavior. Saving resolves the document from the event's view
+host, so Mod-S works in Modeling as well as Code and cannot fall back to another
+document merely because Code has not been focused. Unmounting clears the host
+reference without closing the view's resources.
+
+Undo and Redo resolve the focused presentation's document in every mode, including
+Electron's Edit menu. Native text controls keep their own text history. A closed
+view or an empty document history never redirects the action to another model.
+
 Modes are components contributed through `editorViewValueSpec`. Matching modes
 are ordered by descending `priority`, with registration order breaking ties. Each
 view retains its explicit choice while that mode matches. Code is the wildcard
