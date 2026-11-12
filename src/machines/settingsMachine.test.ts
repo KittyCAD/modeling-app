@@ -22,32 +22,42 @@ vi.mock('react-hot-toast', () => ({ default: mockToast }))
 afterEach(() => vi.restoreAllMocks())
 
 describe('settingsMachine', () => {
-  it('keeps service dependencies out of settings values', () => {
-    const settings = createSettings()
-    const wasmInstancePromise = Promise.resolve({} as ModuleType)
-    const commandBarActor = createActor(commandBarMachine, {
-      input: {
-        commands: [],
+  it.each([undefined, 'modeling.useLocalRenderer'] as const)(
+    'keeps service dependencies and restart intent %s out of settings values',
+    (pendingRestart) => {
+      const settings = createSettings()
+      const wasmInstancePromise = Promise.resolve({} as ModuleType)
+      const commandBarActor = createActor(commandBarMachine, {
+        input: {
+          commands: [],
+          wasmInstancePromise,
+          machineManager: {} as MachineManager,
+        },
+      }).start()
+      const context: SettingsMachineContext = {
+        ...settings,
+        commandBarActor,
+        defaultProjectLibraries: [],
+        projectLibrarySettingDefaultPolicies: [],
+        extensionSettings: {},
+        fileOperations: testFileOperations,
         wasmInstancePromise,
-        machineManager: {} as MachineManager,
-      },
-    }).start()
-    const context: SettingsMachineContext = {
-      ...settings,
-      commandBarActor,
-      defaultProjectLibraries: [],
-      projectLibrarySettingDefaultPolicies: [],
-      extensionSettings: {},
-      fileOperations: testFileOperations,
-      wasmInstancePromise,
-      deferredEvents: [],
-      pendingRestart: 'modeling.useLocalRenderer',
+        deferredEvents: [],
+        pendingRestart,
+      }
+      const settingsActor = createActor(settingsMachine, { input: context })
+
+      expect(getOnlySettingsFromContext(context)).toEqual(settings)
+      expect(settingsUtils.getSettingsFromActorContext(settingsActor)).toEqual(
+        settings
+      )
+      expect(settingsUtils.jsAppSettings(settingsActor)).toEqual(
+        settingsUtils.jsAppSettings(settings)
+      )
+
+      commandBarActor.stop()
     }
-
-    expect(getOnlySettingsFromContext(context)).toEqual(settings)
-
-    commandBarActor.stop()
-  })
+  )
 
   it('serializes settings events received while persistence is pending', async () => {
     mockToast.success.mockClear()

@@ -19,6 +19,7 @@ import { KclManager } from '@src/lang/KclManager'
 import { File } from '@src/lib/projectSession'
 import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { createSettings } from '@src/lib/settings/initialSettings'
+import type * as SettingsUtils from '@src/lib/settings/settingsUtils'
 import { Themes } from '@src/lib/theme'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { waitFor } from 'xstate'
@@ -36,6 +37,10 @@ vi.mock('@src/machines/systemIO/errorReporting', () => ({
 }))
 vi.mock('react-hot-toast', () => ({
   default: toastMocks,
+}))
+vi.mock('@src/lib/settings/settingsUtils', async (importOriginal) => ({
+  ...(await importOriginal<typeof SettingsUtils>()),
+  saveSettings: vi.fn().mockResolvedValue(undefined),
 }))
 
 import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'

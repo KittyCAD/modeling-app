@@ -49,7 +49,10 @@ import { err, isErr } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type {
+  SettingsActorType,
+  SettingsMachineContext,
+} from '@src/machines/settingsMachine'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type { ProjectLibrarySettingDefaultPolicy } from '@src/registry/contracts/projectLibraries'
 import { resolveProjectLibrarySettingDefaults } from '@src/registry/contracts/projectLibraries'
@@ -1382,16 +1385,28 @@ export function getSettingInputType(setting: Setting) {
   return typeof setting.default as 'string' | 'boolean' | 'number'
 }
 
+export function getOnlySettingsFromContext(
+  s: SettingsMachineContext
+): SettingsType {
+  const {
+    currentProject: _c,
+    commandBarActor: _cba,
+    defaultProjectLibraries: _defaultProjectLibraries,
+    projectLibrarySettingDefaultPolicies: _projectLibrarySettingDefaultPolicies,
+    extensionSettings: _extensionSettings,
+    fileOperations: _fileOperations,
+    wasmInstancePromise: _w,
+    deferredEvents: _deferredEvents,
+    pendingRestart: _pendingRestart,
+    ...settings
+  } = s
+  return settings
+}
+
 export function getSettingsFromActorContext(
   s: SettingsActorType
 ): SettingsType {
-  const {
-    currentProject: _,
-    commandBarActor: _cmd,
-    wasmInstancePromise,
-    ...settings
-  } = s.getSnapshot().context
-  return settings
+  return getOnlySettingsFromContext(s.getSnapshot().context)
 }
 
 export function jsAppSettings(s: SettingsType | SettingsActorType) {

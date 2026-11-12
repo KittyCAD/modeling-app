@@ -19,6 +19,7 @@ import type {
 } from '@src/lib/settings/settingsTypes'
 import {
   clearSettingsAtLevel,
+  getOnlySettingsFromContext,
   loadAndValidateSettings,
   saveSettings,
 } from '@src/lib/settings/settingsUtils'
@@ -824,20 +825,4 @@ export const settingsMachine = setup({
   },
 })
 
-export function getOnlySettingsFromContext(
-  s: SettingsMachineContext
-): SettingsType {
-  const {
-    currentProject: _c,
-    commandBarActor: _cba,
-    defaultProjectLibraries: _defaultProjectLibraries,
-    projectLibrarySettingDefaultPolicies: _projectLibrarySettingDefaultPolicies,
-    extensionSettings: _extensionSettings,
-    fileOperations: _fileOperations,
-    wasmInstancePromise: _w,
-    deferredEvents: _deferredEvents,
-    pendingRestart: _pendingRestart,
-    ...settings
-  } = s
-  return settings
-}
+export { getOnlySettingsFromContext } from '@src/lib/settings/settingsUtils'
