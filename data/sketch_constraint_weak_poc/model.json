@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "feature_names": [
+    "intercept",
+    "normalizedResidual",
+    "previewMovementRatio / 0.05",
+    "freePointFraction",
+    "type:Horizontal",
+    "type:Vertical",
+    "type:LinesEqualLength",
+    "type:EqualRadius",
+    "type:Tangent",
+    "type:Symmetric",
+    "type:Distance",
+    "type:Radius",
+    "type:Diameter"
+  ],
+  "weights": [
+    0.7262164414339315,
+    -0.06292896451513363,
+    -0.07011882499381308,
+    0.05791525346406111,
+    0.22445321119020994,
+    0,
+    0.22448336172448108,
+    0.23408882115175633,
+    -0.20778925065499865,
+    0,
+    -0.4752361429665956,
+    0,
+    0
+  ],
+  "training_provenance": "omitted_constraint_in_internal_test_fixture",
+  "training_selections": 40,
+  "training_candidates": 60,
+  "training_source_families": 3,
+  "experimental_only": true
+}

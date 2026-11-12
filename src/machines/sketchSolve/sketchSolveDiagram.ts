@@ -23,6 +23,7 @@ import type {
   ExtrudeFacePlane,
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
+import { recordSuggestionMetric } from '@src/machines/sketchSolve/constraints/constraintSuggestionMetrics'
 import {
   buildCircularSizeDimensionConstraintInput,
   getLinePoints,
@@ -123,6 +124,31 @@ async function runSketchSolveToolbarAction(
     console.error(`Failed to ${description}:`, error)
     toastSketchSolveError(error, `Failed to ${description}`)
   }
+}
+
+function applySuggestedSegment(
+  context: SketchSolveContext,
+  self: SolveActionArgs['self'],
+  segment: SegmentCtor
+) {
+  void runSketchSolveToolbarAction(
+    'add suggested sketch geometry',
+    async () => {
+      try {
+        const result = await context.rustContext.addSegment(
+          0,
+          context.sketchId,
+          segment,
+          undefined,
+          jsAppSettings(context.kclManager.systemDeps.settings),
+          true
+        )
+        sendToolbarConstraintOutcome(self, result)
+      } finally {
+        sendToActorIfActive(self, { type: 'suggested geometry settled' })
+      }
+    }
+  )
 }
 
 function getSelectionPointCoords(
@@ -396,6 +422,47 @@ export const sketchSolveMachine = setup({
         }
       })
     },
+    'apply suggested constraint': ({ context, event, self }) => {
+      assertEvent(event, 'apply suggested constraint')
+      void runSketchSolveToolbarAction(
+        `apply suggested ${event.data.payload.type} constraint`,
+        async () => {
+          try {
+            const result = await context.rustContext.addConstraint(
+              0,
+              context.sketchId,
+              event.data.payload,
+              jsAppSettings(context.kclManager.systemDeps.settings),
+              true
+            )
+            recordSuggestionMetric('applied', event.data.payload.type)
+            sendToolbarConstraintOutcome(self, result)
+          } catch (error) {
+            recordSuggestionMetric('applyFailed', event.data.payload.type)
+            return Promise.reject(error)
+          }
+        }
+      )
+    },
+    'apply suggested geometry': ({ context, event, self }) => {
+      assertEvent(event, 'apply suggested geometry')
+      applySuggestedSegment(context, self, event.data.segment)
+    },
+    'apply pending suggested geometry': ({ context, self }) => {
+      const pending = context.pendingGeometrySuggestion
+      if (!pending) return
+      if (
+        context.sketchExecOutcome?.sceneGraphDelta !== pending.sceneGraphDelta
+      ) {
+        toastSketchSolveError(
+          new Error('The sketch changed while the drawing tool was closing'),
+          'Could not add sketch idea'
+        )
+        sendToActorIfActive(self, { type: 'suggested geometry settled' })
+        return
+      }
+      applySuggestedSegment(context, self, pending.segment)
+    },
     'send tool equipped to parent': sendParent(({ context }) => ({
       type: 'sketch solve tool changed',
       data: { tool: context.sketchSolveToolName },
@@ -466,6 +533,7 @@ export const sketchSolveMachine = setup({
   context: ({ input }): SketchSolveContext => {
     return {
       sketchSolveToolName: null,
+      continuationPending: false,
       keepSelectionAfterToolCompletion: false,
       selectedIds: [],
       selectionCoordinates: {},
@@ -490,6 +558,12 @@ export const sketchSolveMachine = setup({
   id: 'Sketch Solve Mode',
   initial: 'move and select',
   on: {
+    'suggested geometry settled': {
+      actions: assign({
+        continuationPending: false,
+        pendingGeometrySuggestion: undefined,
+      }),
+    },
     exit: {
       target: '#Sketch Solve Mode.exiting with cleanup',
       actions: [
@@ -940,6 +1014,34 @@ export const sketchSolveMachine = setup({
     'move and select': {
       entry: ['setUpOnDragAndSelectionClickCallbacks'],
       on: {
+        'apply suggested geometry': {
+          guard: ({ context, event }) => {
+            assertEvent(event, 'apply suggested geometry')
+            return (
+              !context.continuationPending &&
+              context.sketchExecOutcome?.sceneGraphDelta ===
+                event.data.sceneGraphDelta
+            )
+          },
+          actions: [
+            assign({ continuationPending: true }),
+            'apply suggested geometry',
+          ],
+        },
+        'apply suggested constraint': {
+          guard: ({ context, event }) => {
+            assertEvent(event, 'apply suggested constraint')
+            return (
+              context.sketchExecOutcome?.sceneGraphDelta ===
+                event.data.sceneGraphDelta &&
+              context.selectedIds.length === event.data.selectedIds.length &&
+              context.selectedIds.every(
+                (id, index) => id === event.data.selectedIds[index]
+              )
+            )
+          },
+          actions: 'apply suggested constraint',
+        },
         'equip tool': [
           {
             guard: ({ context, event }) => {
@@ -1003,6 +1105,28 @@ export const sketchSolveMachine = setup({
 
     'using tool': {
       on: {
+        'apply suggested geometry': {
+          guard: ({ context, event }) => {
+            assertEvent(event, 'apply suggested geometry')
+            return (
+              !context.continuationPending &&
+              !context.draftEntities &&
+              context.sketchExecOutcome?.sceneGraphDelta ===
+                event.data.sceneGraphDelta
+            )
+          },
+          target: 'unequipping tool',
+          actions: [
+            assign(({ event }) => {
+              assertEvent(event, 'apply suggested geometry')
+              return {
+                continuationPending: true,
+                pendingGeometrySuggestion: event.data,
+              }
+            }),
+            'send unequip to tool',
+          ],
+        },
         'unequip tool': {
           target: 'unequipping tool',
           actions: ['send unequip to tool'],
@@ -1141,6 +1265,7 @@ export const sketchSolveMachine = setup({
             'refresh selection styling',
             'clear child tool',
             'send tool unequipped to parent',
+            'apply pending suggested geometry',
           ],
         },
       },
