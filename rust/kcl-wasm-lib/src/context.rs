@@ -159,12 +159,10 @@ impl Context {
             }
         };
         let mut settings: kcl_lib::ExecutorSettings = config.into();
+        // Mock plans must use the live mode too, including its cached settings.
+        settings.geometry_only = self.engine_manager.geometry_only();
         let mut ctx = match mode {
-            ExecutionMode::Engine => {
-                // The mode can change on reconnect, so read it from the live connection.
-                settings.geometry_only = self.engine_manager.geometry_only();
-                self.executor.clone()
-            }
+            ExecutionMode::Engine => self.executor.clone(),
             ExecutionMode::Mock => self.mock_executor.clone(),
         };
         settings.enable_ssao &= !settings.geometry_only;
