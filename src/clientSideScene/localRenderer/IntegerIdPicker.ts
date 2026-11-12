@@ -36,8 +36,7 @@ import {
   type WebGPURenderer,
 } from 'three/webgpu'
 
-const SELECTION_LINE_WIDTH_AT_REFERENCE_PX = 24
-const SELECTION_LINE_WIDTH_REFERENCE_VIEWPORT_PX = 2048
+const SELECTION_LINE_WIDTH_PX = 24
 // The ID of whatever can't be picked: occluders, line segments that aren't
 // targets, and the background, which clears to 0. targetById[0] is null to match.
 const NO_TARGET_ID = 0
@@ -175,7 +174,7 @@ export class IntegerIdPicker {
     }
 
     const material = new Line2NodeMaterial({
-      linewidth: SELECTION_LINE_WIDTH_AT_REFERENCE_PX,
+      linewidth: SELECTION_LINE_WIDTH_PX,
     })
     material.worldUnits = false
     material.alphaToCoverage = false
@@ -256,7 +255,7 @@ export class IntegerIdPicker {
     const targetById = this.targetById
 
     if (this.dirty) {
-      this.renderIdBuffer(target, camera, streamWidth)
+      this.renderIdBuffer(target, camera)
     }
 
     const pixels = await this.renderer.readRenderTargetPixelsAsync(
@@ -327,11 +326,7 @@ export class IntegerIdPicker {
     return this.renderTarget
   }
 
-  private renderIdBuffer(
-    target: RenderTarget,
-    camera: Camera,
-    viewportWidth: number
-  ) {
+  private renderIdBuffer(target: RenderTarget, camera: Camera) {
     for (const [proxy, source] of this.sourceByProxy) {
       source.updateWorldMatrix(true, false)
       proxy.matrix.copy(source.matrixWorld)
@@ -345,16 +340,6 @@ export class IntegerIdPicker {
     }
     const previousTarget = this.renderer.getRenderTarget()
     const previousAutoClear = this.renderer.autoClear
-    const selectionLineWidth =
-      (SELECTION_LINE_WIDTH_AT_REFERENCE_PX * viewportWidth) /
-      SELECTION_LINE_WIDTH_REFERENCE_VIEWPORT_PX
-
-    this.materials.forEach((material) => {
-      if (material instanceof Line2NodeMaterial) {
-        material.linewidth = selectionLineWidth
-      }
-    })
-
     this.renderer.autoClear = true
     this.renderer.setRenderTarget(target)
     this.renderer.render(this.scene, camera)
