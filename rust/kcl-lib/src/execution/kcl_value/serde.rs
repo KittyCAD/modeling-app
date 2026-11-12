@@ -15,30 +15,19 @@ enum FunctionBodyData {
     Kcl(EnvironmentRef),
 }
 
-#[derive(Serialize, Deserialize)]
-struct FunctionData {
-    input_arg: Option<(String, Option<Type>)>,
-    resolved_input_ty: Option<RuntimeType>,
-    named_args: IndexMap<String, NamedParam>,
-    return_type: Option<Node<Type>>,
-    resolved_return_ty: Option<RuntimeType>,
-    deprecated: bool,
-    deprecated_since: Option<VersionConstraint>,
-    experimental: bool,
-    include_in_feature_tree: bool,
-    #[serde(with = "std_fn_props::optional")]
-    std_props: Option<StdFnProps>,
-    body: FunctionBodyData,
-    ast: BoxNode<FunctionExpression>,
-    ast_node_path: Option<crate::NodePath>,
-    // FunctionExpression's ordinary serde skips return annotations, including
-    // annotations on nested functions that have not been evaluated yet.
-    ast_return_types: Vec<(SourceRange, Node<Type>)>,
-}
-
+// The flattened source uses the field serde generated on FunctionSource itself.
+// Only the body needs the containing source, to read its native identity.
 impl Serialize for FunctionSource {
-    fn serialize<S: ::serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         use ::serde::ser::Error;
+
+        #[derive(Serialize)]
+        struct FunctionRef<'a> {
+            #[serde(flatten, with = "FunctionSource")]
+            source: &'a FunctionSource,
+            body: FunctionBodyData,
+        }
+
         let body = match &self.body {
             FunctionBody::Kcl(env) => FunctionBodyData::Kcl(*env),
             FunctionBody::Rust(_) => FunctionBodyData::Rust(
@@ -49,89 +38,108 @@ impl Serialize for FunctionSource {
                     .clone(),
             ),
         };
-        let ast_return_types = std::cell::RefCell::new(Vec::new());
-        if let Some(ty) = &self.ast.return_type {
-            ast_return_types
-                .borrow_mut()
-                .push((SourceRange::from(self.ast.as_ref()), ty.clone()));
-        }
-        crate::walk::walk(&self.ast.body, |node| {
-            if let crate::walk::Node::FunctionExpression(function) = node
-                && let Some(ty) = &function.return_type
-            {
-                ast_return_types
-                    .borrow_mut()
-                    .push((SourceRange::from(function), ty.clone()));
-            }
-            Ok::<_, anyhow::Error>(true)
-        })
-        .map_err(S::Error::custom)?;
-        let value = FunctionData {
-            input_arg: self.input_arg.clone(),
-            resolved_input_ty: self.resolved_input_ty.clone(),
-            named_args: self.named_args.clone(),
-            return_type: self.return_type.clone(),
-            resolved_return_ty: self.resolved_return_ty.clone(),
-            deprecated: self.deprecated,
-            deprecated_since: self.deprecated_since.clone(),
-            experimental: self.experimental,
-            include_in_feature_tree: self.include_in_feature_tree,
-            std_props: self.std_props.clone(),
-            body,
-            ast: self.ast.clone(),
-            ast_node_path: self.ast.node_path.clone(),
-            ast_return_types: ast_return_types.into_inner(),
-        };
-        // AST display serialization can emit repeated `type` keys through
-        // flattening. Canonicalize the data model before writing the snapshot,
-        // so streaming deserializers see the same map as from_value does.
-        serde_json::to_value(value)
+        // AST serialization can emit repeated `type` keys through flattening.
+        // Canonicalize before writing so streaming readers also see unique keys.
+        serde_json::to_value(FunctionRef { source: self, body })
             .map_err(S::Error::custom)?
             .serialize(serializer)
     }
 }
 
 impl<'de> Deserialize<'de> for FunctionSource {
-    fn deserialize<D: ::serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         use ::serde::de::Error;
-        let mut value = FunctionData::deserialize(deserializer)?;
-        let (body, std_props) = match value.body {
-            FunctionBodyData::Kcl(env) => (FunctionBody::Kcl(env), value.std_props),
+
+        #[derive(Deserialize)]
+        struct FunctionOwned {
+            #[serde(flatten, with = "FunctionSource")]
+            source: FunctionSource,
+            body: FunctionBodyData,
+        }
+
+        let FunctionOwned { mut source, body } = FunctionOwned::deserialize(deserializer)?;
+        source.body = match body {
+            FunctionBodyData::Kcl(env) => FunctionBody::Kcl(env),
             FunctionBodyData::Rust(name) => {
                 let (module, function) =
                     native_name(&name).ok_or_else(|| D::Error::custom("invalid native function name"))?;
                 let (function, props) = crate::std::std_fn(module, function)
                     .map_err(|error| D::Error::custom(format!("unknown native function `{name}`: {error}")))?;
-                (FunctionBody::Rust(function), Some(props))
+                source.std_props = Some(props);
+                FunctionBody::Rust(function)
             }
         };
-        if let Some((_, ty)) = value
-            .ast_return_types
-            .iter()
-            .find(|(range, _)| *range == SourceRange::from(value.ast.as_ref()))
-        {
-            value.ast.return_type = Some(ty.clone());
+        Ok(source)
+    }
+}
+
+// The derived field decoder does not read the body. The outer decoder replaces
+// this placeholder before returning a FunctionSource, or fails with an error.
+pub(super) fn pending_function_body() -> FunctionBody {
+    FunctionBody::Kcl(EnvironmentRef::dummy())
+}
+
+pub(super) mod function_ast {
+    use super::*;
+
+    #[derive(Serialize, Deserialize)]
+    struct FunctionAstData<T> {
+        ast: T,
+        ast_node_path: Option<crate::NodePath>,
+        // Ordinary AST serde omits return annotations on nested functions too.
+        ast_return_types: Vec<(SourceRange, Node<Type>)>,
+    }
+
+    pub(crate) fn serialize<S: Serializer>(
+        ast: &BoxNode<FunctionExpression>,
+        serializer: S,
+    ) -> Result<S::Ok, S::Error> {
+        use ::serde::ser::Error;
+        let return_types = std::cell::RefCell::new(Vec::new());
+        if let Some(ty) = &ast.return_type {
+            return_types
+                .borrow_mut()
+                .push((SourceRange::from(ast.as_ref()), ty.clone()));
         }
-        let _ = crate::walk::traverse::dfs_mut(&mut value.ast.body, &mut ReturnTypes(&value.ast_return_types));
-        // Ordinary AST serde omits node paths. Rebuild the function subtree
-        // using the original absolute path so solver source references survive.
-        if let Some(path) = value.ast_node_path {
-            crate::parsing::ast::types::fill_function_node_paths(&mut value.ast, path);
-        }
-        Ok(Self {
-            input_arg: value.input_arg,
-            resolved_input_ty: value.resolved_input_ty,
-            named_args: value.named_args,
-            return_type: value.return_type,
-            resolved_return_ty: value.resolved_return_ty,
-            deprecated: value.deprecated,
-            deprecated_since: value.deprecated_since,
-            experimental: value.experimental,
-            include_in_feature_tree: value.include_in_feature_tree,
-            std_props,
-            body,
-            ast: value.ast,
+        crate::walk::walk(&ast.body, |node| {
+            if let crate::walk::Node::FunctionExpression(function) = node
+                && let Some(ty) = &function.return_type
+            {
+                return_types
+                    .borrow_mut()
+                    .push((SourceRange::from(function), ty.clone()));
+            }
+            Ok::<_, anyhow::Error>(true)
         })
+        .map_err(S::Error::custom)?;
+        FunctionAstData {
+            ast,
+            ast_node_path: ast.node_path.clone(),
+            ast_return_types: return_types.into_inner(),
+        }
+        .serialize(serializer)
+    }
+
+    pub(crate) fn deserialize<'de, D: Deserializer<'de>>(
+        deserializer: D,
+    ) -> Result<BoxNode<FunctionExpression>, D::Error> {
+        let FunctionAstData {
+            mut ast,
+            ast_node_path,
+            ast_return_types,
+        } = FunctionAstData::<BoxNode<FunctionExpression>>::deserialize(deserializer)?;
+        if let Some((_, ty)) = ast_return_types
+            .iter()
+            .find(|(range, _)| *range == SourceRange::from(ast.as_ref()))
+        {
+            ast.return_type = Some(ty.clone());
+        }
+        let _ = crate::walk::traverse::dfs_mut(&mut ast.body, &mut ReturnTypes(&ast_return_types));
+        // Restore absolute paths so solver source references survive.
+        if let Some(path) = ast_node_path {
+            crate::parsing::ast::types::fill_function_node_paths(&mut ast, path);
+        }
+        Ok(ast)
     }
 }
 
@@ -172,7 +180,7 @@ pub(crate) mod std_fn_props {
         String::deserialize(deserializer).map(resolve)
     }
 
-    pub(super) mod optional {
+    pub(crate) mod optional {
         use super::*;
         pub(crate) fn serialize<S: Serializer>(value: &Option<StdFnProps>, serializer: S) -> Result<S::Ok, S::Error> {
             value.as_ref().map(|props| &props.name).serialize(serializer)

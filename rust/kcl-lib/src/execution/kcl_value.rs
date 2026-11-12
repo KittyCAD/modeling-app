@@ -283,7 +283,9 @@ impl NamedParam {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+// Generate field serde here; the trait implementations add the executable body.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(remote = "Self")]
 pub struct FunctionSource {
     pub input_arg: Option<(String, Option<Type>)>,
     /// The `RuntimeType` that the input (unlabeled) argument's type resolved
@@ -304,8 +306,11 @@ pub struct FunctionSource {
     pub deprecated_since: Option<VersionConstraint>,
     pub experimental: bool,
     pub include_in_feature_tree: bool,
+    #[serde(with = "self::serde::std_fn_props::optional")]
     pub std_props: Option<StdFnProps>,
+    #[serde(skip, default = "self::serde::pending_function_body")]
     pub body: FunctionBody,
+    #[serde(flatten, with = "self::serde::function_ast")]
     pub ast: BoxNode<FunctionExpression>,
 }
 

@@ -208,6 +208,54 @@ fn native_function_roundtrips_by_identity() {
     assert!(error.to_string().contains("unknown native function"));
 }
 
+#[test]
+fn function_source_roundtrips_nested_annotations() {
+    let program = crate::Program::parse_no_errs(
+        r#"
+@settings(kclVersion = 3.0)
+fn outer(): number(Length) {
+    fn inner(): number(Length) { return 1mm }
+    return inner()
+}
+"#,
+    )
+    .unwrap();
+    let crate::parsing::ast::types::BodyItem::VariableDeclaration(declaration) = &program.ast.body[0] else {
+        panic!("expected function declaration")
+    };
+    let crate::parsing::ast::types::Expr::FunctionExpression(ast) = &declaration.declaration.init else {
+        panic!("expected function expression")
+    };
+    let mut source = function(false);
+    source.ast = ast.clone();
+    source.deprecated = true;
+    source.experimental = true;
+    source.resolved_return_ty = Some(RuntimeType::Primitive(PrimitiveType::Number(NumericType::length(
+        kcl_api::UnitLength::Millimeters,
+    ))));
+    let json = serde_json::to_vec(&source).unwrap();
+    let restored: FunctionSource = serde_json::from_slice(&json).unwrap();
+    assert_eq!(restored, source);
+    assert_eq!(
+        serde_json::to_value(restored).unwrap(),
+        serde_json::to_value(source).unwrap()
+    );
+}
+
+#[test]
+fn function_source_requires_a_body_and_rebinds_native_properties() {
+    let mut json = serde_json::to_value(function(true)).unwrap();
+    // The body identity remains authoritative, even if properties are absent.
+    json["std_props"] = serde_json::Value::Null;
+    let restored: FunctionSource = serde_json::from_value(json.clone()).unwrap();
+    assert_eq!(restored.std_props.unwrap().name, "std::math::abs");
+    assert!(matches!(restored.body, FunctionBody::Rust(_)));
+
+    json.as_object_mut().unwrap().remove("body");
+    let error = serde_json::from_value::<FunctionSource>(json).unwrap_err();
+    assert!(error.to_string().contains("missing field `body`"));
+}
+
 #[tokio::test]
 async fn executed_values_roundtrip_with_geometry_and_closures() {
     let ctx = crate::ExecutorContext::new_mock(None).await;
