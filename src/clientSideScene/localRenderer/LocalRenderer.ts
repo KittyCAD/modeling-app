@@ -1483,26 +1483,40 @@ export function assignFaceUuids(gltf: KITTYCAD_GLTF) {
     )
     return
   }
-  const faceIdsBySolidMesh = new Map<number, number[]>()
+  const faceIdsBySolidMesh = new Map<number, (number | undefined)[]>()
 
   for (const solid of brep.solids) {
     const faceIds = solid.shells.flatMap(
       ([shellIndex]) =>
         brep.shells[shellIndex]?.faces.map(([faceIndex]) => faceIndex) ?? []
     )
-    const primitiveCount =
-      gltf.parser.json.meshes?.[solid.mesh]?.primitives?.length ?? 0
-    if (faceIds.length !== primitiveCount) {
+    const primitives: {
+      extras?: { KITTYCAD?: { faceIndex?: number | null } }
+    }[] = gltf.parser.json.meshes?.[solid.mesh]?.primitives ?? []
+    if (primitives.some((p) => p.extras?.KITTYCAD?.faceIndex !== undefined)) {
+      const solidFaces = new Set(faceIds)
+      faceIdsBySolidMesh.set(
+        solid.mesh,
+        primitives.map((p) => {
+          const index = p.extras?.KITTYCAD?.faceIndex
+          return typeof index === 'number' && solidFaces.has(index)
+            ? index
+            : undefined
+        })
+      )
+    } else if (faceIds.length === primitives.length) {
+      // Older engines only provide the one-primitive-per-face ordering.
+      faceIdsBySolidMesh.set(solid.mesh, faceIds)
+    } else {
       console.warn(
-        'B-rep face count does not match glTF mesh primitive count; face UUID assignment may be incorrect.',
+        'Cannot identify faces on a mesh without per-primitive face indices.',
         {
           meshIndex: solid.mesh,
           faceCount: faceIds.length,
-          primitiveCount,
+          primitiveCount: primitives.length,
         }
       )
     }
-    faceIdsBySolidMesh.set(solid.mesh, faceIds)
   }
 
   gltf.scene.traverse((object) => {
