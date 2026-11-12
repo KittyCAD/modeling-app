@@ -155,13 +155,15 @@ export interface EditorsService {
 }
 
 export const editorsContract = defineContract({
-  editorLanguageValueSpec: appendValueSpec<EditorLanguage>('editors.languages'),
-  editorViewValueSpec: appendValueSpec<EditorViewContribution>('editors.views'),
-  editorTabIndicatorValueSpec: appendValueSpec<EditorTabIndicator>(
+  editorLanguagesValueSpec:
+    appendValueSpec<EditorLanguage>('editors.languages'),
+  editorViewsValueSpec:
+    appendValueSpec<EditorViewContribution>('editors.views'),
+  editorTabIndicatorsValueSpec: appendValueSpec<EditorTabIndicator>(
     'editors.tabIndicators'
   ),
   editorsService: defineService<EditorsService>('editors.service'),
-  codeEditorExtensionValueSpec: appendValueSpec<CodeEditorExtension>(
+  codeEditorsExtensionValueSpec: appendValueSpec<CodeEditorExtension>(
     'editors.codeExtensions'
   ),
   editorCapabilityValueSpec: appendValueSpec<EditorCapability>(
@@ -171,9 +173,9 @@ export const editorsContract = defineContract({
 
 export const {
   editorsService,
-  editorLanguageValueSpec,
+  editorLanguagesValueSpec,
   editorCapabilityValueSpec,
-  editorTabIndicatorValueSpec,
-  editorViewValueSpec,
-  codeEditorExtensionValueSpec,
+  editorTabIndicatorsValueSpec,
+  editorViewsValueSpec,
+  codeEditorsExtensionValueSpec,
 } = editorsContract

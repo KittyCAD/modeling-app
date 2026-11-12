@@ -6,9 +6,9 @@ import { Registry, Slot, defineRegistryItem, provide } from '@kittycad/registry'
 import { afterEach, beforeAll, expect, it } from 'vitest'
 import editorsExtension from '@src/lib/editors/registry'
 import {
-  codeEditorExtensionValueSpec,
-  editorLanguageValueSpec,
-  editorViewValueSpec,
+  codeEditorsExtensionValueSpec,
+  editorLanguagesValueSpec,
+  editorViewsValueSpec,
   editorsService,
 } from '@src/lib/editors/registry/contract'
 import { defineEditorView } from '@src/lib/editors/views'
@@ -68,7 +68,7 @@ it('reclassifies from live source/content contributions and makes media metadata
   registry = new Registry()
   const csv = defineRegistryItem({
     provides: [
-      provide(editorLanguageValueSpec, {
+      provide(editorLanguagesValueSpec, {
         id: 'csv',
         mediaType: 'text/csv',
         matches: '*',
@@ -78,7 +78,7 @@ it('reclassifies from live source/content contributions and makes media metadata
   })
   const tagged = defineRegistryItem({
     provides: [
-      provide(editorLanguageValueSpec, {
+      provide(editorLanguagesValueSpec, {
         id: 'tagged',
         matches: ({ contents }) => contents.startsWith('tag:'),
         priority: 10,
@@ -90,13 +90,13 @@ it('reclassifies from live source/content contributions and makes media metadata
     descriptors.of(csv, tagged),
     defineRegistryItem({
       provides: [
-        provide(codeEditorExtensionValueSpec, {
+        provide(codeEditorsExtensionValueSpec, {
           id: 'csv-tabs',
           matches: ({ mediaType }) => mediaType === 'text/csv',
           extensions: EditorState.tabSize.of(8),
         }),
         provide(
-          editorViewValueSpec,
+          editorViewsValueSpec,
           defineEditorView({
             id: 'table',
             label: 'Table',

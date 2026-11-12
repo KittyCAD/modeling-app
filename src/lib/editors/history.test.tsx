@@ -5,7 +5,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import editorsExtension from '@src/lib/editors/registry'
 import {
   editorsService,
-  editorViewValueSpec,
+  editorViewsValueSpec,
 } from '@src/lib/editors/registry/contract'
 import { EditorView } from '@src/lib/editors/EditorView'
 import { defineEditorView } from '@src/lib/editors/views'
@@ -29,7 +29,7 @@ beforeEach(() => {
     defineRegistryItem({
       provides: [
         provide(
-          editorViewValueSpec,
+          editorViewsValueSpec,
           defineEditorView({
             id: 'modeling',
             label: 'Modeling',

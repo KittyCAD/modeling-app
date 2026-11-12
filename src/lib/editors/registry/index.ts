@@ -23,11 +23,11 @@ import {
   type EditorsService,
   type EditorViewState,
   type EditorViewInstance,
-  codeEditorExtensionValueSpec,
+  codeEditorsExtensionValueSpec,
   editorCapabilityValueSpec,
-  editorLanguageValueSpec,
+  editorLanguagesValueSpec,
   editorsService,
-  editorViewValueSpec,
+  editorViewsValueSpec,
 } from '@src/lib/editors/registry/contract'
 import { defineEditorView } from '@src/lib/editors/views'
 import { createEditorClassification } from '@src/lib/editors/classification'
@@ -68,9 +68,9 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
     binding: { type: 'unbound' },
   })
   const capabilities = valueSpecs.signal(editorCapabilityValueSpec)
-  const views = valueSpecs.signal(editorViewValueSpec)
-  const codeExtensions = valueSpecs.signal(codeEditorExtensionValueSpec)
-  const languages = valueSpecs.signal(editorLanguageValueSpec)
+  const views = valueSpecs.signal(editorViewsValueSpec)
+  const codeExtensions = valueSpecs.signal(codeEditorsExtensionValueSpec)
+  const languages = valueSpecs.signal(editorLanguagesValueSpec)
   const contextBoundary = createEditorContextBoundary()
   // Internal project/service shutdown must still release resources if triggered from contributed code.
   const closeEditor = (id: symbol) => {
@@ -223,7 +223,7 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
     id: 'editors',
     provides: [
       provide(
-        editorViewValueSpec,
+        editorViewsValueSpec,
         defineEditorView((host) => {
           const view = createCodeSurface(host, codeExtensions, (callback) =>
             contextBoundary.run(callback)
@@ -250,7 +250,7 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
         scope: 'editors.history.focused',
         owns: history.ownsKeyEvent,
       }),
-      provide(codeEditorExtensionValueSpec, {
+      provide(codeEditorsExtensionValueSpec, {
         id: 'editors.defaults',
         matches: '*',
         extensions: defaultEditorExtensions,

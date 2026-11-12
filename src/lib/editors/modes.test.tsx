@@ -9,7 +9,7 @@ import { EditorView } from '@src/lib/editors/EditorView'
 import editorsExtension from '@src/lib/editors/registry'
 import {
   editorsService,
-  editorViewValueSpec,
+  editorViewsValueSpec,
   type EditorViewHost,
   type Editor,
 } from '@src/lib/editors/registry/contract'
@@ -44,7 +44,7 @@ it('retains typed mode context across switches and remounts, and releases it whe
     },
   })
   const contribution = defineRegistryItem({
-    provides: [provide(editorViewValueSpec, mode)],
+    provides: [provide(editorViewsValueSpec, mode)],
   })
   registry = new Registry()
   registry.configure([editorsExtension, slot.of(contribution)])
@@ -94,7 +94,7 @@ it('defers content-matched binding until the CodeMirror update completes and rel
     defineRegistryItem({
       provides: [
         provide(
-          editorViewValueSpec,
+          editorViewsValueSpec,
           defineEditorView(bind)({
             id: 'render',
             label: 'Render',
@@ -130,7 +130,7 @@ it('keeps source/content matching and explicit mode choices independent for dupl
     defineRegistryItem({
       provides: [
         provide(
-          editorViewValueSpec,
+          editorViewsValueSpec,
           defineEditorView({
             id: 'test.form',
             label: 'Form',
@@ -197,7 +197,7 @@ it('rejects recursive editor creation during mode setup', () => {
     defineRegistryItem({
       provides: [
         provide(
-          editorViewValueSpec,
+          editorViewsValueSpec,
           defineEditorView(() => {
             registry.get(editorsService).openEditor('/helper.parent', 'helper')
           })({
@@ -234,7 +234,7 @@ it('protects other buffers from mode cleanup and continues releasing owned resou
     defineRegistryItem({
       provides: [
         provide(
-          editorViewValueSpec,
+          editorViewsValueSpec,
           defineEditorView(({ onDispose }) => {
             onDispose(release)
             onDispose(() => registry.get(editorsService).closeEditor(child.id))
@@ -275,7 +275,7 @@ it('releases partially initialized mode resources in reverse order and surfaces 
     defineRegistryItem({
       provides: [
         provide(
-          editorViewValueSpec,
+          editorViewsValueSpec,
           defineEditorView(({ onDispose }) => {
             onDispose(() => released.push('first'))
             onDispose(() => released.push('second'))

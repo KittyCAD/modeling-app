@@ -22,7 +22,7 @@ import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import projectSessionNextExtension from '@src/lib/projectSession/registry'
 import {
   editorCapabilityValueSpec,
-  codeEditorExtensionValueSpec,
+  codeEditorsExtensionValueSpec,
   editorsService,
   type CodeEditorExtension,
 } from '@src/lib/editors/registry/contract'
@@ -326,12 +326,12 @@ describe('editors extension', () => {
       markdownExtension,
       defineRegistryItem({
         provides: [
-          provide(codeEditorExtensionValueSpec, {
+          provide(codeEditorsExtensionValueSpec, {
             id: 'common.tab-size',
             matches: '*',
             extensions: EditorState.tabSize.of(2),
           }),
-          provide(codeEditorExtensionValueSpec, {
+          provide(codeEditorsExtensionValueSpec, {
             id: 'kcl.read-only',
             matches: '.kcl',
             extensions: EditorState.readOnly.of(true),
@@ -353,7 +353,7 @@ describe('editors extension', () => {
     const readOnly = (matches: '.kcl' | '.md' | '*') =>
       defineRegistryItem({
         provides: [
-          provide(codeEditorExtensionValueSpec, {
+          provide(codeEditorsExtensionValueSpec, {
             id: 'read-only',
             matches,
             extensions: EditorState.readOnly.of(true),
@@ -506,7 +506,7 @@ describe('editors extension', () => {
     registry.reconfigure(slot, [
       defineRegistryItem({
         provides: [
-          provide(codeEditorExtensionValueSpec, {
+          provide(codeEditorsExtensionValueSpec, {
             id: 'common.tab-size',
             matches: '*',
             extensions: EditorState.tabSize.of(2),
@@ -535,7 +535,7 @@ describe('editors extension', () => {
       kclExtension,
       markdownExtension,
       defineRegistryItem({
-        provides: [provide(codeEditorExtensionValueSpec, capability)],
+        provides: [provide(codeEditorsExtensionValueSpec, capability)],
       }),
     ])
     const editor = registry.get(editorsService).openEditor('/main.kcl', '')
@@ -552,7 +552,7 @@ describe('editors extension', () => {
     capability.value = { ...capability.value, matches: '.md' }
     expect(
       codeSurface(registry.get(editorsService), editor).state.tabSize
-    ).toBe(4)
+    ).toBe(4) // this is the default value from CodeMirror, tabSize of 4
   })
   it('releases a partially initialized document capability when setup fails', () => {
     const release = vi.fn()

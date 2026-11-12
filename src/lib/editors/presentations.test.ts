@@ -7,8 +7,8 @@ import editorsExtension from '@src/lib/editors/registry'
 import {
   editorsService,
   editorCapabilityValueSpec,
-  codeEditorExtensionValueSpec,
-  editorViewValueSpec,
+  codeEditorsExtensionValueSpec,
+  editorViewsValueSpec,
 } from '@src/lib/editors/registry/contract'
 import { defineEditorView } from '@src/lib/editors/views'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
@@ -59,7 +59,7 @@ it('selects modes per presentation and releases the buffer only after its last v
           setup: ({ onDispose }) => onDispose(releaseDocument),
         }),
         provide(
-          editorViewValueSpec,
+          editorViewsValueSpec,
           defineEditorView({
             id: 'preview',
             label: 'Preview',
@@ -95,7 +95,7 @@ it('preserves Code selection events for argument picking without moving another 
     editorsExtension,
     defineRegistryItem({
       provides: [
-        provide(codeEditorExtensionValueSpec, {
+        provide(codeEditorsExtensionValueSpec, {
           id: 'argument-selection',
           matches: '*',
           extensions: ({ instance }) =>
@@ -122,7 +122,7 @@ it('releases Code contribution resources on withdrawal and reacquires them per s
   const release = vi.fn()
   const contribution = defineRegistryItem({
     provides: [
-      provide(codeEditorExtensionValueSpec, {
+      provide(codeEditorsExtensionValueSpec, {
         id: 'resource',
         matches: '*',
         extensions: ({ onDispose }) => {

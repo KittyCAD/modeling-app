@@ -7,7 +7,7 @@ import { beforeAll, afterEach, expect, it } from 'vitest'
 import editorsExtension from '@src/lib/editors/registry'
 import {
   editorsService,
-  codeEditorExtensionValueSpec,
+  codeEditorsExtensionValueSpec,
 } from '@src/lib/editors/registry/contract'
 import { matchesEditor } from '@src/lib/editors/matching'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
@@ -53,12 +53,12 @@ it('updates path and content capabilities without reentrant dispatch or resettin
     editorsExtension,
     defineRegistryItem({
       provides: [
-        provide(codeEditorExtensionValueSpec, {
+        provide(codeEditorsExtensionValueSpec, {
           id: 'settings',
           matches: ({ src }) => fsZds.basename(src) === 'settings.toml',
           extensions: EditorState.tabSize.of(7),
         }),
-        provide(codeEditorExtensionValueSpec, {
+        provide(codeEditorsExtensionValueSpec, {
           id: 'wrapping',
           matches: ({ contents }) => contents.startsWith('wrap '),
           extensions: EditorView.lineWrapping,

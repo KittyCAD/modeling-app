@@ -2,8 +2,8 @@ import { markdown } from '@codemirror/lang-markdown'
 import { editorMarkdownHighlight } from '@src/editor/plugins/theme'
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import {
-  codeEditorExtensionValueSpec,
-  editorLanguageValueSpec,
+  codeEditorsExtensionValueSpec,
+  editorLanguagesValueSpec,
 } from '@src/lib/editors/registry/contract'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
 
@@ -12,13 +12,13 @@ const extension = defineRegistryItemFactory(() => {
   return {
     id: 'markdown',
     provides: [
-      provide(editorLanguageValueSpec, {
+      provide(editorLanguagesValueSpec, {
         id: 'markdown',
         matches: '.md',
         mediaType: 'text/markdown',
       }),
 
-      provide(codeEditorExtensionValueSpec, {
+      provide(codeEditorsExtensionValueSpec, {
         id: 'editors.markdown',
         matches: ({ languageId }) => languageId === 'markdown',
         extensions: [

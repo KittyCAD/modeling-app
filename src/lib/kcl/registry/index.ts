@@ -2,8 +2,8 @@ import { kcl } from '@kittycad/codemirror-lang-kcl'
 import { editorKclHighlight } from '@src/editor/plugins/theme'
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import {
-  codeEditorExtensionValueSpec,
-  editorLanguageValueSpec,
+  codeEditorsExtensionValueSpec,
+  editorLanguagesValueSpec,
 } from '@src/lib/editors/registry/contract'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
 
@@ -12,12 +12,12 @@ const extension = defineRegistryItemFactory(() => {
   return {
     id: 'kcl',
     provides: [
-      provide(editorLanguageValueSpec, {
+      provide(editorLanguagesValueSpec, {
         id: 'kcl',
         matches: '.kcl',
       }),
 
-      provide(codeEditorExtensionValueSpec, {
+      provide(codeEditorsExtensionValueSpec, {
         id: 'editors.kcl',
         matches: ({ languageId }) => languageId === 'kcl',
         extensions: [kcl(), editorKclHighlight],
