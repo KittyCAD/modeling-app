@@ -1350,6 +1350,7 @@ version = "0.1.0"
 dependencies = [
  "earcutr",
  "js-sys",
+ "kittycad-native-brep",
  "serde",
  "serde_json",
  "wasm-bindgen",
@@ -3184,6 +3185,15 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 3.0.9",
+]
+
+[[package]]
+name = "kittycad-native-brep"
+version = "0.1.0"
+source = "git+https://github.com/KittyCAD/format?rev=9de751b28750c4afe9be98305db920a3c46645ef#9de751b28750c4afe9be98305db920a3c46645ef"
+dependencies = [
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

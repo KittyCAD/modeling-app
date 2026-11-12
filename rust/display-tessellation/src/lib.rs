@@ -1,122 +1,18 @@
 //! Experimental, GPU-independent display tessellation of B-rep snapshots.
 //! Inputs use the engine IR's surfaces, oriented faces and UV trim traces.
 
+pub use kittycad_native_brep::Brep;
+use kittycad_native_brep::Curve;
+#[cfg(test)]
+use kittycad_native_brep::Nurbs;
+use kittycad_native_brep::Point;
+pub use kittycad_native_brep::Snapshot;
+use kittycad_native_brep::Surface;
+use kittycad_native_brep::Uv;
+use kittycad_native_brep::VERSION;
+#[cfg(test)]
 use serde::Deserialize;
 use serde::Serialize;
-
-type Point = [f64; 3];
-type Uv = [f64; 2];
-type Oriented = (usize, i8);
-
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Snapshot {
-    pub version: u32,
-    pub brep: Brep,
-}
-
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Brep {
-    surfaces: Vec<Surface>,
-    faces: Vec<Face>,
-    loops: Vec<TrimLoop>,
-    #[serde(rename = "curves2D")]
-    curves2d: Vec<Curve>,
-}
-
-#[derive(Deserialize)]
-#[serde(tag = "type", rename_all = "camelCase")]
-enum Surface {
-    Plane { plane: Plane },
-    Nurbs { nurbs: Nurbs },
-}
-
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct Plane {
-    #[serde(default)]
-    origin: Point,
-    #[serde(default = "x_axis")]
-    x_axis: Point,
-    #[serde(default = "y_axis")]
-    y_axis: Point,
-}
-fn x_axis() -> Point {
-    [1.0, 0.0, 0.0]
-}
-fn y_axis() -> Point {
-    [0.0, 1.0, 0.0]
-}
-
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct Nurbs {
-    #[serde(default)]
-    closed: [bool; 2],
-    control_points: Vec<Point>,
-    #[serde(default)]
-    weights: Vec<f64>,
-    knot_vector: Vec<f64>,
-    num_control_points: [usize; 2],
-    num_knots: [usize; 2],
-    order: [usize; 2],
-}
-
-#[derive(Deserialize)]
-struct Face {
-    surface: Oriented,
-    loops: Vec<Oriented>,
-}
-#[derive(Deserialize)]
-struct TrimLoop {
-    #[serde(default)]
-    traces: Vec<Trace>,
-}
-#[derive(Deserialize)]
-struct Trace {
-    curve: Oriented,
-    t: [f64; 2],
-}
-#[derive(Deserialize)]
-#[serde(tag = "type", rename_all = "camelCase")]
-enum Curve {
-    Line { line: Line },
-    Circle { circle: Circle },
-    Nurbs { nurbs: NurbsCurve },
-}
-#[derive(Deserialize)]
-struct Line {
-    #[serde(default)]
-    origin: Uv,
-    direction: Uv,
-}
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct Circle {
-    #[serde(default)]
-    origin: Uv,
-    radius: f64,
-    #[serde(default = "uv_x_axis")]
-    x_axis: Uv,
-    #[serde(default = "uv_y_axis")]
-    y_axis: Uv,
-}
-fn uv_x_axis() -> Uv {
-    [1.0, 0.0]
-}
-fn uv_y_axis() -> Uv {
-    [0.0, 1.0]
-}
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct NurbsCurve {
-    control_points: Vec<Uv>,
-    #[serde(default)]
-    weights: Vec<f64>,
-    knot_vector: Vec<f64>,
-    order: usize,
-}
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -200,7 +96,13 @@ fn rational(points: impl IntoIterator<Item = (Point, f64)>) -> Result<Point, Str
     Ok(p)
 }
 
-impl Surface {
+trait SurfaceEvaluation {
+    fn is_planar(&self) -> bool;
+    fn normal(&self, uv: Uv) -> Result<Point, String>;
+    fn evaluate(&self, uv: Uv) -> Result<Point, String>;
+}
+
+impl SurfaceEvaluation for Surface {
     fn is_planar(&self) -> bool {
         let Self::Nurbs { nurbs } = self else { return true };
         let Some(origin) = nurbs.control_points.first() else {
@@ -298,7 +200,12 @@ impl Surface {
     }
 }
 
-impl Curve {
+trait CurveEvaluation {
+    fn sample(&self, interval: [f64; 2], reverse: bool) -> Result<Vec<Uv>, String>;
+    fn evaluate(&self, t: f64) -> Result<Uv, String>;
+}
+
+impl CurveEvaluation for Curve {
     fn sample(&self, interval: [f64; 2], reverse: bool) -> Result<Vec<Uv>, String> {
         let linear = matches!(self, Self::Line { .. })
             || matches!(self, Self::Nurbs { nurbs } if nurbs.order == 2 && nurbs.control_points.len() == 2);
@@ -557,7 +464,7 @@ fn tessellate_limited(
     max_subdivision: u32,
     circumference_intervals: u32,
 ) -> Result<Mesh, String> {
-    if snapshot.version != 1 || refinement > 5 || snapshot.brep.faces.len() > 10_000 {
+    if snapshot.version != VERSION || refinement > 5 || snapshot.brep.faces.len() > 10_000 {
         return Err("Unsupported snapshot version or tessellation budget".into());
     }
     let brep = &snapshot.brep;

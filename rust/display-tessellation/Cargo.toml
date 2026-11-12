@@ -9,6 +9,7 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 serde = { workspace = true, features = ["derive"] }
+kittycad-native-brep = { git = "https://github.com/KittyCAD/format", rev = "9de751b28750c4afe9be98305db920a3c46645ef" }
 serde_json.workspace = true
 earcutr = "0.4.3"
 
