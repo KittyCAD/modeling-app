@@ -1,5 +1,6 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
+import { isArray } from '@src/lib/utils'
 
 // The nose from the snowman sample. Standard tessellation emits primitives for
 // B-rep faces 1 through 4. Faces 0 and 5 have no triangles.
@@ -72,7 +73,7 @@ test(
             cmd: { type: 'select_get' },
           })
         )
-        const msg = Array.isArray(result) ? result[0] : result
+        const msg = isArray(result) ? result[0] : result
         if (!msg || !isModelingResponse(msg)) {
           return []
         }
