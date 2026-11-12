@@ -12,6 +12,7 @@ import type { GridSnapOptions } from '@src/clientSideScene/gridUtils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import { emptyOperationsByModule } from '@src/lang/wasm'
+import { createSettings } from '@src/lib/settings/initialSettings'
 import type { Themes } from '@src/lib/theme'
 import { isArray } from '@src/lib/utils'
 import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
@@ -303,6 +304,12 @@ function setUpMoveToolCallbacks({
     }),
   }
 
+  const settings = createSettings()
+  settings.modeling.snapToGrid.user = snapToGrid
+  settings.modeling.fixedSizeGrid.user = true
+  settings.modeling.majorGridSpacing.user = 2
+  settings.modeling.minorGridsPerMajor.user = 4
+  settings.modeling.snapsPerMinor.user = 2
   const context = {
     sceneInfra,
     rustContext: {
@@ -315,16 +322,7 @@ function setUpMoveToolCallbacks({
       settingsActor: {
         send: vi.fn(),
         getSnapshot: vi.fn(() => ({
-          context: {
-            app: {},
-            modeling: {
-              snapToGrid: { current: snapToGrid },
-              fixedSizeGrid: { current: true },
-              majorGridSpacing: { current: 2 },
-              minorGridsPerMajor: { current: 4 },
-              snapsPerMinor: { current: 2 },
-            },
-          },
+          context: settings,
         })),
       },
     },
