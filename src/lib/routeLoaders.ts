@@ -162,8 +162,10 @@ export const localLoader =
       assertCurrent()
       if (isErr(editor)) return Promise.reject(editor)
       const editors = app.registry.get(editorsService)
-      if (!editors.views.peek().some((view) => view.editor === editor))
-        editors.createView(editor)
+      if (!editors.views.peek().some((view) => view.editor === editor)) {
+        const view = editors.createView(editor)
+        if (isErr(view)) return Promise.reject(view)
+      }
     }
     return session
   }

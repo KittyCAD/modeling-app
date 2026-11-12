@@ -12,6 +12,7 @@ import type {
 import { EditorView } from '@src/lib/editors/EditorView'
 import { TabViewPicker } from '@src/components/TabViewPicker'
 import fsZds from '@src/lib/fs-zds'
+import { trap } from '@src/lib/trap'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { useEffect, useRef, useState } from 'react'
 import styles from './EditorsPane.module.css'
@@ -79,9 +80,12 @@ export function EditorsPane({
               type="button"
               aria-label="New editor"
               className={styles.iconButton}
-              onClick={() =>
-                service.createView(service.createEditor(), 'editors.code')
-              }
+              onClick={() => {
+                const editor = service.createEditor()
+                if (trap(editor)) return
+                const view = service.createView(editor, 'editors.code')
+                if (trap(view)) service.closeEditor(editor.id)
+              }}
             >
               <CustomIcon name="plus" className="h-3.5 w-3.5" aria-hidden />
               <Tooltip position="bottom-right">New editor</Tooltip>
@@ -144,13 +148,17 @@ export function EditorsPane({
                 view={service.viewState(instance).value.selected}
                 views={service.viewState(instance).value.available}
                 onFocus={() => setActiveId(instance.id)}
-                onChange={(viewId) => service.setView(instance.id, viewId)}
+                onChange={(viewId) => {
+                  trap(service.setView(instance.id, viewId))
+                }}
               />
             ),
             close: {
               label: `Close ${editor.src.value ?? 'Untitled'}`,
               tooltip: 'Close editor',
-              onClose: () => service.closeView(instance.id),
+              onClose: () => {
+                trap(service.closeView(instance.id))
+              },
             },
             renderPanel: (active) => (
               <EditorView

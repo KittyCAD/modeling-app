@@ -7,7 +7,7 @@ import { useApp } from '@src/lib/boot'
 import { EditorsPane } from '@src/lib/editors/EditorsPane'
 import { OPEN_EDITOR_COMMAND } from '@src/lib/editors/commands'
 import {
-  editorTabIndicatorValueSpec,
+  editorTabIndicatorsValueSpec,
   editorsService,
 } from '@src/lib/editors/registry/contract'
 import { LayoutRootNode } from '@src/lib/layout/components'
@@ -63,7 +63,7 @@ export function ProjectView({ session }: { session: OpenProjectSession }) {
           <EditorsPane
             {...props}
             editors={editors}
-            indicators={registry.signal(editorTabIndicatorValueSpec)}
+            indicators={registry.signal(editorTabIndicatorsValueSpec)}
             onOpenEditor={() =>
               commands.send({
                 type: 'Find and select command',

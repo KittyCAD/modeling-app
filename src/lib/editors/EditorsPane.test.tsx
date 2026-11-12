@@ -1,4 +1,4 @@
-import { codeSurface } from '@src/lib/editors/testViews'
+import { codeSurface, requireSuccess } from '@src/lib/editors/testViews'
 import { defineEditorView } from '@src/lib/editors/views'
 import '@src/lib/projectSession/next/testFeature'
 import { defineRegistryItem, provide, Registry, Slot } from '@kittycad/registry'
@@ -9,7 +9,7 @@ import {
   type Editor,
   type EditorsService,
   editorsService,
-  editorViewValueSpec,
+  editorViewsValueSpec,
 } from '@src/lib/editors/registry/contract'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { LayoutType } from '@src/lib/layout/types'
@@ -58,8 +58,8 @@ describe('EditorsPane', () => {
   let registry: Registry
   let service: EditorsService
   function openView(src: string, contents: string) {
-    const editor = service.openEditor(src, contents)
-    service.createView(editor)
+    const editor = requireSuccess(service.openEditor(src, contents))
+    requireSuccess(service.createView(editor))
     return editor
   }
   beforeAll(async () => {
@@ -82,7 +82,7 @@ describe('EditorsPane', () => {
       defineRegistryItem({
         provides: [
           provide(
-            editorViewValueSpec,
+            editorViewsValueSpec,
             defineEditorView({
               id: 'test.form',
               label: 'Form',
@@ -137,7 +137,7 @@ describe('EditorsPane', () => {
       defineRegistryItem({
         provides: [
           provide(
-            editorViewValueSpec,
+            editorViewsValueSpec,
             defineEditorView({
               id: 'test.form',
               label: 'Form',
@@ -148,9 +148,9 @@ describe('EditorsPane', () => {
         ],
       }),
     ])
-    const editor = service.createEditor('original')
-    const code = service.createView(editor, 'editors.code')
-    service.createView(editor, 'test.form')
+    const editor = requireSuccess(service.createEditor('original'))
+    const code = requireSuccess(service.createView(editor, 'editors.code'))
+    requireSuccess(service.createView(editor, 'test.form'))
     render(<EditorsPane editors={service} layout={layout} />)
     fireEvent.change(screen.getByRole('textbox', { name: 'Form buffer' }), {
       target: { value: 'from form' },
@@ -187,7 +187,9 @@ describe('EditorsPane', () => {
     fireEvent.click(screen.getByRole('button', { name: 'New editor' }))
     const second = service.editors.value[1]
     expect(second).not.toBe(first)
-    act(() => service.setSource(second.id, '/project/new.md'))
+    act(() => {
+      requireSuccess(service.setSource(second.id, '/project/new.md'))
+    })
     expect(screen.getByRole('tab', { name: 'new.md' })).toHaveAttribute(
       'aria-selected',
       'true'
@@ -220,7 +222,7 @@ describe('EditorsPane', () => {
       <EditorsPane editors={service} layout={layout} onOpenEditor={open} />
     )
     expect(screen.getByRole('heading', { level: 2 })).toBeVisible()
-    let editor: ReturnType<EditorsService['openEditor']>
+    let editor: Editor
     await act(async () => {
       editor = openView('/project/main.kcl', '')
     })

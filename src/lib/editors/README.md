@@ -21,7 +21,7 @@ Undo and Redo resolve the focused presentation's document in every mode, includi
 Electron's Edit menu. Native text controls keep their own text history. A closed
 view or an empty document history never redirects the action to another model.
 
-Modes are components contributed through `editorViewValueSpec`. Matching modes
+Modes are components contributed through `editorViewsValueSpec`. Matching modes
 are ordered by descending `priority`, with registration order breaking ties. Each
 view retains its explicit choice while that mode matches. Code is the wildcard
 fallback with priority `-100`; domain-specific modes can open by default.
@@ -34,7 +34,7 @@ React remounts, and closes with its view, contribution withdrawal, or loss of it
 match. Component props identify the editor, view instance, and active state.
 
 Document capabilities use `editorCapabilityValueSpec` and acquire resources once
-per matching editor. Native CodeMirror extensions use `codeEditorExtensionValueSpec`
+per matching editor. Native CodeMirror extensions use `codeEditorsExtensionValueSpec`
 and are installed separately in each Code surface. Code selections remain available
 to selection listeners without being mirrored into another surface. Shared edits
 map other surfaces' selections through the changes and enter one document history.
