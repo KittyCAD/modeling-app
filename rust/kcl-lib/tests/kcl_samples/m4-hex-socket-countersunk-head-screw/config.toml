@@ -1,0 +1,3 @@
+test_graphics = "CpuEngineRender"
+# Rendering can shift Engine-generated UUIDs between runs.
+redact_uuids = true

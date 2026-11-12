@@ -12,8 +12,10 @@ description: Operations executed socket-head-cap-screw.kcl
         "value": 0.19,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed socket-head-cap-screw.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed socket-head-cap-screw.kcl
         "value": 0.19,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed socket-head-cap-screw.kcl
         "value": 0.313,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed socket-head-cap-screw.kcl
         "value": 0.15625,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed socket-head-cap-screw.kcl
         "value": 0.09021097956087902,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -213,18 +225,22 @@ description: Operations executed socket-head-cap-screw.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -239,18 +255,22 @@ description: Operations executed socket-head-cap-screw.kcl
                 "type": "SketchVar",
                 "value": 0.16,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -343,8 +363,10 @@ description: Operations executed socket-head-cap-screw.kcl
             "value": -0.19,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -390,22 +412,45 @@ description: Operations executed socket-head-cap-screw.kcl
         "sourceRange": []
       },
       "labeledArgs": {
+        "edges": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
+                        "value": "circle1",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "capStart001",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
         "radius": {
           "value": {
             "type": "Number",
             "value": 0.02,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
-          },
-          "sourceRange": []
-        },
-        "tags": {
-          "value": {
-            "type": "Uuid",
-            "value": "[uuid]"
           },
           "sourceRange": []
         }
@@ -465,18 +510,22 @@ description: Operations executed socket-head-cap-screw.kcl
                 "type": "SketchVar",
                 "value": 0.08,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -491,18 +540,22 @@ description: Operations executed socket-head-cap-screw.kcl
                 "type": "SketchVar",
                 "value": 0.08,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -552,18 +605,22 @@ description: Operations executed socket-head-cap-screw.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.09,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -578,18 +635,22 @@ description: Operations executed socket-head-cap-screw.kcl
                 "type": "SketchVar",
                 "value": 0.08,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -683,18 +744,22 @@ description: Operations executed socket-head-cap-screw.kcl
                 "type": "SketchVar",
                 "value": -0.08,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -709,18 +774,22 @@ description: Operations executed socket-head-cap-screw.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.09,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -814,18 +883,22 @@ description: Operations executed socket-head-cap-screw.kcl
                 "type": "SketchVar",
                 "value": -0.08,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -840,18 +913,22 @@ description: Operations executed socket-head-cap-screw.kcl
                 "type": "SketchVar",
                 "value": -0.08,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -945,18 +1022,22 @@ description: Operations executed socket-head-cap-screw.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.09,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -971,18 +1052,22 @@ description: Operations executed socket-head-cap-screw.kcl
                 "type": "SketchVar",
                 "value": -0.08,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1076,18 +1161,22 @@ description: Operations executed socket-head-cap-screw.kcl
                 "type": "SketchVar",
                 "value": 0.08,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1102,18 +1191,22 @@ description: Operations executed socket-head-cap-screw.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.09,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1254,8 +1347,10 @@ description: Operations executed socket-head-cap-screw.kcl
             "value": -0.14250000000000002,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1312,18 +1407,22 @@ description: Operations executed socket-head-cap-screw.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1338,18 +1437,22 @@ description: Operations executed socket-head-cap-screw.kcl
                 "type": "SketchVar",
                 "value": 0.1,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1442,8 +1545,10 @@ description: Operations executed socket-head-cap-screw.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1495,7 +1600,9 @@ description: Operations executed socket-head-cap-screw.kcl
             "value": 90.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1506,7 +1613,9 @@ description: Operations executed socket-head-cap-screw.kcl
             "value": 90.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1569,7 +1678,9 @@ description: Operations executed socket-head-cap-screw.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -1597,7 +1708,9 @@ description: Operations executed socket-head-cap-screw.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -1631,7 +1744,7 @@ description: Operations executed socket-head-cap-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1655,7 +1768,7 @@ description: Operations executed socket-head-cap-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1679,7 +1792,7 @@ description: Operations executed socket-head-cap-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1703,7 +1816,7 @@ description: Operations executed socket-head-cap-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1727,7 +1840,7 @@ description: Operations executed socket-head-cap-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1751,7 +1864,7 @@ description: Operations executed socket-head-cap-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1775,7 +1888,7 @@ description: Operations executed socket-head-cap-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1799,7 +1912,7 @@ description: Operations executed socket-head-cap-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

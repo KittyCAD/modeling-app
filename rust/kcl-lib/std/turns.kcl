@@ -1,7 +1,7 @@
 /// This module contains a few handy constants for defining turns.
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm)
 
 /// No turn, zero degrees/radians.
 export ZERO = 0: number(Angle)

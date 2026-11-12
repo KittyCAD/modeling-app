@@ -1,4 +1,4 @@
-import type { CreateProjectLibraryTarget } from '@src/lib/commandBarConfigs/projectsCommandConfig'
+import type { CreateProjectLibraryTarget } from '@src/lib/homeProjects/commands'
 import {
   DEFAULT_PROJECT_LIBRARY_ID,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
@@ -13,8 +13,9 @@ import {
   type OnboardingUtilDeps,
   shouldApplyRememberedOnboardingWorkflow,
   useAdjacentOnboardingSteps,
+  useOnboardingStartPending,
 } from '@src/routes/Onboarding/utils'
-import type { Location } from 'react-router-dom'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const originalElectron = window.electron
@@ -175,16 +176,65 @@ describe('Onboarding utility functions', () => {
       })
       const navigate = vi.fn()
       const deps = createOnboardingDeps([cloud.target], navigate)
+      const { result } = renderHook(() => useOnboardingStartPending())
 
-      const firstStart = acceptOnboarding(deps)
+      expect(result.current).toBe(false)
+
+      let firstStart: Promise<void> | undefined
+      act(() => {
+        firstStart = acceptOnboarding(deps)
+      })
       const secondStart = acceptOnboarding(deps)
+      const { result: lateSubscriber } = renderHook(() =>
+        useOnboardingStartPending()
+      )
 
       expect(secondStart).toBe(firstStart)
       expect(cloud.run).toHaveBeenCalledOnce()
+      expect(result.current).toBe(true)
+      expect(lateSubscriber.current).toBe(true)
 
-      resolveProject?.(createProject('/cloud/tutorial-project/main.kcl'))
-      await Promise.all([firstStart, secondStart])
+      await act(async () => {
+        resolveProject?.(createProject('/cloud/tutorial-project/main.kcl'))
+        await Promise.all([firstStart, secondStart])
+      })
       expect(navigate).toHaveBeenCalledOnce()
+      expect(result.current).toBe(false)
+      expect(lateSubscriber.current).toBe(false)
+    })
+
+    it('exposes pending state and restores interaction after a failed replay', async () => {
+      setDesktop(false)
+      let rejectProject: ((reason: Error) => void) | undefined
+      const projectPromise = new Promise<Project>((_resolve, reject) => {
+        rejectProject = reject
+      })
+      const cloud = createTarget({
+        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+        path: '/cloud',
+        result: projectPromise,
+      })
+      const { result } = renderHook(() => useOnboardingStartPending())
+
+      expect(result.current).toBe(false)
+
+      let failedStart: Promise<void> | undefined
+      act(() => {
+        failedStart = acceptOnboarding(createOnboardingDeps([cloud.target]))
+      })
+      expect(result.current).toBe(true)
+
+      rejectProject?.(new Error('project creation failed'))
+      await expect(failedStart).rejects.toThrow('project creation failed')
+      await waitFor(() => expect(result.current).toBe(false))
+
+      const retryCloud = createTarget({
+        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+        path: '/cloud',
+        result: createProject('/cloud/tutorial-project/main.kcl'),
+      })
+      await acceptOnboarding(createOnboardingDeps([retryCloud.target]))
+      expect(retryCloud.run).toHaveBeenCalledOnce()
     })
   })
 
@@ -224,40 +274,16 @@ describe('Onboarding utility functions', () => {
   })
 
   describe('needsToOnboard', () => {
-    it('in onboarding already does not need onboarding', () => {
-      const location: Location = {
-        pathname: '/some-file/onboarding/some-step',
-        search: '',
-        hash: '',
-        state: null,
-        key: 'default',
-      }
-      expect(needsToOnboard(location, '')).toEqual(false)
-    })
-    it('elsewhere with bad status does need onboarding', () => {
-      const location: Location = {
-        pathname: '/somewhere-else',
-        search: '',
-        hash: '',
-        state: null,
-        key: 'default',
-      }
+    it('bad status does need onboarding', () => {
       expect(
-        needsToOnboard(
-          location,
-          '/bad-onboarding-status' as unknown as OnboardingStatus
-        )
+        needsToOnboard('/bad-onboarding-status' as unknown as OnboardingStatus)
       ).toEqual(true)
     })
-    it('elsewhere with completed does not need onboarding', () => {
-      const location: Location = {
-        pathname: '/somewhere-else',
-        search: '',
-        hash: '',
-        state: null,
-        key: 'default',
-      }
-      expect(needsToOnboard(location, 'completed')).toEqual(false)
+    it('with completed does not need onboarding', () => {
+      expect(needsToOnboard('completed')).toEqual(false)
+    })
+    it('with valid incomplete value needs onboarding', () => {
+      expect(needsToOnboard('/desktop/toolbar')).toEqual(true)
     })
   })
 

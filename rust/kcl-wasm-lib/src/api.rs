@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
+use kcl_api::ObjectId;
 use kcl_lib::KclErrorWithOutputs;
 use kcl_lib::Program;
 use kcl_lib::SegmentDragAnchor;
@@ -13,7 +14,6 @@ use kcl_lib::front::ExistingSegmentCtor;
 use kcl_lib::front::File;
 use kcl_lib::front::FileId;
 use kcl_lib::front::LifecycleApi;
-use kcl_lib::front::ObjectId;
 use kcl_lib::front::ProjectId;
 use kcl_lib::front::SceneGraphDelta;
 use kcl_lib::front::SketchApi;
@@ -23,6 +23,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::Context;
 use crate::TRUE_BUG;
+use crate::context::ExecutionMode;
 
 #[derive(serde::Serialize)]
 struct TrimOutcome {
@@ -54,6 +55,8 @@ impl Context {
 
         let files: Vec<File> =
             serde_json::from_str(files).map_err(|e| JsValue::from_serde(&Error::deserialize("files", e)).unwrap())?;
+
+        let _owner = self.frontend.write().await;
 
         self.project_manager
             .open_project(ProjectId(project), files, FileId(open_file))
@@ -96,6 +99,8 @@ impl Context {
         let file: File =
             serde_json::from_str(file).map_err(|e| JsValue::from_serde(&Error::deserialize("file", e)).unwrap())?;
 
+        let _owner = self.frontend.write().await;
+
         self.project_manager
             .add_file(ProjectId(project), file)
             .await
@@ -105,6 +110,8 @@ impl Context {
     #[wasm_bindgen]
     pub async fn remove_file(&self, project: usize, file: usize) -> Result<(), JsValue> {
         console_error_panic_hook::set_once();
+
+        let _owner = self.frontend.write().await;
 
         self.project_manager
             .remove_file(ProjectId(project), FileId(file))
@@ -116,6 +123,8 @@ impl Context {
     pub async fn update_file(&self, project: usize, file: usize, text: String) -> Result<(), JsValue> {
         console_error_panic_hook::set_once();
 
+        let _owner = self.frontend.write().await;
+
         self.project_manager
             .update_file(ProjectId(project), FileId(file), text)
             .await
@@ -125,6 +134,8 @@ impl Context {
     #[wasm_bindgen]
     pub async fn switch_file(&self, project: usize, file: usize) -> Result<(), JsValue> {
         console_error_panic_hook::set_once();
+
+        let _owner = self.frontend.write().await;
 
         self.project_manager
             .switch_file(ProjectId(project), FileId(file))
@@ -136,10 +147,35 @@ impl Context {
     pub async fn refresh(&self, project: usize) -> Result<(), JsValue> {
         console_error_panic_hook::set_once();
 
+        let _owner = self.frontend.write().await;
+
         self.project_manager
             .refresh(ProjectId(project))
             .await
             .map_err(|e: Error| JsValue::from_serde(&e).unwrap())
+    }
+
+    /// Evaluate an input expression in the current model's context without contacting the engine.
+    #[wasm_bindgen(js_name = evaluateExpression)]
+    pub async fn evaluate_expression(&self, program_ast_json: &str, settings: &str) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let program: Program =
+            serde_json::from_str(program_ast_json).map_err(|e| format!("Could not deserialize KCL AST: {e}"))?;
+        let (guard, ctx) = self
+            .executor_for_operation(settings, None, ExecutionMode::Mock)
+            .await
+            .map_err(|error| js_value_from_serde(&error))?;
+
+        // Serialize with execution, sketch edits and checkpoint restores while using their memory.
+
+        let result = guard
+            .evaluate_expression(&ctx, program.fill_node_paths())
+            .await
+            .map_err(|e| js_value_from_serde(&e))?;
+
+        JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize expression result. {TRUE_BUG} Details: {e}").into())
     }
 
     /// Set the current program AST and execute it. Temporary hack for
@@ -152,12 +188,11 @@ impl Context {
             serde_json::from_str(program_ast_json).map_err(|e| format!("Could not deserialize KCL AST: {e}"))?;
         let program = program.fill_node_paths();
 
-        let ctx = self
-            .create_executor_ctx(settings, None, false)
-            .map_err(|e| format!("Could not create KCL executor context for new sketch. {TRUE_BUG} Details: {e}"))?;
+        let (mut guard, ctx) = self
+            .executor_for_operation(settings, None, ExecutionMode::Engine)
+            .await
+            .map_err(|error| js_value_from_serde(&error))?;
 
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
         let result = guard
             .hack_set_program(&ctx, program)
             .await
@@ -183,18 +218,17 @@ impl Context {
         let sketch: ObjectId =
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
 
-        let ctx = self
-            .create_executor_ctx(settings, None, true)
-            .map_err(|e| format!("Could not create KCL executor context for new sketch. {TRUE_BUG} Details: {e}"))?;
+        let (mut guard, ctx) = self
+            .executor_for_operation(settings, None, ExecutionMode::Mock)
+            .await
+            .map_err(|error| js_value_from_serde(&error))?;
 
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
         let (source_delta, scene_graph_delta) = guard
             .execute_mock(&ctx, version, sketch)
             .await
             .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
         let checkpoint_id = guard
-            .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+            .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
             .await
             .map_err(|e: Error| js_value_from_serde(&e))?;
         let result = kcl_lib::front::SketchMutationOutcome {
@@ -225,21 +259,20 @@ impl Context {
             serde_json::from_str(file_json).map_err(|e| format!("Could not deserialize FileId: {e}"))?;
         let version: kcl_lib::front::Version =
             serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
-        let args: kcl_lib::front::SketchCtor =
+        let args: kcl_api::SketchCtor =
             serde_json::from_str(args_json).map_err(|e| format!("Could not deserialize SketchCtor: {e}"))?;
 
-        let ctx = self
-            .create_executor_ctx(settings, None, false)
-            .map_err(|e| format!("Could not create KCL executor context for new sketch. {TRUE_BUG} Details: {e}"))?;
+        let (mut guard, ctx) = self
+            .executor_for_operation(settings, None, ExecutionMode::Engine)
+            .await
+            .map_err(|error| js_value_from_serde(&error))?;
 
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
         let (source_delta, scene_graph_delta, sketch_id) = guard
             .new_sketch(&ctx, project, file, version, args)
             .await
             .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
         let checkpoint_id = guard
-            .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+            .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
             .await
             .map_err(|e: Error| js_value_from_serde(&e))?;
         let result = kcl_lib::front::NewSketchOutcome {
@@ -271,21 +304,20 @@ impl Context {
             serde_json::from_str(file_json).map_err(|e| format!("Could not deserialize FileId: {e}"))?;
         let version: kcl_lib::front::Version =
             serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
-        let sketch: kcl_lib::front::ObjectId =
+        let sketch: kcl_api::ObjectId =
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize sketch ObjectId: {e}"))?;
 
-        let ctx = self
-            .create_executor_ctx(settings, None, true)
-            .map_err(|e| format!("Could not create KCL executor context for edit sketch. {TRUE_BUG} Details: {e}"))?;
+        let (mut guard, ctx) = self
+            .executor_for_operation(settings, None, ExecutionMode::Mock)
+            .await
+            .map_err(|error| js_value_from_serde(&error))?;
 
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
         let scene_graph_delta = guard
             .edit_sketch(&ctx, project, file, version, sketch)
             .await
             .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
         let checkpoint_id = guard
-            .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+            .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
             .await
             .map_err(|e: Error| js_value_from_serde(&e))?;
         let result = kcl_lib::front::EditSketchOutcome {
@@ -304,15 +336,14 @@ impl Context {
 
         let version: kcl_lib::front::Version =
             serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
-        let sketch: kcl_lib::front::ObjectId =
+        let sketch: kcl_api::ObjectId =
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
 
-        let ctx = self
-            .create_executor_ctx(settings, None, false)
-            .map_err(|e| format!("Could not create KCL executor context for exit sketch. {TRUE_BUG} Details: {e}"))?;
+        let (mut guard, ctx) = self
+            .executor_for_operation(settings, None, ExecutionMode::Engine)
+            .await
+            .map_err(|error| js_value_from_serde(&error))?;
 
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
         let result = guard
             .exit_sketch(&ctx, version, sketch)
             .await
@@ -337,12 +368,11 @@ impl Context {
         let sketch: ObjectId =
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize sketch ObjectId: {e}"))?;
 
-        let ctx = self
-            .create_executor_ctx(settings, None, false)
-            .map_err(|e| format!("Could not create KCL executor context for delete sketch. {TRUE_BUG} Details: {e}"))?;
+        let (mut guard, ctx) = self
+            .executor_for_operation(settings, None, ExecutionMode::Engine)
+            .await
+            .map_err(|error| js_value_from_serde(&error))?;
 
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
         let result = guard
             .delete_sketch(&ctx, version, sketch)
             .await
@@ -367,17 +397,16 @@ impl Context {
 
         let version: kcl_lib::front::Version =
             serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
-        let sketch: kcl_lib::front::ObjectId =
+        let sketch: kcl_api::ObjectId =
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
-        let segment: kcl_lib::front::SegmentCtor =
+        let segment: kcl_api::SegmentCtor =
             serde_json::from_str(segment_json).map_err(|e| format!("Could not deserialize SegmentCtor: {e}"))?;
 
-        let ctx = self
-            .create_executor_ctx(settings, None, true)
-            .map_err(|e| format!("Could not create KCL executor context for add segment. {TRUE_BUG} Details: {e}"))?;
+        let (mut guard, ctx) = self
+            .executor_for_operation(settings, None, ExecutionMode::Mock)
+            .await
+            .map_err(|error| js_value_from_serde(&error))?;
 
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
         let (source_delta, scene_graph_delta) = guard
             .add_segment(&ctx, version, sketch, segment, label)
             .await
@@ -385,7 +414,7 @@ impl Context {
         let checkpoint_id = if create_checkpoint {
             Some(
                 guard
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .map_err(|e: Error| js_value_from_serde(&e))?,
             )
@@ -425,25 +454,23 @@ impl Context {
 
         let version: kcl_lib::front::Version =
             serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
-        let sketch: kcl_lib::front::ObjectId =
+        let sketch: kcl_api::ObjectId =
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize sketch ObjectId: {e}"))?;
         let segments: Vec<ExistingSegmentCtor> =
             serde_json::from_str(segments_json).map_err(|e| format!("Could not deserialize Segments: {e}"))?;
-        let anchor_segment_ids: Option<Vec<kcl_lib::front::ObjectId>> =
-            serde_json::from_str(anchor_segment_ids_json)
-                .map_err(|e| format!("Could not deserialize anchor segment ObjectIds: {e}"))?;
+        let anchor_segment_ids: Option<Vec<kcl_api::ObjectId>> = serde_json::from_str(anchor_segment_ids_json)
+            .map_err(|e| format!("Could not deserialize anchor segment ObjectIds: {e}"))?;
         let drag_anchors: Vec<SegmentDragAnchor> = serde_json::from_str(drag_anchors_json)
             .map_err(|e| format!("Could not deserialize segment drag anchors: {e}"))?;
         let constraint_label_edits: Vec<ConstraintLabelPositionEdit> =
             serde_json::from_str(constraint_label_edits_json)
                 .map_err(|e| format!("Could not deserialize constraint label edits: {e}"))?;
 
-        let ctx = self
-            .create_executor_ctx(settings, None, true)
-            .map_err(|e| format!("Could not create KCL executor context for edit segment. {TRUE_BUG} Details: {e}"))?;
+        let (mut guard, ctx) = self
+            .executor_for_operation(settings, None, ExecutionMode::Mock)
+            .await
+            .map_err(|error| js_value_from_serde(&error))?;
 
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
         let (source_delta, scene_graph_delta) = guard
             .edit_segments_with_options(
                 &ctx,
@@ -462,7 +489,7 @@ impl Context {
         let checkpoint_id = if create_checkpoint {
             Some(
                 guard
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .map_err(|e: Error| js_value_from_serde(&e))?,
             )
@@ -494,19 +521,18 @@ impl Context {
 
         let version: kcl_lib::front::Version =
             serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
-        let sketch: kcl_lib::front::ObjectId =
+        let sketch: kcl_api::ObjectId =
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize sketch ObjectId: {e}"))?;
         let constraint_ids: Vec<ObjectId> =
             serde_json::from_str(constraint_ids_json).map_err(|e| format!("Could not deserialize Segment IDs: {e}"))?;
         let segment_ids: Vec<ObjectId> =
             serde_json::from_str(segment_ids_json).map_err(|e| format!("Could not deserialize Segment IDs: {e}"))?;
 
-        let ctx = self
-            .create_executor_ctx(settings, None, true)
-            .map_err(|e| format!("Could not create KCL executor context for edit segment. {TRUE_BUG} Details: {e}"))?;
+        let (mut guard, ctx) = self
+            .executor_for_operation(settings, None, ExecutionMode::Mock)
+            .await
+            .map_err(|error| js_value_from_serde(&error))?;
 
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
         let (source_delta, scene_graph_delta) = guard
             .delete_objects(&ctx, version, sketch, constraint_ids, segment_ids)
             .await
@@ -514,7 +540,7 @@ impl Context {
         let checkpoint_id = if create_checkpoint {
             Some(
                 guard
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .map_err(|e: Error| js_value_from_serde(&e))?,
             )
@@ -545,17 +571,16 @@ impl Context {
 
         let version: kcl_lib::front::Version =
             serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
-        let sketch: kcl_lib::front::ObjectId =
+        let sketch: kcl_api::ObjectId =
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
-        let constraint: kcl_lib::front::Constraint =
+        let constraint: kcl_api::Constraint =
             serde_json::from_str(constraint_json).map_err(|e| format!("Could not deserialize ConstraintCtor: {e}"))?;
 
-        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
-            format!("Could not create KCL executor context for add constraint. {TRUE_BUG} Details: {e}")
-        })?;
+        let (mut guard, ctx) = self
+            .executor_for_operation(settings, None, ExecutionMode::Mock)
+            .await
+            .map_err(|error| js_value_from_serde(&error))?;
 
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
         let (source_delta, scene_graph_delta) = guard
             .add_constraint(&ctx, version, sketch, constraint)
             .await
@@ -563,7 +588,7 @@ impl Context {
         let checkpoint_id = if create_checkpoint {
             Some(
                 guard
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .map_err(|e: Error| js_value_from_serde(&e))?,
             )
@@ -595,17 +620,16 @@ impl Context {
 
         let version: kcl_lib::front::Version =
             serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
-        let sketch: kcl_lib::front::ObjectId =
+        let sketch: kcl_api::ObjectId =
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
-        let constraint_id: kcl_lib::front::ObjectId =
+        let constraint_id: kcl_api::ObjectId =
             serde_json::from_str(constraint_id_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
 
-        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
-            format!("Could not create KCL executor context for edit constraint value. {TRUE_BUG} Details: {e}")
-        })?;
+        let (mut guard, ctx) = self
+            .executor_for_operation(settings, None, ExecutionMode::Mock)
+            .await
+            .map_err(|error| js_value_from_serde(&error))?;
 
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
         let (source_delta, scene_graph_delta) = guard
             .edit_constraint_value(&ctx, version, sketch, constraint_id, value_expression.to_string())
             .await
@@ -613,7 +637,7 @@ impl Context {
         let checkpoint_id = if create_checkpoint {
             Some(
                 guard
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .map_err(|e: Error| js_value_from_serde(&e))?,
             )
@@ -651,22 +675,21 @@ impl Context {
 
         let version: kcl_lib::front::Version =
             serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
-        let sketch: kcl_lib::front::ObjectId =
+        let sketch: kcl_api::ObjectId =
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
-        let constraint_id: kcl_lib::front::ObjectId =
+        let constraint_id: kcl_api::ObjectId =
             serde_json::from_str(constraint_id_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
-        let constraint: kcl_lib::front::Constraint =
+        let constraint: kcl_api::Constraint =
             serde_json::from_str(constraint_json).map_err(|e| format!("Could not deserialize Constraint: {e}"))?;
-        let kcl_lib::front::Constraint::Angle(angle) = constraint else {
+        let kcl_api::Constraint::Angle(angle) = constraint else {
             return Err("edit_angle_constraint requires an Angle constraint".into());
         };
 
-        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
-            format!("Could not create KCL executor context for edit angle constraint. {TRUE_BUG} Details: {e}")
-        })?;
+        let (mut guard, ctx) = self
+            .executor_for_operation(settings, None, ExecutionMode::Mock)
+            .await
+            .map_err(|error| js_value_from_serde(&error))?;
 
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
         let (source_delta, scene_graph_delta) = guard
             .edit_angle_constraint_with_options(
                 &ctx,
@@ -683,7 +706,7 @@ impl Context {
         let checkpoint_id = if create_checkpoint {
             Some(
                 guard
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .map_err(|e: Error| js_value_from_serde(&e))?,
             )
@@ -721,27 +744,26 @@ impl Context {
 
         let version: kcl_lib::front::Version =
             serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
-        let sketch: kcl_lib::front::ObjectId =
+        let sketch: kcl_api::ObjectId =
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
-        let constraint_id: kcl_lib::front::ObjectId =
+        let constraint_id: kcl_api::ObjectId =
             serde_json::from_str(constraint_id_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
-        let constraint: kcl_lib::front::Constraint =
+        let constraint: kcl_api::Constraint =
             serde_json::from_str(constraint_json).map_err(|e| format!("Could not deserialize Constraint: {e}"))?;
         if !matches!(
             &constraint,
-            kcl_lib::front::Constraint::Distance(_)
-                | kcl_lib::front::Constraint::HorizontalDistance(_)
-                | kcl_lib::front::Constraint::VerticalDistance(_)
+            kcl_api::Constraint::Distance(_)
+                | kcl_api::Constraint::HorizontalDistance(_)
+                | kcl_api::Constraint::VerticalDistance(_)
         ) {
             return Err("edit_distance_constraint requires a distance constraint".into());
         }
 
-        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
-            format!("Could not create KCL executor context for edit distance constraint. {TRUE_BUG} Details: {e}")
-        })?;
+        let (mut guard, ctx) = self
+            .executor_for_operation(settings, None, ExecutionMode::Mock)
+            .await
+            .map_err(|error| js_value_from_serde(&error))?;
 
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
         let (source_delta, scene_graph_delta) = guard
             .edit_distance_constraint_with_options(
                 &ctx,
@@ -758,7 +780,7 @@ impl Context {
         let checkpoint_id = if create_checkpoint {
             Some(
                 guard
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .map_err(|e: Error| js_value_from_serde(&e))?,
             )
@@ -797,21 +819,20 @@ impl Context {
 
         let version: kcl_lib::front::Version =
             serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
-        let sketch: kcl_lib::front::ObjectId =
+        let sketch: kcl_api::ObjectId =
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
-        let constraint_id: kcl_lib::front::ObjectId =
+        let constraint_id: kcl_api::ObjectId =
             serde_json::from_str(constraint_id_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
-        let label_position: kcl_lib::front::Point2d<kcl_lib::front::Number> = serde_json::from_str(label_position_json)
+        let label_position: kcl_api::Point2d<kcl_api::Number> = serde_json::from_str(label_position_json)
             .map_err(|e| format!("Could not deserialize label position: {e}"))?;
-        let anchor_segment_ids: Vec<kcl_lib::front::ObjectId> = serde_json::from_str(anchor_segment_ids_json)
+        let anchor_segment_ids: Vec<kcl_api::ObjectId> = serde_json::from_str(anchor_segment_ids_json)
             .map_err(|e| format!("Could not deserialize anchor segment ids: {e}"))?;
 
-        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
-            format!("Could not create KCL executor context for edit constraint label. {TRUE_BUG} Details: {e}")
-        })?;
+        let (mut guard, ctx) = self
+            .executor_for_operation(settings, None, ExecutionMode::Mock)
+            .await
+            .map_err(|error| js_value_from_serde(&error))?;
 
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
         let (source_delta, scene_graph_delta) = guard
             .edit_distance_constraint_label_position_with_options(
                 &ctx,
@@ -829,7 +850,7 @@ impl Context {
         let checkpoint_id = if create_checkpoint {
             Some(
                 guard
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .map_err(|e: Error| js_value_from_serde(&e))?,
             )
@@ -859,7 +880,7 @@ impl Context {
         console_error_panic_hook::set_once();
         let version: kcl_lib::front::Version =
             serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
-        let sketch: kcl_lib::front::ObjectId =
+        let sketch: kcl_api::ObjectId =
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
 
         // Convert flattened Vec<f64> to Vec<[f64; 2]> (expects pairs)
@@ -870,12 +891,10 @@ impl Context {
             ));
         }
 
-        let ctx = self
-            .create_executor_ctx(settings, None, true)
-            .map_err(|e| format!("Could not create KCL executor context for trim. {TRUE_BUG} Details: {e}"))?;
-
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
+        let (mut guard, ctx) = self
+            .executor_for_operation(settings, None, ExecutionMode::Mock)
+            .await
+            .map_err(|error| js_value_from_serde(&error))?;
 
         // Import trim function from kcl-lib
         use kcl_lib::front::Coords2d as Coords2dCore;
@@ -891,7 +910,7 @@ impl Context {
                 .scene_graph()
                 .objects
                 .iter()
-                .find(|obj| matches!(obj.kind, kcl_lib::front::ObjectKind::Sketch { .. }))
+                .find(|obj| matches!(obj.kind, kcl_api::ObjectKind::Sketch { .. }))
                 .map(|obj| obj.id)
                 .unwrap_or(sketch) // Fall back to provided sketch
         };
@@ -951,7 +970,7 @@ impl Context {
         let checkpoint_id = if operations_performed {
             Some(
                 guard
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .map_err(|e| format!("Failed to create sketch checkpoint: {:?}", e))?,
             )
@@ -988,20 +1007,18 @@ impl Context {
 
         let version: kcl_lib::front::Version =
             serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
-        let sketch: kcl_lib::front::ObjectId =
+        let sketch: kcl_api::ObjectId =
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
-        let previous_segment_end_point_id: kcl_lib::front::ObjectId =
-            serde_json::from_str(previous_segment_end_point_id_json)
-                .map_err(|e| format!("Could not deserialize previous_segment_end_point_id: {e}"))?;
-        let segment: kcl_lib::front::SegmentCtor =
+        let previous_segment_end_point_id: kcl_api::ObjectId = serde_json::from_str(previous_segment_end_point_id_json)
+            .map_err(|e| format!("Could not deserialize previous_segment_end_point_id: {e}"))?;
+        let segment: kcl_api::SegmentCtor =
             serde_json::from_str(segment_json).map_err(|e| format!("Could not deserialize SegmentCtor: {e}"))?;
 
-        let ctx = self
-            .create_executor_ctx(settings, None, true)
-            .map_err(|e| format!("Could not create KCL executor context for chain segment. {TRUE_BUG} Details: {e}"))?;
+        let (mut guard, ctx) = self
+            .executor_for_operation(settings, None, ExecutionMode::Mock)
+            .await
+            .map_err(|error| js_value_from_serde(&error))?;
 
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
         let (source_delta, scene_graph_delta) = guard
             .chain_segment(&ctx, version, sketch, previous_segment_end_point_id, segment, label)
             .await
@@ -1009,7 +1026,7 @@ impl Context {
         let checkpoint_id = if create_checkpoint {
             Some(
                 guard
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .map_err(|e: Error| js_value_from_serde(&e))?,
             )
@@ -1036,7 +1053,7 @@ impl Context {
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
         let result = guard
-            .restore_sketch_checkpoint(checkpoint_id)
+            .restore_sketch_checkpoint(&self.cache, checkpoint_id)
             .await
             .map_err(|e: Error| js_value_from_serde(&e))?;
 

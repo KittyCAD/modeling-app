@@ -2,22 +2,29 @@ import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import { type Artifact, assertParse } from '@src/lang/wasm'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
-  type ModelingCommandSchema,
-  extrudeSelectionRequiresMethod,
   extrudeSelectionRequiresBodyType,
+  extrudeSelectionRequiresMethod,
   getDefaultGdtTolerance,
+  type ModelingCommandSchema,
   modelingMachineCommandConfig,
   profileSelectionRequiresBodyType,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import {
-  type StdLibCommandDriftConfig,
   modelingCommandStdLibDriftConfig,
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
   modelingStdLibCommandUsesExperimentalFeatures,
+  type StdLibCommandDriftConfig,
+  stdLibCommandArgs,
+  stdLibCommandSources,
   stdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
-import { STD_LIB_COMMANDS } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
+import {
+  STD_LIB_COMMANDS,
+  STD_LIB_ENUMS,
+  stdLibEnumOptions,
+  type StdLibCommandArg,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import type {
   CommandArgumentConfig,
   KclCommandValue,
@@ -33,8 +40,10 @@ import {
   type ResolvedSelectionType,
 } from '@src/lib/selections'
 import { isArray } from '@src/lib/utils'
-import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  ModelingMachineContext,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, it } from 'vitest'
 
@@ -76,6 +85,49 @@ function bodyTypeRequiredForCommand(
     ? bodyTypeArg.required({ argumentsToSubmit })
     : bodyTypeArg.required
 }
+
+describe('STEP schema export options', () => {
+  function schemaArgument() {
+    const config = modelingMachineCommandConfig.Export
+    if (
+      !config ||
+      isArray(config) ||
+      config.args?.schema?.inputType !== 'options'
+    ) {
+      throw new Error('Export should expose schema options')
+    }
+    return config.args.schema
+  }
+
+  it('defaults to AP242 and offers all three STEP schemas', () => {
+    const schema = schemaArgument()
+    const options =
+      typeof schema.options === 'function'
+        ? schema.options({ argumentsToSubmit: { type: 'step' } })
+        : schema.options
+
+    expect(schema.defaultValue).toBe('ap242')
+    expect(options.map((option) => option.value)).toEqual([
+      'ap203',
+      'ap214',
+      'ap242',
+    ])
+    expect(options.find((option) => option.isCurrent)?.value).toBe('ap242')
+  })
+
+  it.each(['step', 'gltf', 'obj', 'stl', 'ply', 'fbx', undefined])(
+    'shows the schema selector only when the format is STEP (%s)',
+    (type) => {
+      const schema = schemaArgument()
+      if (typeof schema.hidden !== 'function') {
+        throw new Error('Export schema visibility should depend on the format')
+      }
+      expect(
+        schema.hidden({ argumentsToSubmit: { type, schema: 'ap214' } })
+      ).toBe(type !== 'step')
+    }
+  )
+})
 
 describe('GDT Datum Default Name', () => {
   it('should work with command bar when datum A already exists', async () => {
@@ -242,6 +294,26 @@ describe('Extrude surface arguments', () => {
       extrudeSelectionRequiresMethod({
         argumentsToSubmit: {
           sketches: {
+            graphSelections: [
+              {
+                entityRef: {
+                  type: 'edge',
+                  side_faces: ['face-1', 'face-2'],
+                },
+                codeRef: { range: [0, 1, 0], pathToNode: [] },
+              },
+            ],
+            otherSelections: [],
+          },
+          length: parsedLength(),
+        },
+      })
+    ).toBe(true)
+
+    expect(
+      extrudeSelectionRequiresMethod({
+        argumentsToSubmit: {
+          sketches: {
             graphSelections: [],
             otherSelections: [
               {
@@ -311,6 +383,47 @@ describe('Extrude surface arguments', () => {
         },
       })
     ).toBe(false)
+  })
+
+  it('keeps bodyType optional for a Face API region without a legacy artifact', () => {
+    expect(
+      extrudeSelectionRequiresBodyType({
+        argumentsToSubmit: {
+          sketches: {
+            graphSelections: [
+              {
+                entityRef: { type: 'solid2d', solid2d_id: 'region-entity' },
+                codeRef: { range: [0, 1, 0], pathToNode: [] },
+              },
+            ],
+            otherSelections: [],
+          },
+          length: parsedLength(),
+        },
+      })
+    ).toBe(false)
+  })
+
+  it('requires bodyType for a Face API edge without a legacy artifact', () => {
+    expect(
+      extrudeSelectionRequiresBodyType({
+        argumentsToSubmit: {
+          sketches: {
+            graphSelections: [
+              {
+                entityRef: {
+                  type: 'edge',
+                  side_faces: ['face-1', 'face-2'],
+                },
+                codeRef: { range: [0, 1, 0], pathToNode: [] },
+              },
+            ],
+            otherSelections: [],
+          },
+          length: parsedLength(),
+        },
+      })
+    ).toBe(true)
   })
 
   it('requires bodyType for valid segment selections before artifact data is available', () => {
@@ -459,11 +572,104 @@ describe('Transform arguments', () => {
       }
     }
   })
+
+  it('does not require or show Clone variableName while editing an existing clone', () => {
+    const commandConfig = modelingMachineCommandConfig.Clone
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Clone should have a single command config')
+    }
+
+    const variableNameArg = commandConfig.args?.variableName
+    if (!variableNameArg) {
+      throw new Error('Clone.variableName should exist')
+    }
+
+    const creatingContext = { argumentsToSubmit: {} }
+    const editingContext = { argumentsToSubmit: { nodeToEdit: [] } }
+    const required =
+      typeof variableNameArg.required === 'function'
+        ? variableNameArg.required
+        : () => variableNameArg.required
+    const hidden =
+      typeof variableNameArg.hidden === 'function'
+        ? variableNameArg.hidden
+        : () => variableNameArg.hidden
+
+    expect(required(creatingContext)).toBe(true)
+    expect(hidden(creatingContext)).toBeFalsy()
+    expect(required(editingContext)).toBe(false)
+    expect(hidden(editingContext)).toBe(true)
+  })
 })
 
 const uniqueSorted = (values: string[]) => [...new Set(values)].sort()
 
+const isDeprecatedStdLibArg = (
+  arg: (typeof STD_LIB_COMMANDS)[keyof typeof STD_LIB_COMMANDS]['args'][number]
+) => arg.deprecated || arg.deprecatedSince !== null
+
+function pointAndClickStdLibArgs(config: StdLibCommandDriftConfig) {
+  const omitted = new Set<string>(config.omittedStdLibArgs ?? [])
+  const includedDeprecated = new Set<string>(config.deprecatedStdLibArgs ?? [])
+
+  return stdLibCommandArgsForConfig(config)
+    .filter(
+      (arg) => !isDeprecatedStdLibArg(arg) || includedDeprecated.has(arg.name)
+    )
+    .filter((arg) => !omitted.has(arg.name))
+}
+
+function stdLibCommandArgsForConfig(config: StdLibCommandDriftConfig) {
+  return stdLibCommandSources(config).flatMap<StdLibCommandArg>(
+    (command) => command.args
+  )
+}
+
 describe('stdlib command arg derivation', () => {
+  it('derives enum options while keeping UI defaults and labels', () => {
+    const values = STD_LIB_ENUMS['view::Visibility']
+    const options = stdLibEnumOptions(values, 'Hide', { Hide: 'Hide all' })
+
+    expect(options.map(({ value }) => value)).toEqual(['Hide', 'Show'])
+    expect(options[0]).toEqual({
+      name: 'Hide all',
+      value: 'Hide',
+      isCurrent: true,
+    })
+    expect(options[1].name).toBe('Show')
+  })
+
+  it('derives nested camera arguments from their stdlib source', () => {
+    const args =
+      modelingStdLibCommandArgs<ModelingCommandSchema['Named View']>(
+        'Named View'
+      )
+    const cameraArgs =
+      stdLibCommandArgs<Record<string, unknown>>('view::oriented')
+
+    expect(args.target).toEqual(cameraArgs.target)
+    expect(args.target.documentation).toBeTruthy()
+    expect(args).toHaveProperty('camera')
+  })
+
+  it('only derives docs for fields backed by a single stdlib argument', () => {
+    const args = stdLibCommandArgs<Record<string, unknown>>('gdt::position', {
+      argAliases: { faces: 'objects', edges: 'objects', tolerance: 'value' },
+      overrides: { objects: { description: 'Pick the features to annotate.' } },
+    })
+    const docs = STD_LIB_COMMANDS['gdt::position'].args
+
+    expect(args.objects.documentation).toBeUndefined()
+    expect(args.objects.description).toBe('Pick the features to annotate.')
+    expect(args.value.documentation).toBe(
+      docs.find((arg) => arg.name === 'tolerance')?.docs?.trim()
+    )
+    expect(args.datums.documentation).toBe(
+      docs.find((arg) => arg.name === 'datums')?.docs?.trim()
+    )
+    expect(args.value.description).toBeUndefined()
+  })
+
   it('derives base command-bar arg config from KCL stdlib metadata', () => {
     const args = modelingStdLibCommandArgs<ModelingCommandSchema['Extrude']>(
       'Extrude',
@@ -508,6 +714,7 @@ describe('stdlib command arg derivation', () => {
 
   it('derives command status from KCL stdlib metadata', () => {
     expect(modelingStdLibCommandStatus('Helical Gear')).toBe('experimental')
+    expect(modelingStdLibCommandStatus('Delete')).toBeUndefined()
     expect(modelingStdLibCommandStatus('Extrude')).toBeUndefined()
     expect(stdLibCommandStatus('startSketchOn')).toBe('deprecated')
   })
@@ -520,9 +727,15 @@ describe('stdlib command arg derivation', () => {
     ][] = [
       ['Extrude', {}, false],
       ['Extrude', { draftAngle: parsedLength('45deg') }, true],
+      ['Extrude', { sketches: selectionsForArtifact() }, false],
       ['Extrude', { direction: selectionsForArtifact() }, false],
+      ['Revolve', { axis: selectionsForArtifact() }, false],
+      ['Helix', { axis: selectionsForArtifact() }, false],
       ['Fillet', { edges: selectionsForArtifact() }, false],
       ['Fillet', { version: parsedLength('2') }, true],
+      ['Chamfer', { edges: selectionsForArtifact() }, false],
+      ['Chamfer', { version: parsedLength('2') }, true],
+      ['Mirror 3D', { across: selectionsForArtifact() }, false],
       ['Helical Gear', {}, true],
     ]
 
@@ -556,6 +769,77 @@ describe('modeling command stdlib drift', () => {
     )
   })
 
+  it('validates every stdlib drift classification', () => {
+    const unclassifiedArgs = Object.entries(modelingCommandStdLibDriftConfig)
+      .flatMap(([commandName, driftConfig]) => {
+        const config = driftConfig as StdLibCommandDriftConfig
+        const omitted = new Set<string>(config.omittedStdLibArgs ?? [])
+        const included = new Set<string>(config.deprecatedStdLibArgs ?? [])
+
+        return stdLibCommandArgsForConfig(config)
+          .filter((arg) => !arg.special && isDeprecatedStdLibArg(arg))
+          .filter((arg) => !omitted.has(arg.name) && !included.has(arg.name))
+          .map((arg) => `${commandName} (${config.stdLibName}).${arg.name}`)
+      })
+      .sort()
+
+    expect(
+      unclassifiedArgs,
+      'Deprecated labeled KCL args must be listed in omittedStdLibArgs or deprecatedStdLibArgs.'
+    ).toEqual([])
+
+    for (const [commandName, driftConfig] of Object.entries(
+      modelingCommandStdLibDriftConfig
+    )) {
+      const config = driftConfig as StdLibCommandDriftConfig
+      const stdLibArgNames = new Set<string>(
+        stdLibCommandArgsForConfig(config).map((arg) => arg.name)
+      )
+      const includedDeprecated = new Set<string>(
+        config.deprecatedStdLibArgs ?? []
+      )
+      const pointAndClickArgNames = new Set<string>(
+        pointAndClickStdLibArgs(config).map((arg) => arg.name)
+      )
+      const configuredNames = [
+        ...(config.omittedStdLibArgs ?? []),
+        ...(config.deprecatedStdLibArgs ?? []),
+        ...Object.keys(config.argAliases ?? {}),
+      ]
+
+      expect(
+        uniqueSorted(
+          configuredNames.filter((argName) => !stdLibArgNames.has(argName))
+        ),
+        `${commandName} has stale or misspelled KCL argument exceptions.`
+      ).toEqual([])
+
+      expect(
+        (config.omittedStdLibArgs ?? []).filter((argName) =>
+          includedDeprecated.has(argName)
+        ),
+        `${commandName} cannot both omit and include the same deprecated KCL argument.`
+      ).toEqual([])
+
+      expect(
+        (config.deprecatedStdLibArgs ?? []).filter((argName) => {
+          const arg = stdLibCommandArgsForConfig(config).find(
+            (candidate) => candidate.name === argName
+          )
+          return arg && !isDeprecatedStdLibArg(arg)
+        }),
+        `${commandName} lists active KCL arguments as deprecated.`
+      ).toEqual([])
+
+      expect(
+        Object.keys(config.argAliases ?? {}).filter(
+          (argName) => !pointAndClickArgNames.has(argName)
+        ),
+        `${commandName} aliases KCL arguments that are not exposed.`
+      ).toEqual([])
+    }
+  })
+
   it('keeps command-bar args aligned with KCL stdlib signatures', () => {
     for (const [commandName, driftConfig] of Object.entries(
       modelingCommandStdLibDriftConfig
@@ -574,19 +858,10 @@ describe('modeling command stdlib drift', () => {
         `${commandName} references missing stdlib function ${driftConfig.stdLibName}`
       ).toBeDefined()
 
-      const omittedStdLibArgs = new Set(driftConfig.omittedStdLibArgs ?? [])
-      const deprecatedStdLibArgs = new Set(
-        driftConfig.deprecatedStdLibArgs ?? []
-      )
       const editFlowArgs = driftConfig.editFlow ? ['nodeToEdit'] : []
-      const expectedStdLibArgOrder = stdLibCommand.args
-        .filter(
-          (arg) =>
-            (!arg.deprecated && arg.deprecatedSince === null) ||
-            deprecatedStdLibArgs.has(arg.name)
-        )
-        .filter((arg) => !omittedStdLibArgs.has(arg.name))
-        .map((arg) => driftConfig.argAliases?.[arg.name] ?? arg.name)
+      const expectedStdLibArgOrder = pointAndClickStdLibArgs(driftConfig).map(
+        (arg) => driftConfig.argAliases?.[arg.name] ?? arg.name
+      )
       const expectedArgs = uniqueSorted([
         ...expectedStdLibArgOrder,
         ...(driftConfig.uiOnlyArgs ?? []),

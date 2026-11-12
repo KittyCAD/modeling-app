@@ -1,0 +1,85 @@
+import type { FileOperationsMount } from '@src/lib/fileSystem/mounts'
+import type { MemoryFileDeletion } from '@src/lib/fileSystem/deletionHistory'
+import {
+  appendValueSpec,
+  defineContract,
+  defineService,
+} from '@kittycad/registry'
+import type { ProjectOperationsService } from '@src/lib/projectSession/projectOperations'
+import type { FileNameParts } from '@src/lib/fileSystem/fileNames'
+import type {
+  CopyOptions,
+  FileContents,
+  FileStat,
+  StatOptions,
+} from '@src/lib/fileSystem/fileOperations'
+
+/** Promise facade for coordinated project-directory and file operations. */
+export interface FileOperationsRegistryService {
+  readonly pending: () => Promise<number>
+  /**
+   * Observe one path while coordinated mutations of it are excluded.
+   * Follows symbolic links unless disabled to inspect the directory entry itself.
+   */
+  readonly stat: (path: string, options?: StatOptions) => Promise<FileStat>
+  /** Check whether the current platform grant allows reading and writing. */
+  readonly canReadWrite: (path: string) => Promise<boolean>
+  /**
+   * Observe whether one path currently exists. Use strict or unique creation
+   * instead when the result would be used to select a name.
+   */
+  readonly exists: (path: string) => Promise<boolean>
+  /** Read a stable snapshot of a directory's immediate membership. */
+  readonly readDirectory: (path: string) => Promise<readonly string[]>
+  /** Read one complete version of a file coordinated with path mutations. */
+  readonly readFile: (path: string) => Promise<Uint8Array>
+  readonly copy: (
+    source: string,
+    destination: string,
+    options?: CopyOptions
+  ) => Promise<void>
+  /** Move within one backing filesystem. Cross-backing moves must reject. */
+  readonly move: (source: string, destination: string) => Promise<void>
+  /** Write bytes, or encode a string as UTF-8, without retaining caller data. */
+  readonly writeFile: (path: string, contents: FileContents) => Promise<void>
+  /** Create exactly this path from bytes or UTF-8 text without overwriting. */
+  readonly createFile: (path: string, contents: FileContents) => Promise<void>
+  /** Create the preferred filename or a numbered variant from bytes or text. */
+  readonly createUniqueFile: (
+    parent: string,
+    name: FileNameParts,
+    contents: FileContents
+  ) => Promise<string>
+  /** Create exactly this path, rejecting any existing file or directory. */
+  readonly createDirectory: (path: string) => Promise<void>
+  /** Create the preferred name or a numbered variant and return its path. */
+  readonly createUniqueDirectory: (
+    parent: string,
+    preferredName: string
+  ) => Promise<string>
+  readonly removeWithSnapshot: (path: string) => Promise<MemoryFileDeletion>
+  readonly replayDeletion: (
+    deletion: MemoryFileDeletion,
+    restore: boolean
+  ) => Promise<void>
+  readonly remove: (path: string) => Promise<void>
+  /** Rename without replacing a distinct entry; filesystem spelling aliases are allowed. */
+  readonly rename: (source: string, destination: string) => Promise<void>
+}
+
+export const fileOperationsContract = defineContract({
+  projectOperationsService: defineService<ProjectOperationsService>(
+    'fileOperations.projects'
+  ),
+  fileOperationsService: defineService<FileOperationsRegistryService>(
+    'fileOperations.service'
+  ),
+})
+
+export const { fileOperationsService, projectOperationsService } =
+  fileOperationsContract
+
+export type { ProjectOperationsService } from '@src/lib/projectSession/projectOperations'
+
+export const fileOperationsMountsValueSpec =
+  appendValueSpec<FileOperationsMount>('fileOperations.mounts')

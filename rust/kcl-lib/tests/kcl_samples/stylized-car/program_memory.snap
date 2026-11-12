@@ -72,8 +72,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 162,
+      "kind": "Custom",
       "origin": {
         "x": -1750.0,
         "y": 0.0,
@@ -105,8 +105,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 170,
+      "kind": "Custom",
       "origin": {
         "x": 1750.0,
         "y": 0.0,
@@ -266,6 +266,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -428,17 +430,17 @@ description: Variables in memory after executing stylized-car.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 94,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -494,8 +496,8 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -508,8 +510,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 1.15,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "cabinHeight": {
@@ -517,8 +521,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.8,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "cabinLength": {
@@ -526,8 +532,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 1.4000000000000001,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "cabinSideProfile": {
@@ -547,17 +555,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.98,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.15,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -565,17 +577,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.4799999999999999,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.95,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -667,17 +683,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.4799999999999999,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.95,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -685,17 +705,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.9200000000000003,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.95,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -787,17 +811,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.9200000000000003,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.95,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -805,17 +833,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 1.2200000000000002,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.15,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -907,17 +939,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 1.2200000000000002,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.15,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -925,17 +961,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.98,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.15,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1120,17 +1160,17 @@ description: Variables in memory after executing stylized-car.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 94,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1300,17 +1340,17 @@ description: Variables in memory after executing stylized-car.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 94,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1366,8 +1406,8 @@ description: Variables in memory after executing stylized-car.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "chassis": {
@@ -1375,6 +1415,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1537,17 +1579,17 @@ description: Variables in memory after executing stylized-car.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 69,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1603,8 +1645,8 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1617,8 +1659,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.75,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "chassisHeight": {
@@ -1626,8 +1670,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.4,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "chassisLength": {
@@ -1635,8 +1681,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 3.5,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "chassisProfile": {
@@ -1656,17 +1704,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -1.7499999959999992,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.7499999963999996,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1674,17 +1726,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 1.750000001000001,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.7499999948999996,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1776,17 +1832,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 1.7499999987500003,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.7499999941499995,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1794,17 +1854,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 1.7499999972500002,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.1499999948999995,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1896,17 +1960,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 1.7499999965000002,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.1499999950499995,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1914,17 +1982,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -1.7499999854999984,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.1499999953499995,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2016,17 +2088,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -1.7499999872499985,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.1499999957999996,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2034,17 +2110,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -1.7499999907499988,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.7499999956499995,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2280,17 +2360,17 @@ description: Variables in memory after executing stylized-car.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 69,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2460,17 +2540,17 @@ description: Variables in memory after executing stylized-car.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 69,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2526,8 +2606,8 @@ description: Variables in memory after executing stylized-car.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "chassisWidth": {
@@ -2535,17 +2615,17 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 1.8,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "circle1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "circle1"
   },
   "circle2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "circle2"
   },
@@ -2701,17 +2781,17 @@ description: Variables in memory after executing stylized-car.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 25,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2775,8 +2855,8 @@ description: Variables in memory after executing stylized-car.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "cutOutVoid": {
@@ -2784,6 +2864,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3022,17 +3104,17 @@ description: Variables in memory after executing stylized-car.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 25,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3096,8 +3178,8 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3110,6 +3192,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3164,17 +3248,17 @@ description: Variables in memory after executing stylized-car.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 145,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3222,8 +3306,8 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3269,17 +3353,17 @@ description: Variables in memory after executing stylized-car.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 145,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3327,8 +3411,8 @@ description: Variables in memory after executing stylized-car.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "fenderBody": {
@@ -3336,6 +3420,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3498,17 +3584,17 @@ description: Variables in memory after executing stylized-car.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3564,8 +3650,8 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3578,6 +3664,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3740,17 +3828,17 @@ description: Variables in memory after executing stylized-car.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3806,8 +3894,8 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3820,8 +3908,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.35,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "fenderInset": {
@@ -3829,8 +3919,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.1,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "fenderLength": {
@@ -3838,8 +3930,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 3.7,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "fenderProfile": {
@@ -3859,17 +3953,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -1.8499999959999993,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.3999999993999999,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -3877,17 +3975,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 1.8500000006000006,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.3999999985999999,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -3979,17 +4081,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 1.84999999805,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.3999999981999999,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -3997,17 +4103,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 1.8499999963499998,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.7500000019000002,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -4099,17 +4209,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 1.8499999954999997,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.7500000016500001,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -4117,17 +4231,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -1.8499999848999984,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.7500000011500001,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -4219,17 +4337,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -1.8499999867499985,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.7500000004,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -4237,17 +4359,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -1.8499999904499989,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.3999999989999999,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -4483,17 +4609,17 @@ description: Variables in memory after executing stylized-car.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -4663,17 +4789,17 @@ description: Variables in memory after executing stylized-car.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4729,8 +4855,8 @@ description: Variables in memory after executing stylized-car.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "fenderWidth": {
@@ -4738,8 +4864,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "frontAndRearCutouts": {
@@ -4750,6 +4878,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4988,17 +5118,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 25,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5062,8 +5192,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5076,6 +5206,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5314,17 +5446,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 25,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5388,8 +5520,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5402,6 +5534,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5640,17 +5774,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 25,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5714,8 +5848,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5728,6 +5862,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5966,17 +6102,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 25,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6040,8 +6176,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6059,6 +6195,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -6297,17 +6435,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 25,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6371,8 +6509,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6385,6 +6523,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -6623,17 +6763,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 25,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6697,8 +6837,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6713,6 +6853,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -6951,17 +7093,17 @@ description: Variables in memory after executing stylized-car.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 25,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -7025,8 +7167,8 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -7039,8 +7181,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.4,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "headlightsBody": {
@@ -7051,6 +7195,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -7105,17 +7251,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 162,
+              "kind": "Custom",
               "origin": {
                 "x": -1750.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7159,8 +7305,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7173,6 +7319,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -7212,17 +7360,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 162,
+              "kind": "Custom",
               "origin": {
                 "x": -1750.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7266,8 +7414,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7282,8 +7430,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 1.35,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "headlightsElevation": {
@@ -7291,8 +7441,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.95,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "headlightsPlane": {
@@ -7300,8 +7452,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 162,
+      "kind": "Custom",
       "origin": {
         "x": -1750.0,
         "y": 0.0,
@@ -7369,17 +7521,17 @@ description: Variables in memory after executing stylized-car.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 162,
+            "kind": "Custom",
             "origin": {
               "x": -1750.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -7423,8 +7575,8 @@ description: Variables in memory after executing stylized-car.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "m"
+          "units": "m",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -7465,17 +7617,17 @@ description: Variables in memory after executing stylized-car.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 162,
+            "kind": "Custom",
             "origin": {
               "x": -1750.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -7519,8 +7671,8 @@ description: Variables in memory after executing stylized-car.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "m"
+          "units": "m",
+          "isClosed": "explicitly"
         }
       }
     ]
@@ -7530,8 +7682,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.32000000000000006,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "headlightsSketch": {
@@ -7551,17 +7705,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.834999998155,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.95,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -7569,17 +7727,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.6749999987899999,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.95,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -7698,17 +7860,17 @@ description: Variables in memory after executing stylized-car.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 162,
+                "kind": "Custom",
                 "origin": {
                   "x": -1750.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -7767,8 +7929,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.77,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "lightDepth": {
@@ -7776,37 +7940,33 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.05,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "line1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line1"
   },
   "line2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line4"
   },
   "line5": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line5"
   },
   "line6": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line6"
   },
@@ -7815,8 +7975,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.3,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "roof": {
@@ -7824,6 +7986,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -7986,17 +8150,17 @@ description: Variables in memory after executing stylized-car.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 120,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -8052,8 +8216,8 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -8066,8 +8230,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 1.95,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "roofHeight": {
@@ -8075,8 +8241,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.1,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "roofProfile": {
@@ -8096,17 +8264,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.95,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8114,17 +8286,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.9200000000000002,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.95,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8216,17 +8392,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.9200000000000002,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.95,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8234,17 +8414,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.9200000000000002,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.05,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8336,17 +8520,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.9200000000000002,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.05,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8354,17 +8542,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.05,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8456,17 +8648,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.05,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8474,17 +8670,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.95,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8669,17 +8869,17 @@ description: Variables in memory after executing stylized-car.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 120,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -8849,17 +9049,17 @@ description: Variables in memory after executing stylized-car.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 120,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -8915,8 +9115,8 @@ description: Variables in memory after executing stylized-car.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "taillightsBody": {
@@ -8927,6 +9127,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -9089,17 +9291,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 170,
+              "kind": "Custom",
               "origin": {
                 "x": 1750.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9155,8 +9357,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -9169,6 +9371,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -9274,17 +9478,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 170,
+              "kind": "Custom",
               "origin": {
                 "x": 1750.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9340,8 +9544,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -9356,8 +9560,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 1.2800000000000002,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "taillightsElevation": {
@@ -9365,8 +9571,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.8300000000000001,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "taillightsHeight": {
@@ -9374,8 +9582,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.24,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "taillightsOffset": {
@@ -9383,8 +9593,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.08000000000000002,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "taillightsPlane": {
@@ -9392,8 +9604,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 170,
+      "kind": "Custom",
       "origin": {
         "x": 1750.0,
         "y": 0.0,
@@ -9527,17 +9739,17 @@ description: Variables in memory after executing stylized-car.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 170,
+            "kind": "Custom",
             "origin": {
               "x": 1750.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -9593,8 +9805,8 @@ description: Variables in memory after executing stylized-car.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "m"
+          "units": "m",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -9701,17 +9913,17 @@ description: Variables in memory after executing stylized-car.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 170,
+            "kind": "Custom",
             "origin": {
               "x": 1750.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -9767,8 +9979,8 @@ description: Variables in memory after executing stylized-car.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "m"
+          "units": "m",
+          "isClosed": "explicitly"
         }
       }
     ]
@@ -9778,8 +9990,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.32000000000000006,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "taillightsSketch": {
@@ -9799,17 +10013,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.8199999908799993,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.8299999963999997,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -9817,17 +10035,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.45999998503999895,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.8299999947399995,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -9919,17 +10141,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.45999998065999814,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.8299999939099995,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -9937,17 +10163,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.4599999777399979,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.0699999956999997,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -10039,17 +10269,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.4599999762799978,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.0699999957699997,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -10057,17 +10291,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.8199999859599989,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.0699999959099997,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -10159,17 +10397,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.819999986779999,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.0699999961199997,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -10177,17 +10419,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.8199999884199991,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.8299999955699996,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -10423,17 +10669,17 @@ description: Variables in memory after executing stylized-car.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 170,
+                "kind": "Custom",
                 "origin": {
                   "x": 1750.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -10504,8 +10750,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.36,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "wheelBase": {
@@ -10513,8 +10761,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 2.3,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "wheelCutoutSketch": {
@@ -10534,17 +10784,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.5250000000002878,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.3500000000000027,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -10552,17 +10806,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.000000000000000000014812878990961126,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.35,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -10655,17 +10913,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.525000000000283,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.35000000000001047,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -10673,17 +10935,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.26250000000014817,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.8046633388240976,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -10775,17 +11041,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.2625000000001466,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.8046633388240921,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -10793,17 +11063,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.26250000000013557,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.8046633388241029,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -10895,17 +11169,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.2625000000001293,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.8046633388240947,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -10913,17 +11191,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.525000000000228,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.3500000000000027,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11015,17 +11297,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.5250000000001698,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.35,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11033,17 +11319,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.26250000000010876,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.10466333882410365,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11135,17 +11425,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.2625000000001072,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.1046633388240982,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11153,17 +11447,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.26250000000018126,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.10466333882409196,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11255,17 +11553,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.262500000000175,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.10466333882408378,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11273,17 +11575,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.5250000000002846,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.35000000000000775,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11375,17 +11681,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.00000000000005663856320632382,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.35,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11393,17 +11703,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.5250000000001132,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.35,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11637,17 +11951,17 @@ description: Variables in memory after executing stylized-car.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 25,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -11726,8 +12040,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.7,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "wheelFrontLeft": {
@@ -11738,6 +12054,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -11836,17 +12154,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 145,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -11894,8 +12212,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -11908,6 +12226,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -11962,17 +12282,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 145,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12020,8 +12340,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -12039,6 +12359,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12137,17 +12459,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 145,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12195,8 +12517,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -12209,6 +12531,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12263,17 +12587,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 145,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12321,8 +12645,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -12337,8 +12661,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.35,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "wheelProfile": {
@@ -12409,17 +12735,17 @@ description: Variables in memory after executing stylized-car.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 145,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -12467,8 +12793,8 @@ description: Variables in memory after executing stylized-car.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "wheelRearLeft": {
@@ -12479,6 +12805,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12577,17 +12905,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 145,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12635,8 +12963,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -12649,6 +12977,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12703,17 +13033,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 145,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12761,8 +13091,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -12780,6 +13110,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12878,17 +13210,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 145,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12936,8 +13268,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -12950,6 +13282,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -13004,17 +13338,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 145,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13062,8 +13396,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -13090,17 +13424,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.3200560503374278,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.20997628856583403,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -13108,17 +13446,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.0007138987956659997,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.35000000000000503,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -13210,17 +13552,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.1520856463105938,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.43530708681476643,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -13228,17 +13574,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.0007138987956651704,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.35000000000000525,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -13330,17 +13680,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.000000000000001765884808083222,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -13348,17 +13702,21 @@ description: Variables in memory after executing stylized-car.kcl
                       {
                         "n": -0.0007138987956665543,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.35000000000000353,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -13525,17 +13883,17 @@ description: Variables in memory after executing stylized-car.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 145,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -13598,6 +13956,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -13696,17 +14056,17 @@ description: Variables in memory after executing stylized-car.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 145,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -13754,8 +14114,8 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -13768,8 +14128,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.27,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "windPanelShift": {
@@ -13777,8 +14139,10 @@ description: Variables in memory after executing stylized-car.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   }
 }

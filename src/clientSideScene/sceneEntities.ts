@@ -22,10 +22,10 @@ import { radToDeg } from 'three/src/math/MathUtils'
 import type { GetSketchModePlane } from '@kittycad/lib'
 import type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import type { Path } from '@rust/kcl-lib/bindings/Path'
+import type { PathView as Path } from '@rust/kcl-lib/bindings/PathView'
 import type { PipeExpression } from '@rust/kcl-lib/bindings/PipeExpression'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
-import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
+import type { SketchView as Sketch } from '@rust/kcl-lib/bindings/SketchView'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { VariableDeclaration } from '@rust/kcl-lib/bindings/VariableDeclaration'
 import type { VariableDeclarator } from '@rust/kcl-lib/bindings/VariableDeclarator'
@@ -122,6 +122,7 @@ import {
 } from '@src/lang/modifyAst'
 import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/tagManagement'
 import {
+  artifactToEntityRef,
   getNodeFromPath,
   getPathNormalisedForTruncatedAst,
 } from '@src/lang/queryAst'
@@ -133,6 +134,7 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/util'
 
+import type { EntityReference } from '@src/machines/modelingSharedTypes'
 import {
   addCallExpressionsToPipe,
   addCloseToPipe,
@@ -976,12 +978,12 @@ export class SceneEntities {
           index >= draftExpressionsIndices.start &&
           // the following line is not robust to sketches defined within a function
           sketchInfo.pathToNode[1][0] === sketchEntryNodePath[1][0]
-        const isSelected = selectionRanges?.graphSelections.some((selection) =>
-          isOverlap(
-            selection?.codeRef?.range,
-            sourceRangeFromRust(segment.__geoMeta.sourceRange)
-          )
-        )
+        const segRange = segment.__geoMeta?.sourceRange
+        const isSelected = selectionRanges?.graphSelections.some((sel) => {
+          const selRange = sel?.codeRef?.range
+          if (!selRange || !segRange) return false
+          return isOverlap(selRange, sourceRangeFromRust(segRange))
+        })
 
         let seg: Group
         const _node1 = getNodeFromPath<Node<CallExpressionKw>>(
@@ -2989,6 +2991,7 @@ export class SceneEntities {
             type: 'Set selection',
             data: {
               selectionType: 'singleCodeCursor',
+              selection: {},
             },
           })
           return
@@ -4405,13 +4408,16 @@ function computeSelectionFromSourceRangeAndAST(
 ): Selections {
   const artifactGraph = kclManager.artifactGraph
   const artifact = getArtifactFromRange(sourceRange, artifactGraph) || undefined
+  const codeRef = codeRefFromRange(sourceRange, ast)
+  const entityRef: EntityReference | undefined = artifact
+    ? artifactToEntityRef(
+        artifact.type,
+        artifact.id,
+        artifact.type === 'segment' ? artifact.pathId : undefined
+      )
+    : undefined
   const selection: Selections = {
-    graphSelections: [
-      {
-        artifact,
-        codeRef: codeRefFromRange(sourceRange, ast),
-      },
-    ],
+    graphSelections: [{ entityRef, codeRef }],
     otherSelections: [],
   }
   return selection

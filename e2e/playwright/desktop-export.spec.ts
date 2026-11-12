@@ -1,6 +1,7 @@
 import path from 'path'
 import fsp from 'fs/promises'
 
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   executorInputPath,
   getPlaywrightDownloadDir,
@@ -10,12 +11,20 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
   'export works on the first try',
-  { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
+  {
+    tag: [
+      '@desktop',
+      '@macos',
+      '@windows',
+      '@skipLocalEngine',
+      '@localRenderer',
+    ],
+  },
   async (
     { page, scene, tronApp, cmdBar, toolbar, folderSetupFn },
     testInfo
   ) => {
-    if (!tronApp) throw new Error('tronApp is missing.')
+    if (!tronApp) throwTronAppMissing()
 
     await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
@@ -50,7 +59,7 @@ test(
 
       // Select the first format option
       const gltfOption = cmdBar.selectOption({ name: 'glTF' })
-      const exportFileName = `main.gltf` // source file is named `main.kcl`
+      const exportFileName = `bracket.glb` // project is named `bracket`
       await expect(gltfOption).toBeVisible()
       await page.keyboard.press('Enter')
 
@@ -72,21 +81,25 @@ test(
         getPlaywrightDownloadDir(tronApp.projectDirName),
         exportFileName
       )
-      await test.step('Check the export size', async () => {
+      await test.step('Check the binary glTF export', async () => {
         await expect
           .poll(
             async () => {
               try {
-                const outputGltf = await fsp.readFile(firstFileFullPath)
-                return outputGltf.byteLength
+                const outputGlb = await fsp.readFile(firstFileFullPath)
+                return outputGlb.subarray(0, 4).toString('utf8')
               } catch (error: unknown) {
                 void error
-                return 0
+                return ''
               }
             },
             { timeout: 15_000 }
           )
-          .toBeGreaterThan(30_000)
+          .toBe('glTF')
+        const outputGlb = await fsp.readFile(firstFileFullPath)
+        expect(outputGlb.byteLength).toBeGreaterThan(30_000)
+        expect(outputGlb.readUInt32LE(4)).toBe(2)
+        expect(outputGlb.readUInt32LE(8)).toBe(outputGlb.byteLength)
       })
     })
 
@@ -112,7 +125,7 @@ test(
 
       // Select the first format option
       const gltfOption = cmdBar.selectOption({ name: 'glTF' })
-      const exportFileName = `other.gltf` // source file is named `other.kcl`
+      const exportFileName = `other.glb` // source file is named `other.kcl`
       await expect(gltfOption).toBeVisible()
       await page.keyboard.press('Enter')
 
@@ -122,7 +135,8 @@ test(
       // Look out for the toast message
       const exportingToastMessage = page.getByText(`Exporting...`)
       const alreadyExportingToastMessage = page.getByText(`Already exporting`)
-      await expect(exportingToastMessage).toBeVisible()
+      // A fast export can finish before the progress toast is observed.
+      // The completed file below is the authoritative success condition.
       await expect(alreadyExportingToastMessage).not.toBeVisible()
 
       // Expect it to succeed
@@ -131,45 +145,55 @@ test(
       await expect(errorToastMessage).not.toBeVisible()
       await expect(engineErrorToastMessage).not.toBeVisible()
 
-      const successToastMessage = page.getByText(`Exported successfully`)
-      await page.waitForTimeout(1_000)
-      const count = await successToastMessage.count()
-      expect(count).toBeGreaterThanOrEqual(1)
-      await expect(exportingToastMessage).not.toBeVisible()
-
-      // Check for the exported file=
+      // Check for the exported file.
       const secondFileFullPath = path.resolve(
         getPlaywrightDownloadDir(tronApp.projectDirName),
         exportFileName
       )
-      await test.step('Check the export size', async () => {
+      await test.step('Check the binary glTF export', async () => {
         await expect
           .poll(
             async () => {
               try {
-                const outputGltf = await fsp.readFile(secondFileFullPath)
-                return outputGltf.byteLength
+                const outputGlb = await fsp.readFile(secondFileFullPath)
+                return outputGlb.subarray(0, 4).toString('utf8')
               } catch (error: unknown) {
                 void error
-                return 0
+                return ''
               }
             },
             { timeout: 15_000 }
           )
-          .toBeGreaterThan(50_000)
+          .toBe('glTF')
+        const outputGlb = await fsp.readFile(secondFileFullPath)
+        expect(outputGlb.byteLength).toBeGreaterThan(40_000)
+        expect(outputGlb.readUInt32LE(4)).toBe(2)
+        expect(outputGlb.readUInt32LE(8)).toBe(outputGlb.byteLength)
       })
+      await expect(exportingToastMessage).not.toBeVisible()
+      await expect(alreadyExportingToastMessage).not.toBeVisible()
+      await expect(errorToastMessage).not.toBeVisible()
+      await expect(engineErrorToastMessage).not.toBeVisible()
     })
   }
 )
 
 test(
   'DXF export works from feature tree sketch context menu',
-  { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
+  {
+    tag: [
+      '@desktop',
+      '@macos',
+      '@windows',
+      '@skipLocalEngine',
+      '@localRenderer',
+    ],
+  },
   async (
     { page, scene, tronApp, cmdBar, toolbar, folderSetupFn },
     testInfo
   ) => {
-    if (!tronApp) throw new Error('tronApp is missing.')
+    if (!tronApp) throwTronAppMissing()
 
     await folderSetupFn(async (dir) => {
       const sketchDir = path.join(dir, 'sketch-project')
@@ -259,12 +283,20 @@ extrude001 = extrude(profile001, length = 5)`
 
 test(
   'DXF export works for second sketch in feature tree',
-  { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
+  {
+    tag: [
+      '@desktop',
+      '@macos',
+      '@windows',
+      '@skipLocalEngine',
+      '@localRenderer',
+    ],
+  },
   async (
     { page, scene, tronApp, cmdBar, toolbar, folderSetupFn },
     testInfo
   ) => {
-    if (!tronApp) throw new Error('tronApp is missing.')
+    if (!tronApp) throwTronAppMissing()
 
     await folderSetupFn(async (dir) => {
       const sketchDir = path.join(dir, 'second-sketch-project')

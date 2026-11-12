@@ -43,14 +43,19 @@ type ToolSelf = {
   }
 }
 
-export function getGridSnapOptions(
-  self: ToolSelf,
+type GridSnapModelingSettings = {
+  snapToGrid: { current: boolean }
+  fixedSizeGrid: { current: boolean }
+  majorGridSpacing: { current: number }
+  minorGridsPerMajor: { current: number }
+  snapsPerMinor: { current: number }
+}
+
+export function getGridSnapOptionsFromModelingSettings(
+  modelingSettings: GridSnapModelingSettings | undefined,
   sceneInfra: SceneInfra
 ): GridSnapOptions | undefined {
-  const modelingSettings = self._parent
-    ?.getSnapshot?.()
-    .context?.rustContext?.settingsActor?.getSnapshot?.().context?.modeling
-  if (!modelingSettings?.snapToGrid?.current) {
+  if (!modelingSettings?.snapToGrid.current) {
     return undefined
   }
   const camera = sceneInfra.camControls.camera
@@ -70,6 +75,16 @@ export function getGridSnapOptions(
       viewportSize.y,
     ]),
   }
+}
+
+export function getGridSnapOptions(
+  self: ToolSelf,
+  sceneInfra: SceneInfra
+): GridSnapOptions | undefined {
+  const modelingSettings = self._parent
+    ?.getSnapshot?.()
+    .context?.rustContext?.settingsActor?.getSnapshot?.().context?.modeling
+  return getGridSnapOptionsFromModelingSettings(modelingSettings, sceneInfra)
 }
 
 type CandidateFilterArgs = {

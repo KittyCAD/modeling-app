@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties gdt-tutorial.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -13.938125610351563,
+      "y": -33.06187438964844,
+      "z": 96.21875
+    },
+    "dimensions": {
+      "x": 492.65625,
+      "y": 428.90625,
+      "z": 286.6875
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 99999.99962747096
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 2000.0000561897955
+  }
+}

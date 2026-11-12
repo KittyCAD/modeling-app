@@ -1159,6 +1159,7 @@ description: Result of parsing get_common_edge_of_segment_edge_tag.kcl
     "commentStart": 0,
     "end": 0,
     "moduleId": 0,
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

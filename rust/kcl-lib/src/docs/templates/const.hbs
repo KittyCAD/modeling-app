@@ -19,6 +19,10 @@ layout: manual
 {{/if}}
 {{{summary}}}
 
+{{#if added_in}}
+**Added in KCL {{added_in}}.**
+
+{{/if}}
 ```kcl
 {{{name}}}{{#if type_}}: {{{type_}}}{{/if}}{{#if value}} = {{{value}}}{{/if}}
 ```

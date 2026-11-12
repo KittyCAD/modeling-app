@@ -61,18 +61,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 35.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -87,18 +91,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -148,18 +156,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -174,18 +186,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 35.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -239,18 +255,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -303,18 +323,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 35.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -529,9 +553,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": 6.3,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -577,27 +603,45 @@ description: Operations executed coilover-assembly.kcl
         "sourceRange": []
       },
       "labeledArgs": {
+        "edges": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
+                        "value": "circle1",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "capStart001",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
         "length": {
           "value": {
             "type": "Number",
             "value": 3.7,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
-            }
-          },
-          "sourceRange": []
-        },
-        "tags": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Uuid",
-                "value": "[uuid]"
+              "value": {
+                "type": "Length",
+                "value": "mm"
               }
-            ]
+            }
           },
           "sourceRange": []
         }
@@ -690,18 +734,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 27.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -716,18 +764,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -777,18 +829,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -803,18 +859,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 27.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -868,18 +928,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -932,18 +996,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 27.5,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1158,9 +1226,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": 5.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -1250,18 +1320,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 19.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1276,18 +1350,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1337,18 +1415,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1363,18 +1445,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 19.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1428,18 +1514,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1492,18 +1582,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 19.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1718,9 +1812,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": 92.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -1766,27 +1862,45 @@ description: Operations executed coilover-assembly.kcl
         "sourceRange": []
       },
       "labeledArgs": {
+        "edges": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
+                        "value": "circle1",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "capEnd001",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
         "length": {
           "value": {
             "type": "Number",
             "value": 3.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
-            }
-          },
-          "sourceRange": []
-        },
-        "tags": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Uuid",
-                "value": "[uuid]"
+              "value": {
+                "type": "Length",
+                "value": "mm"
               }
-            ]
+            }
           },
           "sourceRange": []
         }
@@ -1879,18 +1993,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 12.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1905,18 +2023,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1966,18 +2088,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1992,18 +2118,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 12.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2057,18 +2187,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -2121,18 +2255,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 12.5,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -2347,9 +2485,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": 42.5,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -2402,27 +2542,45 @@ description: Operations executed coilover-assembly.kcl
         "sourceRange": []
       },
       "labeledArgs": {
+        "edges": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
+                        "value": "circle1",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "capEnd002",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
         "radius": {
           "value": {
             "type": "Number",
             "value": 12.49,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
-            }
-          },
-          "sourceRange": []
-        },
-        "tags": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Uuid",
-                "value": "[uuid]"
+              "value": {
+                "type": "Length",
+                "value": "mm"
               }
-            ]
+            }
           },
           "sourceRange": []
         }
@@ -2460,27 +2618,45 @@ description: Operations executed coilover-assembly.kcl
         "sourceRange": []
       },
       "labeledArgs": {
+        "edges": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
+                        "value": "circle1",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "capStart002",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
         "radius": {
           "value": {
             "type": "Number",
             "value": 3.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
-            }
-          },
-          "sourceRange": []
-        },
-        "tags": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Uuid",
-                "value": "[uuid]"
+              "value": {
+                "type": "Length",
+                "value": "mm"
               }
-            ]
+            }
           },
           "sourceRange": []
         }
@@ -2566,18 +2742,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 11.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -114.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2592,18 +2772,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 31.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -114.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2653,18 +2837,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 11.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -119.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2679,18 +2867,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 6.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -119.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2705,18 +2897,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 11.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -114.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2766,18 +2962,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 6.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -141.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2792,18 +2992,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 6.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -119.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2853,18 +3057,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -6.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -141.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2879,18 +3087,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 6.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -141.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2940,18 +3152,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -6.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -119.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2966,18 +3182,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -6.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -141.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3027,18 +3247,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -11.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -119.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3053,18 +3277,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -11.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -114.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3079,18 +3307,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -6.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -119.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3140,18 +3372,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -31.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -114.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3166,18 +3402,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -11.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -114.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3227,18 +3467,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -31.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -144.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3253,18 +3497,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -31.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -114.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3314,18 +3562,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 31.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -144.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3340,18 +3592,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -31.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -144.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3401,18 +3657,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 31.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -114.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3427,18 +3687,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 31.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -144.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4659,18 +4923,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -4726,18 +4994,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -5201,9 +5473,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": 30.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -5314,9 +5588,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": -127.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "default",
@@ -5352,9 +5628,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": 15.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -5411,18 +5689,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -126.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5437,18 +5719,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -127.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5505,18 +5791,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 7.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -128.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5531,18 +5821,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -128.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5717,18 +6011,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -5784,18 +6082,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -5939,9 +6241,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": -40.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -6087,18 +6391,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 19.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6113,18 +6421,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6174,18 +6486,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6200,18 +6516,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 19.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6265,18 +6585,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -6329,18 +6653,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 19.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -6555,9 +6883,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": 51.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -6647,18 +6977,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 5.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6673,18 +7007,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6734,18 +7072,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6760,18 +7102,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 5.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6825,18 +7171,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -6889,18 +7239,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 5.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -7115,9 +7469,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": -51.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -7320,18 +7676,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 12.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7346,18 +7706,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7407,18 +7771,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7433,18 +7801,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 12.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7498,18 +7870,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -7562,18 +7938,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 12.5,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -7788,9 +8168,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": -32.5,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -7836,27 +8218,45 @@ description: Operations executed coilover-assembly.kcl
         "sourceRange": []
       },
       "labeledArgs": {
+        "edges": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
+                        "value": "circle1",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "upperCapStart001",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
         "length": {
           "value": {
             "type": "Number",
             "value": 6.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
-            }
-          },
-          "sourceRange": []
-        },
-        "tags": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Uuid",
-                "value": "[uuid]"
+              "value": {
+                "type": "Length",
+                "value": "mm"
               }
-            ]
+            }
           },
           "sourceRange": []
         }
@@ -7949,18 +8349,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 4.95,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7975,18 +8379,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8036,18 +8444,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8062,18 +8474,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 4.95,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8127,18 +8543,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -8191,18 +8611,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 4.95,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -8417,9 +8841,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": 200.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -8509,18 +8935,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 35.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8535,18 +8965,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8596,18 +9030,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8622,18 +9060,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 35.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8687,18 +9129,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -8751,18 +9197,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 35.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -8977,9 +9427,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": 22.5,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -9025,27 +9477,45 @@ description: Operations executed coilover-assembly.kcl
         "sourceRange": []
       },
       "labeledArgs": {
+        "edges": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
+                        "value": "circle1",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "upperCapEnd002",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
         "length": {
           "value": {
             "type": "Number",
             "value": 19.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
-            }
-          },
-          "sourceRange": []
-        },
-        "tags": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Uuid",
-                "value": "[uuid]"
+              "value": {
+                "type": "Length",
+                "value": "mm"
               }
-            ]
+            }
           },
           "sourceRange": []
         }
@@ -9138,18 +9608,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 12.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9164,18 +9638,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9225,18 +9703,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9251,18 +9733,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 12.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9316,18 +9802,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -9380,18 +9870,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 12.5,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -9606,9 +10100,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": 42.5,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -9654,27 +10150,45 @@ description: Operations executed coilover-assembly.kcl
         "sourceRange": []
       },
       "labeledArgs": {
+        "edges": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
+                        "value": "circle1",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "upperCapEnd003",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
         "radius": {
           "value": {
             "type": "Number",
             "value": 12.49,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
-            }
-          },
-          "sourceRange": []
-        },
-        "tags": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Uuid",
-                "value": "[uuid]"
+              "value": {
+                "type": "Length",
+                "value": "mm"
               }
-            ]
+            }
           },
           "sourceRange": []
         }
@@ -9760,18 +10274,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 11.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9786,18 +10304,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 31.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9847,18 +10369,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 6.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 67.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9873,18 +10399,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 6.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 45.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9934,18 +10464,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -6.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 67.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9960,18 +10494,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 6.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 67.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10021,18 +10559,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -6.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 45.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10047,18 +10589,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -6.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 67.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10108,18 +10654,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -31.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10134,18 +10684,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -11.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10195,18 +10749,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -31.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 70.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10221,18 +10779,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -31.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10282,18 +10844,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 31.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 70.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10308,18 +10874,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -31.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 70.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10369,18 +10939,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 31.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10395,18 +10969,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 31.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 70.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11009,18 +11587,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -11076,18 +11658,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -11509,18 +12095,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -11.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 45.03,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11535,18 +12125,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -6.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 45.03,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11561,18 +12155,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": -11.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 40.03,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11754,18 +12352,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 11.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 45.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11780,18 +12382,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 11.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11806,18 +12412,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 6.35,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 45.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12123,9 +12733,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": 30.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -12245,9 +12857,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": 15.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -12304,18 +12918,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 52.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12330,18 +12948,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12398,18 +13020,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 7.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 52.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12424,18 +13050,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 52.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12610,18 +13240,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -12677,18 +13311,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -12832,9 +13470,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": -40.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -12942,7 +13582,9 @@ description: Operations executed coilover-assembly.kcl
             "value": 90.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -12953,7 +13595,9 @@ description: Operations executed coilover-assembly.kcl
             "value": 90.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -13023,9 +13667,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": 200.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -13065,9 +13711,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": 200.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -13107,9 +13755,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": 200.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -13149,9 +13799,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": 200.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -13226,9 +13878,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 6.3,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13255,9 +13909,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 35.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13284,9 +13940,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 3.7,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13313,9 +13971,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 5.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13342,9 +14002,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 27.5,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13371,9 +14033,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 92.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13400,9 +14064,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 19.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13429,9 +14095,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 3.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13458,9 +14126,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 12.5,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13487,9 +14157,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 42.5,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13516,9 +14188,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 12.49,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13545,9 +14219,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 3.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13574,9 +14250,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 31.35,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13603,9 +14281,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 11.35,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13632,9 +14312,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 6.35,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13661,9 +14343,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": -114.5,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13690,9 +14374,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": -144.5,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13719,9 +14405,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": -119.5,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13748,9 +14436,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": -141.5,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13777,9 +14467,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 5.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13806,9 +14498,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 30.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13835,9 +14529,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 51.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13864,9 +14560,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 5.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13893,9 +14591,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 22.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13922,9 +14622,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 200.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -13952,8 +14654,10 @@ description: Operations executed coilover-assembly.kcl
         "value": 8.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "export",
@@ -13980,9 +14684,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 6.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -14009,9 +14715,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 32.5,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -14038,9 +14746,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 4.95,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -14067,9 +14777,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 22.5,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -14096,9 +14808,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 40.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -14125,9 +14839,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 70.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -14154,9 +14870,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 45.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -14183,9 +14901,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 67.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -14212,9 +14932,11 @@ description: Operations executed coilover-assembly.kcl
         "type": "Number",
         "value": 52.5,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "export",
@@ -14262,8 +14984,10 @@ description: Operations executed coilover-assembly.kcl
             "value": 360.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -14280,8 +15004,10 @@ description: Operations executed coilover-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -14289,8 +15015,10 @@ description: Operations executed coilover-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -14298,8 +15026,10 @@ description: Operations executed coilover-assembly.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -14312,8 +15042,10 @@ description: Operations executed coilover-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -14321,8 +15053,10 @@ description: Operations executed coilover-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -14330,8 +15064,10 @@ description: Operations executed coilover-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -14352,9 +15088,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": 200.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -14364,9 +15102,11 @@ description: Operations executed coilover-assembly.kcl
             "type": "Number",
             "value": 22.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -14377,7 +15117,9 @@ description: Operations executed coilover-assembly.kcl
             "value": 8.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -14441,18 +15183,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 25.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -14467,18 +15213,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 22.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -14528,18 +15278,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 22.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -14554,18 +15308,22 @@ description: Operations executed coilover-assembly.kcl
                 "type": "SketchVar",
                 "value": 25.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -14740,18 +15498,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -14807,18 +15569,22 @@ description: Operations executed coilover-assembly.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -15013,7 +15779,9 @@ description: Operations executed coilover-assembly.kcl
             "value": 50.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -15024,7 +15792,9 @@ description: Operations executed coilover-assembly.kcl
             "value": 90.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -15113,7 +15883,9 @@ description: Operations executed coilover-assembly.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -15141,7 +15913,9 @@ description: Operations executed coilover-assembly.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -15175,7 +15949,7 @@ description: Operations executed coilover-assembly.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -15199,7 +15973,7 @@ description: Operations executed coilover-assembly.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -15223,7 +15997,7 @@ description: Operations executed coilover-assembly.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -15247,7 +16021,7 @@ description: Operations executed coilover-assembly.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -15271,7 +16045,7 @@ description: Operations executed coilover-assembly.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -15295,7 +16069,7 @@ description: Operations executed coilover-assembly.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -15319,7 +16093,7 @@ description: Operations executed coilover-assembly.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -15343,7 +16117,7 @@ description: Operations executed coilover-assembly.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

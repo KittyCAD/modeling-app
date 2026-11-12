@@ -1,0 +1,30 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing tag_chamfer_with_more_than_one_edge_should_fail.kcl
+---
+KCL Type error
+
+  × type: You can only tag one edge at a time with a tagged chamfer. Either
+  │ delete the tag for the chamfer fn if you don't need it OR separate into
+  │ individual chamfer functions for each tag.
+    ╭─[13:6]
+ 12 │   |> extrude(length = 20)
+ 13 │   |> chamfer(length = 10, tags = [line1, getOppositeEdge(line1)], tag = $chamfer1)
+    ·      ──────────────────────────────────────┬──────────────────────────────────────
+    ·                                            ╰── tests/tag_chamfer_with_more_than_one_edge_should_fail/input.kcl
+    ╰────
+  ╰─▶ KCL Type error
+      
+        × type: You can only tag one edge at a time with a tagged chamfer.
+        │ Either delete the tag for the chamfer fn if you don't need it OR
+        │ separate into individual chamfer functions for each tag.
+          ╭─[13:6]
+       12 │   |> extrude(length = 20)
+       13 │   |> chamfer(length = 10, tags = [line1, getOppositeEdge(line1)],
+      tag = $chamfer1)
+          ·
+      ──────────────────────────────────────┬─────────────────────────────────
+      ─────
+          ·                                            ╰── tests/
+      tag_chamfer_with_more_than_one_edge_should_fail/input.kcl
+          ╰────

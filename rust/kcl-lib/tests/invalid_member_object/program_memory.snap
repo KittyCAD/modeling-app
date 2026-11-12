@@ -8,8 +8,10 @@ description: Variables in memory after executing invalid_member_object.kcl
     "value": 999.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

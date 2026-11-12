@@ -58,6 +58,7 @@ function createSceneGraphDelta(
         project_directory: null,
         current_file: null,
         fixed_size_grid: true,
+        geometry_only: false,
       },
       sketch_mode: null,
     },
@@ -68,9 +69,11 @@ function createSceneGraphDelta(
       variables: {},
       operations: emptyOperationsByModule(),
       artifactGraph: { map: {}, itemCount: 0 },
+      namedViews: null,
       filenames: {},
       defaultPlanes: null,
       refactorMetadata: [],
+      engineSceneGeneration: 0,
     },
   }
 }

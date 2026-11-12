@@ -1,9 +1,15 @@
-import * as path from 'path'
+/* eslint suggest-no-throw/suggest-no-throw: 0 */
+import { writeFile } from 'node:fs/promises'
+import * as path from 'node:path'
 
 const Mocha = require('mocha')
 const { glob } = require('glob')
+// Hardcoded inventory: 1 extension sample, 1 profile cleanup, 2 diagnostics tests.
+// Keep this independent of discovery so missing tests cannot lower the target.
+// Update it when adding or removing tests from the extension-host suite.
+const EXPECTED_PASSES = 4
 
-export function run(): Promise<void> {
+export async function run(): Promise<void> {
   // Create the mocha test
   const mocha = new Mocha({
     ui: 'tdd',
@@ -11,24 +17,30 @@ export function run(): Promise<void> {
 
   const testsRoot = path.resolve(__dirname, '..')
 
-  return new Promise((c, e) => {
-    glob('**/**.test.js', { cwd: testsRoot }).then((files: string[]) => {
-      // Add files to the test suite
-      files.forEach((f) => mocha.addFile(path.resolve(testsRoot, f)))
+  const files: string[] = await glob('**/**.test.js', { cwd: testsRoot })
+  for (const file of files) {
+    mocha.addFile(path.resolve(testsRoot, file))
+  }
 
-      try {
-        // Run the mocha test
-        mocha.run((failures: any) => {
-          if (failures > 0) {
-            e(new Error(`${failures} tests failed.`))
-          } else {
-            c()
-          }
-        })
-      } catch (err) {
-        console.error(err)
-        e(err)
+  await new Promise<void>((resolve, reject) => {
+    const runner = mocha.run((failures: number) => {
+      if (failures > 0) {
+        reject(new Error(`${failures} tests failed.`))
+      } else if (runner.stats?.passes !== EXPECTED_PASSES) {
+        reject(
+          new Error(
+            `Expected ${EXPECTED_PASSES} passing VS Code extension tests, found ${runner.stats?.passes ?? 0}`
+          )
+        )
+      } else {
+        resolve()
       }
     })
   })
+
+  const completionPath = process.env['KCL_VSCODE_TEST_COMPLETION']
+  if (!completionPath) {
+    throw new Error('Missing VS Code test completion path')
+  }
+  await writeFile(completionPath, '')
 }

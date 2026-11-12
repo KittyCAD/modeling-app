@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provideService,
 } from '@kittycad/registry'
 import { lspService } from '@src/lang/lsp/registry/contract'
@@ -16,11 +15,9 @@ export const lspExtension = defineRegistryItemFactory((ctx) => {
   })
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'lsp-extension',
-      providesServices: [provideService(lspService, lsp.service)],
-      dispose: lsp.dispose,
-    }),
+    id: 'lsp-extension',
+    providesServices: [provideService(lspService, lsp.service)],
+    dispose: lsp.dispose,
   }
 }, 'lsp-extension')
 

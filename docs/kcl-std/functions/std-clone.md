@@ -20,6 +20,12 @@ instance pattern with zero transformations.
 Really only use this function if YOU ARE SURE you need it. In most cases you
 do not need clone and using a pattern with `instance = 2` is more appropriate.
 
+A clone inherits all transforms already applied to the source geometry.
+Because of [a known rotation-origin bug](https://github.com/KittyCAD/modeling-app/issues/9983),
+rotating a clone of an already-translated body can also move its inherited
+placement. Until that bug is fixed, clone an untransformed seed, rotate it
+first, and then apply that instance's complete translation.
+
 
 
 
@@ -67,7 +73,7 @@ extrude(clonedSketch, length = 5)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the clone function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-clone0.png"
@@ -97,7 +103,7 @@ clonedPart = clone(myPart)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the clone function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-clone1.png"
@@ -129,7 +135,7 @@ loft([sketch001, sketch002])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the clone function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone2_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone2_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-clone2.png"
@@ -156,11 +162,13 @@ sketch002 = clone(sketch001)
 fillet(
   sketch002,
   radius = 2,
-  tags = [
-    getCommonEdge(faces = [
-      sketch002.sketch.tags.face0,
-      sketch002.sketch.tags.face1
-    ])
+  edges = [
+    {
+      sideFaces = [
+        sketch002.sketch.tags.face0,
+        sketch002.sketch.tags.face1
+      ]
+    }
   ],
 )
 
@@ -170,7 +178,7 @@ fillet(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the clone function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone3_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone3_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-clone3.png"
@@ -208,7 +216,7 @@ startSketchOn(sketch002, face = sketch002.sketch.tags.sketchingFace)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the clone function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone4_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone4_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-clone4.png"
@@ -240,11 +248,31 @@ clonedMountingPlate = clone(mountingPlate)
 fillet(
   clonedMountingPlate,
   radius = filletRadius,
-  tags = [
-    getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge1),
-    getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge2),
-    getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge3),
-    getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge4)
+  edges = [
+    {
+      sideFaces = [
+        clonedMountingPlate.sketch.tags.edge1,
+        clonedMountingPlate.sketch.tags.edge2
+      ]
+    },
+    {
+      sideFaces = [
+        clonedMountingPlate.sketch.tags.edge2,
+        clonedMountingPlate.sketch.tags.edge3
+      ]
+    },
+    {
+      sideFaces = [
+        clonedMountingPlate.sketch.tags.edge3,
+        clonedMountingPlate.sketch.tags.edge4
+      ]
+    },
+    {
+      sideFaces = [
+        clonedMountingPlate.sketch.tags.edge1,
+        clonedMountingPlate.sketch.tags.edge4
+      ]
+    }
   ],
 )
   |> translate(x = 0, y = 50, z = 0)
@@ -255,7 +283,7 @@ fillet(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the clone function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone5_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone5_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-clone5.png"
@@ -292,7 +320,7 @@ sweepedSpring = clone(springSketch)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the clone function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone6_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone6_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-clone6.png"
@@ -317,7 +345,7 @@ sketch002 = clone(sketch001)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the clone function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone7_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone7_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-clone7.png"
@@ -370,7 +398,7 @@ example001 = revolve(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the clone function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone8_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone8_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-clone8.png"
@@ -397,7 +425,7 @@ clonedCube = clone(myCube)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the clone function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone9_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone9_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-clone9.png"
@@ -440,7 +468,7 @@ clonedSolid = outputArray[1]
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the clone function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone10_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone10_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-clone10.png"
@@ -485,10 +513,46 @@ outputArray[0]
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the clone function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone11_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone11_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-clone11.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+@settings(defaultLengthUnit = mm, kclVersion = 3.0)
+
+// Work around #9983 by rotating an untransformed seed before placing it.
+seedSketch = sketch(on = XY) {
+  bottom = line(start = [var -5mm, var -5mm], end = [var 5mm, var -5mm])
+  right = line(start = [var 5mm, var -5mm], end = [var 5mm, var 5mm])
+  top = line(start = [var 5mm, var 5mm], end = [var -5mm, var 5mm])
+  left = line(start = [var -5mm, var 5mm], end = [var -5mm, var -5mm])
+}
+seedRegion = region(segments = [seedSketch.bottom, seedSketch.right])
+seed = extrude(seedRegion, length = 10mm)
+
+leftPart = clone(seed)
+  |> translate(x = -20mm, y = 20mm, global = true)
+
+rightPart = clone(seed)
+  |> rotate(axis = Z, angle = 90deg, global = true)
+  |> translate(x = 20mm, y = 20mm, global = true)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the clone function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone12_output.glb"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-clone12.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

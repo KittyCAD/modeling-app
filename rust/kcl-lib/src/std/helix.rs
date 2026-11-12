@@ -37,7 +37,14 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
                 edge::resolve_edge_specifier_with_adjacent_faces_or_tag_ids(&spec, exec_state, &args).await?;
             Some(Axis3dOrEdgeReference::EdgeSpecifier(edge_reference))
         } else {
-            Axis3dOrEdgeReference::from_kcl_val(&axis_val)
+            let maybe_axis = Axis3dOrEdgeReference::from_kcl_val(&axis_val);
+            let axis = maybe_axis.ok_or_else(|| {
+                KclError::new_type(KclErrorDetails::new(
+                    "axis must be an Edge, Axis3d, Segment, or an object with 'sideFaces' (edge reference)".to_owned(),
+                    vec![args.source_range],
+                ))
+            })?;
+            Some(axis)
         }
     } else {
         None
@@ -144,7 +151,7 @@ async fn inner_helix(
                 .is_clockwise(!helix_result.ccw)
                 .revolutions(revolutions)
                 .start_angle(Angle::from_degrees(angle_start))
-                .length(LengthUnit(length.to_mm()))
+                .length(LengthUnit(length.unwrap_to_mm()))
                 .build()
         } else {
             mcmd::EntityMakeHelix::builder()
@@ -176,20 +183,20 @@ async fn inner_helix(
                         ModelingCmdMeta::from_args_id(exec_state, &args, id),
                         ModelingCmd::from(
                             mcmd::EntityMakeHelixFromParams::builder()
-                                .radius(LengthUnit(radius.to_mm()))
+                                .radius(LengthUnit(radius.unwrap_to_mm()))
                                 .is_clockwise(!helix_result.ccw)
-                                .length(LengthUnit(length.to_mm()))
+                                .length(LengthUnit(length.unwrap_to_mm()))
                                 .revolutions(revolutions)
                                 .start_angle(Angle::from_degrees(angle_start))
                                 .axis(Point3d {
-                                    x: direction[0].to_mm(),
-                                    y: direction[1].to_mm(),
-                                    z: direction[2].to_mm(),
+                                    x: direction[0].unwrap_to_mm(),
+                                    y: direction[1].unwrap_to_mm(),
+                                    z: direction[2].unwrap_to_mm(),
                                 })
                                 .center(Point3d {
-                                    x: LengthUnit(origin[0].to_mm()),
-                                    y: LengthUnit(origin[1].to_mm()),
-                                    z: LengthUnit(origin[2].to_mm()),
+                                    x: LengthUnit(origin[0].unwrap_to_mm()),
+                                    y: LengthUnit(origin[1].unwrap_to_mm()),
+                                    z: LengthUnit(origin[2].unwrap_to_mm()),
                                 })
                                 .build(),
                         ),
@@ -208,16 +215,16 @@ async fn inner_helix(
                 // For backwards compatibility, use edge_id directly instead of querying for EdgeReference
                 let cmd = if let Some(length) = length {
                     mcmd::EntityMakeHelixFromEdge::builder()
-                        .radius(LengthUnit(radius.to_mm()))
+                        .radius(LengthUnit(radius.unwrap_to_mm()))
                         .is_clockwise(!helix_result.ccw)
                         .revolutions(revolutions)
                         .start_angle(Angle::from_degrees(angle_start))
                         .edge_id(edge_id)
-                        .length(LengthUnit(length.to_mm()))
+                        .length(LengthUnit(length.unwrap_to_mm()))
                         .build()
                 } else {
                     mcmd::EntityMakeHelixFromEdge::builder()
-                        .radius(LengthUnit(radius.to_mm()))
+                        .radius(LengthUnit(radius.unwrap_to_mm()))
                         .is_clockwise(!helix_result.ccw)
                         .revolutions(revolutions)
                         .start_angle(Angle::from_degrees(angle_start))
@@ -235,16 +242,16 @@ async fn inner_helix(
                 // New API: use EdgeReference directly
                 let cmd = if let Some(length) = length {
                     mcmd::EntityMakeHelixFromEdge::builder()
-                        .radius(LengthUnit(radius.to_mm()))
+                        .radius(LengthUnit(radius.unwrap_to_mm()))
                         .is_clockwise(!helix_result.ccw)
                         .revolutions(revolutions)
                         .start_angle(Angle::from_degrees(angle_start))
                         .edge_reference(edge_ref.clone())
-                        .length(LengthUnit(length.to_mm()))
+                        .length(LengthUnit(length.unwrap_to_mm()))
                         .build()
                 } else {
                     mcmd::EntityMakeHelixFromEdge::builder()
-                        .radius(LengthUnit(radius.to_mm()))
+                        .radius(LengthUnit(radius.unwrap_to_mm()))
                         .is_clockwise(!helix_result.ccw)
                         .revolutions(revolutions)
                         .start_angle(Angle::from_degrees(angle_start))
@@ -262,4 +269,53 @@ async fn inner_helix(
     }
 
     Ok(helix_result)
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::ExecutorContext;
+    use crate::KclError;
+    use crate::MockConfig;
+    use crate::Program;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn helix_rejects_invalid_axis_with_cylinder() {
+        for bad in ["1mm + 1deg", "1deg", "1_"] {
+            for axis in [
+                format!("{{direction = [{bad}, 0, 1], origin = [0mm, 0mm, 0mm]}}"),
+                format!("{{direction = [0, 0, 1], origin = [{bad}, 0mm, 0mm]}}"),
+            ] {
+                let code = format!(
+                    r#"@settings(kclVersion = 2.0)
+profile = startSketchOn(XY) |> circle(center = [0mm, 0mm], radius = 5mm)
+cylinder = extrude(profile, length = 10mm)
+spring = helix(cylinder = cylinder, revolutions = 2, angleStart = 0deg,
+               length = 10mm, axis = {axis})
+"#
+                );
+                let program = Program::parse_no_errs(&code).unwrap();
+                let ctx = ExecutorContext::new_mock(None).await;
+                let outcome = ctx.run_mock(&program, &MockConfig::default()).await;
+                ctx.close().await;
+
+                let err = outcome.expect_err("A supplied invalid axis must not be ignored").error;
+                assert!(matches!(err, KclError::Type { .. }), "{err:?}");
+                assert!(err.message().contains("axis must be"), "{err:?}");
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn helix_allows_cylinder_without_axis() {
+        let code = r#"@settings(kclVersion = 2.0)
+profile = startSketchOn(XY) |> circle(center = [0mm, 0mm], radius = 5mm)
+cylinder = extrude(profile, length = 10mm)
+spring = helix(cylinder = cylinder, revolutions = 2, angleStart = 0deg, length = 10mm)
+"#;
+        let program = Program::parse_no_errs(code).unwrap();
+        let ctx = ExecutorContext::new_mock(None).await;
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await;
+        ctx.close().await;
+        outcome.expect("A cylinder helix may omit the axis");
+    }
 }

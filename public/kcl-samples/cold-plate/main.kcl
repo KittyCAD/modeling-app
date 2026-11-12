@@ -314,42 +314,42 @@ copperTubePath = sketch(on = offsetPlane(XY, offset = tubeDiameter)) {
   horizontalDistance([inletGuide.start, inletGuide.end]) == tubeInletX
   verticalDistance([inletGuide.start, inletGuide.end]) == tubeLowerPassY
   horizontalDistance([
-  rightLowerLoopGuide.start,
-  rightLowerLoopGuide.end
-]) == tubeRightLoopX
+    rightLowerLoopGuide.start,
+    rightLowerLoopGuide.end
+  ]) == tubeRightLoopX
   verticalDistance([
-  rightLowerLoopGuide.start,
-  rightLowerLoopGuide.end
-]) == tubeLowerLoopCenterY
+    rightLowerLoopGuide.start,
+    rightLowerLoopGuide.end
+  ]) == tubeLowerLoopCenterY
   horizontalDistance([leftLoopGuide.start, leftLoopGuide.end]) == tubeLeftLoopX
   verticalDistance([leftLoopGuide.start, leftLoopGuide.end]) == 0in
   horizontalDistance([
-  rightUpperLoopGuide.start,
-  rightUpperLoopGuide.end
-]) == tubeRightLoopX
+    rightUpperLoopGuide.start,
+    rightUpperLoopGuide.end
+  ]) == tubeRightLoopX
   verticalDistance([
-  rightUpperLoopGuide.start,
-  rightUpperLoopGuide.end
-]) == tubeUpperLoopCenterY
+    rightUpperLoopGuide.start,
+    rightUpperLoopGuide.end
+  ]) == tubeUpperLoopCenterY
   horizontalDistance([outletGuide.start, outletGuide.end]) == tubeInletX
   verticalDistance([outletGuide.start, outletGuide.end]) == tubeUpperPassY
   distance([
-  rightLowerArcStartGuide.start,
-  rightLowerArcStartGuide.end
-]) == bendRadius
+    rightLowerArcStartGuide.start,
+    rightLowerArcStartGuide.end
+  ]) == bendRadius
   equalLength([
     rightLowerArcStartGuide,
     rightLowerArcEndGuide
   ])
   distance([
-  leftArcStartGuide.start,
-  leftArcStartGuide.end
-]) == bendRadius
+    leftArcStartGuide.start,
+    leftArcStartGuide.end
+  ]) == bendRadius
   equalLength([leftArcStartGuide, leftArcEndGuide])
   distance([
-  rightUpperArcStartGuide.start,
-  rightUpperArcStartGuide.end
-]) == bendRadius
+    rightUpperArcStartGuide.start,
+    rightUpperArcStartGuide.end
+  ]) == bendRadius
   equalLength([
     rightUpperArcStartGuide,
     rightUpperArcEndGuide
@@ -389,21 +389,21 @@ brazedCapProfile = sketch(on = YZ) {
   tangent([arc3, line4])
   vertical(line4)
   horizontalDistance([
-  bottomCenterGuide.start,
-  bottomCenterGuide.end
-]) == secondGrooveCenterY
+    bottomCenterGuide.start,
+    bottomCenterGuide.end
+  ]) == secondGrooveCenterY
   verticalDistance([
-  bottomCenterGuide.start,
-  bottomCenterGuide.end
-]) == grooveFloorZ
+    bottomCenterGuide.start,
+    bottomCenterGuide.end
+  ]) == grooveFloorZ
   horizontalDistance([
-  topCenterGuide.start,
-  topCenterGuide.end
-]) == secondGrooveCenterY
+    topCenterGuide.start,
+    topCenterGuide.end
+  ]) == secondGrooveCenterY
   verticalDistance([
-  topCenterGuide.start,
-  topCenterGuide.end
-]) == plateTopZ + tubeDiameter * 0.75
+    topCenterGuide.start,
+    topCenterGuide.end
+  ]) == plateTopZ + tubeDiameter * 0.75
   distance([line2.start, line2.end]) == grooveWallHeight
   equalLength([line2, line4])
   radius(arc3) == tubeOuterRadius
@@ -453,13 +453,13 @@ tubeSectionSketch = sketch(on = offsetPlane(YZ, offset = tubeInletX)) {
   horizontalDistance([centerGuide.start, centerGuide.end]) == tubeLowerPassY
   verticalDistance([centerGuide.start, centerGuide.end]) == grooveFloorZ
   horizontalDistance([
-  outerRadiusGuide.start,
-  outerRadiusGuide.end
-]) == tubeOuterRadius
+    outerRadiusGuide.start,
+    outerRadiusGuide.end
+  ]) == tubeOuterRadius
   horizontalDistance([
-  innerRadiusGuide.start,
-  innerRadiusGuide.end
-]) == tubeInnerRadius
+    innerRadiusGuide.start,
+    innerRadiusGuide.end
+  ]) == tubeInnerRadius
 }
 
 tubeSectionProfile = region(segments = [tubeSectionSketch.outerCircle])

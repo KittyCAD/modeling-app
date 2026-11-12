@@ -1355,6 +1355,7 @@ description: Result of parsing sketch_block_basic_fixed_constraints.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

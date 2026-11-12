@@ -10,7 +10,6 @@ import {
   BrowserWindow,
   Menu,
   app,
-  autoUpdater,
   dialog,
   ipcMain,
   nativeTheme,
@@ -40,6 +39,7 @@ import {
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
 import { registerFileProtocolCsp } from '@src/lib/csp'
+import { getDeviceFlowError } from '@src/lib/deviceFlowErrors'
 import { DeviceFlowSessionStore } from '@src/lib/deviceFlowSessions'
 import { discoverMachineApi } from '@src/lib/discoverMachineApi'
 import {
@@ -56,6 +56,7 @@ import {
 } from '@src/lib/electronLifecycle'
 import { getAllowedExternalURL } from '@src/lib/externalUrls'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
+import { prepareMacUpdateInstall } from '@src/lib/macUpdateInstall'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -67,6 +68,8 @@ import {
   type PluginIpcHandler,
 } from '@src/registry/pluginIpc'
 import { configureSystemCertificates } from '@src/systemCertificates'
+
+appUpdater.autoInstallEvent = 'onNextLaunch'
 
 type ElectronPluginModule = {
   register?: (context: ElectronPluginContext) => void
@@ -163,8 +166,6 @@ process.env.VITE_ZOOKEEPER_WEBSOCKET_URL ??=
   viteEnv.VITE_MLEPHANT_WEBSOCKET_URL
 process.env.VITE_ZOO_BASE_DOMAIN ??= viteEnv.VITE_ZOO_BASE_DOMAIN
 
-// Likely convenient to keep for debugging
-console.log('Environment vars', process.env)
 console.log('Parsed CLI args', args)
 
 // Set Electron's profile paths before app.ready. Chromium session/cache state is
@@ -325,7 +326,9 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
         sandbox: false, // expose nodejs in preload
         preload: path.join(__dirname, './preload.js'),
       },
-      icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
+      icon: app.isPackaged
+        ? path.join(process.resourcesPath, 'icon.png')
+        : path.resolve(process.cwd(), 'assets', 'icon.png'),
       frame: os.platform() !== 'darwin',
       titleBarStyle: 'hiddenInset',
       backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',
@@ -337,11 +340,7 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
   }
 
   newWindow.on('close', () => {
-    const bounds = newWindow.getBounds()
-    saveLocalDeviceState({
-      version: '0.1', // Version of the config file, so we add migrations if we break it later
-      windowBounds: bounds,
-    })
+    saveWindowBounds(newWindow)
   })
   newWindow.on('closed', () => {
     // BrowserWindow-scoped resources must die with that exact window.
@@ -593,6 +592,13 @@ const saveLocalDeviceState = (state: LocalDeviceState) => {
   })
 }
 
+function saveWindowBounds(browserWindow: BrowserWindow) {
+  saveLocalDeviceState({
+    version: '0.1', // Version of the config file, so we add migrations if we break it later
+    windowBounds: browserWindow.getBounds(),
+  })
+}
+
 const isBoundsVisible = (bounds: Electron.Rectangle): boolean => {
   const headerArea = {
     x: bounds.x,
@@ -802,7 +808,7 @@ ipcMain.handle('startDeviceFlow', async (event, host: string) => {
   const deviceAuthorizationResponse = await initiateDeviceAuthorization(
     config,
     {}
-  )
+  ).catch((error: unknown) => Promise.reject(getDeviceFlowError(error)))
   const verificationUri =
     deviceAuthorizationResponse.verification_uri_complete ??
     deviceAuthorizationResponse.verification_uri
@@ -872,10 +878,9 @@ ipcMain.handle('loginWithDeviceFlow', async (event) => {
     console.log('Polling for token')
     const tokenSet = await deviceFlowSession.handle.poll()
     console.log('Received token set')
-    console.log(tokenSet)
     return tokenSet.access_token
-  } catch (e) {
-    console.log(e)
+  } catch (error) {
+    return Promise.reject(getDeviceFlowError(error))
   } finally {
     deviceFlowSessions.deleteIfCurrent(targetWindow, deviceFlowSession)
   }
@@ -1005,44 +1010,19 @@ app.on('ready', () => {
     })
   })
 
-  // Based on https://github.com/electron-userland/electron-builder/issues/8997#issuecomment-2846114257
-  const prepareMacUpdateInstall = () => {
-    const beforeQuitListeners = app.listeners('before-quit')
-    app.removeAllListeners('before-quit')
-    for (const browserWindow of BrowserWindow.getAllWindows()) {
-      browserWindow.removeAllListeners('close')
-    }
-
-    autoUpdater.once('before-quit-for-update', () => {
-      // Do any before-quit cleanup here
-      for (const listener of beforeQuitListeners) {
-        try {
-          listener.call(app, {
-            preventDefault: () => {
-              // `preventDefault` during update install causes quit+install to hang.
-            },
-          })
-        } catch (error) {
-          console.error(
-            'Failed to run before-quit listener during update install',
-            error
-          )
-        }
-      }
-
-      // Force app to exit
-      app.exit()
-    })
-  }
-
-  ipcMain.handle('app.restart', () => {
+  ipcMain.handle('app.restart', (event) => {
     if (isInstallingUpdate) {
       return
     }
 
     isInstallingUpdate = true
     if (process.platform === 'darwin') {
-      prepareMacUpdateInstall()
+      const requestingWindow = BrowserWindow.fromWebContents(event.sender)
+      prepareMacUpdateInstall(
+        app,
+        requestingWindow ? [requestingWindow] : BrowserWindow.getAllWindows(),
+        saveWindowBounds
+      )
     }
 
     try {

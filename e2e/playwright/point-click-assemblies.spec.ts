@@ -4,8 +4,10 @@ import * as fsp from 'fs/promises'
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import type { ModelingDialogFixture } from '@e2e/playwright/fixtures/modelingDialogFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   doAndWaitForImageDiff,
   executorInputPath,
@@ -37,7 +39,7 @@ async function insertPartIntoAssembly(
       ...(insertingStepFile ? { Representation: '' } : {}),
     },
     highlightedHeaderArg: 'localName',
-    commandName: 'Insert',
+    commandName: 'Import',
   })
   await page.keyboard.insertText(alias)
   await cmdBar.progressCmdBar()
@@ -53,7 +55,7 @@ async function insertPartIntoAssembly(
         Representation: '',
       },
       highlightedHeaderArg: 'Representation',
-      commandName: 'Insert',
+      commandName: 'Import',
     })
     await expect(
       page.getByText(
@@ -83,7 +85,7 @@ async function insertPartIntoAssembly(
       LocalName: alias,
       ...(insertingStepFile ? { Representation: 'mesh' } : {}),
     },
-    commandName: 'Insert',
+    commandName: 'Import',
   })
   await cmdBar.progressCmdBar()
 }
@@ -93,7 +95,7 @@ test.describe(
   'Point-and-click assemblies tests',
   { tag: ['@desktop', '@macos', '@windows'] },
   () => {
-    test(`Insert kcl parts into assembly as whole module import`, async ({
+    test(`Import kcl parts into assembly as whole module import`, async ({
       folderSetupFn,
       page,
       homePage,
@@ -103,7 +105,7 @@ test.describe(
       cmdBar,
       tronApp,
     }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+      if (!tronApp) throwTronAppMissing()
 
       await test.step('Setup parts and expect empty assembly scene', async () => {
         const projectName = 'assembly'
@@ -137,7 +139,7 @@ test.describe(
         await scene.settled()
       })
 
-      await test.step('Insert kcl as first part as module', async () => {
+      await test.step('Import kcl as first part as module', async () => {
         await insertPartIntoAssembly(
           'cylinder.kcl',
           'cylinder',
@@ -155,7 +157,7 @@ test.describe(
         await scene.settled()
       })
 
-      await test.step('Insert a second part with the same name and expect error', async () => {
+      await test.step('Import a second part with the same name and expect error', async () => {
         await toolbar.insertButton.click()
         await cmdBar.selectOption({ name: 'bracket.kcl' }).click()
         await cmdBar.expectState({
@@ -164,7 +166,7 @@ test.describe(
           currentArgValue: '',
           headerArguments: { Path: 'bracket.kcl', LocalName: '' },
           highlightedHeaderArg: 'localName',
-          commandName: 'Insert',
+          commandName: 'Import',
         })
         await page.keyboard.insertText('cylinder')
         await cmdBar.progressCmdBar()
@@ -180,7 +182,7 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: { Path: 'bracket.kcl', LocalName: 'bracket' },
-          commandName: 'Insert',
+          commandName: 'Import',
         })
         await cmdBar.progressCmdBar()
         await editor.expectEditor.toContain(
@@ -193,7 +195,7 @@ test.describe(
         await scene.settled()
       })
 
-      await test.step('Insert a second time and expect error', async () => {
+      await test.step('Import a second time and expect error', async () => {
         await toolbar.insertButton.click()
         await cmdBar.selectOption({ name: 'bracket.kcl' }).click()
         await expect(
@@ -202,7 +204,7 @@ test.describe(
         await cmdBar.closeCmdBar()
       })
 
-      await test.step('Insert a nested kcl part', async () => {
+      await test.step('Import a nested kcl part', async () => {
         await insertPartIntoAssembly(
           'nested/twice/main.kcl',
           'main',
@@ -228,20 +230,32 @@ test.describe(
       editor: EditorFixture,
       toolbar: ToolbarFixture,
       cmdBar: CmdBarFixture,
+      modelingDialog: ModelingDialogFixture,
       selectionType: 'scene' | 'feature-tree',
       folderSetupFn: (
         fn: (dir: string) => Promise<void>
       ) => Promise<{ dir: string }>
     ) {
-      const selectedObjects =
-        selectionType === 'scene' ? '1 compositeSolid' : '1 plane'
+      const selectedObjects = selectionType === 'scene' ? '1 path' : '1 other'
       async function selectBracket() {
         if (selectionType === 'scene') {
+          if (test.info().tags.includes('@localRenderer')) {
+            // Give the dialog room to move away from the projected face.
+            await toolbar.closePane(DefaultLayoutPaneID.Code)
+            await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+          }
           // The bracket is only visible in the lower-right of the default view
-          const [clickBracketInScene] = scene.makeMouseHelpers(0.75, 0.92, {
-            format: 'ratio',
+          if (await modelingDialog.locator.isVisible()) {
+            await modelingDialog.moveTo({ x: 0, y: 80 })
+          }
+          const [clickBracketInScene] = await scene.makeSelectionHelpers({
+            kind: 'face',
+            // The end cap stays visible when the bracket rotates.
+            index: 2,
+            stream: { x: 0.75, y: 0.92, format: 'ratio' },
           })
           await clickBracketInScene()
+          await expect(toolbar.selectionStatus).toContainText(/1 (path|face)/)
           return
         } else if (selectionType === 'feature-tree') {
           const op = await toolbar.getFeatureTreeOperation('bracket', 0)
@@ -270,7 +284,7 @@ test.describe(
         await toolbar.closePane(DefaultLayoutPaneID.Code)
       })
 
-      await test.step('Insert kcl as module', async () => {
+      await test.step('Import kcl as module', async () => {
         await insertPartIntoAssembly(
           'bracket.kcl',
           'bracket',
@@ -288,44 +302,32 @@ test.describe(
         await scene.settled()
       })
 
+      // The local camera still frames the empty assembly after inserting a part.
+      if (test.info().tags.includes('@localRenderer')) {
+        await expect(page.getByTestId('local-renderer-loading')).toBeHidden({
+          timeout: 30_000,
+        })
+        await page.evaluate(() =>
+          window.app.singletons.kclManager.sceneInfra.camControls.zoomToFit({
+            padding: 0.1,
+          })
+        )
+      }
+
       await test.step('Set translate on module', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.selectTransform('translate')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'objects',
-          currentArgValue: '',
-          headerArguments: {
-            Objects: '',
-            X: '5',
-          },
-          highlightedHeaderArg: 'objects',
-          commandName: 'Translate',
-        })
+        await modelingDialog.selection('Objects').click()
         await selectBracket()
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'x',
-          currentArgValue: '5',
-          headerArguments: {
-            Objects: selectedObjects,
-            X: '5',
-          },
-          highlightedHeaderArg: 'x',
-          commandName: 'Translate',
-        })
-        await page.keyboard.insertText('1')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Objects: selectedObjects,
-            X: '1',
-          },
-          commandName: 'Translate',
-        })
-        await cmdBar.submit()
+        await expect(modelingDialog.selection('Objects')).toHaveText(
+          selectedObjects
+        )
+
+        await expect(modelingDialog.input('x')).toHaveText('5')
+        await modelingDialog.fillInput('x', '1')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
         await scene.settled()
         await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.openPane(DefaultLayoutPaneID.Code)
@@ -337,36 +339,12 @@ test.describe(
       await test.step('Edit translate on module', async () => {
         const op = await toolbar.getFeatureTreeOperation('Translate', 0)
         await op.dblclick()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            X: '1',
-          },
-          commandName: 'Translate',
-        })
-        await cmdBar.clickOptionalArgument('y')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'y',
-          currentArgValue: '0',
-          headerArguments: {
-            X: '1',
-            Y: '',
-          },
-          highlightedHeaderArg: 'y',
-          commandName: 'Translate',
-        })
-        await page.keyboard.insertText('2')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            X: '1',
-            Y: '2',
-          },
-          commandName: 'Translate',
-        })
-        await cmdBar.submit()
+        await expect(modelingDialog.submitButton).toBeEnabled()
+
+        await modelingDialog.fillInput('y', '2')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
         await scene.settled()
         await editor.expectEditor.toContain(
           `translate(bracket, x = 1, y = 2)`,
@@ -379,41 +357,17 @@ test.describe(
       await test.step('Set scale on module', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.selectTransform('scale')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'objects',
-          currentArgValue: '',
-          headerArguments: {
-            Objects: '',
-            Factor: '2',
-          },
-          highlightedHeaderArg: 'objects',
-          commandName: 'Scale',
-        })
+        await modelingDialog.selection('Objects').click()
         await selectBracket()
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'factor',
-          currentArgValue: '2',
-          headerArguments: {
-            Objects: selectedObjects,
-            Factor: '2',
-          },
-          highlightedHeaderArg: 'factor',
-          commandName: 'Scale',
-        })
-        await page.keyboard.insertText('1.1')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Objects: selectedObjects,
-            Factor: '1.1',
-          },
-          commandName: 'Scale',
-        })
-        await cmdBar.submit()
+        await expect(modelingDialog.selection('Objects')).toHaveText(
+          selectedObjects
+        )
+
+        await expect(modelingDialog.input('factor')).toHaveText('2')
+        await modelingDialog.fillInput('factor', '1.1')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
         await scene.settled()
         await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.openPane(DefaultLayoutPaneID.Code)
@@ -427,34 +381,13 @@ test.describe(
       await test.step('Edit scale on module', async () => {
         const op = await toolbar.getFeatureTreeOperation('Scale', 0)
         await op.dblclick()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Factor: '1.1',
-          },
-          commandName: 'Scale',
-        })
-        await cmdBar.clickHeaderArgument('factor')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'factor',
-          currentArgValue: '1.1',
-          headerArguments: {
-            Factor: '1.1',
-          },
-          highlightedHeaderArg: 'factor',
-          commandName: 'Scale',
-        })
-        await page.keyboard.insertText('1.2')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Factor: '1.2',
-          },
-          commandName: 'Scale',
-        })
-        await cmdBar.submit()
+        await expect(modelingDialog.submitButton).toBeEnabled()
+
+        await expect(modelingDialog.input('factor')).toHaveText('1.1')
+        await modelingDialog.fillInput('factor', '1.2')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
         await scene.settled()
         await editor.expectEditor.toContain(`scale(bracket, factor = 1.2)`, {
           shouldNormalise: true,
@@ -466,44 +399,17 @@ test.describe(
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
 
         await toolbar.selectTransform('rotate')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'objects',
-          currentArgValue: '',
-          headerArguments: {
-            Objects: '',
-            Axis: 'Z',
-            Angle: '45deg',
-          },
-          highlightedHeaderArg: 'objects',
-          commandName: 'Rotate',
-        })
+        await modelingDialog.selection('Objects').click()
         await selectBracket()
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'angle',
-          currentArgValue: '45deg',
-          headerArguments: {
-            Objects: selectedObjects,
-            Axis: 'Z',
-            Angle: '45deg',
-          },
-          highlightedHeaderArg: 'angle',
-          commandName: 'Rotate',
-        })
-        await page.keyboard.insertText('0.1')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Objects: selectedObjects,
-            Axis: 'Z',
-            Angle: '0.1',
-          },
-          commandName: 'Rotate',
-        })
-        await cmdBar.submit()
+        await expect(modelingDialog.selection('Objects')).toHaveText(
+          selectedObjects
+        )
+
+        await expect(modelingDialog.input('angle')).toHaveText('45deg')
+        await modelingDialog.fillInput('angle', '0.1')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
         await scene.settled()
         await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.openPane(DefaultLayoutPaneID.Code)
@@ -520,58 +426,29 @@ test.describe(
       await test.step('Edit rotate on module', async () => {
         const op = await toolbar.getFeatureTreeOperation('Rotate', 0)
         await op.dblclick()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Axis: 'Z',
-            Angle: '0.1',
-          },
-          commandName: 'Rotate',
-        })
-        await cmdBar.clickHeaderArgument('angle')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'angle',
-          currentArgValue: '0.1',
-          headerArguments: {
-            Axis: 'Z',
-            Angle: '0.1',
-          },
-          highlightedHeaderArg: 'angle',
-          commandName: 'Rotate',
-        })
-        await page.keyboard.insertText('0.2')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Axis: 'Z',
-            Angle: '0.2',
-          },
-          commandName: 'Rotate',
-        })
-        await cmdBar.submit()
+        await expect(modelingDialog.submitButton).toBeEnabled()
+
+        await expect(modelingDialog.input('angle')).toHaveText('0.1')
+        await modelingDialog.fillInput('angle', '0.2')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
         await scene.settled()
         await editor.expectEditor.toContain(
-          `rotate(bracket, axis = Z, angle = 0.2)`,
-          {
-            shouldNormalise: true,
-          }
+          'rotate(bracket, axis = Z, angle = 0.2)',
+          { shouldNormalise: true }
         )
       })
 
       await test.step('Delete the part using the feature tree', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const opr = await toolbar.getFeatureTreeOperation('Rotate', 0)
-        await opr.click({ button: 'right' })
+        await toolbar.openFeatureTreeOperationContextMenu('Rotate', 0)
         await page.getByTestId('context-menu-delete').click()
         await scene.settled()
-        const ops = await toolbar.getFeatureTreeOperation('Scale', 0)
-        await ops.click({ button: 'right' })
+        await toolbar.openFeatureTreeOperationContextMenu('Scale', 0)
         await page.getByTestId('context-menu-delete').click()
         await scene.settled()
-        const opt = await toolbar.getFeatureTreeOperation('Translate', 0)
-        await opt.click({ button: 'right' })
+        await toolbar.openFeatureTreeOperationContextMenu('Translate', 0)
         await page.getByTestId('context-menu-delete').click()
         await scene.settled()
         await selectBracket()
@@ -588,74 +465,77 @@ test.describe(
       })
     }
 
-    test(`Module feature tree items are source-only`, async ({
-      page,
-      homePage,
-      scene,
-      editor,
-      toolbar,
-      cmdBar,
-      tronApp,
-      folderSetupFn,
-    }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
-      test.slow()
-
-      const projectName = 'assembly'
-      await folderSetupFn(async (dir) => {
-        const bracketDir = path.join(dir, projectName)
-        await fsp.mkdir(bracketDir, { recursive: true })
-        await Promise.all([
-          fsp.copyFile(
-            path.join('public', 'kcl-samples', 'bracket', 'main.kcl'),
-            path.join(bracketDir, 'bracket.kcl')
-          ),
-          fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
-        ])
-      })
-      await page.setBodyDimensions({ width: 1200, height: 800 })
-      await homePage.openProject(projectName)
-      await scene.settled()
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-
-      await insertPartIntoAssembly(
-        'bracket.kcl',
-        'bracket',
+    test(
+      `Module feature tree items are source-only`,
+      { tag: '@localRenderer' },
+      async ({
+        page,
+        homePage,
+        scene,
+        editor,
         toolbar,
         cmdBar,
-        page
-      )
+        tronApp,
+        folderSetupFn,
+      }) => {
+        if (!tronApp) throwTronAppMissing()
+        test.slow()
 
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const op = await toolbar.getFeatureTreeOperation('bracket', 0)
-      await op.click({ button: 'right' })
+        const projectName = 'assembly'
+        await folderSetupFn(async (dir) => {
+          const bracketDir = path.join(dir, projectName)
+          await fsp.mkdir(bracketDir, { recursive: true })
+          await Promise.all([
+            fsp.copyFile(
+              path.join('public', 'kcl-samples', 'bracket', 'main.kcl'),
+              path.join(bracketDir, 'bracket.kcl')
+            ),
+            fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
+          ])
+        })
+        await page.setBodyDimensions({ width: 1200, height: 800 })
+        await homePage.openProject(projectName)
+        await scene.settled()
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
 
-      await expect(page.getByText('View KCL source code')).toBeVisible()
-      await expect(page.getByTestId('context-menu-delete')).not.toBeVisible()
-      await expect(page.getByTestId('context-menu-clone')).not.toBeVisible()
-      await expect(
-        page.getByTestId('context-menu-set-translate')
-      ).not.toBeVisible()
-      await expect(
-        page.getByTestId('context-menu-set-rotate')
-      ).not.toBeVisible()
-      await expect(page.getByTestId('context-menu-set-scale')).not.toBeVisible()
-    })
+        await insertPartIntoAssembly(
+          'bracket.kcl',
+          'bracket',
+          toolbar,
+          cmdBar,
+          page
+        )
 
-    test(`Insert the bracket part into an assembly and transform it (scene selection)`, async ({
-      context,
-      page,
-      homePage,
-      scene,
-      editor,
-      toolbar,
-      cmdBar,
-      tronApp,
-      folderSetupFn,
-    }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
-      test.slow()
-      await testBracketInsertionThenTransformsThenDeletion(
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(
+          `
+          import "bracket.kcl" as bracket
+        `,
+          { shouldNormalise: true }
+        )
+        await scene.settled()
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.openFeatureTreeOperationContextMenu('bracket', 0)
+
+        await expect(page.getByText('View KCL source code')).toBeVisible()
+        await expect(page.getByTestId('context-menu-delete')).not.toBeVisible()
+        await expect(page.getByTestId('context-menu-clone')).not.toBeVisible()
+        await expect(
+          page.getByTestId('context-menu-set-translate')
+        ).not.toBeVisible()
+        await expect(
+          page.getByTestId('context-menu-set-rotate')
+        ).not.toBeVisible()
+        await expect(
+          page.getByTestId('context-menu-set-scale')
+        ).not.toBeVisible()
+      }
+    )
+
+    for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+      test(`Import the bracket part into an assembly and transform it (scene selection) ${rendererTag}`, async ({
         context,
         page,
         homePage,
@@ -663,244 +543,316 @@ test.describe(
         editor,
         toolbar,
         cmdBar,
-        'scene',
-        folderSetupFn
-      )
-    })
-
-    test(`Insert foreign parts into assembly and delete them`, async ({
-      folderSetupFn,
-      page,
-      homePage,
-      scene,
-      editor,
-      toolbar,
-      cmdBar,
-      tronApp,
-    }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
-
-      const complexPlmFileName = 'cube_Complex-PLM_Name_-001.sldprt'
-      const camelCasedSolidworksFileName = 'cubeComplexPLMName001'
-
-      await test.step('Setup parts and expect empty assembly scene', async () => {
-        const projectName = 'assembly'
-        await folderSetupFn(async (dir) => {
-          const bracketDir = path.join(dir, projectName)
-          await fsp.mkdir(bracketDir, { recursive: true })
-          await Promise.all([
-            fsp.copyFile(
-              testsInputPath('cube.step'),
-              path.join(bracketDir, 'cube.step')
-            ),
-            fsp.copyFile(
-              testsInputPath('cube.sldprt'),
-              path.join(bracketDir, complexPlmFileName)
-            ),
-            fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
-          ])
-        })
-        await homePage.openProject(projectName)
-        await scene.settled()
+        modelingDialog,
+        tronApp,
+        folderSetupFn,
+      }) => {
+        if (!tronApp) throwTronAppMissing()
+        test.slow()
+        await testBracketInsertionThenTransformsThenDeletion(
+          context,
+          page,
+          homePage,
+          scene,
+          editor,
+          toolbar,
+          cmdBar,
+          modelingDialog,
+          'scene',
+          folderSetupFn
+        )
       })
+    }
 
-      await test.step('Insert step part as module', async () => {
-        await insertPartIntoAssembly('cube.step', 'cube', toolbar, cmdBar, page)
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.toContain(
-          `
-          @settings(experimentalFeatures = allow)
+    test(
+      `Import foreign parts into assembly and delete them`,
+      { tag: ['@skipLocalEngine', '@localRenderer'] },
+      async ({
+        folderSetupFn,
+        page,
+        homePage,
+        scene,
+        editor,
+        toolbar,
+        cmdBar,
+        tronApp,
+      }) => {
+        if (!tronApp) throwTronAppMissing()
+
+        const complexPlmFileName = 'cube_Complex-PLM_Name_-001.sldprt'
+        const camelCasedSolidworksFileName = 'cubeComplexPLMName001'
+
+        await test.step('Setup parts and expect empty assembly scene', async () => {
+          const projectName = 'assembly'
+          await folderSetupFn(async (dir) => {
+            const bracketDir = path.join(dir, projectName)
+            await fsp.mkdir(bracketDir, { recursive: true })
+            await Promise.all([
+              fsp.mkdir(path.join(bracketDir, 'folder.prt')),
+              fsp.copyFile(
+                testsInputPath('cube.step'),
+                path.join(bracketDir, 'cube.step')
+              ),
+              fsp.copyFile(
+                testsInputPath('cube.sldprt'),
+                path.join(bracketDir, complexPlmFileName)
+              ),
+              fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
+            ])
+            // Valid trailing whitespace pushes the STEP file beyond the editor's size limit.
+            await fsp.appendFile(
+              path.join(bracketDir, 'cube.step'),
+              ' '.repeat(1024 * 1024)
+            )
+          })
+          await homePage.openProject(projectName)
+          await scene.settled()
+        })
+
+        await test.step('Import step part as module', async () => {
+          await toolbar.openPane(DefaultLayoutPaneID.Files)
+          await toolbar.openFile('cube.step')
+          await expect(
+            page.getByText('Text files larger than 1 MiB cannot be edited.', {
+              exact: false,
+            })
+          ).toBeVisible()
+          await expect(
+            page.locator('#code-pane').getByRole('button', {
+              name: 'Import in current file',
+              exact: true,
+            })
+          ).toBeVisible()
+          await insertPartIntoAssembly(
+            'cube.step',
+            'cube',
+            toolbar,
+            cmdBar,
+            page
+          )
+          await toolbar.openPane(DefaultLayoutPaneID.Code)
+          await editor.expectEditor.toContain(
+            `
           @(targetRepresentation = mesh)
           import "cube.step" as cube
         `,
-          { shouldNormalise: true }
-        )
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-        await scene.settled()
+            { shouldNormalise: true }
+          )
+          await toolbar.closePane(DefaultLayoutPaneID.Code)
+          await scene.settled()
 
-        await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-      })
-
-      await test.step('Insert second foreign part by clicking', async () => {
-        await toolbar.openPane(DefaultLayoutPaneID.Files)
-        await toolbar.expectFileTreeState([
-          complexPlmFileName,
-          'cube.step',
-          'main.kcl',
-        ])
-        await toolbar.openFile(complexPlmFileName)
-
-        // Go through the ToastInsert prompt
-        await page.getByText('Insert into my current file').click()
-
-        // Check getPathFilenameInVariableCase output
-        const parsedValueFromFile =
-          await cmdBar.currentArgumentInput.inputValue()
-        expect(parsedValueFromFile).toEqual(camelCasedSolidworksFileName)
-
-        // Continue on with the flow
-        await page.keyboard.insertText('cubeSw')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: { Path: complexPlmFileName, LocalName: 'cubeSw' },
-          commandName: 'Insert',
+          await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
         })
-        await cmdBar.progressCmdBar()
-        await toolbar.closePane(DefaultLayoutPaneID.Files)
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.toContain(
-          `
+
+        await test.step('Import second foreign part from the binary-file preview', async () => {
+          await toolbar.openPane(DefaultLayoutPaneID.Files)
+          await toolbar.expectFileTreeState([
+            'folder.prt',
+            complexPlmFileName,
+            'cube.step',
+            'main.kcl',
+          ])
+          const importAction = page.getByRole('button', {
+            name: 'Import in current file',
+            exact: true,
+          })
+          const folder = page.getByRole('treeitem', {
+            name: 'folder.prt',
+            exact: true,
+          })
+          await folder.click()
+          await expect(folder).toHaveAttribute('aria-expanded', 'true')
+          await folder.click({ button: 'right' })
+          await expect(page.getByTestId('context-menu-rename')).toBeVisible()
+          await expect(importAction).not.toBeVisible()
+          await page.keyboard.press('Escape')
+
+          await toolbar.openFile(complexPlmFileName)
+          await page
+            .locator('#code-pane')
+            .getByRole('button', {
+              name: 'Import in current file',
+              exact: true,
+            })
+            .click()
+
+          // Check getPathFilenameInVariableCase output
+          const parsedValueFromFile =
+            await cmdBar.currentArgumentInput.inputValue()
+          expect(parsedValueFromFile).toEqual(camelCasedSolidworksFileName)
+
+          // Continue on with the flow
+          await page.keyboard.insertText('cubeSw')
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'review',
+            headerArguments: { Path: complexPlmFileName, LocalName: 'cubeSw' },
+            commandName: 'Import',
+          })
+          await cmdBar.progressCmdBar()
+          await toolbar.closePane(DefaultLayoutPaneID.Files)
+          await toolbar.openPane(DefaultLayoutPaneID.Code)
+          await editor.expectEditor.toContain(
+            `
           import "cube.step" as cube
           import "${complexPlmFileName}" as cubeSw
         `,
-          { shouldNormalise: true }
-        )
-        await scene.settled()
+            { shouldNormalise: true }
+          )
+          await scene.settled()
 
-        await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-      })
+          await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+        })
 
-      await test.step('Module feature tree items do not offer delete', async () => {
-        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const cubeOp = await toolbar.getFeatureTreeOperation('cube', 0)
-        await cubeOp.click({ button: 'right' })
-        await expect(page.getByText('View KCL source code')).toBeVisible()
-        await expect(page.getByTestId('context-menu-delete')).not.toBeVisible()
-      })
-    })
+        await test.step('Module feature tree items do not offer delete', async () => {
+          await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+          await toolbar.openFeatureTreeOperationContextMenu('cube', 0)
+          await expect(page.getByText('View KCL source code')).toBeVisible()
+          await expect(
+            page.getByTestId('context-menu-delete')
+          ).not.toBeVisible()
+        })
+      }
+    )
 
-    test('Assembly gets reexecuted when imported models are updated externally', async ({
-      folderSetupFn,
-      page,
-      homePage,
-      scene,
-      toolbar,
-      cmdBar,
-      tronApp,
-    }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+    test(
+      'Assembly gets reexecuted when imported models are updated externally',
+      { tag: '@skipLocalEngine' },
+      async ({
+        folderSetupFn,
+        page,
+        homePage,
+        scene,
+        toolbar,
+        cmdBar,
+        tronApp,
+      }) => {
+        if (!tronApp) throwTronAppMissing()
 
-      const projectName = 'assembly'
+        const projectName = 'assembly'
 
-      await test.step('Setup parts and expect imported model', async () => {
-        await folderSetupFn(async (dir) => {
-          const projectDir = path.join(dir, projectName)
-          await fsp.mkdir(projectDir, { recursive: true })
-          await Promise.all([
-            fsp.copyFile(
-              executorInputPath('cube.kcl'),
-              path.join(projectDir, 'cube.kcl')
-            ),
-            fsp.copyFile(
-              executorInputPath(
-                path.join('mcmaster-parts', '98017a257-washer.step')
+        await test.step('Setup parts and expect imported model', async () => {
+          await folderSetupFn(async (dir) => {
+            const projectDir = path.join(dir, projectName)
+            await fsp.mkdir(projectDir, { recursive: true })
+            await Promise.all([
+              fsp.copyFile(
+                executorInputPath('cube.kcl'),
+                path.join(projectDir, 'cube.kcl')
               ),
-              path.join(projectDir, 'foreign.step')
-            ),
-            fsp.writeFile(
-              path.join(projectDir, 'main.kcl'),
-              `
+              fsp.copyFile(
+                executorInputPath(
+                  path.join('mcmaster-parts', '98017a257-washer.step')
+                ),
+                path.join(projectDir, 'foreign.step')
+              ),
+              fsp.writeFile(
+                path.join(projectDir, 'main.kcl'),
+                `
 import "cube.kcl" as cube
 import "foreign.step" as foreign
 cube
 foreign
   |> translate(x = 40, z = 10)`
-            ),
-          ])
+              ),
+            ])
+          })
+          await page.setBodyDimensions({ width: 1000, height: 500 })
+          await homePage.openProject(projectName)
+          await scene.settled()
+          await toolbar.closePane(DefaultLayoutPaneID.Code)
         })
-        await page.setBodyDimensions({ width: 1000, height: 500 })
-        await homePage.openProject(projectName)
-        await scene.settled()
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-      })
 
-      await test.step('Change imported kcl file and expect change', async () => {
-        await doAndWaitForImageDiff(
-          page,
-          async () => {
+        await test.step('Change imported kcl file and expect change', async () => {
+          await doAndWaitForImageDiff(
+            page,
+            async () => {
+              await folderSetupFn(async (dir) => {
+                // Append appearance to the cube.kcl file
+                await fsp.appendFile(
+                  path.join(dir, projectName, 'cube.kcl'),
+                  `\n  |> appearance(color = "#ff0000")`
+                )
+              })
+              await scene.settled()
+              await toolbar.closePane(DefaultLayoutPaneID.Code)
+            },
+            300
+          )
+        })
+
+        await test.step('Change imported step file and expect change', async () => {
+          // Expect pipe to take over the red cube but leave some space where the washer was
+          await doAndWaitForImageDiff(page, async () => {
             await folderSetupFn(async (dir) => {
-              // Append appearance to the cube.kcl file
-              await fsp.appendFile(
-                path.join(dir, projectName, 'cube.kcl'),
-                `\n  |> appearance(color = "#ff0000")`
+              // Replace the washer with a pipe
+              await fsp.copyFile(
+                executorInputPath(
+                  path.join('mcmaster-parts', '1120t74-pipe.step')
+                ),
+                path.join(dir, projectName, 'foreign.step')
               )
             })
             await scene.settled()
             await toolbar.closePane(DefaultLayoutPaneID.Code)
-          },
-          300
-        )
-      })
-
-      await test.step('Change imported step file and expect change', async () => {
-        // Expect pipe to take over the red cube but leave some space where the washer was
-        await doAndWaitForImageDiff(page, async () => {
-          await folderSetupFn(async (dir) => {
-            // Replace the washer with a pipe
-            await fsp.copyFile(
-              executorInputPath(
-                path.join('mcmaster-parts', '1120t74-pipe.step')
-              ),
-              path.join(dir, projectName, 'foreign.step')
-            )
           })
+        })
+      }
+    )
+
+    test(
+      `Point-and-click clone`,
+      { tag: '@localRenderer' },
+      async ({
+        folderSetupFn,
+        page,
+        homePage,
+        scene,
+        editor,
+        toolbar,
+        cmdBar,
+        tronApp,
+      }) => {
+        if (!tronApp) throwTronAppMissing()
+
+        const projectName = 'assembly'
+        const cloneLine = `clone001 = clone(washer)`
+
+        await test.step('Setup parts and expect imported model', async () => {
+          await folderSetupFn(async (dir) => {
+            const projectDir = path.join(dir, projectName)
+            await fsp.mkdir(projectDir, { recursive: true })
+            await Promise.all([
+              fsp.copyFile(
+                path.join('public', 'kcl-samples', 'washer', 'main.kcl'),
+                path.join(projectDir, 'washer.kcl')
+              ),
+              fsp.writeFile(
+                path.join(projectDir, 'main.kcl'),
+                `import "washer.kcl" as washer`
+              ),
+            ])
+          })
+          await page.setBodyDimensions({ width: 1000, height: 500 })
+          await homePage.openProject(projectName)
           await scene.settled()
           await toolbar.closePane(DefaultLayoutPaneID.Code)
         })
-      })
-    })
 
-    test(`Point-and-click clone`, async ({
-      folderSetupFn,
-      page,
-      homePage,
-      scene,
-      editor,
-      toolbar,
-      cmdBar,
-      tronApp,
-    }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+        await test.step('Module feature tree items do not offer clone', async () => {
+          await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+          await toolbar.openFeatureTreeOperationContextMenu('washer', 0)
+          await expect(page.getByText('View KCL source code')).toBeVisible()
+          await expect(page.getByTestId('context-menu-clone')).not.toBeVisible()
+          await page.keyboard.press('Escape')
+          await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
 
-      const projectName = 'assembly'
-      const cloneLine = `clone001 = clone(washer)`
-
-      await test.step('Setup parts and expect imported model', async () => {
-        await folderSetupFn(async (dir) => {
-          const projectDir = path.join(dir, projectName)
-          await fsp.mkdir(projectDir, { recursive: true })
-          await Promise.all([
-            fsp.copyFile(
-              path.join('public', 'kcl-samples', 'washer', 'main.kcl'),
-              path.join(projectDir, 'washer.kcl')
-            ),
-            fsp.writeFile(
-              path.join(projectDir, 'main.kcl'),
-              `import "washer.kcl" as washer`
-            ),
-          ])
+          await toolbar.openPane(DefaultLayoutPaneID.Code)
+          await editor.expectEditor.not.toContain(cloneLine, {
+            shouldNormalise: true,
+          })
         })
-        await page.setBodyDimensions({ width: 1000, height: 500 })
-        await homePage.openProject(projectName)
-        await scene.settled()
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-      })
-
-      await test.step('Module feature tree items do not offer clone', async () => {
-        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const op = await toolbar.getFeatureTreeOperation('washer', 0)
-        await op.click({ button: 'right' })
-        await expect(page.getByText('View KCL source code')).toBeVisible()
-        await expect(page.getByTestId('context-menu-clone')).not.toBeVisible()
-        await page.keyboard.press('Escape')
-        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.not.toContain(cloneLine, {
-          shouldNormalise: true,
-        })
-      })
-    })
+      }
+    )
   }
 )

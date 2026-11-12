@@ -1,19 +1,23 @@
 import path from 'path'
 import * as TOML from '@iarna/toml'
 import type { Feature, OutputFormat3d } from '@kittycad/lib'
-import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
+import type {
+  BrowserContext,
+  Locator,
+  Page,
+  Request,
+  TestInfo,
+} from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { Configuration } from '@src/lang/wasm'
 import {
   COOKIE_NAME_PREFIX,
   IS_PLAYWRIGHT_KEY,
-  OPFS_CLOUD_FEATURE_FLAG,
   SIDEBAR_BUTTON_SUFFIX,
   TOKEN_PERSIST_KEY,
   VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
 } from '@src/lib/constants'
-import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import dotenv from 'dotenv'
@@ -21,11 +25,30 @@ import fsp from 'fs/promises'
 import pixelMatch from 'pixelmatch'
 import type { Protocol } from 'playwright-core/types/protocol'
 import { PNG } from 'pngjs'
+import { parse as parseToml } from 'smol-toml'
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 export const token =
   process.env.VITE_ZOO_API_TOKEN || process.env.VITE_KITTYCAD_API_TOKEN || ''
+
+export async function expectRenderedDiagnosticText(
+  diagnostic: Locator,
+  text: string,
+  options?: { timeout?: number }
+) {
+  await expect(diagnostic).toBeVisible(options)
+  await expect
+    .poll(
+      async () =>
+        (await diagnostic.innerText())
+          .replace(/\r\n?/g, '\n')
+          .replace(/\n{2,}/g, '\n\n')
+          .trim(),
+      options
+    )
+    .toBe(text)
+}
 
 /** A string version of a RegExp to get a number that may include a decimal point */
 export const NUMBER_REGEXP = '((-)?\\d+(\\.\\d+)?)'
@@ -34,20 +57,24 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import {
   PLAYWRIGHT_PROJECT_DIRECTORY,
   TEST_SETTINGS,
   TEST_SETTINGS_KEY,
+  geometryOnlyForTestTags,
   playwrightPluginSettings,
   playwrightProjectLibraries,
 } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
 import { createLayoutWithMetadata } from '@src/lib/layout'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
-import { PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE } from '@src/lib/projectLibraries'
 
 export const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
+
+export const PLAYWRIGHT_TEST_SCOPE_KEY = 'playwrightTestScope'
+export const PLAYWRIGHT_STORAGE_SCOPE_KEY = 'playwrightStorageScope'
 
 export const PLAYWRIGHT_LAYOUT_SETTINGS = {
   layout: {
@@ -100,6 +127,94 @@ async function waitForPageLoad(page: Page) {
   })
 }
 
+export async function waitForAuthentication(page: Page) {
+  // A document reload can finish while Auth still hides the Home route.
+  try {
+    await page.waitForFunction(() => {
+      const snapshot = window.app?.auth.actor.getSnapshot()
+      return snapshot !== undefined && !snapshot.matches('checkIfLoggedIn')
+    })
+  } catch (error) {
+    let diagnosticTimeout: ReturnType<typeof setTimeout> | undefined
+    try {
+      // Bound this failure-only read so a renderer hang cannot block cleanup.
+      const diagnostic = await Promise.race([
+        page
+          .evaluate(() => {
+            const snapshot = window.app?.auth.actor.getSnapshot()
+            return {
+              readyState: document.readyState,
+              visibility: document.visibilityState,
+              focused: document.hasFocus(),
+              appPresent: window.app !== undefined,
+              authStatus: snapshot?.status ?? null,
+              authState: snapshot?.value ?? null,
+              didAuth:
+                performance.getEntriesByName('code/didAuth', 'mark').length > 0,
+              online: navigator.onLine,
+            }
+          })
+          .catch(() => ({ diagnosticUnavailable: true })),
+        new Promise<{ diagnosticUnavailable: true }>((resolve) => {
+          diagnosticTimeout = setTimeout(
+            () => resolve({ diagnosticUnavailable: true }),
+            2000
+          )
+        }),
+      ])
+      throw new Error(
+        `Home authentication readiness failed: ${JSON.stringify(diagnostic)}`,
+        { cause: error }
+      )
+    } finally {
+      if (diagnosticTimeout) clearTimeout(diagnosticTimeout)
+    }
+  }
+  expect(
+    await page.evaluate(() => window.app.auth.actor.getSnapshot().value),
+    'Home startup requires loggedIn authentication'
+  ).toBe('loggedIn')
+}
+
+export async function waitForAppLoad(page: Page) {
+  const home = page.getByTestId('home-section')
+  const modelingScene = page.getByRole('button', { name: 'Start Sketch' })
+  const continueInBrowser = page.getByTestId('continue-to-web-app-button')
+  await expect(home.or(modelingScene).or(continueInBrowser)).toBeVisible({
+    timeout: 20_000,
+  })
+  if (await continueInBrowser.isVisible()) await continueInBrowser.click()
+  await expect(home.or(modelingScene)).toBeVisible({ timeout: 20_000 })
+  // A completed document navigation does not await the deferred app bootstrap
+  // or its settings I/O. Fixture callers need the current, loaded actor.
+  await page.waitForFunction(
+    () => window.app?.settings.actor.getSnapshot().matches('idle'),
+    undefined,
+    { timeout: 20_000 }
+  )
+}
+
+export async function waitForWebKitBillingToSettle(page: Page) {
+  if (process.env.PLAYWRIGHT_WEBKIT_PERSISTENT_CONTEXT !== '1') {
+    return
+  }
+
+  await expect
+    .poll(
+      () =>
+        page.evaluate(() => {
+          const snapshot = window.app?.billing?.actor.getSnapshot()
+          return (
+            snapshot?.value === 'waiting' &&
+            (snapshot.context.lastFetch !== undefined ||
+              snapshot.context.error !== undefined)
+          )
+        }),
+      { timeout: 20_000 }
+    )
+    .toBe(true)
+}
+
 async function removeCurrentCode(page: Page) {
   // First, hover the element in case the current mouse position is in the way
   await page.mouse.move(0, 0)
@@ -117,6 +232,12 @@ export async function sendCustomCmd(page: Page, cmd: EngineCommand) {
   await expect(page.getByTestId('custom-cmd-input')).toHaveValue(json)
   await page.getByTestId('custom-cmd-send-button').scrollIntoViewIfNeeded()
   await page.getByTestId('custom-cmd-send-button').click()
+}
+
+export async function sendSceneCommand(page: Page, cmd: EngineCommand) {
+  await page.evaluate(async (cmd) => {
+    await window.engineCommandManager.sendSceneCommand(cmd)
+  }, cmd)
 }
 
 async function clearCommandLogs(page: Page) {
@@ -196,8 +317,8 @@ async function closeKclCodePanel(page: Page) {
 async function openDebugPanel(page: Page) {
   await openPane(page, 'debug-pane-button')
 
-  // The debug pane needs time to load everything.
-  await page.waitForTimeout(3000)
+  // Wait for the lazy pane contents rather than imposing a fixed delay.
+  await expect(page.getByTestId('debug-panel')).toBeAttached()
 }
 
 export async function closeDebugPanel(page: Page) {
@@ -351,20 +472,7 @@ export const getMovementUtils = (opts: any) => {
   return { toSU, toU, click00r }
 }
 
-async function waitForAuthAndLsp(page: Page) {
-  const waitForLspPromise = page.waitForEvent('console', {
-    predicate: async (message: any) => {
-      // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
-      // but that doesn't seem to make it to the console for macos/safari :(
-      if (message.text().includes('start kcl lsp')) {
-        await new Promise((resolve) => setTimeout(resolve, 200))
-        return true
-      }
-      return false
-    },
-    timeout: 45_000,
-  })
-
+async function waitForAuth(page: Page) {
   if (process.env.VERCEL_BASE_URL) {
     // set bypass secret for the page's requests based on the hostname
     let secret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
@@ -389,13 +497,12 @@ async function waitForAuthAndLsp(page: Page) {
     if (token) {
       // Vercel is external to Playwright, so the token is provided in the URL
       await page.goto(`/?${VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM}=${token}`)
-      await waitForPageLoad(page)
+      await waitForAppLoad(page)
     }
   }
 
   await page.goto('/')
-  await waitForPageLoad(page)
-  return waitForLspPromise
+  await waitForAppLoad(page)
 }
 
 /**
@@ -446,7 +553,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
   }
 
   const util = {
-    waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
+    waitForAuth: () => waitForAuth(page),
     waitForPageLoad: () => waitForPageLoad(page),
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),
@@ -836,9 +943,9 @@ export const doExport = async (
   if (exportFrom === 'dropdown') {
     await page.getByTestId('project-sidebar-toggle').click()
 
-    const exportMenuButton = page.getByRole('button', {
-      name: 'Export current part',
-    })
+    const exportMenuButton = page
+      .getByTestId('project-sidebar-menu')
+      .getByRole('button', { name: 'Export' })
     await expect(exportMenuButton).toBeVisible()
     await exportMenuButton.click()
   } else if (exportFrom === 'sidebarButton') {
@@ -934,6 +1041,33 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
 }
 
 export async function mockClientErrorReports(context: BrowserContext) {
+  if (process.env.PLAYWRIGHT_WEBKIT_PERSISTENT_CONTEXT === '1') {
+    await context.addInitScript(() => {
+      const originalFetch = globalThis.fetch.bind(globalThis)
+      globalThis.fetch = async (input, init) => {
+        const rawUrl =
+          typeof input === 'string'
+            ? input
+            : input instanceof URL
+              ? input.href
+              : input.url
+        const url = new URL(rawUrl, globalThis.location.href)
+
+        // WebKit applies CORS before Playwright can fulfill this cross-origin
+        // request, so mock the intentionally triggered report in the page.
+        if (url.pathname === '/user/client-errors') {
+          return new Response('{}', {
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+          })
+        }
+
+        return originalFetch(input, init)
+      }
+    })
+    return
+  }
+
   await context.unroute('**/user/client-errors')
   await context.route('**/user/client-errors', async (route) => {
     // Keep intentionally simulated failures from polluting real dev telemetry.
@@ -945,27 +1079,27 @@ export async function mockClientErrorReports(context: BrowserContext) {
   })
 }
 
-// Temporary function to confirm the feature flag is enabled
-export async function expectCloudFeatureEnabled(page: Page) {
-  await page.goto('/')
-  await expect(
-    page,
-    `'${OPFS_CLOUD_FEATURE_FLAG}' feature not enabled: / did not redirect to /home`
-  ).toHaveURL(/\/home$/)
-  await expect(
-    page.getByText(PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE, { exact: true }),
-    `'${OPFS_CLOUD_FEATURE_FLAG}' feature not enabled: "${PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE}" not visible`
-  ).toBeVisible()
-}
-
 // settingsOverrides may need to be augmented to take more generic items,
 // but we'll be strict for now
 export async function setup(
   context: BrowserContext,
   page: Page,
   testInfo?: TestInfo,
-  userFeatures: readonly Feature[] = []
+  userFeatures: readonly Feature[] = [],
+  {
+    cloudSyncEnabled = false,
+    reload = true,
+    mockApiRoutes = true,
+  }: {
+    cloudSyncEnabled?: boolean
+    mockApiRoutes?: boolean
+    reload?: boolean
+  } = {}
 ) {
+  const localRendererEnabled = geometryOnlyForTestTags(testInfo?.tags)
+  if (!mockApiRoutes && userFeatures.length > 0)
+    throw new Error('userFeatures requires mockApiRoutes to be enabled')
+
   const testProjectSettings =
     TEST_SETTINGS.project &&
     typeof TEST_SETTINGS.project === 'object' &&
@@ -974,17 +1108,24 @@ export async function setup(
       : undefined
 
   await context.unroute('**/user/features')
-  await context.route('**/user/features', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        features: userFeatures.map((id) => ({ id })),
-      }),
+  if (mockApiRoutes) {
+    await context.route('**/user/features', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          features: userFeatures.map((id) => ({ id })),
+        }),
+      })
     })
-  })
-
-  await installSlowFsForPlaywright(page)
+    await installSlowFsForPlaywright(page)
+  } else {
+    // Electron reuses its context. Remove previous tests' API interceptions
+    // before any init script reloads the app for this live test.
+    await context.unroute('**/user/client-errors')
+    await page.unroute('**/user/features')
+    await page.unroute('**/user/client-errors')
+  }
 
   await page.addInitScript(
     async ({
@@ -993,8 +1134,24 @@ export async function setup(
       settings,
       IS_PLAYWRIGHT_KEY,
       TOKEN_PERSIST_KEY,
+      PLAYWRIGHT_TEST_SCOPE_KEY,
+      PLAYWRIGHT_STORAGE_SCOPE_KEY,
     }) => {
-      localStorage.clear()
+      // Init scripts also run on opaque startup documents, which cannot use
+      // web storage. Electron's file documents still need initialization.
+      if (window.origin === 'null' && location.protocol !== 'file:') {
+        return
+      }
+      const testScope = sessionStorage.getItem(PLAYWRIGHT_TEST_SCOPE_KEY)
+      const initializedScope = sessionStorage.getItem(
+        PLAYWRIGHT_STORAGE_SCOPE_KEY
+      )
+      if (testScope === null || initializedScope !== testScope) {
+        localStorage.clear()
+        if (testScope !== null) {
+          sessionStorage.setItem(PLAYWRIGHT_STORAGE_SCOPE_KEY, testScope)
+        }
+      }
       localStorage.setItem(TOKEN_PERSIST_KEY, token)
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
@@ -1008,8 +1165,17 @@ export async function setup(
       settings: settingsToToml({
         settings: {
           ...TEST_SETTINGS,
+          ...(localRendererEnabled === undefined
+            ? {}
+            : {
+                modeling: {
+                  ...TEST_SETTINGS.modeling,
+                  use_local_renderer: localRendererEnabled,
+                },
+              }),
           plugins: playwrightPluginSettings({
-            cloudSyncEnabled: userFeatures.includes(OPFS_CLOUD_FEATURE_FLAG),
+            cloudSyncEnabled,
+            zookeeperEnabled: testInfo?.tags.includes('@zookeeper'),
           }),
           ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {
@@ -1028,6 +1194,8 @@ export async function setup(
       }),
       IS_PLAYWRIGHT_KEY,
       TOKEN_PERSIST_KEY,
+      PLAYWRIGHT_TEST_SCOPE_KEY,
+      PLAYWRIGHT_STORAGE_SCOPE_KEY,
     }
   )
 
@@ -1045,8 +1213,8 @@ export async function setup(
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
 
-  // Trigger a navigation, since loading file:// doesn't.
-  await page.reload()
+  // Electron batches scripts and settings before its final startup navigation.
+  if (reload) await page.reload()
 }
 
 const slowFsMethodNames = [
@@ -1163,8 +1331,34 @@ async function installSlowFsForPlaywright(page: Page) {
 }
 
 function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
+  let mainFrameNavigationRequest: Request | undefined
+  page.on('request', (request) => {
+    if (request.isNavigationRequest() && request.frame() === page.mainFrame()) {
+      mainFrameNavigationRequest = request
+    }
+  })
+  page.on('load', () => {
+    mainFrameNavigationRequest = undefined
+  })
+  page.on('requestfailed', (request) => {
+    if (request === mainFrameNavigationRequest) {
+      mainFrameNavigationRequest = undefined
+    }
+  })
+
   page.on('pageerror', (exception: any) => {
     if (isErrorWhitelisted(exception)) {
+      return
+    }
+    if (
+      testInfo?.project.name === 'webkit' &&
+      mainFrameNavigationRequest !== undefined &&
+      exception.name === 'Cannot load blob' &&
+      exception.message.includes('due to access control checks') &&
+      exception.stack?.includes('/src/lib/fs-zds/opfs.ts')
+    ) {
+      // WebKit reports interrupted OPFS reads from the old document as page
+      // errors while it unloads; the replacement document is unaffected.
       return
     }
     // Only disable this environment variable if you want to collect console errors
@@ -1256,55 +1450,82 @@ export function kclSamplesPath(fileName: string): string {
   return path.join('public', 'kcl-samples', fileName)
 }
 
+// Restore the camera used when a model is initially loaded.
+export async function resetView(scene: SceneFixture) {
+  if (test.info().tags.includes('@localRenderer')) {
+    // Keep the isometric framing used by the projected selections.
+    // Plane hiding is deferred after execution. Wait for both the current model
+    // and that visibility update so zoom-to-fit frames the model, not the planes.
+    await expect
+      .poll(
+        () =>
+          scene.page.evaluate(() => {
+            const manager = window.app.singletons.kclManager
+            const view = manager.sceneInfra.localRenderer
+            return (
+              !manager.isExecuting &&
+              view?.isLoadedSceneCurrent() &&
+              !view.hasVisibleDefaultPlanes
+            )
+          }),
+        { timeout: 30_000 }
+      )
+      .toBe(true)
+    await scene.page.evaluate(() =>
+      window.app.singletons.kclManager.sceneInfra.camControls.viewIsometric({
+        padding: 0.1,
+      })
+    )
+    return
+  }
+  // The camera may already face this way, so no image change is guaranteed.
+  await scene.moveCameraTo({ x: 0, y: -128, z: 64 }, undefined, {
+    waitForImageChange: false,
+  })
+  await doAndWaitForImageDiff(scene.streamWrapper, async () => {
+    await scene.streamWrapper.click({
+      button: 'right',
+      position: { x: 10, y: 100 },
+    })
+    await scene.page
+      .getByTestId('view-controls-menu')
+      .getByRole('button', { name: 'Reset view' })
+      .click()
+  })
+}
+
 export async function doAndWaitForImageDiff(
   pageOrLocator: Page | Locator,
   fn: () => Promise<unknown>,
   diffCount = 200
 ) {
-  return new Promise<boolean>((resolve) => {
-    ;(async () => {
-      await pageOrLocator.screenshot({
-        path: './e2e/playwright/temp1.png',
-        fullPage: true,
-      })
-      await fn()
-      const isImageDiff = async () => {
-        await pageOrLocator.screenshot({
-          path: './e2e/playwright/temp2.png',
-          fullPage: true,
-        })
-        const screenshot1 = PNG.sync.read(
-          await fsp.readFile('./e2e/playwright/temp1.png')
-        )
-        const screenshot2 = PNG.sync.read(
-          await fsp.readFile('./e2e/playwright/temp2.png')
-        )
-        const actualDiffCount = pixelMatch(
-          screenshot1.data,
-          screenshot2.data,
-          null,
-          screenshot1.width,
-          screenshot2.height
-        )
-        return actualDiffCount > diffCount
-      }
+  const screenshot1 = PNG.sync.read(
+    await pageOrLocator.screenshot({ fullPage: true })
+  )
+  await fn()
 
-      // run isImageDiff every 50ms until it returns true or 5 seconds have passed (100 times)
-      let count = 0
-      const interval = setInterval(() => {
-        ;(async () => {
-          count++
-          if (await isImageDiff()) {
-            clearInterval(interval)
-            resolve(true)
-          } else if (count > 100) {
-            clearInterval(interval)
-            resolve(false)
-          }
-        })().catch(reportRejection)
-      }, 50)
-    })().catch(reportRejection)
-  })
+  // Keep screenshots private to this invocation when tests run in parallel.
+  // Capture sequentially so slow screenshots do not overlap and starve Electron.
+  for (let count = 0; count <= 100; count++) {
+    const screenshot2 = PNG.sync.read(
+      await pageOrLocator.screenshot({ fullPage: true })
+    )
+    if (
+      screenshot1.width !== screenshot2.width ||
+      screenshot1.height !== screenshot2.height ||
+      pixelMatch(
+        screenshot1.data,
+        screenshot2.data,
+        null,
+        screenshot1.width,
+        screenshot1.height
+      ) > diffCount
+    ) {
+      return true
+    }
+    await new Promise((resolve) => setTimeout(resolve, 50))
+  }
+  return false
 }
 
 export async function openAndClearDebugPanel(page: Page) {
@@ -1371,8 +1592,7 @@ export function tomlToSettings(toml: string): DeepPartial<Configuration> {
 export function tomlToPerProjectSettings(
   toml: string
 ): DeepPartial<ProjectConfiguration> {
-  // eslint-disable-next-line no-restricted-syntax
-  return TOML.parse(toml)
+  return parseToml(toml)
 }
 
 export function perProjectSettingsToToml(

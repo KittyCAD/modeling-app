@@ -18,6 +18,9 @@ export enum AreaType {
 export type AreaTypeId = string
 export type AreaLibrary = Record<AreaTypeId, AreaTypeDefinition>
 
+/** Controls how many panes can be open within each pane container. */
+export type PaneOpenBehavior = 'multiple' | 'single'
+
 export type AreaTypeComponentProps = {
   areaConfig: Omit<AreaTypeDefinition, 'Component'>
   layout: Layout
@@ -30,6 +33,7 @@ export type AreaTypeComponentProps = {
 export type AreaTypeDefinition = {
   hide: () => boolean
   shortcut?: string
+  icon?: CustomIconName
   /** I decided this is where impure stuff like the Zookeeper button's custom styling should live */
   cssClassOverrides?: PaneChildCssOverrides
   useNotifications?: () => ReturnType<
@@ -171,6 +175,9 @@ export type LayoutService = {
   applyContributions: (
     contributions: readonly LayoutContribution[]
   ) => LayoutContributionResult[]
+  /** Ensure a pane is open; repeated calls leave it open. */
+  openPane: (paneId: string) => Layout
+  togglePane: (paneId: string) => Layout
 }
 
 type LayoutVersion = `v${number}`

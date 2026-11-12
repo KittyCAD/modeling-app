@@ -1,4 +1,7 @@
-import { closeOnboardingModalIfPresent } from '@e2e/playwright/test-utils'
+import {
+  closeOnboardingModalIfPresent,
+  waitForAuthentication,
+} from '@e2e/playwright/test-utils'
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
@@ -90,6 +93,7 @@ export class HomePageFixture {
    * Maybe there a good sanity check we can do each time?
    */
   expectState = async (expectedState: HomePageState) => {
+    await this.projectsLoaded()
     await expect.poll(this._serialiseSortBy).toEqual(expectedState.sortBy)
 
     for (const projectCard of expectedState.projectCards) {
@@ -100,11 +104,25 @@ export class HomePageFixture {
   expectIsCurrentPage = async () => {
     await expect(this.page).toHaveURL(/.*home/)
     await expect(
-      this.page.getByRole('heading', { name: 'Projects' })
+      this.page.getByTestId('home-header').getByRole('heading', { level: 1 })
     ).toBeVisible()
   }
 
+  waitForAuthentication = () => waitForAuthentication(this.page)
+
   projectsLoaded = async () => {
+    // Library defaults are applied during settings initialization after a reload.
+    await this.page.waitForFunction(() =>
+      window.app?.settings.actor.getSnapshot().matches('idle')
+    )
+    const heading = this.page.getByRole('heading', { level: 1 })
+    await expect(heading).toBeVisible()
+    if ((await heading.innerText()) === 'Project Libraries') {
+      await this.page
+        .getByRole('link', { name: /^Open .+ library$/ })
+        .first()
+        .click()
+    }
     const projectLink = this.page.getByTestId('project-link').first()
     const noProjects = this.page.getByTestId('projects-none')
     await expect(projectLink.or(noProjects)).toBeVisible()
@@ -116,26 +134,21 @@ export class HomePageFixture {
     await this.projectTextName.fill(projectTitle)
     await this.projectButtonContinue.click()
 
-    await this.page.waitForTimeout(1000)
+    // The stream visibility assertion also waits for project navigation.
     await closeOnboardingModalIfPresent(this.page)
   }
 
   openProject = async (projectTitle: string) => {
+    await this.projectsLoaded()
     const projectCard = this.projectCard.locator(
       this.page.getByText(projectTitle)
     )
     await projectCard.click()
   }
 
-  /** Returns the project name in case caller has used the default and needs it */
-  goToModelingScene = async (name = 'testDefault') => {
-    // On web this is a no-op. There is no project view.
-    if (process.env.TARGET === 'web') return ''
-
+  goToModelingScene = async (name = 'test-project') => {
     await this.createAndGoToProject(name)
     await closeOnboardingModalIfPresent(this.page)
-
-    return name
   }
 
   isNativeFileMenuCreated = async () => {

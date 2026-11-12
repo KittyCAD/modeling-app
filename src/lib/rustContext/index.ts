@@ -33,10 +33,7 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { defaultPlaneStrToKey } from '@src/lib/planes'
-import {
-  getSettingsFromActorContext,
-  jsAppSettings,
-} from '@src/lib/settings/settingsUtils'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { Signal as LegacySignal } from '@src/lib/signal'
 import { err, reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
@@ -44,11 +41,53 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import toast from 'react-hot-toast'
 
+/**
+ * Named-view lifecycle contract for editor and executor refactors.
+ *
+ * `ExecOutcome.namedViews` contains resolved views for the program that ran.
+ * Its visibility maps contain engine object UUIDs and are valid only for that
+ * program's engine scene. Invalidation clears the stored value to `null`.
+ *
+ * Clear the stored views when:
+ * - The active executing file changes.
+ * - A project is opened.
+ * - The editor closes.
+ * - A reset of the engine scene is requested, even if the request fails.
+ * - A non-mock execution fails through any of these operations:
+ *   - Program execution (`execute`).
+ *   - Program synchronization (`hackSetProgram`), including returned failures.
+ *   - Sketch creation (`newSketch`).
+ *   - Sketch deletion (`deleteSketch`).
+ *   - Sketch exit (`exitSketch`).
+ * - A non-mock execution result has invalid checkpoint metadata.
+ *
+ * Handle `ExecOutcome` values as follows:
+ * - For a successful non-mock execution, store `ExecOutcome.namedViews`,
+ *   including `null`.
+ * - An empty `ExecOutcome.namedViews.defaultView` is a valid result.
+ * - Use `ExecOutcome.namedViews` from a successful cached execution.
+ * - Mock execution leaves the stored views unchanged, even if it fails.
+ * - A sketch update with `ExecOutcome.namedViews === null` leaves the stored
+ *   views unchanged.
+ * - Ignore `ExecOutcome.namedViews` from cancelled executions.
+ * - Entries in `ExecOutcome.namedViews.failures` do not invalidate:
+ *   - `ExecOutcome.namedViews.defaultView`.
+ *   - `ExecOutcome.namedViews.namedViews`.
+ * - Editing or parsing the same file without executing it leaves the stored
+ *   views unchanged.
+ *
+ * Any editor or executor refactor must preserve this contract.
+ *
+ * Regression coverage: `KclManager.spec.ts`, "KclManager resolved views".
+ */
 export default class RustContext {
-  private rustInstance: ModuleType | null = null
+  private initialization: Promise<Context> | undefined
+  private contextChanged = new AbortController()
+  private destroyed = false
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
   public readonly planesCreated = new LegacySignal()
+  public readonly namedViewsInvalidated = new LegacySignal()
 
   constructor(
     public readonly wasmInstancePromise: Promise<ModuleType>,
@@ -56,74 +95,64 @@ export default class RustContext {
     public readonly settingsActor: SettingsActorType,
     private projectId = 0
   ) {
-    wasmInstancePromise
-      .then((instance) => this.createFromInstance(instance))
-      .catch(reportRejection)
+    this.initialization = this.createContextFromWasm()
+    void this.initialization.catch((error: unknown) => {
+      if (!this.destroyed) reportRejection(error)
+    })
   }
 
-  /** Create a new context instance */
   private async createContextFromWasm(): Promise<Context> {
-    this.rustInstance = await this.wasmInstancePromise
-
-    const ctxInstance = new this.rustInstance.Context(
+    const instance = await this.wasmInstancePromise
+    if (this.destroyed) return this._checkContextInstance()
+    const context = new instance.Context(
       this.engineCommandManager,
       projectFsManager,
       undefined
     )
-
-    return ctxInstance
-  }
-
-  private createFromInstance(instance: ModuleType) {
-    this.rustInstance = instance
-
-    const ctxInstance = new this.rustInstance.Context(
-      this.engineCommandManager,
-      projectFsManager,
-      undefined
-    )
-
-    this.ctxInstance = ctxInstance
+    this.ctxInstance = context
+    return context
   }
 
   public hasOpenedProject = false
 
   /** Project lifecycle method for WASM, setting up initial snapshot of project */
   async sendOpenProject(currentFilePath: string | null, kclFiles: ApiFile[]) {
-    // TODO: The rust side should really honor having no current file ID
-    const currentFileId =
-      kclFiles.find((f) => f.path === currentFilePath)?.id || -1
-    await this.ctxInstance?.open_project(
+    this.namedViewsInvalidated.dispatch()
+    const context = await this._checkContextInstance()
+    await context.open_project(
       this.projectId,
       JSON.stringify(kclFiles),
-      currentFileId
+      kclFiles.find((file) => file.path === currentFilePath)?.id ?? -1
     )
     this.hasOpenedProject = true
   }
 
   /** Helper to verify the state on the WASM side, useful for testing */
   async getProjectState() {
-    return this.ctxInstance?.get_project(this.projectId)
+    const context = await this._checkContextInstance()
+    return context.get_project(this.projectId)
   }
 
   /** Helper to verify the state on the WASM side, useful for testing */
   async getFileState(fileId: number) {
-    return this.ctxInstance?.get_file(this.projectId, fileId)
+    const context = await this._checkContextInstance()
+    return context.get_file(this.projectId, fileId)
   }
 
   async sendAddFile(file: ApiFile) {
-    return this.ctxInstance?.add_file(this.projectId, JSON.stringify(file))
+    const context = await this._checkContextInstance()
+    return context.add_file(this.projectId, JSON.stringify(file))
   }
 
   async sendUpdateFile(fileId: number, code: string) {
-    if (!this.hasOpenedProject) {
-      return
-    }
-    return this.ctxInstance?.update_file(this.projectId, fileId, code)
+    if (!this.hasOpenedProject) return
+    const context = await this._checkContextInstance()
+    return context.update_file(this.projectId, fileId, code)
   }
 
   async sendRemoveFile(fileId: number) {
-    return this.ctxInstance?.remove_file(this.projectId, fileId)
+    const context = await this._checkContextInstance()
+    return context.remove_file(this.projectId, fileId)
   }
 
   /** Execute a program. */
@@ -152,6 +181,7 @@ export default class RustContext {
       // Return the result.
       return outcome
     } catch (e: any) {
+      this.namedViewsInvalidated.dispatch()
       const err = errFromErrWithOutputs(e)
       this.setDefaultPlanes(err.defaultPlanes)
       return Promise.reject(err)
@@ -182,6 +212,24 @@ export default class RustContext {
         JSON.stringify(settings),
         usePrevMemory
       )
+      const outcome = execStateFromRust(result)
+      this.setDefaultPlanes(outcome.defaultPlanes)
+      return outcome
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      this.setDefaultPlanes(err.defaultPlanes)
+      return Promise.reject(err)
+    }
+  }
+
+  /** Evaluate an input expression with the current Rust model's settings. */
+  async evaluateExpression(node: Node<Program>): Promise<ExecState> {
+    const instance = await this._checkContextInstance()
+    try {
+      const result = await instance.evaluateExpression(
+        JSON.stringify(node),
+        JSON.stringify(jsAppSettings(this.settingsActor))
+      )
       return execStateFromRust(result)
     } catch (e: any) {
       return Promise.reject(errFromErrWithOutputs(e))
@@ -192,7 +240,7 @@ export default class RustContext {
   async export(
     format: DeepPartial<OutputFormat3d>,
     settings: DeepPartial<Configuration>,
-    toastId: string
+    toastId?: string
   ): Promise<ModelingAppFile[] | undefined> {
     const instance = await this._checkContextInstance()
 
@@ -203,7 +251,9 @@ export default class RustContext {
       )
     } catch (e: any) {
       const parsed: RustKclError = JSON.parse(e.toString())
-      toast.error(parsed.details.msg, { id: toastId })
+      if (toastId) {
+        toast.error(parsed.details.msg, { id: toastId })
+      }
       return
     }
   }
@@ -248,6 +298,7 @@ export default class RustContext {
     path?: string
   ): Promise<ExecState> {
     const instance = await this._checkContextInstance()
+    this.namedViewsInvalidated.dispatch()
 
     try {
       const result = await instance.bustCacheAndResetScene(
@@ -311,11 +362,13 @@ export default class RustContext {
         JSON.stringify(settings)
       )
       if (result.type !== 'Success') {
+        this.namedViewsInvalidated.dispatch()
         return result
       }
 
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
+        this.namedViewsInvalidated.dispatch()
         return Promise.reject(checkpointId)
       }
 
@@ -324,6 +377,7 @@ export default class RustContext {
         checkpointId,
       }
     } catch (e: any) {
+      this.namedViewsInvalidated.dispatch()
       const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
@@ -369,8 +423,7 @@ export default class RustContext {
     project: ApiProjectId,
     file: ApiFileId,
     version: ApiVersion,
-    sketchArgs: SketchCtor,
-    settings: DeepPartial<Configuration>
+    sketchArgs: SketchCtor
   ): Promise<NewSketchResult> {
     const instance = await this._checkContextInstance()
 
@@ -385,10 +438,11 @@ export default class RustContext {
         JSON.stringify(file),
         JSON.stringify(version),
         JSON.stringify(sketchArgs),
-        JSON.stringify(settings)
+        JSON.stringify(jsAppSettings(this.settingsActor))
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
+        this.namedViewsInvalidated.dispatch()
         return Promise.reject(checkpointId)
       }
       return {
@@ -398,6 +452,7 @@ export default class RustContext {
         checkpointId,
       }
     } catch (e: any) {
+      this.namedViewsInvalidated.dispatch()
       const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
@@ -408,8 +463,7 @@ export default class RustContext {
     project: ApiProjectId,
     file: ApiFileId,
     version: ApiVersion,
-    sketch: ApiObjectId,
-    settings: DeepPartial<Configuration>
+    sketch: ApiObjectId
   ): Promise<EditSketchResult> {
     const instance = await this._checkContextInstance()
 
@@ -422,7 +476,7 @@ export default class RustContext {
         JSON.stringify(file),
         JSON.stringify(version),
         JSON.stringify(sketch),
-        JSON.stringify(settings)
+        JSON.stringify(jsAppSettings(this.settingsActor))
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
@@ -449,10 +503,11 @@ export default class RustContext {
       const result: SceneGraphDelta = await instance.exit_sketch(
         JSON.stringify(version),
         JSON.stringify(sketch),
-        JSON.stringify(getSettingsFromActorContext(this.settingsActor))
+        JSON.stringify(jsAppSettings(this.settingsActor))
       )
       return result
     } catch (e: any) {
+      this.namedViewsInvalidated.dispatch()
       const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
@@ -481,6 +536,7 @@ export default class RustContext {
         sceneGraphDelta: result[1],
       }
     } catch (e: any) {
+      this.namedViewsInvalidated.dispatch()
       const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
@@ -948,20 +1004,35 @@ export default class RustContext {
 
   /** Helper to check if context instance exists */
   private async _checkContextInstance(): Promise<Context> {
-    if (!this.ctxInstance) {
-      // Create the context instance.
-      this.ctxInstance = await this.createContextFromWasm()
+    while (!this.destroyed) {
+      if (this.ctxInstance) return this.ctxInstance
+      const initialization = this.initialization
+      if (!initialization) break
+      const signal = this.contextChanged.signal
+      const changed = Promise.withResolvers<null>()
+      const onChanged = () => changed.resolve(null)
+      signal.addEventListener('abort', onChanged, { once: true })
+      try {
+        const context = await Promise.race([initialization, changed.promise])
+        if (context && initialization === this.initialization) return context
+      } catch (error) {
+        if (initialization === this.initialization && !this.destroyed)
+          return Promise.reject(error)
+      } finally {
+        signal.removeEventListener('abort', onChanged)
+      }
     }
-
-    return this.ctxInstance
+    return Promise.reject(new Error('Rust context has been destroyed.'))
   }
 
   /** Clean up resources */
   destroy() {
-    if (this.ctxInstance) {
-      // In a real implementation, you might need to manually free resources
-      this.ctxInstance = null
-    }
+    this.destroyed = true
+    this.ctxInstance = null
+    this.initialization = undefined
+    this._defaultPlanes = null
+    this.hasOpenedProject = false
+    this.contextChanged.abort()
   }
 }
 

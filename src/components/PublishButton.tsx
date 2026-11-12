@@ -8,10 +8,14 @@ import {
   useProjectStatus,
 } from '@src/hooks/useProjectStatus'
 import type { App } from '@src/lib/app'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import { cloudSyncService } from '@src/lib/cloudSync/registry/contract'
+import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
-import { moveOpenedProjectToCloudLibrary } from '@src/lib/projectLibraries/moveOpenedProjectToCloudLibrary'
+import {
+  moveOpenedProjectToCloudLibrary,
+  updateProjectTitleForPublication,
+} from '@src/lib/projectLibraries/moveOpenedProjectToCloudLibrary'
 import {
   type CurrentProjectPublicationDetails,
   getCurrentProjectPublicationDetails,
@@ -33,6 +37,7 @@ import {
   useState,
 } from 'react'
 import toast from 'react-hot-toast'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: publish workflow navigation (useNavigate).
 import { useNavigate } from 'react-router-dom'
 
 type PublishButtonProps = {
@@ -91,12 +96,9 @@ function PublishPopoverContent({
   const publishRequiresUsername = !isCheckingUser && !!token && !username
   const accountUrl = withSiteBaseURL('/account')
   const buttonDisabled = kclEmpty || hasKclErrors
-  const hasCloudSyncFeature = app.userFeatures.useHas(
-    OPFS_CLOUD_FEATURE_FLAG,
-    false
-  )
+  const cloudSync = app.registry.optional(cloudSyncService)
   const willMoveProjectToCloud = Boolean(
-    hasCloudSyncFeature &&
+    cloudSync?.status.value.enabled &&
       project &&
       project.libraryType !== CLOUD_PROJECT_LIBRARY_TYPE
   )
@@ -119,25 +121,30 @@ function PublishPopoverContent({
     [keymap, markdownEditor]
   )
 
-  const fetchPublicationDetails = useCallback(async () => {
-    if (!token || !project) {
-      return null
-    }
+  const fetchPublicationDetails = useCallback(
+    async (remoteProjectId?: string) => {
+      if (!token || !project) {
+        return null
+      }
 
-    const wasmInstance = await kclManager.wasmInstancePromise
-    const details = await getCurrentProjectPublicationDetails({
-      token,
-      project,
-      wasmInstance,
-    })
+      const wasmInstance = await kclManager.wasmInstancePromise
+      const details = await getCurrentProjectPublicationDetails({
+        fileOperations: app.fileOperations,
+        token,
+        project,
+        wasmInstance,
+        remoteProjectId,
+      })
 
-    if (err(details)) {
-      console.error('Failed to load project publication details', details)
-      return null
-    }
+      if (err(details)) {
+        console.error('Failed to load project publication details', details)
+        return null
+      }
 
-    return details
-  }, [kclManager, project, token])
+      return details
+    },
+    [app.fileOperations, kclManager, project, token]
+  )
 
   useEffect(() => {
     let isCancelled = false
@@ -174,24 +181,102 @@ function PublishPopoverContent({
       if (err(saved)) {
         return false
       }
+      if (!project) {
+        return false
+      }
+
+      const publicationTitle = submission.title.trim()
+      let publicationProject = project
+      let publicationFilePath = kclManager.path
+
+      if (willMoveProjectToCloud) {
+        const relativeFilePath = fsZds.relative(
+          project.path,
+          publicationFilePath
+        )
+        const moved = await moveOpenedProjectToCloudLibrary({
+          app,
+          project,
+          navigate,
+          title: publicationTitle,
+        })
+        if (err(moved)) {
+          console.error('Project could not be moved to Personal Cloud', moved)
+          toast.error('The project could not be moved to Personal Cloud.', {
+            duration: 5000,
+          })
+          return false
+        }
+
+        publicationFilePath = fsZds.join(moved.projectPath, relativeFilePath)
+        publicationProject = {
+          ...project,
+          title: publicationTitle,
+          name: fsZds.basename(moved.projectPath),
+          path: moved.projectPath,
+          default_file: moved.defaultFile,
+          libraryPath: fsZds.dirname(moved.projectPath),
+          libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
+        }
+      } else {
+        const updatedTitle = await updateProjectTitleForPublication({
+          app,
+          project,
+          title: publicationTitle,
+        })
+        if (err(updatedTitle)) {
+          console.error('Failed to update the project title', updatedTitle)
+          toast.error('The project title could not be updated.', {
+            duration: 5000,
+          })
+          return false
+        }
+        publicationProject = {
+          ...project,
+          title: publicationTitle,
+        }
+      }
+
+      let remoteProjectId: string | undefined
+      if (willMoveProjectToCloud) {
+        if (!cloudSync) {
+          toast.error('Cloud sync is unavailable for this project.', {
+            duration: 5000,
+          })
+          return false
+        }
+        try {
+          remoteProjectId = (await cloudSync.syncNow(publicationProject.path))
+            .remoteProjectId
+        } catch (error) {
+          console.error('Failed to sync the project before publication', error)
+          toast.error('The project could not be synced before publication.', {
+            duration: 5000,
+          })
+          return false
+        }
+      }
+
       const published = await publishCurrentProject({
+        fileOperations: app.fileOperations,
         token,
-        project,
-        currentFilePath: kclManager.path,
+        project: publicationProject,
+        currentFilePath: publicationFilePath,
         currentFileContents: kclManager.code,
         wasmInstance,
         submission,
+        remoteProjectId,
       })
 
       if (!published) {
         return false
       }
 
-      const details = await fetchPublicationDetails()
+      const details = await fetchPublicationDetails(published.remoteProjectId)
       setPublicationDetails(details)
       if (details) {
         setSubmittedProjectStatus({
-          projectId: project?.cloudProjectId,
+          projectId: published.remoteProjectId,
           status: {
             publicationStatus: details.publicationStatus,
             feedback:
@@ -203,29 +288,11 @@ function PublishPopoverContent({
         })
       }
 
-      if (willMoveProjectToCloud && project) {
-        const moved = await moveOpenedProjectToCloudLibrary({
-          app,
-          project,
-          navigate,
-        })
-        if (err(moved)) {
-          console.error(
-            'Project was submitted to Aquarium but could not be moved to Personal Cloud',
-            moved
-          )
-          toast.error(
-            'Project submitted to Aquarium, but it could not be moved to Personal Cloud.',
-            { duration: 5000 }
-          )
-          return false
-        }
-      }
-
       return true
     },
     [
       app,
+      cloudSync,
       fetchPublicationDetails,
       fetchedProjectStatus,
       kclManager,
@@ -241,7 +308,7 @@ function PublishPopoverContent({
       <Popover.Button
         type="button"
         disabled={buttonDisabled}
-        className={`relative inline-flex min-w-max items-center gap-1 border py-0 pl-0.5 pr-2 transition-colors focus-visible:outline-appForeground active:border-primary disabled:cursor-wait disabled:opacity-70 ${
+        className={`relative inline-flex min-w-max items-center gap-1 border py-0 pl-0.5 pr-2 focus-visible:outline-appForeground active:border-primary disabled:cursor-wait disabled:opacity-70 ${
           buttonPresentation.highlight
             ? 'border-warn-80 bg-warn-10/60 text-warn-90 hover:bg-warn-20 dark:border-warn-40 dark:bg-warn-80/30 dark:text-warn-10 dark:hover:bg-warn-80/50'
             : 'border-chalkboard-30 bg-chalkboard-10/80 text-chalkboard-100 hover:border-chalkboard-40 hover:bg-chalkboard-10 dark:border-chalkboard-70 dark:bg-chalkboard-100/50 dark:text-chalkboard-10 dark:hover:border-chalkboard-60 dark:hover:bg-chalkboard-100'

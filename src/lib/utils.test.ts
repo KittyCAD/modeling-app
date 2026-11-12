@@ -14,8 +14,44 @@ import {
   roundOffWithUnits,
   simulateOnMouseDragMatch,
   stripQuotes,
+  throttle,
 } from '@src/lib/utils'
-import { describe, expect, it, test } from 'vitest'
+import { afterEach, describe, expect, it, test, vi } from 'vitest'
+
+describe('throttle', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  function setup() {
+    vi.useFakeTimers()
+    vi.setSystemTime(1000)
+    const calls: number[] = []
+    const throttled = throttle((n: number) => calls.push(n), 100)
+    return { calls, throttled }
+  }
+
+  it('delivers the latest call once the wait has passed', () => {
+    const { calls, throttled } = setup()
+    throttled(1)
+    vi.advanceTimersByTime(10)
+    throttled(2)
+    vi.advanceTimersByTime(100)
+    expect(calls).toEqual([1, 2])
+  })
+
+  it('does not repeat a call when its trailing timer fires late', () => {
+    const { calls, throttled } = setup()
+    throttled(1)
+    vi.advanceTimersByTime(10)
+    throttled(2)
+    // The wait has passed but the timer callback has not run yet.
+    vi.setSystemTime(1150)
+    throttled(3)
+    vi.runOnlyPendingTimers()
+    expect(calls).toEqual([1, 3])
+  })
+})
 
 describe('testing isOverlapping', () => {
   testBothOrders(topLevelRange(0, 3), topLevelRange(3, 10))

@@ -1,0 +1,17 @@
+@settings(kclVersion = "3.0", defaultLengthUnit = mm)
+
+import panelFront from "panel.kcl"
+import panelPlane from "panel.kcl"
+
+importedPlane = panelPlane
+importedFront = panelFront
+
+localPlane = offsetPlane(XY, offset = 20)
+hide(localPlane)
+
+localFront = view::named(
+  "Front",
+  camera = view::oriented(view::Orientation::Back),
+  baseline = view::Visibility::Hide,
+  except = [localPlane],
+)

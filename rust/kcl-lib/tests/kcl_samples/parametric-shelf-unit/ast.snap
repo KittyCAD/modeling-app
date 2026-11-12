@@ -8023,6 +8023,7 @@ description: Result of parsing parametric-shelf-unit.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

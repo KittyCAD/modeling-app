@@ -2,6 +2,9 @@ use std::collections::BTreeMap;
 
 use indexmap::IndexMap;
 use kcl_api::NodePath;
+use kcl_api::Number;
+use kcl_api::Object;
+use kcl_api::ObjectId;
 pub use kcl_error::BacktraceItem;
 pub use kcl_error::BacktraceItemKind;
 pub use kcl_error::CompilationIssue;
@@ -27,9 +30,6 @@ use crate::execution::DefaultPlanes;
 use crate::execution::KclValueView;
 use crate::execution::OperationsByModule;
 use crate::execution::RefactorMetadata;
-use crate::front::Number;
-use crate::front::Object;
-use crate::front::ObjectId;
 use crate::lsp_types::IntoDiagnostic;
 use crate::lsp_types::ToLspRange;
 use crate::modules::ModulePath;
@@ -155,7 +155,7 @@ pub struct KclErrorWithOutputs {
     // reason.
     pub _artifact_commands: Vec<ArtifactCommand>,
     pub artifact_graph: ArtifactGraph,
-    #[serde(skip)]
+    #[ts(skip)]
     pub scene_objects: Vec<Object>,
     #[serde(skip)]
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
@@ -166,6 +166,10 @@ pub struct KclErrorWithOutputs {
     pub filenames: IndexMap<ModuleId, ModulePath>,
     pub source_files: IndexMap<ModuleId, ModuleSource>,
     pub default_planes: Option<DefaultPlanes>,
+    /// The engine scene generation after the run that failed, since a failed
+    /// run may still have changed the engine scene. Not set when the error did
+    /// not come from a run.
+    pub engine_scene_generation: Option<usize>,
 }
 
 impl KclErrorWithOutputs {
@@ -201,6 +205,7 @@ impl KclErrorWithOutputs {
             filenames,
             source_files,
             default_planes,
+            engine_scene_generation: None,
         }
     }
 
@@ -220,6 +225,7 @@ impl KclErrorWithOutputs {
             filenames: Default::default(),
             source_files: Default::default(),
             default_planes: Default::default(),
+            engine_scene_generation: None,
         }
     }
 
@@ -240,11 +246,23 @@ impl KclErrorWithOutputs {
             filenames: outcome.filenames,
             source_files: outcome.source_files,
             default_planes: outcome.default_planes,
+            engine_scene_generation: Some(outcome.engine_scene_generation),
         }
     }
 
     pub fn sketch_constraint_report(&self) -> crate::SketchConstraintReport {
         crate::execution::sketch_constraint_report_from_scene_objects(&self.scene_objects)
+    }
+
+    /// Get a debug visualization of the named sketch.
+    /// If there's multiple sketches with the same name, disambiguate them
+    /// with `instance_index`.
+    pub fn render_sketch_png_instance(
+        &self,
+        sketch_name: &str,
+        instance_index: Option<usize>,
+    ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
+        crate::execution::render_sketch_png_from_scene_objects(&self.scene_objects, sketch_name, instance_index)
     }
 
     pub fn into_miette_report_with_outputs(self, code: &str) -> anyhow::Result<ReportWithOutputs> {

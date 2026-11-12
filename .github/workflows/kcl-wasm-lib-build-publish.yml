@@ -3,8 +3,8 @@ name: kcl-wasm-lib-build-and-publish
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
+    tags:
+      - "kcl-*"
 
 permissions:
   id-token: write
@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
 
-      - uses: actions/setup-node@v7.0.0
+      - uses: actions/setup-node@v7.1.0
         with:
           # node 24 fixed OIDC npm publishing; Node 26 seems to have an issue with electron/build and
           # it's dependency on yargs
@@ -25,7 +25,7 @@ jobs:
           registry-url: "https://registry.npmjs.org/"
           cache: "npm"
 
-      - run: npm install
+      - run: npm ci
 
       - name: Use correct Rust toolchain
         shell: bash
@@ -75,3 +75,51 @@ jobs:
         run: |
           npm pkg fix
           npm publish --access public --provenance
+
+      - name: Create kittycad.ts repository token
+        if: ${{ startsWith(github.ref, 'refs/tags/kcl-') }}
+        id: kittycad_ts_token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+          owner: KittyCAD
+          repositories: kittycad.ts
+
+      - name: Check out kittycad.ts
+        if: ${{ startsWith(github.ref, 'refs/tags/kcl-') }}
+        uses: actions/checkout@v7.0.1
+        with:
+          repository: KittyCAD/kittycad.ts
+          ref: main
+          path: kittycad.ts
+          token: ${{ steps.kittycad_ts_token.outputs.token }}
+
+      - name: Update kittycad.ts KCL Wasm dependency
+        if: ${{ startsWith(github.ref, 'refs/tags/kcl-') }}
+        working-directory: kittycad.ts
+        env:
+          VERSION: ${{ steps.version_check.outputs.local_version }}
+        run: |
+          npm install --save-exact "@kittycad/kcl-wasm-lib@$VERSION" --ignore-scripts
+          if git diff --quiet; then
+            exit 0
+          fi
+          git config user.name zoo-github-actions-auth[bot]
+          git config user.email zoo-github-actions-auth[bot]@users.noreply.github.com
+          git add package.json package-lock.json
+          git commit -m "Update kcl-wasm-lib to $VERSION"
+
+          npm version patch --no-git-tag-version
+          version="$(jq -r '.version' package.json)"
+          git add package.json package-lock.json
+          git commit -m "Trigger release via version bump to $version"
+          git fetch origin main
+          upstream_version="$(git show origin/main:package.json | jq -r '.version')"
+          if [ "$upstream_version" = "$version" ]; then
+            echo "kittycad.ts $version is already upstream; skipping the push."
+            exit 0
+          fi
+          git push origin main
+          git tag "$version"
+          git push origin "$version"

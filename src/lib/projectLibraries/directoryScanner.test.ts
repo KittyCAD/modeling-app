@@ -101,11 +101,27 @@ vi.mock('@src/lib/fs-zds', () => ({
 
 vi.mock('@src/lib/trap', () => mocks.trap)
 
-import {
-  readProjectsFromProjectDirectory,
-  scheduleProjectDirectoryNameSyncFromTitles,
-  syncProjectDirectoryNameFromTitle,
-} from '@src/lib/projectLibraries/directoryScanner'
+import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+
+const fileOperations = {
+  readDirectory: mocks.fsZds.readdir,
+  stat: async (path: string) => {
+    const stat = await mocks.fsZds.stat(path)
+    return {
+      kind: stat.mode & fsZdsConstants.S_IFDIR ? 'directory' : 'file',
+      device: stat.dev,
+      inode: stat.ino,
+      size: stat.size,
+      accessedAt: stat.atimeMs,
+      modifiedAt: stat.mtimeMs,
+      changedAt: stat.ctimeMs,
+      createdAt: stat.birthtimeMs,
+    }
+  },
+  rename: mocks.fsZds.rename,
+  remove: (path: string) => mocks.fsZds.rm(path, { recursive: true }),
+} as unknown as FileOperationsRegistryService
 
 function dirStat(ino: number) {
   const date = new Date(0)
@@ -199,12 +215,14 @@ describe('directory project scanner', () => {
     })
 
     const projects = await readProjectsFromProjectDirectory({
+      fileOperations,
       projectDirectoryPath: '/projects',
       wasmInstancePromise: Promise.resolve({} as ModuleType),
       onProjectStatFailures,
     })
 
     expect(projects).toEqual([])
+    expect(mocks.fsZds.stat).toHaveBeenCalledTimes(3)
     expect(onProjectStatFailures).toHaveBeenCalledOnce()
     expect(onProjectStatFailures).toHaveBeenCalledWith({
       error: statFailure,
@@ -212,52 +230,20 @@ describe('directory project scanner', () => {
     })
   })
 
-  it('schedules stale project directory name syncs after the scan returns', async () => {
+  it('lists projects without moving directories to match their titles', async () => {
     const project = createProject()
-    let finishRename: () => void = () => undefined
-
     mocks.fsZds.readdir.mockResolvedValue(['stale-id'])
-    mocks.fsZds.stat.mockImplementation(async (path: string) => {
-      if (path === '/projects/stale-id') {
-        return dirStat(1)
-      }
-      throw mocks.pathNotFound()
-    })
-    mocks.fsZds.rename.mockImplementation(
-      () =>
-        new Promise<void>((resolve) => {
-          finishRename = resolve
-        })
-    )
+    mocks.fsZds.stat.mockResolvedValue(dirStat(1))
     mocks.desktop.getProjectInfo.mockResolvedValue(project)
-    const onProjectDirectoriesRenamed = vi.fn()
-
     const projects = await readProjectsFromProjectDirectory({
+      fileOperations,
       projectDirectoryPath: '/projects',
       wasmInstancePromise: Promise.resolve({} as ModuleType),
     })
-
     expect(projects).toEqual([project])
     expect(mocks.fsZds.rename).not.toHaveBeenCalled()
-
-    scheduleProjectDirectoryNameSyncFromTitles({
-      projects,
-      onProjectDirectoriesRenamed,
-    })
-
-    await vi.waitFor(() =>
-      expect(mocks.fsZds.rename).toHaveBeenCalledWith(
-        '/projects/stale-id',
-        '/projects/my-cool-project'
-      )
-    )
-    expect(onProjectDirectoriesRenamed).not.toHaveBeenCalled()
-
-    finishRename()
-
-    await vi.waitFor(() =>
-      expect(onProjectDirectoriesRenamed).toHaveBeenCalledTimes(1)
-    )
+    expect(mocks.fsZds.rm).not.toHaveBeenCalled()
+    expect(mocks.fsZds.writeFile).not.toHaveBeenCalled()
   })
 
   it('deletes legacy cloud conflict-copy projects marked as sync-excluded', async () => {
@@ -288,16 +274,19 @@ describe('directory project scanner', () => {
     mocks.desktop.getProjectInfo.mockResolvedValue(project)
 
     const projects = await readProjectsFromProjectDirectory({
+      fileOperations,
       projectDirectoryPath: '/projects',
       wasmInstancePromise: Promise.resolve({} as ModuleType),
     })
 
     expect(projects).toEqual([project])
     expect(mocks.desktop.getProjectInfo).toHaveBeenCalledWith(
+      fileOperations,
       '/projects/normal',
       expect.anything()
     )
     expect(mocks.desktop.getProjectInfo).not.toHaveBeenCalledWith(
+      fileOperations,
       conflictCopyPath,
       expect.anything()
     )
@@ -348,6 +337,7 @@ describe('directory project scanner', () => {
     mocks.desktop.getProjectInfo.mockResolvedValue(project)
 
     const projects = await readProjectsFromProjectDirectory({
+      fileOperations,
       projectDirectoryPath: '/projects',
       wasmInstancePromise: Promise.resolve({} as ModuleType),
     })
@@ -368,160 +358,5 @@ describe('directory project scanner', () => {
     expect(
       mocks.clientErrorReporting.reportCloudSyncConflictCopyDetected
     ).not.toHaveBeenCalled()
-  })
-
-  it('batches scheduled directory name sync refreshes', async () => {
-    const onProjectDirectoriesRenamed = vi.fn()
-    const projects = [
-      createProject({
-        name: 'stale-one',
-        path: '/projects/stale-one',
-        title: 'First Project',
-      }),
-      createProject({
-        name: 'stale-two',
-        path: '/projects/stale-two',
-        title: 'Second Project',
-      }),
-    ]
-
-    mocks.fsZds.readdir.mockResolvedValue(['stale-one', 'stale-two'])
-    mocks.fsZds.stat.mockImplementation(async (path: string) => {
-      if (path === '/projects/stale-one') {
-        return dirStat(1)
-      }
-      if (path === '/projects/stale-two') {
-        return dirStat(2)
-      }
-      throw mocks.pathNotFound()
-    })
-
-    scheduleProjectDirectoryNameSyncFromTitles({
-      projects,
-      onProjectDirectoriesRenamed,
-    })
-
-    await vi.waitFor(() => expect(mocks.fsZds.rename).toHaveBeenCalledTimes(2))
-    expect(mocks.fsZds.rename).toHaveBeenCalledWith(
-      '/projects/stale-one',
-      '/projects/first-project'
-    )
-    expect(mocks.fsZds.rename).toHaveBeenCalledWith(
-      '/projects/stale-two',
-      '/projects/second-project'
-    )
-    await vi.waitFor(() =>
-      expect(onProjectDirectoriesRenamed).toHaveBeenCalledTimes(1)
-    )
-  })
-
-  it('reports rename failures without stopping the batch or risking project data', async () => {
-    const renameFailure = new Error('Permission denied')
-    const onProjectDirectoriesRenamed = vi.fn()
-    const projects = [
-      createProject({
-        name: 'stale-one',
-        path: '/projects/stale-one',
-        title: 'First Project',
-      }),
-      createProject({
-        name: 'stale-two',
-        path: '/projects/stale-two',
-        title: 'Second Project',
-      }),
-    ]
-
-    mocks.fsZds.readdir.mockResolvedValue(['stale-one', 'stale-two'])
-    mocks.fsZds.stat.mockImplementation(async (path: string) => {
-      if (path === '/projects/stale-one') {
-        return dirStat(1)
-      }
-      if (path === '/projects/stale-two') {
-        return dirStat(2)
-      }
-      throw mocks.pathNotFound()
-    })
-    mocks.fsZds.rename.mockImplementation(async (sourcePath: string) => {
-      if (sourcePath === '/projects/stale-one') {
-        throw renameFailure
-      }
-    })
-
-    scheduleProjectDirectoryNameSyncFromTitles({
-      projects,
-      onProjectDirectoriesRenamed,
-    })
-
-    await vi.waitFor(() => expect(mocks.fsZds.rename).toHaveBeenCalledTimes(2))
-    expect(mocks.trap.reportRejection).toHaveBeenCalledWith(renameFailure)
-    expect(mocks.fsZds.rename).toHaveBeenCalledWith(
-      '/projects/stale-one',
-      '/projects/first-project'
-    )
-    expect(mocks.fsZds.rename).toHaveBeenCalledWith(
-      '/projects/stale-two',
-      '/projects/second-project'
-    )
-    expect(onProjectDirectoriesRenamed).toHaveBeenCalledTimes(1)
-    expect(mocks.fsZds.cp).not.toHaveBeenCalled()
-    expect(mocks.fsZds.rm).not.toHaveBeenCalled()
-    expect(mocks.fsZds.writeFile).not.toHaveBeenCalled()
-  })
-
-  it('uses a unique unix-friendly directory name when the title slug is occupied', async () => {
-    mocks.fsZds.stat.mockImplementation(async (path: string) => {
-      if (path === '/projects/stale-id') {
-        return dirStat(1)
-      }
-      if (path === '/projects/my-cool-project-1') {
-        throw mocks.pathNotFound()
-      }
-      return dirStat(2)
-    })
-
-    const targetProjectDirectoryName = await syncProjectDirectoryNameFromTitle({
-      project: createProject(),
-      projectDirectoryEntryNames: ['stale-id', 'my-cool-project'],
-    })
-
-    expect(targetProjectDirectoryName).toBe('my-cool-project-1')
-    expect(mocks.fsZds.rename).toHaveBeenCalledWith(
-      '/projects/stale-id',
-      '/projects/my-cool-project-1'
-    )
-  })
-
-  it('falls back to the default project directory name when the title cannot be slugged', async () => {
-    mocks.fsZds.stat.mockImplementation(async (path: string) => {
-      if (path === '/projects/stale-id') {
-        return dirStat(1)
-      }
-      throw mocks.pathNotFound()
-    })
-
-    const targetProjectDirectoryName = await syncProjectDirectoryNameFromTitle({
-      project: createProject({ title: '!!!' }),
-      projectDirectoryEntryNames: ['stale-id'],
-    })
-
-    expect(targetProjectDirectoryName).toBe('untitled')
-    expect(mocks.fsZds.rename).toHaveBeenCalledWith(
-      '/projects/stale-id',
-      '/projects/untitled'
-    )
-  })
-
-  it('does not rename when the project directory already matches the title', async () => {
-    const targetProjectDirectoryName = await syncProjectDirectoryNameFromTitle({
-      project: createProject({
-        name: 'my-cool-project',
-        path: '/projects/my-cool-project',
-      }),
-      projectDirectoryEntryNames: ['my-cool-project'],
-    })
-
-    expect(targetProjectDirectoryName).toBeUndefined()
-    expect(mocks.fsZds.rename).not.toHaveBeenCalled()
-    expect(mocks.fsZds.stat).not.toHaveBeenCalled()
   })
 })

@@ -1,8 +1,6 @@
-import { join } from 'path'
 import { defineRegistryItem } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import env from '@src/env'
-import { KclManager } from '@src/lang/KclManager'
 import {
   ARG_ANGLE,
   ARG_END_ABSOLUTE_X,
@@ -12,9 +10,13 @@ import {
   ARG_LENGTH_Y,
 } from '@src/lang/constants'
 import { createArrayExpression } from '@src/lang/create'
+import { KclManager } from '@src/lang/KclManager'
 import { findKwArg, findKwArgAny } from '@src/lang/util'
 import type { CallExpressionKw, Expr } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
+import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { createTextFileIO } from '@src/lib/projectSession/textFileIO'
 import { MachineManager } from '@src/lib/MachineManager'
 import RustContext from '@src/lib/rustContext'
 import { createSettings } from '@src/lib/settings/initialSettings'
@@ -23,11 +25,11 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import {
-  UserFeaturesState,
   type UserFeaturesSettleService,
+  UserFeaturesState,
 } from '@src/machines/userFeaturesMachine'
-import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
+import { join } from 'path'
 import { createActor } from 'xstate'
 
 /**
@@ -80,7 +82,13 @@ export function createSettledUserFeaturesForTest(): UserFeaturesSettleService {
 // Initialize all the singletons, the WASM blob, and open an engine connection
 // Most likely a lite engine connection because this function should only run in vitest
 // if this runs in vitest the engineCommandManager will run a lite connection mode.
-export async function buildTheWorldAndConnectToEngine() {
+export async function buildTheWorldAndConnectToEngine({
+  webrtc = true,
+  geometryOnly = false,
+}: {
+  webrtc?: boolean
+  geometryOnly?: boolean
+} = {}) {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
   const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
   const machineManager = new MachineManager()
@@ -93,6 +101,7 @@ export async function buildTheWorldAndConnectToEngine() {
   }).start()
   const settingsActor = createActor(settingsMachine, {
     input: {
+      fileOperations: testFileOperations,
       commandBarActor,
       defaultProjectLibraries: [],
       projectLibrarySettingDefaultPolicies: [],
@@ -110,6 +119,11 @@ export async function buildTheWorldAndConnectToEngine() {
     settingsActor
   )
   const kclManager = new KclManager('some-file', '', {
+    fileOperations: testFileOperations,
+    textFileIO: createTextFileIO(testFileOperations, {
+      watch: () => {},
+      unwatch: () => {},
+    }),
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,
@@ -140,6 +154,9 @@ export async function buildTheWorldAndConnectToEngine() {
             console.log('unit test connected!')
           }
         },
+        unitTestWebrtc: webrtc,
+        unitTestGeometryOnly: geometryOnly,
+        geometryOnly,
         rustContext: kclManager.rustContext,
       })
       .catch(reportRejection)
@@ -204,6 +221,7 @@ export async function buildTheWorldAndNoEngineConnection(
   }).start()
   const settingsActor = createActor(settingsMachine, {
     input: {
+      fileOperations: testFileOperations,
       commandBarActor,
       defaultProjectLibraries: [],
       projectLibrarySettingDefaultPolicies: [],
@@ -221,6 +239,11 @@ export async function buildTheWorldAndNoEngineConnection(
     settingsActor
   )
   const kclManager = new KclManager('some-file', '', {
+    fileOperations: testFileOperations,
+    textFileIO: createTextFileIO(testFileOperations, {
+      watch: () => {},
+      unwatch: () => {},
+    }),
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,

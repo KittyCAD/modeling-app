@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties negative_args.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -1.0,
+      "y": 8.0,
+      "z": 5.0
+    },
+    "dimensions": {
+      "x": 38.0,
+      "y": 46.0,
+      "z": 10.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 1733.9999503747094
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 2.637000169632605
+  }
+}

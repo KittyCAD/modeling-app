@@ -5,8 +5,13 @@ use std::sync::Arc;
 use ahash::AHashMap;
 use anyhow::Result;
 use indexmap::IndexMap;
+use kcl_api::Number;
+use kcl_api::Object;
+use kcl_api::ObjectId;
+use kcl_api::ObjectKind;
 use kcl_api::UnitAngle;
 use kcl_api::UnitLength;
+pub use kittycad_modeling_cmds::KclVersion;
 use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
@@ -48,19 +53,19 @@ use crate::execution::memory::ProgramMemory;
 use crate::execution::memory::Stack;
 use crate::execution::sketch_solve::Solved;
 use crate::execution::types::NumericType;
-use crate::front::Number;
-use crate::front::Object;
-use crate::front::ObjectId;
-use crate::front::ObjectKind;
 use crate::id::IncIdGenerator;
 use crate::modules::ModuleId;
 use crate::modules::ModuleInfo;
 use crate::modules::ModuleLoader;
 use crate::modules::ModulePath;
+use crate::modules::ModulePathExt as _;
 use crate::modules::ModuleRepr;
 use crate::modules::ModuleSource;
+use crate::named_views::ResolvedViewBatch;
 use crate::parsing::ast::types::Annotation;
+use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::NodeRef;
+use crate::parsing::ast::types::Program;
 use crate::parsing::ast::types::TagNode;
 
 /// State for executing a program.
@@ -88,6 +93,8 @@ pub(super) struct GlobalState {
     pub id_to_source: IndexMap<ModuleId, ModuleSource>,
     /// Map from module ID to module info.
     pub module_infos: ModuleInfoMap,
+    /// `never` type uses in local imports, retained until their versions are validated.
+    pub never_type_ranges: IndexMap<ModuleId, Vec<SourceRange>>,
     /// Module loader.
     pub mod_loader: ModuleLoader,
     /// Errors and warnings.
@@ -96,16 +103,20 @@ pub(super) struct GlobalState {
     /// `deprecated_since` warnings. Runtime behavior still uses the version
     /// declared by the KCL program.
     pub deprecation_version_override: Option<String>,
-    /// The entry-point (root) module's declared kclVersion, when it is KCL 3.0
-    /// or later. `Some` makes this single version govern version-conditional
-    /// runtime behavior for the whole execution -- every module and every
-    /// function body. `None` (entry point on 1.0/2.0 or undeclared) preserves
-    /// the legacy per-module lookup and its caller-version quirk; see
-    /// [`ExecState::legacy_caller_kcl_version`]. Assigned unconditionally at
-    /// the start of every execution.
+    /// The entry-point (root) module's declared kclVersion, or `None` when it
+    /// declares none. When this is KCL 3.0 or later, this single version
+    /// governs version-conditional runtime behavior for the whole execution --
+    /// every module and every function body. Otherwise (1.0, 2.0, or
+    /// undeclared) the legacy per-module lookup and its caller-version quirk
+    /// apply, see [`ExecState::legacy_caller_kcl_version`], and no imported
+    /// file may declare KCL 3.0 or later, see
+    /// [`ExecState::check_imported_module_kcl_version`]. Assigned
+    /// unconditionally at the start of every execution.
     pub entry_point_kcl_version: Option<KclVersion>,
     /// Global artifacts that represent the entire program.
     pub artifacts: ArtifactState,
+    /// Resolved views from successful execution.
+    pub(super) named_views: Option<ResolvedViewBatch>,
     /// Artifacts for only the root module.
     pub root_module_artifacts: ModuleArtifactState,
     /// The segments that were edited that triggered this execution.
@@ -117,6 +128,53 @@ pub(super) struct GlobalState {
     /// the entire execution, including while executing the body of the sketch
     /// block being edited.
     pub sketch_mode: bool,
+    /// True when the engine being used for execution is CPU only with no graphical environment
+    pub geometry_only: bool,
+    /// Std's exported declarations skipped as not yet added. Set once by
+    /// `eval_prelude`, since root environments reach the prelude without an
+    /// import statement; the mock memory cache carries it like `module_infos`.
+    pub std_not_yet_added: IndexMap<String, NotYetAdded>,
+    /// Test-only: explain missing names for user declarations too, so tests
+    /// can cover the hint path while std declares nothing gated.
+    #[cfg(test)]
+    pub(crate) hint_all_not_yet_added: bool,
+}
+
+/// A declaration skipped because the program's KCL version predates its
+/// `added_in`, kept so a failed lookup of the name can explain why. Records
+/// flow like names: module scope, the module's outcome if exported, glob imports.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct NotYetAdded {
+    /// The KCL version the declaration is available from.
+    pub added_in: annotations::VersionConstraint,
+    /// Whether the declaration belongs to std. Only std declarations get the hint.
+    pub is_std: bool,
+}
+
+/// A record in a module's scope and whether the module exports it, by its own
+/// `export` or an `export import *`. Only exported records leave in the outcome.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct ScopedNotYetAdded {
+    pub item: NotYetAdded,
+    pub exported: bool,
+}
+
+pub(super) fn collect_execution_issues(
+    mut issues: Vec<CompilationIssue>,
+    named_views: Option<&ResolvedViewBatch>,
+) -> Vec<CompilationIssue> {
+    if let Some(views) = named_views {
+        issues.extend(views.failures().iter().map(|failure| {
+            CompilationIssue::err(
+                failure.source_range,
+                format!(
+                    "Could not resolve named view {:?} in module {}: {}",
+                    failure.name, failure.module_id, failure.error
+                ),
+            )
+        }));
+    }
+    issues
 }
 
 impl GlobalState {
@@ -177,6 +235,7 @@ pub enum EdgeRefactorStdlibFn {
     GetPreviousAdjacentEdge,
     GetCommonEdge,
     EdgeId,
+    DirectEdgeTag,
 }
 
 /// Metadata collected when a deprecated edge stdlib function runs, for refactor-to-edgeRefs lint/code mod.
@@ -314,6 +373,9 @@ pub(super) struct ModuleState {
     pub stdlib_entry_source_range: Option<SourceRange>,
     /// Identifiers that have been exported from the current module.
     pub module_exports: Vec<String>,
+    /// Not-yet-added records in scope here: this module's own plus those from
+    /// glob imports. Only the exported ones travel in the module's outcome.
+    pub not_yet_added: IndexMap<String, ScopedNotYetAdded>,
     /// Settings specified from annotations.
     pub settings: MetaSettings,
     /// True if executing in sketch mode. Only a single sketch block will be
@@ -492,6 +554,19 @@ pub(crate) struct SketchBlockState {
 }
 
 impl ExecState {
+    /// Returns calculated views from the latest successful actual execution.
+    pub fn named_views(&self) -> Option<&ResolvedViewBatch> {
+        self.global.named_views.as_ref()
+    }
+
+    pub(super) fn resolve_named_views(&mut self) {
+        self.global.named_views = Some(crate::named_views::resolve_all(
+            &self.global.artifacts.graph,
+            &self.global.operations_by_module().map,
+            &self.global.filenames(),
+        ));
+    }
+
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
             execution_callbacks: exec_context.execution_callbacks.clone(),
@@ -631,9 +706,111 @@ impl ExecState {
             .unwrap_or(self.mod_local.settings.kcl_version.as_str())
     }
 
+    /// The entry point's declared KCL version, or the default. `added_in`
+    /// gating uses this rather than [`Self::kcl_version`] because std modules
+    /// declare no version of their own.
+    pub(crate) fn entry_point_kcl_version(&self) -> KclVersion {
+        self.global.entry_point_kcl_version.unwrap_or_default()
+    }
+
+    /// Record that `key` was skipped in the current module because the
+    /// program's KCL version predates `added_in`.
+    pub(crate) fn record_not_yet_added(
+        &mut self,
+        key: String,
+        added_in: annotations::VersionConstraint,
+        exported: bool,
+    ) {
+        let item = NotYetAdded {
+            added_in,
+            is_std: matches!(self.mod_local.path, ModulePath::Std { .. }),
+        };
+        self.mod_local
+            .not_yet_added
+            .insert(key, ScopedNotYetAdded { item, exported });
+    }
+
+    /// Bring a glob-imported module's exported records into this scope, as
+    /// `import *` does for names. Records already here are left alone.
+    pub(crate) fn import_not_yet_added(&mut self, records: &IndexMap<String, NotYetAdded>, exported: bool) {
+        for (key, item) in records {
+            self.mod_local
+                .not_yet_added
+                .entry(key.clone())
+                .or_insert_with(|| ScopedNotYetAdded {
+                    item: item.clone(),
+                    exported,
+                });
+        }
+    }
+
+    /// The record for `key` in this module's scope, then in std's.
+    pub(crate) fn not_yet_added_in_scope(&self, key: &str) -> Option<&NotYetAdded> {
+        self.mod_local
+            .not_yet_added
+            .get(key)
+            .map(|scoped| &scoped.item)
+            .or_else(|| self.global.std_not_yet_added.get(key))
+    }
+
+    /// Append the version help to `err` if one of `keys` is a std declaration
+    /// skipped in the current scope, mirroring the not-yet-added parameter
+    /// message.
+    pub(crate) fn with_not_yet_added_hint(&self, keys: &[&str], err: KclError) -> KclError {
+        match keys.iter().find_map(|key| self.not_yet_added_in_scope(key)) {
+            Some(item) if self.hints_for(item) => self.not_yet_added_hint(item, err),
+            _ => err,
+        }
+    }
+
+    /// Like [`Self::with_not_yet_added_hint`], but consulting another module's
+    /// exported `records`.
+    pub(crate) fn with_not_yet_added_hint_from(
+        &self,
+        records: &IndexMap<String, NotYetAdded>,
+        keys: &[&str],
+        err: KclError,
+    ) -> KclError {
+        match keys.iter().find_map(|key| records.get(*key)) {
+            Some(item) if self.hints_for(item) => self.not_yet_added_hint(item, err),
+            _ => err,
+        }
+    }
+
+    /// Whether a failed lookup should mention `item`. Only std declarations
+    /// qualify, so a mismatch with the library is explained while user code
+    /// keeps the plain message; hints for user code would also have to follow
+    /// lexical scope, which these records do not.
+    fn hints_for(&self, item: &NotYetAdded) -> bool {
+        #[cfg(test)]
+        if self.global.hint_all_not_yet_added {
+            return true;
+        }
+        item.is_std
+    }
+
+    fn not_yet_added_hint(&self, item: &NotYetAdded, mut err: KclError) -> KclError {
+        let details = err.details_mut();
+        details.message = format!(
+            "{}; it was added in KCL {}, but this program uses KCL {}",
+            details.message,
+            item.added_in,
+            self.entry_point_kcl_version().as_str()
+        );
+        err
+    }
+
     #[cfg(test)]
     pub(crate) fn set_deprecation_version_override(&mut self, version: Option<&str>) {
         self.global.deprecation_version_override = version.map(str::to_owned);
+    }
+
+    #[cfg(test)]
+    pub(crate) fn program_memory_for_tests(
+        &self,
+        main_ref: EnvironmentRef,
+    ) -> Result<IndexMap<String, KclValue>, KclError> {
+        self.mod_local.variables(main_ref)
     }
 
     /// Convert to execution outcome when running in WebAssembly.  We want to
@@ -646,24 +823,32 @@ impl ExecState {
     ) -> Result<ExecOutcome, KclError> {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
-        let variables = self
-            .mod_local
-            .variables(main_ref)?
+        let variables = self.mod_local.variables(main_ref)?;
+        #[cfg(test)]
+        let test_program_memory = variables.clone();
+        let variables = variables
             .into_iter()
             .map(|(key, value)| (key, KclValueView::from(value)))
             .collect();
+        let filenames = self.global.filenames();
+        let operations = self.global.operations_by_module();
+        let issues = collect_execution_issues(self.global.issues, self.global.named_views.as_ref());
         Ok(ExecOutcome {
             variables,
-            filenames: self.global.filenames(),
-            operations: self.global.operations_by_module(),
+            filenames,
+            engine_scene_generation: ctx.cache.engine_scene_generation().await,
+            operations,
             artifact_graph: self.global.artifacts.graph,
+            named_views: self.global.named_views,
             scene_objects: self.global.root_module_artifacts.scene_objects,
             source_range_to_object: self.global.root_module_artifacts.source_range_to_object,
             var_solutions: self.global.root_module_artifacts.var_solutions,
             refactor_metadata: self.global.root_module_artifacts.refactor_metadata.clone(),
-            issues: self.global.issues,
+            issues,
             source_files: self.global.id_to_source,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
+            #[cfg(test)]
+            test_program_memory,
         })
     }
 
@@ -672,6 +857,10 @@ impl ExecState {
         &mut self,
     ) -> IndexMap<Uuid, kittycad_modeling_cmds::websocket::WebSocketResponse> {
         std::mem::take(&mut self.global.root_module_artifacts.responses)
+    }
+
+    pub(crate) fn geometry_only(&self) -> bool {
+        self.global.geometry_only
     }
 
     pub(crate) fn stack(&self) -> &Stack {
@@ -824,7 +1013,7 @@ impl ExecState {
         self.global.segment_ids_edited.contains(object_id)
     }
 
-    pub fn drag_anchor_target(&self, object_id: &ObjectId) -> Option<&crate::front::Point2d<crate::front::Number>> {
+    pub fn drag_anchor_target(&self, object_id: &ObjectId) -> Option<&kcl_api::Point2d<kcl_api::Number>> {
         self.global
             .drag_anchors
             .iter()
@@ -981,13 +1170,24 @@ impl ExecState {
             .values()
             .chain(self.global.artifacts.artifacts.values())
             .filter_map(|artifact| match artifact {
-                Artifact::NamedView(view) => Some((view.code_ref.range.module_id(), view.name.as_str())),
+                Artifact::NamedView(view) => Some((view.declaring_module_id, view.name.as_str())),
                 _ => None,
             })
     }
 
     pub(crate) fn artifact_mut(&mut self, id: ArtifactId) -> Option<&mut Artifact> {
         self.mod_local.artifacts.artifacts.get_mut(&id)
+    }
+
+    pub(crate) fn is_sketch_block_path(&self, path_id: ArtifactId) -> bool {
+        self.mod_local
+            .artifacts
+            .artifacts
+            .values()
+            .chain(self.global.artifacts.artifacts.values())
+            .any(|artifact| {
+                matches!(artifact, Artifact::SketchBlock(sketch_block) if sketch_block.path_id == Some(path_id))
+            })
     }
 
     pub(crate) fn push_op(&mut self, op: Operation) {
@@ -1066,9 +1266,6 @@ impl ExecState {
     }
 
     /// Record metadata from a deprecated edge stdlib call for the Z0006 refactor.
-    ///
-    /// This is intentionally collected unconditionally when artifact graph support is enabled.
-    /// The temporary feature flag only controls whether the lint/action is shown in the app.
     pub(crate) fn record_edge_refactor_meta(&mut self, meta: EdgeRefactorMeta) {
         self.mod_local
             .artifacts
@@ -1158,9 +1355,6 @@ impl ExecState {
     }
 
     /// Record metadata from a fillet/chamfer call that used `tags` directly.
-    ///
-    /// This is intentionally collected unconditionally when artifact graph support is enabled.
-    /// The temporary feature flag only controls whether the lint/action is shown in the app.
     pub(crate) fn record_direct_tag_fillet_meta(&mut self, meta: DirectTagFilletMeta) {
         self.mod_local
             .artifacts
@@ -1339,9 +1533,10 @@ impl ExecState {
     /// all function bodies. Otherwise, falls back to the legacy per-module
     /// lookup; see [`Self::legacy_caller_kcl_version`].
     pub(crate) fn kcl_version(&self) -> KclVersion {
-        self.global
-            .entry_point_kcl_version
-            .unwrap_or_else(|| self.legacy_caller_kcl_version())
+        match self.global.entry_point_kcl_version {
+            Some(version) if version >= KclVersion::V3Preview => version,
+            _ => self.legacy_caller_kcl_version(),
+        }
     }
 
     /// The legacy kclVersion lookup: the current module-local settings.
@@ -1358,67 +1553,191 @@ impl ExecState {
 
     /// Gate for behaviors introduced in KCL 3.0. True only when the entry-point
     /// module of this execution declares KCL 3.0 or later. This never looks at
-    /// [`Self::legacy_caller_kcl_version()`] so that control flow behavior
-    /// never varies within a single execution.
-    pub(crate) fn use_kcl_v3_control_flow(&self) -> bool {
+    /// [`Self::legacy_caller_kcl_version()`] so that behavior never varies
+    /// within a single execution.
+    pub(crate) fn entry_point_version_is_v3_or_higher(&self) -> bool {
         self.global
             .entry_point_kcl_version
             .is_some_and(|v| v >= KclVersion::V3Preview)
     }
 
     /// Record the entry-point program's declared kclVersion for this
-    /// execution. Only 3.0-preview or later is recorded; older or undeclared
-    /// versions leave the field unset so that the legacy per-module lookup
-    /// applies. Must be assigned unconditionally at the start of every
-    /// execution since the state may be reused across executions whose
-    /// programs declare different versions.
-    pub(crate) fn set_entry_point_kcl_version(&mut self, program: &crate::Program) {
-        let declared = program.meta_settings().ok().flatten().map(|s| s.kcl_version);
-        self.global.entry_point_kcl_version = match declared {
-            Some(v) if v >= KclVersion::V3Preview => Some(v),
-            _ => None,
+    /// execution, or `None` when it declares no kclVersion. Must be assigned
+    /// unconditionally at the start of every execution since the state may be
+    /// reused across executions whose programs declare different versions.
+    pub(crate) fn set_entry_point_kcl_version(&mut self, program: &crate::Program) -> Result<(), KclError> {
+        let version = program.language_version()?;
+        // Import diagnostics distinguish an explicit version from the default.
+        self.global.entry_point_kcl_version = declared_kcl_version(&program.ast)?.map(|_| version);
+        Ok(())
+    }
+
+    /// KCL 3.0: the entry point's declared kclVersion decides which kclVersion
+    /// an imported file may declare, so that KCL 3.0 semantics never apply to
+    /// only part of a program.
+    ///
+    /// - When the entry point declares 3.0-preview or later, that version
+    ///   governs the whole execution (see [`Self::kcl_version`]), and an
+    ///   imported file may not declare a different one.
+    /// - Otherwise (1.0, 2.0, or undeclared), the legacy per-module lookup
+    ///   applies, and an imported file may not declare 3.0-preview or later,
+    ///   which the legacy lookup would honor for that file only. Mixing 1.0
+    ///   and 2.0 remains allowed, as it always has been.
+    ///
+    /// A file that declares no kclVersion does not cause a version mismatch:
+    /// it runs under the version the lookup gives it. Only user files (local
+    /// imports) are checked. Standard library modules are exempt: they ship
+    /// with the interpreter, always run under the entry point's pinned
+    /// version, and the user cannot edit them to resolve a mismatch. Foreign
+    /// imports carry no KCL settings.
+    ///
+    /// `import_range` is the import statement when the check runs at the
+    /// import site, which is included in the error.
+    pub(crate) fn check_imported_module_kcl_version(
+        &self,
+        path: &ModulePath,
+        program: &Node<Program>,
+        import_range: Option<SourceRange>,
+    ) -> Result<(), KclError> {
+        if !path.is_local() {
+            // stdlib is exempt from the restriction, and `Main` is the version
+            // we're checking against.
+            return Ok(());
+        }
+        let Some((declared, declared_range)) = declared_kcl_version(program)? else {
+            return Ok(());
         };
+        let entry_point_version = self.global.entry_point_kcl_version;
+        let allowed = if self.entry_point_version_is_v3_or_higher() {
+            Some(declared) == entry_point_version
+        } else {
+            declared < KclVersion::V3Preview
+        };
+        if allowed {
+            return Ok(());
+        }
+
+        // The root module's path is the executor's current file, which is
+        // empty when execution was started without one.
+        let entry_point = match self
+            .global
+            .module_infos
+            .get(&ModuleId::default())
+            .map(|info| &info.path)
+        {
+            Some(root @ ModulePath::Local { .. }) if !root.to_string().is_empty() => {
+                format!("The entry point `{root}`")
+            }
+            _ => "The entry point".to_owned(),
+        };
+        let (entry_point_declares, fix) = match entry_point_version {
+            Some(version) => (
+                format!("declares kclVersion {}", version.as_str()),
+                "Update the kclVersion setting in one of these files to match the other.",
+            ),
+            None => (
+                "does not declare a kclVersion".to_owned(),
+                "Declare the same kclVersion in the entry point, or update the setting in the imported file.",
+            ),
+        };
+        let mut source_ranges = vec![declared_range];
+        source_ranges.extend(import_range);
+        Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "Mixing KCL versions in a single program is not allowed. {entry_point} {entry_point_declares}, but the imported file `{path}` declares kclVersion {}. {fix}",
+                declared.as_str(),
+            ),
+            source_ranges,
+        )))
+    }
+
+    /// Check an imported file before executing it. Version mismatches take
+    /// priority over versioned syntax restrictions.
+    /// The loader-assigned module ID identifies source and syntax metadata;
+    /// an empty parsed program retains the default AST module ID.
+    pub(crate) fn validate_imported_module(
+        &self,
+        path: &ModulePath,
+        module_id: ModuleId,
+        program: &Node<Program>,
+        import_range: Option<SourceRange>,
+    ) -> Result<(), KclError> {
+        self.check_imported_module_kcl_version(path, program, import_range)?;
+        if !path.is_local() {
+            return Ok(());
+        }
+
+        let ranges = self.global.never_type_ranges.get(&module_id).ok_or_else(|| {
+            KclError::new_internal(KclErrorDetails::new(
+                format!("Missing `never` type ranges for imported KCL module `{path}`"),
+                import_range.into_iter().collect(),
+            ))
+        })?;
+        crate::parsing::validate_never_type_ranges(
+            ranges,
+            crate::parsing::SyntaxSource::UserCode(self.entry_point_kcl_version()),
+        )
+        .map_err(|error| match import_range {
+            Some(range) => error.add_import_location(&path.import_name(), range),
+            None => error,
+        })?;
+        if !self.entry_point_version_is_v3_or_higher() {
+            return Ok(());
+        }
+
+        let source = self.global.id_to_source.get(&module_id).ok_or_else(|| {
+            KclError::new_internal(KclErrorDetails::new(
+                format!("Missing source for imported KCL module `{path}`"),
+                import_range.into_iter().collect(),
+            ))
+        })?;
+        let validation = crate::parsing::validate_use_keyword_source(&source.source, module_id)
+            .and_then(|_| crate::parsing::validate_enum_keyword_source(&source.source, module_id))
+            .and_then(|_| crate::parsing::validate_import_modifier_source(&source.source, module_id));
+        validation.map_err(|error| match import_range {
+            Some(range) => error.add_import_location(&path.import_name(), range),
+            None => error,
+        })
     }
 }
 
-#[derive(Debug, Clone, Copy, Default, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, Ord, PartialOrd)]
-#[ts(export)]
-pub enum KclVersion {
-    #[default]
-    #[serde(rename = "1.0")]
-    V1,
-    #[serde(rename = "2.0")]
-    V2,
-    #[serde(rename = "3.0-preview")]
-    V3Preview,
+/// The kclVersion that a program's `@settings` annotations declare, with the
+/// source range of the declaring property, or `None` when the program does not
+/// declare one. The last declaration wins, as in
+/// [`MetaSettings::update_from_annotation`], so this searches from the end and
+/// stops at the first match.
+pub(crate) fn declared_kcl_version(program: &Node<Program>) -> Result<Option<(KclVersion, SourceRange)>, KclError> {
+    let Some(property) = program
+        .inner_attrs
+        .iter()
+        .rev()
+        .filter(|annotation| annotation.name() == Some(annotations::SETTINGS))
+        .find_map(|annotation| {
+            annotation
+                .properties
+                .as_deref()
+                .unwrap_or_default()
+                .iter()
+                .rev()
+                .find(|property| &*property.inner.key.name == annotations::SETTINGS_VERSION)
+        })
+    else {
+        return Ok(None);
+    };
+    let value = annotations::expect_kcl_version(&property.inner.value)?;
+    let version = value.parse::<KclVersion>().map_err(|err| {
+        KclError::new_semantic(KclErrorDetails::new(err.to_string(), vec![property.as_source_range()]))
+    })?;
+    Ok(Some((version, property.as_source_range())))
 }
 
-impl KclVersion {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            Self::V1 => "1.0",
-            Self::V2 => "2.0",
-            Self::V3Preview => "3.0-preview",
-        }
-    }
-}
-
-impl FromStr for KclVersion {
-    type Err = KclError;
-
-    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-        match s {
-            "1" | "1.0" | "1.0.0" => Ok(Self::V1),
-            "2" | "2.0" | "2.0.0" => Ok(Self::V2),
-            "3-preview" | "3.0-preview" | "3.0.0-preview" => Ok(Self::V3Preview),
-            other => Err(KclError::new_semantic(KclErrorDetails {
-                source_ranges: Default::default(),
-                backtrace: Default::default(),
-                message: format!(
-                    "Unrecognized version {other}. Valid versions are 1.0, 2.0 and (experimentally) 3.0-preview"
-                ),
-            })),
-        }
+/// The effective kclVersion that a program will be run with. If there's an
+/// error parsing, the default is used.
+pub(crate) fn computed_kcl_version(program: &Node<Program>) -> KclVersion {
+    match declared_kcl_version(program) {
+        Ok(Some((version, _))) => version,
+        Ok(None) => KclVersion::default(),
+        Err(_) => KclVersion::default(),
     }
 }
 
@@ -1428,7 +1747,9 @@ impl GlobalState {
             machine_depth_high_water: 0,
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
+            never_type_ranges: Default::default(),
             artifacts: Default::default(),
+            named_views: None,
             root_module_artifacts: Default::default(),
             mod_loader: Default::default(),
             issues: Default::default(),
@@ -1438,6 +1759,10 @@ impl GlobalState {
             segment_ids_edited,
             drag_anchors: Vec::new(),
             sketch_mode: false,
+            geometry_only: settings.geometry_only,
+            std_not_yet_added: Default::default(),
+            #[cfg(test)]
+            hint_all_not_yet_added: false,
         };
 
         let root_id = ModuleId::default();
@@ -1523,10 +1848,10 @@ impl ModuleArtifactState {
                     self.source_range_to_object.insert(cap.source.solid.range, object.id);
                 }
                 _ => match &object.source {
-                    crate::front::SourceRef::Simple { range, node_path: _ } => {
+                    kcl_api::SourceRef::Simple { range, node_path: _ } => {
                         self.source_range_to_object.insert(*range, object.id);
                     }
-                    crate::front::SourceRef::BackTrace { ranges } => {
+                    kcl_api::SourceRef::BackTrace { ranges } => {
                         // Don't map the entire backtrace, only the most specific
                         // range.
                         if let Some((range, _)) = ranges.first() {
@@ -1611,6 +1936,7 @@ impl ModuleState {
             sketch_block: Default::default(),
             stdlib_entry_source_range: Default::default(),
             module_exports: Default::default(),
+            not_yet_added: Default::default(),
             explicit_length_units: false,
             path,
             settings: Default::default(),
@@ -1728,7 +2054,9 @@ impl MetaSettings {
                 }
                 annotations::SETTINGS_VERSION => {
                     let value = annotations::expect_kcl_version(&p.inner.value)?;
-                    self.kcl_version = value.parse()?;
+                    self.kcl_version = value.parse::<KclVersion>().map_err(|err| {
+                        KclError::new_semantic(KclErrorDetails::new(err.to_string(), p.as_source_ranges()))
+                    })?;
                 }
                 annotations::SETTINGS_EXPERIMENTAL_FEATURES => {
                     let value = annotations::expect_ident(&p.inner.value)?;
@@ -1763,8 +2091,12 @@ impl MetaSettings {
 
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
 
+    use kcl_api::Object;
+    use kcl_api::ObjectId;
+    use kcl_api::ObjectKind;
+    use kcl_api::Plane;
+    use kcl_api::SourceRef;
     use uuid::Uuid;
 
     use super::KclVersion;
@@ -1773,27 +2105,54 @@ mod tests {
     use crate::NodePathExt;
     use crate::SourceRange;
     use crate::execution::ArtifactId;
-    use crate::front::Object;
-    use crate::front::ObjectId;
-    use crate::front::ObjectKind;
-    use crate::front::Plane;
-    use crate::front::SourceRef;
 
     #[test]
-    fn kcl_version_parses_supported_spellings() {
-        assert_eq!(KclVersion::from_str("1"), Ok(KclVersion::V1));
-        assert_eq!(KclVersion::from_str("1.0.0"), Ok(KclVersion::V1));
-        assert_eq!(KclVersion::from_str("2"), Ok(KclVersion::V2));
-        assert_eq!(KclVersion::from_str("2.0.0"), Ok(KclVersion::V2));
-        assert_eq!(KclVersion::from_str("3.0-preview"), Ok(KclVersion::V3Preview));
-        // No such version.
-        KclVersion::from_str("99.123").unwrap_err();
+    fn declared_kcl_version_finds_the_setting_and_its_range() {
+        let parse = |code: &str| crate::parsing::top_level_parse(code).unwrap();
+
+        assert_eq!(super::declared_kcl_version(&parse("x = 1\n")).unwrap(), None);
+        assert_eq!(
+            super::declared_kcl_version(&parse("@settings(defaultLengthUnit = in)\nx = 1\n")).unwrap(),
+            None
+        );
+
+        let code = "@settings(defaultLengthUnit = in, kclVersion = 2.0)\nx = 1\n";
+        let (version, range) = super::declared_kcl_version(&parse(code)).unwrap().unwrap();
+        assert_eq!(version, KclVersion::V2);
+        let start = code.find("kclVersion").unwrap();
+        assert_eq!((range.start(), range.end()), (start, start + "kclVersion = 2.0".len()));
+
+        let (version, _) = super::declared_kcl_version(&parse("@settings(kclVersion = \"3.0-preview\")\n"))
+            .unwrap()
+            .unwrap();
+        assert_eq!(version, KclVersion::V3Preview);
+
+        // The last declaration wins, whether it is in a later annotation or
+        // later within the same annotation.
+        let code = "@settings(kclVersion = 1.0)\n@settings(defaultLengthUnit = in)\n@settings(kclVersion = 2.0, kclVersion = \"3.0-preview\")\n";
+        let (version, range) = super::declared_kcl_version(&parse(code)).unwrap().unwrap();
+        assert_eq!(version, KclVersion::V3Preview);
+        let start = code.rfind("kclVersion").unwrap();
+        assert_eq!(
+            (range.start(), range.end()),
+            (start, start + "kclVersion = \"3.0-preview\"".len())
+        );
+
+        // An unknown version is an error located at the setting.
+        let code = "@settings(kclVersion = 9.0)\n";
+        let error = super::declared_kcl_version(&parse(code)).unwrap_err();
+        let start = code.find("kclVersion").unwrap();
+        assert_eq!(
+            error.source_ranges().first().map(|range| (range.start(), range.end())),
+            Some((start, start + "kclVersion = 9.0".len()))
+        );
     }
 
     #[test]
     fn kcl_version_serializes_as_canonical_setting_value() {
         assert_eq!(serde_json::to_string(&KclVersion::V1).unwrap(), r#""1.0""#);
         assert_eq!(serde_json::to_string(&KclVersion::V2).unwrap(), r#""2.0""#);
+        assert_eq!(serde_json::to_string(&KclVersion::V3).unwrap(), r#""3.0""#);
         assert_eq!(
             serde_json::to_string(&KclVersion::V3Preview).unwrap(),
             r#""3.0-preview""#

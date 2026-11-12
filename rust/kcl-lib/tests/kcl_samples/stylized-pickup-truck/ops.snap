@@ -12,8 +12,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 4.0,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 1.8,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 2.6,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.7,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.27,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.1,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -215,8 +229,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 4.2,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +260,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -273,8 +291,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.35,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -302,8 +322,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -331,8 +353,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.75,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -360,8 +384,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.8,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -389,8 +415,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 1.15,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -418,8 +446,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 1.1,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -447,8 +477,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.8,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -476,8 +508,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.43,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -505,8 +539,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.15,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -534,8 +570,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.95,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -563,8 +601,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 1.35,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -592,8 +632,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.32000000000000006,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -621,8 +663,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.05,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -650,8 +694,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.08000000000000002,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -679,8 +725,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.24,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -708,8 +756,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.36,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -737,8 +787,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.8300000000000001,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -766,8 +818,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 1.2800000000000002,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -795,8 +849,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.32000000000000006,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -824,8 +880,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 2.25,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -853,8 +911,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.1,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -909,18 +969,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -935,18 +999,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -996,18 +1064,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1022,18 +1094,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1083,18 +1159,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1109,18 +1189,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1170,18 +1254,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1196,18 +1284,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1581,18 +1673,22 @@ description: Operations executed stylized-pickup-truck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1645,18 +1741,22 @@ description: Operations executed stylized-pickup-truck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1848,8 +1948,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": -2.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1984,18 +2086,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2017,18 +2123,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2078,18 +2188,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": -0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.8,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2104,18 +2218,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": -0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2165,18 +2283,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.8,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2191,18 +2313,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": -0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.8,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2296,18 +2422,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2322,18 +2452,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.8,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2471,18 +2605,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.1,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2497,18 +2635,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2602,18 +2744,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": -0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.1,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2628,18 +2774,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.1,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2733,18 +2883,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": -0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2759,18 +2913,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": -0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.1,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3191,18 +3349,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3217,18 +3379,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3403,18 +3569,22 @@ description: Operations executed stylized-pickup-truck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -3470,18 +3640,22 @@ description: Operations executed stylized-pickup-truck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -3626,8 +3800,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 0.81,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3741,8 +3917,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": -1.3,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3753,8 +3931,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3765,8 +3945,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3851,8 +4033,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 1.3,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3863,8 +4047,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3875,8 +4061,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3961,8 +4149,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": -1.3,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3973,8 +4163,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3985,8 +4177,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4038,8 +4232,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 1.3,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4050,8 +4246,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4062,8 +4260,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4231,18 +4431,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4257,18 +4461,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4318,18 +4526,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4344,18 +4556,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4405,18 +4621,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4431,18 +4651,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4492,18 +4716,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4518,18 +4746,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4903,18 +5135,22 @@ description: Operations executed stylized-pickup-truck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -4967,18 +5203,22 @@ description: Operations executed stylized-pickup-truck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -5159,8 +5399,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 0.09000000000000001,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -5188,8 +5430,10 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 1.7300000000000004,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -5228,8 +5472,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": -1.8,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5301,8 +5547,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 1.1509999999999998,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5359,18 +5607,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 1.91,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.81,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5385,18 +5637,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.81,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5446,18 +5702,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 1.91,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.81,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5472,18 +5732,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 1.91,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.81,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5533,18 +5797,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.81,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5559,18 +5827,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 1.91,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.81,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5620,18 +5892,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.81,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5646,18 +5922,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.81,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6028,18 +6308,22 @@ description: Operations executed stylized-pickup-truck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -6192,18 +6476,22 @@ description: Operations executed stylized-pickup-truck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -6298,8 +6586,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": -0.32100000000000006,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -6471,18 +6761,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": -0.77,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6497,18 +6791,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": -1.2,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.15,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6558,18 +6856,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.03,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6584,18 +6886,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": -0.77,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6645,18 +6951,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.15,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6671,18 +6981,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.03,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6732,18 +7046,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": -1.2,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.15,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6758,18 +7076,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.15,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7071,18 +7393,22 @@ description: Operations executed stylized-pickup-truck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -7135,18 +7461,22 @@ description: Operations executed stylized-pickup-truck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -7479,8 +7809,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": -1.8,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7615,18 +7947,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": -0.77,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7641,18 +7977,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": -0.77,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7702,18 +8042,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.03,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7728,18 +8072,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": -0.77,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7789,18 +8137,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.03,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7815,18 +8167,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.03,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7876,18 +8232,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": -0.77,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7902,18 +8262,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.03,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -8287,18 +8651,22 @@ description: Operations executed stylized-pickup-truck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -8351,18 +8719,22 @@ description: Operations executed stylized-pickup-truck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -8554,8 +8926,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": -1.8,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8690,18 +9064,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": -0.01,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -8716,18 +9094,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.32,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.21,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -8777,18 +9159,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": -0.01,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -8803,18 +9189,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.45,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -8915,18 +9305,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": -0.01,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -8941,18 +9335,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -9047,18 +9445,22 @@ description: Operations executed stylized-pickup-truck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -9114,18 +9516,22 @@ description: Operations executed stylized-pickup-truck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -9539,8 +9945,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": -0.27,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -9626,8 +10034,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": -0.27,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -9801,8 +10211,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": -1.3,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -9813,8 +10225,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -9825,8 +10239,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -9933,8 +10349,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 1.3,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -9945,8 +10363,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -9957,8 +10377,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10065,8 +10487,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10077,8 +10501,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10089,8 +10515,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10153,8 +10581,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 1.3,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10165,8 +10595,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10177,8 +10609,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10241,8 +10675,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10253,8 +10689,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10265,8 +10703,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10329,8 +10769,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": -1.3,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10341,8 +10783,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10353,8 +10797,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10397,8 +10843,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": -2.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10455,18 +10903,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.1,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.95,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -10481,18 +10933,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.2,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.95,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -10543,18 +10999,22 @@ description: Operations executed stylized-pickup-truck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -10610,18 +11070,22 @@ description: Operations executed stylized-pickup-truck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -10828,8 +11292,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": -0.05,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10950,8 +11416,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -11008,18 +11476,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -11034,18 +11506,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -11095,18 +11571,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -11121,18 +11601,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -11182,18 +11666,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -11208,18 +11696,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -11269,18 +11761,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -11295,18 +11791,22 @@ description: Operations executed stylized-pickup-truck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -11680,18 +12180,22 @@ description: Operations executed stylized-pickup-truck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -11744,18 +12248,22 @@ description: Operations executed stylized-pickup-truck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -11962,8 +12470,10 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": 0.05,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -12104,7 +12614,9 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -12132,7 +12644,9 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -12166,7 +12680,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12190,7 +12704,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12214,7 +12728,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12238,7 +12752,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12262,7 +12776,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12286,7 +12800,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12310,7 +12824,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12334,7 +12848,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

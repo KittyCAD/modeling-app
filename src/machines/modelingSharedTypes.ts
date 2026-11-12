@@ -1,4 +1,5 @@
 import type {
+  EntityReference as SdkEntityReference,
   EntityType,
   Point2d,
   RegionGetResolvableIntersectionInfo,
@@ -13,7 +14,7 @@ import type { MachineManager } from '@src/lib/MachineManager'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { Project } from '@src/lib/project'
 import type RustContext from '@src/lib/rustContext'
-import type { Setting } from '@src/lib/settings/initialSettings'
+import type { Setting } from '@src/lib/settings/Setting'
 import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
@@ -21,6 +22,8 @@ import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
+
+export type EntityReference = SdkEntityReference
 
 export type DefaultPlaneSelection = {
   name: DefaultPlaneStr
@@ -57,9 +60,31 @@ export type NonCodeSelection =
   | EnginePrimitiveSelection
   | EngineRegionSelection
 
+/**
+ * Shape of edgeRef when parsed from op args. KCL uses camelCase (sideFaces, endFaces);
+ * op args may also contain snake_case from API. Use when reading so TS enforces
+ * valid keys (not faces/disambiguators).
+ */
+export type EdgeRefFromOpArgs = {
+  side_faces?: unknown
+  sideFaces?: unknown
+  end_faces?: unknown
+  endFaces?: unknown
+  index?: unknown
+}
+
+/** Engine-provided primitive topology used when an entity cannot be referenced through tagged artifact lineage. */
+export type EngineTopologyFallback = {
+  parentId: string
+  primitiveIndex: number
+}
+
 export interface Selection {
+  entityRef?: EntityReference
   artifact?: Artifact
-  codeRef: CodeRef
+  codeRef?: CodeRef
+  /** From query_entity_type_with_point reference.topology_fallback; carried only on graphSelections rows. */
+  engineTopologyFallback?: EngineTopologyFallback
   engineEntityId?: ArtifactId
   patternIndex?: number
 }
@@ -72,7 +97,7 @@ export type Selections = {
 export type SetSelections =
   | {
       selectionType: 'singleCodeCursor'
-      selection?: Selection
+      selection: Selection
       scrollIntoView?: boolean
     }
   | {
@@ -131,6 +156,7 @@ export interface SketchDetails {
   origin: [number, number, number]
   // face id or plane id, both are strings
   animateTargetId?: string
+  animateTargetIsFace?: boolean
   // this is the expression that was added when as sketch tool was used but not completed
   // i.e first click for the center of the circle, but not the second click for the radius
   // we added a circle to editor, but they bailed out early so we should remove it, set to -1 to ignore
@@ -226,7 +252,6 @@ export type SegmentOverlayPayload =
 export interface Store {
   videoElement?: HTMLVideoElement
   cameraProjection?: Setting<CameraProjectionType>
-  useSketchSolveMode?: Setting<boolean>
   defaultUnit?: Setting<BaseUnit>
 }
 

@@ -1,4 +1,6 @@
-import path from 'path'
+import { resolveOPFSHandle as walk } from '@src/lib/fs-zds/opfsHandle'
+
+const OPFS_PATH_SEPARATOR = '/'
 
 type WriteFileRequest = {
   id: number
@@ -10,48 +12,6 @@ type WriteFileRequest = {
 type WorkerResponse =
   | { id: number; ok: true }
   | { id: number; ok: false; error: string }
-
-const walk = async (
-  targetPath: string
-): Promise<undefined | FileSystemDirectoryHandle | FileSystemFileHandle> => {
-  let current = await navigator.storage.getDirectory()
-  let cwd = ''
-  let looped = true
-  let currentChanged = true
-
-  if (targetPath.split(path.sep).length === 2) {
-    return current
-  }
-
-  while (looped && currentChanged) {
-    let entries = current.entries()
-    looped = false
-    currentChanged = false
-    for await (let [name, handle] of entries) {
-      looped = true
-      const currentPath = path.resolve(cwd, name)
-
-      if (targetPath.startsWith(currentPath) === false) {
-        continue
-      }
-
-      if (targetPath === currentPath) {
-        return handle
-      }
-
-      if (handle instanceof FileSystemDirectoryHandle) {
-        cwd = currentPath
-        current = handle
-        currentChanged = true
-        break
-      }
-
-      return undefined
-    }
-  }
-
-  return undefined
-}
 
 const writeWithHandle = async (
   handle: FileSystemFileHandle,
@@ -86,7 +46,7 @@ const writeWithHandle = async (
   const writableMethod = (
     handle as FileSystemFileHandle & {
       createWritable?: () => Promise<{
-        write: (data: Blob) => Promise<void>
+        write: (data: Uint8Array<ArrayBuffer>) => Promise<void>
         close: () => Promise<void>
       }>
     }
@@ -94,7 +54,7 @@ const writeWithHandle = async (
 
   if (typeof writableMethod === 'function') {
     const writer = await writableMethod.call(handle)
-    await writer.write(new Blob([data], { type: 'application/octet-stream' }))
+    await writer.write(data)
     await writer.close()
     return
   }
@@ -106,11 +66,15 @@ const writeFile = async (
   targetPath: string,
   data: Uint8Array<ArrayBuffer>
 ): Promise<void> => {
-  const parts = targetPath.split(path.sep)
-  const parent = parts.slice(0, -1).join(path.sep)
+  const parts = targetPath.split(OPFS_PATH_SEPARATOR)
+  const parent = parts.slice(0, -1).join(OPFS_PATH_SEPARATOR)
   const handle = await walk(parent)
-  if (handle === undefined) return Promise.reject('ENOENT')
-  if (handle instanceof FileSystemFileHandle) return Promise.reject('EISFILE')
+  if (handle === undefined) {
+    return Promise.reject('ENOENT')
+  }
+  if (handle instanceof FileSystemFileHandle) {
+    return Promise.reject('EISFILE')
+  }
 
   const fileHandle = await handle.getFileHandle(parts.slice(-1)[0], {
     create: true,
@@ -119,9 +83,11 @@ const writeFile = async (
   await writeWithHandle(fileHandle, data)
 }
 
-onmessage = (event: MessageEvent<WriteFileRequest>) => {
+self.onmessage = (event: MessageEvent<WriteFileRequest>) => {
   const { id, type, targetPath, data } = event.data
-  if (type !== 'write-file') return
+  if (type !== 'write-file') {
+    return
+  }
 
   void writeFile(targetPath, data)
     .then(() => {

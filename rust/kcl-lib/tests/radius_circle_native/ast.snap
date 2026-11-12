@@ -1420,6 +1420,7 @@ description: Result of parsing radius_circle_native.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

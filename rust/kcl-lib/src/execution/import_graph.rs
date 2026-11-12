@@ -12,6 +12,7 @@ use crate::SourceRange;
 use crate::errors::KclErrorDetails;
 use crate::execution::typed_path::TypedPath;
 use crate::modules::ModulePath;
+use crate::modules::ModulePathExt as _;
 use crate::modules::ModuleRepr;
 use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::ImportStatement;
@@ -142,7 +143,7 @@ fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>, KclEr
             if dep_map.get(&module).map(|v| v.len()).unwrap_or(0) == 0 {
                 // if it's None or empty, this is a node that we can process,
                 // and remove from the graph.
-                stage_modules.push(module.to_string());
+                stage_modules.push(module);
             }
         }
 

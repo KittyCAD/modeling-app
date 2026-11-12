@@ -49,7 +49,7 @@ startSketchOn(offsetPlane(topPlane, offset = 2))
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the planeOf function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-planeOf0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-planeOf0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-planeOf0.png"
@@ -93,7 +93,7 @@ rib = startSketchOn(offsetPlane(sidePlane, offset = 1mm))
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the planeOf function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-planeOf1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-planeOf1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-planeOf1.png"

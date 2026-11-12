@@ -84,7 +84,7 @@ describe('keymap contract', () => {
     const item = createKeymapItem({
       id: 'top-view',
       keystrokes: ['v', '1'],
-      scopes: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
+      when: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
     })
 
     const tree = createKeymapTree([item])
@@ -111,7 +111,7 @@ describe('keymap contract', () => {
     })
     const scopedItem = createKeymapItem({
       id: 'command-palette.close',
-      scopes: ['cmd-palette-open'],
+      when: ['cmd-palette-open'],
       keystrokes: ['mod+k'],
     })
 
@@ -129,6 +129,48 @@ describe('keymap contract', () => {
     })
   })
 
+  it('falls back to an available binding without consuming the unavailable one', () => {
+    const baseItem = createKeymapItem({
+      id: 'base-command',
+      keystrokes: ['mod+k'],
+    })
+    const scopedItem = createKeymapItem({
+      id: 'scoped-command',
+      when: ['test-scope'],
+      keystrokes: ['mod+k'],
+    })
+    const tree = createKeymapTree([baseItem, scopedItem])
+
+    expect(
+      matchKeymapKeystrokes(
+        tree,
+        ['test-scope'],
+        ['mod+k'],
+        [],
+        (item) => item !== scopedItem
+      )
+    ).toEqual({ type: 'full', item: baseItem })
+  })
+
+  it('does not return a prefix for unavailable bindings', () => {
+    const item = createKeymapItem({
+      id: 'unavailable-command',
+      keystrokes: ['v', '1'],
+      when: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
+    })
+    const tree = createKeymapTree([item])
+
+    expect(
+      matchKeymapKeystrokes(
+        tree,
+        [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
+        ['v'],
+        [],
+        () => false
+      )
+    ).toEqual({ type: 'none' })
+  })
+
   it('matches scoped items from a single prefix tree', () => {
     const baseItem = createKeymapItem({
       id: 'command-palette.open',
@@ -136,7 +178,7 @@ describe('keymap contract', () => {
     })
     const scopedItem = createKeymapItem({
       id: 'command-palette.close',
-      scopes: ['cmd-palette-open', CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+      when: ['cmd-palette-open', CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
       keystrokes: ['mod+k'],
     })
 
@@ -159,7 +201,7 @@ describe('keymap contract', () => {
   it('only returns prefix matches when the prefix has active scoped leaves', () => {
     const settingsItem = createKeymapItem({
       id: 'settings.project',
-      scopes: ['settings-open'],
+      when: ['settings-open'],
       keystrokes: ['p', '1'],
     })
 
@@ -176,7 +218,7 @@ describe('keymap contract', () => {
       id: 'mode.line',
       command: 'mode.line',
       keystrokes: ['l'],
-      scopes: [MODE_SKETCHING_KEYMAP_SCOPE],
+      when: [MODE_SKETCHING_KEYMAP_SCOPE],
     })
 
     const tree = createKeymapTree([item])
@@ -211,7 +253,7 @@ describe('keymap contract', () => {
       id: 'mode.line',
       command: 'mode.line',
       keystrokes: ['l'],
-      scopes: [MODE_SKETCHING_KEYMAP_SCOPE],
+      when: [MODE_SKETCHING_KEYMAP_SCOPE],
     })
     const tree = createKeymapTree([item])
     const scopeMetadata = [
@@ -242,13 +284,13 @@ describe('keymap contract', () => {
       id: 'sketch.vertical',
       command: 'sketch.vertical',
       keystrokes: ['v'],
-      scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      when: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
     })
     const viewTop = createKeymapItem({
       id: 'view.top',
       command: 'view.top',
       keystrokes: ['v', '1'],
-      scopes: [MODE_MODELING_KEYMAP_SCOPE],
+      when: [MODE_MODELING_KEYMAP_SCOPE],
     })
 
     const tree = createKeymapTree([viewTop, vertical])
@@ -328,10 +370,37 @@ describe('keymap contract', () => {
     expect(items[0]?.source).toBe('test.extension.override')
   })
 
+  it('normalizes legacy plugin scopes into keybinding when conditions', () => {
+    const items = createKeymapItemsFromContributions([
+      {
+        id: 'test.legacy',
+        title: 'Legacy command',
+        command: 'test.legacy',
+        keystrokes: ['mod+j'],
+        scopes: [' legacy-context ', 'legacy-context'],
+        source: 'legacy.extension',
+      },
+      {
+        id: 'test.when-wins',
+        title: 'When wins',
+        command: 'test.when-wins',
+        keystrokes: ['mod+k'],
+        when: [],
+        scopes: ['legacy-context'],
+        source: 'legacy.extension',
+      },
+    ])
+
+    expect(items[0]?.when).toEqual(['legacy-context'])
+    expect(items[0]).not.toHaveProperty('scopes')
+    expect(items[1]?.when).toBeUndefined()
+    expect(items[1]).not.toHaveProperty('scopes')
+  })
+
   it('resolves persisted user bindings into user-sourced keymap items', () => {
     const tree = createKeymapTree(
       resolveKeymapItems([], {
-        version: 1,
+        version: 2,
         bindings: [
           {
             title: 'User command',
@@ -358,7 +427,7 @@ describe('keymap contract', () => {
     })
     const tree = createKeymapTree(
       resolveKeymapItems([item], {
-        version: 1,
+        version: 2,
         bindings: [
           {
             command: 'zds.commandPalette.open',
@@ -376,81 +445,7 @@ describe('keymap contract', () => {
         ...item,
         keystrokes: ['mod+p'],
         source: 'User',
-        scopes: undefined,
-      },
-    })
-  })
-
-  it('uses persisted overrides for linked hidden keybindings', () => {
-    const legacyItem = createKeymapItem({
-      id: 'toolbar.sketch-legacy.line',
-      command: 'zds.toolbar.sketchLegacy.line',
-      keystrokes: ['l'],
-      scopes: [MODE_SKETCHING_KEYMAP_SCOPE],
-      hidden: true,
-      userBindingCommand: 'zds.toolbar.sketch.line',
-    })
-    const item = createKeymapItem({
-      id: 'toolbar.sketch.line',
-      command: 'zds.toolbar.sketch.line',
-      keystrokes: ['l'],
-      scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-    })
-    const tree = createKeymapTree(
-      resolveKeymapItems([legacyItem, item], {
-        version: 1,
-        bindings: [
-          {
-            command: 'zds.toolbar.sketch.line',
-            keystrokes: ['shift+q'],
-            scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-          },
-        ],
-      })
-    )
-    const scopeMetadata = [
-      createContextScope(MODE_SKETCHING_KEYMAP_SCOPE, 200),
-      createContextScope(MODE_SKETCH_SOLVE_KEYMAP_SCOPE, 220),
-    ]
-
-    expect(
-      matchKeymapKeystrokes(
-        tree,
-        [MODE_SKETCHING_KEYMAP_SCOPE],
-        ['l'],
-        scopeMetadata
-      )
-    ).toEqual({ type: 'none' })
-    expect(
-      matchKeymapKeystrokes(
-        tree,
-        [MODE_SKETCHING_KEYMAP_SCOPE],
-        ['shift+q'],
-        scopeMetadata
-      )
-    ).toEqual({
-      type: 'full',
-      item: {
-        ...legacyItem,
-        keystrokes: ['shift+q'],
-        scopes: [MODE_SKETCHING_KEYMAP_SCOPE],
-        source: 'User',
-      },
-    })
-    expect(
-      matchKeymapKeystrokes(
-        tree,
-        [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-        ['shift+q'],
-        scopeMetadata
-      )
-    ).toEqual({
-      type: 'full',
-      item: {
-        ...item,
-        keystrokes: ['shift+q'],
-        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-        source: 'User',
+        when: undefined,
       },
     })
   })
@@ -460,7 +455,7 @@ describe('keymap contract', () => {
       id: 'editor.undo.code-editor-focused',
       command: 'zds.editor.undo',
       keystrokes: ['mod+z'],
-      scopes: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+      when: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
       hidden: true,
       userBindingCommand: 'zds.editor.undo',
     })
@@ -468,16 +463,16 @@ describe('keymap contract', () => {
       id: 'editor.undo',
       command: 'zds.editor.undo',
       keystrokes: ['mod+z'],
-      scopes: [MODE_MODELING_KEYMAP_SCOPE],
+      when: [MODE_MODELING_KEYMAP_SCOPE],
     })
     const tree = createKeymapTree(
       resolveKeymapItems([hiddenEditorItem, visibleItem], {
-        version: 1,
+        version: 2,
         bindings: [
           {
             command: 'zds.editor.undo',
             keystrokes: ['mod+alt+z'],
-            scopes: [MODE_MODELING_KEYMAP_SCOPE],
+            when: [MODE_MODELING_KEYMAP_SCOPE],
           },
         ],
       })
@@ -514,7 +509,7 @@ describe('keymap contract', () => {
       item: {
         ...visibleItem,
         keystrokes: ['mod+alt+z'],
-        scopes: [MODE_MODELING_KEYMAP_SCOPE],
+        when: [MODE_MODELING_KEYMAP_SCOPE],
         source: 'User',
       },
     })
@@ -528,7 +523,7 @@ describe('keymap contract', () => {
     })
     const tree = createKeymapTree(
       resolveKeymapItems([item], {
-        version: 1,
+        version: 2,
         bindings: [
           {
             command: '-zds.commandPalette.open',
@@ -546,24 +541,24 @@ describe('keymap contract', () => {
       id: 'toolbar.sketch.exit',
       command: 'zds.toolbar.sketch.exit',
       keystrokes: ['shift+escape'],
-      scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      when: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
     })
     const hiddenAlias = createKeymapItem({
       id: 'toolbar.sketch.exit.alias',
       command: 'zds.toolbar.sketch.exit',
       keystrokes: ['escape'],
-      scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      when: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
       hidden: true,
       userBindingCommand: 'zds.toolbar.sketch.exit',
     })
     const tree = createKeymapTree(
       resolveKeymapItems([visibleItem, hiddenAlias], {
-        version: 1,
+        version: 2,
         bindings: [
           {
             command: '-zds.toolbar.sketch.exit',
             keystrokes: ['shift+escape'],
-            scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+            when: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
           },
         ],
       })
@@ -589,7 +584,7 @@ function createKeymapItem(
     title: item.id,
     command: item.id,
     source: 'test',
-    scopes: [BASE_KEYMAP_SCOPE],
+    when: [BASE_KEYMAP_SCOPE],
     ...item,
   }
 }

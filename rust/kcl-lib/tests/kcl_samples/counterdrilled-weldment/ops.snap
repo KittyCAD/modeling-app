@@ -12,8 +12,10 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": 0.25,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": 0.4375,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": 0.1875,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": 1.25,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": 0.115,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -215,8 +229,10 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +260,10 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -273,8 +291,10 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": 0.01,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -302,8 +322,10 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": 6.5,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -331,8 +353,10 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": 4.5,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -394,18 +418,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 3.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -420,18 +448,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -488,18 +520,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -514,18 +550,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -575,18 +615,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 3.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -601,18 +645,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": -3.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -662,18 +710,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 3.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -688,18 +740,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 3.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -749,18 +805,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": -3.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -775,18 +835,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 3.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -836,18 +900,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": -3.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -862,18 +930,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": -3.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1103,18 +1175,22 @@ description: Operations executed counterdrilled-weldment.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1167,18 +1243,22 @@ description: Operations executed counterdrilled-weldment.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1726,18 +1806,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.63,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1752,18 +1836,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1813,18 +1901,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1839,18 +1931,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.63,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1904,18 +2000,22 @@ description: Operations executed counterdrilled-weldment.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1968,18 +2068,22 @@ description: Operations executed counterdrilled-weldment.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -2241,8 +2345,10 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2310,39 +2416,105 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       },
       "labeledArgs": {
+        "edges": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
+                        "value": "rightEdge",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "bottomEdge",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
+                        "value": "leftEdge",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "bottomEdge",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
+                        "value": "rightEdge",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "topEdge",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
+                        "value": "leftEdge",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "topEdge",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
         "length": {
           "value": {
             "type": "Number",
             "value": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        },
-        "tags": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Uuid",
-                "value": "[uuid]"
-              },
-              {
-                "type": "Uuid",
-                "value": "[uuid]"
-              },
-              {
-                "type": "Uuid",
-                "value": "[uuid]"
-              },
-              {
-                "type": "Uuid",
-                "value": "[uuid]"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
               }
-            ]
+            }
           },
           "sourceRange": []
         }
@@ -2380,8 +2552,10 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": 0.51,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2445,18 +2619,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": -2.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2471,18 +2649,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2539,18 +2721,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": -2.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2565,18 +2751,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": -2.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2633,18 +2823,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": -2.375,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2659,18 +2853,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": -2.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2720,18 +2918,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": -2.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2746,18 +2948,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": -2.375,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2811,18 +3017,22 @@ description: Operations executed counterdrilled-weldment.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -3378,8 +3588,10 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": -0.52,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3449,8 +3661,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -3458,8 +3672,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -3467,8 +3683,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -3481,8 +3699,10 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3493,7 +3713,9 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -3548,8 +3770,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -3557,8 +3781,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -3566,8 +3792,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -3580,8 +3808,10 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": 3.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3592,7 +3822,9 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -3656,18 +3888,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": -2.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3682,18 +3918,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3750,18 +3990,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": -2.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3776,18 +4020,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": -2.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3844,18 +4092,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": -2.28125,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3870,18 +4122,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": -2.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3931,18 +4187,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": -2.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3957,18 +4217,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": -2.28125,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4022,18 +4286,22 @@ description: Operations executed counterdrilled-weldment.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -4589,8 +4857,10 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": -0.2075,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4660,8 +4930,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -4669,8 +4941,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -4678,8 +4952,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -4692,8 +4968,10 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4704,7 +4982,9 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -4759,8 +5039,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -4768,8 +5050,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -4777,8 +5061,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -4791,8 +5077,10 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": 3.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4803,7 +5091,9 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -4957,8 +5247,10 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": 0.74,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -4986,8 +5278,10 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": 2.4779759474226504,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -5015,8 +5309,10 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": 0.15,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -5044,8 +5340,10 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": 2.1,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -5073,8 +5371,10 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": 2.2,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -5136,18 +5436,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.2,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5162,18 +5466,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5230,18 +5538,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.125,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.2,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5256,18 +5568,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.2,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5317,18 +5633,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.2,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5343,18 +5663,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.125,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.2,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5408,18 +5732,22 @@ description: Operations executed counterdrilled-weldment.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -5848,8 +6176,10 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": -10.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5914,8 +6244,10 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5982,18 +6314,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.74,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6008,18 +6344,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6076,18 +6416,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.625,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6102,18 +6446,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6163,18 +6511,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6189,18 +6541,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.74,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6250,18 +6606,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6276,18 +6636,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.625,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6341,18 +6705,22 @@ description: Operations executed counterdrilled-weldment.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -6405,18 +6773,22 @@ description: Operations executed counterdrilled-weldment.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -6469,18 +6841,22 @@ description: Operations executed counterdrilled-weldment.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -6533,18 +6909,22 @@ description: Operations executed counterdrilled-weldment.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -6968,8 +7348,10 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7108,18 +7490,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.74,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7134,18 +7520,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7195,18 +7585,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.74,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.1,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7221,18 +7615,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.74,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7282,18 +7680,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.74,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.1,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7308,18 +7710,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.89,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.1,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7369,18 +7775,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.89,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.1,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7395,18 +7805,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 2.48,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.65,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7456,18 +7870,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 2.48,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.65,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7482,18 +7900,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 2.48,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7543,18 +7965,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 2.48,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7569,18 +7995,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.74,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7634,18 +8064,22 @@ description: Operations executed counterdrilled-weldment.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -8431,8 +8865,10 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": 0.115,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8505,9 +8941,11 @@ description: Operations executed counterdrilled-weldment.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
-              "degrees": null,
               "type": "Known",
-              "type": "Angle"
+              "value": {
+                "type": "Angle",
+                "value": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8521,8 +8959,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -8530,8 +8970,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -8539,8 +8981,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -8556,8 +9000,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -8565,8 +9011,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -8574,8 +9022,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -8588,7 +9038,9 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -8659,18 +9111,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.74,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -8685,18 +9141,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -8746,18 +9206,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.74,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.1,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -8772,18 +9236,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.74,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -8833,18 +9301,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.74,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.1,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -8859,18 +9331,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.89,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.1,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -8920,18 +9396,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.89,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.1,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -8946,18 +9426,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 2.48,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.65,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -9007,18 +9491,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 2.48,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.65,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -9033,18 +9521,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 2.48,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -9094,18 +9586,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 2.48,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -9120,18 +9616,22 @@ description: Operations executed counterdrilled-weldment.kcl
                 "type": "SketchVar",
                 "value": 0.74,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -9185,18 +9685,22 @@ description: Operations executed counterdrilled-weldment.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -9982,8 +10486,10 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": 0.115,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10056,9 +10562,11 @@ description: Operations executed counterdrilled-weldment.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
-              "degrees": null,
               "type": "Known",
-              "type": "Angle"
+              "value": {
+                "type": "Angle",
+                "value": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10072,8 +10580,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -10081,8 +10591,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -10090,8 +10602,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -10107,8 +10621,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -10116,8 +10632,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -10125,8 +10643,10 @@ description: Operations executed counterdrilled-weldment.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -10139,7 +10659,9 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -10205,7 +10727,9 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -10233,7 +10757,9 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -10267,7 +10793,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10291,7 +10817,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10315,7 +10841,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10339,7 +10865,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10363,7 +10889,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10387,7 +10913,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10411,7 +10937,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10435,7 +10961,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

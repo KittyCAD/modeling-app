@@ -1,4 +1,6 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { validateSolidEdgeSelections } from '@src/lang/modifyAst/validateSolidEdgeSelections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 import {
   addIntersect,
@@ -39,10 +41,11 @@ import {
 } from '@src/lang/modifyAst/gears'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
+  defineModelingCodemod,
   type ModelingCodemod,
   type ModelingCodemodResult,
-  defineModelingCodemod,
 } from '@src/lang/modifyAst/modelingCodemod'
+import { addNamedView } from '@src/lang/modifyAst/namedViews'
 import {
   addPatternCircular3D,
   addPatternLinear3D,
@@ -77,74 +80,102 @@ import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/mod
 import { withDefaultGdtFrameDefaults } from '@src/lib/gdtFramePosition'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
-type ModelingCodemodCommandSchema = {
+type CommandArgsByName = {
   [CommandName in keyof StdLibModelingCommandSchema]: StdLibModelingCommandSchema[CommandName] & {
     nodeToEdit?: PathToNode
   }
 }
 
-type ModelingCodemodCommandName = keyof ModelingCodemodCommandSchema &
-  ModelingStdLibCommandName
+type CommandName = keyof CommandArgsByName & ModelingStdLibCommandName
 
-type ModelingCommandCodemodConfig<
-  CommandName extends ModelingCodemodCommandName,
-> = ModelingCodemod<ModelingCodemodCommandSchema[CommandName]>
+type CommandCodemod<Name extends CommandName> = ModelingCodemod<
+  CommandArgsByName[Name]
+>
 
-type ModelingCommandCodemods = Partial<{
-  [CommandName in ModelingCodemodCommandName]: ModelingCommandCodemodConfig<CommandName>
+type CommandCodemods = Partial<{
+  [Name in CommandName]: CommandCodemod<Name>
 }>
 
-type AddCodemodArgs<
-  CommandName extends ModelingCodemodCommandName,
+type AddFunctionArgs<
+  Name extends CommandName,
   ExtraContext extends object = object,
-> = ModelingCodemodCommandSchema[CommandName] &
+> = CommandArgsByName[Name] &
   ExtraContext & {
     ast: Node<Program>
     wasmInstance: ModuleType
   }
 
-type AddCodemod<
-  CommandName extends ModelingCodemodCommandName,
+type AddFunction<
+  Name extends CommandName,
   ExtraContext extends object = object,
-> = (args: AddCodemodArgs<CommandName, ExtraContext>) => ModelingCodemodResult
+> = (args: AddFunctionArgs<Name, ExtraContext>) => ModelingCodemodResult
 
-type ModelingCodemodOptions<CommandName extends ModelingCodemodCommandName> =
-  Omit<
-    ModelingCommandCodemodConfig<CommandName>,
-    'enableExperimentalFeatures' | 'run'
-  >
+type AddFunctionInput<Add extends (...args: never[]) => unknown> =
+  Parameters<Add>[0]
 
-const withStdLibExperimentalFeatures = <
-  CommandName extends ModelingCodemodCommandName,
->(
-  commandName: CommandName,
-  options?: ModelingCodemodOptions<CommandName>
-): Omit<ModelingCommandCodemodConfig<CommandName>, 'run'> => ({
+// The following two `MissingCommandArgs` and `CompleteAddFunction` are the actual guard.
+// Taking this for instance as a mini-Extrude example case.
+//`
+// type Expected = {
+//   length: KclCommandValue
+//   draftAngle?: KclCommandValue
+// }
+// ```
+// Below we inspect the parameters explicitly:
+// - `NoInfer` prevents this comparison from contributing to inference of `Add`.
+// - `nodeToEdit` is excluded as it's specific command-bar plumbing for edits
+// For an incomplete addExtrude input type, missing `draftAngle`,
+// it would produce `'draftAngle'`.
+type MissingCommandArgs<
+  Name extends CommandName,
+  Add extends (...args: never[]) => unknown,
+> = Exclude<
+  keyof CommandArgsByName[Name],
+  keyof AddFunctionInput<NoInfer<Add>> | 'nodeToEdit'
+>
+
+// Then we require a `never` property for each missing argument.
+// For our example, it would result in `typeof addExtrude & { draftAngle: never }`,
+// so tsc fails because addExtrude has no required `draftAngle` property.
+type CompleteAddFunction<
+  Name extends CommandName,
+  Add extends (...args: never[]) => unknown,
+> = Add & Record<MissingCommandArgs<Name, Add>, never>
+
+type CommandCodemodOptions<Name extends CommandName> = Omit<
+  CommandCodemod<Name>,
+  'enableExperimentalFeatures' | 'run'
+>
+
+const withStdLibExperimentalFeatures = <Name extends CommandName>(
+  commandName: Name,
+  options?: CommandCodemodOptions<Name>
+): Omit<CommandCodemod<Name>, 'run'> => ({
   ...options,
   enableExperimentalFeatures: (args) =>
     modelingStdLibCommandUsesExperimentalFeatures(commandName, args),
 })
 
 const addCodemodArgs = <
-  CommandName extends ModelingCodemodCommandName,
+  Name extends CommandName,
   ExtraContext extends object = object,
 >(
-  args: ModelingCodemodCommandSchema[CommandName],
+  args: CommandArgsByName[Name],
   context: ExtraContext & {
     ast: Node<Program>
     wasmInstance: ModuleType
   }
-): AddCodemodArgs<CommandName, ExtraContext> => ({
+): AddFunctionArgs<Name, ExtraContext> => ({
   ...args,
   ...context,
 })
 
-const withAst = <CommandName extends ModelingCodemodCommandName>(
-  commandName: CommandName,
-  add: AddCodemod<CommandName>,
-  options?: ModelingCodemodOptions<CommandName>
+const withAst = <Name extends CommandName, Add extends AddFunction<Name>>(
+  commandName: Name,
+  add: CompleteAddFunction<Name, Add>,
+  options?: CommandCodemodOptions<Name>
 ) =>
-  defineModelingCodemod<ModelingCodemodCommandSchema[CommandName]>({
+  defineModelingCodemod<CommandArgsByName[Name]>({
     ...withStdLibExperimentalFeatures(commandName, options),
     run: ({ args, ast, wasmInstance }) =>
       add({
@@ -154,12 +185,15 @@ const withAst = <CommandName extends ModelingCodemodCommandName>(
       }),
   })
 
-const withArtifactGraph = <CommandName extends ModelingCodemodCommandName>(
-  commandName: CommandName,
-  add: AddCodemod<CommandName, { artifactGraph: ArtifactGraph }>,
-  options?: ModelingCodemodOptions<CommandName>
+const withArtifactGraph = <
+  Name extends CommandName,
+  Add extends AddFunction<Name, { artifactGraph: ArtifactGraph }>,
+>(
+  commandName: Name,
+  add: CompleteAddFunction<Name, Add>,
+  options?: CommandCodemodOptions<Name>
 ) =>
-  defineModelingCodemod<ModelingCodemodCommandSchema[CommandName]>({
+  defineModelingCodemod<CommandArgsByName[Name]>({
     ...withStdLibExperimentalFeatures(commandName, options),
     run: ({ args, ast, kclManager, wasmInstance }) =>
       add(
@@ -171,17 +205,43 @@ const withArtifactGraph = <CommandName extends ModelingCodemodCommandName>(
       ),
   })
 
-const withArtifactGraphAndVariables = <
-  CommandName extends ModelingCodemodCommandName,
+// A sketch segment does not identify which solid edge the user intends.
+const withSolidEdgeSelections = <
+  Args extends {
+    selection?: Selections
+    objects?: Selections
+    nodeToEdit?: PathToNode
+  },
 >(
-  commandName: CommandName,
-  add: AddCodemod<
-    CommandName,
+  codemod: ModelingCodemod<Args>,
+  selectionKey: 'selection' | 'objects' = 'selection'
+): ModelingCodemod<Args> => ({
+  ...codemod,
+  run: (context) => {
+    const selections = context.args[selectionKey]
+    if (selections && !context.args.nodeToEdit) {
+      const error = validateSolidEdgeSelections(
+        selections,
+        context.kclManager.artifactGraph
+      )
+      if (error) return error
+    }
+    return codemod.run(context)
+  },
+})
+
+const withArtifactGraphAndVariables = <
+  Name extends CommandName,
+  Add extends AddFunction<
+    Name,
     { artifactGraph: ArtifactGraph; variables: VariableMap }
   >,
-  options?: ModelingCodemodOptions<CommandName>
+>(
+  commandName: Name,
+  add: CompleteAddFunction<Name, Add>,
+  options?: CommandCodemodOptions<Name>
 ) =>
-  defineModelingCodemod<ModelingCodemodCommandSchema[CommandName]>({
+  defineModelingCodemod<CommandArgsByName[Name]>({
     ...withStdLibExperimentalFeatures(commandName, options),
     run: ({ args, ast, kclManager, wasmInstance }) =>
       add(
@@ -196,12 +256,15 @@ const withArtifactGraphAndVariables = <
 
 type GdtCommandData = Parameters<typeof withDefaultGdtFrameDefaults>[0]['data']
 
-const withGdtDefaults = <CommandName extends ModelingCodemodCommandName>(
-  commandName: CommandName,
-  add: AddCodemod<CommandName, { artifactGraph: ArtifactGraph }>,
-  options?: ModelingCodemodOptions<CommandName>
+const withGdtDefaults = <
+  Name extends CommandName,
+  Add extends AddFunction<Name, { artifactGraph: ArtifactGraph }>,
+>(
+  commandName: Name,
+  add: CompleteAddFunction<Name, Add>,
+  options?: CommandCodemodOptions<Name>
 ) =>
-  defineModelingCodemod<ModelingCodemodCommandSchema[CommandName]>({
+  defineModelingCodemod<CommandArgsByName[Name]>({
     ...withStdLibExperimentalFeatures(commandName, options),
     run: async ({ args, ast, kclManager, wasmInstance }) => {
       const data = await withDefaultGdtFrameDefaults({
@@ -214,7 +277,7 @@ const withGdtDefaults = <CommandName extends ModelingCodemodCommandName>(
       })
 
       return add(
-        addCodemodArgs(data as ModelingCodemodCommandSchema[CommandName], {
+        addCodemodArgs(data as CommandArgsByName[Name], {
           ast,
           artifactGraph: kclManager.artifactGraph,
           wasmInstance,
@@ -224,6 +287,9 @@ const withGdtDefaults = <CommandName extends ModelingCodemodCommandName>(
   })
 
 export const modelingCommandCodemods = {
+  'Named View': withArtifactGraph('Named View', addNamedView, {
+    focusPath: false,
+  }),
   Extrude: withArtifactGraph('Extrude', addExtrude),
   Sweep: withArtifactGraph('Sweep', addSweep),
   Loft: withArtifactGraph('Loft', addLoft),
@@ -240,8 +306,8 @@ export const modelingCommandCodemods = {
   'Herringbone Gear': withAst('Herringbone Gear', addHerringboneGear),
   'Spur Gear': withAst('Spur Gear', addSpurGear),
   'Ring Gear': withAst('Ring Gear', addRingGear),
-  Fillet: withArtifactGraph('Fillet', addFillet),
-  Chamfer: withArtifactGraph('Chamfer', addChamfer),
+  Fillet: withSolidEdgeSelections(withArtifactGraph('Fillet', addFillet)),
+  Chamfer: withSolidEdgeSelections(withArtifactGraph('Chamfer', addChamfer)),
   Appearance: withArtifactGraph('Appearance', addAppearance),
   Delete: withArtifactGraph('Delete', addDelete, {
     focusPath: false,
@@ -260,29 +326,62 @@ export const modelingCommandCodemods = {
     addPatternLinear3D
   ),
   'GDT Flatness': withGdtDefaults('GDT Flatness', addFlatnessGdt),
-  'GDT Straightness': withGdtDefaults('GDT Straightness', addStraightnessGdt),
-  'GDT Circularity': withGdtDefaults('GDT Circularity', addCircularityGdt),
-  'GDT Cylindricity': withGdtDefaults('GDT Cylindricity', addCylindricityGdt),
-  'GDT Position': withGdtDefaults('GDT Position', addPositionGdt),
-  'GDT Profile': withGdtDefaults('GDT Profile', addProfileGdt),
-  'GDT Distance': withGdtDefaults('GDT Distance', addDistanceGdt),
-  'GDT Perpendicularity': withGdtDefaults(
-    'GDT Perpendicularity',
-    addPerpendicularityGdt
+  'GDT Straightness': withSolidEdgeSelections(
+    withGdtDefaults('GDT Straightness', addStraightnessGdt),
+    'objects'
   ),
-  'GDT Angularity': withGdtDefaults('GDT Angularity', addAngularityGdt),
-  'GDT Concentricity': withGdtDefaults(
-    'GDT Concentricity',
-    addConcentricityGdt
+  'GDT Circularity': withSolidEdgeSelections(
+    withGdtDefaults('GDT Circularity', addCircularityGdt),
+    'objects'
   ),
-  'GDT Symmetry': withGdtDefaults('GDT Symmetry', addSymmetryGdt),
-  'GDT Runout': withGdtDefaults('GDT Runout', addRunoutGdt),
-  'GDT Parallelism': withGdtDefaults('GDT Parallelism', addParallelismGdt),
-  'GDT Annotation': withGdtDefaults('GDT Annotation', addAnnotationGdt),
+  'GDT Cylindricity': withSolidEdgeSelections(
+    withGdtDefaults('GDT Cylindricity', addCylindricityGdt),
+    'objects'
+  ),
+  'GDT Position': withSolidEdgeSelections(
+    withGdtDefaults('GDT Position', addPositionGdt),
+    'objects'
+  ),
+  'GDT Profile': withSolidEdgeSelections(
+    withGdtDefaults('GDT Profile', addProfileGdt),
+    'objects'
+  ),
+  'GDT Distance': withSolidEdgeSelections(
+    withGdtDefaults('GDT Distance', addDistanceGdt),
+    'objects'
+  ),
+  'GDT Perpendicularity': withSolidEdgeSelections(
+    withGdtDefaults('GDT Perpendicularity', addPerpendicularityGdt),
+    'objects'
+  ),
+  'GDT Angularity': withSolidEdgeSelections(
+    withGdtDefaults('GDT Angularity', addAngularityGdt),
+    'objects'
+  ),
+  'GDT Concentricity': withSolidEdgeSelections(
+    withGdtDefaults('GDT Concentricity', addConcentricityGdt),
+    'objects'
+  ),
+  'GDT Symmetry': withSolidEdgeSelections(
+    withGdtDefaults('GDT Symmetry', addSymmetryGdt),
+    'objects'
+  ),
+  'GDT Runout': withSolidEdgeSelections(
+    withGdtDefaults('GDT Runout', addRunoutGdt),
+    'objects'
+  ),
+  'GDT Parallelism': withSolidEdgeSelections(
+    withGdtDefaults('GDT Parallelism', addParallelismGdt),
+    'objects'
+  ),
+  'GDT Annotation': withSolidEdgeSelections(
+    withGdtDefaults('GDT Annotation', addAnnotationGdt),
+    'objects'
+  ),
   'GDT Note': withAst('GDT Note', addNoteGdt),
   'GDT Datum': withGdtDefaults('GDT Datum', addDatumGdt),
   'Flip Surface': withArtifactGraph('Flip Surface', addFlipSurface),
   'Join Surfaces': withArtifactGraph('Join Surfaces', addJoinSurfaces),
   'Delete Face': withArtifactGraph('Delete Face', addDeleteFace),
   Blend: withArtifactGraph('Blend', addBlend),
-} satisfies ModelingCommandCodemods
+} satisfies CommandCodemods

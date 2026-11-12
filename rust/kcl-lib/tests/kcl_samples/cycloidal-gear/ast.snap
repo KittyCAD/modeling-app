@@ -10310,6 +10310,7 @@ description: Result of parsing cycloidal-gear.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

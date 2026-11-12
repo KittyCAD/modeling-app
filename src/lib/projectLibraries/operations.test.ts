@@ -1,3 +1,4 @@
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -21,6 +22,7 @@ describe('createProjectInLocalDirectory', () => {
     try {
       await expect(
         createProjectInLocalDirectory({
+          fileOperations: testFileOperations,
           projectDirectoryPath,
           requestedProjectName: '..',
           requestedProjectTitle: 'Unsafe project',

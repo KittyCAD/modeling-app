@@ -176,7 +176,7 @@ description: Result of parsing early_return_cross_module.kcl
         "preComments": [
           "// The entry point's kclVersion governs the whole execution: this",
           "// KCL 3.0 entry point gives early-return semantics to functions from",
-          "// an imported 2.0 module too."
+          "// an imported module that declares no kclVersion too."
         ],
         "properties": [
           {
@@ -197,11 +197,14 @@ description: Result of parsing early_return_cross_module.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "raw": "\"3.0-preview\"",
+              "raw": "3.0",
               "start": 0,
               "type": "Literal",
               "type": "Literal",
-              "value": "3.0-preview"
+              "value": {
+                "value": 3.0,
+                "suffix": "None"
+              }
             }
           }
         ],
@@ -227,6 +230,7 @@ description: Result of parsing early_return_cross_module.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

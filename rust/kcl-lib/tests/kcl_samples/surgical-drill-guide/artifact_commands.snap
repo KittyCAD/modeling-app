@@ -532,20 +532,6 @@ description: Artifact commands surgical-drill-guide.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "object_visible",
         "object_id": "[uuid]",
         "hidden": true
@@ -742,20 +728,6 @@ description: Artifact commands surgical-drill-guide.kcl
         "size": 100.0,
         "clobber": false,
         "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
       }
     },
     {
@@ -1067,32 +1039,15 @@ description: Artifact commands surgical-drill-guide.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_common_edge",
+        "type": "solid3d_cut_edge_references",
         "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      },
-      "omitFromGraph": true
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
-          "[uuid]"
+        "edges_references": [
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          }
         ],
         "cut_type": {
           "chamfer": {
@@ -1274,20 +1229,6 @@ description: Artifact commands surgical-drill-guide.kcl
         "size": 100.0,
         "clobber": false,
         "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
       }
     },
     {
@@ -1493,55 +1434,21 @@ description: Artifact commands surgical-drill-guide.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_common_edge",
+        "type": "solid3d_cut_edge_references",
         "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      },
-      "omitFromGraph": true
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      },
-      "omitFromGraph": true
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
-          "[uuid]",
-          "[uuid]"
+        "edges_references": [
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          },
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          }
         ],
         "cut_type": {
           "fillet": {
@@ -1596,20 +1503,6 @@ description: Artifact commands surgical-drill-guide.kcl
         "size": 100.0,
         "clobber": false,
         "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
       }
     },
     {
@@ -1921,32 +1814,15 @@ description: Artifact commands surgical-drill-guide.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_common_edge",
+        "type": "solid3d_cut_edge_references",
         "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      },
-      "omitFromGraph": true
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
-          "[uuid]"
+        "edges_references": [
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          }
         ],
         "cut_type": {
           "chamfer": {
@@ -2128,20 +2004,6 @@ description: Artifact commands surgical-drill-guide.kcl
         "size": 100.0,
         "clobber": false,
         "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
       }
     },
     {
@@ -2347,55 +2209,21 @@ description: Artifact commands surgical-drill-guide.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_common_edge",
+        "type": "solid3d_cut_edge_references",
         "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      },
-      "omitFromGraph": true
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      },
-      "omitFromGraph": true
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
-          "[uuid]",
-          "[uuid]"
+        "edges_references": [
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          },
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          }
         ],
         "cut_type": {
           "fillet": {

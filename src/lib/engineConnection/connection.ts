@@ -4,10 +4,6 @@ import type {
   WebSocketResponse,
 } from '@kittycad/lib/dist/types/src'
 import { EngineDebugger } from '@src/lib/debugger'
-import { markOnce } from '@src/lib/performance'
-import { notifySessionExpired } from '@src/lib/sessionExpired'
-import { promiseFactory, uuidv4 } from '@src/lib/utils'
-import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import {
   createOnConnectionStateChange,
   createOnDataChannel,
@@ -29,6 +25,7 @@ import {
   EngineConnectionEvents,
   EngineConnectionStateType,
   PING_INTERVAL_MS,
+  WebSocketCloseCode,
   WebSocketStatusCodes,
 } from '@src/lib/engineConnection/utils'
 import {
@@ -37,6 +34,10 @@ import {
   createOnWebSocketMessage,
   createOnWebSocketOpen,
 } from '@src/lib/engineConnection/websocketConnection'
+import { markOnce } from '@src/lib/performance'
+import { notifySessionExpired } from '@src/lib/sessionExpired'
+import { promiseFactory, uuidv4 } from '@src/lib/utils'
+import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 
 // An interface for a promise that needs to be awaited and pass the resolve reject to
 // other dependencies. We do not need to pass values between these. It is mainly
@@ -51,6 +52,10 @@ interface IDeferredPromise {
 export class Connection extends EventTarget {
   // connection url for the new Websocket()
   readonly url: string
+  readonly geometryOnly: boolean
+  get webrtc(): boolean {
+    return !this.geometryOnly
+  }
   // Authorization bearer token for headers on websocket
   private readonly _token: string | undefined
   private _pingPongSpan: {
@@ -98,29 +103,43 @@ export class Connection extends EventTarget {
 
   // callback functions
   handleOnDataChannelMessage: (event: MessageEvent<any>) => void
-  tearDownManager: (options?: ManagerTearDown) => void
+  recordShutdownTrigger: (options: ManagerTearDown) => boolean
+  tearDownManager: (options: ManagerTearDown) => void
   rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
   handleMessage: ((event: MessageEvent<any>) => void) | null
   private readonly getCloudProjectId: () => string | undefined
+  private reconnectRequested = false
+  private readonly onReconnectRequested: (connection: Connection) => void
 
   constructor({
     url,
     token,
     handleOnDataChannelMessage,
+    recordShutdownTrigger,
     tearDownManager,
     rejectPendingCommand,
     callbackOnUnitTestingConnection,
+    unitTestWebrtc,
+    unitTestGeometryOnly,
     handleMessage,
     getCloudProjectId,
+    geometryOnly = false,
+    onReconnectRequested = (connection: Connection) =>
+      connection.closeForReconnect(),
   }: {
     url: string
     token: string
     handleOnDataChannelMessage: (event: MessageEvent<any>) => void
-    tearDownManager: (options?: ManagerTearDown) => void
+    recordShutdownTrigger: (options: ManagerTearDown) => boolean
+    tearDownManager: (options: ManagerTearDown) => void
     rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
     callbackOnUnitTestingConnection?: (message: string) => void
+    unitTestWebrtc?: boolean
+    unitTestGeometryOnly?: boolean
     handleMessage: (event: MessageEvent<any>) => void
     getCloudProjectId: () => string | undefined
+    geometryOnly?: boolean
+    onReconnectRequested?: (connection: Connection) => void
   }) {
     markOnce('code/startInitialEngineConnect')
     super()
@@ -131,12 +150,15 @@ export class Connection extends EventTarget {
       metadata: { id: this.id },
     })
     this.url = url
+    this.geometryOnly = geometryOnly
     this._token = token
     this.handleOnDataChannelMessage = handleOnDataChannelMessage
+    this.recordShutdownTrigger = recordShutdownTrigger
     this.tearDownManager = tearDownManager
     this.rejectPendingCommand = rejectPendingCommand
     this.handleMessage = handleMessage
     this.getCloudProjectId = getCloudProjectId
+    this.onReconnectRequested = onReconnectRequested
     this._pingPongSpan = { ping: undefined, pong: undefined }
     this.deferredConnection = null
     this.deferredPeerConnection = null
@@ -154,14 +176,25 @@ export class Connection extends EventTarget {
     })
 
     if (callbackOnUnitTestingConnection) {
-      this.connectUnitTesting(callbackOnUnitTestingConnection)
+      this.connectUnitTesting(
+        callbackOnUnitTestingConnection,
+        unitTestWebrtc,
+        unitTestGeometryOnly
+      )
       this.isUsingUnitTestingConnection = true
     }
   }
 
-  connectUnitTesting(callback: (message: string) => void) {
+  connectUnitTesting(
+    callback: (message: string) => void,
+    webrtc = true,
+    geometryOnly = false
+  ) {
+    const webrtcQuery = webrtc ? '' : '&webrtc=false'
+    const geometryOnlyQuery = `&geometry_only=${geometryOnly}`
+    const postEffectQuery = geometryOnly ? '' : '&post_effect=ssao'
     const url = withKittycadWebSocketURL(
-      `?video_res_width=${256}&video_res_height=${256}&post_effect=ssao`
+      `?video_res_width=${256}&video_res_height=${256}${postEffectQuery}${webrtcQuery}${geometryOnlyQuery}`
     )
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'
@@ -188,6 +221,13 @@ export class Connection extends EventTarget {
             callback('auth_token_invalid')
           }
         }
+
+        if (!this.handleMessage) {
+          console.warn('unable to process message, handleMessage is missing')
+          return
+        }
+        this.handleMessage(event)
+        return
       }
 
       if (!('resp' in message)) return
@@ -203,10 +243,27 @@ export class Connection extends EventTarget {
         case 'pong':
           break
 
+        // Sessions without WebRTC use the session data response as the
+        // successful connection handshake.
+        case 'modeling_session_data':
+          if (!webrtc) {
+            callback('auth success')
+          }
+          break
+
         // Only fires on successful authentication.
         case 'ice_server_info':
           callback('auth success')
           return
+        case 'debug':
+        case 'modeling':
+        case 'trickle_ice':
+        case 'export':
+        case 'sdp_answer':
+        case 'modeling_batch':
+        case 'metrics_request':
+        case 'reconnect':
+          break
       }
       if (!this.handleMessage) {
         console.warn('unable to process message, handleMessage is missing')
@@ -280,9 +337,6 @@ export class Connection extends EventTarget {
     }
 
     this.deferredConnection = promiseFactory<any>()
-    this.deferredPeerConnection = promiseFactory<any>()
-    this.deferredMediaStreamAndWebrtcStatsCollector = promiseFactory<any>()
-    this.deferredSdpAnswer = promiseFactory<any>()
 
     const warnAndRejectConnect = (e: any) => {
       console.warn(e)
@@ -293,6 +347,18 @@ export class Connection extends EventTarget {
     this.deferredConnection.promise.catch((e) => {
       console.warn(e)
     })
+
+    if (!this.webrtc) {
+      this.createWebSocketConnection()
+      await this.deferredConnection.promise
+      this.connected = true
+      return
+    }
+
+    this.deferredPeerConnection = promiseFactory<any>()
+    this.deferredMediaStreamAndWebrtcStatsCollector = promiseFactory<any>()
+    this.deferredSdpAnswer = promiseFactory<any>()
+
     this.deferredPeerConnection.promise.catch(warnAndRejectConnect)
     this.deferredMediaStreamAndWebrtcStatsCollector.promise.catch(
       warnAndRejectConnect
@@ -492,6 +558,8 @@ export class Connection extends EventTarget {
 
     // Has a callback workflow that will create a unreliabledatachannel
     const onDataChannel = createOnDataChannel({
+      connection: this,
+      peerConnection: this.peerConnection,
       setUnreliableDataChannel: this.setUnreliableDataChannel.bind(this),
       dispatchEvent: this.dispatchEvent.bind(this),
       trackListener: this.trackListener.bind(this),
@@ -588,8 +656,29 @@ export class Connection extends EventTarget {
     return this.peerConnection
   }
 
+  closeForReconnect() {
+    if (
+      !this.reconnectRequested ||
+      this.websocket?.readyState !== WebSocket.OPEN
+    ) {
+      return
+    }
+
+    this.recordShutdownTrigger({
+      route: 'websocket-closed',
+      initiatedBy: 'api',
+      code: WebSocketCloseCode.NormalClosure.toString(),
+      reason: 'reconnect requested',
+      reconnectRequested: true,
+    })
+    this.websocket.close(
+      WebSocketCloseCode.NormalClosure,
+      'reconnect requested'
+    )
+  }
+
   createWebSocketConnection() {
-    if (!this.deferredSdpAnswer?.resolve) {
+    if (this.webrtc && !this.deferredSdpAnswer?.resolve) {
       console.warn('deferredSdpAnswer resolve is undefined')
       return
     }
@@ -608,6 +697,7 @@ export class Connection extends EventTarget {
       send: this.send.bind(this),
       token: this.token,
       dispatchEvent: this.dispatchEvent.bind(this),
+      onOpen: this.beginWebSocketOnlyHandshake.bind(this),
     })
     const onWebSocketError = createOnWebSocketError()
     const onWebSocketMessage = createOnWebSocketMessage({
@@ -624,12 +714,30 @@ export class Connection extends EventTarget {
       initiateConnectionExclusive: this.initiateConnectionExclusive.bind(this),
       addIceCandidate: this.addIceCandidate.bind(this),
       webrtcStatsCollector: () => this.webrtcStatsCollector?.bind(this),
-      sdpAnswerResolve: this.deferredSdpAnswer.resolve,
-      sdpAnswerReject: this.deferredSdpAnswer.reject,
+      sdpAnswerResolve: this.deferredSdpAnswer?.resolve ?? (() => undefined),
+      sdpAnswerReject: this.deferredSdpAnswer?.reject ?? (() => undefined),
       setApiCallId: (apiCallId) => {
         this.apiCallId = apiCallId
       },
       getCloudProjectId: this.getCloudProjectId,
+      webrtc: this.webrtc,
+      onWebSocketReady: this.establishWebSocketOnlyConnection.bind(this),
+      getConnectionContext: () => ({
+        connectionId: this.id,
+        modelingApiCallId: this.apiCallId ?? null,
+      }),
+      tearDownManager: this.tearDownManager.bind(this),
+      requestReconnect: () => {
+        if (
+          this.reconnectRequested ||
+          this.websocket?.readyState !== WebSocket.OPEN
+        ) {
+          return
+        }
+
+        this.reconnectRequested = true
+        this.onReconnectRequested(this)
+      },
     })
     const onWebSocketClose = createOnWebSocketClose({
       websocket: this.websocket,
@@ -638,6 +746,7 @@ export class Connection extends EventTarget {
       onWebSocketMessage: onWebSocketMessage,
       tearDownManager: this.tearDownManager.bind(this),
       dispatchEvent: this.dispatchEvent.bind(this),
+      getReconnectRequested: () => this.reconnectRequested,
     })
 
     // Meta close will remove all the internal events itself but then the this.websocket.close
@@ -673,6 +782,16 @@ export class Connection extends EventTarget {
       type: 'websocket',
     })
     this.websocket.addEventListener('message', onWebSocketMessage)
+    // Reliable commands can receive replies before WebRTC startup finishes.
+    const onCommandResponse = (event: MessageEvent) => {
+      this.handleMessage?.(event)
+    }
+    this.trackListener('websocket-command-response', {
+      event: 'message',
+      callback: onCommandResponse,
+      type: 'websocket',
+    })
+    this.websocket.addEventListener('message', onCommandResponse)
     this.trackListener('websocket-close', {
       event: 'close',
       callback: metaClose,
@@ -688,6 +807,37 @@ export class Connection extends EventTarget {
       metadata: { id: this.id },
     })
     this.mediaStream = mediaStream
+  }
+
+  private establishWebSocketOnlyConnection() {
+    if (this.webrtc || this.connected) {
+      return
+    }
+
+    this.connected = true
+    this.startPingPong()
+    this.cleanUpTimeouts()
+    markOnce('code/endInitialEngineConnect')
+    this.deferredConnection?.resolve(true)
+    this.dispatchEvent(
+      new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
+        detail: {
+          type: EngineConnectionStateType.ConnectionEstablished,
+        },
+      })
+    )
+  }
+
+  private beginWebSocketOnlyHandshake() {
+    if (this.webrtc) {
+      return
+    }
+
+    this.send({ type: 'ping' })
+    this._pingPongSpan = {
+      ping: Date.now(),
+      pong: undefined,
+    }
   }
 
   setWebrtcStatsCollector(webrtcStatsCollector: () => Promise<ClientMetrics>) {
@@ -735,7 +885,9 @@ export class Connection extends EventTarget {
     this.removeAllEventListeners()
     this.disconnectWebsocket()
     this.disconnectUnreliableDataChannel()
-    this.disconnectPeerConnection()
+    if (this.webrtc) {
+      this.disconnectPeerConnection()
+    }
     // Function generated from createPeerConnection workflow
     this.webrtcStatsCollector = undefined
     this.cleanUpTimeouts()

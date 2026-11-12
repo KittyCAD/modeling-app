@@ -2,18 +2,15 @@
 
 #![allow(async_fn_in_trait)]
 
-pub use kcl_api::ObjectId;
-use kcl_api::UnitLength;
-use kcl_error::SourceRange;
+use kcl_api::Number;
+use kcl_api::Object;
+use kcl_api::ObjectId;
+use kcl_api::ObjectKind;
 use serde::Deserialize;
 use serde::Serialize;
 
 use crate::ExecOutcome;
 pub use crate::ExecutorSettings as Settings;
-use crate::NodePath;
-use crate::engine::PlaneName;
-use crate::execution::ArtifactId;
-use crate::pretty::NumericSuffix;
 
 pub trait LifecycleApi {
     async fn open_project(&self, project: ProjectId, files: Vec<File>, open_file: FileId) -> Result<()>;
@@ -147,56 +144,15 @@ pub struct File {
     pub text: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts", rename = "ApiObject")]
-pub struct Object {
-    pub id: ObjectId,
-    pub kind: ObjectKind,
-    pub label: String,
-    pub comments: String,
-    pub artifact_id: ArtifactId,
-    pub source: SourceRef,
-}
-
-impl Object {
-    pub fn placeholder(id: ObjectId, range: SourceRange, node_path: Option<NodePath>) -> Self {
-        Object {
-            id,
-            kind: ObjectKind::Nil,
-            label: Default::default(),
-            comments: Default::default(),
-            artifact_id: ArtifactId::placeholder(),
-            source: SourceRef::new(range, node_path),
-        }
-    }
-}
-
-#[allow(clippy::large_enum_variant)]
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts", rename = "ApiObjectKind")]
-#[serde(tag = "type")]
-pub enum ObjectKind {
-    /// A placeholder for an object that will be solved and replaced later.
-    Nil,
-    Plane(Plane),
-    Face(Face),
-    Wall(Wall),
-    Cap(Cap),
-    Sketch(crate::frontend::sketch::Sketch),
-    // These need to be named since the nested types are also enums. ts-rs needs
-    // a place to put the type tag.
-    Segment {
-        segment: crate::frontend::sketch::Segment,
-    },
-    Constraint {
-        constraint: crate::frontend::sketch::Constraint,
-    },
-}
-
-impl ObjectKind {
+/// Runtime helpers for [`ObjectKind`].
+pub trait ObjectKindExt {
     /// What kind of object is this (point, line, arc, etc)
     /// Suitable for use in user-facing messages.
-    pub fn human_friendly_kind_with_article(&self) -> &'static str {
+    fn human_friendly_kind_with_article(&self) -> &'static str;
+}
+
+impl ObjectKindExt for ObjectKind {
+    fn human_friendly_kind_with_article(&self) -> &'static str {
         match self {
             Self::Nil => "a Nil",
             Self::Plane(..) => "a Plane",
@@ -210,131 +166,8 @@ impl ObjectKind {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts", rename = "ApiPlane")]
-#[serde(rename_all = "camelCase")]
-pub enum Plane {
-    Object(ObjectId),
-    Default(PlaneName),
-    PrimitiveFace(PrimitiveFacePlane),
-}
-
-/// An indexed face on a solid which has not yet been materialized as a KCL
-/// `Face` value.
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-#[serde(rename_all = "camelCase")]
-pub struct PrimitiveFacePlane {
-    /// Engine ID of the solid which owns the face.
-    pub solid_id: uuid::Uuid,
-    pub index: usize,
-}
-
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts", rename = "ApiFace")]
-#[serde(rename_all = "camelCase")]
-pub struct Face {
-    pub id: ObjectId,
-}
-
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts", rename = "ApiWall")]
-#[serde(rename_all = "camelCase")]
-pub struct Wall {
-    pub id: ObjectId,
-    #[serde(skip_deserializing)]
-    pub source: WallSource,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
-    pub solid_output_index: Option<usize>,
-}
-
-#[derive(Debug, Clone, Default, PartialEq, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts", rename = "ApiWallSource")]
-#[serde(rename_all = "camelCase")]
-pub struct WallSource {
-    pub solid: SourceRefRange,
-    pub sweep: SourceRefRange,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
-    pub path: Option<SourceRefRange>,
-    pub segment: SourceRefRange,
-}
-
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts", rename = "ApiCap")]
-#[serde(rename_all = "camelCase")]
-pub struct Cap {
-    pub id: ObjectId,
-    pub kind: CapKind,
-    #[serde(skip_deserializing)]
-    pub source: CapSource,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
-    pub solid_output_index: Option<usize>,
-}
-
-#[derive(Debug, Clone, Default, PartialEq, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts", rename = "ApiCapSource")]
-#[serde(rename_all = "camelCase")]
-pub struct CapSource {
-    pub solid: SourceRefRange,
-    pub sweep: SourceRefRange,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts", rename = "ApiCapKind")]
-#[serde(rename_all = "camelCase")]
-pub enum CapKind {
-    Start,
-    End,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts", rename = "ApiSourceRef")]
-#[serde(tag = "type")]
-pub enum SourceRef {
-    Simple {
-        range: SourceRange,
-        node_path: Option<NodePath>,
-    },
-    BackTrace {
-        ranges: Vec<(SourceRange, Option<NodePath>)>,
-    },
-}
-
-#[derive(Debug, Clone, Default, PartialEq, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts", rename = "ApiSourceRefRange")]
-#[serde(rename_all = "camelCase")]
-pub struct SourceRefRange {
-    pub range: SourceRange,
-    pub node_path: Option<NodePath>,
-}
-
-impl From<SourceRange> for SourceRef {
-    fn from(value: SourceRange) -> Self {
-        Self::Simple {
-            range: value,
-            node_path: None,
-        }
-    }
-}
-
-impl SourceRef {
-    pub fn new(range: SourceRange, node_path: Option<NodePath>) -> Self {
-        Self::Simple { range, node_path }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-pub struct Number {
-    pub value: f64,
-    pub units: NumericSuffix,
-}
-
 impl TryFrom<crate::std::args::TyF64> for Number {
-    type Error = crate::execution::types::NumericSuffixTypeConvertError;
+    type Error = kcl_api::NumericSuffixTypeConvertError;
 
     fn try_from(value: crate::std::args::TyF64) -> std::result::Result<Self, Self::Error> {
         Ok(Number {
@@ -344,8 +177,13 @@ impl TryFrom<crate::std::args::TyF64> for Number {
     }
 }
 
-impl Number {
-    pub fn round(&self, digits: u8) -> Self {
+/// Runtime helpers for [`Number`].
+pub trait NumberExt {
+    fn round(&self, digits: u8) -> Self;
+}
+
+impl NumberExt for Number {
+    fn round(&self, digits: u8) -> Self {
         let factor = 10f64.powi(digits as i32);
         let rounded_value = (self.value * factor).round() / factor;
         // Don't return negative zero.
@@ -355,27 +193,6 @@ impl Number {
             units: self.units,
         }
     }
-}
-
-impl From<(f64, UnitLength)> for Number {
-    fn from((value, units): (f64, UnitLength)) -> Self {
-        // Direct conversion from UnitLength to NumericSuffix (never panics)
-        // The From<UnitLength> for NumericSuffix impl is in execution::types
-        let units_suffix = NumericSuffix::from(units);
-        Number {
-            value,
-            units: units_suffix,
-        }
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-#[serde(tag = "type")]
-pub enum Expr {
-    Number(Number),
-    Var(Number),
-    Variable(String),
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]

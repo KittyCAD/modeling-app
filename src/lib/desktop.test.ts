@@ -4,6 +4,7 @@ import {
   createNewProjectDirectory,
   overwriteProjectTomlWithNewSettings,
 } from '@src/lib/desktop'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
@@ -32,6 +33,7 @@ const createTempDirectoryPath = () =>
 
 describe('createNewProjectDirectory', () => {
   afterEach(async () => {
+    vi.restoreAllMocks()
     await Promise.all(
       createdProjectDirectoryPaths.map((projectDirectoryPath) =>
         fsZds.rm(projectDirectoryPath, { recursive: true, force: true })
@@ -45,6 +47,7 @@ describe('createNewProjectDirectory', () => {
     createdProjectDirectoryPaths.push(projectDirectoryPath)
 
     const project = await createNewProjectDirectory(
+      testFileOperations,
       'Human Project',
       wasmInstance,
       undefined,
@@ -72,6 +75,7 @@ describe('createNewProjectDirectory', () => {
     createdProjectDirectoryPaths.push(projectDirectoryPath)
 
     const project = await createNewProjectDirectory(
+      testFileOperations,
       'human-project',
       wasmInstance,
       undefined,
@@ -104,6 +108,7 @@ describe('createNewProjectDirectory', () => {
     createdProjectDirectoryPaths.push(legacyProjectDirectoryPath)
 
     const project = await createNewProjectDirectory(
+      testFileOperations,
       'library-project',
       wasmInstance,
       undefined,
@@ -155,6 +160,7 @@ describe('createNewProjectDirectory', () => {
 
     try {
       const project = await createNewProjectDirectory(
+        testFileOperations,
         'Serialized ENOENT',
         wasmInstance,
         undefined,
@@ -205,6 +211,7 @@ describe('createNewProjectDirectory', () => {
 
     try {
       const project = await createNewProjectDirectory(
+        testFileOperations,
         'Electron ENOENT',
         wasmInstance,
         undefined,
@@ -250,6 +257,7 @@ describe('createNewProjectDirectory', () => {
     let projectPath = ''
     try {
       const project = await createNewProjectDirectory(
+        testFileOperations,
         'Windows Dropbox',
         wasmInstance,
         undefined,
@@ -290,7 +298,9 @@ describe('createNewProjectDirectory', () => {
       )
     )
 
+    const writeFile = vi.spyOn(testFileOperations, 'writeFile')
     await overwriteProjectTomlWithNewSettings(
+      testFileOperations,
       projectPath,
       '[settings.meta]\nid = "new-settings-id"\n'
     )
@@ -306,5 +316,14 @@ describe('createNewProjectDirectory', () => {
     expect(projectToml).toContain('project_id = "project-123"')
     expect(projectToml).toContain('id = "new-settings-id"')
     expect(projectToml).not.toContain('old-settings-id')
+    expect(writeFile).toHaveBeenCalledTimes(1)
+
+    writeFile.mockClear()
+    await overwriteProjectTomlWithNewSettings(
+      testFileOperations,
+      projectPath,
+      '[settings.meta]\nid = "new-settings-id"\n'
+    )
+    expect(writeFile).not.toHaveBeenCalled()
   })
 })

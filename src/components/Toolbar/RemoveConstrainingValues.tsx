@@ -36,7 +36,7 @@ export function removeConstrainingValuesInfo(
   if (err(_err1)) return _err1
   const nodes = _nodes as Expr[]
 
-  const updatedSelectionRanges = {
+  const updatedSelectionRanges: Selections = {
     otherSelections: [],
     graphSelections: nodes.map(
       (node): Selection => ({
@@ -82,9 +82,9 @@ export function applyRemoveConstrainingValues({
   | Error {
   pathToNodes =
     pathToNodes ||
-    selectionRanges.graphSelections.map(({ codeRef }) => {
-      return codeRef.pathToNode
-    })
+    selectionRanges.graphSelections.flatMap((s) =>
+      s.codeRef?.pathToNode != null ? [s.codeRef.pathToNode] : []
+    )
   const constraint = removeConstrainingValuesInfo(
     pathToNodes,
     kclManager,

@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if [ "${VERCEL_ENV:-}" = preview ]; then
+  SKIP_WASM_OPT=1
+fi
+
 rm -rf rust/kcl-wasm-lib/pkg
 mkdir -p rust/kcl-wasm-lib/pkg
 rm -rf rust/kcl-lib/bindings
@@ -8,7 +12,7 @@ rm -rf rust/kcl-lib/bindings
 cd rust
 
 wasm_pack_args=(build kcl-wasm-lib --release --target=web --out-dir=pkg --scope=kittycad)
-if [ "${VERCEL_ENV:-}" = "preview" ]; then
+if [ -n "${SKIP_WASM_OPT-}" ]; then
   wasm_pack_args+=(--no-opt)
 fi
 wasm-pack "${wasm_pack_args[@]}"

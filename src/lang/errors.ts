@@ -29,6 +29,8 @@ export class KCLError extends Error {
   artifactGraph: ArtifactGraph
   filenames: { [x: number]: ModulePath | undefined }
   defaultPlanes: DefaultPlanes | null
+  /** The engine scene generation after the failed run, or null when the error did not come from a run. */
+  engineSceneGeneration: number | null
 
   constructor(
     kind: ExtractKind<RustKclError> | 'name',
@@ -40,7 +42,8 @@ export class KCLError extends Error {
     operations: OperationsByModule,
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
-    defaultPlanes: DefaultPlanes | null
+    defaultPlanes: DefaultPlanes | null,
+    engineSceneGeneration: number | null = null
   ) {
     super(`${kind}: ${msg}`)
     this.kind = kind
@@ -53,6 +56,7 @@ export class KCLError extends Error {
     this.artifactGraph = artifactGraph
     this.filenames = filenames
     this.defaultPlanes = defaultPlanes
+    this.engineSceneGeneration = engineSceneGeneration
     Object.setPrototypeOf(this, KCLError.prototype)
   }
 }
@@ -156,7 +160,6 @@ export function kclErrorsToDiagnostics(
               name = item.fnName ?? '(import)'
               break
             default:
-              const _exhaustiveCheck: never = item.kind
               name = '(unknown)'
               break
           }

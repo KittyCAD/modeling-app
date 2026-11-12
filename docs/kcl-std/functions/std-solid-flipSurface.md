@@ -69,7 +69,7 @@ cube = [
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the flipSurface function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-flipSurface0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-flipSurface0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-flipSurface0.png"
@@ -124,7 +124,7 @@ flipSurface(cube)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the flipSurface function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-flipSurface1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-flipSurface1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-flipSurface1.png"

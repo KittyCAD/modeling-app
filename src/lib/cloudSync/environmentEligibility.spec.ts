@@ -3,6 +3,7 @@ import {
   cloudSyncStatus,
   configureCloudSyncEngine,
   configureCloudSyncLocalFileSystem,
+  disableCloudSyncEngineForTest,
 } from '@src/lib/cloudSync'
 import {
   getAllOutboxEntries,
@@ -39,7 +40,7 @@ describe('cloud sync environment eligibility', () => {
   })
 
   afterEach(async () => {
-    configureCloudSyncEngine({ enabled: false })
+    await disableCloudSyncEngineForTest()
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
     cloudSyncStatus.value = {
@@ -65,7 +66,7 @@ describe('cloud sync environment eligibility', () => {
       const url = getFetchUrl(input)
       const method = getFetchMethod(input, init)
       if (url === `${baseUrl}/user/projects` && method === 'GET') {
-        return jsonResponse([])
+        return jsonResponse({ items: [], next_page: null })
       }
 
       return jsonResponse(

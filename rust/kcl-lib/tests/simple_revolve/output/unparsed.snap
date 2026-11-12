@@ -1,0 +1,15 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing simple_revolve.kcl
+---
+part001 = startSketchOn(XY)
+  |> startProfile(at = [4, 12])
+  |> line(end = [2, 0])
+  |> line(end = [0, -6])
+  |> line(end = [4, -6])
+  |> line(end = [0, -6])
+  |> line(end = [-3.75, -4.5])
+  |> line(end = [0, -5.5])
+  |> line(end = [-2, 0])
+  |> close()
+  |> revolve(axis = Y)

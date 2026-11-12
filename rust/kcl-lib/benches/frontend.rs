@@ -3,25 +3,27 @@ use std::hint::black_box;
 use criterion::Criterion;
 use criterion::criterion_group;
 use criterion::criterion_main;
+use kcl_api::Expr;
+use kcl_api::Number;
+use kcl_api::NumericSuffix;
+use kcl_api::Point2d;
+use kcl_api::PointCtor;
+use kcl_api::SegmentCtor;
 use kcl_lib::ExecutorContext;
 use kcl_lib::Program;
 use kcl_lib::front::ExistingSegmentCtor;
-use kcl_lib::front::Expr;
 use kcl_lib::front::FrontendState;
-use kcl_lib::front::Number;
-use kcl_lib::front::Point2d;
-use kcl_lib::front::PointCtor;
-use kcl_lib::front::SegmentCtor;
 use kcl_lib::front::SketchApi;
 use kcl_lib::front::Version;
-use kcl_lib::pretty::NumericSuffix;
 
 fn bench_edit_segments(c: &mut Criterion) {
     c.bench_function("bench_edit_segment", move |b| {
         let rt = tokio::runtime::Runtime::new().unwrap();
         let (mut frontend, mock_ctx, version, sketch_id, segments) = rt.block_on(async {
             let mut frontend = FrontendState::new();
-            let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+            let ctx = ExecutorContext::new_with_version(kittycad_modeling_cmds::KclVersion::V2)
+                .await
+                .unwrap();
             let mock_ctx = ExecutorContext::new_mock(None).await;
             let version = Version(0);
             let source = include_str!("../tests/inputs/lots_of_segments.kcl");
@@ -46,7 +48,7 @@ fn bench_edit_segments(c: &mut Criterion) {
                 },
             };
             let segment = SegmentCtor::Point(point_ctor.clone());
-            let sketch_id = kcl_lib::front::ObjectId(1);
+            let sketch_id = kcl_api::ObjectId(1);
             let (_, scene_delta) = frontend
                 .add_segment(&mock_ctx, version, sketch_id, segment, None)
                 .await

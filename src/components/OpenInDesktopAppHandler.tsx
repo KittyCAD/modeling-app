@@ -1,4 +1,5 @@
 import { Transition } from '@headlessui/react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: desktop handoff query consumption (useSearchParams).
 import { useSearchParams } from 'react-router-dom'
 
 import { ActionButton } from '@src/components/ActionButton'

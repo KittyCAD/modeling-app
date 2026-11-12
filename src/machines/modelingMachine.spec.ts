@@ -1,32 +1,39 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import type { KclManager } from '@src/lang/KclManager'
 import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import {
   createIdentifier,
   createLiteral,
   createVariableDeclaration,
 } from '@src/lang/create'
+import type { KclManager } from '@src/lang/KclManager'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
-import { getNodeFromPath } from '@src/lang/queryAst'
+import { artifactToEntityRef, getNodeFromPath } from '@src/lang/queryAst'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
-/** Engine-using integration tests of modelingMachine. */
+/** Engine-using integration tests of modelingMachine.
+ * For engineless unit tests, see modelingMachine.test.ts */
 import {
   type Artifact,
   type ArtifactGraph,
-  type CallExpressionKw,
   assertParse,
+  type CallExpressionKw,
   recast,
 } from '@src/lang/wasm'
 import type { MachineManager } from '@src/lib/MachineManager'
+import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type RustContext from '@src/lib/rustContext'
+import { StepSchema } from '@src/lib/stepSchema'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import { modelingMachine } from '@src/machines/modelingMachine'
+import {
+  modelingMachine,
+  positionLocalSketchSolveCamera,
+} from '@src/machines/modelingMachine'
+import type { DefaultPlane } from '@src/machines/modelingSharedTypes'
 import {
   dummyInitSketchGraphDelta,
   generateModelingMachineDefaultContext,
@@ -38,9 +45,10 @@ import {
   buildTheWorldAndNoEngineConnection,
 } from '@src/unitTestUtils'
 import toast from 'react-hot-toast'
-import { afterAll, beforeEach, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { vi } from 'vitest'
-import { type ActorRefFrom, createActor, fromPromise } from 'xstate'
+import { type ActorRefFrom, createActor, fromPromise, toPromise } from 'xstate'
+
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
 
 let instanceInThisFile: ModuleType = null!
@@ -50,45 +58,136 @@ let rustContextInThisFile: RustContext = null!
 let commandBarActorInThisFile: CommandBarActorType = null!
 let machineManagerInThisFile: MachineManager = null!
 
-const TESTS_WITHOUT_ENGINE_WORLD = [
-  'routes a cursor inside a sketch block segment to sketch solve edit',
-  'shows default planes again when canceling sketch plane selection on a blank scene',
-  'hides default planes when canceling sketch plane selection with geometry present',
-]
+type TestWorld = Pick<
+  Awaited<ReturnType<typeof buildTheWorldAndNoEngineConnection>>,
+  | 'instance'
+  | 'kclManager'
+  | 'engineCommandManager'
+  | 'rustContext'
+  | 'commandBarActor'
+  | 'machineManager'
+>
+let worldWithoutEngine: TestWorld
+
+function setTestWorld(world: TestWorld) {
+  instanceInThisFile = world.instance
+  kclManagerInThisFile = world.kclManager
+  engineCommandManagerInThisFile = world.engineCommandManager
+  rustContextInThisFile = world.rustContext
+  commandBarActorInThisFile = world.commandBarActor
+  machineManagerInThisFile = world.machineManager
+}
 
 /**
- * Every it test could build the world and connect to the engine but this is too resource intensive and will
- * spam engine connections.
- *
- * Reuse the world for this file. This is not the same as global singleton imports!
+ * Keep engine sessions scoped to the describe blocks that need them. A single
+ * session for this whole file can expire before the shuffled tests finish.
  */
-beforeEach(async () => {
-  const currentTestName = expect.getState().currentTestName ?? ''
-  if (TESTS_WITHOUT_ENGINE_WORLD.some((name) => currentTestName.includes(name)))
-    return
+function useEngineWorld() {
+  beforeAll(async () => {
+    setTestWorld(
+      await buildTheWorldAndConnectToEngine({
+        webrtc: false,
+        geometryOnly: true,
+      })
+    )
+  })
 
-  if (instanceInThisFile) {
-    return
-  }
+  afterAll(() => {
+    engineCommandManagerInThisFile.tearDown({
+      route: 'user-requested',
+      initiatedBy: 'client',
+    })
+    setTestWorld(worldWithoutEngine)
+  })
+}
 
-  const {
-    instance,
-    engineCommandManager,
-    kclManager,
-    rustContext,
-    commandBarActor,
-    machineManager,
-  } = await buildTheWorldAndConnectToEngine()
-  instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
-  engineCommandManagerInThisFile = engineCommandManager
-  rustContextInThisFile = rustContext
-  commandBarActorInThisFile = commandBarActor
-  machineManagerInThisFile = machineManager
+beforeAll(async () => {
+  worldWithoutEngine = await buildTheWorldAndNoEngineConnection()
+  setTestWorld(worldWithoutEngine)
 })
 
-afterAll(() => {
-  engineCommandManagerInThisFile?.tearDown()
+describe('STEP schema export requests', () => {
+  async function exportFormat(data: ModelingCommandSchema['Export']) {
+    const world = worldWithoutEngine
+    const program = assertParse(
+      '@settings(kclVersion = 3.0)\nvalue = 1',
+      world.instance
+    )
+    const hasErrors = vi
+      .spyOn(world.kclManager, 'hasErrors')
+      .mockReturnValue(false)
+    const ast = vi
+      .spyOn(world.kclManager, 'ast', 'get')
+      .mockReturnValue(program)
+    const exportRequest = vi
+      .spyOn(world.rustContext, 'export')
+      .mockResolvedValue(undefined)
+    const loading = vi
+      .spyOn(toast, 'loading')
+      .mockReturnValue('schema-export-test')
+    const implementation =
+      modelingMachine.implementations.actors.exportFromEngine
+    const logic = 'src' in implementation ? implementation.src : implementation
+    const actor = createActor(logic, {
+      input: {
+        data,
+        kclManager: world.kclManager,
+        rustContext: world.rustContext,
+        fileName: 'model.step',
+      },
+    })
+    try {
+      const done = toPromise(actor)
+      actor.start()
+      await done
+      expect(exportRequest).toHaveBeenCalledOnce()
+      return exportRequest.mock.calls[0]?.[0]
+    } finally {
+      actor.stop()
+      loading.mockRestore()
+      exportRequest.mockRestore()
+      ast.mockRestore()
+      hasErrors.mockRestore()
+    }
+  }
+
+  const schemas: ModelingCommandSchema['Export']['schema'][] = [
+    ...Object.values(StepSchema),
+    undefined,
+  ]
+  it.each(schemas)(
+    'requests schema %s while preserving export units and orientation',
+    async (schema) => {
+      expect(
+        await exportFormat({ type: 'step', schema, up: 'y', scale: 'in' })
+      ).toEqual({
+        type: 'step',
+        schema: schema ?? 'ap242',
+        units: 'in',
+        coords: {
+          forward: { axis: 'z', direction: 'positive' },
+          up: { axis: 'y', direction: 'positive' },
+        },
+        views: {},
+      })
+    }
+  )
+
+  const otherFormats: ModelingCommandSchema['Export']['type'][] = [
+    'gltf',
+    'obj',
+    'stl',
+    'ply',
+    'fbx',
+  ]
+  it.each(otherFormats)(
+    'omits a stale STEP schema when exporting %s',
+    async (type) => {
+      const format = await exportFormat({ type, schema: StepSchema.Ap214 })
+      expect(format).toMatchObject({ type })
+      expect(format).not.toHaveProperty('schema')
+    }
+  )
 })
 
 describe('modelingMachine.test.ts', () => {
@@ -939,6 +1038,8 @@ p3 = [342.51, 216.38],
     }
     // test: all of these pass.
     describe('Deleting segment with three dot menu', () => {
+      useEngineWorld()
+
       let namedConstantConstraintCases = Object.values(cases).flatMap(
         (caseGroup) => caseGroup.deleteSegment
       )
@@ -993,7 +1094,10 @@ p3 = [342.51, 216.38],
                 selection: {
                   graphSelections: [
                     {
-                      artifact: artifact,
+                      entityRef: artifactToEntityRef(
+                        artifact.type,
+                        artifact.id
+                      ),
                       codeRef: artifact.codeRef,
                     },
                   ],
@@ -1015,7 +1119,7 @@ p3 = [342.51, 216.38],
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
-              artifact.codeRef.pathToNode,
+              artifact.codeRef!.pathToNode,
               instanceInThisFile,
               'CallExpressionKw'
             )
@@ -1025,7 +1129,7 @@ p3 = [342.51, 216.38],
             const constraintInfo = getConstraintInfoKw(
               callExp.node,
               kclManagerInThisFile.code,
-              artifact.codeRef.pathToNode,
+              artifact.codeRef!.pathToNode,
               filter
             )
             const constraint = constraintInfo[0]
@@ -1063,6 +1167,8 @@ p3 = [342.51, 216.38],
     })
     // test: all of these pass
     describe('Adding segment overlay constraints', () => {
+      useEngineWorld()
+
       let namedConstantConstraintCases = Object.values(cases).flatMap(
         (caseGroup) => caseGroup.namedConstantConstraint
       )
@@ -1124,7 +1230,10 @@ p3 = [342.51, 216.38],
                 selection: {
                   graphSelections: [
                     {
-                      artifact: artifact,
+                      entityRef: artifactToEntityRef(
+                        artifact.type,
+                        artifact.id
+                      ),
                       codeRef: artifact.codeRef,
                     },
                   ],
@@ -1146,7 +1255,7 @@ p3 = [342.51, 216.38],
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
-              artifact.codeRef.pathToNode,
+              artifact.codeRef!.pathToNode,
               instanceInThisFile,
               'CallExpressionKw'
             )
@@ -1156,7 +1265,7 @@ p3 = [342.51, 216.38],
             const constraintInfo = getConstraintInfoKw(
               callExp.node,
               kclManagerInThisFile.code,
-              artifact.codeRef.pathToNode,
+              artifact.codeRef!.pathToNode,
               filter
             )
             const constraint = constraintInfo[constraintIndex]
@@ -1203,6 +1312,8 @@ p3 = [342.51, 216.38],
     })
     // test: all tests pass
     describe('removing individual constraints with segment overlay events', () => {
+      useEngineWorld()
+
       const removeIndividualConstraintsCases = Object.values(cases).flatMap(
         (caseGroup) => caseGroup.removeIndividualConstraintsCases
       )
@@ -1264,7 +1375,10 @@ p3 = [342.51, 216.38],
                 selection: {
                   graphSelections: [
                     {
-                      artifact: artifact,
+                      entityRef: artifactToEntityRef(
+                        artifact.type,
+                        artifact.id
+                      ),
                       codeRef: artifact.codeRef,
                     },
                   ],
@@ -1291,7 +1405,7 @@ p3 = [342.51, 216.38],
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
-              artifact.codeRef.pathToNode,
+              artifact.codeRef!.pathToNode,
               instanceInThisFile,
               'CallExpressionKw'
             )
@@ -1301,7 +1415,7 @@ p3 = [342.51, 216.38],
             const constraintInfo = getConstraintInfoKw(
               callExp.node,
               kclManagerInThisFile.code,
-              artifact.codeRef.pathToNode,
+              artifact.codeRef!.pathToNode,
               filter
             )
             const constraint = constraintInfo[constraintIndex]
@@ -1331,6 +1445,8 @@ p3 = [342.51, 216.38],
       )
     })
     describe('Removing segment overlay constraints', () => {
+      useEngineWorld()
+
       const removeAllConstraintsCases = Object.values(cases).flatMap(
         (caseGroup) => caseGroup.removeAllConstraintsCases
       )
@@ -1393,7 +1509,10 @@ p3 = [342.51, 216.38],
                 selection: {
                   graphSelections: [
                     {
-                      artifact: artifact,
+                      entityRef: artifactToEntityRef(
+                        artifact.type,
+                        artifact.id
+                      ),
                       codeRef: artifact.codeRef,
                     },
                   ],
@@ -1420,7 +1539,7 @@ p3 = [342.51, 216.38],
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
-              artifact.codeRef.pathToNode,
+              artifact.codeRef!.pathToNode,
               instanceInThisFile,
               'CallExpressionKw'
             )
@@ -1431,7 +1550,7 @@ p3 = [342.51, 216.38],
             // Now that we're in sketchIdle state, test the "Constrain with named value" event
             actor.send({
               type: 'Constrain remove constraints',
-              data: artifact.codeRef.pathToNode,
+              data: artifact.codeRef!.pathToNode,
             })
 
             // Wait for the state to change in response to the constraint
@@ -1465,6 +1584,117 @@ p3 = [342.51, 216.38],
           }, 10_000)
         }
       )
+    })
+
+    describe('selection synchronization', () => {
+      it('synchronizes default plane selection with the engine and editor', () => {
+        const code = 'body001 = extrude(region001, length = 10)'
+        const dispatch = vi.fn()
+        const sendSceneCommand = vi.fn().mockResolvedValue(undefined)
+        const context = {
+          ...modelingMachineInitialInternalContext,
+          selectionRanges: {
+            graphSelections: [
+              {
+                entityRef: { type: 'solid3d', solid3d_id: 'body-id' },
+                codeRef: { range: [0, code.length, 0], pathToNode: [] },
+              },
+            ],
+            otherSelections: [],
+          },
+          kclManager: {
+            artifactGraph: new Map(),
+            ast: { body: [] },
+            code,
+            editorView: { dispatch },
+            hidePlanes: vi.fn(),
+            isShiftDown: false,
+            sceneEntitiesManager: { activeSegments: {} },
+            sceneInfra: {
+              resetMouseListeners: vi.fn(),
+              setCallbacks: vi.fn(),
+              camControls: {
+                cancelSketchCameraTransition: vi.fn(),
+                enablePan: true,
+                enableRotate: true,
+                syncDirection: 'engineToClient',
+              },
+            },
+          },
+          rustContext: {},
+          engineCommandManager: {
+            connection: { pingIntervalId: 1 },
+            sendSceneCommand,
+          },
+          wasmInstance: {},
+          commandBarActor: {},
+          machineManager: {},
+        } as any
+        const actor = createActor(modelingMachine, { input: context }).start()
+
+        actor.send({
+          type: 'Set selection',
+          data: {
+            selectionType: 'defaultPlaneSelection',
+            selection: { name: 'XY', id: 'xy-plane-id' },
+          },
+        })
+
+        expect(actor.getSnapshot().context.selectionRanges).toEqual({
+          graphSelections: [],
+          otherSelections: [{ name: 'XY', id: 'xy-plane-id' }],
+        })
+        expect(dispatch).toHaveBeenCalledWith({
+          selection: expect.objectContaining({
+            main: expect.objectContaining({ head: code.length }),
+          }),
+        })
+        expect(sendSceneCommand.mock.calls.map(([event]) => event.cmd)).toEqual(
+          [
+            { type: 'select_clear' },
+            { type: 'select_add', entities: ['xy-plane-id'] },
+          ]
+        )
+
+        sendSceneCommand.mockClear()
+
+        actor.send({
+          type: 'Set selection',
+          data: {
+            selectionType: 'singleCodeCursor',
+            selection: {
+              entityRef: { type: 'solid3d', solid3d_id: 'body-id' },
+              codeRef: {
+                range: [0, code.length, 0],
+                pathToNode: [],
+              },
+            },
+          },
+        })
+
+        expect(actor.getSnapshot().context.selectionRanges).toEqual({
+          graphSelections: [
+            {
+              entityRef: { type: 'solid3d', solid3d_id: 'body-id' },
+              codeRef: {
+                range: [0, code.length, 0],
+                pathToNode: [],
+              },
+            },
+          ],
+          otherSelections: [],
+        })
+        expect(sendSceneCommand.mock.calls.map(([event]) => event.cmd)).toEqual(
+          [
+            {
+              type: 'select_entity',
+              entities: [{ type: 'solid3d', solid3d_id: 'body-id' }],
+            },
+          ]
+        )
+
+        actor.stop()
+      })
     })
 
     describe('modelingMachine sketch entry', () => {
@@ -1501,11 +1731,12 @@ sketch001 = sketch(on = YZ) {
           commandBarActor,
           machineManager,
         })
-        context.store.useSketchSolveMode = { current: true } as any
         context.store.defaultUnit = { current: 'mm' } as any
         context.projectRef = { current: {} as any }
 
-        const actor = createActor(modelingMachine, { input: context }).start()
+        const actor = createActor(modelingMachine, {
+          input: context as any,
+        }).start()
 
         actor.send({ type: 'Enter sketch' })
         actor.send({
@@ -1532,12 +1763,12 @@ sketch001 = sketch(on = YZ) {
           range: [0, 100, 0] as [number, number, number],
           pathToNode,
           nodePath: { steps: [] },
-        } as any
+        }
         const segmentCodeRef = {
           range: [35, 85, 0] as [number, number, number],
           pathToNode,
           nodePath: { steps: [] },
-        } as any
+        }
         const sketchBlock: Extract<Artifact, { type: 'sketchBlock' }> = {
           type: 'sketchBlock',
           id: 'sketch-block-1',
@@ -1574,6 +1805,7 @@ sketch001 = sketch(on = YZ) {
           selectionRanges: {
             graphSelections: [
               {
+                artifact: segment,
                 codeRef: {
                   range: [45, 45, 0],
                   pathToNode,
@@ -1589,7 +1821,9 @@ sketch001 = sketch(on = YZ) {
             sceneInfra: {
               animate: vi.fn(),
               resetMouseListeners: vi.fn(),
+              setCallbacks: vi.fn(),
               camControls: {
+                cancelSketchCameraTransition: vi.fn(),
                 enablePan: true,
                 enableRotate: true,
                 syncDirection: 'engineToClient',
@@ -1639,38 +1873,42 @@ sketch001 = sketch(on = YZ) {
         artifactGraph = new Map(),
       }: {
         artifactGraph?: Map<unknown, unknown>
-      } = {}) =>
-        ({
-          ...modelingMachineInitialInternalContext,
-          kclManager: {
-            artifactGraph,
-            hasErrors: vi.fn(() => false),
-            hidePlanes: vi.fn(),
-            setSelectionFilter: vi.fn(),
-            setSelectionFilterToDefault: vi.fn(),
-            showPlanes: vi.fn(),
-            sceneInfra: {
-              animate: vi.fn(),
-              stop: vi.fn(),
-              resetMouseListeners: vi.fn(),
-              camControls: {
-                enablePan: true,
-                enableRotate: true,
-                syncDirection: 'engineToClient',
-              },
+      } = {}) => ({
+        ...modelingMachineInitialInternalContext,
+        kclManager: {
+          artifactGraph,
+          hasErrors: vi.fn(() => false),
+          hidePlanes: vi.fn(),
+          setCopilotEnabled: vi.fn(),
+          setSelectionFilter: vi.fn(),
+          setSelectionFilterToDefault: vi.fn(),
+          showPlanes: vi.fn(),
+          sceneInfra: {
+            animate: vi.fn(),
+            stop: vi.fn(),
+            resetMouseListeners: vi.fn(),
+            setCallbacks: vi.fn(),
+            camControls: {
+              cancelSketchCameraTransition: vi.fn(),
+              enablePan: true,
+              enableRotate: true,
+              syncDirection: 'engineToClient',
             },
           },
-          rustContext: {},
-          engineCommandManager: {},
-          wasmInstance: {},
-          commandBarActor: {},
-          machineManager: {},
-        }) as any
+        },
+        rustContext: {},
+        engineCommandManager: {},
+        wasmInstance: {},
+        commandBarActor: {},
+        machineManager: {},
+      })
 
       it('shows default planes again when canceling sketch plane selection on a blank scene', async () => {
         const context = createSketchPlaneSelectionContext()
 
-        const actor = createActor(modelingMachine, { input: context }).start()
+        const actor = createActor(modelingMachine, {
+          input: context as any,
+        }).start()
 
         actor.send({
           type: 'Enter sketch',
@@ -1703,7 +1941,9 @@ sketch001 = sketch(on = YZ) {
           }),
         }
 
-        const actor = createActor(modelingMachine, { input: context }).start()
+        const actor = createActor(modelingMachine, {
+          input: context as any,
+        }).start()
 
         actor.send({
           type: 'Enter sketch',
@@ -1752,7 +1992,6 @@ sketch001 = sketch(on = YZ) {
         commandBarActor,
         machineManager,
       })
-      context.store.useSketchSolveMode = { current: true } as any
       context.store.defaultUnit = { current: 'mm' } as any
       context.projectRef = { current: {} as any }
 
@@ -1827,7 +2066,6 @@ sketch001 = sketch(on = YZ) {
         commandBarActor,
         machineManager,
       })
-      context.store.useSketchSolveMode = { current: true } as any
       context.store.defaultUnit = { current: 'mm' } as any
       context.projectRef = { current: {} as any }
 
@@ -1870,5 +2108,42 @@ sketch001 = sketch(on = YZ) {
         'clientToEngine'
       )
     })
+  })
+})
+
+describe('positionLocalSketchSolveCamera', () => {
+  it('orients the sketch before aiming the camera at it', async () => {
+    const order: string[] = []
+    const sketchSolveGroup = {}
+    const plane: DefaultPlane = {
+      type: 'defaultPlane',
+      plane: 'XZ',
+      planeId: 'plane-id',
+      zAxis: [0, -1, 0],
+      yAxis: [0, 0, 1],
+    }
+    const initSketchSolveEntityOrientation = vi.fn(() => {
+      order.push('orient sketch')
+    })
+    const transitionToSketch = vi.fn(async () => {
+      order.push('aim camera')
+    })
+    const signal = new AbortController().signal
+
+    await positionLocalSketchSolveCamera(
+      {
+        sceneEntitiesManager: {
+          sketchSolveGroup,
+          initSketchSolveEntityOrientation,
+        },
+        sceneInfra: { camControls: { transitionToSketch } },
+      } as unknown as KclManager,
+      plane,
+      signal
+    )
+
+    expect(order).toEqual(['orient sketch', 'aim camera'])
+    expect(initSketchSolveEntityOrientation).toHaveBeenCalledWith(plane)
+    expect(transitionToSketch).toHaveBeenCalledWith(sketchSolveGroup, signal)
   })
 })

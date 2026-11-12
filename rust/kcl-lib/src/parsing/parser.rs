@@ -5,6 +5,7 @@ use std::cell::RefCell;
 use std::collections::BTreeMap;
 
 use indexmap::IndexMap;
+use kcl_api::NumericSuffix;
 use winnow::combinator::alt;
 use winnow::combinator::delimited;
 use winnow::combinator::opt;
@@ -30,7 +31,7 @@ use super::DeprecationKind;
 use super::ast::types::AscribedExpression;
 use super::ast::types::ImportPath;
 use super::ast::types::LabelledExpression;
-use super::token::NumericSuffix;
+use super::sketch_reserved_names::SKETCH_BLOCK_RESERVED_WORDS;
 use super::token::RESERVED_WORDS;
 use crate::IMPORT_FILE_EXTENSIONS;
 use crate::MetaSettings;
@@ -39,15 +40,18 @@ use crate::TypedPath;
 use crate::errors::CompilationIssue;
 use crate::errors::Severity;
 use crate::errors::Tag;
+use crate::execution::annotations::ADDED_IN;
 use crate::execution::annotations::DEPRECATED;
 use crate::execution::annotations::DEPRECATED_SINCE;
 use crate::execution::annotations::EXPERIMENTAL;
+use crate::execution::annotations::REMOVED_IN;
 use crate::execution::annotations::VersionConstraint;
 use crate::execution::annotations::{self};
 use crate::execution::types::ArrayLen;
 use crate::import_format::import_format_from_path;
 use crate::parsing::PIPE_OPERATOR;
 use crate::parsing::PIPE_SUBSTITUTION_OPERATOR;
+use crate::parsing::ast::types::ABSOLUTE_PATHS_NOT_SUPPORTED;
 use crate::parsing::ast::types::Annotation;
 use crate::parsing::ast::types::ArrayExpression;
 use crate::parsing::ast::types::ArrayRangeExpression;
@@ -106,7 +110,6 @@ use crate::parsing::ast::types::VariableDeclarator;
 use crate::parsing::ast::types::VariableKind;
 use crate::parsing::ast::types::fill_node_paths;
 use crate::parsing::math::BinaryExpressionToken;
-use crate::parsing::token::RESERVED_SKETCH_BLOCK_WORDS;
 use crate::parsing::token::Token;
 use crate::parsing::token::TokenSlice;
 use crate::parsing::token::TokenType;
@@ -130,7 +133,12 @@ const MAX_NESTING_DEPTH_MESSAGE: &str = "Exceeded the maximum nesting limit whil
 const ERR_INVALID_ASSIGNMENT_IN_SKETCH_BLOCK: &str =
     "The left-hand side of the = cannot have a value assigned to it. Maybe you meant to use ==?";
 
-pub fn run_parser(i: TokenSlice) -> super::ParseResult {
+#[cfg(test)]
+pub(crate) fn run_parser(i: TokenSlice) -> super::InnerParseResult {
+    run_parser_with_never_ranges(i).0
+}
+
+pub(super) fn run_parser_with_never_ranges(i: TokenSlice) -> (super::InnerParseResult, Vec<SourceRange>) {
     let _stats = crate::log::LogPerfStats::new("Parsing");
     ParseContext::init();
 
@@ -139,7 +147,7 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     if let Some(err) = ParseContext::check_max_nesting(&i) {
         ParseContext::err(err);
         let ctxt = ParseContext::take();
-        return (None, ctxt.errors).into();
+        return ((None, ctxt.errors).into(), ctxt.never_type_ranges);
     }
 
     let ast = match program.parse(i) {
@@ -159,7 +167,7 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
         ast
     };
     let ctxt = ParseContext::take();
-    (ast, ctxt.errors).into()
+    ((ast, ctxt.errors).into(), ctxt.never_type_ranges)
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -177,6 +185,8 @@ struct ParseContext {
     pub errors: Vec<CompilationIssue>,
     settings: MetaSettings,
     code_kind: CodeKind,
+    // Record type positions so version validation can use the final settings.
+    never_type_ranges: Vec<SourceRange>,
     // Tracks current recursive parser depth so we can reject pathological input
     // before it risks stack overflows.
     nesting_depth: u16,
@@ -208,6 +218,7 @@ impl ParseContext {
             errors: Vec::new(),
             settings: Default::default(),
             code_kind: Default::default(),
+            never_type_ranges: Vec::new(),
             nesting_depth: 0,
         }
     }
@@ -295,7 +306,7 @@ impl ParseContext {
                     let _ = ctxt.as_mut().unwrap().settings.update_from_annotation(attr);
                 });
             }
-            Some(annotations::WARNINGS) => {
+            Some(annotations::WARNINGS) | Some(annotations::DIAGNOSTICS) => {
                 // TODO https://github.com/KittyCAD/modeling-app/issues/8021
             }
             _ => {}
@@ -535,6 +546,47 @@ fn non_code_node(i: &mut TokenSlice) -> ModalResult<Node<NonCodeNode>> {
     alt((non_code_node_leading_whitespace, non_code_node_no_leading_whitespace)).parse_next(i)
 }
 
+/// Report each property whose key already appeared earlier in `properties`.
+/// Attributes have no precedence rule, so a repeated key is a fatal error.
+fn reject_repeated_keys(properties: &[Node<ObjectProperty>]) {
+    let mut seen = std::collections::HashSet::new();
+    for property in properties {
+        if !seen.insert(property.key.name.as_str()) {
+            report_repeated_key(property);
+        }
+    }
+}
+
+/// Report keys repeated across the annotations stacked on one item, such as
+/// `@(added_in = "2.0")` above `@(added_in = "3.0")`. Repeats within a single
+/// annotation are reported when it is parsed.
+fn reject_repeated_attribute_keys(annotations: &[Node<Annotation>]) {
+    let mut seen: std::collections::HashSet<&str> = std::collections::HashSet::new();
+    for annotation in annotations {
+        let Some(properties) = &annotation.properties else {
+            continue;
+        };
+        let mut reported = std::collections::HashSet::new();
+        for property in properties {
+            let key = property.key.name.as_str();
+            if seen.contains(key) && reported.insert(key) {
+                report_repeated_key(property);
+            }
+        }
+        seen.extend(properties.iter().map(|property| property.key.name.as_str()));
+    }
+}
+
+fn report_repeated_key(property: &Node<ObjectProperty>) {
+    ParseContext::err(CompilationIssue::fatal(
+        property.as_source_range(),
+        format!(
+            "`{}` is specified more than once. Remove all but one.",
+            property.key.name
+        ),
+    ));
+}
+
 fn outer_annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
     peek((at_sign, open_paren)).parse_next(i)?;
     annotation(i)
@@ -576,6 +628,7 @@ fn annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
         ignore_trailing_comma(i);
         ignore_whitespace(i);
         end = close_paren(i)?.end;
+        reject_repeated_keys(&properties);
         Some(properties)
     } else {
         None
@@ -597,17 +650,6 @@ fn annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
         end,
         at.module_id,
     );
-
-    if let Some(property) = value.properties.as_deref().and_then(|properties| {
-        properties
-            .iter()
-            .find(|property| property.key.name == annotations::IMPORT_TARGET_REPRESENTATION)
-    }) {
-        ParseContext::experimental(
-            "the `targetRepresentation` import annotation",
-            property.as_source_range(),
-        );
-    }
 
     ParseContext::handle_attribute(&value);
 
@@ -1212,7 +1254,7 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> ModalResult<Node<ArrayEx
                 // array, otherwise we could seek to find a closing bracket until the end of the
                 // file
                 RESERVED_WORDS
-                    .keys()
+                    .iter()
                     .chain([",,", "{", "}", "["].iter())
                     .any(|word| *word == token.value)
             })
@@ -1462,7 +1504,7 @@ pub(crate) fn object(i: &mut TokenSlice) -> ModalResult<Node<ObjectExpression>> 
                 // object, otherwise we could seek to find a closing brace until the end of the
                 // file
                 RESERVED_WORDS
-                    .keys()
+                    .iter()
                     .chain([",,", "[", "]", "{"].iter())
                     .any(|word| *word == token.value)
             })
@@ -1670,10 +1712,14 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
         return if_with_no_else(cond, then_val, else_ifs);
     }
     ignore_whitespace(i);
-    let Ok(final_else) = program.parse_next(i).map(BoxNode::new) else {
-        ParseContext::err(CompilationIssue::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
-        let _ = opt(close_brace).parse_next(i);
-        return if_with_no_else(cond, then_val, else_ifs);
+    let final_else = match program.parse_next(i).map(BoxNode::new) {
+        Ok(final_else) => final_else,
+        Err(ErrMode::Backtrack(_)) => {
+            ParseContext::err(CompilationIssue::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
+            let _ = opt(close_brace).parse_next(i);
+            return if_with_no_else(cond, then_val, else_ifs);
+        }
+        Err(e) => return Err(e),
     };
     ignore_whitespace(i);
 
@@ -2062,6 +2108,17 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
     // The solution is that this parser should check if the last matched body item was an empty line,
     // and if so, then ignore the separator parser for the current iteration.
     loop {
+        // Preserve the comma's source range when an enclosing expression parser can backtrack.
+        if let Ok((_, comma)) = peek((opt(whitespace), one_of(TokenType::Comma))).parse_next(i) {
+            return Err(ErrMode::Cut(
+                CompilationIssue::fatal(
+                    comma.as_source_range(),
+                    "Unexpected comma after a statement. Remove the comma; statements are separated by newlines.",
+                )
+                .into(),
+            ));
+        }
+
         let last_match_was_empty_line = things_within_body.last().map(|wf| wf.is_newline()).unwrap_or(false);
 
         use winnow::stream::Stream;
@@ -2206,6 +2263,7 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
                 }
                 end = b.end();
                 if !pending_attrs.is_empty() {
+                    reject_repeated_attribute_keys(&pending_attrs);
                     b.set_attrs(pending_attrs);
                     pending_attrs = Vec::new();
                 }
@@ -2988,9 +3046,6 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
         equals(i)?;
         ignore_whitespace(i);
         let ty = type_(i)?;
-
-        ParseContext::experimental("type aliases", ty.as_source_range());
-
         TypeDeclarationDefinition::Alias { ty: BoxNode::new(ty) }
     } else if peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
         ignore_whitespace(i);
@@ -3020,9 +3075,7 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
         },
     );
 
-    if matches!(result.definition, TypeDeclarationDefinition::Enum(_)) {
-        ParseContext::experimental("enum declarations", result.as_source_range());
-    } else {
+    if matches!(result.definition, TypeDeclarationDefinition::Bare) {
         ParseContext::experimental("type declarations", result.as_source_range());
     }
 
@@ -3345,6 +3398,12 @@ fn identifier_or_keyword(i: &mut TokenSlice) -> ModalResult<Token> {
 fn nameable_identifier(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
     let result = identifier.parse_next(i)?;
 
+    report_unnameable_identifier(&result);
+
+    Ok(result)
+}
+
+fn report_unnameable_identifier(result: &Node<Identifier>) {
     if !result.is_nameable() {
         let desc = if result.name == "_" {
             "Underscores"
@@ -3356,13 +3415,11 @@ fn nameable_identifier(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
             format!("{desc} cannot be referred to, only declared."),
         ));
     }
-
-    Ok(result)
 }
 
-fn name(i: &mut TokenSlice) -> ModalResult<Node<Name>> {
+fn unvalidated_name(i: &mut TokenSlice) -> ModalResult<Node<Name>> {
     let abs_path = opt(double_colon).parse_next(i)?;
-    let mut idents: NodeList<Identifier> = separated(1.., nameable_identifier, double_colon)
+    let mut idents: NodeList<Identifier> = separated(1.., identifier, double_colon)
         .parse_next(i)
         .map_err(|e| e.backtrack())?;
 
@@ -3375,7 +3432,7 @@ fn name(i: &mut TokenSlice) -> ModalResult<Node<Name>> {
     let name = idents.pop().unwrap();
     let end = name.end;
     let module_id = name.module_id;
-    let result = Node::new(
+    Ok(Node::new(
         Name {
             name,
             path: idents,
@@ -3385,7 +3442,15 @@ fn name(i: &mut TokenSlice) -> ModalResult<Node<Name>> {
         start,
         end,
         module_id,
-    );
+    ))
+}
+
+fn name(i: &mut TokenSlice) -> ModalResult<Node<Name>> {
+    let result = unvalidated_name.parse_next(i)?;
+
+    for ident in result.path.iter().chain(std::iter::once(&result.name)) {
+        report_unnameable_identifier(ident);
+    }
 
     if let Some(suggestion) = super::deprecation(&result.to_string(), DeprecationKind::Const) {
         ParseContext::warn(
@@ -3853,13 +3918,13 @@ fn type_not_union(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
             }),
         // Array types
         array_type,
-        // Primitive types
-        primitive_type.map(|t| t.map(Type::Primitive)),
+        // Primary types
+        primary_type,
     ))
     .parse_next(i)
 }
 
-fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {
+fn primary_type(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
     alt((
         // A function type: `fn` (`(` type?, (id: type,)* `)` (`:` type)?)?
         (
@@ -3912,25 +3977,49 @@ fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {
                     }
                 }
 
-                Node::new(PrimitiveType::Function(ft), t.start, t.end, t.module_id)
+                Node::new(
+                    Type::Primitive(PrimitiveType::Function(ft)),
+                    t.start,
+                    t.end,
+                    t.module_id,
+                )
             }),
         // A named type, possibly with a numeric suffix.
-        (identifier, opt(delimited(open_paren, uom_for_type, close_paren))).map(|(ident, suffix)| {
-            let start = ident.start;
-            let end = ident.end;
-            let module_id = ident.module_id;
-            let result = Node::new(
-                PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named { id: ident }),
-                start,
-                end,
-                module_id,
-            );
+        (unvalidated_name, opt(delimited(open_paren, uom_for_type, close_paren))).map(|(name, suffix)| {
+            if name.abs_path {
+                ParseContext::err(CompilationIssue::fatal(
+                    name.as_source_range(),
+                    ABSOLUTE_PATHS_NOT_SUPPORTED,
+                ));
+            }
+            if !name.path.is_empty() && suffix.is_some() {
+                ParseContext::err(CompilationIssue::fatal(
+                    name.as_source_range(),
+                    "Numeric suffixes cannot be applied to qualified type names",
+                ));
+            }
 
-            if *result == PrimitiveType::None {
+            let start = name.start;
+            let end = name.end;
+            let module_id = name.module_id;
+            let primitive = if name.path.is_empty() && !name.abs_path {
+                PrimitiveType::primitive_from_str(&name.name.name, suffix)
+            } else {
+                None
+            };
+            let result = if let Some(primitive) = primitive {
+                Node::new(Type::Primitive(primitive), start, end, module_id)
+            } else {
+                Node::new(Type::Named { name }, start, end, module_id)
+            };
+
+            if *result == Type::Primitive(PrimitiveType::None) {
                 ParseContext::experimental("none type", result.as_source_range());
             }
-            if *result == PrimitiveType::Never {
-                ParseContext::experimental("never type", result.as_source_range());
+            if *result == Type::Primitive(PrimitiveType::Never) {
+                CTXT.with_borrow_mut(|ctxt| {
+                    ctxt.as_mut().unwrap().never_type_ranges.push(result.as_source_range());
+                });
             }
 
             result
@@ -4081,13 +4170,48 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                     identifier.pre_comments = comments.inner;
                 }
                 let mut experimental = false;
+                let mut added_in = None;
                 let mut deprecated = false;
                 let mut deprecated_since = None;
+                let mut removed_in = None;
                 if let Some(attr) = attr {
                     if let Some(property) = attr.property(EXPERIMENTAL)
                         && let Some(value) = property.value.literal_bool()
                     {
                         experimental = value;
+                    }
+                    if let Some(property) = attr.property(ADDED_IN) {
+                        if let Some(s) = property.value.literal_str()
+                            && let Some(version) = VersionConstraint::parse(s)
+                        {
+                            added_in = Some(version);
+                        } else {
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&property.value),
+                                format!(
+                                    "Invalid value for `{ADDED_IN}`; expected a dotted integer version string, e.g., \"3.0\"",
+                                ),
+                            ));
+                        }
+                        if !labeled {
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&attr),
+                                format!(
+                                    "`{ADDED_IN}` cannot be used on the unlabeled parameter; only labeled parameters can be added in a later version"
+                                ),
+                            ));
+                        } else if default_value.is_none() {
+                            // A caller on an older version cannot pass the
+                            // parameter, so the function body must be able to
+                            // run with its default value.
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&identifier),
+                                format!(
+                                    "A parameter with `{ADDED_IN}` must be optional; add `?` after `{}`",
+                                    identifier.name
+                                ),
+                            ));
+                        }
                     }
                     if let Some(property) = attr.property(DEPRECATED)
                         && let Some(value) = property.value.literal_bool()
@@ -4114,13 +4238,74 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                             format!("A parameter cannot set both `{DEPRECATED}` and `{DEPRECATED_SINCE}`; only one may be specified"),
                         ));
                     }
+                    if let Some(property) = attr.property(REMOVED_IN) {
+                        if let Some(s) = property.value.literal_str()
+                            && let Some(version) = VersionConstraint::parse(s)
+                        {
+                            removed_in = Some(version);
+                        } else {
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&property.value),
+                                format!(
+                                    "Invalid value for `{REMOVED_IN}`; expected a dotted integer version string, e.g., \"3.0\"",
+                                ),
+                            ));
+                        }
+                        if !labeled {
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&attr),
+                                format!(
+                                    "`{REMOVED_IN}` cannot be used on the unlabeled parameter; only labeled parameters can be removed"
+                                ),
+                            ));
+                        } else if default_value.is_none() {
+                            // A caller on the removed version cannot pass the
+                            // parameter, so the function body must be able to
+                            // run with its default value.
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&identifier),
+                                format!(
+                                    "A parameter with `{REMOVED_IN}` must be optional; add `?` after `{}`",
+                                    identifier.name
+                                ),
+                            ));
+                        }
+                    }
+                    // A parameter cannot be deprecated before it exists, nor
+                    // removed in the version that added it. These are mistakes
+                    // in the declaration's metadata that do not prevent the
+                    // program from running, so they are not fatal.
+                    if let Some(added) = &added_in {
+                        if let Some(since) = &deprecated_since
+                            && since.is_before(added)
+                            && let Some(property) = attr.property(DEPRECATED_SINCE)
+                        {
+                            ParseContext::err(CompilationIssue::err(
+                                SourceRange::from(&property.value),
+                                format!(
+                                    "`{DEPRECATED_SINCE}` (KCL {since}) must not be earlier than `{ADDED_IN}` (KCL {added})"
+                                ),
+                            ));
+                        }
+                        if let Some(removed) = &removed_in
+                            && !added.is_before(removed)
+                            && let Some(property) = attr.property(REMOVED_IN)
+                        {
+                            ParseContext::err(CompilationIssue::err(
+                                SourceRange::from(&property.value),
+                                format!("`{REMOVED_IN}` (KCL {removed}) must be later than `{ADDED_IN}` (KCL {added})"),
+                            ));
+                        }
+                    }
                     identifier.outer_attrs.push(attr);
                 }
 
                 Ok(Parameter {
                     experimental,
+                    added_in,
                     deprecated,
                     deprecated_since,
+                    removed_in,
                     identifier,
                     param_type: type_,
                     default_value,
@@ -4166,7 +4351,7 @@ fn optional_after_required(params: &[Parameter]) -> Result<(), CompilationIssue>
 }
 
 fn is_safe_sketch_block_binding_name(name: &str) -> bool {
-    !ParseContext::is_in_sketch_block() || !RESERVED_SKETCH_BLOCK_WORDS.contains(name) && !name.starts_with("__")
+    !ParseContext::is_in_sketch_block() || !SKETCH_BLOCK_RESERVED_WORDS.contains(name) && !name.starts_with("__")
 }
 
 fn is_safe_binding_name_anywhere(name: &str) -> bool {
@@ -4226,8 +4411,9 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
     let fn_call = fn_call_kw.parse_next(i)?;
     if is_callee_sketch_block(&fn_call.callee) && peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
         // We have `sketch() {`. Parse the block.
+        // Cut on error: no other parser accepts `sketch(...) {`, so backtracking would only move the error to `sketch(`.
         ignore_whitespace(i);
-        let (_, body, close) = ParseContext::in_sketch_block(|| parse_block(i))?;
+        let (_, body, close) = ParseContext::in_sketch_block(|| parse_block(i)).map_err(|e| e.cut())?;
         let end = close.end;
 
         let Node {
@@ -4551,7 +4737,7 @@ e
 
     #[test]
     fn reserved_sketch_block_words() {
-        for word in crate::parsing::token::RESERVED_SKETCH_BLOCK_WORDS.iter().sorted() {
+        for word in SKETCH_BLOCK_RESERVED_WORDS.iter().sorted() {
             let code = format!(
                 "sketch() {{
   {word} = 5
@@ -4579,9 +4765,13 @@ e
 
     #[test]
     fn reserved_words() {
-        // Since these are stored in a set, we sort to make the tests
-        // deterministic.
-        for word in crate::parsing::token::RESERVED_WORDS.keys().sorted() {
+        // The default parser uses KCL 1.0, where `use` remains an identifier.
+        // Sort the other reserved words for deterministic assertion order.
+        for word in crate::parsing::token::RESERVED_WORDS
+            .iter()
+            .filter(|word| **word != "use")
+            .sorted()
+        {
             assert_reserved(word);
         }
     }
@@ -5250,7 +5440,7 @@ mySk1 = startSketchOn(XY)
         // Hi
         |> f(%)",
             "1
-        /* Hi 
+        /* Hi
         there
         */
         |> f(%)",
@@ -5467,26 +5657,6 @@ mySk1 = startSketchOn(XY)
              "
             .into()
         );
-    }
-
-    #[test]
-    fn pipes_on_pipes_minimal() {
-        let test_program = r#"startSketchOn(XY)
-        |> startProfile(at = [0, 0])
-        |> line(endAbsolute = [0, -0]) // MoveRelative
-
-        "#;
-        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let tokens = &mut tokens.as_slice();
-        let _actual = in_ctx(|| expression.parse_next(tokens)).unwrap();
-        assert_eq!(tokens.first().unwrap().token_type, TokenType::Whitespace);
-    }
-
-    #[test]
-    fn test_pipes_on_pipes() {
-        let test_program = include_str!("../../e2e/executor/inputs/pipes_on_pipes.kcl");
-        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let _ = run_parser(tokens.as_slice()).unwrap();
     }
 
     #[test]
@@ -5758,7 +5928,7 @@ mySk1 = startSketchOn(XY)
         let result = crate::parsing::top_level_parse(p);
         let result = result.0.unwrap();
         assert!(result.1.iter().all(|e| !e.severity.is_err()), "found: {:#?}", result.1);
-        (result.0.unwrap(), result.1)
+        (result.0.unwrap().ast, result.1)
     }
 
     #[track_caller]
@@ -5770,7 +5940,7 @@ mySk1 = startSketchOn(XY)
             "found: {:#?}",
             result.1
         );
-        (result.0.unwrap(), result.1)
+        (result.0.unwrap().ast, result.1)
     }
 
     #[track_caller]
@@ -5801,6 +5971,205 @@ mySk1 = startSketchOn(XY)
             .expect("Expected an error but found none")
             .message;
         assert!(err.contains(expected), "actual='{err}'");
+    }
+
+    #[track_caller]
+    fn assert_statement_comma_error(code: &str, comma_start: usize) -> String {
+        let (program, issues) = crate::parsing::top_level_parse(code).0.unwrap();
+        assert!(program.is_none(), "Unexpected AST for `{code}`");
+        assert_eq!(issues.len(), 1, "Unexpected diagnostics for `{code}`: {issues:#?}");
+        let issue = &issues[0];
+        assert_eq!(issue.severity, Severity::Fatal);
+        assert_eq!(
+            issue.message,
+            "Unexpected comma after a statement. Remove the comma; statements are separated by newlines."
+        );
+        assert_eq!(
+            issue.source_range,
+            SourceRange::new(comma_start, comma_start + 1, ModuleId::default()),
+            "Incorrect comma range for `{code}`"
+        );
+        assert_eq!(&code[comma_start..comma_start + 1], ",");
+        format!("{}{}", &code[..comma_start], &code[comma_start + 1..])
+    }
+
+    #[test]
+    fn test_statement_comma_issue_13876() {
+        let body = r#"plateSketch = sketch(on = XY) {
+  s1 = line(start = [var 0, var 0], end = [var 1, var 0]),
+  s2 = line(start = [var 1, var 0], end = [var 1, var 1]),
+  s3 = line(start = [var 1, var 1], end = [var 0, var 1]),
+  s4 = line(start = [var 0, var 1], end = [var 0, var 0]),
+  distance([s1.start, s1.end]) == plateDim,
+  distance([s2.start, s2.end]) == plateDim,
+  distance([s3.start, s3.end]) == plateDim,
+  distance([s4.start, s4.end]) == plateDim,
+}"#;
+        for version in ["2.0", "3.0"] {
+            let mut code = format!("@settings(kclVersion = {version})\n{body}");
+            // Check the diagnostic for the comma after every statement in the reported source.
+            for _ in 0..8 {
+                let comma_start = code.find(",\n").unwrap();
+                code = assert_statement_comma_error(&code, comma_start);
+            }
+            assert_no_err(&code);
+        }
+    }
+
+    /// Check that parsing fails with one fatal error, with this exact message and range.
+    #[track_caller]
+    fn assert_single_fatal(code: &str, msg: &str, start: usize, end: usize) {
+        let (program, issues) = crate::parsing::top_level_parse(code).0.unwrap();
+        assert!(program.is_none(), "Unexpected AST for `{code}`");
+        assert_eq!(issues.len(), 1, "Unexpected diagnostics for `{code}`: {issues:#?}");
+        let issue = &issues[0];
+        assert_eq!(issue.severity, Severity::Fatal);
+        assert_eq!(issue.message, msg);
+        assert_eq!(
+            issue.source_range,
+            SourceRange::new(start, end, ModuleId::default()),
+            "Incorrect range for `{code}`"
+        );
+    }
+
+    #[test]
+    fn test_stray_token_in_sketch_block() {
+        // A stray token after a statement in a sketch block used to be reported at `sketch(`.
+        for version in ["2.0", "3.0"] {
+            for stray in [";", ")", "]"] {
+                let code = format!(
+                    "@settings(kclVersion = {version})
+s = sketch(on = XY) {{
+  s1 = line(start = [var 0, var 0], end = [var 1, var 0]){stray}
+  s2 = line(start = [var 1, var 0], end = [var 1, var 1])
+}}"
+                );
+                let start = code.find(&format!("]){stray}")).unwrap() + 2;
+                assert_single_fatal(&code, &format!("Unexpected token: {stray}"), start, start + 1);
+                // Without the stray token, the code is valid.
+                assert_no_err(&format!("{}{}", &code[..start], &code[start + 1..]));
+            }
+        }
+    }
+
+    #[test]
+    fn test_stray_token_in_embedded_sketch_block() {
+        // Used to be reported at the array's `[`.
+        for version in ["2.0", "3.0"] {
+            let code = format!("@settings(kclVersion = {version})\nvalues = [sketch(on = XY) {{ x = 1; }}]");
+            let start = code.find(';').unwrap();
+            assert_single_fatal(&code, "Unexpected token: ;", start, start + 1);
+            assert_no_err(&format!("{}{}", &code[..start], &code[start + 1..]));
+        }
+    }
+
+    #[test]
+    fn test_unclosed_sketch_block() {
+        // Used to be reported at `sketch(`.
+        for version in ["2.0", "3.0"] {
+            let code = format!("@settings(kclVersion = {version})\ns = sketch(on = XY) {{\n  x = 1");
+            let end = code.len();
+            assert_single_fatal(&code, "Unexpected end of file. The compiler expected }", end - 1, end);
+        }
+    }
+
+    #[test]
+    fn test_sketch_block_recovered_error_keeps_ast() {
+        // An error the parser recovers from inside a sketch block is not made fatal.
+        for version in ["2.0", "3.0"] {
+            let code = format!("@settings(kclVersion = {version})\ns = sketch(on = XY) {{\n  x = f(a = 1, a = 2)\n}}");
+            let (program, issues) = crate::parsing::top_level_parse(&code).0.unwrap();
+            assert!(program.is_some(), "Expected an AST for `{code}`");
+            assert_eq!(issues.len(), 1, "Unexpected diagnostics for `{code}`: {issues:#?}");
+            assert_eq!(issues[0].severity, Severity::Error);
+            assert!(
+                issues[0]
+                    .message
+                    .starts_with("You've used the parameter labelled 'a' 2 times"),
+                "found: {}",
+                issues[0].message
+            );
+        }
+    }
+
+    #[test]
+    fn test_statement_comma_body_contexts() {
+        for version in ["2.0", "3.0"] {
+            for body in [
+                "x = 1,\n",
+                "f(),\n",
+                "fn f() {\n  x = 1,\n  return x\n}",
+                "fn f() {\n  return 1,\n}",
+                "f = fn() {\n  return 1,\n}",
+                "s = sketch(on = XY) {\n  distance([a, b]) == 1,\n}",
+                "x = if true {\n  1,\n} else {\n  2\n}",
+                "x = if true {\n  1\n} else if false {\n  2,\n} else {\n  3\n}",
+                "x = if true {\n  1\n} else {\n  2,\n}",
+            ] {
+                let code = format!("@settings(kclVersion = {version})\n{body}");
+                let comma_start = code.rfind(',').unwrap();
+                let corrected = assert_statement_comma_error(&code, comma_start);
+                assert_no_err(&corrected);
+            }
+        }
+    }
+
+    #[test]
+    fn test_statement_comma_whitespace_and_comments() {
+        for version in ["2.0", "3.0"] {
+            for (statement, marker) in [
+                ("x = 1  ,\n", ",\n"),
+                ("x = 1,\r\n", ",\r\n"),
+                ("x = 1\n  ,\n", ",\n"),
+                (
+                    "x = 1, // Commas, including this one, are permitted in comments.\n",
+                    ", //",
+                ),
+                (
+                    "x = 1 /* Commas, including this one, are permitted in comments. */ ,\n",
+                    ",\n",
+                ),
+                (
+                    "x = 1\n// Commas, including this one, are permitted in comments.\n,\n",
+                    "\n,\n",
+                ),
+            ] {
+                let code = format!("@settings(kclVersion = {version})\ns = sketch(on = XY) {{\n{statement}}}");
+                let comma_start = code.find(marker).unwrap() + marker.find(',').unwrap();
+                let corrected = assert_statement_comma_error(&code, comma_start);
+                assert_no_err(&corrected);
+            }
+        }
+    }
+
+    #[test]
+    fn test_statement_comma_valid_expression_commas() {
+        for version in ["2.0", "3.0"] {
+            for body in [
+                "values = [1, 2,]\n",
+                "properties = {x = 1, y = 2,}\n",
+                "value = f(1, x = 2,)\n",
+                "fn f(a, b) { return a }\n",
+                "values = [fn() { return 1 }, fn() { return 2 },]\n",
+                "sketches = [sketch(on = XY) { x = 1 },]\n",
+                "s = sketch(on = XY) {\n  x = f(a = [1, 2,], b = {c = 3,})\n}\n",
+                "s = sketch(on = XY) {\n  x = 1 // Commas, including this one, are permitted in comments.\n}\n",
+            ] {
+                let code = format!("@settings(kclVersion = {version})\n{body}");
+                assert_no_err(&code);
+            }
+        }
+    }
+
+    #[test]
+    fn test_statement_comma_empty_else_recovery() {
+        for version in ["2.0", "3.0"] {
+            let code = format!("@settings(kclVersion = {version})\nx = if true {{ 1 }} else {{}}");
+            let (_, issues) = assert_no_fatal(&code);
+            assert_eq!(issues.len(), 1);
+            assert_eq!(issues[0].message, IF_ELSE_CANNOT_BE_EMPTY);
+            assert_eq!(issues[0].severity, Severity::Error);
+        }
     }
 
     #[test]
@@ -5925,6 +6294,275 @@ height = [obj["a"] -1, 0]"#;
     }
 
     #[test]
+    fn test_param_removed_in_annotation() {
+        let tokens = crate::parsing::token::lex(
+            r#"fn foo(
+  @(deprecated_since = "2.0", removed_in = "3.0")
+  x?: number,
+) {
+  return x
+}"#,
+            ModuleId::default(),
+        )
+        .unwrap();
+        let mut body = in_ctx(|| program.parse(tokens.as_slice())).unwrap().inner.body;
+        let BodyItem::VariableDeclaration(item) = body.remove(0) else {
+            panic!("expected function declaration");
+        };
+        let Expr::FunctionExpression(func) = item.into_node().inner.declaration.inner.init else {
+            panic!("expected function expression");
+        };
+        let param = &func.params[0];
+        assert_eq!(param.deprecated_since, VersionConstraint::parse("2.0"));
+        assert_eq!(param.removed_in, VersionConstraint::parse("3.0"));
+    }
+
+    #[test]
+    fn test_param_removed_in_invalid_value() {
+        assert_err_contains(
+            r#"fn foo(
+  @(removed_in = "3.x")
+  x?: number,
+) {
+  return x
+}"#,
+            "Invalid value for `removed_in`",
+        );
+    }
+
+    #[test]
+    fn test_param_removed_in_on_unlabeled_param() {
+        assert_err_contains(
+            r#"fn foo(
+  @(removed_in = "3.0")
+  @x: number,
+) {
+  return x
+}"#,
+            "`removed_in` cannot be used on the unlabeled parameter",
+        );
+    }
+
+    /// Byte range of the last occurrence of `needle` in `src`.
+    fn last_range(src: &str, needle: &str) -> [usize; 2] {
+        let start = src.rfind(needle).unwrap();
+        [start, start + needle.len()]
+    }
+
+    #[test]
+    fn test_attribute_key_repeated_in_one_annotation() {
+        let src = r#"@(added_in = "2.0", added_in = "3.0")
+fn f() {
+  return 1
+}"#;
+        assert_err(
+            src,
+            "`added_in` is specified more than once. Remove all but one.",
+            last_range(src, r#"added_in = "3.0""#),
+        );
+    }
+
+    #[test]
+    fn test_attribute_key_repeated_across_stacked_annotations() {
+        let src = r#"@(added_in = "2.0")
+@(added_in = "3.0")
+fn f() {
+  return 1
+}"#;
+        assert_err(
+            src,
+            "`added_in` is specified more than once. Remove all but one.",
+            last_range(src, r#"added_in = "3.0""#),
+        );
+    }
+
+    #[test]
+    fn test_distinct_attribute_keys_across_stacked_annotations_are_fine() {
+        crate::parsing::top_level_parse(
+            r#"@(added_in = "2.0")
+@(experimental = true)
+fn f() {
+  return 1
+}"#,
+        )
+        .parse_errs_as_err()
+        .unwrap();
+    }
+
+    #[test]
+    fn test_setting_repeated_in_one_annotation() {
+        let src = "@settings(kclVersion = 2.0, kclVersion = 3.0)\nx = 1\n";
+        assert_err(
+            src,
+            "`kclVersion` is specified more than once. Remove all but one.",
+            last_range(src, "kclVersion = 3.0"),
+        );
+    }
+
+    #[test]
+    fn test_parameter_attribute_key_repeated() {
+        let src = r#"fn f(
+  @(added_in = "2.0", added_in = "3.0")
+  x?: number,
+) {
+  return x
+}"#;
+        assert_err(
+            src,
+            "`added_in` is specified more than once. Remove all but one.",
+            last_range(src, r#"added_in = "3.0""#),
+        );
+    }
+
+    #[test]
+    fn test_param_removed_in_requires_optional_param() {
+        assert_err(
+            r#"fn foo(
+  @(removed_in = "3.0")
+  x: number,
+) {
+  return x
+}"#,
+            "A parameter with `removed_in` must be optional; add `?` after `x`",
+            [34, 35],
+        );
+    }
+
+    #[test]
+    fn test_param_removed_in_allows_optional_param_with_default() {
+        crate::parsing::top_level_parse(
+            r#"fn foo(
+  @(removed_in = "3.0")
+  x?: number = 7,
+) {
+  return x
+}"#,
+        )
+        .unwrap();
+    }
+
+    /// The first parameter of the function declared by the program's first
+    /// statement.
+    fn first_fn_param(mut program: Node<Program>) -> Parameter {
+        let BodyItem::VariableDeclaration(item) = program.inner.body.remove(0) else {
+            panic!("expected function declaration");
+        };
+        let Expr::FunctionExpression(func) = item.into_node().inner.declaration.inner.init else {
+            panic!("expected function expression");
+        };
+        func.params[0].clone()
+    }
+
+    #[test]
+    fn test_param_added_in_annotation() {
+        // `added_in` may equal `deprecated_since`: a parameter can arrive
+        // already deprecated.
+        let (program, _) = assert_no_err(
+            r#"fn foo(
+  @(added_in = "2.0", deprecated_since = "2.0", removed_in = "3.0")
+  x?: number,
+) {
+  return x
+}"#,
+        );
+        let param = first_fn_param(program);
+        assert_eq!(param.added_in, VersionConstraint::parse("2.0"));
+        assert_eq!(param.deprecated_since, VersionConstraint::parse("2.0"));
+        assert_eq!(param.removed_in, VersionConstraint::parse("3.0"));
+    }
+
+    #[test]
+    fn test_param_added_in_invalid_value() {
+        assert_err_contains(
+            r#"fn foo(
+  @(added_in = "3.x")
+  x?: number,
+) {
+  return x
+}"#,
+            "Invalid value for `added_in`",
+        );
+    }
+
+    #[test]
+    fn test_param_added_in_on_unlabeled_param() {
+        assert_err_contains(
+            r#"fn foo(
+  @(added_in = "3.0")
+  @x: number,
+) {
+  return x
+}"#,
+            "`added_in` cannot be used on the unlabeled parameter",
+        );
+    }
+
+    #[test]
+    fn test_param_added_in_requires_optional_param() {
+        assert_err(
+            r#"fn foo(
+  @(added_in = "3.0")
+  x: number,
+) {
+  return x
+}"#,
+            "A parameter with `added_in` must be optional; add `?` after `x`",
+            [32, 33],
+        );
+    }
+
+    #[test]
+    fn test_param_added_in_allows_optional_param_with_default() {
+        assert_no_err(
+            r#"fn foo(
+  @(added_in = "3.0")
+  x?: number = 7,
+) {
+  return x
+}"#,
+        );
+    }
+
+    #[test]
+    fn test_param_added_in_later_than_deprecated_since_is_nonfatal_error() {
+        // The declaration's metadata is inconsistent, but the program can
+        // still run, so the error is not fatal and the AST is kept.
+        let (program, issues) = assert_no_fatal(
+            r#"fn foo(
+  @(added_in = "3.0", deprecated_since = "2.0")
+  x?: number,
+) {
+  return x
+}"#,
+        );
+        let errors: Vec<_> = issues.iter().filter(|e| e.severity == Severity::Error).collect();
+        assert_eq!(errors.len(), 1, "found: {issues:#?}");
+        assert_eq!(
+            errors[0].message,
+            "`deprecated_since` (KCL 2.0) must not be earlier than `added_in` (KCL 3.0)"
+        );
+        assert_eq!(first_fn_param(program).added_in, VersionConstraint::parse("3.0"));
+    }
+
+    #[test]
+    fn test_param_added_in_not_before_removed_in_is_nonfatal_error() {
+        let (_, issues) = assert_no_fatal(
+            r#"fn foo(
+  @(added_in = "3.0", removed_in = "3.0")
+  x?: number,
+) {
+  return x
+}"#,
+        );
+        let errors: Vec<_> = issues.iter().filter(|e| e.severity == Severity::Error).collect();
+        assert_eq!(errors.len(), 1, "found: {issues:#?}");
+        assert_eq!(
+            errors[0].message,
+            "`removed_in` (KCL 3.0) must be later than `added_in` (KCL 3.0)"
+        );
+    }
+
+    #[test]
     fn test_anon_fn_no_fn() {
         assert_err_contains("foo(42, (x) { return x + 1 })", "Anonymous function requires `fn`");
     }
@@ -6045,8 +6683,10 @@ e
             (
                 vec![Parameter {
                     experimental: Default::default(),
+                    added_in: None,
                     deprecated: false,
                     deprecated_since: None,
+                    removed_in: None,
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -6061,8 +6701,10 @@ e
             (
                 vec![Parameter {
                     experimental: Default::default(),
+                    added_in: None,
                     deprecated: false,
                     deprecated_since: None,
+                    removed_in: None,
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -6078,8 +6720,10 @@ e
                 vec![
                     Parameter {
                         experimental: Default::default(),
+                        added_in: None,
                         deprecated: false,
                         deprecated_since: None,
+                        removed_in: None,
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -6091,8 +6735,10 @@ e
                     },
                     Parameter {
                         experimental: Default::default(),
+                        added_in: None,
                         deprecated: false,
                         deprecated_since: None,
+                        removed_in: None,
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
@@ -6109,8 +6755,10 @@ e
                 vec![
                     Parameter {
                         experimental: Default::default(),
+                        added_in: None,
                         deprecated: false,
                         deprecated_since: None,
+                        removed_in: None,
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -6122,8 +6770,10 @@ e
                     },
                     Parameter {
                         experimental: Default::default(),
+                        added_in: None,
                         deprecated: false,
                         deprecated_since: None,
+                        removed_in: None,
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
@@ -6316,7 +6966,7 @@ e
 ///      )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close(%)
-/// 
+///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
@@ -6483,7 +7133,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
     #[test]
     fn basic_if_else_if() {
         let some_program_string = "if true {
-            3  
+            3
         } else if true {
             4
         } else {
@@ -6661,6 +7311,86 @@ type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
     }
 
     #[test]
+    fn qualified_type_path_in_parameter_types() {
+        assert_no_err("fn labeled(@o: view::Orientation) {}\nfn unlabeled(o: view::Orientation) {}");
+    }
+
+    #[test]
+    fn qualified_type_path_in_return_type() {
+        assert_no_err("fn front(): view::Orientation {}");
+    }
+
+    #[test]
+    fn qualified_type_path_in_type_alias() {
+        assert_no_err("@settings(experimentalFeatures = allow)\ntype Front = view::Orientation");
+    }
+
+    #[test]
+    fn qualified_type_path_in_ascription() {
+        assert_no_err("front = orientation: view::Orientation");
+    }
+
+    #[test]
+    fn qualified_type_path_in_union_member() {
+        assert_no_err("@settings(experimentalFeatures = allow)\ntype Direction = view::Orientation | math::Axis");
+    }
+
+    #[test]
+    fn qualified_type_path_in_array_element() {
+        assert_no_err("@settings(experimentalFeatures = allow)\ntype Views = [view::Orientation; 3]");
+    }
+
+    #[test]
+    fn qualified_type_path_in_object_field() {
+        assert_no_err("@settings(experimentalFeatures = allow)\ntype View = { front: view::Orientation }");
+    }
+
+    #[test]
+    fn qualified_type_path_in_function_type() {
+        assert_no_err(
+            "@settings(experimentalFeatures = allow)\ntype Mapper = fn(view::Orientation, axis: math::Axis): view::Orientation",
+        );
+    }
+
+    #[test]
+    fn qualified_type_path_in_ascription_binary_lookahead() {
+        assert_no_err("x: a::b > 1");
+    }
+
+    #[test]
+    fn qualified_type_path_named_number_is_not_a_primitive() {
+        let tokens = crate::parsing::token::lex("view::number", ModuleId::default()).unwrap();
+        let ty = in_ctx(|| type_.parse(tokens.as_slice())).unwrap();
+
+        let Type::Named { name } = &*ty else {
+            panic!("expected a named type, found {ty:?}");
+        };
+        assert_eq!(name.path.iter().map(|p| p.name.as_str()).collect::<Vec<_>>(), ["view"]);
+        assert_eq!(name.name.name, "number");
+        assert_eq!(ty.to_string(), "view::number");
+        assert_eq!(ty.human_friendly_type(), "a value with type `view::number`");
+    }
+
+    #[test]
+    fn qualified_type_path_rejects_numeric_suffix() {
+        assert_err(
+            "fn front(@o: view::Orientation(mm)) {}",
+            "Numeric suffixes cannot be applied to qualified type names",
+            [13, 30],
+        );
+    }
+
+    #[test]
+    fn qualified_type_path_rejects_absolute_path() {
+        let code = "fn front(@o: ::view::Orientation) {}";
+        let result = crate::parsing::top_level_parse(code);
+        let errors = result.unwrap_errs().collect::<Vec<_>>();
+
+        assert_eq!(errors.len(), 1, "found errors: {errors:#?}");
+        assert_eq!(errors[0].message, ABSOLUTE_PATHS_NOT_SUPPORTED);
+    }
+
+    #[test]
     fn experimental() {
         let code = r#"4 as foo"#;
         assert_err(code, "Use of `as` for tagging expressions is experimental", [5, 8]);
@@ -6678,32 +7408,36 @@ type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
     }
 
     #[test]
-    fn never_type_is_experimental() {
-        let code = "fn stop(): never {}";
+    fn never_type_requires_v3() {
+        for (settings, version) in [
+            ("", "1.0"),
+            ("@settings(kclVersion = 1.0, experimentalFeatures = allow)\n", "1.0"),
+            ("@settings(kclVersion = 2.0, experimentalFeatures = allow)\n", "2.0"),
+        ] {
+            for body in [
+                "fn stop(): never {}",
+                "fn accept(@stop: fn(): never) {}",
+                "type impossible = never",
+            ] {
+                let code = format!("{settings}{body}");
+                let start = code.find("never").unwrap();
+                assert_err(
+                    &code,
+                    &format!("The `never` type requires KCL 3.0-preview, but this program uses KCL {version}."),
+                    [start, start + "never".len()],
+                );
+            }
+        }
+
+        assert_no_err("@settings(kclVersion = \"3.0-preview\")\nfn stop(): never {}");
+        assert_no_err("never = 1\nvalue = never\nmessage = \"never\"");
+        assert_no_err("fn stop(): never {}\n@settings(kclVersion = \"3.0-preview\")");
+        let code = "@settings(kclVersion = \"3.0-preview\")\n@settings(kclVersion = 2.0)\nfn stop(): never {}";
+        let start = code.find("never").unwrap();
         assert_err(
             code,
-            "Use of never type is experimental and may change or be removed.",
-            [11, 16],
-        );
-
-        let code = "fn accept(@stop: fn(): never) {}";
-        assert_err(
-            code,
-            "Use of never type is experimental and may change or be removed.",
-            [23, 28],
-        );
-
-        let code = r#"@settings(experimentalFeatures = allow)
-fn stop(): never {}"#;
-        assert_no_err(code);
-
-        let code = r#"@settings(experimentalFeatures = warn)
-fn stop(): never {}"#;
-        let (_, errs) = assert_no_err(code);
-        assert_eq!(errs.len(), 1);
-        assert_eq!(
-            errs[0].message,
-            "Use of never type is experimental and may change or be removed."
+            "The `never` type requires KCL 3.0-preview, but this program uses KCL 2.0.",
+            [start, start + "never".len()],
         );
     }
 
@@ -6845,26 +7579,13 @@ type Color {
     }
 
     #[test]
-    fn enum_declarations_are_experimental() {
-        let code = "type Color { | Red }";
-        assert_err(code, "Use of enum declarations is experimental", [0, 20]);
-
-        let code = r#"@settings(experimentalFeatures = allow)
-type Color { | Red }
-"#;
-        assert_no_err(code);
-
-        let code = r#"@settings(experimentalFeatures = warn)
-type Color { | Red }
-"#;
-        let (_, errs) = assert_no_err(code);
-        // Exactly one diagnostic: the enum one, without an additional generic
-        // type-declaration diagnostic at the same range.
-        assert_eq!(errs.len(), 1);
-        assert_eq!(
-            errs[0].message,
-            "Use of enum declarations is experimental and may change or be removed."
-        );
+    fn aliases_and_enums_have_no_parser_experimental_diagnostic() {
+        for declaration in ["type Color { | Red }", "type Distance = number(mm)"] {
+            for settings in ["", "@settings(experimentalFeatures = warn)\n"] {
+                let (_, issues) = assert_no_err(&format!("{settings}{declaration}"));
+                assert!(issues.is_empty(), "declaration: {declaration}; issues: {issues:?}");
+            }
+        }
     }
 
     #[test]

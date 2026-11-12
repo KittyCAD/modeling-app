@@ -1,32 +1,69 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provide,
   provideService,
 } from '@kittycad/registry'
-import { effect } from '@preact/signals-core'
+import { effect, untracked } from '@preact/signals-core'
 import type { Command } from '@src/lib/commandTypes'
-import { commandBarMachine } from '@src/machines/commandBarMachine'
 import {
+  type CommandBarMachineEvent,
+  commandBarMachine,
+} from '@src/machines/commandBarMachine'
+import {
+  COMMAND_PALETTE_OPEN_COMMAND_SCOPE,
   type CommandSystemService,
   commandKey,
+  commandScopeService,
   commandSystemService,
   commandsValueSpec,
 } from '@src/registry/contracts/commands'
+import { projectSession } from '@src/registry/contracts/projectSession'
+import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
 import { createActor } from 'xstate'
-import { appCommands } from './appCommands'
-import { toolbarCommands } from './toolbarCommands'
+import { createAppCommands } from './appCommands'
+import { createToolbarCommands } from './toolbarCommands'
+
+type FindAndSelectCommandEvent = Extract<
+  CommandBarMachineEvent,
+  { type: 'Find and select command' }
+>
 
 export const commandsExtension = defineRegistryItemFactory((ctx) => {
   const commandsSignal = ctx.valueSpecs.signal(commandsValueSpec)
 
   let commandBarActor: CommandSystemService['actor'] | undefined
+  let stopCommandPaletteScopeSync: (() => void) | undefined
   let stopCommandsEffect: (() => void) | undefined
   let registeredCommands: readonly Command[] = []
+  let pendingCommandSelections: FindAndSelectCommandEvent[] = []
+
+  const commandIsRegistered = (event: FindAndSelectCommandEvent) =>
+    commandBarActor
+      ?.getSnapshot()
+      .context.commands.some(
+        (command) =>
+          command.name === event.data.name &&
+          command.groupId === event.data.groupId
+      ) ?? false
+
+  const flushPendingCommandSelections = () => {
+    if (!commandBarActor || pendingCommandSelections.length === 0) {
+      return
+    }
+
+    const readySelections = pendingCommandSelections.filter(commandIsRegistered)
+    pendingCommandSelections = pendingCommandSelections.filter(
+      (event) => !commandIsRegistered(event)
+    )
+
+    for (const event of readySelections) {
+      commandBarActor.send(event)
+    }
+  }
 
   const ensureActor = () => {
     if (commandBarActor) {
@@ -46,6 +83,26 @@ export const commandsExtension = defineRegistryItemFactory((ctx) => {
       },
     }).start()
 
+    const syncCommandPaletteScope = () => {
+      const commandScopes = ctx.services.optional(commandScopeService)
+      if (!commandScopes || !commandBarActor) {
+        return
+      }
+
+      if (commandBarActor.getSnapshot().matches('Closed')) {
+        commandScopes.removeScope(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
+      } else {
+        commandScopes.applyScope(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
+      }
+    }
+
+    syncCommandPaletteScope()
+    const commandPaletteScopeSubscription = commandBarActor.subscribe(() =>
+      untracked(syncCommandPaletteScope)
+    )
+    stopCommandPaletteScopeSync = () =>
+      commandPaletteScopeSubscription.unsubscribe()
+
     stopCommandsEffect = effect(() => {
       const nextCommands = commandsSignal.value
 
@@ -64,6 +121,7 @@ export const commandsExtension = defineRegistryItemFactory((ctx) => {
       }
 
       registeredCommands = nextCommands
+      flushPendingCommandSelections()
     })
 
     return commandBarActor
@@ -73,31 +131,65 @@ export const commandsExtension = defineRegistryItemFactory((ctx) => {
     get actor() {
       return ensureActor()
     },
-    send: (...args: Parameters<CommandSystemService['send']>) =>
-      ensureActor().send(...args),
+    send: (event) => {
+      ensureActor()
+
+      if (
+        event.type === 'Find and select command' &&
+        !commandIsRegistered(event)
+      ) {
+        pendingCommandSelections = [
+          ...pendingCommandSelections.filter(
+            (pending) =>
+              pending.data.name !== event.data.name ||
+              pending.data.groupId !== event.data.groupId
+          ),
+          event,
+        ]
+        return
+      }
+
+      commandBarActor?.send(event)
+    },
     useState: () => useSelector(ensureActor(), (state) => state),
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'commands-extension',
-      providesServices: [provideService(commandSystemService, serviceImpl)],
-      dispose: () => {
-        stopCommandsEffect?.()
-        commandBarActor?.stop()
-      },
-    }),
+    id: 'commands-extension',
+    providesServices: [provideService(commandSystemService, serviceImpl)],
+    dispose: () => {
+      pendingCommandSelections = []
+      stopCommandPaletteScopeSync?.()
+      ctx.services
+        .optional(commandScopeService)
+        ?.removeScope(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
+      stopCommandsEffect?.()
+      commandBarActor?.stop()
+    },
   }
 }, 'commands-extension')
 
-const toolbarCommandsItem = defineRegistryItem({
-  id: 'toolbar-commands',
-  provides: [...toolbarCommands, ...appCommands].map((command) =>
-    provide(commandsValueSpec, command, {
-      key: commandKey(command),
-    })
-  ),
-})
+export const toolbarCommandsItem = defineRegistryItemFactory((ctx) => {
+  const getExecutingEditor = () =>
+    untracked(
+      () =>
+        ctx.services.optional(projectSession)?.project.value?.executingEditor
+          .value ?? undefined
+    )
+  return {
+    id: 'toolbar-commands',
+    provides: [
+      ...createToolbarCommands(getExecutingEditor, () =>
+        ctx.services.optional(userFeaturesService)
+      ),
+      ...createAppCommands(getExecutingEditor),
+    ].map((command) =>
+      provide(commandsValueSpec, command, {
+        key: commandKey(command),
+      })
+    ),
+  }
+}, 'toolbar-commands')
 
 const commandsRegistryItem = defineRegistryItem({
   id: 'commands',

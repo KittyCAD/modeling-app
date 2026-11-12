@@ -28,9 +28,9 @@ elbowSectionSketch = sketch(on = XY) {
   ])
   horizontal(elbowCenterGuide)
   horizontalDistance([
-  elbowCenterGuide.start,
-  elbowCenterGuide.end
-]) == elbowCenterlineBendRadius
+    elbowCenterGuide.start,
+    elbowCenterGuide.end
+  ]) == elbowCenterlineBendRadius
 
   elbowInnerCircle = circle(start = [var 93.57mm, var 17.89mm], center = [var 62.79mm, var 0.22mm])
   coincident([
@@ -54,9 +54,9 @@ flangeSketch = sketch(on = YZ) {
   ])
   vertical(flangeCenterGuide)
   verticalDistance([
-  flangeCenterGuide.start,
-  flangeCenterGuide.end
-]) == elbowCenterlineBendRadius
+    flangeCenterGuide.start,
+    flangeCenterGuide.end
+  ]) == elbowCenterlineBendRadius
   flangeInnerCircle = circle(start = [var 37.73mm, var 77.31mm], center = [var 0mm, var 63mm])
   coincident([
     flangeInnerCircle.center,
@@ -85,13 +85,13 @@ boltHoleSketch = sketch(on = YZ) {
   horizontal(boltHoleCenterGuide)
   vertical(boltHoleOffsetGuide)
   horizontalDistance([
-  boltHoleCenterGuide.start,
-  boltHoleCenterGuide.end
-]) == boltCircleDiameter / 2
+    boltHoleCenterGuide.start,
+    boltHoleCenterGuide.end
+  ]) == boltCircleDiameter / 2
   verticalDistance([
-  boltHoleOffsetGuide.start,
-  boltHoleOffsetGuide.end
-]) == elbowCenterlineBendRadius
+    boltHoleOffsetGuide.start,
+    boltHoleOffsetGuide.end
+  ]) == elbowCenterlineBendRadius
   radius(boltHoleCircle) == boltHoleDiameter / 2
 }
 

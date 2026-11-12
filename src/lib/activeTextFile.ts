@@ -1,10 +1,12 @@
 import { signal } from '@preact/signals-core'
 
-import { EDITABLE_TEXT_FILE_EXTENSIONS } from '@src/lib/constants'
+import { MAX_TEXT_FILE_BYTES } from '@src/lib/constants'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
-import { reportRejection } from '@src/lib/trap'
-import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
+import { decodeTextFile } from '@src/lib/textFiles'
+import { isErr, reportRejection } from '@src/lib/trap'
+import { reportFileOperationError } from '@src/lib/fileSystem/operationErrors'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 /**
  * A non-KCL text file (e.g. Markdown or plain text) opened for editing in the
@@ -40,7 +42,7 @@ export type ActiveTextFile =
 
 export const activeTextFileSignal = signal<ActiveTextFile | null>(null)
 
-const encoder = new TextEncoder()
+const FILE_TOO_LARGE_MESSAGE = 'Text files larger than 1 MiB cannot be edited.'
 
 /** Debounce for writing edits to disk, mirroring `KclManager.writeToFile`. */
 const WRITE_DEBOUNCE_MS = 1000
@@ -56,25 +58,27 @@ let latestOpenRequestId = 0
  * The most recent unsaved edit, carrying its own path so a flush always writes
  * to the correct file even if the active file changes before the timer fires.
  */
-let pendingWrite: { path: string; text: string } | null = null
+let pendingWrite: {
+  fileOperations: FileOperationsRegistryService
+  path: string
+  text: string
+} | null = null
 let pendingWriteTimeout: ReturnType<typeof setTimeout> | undefined
 
-/** Whether a file at `path` can be opened + edited as plain text in the code pane. */
-export function isEditableTextFile(path: string): boolean {
-  const lower = path.toLowerCase()
-  return EDITABLE_TEXT_FILE_EXTENSIONS.some((ext) => lower.endsWith(ext))
-}
-
-async function performWrite(path: string, text: string): Promise<void> {
+async function performWrite(
+  fileOperations: FileOperationsRegistryService,
+  path: string,
+  text: string
+): Promise<void> {
   try {
-    await fsZds.writeFile(path, encoder.encode(text))
+    await fileOperations.writeFile(path, text)
   } catch (error) {
     // The file may have been deleted/moved out from under us (e.g. via the
     // file tree). Don't recreate it or surface a scary error in that case.
     if (isPathNotFoundError(error)) {
       return
     }
-    reportSystemIOError({
+    reportFileOperationError({
       error,
       operation: 'save_text_file',
       risk: 'write',
@@ -103,7 +107,7 @@ export async function flushActiveTextFileWrite(): Promise<void> {
   const write = pendingWrite
   pendingWrite = null
   if (write) {
-    await performWrite(write.path, write.text)
+    await performWrite(write.fileOperations, write.path, write.text)
   }
 }
 
@@ -112,12 +116,17 @@ export async function flushActiveTextFileWrite(): Promise<void> {
  * by the editor on every document change. Ignores writes whose path is no
  * longer the active file.
  */
-export function scheduleActiveTextFileWrite(path: string, text: string): void {
+export function scheduleActiveTextFileWrite(
+  fileOperations: FileOperationsRegistryService,
+  path: string,
+  text: string
+): void {
   // `peek()` avoids creating a signal subscription from a non-reactive context.
-  if (activeTextFileSignal.peek()?.path !== path) {
+  const activeFile = activeTextFileSignal.peek()
+  if (activeFile?.path !== path || activeFile.status !== 'ready') {
     return
   }
-  pendingWrite = { path, text }
+  pendingWrite = { fileOperations, path, text }
   if (pendingWriteTimeout !== undefined) {
     clearTimeout(pendingWriteTimeout)
   }
@@ -126,7 +135,7 @@ export function scheduleActiveTextFileWrite(path: string, text: string): void {
     const write = pendingWrite
     pendingWrite = null
     if (write) {
-      void performWrite(write.path, write.text)
+      void performWrite(write.fileOperations, write.path, write.text)
     }
   }, WRITE_DEBOUNCE_MS)
 }
@@ -143,11 +152,15 @@ export function clearActiveTextFile(): void {
  * Open a text file for editing in the code pane. Persists any pending edits to
  * the previously-open file first, then reads the requested file from disk.
  */
-export async function openActiveTextFile(path: string): Promise<void> {
+export async function openActiveTextFile(
+  fileOperations: FileOperationsRegistryService,
+  path: string
+): Promise<void> {
+  const requestId = ++latestOpenRequestId
   // Persist edits to the outgoing file before switching.
   await flushActiveTextFileWrite()
+  if (requestId !== latestOpenRequestId) return
 
-  const requestId = ++latestOpenRequestId
   const name = fsZds.basename(path)
 
   activeTextFileSignal.value = {
@@ -158,9 +171,24 @@ export async function openActiveTextFile(path: string): Promise<void> {
   }
 
   try {
-    const text = await fsZds.readFile(path, { encoding: 'utf-8' })
+    const stat = await fileOperations.stat(path)
+    if (requestId !== latestOpenRequestId) return
+    if (stat.size > MAX_TEXT_FILE_BYTES) {
+      return setActiveTextFileError(path, name, FILE_TOO_LARGE_MESSAGE)
+    }
+
+    const bytes = await fileOperations.readFile(path)
     if (requestId !== latestOpenRequestId) {
       return
+    }
+    // Recheck the snapshot in case the file grew after stat.
+    if (bytes.byteLength > MAX_TEXT_FILE_BYTES) {
+      return setActiveTextFileError(path, name, FILE_TOO_LARGE_MESSAGE)
+    }
+
+    const text = decodeTextFile(bytes)
+    if (isErr(text)) {
+      return setActiveTextFileError(path, name, text.message)
     }
     activeTextFileSignal.value = {
       path,
@@ -172,12 +200,24 @@ export async function openActiveTextFile(path: string): Promise<void> {
     if (requestId !== latestOpenRequestId) {
       return
     }
-    activeTextFileSignal.value = {
+    setActiveTextFileError(
       path,
       name,
-      text: '',
-      status: 'error',
-      error: error instanceof Error ? error.message : String(error),
-    }
+      error instanceof Error ? error.message : String(error)
+    )
+  }
+}
+
+function setActiveTextFileError(
+  path: string,
+  name: string,
+  error: string
+): void {
+  activeTextFileSignal.value = {
+    path,
+    name,
+    text: '',
+    status: 'error',
+    error,
   }
 }

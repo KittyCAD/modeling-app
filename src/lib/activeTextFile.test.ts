@@ -1,10 +1,14 @@
+import { MAX_TEXT_FILE_BYTES } from '@src/lib/constants'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
-  readFile: vi.fn<(path: string, options: unknown) => Promise<string>>(),
+  readFile:
+    vi.fn<(path: string, options: unknown) => Promise<string | Uint8Array>>(),
+  stat: vi.fn(),
   writeFile: vi.fn<(path: string, data: Uint8Array) => Promise<void>>(),
   basename: vi.fn((path: string) => path.slice(path.lastIndexOf('/') + 1)),
-  reportSystemIOError: vi.fn(),
+  reportFileOperationError: vi.fn(),
 }))
 
 vi.mock('@src/lib/fs-zds', () => ({
@@ -24,12 +28,29 @@ vi.mock('@src/lib/desktop', () => ({
       (error as { code?: string }).code === 'ENOENT'),
 }))
 
-vi.mock('@src/machines/systemIO/errorReporting', () => ({
-  reportSystemIOError: mocks.reportSystemIOError,
+vi.mock('@src/lib/fileSystem/operationErrors', () => ({
+  reportFileOperationError: mocks.reportFileOperationError,
 }))
 
 const importModule = () => import('@src/lib/activeTextFile')
 let mod: Awaited<ReturnType<typeof importModule>>
+
+const fileOperations = {
+  stat: mocks.stat,
+  readFile: async (path: string) => {
+    const contents = await mocks.readFile(path, undefined)
+    return typeof contents === 'string'
+      ? new TextEncoder().encode(contents)
+      : contents
+  },
+  writeFile: (path: string, contents: string | Uint8Array) =>
+    mocks.writeFile(
+      path,
+      typeof contents === 'string'
+        ? new TextEncoder().encode(contents)
+        : contents
+    ),
+} as unknown as FileOperationsRegistryService
 
 /** Flush the microtask queue (works under both real and fake timers). */
 function flushMicrotasks() {
@@ -45,6 +66,7 @@ beforeEach(async () => {
   vi.resetModules()
   vi.clearAllMocks()
   mocks.readFile.mockResolvedValue('')
+  mocks.stat.mockResolvedValue({ size: 0 })
   mocks.writeFile.mockResolvedValue(undefined)
   mod = await importModule()
 })
@@ -53,14 +75,75 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
-describe('isEditableTextFile', () => {
-  it('matches .md/.txt case-insensitively and rejects other files', () => {
-    expect(mod.isEditableTextFile('/proj/readme.md')).toBe(true)
-    expect(mod.isEditableTextFile('/proj/README.MD')).toBe(true)
-    expect(mod.isEditableTextFile('/proj/notes.txt')).toBe(true)
-    expect(mod.isEditableTextFile('/proj/main.kcl')).toBe(false)
-    expect(mod.isEditableTextFile('/proj/model.stp')).toBe(false)
-    expect(mod.isEditableTextFile('/proj/some-folder')).toBe(false)
+describe('text file detection', () => {
+  it.each([
+    ['invalid UTF-8', new Uint8Array([0xc3, 0x28])],
+    ['NUL byte', new Uint8Array([0x61, 0, 0x62])],
+    ['escape control character', new Uint8Array([0x61, 0x1b, 0x62])],
+    [
+      'NUL after 16 KiB',
+      new TextEncoder().encode('text'.repeat(4096) + '\u0000'),
+    ],
+  ])('rejects %s even with a text extension', async (_name, bytes) => {
+    mocks.readFile.mockResolvedValueOnce(bytes)
+    await mod.openActiveTextFile(fileOperations, '/proj/readme.md')
+    expect(mod.activeTextFileSignal.value).toMatchObject({
+      status: 'error',
+      text: '',
+      error: 'This file is binary or is not UTF-8 text.',
+    })
+    mod.scheduleActiveTextFileWrite(fileOperations, '/proj/readme.md', '')
+    await mod.flushActiveTextFileWrite()
+    expect(mocks.writeFile).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    '',
+    'plain text',
+    'café 中文 🚀',
+    '\t \n\r\n\r',
+    '\ufefftitle = "Example"\r\n',
+  ])('preserves supported text %j', async (text) => {
+    mocks.readFile.mockResolvedValueOnce(text)
+    await mod.openActiveTextFile(fileOperations, '/proj/config.toml')
+    expect(mod.activeTextFileSignal.value).toMatchObject({
+      status: 'ready',
+      text,
+    })
+  })
+
+  it('rejects oversized files before reading them', async () => {
+    mocks.stat.mockResolvedValueOnce({
+      size: MAX_TEXT_FILE_BYTES + 1,
+    })
+    await mod.openActiveTextFile(fileOperations, '/proj/large.log')
+    expect(mocks.readFile).not.toHaveBeenCalled()
+    expect(mod.activeTextFileSignal.value).toMatchObject({
+      status: 'error',
+      error: 'Text files larger than 1 MiB cannot be edited.',
+    })
+  })
+
+  it('rejects files that grow past the limit between stat and read', async () => {
+    mocks.readFile.mockResolvedValueOnce(
+      new Uint8Array(MAX_TEXT_FILE_BYTES + 1).fill(97)
+    )
+    await mod.openActiveTextFile(fileOperations, '/proj/growing.log')
+    expect(mod.activeTextFileSignal.value).toMatchObject({
+      status: 'error',
+      error: 'Text files larger than 1 MiB cannot be edited.',
+    })
+  })
+
+  it('accepts a file exactly at the size limit', async () => {
+    const text = 'a'.repeat(MAX_TEXT_FILE_BYTES)
+    mocks.stat.mockResolvedValueOnce({ size: MAX_TEXT_FILE_BYTES })
+    mocks.readFile.mockResolvedValueOnce(text)
+    await mod.openActiveTextFile(fileOperations, '/proj/boundary.txt')
+    expect(mod.activeTextFileSignal.value).toMatchObject({
+      status: 'ready',
+      text,
+    })
   })
 })
 
@@ -73,7 +156,7 @@ describe('openActiveTextFile', () => {
       })
     )
 
-    const promise = mod.openActiveTextFile('/proj/readme.md')
+    const promise = mod.openActiveTextFile(fileOperations, '/proj/readme.md')
     await flushMicrotasks()
 
     expect(mod.activeTextFileSignal.value).toEqual({
@@ -97,7 +180,7 @@ describe('openActiveTextFile', () => {
   it('transitions to error when the read fails', async () => {
     mocks.readFile.mockRejectedValueOnce(new Error('boom'))
 
-    await mod.openActiveTextFile('/proj/readme.md')
+    await mod.openActiveTextFile(fileOperations, '/proj/readme.md')
 
     expect(mod.activeTextFileSignal.value).toEqual({
       path: '/proj/readme.md',
@@ -123,9 +206,9 @@ describe('openActiveTextFile', () => {
         })
       )
 
-    const promiseA = mod.openActiveTextFile('/proj/a.md')
+    const promiseA = mod.openActiveTextFile(fileOperations, '/proj/a.md')
     await flushMicrotasks()
-    const promiseB = mod.openActiveTextFile('/proj/b.md')
+    const promiseB = mod.openActiveTextFile(fileOperations, '/proj/b.md')
     await flushMicrotasks()
 
     resolveB('B contents')
@@ -150,16 +233,16 @@ describe('openActiveTextFile', () => {
 describe('scheduleActiveTextFileWrite', () => {
   async function openReady(path: string, contents = 'initial') {
     mocks.readFile.mockResolvedValueOnce(contents)
-    await mod.openActiveTextFile(path)
+    await mod.openActiveTextFile(fileOperations, path)
   }
 
   it('debounces rapid edits into a single write of the latest text', async () => {
     vi.useFakeTimers()
     await openReady('/proj/readme.md')
 
-    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'a')
-    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'ab')
-    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'abc')
+    mod.scheduleActiveTextFileWrite(fileOperations, '/proj/readme.md', 'a')
+    mod.scheduleActiveTextFileWrite(fileOperations, '/proj/readme.md', 'ab')
+    mod.scheduleActiveTextFileWrite(fileOperations, '/proj/readme.md', 'abc')
     expect(mocks.writeFile).not.toHaveBeenCalled()
 
     await vi.advanceTimersByTimeAsync(1000)
@@ -174,7 +257,7 @@ describe('scheduleActiveTextFileWrite', () => {
     vi.useFakeTimers()
     await openReady('/proj/readme.md')
 
-    mod.scheduleActiveTextFileWrite('/proj/other.md', 'nope')
+    mod.scheduleActiveTextFileWrite(fileOperations, '/proj/other.md', 'nope')
     await vi.advanceTimersByTimeAsync(1000)
 
     expect(mocks.writeFile).not.toHaveBeenCalled()
@@ -185,12 +268,12 @@ describe('scheduleActiveTextFileWrite', () => {
     await openReady('/proj/readme.md')
     mocks.writeFile.mockRejectedValueOnce({ code: 'ENOENT' })
 
-    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'edited')
+    mod.scheduleActiveTextFileWrite(fileOperations, '/proj/readme.md', 'edited')
     // Must not throw / reject even though the write fails with ENOENT.
     await vi.advanceTimersByTimeAsync(1000)
 
     expect(mocks.writeFile).toHaveBeenCalledTimes(1)
-    expect(mocks.reportSystemIOError).not.toHaveBeenCalled()
+    expect(mocks.reportFileOperationError).not.toHaveBeenCalled()
   })
 
   it('reports autosave failures without including the path or contents', async () => {
@@ -199,10 +282,14 @@ describe('scheduleActiveTextFileWrite', () => {
     const error = new Error('permission denied')
     mocks.writeFile.mockRejectedValueOnce(error)
 
-    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'private contents')
+    mod.scheduleActiveTextFileWrite(
+      fileOperations,
+      '/proj/readme.md',
+      'private contents'
+    )
     await vi.advanceTimersByTimeAsync(1000)
 
-    expect(mocks.reportSystemIOError).toHaveBeenCalledWith({
+    expect(mocks.reportFileOperationError).toHaveBeenCalledWith({
       error,
       operation: 'save_text_file',
       risk: 'write',
@@ -212,12 +299,12 @@ describe('scheduleActiveTextFileWrite', () => {
         contentLength: 16,
       },
     })
-    expect(JSON.stringify(mocks.reportSystemIOError.mock.calls)).not.toContain(
-      '/proj/readme.md'
-    )
-    expect(JSON.stringify(mocks.reportSystemIOError.mock.calls)).not.toContain(
-      'private contents'
-    )
+    expect(
+      JSON.stringify(mocks.reportFileOperationError.mock.calls)
+    ).not.toContain('/proj/readme.md')
+    expect(
+      JSON.stringify(mocks.reportFileOperationError.mock.calls)
+    ).not.toContain('private contents')
   })
 })
 
@@ -225,9 +312,13 @@ describe('flushActiveTextFileWrite', () => {
   it('writes the pending edit immediately and cancels the timer', async () => {
     vi.useFakeTimers()
     mocks.readFile.mockResolvedValueOnce('initial')
-    await mod.openActiveTextFile('/proj/readme.md')
+    await mod.openActiveTextFile(fileOperations, '/proj/readme.md')
 
-    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'flushed')
+    mod.scheduleActiveTextFileWrite(
+      fileOperations,
+      '/proj/readme.md',
+      'flushed'
+    )
     await mod.flushActiveTextFileWrite()
 
     expect(mocks.writeFile).toHaveBeenCalledTimes(1)
@@ -240,14 +331,45 @@ describe('flushActiveTextFileWrite', () => {
 })
 
 describe('switching files', () => {
+  it('does not reopen a file after clearing during a pending save', async () => {
+    await mod.openActiveTextFile(fileOperations, '/proj/a.txt')
+    mod.scheduleActiveTextFileWrite(fileOperations, '/proj/a.txt', 'edited')
+    const save = Promise.withResolvers<undefined>()
+    mocks.writeFile.mockReturnValueOnce(save.promise)
+    const opening = mod.openActiveTextFile(fileOperations, '/proj/b.json')
+    await flushMicrotasks()
+
+    mod.clearActiveTextFile()
+    save.resolve(undefined)
+    await opening
+    expect(mod.activeTextFileSignal.value).toBeNull()
+    expect(mocks.readFile).not.toHaveBeenCalledWith('/proj/b.json', undefined)
+  })
+
+  it('discards a pending stat when another file opens', async () => {
+    const stat = Promise.withResolvers<{ size: number }>()
+    mocks.stat.mockReturnValueOnce(stat.promise)
+    const opening = mod.openActiveTextFile(fileOperations, '/proj/a.json')
+    await flushMicrotasks()
+    await mod.openActiveTextFile(fileOperations, '/proj/b.yaml')
+
+    stat.resolve({ size: 0 })
+    await opening
+    expect(mocks.readFile).not.toHaveBeenCalledWith('/proj/a.json', undefined)
+    expect(mod.activeTextFileSignal.value).toMatchObject({
+      path: '/proj/b.yaml',
+      status: 'ready',
+    })
+  })
+
   it('persists pending edits to the outgoing file before opening a new one', async () => {
     mocks.readFile.mockResolvedValueOnce('A')
-    await mod.openActiveTextFile('/proj/a.md')
-    mod.scheduleActiveTextFileWrite('/proj/a.md', 'A edited')
+    await mod.openActiveTextFile(fileOperations, '/proj/a.md')
+    mod.scheduleActiveTextFileWrite(fileOperations, '/proj/a.md', 'A edited')
 
     // Opening B must flush A's edit to A's own path first.
     mocks.readFile.mockResolvedValueOnce('B')
-    await mod.openActiveTextFile('/proj/b.md')
+    await mod.openActiveTextFile(fileOperations, '/proj/b.md')
 
     expect(mocks.writeFile).toHaveBeenCalledTimes(1)
     expect(mocks.writeFile.mock.calls[0][0]).toBe('/proj/a.md')
@@ -261,8 +383,8 @@ describe('switching files', () => {
 
   it('clearActiveTextFile persists pending edits and clears the signal', async () => {
     mocks.readFile.mockResolvedValueOnce('A')
-    await mod.openActiveTextFile('/proj/a.md')
-    mod.scheduleActiveTextFileWrite('/proj/a.md', 'A edited')
+    await mod.openActiveTextFile(fileOperations, '/proj/a.md')
+    mod.scheduleActiveTextFileWrite(fileOperations, '/proj/a.md', 'A edited')
 
     mod.clearActiveTextFile()
     await flushMicrotasks()

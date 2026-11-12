@@ -13,6 +13,8 @@ use serde::Serialize;
 
 use super::DEFAULT_TOLERANCE_MM;
 use super::args::TyF64;
+use crate::CompilationIssue;
+use crate::KclVersion;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::ExecState;
@@ -25,6 +27,7 @@ use crate::execution::Segment;
 use crate::execution::Sketch;
 use crate::execution::SketchSurface;
 use crate::execution::Solid;
+use crate::execution::annotations;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagNode;
@@ -77,10 +80,25 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         exec_state,
     )?;
     let sectional = args.get_kw_arg_opt("sectional", &RuntimeType::bool(), exec_state)?;
+    if sectional.is_some()
+        && exec_state.kcl_version() >= KclVersion::V3Preview
+        && let Some(arg) = args.labeled.get("sectional")
+    {
+        exec_state.warn(
+            CompilationIssue::err(
+                arg.source_range,
+                "Sectional sweeps are not supported in KCL 3. The `sectional` argument has no effect; remove it."
+                    .to_owned(),
+            ),
+            annotations::WARN_NOT_YET_SUPPORTED,
+        );
+    }
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
     let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
     let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
+    // KCL 3.0 removes the version parameter (`removed_in` in sketch.kcl),
+    // so from 3.0 on this is always None, and the newest algorithm is used.
     let version: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
     // Replaced by 2 args below.
     let relative_to: Option<String> = args.get_kw_arg_opt("relativeTo", &RuntimeType::string(), exec_state)?;
@@ -164,6 +182,32 @@ impl ProfileTransform {
     }
 }
 
+/// The sweep algorithm version to send when the user does not set `version`.
+/// KCL 3.0 removes the version parameter (`removed_in` in sketch.kcl), so
+/// from 3.0 on this is always what is sent.
+fn default_sweep_version(kcl_version: KclVersion) -> Option<u8> {
+    if kcl_version <= KclVersion::V2 {
+        // Unspecified, so the engine chooses. It currently chooses version 1.
+        None
+    } else {
+        // KCL 3.0 and later always use the newest algorithm.
+        Some(2)
+    }
+}
+
+/// The value of `orientProfilePerpendicular` when the user does not set it.
+fn default_orient_profile_perpendicular(kcl_version: KclVersion, translate_profile_to_path: bool) -> bool {
+    if kcl_version <= KclVersion::V2 {
+        false
+    } else {
+        // From a mechanical engineer on what is intuitive:
+        // - `translateProfileToPath` should default to false.
+        // - `orientProfilePerpendicular` should default to false,
+        //   unless `translateProfileToPath` is true, in which case both should be true.
+        translate_profile_to_path
+    }
+}
+
 #[allow(clippy::too_many_arguments)]
 async fn inner_sweep(
     sketches: Vec<Extrudable>,
@@ -188,6 +232,7 @@ async fn inner_sweep(
         )));
     }
 
+    let kcl_version = exec_state.kcl_version();
     let version = version
         .map(|v| {
             u8::try_from(v).map_err(|_e| {
@@ -197,7 +242,8 @@ async fn inner_sweep(
                 ))
             })
         })
-        .transpose()?;
+        .transpose()?
+        .or_else(|| default_sweep_version(kcl_version));
 
     let trajectory = ModelingCmdId::from(match path {
         InnerSweepPath::Sketch(sketch) => sketch.id,
@@ -205,8 +251,9 @@ async fn inner_sweep(
     });
 
     let profile_transform = match (relative_to, translate_profile_to_path, orient_profile_perpendicular) {
-        // Default case when the user doesn't give any flags at all.
-        (None, None, None) => ProfileTransform::RelativeTo(match version {
+        // Before KCL 3.0, when the user doesn't give any flags at all, the
+        // legacy `relativeTo` behavior is implied by the algorithm version.
+        (None, None, None) if kcl_version <= KclVersion::V2 => ProfileTransform::RelativeTo(match version {
             // We default to algorithm v1 if no choice was made.
             None | Some(1) => RelativeTo::TrajectoryCurve,
             // 0 means "let engine choose". Engine currently chooses version 1.
@@ -222,11 +269,17 @@ async fn inner_sweep(
             }
         }),
 
-        // If the "new" profile transformation args are set.
-        (None, translate, orient) => ProfileTransform::SeparateFlags {
-            translate_profile_to_path: translate.unwrap_or_default(),
-            orient_profile_perpendicular: orient.unwrap_or_default(),
-        },
+        // If the "new" profile transformation args are set. KCL 3.0 removed
+        // `relativeTo` (see `removed_in` in sketch.kcl), so from 3.0 on,
+        // this is also the case when no flags are set at all.
+        (None, translate, orient) => {
+            let translate_profile_to_path = translate.unwrap_or_default();
+            ProfileTransform::SeparateFlags {
+                translate_profile_to_path,
+                orient_profile_perpendicular: orient
+                    .unwrap_or_else(|| default_orient_profile_perpendicular(kcl_version, translate_profile_to_path)),
+            }
+        }
 
         // RelativeTo was set, but none of its replacements were.
         (Some(relative_to), None, None) => ProfileTransform::RelativeTo(match relative_to.as_str() {
@@ -260,7 +313,10 @@ async fn inner_sweep(
                 .trajectory(trajectory)
                 .sectional(sectional.unwrap_or(false))
                 .tolerance(LengthUnit(
-                    tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
+                    tolerance
+                        .as_ref()
+                        .map(|t| t.unwrap_to_mm())
+                        .unwrap_or(DEFAULT_TOLERANCE_MM),
                 ))
                 .maybe_relative_to(profile_transform.relative_to())
                 .maybe_orient_profile_perpendicular(profile_transform.orient_profile_perpendicular())
@@ -345,4 +401,165 @@ async fn inner_sweep(
         .await?;
 
     Ok(solids)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::errors::Severity;
+    use crate::execution::ExecTestResults;
+    use crate::execution::parse_execute;
+
+    /// What each KCL version sends to the engine when the user leaves out
+    /// `translateProfileToPath`, `orientProfilePerpendicular`, and `version`.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sweep_defaults_depend_on_kcl_version() {
+        // Before KCL 3.0, the legacy `relative_to` field is sent instead of
+        // the two flags, and the algorithm version is left to the engine.
+        let cmd = emitted_sweep("2.0", "").await;
+        assert_eq!(cmd.relative_to, Some(RelativeTo::TrajectoryCurve));
+        assert_eq!(cmd.translate_profile_to_path, None);
+        assert_eq!(cmd.orient_profile_perpendicular, None);
+        assert_eq!(cmd.version, None);
+
+        // From KCL 3.0, the two flags are always sent, both false by default,
+        // and the algorithm is always version 2.
+        let cmd = emitted_sweep("\"3.0-preview\"", "").await;
+        assert_eq!(cmd.relative_to, None);
+        assert_eq!(cmd.translate_profile_to_path, Some(false));
+        assert_eq!(cmd.orient_profile_perpendicular, Some(false));
+        assert_eq!(cmd.version, Some(2));
+    }
+
+    /// From KCL 3.0, `orientProfilePerpendicular` defaults to the value of
+    /// `translateProfileToPath`. Before that, the two flags are independent.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn orient_profile_perpendicular_follows_translate_in_kcl_3() {
+        let cmd = emitted_sweep("\"3.0-preview\"", ", translateProfileToPath = true").await;
+        assert_eq!(cmd.translate_profile_to_path, Some(true));
+        assert_eq!(cmd.orient_profile_perpendicular, Some(true));
+
+        let cmd = emitted_sweep("\"3.0-preview\"", ", translateProfileToPath = false").await;
+        assert_eq!(cmd.translate_profile_to_path, Some(false));
+        assert_eq!(cmd.orient_profile_perpendicular, Some(false));
+
+        let cmd = emitted_sweep("2.0", ", translateProfileToPath = true").await;
+        assert_eq!(cmd.translate_profile_to_path, Some(true));
+        assert_eq!(cmd.orient_profile_perpendicular, Some(false));
+    }
+
+    /// An explicit `orientProfilePerpendicular` wins over the default,
+    /// whatever `translateProfileToPath` is.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn explicit_orient_profile_perpendicular_overrides_kcl_default() {
+        let cmd = emitted_sweep(
+            "\"3.0-preview\"",
+            ", translateProfileToPath = true, orientProfilePerpendicular = false",
+        )
+        .await;
+        assert_eq!(cmd.translate_profile_to_path, Some(true));
+        assert_eq!(cmd.orient_profile_perpendicular, Some(false));
+
+        let cmd = emitted_sweep("\"3.0-preview\"", ", orientProfilePerpendicular = true").await;
+        assert_eq!(cmd.translate_profile_to_path, Some(false));
+        assert_eq!(cmd.orient_profile_perpendicular, Some(true));
+    }
+
+    /// If the user chooses a sweep algorithm version, KCL should respect it,
+    /// and not use that KCL version's default sweep algorithm version.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn explicit_sweep_version_overrides_kcl_default() {
+        assert_eq!(emitted_sweep("2.0", ", version = 2").await.version, Some(2));
+        assert_eq!(emitted_sweep("2.0", ", version = 0").await.version, Some(0));
+    }
+
+    /// KCL 3.0 removed `sweep(version = )`. Passing it is reported like any
+    /// other unknown argument, and the newest algorithm is used.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sweep_version_is_removed_in_kcl_3() {
+        let result = run_sweep("\"3.0-preview\"", ", version = 1").await;
+        assert!(
+            result
+                .issues()
+                .iter()
+                .any(|issue| {
+                    issue.message
+                        == "`version` is not an argument of `sweep`; it was removed in KCL 3.0, but this program uses KCL 3.0-preview"
+                }),
+            "issues: {:#?}",
+            result.issues()
+        );
+        assert_eq!(emitted_sweep_cmd(&result).version, Some(2));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sectional_warns_only_in_kcl_3() {
+        for version in ["\"3.0-preview\"", "3"] {
+            for value in ["true", "false"] {
+                let result = run_sweep(version, &format!(", sectional = {value}")).await;
+                let warnings: Vec<_> = result
+                    .issues()
+                    .iter()
+                    .filter(|issue| issue.message.contains("Sectional sweeps are not supported in KCL 3"))
+                    .collect();
+                assert_eq!(warnings.len(), 1, "issues: {:#?}", result.issues());
+                assert_eq!(warnings[0].severity, Severity::Warning);
+            }
+            let result = run_sweep(version, "").await;
+            assert!(
+                result
+                    .issues()
+                    .iter()
+                    .all(|issue| !issue.message.contains("Sectional sweeps are not supported"))
+            );
+        }
+
+        let result = run_sweep("2.0", ", sectional = true").await;
+        assert!(
+            result
+                .issues()
+                .iter()
+                .all(|issue| !issue.message.contains("Sectional sweeps are not supported"))
+        );
+    }
+
+    /// Sweep a circle along a line under the given KCL version, passing
+    /// `extra_args` to `sweep`, and return the `Sweep` command sent to the
+    /// engine.
+    async fn emitted_sweep(kcl_version: &str, extra_args: &str) -> mcmd::Sweep {
+        emitted_sweep_cmd(&run_sweep(kcl_version, extra_args).await)
+    }
+
+    /// Sweep a circle along a line under the given KCL version, passing
+    /// `extra_args` to `sweep`.
+    async fn run_sweep(kcl_version: &str, extra_args: &str) -> ExecTestResults {
+        let code = format!(
+            r#"@settings(defaultLengthUnit = mm, kclVersion = {kcl_version})
+
+profileSketch = sketch(on = XY) {{
+  c = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}}
+profile = region(segments = [profileSketch.c])
+
+pathSketch = sketch(on = XZ) {{
+  path = line(start = [var 0mm, var 0mm], end = [var 0mm, var 100mm])
+}}
+
+sweep(profile, path = pathSketch{extra_args})
+"#
+        );
+        parse_execute(&code).await.unwrap()
+    }
+
+    /// The `Sweep` command the run sent to the engine.
+    fn emitted_sweep_cmd(result: &ExecTestResults) -> mcmd::Sweep {
+        result
+            .root_module_artifact_commands()
+            .iter()
+            .find_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::Sweep(cmd) => Some(cmd.clone()),
+                _ => None,
+            })
+            .expect("sweep should emit a Sweep command")
+    }
 }

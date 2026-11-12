@@ -7,7 +7,7 @@ layout: manual
 We have support for defining your own functions. Functions can take in any
 type of argument. Below is an example of the syntax:
 
-```
+```kcl
 fn myFn(x) {
   return x
 }
@@ -17,7 +17,7 @@ As you can see above `myFn` just returns whatever it is given.
 
 KCL uses keyword arguments:
 
-```
+```kcl
 // If you declare a function like this
 fn add(left, right) {
   return left + right
@@ -29,7 +29,7 @@ total = add(left = 1, right = 2)
 
 Functions can also declare one *unlabeled* arg. If you do want to declare an unlabeled arg, it must be the first arg and prefixed with @, like this:
 
-```
+```kcl
 // The @ indicates an argument is used without a label.
 // Note that only the first argument can use @.
 fn increment(@x) {

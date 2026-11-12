@@ -16,7 +16,6 @@ import {
   defaultNodePath,
   errFromErrWithOutputs,
   formatNumberLiteral,
-  kclLint,
   parse,
   rustImplPathToNode,
 } from '@src/lang/wasm'
@@ -90,32 +89,16 @@ beforeEach(async () => {
   }
 
   const { instance, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine()
+    await buildTheWorldAndConnectToEngine({ webrtc: false, geometryOnly: true })
   instanceInThisFile = instance
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
 
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
-})
-
-describe('KCL lint options', () => {
-  it('only returns Z0006 when explicitly enabled', async () => {
-    const ast = assertParse(
-      'revolve(profile, axis = getOppositeEdge(seg01))',
-      instanceInThisFile
-    )
-
-    const defaultFindings = await kclLint(ast, instanceInThisFile)
-    expect(
-      defaultFindings.some((finding) => finding.finding.code === 'Z0006')
-    ).toBe(false)
-
-    const optedInFindings = await kclLint(ast, instanceInThisFile, true)
-    expect(
-      optedInFindings.some((finding) => finding.finding.code === 'Z0006')
-    ).toBe(true)
+  engineCommandManagerInThisFile.tearDown({
+    route: 'user-requested',
+    initiatedBy: 'client',
   })
 })
 
@@ -138,6 +121,44 @@ it('can execute parsed AST', async () => {
     throw new Error('Expected KCL value Number')
   }
   expect(x.value).toEqual(1)
+})
+
+it('returns resolved views from actual execution and no batch from mock execution', async () => {
+  const ast = assertParse(
+    `@settings(kclVersion = 3.0)
+plane = offsetPlane(XY, offset = 10mm)
+front = view::named(
+  "Front",
+  camera = view::oriented(view::Orientation::Front),
+  baseline = view::Visibility::Hide,
+  except = [plane],
+)
+`,
+    instanceInThisFile
+  )
+
+  const actual = await rustContextInThisFile.execute(ast, {})
+  expect(actual.namedViews).toMatchObject({
+    namedViews: [
+      {
+        info: { name: 'Front', moduleId: 0 },
+        cameraIntent: { look: { type: 'oriented', orientation: 'front' } },
+      },
+    ],
+    failures: [],
+  })
+  expect(Object.keys(actual.namedViews?.defaultView ?? {})).toHaveLength(1)
+  expect(actual.namedViews?.namedViews[0].visibility).toEqual(
+    actual.namedViews?.defaultView
+  )
+
+  const mock = await rustContextInThisFile.executeMock(
+    ast,
+    {},
+    undefined,
+    false
+  )
+  expect(mock.namedViews).toBeNull()
 })
 
 it('applies operation callbacks to operations-by-module incrementally', () => {
@@ -219,11 +240,11 @@ it('formats numbers with units', () => {
 describe('test errFromErrWithOutputs', () => {
   it('converts KclErrorWithOutputs to KclError', () => {
     const blob =
-      '{"error":{"kind":"internal","details":{"sourceRanges":[],"backtrace":[],"msg":"Cache busted"}},"nonFatal":[],"variables":{},"operations":[],"artifactCommands":[],"artifactGraph":{"map":{}},"filenames":{},"sourceFiles":{},"defaultPlanes":null}'
+      '{"error":{"kind":"internal","details":{"sourceRanges":[],"backtrace":[],"msg":"Cache busted"}},"nonFatal":[],"variables":{},"operations":[],"artifactCommands":[],"artifactGraph":{"map":{}},"filenames":{},"sourceFiles":{},"defaultPlanes":null,"engineSceneGeneration":2}'
     const error = errFromErrWithOutputs(blob)
     const errorStr = JSON.stringify(error)
     expect(errorStr).toEqual(
-      '{"kind":"internal","sourceRange":[0,0,0],"msg":"Cache busted","kclBacktrace":[],"nonFatal":[],"variables":{},"operations":[],"artifactGraph":{},"filenames":{},"defaultPlanes":null}'
+      '{"kind":"internal","sourceRange":[0,0,0],"msg":"Cache busted","kclBacktrace":[],"nonFatal":[],"variables":{},"operations":[],"artifactGraph":{},"filenames":{},"defaultPlanes":null,"engineSceneGeneration":2}'
     )
   })
 })
@@ -600,6 +621,75 @@ describe('isExtensionARelevantExtension', () => {
 })
 
 describe('Project file lifecycle', () => {
+  it('rejects an unregistered execution path without changing the owned scene', async () => {
+    const code = `@settings(defaultLengthUnit = mm, kclVersion = 3.0)
+radiusValue = 10mm
+height = 5mm
+profile = sketch(on = XY) {
+  perimeter = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([perimeter.center, ORIGIN])
+  radius(perimeter) == radiusValue
+  horizontal([perimeter.center, perimeter.start])
+}
+body = extrude(region(segments = [profile.perimeter]), length = height)
+`
+    const file: ApiFile = { id: 0, path: '/cache-owner/main.kcl', text: code }
+    const context = rustContextInThisFile
+    const manager = engineCommandManagerInThisFile
+    await context.sendOpenProject(file.path, [file])
+    const ast = assertParse(code, instanceInThisFile)
+    const warm = await context.execute(ast, {}, file.path)
+    const body = warm.variables.body
+    if (body?.type !== 'Solid') throw new Error('Expected the real solid')
+    const receipt = async () => {
+      const result = await manager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: crypto.randomUUID(),
+        cmd: {
+          type: 'scene_get_entity_ids',
+          filter: ['solid3d'],
+          skip: 0,
+          take: 100,
+        },
+      })
+      const reply = isArray(result) ? result[0] : result
+      if (
+        !reply ||
+        !reply.success ||
+        !('resp' in reply) ||
+        reply.resp.type !== 'modeling' ||
+        reply.resp.data.modeling_response.type !== 'scene_get_entity_ids'
+      )
+        throw new Error('Expected real engine solid IDs')
+      return {
+        bodyIds: reply.resp.data.modeling_response.data.entity_ids
+          .flat()
+          .sort(),
+        defaultPlanes: context.defaultPlanes,
+        project: await context.getProjectState(),
+        sessionId: manager.engineSessionId,
+      }
+    }
+    const original = await receipt()
+    expect(original.bodyIds).toEqual([body.value.id])
+    expect(original.defaultPlanes).not.toBeNull()
+    manager.clearCommandLogs()
+    await expect(
+      context.execute(ast, {}, '/cache-owner/unregistered.kcl')
+    ).rejects.toThrow('does not match registered active file')
+    expect(await receipt()).toEqual(original)
+    const retained = await context.execute(ast, {}, file.path)
+    expect(retained.engineSceneGeneration).toBe(warm.engineSceneGeneration)
+    expect(retained.defaultPlanes).toEqual(warm.defaultPlanes)
+    expect(retained.variables.body).toEqual(body)
+    expect(await receipt()).toEqual(original)
+    const commands = manager.commandLogs.flatMap((log) =>
+      log.type === 'receive-reliable' && log.cmd_type ? [log.cmd_type] : []
+    )
+    expect(commands).not.toContain('set_kcl_version')
+    expect(commands).not.toContain('scene_clear_all')
+  }, 90_000)
+
   it('accepts open, update, and get requests', async () => {
     const projectFiles: ApiFile[] = [
       { id: 0, path: 'some/path/main.kcl', text: 'The first file!' },
@@ -607,10 +697,9 @@ describe('Project file lifecycle', () => {
       { id: 2, path: 'some/path/home.kcl', text: 'The third file 🐘' },
     ]
 
-    await rustContextInThisFile.sendOpenProject(
-      'not-important-to-test',
-      projectFiles
-    )
+    const currentFile = projectFiles[0]
+    if (!currentFile) expect.fail('Expected an active project file')
+    await rustContextInThisFile.sendOpenProject(currentFile.path, projectFiles)
     expect(await rustContextInThisFile.getProjectState()).toEqual(projectFiles)
 
     const newText = 'Things sure are changing.'

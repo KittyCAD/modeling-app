@@ -25,6 +25,7 @@ function makeRemoteProject(
     },
     publication_status: 'draft',
     revision: 'revision-1',
+    metadata_revision: 'metadata-revision-1',
     title: 'Bracket',
     updated_at: '2026-04-09T15:00:00Z',
     ...overrides,
@@ -78,7 +79,9 @@ const mockState = vi.hoisted(() => ({
     },
     {
       relativePath: 'project.toml',
-      data: new TextEncoder().encode('title = "bracket"\n'),
+      data: new TextEncoder().encode(
+        'title = "Bracket"\ndefault_file = "main.kcl"\n'
+      ),
     },
   ]),
 }))
@@ -145,10 +148,33 @@ vi.mock('react-hot-toast', () => ({
   },
 }))
 
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import {
-  getCurrentProjectPublicationDetails,
-  publishCurrentProject,
+  getCurrentProjectPublicationDetails as getCurrentProjectPublicationDetailsWithFileOperations,
+  publishCurrentProject as publishCurrentProjectWithFileOperations,
 } from '@src/lib/share'
+
+const publishCurrentProject = (
+  args: Omit<
+    Parameters<typeof publishCurrentProjectWithFileOperations>[0],
+    'fileOperations'
+  >
+) =>
+  publishCurrentProjectWithFileOperations({
+    ...args,
+    fileOperations: testFileOperations,
+  })
+
+const getCurrentProjectPublicationDetails = (
+  args: Omit<
+    Parameters<typeof getCurrentProjectPublicationDetailsWithFileOperations>[0],
+    'fileOperations'
+  >
+) =>
+  getCurrentProjectPublicationDetailsWithFileOperations({
+    ...args,
+    fileOperations: testFileOperations,
+  })
 
 function makeProject(): Project {
   return {
@@ -195,7 +221,9 @@ describe('publishCurrentProject', () => {
       },
     })
 
-    expect(published).toBe(true)
+    expect(published).toEqual({
+      remoteProjectId: 'project-created',
+    })
     expect(mockState.createProject).toHaveBeenCalledWith({
       client: {
         mocked: true,
@@ -221,6 +249,8 @@ describe('publishCurrentProject', () => {
         title: 'Bracket',
         description: 'A mounting bracket.',
         category_ids: ['category-a', 'category-b'],
+        entrypoint_path: 'main.kcl',
+        project_toml_path: 'project.toml',
       })
     )
     expect(createProjectFiles.map((file) => file.name)).toContain('.gitignore')
@@ -228,14 +258,7 @@ describe('publishCurrentProject', () => {
     await expect(mainFile?.data.text()).resolves.toBe(
       'part001 = startSketchOn(XY)'
     )
-    expect(mockState.fsWriteFile).toHaveBeenCalledOnce()
-    const persistedProjectToml = mockState.fsWriteFile.mock.calls[0]?.[1]
-    expect(new TextDecoder().decode(persistedProjectToml)).toContain(
-      'title = "bracket"'
-    )
-    expect(new TextDecoder().decode(persistedProjectToml)).toContain(
-      'project_id = "project-created"'
-    )
+    expect(mockState.fsWriteFile).not.toHaveBeenCalled()
     expect(mockState.publishProject).toHaveBeenCalledWith({
       client: {
         mocked: true,
@@ -276,6 +299,32 @@ describe('publishCurrentProject', () => {
       { duration: 5000 }
     )
     expect(mockState.publishProject).not.toHaveBeenCalled()
+  })
+
+  it('publishes the project identity returned by an awaited cloud sync', async () => {
+    const published = await publishCurrentProject({
+      token: 'token-123',
+      project: makeProject(),
+      currentFilePath: '/projects/bracket/main.kcl',
+      currentFileContents: 'part001 = startSketchOn(XY)',
+      wasmInstance: {} as never,
+      submission: {
+        title: 'Bracket',
+        description: 'A mounting bracket.',
+        categoryIds: ['category-a'],
+      },
+      remoteProjectId: 'project-synced',
+    })
+
+    expect(published).toEqual({ remoteProjectId: 'project-synced' })
+    expect(mockState.updateProject).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'project-synced' })
+    )
+    expect(mockState.createProject).not.toHaveBeenCalled()
+    expect(mockState.readProjectSettingsFile).not.toHaveBeenCalled()
+    expect(mockState.publishProject).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'project-synced' })
+    )
   })
 })
 
@@ -333,5 +382,23 @@ describe('getCurrentProjectPublicationDetails', () => {
 
     expect(details).toBeNull()
     expect(mockState.getProject).not.toHaveBeenCalled()
+  })
+
+  it('loads a just-published project before its cloud id is synced locally', async () => {
+    const details = await getCurrentProjectPublicationDetails({
+      token: 'token-123',
+      project: makeProject(),
+      wasmInstance: {} as never,
+      remoteProjectId: 'project-created',
+    })
+
+    expect(details).toEqual(
+      expect.objectContaining({ projectId: 'project-created' })
+    )
+    expect(mockState.readProjectSettingsFile).not.toHaveBeenCalled()
+    expect(mockState.getProject).toHaveBeenCalledWith({
+      client: expect.any(Object),
+      id: 'project-created',
+    })
   })
 })

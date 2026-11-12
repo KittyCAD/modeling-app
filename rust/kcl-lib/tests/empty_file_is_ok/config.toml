@@ -1,0 +1,4 @@
+redact_uuids = true
+kcl_versions = ["2.0", "3.0"]
+# This fixture exercises language behavior without producing geometry.
+test_graphics = "None"

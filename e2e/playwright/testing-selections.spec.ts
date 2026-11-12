@@ -1,8 +1,7 @@
-import fs from 'fs'
-import path from 'path'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
+import fs from 'fs'
+import path from 'path'
 
 const bracket = fs.readFileSync(
   path.resolve('public', 'kcl-samples', 'bracket', 'main.kcl'),
@@ -10,9 +9,6 @@ const bracket = fs.readFileSync(
 )
 
 test.describe('Testing selections', { tag: '@desktop' }, () => {
-  // Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
-  test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
-
   test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({
     page,
     editor,
@@ -42,6 +38,7 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     })
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.waitForAuthentication()
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
@@ -88,21 +85,29 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     ).not.toBeDisabled()
   })
 
-  test(
-    'Testing selections (and hovers) work on sketches when NOT in sketch mode',
-    { tag: '@desktop' },
-    async ({ page, homePage, scene, cmdBar, folderSetupFn, fs }) => {
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Testing selections (and hovers) work on sketches when NOT in sketch mode ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      cmdBar,
+      folderSetupFn,
+      fs,
+    }) => {
       const cases = [
         {
           pos: [0.31, 0.5],
+          edgeIndex: 0,
           expectedCode: 'line(end = [74.36, 130.4], tag = $seg01)',
         },
         {
           pos: [0.448, 0.557],
+          edgeIndex: 2,
           expectedCode: 'angledLine(angle = segAng(seg01), length = yo)',
         },
         {
           pos: [0.753, 0.5],
+          edgeIndex: 4,
           expectedCode: 'tangentialArc(endAbsolute = [167.95, -28.85])',
         },
       ] as const
@@ -113,14 +118,14 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
           path.join(projectDir, 'main.kcl'),
           new TextEncoder().encode(
             `@settings(defaultLengthUnit = in)
-  yo = 79
-  part001 = startSketchOn(XZ)
-    |> startProfile(at = [-40.54, -26.74])
-    |> ${cases[0].expectedCode}
-    |> line(end = [-3.19, -138.43])
-    |> ${cases[1].expectedCode}
-    |> line(end = [41.19, 28.97 + 5])
-    |> ${cases[2].expectedCode}`
+yo = 79
+part001 = startSketchOn(XZ)
+  |> startProfile(at = [-40.54, -26.74])
+  |> ${cases[0].expectedCode}
+  |> line(end = [-3.19, -138.43])
+  |> ${cases[1].expectedCode}
+  |> line(end = [41.19, 28.97 + 5])
+  |> ${cases[2].expectedCode}`
           )
         )
       })
@@ -129,10 +134,11 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
       await scene.settled()
 
       // end setup, now test hover and selects
-      for (const { pos, expectedCode } of cases) {
-        const [click, hover] = scene.makeMouseHelpers(pos[0], pos[1], {
-          format: 'ratio',
-          steps: 5,
+      for (const { pos, edgeIndex, expectedCode } of cases) {
+        const [click, hover] = await scene.makeSelectionHelpers({
+          kind: 'edge',
+          index: edgeIndex,
+          stream: { x: pos[0], y: pos[1], format: 'ratio', steps: 5 },
         })
         // hover over segment, check it's content
         await hover()
@@ -144,32 +150,30 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
         await click()
         await expect(page.locator('.cm-activeLine')).toContainText(expectedCode)
       }
-    }
-  )
-  test("Various pipe expressions should and shouldn't allow edit and or extrude", async ({
-    page,
-    homePage,
-    toolbar,
-    scene,
-    cmdBar,
-  }) => {
-    const u = await getUtils(page)
-    const selectionsSnippets = {
-      extrudeAndEditBlocked: '|> startProfile(at = [10.81, 32.99])',
-      extrudeAndEditBlockedInFunction: '|> startProfile(at = pos)',
-      extrudeAndEditAllowed: '|> startProfile(at = [15.72, 4.7])',
-      editOnly: '|> startProfile(at = [15.79, -14.6])',
-    }
-    await page.addInitScript(
-      async ({
-        extrudeAndEditBlocked,
-        extrudeAndEditBlockedInFunction,
-        extrudeAndEditAllowed,
-        editOnly,
-      }: any) => {
-        localStorage.setItem(
-          'persistCode',
-          `part001 = startSketchOn(XZ)
+    })
+  }
+
+  test(
+    "Various pipe expressions should and shouldn't allow edit and or extrude",
+    { tag: '@localRenderer' },
+    async ({ page, homePage, toolbar, scene, cmdBar }) => {
+      const u = await getUtils(page)
+      const selectionsSnippets = {
+        extrudeAndEditBlocked: '|> startProfile(at = [10.81, 32.99])',
+        extrudeAndEditBlockedInFunction: '|> startProfile(at = pos)',
+        extrudeAndEditAllowed: '|> startProfile(at = [15.72, 4.7])',
+        editOnly: '|> startProfile(at = [15.79, -14.6])',
+      }
+      await page.addInitScript(
+        async ({
+          extrudeAndEditBlocked,
+          extrudeAndEditBlockedInFunction,
+          extrudeAndEditAllowed,
+          editOnly,
+        }: any) => {
+          localStorage.setItem(
+            'persistCode',
+            `part001 = startSketchOn(XZ)
   ${extrudeAndEditBlocked}
   |> line(end = [25.96, 2.93])
   |> line(end = [5.25, -5.72])
@@ -203,200 +207,119 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
 
     yohey([15.79, -34.6])
     `
-        )
-      },
-      selectionsSnippets
-    )
-    await page.setBodyDimensions({ width: 1200, height: 1000 })
-
-    await homePage.goToModelingScene()
-    await scene.settled()
-
-    // wait for execution done
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-
-    // wait for start sketch as a proxy for the stream being ready
-    await expect(toolbar.startSketchBtn).not.toBeDisabled()
-
-    await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
-    // expect extrude button to be enabled, since we don't guard
-    // until the extrude button is clicked
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
-
-    await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
-    await expect(
-      page.getByRole('button', { name: 'Extrude' })
-    ).not.toBeDisabled()
-    await expect(
-      page.getByRole('button', { name: 'Edit Sketch' })
-    ).not.toBeDisabled()
-
-    await page.getByText(selectionsSnippets.editOnly).click()
-    // expect extrude button to be enabled, since we don't guard
-    // until the extrude button is clicked
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
-    await expect(
-      page.getByRole('button', { name: 'Edit Sketch' })
-    ).not.toBeDisabled()
-
-    await page
-      .getByText(selectionsSnippets.extrudeAndEditBlockedInFunction)
-      .click()
-    // expect extrude button to be enabled, since we don't guard
-    // until the extrude button is clicked
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
-    await expect(
-      page.getByRole('button', { name: 'Edit Sketch' })
-    ).not.toBeVisible()
-  })
-
-  test('Deselecting line tool should mean nothing happens on click', async ({
-    context,
-    page,
-    homePage,
-    toolbar,
-  }) => {
-    /**
-     * If the line tool is clicked when the state is 'No Points' it will exit Sketch mode.
-     * This is the same exact workflow as pressing ESC.
-     *
-     * To continue to test this workflow, we now enter sketch mode and place a single point before exiting the line tool.
-     */
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, 'sketch001 = startSketchOn(XZ)')
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    await homePage.goToModelingScene()
-
-    await expect(toolbar.startSketchBtn).not.toBeDisabled()
-    await expect(toolbar.startSketchBtn).toBeVisible()
-
-    const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
-    await op.dblclick()
-    await toolbar.waitUntilSketchingReady()
-    await toolbar.closeFeatureTreePane()
-    if (
-      (await page
-        .getByRole('button', { name: 'line Line', exact: true })
-        .getAttribute('aria-pressed')) !== 'true'
-    ) {
-      await page.keyboard.press('l')
-    }
-    await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
-
-    await expect(page.locator('.cm-content')).toContainText(
-      'sketch001 = startSketchOn(XZ)'
-    )
-
-    await page.waitForTimeout(600)
-
-    const firstClickCoords = { x: 650, y: 200 } as const
-    // Place a point because the line tool will exit if no points are pressed
-    await page.mouse.click(firstClickCoords.x, firstClickCoords.y)
-    await page.waitForTimeout(600)
-
-    // Code before exiting the tool
-    let previousCodeContent = (
-      await page.locator('.cm-content').innerText()
-    ).replace(/\s+/g, '')
-
-    // deselect the line tool by clicking it
-    await page.getByRole('button', { name: 'line Line', exact: true }).click()
-
-    await page.mouse.click(700, 200)
-    await page.waitForTimeout(100)
-    await page.mouse.click(700, 250)
-    await page.waitForTimeout(100)
-    await page.mouse.click(750, 200)
-    await page.waitForTimeout(100)
-
-    await expect
-      .poll(async () => {
-        let str = await page.locator('.cm-content').innerText()
-        str = str.replace(/\s+/g, '')
-        return str
-      })
-      .toBe(previousCodeContent)
-
-    // select line tool again
-    await page.getByRole('button', { name: 'line Line', exact: true }).click()
-
-    // Click to continue profile
-    await page.mouse.click(firstClickCoords.x, firstClickCoords.y)
-    await page.waitForTimeout(100)
-
-    // line tool should work as expected again
-    await page.mouse.click(700, 200)
-    await expect(page.locator('.cm-content')).not.toHaveText(
-      previousCodeContent
-    )
-    previousCodeContent = await page.locator('.cm-content').innerText()
-
-    await page.waitForTimeout(100)
-    await page.mouse.click(700, 300)
-    await expect(page.locator('.cm-content')).not.toHaveText(
-      previousCodeContent
-    )
-    previousCodeContent = await page.locator('.cm-content').innerText()
-
-    await page.waitForTimeout(100)
-    await page.mouse.click(750, 300)
-    await expect(page.locator('.cm-content')).not.toHaveText(
-      previousCodeContent
-    )
-    previousCodeContent = await page.locator('.cm-content').innerText()
-  })
-
-  test('"View KCL source code" right click menu in scene', async ({
-    page,
-    homePage,
-    scene,
-  }) => {
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    const [clickBracket] = scene.makeMouseHelpers(0.45, 0.45, {
-      format: 'ratio',
-    })
-    const [clickEmptyScene] = scene.makeMouseHelpers(0.5, 0.9, {
-      format: 'ratio',
-    })
-    await page.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, bracket)
-
-    await homePage.goToModelingScene()
-    await scene.settled()
-
-    const laterCode = page.getByText('finalBracket = hole::holes(')
-    const menuItems = page.locator('[data-testid="view-controls-menu"] button')
-    const viewKclSourceCodeOption = menuItems.filter({
-      hasText: 'View KCL source code',
-    })
-
-    await test.step('Empty scene has disabled "View KCL source code"', async () => {
-      await clickEmptyScene({ shouldRightClick: true })
-      await expect(page.getByTestId('view-controls-menu')).toBeVisible()
-      await expect(viewKclSourceCodeOption).toBeVisible()
-      await expect(viewKclSourceCodeOption).toBeDisabled()
-      await page.keyboard.press('Escape')
-    })
-
-    await test.step('Right click on bracket navigates to its source', async () => {
-      await expect(laterCode).not.toBeInViewport()
-      await clickBracket()
-      await expect(page.getByText('1 face')).toBeVisible()
-      await clickBracket({ shouldRightClick: true })
-      await expect(viewKclSourceCodeOption).toBeVisible()
-      await expect(viewKclSourceCodeOption).toBeEnabled()
-      await viewKclSourceCodeOption.click()
-      await expect(page.locator('.cm-activeLine')).toBeVisible()
-      await expect(page.locator('.cm-activeLine')).not.toContainText(
-        'Shelf Bracket'
+          )
+        },
+        selectionsSnippets
       )
+      await page.setBodyDimensions({ width: 1200, height: 1000 })
+
+      await homePage.goToModelingScene()
+      await scene.settled()
+
+      // wait for execution done
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
+
+      // wait for start sketch as a proxy for the stream being ready
+      await expect(toolbar.startSketchBtn).not.toBeDisabled()
+
+      await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
+      // expect extrude button to be enabled, since we don't guard
+      // until the extrude button is clicked
+      await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
+
+      await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
+      await expect(
+        page.getByRole('button', { name: 'Extrude' })
+      ).not.toBeDisabled()
+      await expect(
+        page.getByRole('button', { name: 'Edit Sketch' })
+      ).toBeDisabled()
+
+      await page.getByText(selectionsSnippets.editOnly).click()
+      // expect extrude button to be enabled, since we don't guard
+      // until the extrude button is clicked
+      await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
+      await expect(
+        page.getByRole('button', { name: 'Edit Sketch' })
+      ).toBeDisabled()
+
+      await page
+        .getByText(selectionsSnippets.extrudeAndEditBlockedInFunction)
+        .click()
+      // expect extrude button to be enabled, since we don't guard
+      // until the extrude button is clicked
+      await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
+      await expect(
+        page.getByRole('button', { name: 'Edit Sketch' })
+      ).not.toBeVisible()
+    }
+  )
+
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`"View KCL source code" right click menu in scene ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+    }) => {
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+
+      const [clickEmptyScene] = scene.makeMouseHelpers(0.5, 0.9, {
+        format: 'ratio',
+      })
+      await page.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, bracket)
+
+      await homePage.goToModelingScene()
+      await scene.settled()
+
+      const laterCode = page.getByText('finalBracket = hole::holes(')
+      const menuItems = page.locator(
+        '[data-testid="view-controls-menu"] button'
+      )
+      const viewKclSourceCodeOption = menuItems.filter({
+        hasText: 'View KCL source code',
+      })
+
+      await test.step('Empty scene has disabled "View KCL source code"', async () => {
+        await clickEmptyScene({ shouldRightClick: true })
+        await expect(page.getByTestId('view-controls-menu')).toBeVisible()
+        await expect(viewKclSourceCodeOption).toBeVisible()
+        await expect(viewKclSourceCodeOption).toBeDisabled()
+        await page.keyboard.press('Escape')
+      })
+
+      await test.step('Right click on bracket navigates to its source', async () => {
+        await expect(laterCode).not.toBeInViewport()
+        {
+          const [clickBracket] = await scene.makeSelectionHelpers({
+            kind: 'face',
+            index: 1,
+            stream: { x: 0.45, y: 0.45, format: 'ratio' },
+          })
+          await clickBracket()
+        }
+        await expect(page.getByText('1 face')).toBeVisible()
+        {
+          const [clickBracket] = await scene.makeSelectionHelpers({
+            kind: 'face',
+            index: 1,
+            stream: { x: 0.45, y: 0.45, format: 'ratio' },
+          })
+          await clickBracket({ shouldRightClick: true })
+        }
+        await expect(viewKclSourceCodeOption).toBeVisible()
+        await expect(viewKclSourceCodeOption).toBeEnabled()
+        await viewKclSourceCodeOption.click()
+        await expect(page.locator('.cm-activeLine')).toBeVisible()
+        await expect(page.locator('.cm-activeLine')).not.toContainText(
+          'Shelf Bracket'
+        )
+      })
     })
-  })
+  }
 
   const innerShellCode = `sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [0, 0])
@@ -409,48 +332,56 @@ extrude001 = extrude(profile001, length = 5, tagEnd = $endCap001)
 sketch002 = startSketchOn(extrude001, face = endCap001)
 shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
 
-  test(`Engine primitive selection works on shell inner face`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    toolbar,
-    cmdBar,
-  }) => {
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, innerShellCode)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Engine primitive selection works on shell inner face ${rendererTag}`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      toolbar,
+      cmdBar,
+    }) => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, innerShellCode)
 
-    await page.setBodyDimensions({ width: 1200, height: 800 })
-    await homePage.goToModelingScene()
-    await scene.settled()
+      await page.setBodyDimensions({ width: 1200, height: 800 })
+      await homePage.goToModelingScene()
+      await scene.settled()
 
-    // Two dumb hardcoded screen ratio values
-    const [clickOnFace] = scene.makeMouseHelpers(0.6, 0.6, { format: 'ratio' })
-    const [clearSelection] = scene.makeMouseHelpers(0.8, 0.8, {
-      format: 'ratio',
+      // Two dumb hardcoded screen ratio values
+
+      const [clearSelection] = scene.makeMouseHelpers(0.8, 0.8, {
+        format: 'ratio',
+      })
+
+      await test.step(`Click a primitive face and expect the selection to be set to it`, async () => {
+        const [clickOnFace] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 0,
+          stream: { x: 0.6, y: 0.6, format: 'ratio' },
+        })
+        await clickOnFace()
+        await expect(toolbar.selectionStatus).toContainText('1 face')
+      })
+
+      await test.step(`Clicking in the corner resets the selection`, async () => {
+        await clearSelection()
+        await expect(toolbar.selectionStatus).not.toContainText('1 face')
+      })
     })
+  }
 
-    await test.step(`Click a primitive face and expect the selection to be set to it`, async () => {
-      await clickOnFace()
-      await expect(toolbar.selectionStatus).toContainText('1 face')
-    })
-
-    await test.step(`Clicking in the corner resets the selection`, async () => {
-      await clearSelection()
-      await expect(toolbar.selectionStatus).not.toContainText('1 face')
-    })
-  })
-
-  test(`Can start a sketch on a shell inner face`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    toolbar,
-    editor,
-  }) => {
-    const code = `@settings(kclVersion = 2.0)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Can start a sketch on a shell inner face ${rendererTag}`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      toolbar,
+      editor,
+    }) => {
+      const code = `@settings(kclVersion = 2.0)
 
 rectangleSketch = sketch(on = XY) {
   line1 = line(start = [var 0.42mm, var 0.91mm], end = [var 3.1mm, var 0.91mm])
@@ -469,28 +400,37 @@ rectangleSketch = sketch(on = XY) {
 extrude001 = extrude(region(point = [1mm, 1mm], sketch = rectangleSketch), length = 1, tagEnd = $capEnd001)
 shell001 = shell(extrude001, faces = capEnd001, thickness = .1)`
 
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, code)
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, code)
 
-    await page.setBodyDimensions({ width: 1200, height: 800 })
-    await homePage.goToModelingScene()
-    await scene.settled()
+      await page.setBodyDimensions({ width: 1200, height: 800 })
+      await homePage.goToModelingScene()
+      await scene.settled()
 
-    const [clickOnInnerFace] = scene.makeMouseHelpers(0.6, 0.4, {
-      format: 'ratio',
-    })
+      if (await page.evaluate(() => window.engineCommandManager.geometryOnly)) {
+        await scene.moveCameraTo(
+          { x: 7, y: -5, z: 8 },
+          { x: 1.76, y: 2.635, z: 0.5 }
+        )
+      }
+      // Visible face 3 is the original inner face, topology primitive index 7.
+      const [clickOnInnerFace] = await scene.makeSelectionHelpers({
+        kind: 'face',
+        index: 3,
+        stream: { x: 0.6, y: 0.4, format: 'ratio' },
+      })
 
-    await clickOnInnerFace()
-    await expect(toolbar.selectionStatus).toHaveText(
-      '1 faceCurrently selected geometry'
-    )
-    await toolbar.startSketchPlaneSelection()
+      await clickOnInnerFace()
+      await expect(toolbar.selectionStatus).toHaveText(
+        '1 faceCurrently selected geometry'
+      )
+      await toolbar.startSketchPlaneSelection()
 
-    await expect(toolbar.lineBtn).toBeEnabled()
-    await expect
-      .poll(() => editor.getCurrentCode())
-      .toBe(`@settings(kclVersion = 2.0)
+      await expect(toolbar.lineBtn).toBeEnabled()
+      await expect
+        .poll(() => editor.getCurrentCode())
+        .toBe(`@settings(kclVersion = 2.0)
 
 
 rectangleSketch = sketch(on = XY) {
@@ -514,38 +454,72 @@ sketch001 = sketch(on = face001) {
 }
 
 `)
-  })
-
-  test(`Engine primitive selection works on shell inner edge`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    toolbar,
-    cmdBar,
-  }) => {
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, innerShellCode)
-
-    await page.setBodyDimensions({ width: 1200, height: 800 })
-    await homePage.goToModelingScene()
-    await scene.settled()
-
-    // Two dumb hardcoded screen ratio values
-    const [clickOnEdge] = scene.makeMouseHelpers(0.5, 0.6, { format: 'ratio' })
-    const [clearSelection] = scene.makeMouseHelpers(0.8, 0.8, {
-      format: 'ratio',
     })
+  }
 
-    await test.step(`Click a primitive edge and expect the selection to be set to it`, async () => {
-      await clickOnEdge()
-      await expect(toolbar.selectionStatus).toContainText('1 edge')
-    })
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Shell inner edge: selection uses engine topology_fallback (primitive index); fillet codegen uses edgeId(solid, index) when the artifact graph lacks wall/cap. ${rendererTag}`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      toolbar,
+      modelingDialog,
+      editor,
+    }) => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, innerShellCode)
 
-    await test.step(`Clicking in the corner resets the selection`, async () => {
-      await clearSelection()
-      await expect(toolbar.selectionStatus).not.toContainText('1 edge')
+      await page.setBodyDimensions({ width: 1200, height: 800 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+
+      if (rendererTag === '@localRenderer') {
+        // Expose the original inner edge, whose midpoint is otherwise occluded.
+        await scene.moveCameraTo(
+          { x: 6.2, y: -18.83, z: 7.77 },
+          { x: 0, y: -2.5, z: 2.5 }
+        )
+      }
+      // Original stream selection resolves to shell topology edge 15.
+      const [clickOnEdge] = await scene.makeSelectionHelpers({
+        kind: 'edge',
+        index: 10,
+        stream: { x: 0.5, y: 0.6, format: 'ratio' },
+      })
+
+      await test.step(`Click a primitive edge and expect the selection to be set to it`, async () => {
+        await clickOnEdge()
+        await expect(toolbar.selectionStatus).toContainText('1 edge')
+      })
+
+      await test.step(`Fillet the selected edge (1mm radius)`, async () => {
+        await scene.moveCameraTo(
+          { x: 11.58, y: -20.49, z: 5.72 },
+          { x: 0, y: -2.6, z: 2.5 }
+        )
+        // Original stream fillet selection resolves to shell topology edge 19.
+        const [clickEdgeForFillet] = await scene.makeSelectionHelpers({
+          kind: 'edge',
+          index: 12,
+          stream: { x: 0.4457, y: 0.5014, format: 'ratio' },
+        })
+        await clickEdgeForFillet()
+
+        await page.waitForTimeout(100)
+        await toolbar.filletButton.click()
+
+        await expect(modelingDialog.selection('Selection')).toHaveText('1 edge')
+        await modelingDialog.input('radius').fill('1')
+
+        await modelingDialog.submit()
+        await scene.settled()
+        await editor.expectEditor.toContain('fillet')
+        await editor.expectEditor.toContain('radius')
+        await editor.expectEditor.toContain('edgeId')
+        await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+      })
     })
-  })
+  }
 })

@@ -14,7 +14,7 @@ import type {
   RegistryItemDefinition,
   RegistryItemFactory,
   RegistryItemKey,
-  RuntimeRegistryItemDefinition,
+  RegistryDisposer,
   Service,
   ServiceContribution,
   ValueSpec,
@@ -44,8 +44,8 @@ export function unwrapMaybeSignal<T>(value: MaybeSignal<T>): T {
 
 /** Normalize function-based and Symbol.dispose-based cleanup into one shape. */
 export function normalizeDisposer(
-  dispose?: { [Symbol.dispose](): void } | (() => void)
-): (() => void) | undefined {
+  dispose?: RegistryDisposer
+): (() => void | PromiseLike<void>) | undefined {
   if (!dispose) return undefined
   if (typeof dispose === 'function') return dispose
   return () => dispose[Symbol.dispose]()
@@ -101,9 +101,9 @@ export function readonlyFromSignal<T>(
  */
 export interface SlotToggleController {
   readonly active: ReadonlyPreactSignal<boolean>
-  enable(): void
-  disable(): void
-  toggle(): void
+  enable(): Promise<void>
+  disable(): Promise<void>
+  toggle(): Promise<void>
 }
 
 /**
@@ -178,12 +178,19 @@ export function sanitizeServiceImplementation<T extends object>(
 }
 
 /** Helpers for authoring registry items. */
-export function defineRegistryItemFactory<TModel = unknown>(
-  factory: RegistryItemFactory<TModel>,
-  itemKey?: RegistryItemKey
-): RegistryItemFactory<TModel> {
+export function defineRegistryItemFactory(
+  factory: RegistryItemFactory,
+  itemKey?: RegistryItemKey,
+  dependencies: readonly RegistryItem[] = []
+): RegistryItemFactory {
   Object.defineProperty(factory, 'itemKey', {
     value: itemKey ?? factory,
+    enumerable: false,
+    configurable: false,
+    writable: false,
+  })
+  Object.defineProperty(factory, 'dependencies', {
+    value: Object.freeze([...dependencies]),
     enumerable: false,
     configurable: false,
     writable: false,
@@ -194,12 +201,6 @@ export function defineRegistryItemFactory<TModel = unknown>(
 export function defineRegistryItem<T extends RegistryItemDefinition>(
   spec: T
 ): T {
-  return spec
-}
-
-export function defineRuntimeRegistryItem<
-  T extends RuntimeRegistryItemDefinition,
->(spec: T): T {
   return spec
 }
 
@@ -311,16 +312,14 @@ function createToggleableRegistryItem({
         slot,
       })
       return {
-        item: defineRuntimeRegistryItem({
-          providesServices: [provideService(service, impl)],
-        }),
+        providesServices: [provideService(service, impl)],
       }
     }, `${name}-toggle-item`),
   }
 }
 
 type SlotToggleControllerProps = {
-  container: Pick<Registry, 'reconfigure'>
+  container: Pick<Registry, 'reconfigureAsync'>
   slot: Slot
   activeItems: readonly RegistryItem[]
   inactiveItems?: readonly RegistryItem[]
@@ -346,19 +345,18 @@ export function createSlotToggleController({
     active,
     enable() {
       active.value = true
-      container.reconfigure(slot, activeItems)
+      return container.reconfigureAsync(slot, activeItems)
     },
     disable() {
       active.value = false
-      container.reconfigure(slot, inactiveItems)
+      return container.reconfigureAsync(slot, inactiveItems)
     },
     toggle() {
       if (active.value) {
-        this.disable()
-        return
+        return this.disable()
       }
 
-      this.enable()
+      return this.enable()
     },
   }
 }

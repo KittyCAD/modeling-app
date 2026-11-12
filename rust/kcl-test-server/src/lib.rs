@@ -1,23 +1,26 @@
 //! Executes KCL programs.
-//! The server reuses the same engine session for each KCL program it receives.
+//! The server reuses an engine session while requests use the same KCL version.
 use std::net::SocketAddr;
 use std::sync::Arc;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 
-use hyper::Body;
+use http_body_util::BodyExt;
+use http_body_util::Full;
 use hyper::Error;
 use hyper::Response;
-use hyper::Server;
 use hyper::body::Bytes;
+use hyper::body::Incoming;
 use hyper::header::CONTENT_TYPE;
-use hyper::service::make_service_fn;
+use hyper::server::conn::http1;
 use hyper::service::service_fn;
+use hyper_util::rt::TokioIo;
 use kcl_lib::ExecState;
 use kcl_lib::ExecutorContext;
 use kcl_lib::Program;
 use kcl_lib::test_server::RequestBody;
+use tokio::net::TcpListener;
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;
 use tokio::task::JoinHandle;
@@ -59,7 +62,7 @@ struct WorkerReq {
     /// A KCL program, in UTF-8.
     body: Bytes,
     /// A channel to send the HTTP response back.
-    resp: oneshot::Sender<Response<Body>>,
+    resp: oneshot::Sender<Response<Full<Bytes>>>,
 }
 
 /// Each worker has a connection to the engine, and accepts
@@ -70,11 +73,11 @@ fn start_worker(i: u8, engine_addr: Option<String>) -> mpsc::Sender<WorkerReq> {
     // Make a work queue for this worker.
     let (tx, mut rx) = mpsc::channel(1);
     tokio::task::spawn(async move {
-        let state = ExecutorContext::new_for_unit_test(engine_addr).await.unwrap();
+        let mut state: Option<(kcl_lib::KclVersion, ExecutorContext)> = None;
         println!("Worker {i} ready");
         while let Some(req) = rx.recv().await {
             let req: WorkerReq = req;
-            let resp = snapshot_endpoint(req.body, state.clone()).await;
+            let resp = snapshot_endpoint(req.body, &mut state, engine_addr.clone()).await;
             if req.resp.send(resp).is_err() {
                 println!("\tWorker {i} exiting");
             }
@@ -102,37 +105,29 @@ pub async fn start_server(args: ServerArgs) -> anyhow::Result<()> {
         workers,
         req_num: 0.into(),
     });
-    // In hyper, a `MakeService` is basically your server.
-    // It makes a `Service` for each connection, which manages the connection.
-    let make_service = make_service_fn(
-        // This closure is run for each connection.
-        move |_conn_info| {
-            // eprintln!("Connected to a client");
-            let state = state.clone();
-            async move {
-                // This is the `Service` which handles the connection.
-                // `service_fn` converts a function which returns a Response
-                // into a `Service`.
-                Ok::<_, Error>(service_fn(move |req| {
-                    // eprintln!("Received a request");
-                    let state = state.clone();
-                    async move { handle_request(req, state).await }
-                }))
-            }
-        },
-    );
-    let server = Server::bind(&listen_on).serve(make_service);
+    let listener = TcpListener::bind(listen_on).await?;
     println!("Listening on {listen_on}");
     println!("PID is {}", std::process::id());
-    if let Err(e) = server.await {
-        eprintln!("Server error: {e}");
-        return Err(e.into());
+    loop {
+        let (stream, _) = listener.accept().await?;
+        let state = state.clone();
+        tokio::spawn(async move {
+            let service = service_fn(move |req| handle_request(req, state.clone()));
+            if let Err(error) = http1::Builder::new()
+                .serve_connection(TokioIo::new(stream), service)
+                .await
+            {
+                eprintln!("Connection error: {error}");
+            }
+        });
     }
-    Ok(())
 }
 
-async fn handle_request(req: hyper::Request<Body>, state3: Arc<ServerState>) -> Result<Response<Body>, Error> {
-    let body = hyper::body::to_bytes(req.into_body()).await?;
+async fn handle_request(
+    req: hyper::Request<Incoming>,
+    state3: Arc<ServerState>,
+) -> Result<Response<Full<Bytes>>, Error> {
+    let body = req.into_body().collect().await?.to_bytes();
 
     // Round robin requests between each available worker.
     let req_num = state3.req_num.fetch_add(1, Ordering::Relaxed);
@@ -150,7 +145,11 @@ async fn handle_request(req: hyper::Request<Body>, state3: Arc<ServerState>) -> 
 /// KCL errors (from engine or the executor) respond with HTTP Bad Gateway.
 /// Malformed requests are HTTP Bad Request.
 /// Successful requests contain a PNG as the body.
-async fn snapshot_endpoint(body: Bytes, ctxt: ExecutorContext) -> Response<Body> {
+async fn snapshot_endpoint(
+    body: Bytes,
+    state: &mut Option<(kcl_lib::KclVersion, ExecutorContext)>,
+    engine_addr: Option<String>,
+) -> Response<Full<Bytes>> {
     let body = match serde_json::from_slice::<RequestBody>(body.as_ref()) {
         Ok(bd) => bd,
         Err(e) => return bad_request(format!("Invalid request JSON: {e}")),
@@ -162,12 +161,33 @@ async fn snapshot_endpoint(body: Bytes, ctxt: ExecutorContext) -> Response<Body>
         Err(e) => return bad_request(format!("Parse error: {e}")),
     };
 
+    let version = match program.language_version() {
+        Ok(version) => version,
+        Err(error) => return bad_request(format!("Invalid KCL settings: {error}")),
+    };
+    if state
+        .as_ref()
+        .is_none_or(|(connected_version, _)| *connected_version != version)
+    {
+        if let Some((_, old)) = state.take() {
+            old.close().await;
+        }
+        let ctx = match ExecutorContext::new_for_unit_test(engine_addr, version).await {
+            Ok(ctx) => ctx,
+            Err(error) => return kcl_err(error),
+        };
+        *state = Some((version, ctx));
+    }
+    let Some((_, ctxt)) = state.as_ref() else {
+        return bad_request("Engine connection was not initialized".to_owned());
+    };
+
     eprintln!("Executing {test_name}");
-    let mut exec_state = ExecState::new(&ctxt);
+    let mut exec_state = ExecState::new(ctxt);
     // This is a shitty source range, I don't know what else to use for it though.
     // There's no actual KCL associated with this reset_scene call.
     if let Err(e) = ctxt
-        .send_clear_scene(&mut exec_state, kcl_lib::SourceRange::default())
+        .send_clear_scene(Some(version), &mut exec_state, kcl_lib::SourceRange::default())
         .await
     {
         return kcl_err(e);
@@ -186,26 +206,26 @@ async fn snapshot_endpoint(body: Bytes, ctxt: ExecutorContext) -> Response<Body>
     timer.abort();
     eprintln!("\tServing response");
     let png_bytes = snapshot.contents.0;
-    let mut resp = Response::new(Body::from(png_bytes));
+    let mut resp = Response::new(Full::new(Bytes::from(png_bytes)));
     resp.headers_mut().insert(CONTENT_TYPE, "image/png".parse().unwrap());
     resp
 }
 
-fn bad_request(msg: String) -> Response<Body> {
+fn bad_request(msg: String) -> Response<Full<Bytes>> {
     eprintln!("\tBad request");
-    let mut resp = Response::new(Body::from(msg));
+    let mut resp = Response::new(Full::new(Bytes::from(msg)));
     *resp.status_mut() = hyper::StatusCode::BAD_REQUEST;
     resp
 }
 
-fn bad_gateway(msg: String) -> Response<Body> {
+fn bad_gateway(msg: String) -> Response<Full<Bytes>> {
     eprintln!("\tBad gateway");
-    let mut resp = Response::new(Body::from(msg));
+    let mut resp = Response::new(Full::new(Bytes::from(msg)));
     *resp.status_mut() = hyper::StatusCode::BAD_GATEWAY;
     resp
 }
 
-fn kcl_err(err: impl std::fmt::Display) -> Response<Body> {
+fn kcl_err(err: impl std::fmt::Display) -> Response<Full<Bytes>> {
     eprintln!("\tBad KCL");
     bad_gateway(format!("{err}"))
 }

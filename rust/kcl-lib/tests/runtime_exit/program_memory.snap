@@ -11,8 +11,10 @@ description: Variables in memory after executing runtime_exit.kcl
     "value": 42.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

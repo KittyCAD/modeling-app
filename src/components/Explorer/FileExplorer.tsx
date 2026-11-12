@@ -16,7 +16,10 @@ import { removeDragPreviewElement, setDragPreview } from '@src/lib/dragPreview'
 import fsZds from '@src/lib/fs-zds'
 import type { MaybePressOrBlur, SubmitByPressOrBlur } from '@src/lib/types'
 import { uuidv4 } from '@src/lib/utils'
-import type { ProjectExplorerRowContextMenuItem } from '@src/registry/contracts/projectExplorer'
+import type {
+  ProjectExplorerRowContextMenuItem,
+  ProjectExplorerRowContextMenuItemContext,
+} from '@src/registry/contracts/projectExplorer'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 export const StatusDot = () => {
@@ -74,6 +77,7 @@ export const FileExplorer = ({
   isExternalDragOver,
   highlightedEntry,
   rowContextMenuItems = [],
+  rowContextMenuContext,
   onDeleteEnd,
   onExternalDragOverRow,
 }: {
@@ -87,6 +91,7 @@ export const FileExplorer = ({
   isExternalDragOver?: boolean
   highlightedEntry?: FileExplorerEntry | null
   rowContextMenuItems?: readonly ProjectExplorerRowContextMenuItem[]
+  rowContextMenuContext?: Omit<ProjectExplorerRowContextMenuItemContext, 'row'>
   onDeleteEnd: () => void
   onExternalDragOverRow?: (entry: FileExplorerEntry | null) => void
 }) => {
@@ -118,6 +123,7 @@ export const FileExplorer = ({
             isExternalDragHighlighted={isHighlighted}
             isExternalDragOver={isExternalDragOver}
             rowContextMenuItems={rowContextMenuItems}
+            rowContextMenuContext={rowContextMenuContext}
             onDeleteEnd={onDeleteEnd}
             onExternalDragOverRow={onExternalDragOverRow}
           />
@@ -141,9 +147,10 @@ function FileExplorerRowContextMenu({
   onPaste,
   isCopying,
   rowContextMenuItems,
+  rowContextMenuContext,
 }: FileExplorerRowContextMenuProps) {
   const extensionItems = rowContextMenuItems.flatMap((item) => {
-    const context = { row }
+    const context = { ...rowContextMenuContext, row }
     if (item.isVisible && !item.isVisible(context)) {
       return []
     }
@@ -309,6 +316,7 @@ export const FileExplorerRowElement = ({
   isExternalDragHighlighted,
   isExternalDragOver,
   rowContextMenuItems,
+  rowContextMenuContext,
   onDeleteEnd,
   onExternalDragOverRow,
 }: {
@@ -322,6 +330,7 @@ export const FileExplorerRowElement = ({
   isExternalDragHighlighted?: boolean
   isExternalDragOver?: boolean
   rowContextMenuItems: readonly ProjectExplorerRowContextMenuItem[]
+  rowContextMenuContext?: Omit<ProjectExplorerRowContextMenuItemContext, 'row'>
   onDeleteEnd: () => void
   onExternalDragOverRow?: (entry: FileExplorerEntry | null) => void
 }) => {
@@ -555,6 +564,7 @@ export const FileExplorerRowElement = ({
           }}
           isCopying={isCopying}
           rowContextMenuItems={rowContextMenuItems}
+          rowContextMenuContext={rowContextMenuContext}
         />
       )}
     </div>

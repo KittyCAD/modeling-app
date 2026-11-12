@@ -36,7 +36,7 @@ curl --silent --request POST \
   --form "GITHUB_SHA=${GITHUB_SHA:-}" \
   --form "GITHUB_WORKFLOW=${GITHUB_WORKFLOW:-}" \
   --form "RUNNER_ARCH=${RUNNER_ARCH:-}" \
-  ${TAB_API_URL}/api/results/bulk > test-results/tab.json
+  "${TAB_API_URL}/api/results/bulk" > test-results/tab.json
 cat test-results/tab.json
 echo
 
@@ -48,14 +48,11 @@ fi
 echo "Sharing updated report:"
 curl --silent --request POST \
   --header "User-Agent: GitHub-Actions/1.0" \
-  --header "Content-Type: application/json" \
   --header "X-API-Key: ${TAB_API_KEY}" \
-  --data "{
-    \"project\": \"${project}\",
-    \"branch\": \"${branch}\",
-    \"commit\": \"${commit}\"
-  }" \
-  ${TAB_API_URL}/api/share
+  --form "project=${project}" \
+  --form "branch=${branch}" \
+  --form "commit=${commit}" \
+  "${TAB_API_URL}/api/share"
 echo
 
 grep --quiet '"block": false' test-results/tab.json

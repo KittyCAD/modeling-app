@@ -1,4 +1,5 @@
-import { Popover, Transition } from '@headlessui/react'
+import { reportRejection } from '@src/lib/trap'
+import { Popover } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { ActionButtonProps } from '@src/components/ActionButton'
 import { ActionButton } from '@src/components/ActionButton'
@@ -15,7 +16,6 @@ import { getProjectRelativeFilePath, PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { IndexLoaderData } from '@src/lib/types'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
@@ -31,14 +31,8 @@ import {
   projectExplorerProjectMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
 import { useSelector } from '@xstate/react'
-import {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: project-menu navigation (useNavigate).
 import { Link, useNavigate } from 'react-router-dom'
 import type { SnapshotFrom } from 'xstate'
 
@@ -46,7 +40,6 @@ interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
   project?: Project
   file?: FileEntry
-  hasCloudSyncFeature?: boolean
   app?: App
   absoluteFilePath?: string
   onProjectClose?: ProjectCloseHandler
@@ -94,21 +87,10 @@ const noopHomeNavigate = () => undefined
 const projectMenuItemLabelClassName = 'min-w-0 flex-1 truncate'
 const projectMenuItemHotkeyClassName = 'hotkey shrink-0'
 
-export function canNavigateHome({
-  isDesktopApp,
-  hasCloudSyncFeature,
-}: {
-  isDesktopApp: boolean
-  hasCloudSyncFeature: boolean
-}) {
-  return isDesktopApp || hasCloudSyncFeature
-}
-
 const ProjectSidebarMenu = ({
   project,
   file,
   enableMenu = false,
-  hasCloudSyncFeature = false,
   app,
   absoluteFilePath,
   onProjectClose = noopProjectClose,
@@ -118,10 +100,6 @@ const ProjectSidebarMenu = ({
   // Make room for traffic lights on desktop left side.
   // TODO: make sure this doesn't look like shit on Linux or Windows
   const trafficLightsOffset = window.electron?.os.isMac ? 'ml-20' : ''
-  const homeNavigationEnabled = canNavigateHome({
-    isDesktopApp: isDesktop(),
-    hasCloudSyncFeature,
-  })
   const projectDisplayName = project ? getProjectDisplayName(project) : APP_NAME
 
   return (
@@ -130,13 +108,10 @@ const ProjectSidebarMenu = ({
         <AppLogoLink
           project={project}
           file={file}
-          enabled={homeNavigationEnabled}
           onProjectClose={onProjectClose}
           onHomeNavigate={onHomeNavigate}
         />
-        {homeNavigationEnabled && (
-          <Tooltip position="bottom-left">Go home</Tooltip>
-        )}
+        <Tooltip position="bottom-left">Go home</Tooltip>
       </div>
       {enableMenu ? (
         app ? (
@@ -145,7 +120,6 @@ const ProjectSidebarMenu = ({
             project={project}
             file={file}
             filePath={absoluteFilePath}
-            homeNavigationEnabled={homeNavigationEnabled}
             onProjectClose={onProjectClose}
             onHomeNavigate={onHomeNavigate}
           />
@@ -166,32 +140,14 @@ const ProjectSidebarMenu = ({
 function AppLogoLink({
   project,
   file,
-  enabled,
   onProjectClose,
   onHomeNavigate,
 }: {
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
-  enabled: boolean
   onProjectClose: ProjectCloseHandler
   onHomeNavigate: () => void
 }) {
-  const wrapperClassName =
-    "cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm before:transition-[filter] before:duration-100 before:ease-out"
-  const logoClassName = 'w-auto h-4 text-chalkboard-10'
-
-  if (!enabled) {
-    return (
-      <div
-        data-testid="app-logo"
-        className="relative h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
-      >
-        <Logo data-onboarding-id="app-logo" className={logoClassName} />
-        <span className="sr-only">{APP_NAME}</span>
-      </div>
-    )
-  }
-
   return (
     <Link
       data-testid="app-logo"
@@ -200,9 +156,12 @@ function AppLogoLink({
         onHomeNavigate()
       }}
       to={PATHS.HOME}
-      className={`${wrapperClassName} hover:hue-rotate-0 dark:hover:brightness-100 hover:before:drop-shadow-tab-sm`}
+      className="cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm hover:hue-rotate-0 dark:hover:brightness-100 hover:before:drop-shadow-tab-sm"
     >
-      <Logo data-onboarding-id="app-logo" className={logoClassName} />
+      <Logo
+        data-onboarding-id="app-logo"
+        className="w-auto h-4 text-chalkboard-10"
+      />
       <span className="sr-only">{APP_NAME}</span>
     </Link>
   )
@@ -213,7 +172,6 @@ function ProjectMenuPopover({
   project,
   file,
   filePath,
-  homeNavigationEnabled,
   onProjectClose,
   onHomeNavigate,
 }: {
@@ -221,7 +179,6 @@ function ProjectMenuPopover({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
   filePath?: string
-  homeNavigationEnabled: boolean
   onProjectClose: ProjectCloseHandler
   onHomeNavigate: () => void
 }) {
@@ -269,6 +226,13 @@ function ProjectMenuPopover({
     [commandList]
   )
   const machineCount = machineManager.machines.length
+  const getCurrentFileForDuplicate = useCallback(
+    () => ({
+      currentFilePath: app?.project?.executingPath,
+      currentFileContents: app?.project?.executingEditor.value?.code,
+    }),
+    [app]
+  )
 
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const projectMenuItems = useMemo<Exclude<ProjectMenuItem, null>[]>(
@@ -314,14 +278,24 @@ function ProjectMenuPopover({
                 </span>
               ),
               onClick: () => {
-                app.systemIOActor.send({
-                  type: SystemIOMachineEvents.duplicateProject,
-                  data: {
-                    projectName: project.name,
-                    projectPath: project.path,
-                    requestedProjectName: getProjectDisplayName(project),
-                  },
-                })
+                const editor = getCurrentFileForDuplicate()
+                app.projectOperations
+                  .duplicateProject(
+                    project,
+                    getProjectDisplayName(project),
+                    editor.currentFilePath
+                      ? {
+                          path: editor.currentFilePath,
+                          contents: editor.currentFileContents ?? '',
+                        }
+                      : undefined
+                  )
+                  .then((created) =>
+                    app.projectSession.openFile(created.path, {
+                      projectPath: created.path,
+                    })
+                  )
+                  .catch(reportRejection)
               },
             }
           : null,
@@ -396,9 +370,7 @@ function ProjectMenuPopover({
           Element: 'button' as const,
           children: (
             <>
-              <span className={projectMenuItemLabelClassName}>
-                Export current part
-              </span>
+              <span className={projectMenuItemLabelClassName}>Export</span>
               <kbd className={projectMenuItemHotkeyClassName}>
                 {hotkeyDisplay('ctrl+shift+e', platform)}
               </kbd>
@@ -479,7 +451,6 @@ function ProjectMenuPopover({
           children: (
             <span className={projectMenuItemLabelClassName}>Go to Home</span>
           ),
-          className: !homeNavigationEnabled ? 'hidden' : '',
           onClick: () => {
             onProjectClose(file || null, project?.path || null, true)
             onHomeNavigate()
@@ -524,12 +495,13 @@ function ProjectMenuPopover({
       commands.send,
       onHomeNavigate,
       onProjectClose,
-      homeNavigationEnabled,
       projectPath,
       project,
+      getCurrentFileForDuplicate,
       contributedProjectMenuItems,
       commands.actor,
-      app.systemIOActor,
+      app.projectOperations,
+      app.projectSession,
       file,
       filePath,
       machineCount,
@@ -564,60 +536,51 @@ function ProjectMenuPopover({
         file={file}
         contributedBadges={projectBreadcrumbBadges}
       />
-
-      <Transition
-        enter="duration-100 ease-out"
-        enterFrom="opacity-0 -translate-y-2"
-        enterTo="opacity-100 translate-y-0"
-        as={Fragment}
-      >
-        <Popover.Panel
-          className={`z-10 absolute top-full left-0 mt-1 pb-1 w-52 bg-chalkboard-10 dark:bg-chalkboard-90
+      <Popover.Panel
+        data-testid="project-sidebar-menu"
+        className={`z-10 absolute top-full left-0 mt-1 pb-1 w-52 bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
           shadow-lg`}
-        >
-          {({ close }) => (
-            <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
-              {projectMenuItems.map((props, index) => {
-                if (isProjectMenuBreak(props)) {
-                  return index !== projectMenuItems.length - 1 ? (
-                    <li key={props.id} className="contents">
-                      <hr className="my-0 border-chalkboard-20 dark:border-chalkboard-80" />
-                    </li>
-                  ) : null
-                }
-
-                if (isContributedProjectMenuItem(props)) {
-                  const Component = props.item.Component
-                  return Component ? (
-                    <Component
-                      key={props.item.id}
-                      context={props.context}
-                      className={menuItemClassName}
-                      close={close}
-                    />
-                  ) : null
-                }
-
-                const { id, className, children, ...rest } = props
-                return (
-                  <li key={id} className="contents">
-                    <ActionButton
-                      {...rest}
-                      className={menuItemClassName + (className ?? '')}
-                      onMouseUp={() => {
-                        close()
-                      }}
-                    >
-                      {children}
-                    </ActionButton>
+      >
+        {({ close }) => (
+          <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
+            {projectMenuItems.map((props, index) => {
+              if (isProjectMenuBreak(props)) {
+                return index !== projectMenuItems.length - 1 ? (
+                  <li key={props.id} className="contents">
+                    <hr className="my-0 border-chalkboard-20 dark:border-chalkboard-80" />
                   </li>
-                )
-              })}
-            </ul>
-          )}
-        </Popover.Panel>
-      </Transition>
+                ) : null
+              }
+
+              if (isContributedProjectMenuItem(props)) {
+                const Component = props.item.Component
+                return Component ? (
+                  <Component
+                    key={props.item.id}
+                    context={props.context}
+                    className={menuItemClassName}
+                    close={close}
+                  />
+                ) : null
+              }
+
+              const { id, className, children, ...rest } = props
+              // Let the action's click run before unmounting its menu.
+              return (
+                <li key={id} className="contents" onClick={() => close()}>
+                  <ActionButton
+                    {...rest}
+                    className={menuItemClassName + (className ?? '')}
+                  >
+                    {children}
+                  </ActionButton>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+      </Popover.Panel>
     </Popover>
   )
 }

@@ -27951,6 +27951,7 @@ description: Result of parsing stylized-cybertruck.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

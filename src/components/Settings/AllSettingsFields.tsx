@@ -1,5 +1,6 @@
 import { ActionButton } from '@src/components/ActionButton'
 import type { Feature } from '@kittycad/lib'
+import { SettingRestartButton } from '@src/components/Settings/SettingRestartButton'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { useApp } from '@src/lib/boot'
@@ -12,7 +13,7 @@ import {
   canRevealInFileExplorer,
   revealInFileExplorer,
 } from '@src/lib/revealInFileExplorer'
-import type { Setting } from '@src/lib/settings/initialSettings'
+import type { Setting } from '@src/lib/settings/Setting'
 import type {
   SetEventTypes,
   SettingsLevel,
@@ -28,11 +29,12 @@ import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import {
   acceptOnboarding,
   reportOnboardingStartFailure,
+  useOnboardingStartPending,
 } from '@src/routes/Onboarding/utils'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import type { ForwardedRef } from 'react'
 import { forwardRef, useMemo } from 'react'
-import toast from 'react-hot-toast'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: settings filesystem path and hash-based highlighting (useLocation, useNavigate).
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
 
@@ -52,6 +54,7 @@ export const AllSettingsFields = forwardRef(
     const navigate = useNavigate()
     const context = settings.useSettings()
     const userFeaturesContext = userFeatures.useContext()
+    const isOnboardingStartPending = useOnboardingStartPending()
     const hasFeature = (feature: Feature) =>
       userFeaturesContextHas(userFeaturesContext, feature, false)
     const projectPath = useMemo(() => {
@@ -142,6 +145,7 @@ export const AllSettingsFields = forwardRef(
                           settingsLevel={searchParamTab}
                           setting={setting}
                         />
+                        <SettingRestartButton setting={setting} />
                       </SettingsSection>
                     )
                   })}
@@ -156,16 +160,23 @@ export const AllSettingsFields = forwardRef(
           >
             <ActionButton
               Element="button"
+              aria-busy={isOnboardingStartPending}
+              disabled={isOnboardingStartPending}
               onClick={() => {
                 void restartOnboarding().catch(reportOnboardingStartFailure)
               }}
+              className="disabled:cursor-wait disabled:opacity-70"
               iconStart={{
                 icon: 'refresh',
                 size: 'sm',
-                className: 'p-1',
+                className: `p-1 ${
+                  isOnboardingStartPending ? 'animate-spin' : ''
+                }`,
               }}
             >
-              Replay Onboarding
+              {isOnboardingStartPending
+                ? 'Starting Onboarding...'
+                : 'Replay Onboarding'}
             </ActionButton>
           </SettingsSection>
           <SettingsSection
@@ -206,9 +217,6 @@ export const AllSettingsFields = forwardRef(
                     type: 'Reset settings',
                     level: searchParamTab,
                   })
-                  toast.success(
-                    `Your ${searchParamTab}-level settings were reset.`
-                  )
                 }}
                 iconStart={{
                   icon: 'refresh',

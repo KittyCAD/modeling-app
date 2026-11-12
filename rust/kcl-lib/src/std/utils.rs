@@ -28,7 +28,7 @@ pub(crate) fn untype_array<const N: usize>(p: [TyF64; N]) -> ([f64; N], NumericT
 }
 
 pub(crate) fn point_to_mm(p: [TyF64; 2]) -> [f64; 2] {
-    [p[0].to_mm(), p[1].to_mm()]
+    [p[0].unwrap_to_mm(), p[1].unwrap_to_mm()]
 }
 
 pub(crate) fn untyped_point_to_mm(p: [f64; 2], units: UnitLength) -> [f64; 2] {
@@ -43,7 +43,7 @@ pub fn untyped_point_to_unit(point: [f64; 2], from_len_unit: UnitLength, to_len_
 }
 
 pub(crate) fn point_to_len_unit(p: [TyF64; 2], len: UnitLength) -> [f64; 2] {
-    [p[0].to_length_units(len), p[1].to_length_units(len)]
+    [p[0].unwrap_to_length_units(len), p[1].unwrap_to_length_units(len)]
 }
 
 /// Precondition, `p` must be in `len` units (this function does no conversion).
@@ -55,7 +55,7 @@ pub(crate) fn point_to_typed(p: [f64; 2], len: UnitLength) -> [TyF64; 2] {
 }
 
 pub(crate) fn point_3d_to_mm(p: [TyF64; 3]) -> [f64; 3] {
-    [p[0].to_mm(), p[1].to_mm(), p[2].to_mm()]
+    [p[0].unwrap_to_mm(), p[1].unwrap_to_mm(), p[2].unwrap_to_mm()]
 }
 
 /// Get the distance between two points.

@@ -7,8 +7,32 @@ use ezpz::datatypes::inputs::DatumCircle;
 use ezpz::datatypes::inputs::DatumDistance;
 use ezpz::datatypes::inputs::DatumLineSegment;
 use ezpz::datatypes::inputs::DatumPoint;
+use kcl_api::ArcCtor;
+use kcl_api::ArcDirection;
+use kcl_api::CircleCtor;
+use kcl_api::Coincident;
+use kcl_api::Constraint;
+use kcl_api::ConstraintSegment;
+use kcl_api::ControlPointSplineCtor;
+use kcl_api::EqualRadius;
+use kcl_api::Horizontal;
+use kcl_api::LineCtor;
+use kcl_api::LinesEqualLength;
+use kcl_api::Midpoint;
+use kcl_api::Number;
+use kcl_api::Object;
+use kcl_api::ObjectId;
+use kcl_api::ObjectKind;
+use kcl_api::Parallel;
+use kcl_api::Perpendicular;
+use kcl_api::Point2d;
+use kcl_api::PointCtor;
+use kcl_api::SourceRef;
+use kcl_api::Symmetric;
+use kcl_api::Tangent;
 use kcl_api::UnitAngle;
 use kcl_api::UnitLength;
+use kcl_api::Vertical;
 use kittycad_modeling_cmds as kcmc;
 
 use crate::errors::KclError;
@@ -43,30 +67,6 @@ use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::execution::types::UnitType;
-use crate::front::ArcCtor;
-use crate::front::ArcDirection;
-use crate::front::CircleCtor;
-use crate::front::Coincident;
-use crate::front::Constraint;
-use crate::front::ControlPointSplineCtor;
-use crate::front::EqualRadius;
-use crate::front::Horizontal;
-use crate::front::LineCtor;
-use crate::front::LinesEqualLength;
-use crate::front::Midpoint;
-use crate::front::Number;
-use crate::front::Object;
-use crate::front::ObjectId;
-use crate::front::ObjectKind;
-use crate::front::Parallel;
-use crate::front::Perpendicular;
-use crate::front::Point2d;
-use crate::front::PointCtor;
-use crate::front::SourceRef;
-use crate::front::Symmetric;
-use crate::front::Tangent;
-use crate::front::Vertical;
-use crate::frontend::sketch::ConstraintSegment;
 use crate::std::Args;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
@@ -85,24 +85,24 @@ fn point2d_is_origin(point2d: &KclValue) -> bool {
     x.n == 0.0 && y.n == 0.0
 }
 
-fn numeric_suffix_to_type(suffix: crate::pretty::NumericSuffix, exec_state: &ExecState) -> NumericType {
+fn numeric_suffix_to_type(suffix: kcl_api::NumericSuffix, exec_state: &ExecState) -> NumericType {
     match suffix {
-        crate::pretty::NumericSuffix::None => NumericType::Default {
+        kcl_api::NumericSuffix::None => NumericType::Default {
             len: exec_state.length_unit(),
             angle: exec_state.angle_unit(),
         },
-        crate::pretty::NumericSuffix::Count => NumericType::Known(UnitType::Count),
-        crate::pretty::NumericSuffix::Length => NumericType::Known(UnitType::GenericLength),
-        crate::pretty::NumericSuffix::Angle => NumericType::Known(UnitType::GenericAngle),
-        crate::pretty::NumericSuffix::Mm => NumericType::Known(UnitType::Length(UnitLength::Millimeters)),
-        crate::pretty::NumericSuffix::Cm => NumericType::Known(UnitType::Length(UnitLength::Centimeters)),
-        crate::pretty::NumericSuffix::M => NumericType::Known(UnitType::Length(UnitLength::Meters)),
-        crate::pretty::NumericSuffix::Inch => NumericType::Known(UnitType::Length(UnitLength::Inches)),
-        crate::pretty::NumericSuffix::Ft => NumericType::Known(UnitType::Length(UnitLength::Feet)),
-        crate::pretty::NumericSuffix::Yd => NumericType::Known(UnitType::Length(UnitLength::Yards)),
-        crate::pretty::NumericSuffix::Deg => NumericType::Known(UnitType::Angle(UnitAngle::Degrees)),
-        crate::pretty::NumericSuffix::Rad => NumericType::Known(UnitType::Angle(UnitAngle::Radians)),
-        crate::pretty::NumericSuffix::Unknown => NumericType::Unknown,
+        kcl_api::NumericSuffix::Count => NumericType::Known(UnitType::Count),
+        kcl_api::NumericSuffix::Length => NumericType::Known(UnitType::GenericLength),
+        kcl_api::NumericSuffix::Angle => NumericType::Known(UnitType::GenericAngle),
+        kcl_api::NumericSuffix::Mm => NumericType::Known(UnitType::Length(UnitLength::Millimeters)),
+        kcl_api::NumericSuffix::Cm => NumericType::Known(UnitType::Length(UnitLength::Centimeters)),
+        kcl_api::NumericSuffix::M => NumericType::Known(UnitType::Length(UnitLength::Meters)),
+        kcl_api::NumericSuffix::Inch => NumericType::Known(UnitType::Length(UnitLength::Inches)),
+        kcl_api::NumericSuffix::Ft => NumericType::Known(UnitType::Length(UnitLength::Feet)),
+        kcl_api::NumericSuffix::Yd => NumericType::Known(UnitType::Length(UnitLength::Yards)),
+        kcl_api::NumericSuffix::Deg => NumericType::Known(UnitType::Angle(UnitAngle::Degrees)),
+        kcl_api::NumericSuffix::Rad => NumericType::Known(UnitType::Angle(UnitAngle::Radians)),
+        kcl_api::NumericSuffix::Unknown => NumericType::Unknown,
     }
 }
 
@@ -380,7 +380,7 @@ fn constrainable_point_from_unsolved_segment(
 
     match (&position[0], &position[1]) {
         (UnsolvedExpr::Unknown(x), UnsolvedExpr::Unknown(y)) => Ok(ConstrainablePoint2d {
-            vars: crate::front::Point2d { x: *x, y: *y },
+            vars: kcl_api::Point2d { x: *x, y: *y },
             object_id: segment.object_id,
         }),
         _ => Err(KclError::new_semantic(KclErrorDetails::new(
@@ -410,11 +410,11 @@ fn constrainable_line_from_unsolved_segment(
             UnsolvedExpr::Unknown(end_y),
         ) => Ok(ConstrainableLine2d {
             vars: [
-                crate::front::Point2d {
+                kcl_api::Point2d {
                     x: *start_x,
                     y: *start_y,
                 },
-                crate::front::Point2d { x: *end_x, y: *end_y },
+                kcl_api::Point2d { x: *end_x, y: *end_y },
             ],
             object_id: segment.object_id,
         }),
@@ -468,7 +468,7 @@ fn constrainable_point_from_exprs(
 ) -> Result<ConstrainablePoint2d, KclError> {
     match (&position[0], &position[1]) {
         (UnsolvedExpr::Unknown(x), UnsolvedExpr::Unknown(y)) => Ok(ConstrainablePoint2d {
-            vars: crate::front::Point2d { x: *x, y: *y },
+            vars: kcl_api::Point2d { x: *x, y: *y },
             object_id,
         }),
         _ => Err(KclError::new_semantic(KclErrorDetails::new(
@@ -1686,7 +1686,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                         )));
                                     };
                                     sketch_state.solver_constraints.push(constraint);
-                                    let constraint = crate::front::Constraint::Coincident(Coincident {
+                                    let constraint = kcl_api::Constraint::Coincident(Coincident {
                                         segments: vec![unsolved0.object_id.into(), unsolved1.object_id.into()],
                                     });
                                     sketch_state.sketch_constraints.push(constraint_id);
@@ -1717,7 +1717,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                     };
                                     sketch_state.solver_constraints.push(constraint_x);
                                     sketch_state.solver_constraints.push(constraint_y);
-                                    let constraint = crate::front::Constraint::Coincident(Coincident {
+                                    let constraint = kcl_api::Constraint::Coincident(Coincident {
                                         segments: vec![unsolved0.object_id.into(), unsolved1.object_id.into()],
                                     });
                                     sketch_state.sketch_constraints.push(constraint_id);
@@ -1762,7 +1762,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                     };
                                     sketch_state.solver_constraints.push(constraint_x);
                                     sketch_state.solver_constraints.push(constraint_y);
-                                    let constraint = crate::front::Constraint::Coincident(Coincident {
+                                    let constraint = kcl_api::Constraint::Coincident(Coincident {
                                         segments: vec![unsolved0.object_id.into(), unsolved1.object_id.into()],
                                     });
                                     sketch_state.sketch_constraints.push(constraint_id);
@@ -1852,7 +1852,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                         )));
                                     };
                                     sketch_state.solver_constraints.push(constraint);
-                                    let constraint = crate::front::Constraint::Coincident(Coincident {
+                                    let constraint = kcl_api::Constraint::Coincident(Coincident {
                                         segments: vec![unsolved0.object_id.into(), unsolved1.object_id.into()],
                                     });
                                     sketch_state.sketch_constraints.push(constraint_id);
@@ -1934,7 +1934,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                         )));
                                     };
                                     sketch_state.solver_constraints.push(constraint);
-                                    let constraint = crate::front::Constraint::Coincident(Coincident {
+                                    let constraint = kcl_api::Constraint::Coincident(Coincident {
                                         segments: vec![unsolved0.object_id.into(), unsolved1.object_id.into()],
                                     });
                                     sketch_state.sketch_constraints.push(constraint_id);
@@ -2022,7 +2022,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                         )));
                                     };
                                     sketch_state.solver_constraints.push(constraint);
-                                    let constraint = crate::front::Constraint::Coincident(Coincident {
+                                    let constraint = kcl_api::Constraint::Coincident(Coincident {
                                         segments: vec![unsolved0.object_id.into(), unsolved1.object_id.into()],
                                     });
                                     sketch_state.sketch_constraints.push(constraint_id);
@@ -2112,7 +2112,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                             // Push both constraints to achieve collinearity
                             sketch_state.solver_constraints.push(parallel_constraint);
                             sketch_state.solver_constraints.push(distance_constraint);
-                            let constraint = crate::front::Constraint::Coincident(Coincident {
+                            let constraint = kcl_api::Constraint::Coincident(Coincident {
                                 segments: vec![unsolved0.object_id.into(), unsolved1.object_id.into()],
                             });
                             sketch_state.sketch_constraints.push(constraint_id);
@@ -2183,7 +2183,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                             };
                             sketch_state.solver_constraints.push(constraint_x);
                             sketch_state.solver_constraints.push(constraint_y);
-                            let constraint = crate::front::Constraint::Coincident(Coincident {
+                            let constraint = kcl_api::Constraint::Coincident(Coincident {
                                 segments: coincident_segments,
                             });
                             sketch_state.sketch_constraints.push(constraint_id);
@@ -2504,7 +2504,7 @@ struct CoincidentPointInput {
 }
 
 fn fixed_points_match(a: &[TyF64; 2], b: &[TyF64; 2]) -> bool {
-    a[0].to_mm() == b[0].to_mm() && a[1].to_mm() == b[1].to_mm()
+    a[0].unwrap_to_mm() == b[0].unwrap_to_mm() && a[1].unwrap_to_mm() == b[1].unwrap_to_mm()
 }
 
 fn ty_f64_to_kcl_value(value: TyF64, source_range: crate::SourceRange) -> KclValue {
@@ -2637,11 +2637,11 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                                 kind: SketchConstraintKind::Distance {
                                     points: [
                                         ConstrainablePoint2dOrOrigin::Point(ConstrainablePoint2d {
-                                            vars: crate::front::Point2d { x: *p0_x, y: *p0_y },
+                                            vars: kcl_api::Point2d { x: *p0_x, y: *p0_y },
                                             object_id: unsolved0.object_id,
                                         }),
                                         ConstrainablePoint2dOrOrigin::Point(ConstrainablePoint2d {
-                                            vars: crate::front::Point2d { x: *p1_x, y: *p1_y },
+                                            vars: kcl_api::Point2d { x: *p1_x, y: *p1_y },
                                             object_id: unsolved1.object_id,
                                         }),
                                     ],
@@ -2839,7 +2839,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                 UnsolvedSegmentKind::Point { position, .. } => match (&position[0], &position[1]) {
                     (UnsolvedExpr::Unknown(point_x), UnsolvedExpr::Unknown(point_y)) => {
                         let point = ConstrainablePoint2dOrOrigin::Point(ConstrainablePoint2d {
-                            vars: crate::front::Point2d {
+                            vars: kcl_api::Point2d {
                                 x: *point_x,
                                 y: *point_y,
                             },
@@ -2935,14 +2935,14 @@ fn create_circular_radius_constraint(
     // Create a dummy constraint to get its name for error messages
     let dummy_constraint = constraint_kind([
         ConstrainablePoint2d {
-            vars: crate::front::Point2d {
+            vars: kcl_api::Point2d {
                 x: SketchVarId(0),
                 y: SketchVarId(0),
             },
             object_id: ObjectId(0),
         },
         ConstrainablePoint2d {
-            vars: crate::front::Point2d {
+            vars: kcl_api::Point2d {
                 x: SketchVarId(0),
                 y: SketchVarId(0),
             },
@@ -2990,14 +2990,14 @@ fn create_circular_radius_constraint(
                     let sketch_constraint = SketchConstraint {
                         kind: constraint_kind([
                             ConstrainablePoint2d {
-                                vars: crate::front::Point2d {
+                                vars: kcl_api::Point2d {
                                     x: *center_x,
                                     y: *center_y,
                                 },
                                 object_id: *center_object_id,
                             },
                             ConstrainablePoint2d {
-                                vars: crate::front::Point2d {
+                                vars: kcl_api::Point2d {
                                     x: *start_x,
                                     y: *start_y,
                                 },
@@ -3110,11 +3110,11 @@ pub async fn horizontal_distance(exec_state: &mut ExecState, args: Args) -> Resu
                                 kind: SketchConstraintKind::HorizontalDistance {
                                     points: [
                                         ConstrainablePoint2dOrOrigin::Point(ConstrainablePoint2d {
-                                            vars: crate::front::Point2d { x: *p0_x, y: *p0_y },
+                                            vars: kcl_api::Point2d { x: *p0_x, y: *p0_y },
                                             object_id: unsolved0.object_id,
                                         }),
                                         ConstrainablePoint2dOrOrigin::Point(ConstrainablePoint2d {
-                                            vars: crate::front::Point2d { x: *p1_x, y: *p1_y },
+                                            vars: kcl_api::Point2d { x: *p1_x, y: *p1_y },
                                             object_id: unsolved1.object_id,
                                         }),
                                     ],
@@ -3174,7 +3174,7 @@ pub async fn horizontal_distance(exec_state: &mut ExecState, args: Args) -> Resu
             match (&position[0], &position[1]) {
                 (UnsolvedExpr::Unknown(point_x), UnsolvedExpr::Unknown(point_y)) => {
                     let point = ConstrainablePoint2dOrOrigin::Point(ConstrainablePoint2d {
-                        vars: crate::front::Point2d {
+                        vars: kcl_api::Point2d {
                             x: *point_x,
                             y: *point_y,
                         },
@@ -3256,11 +3256,11 @@ pub async fn vertical_distance(exec_state: &mut ExecState, args: Args) -> Result
                                 kind: SketchConstraintKind::VerticalDistance {
                                     points: [
                                         ConstrainablePoint2dOrOrigin::Point(ConstrainablePoint2d {
-                                            vars: crate::front::Point2d { x: *p0_x, y: *p0_y },
+                                            vars: kcl_api::Point2d { x: *p0_x, y: *p0_y },
                                             object_id: unsolved0.object_id,
                                         }),
                                         ConstrainablePoint2dOrOrigin::Point(ConstrainablePoint2d {
-                                            vars: crate::front::Point2d { x: *p1_x, y: *p1_y },
+                                            vars: kcl_api::Point2d { x: *p1_x, y: *p1_y },
                                             object_id: unsolved1.object_id,
                                         }),
                                     ],
@@ -3319,7 +3319,7 @@ pub async fn vertical_distance(exec_state: &mut ExecState, args: Args) -> Result
             match (&position[0], &position[1]) {
                 (UnsolvedExpr::Unknown(point_x), UnsolvedExpr::Unknown(point_y)) => {
                     let point = ConstrainablePoint2dOrOrigin::Point(ConstrainablePoint2d {
-                        vars: crate::front::Point2d {
+                        vars: kcl_api::Point2d {
                             x: *point_x,
                             y: *point_y,
                         },
@@ -3663,7 +3663,7 @@ pub async fn equal_length(exec_state: &mut ExecState, args: Args) -> Result<KclV
             line.solver_line,
         ));
     }
-    let constraint = crate::front::Constraint::LinesEqualLength(LinesEqualLength {
+    let constraint = kcl_api::Constraint::LinesEqualLength(LinesEqualLength {
         lines: constrainable_lines.iter().map(|line| line.object_id).collect(),
     });
     sketch_state.sketch_constraints.push(constraint_id);
@@ -3963,7 +3963,7 @@ pub async fn equal_radius(exec_state: &mut ExecState, args: Args) -> Result<KclV
         }
     }
 
-    let constraint = crate::front::Constraint::EqualRadius(EqualRadius {
+    let constraint = kcl_api::Constraint::EqualRadius(EqualRadius {
         input: input_object_ids,
     });
     sketch_state.sketch_constraints.push(constraint_id);
@@ -4273,7 +4273,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         }
     }
 
-    let constraint = crate::front::Constraint::Tangent(Tangent {
+    let constraint = kcl_api::Constraint::Tangent(Tangent {
         input: vec![input0_object_id, input1_object_id],
     });
     let Some(sketch_state) = exec_state.sketch_block_mut() else {
@@ -4667,7 +4667,7 @@ pub async fn symmetric(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     };
     sketch_state.solver_constraints.extend(solver_constraints);
 
-    let constraint = crate::front::Constraint::Symmetric(Symmetric {
+    let constraint = kcl_api::Constraint::Symmetric(Symmetric {
         input: vec![input0.object_id(), input1.object_id()],
         axis: axis_line.object_id,
     });
@@ -5210,7 +5210,7 @@ fn axis_constraint_points(
         // (or y, whatever is appropriate)
         for point in var_points {
             let solver_point = datum_point([point.0, point.1], args.source_range)?;
-            let fix_point_mm = (fix_point.0.to_mm(), fix_point.1.to_mm());
+            let fix_point_mm = (fix_point.0.unwrap_to_mm(), fix_point.1.unwrap_to_mm());
             solver_constraints.push(kind.constraint_aligning_point_to_constant(solver_point, fix_point_mm));
         }
     } else {

@@ -23,7 +23,7 @@ getBoundedEdge(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `solid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The solid that the edge belongs to. | Yes |
-| `edge` | [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`any`](/docs/kcl-std/types/std-types-any) | The edge to bound. This can be a tagged edge or an edge ID from `edgeId(...)`. Experimental face API: edge reference objects (e.g. `{ sideFaces = [faceTag1, faceTag2], endFaces = [...], index = 0 }`) are not ready for generated or user-facing KCL yet; prefer tagged edges or `edgeId(...)` until point-and-click and migration support ships. | Yes |
+| `edge` | [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`any`](/docs/kcl-std/types/std-types-any) | The edge to bound. This can be a tagged edge, an edge ID from `edgeId(...)`, or an edge reference object. Edge reference objects use `sideFaces`, e.g. `{ sideFaces = [faceTag1, faceTag2], endFaces = [...], index = 0 }`. | Yes |
 | `lowerBound` | [`number(_)`](/docs/kcl-std/types/std-types-number) | A lower percentage bound of the edge, must be between 0 and 1 inclusive. Defaults to 0. | No |
 | `upperBound` | [`number(_)`](/docs/kcl-std/types/std-types-number) | A upper percentage bound of the edge, must be between 0 and 1 inclusive. Defaults to 1. | No |
 
@@ -83,7 +83,7 @@ blend([boundedEdge1, boundedEdge2])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the getBoundedEdge function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-getBoundedEdge0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-getBoundedEdge0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-getBoundedEdge0.png"

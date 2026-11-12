@@ -17,7 +17,7 @@ When writing a number literal, you can use a unit suffix to explicitly state the
 - Angle units: `deg`, `rad`
 - `_` to indicate a unitless number such as a count or ratio.
 
-If you write a numeric literal without a suffix, then the defaults for the current file are used. These defaults are specified using the `@settings` attribute, see [settings](/docs/kcl-lang/settings) for details. Note that if using the defaults, the KCL interpreter won't know whether you intend the number to be a length, angle, or count and will treat it as being possibly any of them.
+If you write a numeric literal without a suffix, then the defaults for the current file are used. Use `defaultLengthUnit` in the `@settings` attribute to configure the default length unit; see [settings](/docs/kcl-lang/settings) for details. Note that if using the defaults, the KCL interpreter won't know whether you intend the number to be a length, angle, or count and will treat it as being possibly any of them.
 
 
 ## Numeric types

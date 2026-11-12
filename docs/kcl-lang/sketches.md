@@ -9,6 +9,8 @@ Start a block on a base plane or supported face, add sketch geometry inside the
 braces, then apply constraints to express design intent.
 
 ```kcl
+@settings(kclVersion = 3.0)
+
 width = 40mm
 height = 24mm
 
@@ -43,6 +45,8 @@ change. It is an initial guess, not a fixed dimension. Initial guesses must be
 numeric literals, with a unit where applicable:
 
 ```kcl
+@settings(kclVersion = 3.0)
+
 exampleSketch = sketch(on = XY) {
   // Valid initial guesses
   samplePoint = point(at = [var 0mm, var -3mm])
@@ -86,6 +90,8 @@ For one closed segment, such as a circle, pass that segment by itself. Omit
 intended to disambiguate a boundary traced from multiple segments.
 
 ```kcl
+@settings(kclVersion = 3.0)
+
 roundProfile = sketch(on = XY) {
   perimeter = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
   coincident([perimeter.center, ORIGIN])

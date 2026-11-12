@@ -2,9 +2,11 @@ import 'fake-indexeddb/auto'
 import {
   appendOutboxEntry,
   clearLegacyConflictCopyReferences,
+  clearOutboxEntriesForProjectAtGeneration,
   clearOutboxEntriesTouchingProject,
   getAllOutboxEntries,
   getCloudSyncProjectMetadataIndex,
+  getOutboxMutationGeneration,
   getProjectMetadata,
   putProjectMetadata,
 } from '@src/lib/cloudSync/syncDb'
@@ -78,6 +80,56 @@ describe('cloud sync outbox persistence', () => {
         createdAt: '2026-07-28T12:00:00.000Z',
       },
     ])
+  })
+
+  it('advances the durable mutation generation when queued work coalesces', async () => {
+    await appendOutboxEntry({
+      projectPath: '/projects/bracket',
+      kind: 'upsert',
+      targetPath: '/projects/bracket/main.kcl',
+      createdAt: '2026-07-28T12:00:00.000Z',
+    })
+    const firstEntries = await getAllOutboxEntries()
+    const firstGeneration = getOutboxMutationGeneration(firstEntries)
+
+    await appendOutboxEntry({
+      projectPath: '/projects/bracket',
+      kind: 'upsert',
+      targetPath: '/projects/bracket/other.kcl',
+      createdAt: '2026-07-28T12:01:00.000Z',
+    })
+    const secondEntries = await getAllOutboxEntries()
+
+    expect(secondEntries).toHaveLength(1)
+    expect(getOutboxMutationGeneration(secondEntries)).toBeGreaterThan(
+      firstGeneration
+    )
+  })
+
+  it('does not clear a newer mutation generation', async () => {
+    await appendOutboxEntry({
+      projectPath: '/projects/bracket',
+      kind: 'upsert',
+      targetPath: '/projects/bracket/main.kcl',
+      createdAt: '2026-07-28T12:00:00.000Z',
+    })
+    const firstGeneration = getOutboxMutationGeneration(
+      await getAllOutboxEntries()
+    )
+    await appendOutboxEntry({
+      projectPath: '/projects/bracket',
+      kind: 'upsert',
+      targetPath: '/projects/bracket/other.kcl',
+      createdAt: '2026-07-28T12:01:00.000Z',
+    })
+
+    await expect(
+      clearOutboxEntriesForProjectAtGeneration(
+        '/projects/bracket',
+        firstGeneration
+      )
+    ).resolves.toBe(false)
+    await expect(getAllOutboxEntries()).resolves.toHaveLength(1)
   })
 
   it('coalesces explicit file deletions without losing their paths', async () => {

@@ -1,5 +1,6 @@
 import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
+import { LocalWebGPUScene } from '@src/clientSideScene/localRenderer/LocalWebGPUScene'
 import Loading from '@src/components/Loading'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
@@ -28,29 +29,29 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import { btnName } from '@src/lib/cameraControls'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import {
-  LEGACY_SKETCH_MODE_FEATURE_FLAG,
   LEGACY_SKETCH_MODE_REMOVED_MESSAGE,
+  NUMBER_OF_ENGINE_RETRIES,
 } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
-import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import { prepareEditCommand } from '@src/lib/featureTree'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import {
-  getEngineRegionSelectionFromEntity,
-  sendSelectEventToEngine,
+  getEngineRegionSelectionFromPoint,
+  normalizeEntityReference,
+  sendQueryEntityTypeWithPoint,
 } from '@src/lib/selections'
-import { getResolvedTheme, Themes } from '@src/lib/theme'
+import { getResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
 import { err, reportRejection } from '@src/lib/trap'
+import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import type {
   EngineSceneExtensionContext,
   EngineSceneStreamLayer,
 } from '@src/registry/contracts/engineScene'
 import type { MouseEventHandler } from 'react'
-import { use, useCallback, useMemo, useRef, useState } from 'react'
+import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 const TIME_TO_CONNECT = 30_000
-
 const stringHash = (value: string) => {
   let hash = 0
   for (let i = 0; i < value.length; i++) {
@@ -68,11 +69,7 @@ interface ConnectionStreamProps {
 }
 
 export const ConnectionStream = (props: ConnectionStreamProps) => {
-  const { settings, project, wasmPromise, commands, userFeatures } = useApp()
-  const hasLegacySketchMode = userFeatures.useHas(
-    LEGACY_SKETCH_MODE_FEATURE_FLAG,
-    false
-  )
+  const { settings, project, wasmPromise, commands, fileOperations } = useApp()
   const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
   const engineCommandManager = kclManager.engineCommandManager
@@ -81,6 +78,12 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
   const settingsValues = settings.useSettings()
+  // Each renderer needs its own kind of engine session, so the choice is fixed
+  // when the scene mounts instead of following the setting live.
+  const [isLocalRendering] = useState(
+    () => settingsValues.modeling.useLocalRenderer.current
+  )
+  const theme = getResolvedTheme(settingsValues.app.theme.current)
   const { setAppState } = useAppState()
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState, send: modelingSend } =
@@ -95,8 +98,12 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
-  const { tryConnecting, isConnecting, numberOfConnectionAttempts } =
-    useTryConnect()
+  const {
+    tryConnecting,
+    isConnecting,
+    numberOfConnectionAttempts,
+    abnormalCloseRetries,
+  } = useTryConnect({ geometryOnly: isLocalRendering })
   const safariObjectFitClass = useMemo(() => {
     // on safari we want to apply object-fit: fill to fix video resize bug
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
@@ -123,6 +130,8 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             .length,
           hasConnection: Boolean(connection),
           connectionId: connection?.id,
+          websocketBufferedAmount: connection?.websocket?.bufferedAmount,
+          modelingApiCallId: connection?.apiCallId ?? null,
           connectionConnected: connection?.connected,
           peerConnectionState: connection?.peerConnection?.connectionState,
           iceConnectionState: connection?.peerConnection?.iceConnectionState,
@@ -152,25 +161,24 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       if (sceneInfra.camControls.wasDragging === true) return
 
       if (btnName(e.nativeEvent).left) {
-        sendSelectEventToEngine(e, videoRef.current, {
+        sendQueryEntityTypeWithPoint(e, videoRef.current, {
           engineCommandManager,
         }).catch(reportRejection)
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
-      engineCommandManager,
       isNetworkOkay,
-      modelingMachineState,
+      modelingMachineState.value,
       sceneInfra.camControls.wasDragging,
     ]
   )
 
   /**
-   * On double-click of editable viewport entities we enter their edit flow.
-   * TODO: This should be moved to a more central place.
+   * On double-click of sketch entities we automatically enter sketch mode with the selected sketch,
+   * allowing for quick editing of sketches. TODO: This should be moved to a more central place.
    */
-  const enterEditModeForViewportSelection: MouseEventHandler<HTMLDivElement> =
+  const enterSketchModeIfSelectingSketch: MouseEventHandler<HTMLDivElement> =
     useCallback(
       (e) => {
         if (
@@ -182,28 +190,58 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         ) {
           return
         }
-
-        sendSelectEventToEngine(e, videoRef.current, {
+        sendQueryEntityTypeWithPoint(e, videoRef.current, {
           engineCommandManager,
         })
           .then(async (result) => {
-            if (!result) {
+            if (!result?.reference) {
               return
             }
-            const { entity_id } = result
-            if (!entity_id) {
-              // No entity selected. This is benign
+            const selectedEntityRef = normalizeEntityReference(result.reference)
+            let entityId: string | undefined
+            switch (selectedEntityRef?.type) {
+              case 'annotation':
+                entityId = selectedEntityRef.annotation_id
+                break
+              case 'plane':
+                entityId = selectedEntityRef.plane_id
+                break
+              case 'face':
+                entityId = selectedEntityRef.face_id
+                break
+              case 'solid2d':
+                entityId = selectedEntityRef.solid2d_id
+                break
+              case 'solid3d':
+                entityId = selectedEntityRef.solid3d_id
+                break
+              case 'solid2d_edge':
+                entityId = selectedEntityRef.edge_id
+                break
+              case 'segment':
+                entityId = selectedEntityRef.segment_id
+                break
+              case 'region':
+                entityId = selectedEntityRef.region_id
+                break
+              case 'edge':
+              case 'vertex':
+                entityId = selectedEntityRef.side_faces[0]
+                break
+              case 'helix':
+              case undefined:
+                break
+            }
+            if (!entityId) {
               return
             }
-            const artifact = kclManager.artifactGraph.get(entity_id)
-            if (artifact?.type === 'gdtAnnotation') {
+            const directArtifact = kclManager.artifactGraph.get(entityId)
+            if (directArtifact?.type === 'gdtAnnotation') {
               const operation = findOperationForArtifact({
-                artifact,
+                artifact: directArtifact,
                 operations: getAllOperations(kclManager.operationsByModule),
               })
-              if (!operation) {
-                return
-              }
+              if (!operation) return
 
               await prepareEditCommand({
                 artifactGraph: kclManager.artifactGraph,
@@ -211,13 +249,13 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
                 commandBarActor: commands.actor,
                 operation,
                 rustContext: kclManager.rustContext,
-                artifact,
+                artifact: directArtifact,
               })
               return
             }
 
             const sketchBlockArtifact = getSketchBlockForArtifact(
-              artifact,
+              directArtifact,
               kclManager.artifactGraph
             )
             if (sketchBlockArtifact) {
@@ -228,66 +266,53 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
               return
             }
 
-            // If the selection is an undeclared region, get the corresponding sketch
-            if (!artifact) {
-              try {
-                const regionSelection =
-                  await getEngineRegionSelectionFromEntity(
-                    entity_id,
-                    kclManager.artifactGraph,
-                    kclManager.ast,
-                    engineCommandManager,
-                    wasmInstance
-                  )
+            if (!directArtifact) {
+              const regionSelection = await getEngineRegionSelectionFromPoint(
+                entityId,
+                kclManager.artifactGraph,
+                kclManager.ast,
+                engineCommandManager,
+                wasmInstance
+              )
 
-                if (regionSelection && regionSelection.sketchId) {
-                  sceneInfra.modelingSend({
-                    type: 'Edit sketch solve',
-                    data: { artifactId: regionSelection.sketchId },
-                  })
-                }
-
-                return
-              } catch (e) {
-                return e
+              if (regionSelection?.sketchId) {
+                sceneInfra.modelingSend({
+                  type: 'Edit sketch solve',
+                  data: { artifactId: regionSelection.sketchId },
+                })
               }
+              return
             }
 
-            const path = getArtifactOfTypes(
+            const artifactResult = getArtifactOfTypes(
               {
-                key: entity_id,
+                key: entityId,
                 types: ['path', 'solid2d', 'segment', 'helix'],
               },
               kclManager.artifactGraph
             )
-            if (err(path)) {
-              return path
+            if (err(artifactResult)) {
+              return artifactResult
             }
             // Anything left here belongs to a KCL 1.0 sketch, since sketch
             // blocks and undeclared regions were handled above.
-            if (!hasLegacySketchMode) {
-              toast.error(LEGACY_SKETCH_MODE_REMOVED_MESSAGE)
-              return
-            }
-            sceneInfra.modelingSend({ type: 'Enter sketch' })
+            toast.error(LEGACY_SKETCH_MODE_REMOVED_MESSAGE, {
+              duration: 5_000,
+            })
+            return
           })
-          .catch(reportRejection)
+          .catch((e) => {
+            reportRejection(e)
+          })
       },
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [
         commands.actor,
         engineCommandManager,
-        hasLegacySketchMode,
         isNetworkOkay,
-        kclManager.artifactGraph,
-        kclManager.ast,
-        kclManager.code,
-        kclManager.operationsByModule,
-        kclManager.rustContext,
-        modelingMachineState,
+        modelingMachineState.value,
         sceneInfra.camControls.wasDragging,
-        sceneInfra.modelingSend,
-        wasmInstance,
+        kclManager.artifactGraph,
       ]
     )
 
@@ -312,8 +337,13 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         })
           .then(() => {
             // Take a screen shot after the page mounts and zoom to fit runs
-            if (projectIORef && projectIORef.path) {
+            if (
+              !engineCommandManager.geometryOnly &&
+              projectIORef &&
+              projectIORef.path
+            ) {
               createThumbnailPNGOnDesktop({
+                fileOperations,
                 projectDirectoryWithoutEndingSlash: projectIORef.path,
               })
             }
@@ -365,6 +395,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const onPageIdleStartCb = useCallback(() => {
     if (!videoWrapperRef.current) return
     if (!props.authToken) return
+    if (engineCommandManager.lastConnectionError?.terminal) return
     if (engineCommandManager.started) return
 
     // Do not try to restart the engine on any mouse move.
@@ -397,17 +428,23 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       idleCallback: () => {
         isIdle.current = true
       },
+      enabled: !isLocalRendering,
     }),
-    [onPageIdleStartCb]
+    [onPageIdleStartCb, isLocalRendering]
   )
   useOnPageIdle(onPageIdleParams)
 
   const onWebSocketCloseParams = useMemo(
     () => ({
-      callback: (code: string | undefined) => {
-        reportEngineDisconnect(EngineConnectionManagerEvents.WebsocketClosed, {
-          websocketCloseCode: code,
-        })
+      callback: (code: string | undefined, reconnectRequested: boolean) => {
+        if (!reconnectRequested) {
+          reportEngineDisconnect(
+            EngineConnectionManagerEvents.WebsocketClosed,
+            {
+              websocketCloseCode: code,
+            }
+          )
+        }
         setShowManualConnect(false)
         tryConnecting({
           authToken: props.authToken || '',
@@ -427,12 +464,18 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         })
       },
       infiniteDetectionLoopCallback: (code: string | undefined) => {
+        // Also exhaust any retry already running when the close budget is spent.
+        numberOfConnectionAttempts.current = NUMBER_OF_ENGINE_RETRIES
         reportEngineDisconnect(EngineConnectionManagerEvents.WebsocketClosed, {
           websocketCloseCode: code,
         })
         setShowManualConnect(true)
       },
+      terminalErrorCallback: () => {
+        setShowManualConnect(true)
+      },
       engineCommandManager,
+      abnormalCloseRetries,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
@@ -441,6 +484,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       props.authToken,
       reportEngineDisconnect,
       settings,
+      abnormalCloseRetries,
     ]
   )
   useOnWebsocketClose(onWebSocketCloseParams)
@@ -516,9 +560,13 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           label: 'ConnectionStream.tsx',
           message: 'window offline, calling tearDown()',
         })
-        engineCommandManager.tearDown()
+        engineCommandManager.tearDown({
+          route: 'window-offline',
+          initiatedBy: 'client',
+        })
       },
       connect: () => {
+        if (engineCommandManager.lastConnectionError?.terminal) return
         setShowManualConnect(false)
         tryConnecting({
           authToken: props.authToken || '',
@@ -558,23 +606,31 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   )
   useOnOfflineToExitSketchMode(onOfflineToExitSketchModeParams)
 
-  // Hardcoded engine background color based on theme
-  const style = useMemo(
-    () => ({
-      backgroundColor:
-        getResolvedTheme(settingsValues.app.theme.current) === Themes.Light
-          ? 'rgb(250, 250, 250)'
-          : 'rgb(30, 30, 30)',
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [settingsValues.app.theme.current]
-  )
+  const style = {
+    backgroundColor: getThemeBackgroundColor(theme),
+  }
 
   const viewControlContextMenuGuard: (e: MouseEvent) => boolean = useCallback(
     (e: MouseEvent) =>
       sceneInfra.camControls.wasDragging === false && btnName(e).right === true,
     [sceneInfra.camControls.wasDragging]
   )
+
+  useEffect(() => {
+    // This effect runs when a project gets opened.
+    const cameraControls = sceneInfra.camControls
+    const wasLocalCameraMode = cameraControls.localCameraMode
+    cameraControls.localCameraMode = isLocalRendering
+    // The engine gives a streamed scene its starting view. A local scene has
+    // to set its own, or it opens with the previous project's camera.
+    if (isLocalRendering) {
+      cameraControls.resetLocalCameraToDefaultView()
+    }
+
+    return () => {
+      cameraControls.localCameraMode = wasLocalCameraMode
+    }
+  }, [sceneInfra.camControls, isLocalRendering])
 
   return (
     <div
@@ -585,7 +641,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       id="stream"
       data-testid="stream"
       onMouseUp={handleMouseUp}
-      onDoubleClick={enterEditModeForViewportSelection}
+      onDoubleClick={enterSketchModeIfSelectingSketch}
       onContextMenu={(e) => e.preventDefault()}
       onContextMenuCapture={(e) => e.preventDefault()}
     >
@@ -595,18 +651,29 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         key={id + 'video'}
         ref={videoRef}
         controls={false}
-        className={`w-full cursor-pointer h-full${safariObjectFitClass}`}
+        className={`w-full cursor-pointer h-full${
+          isLocalRendering ? ' opacity-0' : ''
+        }${safariObjectFitClass}`}
         disablePictureInPicture
         id="video-stream"
       />
       <canvas
         key={id + 'canvas'}
         ref={canvasRef}
-        className="cursor-pointer"
+        className={isLocalRendering ? 'opacity-0' : 'cursor-pointer'}
         id="freeze-frame"
       >
         No canvas support
       </canvas>
+      {isLocalRendering && (
+        <LocalWebGPUScene
+          theme={theme}
+          enableSSAO={settingsValues.modeling.enableSSAO.current}
+          shouldHighlightEdges={settingsValues.modeling.highlightEdges.current}
+          fixedSizeGrid={settingsValues.modeling.fixedSizeGrid.current}
+          backfaceColor={settingsValues.modeling.backfaceColor.current}
+        />
+      )}
       <ClientSideScene
         cameraControls={settingsValues.modeling.mouseControls.current}
         enableTouchControls={
@@ -638,6 +705,8 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           className="absolute inset-0 h-screen"
           showManualConnect={showManualConnect}
           callback={() => {
+            abnormalCloseRetries.current = 0
+            numberOfConnectionAttempts.current = 0
             setShowManualConnect(false)
             tryConnecting({
               authToken: props.authToken || '',

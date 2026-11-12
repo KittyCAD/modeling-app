@@ -11,7 +11,9 @@ description: Variables in memory after executing array_push_item_wrong_type.kcl
         "value": 1.0,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       {
@@ -19,7 +21,9 @@ description: Variables in memory after executing array_push_item_wrong_type.kcl
         "value": 2.0,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       }
     ]
@@ -32,7 +36,9 @@ description: Variables in memory after executing array_push_item_wrong_type.kcl
         "value": 1.0,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       {
@@ -40,16 +46,20 @@ description: Variables in memory after executing array_push_item_wrong_type.kcl
         "value": 2.0,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       {
         "type": "Number",
         "value": 4.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       }
     ]

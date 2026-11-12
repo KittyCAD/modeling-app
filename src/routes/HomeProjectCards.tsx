@@ -8,6 +8,7 @@ import {
   getProjectLibrarySummaryTooltip,
   type ProjectLibrary,
 } from '@src/lib/projectLibraries'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
@@ -44,6 +45,8 @@ interface ProjectLibraryPreviewRowProps {
   query: string
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
+  fileOperations: Pick<FileOperationsRegistryService, 'stat' | 'readFile'>
+  projectShellEnabled?: boolean
   showCloudSyncUi: boolean
   onMoveToLibrary: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
@@ -81,6 +84,8 @@ export function ProjectLibraryPreviewRow({
   query,
   projectStatuses,
   projectActions,
+  fileOperations,
+  projectShellEnabled = false,
   showCloudSyncUi,
   onMoveToLibrary,
   projectLibraryDrag,
@@ -94,7 +99,7 @@ export function ProjectLibraryPreviewRow({
     projectLibraryDrag?.getLibraryDropTargetProps(library)
   const isActiveDropTarget =
     projectLibraryDrag?.isLibraryDragOver(library) ?? false
-  const sectionClassName = `mx-1 flex flex-col gap-3 rounded-sm border p-2 transition-colors ${
+  const sectionClassName = `mx-1 flex flex-col gap-3 rounded-sm border p-2 ${
     isActiveDropTarget
       ? 'border-primary bg-primary/5 ring-2 ring-primary/30 dark:bg-primary/10'
       : 'border-transparent'
@@ -161,6 +166,8 @@ export function ProjectLibraryPreviewRow({
           projects={previewProjects}
           projectStatuses={projectStatuses}
           projectActions={projectActions}
+          fileOperations={fileOperations}
+          projectShellEnabled={projectShellEnabled}
           showCloudSyncUi={showCloudSyncUi}
           showSourceStatusBadges={false}
           onMoveToLibrary={onMoveToLibrary}
@@ -184,6 +191,8 @@ interface ProjectCardListProps {
   projects: HomeProjectEntry[]
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
+  fileOperations: Pick<FileOperationsRegistryService, 'stat' | 'readFile'>
+  projectShellEnabled?: boolean
   showCloudSyncUi: boolean
   onMoveToLibrary: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
@@ -197,6 +206,8 @@ export function ProjectCardList({
   projects,
   projectStatuses,
   projectActions,
+  fileOperations,
+  projectShellEnabled = false,
   showCloudSyncUi,
   onMoveToLibrary,
   projectLibraryDrag,
@@ -216,6 +227,7 @@ export function ProjectCardList({
             key={project.id}
             project={project}
             projectActions={projectActions}
+            fileOperations={fileOperations}
             projectStatus={
               project.remoteProjectId
                 ? projectStatuses.get(project.remoteProjectId)
@@ -223,6 +235,7 @@ export function ProjectCardList({
             }
             density={density}
             showDetails={showDetails}
+            projectShellEnabled={projectShellEnabled}
             showCloudSyncUi={showCloudSyncUi}
             showSourceStatusBadges={showSourceStatusBadges}
             onMoveToLibrary={onMoveToLibrary}

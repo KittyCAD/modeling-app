@@ -1,16 +1,20 @@
 use kcl_error::SourceRange;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
 use kittycad_modeling_cmds::shared::AnnotationBasicDimension;
 use kittycad_modeling_cmds::shared::AnnotationFeatureControl;
 use kittycad_modeling_cmds::shared::AnnotationFeatureTag;
 use kittycad_modeling_cmds::shared::AnnotationLineEnd;
 use kittycad_modeling_cmds::shared::AnnotationMbdBasicDimension;
 use kittycad_modeling_cmds::shared::AnnotationMbdControlFrame;
+use kittycad_modeling_cmds::shared::AnnotationMbdLeaderPosition;
 use kittycad_modeling_cmds::shared::AnnotationOptions;
 use kittycad_modeling_cmds::shared::AnnotationType;
 use kittycad_modeling_cmds::shared::MbdSymbol;
 use kittycad_modeling_cmds::shared::Point2d as KPoint2d;
+use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::{self as kcmc};
 
 use crate::ExecState;
@@ -57,7 +61,7 @@ const GDT_DOT_LEADER_REFERENCE_ENGINE_SCALE: f64 = 0.5;
 const GDT_FONT_SCALE_1_HEIGHT_MM: f64 = 8.0;
 
 fn gdt_font_scale(font_size: Option<&TyF64>, args: &Args) -> Result<f32, KclError> {
-    let requested_height_mm = font_size.map(TyF64::to_mm).unwrap_or(DEFAULT_GDT_FONT_SIZE_MM);
+    let requested_height_mm = font_size.map(TyF64::unwrap_to_mm).unwrap_or(DEFAULT_GDT_FONT_SIZE_MM);
     if requested_height_mm <= 0.0 {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "fontSize must be greater than 0.".to_owned(),
@@ -97,6 +101,10 @@ fn gdt_dimension_leader_scale(leader_scale: Option<&TyF64>, args: &Args) -> Resu
     gdt_user_leader_scale(leader_scale, DEFAULT_GDT_DIMENSION_LEADER_SCALE, args)
 }
 
+fn gdt_annotation_name(exec_state: &mut ExecState, args: &Args) -> Result<Option<String>, KclError> {
+    args.get_kw_arg_opt("annotationName", &RuntimeType::string(), exec_state)
+}
+
 #[derive(Debug, Clone)]
 enum DistanceEntity {
     Face(Box<Face>),
@@ -115,7 +123,7 @@ enum GdtEdgeReference {
 struct DistanceEndpoint {
     entity_id: Option<uuid::Uuid>,
     edge_reference: Option<kcmc::shared::EdgeSpecifier>,
-    entity_pos: KPoint2d<f64>,
+    entity_pos: AnnotationMbdLeaderPosition,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -210,6 +218,7 @@ fn add_gdt_annotation_artifact(exec_state: &mut ExecState, args: &Args, annotati
     exec_state.add_artifact(Artifact::GdtAnnotation(GdtAnnotationArtifact {
         id: ArtifactId::new(annotation_id),
         code_ref: CodeRef::placeholder(args.source_range),
+        consumed: false,
     }));
 }
 
@@ -219,22 +228,22 @@ impl DistanceEntity {
             DistanceEntity::Face(face) => Ok(DistanceEndpoint {
                 entity_id: Some(face.id),
                 edge_reference: None,
-                entity_pos: KPoint2d { x: 0.5, y: 0.5 },
+                entity_pos: AnnotationMbdLeaderPosition::Centroid {},
             }),
             DistanceEntity::TaggedFace(face) => Ok(DistanceEndpoint {
                 entity_id: Some(args.get_adjacent_face_to_tag(exec_state, face, false).await?),
                 edge_reference: None,
-                entity_pos: KPoint2d { x: 0.5, y: 0.5 },
+                entity_pos: AnnotationMbdLeaderPosition::Centroid {},
             }),
             DistanceEntity::Edge(edge) => Ok(DistanceEndpoint {
                 entity_id: Some(edge.get_engine_id(exec_state, args)?),
                 edge_reference: None,
-                entity_pos: KPoint2d { x: 0.5, y: 0.0 },
+                entity_pos: AnnotationMbdLeaderPosition::Centroid {},
             }),
             DistanceEntity::Specifier(edge_reference) => Ok(DistanceEndpoint {
                 entity_id: None,
                 edge_reference: Some(edge_reference.clone()),
-                entity_pos: KPoint2d { x: 0.5, y: 0.0 },
+                entity_pos: AnnotationMbdLeaderPosition::Centroid {},
             }),
         }
     }
@@ -387,8 +396,8 @@ async fn inner_datum(
         .plane_id(frame_plane.id)
         .offset(if let Some(offset) = &frame_position {
             KPoint2d {
-                x: offset[0].to_mm(),
-                y: offset[1].to_mm(),
+                x: offset[0].unwrap_to_mm(),
+                y: offset[1].unwrap_to_mm(),
             }
         } else {
             KPoint2d { x: 100.0, y: 100.0 }
@@ -398,12 +407,17 @@ async fn inner_datum(
         .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
         .leader_scale(gdt_dot_leader_scale(leader_scale.as_ref(), font_size.as_ref(), args)?)
         .build();
+    let annotation_name = gdt_annotation_name(exec_state, args)?;
+    let options = AnnotationOptions::builder()
+        .feature_control(feature_control)
+        .maybe_name(annotation_name)
+        .build();
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
             ModelingCmd::from(
                 mcmd::NewAnnotation::builder()
-                    .options(AnnotationOptions::builder().feature_control(feature_control).build())
+                    .options(options)
                     .clobber(false)
                     .annotation_type(AnnotationType::T3D)
                     .build(),
@@ -466,8 +480,8 @@ async fn inner_note(
         .plane_id(frame_plane.id)
         .offset(if let Some(offset) = &frame_position {
             KPoint2d {
-                x: offset[0].to_mm(),
-                y: offset[1].to_mm(),
+                x: offset[0].unwrap_to_mm(),
+                y: offset[1].unwrap_to_mm(),
             }
         } else {
             KPoint2d { x: 100.0, y: 100.0 }
@@ -476,12 +490,17 @@ async fn inner_note(
         .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
         .leader_scale(1.0)
         .build();
+    let annotation_name = gdt_annotation_name(exec_state, args)?;
+    let options = AnnotationOptions::builder()
+        .feature_tag(feature_tag)
+        .maybe_name(annotation_name)
+        .build();
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
             ModelingCmd::from(
                 mcmd::NewAnnotation::builder()
-                    .options(AnnotationOptions::builder().feature_tag(feature_tag).build())
+                    .options(options)
                     .clobber(false)
                     .annotation_type(AnnotationType::T3D)
                     .build(),
@@ -1039,12 +1058,16 @@ async fn inner_distance(
             DistanceEndpoint {
                 entity_id,
                 edge_reference: edge_reference.clone(),
-                entity_pos: KPoint2d { x: 0.0, y: 0.0 },
+                entity_pos: AnnotationMbdLeaderPosition::NormalizedPos {
+                    pos: KPoint2d { x: 0.0, y: 0.0 },
+                },
             },
             DistanceEndpoint {
                 entity_id,
                 edge_reference,
-                entity_pos: KPoint2d { x: 1.0, y: 0.0 },
+                entity_pos: AnnotationMbdLeaderPosition::NormalizedPos {
+                    pos: KPoint2d { x: 1.0, y: 0.0 },
+                },
             },
             &tolerance,
             precision,
@@ -1059,6 +1082,71 @@ async fn inner_distance(
         .await?;
     }
     Ok(annotations)
+}
+
+fn distance_setback(dimensions: [f64; 3], source_range: SourceRange) -> Result<Option<f64>, KclError> {
+    if dimensions.iter().any(|value| !value.is_finite() || *value < 0.0) {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Cannot determine the distance annotation position: bounding-box dimensions must be finite and nonnegative."
+                .to_owned(),
+            vec![source_range],
+        )));
+    }
+    // A straight edge or planar face has zero extent on some axes. Only the
+    // nonzero extents contribute to the setback; they are not invalid bounds.
+    let valid: Vec<_> = dimensions.into_iter().filter(|value| *value > 0.0).collect();
+    if valid.is_empty() {
+        Ok(None)
+    } else {
+        Ok(Some(valid.iter().sum::<f64>() / valid.len() as f64))
+    }
+}
+
+async fn default_distance_setback(
+    from: Option<uuid::Uuid>,
+    to: Option<uuid::Uuid>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<f64, KclError> {
+    let mut entity_ids: Vec<_> = from.into_iter().chain(to).collect();
+    entity_ids.dedup();
+    // Try the selected entities first, then the whole scene if their bounds
+    // are unavailable or have no extent. An empty list requests scene bounds.
+    let mut bounding_box_queries = Vec::new();
+    if !entity_ids.is_empty() {
+        bounding_box_queries.push(entity_ids);
+    }
+    bounding_box_queries.push(Vec::new());
+    for entity_ids in bounding_box_queries {
+        let id = exec_state.next_uuid();
+        let response = exec_state
+            .send_modeling_cmd(
+                ModelingCmdMeta::from_args_id(exec_state, args, id),
+                mcmd::BoundingBox::builder()
+                    .entity_ids(entity_ids)
+                    .output_unit(UnitLength::Millimeters)
+                    .build()
+                    .into(),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::BoundingBox(bounds),
+        } = response
+        else {
+            return Err(KclError::new_engine(KclErrorDetails::new(
+                format!("BoundingBox response was not as expected: {response:?}"),
+                vec![args.source_range],
+            )));
+        };
+
+        if let Some(bound_setback) = distance_setback(
+            [bounds.dimensions.x, bounds.dimensions.y, bounds.dimensions.z],
+            args.source_range,
+        )? {
+            return Ok(bound_setback);
+        }
+    }
+    Ok(20.0)
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -1078,40 +1166,46 @@ async fn create_basic_distance_annotation(
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
     let display_units = exec_state.length_unit();
+    let offset = if let Some(offset) = frame_position {
+        KPoint2d {
+            x: offset[0].unwrap_to_mm(),
+            y: offset[1].unwrap_to_mm(),
+        }
+    } else {
+        KPoint2d {
+            x: 0.0,
+            y: default_distance_setback(from.entity_id, to.entity_id, exec_state, args).await?,
+        }
+    };
     let dimension = AnnotationBasicDimension::builder()
         .maybe_from_entity_id(from.entity_id)
         .maybe_from_edge_reference(from.edge_reference)
-        .from_entity_pos(from.entity_pos)
+        .from_entity_leader_pos(from.entity_pos)
         .maybe_to_entity_id(to.entity_id)
         .maybe_to_edge_reference(to.edge_reference)
-        .to_entity_pos(to.entity_pos)
+        .to_entity_leader_pos(to.entity_pos)
         .dimension(
             AnnotationMbdBasicDimension::builder()
                 .tolerance(
                     tolerance
                         .as_ref()
-                        .map(|tol| tol.to_length_units(display_units))
+                        .map(|tol| tol.unwrap_to_length_units(display_units))
                         .unwrap_or_default(),
                 )
                 .build(),
         )
         .plane_id(frame_plane_id)
-        .offset(if let Some(offset) = frame_position {
-            KPoint2d {
-                x: offset[0].to_mm(),
-                y: offset[1].to_mm(),
-            }
-        } else {
-            KPoint2d { x: 100.0, y: 100.0 }
-        })
+        .offset(offset)
         .precision(precision)
         .font_scale(gdt_font_scale(font_size, args)?)
         .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
         .arrow_scale(gdt_dimension_leader_scale(leader_scale, args)?)
         .build();
+    let annotation_name = gdt_annotation_name(exec_state, args)?;
     let options = AnnotationOptions::builder()
         .dimension(dimension)
         .units(display_units.to_kcmc())
+        .maybe_name(annotation_name)
         .build();
     let annotation_cmd = ModelingCmd::from(
         mcmd::NewAnnotation::builder()
@@ -1537,7 +1631,7 @@ async fn create_feature_control_annotation(
     let control_frame = gdt_control_frame(
         symbol,
         diameter_symbol,
-        tolerance.to_length_units(display_units),
+        tolerance.unwrap_to_length_units(display_units),
         datums,
     );
     let feature_control = AnnotationFeatureControl::builder()
@@ -1549,8 +1643,8 @@ async fn create_feature_control_annotation(
         .plane_id(frame_plane_id)
         .offset(if let Some(offset) = frame_position {
             KPoint2d {
-                x: offset[0].to_mm(),
-                y: offset[1].to_mm(),
+                x: offset[0].unwrap_to_mm(),
+                y: offset[1].unwrap_to_mm(),
             }
         } else {
             KPoint2d { x: 100.0, y: 100.0 }
@@ -1560,7 +1654,11 @@ async fn create_feature_control_annotation(
         .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
         .leader_scale(gdt_dot_leader_scale(leader_scale, font_size, args)?)
         .build();
-    let options = AnnotationOptions::builder().feature_control(feature_control).build();
+    let annotation_name = gdt_annotation_name(exec_state, args)?;
+    let options = AnnotationOptions::builder()
+        .feature_control(feature_control)
+        .maybe_name(annotation_name)
+        .build();
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
@@ -1642,8 +1740,8 @@ async fn create_annotation(
         .plane_id(frame_plane_id)
         .offset(if let Some(offset) = frame_position {
             KPoint2d {
-                x: offset[0].to_mm(),
-                y: offset[1].to_mm(),
+                x: offset[0].unwrap_to_mm(),
+                y: offset[1].unwrap_to_mm(),
             }
         } else {
             KPoint2d { x: 100.0, y: 100.0 }
@@ -1653,7 +1751,11 @@ async fn create_annotation(
         .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
         .leader_scale(gdt_dot_leader_scale(leader_scale, font_size, args)?)
         .build();
-    let options = AnnotationOptions::builder().feature_control(feature_control).build();
+    let annotation_name = gdt_annotation_name(exec_state, args)?;
+    let options = AnnotationOptions::builder()
+        .feature_control(feature_control)
+        .maybe_name(annotation_name)
+        .build();
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
@@ -1776,10 +1878,12 @@ region001 = region(point = [5mm, 5mm], sketch = sketch001)
 extrude001 = extrude(region001, length = 10mm)
 gdt::distance(
   edges = [
-    getCommonEdge(faces = [
+    {
+      sideFaces = [
       region001.tags.line4,
       region001.tags.line1
-    ])
+    ]
+    }
   ],
   tolerance = __TOLERANCE__,
   framePosition = __FRAME_POSITION__,
@@ -1898,6 +2002,33 @@ gdt::flatness(
                     vec![SourceRange::default()],
                 ))
             })
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_annotation_name_comes_from_explicit_argument() -> Result<(), KclError> {
+        let unbound_code = gdt_flatness_kcl("mm", "0.01mm", "[10, -10]");
+        let unbound_commands = gdt_commands(&unbound_code).await;
+        let unbound_index = new_annotation_command_index(&unbound_commands)?;
+        assert_eq!(annotation_options(&unbound_commands[unbound_index])?.name, None);
+
+        let assigned_code = unbound_code.replacen("gdt::flatness(", "topFlatness = gdt::flatness(", 1);
+        let assigned_commands = gdt_commands(&assigned_code).await;
+        let assigned_index = new_annotation_command_index(&assigned_commands)?;
+        assert_eq!(annotation_options(&assigned_commands[assigned_index])?.name, None);
+
+        let named_code = unbound_code.replacen(
+            "gdt::flatness(\n",
+            "gdt::flatness(\n  annotationName = \"topFlatness\",\n",
+            1,
+        );
+        let named_commands = gdt_commands(&named_code).await;
+        let named_index = new_annotation_command_index(&named_commands)?;
+        assert_eq!(
+            annotation_options(&named_commands[named_index])?.name.as_deref(),
+            Some("topFlatness")
+        );
+
+        Ok(())
     }
 
     #[test]
@@ -2077,7 +2208,34 @@ gdt::flatness(
                 .dimension
                 .as_ref()
                 .expect("expected new_annotation command to have a dimension");
-            assert_close(dimension.dimension.tolerance, expected_tolerance);
+            // The fixture measures a face-API edge specifier, which is stored as
+            // an edge reference rather than a resolved engine entity id.
+            assert!(dimension.from_entity_id.is_none());
+            assert!(dimension.to_entity_id.is_none());
+            assert_eq!(dimension.from_edge_reference, dimension.to_edge_reference);
+            assert_eq!(
+                dimension
+                    .from_edge_reference
+                    .as_ref()
+                    .expect("expected from_edge_reference")
+                    .side_faces
+                    .len(),
+                2
+            );
+            // Edge length uses endpoints; the same centroid twice would give zero distance.
+            assert_eq!(
+                dimension.from_entity_leader_pos,
+                Some(AnnotationMbdLeaderPosition::NormalizedPos {
+                    pos: KPoint2d { x: 0.0, y: 0.0 },
+                })
+            );
+            assert_eq!(
+                dimension.to_entity_leader_pos,
+                Some(AnnotationMbdLeaderPosition::NormalizedPos {
+                    pos: KPoint2d { x: 1.0, y: 0.0 },
+                })
+            );
+            assert_close(dimension.dimension.tolerance.unwrap(), expected_tolerance);
             assert_close(dimension.offset.x, expected_x);
             assert_close(dimension.offset.y, expected_y);
             assert_close(
@@ -2085,6 +2243,90 @@ gdt::flatness(
                 gdt_font_scale_for_height_mm(50.8).into(),
             );
         }
+        Ok(())
+    }
+
+    #[test]
+    fn distance_setback_averages_valid_nonzero_dimensions() -> Result<(), KclError> {
+        let source_range = SourceRange::default();
+        assert_eq!(distance_setback([30.0, 40.0, 0.0], source_range)?, Some(35.0));
+        assert_eq!(distance_setback([0.0, 0.0, 40.0], source_range)?, Some(40.0));
+        assert_eq!(distance_setback([0.0, 0.0, 0.0], source_range)?, None);
+        Ok(())
+    }
+
+    #[test]
+    fn distance_setback_rejects_invalid_dimensions() {
+        let source_range = SourceRange::default();
+        for invalid in [f64::NAN, f64::INFINITY, f64::NEG_INFINITY, -1.0] {
+            for axis in 0..3 {
+                let mut dimensions = [10.0, 20.0, 30.0];
+                dimensions[axis] = invalid;
+                let error = distance_setback(dimensions, source_range).unwrap_err();
+                assert!(error.to_string().contains("finite and nonnegative"));
+                assert_eq!(error.source_ranges(), vec![source_range]);
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_distance_default_position_has_a_physical_fallback_without_bounds() -> Result<(), KclError> {
+        for (unit, font_size, expected_setback) in [
+            ("mm", "", 20.0),
+            ("in", "", 20.0),
+            ("mm", "fontSize = 2mm,", 20.0),
+            ("cm", "fontSize = 0.2,", 20.0),
+            ("in", "fontSize = 0.1in,", 20.0),
+        ] {
+            for between_faces in [false, true] {
+                let mut code = gdt_distance_kcl(unit, "0mm", "[0, 0]")
+                    .replace("  framePosition = [0, 0],\n", "")
+                    .replace("fontSize = 2in,", font_size);
+                if between_faces {
+                    code = code.replace(
+                        "edges = [\n    {\n      sideFaces = [\n      region001.tags.line4,\n      region001.tags.line1\n    ]\n    }\n  ]",
+                        "from = region001.tags.line4, to = region001.tags.line2",
+                    );
+                }
+                let commands = gdt_commands(&code).await;
+                let bounding_box_queries: Vec<_> = commands
+                    .iter()
+                    .filter_map(|command| match command {
+                        ModelingCmd::BoundingBox(query) => Some(query),
+                        _ => None,
+                    })
+                    .collect();
+                if between_faces {
+                    assert_eq!(bounding_box_queries.len(), 2);
+                    assert_eq!(bounding_box_queries[0].entity_ids.len(), 2);
+                } else {
+                    // Edge specifiers have no entity UUIDs, so query the scene once.
+                    assert_eq!(bounding_box_queries.len(), 1);
+                }
+                assert!(bounding_box_queries.last().unwrap().entity_ids.is_empty());
+                let index = new_annotation_command_index(&commands)?;
+                let dimension = annotation_options(&commands[index])?.dimension.as_ref().unwrap();
+                assert_close(dimension.offset.x, 0.0);
+                assert_close(dimension.offset.y, expected_setback);
+                assert_eq!(dimension.from_entity_id != dimension.to_entity_id, between_faces);
+            }
+        }
+        Ok(())
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_distance_preserves_explicit_zero_position() -> Result<(), KclError> {
+        let code = gdt_distance_kcl("in", "0mm", "[0, 0]");
+        let commands = gdt_commands(&code).await;
+        assert!(
+            !commands
+                .iter()
+                .any(|command| matches!(command, ModelingCmd::BoundingBox(_)))
+        );
+        let index = new_annotation_command_index(&commands)?;
+        let dimension = annotation_options(&commands[index])?.dimension.as_ref().unwrap();
+        assert_close(dimension.offset.x, 0.0);
+        assert_close(dimension.offset.y, 0.0);
         Ok(())
     }
 
@@ -2193,6 +2435,20 @@ __GDT_CALL__
             .expect("expected new_annotation command to have a dimension");
         assert!(dimension.from_entity_id.is_none());
         assert!(dimension.to_entity_id.is_none());
+        assert_eq!(dimension.from_edge_reference, dimension.to_edge_reference);
+        // Edge length uses endpoints; the same centroid twice would give zero distance.
+        assert_eq!(
+            dimension.from_entity_leader_pos,
+            Some(AnnotationMbdLeaderPosition::NormalizedPos {
+                pos: KPoint2d { x: 0.0, y: 0.0 },
+            })
+        );
+        assert_eq!(
+            dimension.to_entity_leader_pos,
+            Some(AnnotationMbdLeaderPosition::NormalizedPos {
+                pos: KPoint2d { x: 1.0, y: 0.0 },
+            })
+        );
         assert_eq!(
             dimension
                 .from_edge_reference
@@ -2238,6 +2494,15 @@ __GDT_CALL__
             .expect("expected new_annotation command to have a dimension");
         assert!(dimension.from_entity_id.is_none());
         assert!(dimension.to_entity_id.is_none());
+        // `from`/`to` measures between entity centers, so both positions use centroids.
+        assert_eq!(
+            dimension.from_entity_leader_pos,
+            Some(AnnotationMbdLeaderPosition::Centroid {})
+        );
+        assert_eq!(
+            dimension.to_entity_leader_pos,
+            Some(AnnotationMbdLeaderPosition::Centroid {})
+        );
         assert_eq!(
             dimension
                 .from_edge_reference
@@ -2447,7 +2712,7 @@ blockProfile = sketch(on = XY) {
 }
 
 block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
-profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+profileEdge = { sideFaces = [block.sketch.tags.edge1, top] }
 gdt::profileLine(edges = [profileEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 "#;
 
@@ -2470,7 +2735,7 @@ blockProfile = sketch(on = XY) {
 }
 
 block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
-profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+profileEdge = { sideFaces = [block.sketch.tags.edge1, top] }
 gdt::profile(edges = [profileEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 "#;
 
@@ -2515,7 +2780,7 @@ blockProfile = sketch(on = XY) {
 }
 
 block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
-profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+profileEdge = { sideFaces = [block.sketch.tags.edge1, top] }
 gdt::profile(edges = [profileEdge], faces = [top], tolerance = 0.05mm)
 "#;
 
@@ -2619,7 +2884,7 @@ cylinderSketch = sketch(on = XY) {
 }
 
 cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
-topEdge = getCommonEdge(faces = [cylinder.sketch.tags.perimeter, top])
+topEdge = { sideFaces = [cylinder.sketch.tags.perimeter, top] }
 gdt::circularity(edges = [topEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 "#;
 
@@ -2689,7 +2954,7 @@ cylinderSketch = sketch(on = XY) {
 }
 
 cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
-topEdge = getCommonEdge(faces = [cylinder.sketch.tags.perimeter, top])
+topEdge = { sideFaces = [cylinder.sketch.tags.perimeter, top] }
 gdt::cylindricity(edges = [topEdge], tolerance = 0.05mm, framePosition = [-12mm, 8mm], framePlane = XZ)
 "#;
 
@@ -2761,7 +3026,7 @@ referenceFeatureBSketch = sketch(on = XY) {
 
 referenceFeatureB = extrude(region(point = referenceFeatureBSketch.perimeter.center, sketch = referenceFeatureBSketch), length = 12mm, tagEnd = $endB)
   |> translate(z = -12mm)
-endEdgeB = getCommonEdge(faces = [referenceFeatureB.sketch.tags.perimeter, endB])
+endEdgeB = { sideFaces = [referenceFeatureB.sketch.tags.perimeter, endB] }
 
 gdt::datum(face = datumA.sketch.tags.perimeter, name = "A", framePosition = [10mm, -12mm], framePlane = XZ)
 gdt::concentricity(edges = [endEdgeB], tolerance = 0.2mm, datums = ["A"], framePosition = [-18mm, 12mm], framePlane = XZ)
@@ -2871,7 +3136,7 @@ latchProfile = sketch(on = XZ) {
 
 latchBlockRegion = region(point = [0mm, 0mm], sketch = latchProfile)
 latchBlock = extrude(latchBlockRegion, length = 12mm, tagEnd = $frontFace)
-grooveFloorFrontEdge = getCommonEdge(faces = [latchBlock.sketch.tags.grooveFloor, frontFace])
+grooveFloorFrontEdge = { sideFaces = [latchBlock.sketch.tags.grooveFloor, frontFace] }
 
 gdt::datum(face = latchBlock.sketch.tags.bottom, name = "A", framePosition = [0mm, -16mm], framePlane = XZ)
 gdt::symmetry(edges = [grooveFloorFrontEdge], tolerance = 0.2mm, datums = ["A"], framePosition = [-24mm, 14mm], framePlane = XZ)
@@ -2945,10 +3210,10 @@ controlledShaft = extrude(
   tagEnd = $controlledFreeEnd
 )
 
-controlledUpperShoulderEdge = getCommonEdge(faces = [
+controlledUpperShoulderEdge = { sideFaces = [
   controlledShaft.sketch.tags.upperPerimeter,
   controlledShoulder
-])
+] }
 
 datumSketch = sketch(on = YZ) {
   perimeter = circle(start = [var 18mm, var 0mm], center = [var 0mm, var 0mm])

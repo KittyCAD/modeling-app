@@ -1,0 +1,3 @@
+redact_uuids = true
+# This fixture exercises language behavior without producing geometry.
+test_graphics = "None"

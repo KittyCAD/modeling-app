@@ -1,5 +1,21 @@
 import type { PromisifyProps } from '@src/lib/types'
 
+/** Collision and traversal policy shared by every filesystem backing. */
+export interface CopyOptions {
+  readonly recursive?: boolean
+  readonly force?: boolean
+}
+
+/** Whether metadata describes a link's target (default) or the link itself. */
+export interface StatOptions {
+  readonly followSymlinks?: boolean
+}
+
+/** File replacement policy supported by every filesystem backing. */
+export interface WriteFileOptions {
+  readonly flag?: 'w' | 'wx'
+}
+
 export interface IStat {
   dev: number
   ino: number
@@ -42,7 +58,7 @@ export interface IZooDesignStudioFS {
   cp: (
     src: string,
     dest: string,
-    options?: any
+    options?: CopyOptions
     // NodeJS website and TS type defs do not match. We need to use this.
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   ) => Promise<undefined | void> | void
@@ -61,11 +77,11 @@ export interface IZooDesignStudioFS {
   writeFile: (
     src: string,
     data: Uint8Array<ArrayBuffer>,
-    options?: any
+    options?: WriteFileOptions
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   ) => Promise<undefined | void>
   readdir: (path: string, options?: any) => Promise<string[]>
-  stat: (path: string, options?: any) => Promise<IStat>
+  stat: (path: string, options?: StatOptions) => Promise<IStat>
   mkdir: (path: string, options?: any) => Promise<undefined | string>
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   rm: (path: string, options?: any) => Promise<undefined | void>

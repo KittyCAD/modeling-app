@@ -1,22 +1,22 @@
-import {
-  defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
-  provide,
-} from '@kittycad/registry'
+import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import { computed } from '@preact/signals-core'
 import type { Command } from '@src/lib/commandTypes'
-import { provideCommand } from '@src/registry/contracts/commands'
 import {
-  type EngineSceneExtensionContext,
+  FILE_COMMAND_SCOPES,
+  MODE_MODELING_COMMAND_SCOPE,
+  provideCommand,
+} from '@src/registry/contracts/commands'
+import { projectSession } from '@src/registry/contracts/projectSession'
+import {
   defineEngineSceneStreamClassName,
   defineEngineSceneViewExtension,
+  type EngineSceneExtensionContext,
   engineSceneStreamClassNamesValueSpec,
   engineSceneViewExtensionsValueSpec,
 } from '@src/registry/contracts/engineScene'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   type KeymapItem,
-  MODE_MODELING_KEYMAP_SCOPE,
   provideKeymapItem,
 } from '@src/registry/contracts/keymap'
 import {
@@ -24,7 +24,8 @@ import {
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
-import { Suspense, createElement, lazy } from 'react'
+import { viewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
+import { createElement, lazy, Suspense } from 'react'
 import executionIndicator from './executionIndicator'
 import { measurementToolService } from './measurementToolService'
 import { physicalAnalysisService } from './physicalAnalysis/physicalAnalysisService'
@@ -32,6 +33,7 @@ import { saveViewportScreenshot } from './saveViewportScreenshot'
 import {
   EngineSceneGizmoViewExtension,
   EngineSceneToolbarViewExtension,
+  EngineSceneModelingDialogViewExtension,
   SketchBackgroundOpacityViewExtension,
   SketchConstraintsToggleViewExtension,
 } from './viewExtensionControls'
@@ -45,7 +47,8 @@ export const ENGINE_SCENE_COMMAND_IDS = Object.freeze({
   openPhysicalAnalysisTool: 'zds.engineScene.openPhysicalAnalysisTool',
 } as const)
 
-const captureScreenshotCommand: Command = {
+const captureScreenshotCommand = (onSubmit: Command['onSubmit']): Command => ({
+  scopes: FILE_COMMAND_SCOPES,
   id: ENGINE_SCENE_COMMAND_IDS.captureScreenshot,
   name: ENGINE_SCENE_COMMAND_IDS.captureScreenshot,
   groupId: ENGINE_SCENE_COMMAND_GROUP_ID,
@@ -53,10 +56,11 @@ const captureScreenshotCommand: Command = {
   description: 'Save the current modeling viewport as a PNG image.',
   icon: 'camera',
   needsReview: false,
-  onSubmit: saveViewportScreenshot,
-}
+  onSubmit,
+})
 
 const openMeasureToolCommand: Command = {
+  scopes: [MODE_MODELING_COMMAND_SCOPE],
   id: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
   name: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
   groupId: ENGINE_SCENE_COMMAND_GROUP_ID,
@@ -71,6 +75,7 @@ const openMeasureToolCommand: Command = {
 }
 
 const openPhysicalAnalysisToolCommand: Command = {
+  scopes: [MODE_MODELING_COMMAND_SCOPE],
   id: ENGINE_SCENE_COMMAND_IDS.openPhysicalAnalysisTool,
   name: ENGINE_SCENE_COMMAND_IDS.openPhysicalAnalysisTool,
   groupId: ENGINE_SCENE_COMMAND_GROUP_ID,
@@ -88,7 +93,7 @@ const openMeasureToolKeymapItem: KeymapItem = {
   id: 'engine-scene.measure.open',
   title: 'Open measure tool',
   source: ENGINE_SCENE_KEYMAP_SOURCE,
-  scopes: [MODE_MODELING_KEYMAP_SCOPE],
+  when: [MODE_MODELING_COMMAND_SCOPE],
   keystrokes: ['shift+m'],
   command: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
 }
@@ -97,7 +102,7 @@ const openPhysicalAnalysisToolKeymapItem: KeymapItem = {
   id: 'engine-scene.physical-analysis.open',
   title: 'Open physical analysis tool',
   source: ENGINE_SCENE_KEYMAP_SOURCE,
-  scopes: [MODE_MODELING_KEYMAP_SCOPE],
+  when: [MODE_MODELING_COMMAND_SCOPE],
   keystrokes: ['shift+p'],
   command: ENGINE_SCENE_COMMAND_IDS.openPhysicalAnalysisTool,
 }
@@ -204,7 +209,7 @@ const toolbarViewExtension = defineEngineSceneViewExtension({
 
 const sketchBackgroundOpacityViewExtension = defineEngineSceneViewExtension({
   id: 'engine-scene.sketch-background-opacity',
-  zone: 'bottom-left',
+  zone: 'bottom',
   order: 0,
   Component: SketchBackgroundOpacityViewExtension,
   shouldRegister: isSketchSolveMode,
@@ -212,17 +217,26 @@ const sketchBackgroundOpacityViewExtension = defineEngineSceneViewExtension({
 
 const sketchConstraintsToggleViewExtension = defineEngineSceneViewExtension({
   id: 'engine-scene.sketch-constraints-toggle',
-  zone: 'bottom-left',
+  zone: 'bottom',
   order: 10,
   Component: SketchConstraintsToggleViewExtension,
   shouldRegister: isSketchSolveMode,
 })
 
+const modelingDialogViewExtension = defineEngineSceneViewExtension({
+  id: 'engine-scene.modeling-dialog',
+  zone: 'overlay',
+  order: 0,
+  Component: EngineSceneModelingDialogViewExtension,
+  wrapperClassName: '!pointer-events-none',
+})
+
 const gizmoViewExtension = defineEngineSceneViewExtension({
   id: 'engine-scene.gizmo',
-  zone: 'bottom-right',
-  order: 0,
+  zone: 'bottom',
+  order: 20,
   Component: EngineSceneGizmoViewExtension,
+  wrapperClassName: 'ml-auto',
 })
 
 const EngineSceneMeasurementStatusBarItem = () =>
@@ -254,16 +268,18 @@ const EngineSceneScreenshotStatusBarItem = () =>
  * the scene and the default view chrome rendered around the engine stream.
  */
 const engineSceneExtension = defineRegistryItemFactory((ctx) => {
-  const executionService = ctx.services.signal(executingEditorService)
+  const session = ctx.services.signal(projectSession)
+  const executionService = computed(() => session.value?.executingEditor.value)
   const selectionStatusBarItem = computed(() => {
-    const selectionStatusLabel = executionService.value?.selectionStatusLabel
+    const selectionStatusLabel =
+      executionService.value?.selectionStatusLabel.value
     return nullableStatusBarItem(
-      selectionStatusLabel
+      selectionStatusLabel !== undefined
         ? {
             id: 'selection',
             component: () =>
               createElement(EngineSceneSelectionStatusBarItem, {
-                label: selectionStatusLabel.value,
+                label: selectionStatusLabel,
               }),
             order: 10,
             scopes: ['file'],
@@ -345,50 +361,55 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
   )
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'engine-scene-extension',
-      provides: [
-        provideCommand(captureScreenshotCommand),
-        provideCommand(openMeasureToolCommand),
-        provideCommand(openPhysicalAnalysisToolCommand),
-        provideKeymapItem(openMeasureToolKeymapItem),
-        provideKeymapItem(openPhysicalAnalysisToolKeymapItem),
-        provide(statusBarGlobalItemsValueSpec, screenshotStatusBarItem),
-        provide(statusBarLocalItemsValueSpec, measurementStatusBarItem),
-        provide(statusBarLocalItemsValueSpec, physicalAnalysisStatusBarItem),
-        provide(statusBarLocalItemsValueSpec, selectionFilterStatusBarItem),
-        provide(statusBarLocalItemsValueSpec, selectionStatusBarItem),
-        provide(statusBarLocalItemsValueSpec, unitsStatusBarItem),
-        provide(
-          statusBarLocalItemsValueSpec,
-          experimentalFeaturesStatusBarItem
-        ),
-        provide(engineSceneStreamClassNamesValueSpec, defaultStreamClassName, {
-          key: defaultStreamClassName.id,
-        }),
-        provide(engineSceneViewExtensionsValueSpec, toolbarViewExtension, {
-          key: toolbarViewExtension.id,
-        }),
-        provide(
-          engineSceneViewExtensionsValueSpec,
-          sketchBackgroundOpacityViewExtension,
-          {
-            key: sketchBackgroundOpacityViewExtension.id,
-          }
-        ),
-        provide(
-          engineSceneViewExtensionsValueSpec,
-          sketchConstraintsToggleViewExtension,
-          {
-            key: sketchConstraintsToggleViewExtension.id,
-          }
-        ),
-        provide(engineSceneViewExtensionsValueSpec, gizmoViewExtension, {
-          key: gizmoViewExtension.id,
-        }),
-      ],
-      uses: [executionIndicator],
-    }),
+    id: 'engine-scene-extension',
+    provides: [
+      provideCommand(
+        captureScreenshotCommand(() =>
+          saveViewportScreenshot(
+            ctx.services.get(fileOperationsService),
+            ctx.services.get(viewportScreenshotService)
+          )
+        )
+      ),
+      provideCommand(openMeasureToolCommand),
+      provideCommand(openPhysicalAnalysisToolCommand),
+      provideKeymapItem(openMeasureToolKeymapItem),
+      provideKeymapItem(openPhysicalAnalysisToolKeymapItem),
+      provide(statusBarGlobalItemsValueSpec, screenshotStatusBarItem),
+      provide(statusBarLocalItemsValueSpec, measurementStatusBarItem),
+      provide(statusBarLocalItemsValueSpec, physicalAnalysisStatusBarItem),
+      provide(statusBarLocalItemsValueSpec, selectionFilterStatusBarItem),
+      provide(statusBarLocalItemsValueSpec, selectionStatusBarItem),
+      provide(statusBarLocalItemsValueSpec, unitsStatusBarItem),
+      provide(statusBarLocalItemsValueSpec, experimentalFeaturesStatusBarItem),
+      provide(engineSceneStreamClassNamesValueSpec, defaultStreamClassName, {
+        key: defaultStreamClassName.id,
+      }),
+      provide(engineSceneViewExtensionsValueSpec, toolbarViewExtension, {
+        key: toolbarViewExtension.id,
+      }),
+      provide(
+        engineSceneViewExtensionsValueSpec,
+        sketchBackgroundOpacityViewExtension,
+        {
+          key: sketchBackgroundOpacityViewExtension.id,
+        }
+      ),
+      provide(
+        engineSceneViewExtensionsValueSpec,
+        sketchConstraintsToggleViewExtension,
+        {
+          key: sketchConstraintsToggleViewExtension.id,
+        }
+      ),
+      provide(engineSceneViewExtensionsValueSpec, gizmoViewExtension, {
+        key: gizmoViewExtension.id,
+      }),
+      provide(engineSceneViewExtensionsValueSpec, modelingDialogViewExtension, {
+        key: modelingDialogViewExtension.id,
+      }),
+    ],
+    uses: [executionIndicator],
   }
 }, 'engine-scene-extension')
 

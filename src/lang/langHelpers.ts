@@ -1,6 +1,5 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
-import type { Feature } from '@kittycad/lib'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { LegacyAngleRefactorMeta } from '@rust/kcl-lib/bindings/LegacyAngleRefactorMeta'
 
@@ -28,15 +27,6 @@ import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/lib/engineConnection/
 import type { EditorView } from 'codemirror'
 export type { ToolTip } from '@src/lang/toolTips'
 export { isToolTip, toolTips } from '@src/lang/toolTips'
-
-const ENABLE_Z0006_LINT_FLAG = 'enable_z0006_lint'
-
-function userHasFeature(featureFlagId: string, defaultValue: boolean): boolean {
-  return (
-    window.app?.userFeatures.has(featureFlagId as Feature, defaultValue) ??
-    defaultValue
-  )
-}
 
 interface ExecutionResult {
   logs: string[]
@@ -116,6 +106,7 @@ function handleExecuteError(e: unknown): ExecutionResult {
     execState.variables = e.variables
     execState.operations = e.operations
     execState.artifactGraph = e.artifactGraph
+    execState.engineSceneGeneration = e.engineSceneGeneration
     return {
       errors: [e],
       logs: [],
@@ -149,7 +140,6 @@ export async function lintAst({
   ast,
   sourceCode,
   instance,
-  rustContext,
   edgeRefactorMetadata,
   directTagFilletMetadata,
   legacyAngleRefactorMetadata,
@@ -158,33 +148,13 @@ export async function lintAst({
   ast: Node<Program>
   sourceCode: string
   instance: ModuleType
-  rustContext?: RustContext
   edgeRefactorMetadata?: EdgeRefactorMeta[]
   directTagFilletMetadata?: DirectTagFilletMeta[]
   legacyAngleRefactorMetadata: LegacyAngleRefactorMeta[]
   artifactGraph?: ArtifactGraph
 }): Promise<Array<Diagnostic>> {
   try {
-    const shouldShowZ0006 = userHasFeature(ENABLE_Z0006_LINT_FLAG, false)
-    let discovered_findings = await kclLint(ast, instance, shouldShowZ0006)
-    // Filter out Z0005 if sketch solve mode is not enabled
-    // Only show Z0005 when useSketchSolveMode setting is enabled
-    let shouldShowZ0005 = false
-    if (rustContext) {
-      try {
-        const settings = jsAppSettings(rustContext.settingsActor)
-        shouldShowZ0005 =
-          settings?.settings?.modeling?.use_sketch_solve_mode === true
-      } catch {
-        // If we can't get settings, no-op since shouldShowZ0005 defaults false
-      }
-    }
-
-    if (!shouldShowZ0005) {
-      discovered_findings = discovered_findings.filter(
-        (lint) => lint.finding.code !== 'Z0005'
-      )
-    }
+    const discovered_findings = await kclLint(ast, instance)
 
     // Process findings and add any available async refactor actions.
     const z0006RefactorCache: Z0006RefactorCache = {}

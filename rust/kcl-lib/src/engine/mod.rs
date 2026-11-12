@@ -13,8 +13,8 @@ use std::sync::atomic::Ordering;
 
 pub use async_tasks::AsyncTasks;
 use indexmap::IndexMap;
-pub use kcl_api::PlaneName;
 use kcl_api::UnitLength;
+pub use kcl_api::artifact::PlaneName;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::websocket::WebSocketRequest;
@@ -178,14 +178,32 @@ impl Clone for EngineStats {
 /// Create a new zoo api client.
 #[cfg(not(target_arch = "wasm32"))]
 pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> anyhow::Result<kittycad::Client> {
+    zoo_client().maybe_token(token).maybe_engine_addr(engine_addr).build()
+}
+
+/// Create an API client with additional default headers for HTTP and WebSocket requests.
+#[cfg(not(target_arch = "wasm32"))]
+#[bon::builder(finish_fn = build)]
+pub fn zoo_client(
+    token: Option<String>,
+    engine_addr: Option<String>,
+    headers: Option<std::collections::BTreeMap<String, String>>,
+) -> anyhow::Result<kittycad::Client> {
     let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
+    let mut default_headers = http::HeaderMap::new();
+    default_headers.insert(http::header::USER_AGENT, http::HeaderValue::from_static(user_agent));
+    for (name, value) in headers.unwrap_or_default() {
+        let mut value = http::HeaderValue::try_from(value)?;
+        value.set_sensitive(true);
+        default_headers.insert(http::HeaderName::try_from(name)?, value);
+    }
     let http_client = reqwest::Client::builder()
-        .user_agent(user_agent)
+        .default_headers(default_headers.clone())
         // For file conversions we need this to be long.
         .timeout(std::time::Duration::from_secs(600))
         .connect_timeout(std::time::Duration::from_secs(60));
     let ws_client = reqwest::Client::builder()
-        .user_agent(user_agent)
+        .default_headers(default_headers)
         // For file conversions we need this to be long.
         .timeout(std::time::Duration::from_secs(600))
         .connect_timeout(std::time::Duration::from_secs(60))
@@ -223,6 +241,11 @@ pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> any
     if let Some(addr) = engine_addr {
         client.set_base_url(addr);
     } else if let Ok(addr) = std::env::var("ZOO_HOST") {
+        if !(addr.starts_with("http://") || addr.starts_with("https://")) {
+            anyhow::bail!(
+                "ZOO_HOST should probably start with http:// (for local engines) or https:// (for cloud engines)"
+            )
+        }
         if let Ok(kittycad_host) = kittycad_host_env
             && kittycad_host != addr
         {

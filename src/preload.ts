@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises'
+import type { StatOptions } from '@src/lib/fs-zds/interface'
 import os from 'node:os'
 import path from 'path'
 import type { DeviceFlowAuthorization } from '@root/interface'
@@ -168,11 +169,16 @@ const watchFileOff = (path: string, key: string) => {
 }
 const readFile = fs.readFile
 const rename = (prev: string, next: string) => fs.rename(prev, next)
-const writeFile = (path: string, data: string | Uint8Array) =>
-  fs.writeFile(path, data, 'utf-8')
+const writeFile = (
+  path: string,
+  data: string | Uint8Array,
+  options?: { flag?: 'w' | 'wx' }
+) => fs.writeFile(path, data, { encoding: 'utf-8', flag: options?.flag ?? 'w' })
 const readdir = (path: string) => fs.readdir(path, 'utf-8')
-const stat = (path: string) => {
-  return fs.stat(path).catch((e) => Promise.reject(e.code))
+const stat = (path: string, options?: StatOptions) => {
+  const result =
+    options?.followSymlinks === false ? fs.lstat(path) : fs.stat(path)
+  return result.catch((e) => Promise.reject(e.code))
 }
 
 /**

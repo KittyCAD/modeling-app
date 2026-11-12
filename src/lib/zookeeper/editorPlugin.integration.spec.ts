@@ -1,22 +1,33 @@
 import { isolateHistory } from '@codemirror/commands'
-import { createTwoFilesPatch } from 'diff'
-import { applyPatch, parsePatch } from 'diff'
-import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
-
+import { KclManager } from '@src/lang/KclManager'
+import { File, type ZDSProject } from '@src/lib/projectSession'
+import { App } from '@src/lib/app'
+import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import type { Project } from '@src/lib/project'
 import {
-  type ZookeeperEditPatch,
-  buildZookeeperHistoryExtension,
+  buildZookeeperHistoryExtension as buildZookeeperHistoryExtensionWithFileOperations,
   mergeZookeeperEditPatches,
+  type ZookeeperEditPatch,
   zookeeperEditPatchHistoryEvent,
 } from '@src/lib/zookeeper/editorPlugin'
-import { File, KclManager, type ZDSProject } from '@src/lang/KclManager'
-import { App } from '@src/lib/app'
-import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
-import fsZds from '@src/lib/fs-zds'
-import type { Project } from '@src/lib/project'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { applyPatch, createTwoFilesPatch, parsePatch } from 'diff'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
 const apps: App[] = []
+
+const buildZookeeperHistoryExtension = (
+  args: Omit<
+    Parameters<typeof buildZookeeperHistoryExtensionWithFileOperations>[0],
+    'fileOperations'
+  >
+) => {
+  return buildZookeeperHistoryExtensionWithFileOperations({
+    ...args,
+    fileOperations: testFileOperations,
+  })
+}
 const historyDisposers: Array<() => void> = []
 
 beforeAll(async () => {
@@ -656,7 +667,7 @@ describe('Zookeeper project history integration', () => {
     await expect(fsZds.readFile(thirdPath, 'utf8')).resolves.toBe('third = 1\n')
 
     await KclManager.fromFile(
-      new File(thirdPath),
+      new File(thirdPath, harness.kclManager.textFileIO),
       harness.kclManager.systemDeps,
       harness.kclManager
     )
@@ -681,7 +692,7 @@ describe('Zookeeper project history integration', () => {
     const mediumPath = fsZds.join(harness.projectPath, 'mediumBox.kcl')
     const switchToFile = async (path: string) => {
       await KclManager.fromFile(
-        new File(path),
+        new File(path, harness.kclManager.textFileIO),
         harness.kclManager.systemDeps,
         harness.kclManager
       )
@@ -747,7 +758,7 @@ describe('Zookeeper project history integration', () => {
     const mediumPath = fsZds.join(harness.projectPath, 'mediumBox.kcl')
     const switchToFile = async (path: string) => {
       await KclManager.fromFile(
-        new File(path),
+        new File(path, harness.kclManager.textFileIO),
         harness.kclManager.systemDeps,
         harness.kclManager
       )
@@ -872,7 +883,7 @@ describe('Zookeeper project history integration', () => {
     const createdPath = fsZds.join(harness.projectPath, 'created.kcl')
     const switchToFile = async (path: string) => {
       await KclManager.fromFile(
-        new File(path),
+        new File(path, harness.kclManager.textFileIO),
         harness.kclManager.systemDeps,
         harness.kclManager
       )
@@ -948,7 +959,7 @@ describe('Zookeeper project history integration', () => {
     const partPath = fsZds.join(harness.projectPath, 'part.kcl')
     const switchToFile = async (path: string) => {
       await KclManager.fromFile(
-        new File(path),
+        new File(path, harness.kclManager.textFileIO),
         harness.kclManager.systemDeps,
         harness.kclManager
       )
@@ -1023,15 +1034,17 @@ describe('Zookeeper project history integration', () => {
     const executeCode = vi
       .spyOn(harness.kclManager, 'executeCode')
       .mockRejectedValue({ msg: 'No open project' })
-    const read = File.ioImplementations.read
-    vi.spyOn(File.ioImplementations, 'read').mockImplementation((path) => {
-      if (path === partPath) {
-        return Promise.reject(
-          Object.assign(new Error('ENOENT'), { cause: 'ENOENT' })
-        )
+    const read = harness.kclManager.textFileIO.read
+    vi.spyOn(harness.kclManager.textFileIO, 'read').mockImplementation(
+      (path) => {
+        if (path === partPath) {
+          return Promise.reject(
+            Object.assign(new Error('ENOENT'), { cause: 'ENOENT' })
+          )
+        }
+        return read(path)
       }
-      return read(path)
-    })
+    )
 
     await fsZds.rm(partPath)
     if (harness.app.project) {
@@ -1136,7 +1149,7 @@ describe('Zookeeper project history integration', () => {
     const smallBoxPath = fsZds.join(harness.projectPath, 'smallBox.kcl')
     const switchToFile = async (path: string) => {
       await KclManager.fromFile(
-        new File(path),
+        new File(path, harness.kclManager.textFileIO),
         harness.kclManager.systemDeps,
         harness.kclManager
       )

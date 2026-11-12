@@ -30,6 +30,7 @@ import {
   X_AXIS,
   Y_AXIS,
 } from '@src/clientSideScene/sceneUtils'
+import type { LocalRenderer } from '@src/clientSideScene/localRenderer/LocalRenderer'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import { vec2WithinDistance } from '@src/lang/std/sketch'
 import type { Coords2d } from '@src/lang/util'
@@ -104,6 +105,8 @@ export class SceneInfra {
   readonly renderer: WebGLRenderer
   readonly labelRenderer: CSS2DRenderer
   readonly camControls: CameraControls
+  /** Set while the local renderer draws the scene instead of the video stream. */
+  localRenderer: LocalRenderer | null = null
   private readonly wasmInstancePromise: Promise<ModuleType>
   isFovAnimationInProgress = false
   private _baseUnitMultiplier = 1
@@ -363,7 +366,7 @@ export class SceneInfra {
       this.renderer.domElement,
       engineCommandManager,
       getSettings,
-      false
+      () => this.localRenderer
     )
     this.camControls.cameraChange.add(this.onCameraChange)
     this.camControls.camera.layers.enable(SKETCH_LAYER)

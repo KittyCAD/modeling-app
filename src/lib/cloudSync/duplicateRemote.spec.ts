@@ -2,6 +2,7 @@ import 'fake-indexeddb/auto'
 import {
   cloudSyncRemoteProjects,
   configureCloudSyncEngine,
+  disableCloudSyncEngineForTest,
   duplicateRemoteCloudProject,
 } from '@src/lib/cloudSync'
 import {
@@ -39,8 +40,8 @@ describe('duplicateRemoteCloudProject', () => {
     vi.stubGlobal('fetch', fetchMock)
   })
 
-  afterEach(() => {
-    configureCloudSyncEngine({ enabled: false })
+  afterEach(async () => {
+    await disableCloudSyncEngineForTest()
     vi.useRealTimers()
     vi.unstubAllGlobals()
   })
@@ -60,7 +61,7 @@ describe('duplicateRemoteCloudProject', () => {
             {
               relativePath: 'project.toml',
               contents:
-                'title = "Bracket"\ndefault_file = "main.kcl"\n\n[settings.meta]\nid = "source-project-uuid"\n\n[cloud."dev.zoo.dev"]\nproject_id = "remote-project-123"\n',
+                'title = "Bracket"\ndefault_file = "main.kcl"\n\n[settings.meta]\nid = "source-project-uuid"\n\n[zookeeper."dev.zoo.dev"]\nconversation_ids = ["old-conversation"]\n\n[cloud."dev.zoo.dev"]\nproject_id = "remote-project-123"\n',
             },
           ],
         })

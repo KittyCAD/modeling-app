@@ -1,4 +1,5 @@
-import { BillingDialog } from '@kittycad/ui-components'
+import { PROJECT_SHELL_FEATURE } from '@src/lib/projectSession/next/feature'
+import { canReadWriteDirectory } from '@src/lib/desktop'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { Announcements } from '@src/components/Announcements'
@@ -26,7 +27,6 @@ import {
 import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { removeDragPreviewElement, setDragPreview } from '@src/lib/dragPreview'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -42,13 +42,9 @@ import { getSortFunction } from '@src/lib/sorting'
 import { reportRejection } from '@src/lib/trap'
 import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import {
-  useCanReadWriteProjectDirectory,
-  useFolders,
-  useState as useSystemIOState,
-} from '@src/machines/systemIO/hooks'
-import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
+import { HOME_COMMAND_SCOPE } from '@src/registry/contracts/commands'
+import { type FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectActionsService,
   type HomeProjectEntry,
@@ -58,7 +54,6 @@ import {
 import { homeSidebarItemsValueSpec } from '@src/registry/contracts/homeSidebar'
 import {
   findKeymapItemForCommand,
-  HOME_KEYMAP_SCOPE,
   keymapKeystrokesDisplay,
   keymapScopesValueSpec,
   keymapService,
@@ -69,6 +64,7 @@ import {
   projectLibraryRealizationsService,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
@@ -94,9 +90,13 @@ import type { HTMLProps } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import {
+  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: home navigation, library selection, and query-based sorting (useLocation).
   useLocation,
+  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: home navigation, library selection, and query-based sorting (useNavigate).
   useNavigate,
+  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: home navigation, library selection, and query-based sorting (useParams).
   useParams,
+  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: home navigation, library selection, and query-based sorting (useSearchParams).
   useSearchParams,
 } from 'react-router-dom'
 
@@ -288,7 +288,11 @@ function useProjectLibraryDrag({
 const Home = () => {
   useSignals()
   const app = useApp()
-  const { auth, billing, commands, settings, registry, userFeatures } = app
+  const projectShellEnabled = app.userFeatures.useHas(
+    PROJECT_SHELL_FEATURE,
+    false
+  )
+  const { auth, billing, commands, settings, registry } = app
   const keymap = registry.optional(keymapService)
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
@@ -299,24 +303,38 @@ const Home = () => {
       return
     }
 
-    keymap.applyScope(HOME_KEYMAP_SCOPE)
+    keymap.applyScope(HOME_COMMAND_SCOPE)
 
     return () => {
-      keymap.removeScope(HOME_KEYMAP_SCOPE)
+      keymap.removeScope(HOME_COMMAND_SCOPE)
     }
   }, [keymap])
 
   const navigate = useNavigate()
   const location = useLocation()
-  const readWriteProjectDir = useCanReadWriteProjectDirectory()
+  const [readWriteProjectDir, setReadWriteProjectDir] = useState<{
+    value: boolean
+    error: unknown
+  }>({ value: true, error: undefined })
+  const directory = app.projectLibraries.projectDirectoryPath
+  useEffect(() => {
+    let active = true
+    if (directory)
+      void canReadWriteDirectory(app.fileOperations, directory)
+        .then((access) => {
+          if (active) setReadWriteProjectDir(access)
+        })
+        .catch(reportRejection)
+    return () => {
+      active = false
+    }
+  }, [app, directory])
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = auth.useToken()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = billing.useContext()
-  const hasUnlimitedCredits = billingContext.balance === Infinity
-  const openBillingLinkExternally = openExternalBrowserIfDesktop()
 
-  const projects = useFolders()
+  const localProjectsLoaded = app.projectOperations.pending.value === 0
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
   const projectStatuses = useProjectStatuses(homeProjectEntries, apiToken)
   const homeSidebarItems = registry.signal(homeSidebarItemsValueSpec).value
@@ -339,10 +357,7 @@ const Home = () => {
     )
     .join('|')
   const homeProjectActions = registry.get(homeProjectActionsService)
-  const hasCloudSyncFeature = userFeatures.useHas(
-    OPFS_CLOUD_FEATURE_FLAG,
-    false
-  )
+  const session = registry.get(projectSession)
   const { libraryId } = useParams()
   const routeSelectedProjectLibrary = libraryId
     ? projectLibraries.find((library) => library.id === libraryId)
@@ -371,7 +386,7 @@ const Home = () => {
       ? findKeymapItemForCommand(
           keymap.keymap.value,
           APP_COMMAND_IDS.search.focusProjects,
-          [HOME_KEYMAP_SCOPE],
+          [HOME_COMMAND_SCOPE],
           registry.signal(keymapScopesValueSpec).value
         )?.keystrokes
       : undefined,
@@ -415,22 +430,21 @@ const Home = () => {
   }, [projectLibraryRealizations, projectLibraryWatchKey])
 
   useEffect(() => {
-    app.currentProjectLibraryIdSignal.value = selectedProjectLibraryId
+    session.setCurrentProjectLibraryId(selectedProjectLibraryId)
 
     return () => {
-      if (
-        app.currentProjectLibraryIdSignal.value === selectedProjectLibraryId
-      ) {
-        app.currentProjectLibraryIdSignal.value = undefined
+      if (session.getCurrentProjectLibraryId() === selectedProjectLibraryId) {
+        session.setCurrentProjectLibraryId(undefined)
       }
     }
-  }, [app, selectedProjectLibraryId])
+  }, [session, selectedProjectLibraryId])
 
   useEffect(() => {
     const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(
       navigate,
       location,
-      ''
+      '',
+      [HOME_COMMAND_SCOPE]
     )
 
     commands.send({
@@ -474,16 +488,7 @@ const Home = () => {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
     if (data.menuLabel === 'File.Create project') {
-      commands.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Create project',
-          argDefaultValues: {
-            name: settingsValues.projects.defaultProjectName.current,
-          },
-        },
-      })
+      openCreateProjectCommand()
     } else if (data.menuLabel === 'File.Open project') {
       commands.send({
         type: 'Find and select command',
@@ -558,6 +563,18 @@ const Home = () => {
       })
     }
   }
+  const openCreateProjectCommand = () =>
+    commands.send({
+      type: 'Find and select command',
+      data: {
+        groupId: 'projects',
+        name: 'Create project',
+        argDefaultValues: selectedProjectLibrary
+          ? { libraryId: selectedProjectLibrary.id }
+          : undefined,
+      },
+    })
+
   useMenuListener(cb)
 
   // Cancel all KCL executions while on the home page
@@ -611,7 +628,7 @@ const Home = () => {
           className="lg:row-start-1 -row-end-1 grid sm:grid-cols-2 md:mb-12 lg:flex flex-col justify-between"
         >
           <ul className="flex flex-col">
-            {needsToOnboard(location, onboardingStatus) && (
+            {needsToOnboard(onboardingStatus) && (
               <li className="flex group">
                 <ActionButton
                   Element="button"
@@ -649,20 +666,7 @@ const Home = () => {
             <li className="contents">
               <ActionButton
                 Element="button"
-                onClick={() =>
-                  commands.send({
-                    type: 'Find and select command',
-                    data: {
-                      groupId: 'projects',
-                      name: 'Create project',
-                      argDefaultValues: selectedProjectLibrary
-                        ? {
-                            libraryId: selectedProjectLibrary.id,
-                          }
-                        : undefined,
-                    },
-                  })
-                }
+                onClick={openCreateProjectCommand}
                 className={sidebarButtonClasses}
                 iconStart={{
                   icon: 'plus',
@@ -684,6 +688,9 @@ const Home = () => {
                       name: 'create-a-sample',
                       argDefaultValues: {
                         source: 'kcl-samples',
+                        ...(selectedProjectLibrary
+                          ? { libraryId: selectedProjectLibrary.id }
+                          : {}),
                       },
                     },
                   })
@@ -700,21 +707,6 @@ const Home = () => {
             </li>
           </ul>
           <ul className="flex flex-col">
-            {!hasUnlimitedCredits && (
-              <li className="contents">
-                <div className="my-2">
-                  <BillingDialog
-                    upgradeHref={withSiteBaseURL('/design-studio-pricing')}
-                    accountHref={withSiteBaseURL('/account/billing')}
-                    billingClick={openBillingLinkExternally}
-                    error={billingContext.error}
-                    balance={billingContext.balance}
-                    allowance={billingContext.allowance}
-                    userPaymentBalance={billingContext.userPaymentBalance}
-                  />
-                </div>
-              </li>
-            )}
             <li className="contents">
               <Announcements token={apiToken} />
             </li>
@@ -761,14 +753,16 @@ const Home = () => {
         </aside>
         {selectedProjectLibrary || libraryId ? (
           <ProjectGrid
+            projectShellEnabled={projectShellEnabled}
             searchResults={searchResults ?? []}
             projects={scopedHomeProjectEntries}
-            localProjectsLoaded={projects !== undefined}
+            localProjectsLoaded={localProjectsLoaded}
             query={query}
             sort={sort}
             projectStatuses={projectStatuses}
             projectActions={homeProjectActions}
-            showCloudSyncUi={hasCloudSyncFeature}
+            fileOperations={app.fileOperations}
+            showCloudSyncUi
             showSourceStatusBadges={false}
             onMoveToLibrary={moveProjectToLibrary}
             projectLibraryEmptyTestId="project-library-empty"
@@ -776,15 +770,17 @@ const Home = () => {
           />
         ) : (
           <ProjectLibraryOverview
+            projectShellEnabled={projectShellEnabled}
             libraries={projectLibraries}
             searchResults={searchResults ?? []}
             projects={homeProjectEntries}
-            localProjectsLoaded={projects !== undefined}
+            localProjectsLoaded={localProjectsLoaded}
             query={query}
             sort={sort}
             projectStatuses={projectStatuses}
             projectActions={homeProjectActions}
-            showCloudSyncUi={hasCloudSyncFeature}
+            fileOperations={app.fileOperations}
+            showCloudSyncUi
             onMoveToLibrary={moveProjectToLibrary}
             projectLibraryDrag={projectLibraryDrag}
             projectLibraryTypes={projectLibraryTypes}
@@ -798,7 +794,6 @@ const Home = () => {
           ...defaultGlobalStatusBarItems({
             autoUpdateDownloadProgress,
             autoUpdateReady,
-            hasCloudSyncFeature,
             onRestartToUpdate: () => {
               window.electron?.appRestart()
             },
@@ -821,6 +816,7 @@ const Home = () => {
 }
 
 interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
+  projectShellEnabled: boolean
   libraries: ProjectLibrary[]
   searchResults: HomeProjectEntry[]
   projects: HomeProjectEntry[]
@@ -829,22 +825,15 @@ interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
   sort: string
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
+  fileOperations: FileOperationsRegistryService
   showCloudSyncUi: boolean
   onMoveToLibrary: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
   projectLibraryTypes: ReadonlyMap<string, ProjectLibraryTypeContribution>
 }
 
-function shouldShowLoadingMoreProjects(
-  state: ReturnType<typeof useSystemIOState>
-) {
-  return (
-    state.matches(SystemIOMachineStates.readingFolders) &&
-    !state.context.hasListedProjects
-  )
-}
-
 function ProjectLibraryOverview({
+  projectShellEnabled,
   libraries,
   searchResults,
   projects,
@@ -853,13 +842,13 @@ function ProjectLibraryOverview({
   sort,
   projectStatuses,
   projectActions,
+  fileOperations,
   showCloudSyncUi,
   onMoveToLibrary,
   projectLibraryDrag,
   projectLibraryTypes,
   ...rest
 }: ProjectLibraryOverviewProps) {
-  const state = useSystemIOState()
   const libraryRows = libraries
     .map((library) => {
       const libraryProjects = getHomeProjectEntriesForLibrary(
@@ -880,7 +869,7 @@ function ProjectLibraryOverview({
       }
     })
     .filter(({ projects }) => query.length === 0 || projects.length > 0)
-  const loadingMore = shouldShowLoadingMoreProjects(state) ? (
+  const loadingMore = !localProjectsLoaded ? (
     <div className="py-4">
       <Loading isDummy={true}>Loading more projects...</Loading>
     </div>
@@ -900,6 +889,7 @@ function ProjectLibraryOverview({
             <div className="flex flex-col gap-8">
               {libraryRows.map(({ library, libraryProjects, projects }) => (
                 <ProjectLibraryPreviewRow
+                  projectShellEnabled={projectShellEnabled}
                   key={library.id}
                   library={library}
                   projects={projects}
@@ -907,6 +897,7 @@ function ProjectLibraryOverview({
                   query={query}
                   projectStatuses={projectStatuses}
                   projectActions={projectActions}
+                  fileOperations={fileOperations}
                   showCloudSyncUi={showCloudSyncUi}
                   onMoveToLibrary={onMoveToLibrary}
                   projectLibraryDrag={projectLibraryDrag}
@@ -965,6 +956,7 @@ function ProjectLibrariesEmptyState(props: HTMLProps<HTMLDivElement>) {
 }
 
 interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
+  projectShellEnabled: boolean
   searchResults: HomeProjectEntry[]
   projects: HomeProjectEntry[]
   localProjectsLoaded: boolean
@@ -972,6 +964,7 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   sort: string
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
+  fileOperations: FileOperationsRegistryService
   showCloudSyncUi: boolean
   onMoveToLibrary: (project: HomeProjectEntry) => void
   showSourceStatusBadges?: boolean
@@ -979,6 +972,7 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
 }
 
 function ProjectGrid({
+  projectShellEnabled,
   searchResults,
   projects,
   localProjectsLoaded,
@@ -986,15 +980,15 @@ function ProjectGrid({
   sort,
   projectStatuses,
   projectActions,
+  fileOperations,
   showCloudSyncUi,
   onMoveToLibrary,
   showSourceStatusBadges = true,
   projectLibraryEmptyTestId,
   ...rest
 }: ProjectGridProps) {
-  const state = useSystemIOState()
   const sortedSearchResults = searchResults.toSorted(getSortFunction(sort))
-  const loadingMore = shouldShowLoadingMoreProjects(state) ? (
+  const loadingMore = !localProjectsLoaded ? (
     <div className="py-4">
       <Loading isDummy={true}>Loading more projects...</Loading>
     </div>
@@ -1008,9 +1002,11 @@ function ProjectGrid({
         <>
           {searchResults.length > 0 ? (
             <ProjectCardList
+              projectShellEnabled={projectShellEnabled}
               projects={sortedSearchResults}
               projectStatuses={projectStatuses}
               projectActions={projectActions}
+              fileOperations={fileOperations}
               showCloudSyncUi={showCloudSyncUi}
               onMoveToLibrary={onMoveToLibrary}
               showSourceStatusBadges={showSourceStatusBadges}

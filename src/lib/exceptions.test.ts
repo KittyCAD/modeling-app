@@ -44,9 +44,17 @@ describe('window exception handler', () => {
   })
 
   it('restarts wasm through wasm utils after a wasm crash', async () => {
-    const clearSceneAndBustCache = vi.fn().mockResolvedValue(undefined)
+    let finishSceneCleanup!: () => void
+    const sceneCleanup = new Promise<void>((resolve) => {
+      finishSceneCleanup = resolve
+    })
+    const clearSceneAndBustCache = vi.fn(() => sceneCleanup)
+    const finishFailedExecutions = vi.fn()
+    const captureFailedExecutionCleanup = vi.fn(() => finishFailedExecutions)
+    const executeAstCleanUp = vi.fn()
     const kclManager = {
-      executeAstCleanUp: vi.fn(),
+      engineCommandManager: { captureFailedExecutionCleanup },
+      executeAstCleanUp,
       rustContext: {
         clearSceneAndBustCache,
         settingsActor: {},
@@ -68,6 +76,16 @@ describe('window exception handler', () => {
       expect(mocks.restartWasmModule).toHaveBeenCalled()
     })
     await expect(kclManager.wasmInstancePromise).resolves.toBe(wasmModule)
-    expect(clearSceneAndBustCache).toHaveBeenCalled()
+    await waitForAssertion(() => {
+      expect(clearSceneAndBustCache).toHaveBeenCalledOnce()
+    })
+    expect(captureFailedExecutionCleanup).toHaveBeenCalledOnce()
+    expect(executeAstCleanUp).toHaveBeenCalledOnce()
+    expect(finishFailedExecutions).not.toHaveBeenCalled()
+
+    finishSceneCleanup()
+    await waitForAssertion(() => {
+      expect(finishFailedExecutions).toHaveBeenCalledOnce()
+    })
   })
 })

@@ -1,14 +1,19 @@
 import { exportSave } from '@src/lib/exportSave'
-import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
+import { dataUrlToFile } from '@src/lib/screenshot'
 import { isErr } from '@src/lib/trap'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import type { ViewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
 import toast from 'react-hot-toast'
 
 export const VIEWPORT_SCREENSHOT_FILE_NAME = 'viewport-screenshot.png'
 
-export async function saveViewportScreenshot(): Promise<void> {
+export async function saveViewportScreenshot(
+  fileOperations: FileOperationsRegistryService,
+  viewportScreenshot: ViewportScreenshotService
+): Promise<void> {
   let screenshotFile: File | Error
   try {
-    const dataUrl = takeViewportScreenshot()
+    const dataUrl = viewportScreenshot.capture()
     if (!dataUrl) {
       toast.error(
         'Screenshot unavailable because the modeling viewport is not ready.'
@@ -33,6 +38,7 @@ export async function saveViewportScreenshot(): Promise<void> {
       new Uint8Array(await screenshotFile.arrayBuffer())
     )
     await exportSave({
+      fileOperations,
       files: [{ name: VIEWPORT_SCREENSHOT_FILE_NAME, contents }],
       fileName: VIEWPORT_SCREENSHOT_FILE_NAME,
       toastId,

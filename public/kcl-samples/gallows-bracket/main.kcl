@@ -59,9 +59,9 @@ beamProfileSketch = sketch(on = -XZ) {
   coincident([beamBottomOuter.start, ORIGIN])
 
   horizontalDistance([
-  beamBottomOuter.start,
-  beamBottomOuter.end
-]) == ironWidth
+    beamBottomOuter.start,
+    beamBottomOuter.end
+  ]) == ironWidth
   verticalDistance([beamOuterLip.start, beamOuterLip.end]) == -ironThickness
   horizontalDistance([beamCloseEdge.end, beamInnerTop.end]) == ironThickness
   verticalDistance([beamCloseEdge.end, beamOuterWeb.start]) == -ironWidth
@@ -127,21 +127,21 @@ verticalProfileSketch = sketch(on = -XZ) {
   coincident([verticalBottomOuter.start, ORIGIN])
 
   horizontalDistance([
-  verticalBottomOuter.start,
-  verticalBottomOuter.end
-]) == ironWidth
+    verticalBottomOuter.start,
+    verticalBottomOuter.end
+  ]) == ironWidth
   verticalDistance([
-  verticalOuterLip.start,
-  verticalOuterLip.end
-]) == -ironThickness
+    verticalOuterLip.start,
+    verticalOuterLip.end
+  ]) == -ironThickness
   horizontalDistance([
-  verticalCloseEdge.end,
-  verticalInnerTop.end
-]) == ironThickness
+    verticalCloseEdge.end,
+    verticalInnerTop.end
+  ]) == ironThickness
   verticalDistance([
-  verticalCloseEdge.end,
-  verticalOuterWeb.start
-]) == -ironWidth
+    verticalCloseEdge.end,
+    verticalOuterWeb.start
+  ]) == -ironWidth
 }
 
 verticalRegion = region(segments = [
@@ -186,25 +186,25 @@ verticalEndMiterSketch = sketch(on = XY) {
   horizontalDistance([ORIGIN, verticalEndMiterEdge.start]) == verticalEndMiterStartX
   verticalDistance([ORIGIN, verticalEndMiterEdge.start]) == verticalEndMiterStartY
   horizontalDistance([
-  verticalEndMiterEdge.start,
-  verticalEndMiterEdge.end
-]) == verticalEndMiterRun
+    verticalEndMiterEdge.start,
+    verticalEndMiterEdge.end
+  ]) == verticalEndMiterRun
   verticalDistance([
-  verticalEndMiterEdge.start,
-  verticalEndMiterEdge.end
-]) == -verticalEndMiterRise
+    verticalEndMiterEdge.start,
+    verticalEndMiterEdge.end
+  ]) == -verticalEndMiterRise
   verticalDistance([
-  verticalEndRightEdge.start,
-  verticalEndRightEdge.end
-]) == verticalEndMiterRise + csgFriendlyOffset
+    verticalEndRightEdge.start,
+    verticalEndRightEdge.end
+  ]) == verticalEndMiterRise + csgFriendlyOffset
   horizontalDistance([
-  verticalEndTopEdge.start,
-  verticalEndTopEdge.end
-]) == -verticalEndMiterRun
+    verticalEndTopEdge.start,
+    verticalEndTopEdge.end
+  ]) == -verticalEndMiterRun
   verticalDistance([
-  verticalEndLeftEdge.start,
-  verticalEndLeftEdge.end
-]) == -csgFriendlyOffset
+    verticalEndLeftEdge.start,
+    verticalEndLeftEdge.end
+  ]) == -csgFriendlyOffset
 }
 
 verticalEndMiterRegion = region(segments = [
@@ -252,17 +252,17 @@ verticalHoleSketch = sketch(on = verticalHolePlane) {
   horizontal(verticalHoleRadiusGuide)
 
   horizontalDistance([
-  verticalHoleOffsetAcross.start,
-  verticalHoleOffsetAcross.end
-]) == -ironWidth / 2
+    verticalHoleOffsetAcross.start,
+    verticalHoleOffsetAcross.end
+  ]) == -ironWidth / 2
   verticalDistance([
-  verticalHoleOffsetUp.start,
-  verticalHoleOffsetUp.end
-]) == bottomBoltOffset
+    verticalHoleOffsetUp.start,
+    verticalHoleOffsetUp.end
+  ]) == bottomBoltOffset
   horizontalDistance([
-  verticalHoleRadiusGuide.start,
-  verticalHoleRadiusGuide.end
-]) == clearanceBoltRadius
+    verticalHoleRadiusGuide.start,
+    verticalHoleRadiusGuide.end
+  ]) == clearanceBoltRadius
   radius(verticalHoleCircle) == clearanceBoltRadius
 }
 
@@ -322,21 +322,21 @@ horizontalProfileSketch = sketch(on = -XZ) {
   coincident([horizontalBottomOuter.start, ORIGIN])
 
   horizontalDistance([
-  horizontalBottomOuter.start,
-  horizontalBottomOuter.end
-]) == ironWidth
+    horizontalBottomOuter.start,
+    horizontalBottomOuter.end
+  ]) == ironWidth
   verticalDistance([
-  horizontalOuterLip.start,
-  horizontalOuterLip.end
-]) == -ironThickness
+    horizontalOuterLip.start,
+    horizontalOuterLip.end
+  ]) == -ironThickness
   horizontalDistance([
-  horizontalCloseEdge.end,
-  horizontalInnerTop.end
-]) == ironThickness
+    horizontalCloseEdge.end,
+    horizontalInnerTop.end
+  ]) == ironThickness
   verticalDistance([
-  horizontalCloseEdge.end,
-  horizontalOuterWeb.start
-]) == -ironWidth
+    horizontalCloseEdge.end,
+    horizontalOuterWeb.start
+  ]) == -ironWidth
 }
 
 horizontalRegion = region(segments = [
@@ -381,25 +381,25 @@ horizontalStartMiterSketch = sketch(on = XY) {
   horizontalDistance([ORIGIN, horizontalStartMiterEdge.start]) == horizontalStartMiterStartX
   verticalDistance([ORIGIN, horizontalStartMiterEdge.start]) == horizontalStartMiterStartY
   horizontalDistance([
-  horizontalStartMiterEdge.start,
-  horizontalStartMiterEdge.end
-]) == horizontalStartMiterRun
+    horizontalStartMiterEdge.start,
+    horizontalStartMiterEdge.end
+  ]) == horizontalStartMiterRun
   verticalDistance([
-  horizontalStartMiterEdge.start,
-  horizontalStartMiterEdge.end
-]) == horizontalStartMiterRise
+    horizontalStartMiterEdge.start,
+    horizontalStartMiterEdge.end
+  ]) == horizontalStartMiterRise
   verticalDistance([
-  horizontalStartRightEdge.start,
-  horizontalStartRightEdge.end
-]) == -(horizontalStartMiterRise + csgFriendlyOffset)
+    horizontalStartRightEdge.start,
+    horizontalStartRightEdge.end
+  ]) == -(horizontalStartMiterRise + csgFriendlyOffset)
   horizontalDistance([
-  horizontalStartBottomEdge.start,
-  horizontalStartBottomEdge.end
-]) == -horizontalStartMiterRun
+    horizontalStartBottomEdge.start,
+    horizontalStartBottomEdge.end
+  ]) == -horizontalStartMiterRun
   verticalDistance([
-  horizontalStartLeftEdge.start,
-  horizontalStartLeftEdge.end
-]) == csgFriendlyOffset
+    horizontalStartLeftEdge.start,
+    horizontalStartLeftEdge.end
+  ]) == csgFriendlyOffset
 }
 
 horizontalStartMiterRegion = region(segments = [
@@ -450,17 +450,17 @@ horizontalHoleSketch = sketch(on = horizontalHolePlane) {
   horizontal(horizontalHoleRadiusGuide)
 
   horizontalDistance([
-  horizontalHoleOffsetForward.start,
-  horizontalHoleOffsetForward.end
-]) == depth - (ironWidth / 2)
+    horizontalHoleOffsetForward.start,
+    horizontalHoleOffsetForward.end
+  ]) == depth - (ironWidth / 2)
   verticalDistance([
-  horizontalHoleOffsetAcross.start,
-  horizontalHoleOffsetAcross.end
-]) == -ironWidth / 2
+    horizontalHoleOffsetAcross.start,
+    horizontalHoleOffsetAcross.end
+  ]) == -ironWidth / 2
   horizontalDistance([
-  horizontalHoleRadiusGuide.start,
-  horizontalHoleRadiusGuide.end
-]) == clearanceBoltRadius
+    horizontalHoleRadiusGuide.start,
+    horizontalHoleRadiusGuide.end
+  ]) == clearanceBoltRadius
   radius(horizontalHoleCircle) == clearanceBoltRadius
 }
 
@@ -507,15 +507,15 @@ strutProfileSketch = sketch(on = -XZ) {
   coincident([strutBottomOuter.start, ORIGIN])
 
   horizontalDistance([
-  strutBottomOuter.start,
-  strutBottomOuter.end
-]) == strutSectionWidth
+    strutBottomOuter.start,
+    strutBottomOuter.end
+  ]) == strutSectionWidth
   verticalDistance([strutOuterLip.start, strutOuterLip.end]) == -ironThickness
   horizontalDistance([strutCloseEdge.end, strutInnerTop.end]) == ironThickness
   verticalDistance([
-  strutCloseEdge.end,
-  strutOuterWeb.start
-]) == -strutSectionWidth
+    strutCloseEdge.end,
+    strutOuterWeb.start
+  ]) == -strutSectionWidth
 }
 
 strutRegion = region(segments = [
@@ -560,25 +560,25 @@ strutStartMiterSketch = sketch(on = XY) {
   horizontalDistance([ORIGIN, strutStartMiterEdge.start]) == strutStartMiterStartX
   verticalDistance([ORIGIN, strutStartMiterEdge.start]) == strutStartMiterStartY
   horizontalDistance([
-  strutStartMiterEdge.start,
-  strutStartMiterEdge.end
-]) == strutStartMiterRun
+    strutStartMiterEdge.start,
+    strutStartMiterEdge.end
+  ]) == strutStartMiterRun
   verticalDistance([
-  strutStartMiterEdge.start,
-  strutStartMiterEdge.end
-]) == strutStartMiterRise
+    strutStartMiterEdge.start,
+    strutStartMiterEdge.end
+  ]) == strutStartMiterRise
   verticalDistance([
-  strutStartRightEdge.start,
-  strutStartRightEdge.end
-]) == -(strutStartMiterRise + csgFriendlyOffset)
+    strutStartRightEdge.start,
+    strutStartRightEdge.end
+  ]) == -(strutStartMiterRise + csgFriendlyOffset)
   horizontalDistance([
-  strutStartBottomEdge.start,
-  strutStartBottomEdge.end
-]) == -strutStartMiterRun
+    strutStartBottomEdge.start,
+    strutStartBottomEdge.end
+  ]) == -strutStartMiterRun
   verticalDistance([
-  strutStartLeftEdge.start,
-  strutStartLeftEdge.end
-]) == csgFriendlyOffset
+    strutStartLeftEdge.start,
+    strutStartLeftEdge.end
+  ]) == csgFriendlyOffset
 }
 
 strutStartMiterRegion = region(segments = [
@@ -631,25 +631,25 @@ strutEndMiterSketch = sketch(on = XY) {
   horizontalDistance([ORIGIN, strutEndMiterEdge.start]) == strutEndMiterStartX
   verticalDistance([ORIGIN, strutEndMiterEdge.start]) == strutEndMiterStartY
   horizontalDistance([
-  strutEndMiterEdge.start,
-  strutEndMiterEdge.end
-]) == strutEndMiterRun
+    strutEndMiterEdge.start,
+    strutEndMiterEdge.end
+  ]) == strutEndMiterRun
   verticalDistance([
-  strutEndMiterEdge.start,
-  strutEndMiterEdge.end
-]) == -strutEndMiterRise
+    strutEndMiterEdge.start,
+    strutEndMiterEdge.end
+  ]) == -strutEndMiterRise
   verticalDistance([
-  strutEndRightEdge.start,
-  strutEndRightEdge.end
-]) == strutEndMiterRise + csgFriendlyOffset
+    strutEndRightEdge.start,
+    strutEndRightEdge.end
+  ]) == strutEndMiterRise + csgFriendlyOffset
   horizontalDistance([
-  strutEndTopEdge.start,
-  strutEndTopEdge.end
-]) == -strutEndMiterRun
+    strutEndTopEdge.start,
+    strutEndTopEdge.end
+  ]) == -strutEndMiterRun
   verticalDistance([
-  strutEndLeftEdge.start,
-  strutEndLeftEdge.end
-]) == -csgFriendlyOffset
+    strutEndLeftEdge.start,
+    strutEndLeftEdge.end
+  ]) == -csgFriendlyOffset
 }
 
 strutEndMiterRegion = region(segments = [

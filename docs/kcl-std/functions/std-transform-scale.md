@@ -58,7 +58,7 @@ way (i.e. scaled differently along each axis).
 ### Examples
 
 ```kcl
-@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 
 sweepPath = sketch(on = XZ) {
   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
@@ -85,7 +85,7 @@ scaled = sweep(pipeRegion, path = sweepPath)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the scale function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-scale0.png"
@@ -109,7 +109,7 @@ cube
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the scale function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-scale1.png"
@@ -149,7 +149,7 @@ scale(parts, z = 0.5)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the scale function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale2_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale2_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-scale2.png"
@@ -180,7 +180,7 @@ button2 = startSketchOn(XY)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the scale function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale3_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale3_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-scale3.png"
@@ -192,7 +192,7 @@ button2 = startSketchOn(XY)
 
 ```kcl
 // Resize a 1 mm seed cube to exact physical dimensions.
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 seedSize = 1mm
 targetWidth = 40mm
@@ -229,7 +229,7 @@ resized = scale(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the scale function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale4_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale4_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-scale4.png"

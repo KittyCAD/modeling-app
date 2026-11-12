@@ -8,6 +8,7 @@ import { PATHS } from '@src/lib/paths'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { AuthRegistryService } from '@src/registry/contracts/auth'
 import { generateSignInUrl } from '@src/routes/utils'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: expired-session sign-in navigation (useNavigate).
 import { useNavigate } from 'react-router-dom'
 
 type SessionExpiredDialogHostContentProps = {

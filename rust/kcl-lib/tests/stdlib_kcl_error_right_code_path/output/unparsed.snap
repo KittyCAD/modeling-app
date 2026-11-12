@@ -1,0 +1,13 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing stdlib_kcl_error_right_code_path.kcl
+---
+square = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [0, 10])
+  |> line(end = [10, 0])
+  |> line(end = [0, -10])
+  |> close()
+  |> subtract2d(tool = polygon(center = [2, 8], radius = .5), numSides = 3)
+  |> subtract2d(tool = polygon(center = [2, 8], radius = .5))
+  |> extrude(length = 2)

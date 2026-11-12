@@ -1,5 +1,3 @@
-@settings(experimentalFeatures = allow)
-
 // Test variant 2: fillet bottom edge using disambiguator (startCap)
 // Shape has an edge split into two edges that share the same two faces.
 

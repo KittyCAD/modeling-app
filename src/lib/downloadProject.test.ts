@@ -5,7 +5,7 @@ import env from '@src/env'
 import {
   createOpenProjectIdUrl,
   downloadProjectById,
-  getPublicProjectNameById,
+  getProjectNameById,
 } from '@src/lib/downloadProject'
 
 afterEach(() => {
@@ -21,7 +21,7 @@ describe('downloadProject helpers', () => {
     )
   })
 
-  test('getPublicProjectNameById reads and sanitizes the public project title', async () => {
+  test('getProjectNameById reads and sanitizes the project title', async () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
       Response.json({
         categories: [],
@@ -34,7 +34,7 @@ describe('downloadProject helpers', () => {
       })
     )
 
-    const result = await getPublicProjectNameById('project-123')
+    const result = await getProjectNameById('project-123')
 
     expect(fetchSpy).toHaveBeenCalledWith(
       expect.stringContaining('/projects/public/project-123'),

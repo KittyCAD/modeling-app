@@ -12915,6 +12915,7 @@ description: Result of parsing gas-impeller.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

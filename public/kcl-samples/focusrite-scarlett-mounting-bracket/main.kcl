@@ -37,23 +37,31 @@ bodyBlank = extrude(bodyRegion, length = length + 2 * thk, symmetric = true)
 bracketBody = fillet(
   bodyBlank,
   radius = radius,
-  tags = [
-    getCommonEdge(faces = [
-      bodyRegion.tags.line6,
-      bodyRegion.tags.line7
-    ]),
-    getCommonEdge(faces = [
-      bodyRegion.tags.line1,
-      bodyRegion.tags.line2
-    ]),
-    getCommonEdge(faces = [
-      bodyRegion.tags.line2,
-      bodyRegion.tags.line3
-    ]),
-    getCommonEdge(faces = [
-      bodyRegion.tags.line5,
-      bodyRegion.tags.line6
-    ])
+  edges = [
+    {
+      sideFaces = [
+        bodyRegion.tags.line6,
+        bodyRegion.tags.line7
+      ]
+    },
+    {
+      sideFaces = [
+        bodyRegion.tags.line1,
+        bodyRegion.tags.line2
+      ]
+    },
+    {
+      sideFaces = [
+        bodyRegion.tags.line2,
+        bodyRegion.tags.line3
+      ]
+    },
+    {
+      sideFaces = [
+        bodyRegion.tags.line5,
+        bodyRegion.tags.line6
+      ]
+    }
   ],
 )
 
@@ -81,15 +89,19 @@ rightTabCut = extrude(rightTabRegion, length = -tabThk)
 rightTab = fillet(
   rightTabCut,
   radius = holeDiam / 2,
-  tags = [
-    getCommonEdge(faces = [
-      rightTabRegion.tags.line1,
-      rightTabRegion.tags.line2
-    ]),
-    getCommonEdge(faces = [
-      rightTabRegion.tags.line2,
-      rightTabRegion.tags.line3
-    ])
+  edges = [
+    {
+      sideFaces = [
+        rightTabRegion.tags.line1,
+        rightTabRegion.tags.line2
+      ]
+    },
+    {
+      sideFaces = [
+        rightTabRegion.tags.line2,
+        rightTabRegion.tags.line3
+      ]
+    }
   ],
 )
   |> patternLinear3d(axis = [0, -1, 0], instances = 2, distance = length + 2 * thk - (tabLength * 4 / 3))
@@ -116,15 +128,19 @@ leftTabCut = extrude(leftTabRegion, length = -tabThk)
 leftTab = fillet(
   leftTabCut,
   radius = holeDiam / 2,
-  tags = [
-    getCommonEdge(faces = [
-      leftTabRegion.tags.line1,
-      leftTabRegion.tags.line2
-    ]),
-    getCommonEdge(faces = [
-      leftTabRegion.tags.line2,
-      leftTabRegion.tags.line3
-    ])
+  edges = [
+    {
+      sideFaces = [
+        leftTabRegion.tags.line1,
+        leftTabRegion.tags.line2
+      ]
+    },
+    {
+      sideFaces = [
+        leftTabRegion.tags.line2,
+        leftTabRegion.tags.line3
+      ]
+    }
   ],
 )
   |> patternLinear3d(axis = [0, -1, 0], instances = 2, distance = length + 2 * thk - (tabLength * 4 / 3))

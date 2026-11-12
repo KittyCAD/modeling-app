@@ -23,17 +23,19 @@ package-lock.json                 @KittyCAD/frontend @KittyCAD/kcl
 
 # Documentation
 README.md                         @KittyCAD/frontend @KittyCAD/kcl
-GLOSSARY.md                       @KittyCAD/frontend @KittyCAD/kcl
+GLOSSARY-MAP.md                   @KittyCAD/frontend @KittyCAD/kcl
+/dev-docs/                        @KittyCAD/frontend @KittyCAD/kcl
+/src/GLOSSARY.md                  @KittyCAD/frontend @KittyCAD/kcl
 CONTRIBUTING.md                   @KittyCAD/frontend @KittyCAD/kcl
 /docs/                            @KittyCAD/frontend @KittyCAD/kcl
 /public/kcl-samples/              @KittyCAD/frontend @KittyCAD/kcl
 /rust/**/kcl_samples/             @KittyCAD/frontend @KittyCAD/kcl
 
 # Other shared files
-/.github                          @KittyCAD/frontend @KittyCAD/kcl
+.github/                          @KittyCAD/frontend @KittyCAD/kcl
+.github/actions/                  @KittyCAD/frontend-release
+.github/ci-cd-scripts/            @KittyCAD/frontend-release
+.github/workflows/                @KittyCAD/frontend-release
 _typos.toml                       @KittyCAD/frontend @KittyCAD/kcl
 flake.nix                         @KittyCAD/frontend @KittyCAD/kcl
 flake.lock                        @KittyCAD/frontend @KittyCAD/kcl
-
-# Tests
-/e2e/playwright/benchmark/        @KittyCAD/mech

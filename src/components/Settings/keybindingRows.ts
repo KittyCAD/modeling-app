@@ -8,6 +8,7 @@ import {
   doesKeymapBindingOverrideItem,
   doesKeymapUnbindBindingMatchItem,
   isUnboundKeymapCommand,
+  normalizeKeymapBindingInput,
 } from '@src/registry/contracts/keymap'
 
 /**
@@ -64,10 +65,8 @@ export type KeybindingRow = {
    * Effective serializable command arguments displayed by the row.
    */
   arguments?: KeymapArguments
-  /**
-   * Effective scopes displayed and edited by the row.
-   */
-  scopes?: readonly string[]
+  /** Additional contexts in which this keybinding is active. */
+  when?: readonly string[]
   /**
    * Display source for the row. App-backed rows keep the original app source
    * even when overridden; standalone user rows use the user source.
@@ -83,11 +82,12 @@ export function getKeybindingRows(
   appItems: readonly KeymapItem[],
   userBindings: readonly KeymapBinding[]
 ): KeybindingRow[] {
+  const normalizedUserBindings = userBindings.map(normalizeKeymapBindingInput)
   const claimedUserBindingIndexes = new Set<number>()
   const rows: KeybindingRow[] = []
 
   for (const item of appItems) {
-    const matches = userBindings.flatMap((binding, index) =>
+    const matches = normalizedUserBindings.flatMap((binding, index) =>
       doesUserBindingApplyToAppItem(binding, item) ? [{ binding, index }] : []
     )
     for (const match of matches) {
@@ -128,7 +128,7 @@ export function getKeybindingRows(
     rows.push(createAppRow(item, { state: 'app' }))
   }
 
-  for (const [index, binding] of userBindings.entries()) {
+  for (const [index, binding] of normalizedUserBindings.entries()) {
     if (
       claimedUserBindingIndexes.has(index) ||
       isUnboundKeymapCommand(binding.command)
@@ -145,7 +145,7 @@ export function getKeybindingRows(
       title: binding.title ?? binding.command,
       keystrokes: binding.keystrokes,
       arguments: binding.arguments,
-      scopes: binding.scopes,
+      when: binding.when,
       source: USER_KEYMAP_SOURCE,
     })
   }
@@ -156,13 +156,13 @@ export function getKeybindingRows(
 export function createRowUserBinding(
   row: KeybindingRow,
   keystrokes: readonly string[],
-  scopes: readonly string[] | undefined
+  when: readonly string[] | undefined
 ): KeymapBinding {
   if (row.state === 'user' && row.userBinding) {
     return {
-      ...row.userBinding,
+      ...normalizeKeymapBindingInput(row.userBinding),
       keystrokes,
-      scopes: serializeKeymapScopes(scopes),
+      when: serializeKeymapWhen(when),
     }
   }
 
@@ -173,7 +173,7 @@ export function createRowUserBinding(
     ...(title !== undefined ? { title } : {}),
     keystrokes,
     arguments: appItem?.arguments,
-    scopes: serializeKeymapScopes(scopes),
+    when: serializeKeymapWhen(when),
   }
 }
 
@@ -182,14 +182,14 @@ export function findKeybindingConflict(
   candidate: {
     id?: string
     keystrokes: readonly string[]
-    scopes?: readonly string[]
+    when?: readonly string[]
   }
 ): KeybindingConflict | undefined {
   if (candidate.keystrokes.length === 0) {
     return undefined
   }
 
-  const candidateScopes = normalizeVisibleKeymapScopes(candidate.scopes)
+  const candidateWhen = normalizeVisibleKeymapWhen(candidate.when)
 
   const conflictingRow = rows.find((row) => {
     if (row.id === candidate.id || row.state === 'unbound') {
@@ -198,8 +198,8 @@ export function findKeybindingConflict(
 
     return (
       areKeymapKeystrokesEqual(candidate.keystrokes, row.keystrokes) &&
-      normalizeVisibleKeymapScopes(row.scopes).some((scope) =>
-        candidateScopes.includes(scope)
+      normalizeVisibleKeymapWhen(row.when).some((scope) =>
+        candidateWhen.includes(scope)
       )
     )
   })
@@ -227,7 +227,7 @@ function createAppRow(
     title: binding?.title ?? item.title,
     keystrokes: options.keystrokes ?? binding?.keystrokes ?? item.keystrokes,
     arguments: binding?.arguments ?? item.arguments,
-    scopes: binding ? binding.scopes : item.scopes,
+    when: binding ? binding.when : item.when,
     source: item.source,
   }
 }
@@ -250,28 +250,27 @@ function compareKeybindingRows(a: KeybindingRow, b: KeybindingRow) {
   return a.title.localeCompare(b.title)
 }
 
-export function serializeKeymapScopes(scopes: readonly string[] | undefined) {
-  const normalizedScopes = normalizeVisibleKeymapScopes([
-    ...new Set((scopes ?? []).map((scope) => scope.trim()).filter(Boolean)),
+export function serializeKeymapWhen(when: readonly string[] | undefined) {
+  const normalizedWhen = normalizeVisibleKeymapWhen([
+    ...new Set((when ?? []).map((scope) => scope.trim()).filter(Boolean)),
   ])
 
-  return normalizedScopes.length === 1 &&
-    normalizedScopes[0] === BASE_KEYMAP_SCOPE
+  return normalizedWhen.length === 1 && normalizedWhen[0] === BASE_KEYMAP_SCOPE
     ? undefined
-    : normalizedScopes
+    : normalizedWhen
 }
 
-export function normalizeVisibleKeymapScopes(
-  scopes: readonly string[] | undefined
+export function normalizeVisibleKeymapWhen(
+  when: readonly string[] | undefined
 ) {
-  const normalizedScopes = [
-    ...new Set((scopes ?? []).map((scope) => scope.trim()).filter(Boolean)),
+  const normalizedWhen = [
+    ...new Set((when ?? []).map((scope) => scope.trim()).filter(Boolean)),
   ]
-  const nonBaseScopes = normalizedScopes.filter(
+  const nonBaseWhen = normalizedWhen.filter(
     (scope) => scope !== BASE_KEYMAP_SCOPE
   )
 
-  return nonBaseScopes.length > 0 ? nonBaseScopes : [BASE_KEYMAP_SCOPE]
+  return nonBaseWhen.length > 0 ? nonBaseWhen : [BASE_KEYMAP_SCOPE]
 }
 
 export function formatKeybindingConflict(conflict: KeybindingConflict) {

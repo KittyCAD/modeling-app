@@ -9,7 +9,7 @@ import {
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
 import {
   LATEST_LAYOUT_VERSION,
@@ -23,7 +23,8 @@ import {
 } from '@src/lib/projectLibraries'
 import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/settings/setting'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
-import { createSettings, type Setting } from '@src/lib/settings/initialSettings'
+import { createSettings } from '@src/lib/settings/initialSettings'
+import type { Setting } from '@src/lib/settings/Setting'
 import {
   clearSettingsAtLevel,
   configurationToSettingsPayload,
@@ -61,6 +62,22 @@ const createSettingsWithProjectLibraries = () =>
   createSettings(projectLibrariesExtensionSettings)
 
 describe('testing settings initialization', () => {
+  it.each(['multiple', 'single', 'invalid', undefined])(
+    'parses tab open behavior %s with a multiple default',
+    (value) => {
+      const settings = createSettings()
+      const payload = configurationToSettingsPayload({
+        settings: {
+          layout: value === undefined ? {} : { tab_open_behavior: value },
+        },
+      })
+      setSettingsAtLevel(settings, 'user', payload)
+      expect(settings.layout.paneOpenBehavior.current).toBe(
+        value === 'single' ? 'single' : 'multiple'
+      )
+    }
+  )
+
   it(`sets settings at the 'user' level`, () => {
     const settings = createSettings()
     const appConfiguration: DeepPartial<Configuration> = {
@@ -238,7 +255,7 @@ describe('testing hiddenOnPlatform', () => {
 
   it('hides feature-gated settings unless the feature is enabled', () => {
     const setting = {
-      hideWithoutFeature: OPFS_CLOUD_FEATURE_FLAG,
+      hideWithoutFeature: EXPERIMENTAL_POINT_AND_CLICK_FLAG,
     } as Setting<unknown>
 
     expect(hiddenOnPlatform(setting, true)).toBe(true)
@@ -247,7 +264,7 @@ describe('testing hiddenOnPlatform', () => {
       hiddenOnPlatform(
         setting,
         false,
-        (feature) => feature === OPFS_CLOUD_FEATURE_FLAG
+        (feature) => feature === EXPERIMENTAL_POINT_AND_CLICK_FLAG
       )
     ).toBe(false)
   })
@@ -255,7 +272,7 @@ describe('testing hiddenOnPlatform', () => {
   it('can scope feature-gated settings to web', () => {
     const setting = {
       hideWithoutFeatureOnPlatform: {
-        web: OPFS_CLOUD_FEATURE_FLAG,
+        web: EXPERIMENTAL_POINT_AND_CLICK_FLAG,
       },
     } as Setting<unknown>
 
@@ -265,24 +282,17 @@ describe('testing hiddenOnPlatform', () => {
       hiddenOnPlatform(
         setting,
         false,
-        (feature) => feature === OPFS_CLOUD_FEATURE_FLAG
+        (feature) => feature === EXPERIMENTAL_POINT_AND_CLICK_FLAG
       )
     ).toBe(false)
   })
 
-  it('keeps libraries visible on desktop and feature-gated on web', () => {
+  it('keeps libraries visible on desktop and web', () => {
     const settings = createSettingsWithProjectLibraries()
     const libraries = settings.app.libraries as Setting
 
     expect(hiddenOnPlatform(libraries, true, () => false)).toBe(false)
-    expect(hiddenOnPlatform(libraries, false, () => false)).toBe(true)
-    expect(
-      hiddenOnPlatform(
-        libraries,
-        false,
-        (feature) => feature === OPFS_CLOUD_FEATURE_FLAG
-      )
-    ).toBe(false)
+    expect(hiddenOnPlatform(libraries, false, () => false)).toBe(false)
   })
 })
 
@@ -327,7 +337,7 @@ describe('project settings serialization regression', () => {
             mouseControls: 'OnShape',
             gizmoType: 'axis',
             enableTouchControls: false,
-            useSketchSolveMode: false,
+            useLocalRenderer: false,
             showSketchGrid: true,
             snapToGrid: true,
             majorGridSpacing: 2.5,
@@ -342,6 +352,7 @@ describe('project settings serialization regression', () => {
             blinkingCursor: false,
           },
           layout: {
+            paneOpenBehavior: 'single',
             configs: {
               default: createLayoutWithMetadata(defaultLayoutConfig),
             },
@@ -366,7 +377,7 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).toContain('mouse_controls = "onshape"')
     expect(serializedToml).toContain('gizmo_type = "axis"')
     expect(serializedToml).toContain('enable_touch_controls = false')
-    expect(serializedToml).toContain('use_sketch_solve_mode = false')
+    expect(serializedToml).toContain('use_local_renderer = false')
     expect(serializedToml).toContain('show_sketch_grid = true')
     expect(serializedToml).toContain('snap_to_grid = true')
     expect(serializedToml).toContain('major_grid_spacing = 2.5')
@@ -381,6 +392,7 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).toContain('text_wrapping = false')
     expect(serializedToml).toContain('blinking_cursor = false')
     expect(serializedToml).toContain('[settings.layout.configs]')
+    expect(serializedToml).toContain('tab_open_behavior = "single"')
     expect(serializedToml).toContain('default = ')
     expect(serializedToml).not.toContain('[settings.zds')
 
@@ -411,7 +423,6 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.modeling?.mouseControls).toBe('OnShape')
     expect(parsedPayload.modeling?.gizmoType).toBe('axis')
     expect(parsedPayload.modeling?.enableTouchControls).toBe(false)
-    expect(parsedPayload.modeling?.useSketchSolveMode).toBe(false)
     expect(parsedPayload.modeling?.showSketchGrid).toBe(true)
     expect(parsedPayload.modeling?.snapToGrid).toBe(true)
     expect(parsedPayload.modeling?.majorGridSpacing).toBe(2.5)
@@ -423,6 +434,7 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.layout?.configs?.default.version).toBe(
       LATEST_LAYOUT_VERSION
     )
+    expect(parsedPayload.layout?.paneOpenBehavior).toBe('single')
     expect(parsedPayload.layout?.configs?.default.layout.id).toBe(
       defaultLayoutConfig.id
     )
@@ -823,6 +835,22 @@ describe('project settings serialization regression', () => {
     const parsedPayload = configurationToSettingsPayload(parsedConfiguration)
     expect(parsedPayload.debug?.showPanel).toBe(true)
     expect(parsedPayload.debug?.showModelingMachineState).toBe(false)
+  })
+
+  it('loads the saved renderer choice from the modeling section', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    const parsedConfiguration = parseAppSettings(
+      '[settings.modeling]\nuse_local_renderer = false\n',
+      wasmInstance
+    )
+    if (parsedConfiguration instanceof Error) {
+      throw parsedConfiguration
+    }
+
+    const parsedPayload = configurationToSettingsPayload(parsedConfiguration)
+    expect(parsedPayload.modeling?.useLocalRenderer).toBe(false)
   })
 
   it('preserves debug settings through the project debug section', async () => {

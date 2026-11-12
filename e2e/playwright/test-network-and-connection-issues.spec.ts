@@ -1,14 +1,11 @@
-import { TEST_COLORS, circleMove, getUtils } from '@e2e/playwright/test-utils'
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
+import { circleMove, getUtils, TEST_COLORS } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
-
-// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
-test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
 test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
   test(
     'simulate network down and network little widget',
-    { tag: '@skipLocalEngine' },
+    { tag: ['@skipLocalEngine', '@localRenderer'] },
     async ({ page, homePage, toolbar, scene, cmdBar }) => {
       const networkToggleConnectedText = page.getByText(
         'Network health (Strong)'
@@ -18,6 +15,7 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
+      await homePage.waitForAuthentication()
       await homePage.goToModelingScene()
       await scene.settled()
 
@@ -60,6 +58,7 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
 
       // Expect the network to be down
       await expect(networkToggle).toContainText('Network health (Offline)')
+      await expect(scene.networkToggleConnected).toHaveCount(0)
 
       // Click the network toggle
       await networkToggle.click()
@@ -88,147 +87,13 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       await expect(
         networkToggleConnectedText.or(networkToggleWeakText)
       ).toBeVisible()
-    }
-  )
-
-  test(
-    'Engine disconnect & reconnect in sketch mode',
-    { tag: '@skipLocalEngine' },
-    async ({
-      page,
-      context,
-      homePage,
-      toolbar,
-      scene,
-      cmdBar,
-      editor,
-      tronApp,
-    }) => {
-      if (tronApp) {
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: false,
-          },
-        })
-      }
-
-      const networkToggle = page.getByTestId(/network-toggle/)
-      const networkToggleConnectedText = page.getByText(
-        'Network health (Strong)'
-      )
-      const networkToggleWeakText = page.getByText('Network health (Ok)')
-
-      const u = await getUtils(page)
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, 'sketch001 = startSketchOn(XZ)')
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await u.waitForPageLoad()
-
-      const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
-      await op.dblclick()
-      await toolbar.waitUntilSketchingReady()
-      await toolbar.closeFeatureTreePane()
-
-      await expect(page.locator('.cm-content')).toContainText(
-        'sketch001 = startSketchOn(XZ)'
-      )
-
-      await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
-
-      // Expect the network to be up
-      await networkToggle.hover()
-      await expect(
-        networkToggleConnectedText.or(networkToggleWeakText)
-      ).toBeVisible()
-
-      // simulate network down
-      await u.emulateNetworkConditions({
-        offline: true,
-        // values of 0 remove any active throttling. crbug.com/456324#c9
-        latency: 0,
-        downloadThroughput: -1,
-        uploadThroughput: -1,
-      })
-
-      // Expect the network to be down
-      await networkToggle.hover()
-
-      await expect(networkToggle).toContainText('Network health (Offline)')
-
-      // Ensure we are not in sketch mode
-      await expect(
-        page.getByRole('button', { name: 'Exit Sketch' })
-      ).not.toBeVisible()
-      await expect(toolbar.startSketchBtn).toBeVisible()
-
-      // simulate network up
-      await u.emulateNetworkConditions({
-        offline: false,
-        // values of 0 remove any active throttling. crbug.com/456324#c9
-        latency: 0,
-        downloadThroughput: -1,
-        uploadThroughput: -1,
-      })
-
-      // Wait for the app to be ready for use
-      await expect(toolbar.startSketchBtn).not.toBeDisabled({
-        timeout: 15000,
-      })
-
-      // Expect the network to be up
-      await networkToggle.hover()
-      await expect(
-        networkToggleConnectedText.or(networkToggleWeakText)
-      ).toBeVisible()
-
-      await scene.settled()
-
-      // Click off the code pane.
-      await page.mouse.click(100, 100)
-
-      // enter sketch again
-      await toolbar.editSketch()
-
-      await page.waitForTimeout(150)
-
-      // click to continue profile
-      await page.mouse.click(1000, 400)
-      await page.waitForTimeout(100)
-
-      // Ensure we can continue sketching
-      await page.mouse.click(800, 300)
-
-      await expect(editor.codeContent).toContainText(
-        `profile001 = startProfile(sketch001`
-      )
-      await page.waitForTimeout(100)
-
-      // Unequip line tool
-      await page.keyboard.press('Escape')
-
-      // Make sure we didn't pop out of sketch mode.
-      await expect(
-        page.getByRole('button', { name: 'Exit Sketch' })
-      ).toBeVisible()
-      await expect(
-        page.getByRole('button', { name: 'line Line', exact: true })
-      ).not.toHaveAttribute('aria-pressed', 'true')
-
-      // Exit sketch
-      await page.keyboard.press('Shift+Escape')
-      await expect(
-        page.getByRole('button', { name: 'Exit Sketch' })
-      ).not.toBeVisible()
+      await expect(scene.networkToggleConnected).toBeVisible()
     }
   )
 
   test(
     'Paused stream freezes view frame, unpause reconnect is seamless to user',
-    { tag: '@skipLocalEngine' },
+    { tag: ['@skipLocalEngine', '@streamRenderer'] },
     async ({ page, homePage, scene, cmdBar, toolbar, tronApp }) => {
       const networkToggle = page.getByTestId(/network-toggle/)
       const networkToggleConnectedText = page.getByText(
@@ -236,7 +101,7 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       )
       const networkToggleWeakText = page.getByText('Network health (Ok)')
 
-      if (!tronApp) throw new Error('tronApp is missing.')
+      if (!tronApp) throwTronAppMissing()
 
       await tronApp.cleanProjectDir({
         app: {
@@ -261,6 +126,30 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])
       await test.step('Go to modeling scene', async () => {
         await homePage.goToModelingScene()
         await scene.settled()
+        // Frame the profile itself before testing whether its stream frame freezes.
+        await page.evaluate(async () => {
+          const manager = window.app.singletons.kclManager
+          const profiles = [...manager.artifactGraph.values()]
+            .filter((a) => a.type === 'path')
+            .map((a) => a.id)
+          if (profiles.length !== 1)
+            throw new Error('Expected one profile to frame')
+          await window.engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: crypto.randomUUID(),
+            cmd: {
+              type: 'zoom_to_fit',
+              object_ids: profiles,
+              padding: 0.1,
+              animated: false,
+            },
+          })
+        })
+        await scene.expectPixelColor(
+          TEST_COLORS.GREY,
+          { x: dim.width / 2 + dim.width / 100, y: dim.height / 2 },
+          15
+        )
       })
 
       await test.step('Verify pausing behavior', async () => {

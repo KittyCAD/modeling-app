@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties patterns_linear_basic_negative_distance.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": -12.0,
+      "z": 0.5
+    },
+    "dimensions": {
+      "x": 4.8,
+      "y": 28.799999999999997,
+      "z": 1.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 488.8358492647071
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.1628061567409203
+  }
+}

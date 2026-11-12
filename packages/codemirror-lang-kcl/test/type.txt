@@ -12,7 +12,15 @@ type Temperature = number
 
 ==>
 
-Program(TypeDeclaration(type, PrimitiveType))
+Program(TypeDeclaration(type, TypeName))
+
+# qualified type alias
+
+type Front = view::Orientation
+
+==>
+
+Program(TypeDeclaration(type, TypeName))
 
 # enum single line
 

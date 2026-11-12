@@ -16,11 +16,16 @@ import fsp from 'fs/promises'
 
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
+import {
+  attachRendererCrashDiagnostics,
+  startRendererCrashDiagnostics,
+} from '@e2e/playwright/fixtures/electronCrashDiagnostics'
 import { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import { FsFixture } from '@e2e/playwright/fixtures/fsFixture'
 import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import { ModelingDialogFixture } from '@e2e/playwright/fixtures/modelingDialogFixture'
 import { NativeMenuFixture } from '@e2e/playwright/fixtures/nativeMenuFixture'
 import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { SignInPageFixture } from '@e2e/playwright/fixtures/signInPageFixture'
@@ -28,14 +33,18 @@ import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 
 import {
   TEST_SETTINGS,
+  geometryOnlyForTestTags,
   playwrightPluginSettings,
   playwrightProjectLibraries,
 } from '@e2e/playwright/storageStates'
 import {
   PLAYWRIGHT_LAYOUT_SETTINGS,
+  PLAYWRIGHT_TEST_SCOPE_KEY,
   getUtils,
   settingsToToml,
   setup,
+  waitForAppLoad,
+  waitForAuthentication,
 } from '@e2e/playwright/test-utils'
 import type { ILog } from '@src/lib/debugger'
 import { isArray } from '@src/lib/utils'
@@ -46,6 +55,42 @@ const TEST_PROJECT_SETTINGS =
   !isArray(TEST_SETTINGS.project)
     ? TEST_SETTINGS.project
     : undefined
+
+function scopedInitScript(script: unknown, arg: unknown, testScope: string) {
+  const serializedArg = arg === undefined ? 'undefined' : JSON.stringify(arg)
+  if (serializedArg === undefined) {
+    throw new Error('Unable to serialize Playwright init-script argument')
+  }
+
+  let invocation: string
+  if (typeof script === 'function') {
+    invocation = `(${script.toString()})(${serializedArg})`
+  } else if (typeof script === 'string') {
+    invocation = script
+  } else if (
+    typeof script === 'object' &&
+    script !== null &&
+    'content' in script &&
+    typeof script.content === 'string'
+  ) {
+    invocation = script.content
+  } else if (
+    typeof script === 'object' &&
+    script !== null &&
+    'path' in script &&
+    typeof script.path === 'string'
+  ) {
+    invocation = fs.readFileSync(script.path, 'utf8')
+  } else {
+    throw new Error('Unsupported Playwright init script')
+  }
+
+  return {
+    content: `if (sessionStorage.getItem(${JSON.stringify(
+      PLAYWRIGHT_TEST_SCOPE_KEY
+    )}) === ${JSON.stringify(testScope)}) { ${invocation} }`,
+  }
+}
 
 export class AuthenticatedApp {
   public readonly page: Page
@@ -61,18 +106,29 @@ export class AuthenticatedApp {
     this.testInfo = testInfo
   }
 
-  async initialise(code = '', userFeatures: readonly Feature[] = []) {
-    await setup(this.context, this.page, this.testInfo, userFeatures)
+  async initialise(
+    code = '',
+    userFeatures: readonly Feature[] = [],
+    mockApiRoutes = true
+  ) {
+    await setup(this.context, this.page, this.testInfo, userFeatures, {
+      mockApiRoutes,
+    })
     const u = await getUtils(this.page)
 
     await this.page.addInitScript(async (code) => {
+      // Persistent WebKit starts on about:blank, where localStorage is unavailable.
+      if (window.location.protocol === 'about:') {
+        return
+      }
       localStorage.setItem('persistCode', code)
       ;(window as any).playwrightSkipFilePicker = true
     }, code)
 
     await this.page.setViewportSize(this.viewPortSize)
 
-    await u.waitForAuthSkipAppStart()
+    await u.waitForAuth()
+    if (!mockApiRoutes) await waitForAuthentication(this.page)
   }
   getInputFile = (fileName: string) => {
     return fsp.readFile(
@@ -84,6 +140,7 @@ export class AuthenticatedApp {
 
 export interface Fixtures {
   cmdBar: CmdBarFixture
+  modelingDialog: ModelingDialogFixture
   editor: EditorFixture
   toolbar: ToolbarFixture
   scene: SceneFixture
@@ -97,7 +154,47 @@ export interface Fixtures {
   ) => Promise<{ dir: string }>
 }
 
+export interface ElectronZooLaunchOptions {
+  args?: string[]
+  appDirectory?: string
+  executablePath?: string
+}
+
+/** Persist the tagged renderer choice; return whether the setting changed. */
+async function applyTestSceneMode(page: Page, localRendererEnabled?: boolean) {
+  if (localRendererEnabled === undefined) return false
+  await page.waitForFunction(() =>
+    window.app?.settings.actor.getSnapshot().matches('idle')
+  )
+  const changed = await page.evaluate((value) => {
+    const actor = window.app.settings.actor
+    if (
+      actor.getSnapshot().context.modeling.useLocalRenderer.current === value
+    ) {
+      return false
+    }
+    actor.send({
+      type: 'set.modeling.useLocalRenderer',
+      data: { level: 'user', value },
+    })
+    return true
+  }, localRendererEnabled)
+  if (!changed) return false
+  await page.waitForFunction((value) => {
+    const snapshot = window.app.settings.actor.getSnapshot()
+    return (
+      snapshot.matches('idle') &&
+      snapshot.context.modeling.useLocalRenderer.current === value
+    )
+  }, localRendererEnabled)
+  return true
+}
+
 export class ElectronZoo {
+  private disposed = false
+  private disposal: Promise<void> | undefined
+  private launching: Promise<ElectronApplication> | undefined
+  public rendererCrashed = false
   public available: boolean = true
   public electron!: ElectronApplication
   public firstUrl = ''
@@ -106,24 +203,59 @@ export class ElectronZoo {
 
   public page!: Page
   public context!: BrowserContext
+  private tracingEnabled = false
+  private useLocalRenderer: boolean | undefined
+  private deferInitScriptReloads = false
 
-  constructor() {}
+  constructor(private readonly launchOptions: ElectronZooLaunchOptions = {}) {}
+
+  async dispose(testInfo: TestInfo) {
+    this.disposed = true
+    this.available = false
+    if (!this.electron && this.launching) {
+      try {
+        this.electron = await this.launching
+      } catch {
+        return
+      }
+    }
+    if (!this.electron) return
+    this.disposal ??= (async () => {
+      await attachRendererCrashDiagnostics(this.electron, testInfo)
+      // Bypass unload handlers in an unresponsive renderer before quitting.
+      await Promise.all(
+        this.electron
+          .windows()
+          .map((page) => page.close({ runBeforeUnload: false }))
+      )
+      await this.electron.close()
+    })()
+    await this.disposal
+  }
 
   // Help remote end by signaling we're done with the connection.
   // If it takes longer than 10s to stop, just resolve.
   async makeAvailableAgain() {
+    // A test may end immediately after a native reload. Resolve the current
+    // document's real owner before asking it to release its engine session.
+    await this.page.waitForFunction(() =>
+      Boolean(window.app?.engineCommandManager)
+    )
     await this.page.evaluate(async () => {
       return new Promise((resolve) => {
         if (
-          window.engineCommandManager.connection &&
-          window.engineCommandManager.started &&
-          window.engineCommandManager.connection.websocket?.readyState ===
+          !window.engineCommandManager.connection ||
+          !window.engineCommandManager.started ||
+          window.engineCommandManager.connection.websocket?.readyState !==
             WebSocket.OPEN
         ) {
           return resolve(undefined)
         }
 
-        window.engineCommandManager.tearDown()
+        window.engineCommandManager.tearDown({
+          route: 'user-requested',
+          initiatedBy: 'client',
+        })
 
         // Keep polling (per js event tick) until state is Disconnected.
         const timeA = Date.now()
@@ -149,7 +281,9 @@ export class ElectronZoo {
       })
     })
 
-    await this.context.tracing.stopChunk({ path: 'trace.zip' })
+    if (this.tracingEnabled) {
+      await this.context.tracing.stopChunk({ path: 'trace.zip' })
+    }
 
     // Only after cleanup we're ready.
     this.available = true
@@ -157,8 +291,15 @@ export class ElectronZoo {
 
   async createInstanceIfMissing(
     testInfo: TestInfo,
-    userFeatures: readonly Feature[] = []
+    userFeatures: readonly Feature[] = [],
+    setupTimeout = 120_000,
+    mockApiRoutes = true
   ) {
+    if (this.disposed) {
+      throw new Error('Electron fixture has been disposed')
+    }
+    this.useLocalRenderer = geometryOnlyForTestTags(testInfo.tags)
+
     // Create or otherwise clear the folder.
     this.projectDirName = testInfo.outputPath('electron-test-projects-dir')
 
@@ -167,18 +308,27 @@ export class ElectronZoo {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this
 
+    const appDirectory = this.launchOptions.appDirectory
+      ? path.resolve(this.launchOptions.appDirectory)
+      : undefined
+    const executablePath =
+      this.launchOptions.executablePath ??
+      (process.env.ELECTRON_OVERRIDE_DIST_PATH
+        ? process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron'
+        : undefined)
     const options = {
-      args: ['.', '--no-sandbox'],
+      args: [
+        appDirectory ?? '.',
+        '--no-sandbox',
+        ...(this.launchOptions.args ?? []),
+      ],
+      ...(appDirectory ? { cwd: appDirectory } : {}),
+      timeout: setupTimeout,
       env: {
         ...process.env,
         NODE_ENV: 'test',
       },
-      ...(process.env.ELECTRON_OVERRIDE_DIST_PATH
-        ? {
-            executablePath:
-              process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron',
-          }
-        : {}),
+      ...(executablePath !== undefined ? { executablePath } : {}),
       ...(process.env.PLAYWRIGHT_RECORD_VIDEO
         ? {
             recordVideo: {
@@ -191,16 +341,25 @@ export class ElectronZoo {
 
     // Do this once and then reuse window on subsequent calls.
     if (!this.electron) {
-      this.electron = await electron.launch(options)
+      this.launching = electron.launch(options)
+      this.electron = await this.launching
+      if (this.disposed) {
+        await this.dispose(testInfo)
+        throw new Error('Electron fixture setup was cancelled')
+      }
 
       // Mac takes quite a long time to create the first window in CI.
       // Turns out we can't trust firstWindow() either. So loop.
       let timeoutId: ReturnType<typeof setTimeout>
       const tryToGetWindowPage = () =>
-        new Promise((resolve) => {
+        new Promise((resolve, reject) => {
           const fn = () => {
             this.page = this.electron.windows()[0]
             timeoutId = setTimeout(() => {
+              if (this.disposed) {
+                reject(new Error('Electron fixture setup was cancelled'))
+                return
+              }
               if (this.page) {
                 clearTimeout(timeoutId)
                 return resolve(undefined)
@@ -214,19 +373,25 @@ export class ElectronZoo {
       await tryToGetWindowPage()
 
       this.context = this.electron.context()
-      await this.context.tracing.start({ screenshots: true, snapshots: true })
+      const trace = testInfo.project.use.trace
+      this.tracingEnabled =
+        trace !== 'off' && !(typeof trace === 'object' && trace.mode === 'off')
+      if (this.tracingEnabled) {
+        await this.context.tracing.start({ screenshots: true, snapshots: true })
+      }
 
       // We need to patch this because addInitScript will bind too late in our
-      // electron tests, never running. We need to call reload() after each call
-      // to guarantee it runs. Intentionally changing `this`, so no need to
-      // bind.
+      // electron tests, never running. Reload to apply scripts added by tests;
+      // fixture setup batches them before one final navigation.
+      // Intentionally changing `this`, so no need to bind.
       // eslint-disable-next-line @typescript-eslint/unbound-method
       const oldContextAddInitScript = this.context.addInitScript
       this.context.addInitScript = async function (a, b) {
-        // @ts-ignore pretty sure way out of tsc's type checking capabilities.
-        // This code works perfectly fine.
-        const disposable = await oldContextAddInitScript.apply(this, [a, b])
-        await that.page.reload()
+        const disposable = await oldContextAddInitScript.call(
+          this,
+          scopedInitScript(a, b, that.projectDirName)
+        )
+        if (!that.deferInitScriptReloads) await that.page.reload()
         return disposable
       }
 
@@ -234,26 +399,56 @@ export class ElectronZoo {
       // eslint-disable-next-line @typescript-eslint/unbound-method
       const oldPageAddInitScript = this.page.addInitScript
       this.page.addInitScript = async function (a: any, b: any) {
-        // @ts-ignore pretty sure way out of tsc's type checking capabilities.
-        // This code works perfectly fine.
-        const disposable = await oldPageAddInitScript.apply(this, [a, b])
-        await that.page.reload()
+        const disposable = await oldPageAddInitScript.call(
+          this,
+          scopedInitScript(a, b, that.projectDirName)
+        )
+        if (!that.deferInitScriptReloads) await that.page.reload()
         return disposable
       }
     }
 
-    await this.context.tracing.startChunk()
+    await startRendererCrashDiagnostics(this.electron)
+    if (this.tracingEnabled) {
+      await this.context.tracing.startChunk()
+    }
+
+    await this.page.evaluate(
+      ({ key, testScope }) => sessionStorage.setItem(key, testScope),
+      {
+        key: PLAYWRIGHT_TEST_SCOPE_KEY,
+        testScope: this.projectDirName,
+      }
+    )
 
     // THIS IS ABSOLUTELY NECESSARY TO CHANGE THE PROJECT DIRECTORY BETWEEN
     // TESTS BECAUSE OF THE ELECTRON INSTANCE REUSE.
+    await this.stopSettingsWrites()
     await this.electron?.evaluate(({ app }, projectDirName) => {
       // @ts-ignore can't declaration merge see main.ts
       app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
     }, this.projectDirName)
 
-    await setup(this.context, this.page, testInfo, userFeatures)
+    // Register all fixture scripts without booting the app between each step.
+    // Individual tests retain addInitScript's historical immediate reload.
+    this.deferInitScriptReloads = true
+    try {
+      await setup(this.context, this.page, testInfo, userFeatures, {
+        mockApiRoutes,
+        reload: false,
+      })
+    } finally {
+      this.deferInitScriptReloads = false
+    }
 
-    await this.cleanProjectDir()
+    await this.cleanProjectDir(
+      {
+        plugins: playwrightPluginSettings({
+          zookeeperEnabled: testInfo.tags.includes('@zookeeper'),
+        }),
+      },
+      { reload: false }
+    )
 
     // Create a consistent way to resize the page across electron and web.
     // (lee) I had to do everything in the book to make electron change its
@@ -296,14 +491,27 @@ export class ElectronZoo {
     //   return app.reuseWindowForTest();
     // });
 
-    // Always start at the root view
-    await this.page.goto(this.firstUrl)
-
-    // Force a hard reload, destroying the stream and other state
-    await this.page.reload()
+    // One full navigation applies the prepared scripts and settings and destroys
+    // the previous renderer state. A hash-only goto would preserve that state.
+    await this.page.goto(this.firstUrl.split('#')[0])
+    await waitForAppLoad(this.page)
+    if (!mockApiRoutes) await waitForAuthentication(this.page)
+    // Reused Electron windows can reload before the settings file is settled.
+    // Verify the live setting before the test opens a modeling scene.
+    // A reused Electron window may already have mounted the old renderer.
+    if (await applyTestSceneMode(this.page, this.useLocalRenderer)) {
+      await this.page.reload()
+      await waitForAppLoad(this.page)
+      if (!mockApiRoutes) await waitForAuthentication(this.page)
+    }
   }
 
-  async cleanProjectDir(appSettings?: DeepPartial<Settings>) {
+  async cleanProjectDir(
+    appSettings?: DeepPartial<Settings>,
+    { reload = true }: { reload?: boolean } = {}
+  ) {
+    await this.stopSettingsWrites()
+
     try {
       if (fs.existsSync(this.projectDirName)) {
         await fsp.rm(this.projectDirName, { recursive: true })
@@ -339,6 +547,14 @@ export class ElectronZoo {
       settings: {
         ...TEST_SETTINGS,
         ...appSettings,
+        ...(this.useLocalRenderer === undefined
+          ? {}
+          : {
+              modeling: {
+                ...(appSettings?.modeling ?? TEST_SETTINGS.modeling),
+                use_local_renderer: this.useLocalRenderer,
+              },
+            }),
         plugins: {
           ...playwrightPluginSettings(),
           ...appSettingsPlugins,
@@ -356,6 +572,21 @@ export class ElectronZoo {
       },
     })
     await fsp.writeFile(tempSettingsFilePath, settingsOverridesToml)
+    if (reload) {
+      await this.page.reload()
+      await waitForAppLoad(this.page)
+    }
+  }
+
+  private async stopSettingsWrites() {
+    // Drain the current save and stop future layout saves before replacing
+    // the settings file or changing its destination. Reload restarts the actor.
+    await this.page.waitForFunction(() => {
+      const actor = window.app?.settings.actor
+      if (!actor?.getSnapshot().matches('idle')) return false
+      actor.stop()
+      return true
+    })
   }
 }
 
@@ -368,7 +599,16 @@ const fixturesForElectron = {
     use: FnUse,
     testInfo: TestInfo
   ) => {
-    await use(tronApp.page)
+    tronApp.rendererCrashed = false
+    const onCrash = () => {
+      tronApp.rendererCrashed = true
+    }
+    tronApp.page.on('crash', onCrash)
+    try {
+      await use(tronApp.page)
+    } finally {
+      tronApp.page.off('crash', onCrash)
+    }
   },
   context: async (
     { tronApp }: { tronApp: ElectronZoo },
@@ -385,10 +625,12 @@ const fixturesForWeb = {
       page,
       context,
       userFeatures,
+      mockApiRoutes,
     }: {
       page: Page
       context: BrowserContext
       userFeatures: readonly Feature[]
+      mockApiRoutes: boolean
     },
     use: FnUse,
     testInfo: TestInfo
@@ -419,7 +661,12 @@ const fixturesForWeb = {
     }
 
     const webApp = new AuthenticatedApp(context, page, testInfo)
-    await webApp.initialise('', userFeatures)
+    await webApp.initialise('', userFeatures, mockApiRoutes)
+
+    // Web settings live in OPFS; the localStorage seed alone cannot select
+    // a renderer. Persist the choice before a modeling scene mounts; no reload
+    // is needed on the project library, where no scene has mounted yet.
+    await applyTestSceneMode(page, geometryOnlyForTestTags(testInfo.tags))
 
     await use(page)
   },
@@ -437,14 +684,17 @@ const fixturesBasedOnProcessEnvPlatform = {
   cmdBar: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new CmdBarFixture(page))
   },
+  modelingDialog: async ({ page }: { page: Page }, use: FnUse) => {
+    await use(new ModelingDialogFixture(page))
+  },
   editor: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new EditorFixture(page))
   },
   toolbar: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new ToolbarFixture(page))
   },
-  scene: async ({ page }: { page: Page }, use: FnUse) => {
-    await use(new SceneFixture(page))
+  scene: async ({ page }: { page: Page }, use: FnUse, testInfo: TestInfo) => {
+    await use(new SceneFixture(page, geometryOnlyForTestTags(testInfo.tags)))
   },
   homePage: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new HomePageFixture(page))
@@ -475,13 +725,14 @@ const fixturesBasedOnProcessEnvPlatform = {
     // This forces the page to reload after fs operations.
     let ret
     if (!tronApp) {
-      // OPFS is isolated per instance in Playwright!
-      // In the past, it wasn't: https://github.com/microsoft/playwright/issues/29901
+      // The persistent WebKit fixture clears its origin storage before each
+      // serial test; regular browser contexts isolate OPFS themselves.
       const projects = await fs.getPath('documents')
       const projectDirPath = await fs.resolve(projects, PROJECT_FOLDER)
       ret = async function (fn: (dir: string) => Promise<void>) {
         return fn(projectDirPath)
           .then(() => page.reload())
+          .then(() => waitForAppLoad(page))
           .then(() => ({
             dir: projectDirPath,
           }))
@@ -491,6 +742,7 @@ const fixturesBasedOnProcessEnvPlatform = {
       ret = async function (fn: (dir: string) => Promise<void>) {
         return fn(projectDirName)
           .then(() => page.reload())
+          .then(() => waitForAppLoad(page))
           .then(() => ({
             dir: projectDirName,
           }))
@@ -500,12 +752,26 @@ const fixturesBasedOnProcessEnvPlatform = {
     await use(ret)
   },
   _globalAfterEach: [
-    async ({ page }: { page: Page }, use: FnUse, testInfo: TestInfo) => {
+    async (
+      { page, tronApp }: { page: Page; tronApp?: ElectronZoo },
+      use: FnUse,
+      testInfo: TestInfo
+    ) => {
       await use() // <-- runs the actual test
 
-      const engineLogs: ILog[] = await page.evaluate(
-        () => window.engineDebugger.logs || []
-      )
+      if (
+        tronApp &&
+        (testInfo.status === 'timedOut' || tronApp.rendererCrashed)
+      ) {
+        await tronApp.dispose(testInfo)
+        return
+      }
+
+      await attachRendererCrashDiagnostics(tronApp?.electron, testInfo)
+
+      const engineLogs: ILog[] = await page
+        .evaluate(() => window.engineDebugger?.logs || [])
+        .catch(() => [])
       const formattedLogs: IFormattedLog[] = engineLogs.map((log: ILog) => {
         const newLog: IFormattedLog = {
           ...log,

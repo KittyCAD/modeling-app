@@ -38,7 +38,7 @@ startSketchOn(-XZ)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the appearance::hexString function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-appearance-hexString0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-appearance-hexString0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-appearance-hexString0.png"
@@ -76,7 +76,7 @@ map(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the appearance::hexString function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-appearance-hexString1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-appearance-hexString1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-appearance-hexString1.png"
@@ -118,7 +118,7 @@ grid(offset = 0, red = 0)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the appearance::hexString function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-appearance-hexString2_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-appearance-hexString2_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-appearance-hexString2.png"
@@ -165,7 +165,7 @@ map(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the appearance::hexString function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-appearance-hexString3_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-appearance-hexString3_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-appearance-hexString3.png"

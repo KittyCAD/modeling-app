@@ -1019,6 +1019,7 @@ description: Result of parsing translate_helix.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

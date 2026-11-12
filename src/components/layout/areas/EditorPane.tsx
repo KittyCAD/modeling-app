@@ -1,0 +1,473 @@
+import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
+import { markdown } from '@codemirror/lang-markdown'
+import { python } from '@codemirror/lang-python'
+import { searchKeymap } from '@codemirror/search'
+import { Compartment, EditorState } from '@codemirror/state'
+import {
+  drawSelection,
+  EditorView,
+  highlightActiveLine,
+  highlightSpecialChars,
+  keymap,
+  lineNumbers,
+} from '@codemirror/view'
+import { Menu } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
+import { ActionButton } from '@src/components/ActionButton'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
+import {
+  editorMarkdownHighlight,
+  editorTheme,
+  editorVisualTheme,
+} from '@src/editor/plugins/theme'
+import usePlatform from '@src/hooks/usePlatform'
+import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
+import {
+  type ActiveTextFile,
+  activeTextFileSignal,
+  clearActiveTextFile,
+  flushActiveTextFileWrite,
+  scheduleActiveTextFileWrite,
+} from '@src/lib/activeTextFile'
+import { useApp, useSingletons } from '@src/lib/boot'
+import type { AreaTypeComponentProps } from '@src/lib/layout'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import {
+  isExtensionARelevantExtension,
+  toProjectRelativePath,
+} from '@src/lib/paths'
+import { getResolvedTheme } from '@src/lib/theme'
+import { reportRejection, trap } from '@src/lib/trap'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import {
+  findKeymapItemForCommand,
+  keymapKeystrokesDisplay,
+  keymapScopesValueSpec,
+  keymapService,
+} from '@src/registry/contracts/keymap'
+import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
+import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import { use, useEffect, useRef } from 'react'
+import toast from 'react-hot-toast'
+import styles from './KclEditorMenu.module.css'
+
+type Singletons = ReturnType<typeof useSingletons>
+
+export const editorShortcutMeta = {
+  formatCode: {
+    defaultKeys: ['alt+shift+f'],
+  },
+  convertToVariable: {
+    defaultKeys: ['ctrl+shift+c'],
+  },
+}
+
+export const EditorPane = (props: AreaTypeComponentProps) => {
+  return (
+    <LayoutPanel
+      title={props.layout.label}
+      id={`${props.layout.id}-pane`}
+      className="border-none"
+    >
+      <LayoutPanelHeader
+        id={props.layout.id}
+        icon="code"
+        title={props.layout.label}
+        Menu={KclEditorMenu}
+        onClose={props.onClose}
+      />
+      <EditorPaneContents />
+    </LayoutPanel>
+  )
+}
+
+export const EditorPaneContents = () => {
+  useSignals()
+  const { kclManager } = useSingletons()
+  const activeTextFile = activeTextFileSignal.value
+  const editorParent = useRef<HTMLDivElement>(null)
+
+  // When this pane unmounts (e.g. the Code pane is closed), stop showing the
+  // text file so a KCL file is shown again the next time it opens.
+  useEffect(() => {
+    return () => {
+      clearActiveTextFile()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (activeTextFile) {
+      return
+    }
+    editorParent.current?.appendChild(kclManager.editorView.dom)
+  }, [activeTextFile, kclManager.editorView.dom])
+
+  if (activeTextFile) {
+    return <TextFileEditor activeTextFile={activeTextFile} />
+  }
+
+  return (
+    <div className="relative h-full">
+      <div
+        id="code-mirror-override"
+        className="absolute inset-0 pr-1"
+        ref={editorParent}
+      />
+    </div>
+  )
+}
+
+const textFileEditorTheme = EditorView.theme({
+  '&': {
+    height: '100%',
+    color: 'inherit',
+  },
+  '.cm-scroller': {
+    fontFamily:
+      'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+  },
+  '.cm-content': {
+    paddingBlock: '0.5rem',
+  },
+  '.cm-line': {
+    paddingInline: '0.5rem',
+  },
+  '&.cm-focused': {
+    outline: 'none',
+  },
+})
+
+/** Compartment so theme changes reconfigure in place instead of recreating the view. */
+const textThemeCompartment = new Compartment()
+
+/**
+ * Keep the visual theme and syntax colors in one compartment so they update
+ * together when the app theme changes. Python uses the same code palette as KCL.
+ */
+function textEditorThemeExtensions(theme: 'light' | 'dark', path: string) {
+  const normalizedPath = path.toLowerCase()
+  if (normalizedPath.endsWith('.py')) {
+    return editorTheme[theme]
+  }
+  return [
+    editorVisualTheme[theme],
+    ...(normalizedPath.endsWith('.md') ? [editorMarkdownHighlight[theme]] : []),
+  ]
+}
+
+/**
+ * A lightweight, editable CodeMirror surface for non-KCL text files (Markdown,
+ * Python, or plain text). It is independent of `KclManager` so editing these
+ * files never triggers KCL execution, LSP, or WASM project loading. Edits are
+ * auto-saved to disk (debounced) via {@link scheduleActiveTextFileWrite}.
+ */
+function TextFileEditor({
+  activeTextFile,
+}: {
+  activeTextFile: ActiveTextFile
+}) {
+  useSignals()
+  const { commands, fileOperations, settings, registry, project } = useApp()
+  const settingsValues = settings.useSettings()
+  const resolvedTheme = getResolvedTheme(settingsValues.app.theme.current)
+  const editorParent = useRef<HTMLDivElement>(null)
+  const viewRef = useRef<EditorView | null>(null)
+
+  // Create/destroy the editor only when the FILE changes (path/status) — never
+  // on keystroke or theme change, which would reset cursor/scroll and could
+  // drop un-flushed edits.
+  useEffect(() => {
+    if (!editorParent.current || activeTextFile.status !== 'ready') {
+      return
+    }
+    const path = activeTextFile.path
+    const normalizedPath = path.toLowerCase()
+    const lineSeparator = activeTextFile.text.match(/\r\n|\r|\n/)?.[0]
+
+    const view = new EditorView({
+      state: EditorState.create({
+        doc: activeTextFile.text,
+        extensions: [
+          textThemeCompartment.of(
+            textEditorThemeExtensions(resolvedTheme, path)
+          ),
+          textFileEditorTheme,
+          ...(normalizedPath.endsWith('.md') ? [markdown()] : []),
+          ...(normalizedPath.endsWith('.py') ? [python()] : []),
+          EditorView.lineWrapping,
+          history(),
+          drawSelection(),
+          lineNumbers(),
+          highlightSpecialChars(),
+          highlightActiveLine(),
+          keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
+          EditorView.updateListener.of((update) => {
+            if (update.docChanged) {
+              scheduleActiveTextFileWrite(
+                fileOperations,
+                path,
+                update.state.doc.sliceString(0, undefined, lineSeparator)
+              )
+            }
+          }),
+        ],
+      }),
+      parent: editorParent.current,
+    })
+    viewRef.current = view
+
+    return () => {
+      view.destroy()
+      viewRef.current = null
+      // Persist edits typed within the debounce window before switching away.
+      flushActiveTextFileWrite().catch(reportRejection)
+    }
+    // resolvedTheme is intentionally omitted: theme changes are handled by the
+    // compartment effect below so the editor isn't recreated on every toggle.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTextFile.path, activeTextFile.status])
+
+  // Reconfigure the theme in place — no recreation, no lost edits.
+  useEffect(() => {
+    viewRef.current?.dispatch({
+      effects: textThemeCompartment.reconfigure(
+        textEditorThemeExtensions(resolvedTheme, activeTextFile.path)
+      ),
+    })
+  }, [resolvedTheme, activeTextFile.path])
+
+  if (activeTextFile.status === 'loading') {
+    return (
+      <div className="h-full p-3 text-sm text-chalkboard-70 dark:text-chalkboard-30">
+        Loading {activeTextFile.name}...
+      </div>
+    )
+  }
+
+  if (activeTextFile.status === 'error') {
+    const currentProject = project?.projectIORefSignal.value
+    const currentFile = project?.executingFileEntry.value
+    const wasmPromise = registry.signal(wasmPromiseValueSpec).value
+    const wasm = wasmPromise ? use(wasmPromise) : undefined
+    const canImport =
+      currentProject?.readWriteAccess &&
+      currentFile &&
+      currentFile.path !== activeTextFile.path &&
+      wasm &&
+      isExtensionARelevantExtension(activeTextFile.path, [
+        'kcl',
+        ...wasm.import_file_extensions(),
+      ])
+
+    return (
+      <div className="h-full p-3 text-sm">
+        <p className="text-destroy-80">
+          Failed to open {activeTextFile.name}: {activeTextFile.error}
+        </p>
+        {canImport && (
+          <ActionButton
+            Element="button"
+            className="mt-3 py-2"
+            tabIndex={0}
+            onClick={() => {
+              commands.send({
+                type: 'Find and select command',
+                data: {
+                  name: 'Import',
+                  groupId: 'code',
+                  argDefaultValues: {
+                    path: toProjectRelativePath(
+                      currentProject.path,
+                      activeTextFile.path
+                    ),
+                  },
+                },
+              })
+            }}
+          >
+            Import in current file
+          </ActionButton>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="relative h-full">
+      <div
+        id="code-mirror-override"
+        className="absolute inset-0 pr-1"
+        ref={editorParent}
+      />
+    </div>
+  )
+}
+
+function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
+  if (!kclManager.codeSignal.value) {
+    toast.error('No code available to copy.')
+    return
+  }
+
+  if (!globalThis?.navigator?.clipboard?.writeText) {
+    toast.error('Clipboard functionality not available in your browser.')
+    return
+  }
+
+  navigator.clipboard
+    .writeText(kclManager.codeSignal.value)
+    .then(() => toast.success(`Copied current file's code to clipboard.`))
+    .catch((e) =>
+      trap(new Error(`Failed to copy code to clipboard: ${e.message}`))
+    )
+}
+
+export const KclEditorMenu = () => {
+  useSignals()
+  // The KCL-specific menu items (format, convert to variable, KCL docs, add KCL
+  // file) don't apply when a plain text/markdown file is open in the pane.
+  if (activeTextFileSignal.value) {
+    return null
+  }
+  return <KclEditorKclMenu />
+}
+
+const KclEditorKclMenu = () => {
+  useSignals()
+  const app = useApp()
+  const { commands, settings } = app
+  const { kclManager } = useSingletons()
+  const platform = usePlatform()
+  const settingsActor = settings.actor
+  const keymap = app.registry.optional(keymapService)
+  const keymapScopes = app.registry.signal(keymapScopesValueSpec).value
+  const currentScopes = keymap?.getCurrentScopes()
+  const keybindingDisplay = (
+    command: string,
+    fallbackKeystrokes: readonly string[]
+  ) =>
+    keymapKeystrokesDisplay(
+      keymap && currentScopes
+        ? findKeymapItemForCommand(
+            keymap.keymap.value,
+            command,
+            currentScopes,
+            keymapScopes
+          )?.keystrokes
+        : fallbackKeystrokes,
+      platform
+    )
+  const formatCodeKeybinding = keybindingDisplay(
+    APP_COMMAND_IDS.editor.format,
+    editorShortcutMeta.formatCode.defaultKeys
+  )
+  const convertToVariableKeybinding = keybindingDisplay(
+    APP_COMMAND_IDS.editor.convertToVariable,
+    editorShortcutMeta.convertToVariable.defaultKeys
+  )
+  const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
+    useConvertToVariable(kclManager)
+
+  return (
+    <HeaderMenu>
+      <Menu.Item>
+        <button
+          type="button"
+          onClick={() => {
+            kclManager.format().catch(reportRejection)
+          }}
+          className={styles.button}
+        >
+          <span>Format code</span>
+          {formatCodeKeybinding && <small>{formatCodeKeybinding}</small>}
+        </button>
+      </Menu.Item>
+      <Menu.Item>
+        <button
+          type="button"
+          onClick={() => copyKclCodeToClipboard(kclManager)}
+          className={styles.button}
+        >
+          <span>Copy code</span>
+        </button>
+      </Menu.Item>
+      {convertToVarEnabled && (
+        <Menu.Item>
+          <button
+            type="button"
+            onClick={() => {
+              handleConvertToVarClick().catch(reportRejection)
+            }}
+            className={styles.button}
+          >
+            <span>Convert to Variable</span>
+            {convertToVariableKeybinding && (
+              <small>{convertToVariableKeybinding}</small>
+            )}
+          </button>
+        </Menu.Item>
+      )}
+      <Menu.Item>
+        <a
+          className={styles.button}
+          href={withSiteBaseURL('/docs/kcl-lang')}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={openExternalBrowserIfDesktop()}
+        >
+          <span>Read the KCL docs</span>
+          <small>
+            zoo.dev
+            <CustomIcon
+              name="link"
+              className="inline-block ml-1 text-align-top w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
+            />
+          </small>
+        </a>
+      </Menu.Item>
+      <Menu.Item>
+        <button
+          type="button"
+          onClick={() => {
+            const currentProject =
+              settingsActor.getSnapshot().context.currentProject
+            commands.send({
+              type: 'Find and select command',
+              data: {
+                name: 'add-kcl-file-to-project',
+                groupId: 'application',
+                argDefaultValues: {
+                  method: 'existingProject',
+                  projectName: currentProject?.name,
+                },
+              },
+            })
+          }}
+          className={styles.button}
+        >
+          <span>Add file to project</span>
+        </button>
+      </Menu.Item>
+      <Menu.Item>
+        <a
+          className={styles.button}
+          href={withSiteBaseURL('/docs/kcl-samples')}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={openExternalBrowserIfDesktop()}
+        >
+          <span>View all samples</span>
+          <small>
+            zoo.dev
+            <CustomIcon
+              name="link"
+              className="inline-block ml-1 text-align-top w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
+            />
+          </small>
+        </a>
+      </Menu.Item>
+    </HeaderMenu>
+  )
+}

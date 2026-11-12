@@ -8,11 +8,13 @@ import type {
   Layout,
   LayoutMigrationMap,
   LayoutWithMetadata,
+  PaneLayout,
 } from '@src/lib/layout/types'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
 import {
   applyLayoutContribution,
   applyLayoutMigrationMap,
+  applyPaneOpenBehavior,
   closeAllPanes,
   parseLayoutWithMigrations,
   setOpenPanes,
@@ -42,6 +44,74 @@ const basicSplitLayout: Layout = {
 }
 
 describe('Layout utils', () => {
+  describe('tab open behavior', () => {
+    const panes: PaneLayout = {
+      id: 'tabs',
+      label: 'Tabs',
+      type: LayoutType.Panes,
+      side: 'inline-start',
+      splitOrientation: 'block',
+      activeIndices: [0, 1],
+      sizes: [30, 70],
+      children: [
+        {
+          id: 'first',
+          label: 'First',
+          type: LayoutType.Simple,
+          areaType: AreaType.Code,
+          icon: 'code',
+        },
+        {
+          id: 'second',
+          label: 'Second',
+          type: LayoutType.Simple,
+          areaType: AreaType.Logs,
+          icon: 'logs',
+        },
+      ],
+    }
+
+    it('leaves multiple mode unchanged and normalizes single mode without mutating the input', () => {
+      expect(applyPaneOpenBehavior(panes, 'multiple')).toBe(panes)
+      const single = applyPaneOpenBehavior(panes, 'single')
+      expect(single).toMatchObject({ activeIndices: [0], sizes: [100] })
+      expect(applyPaneOpenBehavior(single, 'single')).toBe(single)
+      expect(panes.activeIndices).toEqual([0, 1])
+      expect(panes.sizes).toEqual([30, 70])
+    })
+
+    it('normalizes every container, including nested tabs, while preserving surrounding split sizes', () => {
+      const layout: Layout = {
+        ...basicSplitLayout,
+        sizes: [35, 65],
+        children: [
+          panes,
+          {
+            ...panes,
+            id: 'outer',
+            children: [
+              { ...panes, id: 'nested', icon: 'code' },
+              panes.children[1],
+            ],
+          },
+        ],
+      }
+      expect(applyPaneOpenBehavior(layout, 'single')).toMatchObject({
+        sizes: [35, 65],
+        children: [
+          { activeIndices: [0], sizes: [100] },
+          {
+            activeIndices: [0],
+            sizes: [100],
+            children: [
+              { id: 'nested', icon: 'code', activeIndices: [0], sizes: [100] },
+              panes.children[1],
+            ],
+          },
+        ],
+      })
+    })
+  })
   describe('pane visibility utilities', () => {
     it('closes every open pane in a pane layout', () => {
       const layout: Layout = {

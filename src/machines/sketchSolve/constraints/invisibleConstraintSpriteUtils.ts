@@ -81,6 +81,13 @@ export function isInvisibleConstraintObject(
     case 'Tangent':
     case 'Symmetric':
       return true
+    case 'Distance':
+    case 'Angle':
+    case 'Diameter':
+    case 'Fixed':
+    case 'HorizontalDistance':
+    case 'VerticalDistance':
+    case 'Radius':
     default:
       return false
   }
@@ -412,6 +419,11 @@ function isConstrainingPointCluster(
         isConstraintSegmentId(constraint.kind.constraint.point) &&
         pointIds.includes(constraint.kind.constraint.point)
       )
+    case 'EqualRadius':
+    case 'LinesEqualLength':
+    case 'Parallel':
+    case 'Perpendicular':
+    case 'Tangent':
     default:
       return false
   }

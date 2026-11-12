@@ -3,8 +3,8 @@ import fsSync from 'node:fs'
 import { FILE_EXT } from '@src/lib/constants'
 
 import {
-  closeOnboardingModalIfPresent,
   getUtils,
+  waitForWebKitBillingToSettle,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
@@ -80,105 +80,126 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
    * "parametric-bearing-pillow-block": https://github.com/KittyCAD/kcl-samples/blob/main/parametric-bearing-pillow-block/main.kcl
    * "gear-rack": https://github.com/KittyCAD/kcl-samples/blob/main/gear-rack/main.kcl
    */
-  test('should create new file by default, creates a second file with automatic unique name', async ({
-    editor,
-    page,
-    scene,
-    cmdBar,
-    toolbar,
-    folderSetupFn,
-    fs,
-  }) => {
-    await folderSetupFn(async (dir) => {
-      const bracketDir = join(dir, 'bracket')
-      await fs.mkdir(bracketDir, { recursive: true })
-      await fs.writeFile(
-        join(bracketDir, 'main.kcl'),
-        new TextEncoder().encode(bracket)
-      )
-    })
-    const u = await getUtils(page)
-    const sampleOne = {
-      file: `ball-bearing${FILE_EXT}`,
-      title: 'Ball Bearing',
-      file1: `ball-bearing-1${FILE_EXT}`,
-      folderName: 'ball-bearing',
-      folderName1: 'ball-bearing-1',
+  test(
+    'should create new file by default, creates a second file with automatic unique name',
+    { tag: '@localRenderer' },
+    async ({ editor, page, scene, cmdBar, toolbar, folderSetupFn, fs }) => {
+      await folderSetupFn(async (dir) => {
+        const bracketDir = join(dir, 'bracket')
+        await fs.mkdir(bracketDir, { recursive: true })
+        await fs.writeFile(
+          join(bracketDir, 'main.kcl'),
+          new TextEncoder().encode(bracket)
+        )
+      })
+      const u = await getUtils(page)
+      const sampleOne = {
+        file: `ball-bearing${FILE_EXT}`,
+        title: 'Ball Bearing',
+        file1: `ball-bearing-1${FILE_EXT}`,
+        folderName: 'ball-bearing',
+        folderName1: 'ball-bearing-1',
+      }
+      const projectCard = page.getByRole('link', { name: 'bracket' })
+      const loadSampleFromToolbar = async () => {
+        await toolbar.loadButton.click()
+        await cmdBar.expectCommandName('Add file to project')
+        await expect(page.getByTestId('cmd-bar-arg-name')).toHaveText('source')
+        await expect(page.getByTestId('cmd-bar-arg-value')).toHaveAttribute(
+          'placeholder',
+          'KCL Samples'
+        )
+        await page.keyboard.press('Enter')
+        await expect(page.getByTestId('cmd-bar-arg-name')).toHaveText('sample')
+        await cmdBar.selectOption({ name: sampleOne.title }).click()
+      }
+
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await projectCard.click()
+      await scene.settled()
+
+      await test.step('Load a KCL sample with the command palette', async () => {
+        await loadSampleFromToolbar()
+      })
+
+      await test.step('Ensure we made and opened a new file', async () => {
+        await u.openFilePanel()
+        await expect(
+          page.getByTestId('file-tree-item').getByText(sampleOne.folderName)
+        ).toBeVisible()
+        // The folder can appear before navigation closes the command bar.
+        await expect(page).toHaveURL(/ball-bearing(?:%2F|%5C)main\.kcl$/)
+        await scene.settled()
+      })
+
+      await test.step('Load a KCL sample with the command palette', async () => {
+        await loadSampleFromToolbar()
+      })
+
+      await test.step('Ensure we made and opened a new file with a unique name', async () => {
+        await u.openFilePanel()
+        await expect(
+          page.getByTestId('file-tree-item').getByText(sampleOne.folderName1)
+        ).toBeVisible()
+        await expect(page).toHaveURL(/ball-bearing-1(?:%2F|%5C)main\.kcl$/)
+      })
     }
-    const projectCard = page.getByRole('link', { name: 'bracket' })
-    const loadSampleFromToolbar = async () => {
-      await toolbar.loadButton.click()
-      await cmdBar.expectCommandName('Add file to project')
-      await expect(page.getByTestId('cmd-bar-arg-name')).toHaveText('source')
-      await expect(page.getByTestId('cmd-bar-arg-value')).toHaveAttribute(
-        'placeholder',
-        'KCL Samples'
-      )
-      await page.keyboard.press('Enter')
-      await expect(page.getByTestId('cmd-bar-arg-name')).toHaveText('sample')
-      await cmdBar.selectOption({ name: sampleOne.title }).click()
-    }
-
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await projectCard.click()
-    await scene.settled()
-
-    await test.step('Load a KCL sample with the command palette', async () => {
-      await loadSampleFromToolbar()
-    })
-
-    await test.step('Ensure we made and opened a new file', async () => {
-      await u.openFilePanel()
-      await expect(
-        page.getByTestId('file-tree-item').getByText(sampleOne.folderName)
-      ).toBeVisible()
-    })
-
-    await test.step('Load a KCL sample with the command palette', async () => {
-      await loadSampleFromToolbar()
-    })
-
-    await test.step('Ensure we made and opened a new file with a unique name', async () => {
-      await u.openFilePanel()
-      await expect(
-        page.getByTestId('file-tree-item').getByText(sampleOne.folderName1)
-      ).toBeVisible()
-    })
-  })
+  )
 })
 
-test.describe('Query parameter command', { tag: '@web' }, () => {
-  test('applies the ttc layout without opening the command palette', async ({
-    page,
-    cmdBar,
-  }) => {
-    await page.goto('/?cmd=set-layout&groupId=application&layoutId=ttc')
+test.describe(
+  'Query parameter command',
+  { tag: ['@web', '@localRenderer'] },
+  () => {
+    test('applies the ttc layout without opening the command palette', async ({
+      page,
+      cmdBar,
+    }) => {
+      await page.goto('/?cmd=set-layout&groupId=application&layoutId=ttc')
 
-    await expect
-      .poll(() =>
-        page.evaluate(() => {
-          const layout = window.app.layout.get()
-          return 'sizes' in layout ? layout.sizes : []
-        })
+      // Home creates and opens a project before the file route applies its layout.
+      await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+
+      await expect
+        .poll(() =>
+          page.evaluate(() => {
+            const layout = window.app.layout.get()
+            return 'sizes' in layout ? layout.sizes : []
+          })
+        )
+        .toEqual([0, 50, 50])
+      await cmdBar.expectState({ stage: 'commandBarClosed' })
+    })
+
+    test('creates a current sample in the default project library', async ({
+      page,
+      toolbar,
+      editor,
+    }) => {
+      // Avoid interrupting WebKit's in-flight billing request when the query
+      // command replaces the current document.
+      await waitForWebKitBillingToSettle(page)
+
+      const sampleTitle = 'Socket Head Cap Screw'
+      const sampleSlug = 'socket-head-cap-screw'
+      const sampleLoadTimeout = 30_000
+      const queryString = `?cmd=add-kcl-file-to-project&groupId=application&projectName=browser&source=kcl-samples&sample=${sampleSlug}/main.kcl`
+      await page.goto(page.url() + queryString)
+
+      // Query-driven creation continues after Wasm initialization, while still on Home.
+      await test.step(
+        'Open the created sample',
+        async () => {
+          await expect(page).toHaveURL(/socket-head-cap-screw%2Fmain\.kcl$/, {
+            timeout: sampleLoadTimeout,
+          })
+          await toolbar.openPane(DefaultLayoutPaneID.Code)
+          await editor.expectEditor.toContain(sampleTitle, {
+            timeout: sampleLoadTimeout,
+          })
+        },
+        { timeout: sampleLoadTimeout }
       )
-      .toEqual([0, 50, 50])
-    await cmdBar.expectState({ stage: 'commandBarClosed' })
-  })
-
-  test('creates a current sample in the default project library', async ({
-    page,
-    toolbar,
-    editor,
-  }) => {
-    await closeOnboardingModalIfPresent(page)
-
-    const sampleTitle = 'Socket Head Cap Screw'
-    const sampleSlug = 'socket-head-cap-screw'
-    const queryString = `?cmd=add-kcl-file-to-project&groupId=application&projectName=browser&source=kcl-samples&sample=${sampleSlug}/main.kcl`
-    await page.goto(page.url() + queryString)
-
-    await toolbar.openPane(DefaultLayoutPaneID.Code)
-    await editor.expectEditor.toContain(sampleTitle, { timeout: 30_000 })
-    await expect(page).toHaveURL(/socket-head-cap-screw%2Fmain\.kcl$/)
-  })
-})
+    })
+  }
+)

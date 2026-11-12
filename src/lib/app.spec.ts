@@ -1,34 +1,34 @@
+import '@src/lib/projectSession/next/testFeature'
+import { projectSessionService } from '@src/lib/projectSession/next/contract'
+import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
+import { FileNotFound } from '@src/lib/fileSystem/fileOperations'
 import type { Feature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { File, type KclManager } from '@src/lang/KclManager'
+import type { KclManager } from '@src/lang/KclManager'
+import { File } from '@src/lib/projectSession'
 import { App } from '@src/lib/app'
-import {
-  KCL_CEK_EXECUTOR_FEATURE_FLAG,
-  KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
-  OPFS_CLOUD_FEATURE_FLAG,
-} from '@src/lib/constants'
+import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
-import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import {
   DIRECTORY_PROJECT_LIBRARY_TYPE,
-  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   getDefaultCloudProjectLibrarySetting,
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
 } from '@src/lib/projectLibraries'
+import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
 import { zookeeperEditPatchHistoryEvent } from '@src/lib/zookeeper/editorPlugin'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
 import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { billingService } from '@src/registry/contracts/billing'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
@@ -196,13 +196,9 @@ function createRuntimeFlagsWasmInstance() {
   }
 }
 
-function expectedRuntimeFlags(
-  useNewLexerParser: 'On' | 'Off',
-  useCekExecutor: 'On' | 'Off'
-) {
+function expectedRuntimeFlags() {
   return JSON.stringify({
-    use_cek_executor: useCekExecutor,
-    use_new_lexer_parser: useNewLexerParser,
+    use_new_parser: 'Off',
   })
 }
 
@@ -256,6 +252,92 @@ function hasDefaultDirectoryLibrarySetting(app: App) {
 }
 
 describe('project system', () => {
+  it('closes the next project session through the Home navigation boundary', async () => {
+    const app = createAppForTest()
+    try {
+      await waitForSettingsIdle(app)
+      await waitForAuthSettled(app)
+      const projects = app.registry.get(projectSessionService)
+      const session = projects.openProject({
+        contents: { name: 'standalone', path: '/standalone', children: [] },
+        metadata: { title: 'Standalone', readWriteAccess: true },
+      })
+      // Exercise Home's actual close boundary without starting unrelated folder IO.
+      loadHomeProjects({
+        projectLibraries: { refreshProjects: vi.fn(async () => {}) },
+        closeProject: () => app.closeProject(),
+        settings: { actor: { send: vi.fn() } },
+      })
+      expect(projects.currentSession.value).toBeUndefined()
+      expect(session.signal.aborted).toBe(true)
+    } finally {
+      await app.disposeAsync()
+    }
+  })
+  it('opens projects containing KCL-named directories without reading them as files', async () => {
+    const path = `/tmp/app-kcl-directory-${crypto.randomUUID()}`
+    const main = fsZds.join(path, 'main.kcl')
+    const folder = fsZds.join(path, 'folder.kcl')
+    const nested = fsZds.join(folder, 'part.kcl')
+    const app = createAppForTest()
+    try {
+      await writeText(main, '// main\n')
+      await writeText(nested, '// nested\n')
+      const snapshot = vi
+        .spyOn(app.singletons.kclManager.rustContext, 'sendOpenProject')
+        .mockResolvedValue(undefined)
+      const opened = await app.openProject({
+        ...mockProject,
+        path,
+        name: fsZds.basename(path),
+        default_file: main,
+        children: [
+          { name: 'main.kcl', path: main, children: null },
+          {
+            name: 'folder.kcl',
+            path: folder,
+            children: [{ name: 'part.kcl', path: nested, children: null }],
+          },
+        ],
+      })
+      await opened.openEditor(
+        main,
+        app.singletons.kclManager,
+        '// main\n',
+        false
+      )
+      expect(snapshot).toHaveBeenCalledWith(
+        main,
+        expect.arrayContaining([
+          expect.objectContaining({ path: main, text: '// main\n' }),
+          expect.objectContaining({ path: nested, text: '// nested\n' }),
+        ])
+      )
+      expect(snapshot.mock.calls.at(-1)?.[1]).toHaveLength(2)
+    } finally {
+      app.dispose()
+      await fsZds.rm(path, { recursive: true, force: true })
+    }
+  })
+  it('always closes a the last project before opening a new one', async () => {
+    const app = createAppForTest()
+    vi.fn(window.electron?.watchFileOn).mockImplementation(() => {})
+    vi.fn(window.electron?.watchFileOff).mockImplementation(() => {})
+
+    const project1 = await app.openProject(mockProject)
+    const closeFn = vi.spyOn(project1, 'close')
+    const projectPath = 'some-other-one'
+    await app.openProject({
+      ...mockProject,
+      name: 'bracket',
+      path: projectPath,
+      default_file: fsZds.join(projectPath, 'main.kcl'),
+    })
+    expect(closeFn).toHaveBeenCalled()
+
+    app.closeProject()
+    app.dispose()
+  })
   it('uses registry runtime dependencies by default', () => {
     const app = createAppForTest()
 
@@ -267,6 +349,7 @@ describe('project system', () => {
       )
       const registryBilling = app.registry.get(billingService)
       const registryRustContext = app.registry.get(rustContextService)
+      const registryProjectSession = app.registry.get(projectSession)
 
       expect(app.wasmPromise).toBe(app.registry.get(wasmPromiseValueSpec))
       expect(app.machineManager).toBe(registryMachineManager.manager)
@@ -276,34 +359,270 @@ describe('project system', () => {
       )
       expect(app.billing.actor).toBe(registryBilling.actor)
       expect(app.rustContext).toBe(registryRustContext.context)
+      expect(app.projectSignal).toBe(registryProjectSession.project)
+      expect(app.currentProjectLibraryIdSignal).toBe(
+        registryProjectSession.currentProjectLibraryId
+      )
     } finally {
       app.dispose()
     }
   })
 
-  it('does not reapply the camera projection while sketch solve mode is active', () => {
+  it('follows the executing project editor and releases it on close', async () => {
     const app = createAppForTest()
-    const cameraProjectionSetter = vi.spyOn(
-      app.singletons.kclManager.sceneInfra.camControls,
-      'engineCameraProjection',
-      'set'
-    )
-
     try {
-      app.project = {} as NonNullable<typeof app.project>
-      app.singletons.kclManager.modelingState = {
-        matches: (state: string) => state === 'sketchSolveMode',
-      } as unknown as NonNullable<KclManager['modelingState']>
+      await waitForSettingsIdle(app)
+      const execution = app.registry.get(projectSession).executingEditor
+      expect(execution.value).toBeUndefined()
+      const project = await app.openProject(mockProject)
+      expect(execution.value).toBeUndefined()
+      const first = await project.openEditor(
+        '/some-dir/test/main.kcl',
+        undefined,
+        ''
+      )
+      const second = await project.openEditor(
+        '/some-dir/test/other.kcl',
+        undefined,
+        '',
+        false
+      )
+      const firstExecute = vi
+        .spyOn(first, 'executeCode')
+        .mockResolvedValue(undefined)
+      const secondExecute = vi
+        .spyOn(second, 'executeCode')
+        .mockResolvedValue(undefined)
+      const firstUpdate = vi.spyOn(first, 'updateCodeEditor')
+      const secondUpdate = vi.spyOn(second, 'updateCodeEditor')
+      const firstHandle = execution.value!
+      expect(firstHandle.code).toBe(first.codeSignal)
+      await firstHandle.executeCode()
+      expect(firstExecute).toHaveBeenCalledTimes(1)
 
-      app.onSettingsUpdate(app.settings.actor.getSnapshot())
+      project.executingPath = second.path
+      const secondHandle = execution.value!
+      expect(secondHandle.code).toBe(second.codeSignal)
+      await firstHandle.executeCode()
+      firstHandle.updateCode('stale')
+      expect(firstExecute).toHaveBeenCalledTimes(1)
+      expect(firstUpdate).not.toHaveBeenCalled()
+      secondHandle.updateCode('current')
+      await secondHandle.executeCode()
+      expect(secondUpdate).toHaveBeenCalledWith('current', undefined)
+      expect(secondExecute).toHaveBeenCalledTimes(1)
 
-      expect(cameraProjectionSetter).not.toHaveBeenCalled()
+      project.closeEditor(second.path)
+      expect(execution.value).toBeUndefined()
+      await secondHandle.executeCode()
+      secondHandle.updateCode('closed')
+      expect(secondExecute).toHaveBeenCalledTimes(1)
+      expect(secondUpdate).toHaveBeenCalledTimes(1)
+      project.executingPath = first.path
+      expect(execution.value?.code).toBe(first.codeSignal)
+      project.closeAllEditors()
+      expect(execution.value).toBeUndefined()
+      await app.openProject({
+        ...mockProject,
+        name: 'other',
+        path: '/some-dir/other',
+      })
+      expect(execution.value).toBeUndefined()
     } finally {
-      cameraProjectionSetter.mockRestore()
-      app.project = undefined
       app.dispose()
     }
   })
+
+  it('does not replay scene settings when selecting the executing editor again', async () => {
+    const app = createAppForTest()
+    try {
+      await waitForSettingsIdle(app)
+      const project = await app.openProject(mockProject)
+      const first = await project.openEditor(
+        '/some-dir/test/main.kcl',
+        undefined,
+        ''
+      )
+      const second = await project.openEditor(
+        '/some-dir/test/other.kcl',
+        undefined,
+        '',
+        false
+      )
+      const engine = app.engineCommandManager
+      const theme = vi.spyOn(engine, 'setTheme').mockResolvedValue(undefined)
+      const edges = vi
+        .spyOn(engine, 'setHighlightEdges')
+        .mockResolvedValue(undefined)
+      const backface = vi
+        .spyOn(engine, 'setDefaultSystemProperties')
+        .mockResolvedValue(undefined)
+      const execute = vi
+        .spyOn(first, 'executeCode')
+        .mockResolvedValue(undefined)
+      const clear = vi.spyOn(first.rustContext, 'clearSceneAndBustCache')
+      engine.connection = { connected: true } as typeof engine.connection
+
+      project.executingPath = first.path
+      expect(theme).not.toHaveBeenCalled()
+      expect(edges).not.toHaveBeenCalled()
+      expect(backface).not.toHaveBeenCalled()
+      expect(execute).not.toHaveBeenCalled()
+      expect(clear).not.toHaveBeenCalled()
+
+      const setting = app.settings.get().modeling.highlightEdges
+      setting.user = !setting.current
+      expect(edges).toHaveBeenCalledExactlyOnceWith(setting.current)
+      expect(execute).toHaveBeenCalledTimes(1)
+      edges.mockClear()
+
+      // A different editor still takes ownership and applies current values.
+      project.executingPath = second.path
+      expect(project.executingEditor.peek()).toBe(second)
+      expect(theme).toHaveBeenCalledTimes(1)
+      expect(edges).toHaveBeenCalledTimes(1)
+      expect(backface).toHaveBeenCalledTimes(1)
+      project.executingPath = second.path
+      expect(theme).toHaveBeenCalledTimes(1)
+      expect(edges).toHaveBeenCalledTimes(1)
+      expect(backface).toHaveBeenCalledTimes(1)
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('assigns scene settings to the executing project editor rather than the singleton', async () => {
+    const app = createAppForTest()
+    try {
+      await waitForSettingsIdle(app)
+      const project = await app.openProject(mockProject)
+      const first = await project.openEditor(
+        '/some-dir/test/main.kcl',
+        undefined,
+        ''
+      )
+      const second = await project.openEditor(
+        '/some-dir/test/other.kcl',
+        undefined,
+        '',
+        false
+      )
+      const firstExecute = vi
+        .spyOn(first, 'executeCode')
+        .mockResolvedValue(undefined)
+      const secondExecute = vi
+        .spyOn(second, 'executeCode')
+        .mockResolvedValue(undefined)
+      const singletonExecute = vi
+        .spyOn(app.singletons.kclManager, 'executeCode')
+        .mockResolvedValue(undefined)
+      vi.spyOn(app.engineCommandManager, 'setTheme').mockResolvedValue(
+        undefined
+      )
+      vi.spyOn(app.engineCommandManager, 'setHighlightEdges').mockResolvedValue(
+        undefined
+      )
+      vi.spyOn(
+        app.engineCommandManager,
+        'setDefaultSystemProperties'
+      ).mockResolvedValue(undefined)
+      app.engineCommandManager.connection = {
+        connected: true,
+      } as typeof app.engineCommandManager.connection
+      const setting = app.settings.get().modeling.highlightEdges
+      setting.user = !setting.current
+      expect(firstExecute).toHaveBeenCalledTimes(1)
+      expect(secondExecute).not.toHaveBeenCalled()
+      expect(singletonExecute).not.toHaveBeenCalled()
+
+      project.executingPath = second.path
+      setting.user = !setting.current
+      expect(firstExecute).toHaveBeenCalledTimes(1)
+      expect(secondExecute).toHaveBeenCalledTimes(1)
+      expect(singletonExecute).not.toHaveBeenCalled()
+
+      project.executingPath = null
+      setting.user = !setting.current
+      expect(firstExecute).toHaveBeenCalledTimes(1)
+      expect(secondExecute).toHaveBeenCalledTimes(1)
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it.each([false, true])(
+    'switches files after a deletion arrives before its watcher notification (missing: %s)',
+    async (missing) => {
+      const app = createAppForTest()
+      const root = '/some-dir/test'
+      const main = `${root}/main.kcl`
+      const dependency = `${root}/dependency.kcl`
+      const healthy = `${root}/healthy.kcl`
+      const failure = missing
+        ? new FileNotFound({
+            operation: 'read-file',
+            path: dependency,
+            cause: { code: 'ENOENT' },
+            message: 'Dependency was deleted',
+          })
+        : new Error('Dependency read permission denied')
+      let deleted = false
+      const read = vi
+        .spyOn(app.projectSession.textFileIO, 'read')
+        .mockImplementation(async (path) => {
+          if (deleted && path === dependency) return Promise.reject(failure)
+          return ''
+        })
+      try {
+        const project = await app.openProject({
+          ...mockProject,
+          children: [main, dependency, healthy].map((path) => ({
+            name: fsZds.basename(path),
+            path,
+            children: null,
+          })),
+        })
+        const editor = await project.openEditor(
+          main,
+          app.singletons.kclManager,
+          '',
+          false
+        )
+        const snapshot = vi
+          .spyOn(editor.rustContext, 'sendOpenProject')
+          .mockResolvedValue(undefined)
+        deleted = true
+        const open = project.openEditor(healthy, editor, undefined, false)
+        if (missing) {
+          await open
+          expect(snapshot).toHaveBeenCalledWith(
+            healthy,
+            expect.arrayContaining([
+              expect.objectContaining({ path: main }),
+              expect.objectContaining({ path: healthy }),
+            ])
+          )
+          expect(snapshot.mock.calls[0][1]).toHaveLength(2)
+          expect(project.files.some((file) => file.path === dependency)).toBe(
+            false
+          )
+          const reads = read.mock.calls.filter(
+            ([path]) => path === dependency
+          ).length
+          await project.openEditor(main, editor, undefined, false)
+          expect(
+            read.mock.calls.filter(([path]) => path === dependency)
+          ).toHaveLength(reads)
+        } else {
+          await expect(open).rejects.toBe(failure)
+          expect(snapshot).not.toHaveBeenCalled()
+        }
+      } finally {
+        read.mockRestore()
+        app.dispose()
+      }
+    }
+  )
 
   it('annotates opened projects with their owning library path', async () => {
     const app = createAppForTest()
@@ -311,11 +630,7 @@ describe('project system', () => {
     try {
       await waitForSettingsIdle(app)
 
-      const library = app.settings
-        .get()
-        .app.libraries.current.find(
-          (entry) => entry.type === DIRECTORY_PROJECT_LIBRARY_TYPE
-        )
+      const library = app.settings.get().app.libraries.current[0]
       expect(library).toBeDefined()
       if (!library) {
         return
@@ -332,7 +647,7 @@ describe('project system', () => {
       expect(openedProject.projectIORefSignal.value).toEqual(
         expect.objectContaining({
           libraryPath: library.path,
-          libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
+          libraryType: library.type,
         })
       )
     } finally {
@@ -354,7 +669,7 @@ describe('project system', () => {
       await wasmPromise
 
       expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('Off', 'Off')
+        expectedRuntimeFlags()
       )
     } finally {
       app.dispose()
@@ -375,34 +690,10 @@ describe('project system', () => {
       await wasmPromise
       wasmInstance.set_kcl_runtime_flags.mockClear()
 
-      userFeatures.setFeatureIds(new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG]))
+      userFeatures.setFeatureIds(new Set())
 
       expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('On', 'Off')
-      )
-    } finally {
-      app.dispose()
-    }
-  })
-
-  it('updates the CEK executor runtime flag when the feature is enabled', async () => {
-    const userFeatures = createUserFeaturesForTest(new Set())
-    const wasmInstance = createRuntimeFlagsWasmInstance()
-    const wasmPromise = Promise.resolve(wasmInstance)
-    const app = createAppForTest({
-      userFeatures,
-      wasmPromise,
-      registryOverrides: [createTestWasmRegistryItem(wasmPromise)],
-    })
-
-    try {
-      await wasmPromise
-      wasmInstance.set_kcl_runtime_flags.mockClear()
-
-      userFeatures.setFeatureIds(new Set([KCL_CEK_EXECUTOR_FEATURE_FLAG]))
-
-      expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('Off', 'On')
+        expectedRuntimeFlags()
       )
     } finally {
       app.dispose()
@@ -410,9 +701,7 @@ describe('project system', () => {
   })
 
   it('sets KCL runtime flags on lifecycle-announced wasm instances', async () => {
-    const userFeatures = createUserFeaturesForTest(
-      new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
-    )
+    const userFeatures = createUserFeaturesForTest(new Set())
     const initialWasmInstance = createRuntimeFlagsWasmInstance()
     const nextWasmInstance = createRuntimeFlagsWasmInstance()
     const wasmPromise = Promise.resolve(initialWasmInstance)
@@ -428,7 +717,7 @@ describe('project system', () => {
       await notifyActiveWasmInstance(nextWasmInstance)
 
       expect(nextWasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('On', 'Off')
+        expectedRuntimeFlags()
       )
     } finally {
       app.dispose()
@@ -439,6 +728,16 @@ describe('project system', () => {
     const previousElectron = window.electron
     const syncActivePlugins = vi.fn().mockResolvedValue(undefined)
     window.electron = {
+      os: {
+        isLinux: true,
+        isMac: false,
+        isWindows: false,
+        name: 'Linux',
+      },
+      packageJson: {
+        name: 'zoo-modeling-app',
+      },
+      getAppTestProperty: vi.fn().mockResolvedValue(undefined),
       pluginIpc: {
         invoke: vi.fn(),
         syncActivePlugins,
@@ -447,7 +746,9 @@ describe('project system', () => {
     const app = createAppForTest()
 
     try {
-      await waitForSettingsIdle(app)
+      await expect
+        .poll(() => syncActivePlugins.mock.calls.length)
+        .toBeGreaterThan(0)
 
       const pluginId = 'code-editor'
       const plugin = app.registry
@@ -480,6 +781,7 @@ describe('project system', () => {
       expect(
         getChangedSettingsAtLevel(app.settings.get(), 'user').plugins
       ).toEqual({
+        'cloud-sync': true,
         [pluginId]: false,
       })
 
@@ -497,17 +799,18 @@ describe('project system', () => {
       expect(pluginToggle.active.value).toBe(true)
       expect(syncActivePlugins.mock.calls.at(-1)?.[0]).toContain(pluginId)
       expect(
-        getChangedSettingsAtLevel(app.settings.get(), 'user').plugins?.[
-          pluginId
-        ]
-      ).toBeUndefined()
+        getChangedSettingsAtLevel(app.settings.get(), 'user').plugins
+      ).toEqual({
+        'cloud-sync': true,
+      })
     } finally {
       app.dispose()
       window.electron = previousElectron
     }
   })
 
-  it('keeps cloud sync disabled by default without the cloud projects feature', async () => {
+  it('lets Playwright keep cloud sync off while Personal Cloud stays available', async () => {
+    localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
     const userFeatures = createUserFeaturesForTest(new Set())
     const app = createAppForTest({
       userFeatures,
@@ -519,51 +822,30 @@ describe('project system', () => {
       expect(getCloudSyncPluginSetting(app)?.current).toBe(false)
       expect(getCloudSyncPluginSetting(app)?.user).toBeUndefined()
       expect(getPluginToggle(app, 'cloud-sync').active.value).toBe(false)
-      expect(hasPersonalCloudLibrarySetting(app)).toBe(false)
-      expect(hasDefaultDirectoryLibrarySetting(app)).toBe(true)
-      expect(app.getCreateProjectLibraryTargets()).not.toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            library: expect.objectContaining({
-              id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-            }),
-          }),
-        ])
-      )
-    } finally {
-      app.dispose()
-    }
-  })
 
-  it('auto-enables cloud sync for feature-flagged users and materializes Personal Cloud', async () => {
-    const userFeatures = createUserFeaturesForTest(
-      new Set([OPFS_CLOUD_FEATURE_FLAG])
-    )
-    const app = createAppForTest({
-      userFeatures,
-    })
+      app.settings.actor.send({
+        type: 'set.plugins.cloud-sync',
+        data: {
+          level: 'user',
+          value: true,
+        },
+        doNotPersist: true,
+      } as never)
 
-    try {
       await expect
         .poll(() => ({
           active: getPluginToggle(app, 'cloud-sync').active.value,
           current: getCloudSyncPluginSetting(app)?.current,
           user: getCloudSyncPluginSetting(app)?.user,
           hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
-          hasDefaultDirectoryLibrarySetting:
-            hasDefaultDirectoryLibrarySetting(app),
         }))
         .toEqual({
           active: true,
           current: true,
           user: true,
           hasPersonalCloudLibrarySetting: true,
-          hasDefaultDirectoryLibrarySetting: false,
         })
 
-      // On web, cloud sync is the project storage layer, not an optional
-      // feature: a disable attempt is overridden, the plugin stays active, and
-      // a usable library plus a create target remain (the strand-repro fix).
       app.settings.actor.send({
         type: 'set.plugins.cloud-sync',
         data: {
@@ -576,6 +858,7 @@ describe('project system', () => {
       await expect
         .poll(() => ({
           current: getCloudSyncPluginSetting(app)?.current,
+          user: getCloudSyncPluginSetting(app)?.user,
           active: getPluginToggle(app, 'cloud-sync').active.value,
           hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
           canCreateInPersonalCloud: app
@@ -586,13 +869,15 @@ describe('project system', () => {
             ),
         }))
         .toEqual({
-          current: true,
-          active: true,
+          current: false,
+          user: false,
+          active: false,
           hasPersonalCloudLibrarySetting: true,
           canCreateInPersonalCloud: true,
         })
     } finally {
       app.dispose()
+      localStorage.removeItem(IS_PLAYWRIGHT_KEY)
     }
   })
 
@@ -617,13 +902,11 @@ describe('project system', () => {
         syncActivePlugins: vi.fn().mockResolvedValue(undefined),
       },
     } as unknown as typeof window.electron
-    const userFeatures = createUserFeaturesForTest(
-      new Set([OPFS_CLOUD_FEATURE_FLAG])
-    )
+    const userFeatures = createUserFeaturesForTest(new Set())
     const app = createAppForTest({ userFeatures })
 
     try {
-      // Cloud sync auto-enables for the flag on desktop too.
+      // Cloud sync auto-enables on desktop too.
       await expect
         .poll(() => ({
           active: getPluginToggle(app, 'cloud-sync').active.value,
@@ -667,18 +950,6 @@ describe('project system', () => {
     })
 
     try {
-      expect(
-        app.registry
-          .get(commandsValueSpec)
-          .some(
-            (command) =>
-              command.groupId === 'projects' &&
-              command.name === 'Create project'
-          )
-      ).toBe(false)
-
-      userFeatures.setFeatureIds(new Set([OPFS_CLOUD_FEATURE_FLAG]))
-
       expect(
         app.registry
           .get(commandsValueSpec)
@@ -736,10 +1007,8 @@ describe('project system', () => {
         ])
       )
       expect(
-        app.registry.get(executingEditorService).hasEditsSinceLastExecution
-          .value
-      ).toBe(false)
-      expect(app.registry.get(executingEditorService).code.value).toBe('')
+        app.registry.get(projectSession).executingEditor.value
+      ).toBeUndefined()
 
       const textEditorSettings = app.settings.get().textEditor as Record<
         string,
@@ -779,7 +1048,8 @@ describe('project system', () => {
   })
 
   it('refreshes project folders after Zookeeper undo and redo changes the file set', async () => {
-    const projectPath = `/tmp/app-zookeeper-folder-refresh-${crypto.randomUUID()}`
+    const libraryPath = `/tmp/app-zookeeper-folder-refresh-${crypto.randomUUID()}`
+    const projectPath = fsZds.join(libraryPath, 'project')
     const mainPath = fsZds.join(projectPath, 'main.kcl')
     const createdPath = fsZds.join(projectPath, 'created.kcl')
     const app = createAppForTest()
@@ -793,6 +1063,7 @@ describe('project system', () => {
         kcl_file_count: 1,
         metadata: null,
         path: projectPath,
+        libraryPath,
         readWriteAccess: true,
         children: [
           {
@@ -823,144 +1094,217 @@ describe('project system', () => {
           },
         })
       )
-      const send = vi.spyOn(app.systemIOActor, 'send')
+      await app.projectLibraries.refreshProjects()
+      expect(
+        openedProject.projectIORefSignal.value.children?.map(
+          (file) => file.path
+        )
+      ).toContain(createdPath)
 
       kclManager.undo()
       await waitForHistoryIdle(kclManager)
-      expect(send).toHaveBeenCalledWith({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
+      await expect
+        .poll(() =>
+          openedProject.projectIORefSignal.value.children?.map(
+            (file) => file.path
+          )
+        )
+        .not.toContain(createdPath)
       await expect(fsZds.readFile(createdPath, 'utf8')).rejects.toThrow()
 
-      send.mockClear()
       kclManager.redo()
       await waitForHistoryIdle(kclManager)
-      expect(send).toHaveBeenCalledWith({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
+      await expect
+        .poll(() =>
+          openedProject.projectIORefSignal.value.children?.map(
+            (file) => file.path
+          )
+        )
+        .toContain(createdPath)
       await expect(fsZds.readFile(createdPath, 'utf8')).resolves.toBe(
         'created = true\n'
       )
+    } finally {
+      app.dispose()
+      await fsZds.rm(libraryPath, { recursive: true, force: true })
+    }
+  })
+
+  it('waits for the Rust project snapshot before executing a reused editor after a file switch', async () => {
+    const projectPath = `/tmp/app-file-switch-open-race-${crypto.randomUUID()}`
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    const alternatePath = fsZds.join(projectPath, 'alternate.kcl')
+    const app = createAppForTest()
+    let resolveOpenProject: () => void = () => {}
+    const openProjectGate = new Promise<void>((resolve) => {
+      resolveOpenProject = resolve
+    })
+
+    try {
+      await writeText(mainPath, 'main = true\n')
+      await writeText(alternatePath, 'alternate = true\n')
+      const project: Project = {
+        name: fsZds.basename(projectPath),
+        default_file: mainPath,
+        directory_count: 0,
+        kcl_file_count: 2,
+        metadata: null,
+        path: projectPath,
+        readWriteAccess: true,
+        children: [
+          {
+            name: 'main.kcl',
+            path: mainPath,
+            children: null,
+          },
+          {
+            name: 'alternate.kcl',
+            path: alternatePath,
+            children: null,
+          },
+        ],
+      }
+      const openedProject = await app.openProject(project)
+      const kclManager = await openedProject.openEditor(mainPath)
+      const calls: string[] = []
+
+      vi.spyOn(kclManager.rustContext, 'sendOpenProject').mockImplementation(
+        async (currentFilePath) => {
+          calls.push(`open:${currentFilePath}`)
+          await openProjectGate
+          calls.push(`open:resolved:${currentFilePath}`)
+        }
+      )
+      vi.spyOn(kclManager, 'executeCode').mockImplementation(async () => {
+        calls.push(`execute:${kclManager.path}`)
+      })
+      const sendUpdateFile = vi
+        .spyOn(kclManager.rustContext, 'sendUpdateFile')
+        .mockImplementation(async () => {})
+      vi.spyOn(
+        kclManager.engineCommandManager,
+        'sendSceneCommand'
+      ).mockResolvedValue({} as never)
+      kclManager.engineCommandManager.connection = {
+        connected: true,
+      } as typeof kclManager.engineCommandManager.connection
+
+      vi.useFakeTimers()
+      const openAlternatePromise = openedProject.openEditor(
+        alternatePath,
+        kclManager
+      )
+
+      await vi.waitFor(() => {
+        expect(calls).toEqual([`open:${alternatePath}`])
+      })
+
+      expect(openedProject.executingPath).toBe(alternatePath)
+      expect(openedProject.executingFileEntry.value.name).toBe('alternate.kcl')
+
+      await vi.advanceTimersByTimeAsync(1000)
+      expect(calls).toEqual([`open:${alternatePath}`])
+      expect(sendUpdateFile).not.toHaveBeenCalled()
+
+      resolveOpenProject()
+      await openAlternatePromise
+
+      expect(calls).toEqual([
+        `open:${alternatePath}`,
+        `open:resolved:${alternatePath}`,
+        `execute:${alternatePath}`,
+      ])
+      expect(sendUpdateFile).not.toHaveBeenCalled()
+    } finally {
+      vi.useRealTimers()
+      app.dispose()
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
+  it('does not let a superseded route load replace the active editor', async () => {
+    const projectPath = `/tmp/app-stale-route-load-${crypto.randomUUID()}`
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    const alternatePath = fsZds.join(projectPath, 'alternate.kcl')
+    const app = createAppForTest()
+    const textFileIO = app.registry.get(projectSession).textFileIO
+    const originalRead = textFileIO.read
+    let resolveAlternateRead: (code: string) => void = () => {}
+    const alternateRead = new Promise<string>((resolve) => {
+      resolveAlternateRead = resolve
+    })
+
+    try {
+      await writeText(mainPath, 'main = true\n')
+      await writeText(alternatePath, 'alternate = true\n')
+      const project: Project = {
+        name: fsZds.basename(projectPath),
+        default_file: mainPath,
+        directory_count: 0,
+        kcl_file_count: 2,
+        metadata: null,
+        path: projectPath,
+        readWriteAccess: true,
+        children: [
+          { name: 'main.kcl', path: mainPath, children: null },
+          { name: 'alternate.kcl', path: alternatePath, children: null },
+        ],
+      }
+      const openedProject = await app.openProject(project)
+      const kclManager = await openedProject.openEditor(
+        mainPath,
+        undefined,
+        'main = true\n'
+      )
+      kclManager.updateCodeEditor('main = true\n', {
+        shouldExecute: false,
+        shouldSyncRust: false,
+        shouldWriteToDisk: false,
+        shouldClearHistory: true,
+        shouldAddToHistory: false,
+      })
+      vi.spyOn(textFileIO, 'read').mockImplementation((path) =>
+        path === alternatePath ? alternateRead : originalRead(path)
+      )
+
+      const firstController = new AbortController()
+      const assertFirstLoadCurrent = app.beginFileRouteLoad(
+        firstController.signal
+      )
+      const staleOpen = openedProject.openEditor(
+        alternatePath,
+        kclManager,
+        undefined,
+        true,
+        assertFirstLoadCurrent
+      )
+      await Promise.resolve()
+
+      app.beginFileRouteLoad(new AbortController().signal)
+      resolveAlternateRead('alternate = true\n')
+
+      await expect(staleOpen).rejects.toMatchObject({ name: 'AbortError' })
+      expect(kclManager.path).toBe(mainPath)
+      expect(kclManager.code).toBe('main = true\n')
+      expect(openedProject.executingPath).toBe(mainPath)
     } finally {
       app.dispose()
       await fsZds.rm(projectPath, { recursive: true, force: true })
     }
   })
 
-  it('refreshes sketch grids without clearing the scene', async () => {
-    const app = createAppForTest()
-    const kclManager = app.singletons.kclManager
-    const engineCommandManager = kclManager.engineCommandManager
-    const previousConnection = engineCommandManager.connection
-
-    try {
-      await waitForSettingsIdle(app)
-
-      const updateSketchGrid = vi.spyOn(
-        kclManager.sceneEntitiesManager,
-        'updateSketchGrid'
-      )
-      const clearSceneAndBustCache = vi.spyOn(
-        kclManager.rustContext,
-        'clearSceneAndBustCache'
-      )
-      const executeCode = vi
-        .spyOn(kclManager, 'executeCode')
-        .mockResolvedValue(undefined)
-      engineCommandManager.connection = {
-        connected: false,
-      } as typeof engineCommandManager.connection
-
-      const setGridSetting = async (
-        setting:
-          | 'showSketchGrid'
-          | 'fixedSizeGrid'
-          | 'majorGridSpacing'
-          | 'minorGridsPerMajor',
-        value: boolean | number
-      ) => {
-        app.settings.actor.send({
-          type: `set.modeling.${setting}`,
-          data: { level: 'user', value },
-          doNotPersist: true,
-        } as never)
-        await waitForSettingsIdle(app)
-      }
-
-      await setGridSetting(
-        'fixedSizeGrid',
-        !app.settings.get().modeling.fixedSizeGrid.default
-      )
-      await app.openProject(mockProject)
-      await Promise.resolve()
-
-      expect(updateSketchGrid).not.toHaveBeenCalled()
-      expect(clearSceneAndBustCache).not.toHaveBeenCalled()
-      expect(executeCode).not.toHaveBeenCalled()
-
-      const modeling = app.settings.get().modeling
-      expect(modeling.showSketchGrid.default).toBe(false)
-      expect(modeling.showSketchGrid.current).toBe(false)
-      await setGridSetting('showSketchGrid', !modeling.showSketchGrid.current)
-      expect(updateSketchGrid).toHaveBeenCalledTimes(1)
-      expect(clearSceneAndBustCache).not.toHaveBeenCalled()
-      expect(executeCode).not.toHaveBeenCalled()
-
-      updateSketchGrid.mockClear()
-      await setGridSetting('fixedSizeGrid', !modeling.fixedSizeGrid.current)
-      await vi.waitFor(() => {
-        expect(updateSketchGrid).toHaveBeenCalledTimes(1)
-        expect(clearSceneAndBustCache).not.toHaveBeenCalled()
-        expect(executeCode).toHaveBeenCalledTimes(1)
-      })
-
-      updateSketchGrid.mockClear()
-      clearSceneAndBustCache.mockClear()
-      executeCode.mockClear()
-
-      await setGridSetting(
-        'majorGridSpacing',
-        modeling.majorGridSpacing.current + 1
-      )
-      expect(updateSketchGrid).toHaveBeenCalledTimes(1)
-      expect(clearSceneAndBustCache).not.toHaveBeenCalled()
-      expect(executeCode).not.toHaveBeenCalled()
-
-      updateSketchGrid.mockClear()
-      await setGridSetting(
-        'minorGridsPerMajor',
-        modeling.minorGridsPerMajor.current + 1
-      )
-      expect(updateSketchGrid).toHaveBeenCalledTimes(1)
-      expect(clearSceneAndBustCache).not.toHaveBeenCalled()
-      expect(executeCode).not.toHaveBeenCalled()
-
-      updateSketchGrid.mockClear()
-      const currentTheme = app.settings.get().app.theme.current
-      app.settings.actor.send({
-        type: 'set.app.theme',
-        data: {
-          level: 'user',
-          value: currentTheme === 'dark' ? 'light' : 'dark',
-        },
-        doNotPersist: true,
-      })
-      await waitForSettingsIdle(app)
-      await vi.waitFor(() => {
-        expect(updateSketchGrid).toHaveBeenCalledTimes(1)
-      })
-    } finally {
-      engineCommandManager.connection = previousConnection
-      app.dispose()
-    }
-  })
-
   it('can open, close project', async () => {
-    // Stub out File read and write implementations
-    File.ioImplementations.read = () => Promise.resolve('')
-    File.ioImplementations.write = () => Promise.resolve()
-
     const app = createAppForTest()
+
+    // Override the application wiring for this focused project-session test.
+    vi.spyOn(
+      app.registry.get(projectSession).textFileIO,
+      'read'
+    ).mockResolvedValue('')
+    vi.spyOn(
+      app.registry.get(projectSession).textFileIO,
+      'write'
+    ).mockResolvedValue(undefined)
 
     try {
       const project = await app.openProject(mockProject)

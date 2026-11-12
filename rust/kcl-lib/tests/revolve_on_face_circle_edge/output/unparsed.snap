@@ -1,0 +1,15 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing revolve_on_face_circle_edge.kcl
+---
+box = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [0, 20])
+  |> line(end = [20, 0])
+  |> line(end = [0, -20], tag = $revolveAxis)
+  |> close()
+  |> extrude(length = 20)
+
+sketch001 = startSketchOn(box, face = END)
+  |> circle(center = [10, 10], radius = 4)
+  |> revolve(angle = 90, axis = getOppositeEdge(revolveAxis))

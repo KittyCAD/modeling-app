@@ -4878,6 +4878,7 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
     "commentStart": 0,
     "end": 0,
     "moduleId": 0,
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

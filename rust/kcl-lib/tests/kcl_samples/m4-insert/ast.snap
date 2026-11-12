@@ -7759,6 +7759,7 @@ description: Result of parsing m4-insert.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

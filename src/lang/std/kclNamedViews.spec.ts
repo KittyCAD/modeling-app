@@ -13,9 +13,12 @@ const EXCEPT_TYPE_TO_KINDS: Record<string, readonly VisibilityKind[]> = {
   Solid: ['sweep', 'compositeSolid'],
   Sketch: ['path'],
   GdtAnnotation: ['gdtAnnotation'],
+  Helix: ['helix'],
+  Plane: ['plane'],
+  ImportedGeometry: ['importedGeometry'],
 }
 
-/** Splits the recorded type `[Solid | Sketch | GdtAnnotation; 1+]`. */
+/** Splits the recorded non-empty union array type for `except`. */
 function kclTypesInArrayType(recordedType: string): string[] {
   const match = /^\[(.+);\s*1\+\]$/.exec(recordedType)
   expect(

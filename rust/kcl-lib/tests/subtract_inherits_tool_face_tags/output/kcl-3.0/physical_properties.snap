@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties subtract_inherits_tool_face_tags.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 7.574999999999973,
+      "y": 7.935,
+      "z": 2.5
+    },
+    "dimensions": {
+      "x": 18.180000000000117,
+      "y": 15.87,
+      "z": 5.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 848.660717082339
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.769708817275709
+  }
+}

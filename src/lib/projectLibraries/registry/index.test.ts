@@ -6,8 +6,8 @@ import {
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import {
-  projectLibrariesFromSettings,
   type ProjectLibrarySetting,
+  projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
 import projectLibrariesExtension from '@src/lib/projectLibraries/registry'
 import {
@@ -54,7 +54,7 @@ describe('project library realizations registry service', () => {
     vi.useRealTimers()
   })
 
-  it('invalidates only changed libraries from configured library watchers', async () => {
+  it('refreshes watched libraries and invalidates only the library that changes', async () => {
     const librarySettings = [
       {
         title: 'Library A',
@@ -136,6 +136,8 @@ describe('project library realizations registry service', () => {
         expect.any(Function),
         { depth: 0 }
       )
+      await waitFor(() => expect(readRealizations).toHaveBeenCalledTimes(2))
+      readRealizations.mockClear()
 
       vi.useFakeTimers()
       const libraryAWatcher = registrations.find(

@@ -1,5 +1,6 @@
 import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
+import { SKETCH_GROUP_SEGMENTS } from '@src/clientSideScene/sceneUtils'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { useSketchModeMenuEnableDisable } from '@src/hooks/useSketchModeMenuEnableDisable'
 import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
@@ -13,14 +14,13 @@ import type { Actor, ContextFrom, Prop, StateFrom } from 'xstate'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import { modelingStdLibCommandSummary } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { Project } from '@src/lib/project'
 import { modelingMachine } from '@src/machines/modelingMachine'
-import { useFolders } from '@src/machines/systemIO/hooks'
 
 import { useSignals } from '@preact/signals-react/runtime'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
-import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import {
   modelingMachineStateToToolbarModeName,
   toolbarModeNameToKeymapScope,
@@ -30,7 +30,10 @@ import {
   EngineConnectionEvents,
   EngineConnectionStateType,
 } from '@src/lib/engineConnection/utils'
+import { MODE_MODELING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import { keymapService } from '@src/registry/contracts/keymap'
+
+const MODELING_COMMAND_SCOPES = [MODE_MODELING_COMMAND_SCOPE] as const
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -55,12 +58,7 @@ export const ModelingMachineProvider = ({
   const settingsValues = settings.useSettings()
   const {
     app: { allowOrbitInSketchMode },
-    modeling: {
-      defaultUnit,
-      cameraProjection,
-      cameraOrbit,
-      useSketchSolveMode,
-    },
+    modeling: { defaultUnit, cameraProjection, cameraOrbit },
   } = settingsValues
   const machineApiEnabled = settingsValues.app.machineApi.current
   const commandBarConfig = useMemo(() => {
@@ -72,29 +70,11 @@ export const ModelingMachineProvider = ({
     return configWithoutMake
   }, [machineApiEnabled])
   const previousCameraOrbit = useRef<CameraOrbitType | null>(null)
-  const projects = useFolders()
   const theProject = useRef<Project | undefined>(
     project?.projectIORefSignal.value
   )
   const file = project?.executingFileEntry.value
-  useEffect(() => {
-    // Have no idea why the project loader data doesn't have the children from the ls on disk
-    // That means it is a different object or cached incorrectly?
-    if (!project || !file || !projects) {
-      return
-    }
-
-    // You need to find the real project in the storage from the loader information since the loader Project is not hydrated
-    const foundYourProject = projects.find((p) => {
-      return p.name === project.name
-    })
-
-    if (!foundYourProject) {
-      return
-    }
-    theProject.current = foundYourProject
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [projects, file])
+  theProject.current = project?.projectIORefSignal.value
 
   const streamRef = useRef<HTMLDivElement>(null)
 
@@ -125,7 +105,6 @@ export const ModelingMachineProvider = ({
         // React Suspense will await this
         wasmInstance,
         store: {
-          useSketchSolveMode,
           cameraProjection,
           defaultUnit,
         },
@@ -136,28 +115,18 @@ export const ModelingMachineProvider = ({
 
   // Register file menu actions based off modeling send
   const cb = (data: WebContentSendPayload) => {
-    const rootLayout = structuredClone(layout.signal.value)
-    const toggle = (id: DefaultLayoutPaneID) =>
-      layout.set(
-        togglePaneLayoutNode({
-          rootLayout,
-          targetNodeId: id,
-          shouldExpand: true,
-        })
-      )
-
     if (data.menuLabel === 'View.Panes.Feature tree') {
-      toggle(DefaultLayoutPaneID.FeatureTree)
+      layout.openPane(DefaultLayoutPaneID.FeatureTree)
     } else if (data.menuLabel === 'View.Panes.KCL code') {
-      toggle(DefaultLayoutPaneID.Code)
+      layout.openPane(DefaultLayoutPaneID.Code)
     } else if (data.menuLabel === 'View.Panes.Project files') {
-      toggle(DefaultLayoutPaneID.Files)
+      layout.openPane(DefaultLayoutPaneID.Files)
     } else if (data.menuLabel === 'View.Panes.Variables') {
-      toggle(DefaultLayoutPaneID.Variables)
+      layout.openPane(DefaultLayoutPaneID.Variables)
     } else if (data.menuLabel === 'View.Panes.Logs') {
-      toggle(DefaultLayoutPaneID.Logs)
+      layout.openPane(DefaultLayoutPaneID.Logs)
     } else if (data.menuLabel === 'View.Panes.Zookeeper') {
-      toggle(DefaultLayoutPaneID.Zookeeper)
+      layout.openPane(DefaultLayoutPaneID.Zookeeper)
     } else if (data.menuLabel === 'Design.Start sketch') {
       modelingSend({
         type: 'Enter sketch',
@@ -319,9 +288,17 @@ export const ModelingMachineProvider = ({
       if (inSketchMode && targetId) {
         letEngineAnimateAndSyncCamAfter(
           kclManager.engineCommandManager,
-          targetId
+          targetId,
+          kclManager.sceneInfra.camControls,
+          modelingState.context.sketchDetails?.animateTargetIsFace
         )
-          .then(() => {})
+          .then(() =>
+            kclManager.sceneInfra.camControls.transitionToSketch(
+              kclManager.sceneInfra.scene.children.find(
+                (object) => object.userData.type === SKETCH_GROUP_SEGMENTS
+              ) ?? kclManager.sceneEntitiesManager.intersectionPlane
+            )
+          )
           .catch((e) => {
             console.error(
               'failed to sync engine and client scene after disabling allow orbit in sketch mode'
@@ -346,6 +323,8 @@ export const ModelingMachineProvider = ({
     send: modelingSend,
     actor: modelingActor,
     commandBarConfig,
+    getDefaultDescription: modelingStdLibCommandSummary,
+    scopes: MODELING_COMMAND_SCOPES,
     isExecuting: kclManager.isExecutingSignal.value,
     // TODO for when sketch tools are in the toolbar: This was added when we used one "Cancel" event,
     // but we need to support "SketchCancel" and basically

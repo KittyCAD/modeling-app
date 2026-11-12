@@ -17,11 +17,15 @@ use serde::Serialize;
 use uuid::Uuid;
 
 use super::axis_or_reference::Axis3dOrPoint3d;
+use crate::CompilationIssue;
 use crate::ExecutorContext;
+use crate::KclVersion;
 use crate::NodePath;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
+use crate::errors::Severity;
+use crate::errors::Tag;
 use crate::execution::ArtifactId;
 use crate::execution::EarlyReturn;
 use crate::execution::ExecState;
@@ -35,6 +39,7 @@ use crate::execution::ModelingCmdMeta;
 use crate::execution::Sketch;
 use crate::execution::Solid;
 use crate::execution::SolidOrImportedGeometry;
+use crate::execution::annotations;
 use crate::execution::early_return;
 use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
@@ -65,6 +70,7 @@ pub const POINT_ZERO_ZERO_ZERO: [TyF64; 3] = [
 ];
 
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
+const PATTERN_LINEAR_2D_REGIONS_ONLY: &str = "patternLinear2d should only be used with regions";
 
 /// Something that can be 3D patterned, e.g. a 3D body.
 #[derive(Debug)]
@@ -84,7 +90,7 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
     let (geometry, instances, transform, use_original) = pattern_transform_parse_args(&args, exec_state)?;
 
     match inner_pattern_transform(geometry, instances, transform, use_original, exec_state, &args).await {
-        Ok(geometry) => Ok(KclValue::continue_(geometry)),
+        Ok(geometry) => Ok(KclValue::normal(geometry)),
         // The callback exited, e.g. by calling exit(). Propagate the exit so
         // that it terminates the enclosing module.
         Err(EarlyReturn::Value(cf)) => Ok(cf),
@@ -97,7 +103,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
     let (sketches, instances, transform, use_original) = pattern_transform_2d_parse_args(&args, exec_state)?;
 
     match inner_pattern_transform_2d(sketches, instances, transform, use_original, exec_state, &args).await {
-        Ok(sketches) => Ok(KclValue::continue_(sketches.into())),
+        Ok(sketches) => Ok(KclValue::normal(sketches.into())),
         // The callback exited, e.g. by calling exit(). Propagate the exit so
         // that it terminates the enclosing module.
         Err(EarlyReturn::Value(cf)) => Ok(cf),
@@ -105,7 +111,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
     }
 }
 
-/// Parse patternTransform's arguments. Shared by both executors.
+/// Parse patternTransform's arguments.
 pub(crate) fn pattern_transform_parse_args(
     args: &Args,
     exec_state: &mut ExecState,
@@ -122,7 +128,7 @@ pub(crate) fn pattern_transform_parse_args(
     Ok((geometry, instances, transform, use_original))
 }
 
-/// Parse patternTransform2d's arguments. Shared by both executors.
+/// Parse patternTransform2d's arguments.
 pub(crate) fn pattern_transform_2d_parse_args(
     args: &Args,
     exec_state: &mut ExecState,
@@ -134,8 +140,7 @@ pub(crate) fn pattern_transform_2d_parse_args(
     Ok((sketches, instances, transform, use_original))
 }
 
-/// The "at least 1 instance" check both executors run before the callback
-/// loop.
+/// Check for at least one instance before the callback loop.
 pub(crate) fn pattern_check_instances(instances: u32, source_range: SourceRange) -> Result<(), KclError> {
     if instances < 1 {
         return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -146,8 +151,7 @@ pub(crate) fn pattern_check_instances(instances: u32, source_range: SourceRange)
     Ok(())
 }
 
-/// Build the per-repetition callback arguments for patternTransform. Shared
-/// by both executors.
+/// Build the per-repetition callback arguments for patternTransform.
 pub(crate) fn transform_callback_args(
     i: u32,
     source_range: SourceRange,
@@ -171,8 +175,7 @@ pub(crate) fn transform_callback_args(
     )
 }
 
-/// Error when a transform callback produces no value. Shared by both
-/// executors.
+/// Error when a transform callback produces no value.
 pub(crate) fn transform_missing_value_error(source_range: SourceRange) -> KclError {
     KclError::new_semantic(KclErrorDetails::new(
         "Transform function must return a value".to_string(),
@@ -181,7 +184,7 @@ pub(crate) fn transform_missing_value_error(source_range: SourceRange) -> KclErr
 }
 
 /// Unpack a transform callback's returned value into engine transforms: the
-/// evaluation-free tail of make_transform, shared by both executors.
+/// evaluation-free tail of make_transform.
 pub(crate) fn transforms_from_callback_value<T: GeometryTrait>(
     transform_fn_return: KclValue,
     source_range: SourceRange,
@@ -677,8 +680,10 @@ mod tests {
             .join("tests")
             .join("inputs")
             .join("main.kcl");
-        let ctx = crate::test_server::new_context(true, Some(current_file)).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, Some(current_file), true, program.language_version().unwrap())
+            .await
+            .unwrap();
         let result = ctx.run_with_caching(program).await.unwrap();
 
         let KclValueView::HomArray { value } = result.variables.get("patterned").unwrap() else {
@@ -806,11 +811,99 @@ patterned = patternTransform(cube, instances = 3, transform = shift)
         assert_eq!(actual.unwrap(), expected);
         ctx.close().await;
     }
+
+    fn pattern_linear_2d_code(kcl_version: &str, input: &str) -> String {
+        format!(
+            r#"@settings(kclVersion = {kcl_version}, defaultLengthUnit = mm, experimentalFeatures = allow)
+
+profile = sketch(on = XY) {{
+  circle1 = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}}
+patterned = patternLinear2d({input}, instances = 2, distance = 20mm, axis = X)
+"#
+        )
+    }
+
+    async fn run_mock(code: &str) -> Result<crate::ExecOutcome, crate::KclErrorWithOutputs> {
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = ExecutorContext::new_mock(None).await;
+        let result = ctx.run_mock(&program, &crate::execution::MockConfig::default()).await;
+        ctx.close().await;
+        result
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn pattern_linear_2d_with_sketch_warns_before_v3() {
+        for version in ["1.0", "2.0"] {
+            let code = pattern_linear_2d_code(version, "profile");
+            let outcome = run_mock(&code).await.unwrap();
+            let warnings = outcome
+                .issues
+                .iter()
+                .filter(|issue| issue.message == PATTERN_LINEAR_2D_REGIONS_ONLY)
+                .collect::<Vec<_>>();
+
+            assert_eq!(
+                warnings.len(),
+                1,
+                "unexpected issues for KCL {version}: {:#?}",
+                outcome.issues
+            );
+            assert_eq!(warnings[0].severity, Severity::Warning);
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn pattern_linear_2d_with_sketch_is_an_error_in_v3() {
+        let code = pattern_linear_2d_code(r#""3.0-preview""#, "profile");
+        let error = run_mock(&code).await.unwrap_err();
+
+        assert!(matches!(error.error, KclError::Semantic { .. }));
+        assert_eq!(error.error.message(), PATTERN_LINEAR_2D_REGIONS_ONLY);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn pattern_linear_2d_with_region_is_allowed_in_v3() {
+        let code = pattern_linear_2d_code(r#""3.0-preview""#, "region(segments = [profile.circle1])");
+        let outcome = run_mock(&code).await.unwrap();
+
+        assert!(
+            outcome
+                .issues
+                .iter()
+                .all(|issue| issue.message != PATTERN_LINEAR_2D_REGIONS_ONLY),
+            "unexpected regions-only issue: {:#?}",
+            outcome.issues
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn pattern_linear_2d_with_sketch_v1_profile_is_allowed() {
+        let code = r#"@settings(kclVersion = 2.0, defaultLengthUnit = mm, experimentalFeatures = allow)
+
+patterned = startSketchOn(XY)
+  |> rectangle(width = 4mm, height = 3mm, center = [0mm, 0mm])
+  |> patternLinear2d(instances = 10, distance = 10mm, axis = [1, 0])
+"#;
+        let outcome = run_mock(code).await.unwrap();
+
+        assert!(
+            outcome
+                .issues
+                .iter()
+                .all(|issue| issue.message != PATTERN_LINEAR_2D_REGIONS_ONLY),
+            "unexpected regions-only issue: {:#?}",
+            outcome.issues
+        );
+    }
 }
 
 /// A linear pattern on a 2D sketch.
 pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let sketches_source_range = args
+        .unlabeled_kw_arg_unconverted()
+        .map_or(args.source_range, |arg| arg.source_range);
+    let sketches: Vec<Sketch> = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances", &RuntimeType::count(), exec_state)?;
     let distance: TyF64 = args.get_kw_arg("distance", &RuntimeType::length(), exec_state)?;
     let axis: Axis2dOrPoint2d = args.get_kw_arg(
@@ -822,6 +915,31 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
         exec_state,
     )?;
     let use_original = args.get_kw_arg_opt("useOriginal", &RuntimeType::bool(), exec_state)?;
+
+    let has_sketch_solver_block = sketches.iter().any(|sketch| {
+        sketch.origin_sketch_id.is_none()
+            && (exec_state.is_sketch_block_path(sketch.artifact_id)
+                || exec_state.is_sketch_block_path(sketch.original_id.into()))
+    });
+    if has_sketch_solver_block {
+        if exec_state.kcl_version() >= KclVersion::V3Preview {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                PATTERN_LINEAR_2D_REGIONS_ONLY.to_owned(),
+                vec![sketches_source_range],
+            )));
+        }
+
+        exec_state.warn(
+            CompilationIssue {
+                source_range: sketches_source_range,
+                message: PATTERN_LINEAR_2D_REGIONS_ONLY.to_owned(),
+                suggestion: None,
+                severity: Severity::Warning,
+                tag: Tag::Deprecated,
+            },
+            annotations::WARN_DEPRECATED,
+        );
+    }
 
     let axis = axis.to_point2d();
     if axis[0].n == 0.0 && axis[1].n == 0.0 {
@@ -850,7 +968,7 @@ async fn inner_pattern_linear_2d(
     let normalized_axis = kcmc::shared::Point2d::from([x / axis_len, y / axis_len]);
     let transforms: Vec<_> = (1..instances)
         .map(|i| {
-            let d = distance.to_mm() * (i as f64);
+            let d = distance.unwrap_to_mm() * (i as f64);
             let translate = (normalized_axis * d).with_z(0.0).map(LengthUnit);
             vec![Transform::builder().translate(translate).build()]
         })
@@ -927,7 +1045,7 @@ async fn inner_pattern_linear_3d<T: GeometryTrait<Set = Vec<T>>>(
     let normalized_axis = kcmc::shared::Point3d::from([x / axis_len, y / axis_len, z / axis_len]);
     let transforms: Vec<_> = (1..instances)
         .map(|i| {
-            let d = distance.to_mm() * (i as f64);
+            let d = distance.unwrap_to_mm() * (i as f64);
             let translate = (normalized_axis * d).map(LengthUnit);
             vec![Transform::builder().translate(translate).build()]
         })
@@ -1023,8 +1141,12 @@ impl CircularPattern {
 
     pub fn center_mm(&self) -> [f64; 3] {
         match self {
-            CircularPattern::TwoD(lp) => [lp.center[0].to_mm(), lp.center[1].to_mm(), 0.0],
-            CircularPattern::ThreeD(lp) => [lp.center[0].to_mm(), lp.center[1].to_mm(), lp.center[2].to_mm()],
+            CircularPattern::TwoD(lp) => [lp.center[0].unwrap_to_mm(), lp.center[1].unwrap_to_mm(), 0.0],
+            CircularPattern::ThreeD(lp) => [
+                lp.center[0].unwrap_to_mm(),
+                lp.center[1].unwrap_to_mm(),
+                lp.center[2].unwrap_to_mm(),
+            ],
         }
     }
 

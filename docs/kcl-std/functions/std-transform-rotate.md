@@ -69,7 +69,7 @@ rotation.
 ### Examples
 
 ```kcl
-@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 
 sweepPath = sketch(on = XZ) {
   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
@@ -96,7 +96,7 @@ rotated = sweep(pipeRegion, path = sweepPath)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the rotate function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-rotate0.png"
@@ -107,7 +107,7 @@ rotated = sweep(pipeRegion, path = sweepPath)
 </model-viewer>
 
 ```kcl
-@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 
 sweepPath = sketch(on = XZ) {
   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
@@ -134,7 +134,7 @@ rotated = sweep(pipeRegion, path = sweepPath)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the rotate function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-rotate1.png"
@@ -145,7 +145,7 @@ rotated = sweep(pipeRegion, path = sweepPath)
 </model-viewer>
 
 ```kcl
-@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 
 sweepPath = sketch(on = XZ) {
   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
@@ -172,7 +172,7 @@ rotated = sweep(pipeRegion, path = sweepPath)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the rotate function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate2_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate2_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-rotate2.png"
@@ -196,7 +196,7 @@ cube
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the rotate function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate3_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate3_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-rotate3.png"
@@ -207,7 +207,7 @@ cube
 </model-viewer>
 
 ```kcl
-@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 
 sweepPath = sketch(on = XZ) {
   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
@@ -234,7 +234,7 @@ rotated = sweep(pipeRegion, path = sweepPath)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the rotate function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate4_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate4_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-rotate4.png"
@@ -274,7 +274,7 @@ rotate(parts, axis = [0, 0, 1.0], angle = 90deg)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the rotate function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate5_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate5_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-rotate5.png"
@@ -311,7 +311,7 @@ loft([profile001, profile002])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the rotate function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate6_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate6_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-rotate6.png"

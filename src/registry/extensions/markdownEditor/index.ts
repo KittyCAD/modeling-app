@@ -1,18 +1,16 @@
-import {
-  defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
-  provideService,
-} from '@kittycad/registry'
+import { defineRegistryItemFactory, provideService } from '@kittycad/registry'
 import type {
   MarkdownEditorActionName,
   MarkdownEditorActions,
 } from '@kittycad/ui-components'
 import type { Command } from '@src/lib/commandTypes'
-import { provideCommand } from '@src/registry/contracts/commands'
+import {
+  provideCommand,
+  provideCommandScope,
+} from '@src/registry/contracts/commands'
 import {
   type KeymapItem,
   provideKeymapItem,
-  provideKeymapScope,
 } from '@src/registry/contracts/keymap'
 import {
   MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE,
@@ -158,7 +156,7 @@ const markdownEditorKeymapItems: readonly KeymapItem[] =
     id: keymap.id,
     title: keymap.title,
     source: MARKDOWN_EDITOR_KEYMAP_SOURCE,
-    scopes: [MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE],
+    when: [MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE],
     keystrokes: keymap.keystrokes,
     command: keymap.command,
     hidden: keymap.hidden,
@@ -173,6 +171,7 @@ const markdownEditorCommands: readonly Command[] = Object.values(
 
   return {
     id: commandId,
+    scopes: [MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE],
     name: commandId,
     groupId: MARKDOWN_EDITOR_COMMAND_GROUP_ID,
     displayName: keymap?.title ?? commandId,
@@ -225,20 +224,18 @@ const markdownEditorExtension = defineRegistryItemFactory(() => {
   })
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'markdown-editor-extension',
-      provides: [
-        ...commands.map(provideCommand),
-        ...markdownEditorKeymapItems.map(provideKeymapItem),
-        provideKeymapScope({
-          id: MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE,
-          displayName: 'Markdown editor focused',
-          priority: 1200,
-          userEditable: false,
-        }),
-      ],
-      providesServices: [provideService(markdownEditorService, serviceImpl)],
-    }),
+    id: 'markdown-editor-extension',
+    provides: [
+      ...commands.map(provideCommand),
+      ...markdownEditorKeymapItems.map(provideKeymapItem),
+      provideCommandScope({
+        id: MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE,
+        displayName: 'Markdown editor focused',
+        priority: 1200,
+        userEditable: false,
+      }),
+    ],
+    providesServices: [provideService(markdownEditorService, serviceImpl)],
   }
 }, 'markdown-editor-extension')
 

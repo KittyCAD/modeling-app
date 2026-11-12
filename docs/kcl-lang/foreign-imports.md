@@ -7,7 +7,7 @@ layout: manual
 `import` can also be used to import files from other CAD systems. The format of the statement is the
 same as for KCL files. You can only import the whole file, not items from it. E.g.,
 
-```norun
+```kcl,norun
 import "tests/inputs/cube.obj"
 
 // Use `cube` just like a KCL object.

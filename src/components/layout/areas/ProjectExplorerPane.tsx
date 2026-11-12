@@ -1,45 +1,32 @@
+import { useSignals } from '@preact/signals-react/runtime'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
-import { ToastInsert } from '@src/components/ToastInsert'
-import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { getProjectExplorerProjectWithPlaceholders } from '@src/components/layout/areas/ProjectExplorerPane.utils'
+import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import {
   clearActiveTextFile,
-  isEditableTextFile,
   openActiveTextFile,
 } from '@src/lib/activeTextFile'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
-import fsZds from '@src/lib/fs-zds'
+import { FILE_EXT } from '@src/lib/constants'
 import {
   type AreaTypeComponentProps,
   DefaultLayoutPaneID,
-  getOpenPanes,
-  togglePaneLayoutNode,
 } from '@src/lib/layout'
-import {
-  isExtensionARelevantExtension,
-  parentPathRelativeToProject,
-} from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { reportRejection } from '@src/lib/trap'
-import {
-  useFolders,
-  useProjectDirectoryPath,
-} from '@src/machines/systemIO/hooks'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { use, useCallback, useEffect, useRef, useState } from 'react'
-import toast from 'react-hot-toast'
+import { use, useCallback, useEffect, useRef, useState, useMemo } from 'react'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
-  const { commands, project, systemIOActor, layout } = useApp()
+  useSignals()
+  const app = useApp()
+  const { commands, fileOperations, project, layout } = app
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
-  const projects = useFolders()
-  const projectDirectoryPath = useProjectDirectoryPath()
+  const metadata = project?.projectIORefSignal.value
+  const projects = useMemo(() => (metadata ? [metadata] : []), [metadata])
   const projectRef = useRef(project?.projectIORefSignal)
   const [theProject, setTheProject] = useState<Project | null>(null)
   const file = project?.executingFileEntry.value
@@ -57,11 +44,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     }
 
     const loadedProject = project.projectIORefSignal.value
-    if (projects === undefined) {
-      systemIOActor.send({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
-    }
 
     const duplicated = getProjectExplorerProjectWithPlaceholders({
       loadedProject,
@@ -72,7 +54,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       return
     }
     setTheProject(duplicated)
-  }, [file, projects, project, systemIOActor])
+  }, [file, projects, project])
 
   const [createFilePressed, setCreateFilePressed] = useState<number>(0)
   const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
@@ -80,17 +62,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   const [collapsePressed, setCollapsedPressed] = useState<number>(0)
 
   const openCodeEditorPaneIfClosed = useCallback(() => {
-    const rootLayout = layout.get()
-    if (getOpenPanes({ rootLayout }).includes(DefaultLayoutPaneID.Code)) {
-      return
-    }
-    layout.set(
-      togglePaneLayoutNode({
-        rootLayout: structuredClone(rootLayout),
-        targetNodeId: DefaultLayoutPaneID.Code,
-        shouldExpand: true,
-      })
-    )
+    layout.openPane(DefaultLayoutPaneID.Code)
   }, [layout])
 
   const downloadProjectZip = useCallback(() => {
@@ -108,7 +80,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       if (
         !projectRef.current?.value.name ||
         entry.children != null ||
-        (!entry.path.endsWith(FILE_EXT) && !isEditableTextFile(entry.path))
+        !entry.path.endsWith(FILE_EXT)
       ) {
         return
       }
@@ -119,16 +91,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
 
   const onRowClicked = useCallback(
     (entry: FileExplorerEntry) => {
-      const requestedFileName = parentPathRelativeToProject(
-        entry.path,
-        projectDirectoryPath
-      )
-
-      const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions(wasmInstance)
-      const isRelevantFile = (filename: string): boolean => {
-        return isExtensionARelevantExtension(filename, RELEVANT_FILE_EXTENSIONS)
-      }
-
       // Only open the file if it is a kcl file.
       if (
         projectRef.current?.value.name &&
@@ -137,18 +99,20 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       ) {
         // Leaving any open text file for the KCL editor.
         clearActiveTextFile()
-        const name = projectRef.current.value.name.slice()
 
         const navigateHelper = () => {
-          systemIOActor.send({
-            type: SystemIOMachineEvents.navigateToFile,
-            data: {
-              requestedProjectName: name,
-              requestedFileName: requestedFileName,
-            },
-          })
+          app.projectSession
+            .openFile(entry.path, { projectPath: project?.path })
+            .catch(reportRejection)
         }
-
+        const navigateAfterFlush = () => {
+          void kclManager
+            .flushWriteToFile()
+            .then((saved) => {
+              if (saved) navigateHelper()
+            })
+            .catch(reportRejection)
+        }
         if (modelingMachineState.matches('Sketch')) {
           modelingSend({ type: 'Cancel' })
           const waitForIdlePromise = new Promise((resolve) => {
@@ -160,55 +124,26 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             })
           })
           waitForIdlePromise.catch(reportRejection).finally(() => {
-            navigateHelper()
+            navigateAfterFlush()
           })
         } else {
-          // immediately navigate
-          navigateHelper()
+          navigateAfterFlush()
         }
-      } else if (
-        projectRef.current?.value.name &&
-        entry.children == null &&
-        isEditableTextFile(entry.path)
-      ) {
-        // Open text/markdown files directly in the code editor pane. This must
-        // be checked before the "relevant file" branch below because some text
-        // extensions (e.g. .md) are also importable.
+      } else if (projectRef.current?.value.name && entry.children == null) {
+        // Inspect file contents before allowing edits, regardless of extension.
         openCodeEditorPaneIfClosed()
-        openActiveTextFile(entry.path).catch(reportRejection)
-      } else if (isRelevantFile(entry.path) && projectRef.current?.value.path) {
-        // Allow insert if it is a importable file
-        toast.custom(
-          ToastInsert({
-            onInsert: () => {
-              const relativeFilePath = entry.path.replace(
-                projectRef.current?.value.path + fsZds.sep,
-                ''
-              )
-              commands.send({
-                type: 'Find and select command',
-                data: {
-                  name: 'Insert',
-                  groupId: 'code',
-                  argDefaultValues: { path: relativeFilePath },
-                },
-              })
-              toast.dismiss(INSERT_FOREIGN_TOAST_ID)
-            },
-          }),
-          { duration: 30000, id: INSERT_FOREIGN_TOAST_ID }
-        )
+        openActiveTextFile(fileOperations, entry.path).catch(reportRejection)
       }
     },
     [
-      commands,
+      fileOperations,
+      kclManager,
       modelingActor,
       modelingMachineState,
       modelingSend,
       openCodeEditorPaneIfClosed,
-      projectDirectoryPath,
-      systemIOActor,
-      wasmInstance,
+      app,
+      project,
     ]
   )
 
@@ -259,7 +194,9 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             onRowEnter={onRowClicked}
             canNavigate={true}
             readOnly={false}
-            overrideApplicationProjectDirectory={projectDirectoryPath}
+            overrideApplicationProjectDirectory={
+              app.projectLibraries.projectDirectoryPath
+            }
           />
         </div>
       ) : (

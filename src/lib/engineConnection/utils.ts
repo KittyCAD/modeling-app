@@ -98,6 +98,14 @@ export function isHighlightSetEntity_type(
   return data.entity_id && data.sequence
 }
 
+export function isExecutionBoundaryCommand(command: EngineCommand): boolean {
+  return (
+    command.type === 'modeling_cmd_req' &&
+    (command.cmd.type === 'begin_execution' ||
+      command.cmd.type === 'end_execution')
+  )
+}
+
 export type Value<T, U> = U extends undefined
   ? { type: T; value: U }
   : // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
@@ -338,6 +346,23 @@ export enum EngineConnectionManagerEvents {
   dataChannelClose = 'data-channel-closed',
 }
 
+export enum EngineConnectionErrorKind {
+  BackendDisconnect = 'backend-disconnect',
+  UnsupportedVideoCodec = 'unsupported-video-codec',
+}
+
+export type EngineConnectionError = {
+  kind: EngineConnectionErrorKind
+  message: string
+  terminal: boolean
+}
+
+export type EngineDisconnectEventDetail = {
+  reconnectRequested?: boolean
+  code?: string
+  connectionError?: EngineConnectionError
+}
+
 export interface UnreliableSubscription<T extends UnreliableResponses['type']> {
   event: T
   callback: (data: Extract<UnreliableResponses, { type: T }>) => void
@@ -452,13 +477,42 @@ function validateStreamDimension(dimension: number, label: string) {
   return undefined
 }
 
+export const WebSocketCloseCode = {
+  NormalClosure: 1000,
+  AbnormalClosure: 1006,
+} as const
+
+export type ModelingShutdownRoute =
+  | 'command-timeout'
+  | 'pong-timeout'
+  | 'data-channel-closed'
+  | 'websocket-closed'
+  | 'peer-connection-failed'
+  | 'peer-connection-disconnected'
+  | 'peer-connection-closed'
+  | 'page-exit'
+  | 'window-offline'
+  | 'connection-attempt-failed'
+  | 'idle-timeout'
+  | 'service-disposed'
+  | 'backend-shutdown'
+  | 'user-requested'
+  | 'unknown'
+
+export type ModelingShutdownInitiator =
+  | 'client'
+  | 'api'
+  | 'engine'
+  | 'infrastructure'
+  | 'unknown'
+
 export interface ManagerTearDown {
-  websocketClosed?: boolean
-  peerConnectionFailed?: boolean
-  peerConnectionDisconnected?: boolean
-  peerConnectionClosed?: boolean
-  dataChannelClosed?: boolean
+  route: ModelingShutdownRoute
+  initiatedBy: ModelingShutdownInitiator
   code?: string
+  reason?: string
+  connectionError?: EngineConnectionError
+  reconnectRequested?: boolean
 }
 
 // 7.4.1 Defined Status Codes from RFC 6455 The WebSocket Protocol
@@ -468,7 +522,7 @@ export const WebSocketStatusCodes: Readonly<Record<string, string>> =
      * indicates a normal closure, meaning that the purpose for
      * which the connection was established has been fulfilled.
      */
-    '1000': 'normal closure',
+    [WebSocketCloseCode.NormalClosure]: 'normal closure',
     /**
      * indicates that an endpoint is "going away", such as a server
      * going down or a browser having navigated away from a page.
@@ -504,7 +558,7 @@ export const WebSocketStatusCodes: Readonly<Record<string, string>> =
      * connection was closed abnormally, e.g., without sending or
      * receiving a Close control frame.
      */
-    '1006': 'abnormally closed',
+    [WebSocketCloseCode.AbnormalClosure]: 'abnormally closed',
     /**
      * indicates that an endpoint is terminating the connection
      * because it has received data within a message that was not

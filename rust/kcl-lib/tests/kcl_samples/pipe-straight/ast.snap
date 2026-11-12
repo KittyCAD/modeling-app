@@ -4827,6 +4827,7 @@ description: Result of parsing pipe-straight.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

@@ -18,6 +18,7 @@ gdt::symmetry(
   framePlane?: Plane,
   leaderScale?: number(_),
   fontSize?: number(Length),
+  annotationName?: string,
 ): [GdtAnnotation; 1+]
 ```
 
@@ -45,12 +46,13 @@ condition (MMC) or least material condition (LMC) modifiers.
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The total width of the tolerance zone between two parallel planes. | Yes |
 | `datums` | [[`string`](/docs/kcl-std/types/std-types-string); 1+] | The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums. | Yes |
 | `faces` | [[`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace); 1+] | The faces to be annotated. | No |
-| `edges` | [[`Edge`](/docs/kcl-std/types/std-types-Edge) or [`any`](/docs/kcl-std/types/std-types-any); 1+] | The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet. | No |
+| `edges` | [[`Edge`](/docs/kcl-std/types/std-types-Edge) or [`any`](/docs/kcl-std/types/std-types-any); 1+] | The edges to be annotated. | No |
 | `precision` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`. | No |
 | `framePosition` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`. | No |
 | `framePlane` | [`Plane`](/docs/kcl-std/types/std-types-Plane) | The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane. | No |
 | `leaderScale` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`. | No |
 | `fontSize` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit. This changes the scene size, not the internal raster texture quality. | No |
+| `annotationName` | [`string`](/docs/kcl-std/types/std-types-string) | Human-friendly name for this annotation in exports and model metadata. This is not displayed visually. | No |
 
 ### Returns
 
@@ -60,7 +62,7 @@ condition (MMC) or least material condition (LMC) modifiers.
 ### Examples
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 latchProfile = sketch(on = XZ) {
   bottom = line(start = [var -20mm, var -10mm], end = [var 20mm, var -10mm])
@@ -115,7 +117,7 @@ gdt::symmetry(
 ![Rendered example of gdt::symmetry 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-symmetry0.png)
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 latchProfile = sketch(on = XZ) {
   bottom = line(start = [var -20mm, var -10mm], end = [var 20mm, var -10mm])
@@ -149,10 +151,12 @@ latchBlockRegion = region(segments = [
   latchProfile.datumWidthFace
 ])
 latchBlock = extrude(latchBlockRegion, length = 12mm, tagEnd = $frontFace)
-grooveFloorFrontEdge = getCommonEdge(faces = [
-  latchBlock.sketch.tags.grooveFloor,
-  frontFace
-])
+grooveFloorFrontEdge = {
+  sideFaces = [
+    latchBlock.sketch.tags.grooveFloor,
+    frontFace
+  ]
+}
 
 gdt::datum(
   face = latchBlock.sketch.tags.bottom,

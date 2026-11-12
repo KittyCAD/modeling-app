@@ -40,6 +40,7 @@ export interface ProjectCardContextMenuRenderProps {
 
 export interface ProjectCardProps
   extends Omit<HTMLAttributes<HTMLLIElement>, 'title'> {
+  rootRef?: RefObject<HTMLLIElement | null>
   title: ReactNode
   titleText?: string
   canOpen?: boolean
@@ -70,8 +71,7 @@ export const defaultProjectCardClassNames: Record<
   openLinkDisabled: 'cursor-not-allowed',
   thumbnailFrame:
     'h-36 relative overflow-hidden bg-gradient-to-b from-transparent to-primary/10 rounded-t-sm',
-  thumbnail:
-    'h-full w-full transition-transform group-hover:scale-105 object-cover',
+  thumbnail: 'h-full w-full group-hover:scale-105 object-cover',
   badges:
     'absolute top-2 right-2 z-10 flex flex-col items-end gap-1 pointer-events-none',
   body: 'pb-2 flex flex-col flex-grow flex-auto gap-2 rounded-b-sm',
@@ -98,6 +98,7 @@ function defaultRenderOpenLink({
  * component package.
  */
 export function ProjectCard({
+  rootRef: providedRootRef,
   title,
   titleText = typeof title === 'string' ? title : undefined,
   canOpen = true,
@@ -118,7 +119,8 @@ export function ProjectCard({
   renderOpenLink = defaultRenderOpenLink,
   ...props
 }: ProjectCardProps) {
-  const rootRef = useRef<HTMLLIElement>(null)
+  const internalRootRef = useRef<HTMLLIElement>(null)
+  const rootRef = providedRootRef ?? internalRootRef
   const classes = getProjectCardClassNames(classNames)
   const openLinkClassName = joinClassNames(
     classes.openLink,

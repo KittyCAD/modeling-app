@@ -158,7 +158,8 @@ description: Artifact commands named_views_baseline_show.kcl
         "query_point": {
           "x": 20.0,
           "y": 10.0
-        }
+        },
+        "version": "V1"
       }
     },
     {
@@ -377,7 +378,8 @@ description: Artifact commands named_views_baseline_show.kcl
         "query_point": {
           "x": 55.0,
           "y": 5.0
-        }
+        },
+        "version": "V1"
       }
     },
     {

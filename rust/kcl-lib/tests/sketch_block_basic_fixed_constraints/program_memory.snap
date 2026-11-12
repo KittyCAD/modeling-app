@@ -40,8 +40,10 @@ description: Variables in memory after executing sketch_block_basic_fixed_constr
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "s": {
@@ -51,9 +53,11 @@ description: Variables in memory after executing sketch_block_basic_fixed_constr
         "type": "Number",
         "value": 5.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "p1": {
@@ -63,18 +67,22 @@ description: Variables in memory after executing sketch_block_basic_fixed_constr
             "type": "Number",
             "value": 30.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           {
             "type": "Number",
             "value": 1016.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           }
         ]
@@ -83,18 +91,22 @@ description: Variables in memory after executing sketch_block_basic_fixed_constr
         "type": "Number",
         "value": 3.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "y": {
         "type": "Number",
         "value": 20.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       }
     },

@@ -1,0 +1,26 @@
+fn capScrew(originStart, length, dia, capDia, capHeadLength) {
+  screwHead = startSketchOn({
+    origin = {
+      x = originStart[0],
+      y = originStart[1],
+      z = originStart[2]
+    },
+    xAxis = { x = 0, y = 0, z = -1 },
+    yAxis = { x = 1, y = 0, z = 0 },
+    zAxis = { x = 0, y = 1, z = 0 }
+  })
+    |> circle(center = [0, 0], radius = capDia / 2)
+    |> extrude(length = capHeadLength)
+  screw = startSketchOn(screwHead, face = START)
+    |> circle(center = [0, 0], radius = dia / 2)
+    |> extrude(length = length)
+  return screw
+}
+
+capScrew(
+  originStart = [0, 0.5, 0],
+  length = 50,
+  dia = 37.5,
+  capDia = 50,
+  capHeadLength = 25,
+)

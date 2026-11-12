@@ -14,6 +14,9 @@ export interface DisposableLike {
   [Symbol.dispose](): void
 }
 
+/** Every cleanup shape accepted from a runtime registry item. */
+export type RegistryDisposer = DisposableLike | (() => void | PromiseLike<void>)
+
 /**
  * Value-spec contributions may be static values or live reactive values.
  *
@@ -92,26 +95,20 @@ export interface RegistryItemDefinition {
  * contributions.
  */
 export interface RuntimeRegistryItemDefinition extends RegistryItemDefinition {
-  readonly dispose?: DisposableLike | (() => void)
+  readonly dispose?: RegistryDisposer
 }
 
 /**
  * A runtime registry item factory constructs long-lived registry item instances.
  *
  * Factories are where models usually live. A factory should create a stable
- * service surface and return a registry item definition that exposes it.
+ * service surface and return its contributions and optional cleanup directly.
+ * The registry preserves instances by item key.
  */
-export interface RuntimeRegistryItemHandle<TModel = unknown> {
-  readonly model?: TModel
-  readonly item: RuntimeRegistryItemDefinition
-}
-
-/**
- * A runtime registry item factory. The registry preserves instances by item key.
- */
-export interface RegistryItemFactory<TModel = unknown> {
-  (ctx: RegistryItemContext): RuntimeRegistryItemHandle<TModel>
+export interface RegistryItemFactory {
+  (ctx: RegistryItemContext): RuntimeRegistryItemDefinition
   readonly itemKey?: RegistryItemKey
+  readonly dependencies?: readonly RegistryItem[]
 }
 
 /**
@@ -120,7 +117,7 @@ export interface RegistryItemFactory<TModel = unknown> {
 export type RegistryItem =
   | RegistryItemDefinition
   | RuntimeRegistryItemDefinition
-  | RegistryItemFactory<any>
+  | RegistryItemFactory
   | SlotInstance
 
 /**
@@ -146,8 +143,8 @@ export interface ServiceReader {
 }
 
 /**
- * Registry item factories receive a context that lets them read resolved value specs
- * and services lazily.
+ * Registry item factories receive a context that lets them read resolved value
+ * specs and services lazily, after graph construction.
  */
 export interface RegistryItemContext {
   readonly container: RegistryLike
@@ -203,11 +200,14 @@ export class SlotInstance {
  * The concrete implementation lives in registry.ts.
  */
 export interface RegistryLike extends DisposableLike {
+  configureAsync(items: readonly RegistryItem[]): Promise<void>
+  disposeAsync(): Promise<void>
   get<T>(service: Service<T>): T
   get<I, O>(valueSpec: ValueSpec<I, O>): O
   signal<T>(service: Service<T>): ReadonlyPreactSignal<T | undefined>
   signal<I, O>(valueSpec: ValueSpec<I, O>): ReadonlyPreactSignal<O>
   reconfigure(slot: Slot, items: readonly RegistryItem[]): void
+  reconfigureAsync(slot: Slot, items: readonly RegistryItem[]): Promise<void>
   optional<T>(service: Service<T>): T | undefined
   debugService<T>(
     service: Service<T>

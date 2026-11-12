@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties sketch_block_circle_constants.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 3.999999998800001,
+      "y": 0.0,
+      "z": 1.0
+    },
+    "dimensions": {
+      "x": 15.1999999908,
+      "y": 7.1999999952,
+      "z": 2.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 188.36313606779288
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.11298382812460991
+  }
+}

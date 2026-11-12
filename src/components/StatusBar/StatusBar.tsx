@@ -3,25 +3,32 @@ import { ActionButton } from '@src/components/ActionButton'
 import { ActionIcon } from '@src/components/ActionIcon'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import Tooltip, { type TooltipProps } from '@src/components/Tooltip'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: status-bar links receive router location (useLocation).
 import { useLocation } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
 
 export function StatusBar({
   globalItems,
   localItems,
+  activeFileRoutePath,
 }: {
   globalItems: StatusBarItemType[]
   localItems: StatusBarItemType[]
+  activeFileRoutePath?: string
 }) {
   return (
     <footer
       id="statusbar"
-      className="relative z-10 flex justify-between items-center bg-chalkboard-20 dark:bg-chalkboard-90 text-chalkboard-80 dark:text-chalkboard-30 border-t border-t-chalkboard-30 dark:border-t-chalkboard-80"
+      className="relative z-10 box-content h-8 shrink-0 flex justify-between items-stretch bg-chalkboard-20 dark:bg-chalkboard-90 text-chalkboard-80 dark:text-chalkboard-30 border-t border-t-chalkboard-30 dark:border-t-chalkboard-80"
     >
       <menu id="statusbar-globals" className="flex items-stretch">
         {globalItems.map((item, index, arr) => (
           <Fragment key={item.id}>
-            <StatusBarItem {...item} position="left" />
+            <StatusBarItem
+              {...item}
+              position="left"
+              activeFileRoutePath={activeFileRoutePath}
+            />
             {index < arr.length - 1 && (
               <div className="w-[1px] self-stretch bg-chalkboard-30 dark:bg-chalkboard-80" />
             )}
@@ -31,7 +38,11 @@ export function StatusBar({
       <menu id="statusbar-locals" className="flex items-stretch">
         {localItems.map((item, index, arr) => (
           <Fragment key={item.id}>
-            <StatusBarItem {...item} position="right" />
+            <StatusBarItem
+              {...item}
+              position="right"
+              activeFileRoutePath={activeFileRoutePath}
+            />
             {index < arr.length - 1 && (
               <div className="w-[1px] self-stretch bg-chalkboard-30 dark:bg-chalkboard-80" />
             )}
@@ -43,10 +54,13 @@ export function StatusBar({
 }
 
 export const defaultStatusBarItemClassNames =
-  'flex items-center gap-2 px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10  focus:outline-none focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50'
+  'flex items-center gap-2 my-0 px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10  focus:outline-none focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50'
 
 function StatusBarItem(
-  props: StatusBarItemType & { position: 'left' | 'middle' | 'right' }
+  props: StatusBarItemType & {
+    position: 'left' | 'middle' | 'right'
+    activeFileRoutePath?: string
+  }
 ) {
   const location = useLocation()
   const tooltipPosition: TooltipProps['position'] =
@@ -87,7 +101,7 @@ function StatusBarItem(
       )
     case 'popover':
       return (
-        <Popover className="relative">
+        <Popover className="relative flex">
           <Popover.Button
             as={ActionButton}
             Element="button"
@@ -145,12 +159,18 @@ function StatusBarItem(
           )}
         </div>
       )
+    case 'link':
+    case 'externalLink':
     default:
       return (
         <ActionButton
           Element={props.element}
           to={
-            props.href instanceof Function ? props.href(location) : props.href
+            props.href instanceof Function
+              ? props.href(location, {
+                  activeFileRoutePath: props.activeFileRoutePath,
+                })
+              : props.href
           }
           iconStart={
             'icon' in props

@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties helix_axis_edge_ref.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.15000000000000036,
+      "y": -17.82,
+      "z": 1.5
+    },
+    "dimensions": {
+      "x": 20.320000000000004,
+      "y": 50.0,
+      "z": 7.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 940.1672868989408
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 1.486668130231313
+  }
+}

@@ -1,4 +1,3 @@
-import { DownloadDesktopApp } from '@src/components/StatusBar/DownloadDesktopApp'
 import { defaultGlobalStatusBarItems } from '@src/components/StatusBar/defaultStatusBarItems'
 import { isDesktop } from '@src/lib/isDesktop'
 import { getReleaseUrl } from '@src/routes/utils'
@@ -15,9 +14,6 @@ vi.mock('@src/components/StatusBar/AutoUpdateDownloadStatus', () => ({
 }))
 vi.mock('@src/components/StatusBar/AutoUpdateReadyStatus', () => ({
   AutoUpdateReadyStatus: vi.fn(),
-}))
-vi.mock('@src/components/StatusBar/DownloadDesktopApp', () => ({
-  DownloadDesktopApp: vi.fn(),
 }))
 vi.mock('@src/components/environment/Environment', () => ({
   EnvironmentChip: vi.fn(),
@@ -38,7 +34,6 @@ describe('defaultGlobalStatusBarItems', () => {
     expect(
       defaultGlobalStatusBarItems({
         appVersion,
-        hasCloudSyncFeature: false,
       })[0]
     ).toEqual({
       id: 'version',
@@ -51,24 +46,11 @@ describe('defaultGlobalStatusBarItems', () => {
     })
   })
 
-  it('shows the desktop app download in the web status bar without cloud sync', () => {
-    mockedIsDesktop.mockReturnValue(false)
-
-    expect(
-      defaultGlobalStatusBarItems({ hasCloudSyncFeature: false })[0]
-    ).toEqual({
-      id: 'download-desktop-app',
-      'data-testid': 'download-desktop-app',
-      component: DownloadDesktopApp,
-    })
-  })
-
-  it('shows no version or download item in web with cloud sync', () => {
+  it('shows no version or download item in the web status bar', () => {
     mockedIsDesktop.mockReturnValue(false)
 
     const items = defaultGlobalStatusBarItems({
       appVersion: 'fe581ff',
-      hasCloudSyncFeature: true,
     })
 
     expect(items.some(({ id }) => id === 'version')).toBe(false)

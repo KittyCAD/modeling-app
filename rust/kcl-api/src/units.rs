@@ -168,7 +168,7 @@ pub enum UnitArea {
     #[serde(rename = "mm2")]
     #[display("mm2")]
     SquareMillimeters,
-    /// Square yards <https://en.wikipedia.org/wiki/Square_mile>
+    /// Square yards <https://en.wikipedia.org/wiki/Square_yard>
     #[serde(rename = "yd2")]
     #[display("yd2")]
     SquareYards,

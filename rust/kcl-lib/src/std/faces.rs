@@ -1,5 +1,6 @@
 //! Standard library face helpers.
 
+use kcl_api::SourceRef;
 use uuid::Uuid;
 
 use super::sketch::FaceTag;
@@ -12,7 +13,6 @@ use crate::execution::KclValue;
 use crate::execution::Segment;
 use crate::execution::Solid;
 use crate::execution::types::RuntimeType;
-use crate::front::SourceRef;
 use crate::std::Args;
 
 const SEGMENT_MUST_HAVE_TAG_ERROR: &str =
@@ -88,9 +88,9 @@ pub(super) async fn make_face(
     })?;
 
     let object_id = exec_state.next_object_id();
-    let face_object = crate::front::Object {
+    let face_object = kcl_api::Object {
         id: object_id,
-        kind: crate::front::ObjectKind::Face(crate::front::Face { id: object_id }),
+        kind: kcl_api::ObjectKind::Face(kcl_api::Face { id: object_id }),
         label: Default::default(),
         comments: Default::default(),
         artifact_id: extrude_plane_id.into(),

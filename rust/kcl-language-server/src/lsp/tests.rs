@@ -5,6 +5,7 @@ use tower_lsp::LanguageServer;
 use tower_lsp::lsp_types::CodeActionKind;
 use tower_lsp::lsp_types::CodeActionOrCommand;
 use tower_lsp::lsp_types::Diagnostic;
+use tower_lsp::lsp_types::DiagnosticSeverity;
 use tower_lsp::lsp_types::PrepareRenameResponse;
 use tower_lsp::lsp_types::SemanticTokenModifier;
 use tower_lsp::lsp_types::SemanticTokenType;
@@ -16,6 +17,7 @@ use crate::errors::Suggestion;
 use crate::lsp::LspSuggestion;
 use crate::lsp::test_util::copilot_lsp_server;
 use crate::lsp::test_util::kcl_lsp_server;
+use crate::lsp::test_util::kcl_lsp_server_mock_execution;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
 
@@ -1652,7 +1654,7 @@ async fn test_kcl_lsp_semantic_tokens() {
 #[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_semantic_tokens_large_file() {
     let server = kcl_lsp_server(false).await.unwrap();
-    let code = include_str!("../../../kcl-lib/e2e/executor/inputs/global-tags.kcl");
+    let code = include_str!("../../../kcl-lib/tests/global_tags/input.kcl");
 
     // Send open file.
     server
@@ -1689,10 +1691,7 @@ async fn test_kcl_lsp_semantic_tokens_large_file() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_new_lexer_retains_semantic_tokens_on_lexical_error() {
-    // With the new lexer a lexical error still yields semantic tokens (so the
-    // editor keeps highlighting) alongside a diagnostic, and produces no AST.
-    // (Uses the process-global test override; race-free under nextest isolation.)
-    let _guard = crate::parsing::token::LexerMode::override_for_test(crate::parsing::token::LexerMode::New);
+    // Lexical errors retain semantic highlighting.
 
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -2413,6 +2412,64 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
                 .to_string()
         }]
     );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_rename_local_in_if_arm_is_refused() {
+    // Renaming a declaration inside an if-expression arm isn't supported. The rename must
+    // return no edit, and prepare_rename must refuse, instead of producing a whole-document
+    // edit that only reformats the code.
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"x = if true {
+  local_value = 1
+  local_value
+} else {
+  0
+}
+"#
+                .to_string(),
+            },
+        })
+        .await;
+
+    // The position is on `local_value`'s declaration inside the `if` arm.
+    let position = tower_lsp::lsp_types::Position { line: 1, character: 3 };
+
+    // Send rename request.
+    let rename = server
+        .rename(tower_lsp::lsp_types::RenameParams {
+            text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position,
+            },
+            new_name: "localValue".to_string(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+    assert_eq!(rename, None);
+
+    // Send prepare rename request.
+    let prepared = server
+        .prepare_rename(tower_lsp::lsp_types::TextDocumentPositionParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            position,
+        })
+        .await
+        .unwrap();
+    assert_eq!(prepared, None);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3156,6 +3213,7 @@ async fn kcl_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
     server.ast_map.insert(
         "file:///test.kcl".to_string(),
         crate::Program {
+            kcl_version: Default::default(),
             ast: Default::default(),
             original_file_contents: Default::default(),
         },
@@ -4532,4 +4590,117 @@ async fn test_kcl_lsp_diagnostic_compilation_warnings() {
     } else {
         panic!("Expected diagnostics");
     }
+}
+
+fn did_open_params(text: &str) -> tower_lsp::lsp_types::DidOpenTextDocumentParams {
+    tower_lsp::lsp_types::DidOpenTextDocumentParams {
+        text_document: tower_lsp::lsp_types::TextDocumentItem {
+            uri: "file:///test.kcl".try_into().unwrap(),
+            language_id: "kcl".to_string(),
+            version: 1,
+            text: text.to_string(),
+        },
+    }
+}
+
+fn did_change_params(text: &str, version: i32) -> tower_lsp::lsp_types::DidChangeTextDocumentParams {
+    tower_lsp::lsp_types::DidChangeTextDocumentParams {
+        text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+            uri: "file:///test.kcl".try_into().unwrap(),
+            version,
+        },
+        content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+            range: None,
+            range_length: None,
+            text: text.to_string(),
+        }],
+    }
+}
+
+#[track_caller]
+fn assert_single_error(diagnostics: &[Diagnostic], expected_message_fragment: &str) {
+    assert_eq!(diagnostics.len(), 1, "expected one diagnostic, got {diagnostics:#?}");
+    assert_eq!(diagnostics[0].severity, Some(DiagnosticSeverity::ERROR));
+    assert!(
+        diagnostics[0].message.contains(expected_message_fragment),
+        "expected a message containing {expected_message_fragment:?}, got {:?}",
+        diagnostics[0].message
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn exec_time_error_issue_reaches_diagnostics() {
+    // Calling a function with an explicitly experimental parameter records an
+    // Error-severity issue during execution while the call still returns a
+    // value. The language server must publish that issue after parsing.
+    let server = kcl_lsp_server_mock_execution().await.unwrap();
+
+    let code = r#"@settings(kclVersion = 2.0)
+fn inc(@x, @(experimental = true) amount? = 1) {
+  return x + amount
+}
+answer = inc(5, amount = 2)
+"#;
+    server.did_open(did_open_params(code)).await;
+
+    let diagnostics = server
+        .diagnostics_map
+        .get("file:///test.kcl")
+        .expect("execution raised an issue but nothing was published");
+    assert_single_error(&diagnostics, "Use of `inc(amount)` is experimental");
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn enum_version_error_reaches_diagnostics() {
+    // The declaration fails during execution when the entry point uses KCL V1.
+    let server = kcl_lsp_server_mock_execution().await.unwrap();
+
+    server.did_open(did_open_params("type Color { | Red }\n")).await;
+
+    let diagnostics = server
+        .diagnostics_map
+        .get("file:///test.kcl")
+        .expect("the version error was not published");
+    assert_single_error(&diagnostics, "Enum declarations require KCL 3.0-preview");
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn clean_document_has_no_diagnostics() {
+    // A pass over a document that raises nothing must leave no entry behind.
+    let server = kcl_lsp_server_mock_execution().await.unwrap();
+
+    server.did_open(did_open_params("x = 1\n")).await;
+
+    assert!(server.diagnostics_map.get("file:///test.kcl").is_none());
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn repeated_pass_settles_on_the_same_diagnostics() {
+    // Each pass clears the Error and Warning diagnostics and publishes them
+    // again. Re-sending identical text runs a whole pass, because a document
+    // that has diagnostics is never skipped as unchanged, so this is where a
+    // clearing mistake shows up: the set would come back empty or doubled.
+    let server = kcl_lsp_server_mock_execution().await.unwrap();
+
+    // The declaration's version error must remain stable across repeated passes.
+    let code = "type Color { | Red }\nc = Color::Red\n";
+
+    server.did_open(did_open_params(code)).await;
+    let settled = server
+        .diagnostics_map
+        .get("file:///test.kcl")
+        .expect("nothing was published")
+        .clone();
+    assert_eq!(settled.len(), 1, "settled on {settled:#?}");
+    assert!(settled.iter().all(|d| d.severity == Some(DiagnosticSeverity::ERROR)));
+
+    server.did_change(did_change_params(code, 2)).await;
+    assert_eq!(
+        *server
+            .diagnostics_map
+            .get("file:///test.kcl")
+            .expect("the second pass published nothing"),
+        settled,
+        "the second pass settled somewhere else"
+    );
 }

@@ -1,0 +1,15 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing optional_params.kcl
+---
+fn other_circle(pos, radius, tag?) {
+  sg = startSketchOn(XY)
+    |> startProfile(at = pos)
+    |> arc(angleEnd = 360, angleStart = 0, radius = radius)
+    |> close()
+    |> extrude(length = 2)
+
+  return sg
+}
+
+thing = other_circle(pos = [2, 2], radius = 20)

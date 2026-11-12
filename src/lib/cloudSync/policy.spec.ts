@@ -3,6 +3,7 @@ import type * as ClientErrorsModule from '@src/lib/clientErrors'
 import {
   configureCloudSyncEngine,
   configureCloudSyncLocalFileSystem,
+  disableCloudSyncEngineForTest,
   filterCloudSyncProjectFilesForSync,
   notifyCloudSyncRemoveMutation,
   notifyCloudSyncRenameMutation,
@@ -73,7 +74,7 @@ function installFetchMock() {
     const method = getFetchMethod(input, init)
 
     if (url === `${baseUrl}/user/projects` && method === 'GET') {
-      return jsonResponse([])
+      return jsonResponse({ items: [], next_page: null })
     }
 
     if (url === remoteProjectUrl && method === 'GET') {
@@ -111,7 +112,7 @@ describe('cloud sync file policy', () => {
 
   afterEach(async () => {
     setCloudSyncOpenedProject(undefined)
-    configureCloudSyncEngine({ enabled: false })
+    await disableCloudSyncEngineForTest()
     clientErrorsMock.reportClientError.mockClear()
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()

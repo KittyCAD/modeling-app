@@ -1,0 +1,283 @@
+import { artifactToEntityRef, resolveToCodeRef } from '@src/lang/queryAst'
+import {
+  getArtifactFromRange,
+  getArtifactOfTypes,
+  getSweepArtifactFromSelection,
+} from '@src/lang/std/artifactGraph'
+import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
+import type { ArtifactGraph } from '@src/lang/wasm'
+import type { CommandSelectionType } from '@src/lib/commandTypes'
+import {
+  getBodySelectionFromPrimitiveParentEntityId,
+  getEngineTopologyFallbackNormalized,
+  isEnginePrimitiveSelection,
+} from '@src/lib/selections'
+import { err } from '@src/lib/trap'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+
+// Classify every selection type so additions require an explicit decision.
+const objectSelectionTypes: Record<CommandSelectionType, boolean> = {
+  path: true,
+  pathRegion: true,
+  solid2d: true,
+  sketchBlock: true,
+  sweep: true,
+  compositeSolid: true,
+  gdtAnnotation: true,
+  helix: true,
+  plane: true,
+  importedGeometry: true,
+  segment: false,
+  primitiveFace: false,
+  primitiveEdge: false,
+  planeOfFace: false,
+  startSketchOnFace: false,
+  startSketchOnPlane: false,
+  sketchBlockConstraint: false,
+  wall: false,
+  cap: false,
+  sweepEdge: false,
+  edgeCut: false,
+  edgeCutEdge: false,
+  namedView: false,
+  pattern: false,
+  enginePrimitiveFace: false,
+  enginePrimitiveEdge: false,
+  engineRegion: false,
+}
+
+/**
+ * Coerce selections that may contain faces or edges to their parent body (sweep/compositeSolid).
+ * This is useful for commands that only work with bodies, but users may have faces or edges selected.
+ *
+ * @param selections - The selections to coerce
+ * @param artifactGraph - The artifact graph to use for lookups
+ * @returns Body selections with other whole objects preserved, or an Error if coercion fails
+ */
+export function coerceSelectionsToBody(
+  selections: Selections,
+  artifactGraph: ArtifactGraph
+): Selections | Error {
+  const bodySelections: Array<{ artifact: Artifact; codeRef: CodeRef }> = []
+  const passthroughSelections: Selection[] = []
+  const codeRefOnlyV2: Array<Selection> = []
+  const remainingOtherSelections: Selections['otherSelections'] = []
+  const seenBodyIds = new Set<string>()
+
+  for (const selV2 of selections.graphSelections) {
+    const topologyFallback = getEngineTopologyFallbackNormalized(selV2)
+    if (topologyFallback) {
+      const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
+        topologyFallback.parentId,
+        artifactGraph
+      )
+      if (bodySelection?.artifact && bodySelection.codeRef) {
+        if (seenBodyIds.has(bodySelection.artifact.id)) continue
+        seenBodyIds.add(bodySelection.artifact.id)
+        bodySelections.push({
+          artifact: bodySelection.artifact,
+          codeRef: bodySelection.codeRef,
+        })
+        continue
+      }
+    }
+
+    const resolvedSelection = resolveToCodeRef(selV2, artifactGraph)
+    const selection = resolvedSelection
+      ? !resolvedSelection.artifact && resolvedSelection.codeRef.range
+        ? {
+            ...resolvedSelection,
+            artifact:
+              getArtifactFromRange(
+                resolvedSelection.codeRef.range,
+                artifactGraph
+              ) ?? undefined,
+          }
+        : resolvedSelection
+      : selV2.codeRef
+        ? {
+            codeRef: selV2.codeRef,
+            artifact:
+              getArtifactFromRange(selV2.codeRef.range, artifactGraph) ??
+              undefined,
+          }
+        : null
+
+    if (!selection) {
+      continue
+    }
+
+    if (!selection.artifact) {
+      if (selection.codeRef.range[1] - selection.codeRef.range[0] !== 0) {
+        codeRefOnlyV2.push({ codeRef: selection.codeRef })
+      }
+      continue
+    }
+
+    if (selection.artifact.type === 'path') {
+      const maybeSweepId = selection.artifact.sweepId
+      if (maybeSweepId) {
+        const sweepWithType = getArtifactOfTypes(
+          { key: maybeSweepId, types: ['sweep'] },
+          artifactGraph
+        )
+        if (!err(sweepWithType)) {
+          if (seenBodyIds.has(sweepWithType.id)) continue
+          seenBodyIds.add(sweepWithType.id)
+          bodySelections.push({
+            artifact: sweepWithType,
+            codeRef: sweepWithType.codeRef,
+          })
+          continue
+        }
+      }
+
+      if (
+        selection.artifact.codeRef.range[1] -
+          selection.artifact.codeRef.range[0] !==
+        0
+      ) {
+        codeRefOnlyV2.push({ codeRef: selection.artifact.codeRef })
+      }
+      continue
+    }
+
+    if (
+      objectSelectionTypes[selection.artifact.type] &&
+      selection.artifact.type !== 'sweep' &&
+      selection.artifact.type !== 'compositeSolid'
+    ) {
+      passthroughSelections.push(selV2)
+      continue
+    }
+
+    if (
+      selection.artifact.type === 'sweep' ||
+      selection.artifact.type === 'compositeSolid'
+    ) {
+      const entityRef = artifactToEntityRef(
+        selection.artifact.type,
+        selection.artifact.id
+      )
+      if (entityRef && !seenBodyIds.has(selection.artifact.id)) {
+        seenBodyIds.add(selection.artifact.id)
+        bodySelections.push({
+          artifact: selection.artifact,
+          codeRef: selection.codeRef,
+        })
+      }
+    } else {
+      const maybeSweep = getSweepArtifactFromSelection(selection, artifactGraph)
+      if (err(maybeSweep)) {
+        return new Error(
+          `Unable to find parent body for selected artifact: ${selection.artifact.type}`
+        )
+      }
+      // Prefer the sweep (3D solid) over the path (2D profile) when it has entityRef.
+      const sweepWithType = getArtifactOfTypes(
+        { key: maybeSweep.id, types: ['sweep'] },
+        artifactGraph
+      )
+      if (!err(sweepWithType)) {
+        if (seenBodyIds.has(sweepWithType.id)) continue
+        seenBodyIds.add(sweepWithType.id)
+        bodySelections.push({
+          artifact: sweepWithType,
+          codeRef: maybeSweep.codeRef,
+        })
+        continue
+      }
+
+      const maybePath = maybeSweep.pathId
+        ? getArtifactOfTypes(
+            { key: maybeSweep.pathId, types: ['path'] },
+            artifactGraph
+          )
+        : new Error('sweep has no pathId')
+      if (!err(maybePath) && !seenBodyIds.has(maybePath.id)) {
+        const pathEntityRef = artifactToEntityRef('path', maybePath.id)
+        if (pathEntityRef) {
+          seenBodyIds.add(maybePath.id)
+          bodySelections.push({
+            artifact: maybePath,
+            codeRef: maybePath.codeRef,
+          })
+        } else if (
+          maybePath.codeRef.range[1] - maybePath.codeRef.range[0] !==
+          0
+        ) {
+          codeRefOnlyV2.push({ codeRef: maybePath.codeRef })
+        }
+      }
+    }
+  }
+
+  for (const selection of selections.otherSelections) {
+    if (
+      isEnginePrimitiveSelection(selection) &&
+      selection.parentEntityId != null
+    ) {
+      const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
+        selection.parentEntityId,
+        artifactGraph
+      )
+      if (bodySelection?.artifact && bodySelection.codeRef) {
+        if (seenBodyIds.has(bodySelection.artifact.id)) continue
+        seenBodyIds.add(bodySelection.artifact.id)
+        bodySelections.push({
+          artifact: bodySelection.artifact,
+          codeRef: bodySelection.codeRef,
+        })
+        continue
+      }
+    }
+
+    remainingOtherSelections.push(selection)
+  }
+
+  const graphSelections: Selection[] = [
+    ...bodySelections.map(({ artifact, codeRef }) => {
+      const entityRef = artifactToEntityRef(artifact.type, artifact.id)
+      return entityRef ? { entityRef, codeRef } : { artifact, codeRef }
+    }),
+    ...passthroughSelections,
+    ...codeRefOnlyV2,
+  ]
+
+  return {
+    graphSelections,
+    otherSelections: remainingOtherSelections,
+  }
+}
+
+export function coerceSelectionsForBodyOnlySelectionTypes(
+  selections: Selections | undefined,
+  selectionTypes: CommandSelectionType[] | undefined,
+  artifactGraph: ArtifactGraph
+): Selections | undefined {
+  if (
+    !selections ||
+    (selections.graphSelections.length === 0 &&
+      selections.otherSelections.length === 0)
+  ) {
+    return selections
+  }
+
+  const onlyAcceptsBodyLikeObjects = selectionTypes?.every(
+    (type) => objectSelectionTypes[type]
+  )
+  if (!onlyAcceptsBodyLikeObjects) {
+    return selections
+  }
+
+  const coercedSelections = coerceSelectionsToBody(selections, artifactGraph)
+  if (err(coercedSelections)) {
+    return selections
+  }
+
+  if ((coercedSelections.graphSelections?.length ?? 0) === 0) {
+    return selections
+  }
+
+  return coercedSelections
+}

@@ -68,6 +68,7 @@ description: Result of parsing nested_windows_main_kcl.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

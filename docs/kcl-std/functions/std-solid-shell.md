@@ -51,7 +51,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the shell function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-shell0.png"
@@ -80,7 +80,7 @@ shell(firstSketch, faces = [START], thickness = 0.25)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the shell function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-shell1.png"
@@ -109,7 +109,7 @@ shell(firstSketch, faces = [myTag], thickness = 0.25)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the shell function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell2_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell2_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-shell2.png"
@@ -138,7 +138,7 @@ shell(firstSketch, faces = [myTag, END], thickness = 0.25)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the shell function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell3_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell3_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-shell3.png"
@@ -176,7 +176,7 @@ shell(case, faces = [START], thickness = 5)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the shell function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell4_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell4_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-shell4.png"
@@ -214,7 +214,7 @@ shell(thing1, faces = [END], thickness = 5)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the shell function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell5_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell5_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-shell5.png"
@@ -254,7 +254,7 @@ shell([thing1, thing2], faces = [END], thickness = 5)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the shell function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell6_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell6_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-shell6.png"
@@ -289,7 +289,7 @@ openBox = shell(box, faces = [END], thickness = 0.5mm)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the shell function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell7_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell7_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-shell7.png"

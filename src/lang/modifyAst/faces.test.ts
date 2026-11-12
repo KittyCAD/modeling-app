@@ -2,6 +2,7 @@ import type { Artifact, CodeRef } from '@rust/kcl-lib/bindings/Artifact'
 import type { OpArg } from '@rust/kcl-lib/bindings/Operation'
 
 import { retrieveFaceSelectionsFromOpArgs } from '@src/lang/modifyAst/faces'
+import { resolveToCodeRef } from '@src/lang/queryAst'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -120,7 +121,10 @@ describe('retrieveFaceSelectionsFromOpArgs', () => {
         throw result
       }
       expect(result.solids.graphSelections[0].artifact).toBe(hole)
-      expect(result.faces.graphSelections[0].artifact).toBe(wall)
+      expect(
+        resolveToCodeRef(result.faces.graphSelections[0], artifactGraph)
+          ?.artifact
+      ).toBe(wall)
     }
   })
 })

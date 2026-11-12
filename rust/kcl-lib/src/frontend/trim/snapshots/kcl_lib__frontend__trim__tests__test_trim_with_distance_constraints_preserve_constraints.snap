@@ -40,7 +40,7 @@ sketch(on = YZ) {
   coincident([line2.end, line8.start])
   coincident([line10.start, line2])
   distance([
-  splitTrimLineDistanceConstraintMigrated.start,
-  line2.end
-]) == 5.54mm
+    splitTrimLineDistanceConstraintMigrated.start,
+    line2.end
+  ]) == 5.54mm
 }

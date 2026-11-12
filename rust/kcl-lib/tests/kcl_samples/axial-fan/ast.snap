@@ -267,6 +267,7 @@ description: Result of parsing axial-fan.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

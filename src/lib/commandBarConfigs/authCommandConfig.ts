@@ -2,6 +2,7 @@ import type { Command } from '@src/lib/commandTypes'
 import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
 import type { authMachine } from '@src/machines/authMachine'
+import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 import type { ActorRefFrom } from 'xstate'
 
 export function createAuthCommands({
@@ -11,6 +12,7 @@ export function createAuthCommands({
 }) {
   const authCommands: Command[] = [
     {
+      scopes: GLOBAL_COMMAND_SCOPES,
       groupId: 'auth',
       name: 'log-out',
       displayName: 'Log out',
@@ -20,6 +22,7 @@ export function createAuthCommands({
       onSubmit: () => authActor.send({ type: 'Log out' }),
     },
     {
+      scopes: GLOBAL_COMMAND_SCOPES,
       groupId: 'auth',
       name: 'refresh',
       displayName: 'Reload app',

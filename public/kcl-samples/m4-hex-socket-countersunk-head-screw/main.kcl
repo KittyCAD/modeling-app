@@ -38,9 +38,9 @@ boltProfileSketch = sketch(on = XY) {
   horizontalDistance([shankTopEdge.end, shankTopEdge.start]) == boltShankDiameter / 2
   horizontalDistance([headTopEdge.start, headTopEdge.end]) == boltHeadDiameter / 2
   verticalDistance([
-  headTransitionEdge.start,
-  headTransitionEdge.end
-]) == boltHeadTransitionHeight
+    headTransitionEdge.start,
+    headTransitionEdge.end
+  ]) == boltHeadTransitionHeight
 }
 
 hexSocketSketch = sketch(on = XZ) {
@@ -97,9 +97,9 @@ hexSocketSketch = sketch(on = XZ) {
   ])
   horizontal(socketRadiusGuide)
   horizontalDistance([
-  socketRadiusGuide.start,
-  socketRadiusGuide.end
-]) == socketRadius
+    socketRadiusGuide.start,
+    socketRadiusGuide.end
+  ]) == socketRadius
   coincident([topFacet.end, upperLeftFacet.start])
   coincident([
     socketRadiusGuide.end,

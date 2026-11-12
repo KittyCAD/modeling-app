@@ -1,4 +1,3 @@
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import {
   isProjectLibrarySettings,
   projectLibrarySettingsFromSerialized,
@@ -6,7 +5,7 @@ import {
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 import type { ExtensionSettingsContribution } from '@src/lib/settings/extensionSettings'
-import { Setting } from '@src/lib/settings/initialSettings'
+import { Setting } from '@src/lib/settings/Setting'
 import { Suspense, lazy } from 'react'
 
 const ProjectLibrariesSetting = lazy(() =>
@@ -26,9 +25,6 @@ export const projectLibrariesSettingsContribution: ExtensionSettingsContribution
             defaultValue: [],
             description: 'Project libraries shown on the home page.',
             hideOnLevel: 'project',
-            hideWithoutFeatureOnPlatform: {
-              web: OPFS_CLOUD_FEATURE_FLAG,
-            },
             validate: isProjectLibrarySettings,
             Component: (props) => (
               <Suspense fallback={null}>

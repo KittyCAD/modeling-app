@@ -1,3 +1,4 @@
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: relative paths derived from browser pathname (useLocation).
 import { useLocation } from 'react-router-dom'
 
 export function useDotDotSlash(): (count?: number) => string {

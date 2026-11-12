@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
 } from '@kittycad/registry'
 import { computed } from '@preact/signals-core'
 import { initialiseWasm } from '@src/lang/wasmUtils'
@@ -12,17 +11,15 @@ export const wasmExtension = defineRegistryItemFactory(() => {
   let wasmPromise: Promise<ModuleType> | undefined
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'wasm-extension',
-      provides: [
-        provideWasmPromise(
-          computed(() => {
-            wasmPromise ??= initialiseWasm()
-            return wasmPromise
-          })
-        ),
-      ],
-    }),
+    id: 'wasm-extension',
+    provides: [
+      provideWasmPromise(
+        computed(() => {
+          wasmPromise ??= initialiseWasm()
+          return wasmPromise
+        })
+      ),
+    ],
   }
 }, 'wasm-extension')
 

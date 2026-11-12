@@ -1,7 +1,7 @@
+use kcl_api::NumericSuffix;
 use serde::Serialize;
 
 use crate::execution::types::NumericType;
-use crate::pretty::NumericSuffix;
 
 /// For the UI, display a number and its type for debugging purposes. This is
 /// used by TS.

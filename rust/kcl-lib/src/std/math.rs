@@ -44,21 +44,21 @@ pub async fn rem(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// Compute the cosine of a number (in radians).
 pub async fn cos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::angle(), exec_state)?;
-    let num = num.to_radians(exec_state, args.source_range);
+    let num = num.unwrap_to_radians(exec_state, args.source_range);
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(libm::cos(num), exec_state.current_default_units())))
 }
 
 /// Compute the sine of a number (in radians).
 pub async fn sin(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::angle(), exec_state)?;
-    let num = num.to_radians(exec_state, args.source_range);
+    let num = num.unwrap_to_radians(exec_state, args.source_range);
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(libm::sin(num), exec_state.current_default_units())))
 }
 
 /// Compute the tangent of a number (in radians).
 pub async fn tan(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::angle(), exec_state)?;
-    let num = num.to_radians(exec_state, args.source_range);
+    let num = num.unwrap_to_radians(exec_state, args.source_range);
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(libm::tan(num), exec_state.current_default_units())))
 }
 

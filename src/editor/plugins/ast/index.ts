@@ -7,6 +7,7 @@ import type { Program } from '@src/lang/wasm'
 export const setAstEffect = StateEffect.define<Node<Program> | null>()
 
 export const createEmptyAst = (): Node<Program> => ({
+  type: 'Program',
   body: [],
   shebang: null,
   start: 0,

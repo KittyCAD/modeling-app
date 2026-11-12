@@ -99,8 +99,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 26,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -164,8 +164,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 78,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -196,9 +196,11 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
     "type": "Number",
     "value": 3.0,
     "ty": {
-      "m": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "m"
+      }
     }
   },
   "baseRegion": {
@@ -305,17 +307,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -371,8 +373,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "baseSketch": {
@@ -392,17 +394,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -410,17 +416,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -512,17 +522,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -530,17 +544,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -632,17 +650,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -650,17 +672,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -752,17 +778,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -770,17 +800,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -965,17 +999,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1046,6 +1080,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1208,17 +1244,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1274,8 +1310,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1287,9 +1323,11 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
     "type": "Number",
     "value": 0.2,
     "ty": {
-      "m": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "m"
+      }
     }
   },
   "coreBody": {
@@ -1297,6 +1335,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1459,17 +1499,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 52,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1525,8 +1565,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1538,18 +1578,22 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
     "type": "Number",
     "value": 84.5,
     "ty": {
-      "m": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "m"
+      }
     }
   },
   "coreLength": {
     "type": "Number",
     "value": 10.0,
     "ty": {
-      "m": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "m"
+      }
     }
   },
   "coreRegion": {
@@ -1656,17 +1700,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 52,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1722,8 +1766,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "coreSketch": {
@@ -1743,17 +1787,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -5.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -4.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1761,17 +1809,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -4.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1863,17 +1915,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -4.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1881,17 +1937,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 4.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1983,17 +2043,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 4.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2001,17 +2065,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -5.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 4.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2103,17 +2171,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -5.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 4.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2121,17 +2193,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -5.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -4.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2316,17 +2392,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 52,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2396,28 +2472,26 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
     "type": "Number",
     "value": 8.0,
     "ty": {
-      "m": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "m"
+      }
     }
   },
   "edge1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge1"
   },
   "edge2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "edge2"
   },
   "edge3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "edge3"
   },
   "edge4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge4"
   },
@@ -2425,9 +2499,11 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
     "type": "Number",
     "value": 4.5,
     "ty": {
-      "m": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "m"
+      }
     }
   },
   "facadeRegion": {
@@ -2534,17 +2610,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 130,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2600,8 +2676,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "facadeSketch": {
@@ -2621,17 +2697,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -12.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -12.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2639,17 +2719,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 12.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -12.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2741,17 +2825,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 12.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -12.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2759,17 +2847,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 12.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 12.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2861,17 +2953,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 12.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 12.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2879,17 +2975,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -12.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 12.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2981,17 +3081,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -12.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 12.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2999,17 +3103,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -12.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -12.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -3194,17 +3302,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 130,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -3275,6 +3383,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3437,17 +3547,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 130,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3503,8 +3613,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3520,6 +3630,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3682,17 +3794,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 130,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3748,8 +3860,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3762,6 +3874,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3924,17 +4038,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 130,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3990,8 +4104,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4004,6 +4118,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4166,17 +4282,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 130,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4232,8 +4348,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4246,6 +4362,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4408,17 +4526,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 130,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4474,8 +4592,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4488,6 +4606,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4650,17 +4770,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 130,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4716,8 +4836,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4730,6 +4850,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4892,17 +5014,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 130,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4958,8 +5080,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4972,6 +5094,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5134,17 +5258,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 130,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5200,8 +5324,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5214,6 +5338,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5376,17 +5502,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 130,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5442,8 +5568,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5456,6 +5582,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5618,17 +5746,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 130,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5684,8 +5812,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5698,6 +5826,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5860,17 +5990,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 130,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5926,8 +6056,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5940,6 +6070,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -6102,17 +6234,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 130,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6168,8 +6300,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6182,6 +6314,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -6344,17 +6478,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 130,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6410,8 +6544,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6424,6 +6558,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -6586,17 +6722,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 130,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6652,8 +6788,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6666,6 +6802,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -6828,17 +6966,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 130,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6894,8 +7032,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6908,6 +7046,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -7070,17 +7210,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 130,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7136,8 +7276,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7150,6 +7290,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -7312,17 +7454,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 130,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7378,8 +7520,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7392,6 +7534,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -7554,17 +7698,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 130,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7620,8 +7764,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7635,9 +7779,11 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
     "type": "Number",
     "value": 24.0,
     "ty": {
-      "m": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "m"
+      }
     }
   },
   "floorBlank": {
@@ -7645,6 +7791,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -7807,17 +7955,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 78,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 4500.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -7873,8 +8021,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -7986,17 +8134,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 78,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 4500.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -8052,8 +8200,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "floorBlankSketch": {
@@ -8073,17 +8221,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8091,17 +8243,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8193,17 +8349,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8211,17 +8371,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8313,17 +8477,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8331,17 +8499,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8433,17 +8605,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8451,17 +8627,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -15.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8646,17 +8826,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 78,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 4500.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -8727,16 +8907,20 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
     "value": 17.0,
     "ty": {
       "type": "Known",
-      "type": "Count"
+      "value": {
+        "type": "Count"
+      }
     }
   },
   "floorHeight": {
     "type": "Number",
     "value": 5.0,
     "ty": {
-      "m": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "m"
+      }
     }
   },
   "floorUnitTemplate": {
@@ -8744,6 +8928,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -8966,8 +9152,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": null,
@@ -8983,6 +9169,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -9205,8 +9393,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -9219,6 +9407,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -9441,8 +9631,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -9455,6 +9645,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -9677,8 +9869,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -9691,6 +9883,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -9913,8 +10107,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -9927,6 +10121,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -10149,8 +10345,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -10163,6 +10359,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -10385,8 +10583,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -10399,6 +10597,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -10621,8 +10821,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -10635,6 +10835,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -10857,8 +11059,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -10871,6 +11073,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -11093,8 +11297,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -11107,6 +11311,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -11329,8 +11535,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -11343,6 +11549,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -11565,8 +11773,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -11579,6 +11787,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -11801,8 +12011,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -11815,6 +12025,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12037,8 +12249,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -12051,6 +12263,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12273,8 +12487,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -12287,6 +12501,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12509,8 +12725,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -12523,6 +12739,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12745,8 +12963,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -12759,6 +12977,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12981,8 +13201,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -13156,8 +13376,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "floorVoidSketch": {
@@ -13177,17 +13397,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -14.7,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -14.7,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -13195,17 +13419,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 14.7,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -14.7,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -13291,17 +13519,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 14.7,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -14.7,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -13309,17 +13541,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 14.7,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 14.7,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -13405,17 +13641,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 14.7,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 14.7,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -13423,17 +13663,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -14.7,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 14.7,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -13519,17 +13763,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -14.7,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 14.7,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -13537,17 +13785,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -14.7,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -14.7,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -13801,6 +14053,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -13963,17 +14217,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 26,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": -200.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -14029,8 +14283,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -14042,9 +14296,11 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
     "type": "Number",
     "value": 5.0,
     "ty": {
-      "m": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "m"
+      }
     }
   },
   "groundRegion": {
@@ -14151,17 +14407,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 26,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": -200.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -14217,17 +14473,19 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "groundSize": {
     "type": "Number",
     "value": 50.0,
     "ty": {
-      "m": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "m"
+      }
     }
   },
   "groundSketch": {
@@ -14247,17 +14505,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -25.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -25.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -14265,17 +14527,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 25.000000000000004,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -25.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -14367,17 +14633,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 25.000000000000004,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -25.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -14385,17 +14655,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 25.000000000000004,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 25.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -14487,17 +14761,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": 25.000000000000004,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 25.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -14505,17 +14783,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -25.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 25.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -14607,17 +14889,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -25.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 25.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -14625,17 +14911,21 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       {
                         "n": -25.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -25.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -14820,17 +15110,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 26,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": -200.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -14900,18 +15190,22 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
     "type": "Number",
     "value": 1.2,
     "ty": {
-      "m": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "m"
+      }
     }
   },
   "handrailThickness": {
     "type": "Number",
     "value": 0.3,
     "ty": {
-      "m": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "m"
+      }
     }
   },
   "hiddenBaseSketch": {
@@ -15018,17 +15312,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -15192,17 +15486,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 52,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -15366,17 +15660,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 130,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -15540,17 +15834,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 78,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 4500.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -15882,17 +16176,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 26,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": -200.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -15956,36 +16250,44 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
     "type": "Number",
     "value": 29.4,
     "ty": {
-      "m": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "m"
+      }
     }
   },
   "rotationAngleStep": {
     "type": "Number",
     "value": 5.0,
     "ty": {
-      "degrees": null,
       "type": "Known",
-      "type": "Angle"
+      "value": {
+        "type": "Angle",
+        "value": "degrees"
+      }
     }
   },
   "slabThickness": {
     "type": "Number",
     "value": 0.5,
     "ty": {
-      "m": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "m"
+      }
     }
   },
   "slabWidth": {
     "type": "Number",
     "value": 30.0,
     "ty": {
-      "m": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "m"
+      }
     }
   }
 }

@@ -2,6 +2,7 @@ import type { IElectronAPI } from '@root/interface'
 import { writeRawTelemetryFile, writeTelemetryFile } from '@src/lib/desktop'
 import type { PerformanceMark } from '@src/lib/performance'
 import { getMarks } from '@src/lib/performance'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 let args: any = null
 
@@ -154,7 +155,10 @@ export function printInvocationCount(marks: Array<PerformanceMark>): string[] {
   return printMarkDownTable(formattedCounts)
 }
 
-export async function maybeWriteToDisk(electron: IElectronAPI) {
+export async function maybeWriteToDisk(
+  fileOperations: FileOperationsRegistryService,
+  electron: IElectronAPI
+) {
   if (!args) {
     args = await electron.getArgvParsed()
   }
@@ -162,10 +166,10 @@ export async function maybeWriteToDisk(electron: IElectronAPI) {
     setInterval(() => {
       const marks = getMarks()
       const deltaTotalTable = printDeltaTotal(marks)
-      writeTelemetryFile(deltaTotalTable.join('\n'))
+      writeTelemetryFile(fileOperations, deltaTotalTable.join('\n'))
         .then(() => {})
         .catch(() => {})
-      writeRawTelemetryFile(JSON.stringify(marks))
+      writeRawTelemetryFile(fileOperations, JSON.stringify(marks))
         .then(() => {})
         .catch(() => {})
     }, 5000)

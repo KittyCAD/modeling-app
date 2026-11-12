@@ -22,7 +22,7 @@ jobs:
         with:
           submodules: recursive
       - name: Set up Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7.1.0
         with:
           python-version-file: .tool-versions
       - name: Install toolchain + maturin

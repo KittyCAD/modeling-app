@@ -5,9 +5,9 @@ excerpt: "The camera projection of a named view."
 layout: manual
 ---
 
-**WARNING:** This type is experimental and may change or be removed.
-
 The camera projection of a named view.
+
+**Added in KCL 3.0.**
 
 ```kcl
 type Projection {

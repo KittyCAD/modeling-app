@@ -5,9 +5,9 @@ excerpt: "A camera viewpoint, stored as intent: what the camera looks at and fro
 layout: manual
 ---
 
-**WARNING:** This type is experimental and may change or be removed.
-
 A camera viewpoint, stored as intent: what the camera looks at and from which direction, not a snapshot of engine camera state.
+
+**Added in KCL 3.0.**
 
 Values of this type are opaque. Call
 [`view::oriented()`](/docs/kcl-std/functions/std-view-oriented) or

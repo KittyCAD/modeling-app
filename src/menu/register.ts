@@ -5,14 +5,12 @@ import type { Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection } from '@src/lib/trap'
-import { activeFocusIsInput, uuidv4 } from '@src/lib/utils'
+import { activeFocusIsInput } from '@src/lib/utils'
 import type { authMachine } from '@src/machines/authMachine'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import {
-  SystemIOMachineEvents,
-  type SystemIOActor,
-} from '@src/machines/systemIO/utils'
+import type { ProjectOperationsService } from '@src/lib/projectSession/projectOperations'
+import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import type { NavigateFunction } from 'react-router-dom'
 import type { ActorRefFrom } from 'xstate'
@@ -26,7 +24,8 @@ export function modelingMenuCallbackMostActions({
   currentProject,
   kclManager,
   settingsActor,
-  systemIOActor,
+  projectOperations,
+  projectSession,
 }: {
   settings: SettingsType
   navigate: NavigateFunction
@@ -36,7 +35,8 @@ export function modelingMenuCallbackMostActions({
   currentProject?: Project
   kclManager: KclManager
   settingsActor: SettingsActorType
-  systemIOActor: SystemIOActor
+  projectOperations: ProjectOperationsService
+  projectSession: ProjectSessionService
 }) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -55,14 +55,16 @@ export function modelingMenuCallbackMostActions({
       if (!currentProject) {
         return
       }
-      systemIOActor.send({
-        type: SystemIOMachineEvents.duplicateProject,
-        data: {
-          projectName: currentProject.name,
-          projectPath: currentProject.path,
-          requestedProjectName: getProjectDisplayName(currentProject),
-        },
-      })
+      projectOperations
+        .duplicateProject(
+          currentProject,
+          getProjectDisplayName(currentProject),
+          filePath ? { path: filePath, contents: kclManager.code } : undefined
+        )
+        .then((project) =>
+          projectSession.openFile(project.path, { projectPath: project.path })
+        )
+        .catch(reportRejection)
     } else if (data.menuLabel === 'File.Open project') {
       commandBarActor.send({
         type: 'Find and select command',
@@ -235,16 +237,8 @@ export function modelingMenuCallbackMostActions({
     } else if (
       data.menuLabel === 'View.Standard views.Center view on selection'
     ) {
-      // Gotcha: out of band from modelingMachineProvider, has no state or extra workflows. I am taking the function's logic and porting it here.
-      kclManager.engineCommandManager
-        .sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'default_camera_center_to_selection',
-            camera_movement: 'vantage',
-          },
-        })
+      kclManager.sceneInfra.camControls
+        .centerOnSelection()
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Named views.Create named view') {
       commandBarActor.send({
@@ -316,7 +310,7 @@ export function modelingMenuCallbackMostActions({
         type: 'Find and select command',
         data: {
           groupId: 'code',
-          name: 'Insert',
+          name: 'Import',
         },
       })
     }

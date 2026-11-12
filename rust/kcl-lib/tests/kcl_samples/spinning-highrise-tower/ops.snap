@@ -12,7 +12,9 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 17.0,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "default",
@@ -39,9 +41,11 @@ description: Operations executed spinning-highrise-tower.kcl
         "type": "Number",
         "value": 5.0,
         "ty": {
-          "m": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "m"
+          }
         }
       },
       "visibility": "default",
@@ -68,9 +72,11 @@ description: Operations executed spinning-highrise-tower.kcl
         "type": "Number",
         "value": 30.0,
         "ty": {
-          "m": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "m"
+          }
         }
       },
       "visibility": "default",
@@ -97,9 +103,11 @@ description: Operations executed spinning-highrise-tower.kcl
         "type": "Number",
         "value": 0.5,
         "ty": {
-          "m": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "m"
+          }
         }
       },
       "visibility": "default",
@@ -126,9 +134,11 @@ description: Operations executed spinning-highrise-tower.kcl
         "type": "Number",
         "value": 5.0,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -155,9 +165,11 @@ description: Operations executed spinning-highrise-tower.kcl
         "type": "Number",
         "value": 1.2,
         "ty": {
-          "m": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "m"
+          }
         }
       },
       "visibility": "default",
@@ -184,9 +196,11 @@ description: Operations executed spinning-highrise-tower.kcl
         "type": "Number",
         "value": 0.3,
         "ty": {
-          "m": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "m"
+          }
         }
       },
       "visibility": "default",
@@ -213,9 +227,11 @@ description: Operations executed spinning-highrise-tower.kcl
         "type": "Number",
         "value": 3.0,
         "ty": {
-          "m": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "m"
+          }
         }
       },
       "visibility": "default",
@@ -242,9 +258,11 @@ description: Operations executed spinning-highrise-tower.kcl
         "type": "Number",
         "value": 0.2,
         "ty": {
-          "m": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "m"
+          }
         }
       },
       "visibility": "default",
@@ -271,9 +289,11 @@ description: Operations executed spinning-highrise-tower.kcl
         "type": "Number",
         "value": 5.0,
         "ty": {
-          "m": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "m"
+          }
         }
       },
       "visibility": "default",
@@ -300,9 +320,11 @@ description: Operations executed spinning-highrise-tower.kcl
         "type": "Number",
         "value": 50.0,
         "ty": {
-          "m": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "m"
+          }
         }
       },
       "visibility": "default",
@@ -329,9 +351,11 @@ description: Operations executed spinning-highrise-tower.kcl
         "type": "Number",
         "value": 10.0,
         "ty": {
-          "m": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "m"
+          }
         }
       },
       "visibility": "default",
@@ -358,9 +382,11 @@ description: Operations executed spinning-highrise-tower.kcl
         "type": "Number",
         "value": 8.0,
         "ty": {
-          "m": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "m"
+          }
         }
       },
       "visibility": "default",
@@ -387,9 +413,11 @@ description: Operations executed spinning-highrise-tower.kcl
         "type": "Number",
         "value": 24.0,
         "ty": {
-          "m": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "m"
+          }
         }
       },
       "visibility": "default",
@@ -416,9 +444,11 @@ description: Operations executed spinning-highrise-tower.kcl
         "type": "Number",
         "value": 4.5,
         "ty": {
-          "m": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "m"
+          }
         }
       },
       "visibility": "default",
@@ -445,9 +475,11 @@ description: Operations executed spinning-highrise-tower.kcl
         "type": "Number",
         "value": 84.5,
         "ty": {
-          "m": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "m"
+          }
         }
       },
       "visibility": "default",
@@ -474,9 +506,11 @@ description: Operations executed spinning-highrise-tower.kcl
         "type": "Number",
         "value": 29.4,
         "ty": {
-          "m": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "m"
+          }
         }
       },
       "visibility": "default",
@@ -531,18 +565,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -557,18 +595,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -618,18 +660,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -644,18 +690,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -705,18 +755,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -731,18 +785,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -792,18 +850,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -818,18 +880,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1294,18 +1360,22 @@ description: Operations executed spinning-highrise-tower.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1361,18 +1431,22 @@ description: Operations executed spinning-highrise-tower.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1473,9 +1547,11 @@ description: Operations executed spinning-highrise-tower.kcl
             "type": "Number",
             "value": -0.2,
             "ty": {
-              "m": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "m"
+              }
             }
           },
           "sourceRange": []
@@ -1587,9 +1663,11 @@ description: Operations executed spinning-highrise-tower.kcl
             "type": "Number",
             "value": -0.2,
             "ty": {
-              "m": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "m"
+              }
             }
           },
           "sourceRange": []
@@ -1649,18 +1727,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1675,18 +1757,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1736,18 +1822,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1762,18 +1852,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1823,18 +1917,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1849,18 +1947,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1910,18 +2012,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1936,18 +2042,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2412,18 +2522,22 @@ description: Operations executed spinning-highrise-tower.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -2479,18 +2593,22 @@ description: Operations executed spinning-highrise-tower.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -2591,9 +2709,11 @@ description: Operations executed spinning-highrise-tower.kcl
             "type": "Number",
             "value": -5.0,
             "ty": {
-              "m": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "m"
+              }
             }
           },
           "sourceRange": []
@@ -2724,18 +2844,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2750,18 +2874,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2811,18 +2939,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2837,18 +2969,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2898,18 +3034,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2924,18 +3064,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2985,18 +3129,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3011,18 +3159,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3487,18 +3639,22 @@ description: Operations executed spinning-highrise-tower.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -3554,18 +3710,22 @@ description: Operations executed spinning-highrise-tower.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -3666,9 +3826,11 @@ description: Operations executed spinning-highrise-tower.kcl
             "type": "Number",
             "value": 84.5,
             "ty": {
-              "m": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "m"
+              }
             }
           },
           "sourceRange": []
@@ -3780,9 +3942,11 @@ description: Operations executed spinning-highrise-tower.kcl
             "type": "Number",
             "value": 4.5,
             "ty": {
-              "m": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "m"
+              }
             }
           },
           "sourceRange": []
@@ -3842,18 +4006,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3868,18 +4036,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3929,18 +4101,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3955,18 +4131,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4016,18 +4196,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4042,18 +4226,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4103,18 +4291,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4129,18 +4321,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4605,18 +4801,22 @@ description: Operations executed spinning-highrise-tower.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -4672,18 +4872,22 @@ description: Operations executed spinning-highrise-tower.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -4784,9 +4988,11 @@ description: Operations executed spinning-highrise-tower.kcl
             "type": "Number",
             "value": 1.7,
             "ty": {
-              "m": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "m"
+              }
             }
           },
           "sourceRange": []
@@ -4872,18 +5078,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4898,18 +5108,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4959,18 +5173,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4985,18 +5203,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5046,18 +5268,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5072,18 +5298,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5133,18 +5363,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5159,18 +5393,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5635,18 +5873,22 @@ description: Operations executed spinning-highrise-tower.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -5702,18 +5944,22 @@ description: Operations executed spinning-highrise-tower.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -5814,9 +6060,11 @@ description: Operations executed spinning-highrise-tower.kcl
             "type": "Number",
             "value": -1.2,
             "ty": {
-              "m": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "m"
+              }
             }
           },
           "sourceRange": []
@@ -5947,18 +6195,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5973,18 +6225,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6034,18 +6290,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6060,18 +6320,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6121,18 +6385,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6147,18 +6415,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6208,18 +6480,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6234,18 +6510,22 @@ description: Operations executed spinning-highrise-tower.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6710,18 +6990,22 @@ description: Operations executed spinning-highrise-tower.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -6777,18 +7061,22 @@ description: Operations executed spinning-highrise-tower.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -6889,9 +7177,11 @@ description: Operations executed spinning-highrise-tower.kcl
             "type": "Number",
             "value": 4.5,
             "ty": {
-              "m": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "m"
+              }
             }
           },
           "sourceRange": []
@@ -6999,7 +7289,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7037,7 +7329,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7075,7 +7369,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 3.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7113,7 +7409,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 4.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7151,7 +7449,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 5.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7189,7 +7489,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 6.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7227,7 +7529,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 7.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7265,7 +7569,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 8.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7303,7 +7609,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 9.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7341,7 +7649,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 10.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7379,7 +7689,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 11.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7417,7 +7729,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 12.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7455,7 +7769,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 13.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7493,7 +7809,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 14.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7531,7 +7849,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 15.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7569,7 +7889,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 16.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7614,7 +7936,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 17.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7654,7 +7978,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7692,7 +8018,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7730,7 +8058,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 3.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7768,7 +8098,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 4.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7806,7 +8138,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 5.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7844,7 +8178,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 6.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7882,7 +8218,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 7.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7920,7 +8258,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 8.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7958,7 +8298,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 9.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -7996,7 +8338,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 10.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -8034,7 +8378,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 11.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -8072,7 +8418,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 12.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -8110,7 +8458,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 13.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -8148,7 +8498,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 14.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -8186,7 +8538,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 15.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -8224,7 +8578,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 16.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -8269,7 +8625,9 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 17.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -8334,7 +8692,9 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -8362,7 +8722,9 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -8396,7 +8758,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8420,7 +8782,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8444,7 +8806,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8468,7 +8830,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8492,7 +8854,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8516,7 +8878,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8540,7 +8902,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8564,7 +8926,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

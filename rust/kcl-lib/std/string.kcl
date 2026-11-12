@@ -4,7 +4,7 @@
 /// their contents.
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm)
 
 /// Convert all cased characters in a string to uppercase.
 ///

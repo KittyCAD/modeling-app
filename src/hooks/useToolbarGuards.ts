@@ -33,11 +33,12 @@ export function useConvertToVariable(
     if (!context.selectionRanges) return
     const parsed = ast
 
+    const defaultRange: SourceRange = [0, 0, 0]
     const meta = isNodeSafeToReplace(
       parsed,
-      range ||
-        context.selectionRanges.graphSelections?.[0]?.codeRef?.range ||
-        [],
+      range ??
+        context.selectionRanges.graphSelections?.[0]?.codeRef?.range ??
+        defaultRange,
       wasmInstance
     )
     if (trap(meta)) return
@@ -60,11 +61,14 @@ export function useConvertToVariable(
         selectionRanges: context.selectionRanges,
       })
 
+      const selRange =
+        context.selectionRanges.graphSelections[0]?.codeRef?.range
+      const rangeToUse: SourceRange = range ?? selRange ?? [0, 0, 0]
       const { modifiedAst: _modifiedAst, pathToReplacedNode } =
         moveValueIntoNewVariable(
           ast,
           kclManager.variables,
-          range || context.selectionRanges.graphSelections[0]?.codeRef?.range,
+          rangeToUse,
           variableName,
           wasmInstance
         )

@@ -24,6 +24,7 @@ import {
   getNodeFromPath,
   getSettingsAnnotation,
   getSketchSegmentName,
+  getVariableExprsFromSelection,
   getVariableNameFromNodePath,
   isCallExprWithName,
   isNodeSafeToReplace,
@@ -40,6 +41,7 @@ import type {
   CallExpressionKw,
   Expr,
   ExpressionStatement,
+  LabeledArg,
   NumericSuffix,
   PathToNode,
   PipeExpression,
@@ -85,6 +87,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EngineRegionSelection,
   ExtrudeFacePlane,
+  Selections,
 } from '@src/machines/modelingSharedTypes'
 
 export function startSketchOnDefault(
@@ -364,7 +367,22 @@ export function sketchOnExtrudedFace(
     _tag = createLocalName(tag)
     _node = modifiedAst
   } else {
-    _tag = createLiteral(info.subType.toUpperCase(), wasmInstance)
+    const capCall = getNodeFromPath<CallExpressionKw>(
+      _node,
+      extrudePathToNode,
+      wasmInstance,
+      ['CallExpressionKw']
+    )
+    const capTagLabel = info.subType === 'end' ? 'tagEnd' : 'tagStart'
+    const existingCapTag = err(capCall)
+      ? undefined
+      : capCall.node.arguments.find(
+          (argument) => argument.label?.name === capTagLabel
+        )?.arg
+    _tag =
+      existingCapTag?.type === 'TagDeclarator'
+        ? createLocalName(existingCapTag.value)
+        : createLiteral(info.subType.toUpperCase(), wasmInstance)
   }
   const newSketch = createVariableDeclaration(
     newSketchName,
@@ -1271,6 +1289,35 @@ export function createVariableExpressionsArray(exprs: Expr[]): Expr | null {
   return expr
 }
 
+export function getSelectionVarsForCall({
+  selection,
+  artifactGraph,
+  modifiedAst,
+  wasmInstance,
+  nodeToEdit,
+}: {
+  selection: Selections
+  artifactGraph: ArtifactGraph
+  modifiedAst: Node<Program>
+  wasmInstance: ModuleType
+  nodeToEdit?: PathToNode
+}) {
+  // Edit codemods preserve the existing selection argument, so only rebuild
+  // selection expressions when creating a new call.
+  if (nodeToEdit) {
+    return { exprs: [] }
+  }
+
+  return getVariableExprsFromSelection(
+    selection,
+    artifactGraph,
+    modifiedAst,
+    wasmInstance,
+    undefined,
+    { lastChildLookup: true }
+  )
+}
+
 // Create a path to node to the last variable declaroator of an ast
 // Optionally, can point to the first kwarg of the CallExpressionKw
 export function createPathToNodeForLastVariable(
@@ -1310,13 +1357,33 @@ export function pathsReferToSamePipe(
 
 export function replaceCallInPlace(
   existingCall: CallExpressionKw,
-  replacementCall: CallExpressionKw
+  replacementCall: CallExpressionKw,
+  labeledSelectionArgNames: readonly string[] = [],
+  preserveUnlabeledArgument = true
 ) {
-  const unlabeled =
-    replacementCall.unlabeled === null
-      ? structuredClone(existingCall.unlabeled)
-      : replacementCall.unlabeled
-  Object.assign(existingCall, replacementCall, { unlabeled })
+  // Until selection edits can roll back, reconstructed selections are
+  // display-only. Drop them, then restore the originals at their old positions.
+  const isLabeledSelectionArgument = (argument: LabeledArg) =>
+    argument.label !== null &&
+    labeledSelectionArgNames.includes(argument.label.name)
+  const mergedArguments = replacementCall.arguments.filter(
+    (argument) => !isLabeledSelectionArgument(argument)
+  )
+
+  for (const [index, argument] of existingCall.arguments.entries()) {
+    if (isLabeledSelectionArgument(argument)) {
+      mergedArguments.splice(index, 0, structuredClone(argument))
+    }
+  }
+
+  Object.assign(existingCall, replacementCall, {
+    unlabeled: structuredClone(
+      preserveUnlabeledArgument
+        ? existingCall.unlabeled
+        : replacementCall.unlabeled
+    ),
+    arguments: mergedArguments,
+  })
 }
 
 export function setCallInAst({
@@ -1325,6 +1392,9 @@ export function setCallInAst({
   pathToEdit,
   pathIfNewPipe,
   variableIfNewDecl,
+  variableIfNewPipe,
+  labeledSelectionArgNames,
+  preserveUnlabeledArgument,
   wasmInstance,
 }: {
   ast: Node<Program>
@@ -1332,6 +1402,9 @@ export function setCallInAst({
   pathToEdit?: PathToNode
   pathIfNewPipe?: PathToNode
   variableIfNewDecl?: string
+  variableIfNewPipe?: string
+  labeledSelectionArgNames?: readonly string[]
+  preserveUnlabeledArgument?: boolean
   wasmInstance: ModuleType
 }): Error | PathToNode {
   let pathToNode: PathToNode | undefined
@@ -1353,10 +1426,15 @@ export function setCallInAst({
       return result
     }
 
-    replaceCallInPlace(result.node, call)
+    replaceCallInPlace(
+      result.node,
+      call,
+      labeledSelectionArgNames,
+      preserveUnlabeledArgument
+    )
     pathToNode = pathToEdit
   } else if (pathIfNewPipe) {
-    const pipe = getNodeFromPath<PipeExpression>(
+    const pipe = getNodeFromPath<Node<PipeExpression> | Node<CallExpressionKw>>(
       ast,
       pathIfNewPipe,
       wasmInstance,
@@ -1365,8 +1443,10 @@ export function setCallInAst({
     if (err(pipe)) {
       return pipe
     }
+    let pipeExpression: Node<PipeExpression>
     if (pipe.node.type === 'PipeExpression') {
       pipe.node.body.push(call)
+      pipeExpression = pipe.node
     } else if (pipe.node.type === 'CallExpressionKw') {
       const expression = getNodeFromPath<ExpressionStatement>(
         ast,
@@ -1378,16 +1458,48 @@ export function setCallInAst({
         return new Error('Could not retrieve ExpressionStatement')
       }
 
-      expression.node.expression = createPipeExpression([
-        expression.node.expression,
-        call,
-      ])
+      pipeExpression = createPipeExpression([expression.node.expression, call])
+      expression.node.expression = pipeExpression
     } else {
       return new Error(
         'Expected pipeIfPipe to be a PipeExpression or CallExpressionKw'
       )
     }
-    pathToNode = pathIfNewPipe
+    if (variableIfNewPipe) {
+      const expression = getNodeFromPath<ExpressionStatement>(
+        ast,
+        pathIfNewPipe,
+        wasmInstance,
+        'ExpressionStatement'
+      )
+      if (err(expression) || expression.node.type !== 'ExpressionStatement') {
+        return new Error('Could not retrieve ExpressionStatement')
+      }
+      const bodyIndex = getBodyIndex(expression.shallowPath)
+      if (err(bodyIndex)) {
+        return bodyIndex
+      }
+      const sourceStatement = ast.body[bodyIndex]
+      if (!sourceStatement) {
+        return new Error('Could not find source statement')
+      }
+      const declaration = createVariableDeclaration(
+        variableIfNewPipe,
+        pipeExpression
+      )
+      declaration.preComments = sourceStatement.preComments
+      ast.body[bodyIndex] = declaration
+      pathToNode = [
+        ['body', ''],
+        [bodyIndex, 'index'],
+        ['declaration', 'VariableDeclaration'],
+        ['init', 'VariableDeclarator'],
+        ['body', 'PipeExpression'],
+        [pipeExpression.body.length - 1, 'index'],
+      ]
+    } else {
+      pathToNode = pathIfNewPipe
+    }
   } else if (variableIfNewDecl) {
     const name = findUniqueName(ast, variableIfNewDecl)
     const declaration = createVariableDeclaration(name, call)

@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provideService,
 } from '@kittycad/registry'
 import { engineConnectionService } from '@src/lib/engineConnection/registry/contract'
@@ -38,16 +37,14 @@ export const rustContextExtension = defineRegistryItemFactory((ctx) => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'rust-context-extension',
-      providesServices: [
-        provideService(rustContextService, {
-          get context() {
-            return ensureService().context
-          },
-        }),
-      ],
-    }),
+    id: 'rust-context-extension',
+    providesServices: [
+      provideService(rustContextService, {
+        get context() {
+          return ensureService().context
+        },
+      }),
+    ],
   }
 }, 'rust-context-extension')
 

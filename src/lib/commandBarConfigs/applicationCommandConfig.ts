@@ -1,5 +1,4 @@
 import env from '@src/env'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { App } from '@src/lib/app'
 import type { Command } from '@src/lib/commandTypes'
 import {
@@ -7,7 +6,7 @@ import {
   writeEnvironmentConfigurationZookeeperWebSocketUrl,
   writeEnvironmentFile,
 } from '@src/lib/desktop'
-import { getNextFileName, getUniqueProjectName } from '@src/lib/desktopFS'
+import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { exportProjectZip } from '@src/lib/exportProjectZip'
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -18,91 +17,72 @@ import {
 } from '@src/lib/kclSamples'
 import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
 import {
-  getEXTNoPeriod,
   getStringAfterLastSeparator,
   joinOSPaths,
-  webSafePathSplit,
+  PATHS,
+  safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import { getProjectDirectoryOptions } from '@src/lib/projectDisplayName'
-import { reportRejection } from '@src/lib/trap'
+import { reportRejection, trap } from '@src/lib/trap'
 import { isArray, returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
+  GLOBAL_COMMAND_SCOPES,
+  HOME_COMMAND_SCOPE,
+} from '@src/registry/contracts/commands'
+import { routerService } from '@src/registry/contracts/router'
 import toast from 'react-hot-toast'
-import type { ActorRefFrom } from 'xstate'
 
-function onSubmitKCLSampleCreation({
+async function onSubmitKCLSampleCreation({
   sample,
   uniqueNameIfNeeded,
-  systemIOActor,
+  app,
   isProjectNew,
 }: {
   sample: string
   uniqueNameIfNeeded: string
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  app: App
   isProjectNew: boolean
 }) {
-  void downloadKclSample(sample, {
-    assetUrlPrefix: isDesktop() ? '.' : '',
-  })
-    .then(({ requestedProjectName: projectPathPart, initialProject }) => {
-      const requestedFiles: RequestedKCLFile[] = initialProject.files.map(
-        (file) => ({
-          requestedCode: new TextDecoder().decode(file.requestedData),
-          requestedFileName: file.requestedFileName,
-          requestedProjectName: uniqueNameIfNeeded,
-        })
-      )
-
-      /**
-       * When adding assemblies to an existing project create the assembly into a unique sub directory
-       */
-      if (!isProjectNew) {
-        requestedFiles.forEach((requestedFile) => {
-          const subDirectoryName = projectPathPart
-          const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot(
-            systemIOActor.getSnapshot().context,
-            { projectFolderName: requestedFile.requestedProjectName }
-          )
-          const uniqueSubDirectoryName = getUniqueProjectName(
-            subDirectoryName,
-            firstLevelDirectories
-          )
-          requestedFile.requestedProjectName = joinOSPaths(
-            requestedFile.requestedProjectName,
-            uniqueSubDirectoryName
-          )
-        })
-      }
-
-      if (requestedFiles.length === 1) {
-        systemIOActor.send({
-          type: SystemIOMachineEvents.importFileFromURL,
-          data: {
-            requestedProjectName: requestedFiles[0].requestedProjectName,
-            requestedFileNameWithExtension: requestedFiles[0].requestedFileName,
-            requestedCode: requestedFiles[0].requestedCode,
-          },
-        })
-      } else {
-        /**
-         * Bulk create the assembly and navigate to the project
-         */
-        systemIOActor.send({
-          type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
-          data: {
-            files: requestedFiles,
-            requestedProjectName: uniqueNameIfNeeded,
-          },
-        })
-      }
-    })
-    .catch(reportError)
+  const openedProject = app.project
+  const existing = app.projectOperations.projects.value.find(
+    (project) => project.name === uniqueNameIfNeeded
+  )
+  const projectRoot =
+    openedProject?.name === uniqueNameIfNeeded
+      ? openedProject.path
+      : (existing?.path ??
+        fsZds.join(
+          app.projectLibraries.projectDirectoryPath,
+          uniqueNameIfNeeded
+        ))
+  const { requestedProjectName: sampleName, initialProject } =
+    await downloadKclSample(sample, { assetUrlPrefix: isDesktop() ? '.' : '' })
+  // Every sample gets its own folder in an existing project, including samples
+  // containing only main.kcl. Allocate against storage so repeated imports and
+  // collisions with either files or folders cannot overwrite existing contents.
+  const sampleRoot = isProjectNew
+    ? projectRoot
+    : await app.fileOperations.createUniqueDirectory(projectRoot, sampleName)
+  await app.projectOperations.writeFiles(
+    projectRoot,
+    initialProject.files.map((file) => ({
+      path: fsZds.relative(
+        projectRoot,
+        fsZds.join(sampleRoot, file.requestedFileName)
+      ),
+      contents: file.requestedData,
+    }))
+  )
+  await app.projectLibraries.refreshProjects()
+  if (app.project !== openedProject) return
+  await app.projectSession.openFile(
+    fsZds.join(sampleRoot, initialProject.entrypointFilePath),
+    { projectPath: projectRoot }
+  )
 }
 
 export function createApplicationCommands({
@@ -112,7 +92,18 @@ export function createApplicationCommands({
   app: App
   wasmInstance: ModuleType
 }) {
+  const createProjectLibraryTargets = () => app.getCreateProjectLibraryTargets()
+  const createProjectLibraryOptions = () =>
+    createProjectLibraryTargets().map((target) => ({
+      name: target.library.title,
+      value: target.library.id,
+      isCurrent: false,
+    }))
+  const defaultCreateProjectLibraryId = () =>
+    createProjectLibraryOptions()[0]?.value ?? ''
+
   const addKCLFileToProject: Command = {
+    scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
     name: 'add-kcl-file-to-project',
     displayName: 'Add file to project',
     description:
@@ -120,20 +111,14 @@ export function createApplicationCommands({
     needsReview: false,
     icon: 'importFile',
     groupId: 'application',
-    onSubmit(data) {
+    async onSubmit(data) {
       if (data) {
-        /** TODO: Make a new machine for models. This is only a temporary location
-         * to move it to the global application level. To reduce its footprint
-         * and complexity the implementation lives here with systemIOMachine. Not
-         * inside the systemIOMachine. We can have a fancy model machine that loads
-         * KCL samples
-         */
         const error = "The command couldn't be submitted, check the arguments."
-        const folders = app.systemIOActor.getSnapshot().context.folders
+        const folders = app.projectOperations.projects.value
         const isProjectNew = !!data.newProjectName
         const requestedProjectName = data.newProjectName || data.projectName
         const uniqueNameIfNeeded = isProjectNew
-          ? getUniqueProjectName(requestedProjectName, folders ?? [])
+          ? getUniqueProjectName(requestedProjectName, [...folders])
           : requestedProjectName
 
         if (data.source === 'kcl-samples') {
@@ -141,82 +126,46 @@ export function createApplicationCommands({
           if (!kclSample || kclSample.files.length === 0) {
             toast.error("Couldn't find KCL sample.")
           } else {
-            onSubmitKCLSampleCreation({
+            void onSubmitKCLSampleCreation({
               sample: data.sample,
               uniqueNameIfNeeded,
-              systemIOActor: app.systemIOActor,
+              app,
               isProjectNew,
-            })
+            }).catch(reportError)
           }
         } else if (data.source === 'local') {
-          const selectedFilePath = isArray(data.files)
-            ? data.files[0]
-            : data.files
+          const selectedFile = isArray(data.files) ? data.files[0] : data.files
 
-          if (!selectedFilePath) {
+          if (
+            !selectedFile ||
+            !(typeof selectedFile === 'string' || selectedFile instanceof File)
+          ) {
             toast.error(error)
             return
           }
 
           const fileNameWithExtension =
-            getStringAfterLastSeparator(selectedFilePath)
-          const fr = new FileReader()
-          const extension = getEXTNoPeriod(selectedFilePath)
-          const isKCL = extension === 'kcl'
-          fr.addEventListener('load', () => {
-            if (isKCL) {
-              if (typeof fr.result !== 'string') {
-                toast.error(error)
-                return
-              }
-
-              app.systemIOActor.send({
-                type: SystemIOMachineEvents.importFileFromURL,
-                data: {
-                  requestedProjectName: uniqueNameIfNeeded,
-                  requestedFileNameWithExtension: fileNameWithExtension,
-                  requestedCode: fr.result,
-                },
-              })
-            } else {
-              if (!(fr.result instanceof ArrayBuffer)) {
-                toast.error(error)
-                return
-              }
-
-              const projectDirectoryPath =
-                app.systemIOActor.getSnapshot().context.projectDirectoryPath
-              const fileData = new Uint8Array(fr.result)
-
-              getNextFileName({
-                entryName: fileNameWithExtension,
-                baseDir: joinOSPaths(projectDirectoryPath, uniqueNameIfNeeded),
-                wasmInstance,
-                preserveUnknownExtension: true,
-              })
-                .then(({ path }) => {
-                  return fsZds.writeFile(path, fileData)
-                })
-                .then(() => {
-                  app.systemIOActor.send({
-                    type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-                  })
-                })
-                .catch(() => toast.error(error))
-            }
-          })
-          fsZds
-            .readFile(selectedFilePath)
-            .then((content) => {
-              const blob = new Blob([new Uint8Array(content)])
-              // Read all KCL as text, but anything else is a blob.
-              if (isKCL) {
-                fr.readAsText(blob)
-              } else {
-                fr.readAsArrayBuffer(blob)
-              }
-            })
-            .catch(() => toast.error(error))
+            selectedFile instanceof File
+              ? selectedFile.name
+              : getStringAfterLastSeparator(selectedFile)
+          const root = joinOSPaths(
+            app.projectLibraries.projectDirectoryPath,
+            uniqueNameIfNeeded
+          )
+          try {
+            const content =
+              selectedFile instanceof File
+                ? new Uint8Array(await selectedFile.arrayBuffer())
+                : await app.fileOperations.readFile(selectedFile)
+            const paths = await app.projectOperations.writeFiles(root, [
+              { path: fileNameWithExtension, contents: content },
+            ])
+            await app.projectLibraries.refreshProjects()
+            if (fileNameWithExtension.endsWith('.kcl'))
+              await app.projectSession.openFile(paths[0], { projectPath: root })
+          } catch (cause) {
+            trap(new Error(error, { cause }))
+          }
         } else {
           toast.error(error)
         }
@@ -227,18 +176,13 @@ export function createApplicationCommands({
         inputType: 'options',
         required: true,
         skip: true,
-        defaultValue: window.electron ? undefined : 'kcl-samples',
         options() {
           return [
-            ...(window.electron
-              ? [
-                  {
-                    value: 'local',
-                    name: 'Local Drive',
-                    isCurrent: false,
-                  },
-                ]
-              : []),
+            {
+              value: 'local',
+              name: 'Local Drive',
+              isCurrent: false,
+            },
             {
               value: 'kcl-samples',
               name: 'KCL Samples',
@@ -278,7 +222,7 @@ export function createApplicationCommands({
         inputType: 'options',
         required: true,
         skip: true,
-        defaultValue: window.electron ? undefined : 'existingProject',
+        defaultValue: 'existingProject',
         options: window.electron
           ? [
               { name: 'New project', value: 'newProject', isCurrent: true },
@@ -296,8 +240,16 @@ export function createApplicationCommands({
         skip: true,
         defaultValue: () => app.project?.name,
         options: (_, _context) => {
-          const { folders } = app.systemIOActor.getSnapshot().context
-          return getProjectDirectoryOptions(folders)
+          const folders = app.projectOperations.projects.value
+          const current = app.project?.projectIORefSignal.value
+          return getProjectDirectoryOptions(
+            current
+              ? [
+                  current,
+                  ...folders.filter((folder) => folder.name !== current.name),
+                ]
+              : folders
+          )
         },
       },
       newProjectName: {
@@ -311,6 +263,9 @@ export function createApplicationCommands({
         skip: true,
         hidden: false,
         valueSummary: (value) => {
+          if (value instanceof File) {
+            return value.name
+          }
           if (typeof value === 'string') {
             return fsZds.basename(value)
           }
@@ -321,41 +276,21 @@ export function createApplicationCommands({
         },
         required: (commandContext) =>
           ['local'].includes(commandContext.argumentsToSubmit.source as string),
-        filters: [
-          {
-            name: `Import ${relevantFileExtensions(wasmInstance).map((f) => ` .${f}`)}`,
-            extensions: relevantFileExtensions(wasmInstance),
-          },
-          {
-            name: 'All files',
-            extensions: ['*'],
-          },
-        ],
+        filters: [],
       },
     },
   }
 
-  /**
-   * Looks similar to Add file to project but more data is hard coded for the home page button
-   * to direct the user in a more seamless method.
-   *
-   * This will always create a new folder on disk does not import into existing projects.
-   * Desktop only command for now!
-   */
-  const createASampleDesktopOnly: Command = {
+  const createASample: Command = {
+    scopes: [HOME_COMMAND_SCOPE],
     name: 'create-a-sample',
     displayName: 'Create a sample',
     description: 'Create a new project from a Zoo Sample',
     needsReview: false,
     icon: 'importFile',
     groupId: 'application',
-    hideFromSearch: true,
     onSubmit: (data) => {
       if (data) {
-        const folders = app.systemIOActor.getSnapshot().context.folders
-        if (!folders) {
-          return
-        }
         const kclSample = findKclSample(data.sample)
         if (!kclSample) {
           toast.error(
@@ -363,27 +298,53 @@ export function createApplicationCommands({
           )
           return
         }
-        const pathParts = webSafePathSplit(
-          kclSample.pathFromProjectDirectoryToFirstFile
-        )
-        const folderNameBecomesSampleName = pathParts[0]
-        const uniqueNameIfNeeded = getUniqueProjectName(
-          folderNameBecomesSampleName,
-          folders
-        )
-        onSubmitKCLSampleCreation({
-          sample: data.sample,
-          uniqueNameIfNeeded,
-          systemIOActor: app.systemIOActor,
-          isProjectNew: true,
+        const targets = createProjectLibraryTargets()
+        const target =
+          targets.find(({ library }) => library.id === data.libraryId) ??
+          targets[0]
+        if (!target) {
+          toast.error(
+            'Add a writable project library before creating a sample.'
+          )
+          return
+        }
+
+        return downloadKclSample(data.sample, {
+          assetUrlPrefix: isDesktop() ? '.' : '',
         })
+          .then(async ({ requestedProjectName, sample, initialProject }) => {
+            const project = await target.createProject.run({
+              library: target.library,
+              requestedProjectName,
+              requestedProjectTitle: sample.title,
+              initialProject,
+            })
+            if (!project?.default_file) {
+              return Promise.reject(
+                new Error('Unable to create the sample project.')
+              )
+            }
+
+            void app.registry
+              .get(routerService)
+              .navigate(
+                `${PATHS.FILE}/${safeEncodeForRouterPaths(project.default_file)}`
+              )
+          })
+          .catch((error: unknown) => {
+            trap(
+              error instanceof Error
+                ? error
+                : new Error('Unable to create the sample project.')
+            )
+          })
       }
     },
     args: {
       source: {
         inputType: 'string',
         required: true,
-        skip: false,
+        skip: true,
         defaultValue: 'local',
         hidden: true,
       },
@@ -406,10 +367,27 @@ export function createApplicationCommands({
           }
         }),
       },
+      libraryId: {
+        displayName: 'Library',
+        required: () => createProjectLibraryOptions().length > 1,
+        prepopulate: true,
+        hidden: () => createProjectLibraryOptions().length <= 1,
+        inputType: 'options',
+        options: createProjectLibraryOptions,
+        defaultValue: defaultCreateProjectLibraryId,
+        valueSummary(value) {
+          return (
+            createProjectLibraryOptions().find(
+              (option) => option.value === value
+            )?.name ?? 'Library'
+          )
+        },
+      },
     },
   }
 
   const switchEnvironmentsCommand: Command = {
+    scopes: GLOBAL_COMMAND_SCOPES,
     name: 'switch-environments',
     displayName: 'Switch Environments',
     description: 'Connect the application runtime to a different environment',
@@ -421,7 +399,7 @@ export function createApplicationCommands({
         const requestedEnvironmentFormatted = returnSelfOrGetHostNameFromURL(
           data.environment
         )
-        writeEnvironmentFile(requestedEnvironmentFormatted)
+        writeEnvironmentFile(app.fileOperations, requestedEnvironmentFormatted)
           .then(() => {
             // Reload the application and it will trigger the correct sign in workflow for the new environment
             window.location.reload()
@@ -439,6 +417,7 @@ export function createApplicationCommands({
   }
 
   const overrideEngineCommand: Command = {
+    scopes: GLOBAL_COMMAND_SCOPES,
     name: 'override-engine',
     displayName: 'Override Engine',
     description: 'Connect the scene to a custom Engine WebSocket URL',
@@ -460,6 +439,7 @@ export function createApplicationCommands({
       const environmentName = env().VITE_ZOO_BASE_DOMAIN
       if (environmentName) {
         writeEnvironmentConfigurationKittycadWebSocketUrl(
+          app.fileOperations,
           environmentName,
           data?.url ?? ''
         )
@@ -485,6 +465,7 @@ export function createApplicationCommands({
   }
 
   const overrideZookeeperCommand: Command = {
+    scopes: GLOBAL_COMMAND_SCOPES,
     name: 'override-zookeeper',
     displayName: 'Override Zookeeper',
     description: 'Connect to a custom Zookeeper WebSocket URL',
@@ -505,6 +486,7 @@ export function createApplicationCommands({
       const environmentName = env().VITE_ZOO_BASE_DOMAIN
       if (environmentName) {
         writeEnvironmentConfigurationZookeeperWebSocketUrl(
+          app.fileOperations,
           environmentName,
           data?.url ?? ''
         )
@@ -529,6 +511,7 @@ export function createApplicationCommands({
   }
 
   const resetLayoutCommand: Command = {
+    scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
     name: 'reset-layout',
     displayName: 'Reset layout',
     description: 'Reset layout to the default configuration',
@@ -539,6 +522,7 @@ export function createApplicationCommands({
   }
 
   const setLayoutCommand: Command = {
+    scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
     name: 'set-layout',
     hideFromSearch: true,
     displayName: 'Set layout',
@@ -582,6 +566,7 @@ export function createApplicationCommands({
   }
 
   const checkForUpdatesCommand: Command = {
+    scopes: GLOBAL_COMMAND_SCOPES,
     name: 'check-for-updates',
     displayName: 'Check for updates',
     description: 'Check for a newer desktop app version.',
@@ -600,6 +585,7 @@ export function createApplicationCommands({
   }
 
   const exportProjectZipCommand: Command = {
+    scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
     name: 'export-project-zip',
     displayName: 'Download project files',
     description: 'Download every file in the current project as a ZIP archive.',
@@ -612,6 +598,7 @@ export function createApplicationCommands({
       const wasmInstance = await app.wasmPromise
 
       await exportProjectZip({
+        fileOperations: app.fileOperations,
         project,
         currentFilePath: app.project?.executingPath,
         currentFileContents: executingEditor?.code,
@@ -626,7 +613,7 @@ export function createApplicationCommands({
     ...(isDesktop() ? [checkForUpdatesCommand] : []),
     resetLayoutCommand,
     setLayoutCommand,
-    createASampleDesktopOnly,
+    createASample,
     switchEnvironmentsCommand,
     overrideEngineCommand,
     overrideZookeeperCommand,
@@ -646,7 +633,6 @@ export function sendAddFileToProjectCommandForCurrentProject(
       argDefaultValues: {
         method: 'existingProject',
         projectName: currentProject?.name,
-        ...(!isDesktop() ? { source: 'kcl-samples' } : {}),
       },
     },
   })

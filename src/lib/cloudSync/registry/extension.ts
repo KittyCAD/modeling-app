@@ -1,11 +1,11 @@
 import {
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   pluginsValueSpec,
   provideService,
 } from '@kittycad/registry'
 import { effect, signal, untracked } from '@preact/signals-core'
 import {
+  type CloudSyncConfig,
   cloudSyncStatus,
   configureCloudSync,
   deleteCloudSyncDuplicateProjectRealizations,
@@ -22,6 +22,7 @@ import {
   retryCloudSync,
   setCloudSyncOpenedProject,
   startCloudSyncProject,
+  syncCloudSyncProjectNow,
 } from '@src/lib/cloudSync'
 import { getCloudProjectLibraryMaterializationDirectoryPath } from '@src/lib/cloudSync/paths'
 import { CLOUD_SYNC_PLUGIN_ID } from '@src/lib/cloudSync/registry/constants'
@@ -30,7 +31,6 @@ import {
   type CloudSyncRegistryService,
   cloudSyncService,
 } from '@src/lib/cloudSync/registry/contract'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import {
   areProjectLibrarySettingsEqual,
   CLOUD_PROJECT_LIBRARY_TYPE,
@@ -47,7 +47,7 @@ import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
-import { userFeaturesService } from '@src/registry/contracts/userFeatures'
+import isEqual from 'react-fast-compare'
 
 type SettingsSnapshot = ReturnType<
   SettingsRegistryService['actor']['getSnapshot']
@@ -147,7 +147,6 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
   })
   const runtime = ctx.services.signal(runtimeService)
   const auth = ctx.services.signal(authService)
-  const userFeatures = ctx.services.signal(userFeaturesService)
   const plugins = ctx.valueSpecs.signal(pluginsValueSpec)
   const settingsSnapshot = signal<SettingsSnapshot | undefined>(undefined)
   let settingsRegistry: SettingsRegistryService | undefined
@@ -155,6 +154,18 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
   let stopPolicySync: (() => void) | undefined
   let stopSettingsActorSubscription: (() => void) | undefined
   let runtimePolicyVersion = 0
+  let appliedRuntimePolicy: CloudSyncConfig | undefined
+
+  const configureRuntimePolicy = (policy: CloudSyncConfig) => {
+    // Settings publish snapshots both during and after persistence. Only cloud
+    // configuration changes should schedule sync or invalidate in-flight work.
+    if (isEqual(appliedRuntimePolicy, policy)) {
+      return
+    }
+
+    untracked(() => configureCloudSync(policy))
+    appliedRuntimePolicy = policy
+  }
 
   const applyRuntimePolicy = () => {
     const version = ++runtimePolicyVersion
@@ -165,16 +176,13 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
       : runtimeConfig.value.token
     const cloudSyncPluginEnabled =
       currentSettings?.plugins?.[CLOUD_SYNC_PLUGIN_ID]?.current === true
-    const cloudSyncFeatureEnabled =
-      userFeatures.value?.has(OPFS_CLOUD_FEATURE_FLAG, false) ?? true
     const cloudProjectLibraries =
       currentSettings?.app.libraries.current.filter(
         (library) => library.type === CLOUD_PROJECT_LIBRARY_TYPE
       ) ?? []
     const runtimePolicy = {
       ...runtimeConfig.value,
-      enabled:
-        Boolean(token) && cloudSyncPluginEnabled && cloudSyncFeatureEnabled,
+      enabled: Boolean(token) && cloudSyncPluginEnabled,
       token,
       baseUrl: currentRuntime?.apiBaseUrl ?? runtimeConfig.value.baseUrl,
       environmentName:
@@ -182,7 +190,7 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
     }
 
     if (!runtimePolicy.enabled) {
-      untracked(() => configureCloudSync(runtimePolicy))
+      configureRuntimePolicy(runtimePolicy)
       return
     }
 
@@ -206,12 +214,10 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
       const policyCloudProjectDirectoryPaths =
         runtimePolicy.cloudProjectDirectoryPaths ?? cloudProjectDirectoryPaths
 
-      untracked(() =>
-        configureCloudSync({
-          ...runtimePolicy,
-          cloudProjectDirectoryPaths: policyCloudProjectDirectoryPaths,
-        })
-      )
+      configureRuntimePolicy({
+        ...runtimePolicy,
+        cloudProjectDirectoryPaths: policyCloudProjectDirectoryPaths,
+      })
     })
   }
 
@@ -283,6 +289,7 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
     retry: retryCloudSync,
     setOpenedProject: setCloudSyncOpenedProject,
     startProjectSync: startCloudSyncProject,
+    syncNow: syncCloudSyncProjectNow,
     disconnectProjectSync: disconnectCloudSyncProject,
     deleteRemoteProject: deleteRemoteCloudProject,
     deleteLocalProjectRealizations: deleteCloudSyncLocalProjectRealizations,
@@ -297,16 +304,14 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'cloud-sync-extension',
-      providesServices: [provideService(cloudSyncService, serviceImpl)],
-      dispose: () => {
-        disposed = true
-        runtimePolicyVersion += 1
-        stopPolicySync?.()
-        stopSettingsActorSubscription?.()
-        configureCloudSync({ enabled: false })
-      },
-    }),
+    id: 'cloud-sync-extension',
+    providesServices: [provideService(cloudSyncService, serviceImpl)],
+    dispose: () => {
+      disposed = true
+      runtimePolicyVersion += 1
+      stopPolicySync?.()
+      stopSettingsActorSubscription?.()
+      configureCloudSync({ enabled: false })
+    },
   }
 }, 'cloud-sync-extension')

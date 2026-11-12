@@ -3,7 +3,6 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { AppHeader } from '@src/components/AppHeader'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import { getZookeeperProjectReloadBehavior } from '@src/components/openedProjectUtils'
 import {
   defaultGlobalStatusBarItems,
   defaultLocalStatusBarItems,
@@ -16,148 +15,61 @@ import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnection
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
+import { lspService } from '@src/lang/lsp/registry/contract'
 import {
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
 import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
-import {
-  ONBOARDING_TOAST_ID,
-  OPFS_CLOUD_FEATURE_FLAG,
-  WASM_INIT_FAILED_TOAST_ID,
-} from '@src/lib/constants'
+import { WASM_INIT_FAILED_TOAST_ID } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { defaultLayout, LayoutRootNode } from '@src/lib/layout'
 import { useDefaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
 import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
-import { lspService } from '@src/lang/lsp/registry/contract'
 import { PATHS } from '@src/lib/paths'
-import type { Project } from '@src/lib/project'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
 
-import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
-import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
-import {
-  needsToOnboard,
-  TutorialRequestToast,
-  useApplyRememberedOnboardingWorkflow,
-} from '@src/routes/Onboarding/utils'
-import { useSelector } from '@xstate/react'
+import { useApplyRememberedOnboardingWorkflow } from '@src/routes/Onboarding/utils'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import ModalContainer from 'react-modal-promise'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-
-if (window.electron) {
-  maybeWriteToDisk(window.electron)
-    .then(() => {})
-    .catch(reportRejection)
-}
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: project navigation and onboarding query detection (useLocation, useSearchParams).
+import { useLocation } from 'react-router-dom'
 
 export function OpenedProject() {
   useSignals()
   const app = useApp()
-  const { auth, billing, settings, layout, project, systemIOActor, registry } =
-    app
+  useEffect(() => {
+    if (window.electron) {
+      maybeWriteToDisk(app.fileOperations, window.electron).catch(
+        reportRejection
+      )
+    }
+  }, [app.fileOperations])
+  const { auth, billing, settings, layout, project, registry } = app
   const { kclManager } = useSingletons()
-  const settingsActor = settings.actor
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
-  const { state: modelingState, send: modelingSend } = useModelingContext()
+  const { state: modelingState } = useModelingContext()
   useQueryParamEffects()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const location = useLocation()
-  const navigate = useNavigate()
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
-  const lastOperation = useLastOperation()
-  const projects = useFolders()
   const lsp = registry.get(lspService)
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
-  const hasCloudSyncFeature = app.userFeatures.useHas(
-    OPFS_CLOUD_FEATURE_FLAG,
-    false
-  )
-
-  // Stream related refs and data
-  const [searchParams] = useSearchParams()
 
   const projectName = project?.name || null
   const projectPath = project?.path || null
-
-  const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
-
-  // Handle our project folder disappearing (Go back to Projects listing)
-  useEffect(() => {
-    if (systemIOState !== SystemIOMachineStates.idle) {
-      return
-    }
-
-    if (
-      projects &&
-      projects.length > 0 &&
-      projects.every((p: Project) => p.name !== projectName) &&
-      [
-        SystemIOMachineStates.creatingProject,
-        SystemIOMachineStates.renamingProject,
-        SystemIOMachineStates.importFileFromURL,
-      ].includes(lastOperation) === false
-    ) {
-      void navigate(PATHS.HOME)
-    }
-
-    if (projects && projects.length === 0) {
-      void navigate(PATHS.HOME)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projects, lastOperation, systemIOState])
-
-  // ZOOKEEPER BEHAVIOR EXCEPTION
-  // Only fires on state changes, to deal with Zookeeper control.
-  useEffect(() => {
-    if (systemIOState !== 'idle') {
-      return
-    }
-    if (
-      kclManager.zookeeperManagerMachineBulkManipulatingFileSystem === false
-    ) {
-      return
-    }
-    const reloadBehavior = getZookeeperProjectReloadBehavior(modelingState)
-    kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = false
-
-    if (reloadBehavior === 'exit-sketch-solve') {
-      toast(
-        'Zookeeper updated the project while sketch mode was active. Exiting sketch mode to reload safely.'
-      )
-      modelingSend({ type: 'Exit sketch' })
-      return
-    }
-
-    kclManager
-      .executeCode()
-      .then(async () => {
-        if (reloadBehavior === 'execute-and-reset-camera') {
-          await resetCameraPosition({
-            sceneInfra: kclManager.sceneInfra,
-            engineCommandManager: kclManager.engineCommandManager,
-            settingsActor,
-          })
-        }
-      })
-      .catch(reportRejection)
-  }, [systemIOState, kclManager, modelingState, modelingSend, settingsActor])
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
@@ -179,6 +91,10 @@ export function OpenedProject() {
     registry.signal(statusBarLocalItemsValueSpec).value,
     ['file']
   )
+  const executingPath = project?.executingPathSignal.value?.value
+  const activeFileRoutePath = executingPath
+    ? PATHS.FILE + '/' + encodeURIComponent(executingPath)
+    : undefined
   const authToken = auth.useToken()
   const onboardingStatus =
     settingsValues.app.onboardingStatus.current ||
@@ -203,46 +119,7 @@ export function OpenedProject() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
-  const href = 'href' in location ? location.href : ''
-
-  // Show a custom toast to users if they haven't done the onboarding
-  // and they're on the web
-  useEffect(() => {
-    const needsOnboarded =
-      !window.electron &&
-      authToken && // we're logged in,
-      searchParams.size === 0 && // we haven't come via a website "try in browser" link,
-      needsToOnboard(location, onboardingStatus) // and we have an uninitialized onboarding status.
-
-    if (needsOnboarded) {
-      toast.success(
-        () =>
-          TutorialRequestToast({
-            app,
-            onboardingStatus: settingsValues.app.onboardingStatus.current,
-            navigate,
-            accountUrl: withSiteBaseURL('/account'),
-          }),
-        {
-          id: ONBOARDING_TOAST_ID,
-          duration: Number.POSITIVE_INFINITY,
-          icon: null,
-          style: { maxInlineSize: 'min(900px, 100%)' },
-        }
-      )
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    settingsValues.app.onboardingStatus.current,
-    settingsValues.app.theme.current,
-    href,
-    navigate,
-    searchParams.size,
-    authToken,
-  ])
-
-  // This is, at time of writing, the only spot we need @preact/signals-react,
-  // because we can't use the core `effect()` function for this signal, because
+  // We can't use the core `effect()` function for this signal, because
   // it is initially set to `true`, and will break the web app.
   // TODO: get the loading pattern of KclManager in order so that it's for real available,
   // then you might be able to uninstall this package and stick to just using signals-core.
@@ -304,7 +181,6 @@ export function OpenedProject() {
       <div className="relative flex flex-1 flex-col">
         <div className="relative flex items-center flex-col">
           <AppHeader
-            className="transition-opacity transition-duration-75"
             project={project?.projectIORefSignal.value}
             file={project?.executingFileEntry.value}
             enableMenu={true}
@@ -312,7 +188,7 @@ export function OpenedProject() {
             projectMenuChildren={undoRedoButtons}
           />
         </div>
-        <ModalContainer />
+        <ModalContainer enterTimeout={0} exitTimeout={0} />
         <section className="pointer-events-auto flex-1">
           <LayoutRootNode
             layout={layout.signal.value || defaultLayout}
@@ -320,19 +196,20 @@ export function OpenedProject() {
             setLayout={layout.set}
             areaLibrary={defaultAreaLibrary}
             actionLibrary={defaultActionLibrary}
+            paneOpenBehavior={settingsValues.layout.paneOpenBehavior.current}
             showDebugPanel={settingsValues.debug.showPanel.current}
             notifications={notifications}
             artifactGraph={kclManager.artifactGraph}
           />
         </section>
         <StatusBar
+          activeFileRoutePath={activeFileRoutePath}
           globalItems={[
             networkHealthStatus,
             ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),
             ...defaultGlobalStatusBarItems({
               autoUpdateDownloadProgress,
               autoUpdateReady,
-              hasCloudSyncFeature,
               onRestartToUpdate: () => {
                 window.electron?.appRestart()
               },

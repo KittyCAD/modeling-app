@@ -1,0 +1,31 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints optional_params.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'other_circle'",
+    "pos": [
+      3,
+      15,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'other_circle' to 'otherCircle'",
+      "insert": "fn otherCircle(pos, radius, tag?) {\n  sg = startSketchOn(XY)\n    |> startProfile(at = pos)\n    |> arc(angleEnd = 360, angleStart = 0, radius = radius)\n    |> close()\n    |> extrude(length = 2)\n\n  return sg\n}\n\nthing = otherCircle(pos = [2, 2], radius = 20)\n",
+      "source_range": [
+        0,
+        258,
+        0
+      ]
+    }
+  }
+]

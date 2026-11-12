@@ -1,0 +1,25 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing arc_error_same_start_end.kcl
+---
+KCL Type error
+
+  × type: Arc start and end angles must be different
+   ╭─[3:6]
+ 2 │   |> startProfile(at = [10, 0])
+ 3 │   |> arc(angleStart = 180, angleEnd = 180, radius = 1.5)
+   ·      ─────────────────────────┬─────────────────────────
+   ·                               ╰── tests/arc_error_same_start_end/input.kcl
+ 4 │   |> close()
+   ╰────
+  ╰─▶ KCL Type error
+      
+        × type: Arc start and end angles must be different
+         ╭─[3:6]
+       2 │   |> startProfile(at = [10, 0])
+       3 │   |> arc(angleStart = 180, angleEnd = 180, radius = 1.5)
+         ·      ─────────────────────────┬─────────────────────────
+         ·                               ╰── tests/arc_error_same_start_end/
+      input.kcl
+       4 │   |> close()
+         ╰────

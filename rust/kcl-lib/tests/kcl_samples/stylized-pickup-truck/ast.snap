@@ -30151,6 +30151,7 @@ description: Result of parsing stylized-pickup-truck.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

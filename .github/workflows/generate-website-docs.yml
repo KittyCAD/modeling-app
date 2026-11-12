@@ -5,7 +5,6 @@ on:
     paths:
       - .github/workflows/generate-website-docs.yml
       - 'docs/**'
-      - 'public/kcl-samples/**'
   pull_request:
     paths:
       - .github/workflows/generate-website-docs.yml
@@ -20,7 +19,7 @@ jobs:
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - uses: actions/checkout@v7.0.1
-      - uses: actions/create-github-app-token@v3.2.0
+      - uses: actions/create-github-app-token@v3
         id: app-token
         with:
           # required
@@ -47,14 +46,6 @@ jobs:
           mv -f rust/kcl-lib/tests/outputs documentation/content/kcl-test-outputs
           # We don't need the README
           rm documentation/content/pages/docs/kcl-std/README.md
-      - name: Update samples
-        shell: bash
-        run: |
-          mkdir -p documentation/content/pages/docs/kcl-samples
-          # cleanup old
-          rm -rf documentation/content/pages/docs/kcl-samples/*
-          # move new
-          mv -f public/kcl-samples/* documentation/content/pages/docs/kcl-samples/
       - name: Commit changes
         shell: bash
         env:

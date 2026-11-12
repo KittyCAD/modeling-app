@@ -24,6 +24,8 @@ interface UseStateMachineCommandsArgs<
   send: (event: EventFrom<T>) => void
   actor: Actor<T>
   commandBarConfig?: StateMachineCommandSetConfig<T, S>
+  getDefaultDescription?: (type: EventFrom<T>['type']) => string | undefined
+  scopes: Command['scopes']
   isExecuting: boolean
   onCancel?: () => void
 }
@@ -44,12 +46,15 @@ export default function useStateMachineCommands<
   send,
   actor,
   commandBarConfig,
+  getDefaultDescription,
+  scopes,
   onCancel,
   isExecuting,
 }: UseStateMachineCommandsArgs<T, S>) {
   useSignals()
   const { commands, settings, userFeatures } = useApp()
   const { kclManager } = useSingletons()
+  const kclProgramVersion = kclManager.kclProgramVersionSignal.value
   const showExperimentalCommands = userFeatures.useHas(
     EXPERIMENTAL_POINT_AND_CLICK_FLAG,
     false
@@ -83,11 +88,22 @@ export default function useStateMachineCommands<
           send,
           actor,
           commandBarConfig,
+          getDefaultDescription,
+          defaultScopes: scopes,
           onCancel,
           forceDisable: shouldDisableEngineCommands,
           showExperimentalCommands,
         })
       })
+      .map((command) =>
+        command
+          ? {
+              ...command,
+              useModelingDialog:
+                command.groupId === 'modeling' && !command.forceCommandBar,
+            }
+          : command
+      )
       .filter((c) => c !== null) as Command[] // TS isn't smart enough to know this filter removes nulls
 
     commands.send({
@@ -102,5 +118,12 @@ export default function useStateMachineCommands<
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [shouldDisableEngineCommands, showExperimentalCommands, commandBarConfig])
+  }, [
+    shouldDisableEngineCommands,
+    showExperimentalCommands,
+    commandBarConfig,
+    getDefaultDescription,
+    kclProgramVersion,
+    scopes,
+  ])
 }

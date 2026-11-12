@@ -1,12 +1,15 @@
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import type { ProjectLibrariesService } from '@src/registry/contracts/projectLibraries'
+import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
+import fsZds from '@src/lib/fs-zds'
+import { trap } from '@src/lib/trap'
+import toast from 'react-hot-toast'
 import { invertedEffects } from '@codemirror/commands'
 import type { Extension, Transaction } from '@codemirror/state'
 import { Annotation, Compartment, StateEffect } from '@codemirror/state'
 import type { TransactionSpecNoChanges } from '@src/editor/HistoryView'
 import type { KclManager } from '@src/lang/KclManager'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { EditorView } from 'codemirror'
-import type { ActorRefFrom } from 'xstate'
 
 const fsEffectCompartment = new Compartment()
 export const fsIgnoreAnnotationType = Annotation.define<true>()
@@ -15,6 +18,7 @@ type FSEffectProps = {
   src: string
   target: string
   requestedProjectName: string
+  requestedFileName?: string
 }
 const restoreFile = StateEffect.define<FSEffectProps>()
 const archiveFile = StateEffect.define<FSEffectProps>()
@@ -52,10 +56,18 @@ export const fsMoveFile = (props: FSEffectProps) => h(moveFile.of(props))
 /**
  * Builder function to provide necessary system dependencies for the
  * FS history extension. This is where FS un/redo editor events
- * actually call systemIO APIs.
+ * apply file operations.
  */
 export function buildFSHistoryExtension(
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>,
+  {
+    fileOperations,
+    projectLibraries,
+    projectSession,
+  }: {
+    fileOperations: Pick<FileOperationsRegistryService, 'move'>
+    projectLibraries: ProjectLibrariesService
+    projectSession: Pick<ProjectSessionService, 'getProject' | 'openFile'>
+  },
   kclManager: KclManager
 ) {
   const fsWiredListener = EditorView.updateListener.of((vu) => {
@@ -65,17 +77,25 @@ export function buildFSHistoryExtension(
       }
       for (const e of tr.effects) {
         if (e.is(restoreFile) || e.is(archiveFile) || e.is(moveFile)) {
-          const type = e.is(moveFile)
-            ? SystemIOMachineEvents.moveRecursive
-            : SystemIOMachineEvents.moveRecursiveAndNavigate
-
-          systemIOActor.send({
-            type,
-            data: {
-              ...e.value,
-              successMessage: getSuccessMessage(e, tr),
-            },
-          })
+          const current = projectSession.getProject()
+          const root = projectLibraries.projectDirectoryPath
+          const { src, target, requestedProjectName, requestedFileName } =
+            e.value
+          void (async () => {
+            await fileOperations.move(src, target)
+            await projectLibraries.refreshProjects()
+            if (projectSession.getProject() !== current) return
+            if (!e.is(moveFile)) {
+              const projectPath = fsZds.join(root, requestedProjectName)
+              await projectSession.openFile(
+                requestedFileName
+                  ? fsZds.join(projectPath, requestedFileName)
+                  : projectPath,
+                { projectPath }
+              )
+            }
+            toast.success(getSuccessMessage(e, tr))
+          })().catch(trap)
         }
       }
     }

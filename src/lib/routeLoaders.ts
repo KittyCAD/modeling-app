@@ -1,43 +1,20 @@
-import { projectSkeletonCreate } from '@src/lang/project'
+import { reportRejection } from '@src/lib/trap'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
+import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
 import {
-  DEFAULT_DEFAULT_LENGTH_UNIT,
-  PROJECT_ENTRYPOINT,
-} from '@src/lib/constants'
-import { getInitialDefaultDir, getProjectInfo } from '@src/lib/desktop'
-import fsZds from '@src/lib/fs-zds'
-import {
-  getParentAbsolutePath,
   getRouterSearchFromRequestUrl,
   PATHS,
   parseProjectRoute,
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
-import {
-  DEFAULT_PROJECT_LIBRARY_TITLE,
-  DIRECTORY_PROJECT_LIBRARY_TYPE,
-  getDefaultDirectoryProjectLibrarySetting,
-  type ProjectLibrarySetting,
-} from '@src/lib/projectLibraries'
 import { getProjectLibraryOwnership } from '@src/lib/projectLibraryOwnership'
-import {
-  loadHomeProjects,
-  webHomeRouteEnabled,
-} from '@src/lib/routeLoaderUtils'
-import {
-  type AppSettings,
-  loadAndValidateSettings,
-} from '@src/lib/settings/settingsUtils'
-import type {
-  FileLoaderData,
-  HomeLoaderData,
-  IndexLoaderData,
-} from '@src/lib/types'
-import {
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
+import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
+import { getOnboardingChildRoute } from '@src/lib/routeLoaderNavigation'
+import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
+import type { HomeLoaderData } from '@src/lib/types'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibrarySettingDefaultsValueSpec,
@@ -46,96 +23,39 @@ import { settingsValueSpec } from '@src/registry/contracts/settings'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
+import { hasProjectShellFeature } from '@src/lib/projectSession/next/feature'
+import { waitForUserFeaturesSettled } from '@src/machines/userFeaturesMachine'
+import { readProject } from '@src/lib/projectSession/next/utils'
+import { projectSessionService } from '@src/lib/projectSession/next/contract'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
-
-type CanonicalWebProjectLibrary = {
-  library: ProjectLibrarySetting
-  projectPath: string
-  defaultFilePath: string
-}
 
 function loadRouteSettings(
   app: App,
   wasmInstance: Awaited<App['wasmPromise']>,
   projectPath?: string
 ) {
-  return loadAndValidateSettings(wasmInstance, {
-    defaultProjectLibraries: app.registry.get(
-      projectLibrarySettingDefaultsValueSpec
-    ),
-    projectLibrarySettingDefaultPolicies: app.registry.get(
-      projectLibrarySettingDefaultPoliciesValueSpec
-    ),
-    extensionSettings: app.registry.get(settingsValueSpec),
-    projectPath,
-  })
-}
-
-async function getCanonicalWebProjectLibrary(
-  settings: AppSettings['settings']
-): Promise<CanonicalWebProjectLibrary> {
-  const fallbackLibraryPath =
-    settings.app.projectDirectory.current.trim() ||
-    (await getInitialDefaultDir())
-  const configuredLibrary = getDefaultDirectoryProjectLibrarySetting(
-    settings.app.libraries?.current
-  )
-  const libraryPath = configuredLibrary?.path.trim()
-    ? configuredLibrary.path
-    : fallbackLibraryPath
-  const library = {
-    title: configuredLibrary?.title || DEFAULT_PROJECT_LIBRARY_TITLE,
-    path: libraryPath,
-    type: configuredLibrary?.type || DIRECTORY_PROJECT_LIBRARY_TYPE,
-  }
-
-  return {
-    library,
-    projectPath: fsZds.resolve(library.path, DEFAULT_WEB_PROJECT_NAME),
-    defaultFilePath: fsZds.resolve(
-      library.path,
-      DEFAULT_WEB_PROJECT_NAME,
-      PROJECT_ENTRYPOINT
-    ),
-  }
-}
-
-async function maybeGetExistingDefaultFilePath(
-  projectPath: string,
-  wasmInstance: Awaited<App['wasmPromise']>
-) {
-  try {
-    const project = await getProjectInfo(projectPath, wasmInstance)
-    return project.default_file
-  } catch {
-    return undefined
-  }
-}
-
-async function fileExists(filePath: string) {
-  try {
-    await fsZds.stat(filePath)
-    return true
-  } catch {
-    return false
-  }
-}
-
-function redirectToFile(filePath: string, routerSearch: string) {
-  return redirect(
-    `${PATHS.FILE}/${encodeURIComponent(filePath)}${routerSearch}`
+  return loadAndValidateSettings(
+    app.registry.get(fileOperationsService),
+    wasmInstance,
+    {
+      defaultProjectLibraries: app.registry.get(
+        projectLibrarySettingDefaultsValueSpec
+      ),
+      projectLibrarySettingDefaultPolicies: app.registry.get(
+        projectLibrarySettingDefaultPoliciesValueSpec
+      ),
+      extensionSettings: app.registry.get(settingsValueSpec),
+      projectPath,
+    }
   )
 }
 
 /**
- * The base loader is used to reroute `/` root path requests,
- * to the home route on desktop, and to a constrained single project view on web.
- *
- * The OPFS cloud feature flag enables the home, multi-project view on web.
+ * The base loader reroutes `/` to the home route.
  */
 export const baseLoader =
-  ({ app }: { app: App }): LoaderFunction =>
+  (_: { app: App }): LoaderFunction =>
   async ({ request }) => {
     const url = new URL(request.url)
     const routerSearch = getRouterSearchFromRequestUrl(
@@ -143,66 +63,101 @@ export const baseLoader =
       Boolean(window.electron)
     )
 
-    // Desktop, redirect and return early
-    if (window.electron) {
-      return redirect(PATHS.HOME + routerSearch)
-    }
-
     // Let another part of the system handle the "open with web/desktop"...
-    if (url.searchParams.has('ask-open-desktop')) {
+    if (!window.electron && url.searchParams.has('ask-open-desktop')) {
       return
     }
 
-    if (await webHomeRouteEnabled(app)) {
-      return redirect(PATHS.HOME + routerSearch)
-    }
+    return redirect(PATHS.HOME + routerSearch)
+  }
 
-    // Web, make a default project and redirect to it.
-    const wasmInstance = await app.singletons.kclManager.wasmInstancePromise
+/** Settle the shared feature grant before either experimental route accesses resources. */
+async function canOpenProjectShell(app: App, signal: AbortSignal) {
+  await waitForUserFeaturesSettled(app.userFeatures.actor, undefined, signal)
+  signal.throwIfAborted()
+  return hasProjectShellFeature(app.userFeatures)
+}
 
-    const { settings } = await loadRouteSettings(app, wasmInstance)
-    const canonicalLibrary = await getCanonicalWebProjectLibrary(settings)
-    let defaultFilePath =
-      (await maybeGetExistingDefaultFilePath(
-        canonicalLibrary.projectPath,
-        wasmInstance
-      )) ?? canonicalLibrary.defaultFilePath
+/**
+ * `/project/:id` identifies a cloud project by its API ID, never a disk path or
+ * an internal cloud relationship ID. Cloud opening is reserved for a follow-up;
+ * this route must not fall through to filesystem discovery in the meantime.
+ */
+export const projectLoader =
+  ({ app }: { app: App }): LoaderFunction =>
+  async ({ request, params }) => {
+    if (!(await canOpenProjectShell(app, request.signal)))
+      return redirect(PATHS.HOME)
+    if (!params.id)
+      return Promise.reject(new Error('No cloud project ID provided'))
+    return Promise.reject(
+      new Error('Cloud projects are not yet supported by this route')
+    )
+  }
 
-    if (!(await fileExists(defaultFilePath))) {
-      await projectSkeletonCreate(
-        canonicalLibrary.defaultFilePath,
-        settings.modeling.defaultUnit.current ?? DEFAULT_DEFAULT_LENGTH_UNIT,
-        wasmInstance
-      )
-      defaultFilePath = canonicalLibrary.defaultFilePath
-    }
+/**
+ * Open the directory identified by `/local/:path`, without opening an editor.
+ * Reading assembles the full tree and optional TOML metadata without creating files
+ * or applying project settings. Files are rejected rather than promoted to their
+ * parent directory. Failed or cancelled discovery leaves the selection intact.
+ */
+export const localLoader =
+  ({ app }: { app: App }): LoaderFunction =>
+  async ({ request, params }) => {
+    if (!(await canOpenProjectShell(app, request.signal)))
+      return redirect(PATHS.HOME)
+    const { path } = params
+    if (!path)
+      return Promise.reject(new Error('No local directory path provided'))
 
-    return redirectToFile(defaultFilePath, routerSearch)
+    const assertCurrent = () => request.signal.throwIfAborted()
+    const fileOperations = app.registry.get(fileOperationsService)
+    const projectSessions = app.registry.get(projectSessionService)
+    // A grant can be revoked (and granted again) while discovery is awaiting IO.
+    // Never publish through a captured service that the registry has disposed.
+    const ownsSession = () =>
+      hasProjectShellFeature(app.userFeatures) &&
+      app.registry.optional(projectSessionService) === projectSessions
+
+    const library = await getProjectLibraryOwnership(
+      app.settings.get().app.libraries.current,
+      path
+    )
+    assertCurrent()
+    if (!ownsSession()) return redirect(PATHS.HOME)
+    const project = await readProject(fileOperations, path, {
+      signal: request.signal,
+      library,
+    })
+    assertCurrent()
+    if (!ownsSession()) return redirect(PATHS.HOME)
+    // Consumers retain this session instead of resolving the global selection again.
+    return projectSessions.openProject(project)
   }
 
 export const fileLoader =
   ({ app }: { app: App }): LoaderFunction =>
-  async (routerData): Promise<FileLoaderData | Response> => {
+  async (routerData) => {
+    const assertCurrent = app.beginFileRouteLoad(routerData.request.signal)
     const {
       settings: { actor: settingsActor },
     } = app
     const { kclManager } = app.singletons
     const { params } = routerData
-
-    // Must basically remain for all eternity, until the last person
-    // who's ever used ZDS on web before this point has died.
+    // Old web bookmarks encode /browser/... as the file route's id. These
+    // paths no longer identify projects, so return home before filesystem I/O.
     if (params.id?.startsWith('/browser')) {
-      // Pop us back home, which will cause a default project to be
-      // created.
       return redirect(PATHS.HOME)
     }
 
     const wasmInstance = await kclManager.wasmInstancePromise
+    assertCurrent()
 
     // Resolve the project root before loading project settings. Loading project
     // settings from a selected file's parent folder creates project.toml in
     // nested folders and makes them look like project roots.
     const appSettings = await loadRouteSettings(app, wasmInstance)
+    assertCurrent()
     const currentProjectPath = app.project?.projectIORefSignal.value.path
     const targetLibraryPath = params.id
       ? (
@@ -228,6 +183,7 @@ export const fileLoader =
     }
 
     await loadRouteSettings(app, wasmInstance, projectPathData.projectPath)
+    assertCurrent()
 
     const { projectName, projectPath, currentFileName, currentFilePath } =
       projectPathData
@@ -235,14 +191,19 @@ export const fileLoader =
     const urlObj = new URL(routerData.request.url)
 
     if (!urlObj.pathname.endsWith('/settings')) {
-      const fallbackFile = (await getProjectInfo(projectPath, wasmInstance))
-        .default_file
+      const fallbackFile = (
+        await getProjectInfo(
+          app.registry.get(fileOperationsService),
+          projectPath,
+          wasmInstance
+        )
+      ).default_file
       let fileExists = true
       if (currentFilePath && fileExists) {
         try {
-          await fsZds.stat(currentFilePath)
+          await app.registry.get(fileOperationsService).stat(currentFilePath)
         } catch (e) {
-          if (e === 'ENOENT') {
+          if (isPathNotFoundError(e)) {
             fileExists = false
           }
         }
@@ -264,8 +225,13 @@ export const fileLoader =
           routerData.request.url,
           Boolean(window.electron)
         )
+        const onboardingChildRoute = params.id
+          ? getOnboardingChildRoute(routerData.request.url, params.id)
+          : ''
         return redirect(
-          `${PATHS.FILE}/${encodeURIComponent(fallbackFile)}${routerSearch}`
+          `${PATHS.FILE}/${encodeURIComponent(
+            fallbackFile
+          )}${onboardingChildRoute}${routerSearch}`
         )
       }
     }
@@ -285,82 +251,48 @@ export const fileLoader =
       readWriteAccess: true,
     }
 
-    const maybeProjectInfo = await getProjectInfo(projectPath, wasmInstance)
+    const maybeProjectInfo = await getProjectInfo(
+      app.registry.get(fileOperationsService),
+      projectPath,
+      wasmInstance
+    )
+    assertCurrent()
 
     const project = maybeProjectInfo ?? defaultProjectData
 
     // Fire off the event to load the project settings
     // once we know it's idle.
     await waitFor(settingsActor, (state) => state.matches('idle'))
+    assertCurrent()
     settingsActor.send({
       type: 'load.project',
       project,
     })
     await waitFor(settingsActor, (state) => state.matches('idle'))
+    assertCurrent()
 
-    const projectRef = await app.openProject(project)
-    const editor = await projectRef.openEditor(
+    const projectRef = await app.openProject(project, assertCurrent)
+    await projectRef.openEditor(
       currentFilePath || PROJECT_ENTRYPOINT,
       app.singletons.kclManager,
       // If persistCode in localStorage is present, it'll persist that code
       // through *anything*. INTENDED FOR TESTS.
       window.electron?.process.env.NODE_ENV === 'test'
         ? kclManager.localStoragePersistCode()
-        : undefined
+        : undefined,
+      true,
+      assertCurrent
     )
+    assertCurrent()
 
-    const requestedFileName =
-      app.systemIOActor.getSnapshot().context.requestedFileName
-    if (requestedFileName.project === projectName) {
-      requestedFileName.onProjectLoaderComplete?.()
-    }
-
-    const requestedProjectDirectoryPath =
-      projectRef.projectIORefSignal.value.libraryPath ??
-      getParentAbsolutePath(project.path)
-    const systemIOSnapshot = app.systemIOActor.getSnapshot()
-    // Same-directory file navigation should not restart SystemIO's own
-    // post-mutation folder refresh.
-    const shouldSyncProjectDirectory =
-      requestedProjectDirectoryPath !==
-        systemIOSnapshot.context.projectDirectoryPath ||
-      (systemIOSnapshot.matches(SystemIOMachineStates.idle) &&
-        systemIOSnapshot.context.folders === undefined)
-    if (shouldSyncProjectDirectory) {
-      app.systemIOActor.send({
-        type: SystemIOMachineEvents.setProjectDirectoryPath,
-        data: {
-          requestedProjectDirectoryPath,
-        },
-      })
-    }
-
-    const projectData: IndexLoaderData = {
-      code: editor.code,
-      project,
-      file: {
-        name: currentFileName || '',
-        path: currentFilePath || '',
-        children: [],
-      },
-    }
-
-    return {
-      ...projectData,
-    }
+    void app.projectLibraries.refreshProjects().catch(reportRejection)
   }
 
 // Loads the settings and by extension the projects in the default directory
 // and returns them to the Home route, along with any errors that occurred
 
-// Should also clear currently loaded projects in SystemIO. They may be stale.
 export const homeLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async (): Promise<HomeLoaderData | Response> => {
-    // If on unflagged web, bump out to root, which will redirect to a project.
-    if (!window.electron && !(await webHomeRouteEnabled(app))) {
-      return redirect(PATHS.INDEX)
-    }
-
     return loadHomeProjects(app)
   }

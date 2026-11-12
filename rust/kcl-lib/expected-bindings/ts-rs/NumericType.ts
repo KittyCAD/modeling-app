@@ -2,4 +2,4 @@
 import type { UnitAngle, UnitLength } from "./ModelingCmd";
 import type { UnitType } from "./UnitType";
 
-export type NumericType = { "type": "Known" } & UnitType | { "type": "Default", len: UnitLength, angle: UnitAngle, } | { "type": "Unknown" } | { "type": "Any" };
+export type NumericType = { "type": "Known", "value": UnitType } | { "type": "Default", "value": { len: UnitLength, angle: UnitAngle, } } | { "type": "Unknown" } | { "type": "Any" };

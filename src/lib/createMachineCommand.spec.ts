@@ -3,6 +3,10 @@ import { createActor, createMachine } from 'xstate'
 
 import type { StateMachineCommandSetConfig } from '@src/lib/commandTypes'
 import { createMachineCommand } from '@src/lib/createMachineCommand'
+import {
+  GLOBAL_COMMAND_SCOPES,
+  MODE_SKETCHING_COMMAND_SCOPE,
+} from '@src/registry/contracts/commands'
 
 const testMachine = createMachine({
   id: 'testMachine',
@@ -45,6 +49,7 @@ const commandBarConfig = {
     {
       displayName: 'Available child',
       description: 'Available child command',
+      scopes: [MODE_SKETCHING_COMMAND_SCOPE],
     },
   ],
   WithArguments: {
@@ -53,6 +58,7 @@ const commandBarConfig = {
       availableArg: {
         inputType: 'string',
         required: false,
+        documentation: 'Reference documentation.',
       },
       experimentalArg: {
         inputType: 'string',
@@ -69,6 +75,64 @@ const commandBarConfig = {
 } satisfies StateMachineCommandSetConfig<typeof testMachine, TestCommandSchema>
 
 describe('createMachineCommand', () => {
+  test('honors command availability using the machine context', () => {
+    const actor = createActor(testMachine).start()
+    const state = actor.getSnapshot()
+    const available = vi.fn(() => false)
+    const createCommand = () =>
+      createMachineCommand<typeof testMachine, TestCommandSchema>({
+        groupId: testMachine.id,
+        type: 'Available',
+        state,
+        send: vi.fn(),
+        actor,
+        commandBarConfig: { Available: { available } },
+        defaultScopes: GLOBAL_COMMAND_SCOPES,
+      })
+
+    expect(createCommand()).toBeNull()
+    available.mockReturnValue(true)
+    expect(createCommand()).toMatchObject({ name: 'Available' })
+    expect(available).toHaveBeenLastCalledWith(state.context)
+    actor.stop()
+  })
+
+  test('defaults missing descriptions while preserving overrides, including command arrays', () => {
+    const actor = createActor(testMachine).start()
+    const configs = {
+      Available: {},
+      ManyCommands: [{}, { description: 'Custom' }, { description: '' }],
+    } satisfies StateMachineCommandSetConfig<
+      typeof testMachine,
+      TestCommandSchema
+    >
+    const props = {
+      groupId: testMachine.id,
+      state: actor.getSnapshot(),
+      send: vi.fn(),
+      actor,
+      commandBarConfig: configs,
+      defaultScopes: GLOBAL_COMMAND_SCOPES,
+      getDefaultDescription: (type: string) => `Default ${type}`,
+    }
+
+    const command = createMachineCommand<typeof testMachine, TestCommandSchema>(
+      { ...props, type: 'Available' }
+    )
+    const commands = createMachineCommand<
+      typeof testMachine,
+      TestCommandSchema
+    >({ ...props, type: 'ManyCommands' })
+    actor.stop()
+
+    expect(command).toMatchObject({ description: 'Default Available' })
+    expect(commands).toMatchObject([
+      { description: 'Default ManyCommands' },
+      { description: 'Custom' },
+      { description: '' },
+    ])
+  })
+
   test('hides experimental commands by default', () => {
     const actor = createActor(testMachine).start()
 
@@ -80,6 +144,7 @@ describe('createMachineCommand', () => {
         send: vi.fn(),
         actor,
         commandBarConfig,
+        defaultScopes: GLOBAL_COMMAND_SCOPES,
       }
     )
 
@@ -99,6 +164,7 @@ describe('createMachineCommand', () => {
         send: vi.fn(),
         actor,
         commandBarConfig,
+        defaultScopes: GLOBAL_COMMAND_SCOPES,
         showExperimentalCommands: true,
       }
     )
@@ -122,6 +188,7 @@ describe('createMachineCommand', () => {
         send: vi.fn(),
         actor,
         commandBarConfig,
+        defaultScopes: GLOBAL_COMMAND_SCOPES,
       }
     )
 
@@ -130,6 +197,7 @@ describe('createMachineCommand', () => {
     expect(command).toMatchObject({
       name: 'Deprecated',
       status: 'deprecated',
+      scopes: GLOBAL_COMMAND_SCOPES,
     })
   })
 
@@ -146,6 +214,7 @@ describe('createMachineCommand', () => {
       send: vi.fn(),
       actor,
       commandBarConfig,
+      defaultScopes: GLOBAL_COMMAND_SCOPES,
     })
 
     actor.stop()
@@ -154,11 +223,12 @@ describe('createMachineCommand', () => {
       expect.objectContaining({
         name: 'ManyCommands',
         displayName: 'Available child',
+        scopes: [MODE_SKETCHING_COMMAND_SCOPE],
       }),
     ])
   })
 
-  test('hides experimental arguments by default', () => {
+  test('preserves metadata while hiding experimental arguments by default', () => {
     const actor = createActor(testMachine).start()
 
     const command = createMachineCommand<typeof testMachine, TestCommandSchema>(
@@ -169,6 +239,7 @@ describe('createMachineCommand', () => {
         send: vi.fn(),
         actor,
         commandBarConfig,
+        defaultScopes: GLOBAL_COMMAND_SCOPES,
       }
     )
 
@@ -178,6 +249,8 @@ describe('createMachineCommand', () => {
       args: {
         availableArg: {
           hidden: undefined,
+          documentation:
+            commandBarConfig.WithArguments.args.availableArg.documentation,
         },
         deprecatedArg: {
           hidden: undefined,
@@ -202,6 +275,7 @@ describe('createMachineCommand', () => {
         send: vi.fn(),
         actor,
         commandBarConfig,
+        defaultScopes: GLOBAL_COMMAND_SCOPES,
         showExperimentalCommands: true,
       }
     )

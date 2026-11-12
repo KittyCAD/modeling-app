@@ -34,7 +34,7 @@ function createCommandSystemService(send: CommandSystemService['send']) {
 }
 
 describe('slicer plugin', () => {
-  it('registers a toggleable Export to Slicer command and toolbar action', () => {
+  it('registers a toggleable Export to Slicer command and toolbar action', async () => {
     const send = vi.fn()
     const commandSystemItem = defineRegistryItem({
       id: 'test-command-system-service',
@@ -62,7 +62,7 @@ describe('slicer plugin', () => {
     expect(registry.get(layoutActionLibraryValueSpec)).toEqual({})
     expect(registry.get(layoutContributionsValueSpec)).toEqual([])
 
-    toggle.enable()
+    await toggle.enable()
 
     const [command] = registry.get(commandsValueSpec)
     expect(command).toMatchObject({
@@ -113,7 +113,7 @@ describe('slicer plugin', () => {
       }),
     ])
 
-    toggle.disable()
+    await toggle.disable()
 
     expect(toggle.active.value).toBe(false)
     expect(registry.get(commandsValueSpec)).toEqual([])

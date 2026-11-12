@@ -23,7 +23,7 @@ solver::equalRadius(@input: [Segment; 2+])
 ### Examples
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 sketch1 = sketch(on = XY) {
   circle1 = circle(start = [var -2mm, var 0mm], center = [var -6mm, var 0mm])
@@ -40,7 +40,7 @@ solid2 = extrude(region(segments = [sketch1.circle2]), length = 2)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the solver::equalRadius function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-equalRadius0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-equalRadius0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solver-equalRadius0.png"

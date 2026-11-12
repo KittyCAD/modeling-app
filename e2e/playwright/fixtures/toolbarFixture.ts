@@ -150,10 +150,15 @@ export class ToolbarFixture {
   ) => {
     await this.startSketchPlaneSelection()
     await this.selectDefaultPlane(plane)
+    await expect(this.exitSketchBtn).toBeEnabled()
   }
 
   waitUntilSketchingReady = async () => {
     await expect(this.gizmoDisabled).toBeVisible()
+  }
+
+  expectSelection = async (selectionText: string) => {
+    await expect(this.selectionStatus).toContainText(selectionText)
   }
 
   startSketchThenCallbackThenWaitUntilReady = async (
@@ -369,6 +374,20 @@ export class ToolbarFixture {
         name: operationName,
       })
       .nth(operationIndex)
+  }
+
+  async openFeatureTreeOperationContextMenu(
+    operationName: string,
+    operationIndex: number
+  ) {
+    const operationButton = await this.getFeatureTreeOperation(
+      operationName,
+      operationIndex
+    )
+    const operationRow = operationButton.locator(
+      'xpath=ancestor::*[@data-testid="feature-tree-operation-item"][1]'
+    )
+    await operationRow.click({ button: 'right' })
   }
 
   /**

@@ -47,13 +47,14 @@ import {
   formatPoint3d,
   getAreaUnit,
   getDistanceTypeForMode,
-  getMeasurementEntities,
   getVolumeUnit,
   graphSelectionsReferenceCurrentArtifacts,
   type MeasurementEntity,
   unitAreaLabels,
   unitVolumeLabels,
 } from './measurementUtils'
+
+import { useMeasurementSelection } from './useMeasurementSelection'
 
 const measurementFailedMessage = 'Measurement failed'
 
@@ -444,9 +445,35 @@ export function MeasurementTool() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const latestRequestKey = useRef<string | null>(null)
 
-  const selectedEntities = useMemo(
-    () => getMeasurementEntities(state.context.selectionRanges),
-    [state.context.selectionRanges]
+  const isIdle = state.matches('idle')
+  const graphSelectionsAreCurrent = useMemo(
+    () =>
+      graphSelectionsReferenceCurrentArtifacts(
+        state.context.selectionRanges,
+        kclManager.artifactGraph
+      ),
+    [state.context.selectionRanges, kclManager.artifactGraph]
+  )
+
+  const sendModelingCommand = useCallback(
+    (cmd: ModelingCmd) =>
+      engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd,
+      }),
+    [engineCommandManager]
+  )
+
+  const {
+    entities: selectedEntities,
+    error: selectionError,
+    resolving: resolvingSelection,
+  } = useMeasurementSelection(
+    state.context.selectionRanges,
+    kclManager.artifactGraph,
+    sendModelingCommand,
+    isIdle && graphSelectionsAreCurrent
   )
   const selectedEntityIdsKey = selectedEntities
     .map((entity) => `${entity.kind}:${entity.id}`)
@@ -471,25 +498,6 @@ export function MeasurementTool() {
     DEFAULT_DEFAULT_LENGTH_UNIT
   const areaUnit = getAreaUnit(unit)
   const volumeUnit = getVolumeUnit(unit)
-  const isIdle = state.matches('idle')
-  const graphSelectionsAreCurrent = useMemo(
-    () =>
-      graphSelectionsReferenceCurrentArtifacts(
-        state.context.selectionRanges,
-        kclManager.artifactGraph
-      ),
-    [state.context.selectionRanges, kclManager.artifactGraph]
-  )
-
-  const sendModelingCommand = useCallback(
-    (cmd: ModelingCmd) =>
-      engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd,
-      }),
-    [engineCommandManager]
-  )
 
   useEffect(() => {
     const target = measurementTarget
@@ -541,6 +549,9 @@ export function MeasurementTool() {
           setStatus('idle')
         }
       })
+    return () => {
+      latestRequestKey.current = null
+    }
   }, [
     areaUnit,
     distanceMode,
@@ -570,7 +581,13 @@ export function MeasurementTool() {
 
   return (
     <div className="flex min-w-64 flex-col gap-2 p-2 text-chalkboard-100 dark:text-chalkboard-10">
-      <MeasurementSelectionSummary selectedEntities={selectedEntities} />
+      {resolvingSelection || selectionError ? (
+        <div className="p-2 text-xs">
+          {selectionError ?? 'Resolving selection...'}
+        </div>
+      ) : (
+        <MeasurementSelectionSummary selectedEntities={selectedEntities} />
+      )}
 
       {showDistanceModes && (
         <fieldset className="m-0 grid grid-cols-4 rounded border border-chalkboard-20 bg-chalkboard-10 p-0 dark:border-chalkboard-80 dark:bg-chalkboard-90">
@@ -712,10 +729,6 @@ export function MeasurementStatusBarItem() {
   const latestRequestKey = useRef<string | null>(null)
 
   const isIdle = state.matches('idle')
-  const selectedEntities = useMemo(
-    () => getMeasurementEntities(state.context.selectionRanges),
-    [state.context.selectionRanges]
-  )
   const graphSelectionsAreCurrent = useMemo(
     () =>
       graphSelectionsReferenceCurrentArtifacts(
@@ -723,6 +736,23 @@ export function MeasurementStatusBarItem() {
         kclManager.artifactGraph
       ),
     [state.context.selectionRanges, kclManager.artifactGraph]
+  )
+
+  const sendModelingCommand = useCallback(
+    (cmd: ModelingCmd) =>
+      engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd,
+      }),
+    [engineCommandManager]
+  )
+
+  const { entities: selectedEntities } = useMeasurementSelection(
+    state.context.selectionRanges,
+    kclManager.artifactGraph,
+    sendModelingCommand,
+    isIdle && graphSelectionsAreCurrent
   )
   const selectedEntityIdsKey = selectedEntities
     .map((entity) => `${entity.kind}:${entity.id}`)
@@ -747,16 +777,6 @@ export function MeasurementStatusBarItem() {
     DEFAULT_DEFAULT_LENGTH_UNIT
   const areaUnit = getAreaUnit(unit)
   const volumeUnit = getVolumeUnit(unit)
-
-  const sendModelingCommand = useCallback(
-    (cmd: ModelingCmd) =>
-      engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd,
-      }),
-    [engineCommandManager]
-  )
 
   useEffect(() => {
     latestRequestKey.current = measurementInputKey
@@ -792,6 +812,9 @@ export function MeasurementStatusBarItem() {
       .catch(() => {
         // Best-effort measurements should fail silently in the status bar.
       })
+    return () => {
+      latestRequestKey.current = null
+    }
   }, [
     areaUnit,
     defaultStatusDistanceMode,
@@ -834,7 +857,7 @@ export function MeasurementStatusBarItem() {
   }, [isOpen])
 
   return (
-    <div className="relative">
+    <div className="relative flex">
       <button
         type="button"
         className={`${defaultStatusBarItemClassNames} max-w-[32vw] gap-1`}

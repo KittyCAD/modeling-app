@@ -2323,6 +2323,7 @@ description: Result of parsing round-table.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

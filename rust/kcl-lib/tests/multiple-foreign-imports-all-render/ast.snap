@@ -597,6 +597,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

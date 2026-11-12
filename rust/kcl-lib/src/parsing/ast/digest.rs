@@ -257,6 +257,10 @@ impl Type {
                 hasher.update(b"FnArgType::Primitive");
                 hasher.update(prim.compute_digest())
             }
+            Type::Named { name } => {
+                hasher.update(b"FnArgType::Named");
+                hasher.update(name.compute_digest())
+            }
             Type::Array { ty, len } => {
                 hasher.update(b"FnArgType::Array");
                 hasher.update(ty.compute_digest());
@@ -294,7 +298,6 @@ impl PrimitiveType {
             PrimitiveType::Any => hasher.update(b"any"),
             PrimitiveType::Never => hasher.update(b"never"),
             PrimitiveType::None => hasher.update(b"none"),
-            PrimitiveType::Named { id } => hasher.update(id.compute_digest()),
             PrimitiveType::String => hasher.update(b"string"),
             PrimitiveType::Number(suffix) => hasher.update(suffix.digestable_id()),
             PrimitiveType::Boolean => hasher.update(b"bool"),

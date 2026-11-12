@@ -1,0 +1,18 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing patterns_circular_basic_3d.kcl
+---
+part = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [0, 1])
+  |> line(end = [1, 0])
+  |> line(end = [0, -1])
+  |> close()
+  |> extrude(length = 1)
+  |> patternCircular3d(
+       axis = [0, 0, 1],
+       center = [-20, -20, -20],
+       instances = 41,
+       arcDegrees = 360,
+       rotateDuplicates = false,
+     )

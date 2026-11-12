@@ -41,17 +41,8 @@ export function getSketchSegmentFromPathToNode(
   if (err(nodeMeta)) return nodeMeta
 
   const _node = nodeMeta.node
-  const node = (() => {
-    switch (_node.type) {
-      // LabeledArg wraps the expression being assigned to a parameter.
-      // So, undo the wrapper. Used for keyword arguments.
-      case 'LabeledArg':
-        return _node.arg
-      // Other nodes aren't wrapped, we can return them directly.
-      default:
-        return _node
-    }
-  })()
+  // LabeledArg wraps keyword argument expressions; other nodes are unwrapped.
+  const node = _node.type === 'LabeledArg' ? _node.arg : _node
   if (!node || typeof node.start !== 'number' || !node.end)
     return new Error('no node found')
   const sourceRange = topLevelRange(node.start, node.end)

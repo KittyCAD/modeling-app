@@ -2,11 +2,12 @@ import type { KclManager } from '@src/lang/KclManager'
 import type { Command } from '@src/lib/commandTypes'
 import { AxisNames } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
-import { engineStreamZoomToFit } from '@src/lib/utils'
+import { MODE_MODELING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 
 export function createStandardViewsCommands(kclManager: KclManager) {
-  const { engineCommandManager, sceneInfra } = kclManager
+  const { sceneInfra } = kclManager
   const topViewCommand: Command = {
+    scopes: [MODE_MODELING_COMMAND_SCOPE],
     name: 'Top view',
     displayName: `Top view`,
     description: 'Set to top view',
@@ -20,6 +21,7 @@ export function createStandardViewsCommands(kclManager: KclManager) {
     },
   }
   const rightViewCommand: Command = {
+    scopes: [MODE_MODELING_COMMAND_SCOPE],
     name: 'Right view',
     displayName: `Right view`,
     description: 'Set to right view',
@@ -33,6 +35,7 @@ export function createStandardViewsCommands(kclManager: KclManager) {
     },
   }
   const frontViewCommand: Command = {
+    scopes: [MODE_MODELING_COMMAND_SCOPE],
     name: 'Front view',
     displayName: `Front view`,
     description: 'Set to front view',
@@ -47,6 +50,7 @@ export function createStandardViewsCommands(kclManager: KclManager) {
   }
 
   const backViewCommand: Command = {
+    scopes: [MODE_MODELING_COMMAND_SCOPE],
     name: 'Back view',
     displayName: `Back view`,
     description: 'Set to back view',
@@ -61,6 +65,7 @@ export function createStandardViewsCommands(kclManager: KclManager) {
   }
 
   const bottomViewCommand: Command = {
+    scopes: [MODE_MODELING_COMMAND_SCOPE],
     name: 'Bottom view',
     displayName: `Bottom view`,
     description: 'Set to bottom view',
@@ -75,6 +80,7 @@ export function createStandardViewsCommands(kclManager: KclManager) {
   }
 
   const leftViewCommand: Command = {
+    scopes: [MODE_MODELING_COMMAND_SCOPE],
     name: 'Left view',
     displayName: `Left view`,
     description: 'Set to left view',
@@ -89,6 +95,7 @@ export function createStandardViewsCommands(kclManager: KclManager) {
   }
 
   const zoomToFitCommand: Command = {
+    scopes: [MODE_MODELING_COMMAND_SCOPE],
     name: 'Zoom to fit',
     displayName: `Zoom to fit`,
     description: 'Fits the model in the camera view',
@@ -96,9 +103,7 @@ export function createStandardViewsCommands(kclManager: KclManager) {
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
-      engineStreamZoomToFit({ engineCommandManager, padding: 0.1 }).catch(
-        reportRejection
-      )
+      sceneInfra.camControls.zoomToFit({ padding: 0.1 }).catch(reportRejection)
     },
   }
 

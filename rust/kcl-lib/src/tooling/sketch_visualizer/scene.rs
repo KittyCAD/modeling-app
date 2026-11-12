@@ -1,9 +1,10 @@
+use kcl_api::Number;
+use kcl_api::Object;
+use kcl_api::ObjectId;
+use kcl_api::Point2d;
+
 use super::types::SketchVisualizationError;
 use super::types::SketchVisualizationPoint;
-use crate::front::Number;
-use crate::front::Object;
-use crate::front::ObjectId;
-use crate::front::Point2d;
 
 pub(super) fn object_by_id(scene_objects: &[Object], id: ObjectId) -> Result<&Object, SketchVisualizationError> {
     scene_objects

@@ -1,0 +1,182 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing assembly_mixed_units_cubes.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "moduleId": 0,
+        "path": {
+          "type": "Kcl",
+          "filename": "cube-inches.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "cubeIn",
+            "start": 0,
+            "type": "Identifier"
+          }
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "commentStart": 0,
+        "end": 0,
+        "moduleId": 0,
+        "path": {
+          "type": "Kcl",
+          "filename": "cube-mm.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "cubeMm",
+            "start": 0,
+            "type": "Identifier"
+          }
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "commentStart": 0,
+        "end": 0,
+        "expression": {
+          "abs_path": false,
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "name": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "cubeIn",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
+          "start": 0,
+          "type": "Name",
+          "type": "Name"
+        },
+        "moduleId": 0,
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 0,
+        "end": 0,
+        "expression": {
+          "abs_path": false,
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "name": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "cubeMm",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
+          "start": 0,
+          "type": "Name",
+          "type": "Name"
+        },
+        "moduleId": 0,
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "innerAttrs": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "moduleId": 0,
+        "name": {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "name": "settings",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "defaultLengthUnit",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "in",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
+    "moduleId": 0,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "1": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
+    "start": 0,
+    "type": "Program"
+  }
+}

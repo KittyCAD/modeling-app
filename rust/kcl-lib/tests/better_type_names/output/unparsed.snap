@@ -1,0 +1,7 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing better_type_names.kcl
+---
+startSketchOn(XY)
+  |> circle(center = [-95.51, -74.7], radius = 262.23)
+  |> appearance(metalness = 0.9)

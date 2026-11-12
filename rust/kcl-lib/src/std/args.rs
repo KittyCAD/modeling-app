@@ -1,6 +1,8 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
+use kcl_api::Number;
+use kcl_api::NumericSuffixTypeConvertError;
 use kcl_api::UnitAngle;
 use kcl_api::UnitLength;
 use kcmc::shared::BodyType;
@@ -37,13 +39,11 @@ use crate::execution::annotations;
 pub use crate::execution::fn_call::Args;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::types::CoercionMode;
-use crate::execution::types::NumericSuffixTypeConvertError;
 use crate::execution::types::NumericType;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::execution::types::UnitType;
-use crate::front::Number;
 use crate::parsing::ast::types::TagNode;
 use crate::std::CircularDirection;
 use crate::std::edge::check_tag_not_ambiguous;
@@ -75,21 +75,59 @@ impl TyF64 {
         }
     }
 
-    pub fn to_mm(&self) -> f64 {
+    /// Soft-deprecated. Use [`Self::to_mm()`] instead. This is legacy, and all
+    /// callers should stop using this.
+    pub fn unwrap_to_mm(&self) -> f64 {
+        self.unwrap_to_length_units(UnitLength::Millimeters)
+    }
+
+    /// The original that returns `f64` was renamed to [`Self::unwrap_to_mm()`].
+    pub fn to_mm(&self) -> Option<f64> {
         self.to_length_units(UnitLength::Millimeters)
     }
 
-    pub fn to_length_units(&self, units: UnitLength) -> f64 {
+    /// Returns true if this can be used as a length unit (e.g. mm, inches, etc)
+    pub fn is_length_compatible(&self) -> bool {
+        #[expect(
+            clippy::match_like_matches_macro,
+            reason = "Want to mirror the structure of `to_length_units` below"
+        )]
+        match self.ty {
+            NumericType::Default { .. } => true,
+            NumericType::Known(UnitType::Length(_)) => true,
+            _ => false,
+        }
+    }
+
+    /// Soft-deprecated. Use [`Self::to_length_units()`] instead.
+    /// This is legacy, and all callers should stop using this.
+    pub fn unwrap_to_length_units(&self, units: UnitLength) -> f64 {
+        self.to_length_units(units)
+            .unwrap_or_else(|| panic!("expected length, found {:?}", self.ty))
+    }
+
+    /// The original that returns `f64` was renamed to
+    /// [`Self::unwrap_to_length_units()`].
+    pub fn to_length_units(&self, units: UnitLength) -> Option<f64> {
         let len = match &self.ty {
             NumericType::Default { len, .. } => *len,
             NumericType::Known(UnitType::Length(len)) => *len,
-            t => unreachable!("expected length, found {t:?}"),
+            _ => return None,
         };
 
-        crate::execution::types::adjust_length(len, self.n, units).0
+        Some(crate::execution::types::adjust_length(len, self.n, units).0)
     }
 
-    pub fn to_degrees(&self, exec_state: &mut ExecState, source_range: SourceRange) -> f64 {
+    /// Soft-deprecated. Use [`Self::to_degrees()`] instead. This is legacy, and
+    /// all callers should stop using this.
+    pub fn unwrap_to_degrees(&self, exec_state: &mut ExecState, source_range: SourceRange) -> f64 {
+        self.to_degrees(exec_state, source_range)
+            .unwrap_or_else(|| panic!("expected angle, found {:?}", self.ty))
+    }
+
+    /// The original that returns `f64` was renamed to
+    /// [`Self::unwrap_to_degrees()`].
+    pub fn to_degrees(&self, exec_state: &mut ExecState, source_range: SourceRange) -> Option<f64> {
         let angle = match self.ty {
             NumericType::Default { angle, .. } => {
                 if self.n != 0.0 {
@@ -101,13 +139,22 @@ impl TyF64 {
                 angle
             }
             NumericType::Known(UnitType::Angle(angle)) => angle,
-            _ => unreachable!(),
+            _ => return None,
         };
 
-        crate::execution::types::adjust_angle(angle, self.n, UnitAngle::Degrees).0
+        Some(crate::execution::types::adjust_angle(angle, self.n, UnitAngle::Degrees).0)
     }
 
-    pub fn to_radians(&self, exec_state: &mut ExecState, source_range: SourceRange) -> f64 {
+    /// Soft-deprecated. Use [`Self::to_radians()`] instead. This is legacy, and
+    /// all callers should stop using this.
+    pub fn unwrap_to_radians(&self, exec_state: &mut ExecState, source_range: SourceRange) -> f64 {
+        self.to_radians(exec_state, source_range)
+            .unwrap_or_else(|| panic!("expected angle, found {:?}", self.ty))
+    }
+
+    /// The original that returns `f64` was renamed to
+    /// [`Self::unwrap_to_radians()`].
+    pub fn to_radians(&self, exec_state: &mut ExecState, source_range: SourceRange) -> Option<f64> {
         let angle = match self.ty {
             NumericType::Default { angle, .. } => {
                 if self.n != 0.0 {
@@ -119,11 +166,12 @@ impl TyF64 {
                 angle
             }
             NumericType::Known(UnitType::Angle(angle)) => angle,
-            _ => unreachable!(),
+            _ => return None,
         };
 
-        crate::execution::types::adjust_angle(angle, self.n, UnitAngle::Radians).0
+        Some(crate::execution::types::adjust_angle(angle, self.n, UnitAngle::Radians).0)
     }
+
     pub fn count(n: f64) -> Self {
         Self {
             n,
@@ -138,8 +186,8 @@ impl TyF64 {
 
     // This can't be a TryFrom impl because `Point2d` is defined in another
     // crate.
-    pub fn to_point2d(value: &[TyF64; 2]) -> Result<crate::front::Point2d<Number>, NumericSuffixTypeConvertError> {
-        Ok(crate::front::Point2d {
+    pub fn to_point2d(value: &[TyF64; 2]) -> Result<kcl_api::Point2d<Number>, NumericSuffixTypeConvertError> {
+        Ok(kcl_api::Point2d {
             x: Number {
                 value: value[0].n,
                 units: value[0].ty.try_into()?,
@@ -150,6 +198,11 @@ impl TyF64 {
             },
         })
     }
+}
+
+/// Are all numbers in this slice compatible with being lengths?
+fn is_lengths(nums: &[TyF64]) -> bool {
+    nums.iter().all(|num| num.is_length_compatible())
 }
 
 impl Args {
@@ -1160,6 +1213,14 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis2dOrEdgeReference {
             let obj = arg.as_object()?;
             let_field_of!(obj, direction);
             let_field_of!(obj, origin);
+            let origin: [TyF64; 2] = origin;
+            if !is_lengths(&origin) {
+                return None;
+            }
+            let direction: [TyF64; 2] = direction;
+            if !is_lengths(&direction) {
+                return None;
+            }
             Some(Self::Axis { direction, origin })
         };
         let case2 = super::fillet::EdgeReference::from_kcl_val;
@@ -1175,7 +1236,15 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis3dOrEdgeReference {
         let case1 = |arg: &KclValue| {
             let obj = arg.as_object()?;
             let_field_of!(obj, direction);
+            let direction: [TyF64; 3] = direction;
+            if !is_lengths(&direction) {
+                return None;
+            }
             let_field_of!(obj, origin);
+            let origin: [TyF64; 3] = origin;
+            if !is_lengths(&origin) {
+                return None;
+            }
             Some(Self::Axis { direction, origin })
         };
         let case2 = super::fillet::EdgeReference::from_kcl_val;
@@ -1204,7 +1273,15 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::MirrorAcross3d {
         let case2 = |arg: &KclValue| {
             let obj = arg.as_object()?;
             let_field_of!(obj, direction);
+            let direction: [TyF64; 3] = direction;
+            if !is_lengths(&direction) {
+                return None;
+            }
             let_field_of!(obj, origin);
+            let origin: [TyF64; 3] = origin;
+            if !is_lengths(&origin) {
+                return None;
+            }
             Some(Self::Axis {
                 direction: Box::new(direction),
                 origin: Box::new(origin),
@@ -1251,10 +1328,24 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryR
         let case1 = |arg: &KclValue| {
             let obj = arg.as_object()?;
             let_field_of!(obj, direction);
+            let direction: [TyF64; 3] = direction;
+            if !is_lengths(&direction) {
+                return None;
+            }
             let_field_of!(obj, origin);
+            let origin: [TyF64; 3] = origin;
+            if !is_lengths(&origin) {
+                return None;
+            }
             Some(Self::Axis { direction, origin })
         };
-        let case2 = <[TyF64; 3]>::from_kcl_val;
+        let case2 = |arg: &KclValue| {
+            let point: [TyF64; 3] = FromKclValue::from_kcl_val(arg)?;
+            if !is_lengths(&point) {
+                return None;
+            }
+            Some(point)
+        };
         let case3 = super::fillet::EdgeReference::from_kcl_val;
         let case4 = FaceTag::from_kcl_val;
         let case5 = Box::<Solid>::from_kcl_val;

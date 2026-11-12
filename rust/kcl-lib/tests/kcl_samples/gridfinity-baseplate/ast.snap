@@ -7221,6 +7221,7 @@ description: Result of parsing gridfinity-baseplate.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

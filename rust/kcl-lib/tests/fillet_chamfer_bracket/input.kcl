@@ -1,0 +1,580 @@
+// Aerospace Clevis Bracket
+// Single-piece machined clevis with integral lugs, gussets, pockets, bores, and edge treatments.
+// This tests a case where KCL 2 was making the fillet the wrong size. Fixed in KCL 3.
+@settings(defaultLengthUnit = mm, experimentalFeatures = deny, kclVersion = 3.0)
+
+baseLength = 120mm
+baseWidth = 90mm
+baseThickness = 16mm
+baseCornerRadius = 6mm
+baseEdgeBreak = 0.8mm
+
+lugThickness = 18mm
+lugGap = 18mm
+lugCenterOffset = lugGap / 2 + lugThickness / 2
+lugHalfWidth = 28mm
+lugRootZ = 6mm
+pivotCenterZ = 58mm
+lugCapRadius = 28mm
+lugStraightHeight = pivotCenterZ - lugRootZ
+lugFaceChamfer = 0.75mm
+
+mountHoleDiameter = 11mm
+mountHoleX = 48mm
+mountHoleY = 33mm
+mountEntryChamfer = 1mm
+pivotBoreDiameter = 20mm
+pivotEntryChamfer = 1mm
+
+gussetInnerX = 24mm
+gussetOuterX = 46mm
+gussetTopZ = 34mm
+gussetThickness = 14mm
+gussetEdgeBreak = 0.6mm
+rootFilletRadius = 4mm
+
+basePocketRadius = 7mm
+basePocketCenterX = 32mm
+basePocketDepth = 5mm
+lugPocketRadius = 7mm
+lugPocketCenterZ = 28mm
+lugPocketDepth = 4mm
+
+alloyColor = "#6F8496"
+
+baseProfile = sketch(on = XY) {
+  baseBottom = line(start = [var -60mm, var -45mm], end = [var 60mm, var -45mm])
+  baseRight = line(start = [var 60mm, var -45mm], end = [var 60mm, var 45mm])
+  baseTop = line(start = [var 60mm, var 45mm], end = [var -60mm, var 45mm])
+  baseLeft = line(start = [var -60mm, var 45mm], end = [var -60mm, var -45mm])
+  coincident([baseBottom.end, baseRight.start])
+  coincident([baseRight.end, baseTop.start])
+  coincident([baseTop.end, baseLeft.start])
+  coincident([baseLeft.end, baseBottom.start])
+  horizontal(baseBottom)
+  vertical(baseRight)
+  horizontal(baseTop)
+  vertical(baseLeft)
+  horizontalDistance([baseBottom.start, baseBottom.end]) == baseLength
+  verticalDistance([baseRight.start, baseRight.end]) == baseWidth
+  coincident([baseBottom.start, [-60mm, -45mm]])
+}
+baseRegion = region(
+  segments = [
+    baseProfile.baseBottom,
+    baseProfile.baseRight
+  ],
+  intersectionIndex = -1,
+  direction = CCW,
+)
+baseBlank = extrude(
+  baseRegion,
+  length = baseThickness,
+  symmetric = true,
+  tagEnd = $capEnd003,
+  tagStart = $capStart003,
+)
+baseRounded = fillet(
+  baseBlank,
+  radius = baseCornerRadius,
+  edges = [
+    {
+      sideFaces = [
+        baseRegion.tags.baseRight,
+        baseRegion.tags.baseTop
+      ]
+    },
+    {
+      sideFaces = [
+        baseRegion.tags.baseTop,
+        baseRegion.tags.baseLeft
+      ]
+    },
+    {
+      sideFaces = [
+        baseRegion.tags.baseLeft,
+        baseRegion.tags.baseBottom
+      ]
+    },
+    {
+      sideFaces = [
+        baseRegion.tags.baseRight,
+        baseRegion.tags.baseBottom
+      ]
+    }
+  ],
+)
+baseProfileHidden = hide(baseProfile)
+
+lugProfile = sketch(on = XZ) {
+  lugBottom = line(start = [var -28mm, var 6mm], end = [var 28mm, var 6mm])
+  lugRight = line(start = [var 28mm, var 6mm], end = [var 28mm, var 58mm])
+  lugCap = arc(start = [var 28mm, var 58mm], end = [var -28mm, var 58mm], center = [var 0mm, var 58mm])
+  lugLeft = line(start = [var -28mm, var 58mm], end = [var -28mm, var 6mm])
+  coincident([lugBottom.end, lugRight.start])
+  coincident([lugRight.end, lugCap.start])
+  coincident([lugCap.end, lugLeft.start])
+  coincident([lugLeft.end, lugBottom.start])
+  horizontal(lugBottom)
+  vertical(lugRight)
+  vertical(lugLeft)
+  horizontal([lugCap.start, lugCap.end])
+  horizontalDistance([lugBottom.start, lugBottom.end]) == 2 * lugHalfWidth
+  verticalDistance([lugRight.start, lugRight.end]) == lugStraightHeight
+  radius(lugCap) == lugCapRadius
+  coincident([lugBottom.start, [-28mm, 6mm]])
+  coincident([lugCap.center, [0mm, 58mm]])
+}
+lugRegion = region(
+  segments = [
+    lugProfile.lugBottom,
+    lugProfile.lugRight
+  ],
+  intersectionIndex = -1,
+  direction = CCW,
+)
+lugBlank = extrude(
+  lugRegion,
+  length = lugThickness,
+  symmetric = true,
+  tagStart = $capStart001,
+  tagEnd = $capEnd001,
+)
+lugEdgeBroken = chamfer(
+  lugBlank,
+  length = lugFaceChamfer,
+  edges = [
+    {
+      sideFaces = [
+        lugBlank.sketch.tags.lugRight,
+        lugBlank.faces.capStart001
+      ]
+    },
+    {
+      sideFaces = [
+        lugBlank.sketch.tags.lugRight,
+        lugBlank.faces.capEnd001
+      ]
+    },
+    {
+      sideFaces = [
+        lugBlank.sketch.tags.lugLeft,
+        lugBlank.faces.capStart001
+      ]
+    },
+    {
+      sideFaces = [
+        lugBlank.sketch.tags.lugLeft,
+        lugBlank.faces.capEnd001
+      ]
+    }
+  ],
+)
+positiveLug = clone(lugEdgeBroken)
+  |> translate(xyz = [0mm, lugCenterOffset, 0mm], global = true)
+negativeLug = clone(lugEdgeBroken)
+  |> translate(xyz = [0mm, -lugCenterOffset, 0mm], global = true)
+lugSeedHidden = hide(lugEdgeBroken)
+lugProfileHidden = hide(lugProfile)
+
+gussetProfile = sketch(on = XZ) {
+  gussetBase = line(start = [var 24mm, var 6mm], end = [var 46mm, var 6mm])
+  gussetSlope = line(start = [var 46mm, var 6mm], end = [var 24mm, var 42mm])
+  gussetRoot = line(start = [var 24mm, var 42mm], end = [var 24mm, var 6mm])
+  coincident([gussetBase.end, gussetSlope.start])
+  coincident([gussetSlope.end, gussetRoot.start])
+  coincident([gussetRoot.end, gussetBase.start])
+  horizontal(gussetBase)
+  vertical(gussetRoot)
+  horizontalDistance([gussetBase.start, gussetBase.end]) == gussetOuterX - gussetInnerX
+  verticalDistance([gussetRoot.end, gussetRoot.start]) == gussetTopZ - lugRootZ
+  coincident([gussetBase.start, [24mm, 6mm]])
+}
+gussetRegion = region(
+  segments = [
+    gussetProfile.gussetBase,
+    gussetProfile.gussetSlope
+  ],
+  intersectionIndex = -1,
+  direction = CCW,
+)
+rightGussetBlank = extrude(
+  gussetRegion,
+  length = gussetThickness,
+  symmetric = true,
+  tagStart = $capStart002,
+  tagEnd = $capEnd002,
+)
+rightGusset = chamfer(
+  rightGussetBlank,
+  length = gussetEdgeBreak,
+  edges = [
+    {
+      sideFaces = [
+        rightGussetBlank.sketch.tags.gussetSlope,
+        rightGussetBlank.faces.capStart002
+      ]
+    },
+    {
+      sideFaces = [
+        rightGussetBlank.sketch.tags.gussetSlope,
+        rightGussetBlank.faces.capEnd002
+      ]
+    }
+  ],
+)
+leftGusset = clone(rightGusset)
+  |> rotate(axis = Z, angle = 180deg, global = true)
+positiveRightGusset = clone(rightGusset)
+  |> translate(xyz = [0mm, lugCenterOffset, 0mm], global = true)
+positiveLeftGusset = clone(leftGusset)
+  |> translate(xyz = [0mm, lugCenterOffset, 0mm], global = true)
+negativeRightGusset = clone(rightGusset)
+  |> translate(xyz = [0mm, -lugCenterOffset, 0mm], global = true)
+negativeLeftGusset = clone(leftGusset)
+  |> translate(xyz = [0mm, -lugCenterOffset, 0mm], global = true)
+rightGussetSeedHidden = hide(rightGusset)
+leftGussetSeedHidden = hide(leftGusset)
+gussetProfileHidden = hide(gussetProfile)
+
+coreUnified = union([
+  baseRounded,
+  positiveLug,
+  negativeLug,
+  positiveRightGusset,
+  positiveLeftGusset,
+  negativeRightGusset,
+  negativeLeftGusset
+])
+coreRootFilleted = fillet(
+  coreUnified,
+  radius = rootFilletRadius,
+  edges = [
+    {
+      sideFaces = [
+        coreUnified.faces.capEnd003,
+        positiveLug.faces.capEnd001
+      ]
+    },
+    {
+      sideFaces = [
+        coreUnified.faces.capEnd003,
+        positiveLug.faces.capStart001
+      ]
+    },
+    {
+      sideFaces = [
+        coreUnified.faces.capEnd003,
+        negativeLug.faces.capStart001
+      ]
+    },
+    {
+      sideFaces = [
+        coreUnified.faces.capEnd003,
+        negativeLug.faces.capEnd001
+      ]
+    }
+  ],
+)
+coreEdgeBroken = chamfer(
+  coreRootFilleted,
+  length = baseEdgeBreak,
+  edges = [
+    {
+      sideFaces = [
+        baseRegion.tags.baseTop,
+        coreRootFilleted.faces.capEnd003
+      ]
+    },
+    {
+      sideFaces = [
+        baseRegion.tags.baseBottom,
+        coreRootFilleted.faces.capEnd003
+      ]
+    },
+    {
+      sideFaces = [
+        baseRegion.tags.baseRight,
+        coreRootFilleted.faces.capEnd003
+      ]
+    },
+    {
+      sideFaces = [
+        baseRegion.tags.baseLeft,
+        coreRootFilleted.faces.capEnd003
+      ]
+    },
+    {
+      sideFaces = [
+        baseRegion.tags.baseTop,
+        coreRootFilleted.faces.capStart003
+      ]
+    },
+    {
+      sideFaces = [
+        baseRegion.tags.baseBottom,
+        coreRootFilleted.faces.capStart003
+      ]
+    },
+    {
+      sideFaces = [
+        baseRegion.tags.baseRight,
+        coreRootFilleted.faces.capStart003
+      ]
+    },
+    {
+      sideFaces = [
+        baseRegion.tags.baseLeft,
+        coreRootFilleted.faces.capStart003
+      ]
+    }
+  ],
+)
+
+mountCutterProfile = sketch(on = XZ) {
+  lowerRadial = line(start = [var 0mm, var -9mm], end = [var 7.5mm, var -9mm])
+  lowerSlope = line(start = [var 7.5mm, var -9mm], end = [var 5.5mm, var -7mm])
+  boreSide = line(start = [var 5.5mm, var -7mm], end = [var 5.5mm, var 7mm])
+  upperSlope = line(start = [var 5.5mm, var 7mm], end = [var 7.5mm, var 9mm])
+  upperRadial = line(start = [var 7.5mm, var 9mm], end = [var 0mm, var 9mm])
+  axisSide = line(start = [var 0mm, var 9mm], end = [var 0mm, var -9mm])
+  coincident([lowerRadial.end, lowerSlope.start])
+  coincident([lowerSlope.end, boreSide.start])
+  coincident([boreSide.end, upperSlope.start])
+  coincident([upperSlope.end, upperRadial.start])
+  coincident([upperRadial.end, axisSide.start])
+  coincident([axisSide.end, lowerRadial.start])
+  horizontal(lowerRadial)
+  horizontal(upperRadial)
+  vertical(boreSide)
+  vertical(axisSide)
+  horizontalDistance([lowerRadial.start, lowerRadial.end]) == mountHoleDiameter / 2 + 2 * mountEntryChamfer
+  horizontalDistance([lowerRadial.start, lowerSlope.end]) == mountHoleDiameter / 2
+  verticalDistance([lowerSlope.start, lowerSlope.end]) == 2 * mountEntryChamfer
+  verticalDistance([boreSide.start, boreSide.end]) == baseThickness - (2 * mountEntryChamfer)
+  verticalDistance([upperSlope.start, upperSlope.end]) == 2 * mountEntryChamfer
+  horizontalDistance([upperRadial.end, upperRadial.start]) == mountHoleDiameter / 2 + 2 * mountEntryChamfer
+  coincident([lowerRadial.start, [0mm, -9mm]])
+}
+mountCutterRegion = region(
+  segments = [
+    mountCutterProfile.lowerRadial,
+    mountCutterProfile.lowerSlope
+  ],
+  intersectionIndex = -1,
+  direction = CCW,
+)
+mountCutterOrigin = revolve(mountCutterRegion, axis = Y)
+mountCutterPositivePositive = clone(mountCutterOrigin)
+  |> translate(xyz = [mountHoleX, mountHoleY, 0mm], global = true)
+mountCutterPositiveNegative = clone(mountCutterOrigin)
+  |> translate(xyz = [mountHoleX, -mountHoleY, 0mm], global = true)
+mountCutterNegativePositive = clone(mountCutterOrigin)
+  |> translate(xyz = [-mountHoleX, mountHoleY, 0mm], global = true)
+mountCutterNegativeNegative = clone(mountCutterOrigin)
+  |> translate(xyz = [-mountHoleX, -mountHoleY, 0mm], global = true)
+mountCut1 = subtract([coreEdgeBroken], tools = [mountCutterPositivePositive])
+mountCut2 = subtract([mountCut1], tools = [mountCutterPositiveNegative])
+mountCut3 = subtract([mountCut2], tools = [mountCutterNegativePositive])
+bracketWithMountHoles = subtract([mountCut3], tools = [mountCutterNegativeNegative])
+mountCutterSeedHidden = hide(mountCutterOrigin)
+mountCutterProfileHidden = hide(mountCutterProfile)
+
+pivotCutterProfile = sketch(on = XY) {
+  lowerRadial = line(start = [var 0mm, var -28mm], end = [var 12mm, var -28mm])
+  lowerSlope = line(start = [var 12mm, var -28mm], end = [var 10mm, var -26mm])
+  boreSide = line(start = [var 10mm, var -26mm], end = [var 10mm, var 26mm])
+  upperSlope = line(start = [var 10mm, var 26mm], end = [var 12mm, var 28mm])
+  upperRadial = line(start = [var 12mm, var 28mm], end = [var 0mm, var 28mm])
+  axisSide = line(start = [var 0mm, var 28mm], end = [var 0mm, var -28mm])
+  coincident([lowerRadial.end, lowerSlope.start])
+  coincident([lowerSlope.end, boreSide.start])
+  coincident([boreSide.end, upperSlope.start])
+  coincident([upperSlope.end, upperRadial.start])
+  coincident([upperRadial.end, axisSide.start])
+  coincident([axisSide.end, lowerRadial.start])
+  horizontal(lowerRadial)
+  horizontal(upperRadial)
+  vertical(boreSide)
+  vertical(axisSide)
+  horizontalDistance([lowerRadial.start, lowerRadial.end]) == pivotBoreDiameter / 2 + 2 * pivotEntryChamfer
+  horizontalDistance([lowerRadial.start, lowerSlope.end]) == pivotBoreDiameter / 2
+  verticalDistance([lowerSlope.start, lowerSlope.end]) == 2 * pivotEntryChamfer
+  verticalDistance([boreSide.start, boreSide.end]) == lugGap + 2 * lugThickness - (2 * pivotEntryChamfer)
+  verticalDistance([upperSlope.start, upperSlope.end]) == 2 * pivotEntryChamfer
+  horizontalDistance([upperRadial.end, upperRadial.start]) == pivotBoreDiameter / 2 + 2 * pivotEntryChamfer
+  coincident([lowerRadial.start, [0mm, -28mm]])
+}
+pivotCutterRegion = region(
+  segments = [
+    pivotCutterProfile.lowerRadial,
+    pivotCutterProfile.lowerSlope
+  ],
+  intersectionIndex = -1,
+  direction = CCW,
+)
+pivotCutter = revolve(pivotCutterRegion, axis = Y)
+  |> translate(xyz = [0mm, 0mm, pivotCenterZ], global = true)
+pivotCutterProfileHidden = hide(pivotCutterProfile)
+
+basePocketProfile = sketch(on = XY) {
+  pocketTop = line(start = [var 12mm, var 7mm], end = [var -12mm, var 7mm])
+  pocketLeft = arc(start = [var -12mm, var 7mm], end = [var -12mm, var -7mm], center = [var -12mm, var 0mm])
+  pocketBottom = line(start = [var -12mm, var -7mm], end = [var 12mm, var -7mm])
+  pocketRight = arc(start = [var 12mm, var -7mm], end = [var 12mm, var 7mm], center = [var 12mm, var 0mm])
+  leftTopGuide = line(start = [var -12mm, var 0mm], end = [var -12mm, var 7mm], construction = true)
+  leftBottomGuide = line(start = [var -12mm, var 0mm], end = [var -12mm, var -7mm], construction = true)
+  rightBottomGuide = line(start = [var 12mm, var 0mm], end = [var 12mm, var -7mm], construction = true)
+  rightTopGuide = line(start = [var 12mm, var 0mm], end = [var 12mm, var 7mm], construction = true)
+  coincident([pocketTop.end, pocketLeft.start])
+  coincident([pocketLeft.end, pocketBottom.start])
+  coincident([pocketBottom.end, pocketRight.start])
+  coincident([pocketRight.end, pocketTop.start])
+  coincident([leftTopGuide.start, pocketLeft.center])
+  coincident([leftTopGuide.end, pocketLeft.start])
+  coincident([
+    leftBottomGuide.start,
+    pocketLeft.center
+  ])
+  coincident([leftBottomGuide.end, pocketLeft.end])
+  coincident([
+    rightBottomGuide.start,
+    pocketRight.center
+  ])
+  coincident([
+    rightBottomGuide.end,
+    pocketRight.start
+  ])
+  coincident([
+    rightTopGuide.start,
+    pocketRight.center
+  ])
+  coincident([rightTopGuide.end, pocketRight.end])
+  horizontal(pocketTop)
+  horizontal(pocketBottom)
+  vertical(leftTopGuide)
+  vertical(leftBottomGuide)
+  vertical(rightBottomGuide)
+  vertical(rightTopGuide)
+  distance([leftTopGuide.start, leftTopGuide.end]) == basePocketRadius
+  distance([
+    leftBottomGuide.start,
+    leftBottomGuide.end
+  ]) == basePocketRadius
+  distance([
+    rightBottomGuide.start,
+    rightBottomGuide.end
+  ]) == basePocketRadius
+  distance([rightTopGuide.start, rightTopGuide.end]) == basePocketRadius
+  coincident([pocketLeft.center, [-12mm, 0mm]])
+  coincident([pocketRight.center, [12mm, 0mm]])
+}
+basePocketRegion = region(
+  segments = [
+    basePocketProfile.pocketTop,
+    basePocketProfile.pocketLeft
+  ],
+  intersectionIndex = -1,
+  direction = CCW,
+)
+basePocketOrigin = extrude(basePocketRegion, length = basePocketDepth + 1mm, symmetric = true)
+  |> translate(
+       xyz = [
+         0mm,
+         0mm,
+         baseThickness / 2 - (basePocketDepth / 2) + 0.5mm
+       ],
+       global = true,
+     )
+positiveBasePocket = clone(basePocketOrigin)
+  |> translate(xyz = [basePocketCenterX, 0mm, 0mm], global = true)
+negativeBasePocket = clone(basePocketOrigin)
+  |> translate(xyz = [-basePocketCenterX, 0mm, 0mm], global = true)
+positiveBasePocketHidden = hide(positiveBasePocket)
+negativeBasePocketHidden = hide(negativeBasePocket)
+bracketWithBasePockets = bracketWithMountHoles
+bracketWithBasePocketsAndPivotBore = subtract([bracketWithBasePockets], tools = [pivotCutter])
+basePocketSeedHidden = hide(basePocketOrigin)
+basePocketProfileHidden = hide(basePocketProfile)
+
+lugPocketProfile = sketch(on = XZ) {
+  pocketTop = line(start = [var 12mm, var 7mm], end = [var -12mm, var 7mm])
+  pocketLeft = arc(start = [var -12mm, var 7mm], end = [var -12mm, var -7mm], center = [var -12mm, var 0mm])
+  pocketBottom = line(start = [var -12mm, var -7mm], end = [var 12mm, var -7mm])
+  pocketRight = arc(start = [var 12mm, var -7mm], end = [var 12mm, var 7mm], center = [var 12mm, var 0mm])
+  leftTopGuide = line(start = [var -12mm, var 0mm], end = [var -12mm, var 7mm], construction = true)
+  leftBottomGuide = line(start = [var -12mm, var 0mm], end = [var -12mm, var -7mm], construction = true)
+  rightBottomGuide = line(start = [var 12mm, var 0mm], end = [var 12mm, var -7mm], construction = true)
+  rightTopGuide = line(start = [var 12mm, var 0mm], end = [var 12mm, var 7mm], construction = true)
+  coincident([pocketTop.end, pocketLeft.start])
+  coincident([pocketLeft.end, pocketBottom.start])
+  coincident([pocketBottom.end, pocketRight.start])
+  coincident([pocketRight.end, pocketTop.start])
+  coincident([leftTopGuide.start, pocketLeft.center])
+  coincident([leftTopGuide.end, pocketLeft.start])
+  coincident([
+    leftBottomGuide.start,
+    pocketLeft.center
+  ])
+  coincident([leftBottomGuide.end, pocketLeft.end])
+  coincident([
+    rightBottomGuide.start,
+    pocketRight.center
+  ])
+  coincident([
+    rightBottomGuide.end,
+    pocketRight.start
+  ])
+  coincident([
+    rightTopGuide.start,
+    pocketRight.center
+  ])
+  coincident([rightTopGuide.end, pocketRight.end])
+  horizontal(pocketTop)
+  horizontal(pocketBottom)
+  vertical(leftTopGuide)
+  vertical(leftBottomGuide)
+  vertical(rightBottomGuide)
+  vertical(rightTopGuide)
+  distance([leftTopGuide.start, leftTopGuide.end]) == lugPocketRadius
+  distance([
+    leftBottomGuide.start,
+    leftBottomGuide.end
+  ]) == lugPocketRadius
+  distance([
+    rightBottomGuide.start,
+    rightBottomGuide.end
+  ]) == lugPocketRadius
+  distance([rightTopGuide.start, rightTopGuide.end]) == lugPocketRadius
+  coincident([pocketLeft.center, [-12mm, 0mm]])
+  coincident([pocketRight.center, [12mm, 0mm]])
+}
+lugPocketRegion = region(
+  segments = [
+    lugPocketProfile.pocketTop,
+    lugPocketProfile.pocketLeft
+  ],
+  intersectionIndex = -1,
+  direction = CCW,
+)
+positiveLugPocket = extrude(lugPocketRegion, length = lugPocketDepth + 1mm, symmetric = true)
+  |> translate(
+       xyz = [
+         0mm,
+         lugGap / 2 + lugThickness - (lugPocketDepth / 2) + 0.5mm,
+         lugPocketCenterZ
+       ],
+       global = true,
+     )
+negativeLugPocket = clone(positiveLugPocket)
+  |> rotate(axis = Z, angle = 180deg, global = true)
+lugPocketCut1 = subtract([bracketWithBasePocketsAndPivotBore], tools = [positiveLugPocket])
+finishedSolid = subtract([lugPocketCut1], tools = [negativeLugPocket])
+lugPocketProfileHidden = hide(lugPocketProfile)
+
+finishedBracket = appearance(
+  finishedSolid,
+  color = alloyColor,
+  metalness = 88,
+  roughness = 28,
+)

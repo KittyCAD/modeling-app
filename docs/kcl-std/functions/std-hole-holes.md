@@ -61,7 +61,7 @@ hole001 = hole::holes(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the hole::holes function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-hole-holes0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-hole-holes0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-hole-holes0.png"
@@ -103,7 +103,7 @@ drilledBlock = hole::holes(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the hole::holes function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-hole-holes1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-hole-holes1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-hole-holes1.png"

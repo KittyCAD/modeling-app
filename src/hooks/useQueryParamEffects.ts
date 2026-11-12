@@ -1,7 +1,12 @@
+import { cloudSyncService } from '@src/registry/contracts/cloudSync'
+import {
+  downloadProjectById,
+  getProjectNameById,
+} from '@src/lib/downloadProject'
 import { base64ToString } from '@src/lib/base64'
 import type { App } from '@src/lib/app'
 import { useApp } from '@src/lib/boot'
-import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
+import type { ProjectsCommandSchema } from '@src/lib/homeProjects/commands'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
   CMD_GROUP_QUERY_PARAM,
@@ -15,10 +20,6 @@ import {
   LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
   SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
 } from '@src/lib/constants'
-import {
-  downloadProjectById,
-  getPublicProjectNameById,
-} from '@src/lib/downloadProject'
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import { downloadKclSample } from '@src/lib/kclSamples'
@@ -27,13 +28,9 @@ import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { err } from '@src/lib/trap'
-import {
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-  waitForIdleState,
-} from '@src/machines/systemIO/utils'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: query-driven imports, project creation, and command dispatch (useNavigate, useSearchParams).
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { waitFor } from 'xstate'
 
@@ -49,7 +46,7 @@ export type CreateFileSchemaMethodOptional = Omit<
 let pendingWebLayoutProjectCreation: Promise<string> | undefined
 
 async function createFreshWebLayoutProject(app: App) {
-  await waitForIdleState({ systemIOActor: app.systemIOActor })
+  await app.projectLibraries.refreshProjects()
   await waitFor(app.settings.actor, (state) => state.matches('idle'))
 
   const targets = app.getCreateProjectLibraryTargets()
@@ -151,7 +148,7 @@ export function useQueryParamEffects() {
       // File navigation removes the project-id param while preserving the new
       // file route. Calling setSearchParams here can re-navigate from the
       // original query-param route and reopen the project default file.
-      await waitForIdleState({ systemIOActor: app.systemIOActor })
+      await app.projectLibraries.refreshProjects()
       if (cancelled) {
         return
       }
@@ -168,7 +165,7 @@ export function useQueryParamEffects() {
         )
       }
 
-      const projectName = await getPublicProjectNameById(projectId)
+      const projectName = await getProjectNameById(projectId)
       if (err(projectName)) {
         return Promise.reject(projectName)
       }
@@ -199,6 +196,12 @@ export function useQueryParamEffects() {
       })
       if (!importedProject?.default_file) {
         return Promise.reject(new Error('Unable to create the shared project.'))
+      }
+      if (
+        projectLibraryTarget.library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID &&
+        app.registry.get(cloudSyncService).status.value.enabled
+      ) {
+        await app.registry.get(cloudSyncService).syncNow(importedProject.path)
       }
       if (cancelled) {
         return
@@ -298,7 +301,7 @@ export function useQueryParamEffects() {
       let cancelled = false
 
       void (async () => {
-        await waitForIdleState({ systemIOActor: app.systemIOActor })
+        await app.projectLibraries.refreshProjects()
         if (cancelled) {
           return
         }
@@ -394,47 +397,35 @@ export function useQueryParamEffects() {
       const projectNameArg = String(commandData.argDefaultValues.projectName)
       const projectFolderName = fsZds.basename(projectNameArg)
 
-      const systemIO = app.systemIOActor
-      const foldersIncludeProject = (folders: { name: string }[] | undefined) =>
-        (folders ?? []).some((f) => f.name === projectFolderName)
-      let hasRequestedProjectCreate = false
-      const sendOrCreateProject = (
-        snapshot: ReturnType<typeof systemIO.getSnapshot>
-      ) => {
-        if (foldersIncludeProject(snapshot.context.folders)) {
-          sendCommand()
-          return true
-        }
-
+      let cancelled = false
+      void (async () => {
+        await app.projectLibraries.refreshProjects()
+        if (cancelled) return
         if (
+          !app.projectOperations.projects
+            .peek()
+            .some((project) => project.name === projectFolderName) &&
           shouldCreateDefaultWebProject &&
-          !hasRequestedProjectCreate &&
-          projectFolderName === DEFAULT_WEB_PROJECT_NAME &&
-          snapshot.matches(SystemIOMachineStates.idle) &&
-          snapshot.context.folders !== undefined
+          projectFolderName === DEFAULT_WEB_PROJECT_NAME
         ) {
-          hasRequestedProjectCreate = true
-          systemIO.send({
-            type: SystemIOMachineEvents.createProject,
-            data: {
-              requestedProjectName: DEFAULT_WEB_PROJECT_NAME,
-            },
+          await app.projectOperations.createProject({
+            directory: app.projectLibraries.projectDirectoryPath,
+            name: DEFAULT_WEB_PROJECT_NAME,
           })
+          await app.projectLibraries.refreshProjects()
         }
-
-        return false
-      }
-
-      if (sendOrCreateProject(systemIO.getSnapshot())) {
-        return
-      }
-
-      const subscription = systemIO.subscribe((snapshot) => {
-        if (sendOrCreateProject(snapshot)) {
-          subscription.unsubscribe()
-        }
+        if (!cancelled) sendCommand()
+      })().catch((error) => {
+        if (!cancelled)
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : 'Could not prepare the project.'
+          )
       })
-      return () => subscription.unsubscribe()
+      return () => {
+        cancelled = true
+      }
     }
 
     sendCommand()

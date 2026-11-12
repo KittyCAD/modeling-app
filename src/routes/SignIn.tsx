@@ -1,14 +1,9 @@
-import type { CSSProperties } from 'react'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import toast from 'react-hot-toast'
-import { Link, useLocation } from 'react-router-dom'
-
 import type { IElectronAPI } from '@root/interface'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
-import { updateEnvironment } from '@src/env'
-import env from '@src/env'
+import { AutoUpdateStatus } from '@src/components/StatusBar/AutoUpdateStatus'
+import env, { updateEnvironment } from '@src/env'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import {
@@ -24,12 +19,17 @@ import { readEnvironmentFile, writeEnvironmentFile } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { mark } from '@src/lib/performance'
-import { Themes, getSystemTheme } from '@src/lib/theme'
+import { getSystemTheme, Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { returnSelfOrGetHostNameFromURL, toSync } from '@src/lib/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
+import type { CSSProperties } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: sign-in forwards browser query data to device authentication (useLocation).
+import { Link, useLocation } from 'react-router-dom'
 
 type SignInRouteState = {
   [SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY]?: boolean
@@ -42,7 +42,7 @@ const cardArea = `${subtleBorder} rounded-lg px-6 py-3 text-chalkboard-70 dark:t
 let didReadFromDiskCacheForEnvironment = false
 
 const SignIn = () => {
-  const { auth, settings } = useApp()
+  const { auth, fileOperations, settings } = useApp()
   const routerLocation = useLocation()
   const [userCode, setUserCode] = useState('')
   const [verificationUri, setVerificationUri] = useState('')
@@ -105,13 +105,16 @@ const SignIn = () => {
     const requestedEnvironmentFormatted =
       returnSelfOrGetHostNameFromURL(requestedEnvironment)
     void (async () => {
-      const persistedEnvironment = await readEnvironmentFile().catch(() => '')
+      const persistedEnvironment = await readEnvironmentFile(
+        fileOperations
+      ).catch(() => '')
       if (requestedEnvironmentFormatted === persistedEnvironment) {
         return
       }
-      await writeEnvironmentFile(requestedEnvironmentFormatted).catch(
-        reportRejection
-      )
+      await writeEnvironmentFile(
+        fileOperations,
+        requestedEnvironmentFormatted
+      ).catch(reportRejection)
       window.location.reload()
     })()
   }
@@ -133,7 +136,7 @@ const SignIn = () => {
   useEffect(() => {
     if (!didReadFromDiskCacheForEnvironment) {
       didReadFromDiskCacheForEnvironment = true
-      readEnvironmentFile()
+      readEnvironmentFile(fileOperations)
         .then((environment) => {
           if (environment) {
             setSelectedEnvironmentFormatter(environment)
@@ -145,7 +148,7 @@ const SignIn = () => {
         })
         .catch(reportRejection)
     }
-  }, [])
+  }, [fileOperations])
 
   const {
     app: { theme },
@@ -320,15 +323,18 @@ const SignIn = () => {
       >
         <div className="max-w-7xl flex flex-col md:grid gap-5 grid-cols-3 xl:grid-cols-4 xl:grid-rows-5">
           <div className="md:col-span-2 xl:col-span-3 xl:row-span-3 max-w-3xl mr-8 mb-8">
-            <div className="flex flex-row items-baseline mb-8">
+            <div className="flex flex-row flex-wrap items-baseline gap-y-2 mb-8">
               <Logo className="text-primary h-8 md:h-10 lg:h-12 xl:h-16 relative translate-y-1 mr-4 lg:mr-6 xl:mr-8" />
               <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl">
                 {APP_NAME}
               </h1>
               {isDesktop() && (
-                <span className="px-2 md:px-3 py-1 text-xs md:text-base rounded-full bg-primary/10 text-primary self-start">
-                  v{APP_VERSION}
-                </span>
+                <div className="flex items-center gap-2 self-start">
+                  <span className="px-2 md:px-3 py-1 text-xs md:text-base rounded-full bg-primary/10 text-primary">
+                    v{APP_VERSION}
+                  </span>
+                  <AutoUpdateStatus tooltipPosition="bottom-left" />
+                </div>
               )}
             </div>
             <p className="my-4 text-lg xl:text-xl">
@@ -486,7 +492,7 @@ const SignIn = () => {
             </video>
             <div
               className={
-                'absolute bottom-0 left-0 right-0 transition translate-y-4 opacity-0 ' +
+                'absolute bottom-0 left-0 right-0 translate-y-4 opacity-0 ' +
                 'group-hover:translate-y-0 group-hover:opacity-100 ' +
                 'm-0 mt-8 flex gap-4 items-center px-3 py-1 ' +
                 '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'

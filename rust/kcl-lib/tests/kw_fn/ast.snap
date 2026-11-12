@@ -73,7 +73,8 @@ description: Result of parsing kw_fn.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "start": 0
+              "start": 0,
+              "type": "Program"
             },
             "commentStart": 0,
             "end": 0,
@@ -188,7 +189,8 @@ description: Result of parsing kw_fn.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "start": 0
+              "start": 0,
+              "type": "Program"
             },
             "commentStart": 0,
             "end": 0,
@@ -425,6 +427,7 @@ description: Result of parsing kw_fn.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

@@ -1,5 +1,5 @@
 import { Popover } from '@headlessui/react'
-import type { MlCopilotAccessDeniedCode } from '@kittycad/lib'
+import type { AttachmentRef, MlCopilotAccessDeniedCode } from '@kittycad/lib'
 import { ActionButton } from '@src/components/ActionButton'
 import { ConnectionRecovery } from '@src/components/ConnectionRecovery'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -9,19 +9,27 @@ import Loading from '@src/components/Loading'
 import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
 import Tooltip from '@src/components/Tooltip'
 import { noAutofillInputProps } from '@src/lib/autofill'
-import { useApp } from '@src/lib/boot'
-import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { isImageMimetype } from '@src/lib/mimeTypes'
+import { fileNameHasExtension, getEXTWithPeriod } from '@src/lib/paths'
+import { dataUrlToFile } from '@src/lib/screenshot'
+import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
+import { ZookeeperAttachment } from '@src/lib/zookeeper/components/ZookeeperAttachment'
+import { ZookeeperAttachmentPreview } from '@src/lib/zookeeper/components/ZookeeperAttachmentPreview'
 import { ZookeeperConnectionErrorBanner } from '@src/lib/zookeeper/components/ZookeeperConnectionErrorBanner'
+import type { QueuedMessage } from '@src/lib/zookeeper/registry/controller'
 import {
   type Conversation,
   type Exchange,
   isResponseComplete,
   type MlCopilotModeId,
   type MlCopilotModeOption,
+  type ZookeeperAttachmentFetchState,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { viewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
 import {
   activateZoodleRuntimeExtension,
   deactivateZoodleRuntimeExtension,
@@ -30,15 +38,10 @@ import type { ChangeEvent, ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 const noop = () => {}
+const MAX_INLINE_PASTE_LENGTH = 5_000
 
 export const SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN = true
-
-export interface QueuedMessage {
-  id: string
-  text: string
-  mode?: MlCopilotModeId
-  attachments: File[]
-}
+export type { QueuedMessage }
 
 export interface ZookeeperConversationProps {
   isLoading: boolean
@@ -82,6 +85,8 @@ export interface ZookeeperConversationProps {
   onSteer: (id: string) => void
   modeOptions?: MlCopilotModeOption[]
   modeScopeKey?: string
+  attachmentFetches?: Record<string, ZookeeperAttachmentFetchState>
+  onFetchAttachment?: (attachmentRef: AttachmentRef) => void
 }
 
 const getModeOption = (
@@ -173,6 +178,7 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
 }
 
 export interface ZookeeperExtraInputsProps {
+  context?: Extract<ZookeeperManagerPromptContext, { type: 'selections' }>
   mode?: MlCopilotModeId
   onSetMode: (mode: MlCopilotModeId) => void
   onAttachFiles: () => void
@@ -193,6 +199,9 @@ export const ZookeeperExtraInputs = (props: ZookeeperExtraInputsProps) => {
       data-testid="ml-ephant-extra-inputs"
     >
       <div className="flex w-full min-w-0 flex-wrap items-end gap-1">
+        {props.context && (
+          <MlCopilotSelectionsContext selections={props.context} />
+        )}
         {SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN && currentMode && (
           <MlCopilotModes
             onClick={props.onSetMode}
@@ -268,7 +277,25 @@ export interface ZookeeperContextsProps {
   contexts: ZookeeperManagerPromptContext[]
 }
 
+const MlCopilotSelectionsContext = (props: {
+  selections: Extract<ZookeeperManagerPromptContext, { type: 'selections' }>
+}) => {
+  const { kclManager } = useSingletons()
+  const selectionText = getSelectionTypeDisplayText(
+    kclManager.astSignal.value,
+    props.selections.data,
+    kclManager.artifactGraph
+  )
+  return selectionText ? (
+    <button className="group/tool h-7 bg-default flex-none flex flex-row items-center gap-1 m-0 pl-1 pr-2 rounded-sm">
+      <CustomIcon name="clipboardCheckmark" className="w-6 h-6 block" />
+      {selectionText}
+    </button>
+  ) : null
+}
+
 interface ZookeeperConversationInputProps {
+  contexts: ZookeeperManagerPromptContext[]
   onProcess: ZookeeperConversationProps['onProcess']
   onCancel: ZookeeperConversationProps['onCancel']
   hasPromptCompleted: ZookeeperConversationProps['hasPromptCompleted']
@@ -297,7 +324,9 @@ export const ZookeeperConversationInput = (
   )
   const userHasPickedMode = useRef(false)
   const lastModeScopeKey = useRef(props.modeScopeKey)
-  const [attachments, setAttachments] = useState<File[]>([])
+  const [attachments, setAttachments] = useState<
+    { file: File; isPastedText: boolean }[]
+  >([])
   const [isDraggingOver, setIsDraggingOver] = useState(false)
   const [isZoodleActive, setIsZoodleActive] = useState(false)
 
@@ -358,7 +387,7 @@ export const ZookeeperConversationInput = (
     props.onProcess(
       value,
       getSelectableModeOption(mode, modeOptions)?.id,
-      attachments
+      attachments.map(({ file }) => file)
     )
     setValue('')
     setAttachments([])
@@ -377,24 +406,28 @@ export const ZookeeperConversationInput = (
     return `${base}-${i}${ext}`
   }
 
-  const appendAttachments = (files: File[]) => {
+  const appendAttachments = (
+    files: File[],
+    { isPastedText = false }: { isPastedText?: boolean } = {}
+  ) => {
     if (!files.length) return
     setAttachments((current) => {
       const next = [...current]
       for (const file of files) {
         const newName = deduplicateFileName(
           file.name,
-          next.map((f) => f.name)
+          next.map((f) => f.file.name)
         )
         if (newName !== file.name) {
-          next.push(
-            new File([file], newName, {
+          next.push({
+            file: new File([file], newName, {
               type: file.type,
               lastModified: file.lastModified,
-            })
-          )
+            }),
+            isPastedText,
+          })
         } else {
-          next.push(file)
+          next.push({ file, isPastedText })
         }
       }
       return next
@@ -417,9 +450,12 @@ export const ZookeeperConversationInput = (
   const onCaptureScreenshot = () => {
     if (props.disabled) return
     try {
-      const dataUrl = takeViewportScreenshot()
+      const dataUrl = registry.get(viewportScreenshotService).capture()
       if (!dataUrl) return
-      appendDataUrlAttachment(dataUrl, 'viewport-screenshot.png')
+      appendDataUrlAttachment(
+        dataUrl,
+        `viewport-screenshot-${crypto.randomUUID()}.png`
+      )
     } catch (e) {
       console.error('Failed to capture viewport screenshot', e)
     }
@@ -433,7 +469,7 @@ export const ZookeeperConversationInput = (
 
     if (props.disabled) return
     try {
-      const dataUrl = takeViewportScreenshot()
+      const dataUrl = registry.get(viewportScreenshotService).capture()
       if (!dataUrl) return
       setIsZoodleActive(true)
       activateZoodleRuntimeExtension(registry, {
@@ -442,7 +478,7 @@ export const ZookeeperConversationInput = (
         onSend: (annotatedDataUrl) => {
           appendDataUrlAttachment(
             annotatedDataUrl,
-            'annotated-viewport-screenshot.png'
+            `annotated-viewport-screenshot-${crypto.randomUUID()}.png`
           )
           stopZoodleRuntimeExtension()
         },
@@ -505,15 +541,49 @@ export const ZookeeperConversationInput = (
   }
 
   const handlePaste = (e: React.ClipboardEvent) => {
-    const files = Array.from(e.clipboardData.files)
-    if (!files.length) return
     if (props.disabled) return
 
-    // Prevent default only if we have files to handle
-    e.preventDefault()
+    const files = Array.from(e.clipboardData.files)
+    if (files.length > 0) {
+      e.preventDefault()
+      // Clipboard image names can repeat across prompts.
+      const pastedFiles = files.map((file) => {
+        if (!isImageMimetype(file.type)) return file
+        const extension = fileNameHasExtension(file.name)
+          ? (getEXTWithPeriod(file.name) ?? '')
+          : ''
+        return new File([file], `image-${crypto.randomUUID()}${extension}`, {
+          type: file.type,
+          lastModified: file.lastModified,
+        })
+      })
+      appendAttachments(pastedFiles)
+      return
+    }
 
-    appendAttachments(files)
+    const text = e.clipboardData.getData('text/plain')
+    if (text.length <= MAX_INLINE_PASTE_LENGTH) return
+
+    e.preventDefault()
+    // Attachment names persist across turns, so each paste needs a unique name.
+    appendAttachments(
+      [
+        new File([text], `pasted-text-${crypto.randomUUID()}.txt`, {
+          type: 'text/plain',
+        }),
+      ],
+      { isPastedText: true }
+    )
   }
+
+  const selectionsContext = props.contexts.find(
+    (
+      context
+    ): context is Extract<
+      ZookeeperManagerPromptContext,
+      { type: 'selections' }
+    > => context.type === 'selections'
+  )
 
   return (
     <div className="flex flex-col p-4 gap-2">
@@ -565,21 +635,35 @@ export const ZookeeperConversationInput = (
         ></textarea>
         {attachments.length > 0 && (
           <div className="flex flex-wrap gap-1">
-            {attachments.map((file, index) => (
+            {attachments.map(({ file, isPastedText }, index) => (
               <div
                 key={`${file.name}-${file.lastModified}-${file.size}`}
-                className="flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 px-2 py-1 text-xs"
+                className={`relative flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 text-xs ${isImageMimetype(file.type) ? '' : 'py-1 pl-2 pr-8'}`}
                 title={file.name}
               >
-                <CustomIcon name="file" className="w-4 h-4" />
-                <span className="max-w-[160px] truncate">{file.name}</span>
+                <ZookeeperAttachment
+                  file={file}
+                  className="m-0 flex min-w-0 items-center gap-1 border-0 bg-transparent p-0 text-left text-xs focus-visible:ring-2 focus-visible:ring-ml-green"
+                >
+                  <ZookeeperAttachmentPreview
+                    file={file}
+                    isPastedText={isPastedText}
+                  />
+                </ZookeeperAttachment>
                 <button
                   type="button"
                   onClick={() => onRemoveAttachment(index)}
-                  className="ml-1 text-chalkboard-70 hover:text-chalkboard-100 dark:hover:text-chalkboard-20"
-                  aria-label={`Remove ${file.name}`}
+                  className="group absolute right-0 top-0 m-0 flex h-6 w-6 items-center justify-center rounded-sm border-none bg-transparent p-0 hover:bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-appForeground"
+                  aria-label={
+                    isImageMimetype(file.type)
+                      ? `Remove image ${index + 1}`
+                      : `Remove ${file.name}`
+                  }
                 >
-                  <CustomIcon name="close" className="w-4 h-4" />
+                  <CustomIcon
+                    name="close"
+                    className="w-5 h-5 rounded-sm bg-chalkboard-20 text-chalkboard-80 dark:bg-chalkboard-80 dark:text-chalkboard-20 group-hover:brightness-110"
+                  />
                 </button>
               </div>
             ))}
@@ -590,6 +674,7 @@ export const ZookeeperConversationInput = (
           data-testid="ml-ephant-composer-actions"
         >
           <ZookeeperExtraInputs
+            context={selectionsContext}
             mode={mode}
             onSetMode={(m) => {
               userHasPickedMode.current = true
@@ -653,7 +738,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
     if (exchangesLength === 0 || !refScroll.current) return
     refScroll.current.scrollTo({
       top: refScroll.current.scrollHeight,
-      behavior: 'smooth',
+      behavior: 'instant',
     })
   }, [exchangesLength])
 
@@ -662,7 +747,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
     if (!isEndOfStream || !refScroll.current) return
     refScroll.current.scrollTo({
       top: refScroll.current.scrollHeight,
-      behavior: 'smooth',
+      behavior: 'instant',
     })
   }, [isEndOfStream])
 
@@ -676,6 +761,8 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
           userAvatar={props.userAvatarSrc}
           isLastResponse={isLastResponse}
           onClickClearChat={isLastResponse ? props.onClickClearChat : noop}
+          attachmentFetches={props.attachmentFetches}
+          onFetchAttachment={props.onFetchAttachment}
         />
       )
     }
@@ -739,26 +826,29 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                           role="status"
                         >
                           <p className="font-semibold">
-                            Zookeeper stopped before finishing this request.
-                          </p>
-                          <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
-                            Review the current project, then resume when you're
-                            ready.
-                          </p>
-                          <ActionButton
-                            Element="button"
-                            type="button"
-                            aria-label="Resume interrupted request"
-                            className="h-7 w-fit focus-visible:outline-appForeground"
-                            iconStart={{ icon: 'arrowRight' }}
-                            onClick={props.onResumeInterruptedTurn}
-                            disabled={props.isResumingInterruptedTurn}
-                            tabIndex={0}
-                          >
                             {props.isResumingInterruptedTurn
-                              ? 'Resuming...'
-                              : 'Resume interrupted request'}
-                          </ActionButton>
+                              ? 'Resuming your request...'
+                              : 'This request was interrupted before it finished.'}
+                          </p>
+                          {!props.isResumingInterruptedTurn && (
+                            <>
+                              <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
+                                Review the current project, then resume when
+                                you're ready.
+                              </p>
+                              <ActionButton
+                                Element="button"
+                                type="button"
+                                aria-label="Resume interrupted request"
+                                className="h-7 w-fit focus-visible:outline-appForeground"
+                                iconStart={{ icon: 'arrowRight' }}
+                                onClick={props.onResumeInterruptedTurn}
+                                tabIndex={0}
+                              >
+                                Resume interrupted request
+                              </ActionButton>
+                            </>
+                          )}
                         </div>
                       ) : lastExchange &&
                         !isEndOfStream &&
@@ -833,6 +923,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
           ) : null}
           <div className="border-t b-4">
             <ZookeeperConversationInput
+              contexts={props.contexts}
               disabled={props.disabled || props.isLoading}
               hasPromptCompleted={props.hasPromptCompleted}
               needsReconnect={props.needsReconnect}

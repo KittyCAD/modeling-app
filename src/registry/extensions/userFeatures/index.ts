@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provideService,
 } from '@kittycad/registry'
 import { computed, signal } from '@preact/signals-core'
@@ -44,14 +43,12 @@ export const userFeaturesExtension = defineRegistryItemFactory(() => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'user-features-extension',
-      providesServices: [provideService(userFeaturesService, serviceImpl)],
-      dispose: () => {
-        subscription.unsubscribe()
-        actor.stop()
-      },
-    }),
+    id: 'user-features-extension',
+    providesServices: [provideService(userFeaturesService, serviceImpl)],
+    dispose: () => {
+      subscription.unsubscribe()
+      actor.stop()
+    },
   }
 }, 'user-features-extension')
 

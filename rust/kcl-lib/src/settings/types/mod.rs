@@ -401,7 +401,6 @@ camera_projection = "perspective"
 mouse_controls = "zoo"
 gizmo_type = "axis"
 enable_touch_controls = false
-use_sketch_solve_mode = true
 enable_ssao = false
 snap_to_grid = true
 major_grid_spacing = 2.5
@@ -447,7 +446,6 @@ text_wrapping = true
                         ("mouse_controls".to_owned(), "zoo".into()),
                         ("snap_to_grid".to_owned(), true.into()),
                         ("snaps_per_minor".to_owned(), json!(3)),
-                        ("use_sketch_solve_mode".to_owned(), true.into()),
                     ]),
                     ..Default::default()
                 }),
@@ -487,7 +485,6 @@ text_wrapping = true
         assert!(serialized.contains("mouse_controls = \"zoo\""));
         assert!(serialized.contains("gizmo_type = \"axis\""));
         assert!(serialized.contains("enable_touch_controls = false"));
-        assert!(serialized.contains("use_sketch_solve_mode = true"));
         assert!(serialized.contains("snap_to_grid = true"));
         assert!(serialized.contains("major_grid_spacing = 2.5"));
         assert!(serialized.contains("minor_grids_per_major = 5"));

@@ -33,7 +33,7 @@ ruleTester.run('no-codemirror-printable-keymap-keystrokes', rule, {
       code: `
         const item = {
           keystrokes: ['v', '1'],
-          scopes: ['settings-open'],
+          when: ['settings-open'],
         }
       `,
     },
@@ -55,7 +55,32 @@ ruleTester.run('no-codemirror-printable-keymap-keystrokes', rule, {
       code: `
         const item = {
           keystrokes: ['v', '1'],
+          when: ['code-editor-not-focused'],
+        }
+      `,
+    },
+    {
+      code: `
+        const item = {
+          keystrokes: ['v', '1'],
+          when: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
+        }
+      `,
+    },
+    {
+      code: `
+        const legacyItem = {
+          keystrokes: ['v', '1'],
           scopes: ['code-editor-not-focused'],
+        }
+      `,
+    },
+    {
+      code: `
+        const item = {
+          keystrokes: ['v', '1'],
+          when: ['code-editor-not-focused'],
+          scopes: ['base'],
         }
       `,
     },
@@ -73,7 +98,7 @@ ruleTester.run('no-codemirror-printable-keymap-keystrokes', rule, {
       code: `
         const item = {
           keystrokes: [','],
-          scopes: ['base'],
+          when: [],
         }
       `,
       errors: [{ messageId: 'textProducingCodeMirrorKeystrokes' }],
@@ -82,7 +107,7 @@ ruleTester.run('no-codemirror-printable-keymap-keystrokes', rule, {
       code: `
         const item = {
           keystrokes: ['Shift+V'],
-          scopes: ['code-editor-focused'],
+          when: ['code-editor-focused'],
         }
       `,
       errors: [{ messageId: 'textProducingCodeMirrorKeystrokes' }],
@@ -91,8 +116,36 @@ ruleTester.run('no-codemirror-printable-keymap-keystrokes', rule, {
       code: `
         provide(keymapValueSpec, {
           keystrokes: ['Space', 'k'],
-          scopes: ['code-editor-focused'],
+          when: ['base'],
         })
+      `,
+      errors: [{ messageId: 'textProducingCodeMirrorKeystrokes' }],
+    },
+    {
+      code: `
+        const legacyItem = {
+          keystrokes: [','],
+          scopes: [],
+        }
+      `,
+      errors: [{ messageId: 'textProducingCodeMirrorKeystrokes' }],
+    },
+    {
+      code: `
+        const legacyItem = {
+          keystrokes: ['v'],
+          scopes: ['code-editor-focused'],
+        }
+      `,
+      errors: [{ messageId: 'textProducingCodeMirrorKeystrokes' }],
+    },
+    {
+      code: `
+        const item = {
+          keystrokes: ['Space'],
+          when: [],
+          scopes: ['code-editor-not-focused'],
+        }
       `,
       errors: [{ messageId: 'textProducingCodeMirrorKeystrokes' }],
     },

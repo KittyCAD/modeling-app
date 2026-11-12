@@ -1,12 +1,12 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   pluginsValueSpec,
   provide,
   provideService,
 } from '@kittycad/registry'
 import { effect, signal } from '@preact/signals-core'
+import projectLibrariesRegistryService from '@src/lib/projectLibraries/registry/service'
 import { CLOUD_SYNC_PLUGIN_ID } from '@src/lib/cloudSync/registry/constants'
 import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
@@ -20,10 +20,7 @@ import {
   type ProjectLibrary,
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
-import {
-  readProjectsFromProjectDirectory,
-  scheduleProjectDirectoryNameSyncFromTitles,
-} from '@src/lib/projectLibraries/directoryScanner'
+import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
 import {
   createProjectInLocalDirectory,
   moveProjectIntoLocalDirectory,
@@ -40,12 +37,12 @@ import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import {
-  ExpectedSystemIOError,
-  reportSystemIOError,
-  type SystemIOErrorRisk,
-} from '@src/machines/systemIO/errorReporting'
-import { SystemIOMachineActors } from '@src/machines/systemIO/utils'
+  ExpectedFileOperationError,
+  reportFileOperationError,
+  type FileOperationRisk,
+} from '@src/lib/fileSystem/operationErrors'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
 import {
   type ProjectLibraryOperation,
@@ -324,8 +321,9 @@ function watchConfiguredProjectLibraries({
         for (const libraryId of target.libraryIds) {
           scheduleInvalidation(libraryId)
           if (eventType === 'addDir') {
-            // Root-only watchers see the project folder creation, not every file
-            // copied into it. A settled follow-up catches slower external copies.
+            // The project folder event can arrive before its contents. A
+            // settled follow-up catches slower external copies even if their
+            // metadata event is unavailable.
             scheduleSettledInvalidation(libraryId)
           }
         }
@@ -474,21 +472,19 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
     })
 
     return {
-      item: defineRuntimeRegistryItem({
-        id: 'project-libraries.configured-realizations',
-        provides: [
-          provide(projectLibraryRealizationsValueSpec, realizations, {
-            key: 'project-libraries.configured-realizations',
-          }),
-        ],
-        dispose: () => {
-          disposed = true
-          for (const state of scanStates.values()) {
-            state.abortController?.abort()
-          }
-          disposeConfiguredProjectLibraryRealizationsEffect?.()
-        },
-      }),
+      id: 'project-libraries.configured-realizations',
+      provides: [
+        provide(projectLibraryRealizationsValueSpec, realizations, {
+          key: 'project-libraries.configured-realizations',
+        }),
+      ],
+      dispose: () => {
+        disposed = true
+        for (const state of scanStates.values()) {
+          state.abortController?.abort()
+        }
+        disposeConfiguredProjectLibraryRealizationsEffect?.()
+      },
     }
   },
   'project-libraries.configured-realizations'
@@ -499,12 +495,19 @@ const projectLibraryRealizationsRegistryService = defineRegistryItem({
   providesServices: [
     provideService(projectLibraryRealizationsService, {
       invalidate: invalidateProjectLibraryRealizations,
-      watchConfiguredLibraries: ({ libraries }) =>
-        watchConfiguredProjectLibraries({
+      watchConfiguredLibraries: ({ libraries }) => {
+        const dispose = watchConfiguredProjectLibraries({
           libraries,
           onInvalidateLibrary: (libraryId) =>
             invalidateProjectLibraryRealizations({ libraryId }),
-        }),
+        })
+
+        for (const libraryId of new Set(libraries.map(({ id }) => id))) {
+          invalidateProjectLibraryRealizations({ libraryId })
+        }
+
+        return dispose
+      },
     } satisfies ProjectLibraryRealizationsService),
   ],
 })
@@ -524,7 +527,7 @@ function getProjectMoveSource({ project }: { project: HomeProjectEntry }) {
 
 type DirectoryProjectOperationReport = {
   operation: string
-  risk: SystemIOErrorRisk
+  risk: FileOperationRisk
 }
 
 async function runReportedDirectoryProjectOperation<T>({
@@ -536,7 +539,7 @@ async function runReportedDirectoryProjectOperation<T>({
   try {
     return await run()
   } catch (error) {
-    reportSystemIOError({
+    reportFileOperationError({
       error,
       source: 'DirectoryProjectLibrary',
       ...report,
@@ -576,23 +579,23 @@ function withReportedDirectoryProjectOperations(
   return {
     ...operations,
     createProject: report(operations.createProject, {
-      operation: SystemIOMachineActors.createProject,
+      operation: 'create project',
       risk: 'write',
     }),
     duplicateProject: report(operations.duplicateProject, {
-      operation: SystemIOMachineActors.duplicateProject,
+      operation: 'duplicate project',
       risk: 'write',
     }),
     renameProject: report(operations.renameProject, {
-      operation: SystemIOMachineActors.renameProject,
+      operation: 'rename project',
       risk: 'write',
     }),
     deleteProject: report(operations.deleteProject, {
-      operation: SystemIOMachineActors.deleteProject,
+      operation: 'delete project',
       risk: 'destructive',
     }),
     moveProjectTo: report(operations.moveProjectTo, {
-      operation: SystemIOMachineActors.moveRecursive,
+      operation: 'move recursive',
       risk: 'destructive',
     }),
   }
@@ -605,9 +608,9 @@ function reportDirectoryProjectStatFailures({
   error: unknown
   count: number
 }) {
-  reportSystemIOError({
+  reportFileOperationError({
     error,
-    operation: SystemIOMachineActors.readFoldersFromProjectDirectory,
+    operation: 'read folders from project directory',
     risk: 'read',
     source: 'DirectoryProjectLibrary',
     dedupeKey:
@@ -620,6 +623,7 @@ function reportDirectoryProjectStatFailures({
 }
 
 const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
+  const fileOperations = () => ctx.services.get(fileOperationsService)
   const cloudSync = ctx.services.signal(cloudSyncService)
   const plugins = ctx.valueSpecs.signal(pluginsValueSpec)
   const isCloudSyncPluginActive = () => {
@@ -630,7 +634,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   }
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
-    new ExpectedSystemIOError('Missing WASM promise registry value.')
+    new ExpectedFileOperationError('Missing WASM promise registry value.')
   /**
    * Directory operations know the configured library they changed, so they
    * refresh that library's local realization discovery directly.
@@ -658,6 +662,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
         }
 
         const project = await createProjectInLocalDirectory({
+          fileOperations: fileOperations(),
           projectDirectoryPath: library.path,
           requestedProjectName,
           requestedProjectTitle,
@@ -690,6 +695,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
         }
 
         const result = await duplicateProjectInDirectory({
+          fileOperations: fileOperations(),
           source: {
             directoryName: project.localProjectName,
             displayName: getHomeProjectDisplayName(project),
@@ -711,6 +717,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
         }
 
         await writeProjectTitleToProjectToml(
+          fileOperations(),
           project.localProjectPath,
           requestedName
         )
@@ -737,7 +744,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           cloudSyncActions?.status.value.enabled !== true
         ) {
           return Promise.reject(
-            new ExpectedSystemIOError('Cloud sync is not enabled.')
+            new ExpectedFileOperationError('Cloud sync is not enabled.')
           )
         }
 
@@ -747,9 +754,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
             project.localProjectPath
           )
         } else {
-          await fsZds.rm(project.localProjectPath, {
-            recursive: true,
-          })
+          await fileOperations().remove(project.localProjectPath)
         }
         refreshLocalProjectRealizations(library)
       },
@@ -762,6 +767,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
     moveProjectTo: {
       run: async ({ library, sourceLibrary, source }) => {
         const result = await moveProjectIntoLocalDirectory({
+          fileOperations: fileOperations(),
           projectDirectoryPath: library.path,
           sourceProjectPath: source.localProjectPath,
           sourceProjectName: source.localProjectName,
@@ -775,67 +781,57 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'project-libraries.directory-library-type',
-      provides: [
-        provide(projectLibraryTypesValueSpec, {
+    id: 'project-libraries.directory-library-type',
+    provides: [
+      provide(projectLibraryTypesValueSpec, {
+        type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+        title: 'Directory',
+        icon: 'folder',
+        order: 0,
+        defaultSetting: {
+          title: DEFAULT_PROJECT_LIBRARY_TITLE,
+          path: 'projects',
           type: DIRECTORY_PROJECT_LIBRARY_TYPE,
-          title: 'Directory',
-          icon: 'folder',
-          order: 0,
-          defaultSetting: {
-            title: DEFAULT_PROJECT_LIBRARY_TITLE,
-            path: 'projects',
-            type: DIRECTORY_PROJECT_LIBRARY_TYPE,
-          },
-          newLibrarySetting: {
-            title: NEW_PROJECT_LIBRARY_TITLE,
-            path: 'projects',
-            type: DIRECTORY_PROJECT_LIBRARY_TYPE,
-          },
-          settingsDetails: DirectoryProjectLibrarySettingsDetails,
-          hideInSettingsOnPlatform: 'web',
-          /**
-           * Directory libraries return concrete folders on disk. Any cloud
-           * project ID found in project metadata is carried as an observation,
-           * not used here to merge or discard local realizations.
-           */
-          readRealizations: async ({ library, signal }) => {
-            const wasmInstancePromise = getWasmPromise()
-            if (wasmInstancePromise instanceof Error) {
-              return Promise.reject(wasmInstancePromise)
-            }
+        },
+        newLibrarySetting: {
+          title: NEW_PROJECT_LIBRARY_TITLE,
+          path: 'projects',
+          type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+        },
+        settingsDetails: DirectoryProjectLibrarySettingsDetails,
+        hideInSettingsOnPlatform: 'web',
+        /**
+         * Directory libraries return concrete folders on disk. Any cloud
+         * project ID found in project metadata is carried as an observation,
+         * not used here to merge or discard local realizations.
+         */
+        readRealizations: async ({ library, signal }) => {
+          const wasmInstancePromise = getWasmPromise()
+          if (wasmInstancePromise instanceof Error) {
+            return Promise.reject(wasmInstancePromise)
+          }
 
-            return runReportedDirectoryProjectOperation({
-              operation: SystemIOMachineActors.readFoldersFromProjectDirectory,
-              risk: 'read',
-              run: async () => {
-                const projects = await readProjectsFromProjectDirectory({
-                  projectDirectoryPath: library.path,
-                  wasmInstancePromise,
-                  signal,
-                  onProjectStatFailures: reportDirectoryProjectStatFailures,
-                })
-                if (!signal.aborted) {
-                  scheduleProjectDirectoryNameSyncFromTitles({
-                    projects,
-                    onProjectDirectoriesRenamed: () =>
-                      invalidateProjectLibraryRealizations({
-                        libraryId: library.id,
-                      }),
-                  })
-                }
+          return runReportedDirectoryProjectOperation({
+            operation: 'read folders from project directory',
+            risk: 'read',
+            run: async () => {
+              const projects = await readProjectsFromProjectDirectory({
+                fileOperations: fileOperations(),
+                projectDirectoryPath: library.path,
+                wasmInstancePromise,
+                signal,
+                onProjectStatFailures: reportDirectoryProjectStatFailures,
+              })
 
-                return projects.map((project) =>
-                  projectLibraryRealizationFromProject(project, library)
-                )
-              },
-            })
-          },
-          operations: withReportedDirectoryProjectOperations(operations),
-        }),
-      ],
-    }),
+              return projects.map((project) =>
+                projectLibraryRealizationFromProject(project, library)
+              )
+            },
+          })
+        },
+        operations: withReportedDirectoryProjectOperations(operations),
+      }),
+    ],
   }
 }, 'project-libraries.directory-library-type')
 
@@ -862,6 +858,7 @@ const directoryProjectLibraryDefaultPolicy = defineRegistryItem({
 const projectLibrariesExtension = defineRegistryItem({
   id: 'project-libraries',
   uses: [
+    projectLibrariesRegistryService,
     configuredProjectLibraryRealizations,
     directoryProjectLibraryDefaultPolicy,
     directoryProjectLibraryType,

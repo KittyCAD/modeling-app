@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import { decode as msgpackDecode } from '@msgpack/msgpack'
 
 vi.mock('@src/routes/utils', () => ({
   APP_DOWNLOAD_PATH: 'design-studio/download/staging',
@@ -28,6 +29,7 @@ import {
   ZookeeperManagerStates,
   ZookeeperManagerTransitions,
   zookeeperManagerMachine,
+  isMlCopilotUserRequest,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { modelingMachine } from '@src/machines/modelingMachine'
 import { generateModelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
@@ -40,13 +42,8 @@ import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
 class TestSocket extends EventTarget {
-  sentPayloads: string[] = []
   readyState: number = WebSocket.OPEN
-
-  send(payload: string) {
-    this.sentPayloads.push(payload)
-  }
-
+  send = vi.fn()
   close = vi.fn()
 }
 
@@ -64,7 +61,10 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
   })
 
   afterAll(() => {
-    world.engineCommandManager.tearDown()
+    world.engineCommandManager.tearDown({
+      route: 'user-requested',
+      initiatedBy: 'client',
+    })
     world.commandBarActor.stop()
     world.settingsActor.stop()
   })
@@ -193,7 +193,9 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
 
     actor.stop()
 
-    return ws.sentPayloads.map((payload) => JSON.parse(payload))
+    return ws.send.mock.calls
+      .map(([payload]) => msgpackDecode(payload))
+      .filter(isMlCopilotUserRequest)
   }
 
   function sourceRangeForSnippet(code: string, snippet: string): SourceRange {
@@ -249,6 +251,35 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
     expect(userPayload?.source_ranges).toStrictEqual([])
   })
 
+  it('omits source ranges for an engine selection without a KCL mapping', async () => {
+    const code = 'width = 5\n'
+    const modelingSelections = setupModelingSelection({
+      code,
+      selection: {
+        selectionType: 'completeSelection',
+        selection: {
+          otherSelections: [],
+          graphSelections: [
+            {
+              entityRef: {
+                type: 'face',
+                face_id: '00000000-0000-0000-0000-000000000001',
+              },
+            },
+          ],
+        },
+      },
+    })
+
+    const sentPayloads = await sendZookeeperMessage({
+      code,
+      selections: modelingSelections,
+    })
+    const userPayload = sentPayloads.find((payload) => payload.type === 'user')
+
+    expect(userPayload?.source_ranges).toStrictEqual([])
+  })
+
   it('includes the single current graph selection in the Zookeeper user payload', async () => {
     const code = 'width = 5\nheight = 10\n'
     const widthRange = selectedIdentifierRange(code, 'width')
@@ -271,7 +302,7 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
     })
 
     expect(
-      modelingSelections.graphSelections.map(({ codeRef }) => codeRef.range)
+      modelingSelections.graphSelections.map(({ codeRef }) => codeRef?.range)
     ).toStrictEqual([widthRange])
 
     const sentPayloads = await sendZookeeperMessage({
@@ -321,7 +352,7 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
     })
 
     expect(
-      modelingSelections.graphSelections.map(({ codeRef }) => codeRef.range)
+      modelingSelections.graphSelections.map(({ codeRef }) => codeRef?.range)
     ).toStrictEqual([widthRange, heightRange])
 
     const sentPayloads = await sendZookeeperMessage({

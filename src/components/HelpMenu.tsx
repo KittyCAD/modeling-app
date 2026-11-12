@@ -15,7 +15,9 @@ import type { WebContentSendPayload } from '@src/menu/channels'
 import {
   acceptOnboarding,
   reportOnboardingStartFailure,
+  useOnboardingStartPending,
 } from '@src/routes/Onboarding/utils'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: help and onboarding navigation (useNavigate).
 import { useNavigate } from 'react-router-dom'
 
 const HelpMenuDivider = () => (
@@ -26,13 +28,16 @@ export function HelpMenu() {
   const app = useApp()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath({ warnIfNoExecutingPath: false })
+  const isOnboardingStartPending = useOnboardingStartPending()
 
-  const replayOnboardingWorkflow = () => {
+  const replayOnboardingWorkflow = (onSuccess?: () => void) => {
     void acceptOnboarding({
       app,
       onboardingStatus: onboardingStartPath,
       navigate,
-    }).catch(reportOnboardingStartFailure)
+    })
+      .then(onSuccess)
+      .catch(reportOnboardingStartFailure)
   }
 
   const cb = (data: WebContentSendPayload) => {
@@ -137,12 +142,15 @@ export function HelpMenu() {
             </HelpMenuItem>
             <HelpMenuItem
               as="button"
+              aria-busy={isOnboardingStartPending}
+              disabled={isOnboardingStartPending}
               onClick={() => {
-                close()
-                replayOnboardingWorkflow()
+                replayOnboardingWorkflow(close)
               }}
             >
-              Replay onboarding tutorial
+              {isOnboardingStartPending
+                ? 'Starting onboarding tutorial...'
+                : 'Replay onboarding tutorial'}
             </HelpMenuItem>
           </>
         )}
@@ -165,7 +173,8 @@ function HelpMenuItem({
   className,
   ...props
 }: HelpMenuItemProps) {
-  const baseClassName = 'block px-2 py-1 hover:bg-chalkboard-80'
+  const baseClassName =
+    'block px-2 py-1 hover:bg-chalkboard-80 disabled:cursor-wait disabled:text-chalkboard-50 disabled:hover:bg-transparent dark:disabled:text-chalkboard-60'
   return (
     <li className="p-0 m-0">
       {as === 'a' ? (

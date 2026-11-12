@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties neg_xz_plane.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -50.0,
+      "y": 6.0,
+      "z": 50.0
+    },
+    "dimensions": {
+      "x": 120.0,
+      "y": 12.0,
+      "z": 120.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 14097.05716650933
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 60.00000212225132
+  }
+}

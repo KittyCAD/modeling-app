@@ -10769,6 +10769,7 @@ description: Result of parsing manhole-cover.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

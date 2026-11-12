@@ -4,7 +4,6 @@ use criterion::criterion_main;
 
 pub fn bench_digest(c: &mut Criterion) {
     for (name, file) in [
-        ("pipes_on_pipes", PIPES_PROGRAM),
         ("big_kitt", KITT_PROGRAM),
         ("cube", CUBE_PROGRAM),
         ("math", MATH_PROGRAM),
@@ -27,8 +26,7 @@ criterion_group!(benches, bench_digest);
 criterion_main!(benches);
 
 const KITT_PROGRAM: &str = include_str!("../e2e/executor/inputs/kittycad_svg.kcl");
-const PIPES_PROGRAM: &str = include_str!("../e2e/executor/inputs/pipes_on_pipes.kcl");
 const CUBE_PROGRAM: &str = include_str!("../e2e/executor/inputs/cube.kcl");
 const MATH_PROGRAM: &str = include_str!("../e2e/executor/inputs/math.kcl");
 const MIKE_STRESS_TEST_PROGRAM: &str = include_str!("../tests/mike_stress_test/input.kcl");
-const LSYSTEM_PROGRAM: &str = include_str!("../e2e/executor/inputs/lsystem.kcl");
+const LSYSTEM_PROGRAM: &str = include_str!("../tests/lsystem/input.kcl");

@@ -7448,6 +7448,7 @@ description: Result of parsing sketch_on_face_loft_subtract.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

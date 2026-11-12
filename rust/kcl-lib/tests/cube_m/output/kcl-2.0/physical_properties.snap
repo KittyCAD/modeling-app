@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties cube_m.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 5000.0,
+      "y": 5000.0,
+      "z": 5000.0
+    },
+    "dimensions": {
+      "x": 10000.0,
+      "y": 10000.0,
+      "z": 10000.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 600000000.0
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 1000000000.0
+  }
+}

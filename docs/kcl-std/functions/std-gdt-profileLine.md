@@ -17,6 +17,7 @@ gdt::profileLine(
   framePlane?: Plane,
   leaderScale?: number(_),
   fontSize?: number(Length),
+  annotationName?: string,
 ): [GdtAnnotation; 1+]
 ```
 
@@ -28,7 +29,7 @@ Profile of a line is a two-dimensional tolerance zone for a cross-section or edg
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `edges` | [[`Edge`](/docs/kcl-std/types/std-types-Edge) or [`any`](/docs/kcl-std/types/std-types-any); 1+] | The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet. | Yes |
+| `edges` | [[`Edge`](/docs/kcl-std/types/std-types-Edge) or [`any`](/docs/kcl-std/types/std-types-any); 1+] | The edges to be annotated. | Yes |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The amount of deviation from an ideal profile that is acceptable. | Yes |
 | `datums` | [[`string`](/docs/kcl-std/types/std-types-string); 1+] | The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums. | No |
 | `precision` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`. | No |
@@ -36,6 +37,7 @@ Profile of a line is a two-dimensional tolerance zone for a cross-section or edg
 | `framePlane` | [`Plane`](/docs/kcl-std/types/std-types-Plane) | The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane. | No |
 | `leaderScale` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`. | No |
 | `fontSize` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit. This changes the scene size, not the internal raster texture quality. | No |
+| `annotationName` | [`string`](/docs/kcl-std/types/std-types-string) | Human-friendly name for this annotation in exports and model metadata. This is not displayed visually. | No |
 
 ### Returns
 
@@ -54,7 +56,7 @@ startSketchOn(XY)
   |> close()
   |> extrude(length = 5, tagEnd = $top)
 
-profileEdge = getCommonEdge(faces = [side1, top])
+profileEdge = { sideFaces = [side1, top] }
 
 gdt::profileLine(
   edges = [profileEdge],
@@ -86,7 +88,9 @@ blockProfile = sketch(on = XY) {
 }
 
 block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm, tagEnd = $top)
-profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+profileEdge = {
+  sideFaces = [block.sketch.tags.edge1, top]
+}
 gdt::profileLine(
   edges = [profileEdge],
   tolerance = 0.05mm,

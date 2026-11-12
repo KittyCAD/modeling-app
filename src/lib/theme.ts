@@ -25,6 +25,7 @@ export function appThemeToTheme(
       return Themes.Dark
     case 'system':
       return Themes.System
+    case undefined:
     default:
       return undefined
   }
@@ -60,6 +61,10 @@ export function getOppositeTheme(theme: Themes) {
   return resolvedTheme === Themes.Dark ? Themes.Light : Themes.Dark
 }
 
+export function getThemeBackgroundColor(theme: ResolvedTheme) {
+  return theme === Themes.Light ? 'rgb(250, 250, 250)' : 'rgb(30, 30, 30)'
+}
+
 /**
  * The engine takes RGBA values from 0-1
  * So we convert from the conventional 0-255 found in Figma
@@ -73,6 +78,12 @@ export function getThemeColorForEngine(theme: Themes) {
   return resolvedTheme === Themes.Dark
     ? { r: dark, g: dark, b: dark, a: 1 }
     : { r: light, g: light, b: light, a: 1 }
+}
+
+/** Same edge color regardless of theme */
+export function edgeColor() {
+  const light = 28 / 255
+  return { r: light, g: light, b: light, a: 1 }
 }
 
 /**

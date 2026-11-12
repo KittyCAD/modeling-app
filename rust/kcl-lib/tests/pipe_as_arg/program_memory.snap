@@ -14,8 +14,10 @@ description: Variables in memory after executing pipe_as_arg.kcl
     "value": 400.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "width": {

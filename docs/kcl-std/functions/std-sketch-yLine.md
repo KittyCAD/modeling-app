@@ -20,6 +20,9 @@ yLine(
 
 This is part of sketch v1 and is deprecated in favor of
 [sketch-solve](/docs/kcl-std/modules/std-solver).
+Legacy sketch functions cannot be used with constraints; strongly prefer
+[`solver::line`](/docs/kcl-std/functions/std-solver-line) with horizontal
+or vertical constraints inside a `sketch` block instead.
 
 ### Arguments
 
@@ -54,7 +57,7 @@ example = extrude(exampleSketch, length = 10)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the yLine function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-yLine0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-yLine0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-yLine0.png"

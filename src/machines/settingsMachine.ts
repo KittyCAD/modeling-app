@@ -1,17 +1,4 @@
-import decamelize from 'decamelize'
-import toast from 'react-hot-toast'
-import type { ActorRefFrom, AnyActorRef } from 'xstate'
-import {
-  assertEvent,
-  assign,
-  fromCallback,
-  fromPromise,
-  sendTo,
-  setup,
-} from 'xstate'
-
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
-
 import {
   createSettingsCommand,
   settingsWithCommandConfigs,
@@ -21,7 +8,6 @@ import type { Project } from '@src/lib/project'
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type { ProjectLibrarySettingDefaultPolicy } from '@src/registry/contracts/projectLibraries'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import type {
   BaseUnit,
@@ -37,13 +23,27 @@ import {
   saveSettings,
 } from '@src/lib/settings/settingsUtils'
 import {
-  Themes,
   darkModeMatcher,
   getSystemTheme,
   setThemeClass,
+  Themes,
 } from '@src/lib/theme'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import type { ProjectLibrarySettingDefaultPolicy } from '@src/registry/contracts/projectLibraries'
+import decamelize from 'decamelize'
+import toast from 'react-hot-toast'
+import type { ActorRefFrom, AnyActorRef } from 'xstate'
+import {
+  assertEvent,
+  assign,
+  enqueueActions,
+  fromCallback,
+  fromPromise,
+  sendTo,
+  setup,
+} from 'xstate'
 
 export type SettingsActorDepsType = {
   currentProject?: Project
@@ -51,44 +51,51 @@ export type SettingsActorDepsType = {
   defaultProjectLibraries: readonly ProjectLibrarySetting[]
   projectLibrarySettingDefaultPolicies: readonly ProjectLibrarySettingDefaultPolicy[]
   extensionSettings: ResolvedExtensionSettings
+  fileOperations: FileOperationsRegistryService
   wasmInstancePromise: Promise<ModuleType>
 }
-export type SettingsMachineContext = SettingsType & SettingsActorDepsType
+export type SettingsMachineInput = SettingsType & SettingsActorDepsType
+
+export type SettingsMachineEvent = (
+  | WildcardSetEvent<SettingsPaths>
+  | DynamicBooleanSetEvent
+  | SetEventTypes
+  | {
+      type: 'set.modeling.units'
+      data: { level: SettingsLevel; value: BaseUnit }
+    }
+  | {
+      type: 'Reset settings'
+      level: SettingsLevel
+    }
+  | {
+      type: 'Set all settings'
+      settings: SettingsType
+    }
+  | {
+      type: 'set.app.namedViews'
+      data: {
+        value: NamedView
+        toastCallback: () => void
+        level: SettingsLevel
+      }
+    }
+  | { type: 'load.project'; project: Project }
+  | { type: 'reload.settings' }
+  | { type: 'clear.project' }
+) & { doNotPersist?: boolean }
+
+export type SettingsMachineContext = SettingsMachineInput & {
+  deferredEvents: SettingsMachineEvent[]
+}
 
 export type SettingsActorType = ActorRefFrom<typeof settingsMachine>
 
 export const settingsMachine = setup({
   types: {
     context: {} as SettingsMachineContext,
-    input: {} as SettingsMachineContext,
-    events: {} as (
-      | WildcardSetEvent<SettingsPaths>
-      | DynamicBooleanSetEvent
-      | SetEventTypes
-      | {
-          type: 'set.modeling.units'
-          data: { level: SettingsLevel; value: BaseUnit }
-        }
-      | {
-          type: 'Reset settings'
-          level: SettingsLevel
-        }
-      | {
-          type: 'Set all settings'
-          settings: SettingsType
-        }
-      | {
-          type: 'set.app.namedViews'
-          data: {
-            value: NamedView
-            toastCallback: () => void
-            level: SettingsLevel
-          }
-        }
-      | { type: 'load.project'; project: Project }
-      | { type: 'reload.settings' }
-      | { type: 'clear.project' }
-    ) & { doNotPersist?: boolean },
+    input: {} as SettingsMachineInput,
+    events: {} as SettingsMachineEvent,
   },
   actors: {
     persistSettings: fromPromise<
@@ -96,6 +103,7 @@ export const settingsMachine = setup({
       {
         doNotPersist: boolean
         context: SettingsMachineContext
+        level?: SettingsLevel
         toastCallback?: () => void
       }
     >(async ({ input }) => {
@@ -109,14 +117,16 @@ export const settingsMachine = setup({
         extensionSettings,
         wasmInstancePromise,
         commandBarActor: _c,
+        fileOperations,
         ...settings
       } = input.context
 
       await saveSettings(
+        fileOperations,
         wasmInstancePromise,
         settings,
         extensionSettings,
-        currentProject?.path
+        input.level === 'user' ? undefined : currentProject?.path
       )
 
       if (input.toastCallback) {
@@ -129,10 +139,12 @@ export const settingsMachine = setup({
         defaultProjectLibraries: readonly ProjectLibrarySetting[]
         projectLibrarySettingDefaultPolicies: readonly ProjectLibrarySettingDefaultPolicy[]
         extensionSettings: ResolvedExtensionSettings
+        fileOperations: FileOperationsRegistryService
         wasmInstancePromise: Promise<ModuleType>
       }
     >(async ({ input }) => {
       const { settings } = await loadAndValidateSettings(
+        input.fileOperations,
         input.wasmInstancePromise,
         {
           defaultProjectLibraries: input.defaultProjectLibraries,
@@ -149,12 +161,14 @@ export const settingsMachine = setup({
         defaultProjectLibraries: readonly ProjectLibrarySetting[]
         projectLibrarySettingDefaultPolicies: readonly ProjectLibrarySettingDefaultPolicy[]
         extensionSettings: ResolvedExtensionSettings
+        fileOperations: FileOperationsRegistryService
         project: Project
         settings: SettingsType
         wasmInstancePromise: Promise<ModuleType>
       }
     >(async ({ input }) => {
       const { settings } = await loadAndValidateSettings(
+        input.fileOperations,
         input.wasmInstancePromise,
         {
           defaultProjectLibraries: input.defaultProjectLibraries,
@@ -173,10 +187,12 @@ export const settingsMachine = setup({
         defaultProjectLibraries: readonly ProjectLibrarySetting[]
         projectLibrarySettingDefaultPolicies: readonly ProjectLibrarySettingDefaultPolicy[]
         extensionSettings: ResolvedExtensionSettings
+        fileOperations: FileOperationsRegistryService
         wasmInstancePromise: Promise<ModuleType>
       }
     >(async ({ input }) => {
       const { settings } = await loadAndValidateSettings(
+        input.fileOperations,
         input.wasmInstancePromise,
         {
           defaultProjectLibraries: input.defaultProjectLibraries,
@@ -332,6 +348,10 @@ export const settingsMachine = setup({
 
       return newSettings
     }),
+    toastSettingsReset: ({ event }) => {
+      if (event.type !== 'Reset settings') return
+      toast.success(`Your ${event.level}-level settings were reset.`)
+    },
     setAllSettings: assign(({ event, context }) => {
       if ('settings' in event) return event.settings
       else if ('output' in event) return event.output || context
@@ -361,6 +381,21 @@ export const settingsMachine = setup({
 
       return newContext
     }),
+    deferEventUntilSettingsPersist: assign({
+      deferredEvents: ({ context, event }) => [
+        ...context.deferredEvents,
+        event,
+      ],
+    }),
+    flushDeferredSettingsEvents: enqueueActions(({ context, enqueue }) => {
+      // Replay after the current write finishes so filesystem operations never
+      // overlap, while preserving the order in which the user changed settings.
+      const deferredEvents = context.deferredEvents
+      enqueue.assign({ deferredEvents: [] })
+      for (const event of deferredEvents) {
+        enqueue.raise(event)
+      }
+    }),
     setThemeClass: ({ context }) => {
       const currentTheme = context.app.theme.current ?? Themes.System
       setThemeClass(
@@ -385,6 +420,7 @@ export const settingsMachine = setup({
     return {
       ...createSettings(),
       ...input,
+      deferredEvents: [],
     }
   },
   invoke: [
@@ -515,6 +551,7 @@ export const settingsMachine = setup({
 
           actions: [
             'resetSettings',
+            'toastSettingsReset',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
@@ -565,12 +602,16 @@ export const settingsMachine = setup({
       },
     },
     reloadingSettings: {
+      on: {
+        '*': { actions: ['deferEventUntilSettingsPersist'] },
+      },
       invoke: {
         src: 'reloadSettings',
         onDone: {
           target: 'idle',
           actions: [
             'setAllSettings',
+            'flushDeferredSettingsEvents',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
@@ -581,11 +622,15 @@ export const settingsMachine = setup({
         },
         onError: {
           target: 'idle',
-          actions: ({ event }) => {
-            console.error('Error reloading settings', event)
-          },
+          actions: [
+            ({ event }) => {
+              console.error('Error reloading settings', event)
+            },
+            'flushDeferredSettingsEvents',
+          ],
         },
         input: ({ context }) => ({
+          fileOperations: context.fileOperations,
           currentProject: context.currentProject,
           defaultProjectLibraries: context.defaultProjectLibraries,
           projectLibrarySettingDefaultPolicies:
@@ -598,24 +643,33 @@ export const settingsMachine = setup({
 
     'persisting settings': {
       on: {
-        'set.layout.configs': {
-          target: 'persisting settings',
-          reenter: true,
-          actions: ['setSettingAtLevel'],
+        '*': {
+          actions: ['deferEventUntilSettingsPersist'],
         },
       },
       invoke: {
         src: 'persistSettings',
         onDone: {
           target: 'idle',
+          actions: ['flushDeferredSettingsEvents'],
         },
         onError: {
           target: 'idle',
-          actions: () => {
-            console.error('Error persisting settings')
-          },
+          actions: [
+            () => {
+              console.error('Error persisting settings')
+            },
+            'flushDeferredSettingsEvents',
+          ],
         },
         input: ({ context, event }) => {
+          let level: SettingsLevel | undefined
+          if (event.type === 'Reset settings') {
+            level = event.level
+          } else if ('data' in event && 'level' in event.data) {
+            level = event.data.level
+          }
+
           if (
             event.type === 'set.app.namedViews' &&
             'toastCallback' in event.data
@@ -623,6 +677,7 @@ export const settingsMachine = setup({
             return {
               doNotPersist: event.doNotPersist ?? false,
               context,
+              level,
               toastCallback: event.data.toastCallback,
             }
           }
@@ -630,6 +685,7 @@ export const settingsMachine = setup({
           return {
             doNotPersist: event.doNotPersist ?? false,
             context,
+            level,
           }
         },
       },
@@ -639,6 +695,7 @@ export const settingsMachine = setup({
       invoke: {
         src: 'loadUserSettings',
         input: ({ context }) => ({
+          fileOperations: context.fileOperations,
           defaultProjectLibraries: context.defaultProjectLibraries,
           projectLibrarySettingDefaultPolicies:
             context.projectLibrarySettingDefaultPolicies,
@@ -691,6 +748,7 @@ export const settingsMachine = setup({
         input: ({ event, context }) => {
           assertEvent(event, 'load.project')
           return {
+            fileOperations: context.fileOperations,
             defaultProjectLibraries: context.defaultProjectLibraries,
             projectLibrarySettingDefaultPolicies:
               context.projectLibrarySettingDefaultPolicies,
@@ -714,7 +772,9 @@ export function getOnlySettingsFromContext(
     defaultProjectLibraries: _defaultProjectLibraries,
     projectLibrarySettingDefaultPolicies: _projectLibrarySettingDefaultPolicies,
     extensionSettings: _extensionSettings,
+    fileOperations: _fileOperations,
     wasmInstancePromise: _w,
+    deferredEvents: _deferredEvents,
     ...settings
   } = s
   return settings
