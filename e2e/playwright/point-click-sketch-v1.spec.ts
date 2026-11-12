@@ -396,7 +396,7 @@ sketch002 = startSketchOn(plane001)
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.advanced.click()
         await expect(modelingDialog.input('v degree')).toBeVisible()
-        await modelingDialog.input('v degree').fill('3')
+        await modelingDialog.fillInput('v degree', '3')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
@@ -1553,7 +1553,7 @@ extrude001 = extrude(sketch001, length = 30)
             'Use defaults'
           )
           // Update font size to 12mm
-          await modelingDialog.input('font size').fill('12mm')
+          await modelingDialog.fillInput('font size', '12mm')
 
           // Review changes to font size
           await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1751,7 +1751,7 @@ extrude001 = extrude(sketch001, length = 30)
             'Use defaults'
           )
           // Update font size to 12mm
-          await modelingDialog.input('font size').fill('12mm')
+          await modelingDialog.fillInput('font size', '12mm')
 
           // Review changes to font size
           await expect(modelingDialog.submitButton).toBeEnabled()
