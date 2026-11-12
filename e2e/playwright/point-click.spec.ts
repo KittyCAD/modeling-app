@@ -219,11 +219,12 @@ openSketch = sketch(on = XY) {
         editor.replaceCode('', initialCode)
       )
       // Match the cursor position of an initially loaded file.
-      await editor.scrollToText('closedSketch = sketch(on = XZ) {')
+      await editor.scrollToText('closedSketch = sketch(on = XZ) {', true)
 
       await test.step(`Double-click on the closed sketch`, async () => {
         await scene.settled()
         await editor.closePane()
+        await toolbar.closeFeatureTreePane()
         // Selecting the closed region keeps the sketch header active on entry.
         const [, moveToCircle, dblClickCircle] =
           await scene.makeSelectionHelpers({
