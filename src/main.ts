@@ -69,8 +69,6 @@ import {
 } from '@src/registry/pluginIpc'
 import { configureSystemCertificates } from '@src/systemCertificates'
 
-appUpdater.autoInstallEvent = 'onNextLaunch'
-
 type ElectronPluginModule = {
   register?: (context: ElectronPluginContext) => void
 }

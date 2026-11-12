@@ -8,7 +8,7 @@ Compared to other CAD software, getting Zoo Design Studio up and running is quic
 
 2. Once downloaded, run the installer `Zoo Design Studio-{version}-{arch}-win.exe` which should take a few seconds.
 
-3. By default the app installs for the current user (under `%LOCALAPPDATA%`). The installer can also install for all users when you choose that option. A Start Menu shortcut is created either way.
+3. The installation happens at `C:\Program Files\Zoo Design Studio`. A shortcut in the start menu is also created so you can run the app easily by clicking on it.
 
 ## macOS
 
