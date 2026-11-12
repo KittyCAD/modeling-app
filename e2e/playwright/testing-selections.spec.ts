@@ -409,7 +409,9 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = .1)`
       await scene.settled()
 
       await expect
-        .poll(() => page.evaluate(() => window.app.singletons.kclManager.read()))
+        .poll(() =>
+          page.evaluate(() => window.app.singletons.kclManager.read())
+        )
         .toBe(code)
 
       if (await page.evaluate(() => window.engineCommandManager.geometryOnly)) {

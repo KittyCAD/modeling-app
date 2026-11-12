@@ -1468,9 +1468,9 @@ solid001 = extrude(sketch001, length = 5)`
       modelingDialog,
     }) => {
       const initialCode = `@settings(defaultLengthUnit = in)
-    sketch001 = startSketchOn(XZ)
-      |> circle(center = [0, 0], radius = 30)
-    extrude001 = extrude(sketch001, length = 30)
+sketch001 = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 30)
+extrude001 = extrude(sketch001, length = 30)
     `
       await test.step('Settle the scene', async () => {
         await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -1509,7 +1509,7 @@ solid001 = extrude(sketch001, length = 5)`
           await test.step('Configure tolerance', async () => {
             await expect(modelingDialog.input('tolerance')).toHaveText('0.1in')
             // Set tolerance to 0.1in
-            await modelingDialog.input('tolerance').fill('0.1in')
+            await modelingDialog.fillInput('tolerance', '0.1in')
           })
 
           await test.step('Review basic parameters', async () => {
@@ -1524,7 +1524,7 @@ solid001 = extrude(sketch001, length = 5)`
               'Use defaults'
             )
             // Update precision from 3 to 5
-            await modelingDialog.input('precision').fill('5')
+            await modelingDialog.fillInput('precision', '5')
 
             // Review changes to precision
             await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1535,7 +1535,7 @@ solid001 = extrude(sketch001, length = 5)`
               modelingDialog.input('frame position')
             ).toHaveAttribute('aria-placeholder', 'Use defaults')
             // Update frame position from [0, 0] to [10, 10]
-            await modelingDialog.input('frame position').fill('[10, 10]')
+            await modelingDialog.fillInput('frame position', '[10, 10]')
 
             // Review changes to frame position
             await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1557,7 +1557,7 @@ solid001 = extrude(sketch001, length = 5)`
               'Use defaults'
             )
             // Update font size to 12mm
-            await modelingDialog.input('font size').fill('12mm')
+            await modelingDialog.fillInput('font size', '12mm')
 
             // Review changes to font size
             await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1596,7 +1596,7 @@ solid001 = extrude(sketch001, length = 5)`
           await test.step('Edit tolerance', async () => {
             await expect(modelingDialog.input('tolerance')).toHaveText('0.1in')
             // Update tolerance from 0.1in to 0.2in
-            await modelingDialog.input('tolerance').fill('0.2in')
+            await modelingDialog.fillInput('tolerance', '0.2in')
 
             // Review changes to tolerance
             await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1616,7 +1616,7 @@ solid001 = extrude(sketch001, length = 5)`
               '[10, 10]'
             )
             // Update frame position from [10, 10] to [20, 30]
-            await modelingDialog.input('frame position').fill('[20, 30]')
+            await modelingDialog.fillInput('frame position', '[20, 30]')
 
             // Review changes to frame position
             await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1637,7 +1637,7 @@ solid001 = extrude(sketch001, length = 5)`
           await test.step('Edit font size', async () => {
             await expect(modelingDialog.input('font size')).toHaveText('12mm')
             // Update font size from 48 to 24
-            await modelingDialog.input('font size').fill('24')
+            await modelingDialog.fillInput('font size', '24')
 
             // Review changes to font size
             await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1682,9 +1682,9 @@ solid001 = extrude(sketch001, length = 5)`
       modelingDialog,
     }) => {
       const initialCode = `@settings(defaultLengthUnit = in)
-    sketch001 = startSketchOn(XZ)
-      |> circle(center = [0, 0], radius = 30)
-    extrude001 = extrude(sketch001, length = 30)
+sketch001 = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 30)
+extrude001 = extrude(sketch001, length = 30)
     `
       await test.step('Settle the scene', async () => {
         await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -1740,7 +1740,7 @@ solid001 = extrude(sketch001, length = 5)`
               modelingDialog.input('frame position')
             ).toHaveAttribute('aria-placeholder', 'Use defaults')
             // Update frame position from [0, 0] to [5, 0]
-            await modelingDialog.input('frame position').fill('[5, 0]')
+            await modelingDialog.fillInput('frame position', '[5, 0]')
 
             // Review changes to frame position
             await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1762,7 +1762,7 @@ solid001 = extrude(sketch001, length = 5)`
               'Use defaults'
             )
             // Update font size to 12mm
-            await modelingDialog.input('font size').fill('12mm')
+            await modelingDialog.fillInput('font size', '12mm')
 
             // Review changes to font size
             await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1808,7 +1808,7 @@ solid001 = extrude(sketch001, length = 5)`
               '[5, 0]'
             )
             // Update frame position from [5, 0] to [10, 5]
-            await modelingDialog.input('frame position').fill('[10, 5]')
+            await modelingDialog.fillInput('frame position', '[10, 5]')
 
             // Review changes to frame position
             await expect(modelingDialog.submitButton).toBeEnabled()
@@ -1829,7 +1829,7 @@ solid001 = extrude(sketch001, length = 5)`
           await test.step('Edit font size', async () => {
             await expect(modelingDialog.input('font size')).toHaveText('12mm')
             // Update font size from 48 to 32
-            await modelingDialog.input('font size').fill('32')
+            await modelingDialog.fillInput('font size', '32')
 
             // Review changes to font size
             await expect(modelingDialog.submitButton).toBeEnabled()
