@@ -100,6 +100,7 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
       const instance: EditorViewInstance = {
         id: Symbol('editor-view'),
         editor,
+        element: signal<HTMLElement | undefined>(undefined),
         codeView: signal<NativeEditorView | undefined>(undefined),
       }
       const modes = createEditorModes(instance, views, contextBoundary)

@@ -39,6 +39,8 @@ export interface Editor {
 export interface EditorViewInstance {
   readonly id: symbol
   readonly editor: Editor
+  /** The mounted host of any mode; undefined while the view is detached. */
+  readonly element: ReadonlySignal<HTMLElement | undefined>
   readonly codeView: ReadonlySignal<EditorView | undefined>
 }
 
