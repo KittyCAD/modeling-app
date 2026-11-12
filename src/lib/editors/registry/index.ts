@@ -1,3 +1,4 @@
+import { createEditorHistory } from '@src/lib/editors/history'
 import {
   defineRegistryItemFactory,
   provide,
@@ -217,6 +218,7 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
       closeEditor(id)
     },
   }
+  const history = createEditorHistory(presentations)
   return {
     id: 'editors',
     provides: [
@@ -243,21 +245,10 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
             createElement(CodeMirrorView, { view: context, active }),
         })
       ),
-      // Focused Code surfaces consume document undo shortcuts before the legacy global keymap.
       provide(keymapEventOwnersValueSpec, {
         id: 'editors.history',
         scope: 'editors.history.focused',
-        owns: (event) =>
-          (event.metaKey || event.ctrlKey) &&
-          !event.altKey &&
-          ['z', 'y'].includes(event.key.toLowerCase()) &&
-          event
-            .composedPath()
-            .some(
-              (target) =>
-                target instanceof HTMLElement &&
-                target.hasAttribute('data-editor-code')
-            ),
+        owns: history.ownsKeyEvent,
       }),
       provide(codeEditorExtensionValueSpec, {
         id: 'editors.defaults',
@@ -289,6 +280,7 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
     dispose: () => {
       if (disposed) return
       disposed = true
+      history.dispose()
       for (const id of [...records.keys()]) closeEditor(id)
     },
   }
