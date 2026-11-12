@@ -12,6 +12,7 @@ import { PlaceholderLine } from '@src/components/PlaceholderLine'
 import { isImageMimetype } from '@src/lib/mimeTypes'
 import {
   type ReactNode,
+  type ReactElement,
   useCallback,
   useEffect,
   useMemo,
@@ -1053,6 +1054,7 @@ export const Thinking = (
     thoughts?: MlCopilotServerMessage[]
     isDone: boolean
     onlyShowImmediateThought: boolean
+    activityNotice?: ReactElement
   } & AttachmentFetchProps
 ) => {
   const refViewFull = useRef<HTMLDivElement>(null)
@@ -1155,7 +1157,7 @@ export const Thinking = (
   const sections = hasStructuredActivity
     ? groupActivityItems(displayedItems)
     : undefined
-  const componentThoughts = sections
+  const componentThoughts: (ReactElement | null)[] = sections
     ? sections.map((section, sectionIndex) => {
         if (section.kind === 'commentary') {
           return (
@@ -1203,6 +1205,11 @@ export const Thinking = (
 
   if (props.isDone && !hasStructuredActivity) {
     componentThoughts.push(<End key={reasoningThoughts.length} />)
+  }
+  if (props.activityNotice) {
+    const firstCommentaryIndex =
+      sections?.findIndex((section) => section.kind === 'commentary') ?? -1
+    componentThoughts.splice(firstCommentaryIndex + 1, 0, props.activityNotice)
   }
 
   const lastCommentary = activityItems.findLast(

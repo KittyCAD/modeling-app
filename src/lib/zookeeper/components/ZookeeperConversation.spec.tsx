@@ -850,8 +850,11 @@ describe('ZookeeperConversation', () => {
         ).not.toBeInTheDocument()
       } else {
         expect(
-          screen.getByTestId('ml-response-info-chat-bubble')
-        ).toHaveTextContent(infoText)
+          screen.queryByTestId('ml-response-info-chat-bubble')
+        ).not.toBeInTheDocument()
+        expect(
+          screen.queryByTestId('zookeeper-manual-edit-notice')
+        ).not.toBeInTheDocument()
       }
       expect(
         screen.queryByTestId('ml-response-chat-bubble-thinking')
@@ -867,6 +870,15 @@ describe('ZookeeperConversation', () => {
           screen.getByTestId('ml-response-thinking-view')
         ).toBeInTheDocument()
       })
+      if (
+        infoText === 'Manual edits detected since the last Zookeeper state.'
+      ) {
+        expect(
+          screen.getByTestId('zookeeper-manual-edit-notice')
+        ).toHaveTextContent(
+          'Project files changed since Zookeeper last ran. Using the current files.'
+        )
+      }
       expect(
         screen.getByRole('button', { name: /Hide activity/ })
       ).toHaveAttribute('aria-expanded', 'true')

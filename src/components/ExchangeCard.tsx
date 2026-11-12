@@ -21,6 +21,7 @@ import {
 import ms from 'ms'
 import {
   type ComponentProps,
+  type ReactElement,
   type ReactNode,
   useEffect,
   isValidElement,
@@ -49,9 +50,11 @@ type MlCopilotServerMessageEndOfStream = Extract<
 
 const TRANSIENT_RETRY_STATUS_TEXT =
   'Temporary connection issue. Retrying automatically…'
+const MANUAL_EDITS_INFO_TEXT =
+  'Manual edits detected since the last Zookeeper state.'
 
 const NON_TERMINAL_INFO_TEXTS = [
-  'Manual edits detected since the last Zookeeper state.',
+  MANUAL_EDITS_INFO_TEXT,
   TRANSIENT_RETRY_STATUS_TEXT,
 ]
 
@@ -74,6 +77,9 @@ const isTransientRetryInfoResponse = (
 ): boolean =>
   'info' in response &&
   response.info.text.startsWith(TRANSIENT_RETRY_STATUS_TEXT)
+
+const isManualEditsInfoResponse = (response: MlCopilotServerMessage): boolean =>
+  'info' in response && response.info.text.startsWith(MANUAL_EDITS_INFO_TEXT)
 
 const isExchangeComplete = (responses?: MlCopilotServerMessage[]): boolean =>
   responses?.some(
@@ -159,6 +165,7 @@ export const ExchangeCardStatus = (props: {
   onFetchAttachment?: (attachmentRef: AttachmentRef) => void
   onlyShowImmediateThought: boolean
   maybeError?: MlCopilotServerMessageError
+  activityNotice?: ReactElement
 }) => {
   // Error and info also signal the end of a stream when no end_of_stream arrives.
   const isEndOfStream = isExchangeComplete(props.responses)
@@ -169,6 +176,7 @@ export const ExchangeCardStatus = (props: {
       attachmentFetches={props.attachmentFetches}
       onFetchAttachment={props.onFetchAttachment}
       onlyShowImmediateThought={props.onlyShowImmediateThought}
+      activityNotice={props.activityNotice}
     />
   )
 
@@ -386,7 +394,11 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
       // if ('delta' in response) {
       //   return response.delta.delta
       // }
-      if ('info' in response && !isTransientRetryInfoResponse(response)) {
+      if (
+        'info' in response &&
+        !isTransientRetryInfoResponse(response) &&
+        !isManualEditsInfoResponse(response)
+      ) {
         return <span key={index}>{response.info.text}</span>
       }
       return null
@@ -534,12 +546,15 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
     }
   }, [isEndOfStream])
 
-  const hasRecordedActivity = props.responses.some(
-    (response) =>
-      'reasoning' in response ||
-      ('files' in response &&
-        response.files.files.some((file) => !isExportDownloadFile(file)))
-  )
+  const manualEditsDetected = props.responses.some(isManualEditsInfoResponse)
+  const hasRecordedActivity =
+    manualEditsDetected ||
+    props.responses.some(
+      (response) =>
+        'reasoning' in response ||
+        ('files' in response &&
+          response.files.files.some((file) => !isExportDownloadFile(file)))
+    )
   const hasActivity =
     hasRecordedActivity || (!isEndOfStream && props.isLastResponse)
   let latestCommentary: string | undefined
@@ -618,6 +633,26 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
                   attachmentFetches={props.attachmentFetches}
                   onFetchAttachment={props.onFetchAttachment}
                   onlyShowImmediateThought={false}
+                  activityNotice={
+                    manualEditsDetected ? (
+                      <div
+                        key="manual-edit-notice"
+                        data-testid="zookeeper-manual-edit-notice"
+                        className="my-2 flex items-start gap-2 rounded bg-chalkboard-20 px-2 py-1.5 text-chalkboard-70 dark:bg-chalkboard-80 dark:text-chalkboard-30"
+                      >
+                        <span
+                          aria-hidden="true"
+                          className="mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border border-current text-[10px] leading-none"
+                        >
+                          i
+                        </span>
+                        <span>
+                          Project files changed since Zookeeper last ran. Using
+                          the current files.
+                        </span>
+                      </div>
+                    ) : undefined
+                  }
                 />
               ) : (
                 <PlaceholderLine />

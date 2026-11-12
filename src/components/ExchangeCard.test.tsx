@@ -340,6 +340,73 @@ describe('ExchangeCard replay attachments', () => {
     ).toHaveAttribute('open')
   })
 
+  test('keeps the manual edit notice inside expanded activity', () => {
+    render(
+      <ExchangeCard
+        {...exchangeProps}
+        request={{ type: 'user', content: 'Inspect the project' }}
+        responses={[
+          {
+            info: {
+              text: 'Manual edits detected since the last Zookeeper state.',
+            },
+          },
+          {
+            reasoning: {
+              type: 'markdown',
+              content:
+                ZOOKEEPER_ACTIVITY_PREFIX +
+                JSON.stringify({
+                  kind: 'commentary',
+                  text: 'Checking the project.',
+                }),
+            },
+          },
+          {
+            reasoning: {
+              type: 'markdown',
+              content:
+                ZOOKEEPER_ACTIVITY_PREFIX +
+                JSON.stringify({
+                  kind: 'tool',
+                  call_id: 'call-1',
+                  name: 'read_project_file',
+                  status: 'completed',
+                  label: 'Read main.kcl',
+                }),
+            },
+          },
+        ]}
+      />
+    )
+
+    expect(screen.getByText('Checking the project.')).toBeVisible()
+    expect(
+      screen.queryByTestId('ml-response-info-chat-bubble')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByText(
+        'Project files changed since Zookeeper last ran. Using the current files.'
+      )
+    ).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /View activity/ }))
+
+    const activityCard = screen.getByTestId('zookeeper-activity-card')
+    const notice = screen.getByTestId('zookeeper-manual-edit-notice')
+    expect(activityCard).toContainElement(notice)
+    expect(notice).toHaveTextContent(
+      'Project files changed since Zookeeper last ran. Using the current files.'
+    )
+    const activityText = activityCard.textContent ?? ''
+    expect(activityText.indexOf('Checking the project.')).toBeLessThan(
+      activityText.indexOf('Project files changed')
+    )
+    expect(activityText.indexOf('Project files changed')).toBeLessThan(
+      activityText.indexOf('Read main.kcl')
+    )
+  })
+
   test('shows an activity card immediately, before any response arrives', () => {
     render(
       <ExchangeCard
