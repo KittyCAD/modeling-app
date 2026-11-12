@@ -1003,35 +1003,39 @@ for (const kind of ['local', 'cloud'] as const) {
           }
           if (removal.startsWith('editor'))
             await editThroughUI(page, updatedCode)
-          else {
-            const download = Promise.withResolvers<undefined>()
-            let downloading = false
-            if (kind === 'cloud')
-              await context.route('**/versions/*/download*', async (route) => {
-                downloading = true
-                await download.promise
-                await route.fallback()
-              })
-            try {
-              await storage.replace(root, updatedCode)
-              if (kind === 'cloud') {
-                await expect.poll(() => downloading).toBe(true)
-                await installPausedClock(page)
-                await page.clock.runFor(7_000)
-                await expect(toolbar.exitSketchBtn).toBeEnabled()
+          else
+            await scene.waitForExecutionDoneAfter(async () => {
+              const download = Promise.withResolvers<undefined>()
+              let downloading = false
+              if (kind === 'cloud')
+                await context.route(
+                  '**/versions/*/download*',
+                  async (route) => {
+                    downloading = true
+                    await download.promise
+                    await route.fallback()
+                  }
+                )
+              try {
+                await storage.replace(root, updatedCode)
+                if (kind === 'cloud') {
+                  await expect.poll(() => downloading).toBe(true)
+                  await installPausedClock(page)
+                  await page.clock.runFor(7_000)
+                  await expect(toolbar.exitSketchBtn).toBeEnabled()
+                }
+              } finally {
+                download.resolve(undefined)
+                if (kind === 'cloud') await page.clock.resume()
               }
-            } finally {
-              download.resolve(undefined)
-              if (kind === 'cloud') await page.clock.resume()
-            }
-            if (kind === 'local' && process.env.TARGET === 'web')
-              await page.evaluate(() => {
-                const editor = window.app.project?.executingEditor.peek()
-                if (editor)
-                  for (const onChange of editor.onWatchEvent)
-                    onChange('change', editor.path)
-              })
-          }
+              if (kind === 'local' && process.env.TARGET === 'web')
+                await page.evaluate(() => {
+                  const editor = window.app.project?.executingEditor.peek()
+                  if (editor)
+                    for (const onChange of editor.onWatchEvent)
+                      onChange('change', editor.path)
+                })
+            })
           await expectEditor(page, updatedCode)
           if (removal.startsWith('editor'))
             await page.evaluate(() =>

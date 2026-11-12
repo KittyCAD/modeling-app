@@ -10,7 +10,11 @@ import {
   openProjectLibrary,
   selectProjectLibraries,
 } from '@e2e/playwright/lib/appTestUtils'
-import { mockClientErrorReports, setup } from '@e2e/playwright/test-utils'
+import {
+  mockClientErrorReports,
+  setup,
+  waitForAppLoad,
+} from '@e2e/playwright/test-utils'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import {
   getDefaultCloudProjectLibrarySetting,
