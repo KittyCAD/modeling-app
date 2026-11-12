@@ -1,0 +1,280 @@
+import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import fc from 'fast-check'
+import { describe, expect, it } from 'vitest'
+
+export interface FileSystemContractFixture {
+  readonly fs: IZooDesignStudioFS
+  readonly root: string
+  readonly dispose: () => Promise<void>
+}
+
+const bytes = fc.uint8Array({ maxLength: 128 })
+const segment = fc
+  .array(fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789-_'), {
+    minLength: 1,
+    maxLength: 12,
+  })
+  .map((characters) => `dir-${characters.join('')}`)
+
+/** Common adapter guarantees. No cloud acknowledgement or coordinator ordering is assumed. */
+export function fileSystemContract(
+  name: string,
+  create: () => Promise<FileSystemContractFixture>
+) {
+  const usingFixture = async (
+    check: (fixture: FileSystemContractFixture) => Promise<void>
+  ) => {
+    const fixture = await create()
+    try {
+      await check(fixture)
+    } finally {
+      await fixture.dispose()
+    }
+  }
+
+  describe(name, () => {
+    it('preserves file identity across overwrites and distinguishes new entries', async () => {
+      await fc.assert(
+        fc.asyncProperty(bytes, bytes, (original, replacement) =>
+          usingFixture(async ({ fs, root }) => {
+            const file = fs.join(root, 'identity.bin')
+            await fs.writeFile(file, original)
+            const before = await fs.stat(file)
+            await fs.writeFile(file, replacement)
+            expect((await fs.stat(file)).ino).toBe(before.ino)
+            expect(Uint8Array.from(await fs.readFile(file))).toEqual(
+              replacement
+            )
+            // Keep the old entry alive so disk filesystems cannot reuse its inode.
+            const moved = fs.join(root, 'old-identity.bin')
+            await fs.rename(file, moved)
+            await fs.writeFile(file, original)
+            expect((await fs.stat(file)).ino).not.toBe(before.ino)
+          })
+        ),
+        { numRuns: 50 }
+      )
+    })
+
+    it('renames over an existing file without changing source identity', async () => {
+      await fc.assert(
+        fc.asyncProperty(bytes, bytes, (contents, previous) =>
+          usingFixture(async ({ fs, root }) => {
+            const source = fs.join(root, 'source.bin')
+            const destination = fs.join(root, 'destination.bin')
+            await fs.writeFile(source, contents)
+            await fs.writeFile(destination, previous)
+            const before = await fs.stat(source)
+            await fs.rename(source, destination)
+            expect(Uint8Array.from(await fs.readFile(destination))).toEqual(
+              contents
+            )
+            expect((await fs.stat(destination)).ino).toBe(before.ino)
+            await expect(fs.stat(source)).rejects.toMatchObject({
+              code: 'ENOENT',
+            })
+          })
+        ),
+        { numRuns: 50 }
+      )
+    })
+
+    it('accepts renaming an existing file or directory to itself', async () => {
+      await usingFixture(async ({ fs, root }) => {
+        const file = fs.join(root, 'contents.bin')
+        await fs.writeFile(file, new Uint8Array([42]))
+        await fs.rename(file, file)
+        await fs.rename(root, root)
+        expect(Uint8Array.from(await fs.readFile(file))).toEqual(
+          new Uint8Array([42])
+        )
+        const missing = fs.join(root, 'missing')
+        await expect(fs.rename(missing, missing)).rejects.toMatchObject({
+          code: 'ENOENT',
+        })
+      })
+    })
+
+    it('preserves entry identity throughout a renamed subtree', async () => {
+      await usingFixture(async ({ fs, root }) => {
+        const source = fs.join(root, 'source')
+        const destination = fs.join(root, 'destination')
+        await fs.mkdir(source)
+        await fs.writeFile(fs.join(source, 'file.bin'), new Uint8Array([42]))
+        const before = await fs.stat(source)
+        const child = await fs.stat(fs.join(source, 'file.bin'))
+        await fs.rename(source, destination)
+        expect((await fs.stat(destination)).ino).toBe(before.ino)
+        expect((await fs.stat(fs.join(destination, 'file.bin'))).ino).toBe(
+          child.ino
+        )
+        expect(
+          Uint8Array.from(await fs.readFile(fs.join(destination, 'file.bin')))
+        ).toEqual(new Uint8Array([42]))
+        await expect(fs.stat(source)).rejects.toMatchObject({ code: 'ENOENT' })
+      })
+    })
+
+    it('leaves both trees intact when a rename destination is invalid', async () => {
+      await usingFixture(async ({ fs, root }) => {
+        const source = fs.join(root, 'source')
+        const destination = fs.join(root, 'destination')
+        const file = fs.join(source, 'file.bin')
+        await fs.mkdir(source)
+        await fs.mkdir(destination)
+        await fs.writeFile(file, new Uint8Array([1]))
+        await fs.writeFile(
+          fs.join(destination, 'file.bin'),
+          new Uint8Array([2])
+        )
+        await expect(fs.rename(source, destination)).rejects.toThrow()
+        await expect(
+          fs.rename(source, fs.join(source, 'child'))
+        ).rejects.toThrow()
+        await expect(fs.rename(file, destination)).rejects.toThrow()
+        await expect(fs.rename(destination, file)).rejects.toThrow()
+        await expect(
+          fs.rename(source, fs.join(root, 'missing', 'child'))
+        ).rejects.toThrow()
+        expect(Uint8Array.from(await fs.readFile(file))).toEqual(
+          new Uint8Array([1])
+        )
+        expect(
+          Uint8Array.from(await fs.readFile(fs.join(destination, 'file.bin')))
+        ).toEqual(new Uint8Array([2]))
+      })
+    })
+
+    it('round-trips generated bytes without sharing caller or reader buffers', async () => {
+      await fc.assert(
+        fc.asyncProperty(bytes, (contents) =>
+          usingFixture(async ({ fs, root }) => {
+            const file = fs.join(root, 'contents.bin')
+            const expected = new Uint8Array(contents)
+            const callerBuffer = new Uint8Array(contents)
+            await fs.writeFile(file, callerBuffer)
+            // Mutate only after acknowledgement: raw NodeFS makes no earlier ownership promise.
+            callerBuffer.fill(0)
+            const read = await fs.readFile(file)
+            expect(Uint8Array.from(read)).toEqual(expected)
+            read.fill(255)
+            expect(Uint8Array.from(await fs.readFile(file))).toEqual(expected)
+          })
+        ),
+        { numRuns: 50 }
+      )
+    })
+
+    it('preserves existing bytes when exclusive creation collides', async () => {
+      await fc.assert(
+        fc.asyncProperty(bytes, bytes, (original, replacement) =>
+          usingFixture(async ({ fs, root }) => {
+            const file = fs.join(root, 'existing.bin')
+            await fs.writeFile(file, original, { flag: 'wx' })
+            await expect(
+              fs.writeFile(file, replacement, { flag: 'wx' })
+            ).rejects.toMatchObject({ code: 'EEXIST' })
+            expect(Uint8Array.from(await fs.readFile(file))).toEqual(original)
+          })
+        ),
+        { numRuns: 50 }
+      )
+    })
+
+    it('preserves a generated subtree through rename and removes the old paths', async () => {
+      await fc.assert(
+        fc.asyncProperty(
+          fc.array(
+            fc.record({
+              directories: fc.array(segment, { maxLength: 3 }),
+              contents: bytes,
+            }),
+            { minLength: 1, maxLength: 8 }
+          ),
+          (entries) =>
+            usingFixture(async ({ fs, root }) => {
+              const source = fs.join(root, 'source')
+              const destination = fs.join(root, 'destination')
+              await fs.mkdir(source)
+              const files = entries.map(({ directories, contents }, index) => ({
+                relativePath: fs.join(
+                  `entry-${index}`,
+                  ...directories,
+                  'file.bin'
+                ),
+                contents,
+              }))
+              for (const { relativePath, contents } of files) {
+                const file = fs.join(source, relativePath)
+                await fs.mkdir(fs.dirname(file), { recursive: true })
+                await fs.writeFile(file, contents)
+              }
+              await fs.rename(source, destination)
+              await expect(fs.stat(source)).rejects.toMatchObject({
+                code: 'ENOENT',
+              })
+              for (const { relativePath, contents } of files) {
+                expect(
+                  Uint8Array.from(
+                    await fs.readFile(fs.join(destination, relativePath))
+                  )
+                ).toEqual(contents)
+                await expect(
+                  fs.readFile(fs.join(source, relativePath))
+                ).rejects.toMatchObject({ code: 'ENOENT' })
+              }
+            })
+        ),
+        { numRuns: 50 }
+      )
+    }, 10_000)
+
+    it('matches an independent file model across generated write, read, and remove histories', async () => {
+      const operation = fc.oneof(
+        fc.record({ kind: fc.constant('write' as const), contents: bytes }),
+        fc.record({ kind: fc.constant('read' as const) }),
+        fc.record({ kind: fc.constant('remove' as const) })
+      )
+      await fc.assert(
+        fc.asyncProperty(
+          fc.array(operation, { minLength: 1, maxLength: 30 }),
+          (history) =>
+            usingFixture(async ({ fs, root }) => {
+              const file = fs.join(root, 'model.bin')
+              let expected: Uint8Array | undefined
+              const assertContents = async () => {
+                if (expected === undefined) {
+                  await expect(fs.readFile(file)).rejects.toMatchObject({
+                    code: 'ENOENT',
+                  })
+                } else {
+                  expect(Uint8Array.from(await fs.readFile(file))).toEqual(
+                    expected
+                  )
+                }
+              }
+              for (const operation of history) {
+                if (operation.kind === 'write') {
+                  await fs.writeFile(file, operation.contents)
+                  expected = new Uint8Array(operation.contents)
+                } else if (operation.kind === 'remove') {
+                  if (expected === undefined) {
+                    await expect(fs.rm(file)).rejects.toMatchObject({
+                      code: 'ENOENT',
+                    })
+                  } else {
+                    await fs.rm(file)
+                    expected = undefined
+                  }
+                } else {
+                  await assertContents()
+                }
+                await assertContents()
+              }
+            })
+        ),
+        { numRuns: 50 }
+      )
+    }, 10_000)
+  })
+}

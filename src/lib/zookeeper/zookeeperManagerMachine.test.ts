@@ -736,6 +736,86 @@ describe('zookeeperManagerMachine', () => {
       stubClientErrorFetch()
     })
 
+    it.each([
+      { info: { text: 'Message canceled by user.' } },
+      { error: { detail: 'Request failed.' } },
+      {
+        info: {
+          text: 'Temporary connection issue. Retrying automatically\u2026',
+        },
+      },
+      {
+        info: { text: 'Manual edits detected since the last Zookeeper state.' },
+      },
+    ])('keeps replayed notices with their exchange: %j', async (notice) => {
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: { apiToken: 'token' },
+      }).start()
+      const firstRequest = { type: 'user', content: 'Make a bracket' }
+      const firstAnswer = {
+        end_of_stream: { whole_response: 'Bracket created.' },
+      }
+      const secondRequest = { type: 'user', content: 'Add a hole' }
+      const reasoning = {
+        reasoning: { type: 'text', content: 'Checking constraints' },
+      }
+
+      try {
+        actor.send({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          refParentSend: vi.fn(),
+          conversationId: 'conversation-id',
+        })
+        const socket = ControllableSetupWebSocket.instances[0]
+        socket.open()
+        await vi.waitFor(() => {
+          expect(socket.sentPayloads).toContain(
+            JSON.stringify({ type: 'list_modes' })
+          )
+        })
+        socket.receive({
+          replay: {
+            messages: [
+              notice,
+              firstRequest,
+              firstAnswer,
+              secondRequest,
+              reasoning,
+              notice,
+            ].map((message) =>
+              Array.from(new TextEncoder().encode(JSON.stringify(message)))
+            ),
+          },
+        })
+        socket.receive({
+          conversation_id: { conversation_id: 'conversation-id' },
+        })
+        await waitFor(actor, (state) =>
+          state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+        )
+
+        expect(actor.getSnapshot().context.conversation?.exchanges).toEqual([
+          {
+            responses: [notice],
+            deltasAggregated: '',
+          },
+          {
+            request: firstRequest,
+            responses: [firstAnswer],
+            deltasAggregated: firstAnswer.end_of_stream.whole_response,
+          },
+          {
+            request: secondRequest,
+            responses: [reasoning, notice],
+            deltasAggregated: '',
+          },
+        ])
+      } finally {
+        actor.stop()
+      }
+    })
+
     it('waits for auth hydration before opening the setup websocket', async () => {
       vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
       const actor = createActor(zookeeperManagerMachine, {

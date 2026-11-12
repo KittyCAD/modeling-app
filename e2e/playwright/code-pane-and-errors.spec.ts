@@ -10,21 +10,24 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
-test.describe('Code pane and errors', { tag: '@desktop' }, () => {
-  test('Typing KCL errors induces a badge on the code pane button', async ({
-    page,
-    homePage,
-    scene,
-    cmdBar,
-    editor,
-  }) => {
-    const u = await getUtils(page)
+test.describe(
+  'Code pane and errors',
+  { tag: ['@desktop', '@localRenderer'] },
+  () => {
+    test('Typing KCL errors induces a badge on the code pane button', async ({
+      page,
+      homePage,
+      scene,
+      cmdBar,
+      editor,
+    }) => {
+      const u = await getUtils(page)
 
-    // Load the app with the working starter code
-    await page.addInitScript(() => {
-      localStorage.setItem(
-        'persistCode',
-        `@settings(defaultLengthUnit = in)
+      // Load the app with the working starter code
+      await page.addInitScript(() => {
+        localStorage.setItem(
+          'persistCode',
+          `@settings(defaultLengthUnit = in)
 // Extruded Triangle
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
@@ -33,95 +36,100 @@ sketch001 = startSketchOn(XZ)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = 5)`
-      )
-    })
-
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.goToModelingScene()
-    await scene.settled()
-
-    // Ensure no badge is present
-    const codeBadge = page.locator('#code-badge')
-    await expect(codeBadge).not.toBeVisible()
-
-    // Delete a character to break the KCL
-    await u.openKclCodePanel()
-    await editor.codeContent.getByText('sketch001').last().click()
-    await page.keyboard.press('Backspace')
-
-    // Ensure that a badge appears on the button
-    await expect(codeBadge).toBeVisible()
-  })
-
-  test('When error is not in view you can click the badge to scroll to it', async ({
-    page,
-    homePage,
-    context,
-    editor,
-  }) => {
-    // Load the app with the working starter code
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW)
-
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.goToModelingScene()
-    await editor.openPane()
-
-    // Ensure badge is present
-    const codePaneButtonHolder = page.locator('#code-button-holder')
-    await expect(codePaneButtonHolder).toContainText('notification', {
-      timeout: 20_000,
-    })
-    await expect(editor.codeContent).toBeVisible()
-
-    // Ensure we have no errors in the gutter, since error out of view.
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeInViewport()
-
-    // Click the badge.
-    const badge = page.locator('#code-badge')
-    await expect(badge).toBeVisible()
-    await badge.click()
-
-    // Ensure we have an error diagnostic.
-    await expect(editor.codeContent).toBeVisible()
-    await expect(page.locator('.cm-lint-marker-error').first()).toBeInViewport()
-
-    // Repeated navigation to an error must keep the code pane open.
-    await badge.click()
-    await expect(editor.codeContent).toBeVisible()
-    await expect(page.locator('.cm-lint-marker-error').first()).toBeInViewport()
-
-    // The same notification must also open a closed code pane.
-    await editor.closePane()
-    await expect(editor.codeContent).not.toBeVisible()
-    await badge.click()
-    await expect(editor.codeContent).toBeVisible()
-    await expect(page.locator('.cm-lint-marker-error').first()).toBeInViewport()
-
-    // Hover over the error to see the error message
-    await page.hover('.cm-lint-marker-error')
-    await expect(
-      page
-        .getByText(
-          'Solid3D revolve failed:  sketch profile must lie entirely on one side of the revolution axis'
         )
-        .first()
-    ).toBeVisible()
+      })
 
-    // Make sure ApiError is not on the page.
-    // This ensures we didn't nest the json
-    await expect(page.getByText('ApiError')).not.toBeVisible()
-  })
-
-  test(
-    'KCL errors with functions show hints for the entire backtrace',
-    { tag: '@web' },
-    async ({ page, homePage, scene, cmdBar, editor, toolbar }) => {
+      await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
 
-      const code = `fn check(@x) {
+      // Ensure no badge is present
+      const codeBadge = page.locator('#code-badge')
+      await expect(codeBadge).not.toBeVisible()
+
+      // Delete a character to break the KCL
+      await u.openKclCodePanel()
+      await editor.codeContent.getByText('sketch001').last().click()
+      await page.keyboard.press('Backspace')
+
+      // Ensure that a badge appears on the button
+      await expect(codeBadge).toBeVisible()
+    })
+
+    test('When error is not in view you can click the badge to scroll to it', async ({
+      page,
+      homePage,
+      context,
+      editor,
+    }) => {
+      // Load the app with the working starter code
+      await context.addInitScript((code) => {
+        localStorage.setItem('persistCode', code)
+      }, TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW)
+
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+
+      // Ensure badge is present
+      const codePaneButtonHolder = page.locator('#code-button-holder')
+      await expect(codePaneButtonHolder).toContainText('notification', {
+        timeout: 20_000,
+      })
+      await expect(editor.codeContent).toBeVisible()
+
+      // Ensure we have no errors in the gutter, since error out of view.
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeInViewport()
+
+      // Click the badge.
+      const badge = page.locator('#code-badge')
+      await expect(badge).toBeVisible()
+      await badge.click()
+
+      // Ensure we have an error diagnostic.
+      await expect(editor.codeContent).toBeVisible()
+      await expect(
+        page.locator('.cm-lint-marker-error').first()
+      ).toBeInViewport()
+
+      // Repeated navigation to an error must keep the code pane open.
+      await badge.click()
+      await expect(editor.codeContent).toBeVisible()
+      await expect(
+        page.locator('.cm-lint-marker-error').first()
+      ).toBeInViewport()
+
+      // The same notification must also open a closed code pane.
+      await editor.closePane()
+      await expect(editor.codeContent).not.toBeVisible()
+      await badge.click()
+      await expect(editor.codeContent).toBeVisible()
+      await expect(
+        page.locator('.cm-lint-marker-error').first()
+      ).toBeInViewport()
+
+      // Hover over the error to see the error message
+      await page.hover('.cm-lint-marker-error')
+      await expect(
+        page
+          .getByText(
+            'Solid3D revolve failed:  sketch profile must lie entirely on one side of the revolution axis'
+          )
+          .first()
+      ).toBeVisible()
+
+      // Make sure ApiError is not on the page.
+      // This ensures we didn't nest the json
+      await expect(page.getByText('ApiError')).not.toBeVisible()
+    })
+
+    test(
+      'KCL errors with functions show hints for the entire backtrace',
+      { tag: '@web' },
+      async ({ page, homePage, scene, cmdBar, editor, toolbar }) => {
+        await homePage.goToModelingScene()
+        await scene.settled()
+
+        const code = `fn check(@x) {
   return assert(x, isGreaterThan = 0)
 }
 
@@ -132,106 +140,109 @@ fn middle(@x) {
 middle(1)
 middle(0)
 `
-      await test.step('Set the code with a KCL error', async () => {
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.replaceCode('', code)
-      })
-      // This shows all the diagnostics in a way that doesn't require the mouse
-      // pointer hovering over a coordinate, which would be brittle.
-      await test.step('Open CodeMirror diagnostics list', async () => {
-        // Ensure keyboard focus is in the editor.
-        await page.getByText('fn check(').click()
-        await page.keyboard.press('ControlOrMeta+Shift+M')
-      })
-      const error = page
-        .getByLabel('Diagnostics')
-        .locator('.cm-diagnosticText')
-        .filter({ hasText: 'assert failed' })
-      await expectRenderedDiagnosticText(
-        error,
-        `assert failed: Expected 0 to be greater than 0 but it wasn't
+        await test.step('Set the code with a KCL error', async () => {
+          await toolbar.openPane(DefaultLayoutPaneID.Code)
+          await editor.replaceCode('', code)
+        })
+        // This shows all the diagnostics in a way that doesn't require the mouse
+        // pointer hovering over a coordinate, which would be brittle.
+        await test.step('Open CodeMirror diagnostics list', async () => {
+          // Ensure keyboard focus is in the editor.
+          await page.getByText('fn check(').click()
+          await page.keyboard.press('ControlOrMeta+Shift+M')
+        })
+        const error = page
+          .getByLabel('Diagnostics')
+          .locator('.cm-diagnosticText')
+          .filter({ hasText: 'assert failed' })
+        await expectRenderedDiagnosticText(
+          error,
+          `assert failed: Expected 0 to be greater than 0 but it wasn't
 
 Backtrace:
 assert()
 check()
 middle()`
-      )
-      // There should be one hint inside middle() and one at the top level.
-      await expect(page.getByText('Part of the error backtrace')).toHaveCount(2)
-    }
-  )
+        )
+        // There should be one hint inside middle() and one at the top level.
+        await expect(page.getByText('Part of the error backtrace')).toHaveCount(
+          2
+        )
+      }
+    )
 
-  test('KCL errors from imported files show the import backtrace', async ({
-    page,
-    toolbar,
-    homePage,
-    folderSetupFn,
-  }) => {
-    // A runtime error deep in a nested import: main.kcl imports
-    // assembly.kcl, which imports broken.kcl, which fails to execute.
-    await folderSetupFn(async (dir) => {
-      const projectDir = join(dir, 'broken-import')
-      await fsp.mkdir(projectDir, { recursive: true })
-      await fsp.writeFile(
-        join(projectDir, 'broken.kcl'),
-        'export brokenValue = missingName + 1\n',
-        'utf-8'
-      )
-      await fsp.writeFile(
-        join(projectDir, 'assembly.kcl'),
-        'import brokenValue from "broken.kcl"\n\nexport assemblyValue = brokenValue\n',
-        'utf-8'
-      )
-      await fsp.writeFile(
-        join(projectDir, 'main.kcl'),
-        'import assemblyValue from "assembly.kcl"\n\nassemblyValue\n',
-        'utf-8'
-      )
-    })
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    await homePage.openProject('broken-import')
-
-    await test.step('Wait for execution to report the error', async () => {
-      const codePaneButtonHolder = page.locator('#code-button-holder')
-      await expect(codePaneButtonHolder).toContainText('notification', {
-        timeout: 20_000,
+    test('KCL errors from imported files show the import backtrace', async ({
+      page,
+      toolbar,
+      homePage,
+      folderSetupFn,
+    }) => {
+      // A runtime error deep in a nested import: main.kcl imports
+      // assembly.kcl, which imports broken.kcl, which fails to execute.
+      await folderSetupFn(async (dir) => {
+        const projectDir = join(dir, 'broken-import')
+        await fsp.mkdir(projectDir, { recursive: true })
+        await fsp.writeFile(
+          join(projectDir, 'broken.kcl'),
+          'export brokenValue = missingName + 1\n',
+          'utf-8'
+        )
+        await fsp.writeFile(
+          join(projectDir, 'assembly.kcl'),
+          'import brokenValue from "broken.kcl"\n\nexport assemblyValue = brokenValue\n',
+          'utf-8'
+        )
+        await fsp.writeFile(
+          join(projectDir, 'main.kcl'),
+          'import assemblyValue from "assembly.kcl"\n\nassemblyValue\n',
+          'utf-8'
+        )
       })
-    })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    // This shows all the diagnostics in a way that doesn't require the mouse
-    // pointer hovering over a coordinate, which would be brittle.
-    await test.step('Open CodeMirror diagnostics list', async () => {
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      // Ensure keyboard focus is in the editor.
-      await page.getByText('import assemblyValue').click()
-      await page.keyboard.press('ControlOrMeta+Shift+M')
-    })
+      await homePage.openProject('broken-import')
 
-    // The original error message is preserved, and import frames are
-    // labeled as imports (no call parens), innermost first.
-    const error = page
-      .getByLabel('Diagnostics')
-      .locator('.cm-diagnosticText')
-      .filter({ hasText: 'missingName' })
-    await expectRenderedDiagnosticText(
-      error,
-      `missingName is not defined
+      await test.step('Wait for execution to report the error', async () => {
+        const codePaneButtonHolder = page.locator('#code-button-holder')
+        await expect(codePaneButtonHolder).toContainText('notification', {
+          timeout: 20_000,
+        })
+      })
+
+      // This shows all the diagnostics in a way that doesn't require the mouse
+      // pointer hovering over a coordinate, which would be brittle.
+      await test.step('Open CodeMirror diagnostics list', async () => {
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        // Ensure keyboard focus is in the editor.
+        await page.getByText('import assemblyValue').click()
+        await page.keyboard.press('ControlOrMeta+Shift+M')
+      })
+
+      // The original error message is preserved, and import frames are
+      // labeled as imports (no call parens), innermost first.
+      const error = page
+        .getByLabel('Diagnostics')
+        .locator('.cm-diagnosticText')
+        .filter({ hasText: 'missingName' })
+      await expectRenderedDiagnosticText(
+        error,
+        `missingName is not defined
 
 Backtrace:
 import broken.kcl
 import assembly.kcl`
-    )
-    await expect(error.locator('code')).toHaveText('missingName')
-    // The import frames are in other files and the top-level frame is the
-    // error's own range, so there are no backtrace hint diagnostics.
-    await expect(page.getByText('Part of the error backtrace')).toHaveCount(0)
-  })
-})
+      )
+      await expect(error.locator('code')).toHaveText('missingName')
+      // The import frames are in other files and the top-level frame is the
+      // error's own range, so there are no backtrace hint diagnostics.
+      await expect(page.getByText('Part of the error backtrace')).toHaveCount(0)
+    })
+  }
+)
 
 test(
   'Opening multiple panes persists when switching projects',
-  { tag: '@desktop' },
+  { tag: ['@desktop', '@localRenderer'] },
   async ({ page, folderSetupFn }) => {
     // Setup multiple projects.
     await folderSetupFn(async (dir) => {
@@ -302,7 +313,7 @@ test(
 
 test(
   'external change of file contents are reflected in editor',
-  { tag: '@desktop' },
+  { tag: ['@desktop', '@localRenderer'] },
   async ({ page, folderSetupFn }) => {
     const PROJECT_DIR_NAME = 'lee-was-here'
     const { dir: projectsDir } = await folderSetupFn(async (dir) => {

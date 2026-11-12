@@ -77,7 +77,7 @@ import {
 import { err, reportRejection } from '@src/lib/trap'
 import { deferredCallback } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
+import { reportFileOperationError } from '@src/lib/fileSystem/operationErrors'
 import type {
   PlaneVisibilityMap,
   Selection,
@@ -172,7 +172,7 @@ import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import { bracket } from '@src/lib/exampleKcl'
 import { setKclVersion } from '@src/lib/kclVersion'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { resetCameraAfterExecution } from '@src/lib/resetCameraPosition'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { type Themes, getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
@@ -306,6 +306,13 @@ type ExecutionCompletionResult = {
 
 export enum KclManagerEvents {
   LongExecution = 'long-execution',
+  ExecutionDone = 'execution-done',
+}
+
+export interface KclExecutionDoneDetail {
+  successful: boolean
+  isInterrupted: boolean
+  hasErrors: boolean
 }
 
 declare global {
@@ -512,6 +519,7 @@ export class KclManager extends File {
   livePathsToWatch = signal<string[]>([])
 
   private _execState = signal<ExecState>(emptyExecState())
+  private stopNamedViewInvalidation: (() => void) | undefined
   /**
    * The engine scene generation from the last execution: the number of runs
    * that changed the engine scene. Runs answered from the cache leave it
@@ -522,7 +530,11 @@ export class KclManager extends File {
    * subscribes here rather than to `execStateSignal`.
    */
   private _engineSceneGeneration = signal(0)
-  /** Incremented on every execution completion (success, failure, or cancel). Used so callers can wait for "next" run. */
+  /**
+   * Incremented on every execution completion (success, failure, or cancel),
+   * even if cached.
+   * Used so callers can wait for "next" run.
+   */
   private _executionGeneration = 0
   private _lastExecutionCompletion: ExecutionCompletionResult = {
     generation: 0,
@@ -541,6 +553,7 @@ export class KclManager extends File {
   /** Operation key (from getOperationKey) of the most recent live operation. */
   private _liveLatestOperationKey = signal<string | null>(null)
   private activeLiveOperationExecutionId: number | null = null
+  private executionGeneration = 0
 
   private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
@@ -623,7 +636,6 @@ export class KclManager extends File {
   /**
    * Watching the file system for updates and reacting to them.
    * TODO: might need to watch for deletions here or in the project eventually.
-   * It's currently handled elsewhere in SystemIOMachine I believe.
    *
    * NOTE: This listener is in *addition* to the base File class one, so it must have a distinct name and
    * In future, event listeners like `onWatchEvent` should be Facets in the CodeMirror sense.
@@ -800,6 +812,17 @@ export class KclManager extends File {
   private set execState(execState) {
     this._execState.value = execState
     this.variables = execState.variables
+  }
+
+  private clearNamedViews() {
+    this.execState = { ...this._execState.peek(), namedViews: null }
+  }
+
+  private watchNamedViewInvalidation() {
+    if (this.stopNamedViewInvalidation) return
+    this.stopNamedViewInvalidation = this.rustContext.namedViewsInvalidated.add(
+      () => this.clearNamedViews()
+    )
   }
 
   private beginLiveOperationUpdates(executionId: number) {
@@ -1038,7 +1061,10 @@ export class KclManager extends File {
     this.diagnostics = []
     this.refreshSketchSolveAst(code, execState, options).catch(reportRejection)
 
-    this.execState = execState
+    this.execState = {
+      ...execState,
+      namedViews: execState.namedViews ?? this.execState.namedViews,
+    }
     this.lastSuccessfulVariables = execState.variables
     this.lastSuccessfulOperations = execState.operations
     this.lastSuccessfulCode = code
@@ -1431,9 +1457,8 @@ export class KclManager extends File {
         } else {
           await this.executeCode(newCode)
           if (shouldResetCamera) {
-            await resetCameraPosition({
+            await resetCameraAfterExecution({
               sceneInfra: this.sceneInfra,
-              engineCommandManager: this.engineCommandManager,
               settingsActor: this.systemDeps.settings,
             })
           }
@@ -1817,6 +1842,13 @@ export class KclManager extends File {
       providedEditor.path,
       providedEditor.editorView.state
     )
+    providedEditor.clearNamedViews()
+    providedEditor.executeIsStale = null
+    // A reused editor must stop accepting results from its previous file, even
+    // if the user returns to that path before an old execution finishes.
+    providedEditor.executionGeneration += 1
+    providedEditor.endLiveOperationUpdates()
+    providedEditor.isExecuting = false
     providedEditor.path = file.path
     providedEditor.id = file.id
     providedEditor.codeSignal.value = initialCode
@@ -1847,7 +1879,11 @@ export class KclManager extends File {
         shouldWriteToDisk: false,
       })
     }
+    providedEditor.diagnostics = []
+    providedEditor.errors = []
+    providedEditor.logs = []
     providedEditor.markFileCodeAsSynced(diskCode)
+    providedEditor.watchNamedViewInvalidation()
     providedEditor.startWatchingSettings()
     providedEditor.refreshEditorSettings()
     providedEditor.watch()
@@ -1896,6 +1932,7 @@ export class KclManager extends File {
         this.updateHistoryDepth()
       })
 
+    this.watchNamedViewInvalidation()
     this.startWatchingSettings()
 
     this.systemDeps.wasmInstancePromise
@@ -1922,6 +1959,10 @@ export class KclManager extends File {
 
   /** Clean up listeners, watchers, etc */
   public close() {
+    this.clearNamedViews()
+    this.stopNamedViewInvalidation?.()
+    this.stopNamedViewInvalidation = undefined
+    this.executionGeneration += 1
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
     this.sceneSettingsActive.value = false
@@ -2166,12 +2207,16 @@ export class KclManager extends File {
     }
 
     const finishExecution = this.engineCommandManager.trackExecution()
+    const generation = ++this.executionGeneration
+    const currentExecutionId = args.executionId ?? generation
+    const pathThatExecuted = this.path
+    const isCurrent = () =>
+      this.executionGeneration === generation && this.path === pathThatExecuted
 
     try {
       const ast = args.ast || this.ast
       markOnce('code/startExecuteAst')
 
-      const currentExecutionId = args.executionId || Date.now()
       this._cancelTokens.set(currentExecutionId, false)
 
       this.isExecuting = true
@@ -2188,6 +2233,8 @@ export class KclManager extends File {
         callbacks: this.createExecutionCallbacks(currentExecutionId),
       })
 
+      if (!isCurrent()) return
+
       const livePathsToWatch = Object.values(execState.filenames)
         .filter((file) => {
           return file?.type === 'Local'
@@ -2200,28 +2247,28 @@ export class KclManager extends File {
       // Program was not interrupted, setup the scene
       // Do not send send scene commands if the program was interrupted, go to clean up
       if (!isInterrupted) {
-        this.addDiagnostics(
-          await lintAst({
-            ast,
-            sourceCode: this.code,
-            instance: await this.systemDeps.wasmInstancePromise,
-            legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
-            edgeRefactorMetadata: execState.edgeRefactorMetadata,
-            directTagFilletMetadata: execState.directTagFilletMetadata,
-            artifactGraph: execState.artifactGraph,
-          })
-        )
+        const diagnostics = await lintAst({
+          ast,
+          sourceCode: codeThatExecuted,
+          instance: await this.systemDeps.wasmInstancePromise,
+          legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
+          edgeRefactorMetadata: execState.edgeRefactorMetadata,
+          directTagFilletMetadata: execState.directTagFilletMetadata,
+          artifactGraph: execState.artifactGraph,
+        })
+        if (!isCurrent()) return
+        this.addDiagnostics(diagnostics)
+        const wasmInstance = await this.systemDeps.wasmInstancePromise
+        if (!isCurrent()) return
         if (this.sceneEntitiesManager) {
           setSelectionFilterToDefault({
             engineCommandManager: this.engineCommandManager,
             kclManager: this,
             sceneEntitiesManager: this.sceneEntitiesManager,
-            wasmInstance: await this.systemDeps.wasmInstancePromise,
+            wasmInstance,
           })
         }
       }
-
-      this.isExecuting = false
 
       // Check the cancellation token for this execution before applying side effects
       if (this._cancelTokens.get(currentExecutionId)) {
@@ -2236,6 +2283,7 @@ export class KclManager extends File {
         ast,
         await this.wasmInstancePromise
       )
+      if (!isCurrent()) return
       if (err(fileSettings)) {
         fileSettings = {}
       }
@@ -2267,6 +2315,7 @@ export class KclManager extends File {
       this.ast = structuredClone(ast)
       // updateArtifactGraph relies on updated executeState/variables
       await this.updateArtifactGraph(execState.artifactGraph)
+      if (!isCurrent()) return
       // Failed runs report their generation too. It is null only when no run
       // reached the engine, which leaves the scene as it was.
       if (execState.engineSceneGeneration !== null) {
@@ -2298,14 +2347,37 @@ export class KclManager extends File {
       markOnce('code/endExecuteAst')
       this.notifyExecutionCompletion('completed')
 
-      // Update project thumbnail after successful execution
-      if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
+      // Update project thumbnail after successful execution. The local renderer
+      // writes its own once the new model is on screen.
+      if (
+        !isInterrupted &&
+        errors.length === 0 &&
+        projectFsManager.dir &&
+        !this.engineCommandManager.geometryOnly
+      ) {
         createThumbnailPNGOnDesktop({
           fileOperations: this.systemDeps.fileOperations,
           projectDirectoryWithoutEndingSlash: projectFsManager.dir,
         })
       }
+
+      if (isCurrent()) this.isExecuting = false
+      this.dispatchEvent(
+        new CustomEvent<KclExecutionDoneDetail>(
+          KclManagerEvents.ExecutionDone,
+          {
+            detail: {
+              successful: !isInterrupted && errors.length === 0,
+              isInterrupted,
+              hasErrors: errors.length > 0,
+            },
+          }
+        )
+      )
     } finally {
+      this._cancelTokens.delete(currentExecutionId)
+      // Only this run may release its status; an old run must not stop a new one.
+      if (isCurrent()) this.isExecuting = false
       finishExecution()
     }
   }
@@ -2328,6 +2400,12 @@ export class KclManager extends File {
       data: null,
     })
     markOnce('code/endExecuteAst')
+    // The local renderer shows its loading indicator until it hears this.
+    this.dispatchEvent(
+      new CustomEvent<KclExecutionDoneDetail>(KclManagerEvents.ExecutionDone, {
+        detail: { successful: false, isInterrupted: true, hasErrors: false },
+      })
+    )
   }
 
   // DO NOT CALL THIS from codemirror ever.
@@ -2354,8 +2432,10 @@ export class KclManager extends File {
     })
 
     this.logs = logs
-    this._execState.value = execState
-    this._variables.value = execState.variables
+    this.execState = {
+      ...execState,
+      namedViews: this.execState.namedViews,
+    }
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
@@ -2926,7 +3006,10 @@ export class KclManager extends File {
           highlightEdges: highlightEdges.value,
           backfaceColor: backfaceColor.value,
         }
-        const backfaceChanged = current.backfaceColor !== previous.backfaceColor
+        // The local renderer draws back faces itself, so the engine scene can stay.
+        const backfaceChanged =
+          current.backfaceColor !== previous.backfaceColor &&
+          !this.engineCommandManager.geometryOnly
         const engineSettingsChanged =
           current.showScaleGrid !== previous.showScaleGrid ||
           current.fixedSizeGrid !== previous.fixedSizeGrid ||
@@ -3840,7 +3923,7 @@ export class KclManager extends File {
       if (isPathNotFoundError(err)) {
         currentDiskCode = null
       } else {
-        reportSystemIOError({
+        reportFileOperationError({
           error: err,
           operation: 'save_kcl_file',
           risk: 'write',
@@ -3904,7 +3987,7 @@ export class KclManager extends File {
       // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
       console.warn('error saving file', err)
       if (!isPathNotFoundError(err)) {
-        reportSystemIOError({
+        reportFileOperationError({
           error: err,
           operation: 'save_kcl_file',
           risk: 'write',

@@ -444,20 +444,6 @@ description: Artifact commands pipe-flange-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "object_visible",
         "object_id": "[uuid]",
         "hidden": true
@@ -851,20 +837,6 @@ description: Artifact commands pipe-flange-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "object_visible",
         "object_id": "[uuid]",
         "hidden": true
@@ -1050,20 +1022,6 @@ description: Artifact commands pipe-flange-assembly.kcl
         "size": 100.0,
         "clobber": false,
         "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
       }
     },
     {
@@ -1456,20 +1414,6 @@ description: Artifact commands pipe-flange-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "object_visible",
         "object_id": "[uuid]",
         "hidden": true
@@ -1863,20 +1807,6 @@ description: Artifact commands pipe-flange-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "object_visible",
         "object_id": "[uuid]",
         "hidden": true
@@ -2062,20 +1992,6 @@ description: Artifact commands pipe-flange-assembly.kcl
         "size": 100.0,
         "clobber": false,
         "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
       }
     },
     {
@@ -3013,20 +2929,6 @@ description: Artifact commands pipe-flange-assembly.kcl
         "size": 100.0,
         "clobber": false,
         "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
       }
     },
     {

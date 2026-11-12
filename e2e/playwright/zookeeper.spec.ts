@@ -1,4 +1,5 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { devices } from '@playwright/test'
 import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { decode } from '@msgpack/msgpack'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
@@ -9,255 +10,322 @@ const ZK_MOCK_REPLY_MARKER =
   'ZOO_MAGIC_STRING_TRIGGER_MOCK_REPLY_D39D279C6F84FA63AD49364FDEFB4A27D0E15BA7FB0975D4D6E003A8A594E460'
 const ZOOKEEPER_TEST_TAGS = ['@desktop', '@web', '@zookeeper']
 
-test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
-  test('Header toggle collapses the right pane and restores its width', async ({
-    page,
-    homePage,
-    scene,
-  }) => {
-    await homePage.goToModelingScene()
-    await scene.settled()
-
-    const toggle = page
-      .getByTestId('app-header')
-      .getByRole('button', { name: 'Zookeeper', exact: true })
-    const rightPane = page.locator('[data-panel-id="right-toolbar"]')
-    const viewport = page.locator('[data-panel-id="modeling-scene"]')
-    await expect(toggle).toHaveAttribute('aria-pressed', 'true')
-    await expect(page.getByTestId('ttc-pane-button')).toHaveCount(1)
-    const headerHeights = await toggle.evaluate((button) => {
-      const header = button.closest('header')!
-      const wrapper = button.parentElement!
-      const withToggle = header.getBoundingClientRect().height
-      wrapper.style.display = 'none'
-      const withoutToggle = header.getBoundingClientRect().height
-      wrapper.style.removeProperty('display')
-      return { withToggle, withoutToggle }
-    })
-    expect(headerHeights.withToggle).toBe(headerHeights.withoutToggle)
-    await expect(toggle.locator('.bg-img-mel')).toBeVisible()
-    const avatarSize = await page
-      .getByTestId('user-sidebar-toggle')
-      .locator('.avatar')
-      .boundingBox()
-    const toggleSize = await toggle.boundingBox()
-    expect(toggleSize?.width).toBe(avatarSize?.width)
-    expect(toggleSize?.height).toBe(avatarSize?.height)
-    expect(toggleSize?.width).toBe(toggleSize?.height)
-    await expect(rightPane.locator('[data-pane-toolbar]')).toBeHidden()
-
-    const handle = page.locator(
-      '[data-panel-resize-handle-id="handle-modeling-scene"]'
-    )
-    const handleBox = await handle.boundingBox()
-    if (!handleBox) throw new Error('Missing Zookeeper resize handle')
-    await page.mouse.move(handleBox.x, handleBox.y + handleBox.height / 2)
-    await page.mouse.down()
-    await page.mouse.move(handleBox.x - 80, handleBox.y + handleBox.height / 2)
-    await page.mouse.up()
-    const openWidth = (await rightPane.boundingBox())!.width
-    const viewportWidth = (await viewport.boundingBox())!.width
-
-    await toggle.click()
-    await expect(toggle).toHaveAttribute('aria-pressed', 'false')
-    await expect
-      .poll(async () => (await rightPane.boundingBox())?.width)
-      .toBe(0)
-    await expect
-      .poll(async () => (await viewport.boundingBox())!.width)
-      .toBeGreaterThan(viewportWidth + openWidth - 2)
-
-    await page.keyboard.press('Control+t')
-    await expect(toggle).toHaveAttribute('aria-pressed', 'true')
-    await expect
-      .poll(async () =>
-        Math.abs((await rightPane.boundingBox())!.width - openWidth)
-      )
-      .toBeLessThan(2)
-  })
-
-  test('Happy path: new project, easy prompt, good result', async ({
-    page,
-    editor,
-    homePage,
-    scene,
-    toolbar,
-    copilot,
-  }) => {
-    let holdResponses = false
-    let originalCode = ''
-    let zookeeperConnectionCount = 0
-    let releaseResponses: () => void = () => {
-      throw new Error('Zookeeper WebSocket was not intercepted')
-    }
-    await page.routeWebSocket('**/ws/ml/copilot**', (client) => {
-      zookeeperConnectionCount += 1
-      const bufferedMessages: Parameters<typeof client.send>[0][] = []
-      const server = client.connectToServer()
-      server.onMessage((message) => {
-        const response = (
-          typeof message === 'string' ? JSON.parse(message) : decode(message)
-        ) as MlCopilotServerMessage
-        const result = 'tool_output' in response && response.tool_output.result
-        if (
-          result &&
-          result.type === 'edit_kcl_code' &&
-          !result.zookeeper_edit_patch
-        ) {
-          // The backend's magic reply predates patch-listed writes. Give this
-          // test response a real modification patch for the existing main.kcl.
-          const code = result.outputs?.['main.kcl']
-          if (typeof code !== 'string') {
-            throw new Error('Canned Zookeeper reply must include main.kcl')
-          }
-          result.zookeeper_edit_patch = {
-            run_id: '00000000-0000-4000-8000-000000000001',
-            changed_files: [
-              {
-                path: 'main.kcl',
-                status: 'modified',
-                diff: createTwoFilesPatch(
-                  'a/main.kcl',
-                  'b/main.kcl',
-                  originalCode,
-                  code
-                ),
-              },
-            ],
-          }
-          message = JSON.stringify(response)
-        }
-        if (holdResponses) {
-          bufferedMessages.push(message)
-          return
-        }
-        client.send(message)
-      })
-      releaseResponses = () => {
-        for (const message of bufferedMessages.splice(0)) {
-          client.send(message)
-        }
-      }
-    })
-    await page.reload()
-    await page.setBodyDimensions({ width: 1500, height: 1000 })
-    await homePage.goToModelingScene()
-    await scene.settled()
-
-    await test.step('Submit basic prompt', async () => {
-      const prompt = `make a 10x10x10cm cube centered on the origin, name the last variable "cube" [${ZK_MOCK_REPLY_MARKER}]`
-
-      originalCode = await editor.getCurrentCode()
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-      await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
-      await copilot.setMode('fast')
-      await copilot.conversationInput.fill(prompt)
-      expect(zookeeperConnectionCount).toBe(1)
-      holdResponses = true
-      await copilot.submitButton.click()
-      await expect(page.getByTestId('ml-request-chat-bubble')).toContainText(
-        prompt
-      )
-      await expect(copilot.placeHolderResponse).toBeVisible()
-
-      const zookeeperPaneButton = page.getByTestId(
-        `${DefaultLayoutPaneID.Zookeeper}-pane-button`
-      )
-      await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
-      await expect(
-        zookeeperPaneButton.locator('svg[aria-label="loading"]')
-      ).toBeVisible()
-      expect(zookeeperConnectionCount).toBe(1)
-      holdResponses = false
-      releaseResponses()
-      await expect(zookeeperPaneButton.locator('.bg-img-mel')).toBeVisible({
-        timeout: 30_000,
-      })
-      expect(zookeeperConnectionCount).toBe(1)
-
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await expect(editor.codeContent).toContainText('sketch', {
-        timeout: 30_000,
-      })
+test.describe(
+  'Zookeeper tests',
+  { tag: [...ZOOKEEPER_TEST_TAGS, '@localRenderer'] },
+  () => {
+    test('Header toggle collapses the right pane and restores its width', async ({
+      page,
+      homePage,
+      scene,
+      editor,
+    }) => {
+      await homePage.goToModelingScene()
       await scene.settled()
-      expect(zookeeperConnectionCount).toBe(1)
+      await editor.openPane()
 
-      await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
-      await expect(copilot.conversationInput).toBeVisible()
-      await expect(copilot.placeHolderResponse).not.toBeVisible({
-        timeout: 30_000,
+      const toggle = page
+        .getByTestId('app-header')
+        .getByRole('button', { name: 'Zookeeper', exact: true })
+      const rightPane = page.locator('[data-panel-id="right-toolbar"]')
+      const viewport = page.locator('[data-panel-id="modeling-scene"]')
+      await expect(toggle).toHaveAttribute('aria-pressed', 'true')
+      await expect(page.getByTestId('ttc-pane-button')).toHaveCount(1)
+      const headerHeights = await toggle.evaluate((button) => {
+        const header = button.closest('header')!
+        const wrapper = button.parentElement!
+        const withToggle = header.getBoundingClientRect().height
+        wrapper.style.display = 'none'
+        const withoutToggle = header.getBoundingClientRect().height
+        wrapper.style.removeProperty('display')
+        return { withToggle, withoutToggle }
       })
-      expect(zookeeperConnectionCount).toBe(1)
-      await expect(page.getByTestId('ml-response-chat-bubble')).toBeVisible()
-      await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
+      expect(headerHeights.withToggle).toBe(headerHeights.withoutToggle)
+      await expect(toggle.locator('.bg-img-mel')).toBeVisible()
+      const avatarSize = await page
+        .getByTestId('user-sidebar-toggle')
+        .locator('.avatar')
+        .boundingBox()
+      const toggleSize = await toggle.boundingBox()
+      expect(toggleSize?.width).toBe(avatarSize?.width)
+      expect(toggleSize?.height).toBe(avatarSize?.height)
+      expect(toggleSize?.width).toBe(toggleSize?.height)
+      await expect(rightPane.locator('[data-pane-toolbar]')).toBeHidden()
 
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      await scene.settled()
-      const extrude = await toolbar.getFeatureTreeOperation('cube', 0)
-      await expect(extrude).toBeVisible()
+      const handle = page.locator(
+        '[data-panel-resize-handle-id="handle-modeling-scene"]'
+      )
+      const handleBox = await handle.boundingBox()
+      if (!handleBox) throw new Error('Missing Zookeeper resize handle')
+      await page.mouse.move(handleBox.x, handleBox.y + handleBox.height / 2)
+      await page.mouse.down()
+      await page.mouse.move(
+        handleBox.x - 80,
+        handleBox.y + handleBox.height / 2
+      )
+      await page.mouse.up()
+      const openWidth = (await rightPane.boundingBox())!.width
+      const viewportWidth = (await viewport.boundingBox())!.width
+      const codeWidth = (await editor.codeContent.boundingBox())!.width
+
+      await toggle.click()
+      await expect(toggle).toHaveAttribute('aria-pressed', 'false')
+      await expect
+        .poll(async () => (await rightPane.boundingBox())?.width)
+        .toBe(0)
+      await expect
+        .poll(async () => (await viewport.boundingBox())!.width)
+        .toBeGreaterThan(viewportWidth + openWidth - 2)
+      expect((await editor.codeContent.boundingBox())!.width).toBeCloseTo(
+        codeWidth,
+        1
+      )
+
+      await page.keyboard.press('Control+t')
+      await expect(toggle).toHaveAttribute('aria-pressed', 'true')
+      await expect
+        .poll(async () =>
+          Math.abs((await rightPane.boundingBox())!.width - openWidth)
+        )
+        .toBeLessThan(2)
     })
-  })
-  test(
-    'Chat history can be cleared',
-    { tag: ['@desktop', '@web'] },
-    async ({ page, homePage, scene, toolbar, copilot }) => {
+
+    test('Happy path: new project, easy prompt, good result', async ({
+      page,
+      editor,
+      homePage,
+      scene,
+      toolbar,
+      copilot,
+    }) => {
       let holdResponses = false
+      let originalCode = ''
       let zookeeperConnectionCount = 0
+      let releaseResponses: () => void = () => {
+        throw new Error('Zookeeper WebSocket was not intercepted')
+      }
       await page.routeWebSocket('**/ws/ml/copilot**', (client) => {
         zookeeperConnectionCount += 1
+        const bufferedMessages: Parameters<typeof client.send>[0][] = []
         const server = client.connectToServer()
         server.onMessage((message) => {
-          if (!holdResponses) {
+          const response = (
+            typeof message === 'string' ? JSON.parse(message) : decode(message)
+          ) as MlCopilotServerMessage
+          const result =
+            'tool_output' in response && response.tool_output.result
+          if (
+            result &&
+            result.type === 'edit_kcl_code' &&
+            !result.zookeeper_edit_patch
+          ) {
+            // The backend's magic reply predates patch-listed writes. Give this
+            // test response a real modification patch for the existing main.kcl.
+            const code = result.outputs?.['main.kcl']
+            if (typeof code !== 'string') {
+              throw new Error('Canned Zookeeper reply must include main.kcl')
+            }
+            result.zookeeper_edit_patch = {
+              run_id: '00000000-0000-4000-8000-000000000001',
+              changed_files: [
+                {
+                  path: 'main.kcl',
+                  status: 'modified',
+                  diff: createTwoFilesPatch(
+                    'a/main.kcl',
+                    'b/main.kcl',
+                    originalCode,
+                    code
+                  ),
+                },
+              ],
+            }
+            message = JSON.stringify(response)
+          }
+          if (holdResponses) {
+            bufferedMessages.push(message)
+            return
+          }
+          client.send(message)
+        })
+        releaseResponses = () => {
+          for (const message of bufferedMessages.splice(0)) {
             client.send(message)
           }
-        })
+        }
       })
       await page.reload()
       await page.setBodyDimensions({ width: 1500, height: 1000 })
       await homePage.goToModelingScene()
       await scene.settled()
 
-      await test.step('Submit placeholder prompt', async () => {
+      await test.step('Submit basic prompt', async () => {
+        const prompt = `make a 10x10x10cm cube centered on the origin, name the last variable "cube" [${ZK_MOCK_REPLY_MARKER}]`
+
+        originalCode = await editor.getCurrentCode()
         await toolbar.closePane(DefaultLayoutPaneID.Code)
         await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
-        await copilot.conversationInput.fill(
-          `This is a test prompt [${ZK_MOCK_REPLY_MARKER}]`
-        )
+        await copilot.setMode('auto')
+        await copilot.conversationInput.fill(prompt)
+        expect(zookeeperConnectionCount).toBe(1)
         holdResponses = true
         await copilot.submitButton.click()
-        await expect(copilot.placeHolderResponse).toBeVisible()
-      })
-
-      await test.step('Keep the current chat when clearing is dismissed', async () => {
-        const originalConnectionCount = zookeeperConnectionCount
-        await copilot.clearChatButton.click()
-        const confirmationDialog = page.getByRole('dialog', {
-          name: 'Start a new chat?',
-        })
-        await expect(confirmationDialog).toContainText(
-          'This will stop the current Zookeeper response and start a new conversation.'
+        await expect(page.getByTestId('ml-request-chat-bubble')).toContainText(
+          prompt
         )
-        await page.getByRole('button', { name: 'Keep current chat' }).click()
-
-        await expect(confirmationDialog).not.toBeVisible()
-        await expect(page.getByTestId('ml-request-chat-bubble')).toHaveCount(1)
-        await expect(copilot.clearChatButton).toBeVisible()
         await expect(copilot.placeHolderResponse).toBeVisible()
-        expect(zookeeperConnectionCount).toBe(originalConnectionCount)
-      })
 
-      await test.step('Confirm clearing the chat history', async () => {
-        await copilot.clearChatButton.click()
+        const zookeeperPaneButton = page.getByTestId(
+          `${DefaultLayoutPaneID.Zookeeper}-pane-button`
+        )
+        await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
+        await expect(
+          zookeeperPaneButton.locator('svg[aria-label="loading"]')
+        ).toBeVisible()
+        expect(zookeeperConnectionCount).toBe(1)
         holdResponses = false
-        await page.getByRole('button', { name: 'Start new chat' }).click()
-        await expect(copilot.welcomeSection).not.toBeVisible()
-        await expect(copilot.welcomeSection).toBeVisible({ timeout: 30_000 })
+        releaseResponses()
+        await expect(zookeeperPaneButton.locator('.bg-img-mel')).toBeVisible({
+          timeout: 30_000,
+        })
+        expect(zookeeperConnectionCount).toBe(1)
 
-        await expect(page.getByTestId('ml-request-chat-bubble')).toHaveCount(0)
-        await expect(page.getByTestId('ml-response-chat-bubble')).toHaveCount(0)
-        await expect(copilot.clearChatButton).not.toBeVisible()
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await expect(editor.codeContent).toContainText('sketch', {
+          timeout: 30_000,
+        })
+        await scene.settled()
+        expect(zookeeperConnectionCount).toBe(1)
+
+        await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
+        await expect(copilot.conversationInput).toBeVisible()
+        await expect(copilot.placeHolderResponse).not.toBeVisible({
+          timeout: 30_000,
+        })
+        expect(zookeeperConnectionCount).toBe(1)
+        await expect(page.getByTestId('ml-response-chat-bubble')).toBeVisible()
+        await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
+
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        await scene.settled()
+        const extrude = await toolbar.getFeatureTreeOperation('cube', 0)
+        await expect(extrude).toBeVisible()
       })
-    }
-  )
-})
+    })
+    test(
+      'Chat history can be cleared',
+      { tag: ['@desktop', '@web'] },
+      async ({ page, homePage, scene, toolbar, copilot }) => {
+        let holdResponses = false
+        let zookeeperConnectionCount = 0
+        await page.routeWebSocket('**/ws/ml/copilot**', (client) => {
+          zookeeperConnectionCount += 1
+          const server = client.connectToServer()
+          server.onMessage((message) => {
+            if (!holdResponses) {
+              client.send(message)
+            }
+          })
+        })
+        await page.reload()
+        await page.setBodyDimensions({ width: 1500, height: 1000 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+
+        await test.step('Submit placeholder prompt', async () => {
+          await toolbar.closePane(DefaultLayoutPaneID.Code)
+          await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
+          await copilot.conversationInput.fill(
+            `This is a test prompt [${ZK_MOCK_REPLY_MARKER}]`
+          )
+          holdResponses = true
+          await copilot.submitButton.click()
+          await expect(copilot.placeHolderResponse).toBeVisible()
+        })
+
+        await test.step('Keep the current chat when clearing is dismissed', async () => {
+          const originalConnectionCount = zookeeperConnectionCount
+          await copilot.clearChatButton.click()
+          const confirmationDialog = page.getByRole('dialog', {
+            name: 'Start a new chat?',
+          })
+          await expect(confirmationDialog).toContainText(
+            'This will stop the current Zookeeper response and start a new conversation.'
+          )
+          await page.getByRole('button', { name: 'Keep current chat' }).click()
+
+          await expect(confirmationDialog).not.toBeVisible()
+          await expect(page.getByTestId('ml-request-chat-bubble')).toHaveCount(
+            1
+          )
+          await expect(copilot.clearChatButton).toBeVisible()
+          await expect(copilot.placeHolderResponse).toBeVisible()
+          expect(zookeeperConnectionCount).toBe(originalConnectionCount)
+        })
+
+        await test.step('Confirm clearing the chat history', async () => {
+          await copilot.clearChatButton.click()
+          holdResponses = false
+          await page.getByRole('button', { name: 'Start new chat' }).click()
+          await expect(copilot.welcomeSection).not.toBeVisible()
+          await expect(copilot.welcomeSection).toBeVisible({ timeout: 30_000 })
+
+          await expect(page.getByTestId('ml-request-chat-bubble')).toHaveCount(
+            0
+          )
+          await expect(page.getByTestId('ml-response-chat-bubble')).toHaveCount(
+            0
+          )
+          await expect(copilot.clearChatButton).not.toBeVisible()
+        })
+      }
+    )
+  }
+)
+
+test.describe(
+  'Mobile Zookeeper controls',
+  { tag: ['@web', '@zookeeper', '@localRenderer'] },
+  () => {
+    const phone = devices['iPhone 13']
+    test.use({
+      viewport: phone.viewport,
+      userAgent: phone.userAgent,
+      isMobile: true,
+      hasTouch: true,
+    })
+
+    test('Keeps Zookeeper reachable from the bottom toolbar', async ({
+      page,
+      homePage,
+      scene,
+      copilot,
+    }) => {
+      await page.setViewportSize(phone.viewport)
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await expect(
+        page.getByTestId('app-header').getByRole('button', {
+          name: 'Zookeeper',
+          exact: true,
+        })
+      ).toBeHidden()
+      const toggle = page.getByRole('switch', {
+        name: 'Zookeeper',
+        exact: true,
+      })
+      await expect(toggle).toBeInViewport()
+      await expect(toggle).toBeChecked()
+      await toggle.click()
+      await page
+        .getByRole('switch', { name: 'Code Editor', exact: true })
+        .click()
+      await expect(toggle).not.toBeChecked()
+      await expect(copilot.conversationInput).toBeHidden()
+      await toggle.click()
+      await expect(toggle).toBeChecked()
+      await expect(copilot.conversationInput).toBeInViewport({ ratio: 0.5 })
+    })
+  }
+)

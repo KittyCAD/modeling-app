@@ -40,8 +40,39 @@ async function resetPersistentWebKitOpfs(
 }
 
 const persistentWebKitTest = playwrightTest.extend({
+  baseURL: async ({ baseURL }, provide, testInfo) => {
+    const origins = process.env.PLAYWRIGHT_WEBKIT_WORKER_ORIGINS?.split(
+      ','
+    ).map((value) => new URL(value.trim()).origin)
+    if (!origins) {
+      await provide(baseURL)
+      return
+    }
+    if (
+      testInfo.config.workers > origins.length ||
+      new Set(origins).size !== origins.length
+    ) {
+      throw new Error('Each WebKit worker needs a distinct origin')
+    }
+    const origin = origins[testInfo.parallelIndex]
+    testInfo.annotations.push({
+      type: 'webkit-worker-origin',
+      description: origin,
+    })
+    await provide(origin)
+  },
   context: async (
-    { baseURL, browserName, headless, launchOptions, playwright },
+    {
+      baseURL,
+      browserName,
+      headless,
+      launchOptions,
+      playwright,
+      userAgent,
+      viewport,
+      isMobile,
+      hasTouch,
+    },
     provide
   ) => {
     if (browserName !== 'webkit') {
@@ -56,6 +87,10 @@ const persistentWebKitTest = playwrightTest.extend({
     const context = await playwright.webkit.launchPersistentContext('', {
       ...desktopSafari,
       ...launchOptions,
+      userAgent,
+      viewport,
+      isMobile,
+      hasTouch,
       baseURL,
       headless,
     })
@@ -63,7 +98,7 @@ const persistentWebKitTest = playwrightTest.extend({
     try {
       const page = context.pages()[0] ?? (await context.newPage())
       // Persistent WebKit OPFS is shared by origin across contexts and even
-      // user-data directories, so reset it before each serial WebKit test.
+      // user-data directories. Parallel workers must use distinct origins.
       await resetPersistentWebKitOpfs(page, baseURL)
       await provide(context)
     } finally {

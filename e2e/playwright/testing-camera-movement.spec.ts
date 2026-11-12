@@ -1,5 +1,4 @@
-import type { EngineCommand } from '@src/lang/std/artifactGraph'
-import { uuidv4 } from '@src/lib/utils'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -20,52 +19,30 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
     beforePosition,
     retryCount = 0,
     page,
+    scene,
   }: {
     mouseActions: () => Promise<void>
     beforePosition: [number, number, number]
     afterPosition: [number, number, number]
     retryCount?: number
     page: Page
+    scene: SceneFixture
   }) => {
     const acceptableCamError = 5
-    const u = await getUtils(page)
-    const setCameraPosition = async () => {
-      await u.openAndClearDebugPanel()
-      await u.sendCustomCmd({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_look_at',
-          vantage: {
-            x: beforePosition[0],
-            y: beforePosition[1],
-            z: beforePosition[2],
-          },
-          center: { x: 0, y: 0, z: 0 },
-          up: { x: 0, y: 0, z: 1 },
-        },
-      })
-      await u.waitForCmdReceive('default_camera_look_at')
-      await u.closeDebugPanel()
-    }
+    const setCameraPosition = () =>
+      scene.moveCameraTo(
+        { x: beforePosition[0], y: beforePosition[1], z: beforePosition[2] },
+        undefined,
+        { waitForImageChange: false }
+      )
 
     await test.step('Set up initial camera position', setCameraPosition)
 
     await test.step('Do actions and wait for camera values', async () => {
       await mouseActions()
-      await u.openAndClearDebugPanel()
-      await u.closeDebugPanel()
-      await page.waitForTimeout(100)
     })
 
-    await u.openAndClearDebugPanel()
-    await expect(page.getByTestId('cam-x-position')).toBeAttached()
-
-    const vals = await Promise.all([
-      page.getByTestId('cam-x-position').inputValue(),
-      page.getByTestId('cam-y-position').inputValue(),
-      page.getByTestId('cam-z-position').inputValue(),
-    ])
+    const { position: vals } = await scene.getCameraInfo()
     const errors = vals.map((v, i) => Math.abs(Number(v) - afterPosition[i]))
     let shouldRetry = false
 
@@ -99,6 +76,7 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
         beforePosition: beforePosition,
         retryCount: retryCount + 1,
         page,
+        scene,
       })
     }
   }
@@ -110,22 +88,10 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
   }) => {
     const u = await getUtils(page)
     const camInitialPosition: [number, number, number] = [0, 85, 85]
-    const waitForDragResponse = async (
-      type: 'camera_drag_start' | 'camera_drag_end'
-    ) => {
-      await page.waitForFunction(
-        (type) =>
-          window.engineCommandManager.commandLogs.some(
-            (log) => log.type === 'receive-reliable' && log.cmd_type === type
-          ),
-        type
-      )
-    }
 
     await homePage.goToModelingScene()
     await scene.settled()
 
-    await u.openAndClearDebugPanel()
     await u.closeKclCodePanel()
 
     await test.step('Pan', async () => {
@@ -136,16 +102,17 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
           await page.keyboard.down('Shift')
           await page.mouse.move(dragStart.x, dragStart.y)
           await page.mouse.down({ button: 'right' })
-          await waitForDragResponse('camera_drag_start')
+          await scene.waitForCameraDrag('start')
           // Gotcha: remove steps:2 from this 700,200 mouse move. This bricked the test on local host engine.
           await page.mouse.move(dragEnd.x, dragEnd.y)
           await page.mouse.up({ button: 'right' })
           await page.keyboard.up('Shift')
-          await waitForDragResponse('camera_drag_end')
+          await scene.waitForCameraDrag('end')
         },
         afterPosition: [19, 85, 85],
         beforePosition: camInitialPosition,
         page,
+        scene,
       })
     })
 
@@ -157,7 +124,7 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
           await page.keyboard.down('Control')
           await page.mouse.move(dragStart.x, dragStart.y)
           await page.mouse.down({ button: 'right' })
-          await waitForDragResponse('camera_drag_start')
+          await scene.waitForCameraDrag('start')
           await page.mouse.move(dragEnd.x, dragEnd.y)
           await page.mouse.up({ button: 'right' })
           await page.keyboard.up('Control')
@@ -165,33 +132,21 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
         afterPosition: [0, 118, 118],
         beforePosition: camInitialPosition,
         page,
+        scene,
       })
     })
 
     await test.step('Zoom with scrollwheel', async () => {
-      const refreshCamValuesCmd: EngineCommand = {
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_get_settings',
-        },
-      }
       await bakeInRetries({
         mouseActions: async () => {
           const scrollPos = await scene.convertPagePositionToStream(700, 400)
           await page.mouse.move(scrollPos.x, scrollPos.y)
           await page.mouse.wheel(0, -150)
-
-          // Scroll zooming doesn't update the debug pane's cam position values,
-          // so we have to force a refresh.
-          await u.openAndClearDebugPanel()
-          await u.sendCustomCmd(refreshCamValuesCmd)
-          await u.waitForCmdReceive('default_camera_get_settings')
-          await u.closeDebugPanel()
         },
         afterPosition: [0, 42.5, 42.5],
         beforePosition: camInitialPosition,
         page,
+        scene,
       })
     })
   })
@@ -209,7 +164,6 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
     // this turns on the debug pane setting as well
     await scene.settled()
 
-    await u.openAndClearDebugPanel()
     await u.closeKclCodePanel()
 
     await test.step('Test orbit with spherical mode', async () => {
@@ -236,6 +190,7 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
         afterPosition: [-4, 10.5, 120],
         beforePosition: initialCamPosition,
         page,
+        scene,
       })
     })
 
@@ -274,6 +229,7 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
         afterPosition: [-4, 22.6, 118],
         beforePosition: initialCamPosition,
         page,
+        scene,
       })
     })
   })

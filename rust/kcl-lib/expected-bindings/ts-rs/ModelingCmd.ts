@@ -2018,6 +2018,11 @@ export type GetSketchModePlane = Record<symbol, never>;
 export type GlobalAxis = "x" | "y" | "z";
 
 /**
+ * Additional data that can be included in a glTF 2.0 export.
+ */
+export type GltfExportExtra = "sketches" | "regions" | "imported_files" | "mbd" | "geometry_uuids";
+
+/**
  * Options for exporting glTF 2.0.
  */
 export type GltfExportOptions = { 
@@ -2030,9 +2035,13 @@ storage: GltfStorage,
  */
 presentation: GltfPresentation, 
 /**
- * Include engine UUIDs in glTF extras. Defaults to false.
+ * Include geometry UUIDs. Setting this to true is equivalent to adding `geometry_uuids` to `extras`.
  */
 include_uuids: boolean, 
+/**
+ * Additional data to include in the exported glTF. Defaults to an empty set.
+ */
+extras: Array<GltfExportExtra>, 
 /**
  * Named views in the scene.
  */

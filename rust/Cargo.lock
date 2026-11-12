@@ -378,7 +378,7 @@ dependencies = [
  "spin 0.10.1",
  "wasm-bindgen",
  "wasm-bindgen-futures",
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -1528,7 +1528,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -2630,7 +2630,7 @@ checksum = "3640c1c38b8e4e43584d8df18be5fc6b0aa314ce6ebf51b53313d4306cca8e46"
 dependencies = [
  "hermit-abi",
  "libc",
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -2761,7 +2761,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-api"
-version = "0.2.195"
+version = "0.2.196"
 dependencies = [
  "arbitrary",
  "euler",
@@ -2778,13 +2778,13 @@ dependencies = [
  "serde",
  "serde_json",
  "ts-rs",
- "typed-path 0.13.0",
+ "typed-path",
  "uuid",
 ]
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.195"
+version = "0.1.196"
 dependencies = [
  "anyhow",
  "clap",
@@ -2794,7 +2794,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.2.195"
+version = "0.2.196"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2803,7 +2803,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.195"
+version = "0.1.196"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2813,7 +2813,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-engine-codec"
-version = "0.2.195"
+version = "0.2.196"
 dependencies = [
  "kittycad-modeling-cmds",
  "rmp-serde",
@@ -2822,7 +2822,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.2.195"
+version = "0.2.196"
 dependencies = [
  "miette",
  "pyo3",
@@ -2835,7 +2835,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-grammar"
-version = "0.2.195"
+version = "0.2.196"
 dependencies = [
  "datatest-stable",
  "kcl-syntax",
@@ -2845,7 +2845,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.195"
+version = "0.2.196"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2876,7 +2876,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.195"
+version = "0.1.196"
 dependencies = [
  "anyhow",
  "clap",
@@ -2896,7 +2896,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.195"
+version = "0.2.196"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2964,7 +2964,7 @@ dependencies = [
  "tower-lsp",
  "ts-rs",
  "twenty-twenty",
- "typed-path 0.13.0",
+ "typed-path",
  "unicase",
  "url",
  "uuid",
@@ -2980,7 +2980,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.195"
+version = "0.3.196"
 dependencies = [
  "anyhow",
  "kcl-api",
@@ -2997,7 +2997,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-syntax"
-version = "0.2.195"
+version = "0.2.196"
 dependencies = [
  "logos",
  "proptest",
@@ -3006,7 +3006,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.2.195"
+version = "0.2.196"
 dependencies = [
  "anyhow",
  "http-body-util",
@@ -3021,7 +3021,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.195"
+version = "0.1.196"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
@@ -3042,7 +3042,7 @@ dependencies = [
  "tokio",
  "toml",
  "tower-lsp",
- "typed-path 0.13.0",
+ "typed-path",
  "uuid",
  "wasm-bindgen",
  "wasm-bindgen-futures",
@@ -3109,9 +3109,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.258"
+version = "0.2.259"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a043995a62b25e2f73018086c2fe84367ddacd669b27e846a7b990ae66e531e"
+checksum = "3b9fbd02684ef51b3879f24e38e3a670e4e37eba0ec8cedd2f0098fc39c44477"
 dependencies = [
  "anyhow",
  "bon",
@@ -3138,7 +3138,7 @@ dependencies = [
  "serde_json",
  "serde_with",
  "ts-rs",
- "typed-path 0.12.4",
+ "typed-path",
  "uuid",
 ]
 
@@ -3675,7 +3675,7 @@ version = "0.50.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7957b9740744892f114936ab4a57b3f487491bbeafaf8083688b16841a4240e5"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4117,9 +4117,9 @@ checksum = "3b3cff922bd51709b605d9ead9aa71031d81447142d828eb4a6eba76fe619f9b"
 
 [[package]]
 name = "pin-utils"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
+checksum = "13bee6c73da26345c729282832b60b0363cf3dd9f4bfd81d8551b7a1c889a113"
 
 [[package]]
 name = "pkg-config"
@@ -4534,7 +4534,7 @@ dependencies = [
  "once_cell",
  "socket2",
  "tracing",
- "windows-sys 0.60.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4927,15 +4927,15 @@ dependencies = [
 
 [[package]]
 name = "rustix"
-version = "1.1.4"
+version = "1.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b6fe4565b9518b83ef4f91bb47ce29620ca828bd32cb7e408f0062e9930ba190"
+checksum = "e5e76742e5294153d4dde1207dbec5bdd81eef6fabdc0d2118babadabfd858aa"
 dependencies = [
  "bitflags 2.10.0",
  "errno",
  "libc",
  "linux-raw-sys 0.12.1",
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4992,7 +4992,7 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -5794,8 +5794,8 @@ dependencies = [
  "fastrand",
  "getrandom 0.4.3",
  "once_cell",
- "rustix 1.1.4",
- "windows-sys 0.61.2",
+ "rustix 1.1.6",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -5804,7 +5804,7 @@ version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d8c27177b12a6399ffc08b98f76f7c9a1f4fe9fc967c784c5a071fa8d93cf7e1"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -5822,7 +5822,7 @@ version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "60b8cb979cb11c32ce1603f8137b22262a9d131aaa5c37b5678025f22b8becd0"
 dependencies = [
- "rustix 1.1.4",
+ "rustix 1.1.6",
  "windows-sys 0.60.2",
 ]
 
@@ -6313,12 +6313,6 @@ dependencies = [
 
 [[package]]
 name = "typed-path"
-version = "0.12.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "54ec2755506471f54baf5e4bb5499d8e510cc1caf271270e778a736bd2d7336c"
-
-[[package]]
-name = "typed-path"
 version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9ce898823d8cd0f028662d2f349694b1af0a5cc9be83f1d213a00d3147445e1e"
@@ -6774,7 +6768,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -7204,7 +7198,7 @@ dependencies = [
  "ppmd-rust",
  "sha1",
  "time",
- "typed-path 0.13.0",
+ "typed-path",
  "windows-sys 0.61.2",
  "zeroize",
  "zopfli",

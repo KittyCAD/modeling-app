@@ -23,7 +23,7 @@ function getToastError(page: Page) {
 test.describe('Share link tests', () => {
   test(
     `Open in desktop app with 2000-long code works non-Windows`,
-    { tag: ['@web', '@macos', '@linux'] },
+    { tag: ['@web', '@macos', '@linux', '@localRenderer'] },
     async ({ page }) => {
       test.skip(process.platform === 'win32')
 
@@ -59,7 +59,7 @@ test.describe('Share link tests', () => {
 
   test(
     'should prefill demo project name on web',
-    { tag: ['@web'] },
+    { tag: ['@web', '@localRenderer'] },
     async ({ page }) => {
       await waitForWebKitBillingToSettle(page)
 

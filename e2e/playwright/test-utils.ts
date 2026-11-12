@@ -18,7 +18,6 @@ import {
   TOKEN_PERSIST_KEY,
   VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
 } from '@src/lib/constants'
-import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import dotenv from 'dotenv'
@@ -64,6 +63,7 @@ import {
   PLAYWRIGHT_PROJECT_DIRECTORY,
   TEST_SETTINGS,
   TEST_SETTINGS_KEY,
+  geometryOnlyForTestTags,
   playwrightPluginSettings,
   playwrightProjectLibraries,
 } from '@e2e/playwright/storageStates'
@@ -303,7 +303,9 @@ async function openDebugPanel(page: Page) {
   await openPane(page, 'debug-pane-button')
 
   // Wait for the lazy pane contents rather than imposing a fixed delay.
-  await expect(page.getByTestId('debug-panel')).toBeAttached()
+  await expect(
+    page.locator('#debug-pane').getByTestId('debug-panel')
+  ).toBeAttached()
 }
 
 export async function closeDebugPanel(page: Page) {
@@ -1082,6 +1084,7 @@ export async function setup(
     reload?: boolean
   } = {}
 ) {
+  const localRendererEnabled = geometryOnlyForTestTags(testInfo?.tags)
   if (!mockApiRoutes && userFeatures.length > 0)
     throw new Error('userFeatures requires mockApiRoutes to be enabled')
 
@@ -1150,6 +1153,14 @@ export async function setup(
       settings: settingsToToml({
         settings: {
           ...TEST_SETTINGS,
+          ...(localRendererEnabled === undefined
+            ? {}
+            : {
+                modeling: {
+                  ...TEST_SETTINGS.modeling,
+                  use_local_renderer: localRendererEnabled,
+                },
+              }),
           plugins: playwrightPluginSettings({
             cloudSyncEnabled,
             zookeeperEnabled: testInfo?.tags.includes('@zookeeper'),
@@ -1428,6 +1439,32 @@ export function kclSamplesPath(fileName: string): string {
 
 // Restore the camera used when a model is initially loaded.
 export async function resetView(scene: SceneFixture) {
+  if (test.info().tags.includes('@localRenderer')) {
+    // Keep the isometric framing used by the projected selections.
+    // Plane hiding is deferred after execution. Wait for both the current model
+    // and that visibility update so zoom-to-fit frames the model, not the planes.
+    await expect
+      .poll(
+        () =>
+          scene.page.evaluate(() => {
+            const manager = window.app.singletons.kclManager
+            const view = manager.sceneInfra.localRenderer
+            return (
+              !manager.isExecuting &&
+              view?.isLoadedSceneCurrent() &&
+              !view.hasVisibleDefaultPlanes
+            )
+          }),
+        { timeout: 30_000 }
+      )
+      .toBe(true)
+    await scene.page.evaluate(() =>
+      window.app.singletons.kclManager.sceneInfra.camControls.viewIsometric({
+        padding: 0.1,
+      })
+    )
+    return
+  }
   // The camera may already face this way, so no image change is guaranteed.
   await scene.moveCameraTo({ x: 0, y: -128, z: 64 }, undefined, {
     waitForImageChange: false,
@@ -1449,45 +1486,33 @@ export async function doAndWaitForImageDiff(
   fn: () => Promise<unknown>,
   diffCount = 200
 ) {
-  return new Promise<boolean>((resolve) => {
-    ;(async () => {
-      await pageOrLocator.screenshot({
-        path: './e2e/playwright/temp1.png',
-        fullPage: true,
-      })
-      await fn()
-      const isImageDiff = async () => {
-        await pageOrLocator.screenshot({
-          path: './e2e/playwright/temp2.png',
-          fullPage: true,
-        })
-        const screenshot1 = PNG.sync.read(
-          await fsp.readFile('./e2e/playwright/temp1.png')
-        )
-        const screenshot2 = PNG.sync.read(
-          await fsp.readFile('./e2e/playwright/temp2.png')
-        )
-        const actualDiffCount = pixelMatch(
-          screenshot1.data,
-          screenshot2.data,
-          null,
-          screenshot1.width,
-          screenshot2.height
-        )
-        return actualDiffCount > diffCount
-      }
+  const screenshot1 = PNG.sync.read(
+    await pageOrLocator.screenshot({ fullPage: true })
+  )
+  await fn()
 
-      // Run sequentially so slow screenshots do not overlap and starve Electron.
-      for (let count = 0; count <= 100; count++) {
-        if (await isImageDiff()) {
-          resolve(true)
-          return
-        }
-        await new Promise((resolve) => setTimeout(resolve, 50))
-      }
-      resolve(false)
-    })().catch(reportRejection)
-  })
+  // Keep screenshots private to this invocation when tests run in parallel.
+  // Capture sequentially so slow screenshots do not overlap and starve Electron.
+  for (let count = 0; count <= 100; count++) {
+    const screenshot2 = PNG.sync.read(
+      await pageOrLocator.screenshot({ fullPage: true })
+    )
+    if (
+      screenshot1.width !== screenshot2.width ||
+      screenshot1.height !== screenshot2.height ||
+      pixelMatch(
+        screenshot1.data,
+        screenshot2.data,
+        null,
+        screenshot1.width,
+        screenshot1.height
+      ) > diffCount
+    ) {
+      return true
+    }
+    await new Promise((resolve) => setTimeout(resolve, 50))
+  }
+  return false
 }
 
 export async function openAndClearDebugPanel(page: Page) {

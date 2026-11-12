@@ -180,6 +180,8 @@ pub(crate) mod kcl_value_view;
 pub(crate) mod machine;
 mod memory;
 mod modeling;
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod named_view_tests;
 #[cfg(not(target_arch = "wasm32"))]
 mod remote;
 mod sketch_solve;
@@ -378,6 +380,8 @@ pub struct ExecOutcome {
     pub operations: OperationsByModule,
     /// Output artifact graph.
     pub artifact_graph: ArtifactGraph,
+    /// Resolved views (default and any named views)
+    pub named_views: Option<crate::named_views::ResolvedViewBatch>,
     /// Objects in the scene, created from execution.
     #[serde(skip)]
     pub scene_objects: Vec<Object>,
@@ -1764,6 +1768,7 @@ impl ExecutorContext {
             PreparedCachedExecution::Cached(outcome) => return Ok(*outcome),
             PreparedCachedExecution::Execute(execution) => execution,
         };
+        exec_state.global.named_views = None;
         let result = self
             .run_concurrent_inner(&program, &mut exec_state, universe_info, preserve_mem)
             .await;
@@ -2017,12 +2022,14 @@ impl ExecutorContext {
     fn finish_cached_execution(
         &self,
         original_program: crate::Program,
-        exec_state: Box<ExecState>,
+        mut exec_state: Box<ExecState>,
         result: Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs>,
     ) -> BoxFuture<'_, Result<ExecOutcome, KclErrorWithOutputs>> {
         Box::pin(async move {
             // Throw the error.
             let result = result?;
+
+            exec_state.resolve_named_views();
 
             // Save this as the last successful execution to the cache.
             // Gotcha: `CacheResult::ReExecute.program` may be diff-based, do not save that AST
@@ -2068,12 +2075,17 @@ impl ExecutorContext {
         universe_info: Option<(Universe, UniverseMap)>,
         preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
+        exec_state.global.named_views = None;
         let execution_fut = self.run_concurrent_inner(program, exec_state, universe_info, preserve_mem);
-        if self.configure_engine_render {
+        let result = if self.configure_engine_render {
             self.with_engine_execution(Box::pin(execution_fut)).await
         } else {
             execution_fut.await
+        };
+        if result.is_ok() && !self.is_mock() {
+            exec_state.resolve_named_views();
         }
+        result
     }
 
     /// Enclose the entire execution, including scene setup and cached settings updates.

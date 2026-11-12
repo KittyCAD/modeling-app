@@ -200,17 +200,21 @@ impl GlobalState {
             .into_iter()
             .map(|(key, value)| (key, KclValueView::from(value)))
             .collect();
+        let filenames = self.exec_state.filenames();
+        let operations = self.exec_state.operations_by_module();
+        let issues = exec_state::collect_execution_issues(self.exec_state.issues, self.exec_state.named_views.as_ref());
         Ok(ExecOutcome {
             variables,
-            filenames: self.exec_state.filenames(),
+            filenames,
             engine_scene_generation: ctx.cache.engine_scene_generation().await,
-            operations: self.exec_state.operations_by_module(),
+            operations,
             artifact_graph: self.exec_state.artifacts.graph,
+            named_views: self.exec_state.named_views,
             scene_objects: self.exec_state.root_module_artifacts.scene_objects,
             source_range_to_object: self.exec_state.root_module_artifacts.source_range_to_object,
             var_solutions: self.exec_state.root_module_artifacts.var_solutions,
             refactor_metadata: self.exec_state.root_module_artifacts.refactor_metadata.clone(),
-            issues: self.exec_state.issues,
+            issues,
             source_files: self.exec_state.id_to_source,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
             #[cfg(test)]

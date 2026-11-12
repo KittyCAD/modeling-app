@@ -1,3 +1,4 @@
+import { MAX_TEXT_FILE_BYTES } from '@src/lib/constants'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -7,7 +8,7 @@ const mocks = vi.hoisted(() => ({
   stat: vi.fn(),
   writeFile: vi.fn<(path: string, data: Uint8Array) => Promise<void>>(),
   basename: vi.fn((path: string) => path.slice(path.lastIndexOf('/') + 1)),
-  reportSystemIOError: vi.fn(),
+  reportFileOperationError: vi.fn(),
 }))
 
 vi.mock('@src/lib/fs-zds', () => ({
@@ -27,8 +28,8 @@ vi.mock('@src/lib/desktop', () => ({
       (error as { code?: string }).code === 'ENOENT'),
 }))
 
-vi.mock('@src/machines/systemIO/errorReporting', () => ({
-  reportSystemIOError: mocks.reportSystemIOError,
+vi.mock('@src/lib/fileSystem/operationErrors', () => ({
+  reportFileOperationError: mocks.reportFileOperationError,
 }))
 
 const importModule = () => import('@src/lib/activeTextFile')
@@ -113,7 +114,7 @@ describe('text file detection', () => {
 
   it('rejects oversized files before reading them', async () => {
     mocks.stat.mockResolvedValueOnce({
-      size: mod.MAX_EDITABLE_TEXT_FILE_BYTES + 1,
+      size: MAX_TEXT_FILE_BYTES + 1,
     })
     await mod.openActiveTextFile(fileOperations, '/proj/large.log')
     expect(mocks.readFile).not.toHaveBeenCalled()
@@ -125,7 +126,7 @@ describe('text file detection', () => {
 
   it('rejects files that grow past the limit between stat and read', async () => {
     mocks.readFile.mockResolvedValueOnce(
-      new Uint8Array(mod.MAX_EDITABLE_TEXT_FILE_BYTES + 1).fill(97)
+      new Uint8Array(MAX_TEXT_FILE_BYTES + 1).fill(97)
     )
     await mod.openActiveTextFile(fileOperations, '/proj/growing.log')
     expect(mod.activeTextFileSignal.value).toMatchObject({
@@ -135,8 +136,8 @@ describe('text file detection', () => {
   })
 
   it('accepts a file exactly at the size limit', async () => {
-    const text = 'a'.repeat(mod.MAX_EDITABLE_TEXT_FILE_BYTES)
-    mocks.stat.mockResolvedValueOnce({ size: mod.MAX_EDITABLE_TEXT_FILE_BYTES })
+    const text = 'a'.repeat(MAX_TEXT_FILE_BYTES)
+    mocks.stat.mockResolvedValueOnce({ size: MAX_TEXT_FILE_BYTES })
     mocks.readFile.mockResolvedValueOnce(text)
     await mod.openActiveTextFile(fileOperations, '/proj/boundary.txt')
     expect(mod.activeTextFileSignal.value).toMatchObject({
@@ -272,7 +273,7 @@ describe('scheduleActiveTextFileWrite', () => {
     await vi.advanceTimersByTimeAsync(1000)
 
     expect(mocks.writeFile).toHaveBeenCalledTimes(1)
-    expect(mocks.reportSystemIOError).not.toHaveBeenCalled()
+    expect(mocks.reportFileOperationError).not.toHaveBeenCalled()
   })
 
   it('reports autosave failures without including the path or contents', async () => {
@@ -288,7 +289,7 @@ describe('scheduleActiveTextFileWrite', () => {
     )
     await vi.advanceTimersByTimeAsync(1000)
 
-    expect(mocks.reportSystemIOError).toHaveBeenCalledWith({
+    expect(mocks.reportFileOperationError).toHaveBeenCalledWith({
       error,
       operation: 'save_text_file',
       risk: 'write',
@@ -298,12 +299,12 @@ describe('scheduleActiveTextFileWrite', () => {
         contentLength: 16,
       },
     })
-    expect(JSON.stringify(mocks.reportSystemIOError.mock.calls)).not.toContain(
-      '/proj/readme.md'
-    )
-    expect(JSON.stringify(mocks.reportSystemIOError.mock.calls)).not.toContain(
-      'private contents'
-    )
+    expect(
+      JSON.stringify(mocks.reportFileOperationError.mock.calls)
+    ).not.toContain('/proj/readme.md')
+    expect(
+      JSON.stringify(mocks.reportFileOperationError.mock.calls)
+    ).not.toContain('private contents')
   })
 })
 
