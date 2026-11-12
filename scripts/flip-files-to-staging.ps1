@@ -10,7 +10,6 @@ yq -i '.name = "zoo-modeling-app-staging"' -p=json -o=json package.json
 # electron-builder.yml
 yq -i '.publish[0].url = "https://dl.zoo.dev/releases/design-studio/staging"' electron-builder.yml
 yq -i '.appId = "dev.zoo.modeling-app-staging"' electron-builder.yml
-yq -i '.nsis.include = "./scripts/installer-staging.nsh"' electron-builder.yml
 
 # Release notes
 echo "Staging build $VERSION (commit $COMMIT)" > release-notes.md

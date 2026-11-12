@@ -44,10 +44,9 @@ win:
       role: Editor
 nsis:
   oneClick: false
-  perMachine: true
+  perMachine: false
   allowElevation: true
   installerIcon: "assets/icon.ico"
-  include: "./scripts/installer.nsh"
   buildUniversalInstaller: true
 linux:
   artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
