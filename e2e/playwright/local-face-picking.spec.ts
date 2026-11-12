@@ -33,6 +33,32 @@ test(
     await homePage.goToModelingScene()
     await scene.settled()
     await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', nose))
+    const session = await page.evaluate(() => {
+      const connection = window.engineCommandManager.connection
+      if (!connection?.websocket || !connection.apiCallId) {
+        throw new Error('The browser has no live modeling session')
+      }
+      const url = new URL(connection.websocket.url)
+      return {
+        host: url.host,
+        pool: url.searchParams.get('pool'),
+        geometryOnly: url.searchParams.get('geometry_only'),
+        apiCallId: connection.apiCallId,
+      }
+    })
+    console.log('Modeling session', session)
+    expect(session).toMatchObject({
+      host: 'api.dev.zoo.dev',
+      pool: 'pr-5491-cpu',
+      geometryOnly: 'true',
+    })
+    // The API honors explicit preview pools only for employee accounts.
+    const identity = await page.request.get('https://api.dev.zoo.dev/user', {
+      headers: { Authorization: `Bearer ${process.env.VITE_ZOO_API_TOKEN}` },
+    })
+    expect(identity.status()).toBe(200)
+    const { email } = await identity.json()
+    expect(typeof email === 'string' && /@(zoo\.dev|kittycad\.io)$/i.test(email)).toBe(true)
     await editor.closePane()
 
     // The artifact graph identifies the wall made by revolving the slope.
