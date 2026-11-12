@@ -1,0 +1,23 @@
+[package]
+name = "display-tessellation"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+earcutr = "0.4.3"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = "0.2.99"
+js-sys = "0.3.72"
+
+[lints]
+workspace = true
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false

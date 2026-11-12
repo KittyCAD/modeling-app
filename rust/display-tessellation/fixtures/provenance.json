@@ -1,0 +1,28 @@
+{
+  "engineCommit": "06daf3ad85ad22d9686c0418db7f62645af96897",
+  "openNurbsCommit": "7e9b21713305fa6832685ac30f0aae78c98f2a0d",
+  "models": {
+    "arc": {
+      "source": "assets/tests/api/arc_with_extrude.3dm",
+      "sourceSha256": "f1a205ac98b7009bdee8bdd0a34f5d98576078295db3b7c4dc86acd485304663",
+      "faces": 4
+    },
+    "cylinder": {
+      "source": "assets/tests/api/csg-cylinder-case-subtraction.3dm",
+      "sourceSha256": "e0b10cedd1f2fa9d2fa73736ea40785c7e783e17703721e0d7559d4f0663063a",
+      "faces": 8
+    },
+    "shell-plane": {
+      "source": "assets/tests/api/shell_top.3dm",
+      "sourceSha256": "558fcdaa3b1333729666b8c33ea9ba4c99e976239c17c1ef2bd8d81cb44a7c43",
+      "format": "live scene snapshot; analytic affine planes; all bodies",
+      "capture": "spikes/brep-capture/build/brep-capture <source> <target> --scene"
+    },
+    "affine-plane": {
+      "source": "assets/tests/api/csg-coplanar-ambiguity-case-union.3dm",
+      "sourceSha256": "a33d318825b1db776afcd9612c30cc853dd40c23b14295e7c4a5f4eeedb29fe0",
+      "format": "live scene snapshot; analytic affine planes; all bodies",
+      "capture": "spikes/brep-capture/build/brep-capture <source> <target> --scene"
+    }
+  }
+}
