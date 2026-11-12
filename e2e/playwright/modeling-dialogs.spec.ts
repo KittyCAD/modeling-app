@@ -93,9 +93,9 @@ sketch001 = sketch(on = XZ) {
       ).toHaveValue('length001')
 
       const bidirectionalLength = modelingDialog.input('bidirectional length')
-      await bidirectionalLength.fill('10')
+      await modelingDialog.fillInput('bidirectional length', '10')
       await expect(bidirectionalLength).toHaveText('10')
-      await bidirectionalLength.fill('')
+      await modelingDialog.fillInput('bidirectional length', '')
       await expect(bidirectionalLength).toHaveAttribute(
         'aria-placeholder',
         'Use defaults'
@@ -129,7 +129,7 @@ sketch001 = sketch(on = XZ) {
       await modelingDialog
         .options('body type')
         .selectOption({ label: 'Surface' })
-      await modelingDialog.input('bidirectional length').fill('1 +')
+      await modelingDialog.fillInput('bidirectional length', '1 +')
       await expect(modelingDialog.submitButton).toBeDisabled()
       await modelingDialog.cancelButton.click()
       await expect(modelingDialog.locator).not.toBeAttached()

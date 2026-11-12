@@ -1,3 +1,9 @@
+import { renameEntry } from '@src/lib/fileSystem/renameEntry'
+import {
+  captureDeletion,
+  replayDeletion,
+  type MemoryFileDeletion,
+} from '@src/lib/fileSystem/deletionHistory'
 import {
   type FileNameParts,
   fileNameCandidate,
@@ -13,12 +19,14 @@ import {
 } from '@src/lib/fileSystem/fileSystem'
 import {
   comparePathLockKeys,
+  conservativePathLockKey,
   type PathLockRequirement,
   pathLockRequirements,
 } from '@src/lib/fileSystem/pathLocking'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import * as Context from 'effect/Context'
 import * as Effect from 'effect/Effect'
+import * as FiberRef from 'effect/FiberRef'
 import * as Layer from 'effect/Layer'
 import * as Stream from 'effect/Stream'
 import * as SubscriptionRef from 'effect/SubscriptionRef'
@@ -58,9 +66,12 @@ function snapshotFileContents(contents: FileContents): OwnedFileContents {
  * The coordinated workspace storage boundary above the raw filesystem.
  *
  * This boundary covers both project directories and the files within them.
- * Reads take shared path locks while mutations take exclusive target locks,
- * allowing unrelated paths to proceed concurrently without exposing a file
- * while a coordinated mutation of that path is in progress.
+ * By default, reads take shared path locks while mutations take exclusive
+ * target locks, allowing unrelated paths to proceed concurrently without
+ * exposing a file during a coordinated mutation. Backends that guarantee
+ * complete file snapshots may opt out of file-read locking below.
+ * Locks coordinate only operations through this runtime; they cannot exclude
+ * external programs or other runtimes accessing the same backing storage.
  */
 export interface FileOperationsService {
   readonly pending: Effect.Effect<number>
@@ -133,7 +144,16 @@ export interface FileOperationsService {
     parent: string,
     preferredName: string
   ) => Effect.Effect<string, FileSystemError>
+  /** Capture bytes and folders in memory before removing the subtree. */
+  readonly removeWithSnapshot: (
+    path: string
+  ) => Effect.Effect<MemoryFileDeletion, FileSystemError>
+  readonly replayDeletion: (
+    deletion: MemoryFileDeletion,
+    restore: boolean
+  ) => Effect.Effect<void, FileSystemError>
   readonly remove: (path: string) => Effect.Effect<void, FileSystemError>
+  /** Rename without replacing a distinct entry; filesystem spelling aliases are allowed. */
   readonly rename: (
     source: string,
     destination: string
@@ -145,9 +165,74 @@ export class FileOperations extends Context.Tag('zds/FileOperations')<
   FileOperationsService
 >() {}
 
-const makeFileOperations = (backing: IZooDesignStudioFS) =>
+export interface FileOperationsOptions {
+  /** Override conservative local alias folding for an exact-name virtual backing. */
+  readonly pathLockKey?: (absolutePath: string) => string
+  /**
+   * Allow cloud file reads while an upload waits for remote acknowledgement.
+   * The cloud backing replaces the complete in-memory byte array before awaiting
+   * the upload, so reads can see those bytes without waiting for the network.
+   * Enable only for backends that guarantee complete file versions during
+   * concurrent mutations.
+   * This declares a backend guarantee; it does not make underlying reads atomic.
+   * Directory reads and all mutations remain coordinated. Disk and browser
+   * storage retain coordinated file reads by default.
+   */
+  readonly atomicFileReads?: boolean
+  /** Capture the backing snapshot before waiting for locks; reject superseded mutations. */
+  readonly captureMutationGuard?: (
+    paths: readonly string[]
+  ) => () => Error | undefined
+}
+
+const makeFileOperations = (
+  backing: IZooDesignStudioFS,
+  options: FileOperationsOptions
+) =>
   Effect.gen(function* () {
-    const fileSystem = yield* FileSystem
+    const backingFileSystem = yield* FileSystem
+    const pathLockKey = options.pathLockKey ?? conservativePathLockKey
+    const lockPaths = {
+      dirname: backing.dirname,
+      resolve: (...parts: string[]) => {
+        const absolute = backing.resolve(...parts)
+        return pathLockKey(absolute)
+      },
+    }
+    const mutationGuard = yield* FiberRef.make<
+      (() => Error | undefined) | undefined
+    >(undefined)
+    const validateMutation = (
+      path: string,
+      operation: Effect.Effect<void, FileSystemError>
+    ) =>
+      FiberRef.get(mutationGuard).pipe(
+        Effect.flatMap((check) => {
+          const error = check?.()
+          return error
+            ? Effect.fail(fileSystemError('validate-mutation', path, error))
+            : operation
+        })
+      )
+    // Keep the operation's captured snapshot through every lock wait and primitive.
+    const fileSystem = {
+      ...backingFileSystem,
+      writeFile: (path: string, contents: OwnedFileContents) =>
+        validateMutation(path, backingFileSystem.writeFile(path, contents)),
+      createFile: (path: string, contents: OwnedFileContents) =>
+        validateMutation(path, backingFileSystem.createFile(path, contents)),
+      makeDirectory: (path: string) =>
+        validateMutation(path, backingFileSystem.makeDirectory(path)),
+      remove: (path: string) =>
+        validateMutation(path, backingFileSystem.remove(path)),
+      rename: (source: string, destination: string) =>
+        validateMutation(source, backingFileSystem.rename(source, destination)),
+      copy: (source: string, destination: string, overwrite?: boolean) =>
+        validateMutation(
+          destination,
+          backingFileSystem.copy(source, destination, overwrite)
+        ),
+    }
     const pending = yield* SubscriptionRef.make(0)
     const pathLocks = yield* SynchronizedRef.make(
       new Map<string, PathLockEntry>()
@@ -225,7 +310,7 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
     ) =>
       withLocks(
         directoryMembershipLocks,
-        [...new Set(paths.map((path) => backing.resolve(path)))]
+        [...new Set(paths.map((path) => lockPaths.resolve(path)))]
           .sort(comparePathLockKeys)
           .map((path) => ({ path, mode })),
         operation
@@ -235,14 +320,19 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
       path: string,
       operation: Effect.Effect<A, E, R>
     ) =>
-      withPathLocks(pathLockRequirements(backing, [path], 'shared'), operation)
+      options.atomicFileReads
+        ? operation
+        : withPathLocks(
+            pathLockRequirements(lockPaths, [path], 'shared'),
+            operation
+          )
 
     const coordinateDirectoryRead = <A, E, R>(
       path: string,
       operation: Effect.Effect<A, E, R>
     ) =>
       withPathLocks(
-        pathLockRequirements(backing, [path], 'shared'),
+        pathLockRequirements(lockPaths, [path], 'shared'),
         withDirectoryMembershipLocks([path], 'shared', operation)
       )
 
@@ -252,22 +342,41 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
         Effect.ensuring(SubscriptionRef.update(pending, (count) => count - 1))
       )
 
+    const guardMutation = <A, E, R>(
+      paths: readonly string[],
+      operation: Effect.Effect<A, E, R>
+    ) => {
+      const check = options.captureMutationGuard?.(paths)
+      return operation.pipe(Effect.locally(mutationGuard, check))
+    }
+
+    const coordinatePathMutation = <A, E, R>(
+      paths: readonly string[],
+      operation: Effect.Effect<A, E, R>
+    ) =>
+      trackMutation(
+        withPathLocks(pathLockRequirements(lockPaths, paths), operation)
+      )
+
     const coordinateMutation = <A, E, R>(
       paths: readonly string[],
       operation: Effect.Effect<A, E, R>,
       membershipPaths = paths.map((path) => backing.dirname(path))
     ) =>
-      trackMutation(
-        withPathLocks(
-          pathLockRequirements(backing, paths),
-          withDirectoryMembershipLocks(membershipPaths, 'exclusive', operation)
+      coordinatePathMutation(
+        paths,
+        withDirectoryMembershipLocks(
+          membershipPaths,
+          'exclusive',
+          guardMutation(paths, operation)
         )
       )
 
     const coordinateWrite = (path: string, contents: OwnedFileContents) =>
-      trackMutation(
-        withPathLocks(
-          pathLockRequirements(backing, [path]),
+      coordinatePathMutation(
+        [path],
+        guardMutation(
+          [path],
           fileSystem
             .exists(path)
             .pipe(
@@ -432,9 +541,10 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
           [parent]
         ),
       createDirectory: (path) =>
-        trackMutation(
-          withPathLocks(
-            pathLockRequirements(backing, [path]),
+        coordinatePathMutation(
+          [path],
+          guardMutation(
+            [path],
             ensureDirectoryPath(backing.dirname(path)).pipe(
               Effect.zipRight(
                 withDirectoryMembershipLocks(
@@ -450,9 +560,10 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
       // Child mutations take a shared parent lock, so no coordinated caller
       // can claim the same candidate between the existence check and creation.
       createUniqueDirectory: (parent, preferredName) =>
-        trackMutation(
-          withPathLocks(
-            pathLockRequirements(backing, [parent]),
+        coordinatePathMutation(
+          [parent],
+          guardMutation(
+            [parent],
             ensureDirectoryPath(parent).pipe(
               Effect.zipRight(
                 withDirectoryMembershipLocks(
@@ -464,17 +575,31 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
             )
           )
         ),
+      removeWithSnapshot: (path) =>
+        coordinateMutation(
+          [path],
+          captureDeletion(fileSystem, backing, path).pipe(
+            Effect.tap(() => fileSystem.remove(path))
+          )
+        ),
+      replayDeletion: (deletion, restore) =>
+        coordinateMutation(
+          [deletion.path],
+          replayDeletion(fileSystem, backing, deletion, restore)
+        ),
       remove: (path) => coordinateMutation([path], fileSystem.remove(path)),
       rename: (source, destination) =>
         coordinateMutation(
           [source, destination],
-          fileSystem.rename(source, destination)
+          renameEntry(fileSystem, backing, source, destination)
         ),
     })
   })
 
-export const fileOperationsLayer = (backing: IZooDesignStudioFS) =>
-  Layer.effect(FileOperations, makeFileOperations(backing))
+export const fileOperationsLayer = (
+  backing: IZooDesignStudioFS,
+  options: FileOperationsOptions = {}
+) => Layer.scoped(FileOperations, makeFileOperations(backing, options))
 
 export const pendingFileOperations = FileOperations.pipe(
   Effect.flatMap((operations) => operations.pending)
@@ -559,6 +684,19 @@ export const createUniqueDirectory = (parent: string, preferredName: string) =>
     Effect.flatMap((operations) =>
       operations.createUniqueDirectory(parent, preferredName)
     )
+  )
+
+export const removeWithSnapshot = (path: string) =>
+  FileOperations.pipe(
+    Effect.flatMap((operations) => operations.removeWithSnapshot(path))
+  )
+
+export const replayFileDeletion = (
+  deletion: MemoryFileDeletion,
+  restore: boolean
+) =>
+  FileOperations.pipe(
+    Effect.flatMap((operations) => operations.replayDeletion(deletion, restore))
   )
 
 export const remove = (path: string) =>

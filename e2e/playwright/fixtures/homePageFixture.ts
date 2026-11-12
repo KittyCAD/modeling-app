@@ -93,6 +93,7 @@ export class HomePageFixture {
    * Maybe there a good sanity check we can do each time?
    */
   expectState = async (expectedState: HomePageState) => {
+    await this.projectsLoaded()
     await expect.poll(this._serialiseSortBy).toEqual(expectedState.sortBy)
 
     for (const projectCard of expectedState.projectCards) {
@@ -103,7 +104,7 @@ export class HomePageFixture {
   expectIsCurrentPage = async () => {
     await expect(this.page).toHaveURL(/.*home/)
     await expect(
-      this.page.getByRole('heading', { name: 'Projects' })
+      this.page.getByTestId('home-header').getByRole('heading', { level: 1 })
     ).toBeVisible()
   }
 
@@ -114,6 +115,14 @@ export class HomePageFixture {
     await this.page.waitForFunction(() =>
       window.app?.settings.actor.getSnapshot().matches('idle')
     )
+    const heading = this.page.getByRole('heading', { level: 1 })
+    await expect(heading).toBeVisible()
+    if ((await heading.innerText()) === 'Project Libraries') {
+      await this.page
+        .getByRole('link', { name: /^Open .+ library$/ })
+        .first()
+        .click()
+    }
     const projectLink = this.page.getByTestId('project-link').first()
     const noProjects = this.page.getByTestId('projects-none')
     await expect(projectLink.or(noProjects)).toBeVisible()
@@ -130,6 +139,7 @@ export class HomePageFixture {
   }
 
   openProject = async (projectTitle: string) => {
+    await this.projectsLoaded()
     const projectCard = this.projectCard.locator(
       this.page.getByText(projectTitle)
     )
