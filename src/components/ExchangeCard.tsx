@@ -510,10 +510,8 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   const isEndOfStream = isExchangeComplete(props.responses)
 
   useEffect(() => {
+    if (isEndOfStream) return
     const id = setInterval(() => {
-      if (isEndOfStream) {
-        clearInterval(id)
-      }
       setUpdatedAt(new Date())
     }, 1000)
     return () => {

@@ -6,6 +6,7 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { effect, signal } from '@preact/signals-core'
+import projectLibrariesRegistryService from '@src/lib/projectLibraries/registry/service'
 import { CLOUD_SYNC_PLUGIN_ID } from '@src/lib/cloudSync/registry/constants'
 import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
@@ -19,10 +20,7 @@ import {
   type ProjectLibrary,
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
-import {
-  readProjectsFromProjectDirectory,
-  scheduleProjectDirectoryNameSyncFromTitles,
-} from '@src/lib/projectLibraries/directoryScanner'
+import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
 import {
   createProjectInLocalDirectory,
   moveProjectIntoLocalDirectory,
@@ -39,11 +37,10 @@ import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import {
-  ExpectedSystemIOError,
-  reportSystemIOError,
-  type SystemIOErrorRisk,
-} from '@src/machines/systemIO/errorReporting'
-import { SystemIOMachineActors } from '@src/machines/systemIO/utils'
+  ExpectedFileOperationError,
+  reportFileOperationError,
+  type FileOperationRisk,
+} from '@src/lib/fileSystem/operationErrors'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
@@ -530,7 +527,7 @@ function getProjectMoveSource({ project }: { project: HomeProjectEntry }) {
 
 type DirectoryProjectOperationReport = {
   operation: string
-  risk: SystemIOErrorRisk
+  risk: FileOperationRisk
 }
 
 async function runReportedDirectoryProjectOperation<T>({
@@ -542,7 +539,7 @@ async function runReportedDirectoryProjectOperation<T>({
   try {
     return await run()
   } catch (error) {
-    reportSystemIOError({
+    reportFileOperationError({
       error,
       source: 'DirectoryProjectLibrary',
       ...report,
@@ -582,23 +579,23 @@ function withReportedDirectoryProjectOperations(
   return {
     ...operations,
     createProject: report(operations.createProject, {
-      operation: SystemIOMachineActors.createProject,
+      operation: 'create project',
       risk: 'write',
     }),
     duplicateProject: report(operations.duplicateProject, {
-      operation: SystemIOMachineActors.duplicateProject,
+      operation: 'duplicate project',
       risk: 'write',
     }),
     renameProject: report(operations.renameProject, {
-      operation: SystemIOMachineActors.renameProject,
+      operation: 'rename project',
       risk: 'write',
     }),
     deleteProject: report(operations.deleteProject, {
-      operation: SystemIOMachineActors.deleteProject,
+      operation: 'delete project',
       risk: 'destructive',
     }),
     moveProjectTo: report(operations.moveProjectTo, {
-      operation: SystemIOMachineActors.moveRecursive,
+      operation: 'move recursive',
       risk: 'destructive',
     }),
   }
@@ -611,9 +608,9 @@ function reportDirectoryProjectStatFailures({
   error: unknown
   count: number
 }) {
-  reportSystemIOError({
+  reportFileOperationError({
     error,
-    operation: SystemIOMachineActors.readFoldersFromProjectDirectory,
+    operation: 'read folders from project directory',
     risk: 'read',
     source: 'DirectoryProjectLibrary',
     dedupeKey:
@@ -637,7 +634,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   }
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
-    new ExpectedSystemIOError('Missing WASM promise registry value.')
+    new ExpectedFileOperationError('Missing WASM promise registry value.')
   /**
    * Directory operations know the configured library they changed, so they
    * refresh that library's local realization discovery directly.
@@ -747,7 +744,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           cloudSyncActions?.status.value.enabled !== true
         ) {
           return Promise.reject(
-            new ExpectedSystemIOError('Cloud sync is not enabled.')
+            new ExpectedFileOperationError('Cloud sync is not enabled.')
           )
         }
 
@@ -815,7 +812,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           }
 
           return runReportedDirectoryProjectOperation({
-            operation: SystemIOMachineActors.readFoldersFromProjectDirectory,
+            operation: 'read folders from project directory',
             risk: 'read',
             run: async () => {
               const projects = await readProjectsFromProjectDirectory({
@@ -825,16 +822,6 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 signal,
                 onProjectStatFailures: reportDirectoryProjectStatFailures,
               })
-              if (!signal.aborted) {
-                scheduleProjectDirectoryNameSyncFromTitles({
-                  fileOperations: fileOperations(),
-                  projects,
-                  onProjectDirectoriesRenamed: () =>
-                    invalidateProjectLibraryRealizations({
-                      libraryId: library.id,
-                    }),
-                })
-              }
 
               return projects.map((project) =>
                 projectLibraryRealizationFromProject(project, library)
@@ -871,6 +858,7 @@ const directoryProjectLibraryDefaultPolicy = defineRegistryItem({
 const projectLibrariesExtension = defineRegistryItem({
   id: 'project-libraries',
   uses: [
+    projectLibrariesRegistryService,
     configuredProjectLibraryRealizations,
     directoryProjectLibraryDefaultPolicy,
     directoryProjectLibraryType,

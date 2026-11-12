@@ -1,7 +1,7 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import { ZOOKEEPER_ACTIVITY_PREFIX } from '@src/lib/zookeeper/activityMessages'
-import { describe, expect, test, vi } from 'vitest'
+import { afterEach, describe, expect, test, vi } from 'vitest'
 
 describe('ExchangeCard replay attachments', () => {
   const attachmentRef = {
@@ -649,5 +649,54 @@ describe('ExchangeCard replay attachments', () => {
       })
     ).toHaveAttribute('aria-expanded', 'false')
     expect(screen.getByText('The bracket is ready.')).toBeVisible()
+  })
+})
+
+describe('ExchangeCard activity after replay', () => {
+  afterEach(() => {
+    vi.clearAllTimers()
+    vi.useRealTimers()
+  })
+
+  test.each([
+    { info: { text: 'Message canceled by user.' } },
+    { error: { detail: 'Request failed.' } },
+  ])('stops the activity timer for a terminal notice: %j', (notice) => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-07-15T12:01:00.000Z'))
+    render(
+      <ExchangeCard
+        request={{ type: 'user', content: 'Add a hole' }}
+        responses={[
+          { reasoning: { type: 'text', content: 'Checking constraints' } },
+          notice,
+        ]}
+        deltasAggregated=""
+        startedAt={new Date('2026-07-15T12:00:00.000Z')}
+        isLastResponse={true}
+        onClickClearChat={() => {}}
+      />
+    )
+
+    const activityToggle = screen.getByRole('button', {
+      name: /Worked for 1m 0s View activity/,
+    })
+    expect(activityToggle).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.queryByTestId('thinking-immediate')).not.toBeInTheDocument()
+    expect(screen.queryByText('Checking constraints')).not.toBeInTheDocument()
+    fireEvent.click(activityToggle)
+    expect(screen.getByText('Checking constraints')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /Worked for 1m 0s Hide activity/ })
+    ).toHaveAttribute('aria-expanded', 'true')
+
+    act(() => {
+      vi.advanceTimersByTime(120_000)
+    })
+
+    expect(
+      screen.getByRole('button', { name: /Worked for 1m 0s Hide activity/ })
+    ).toBeInTheDocument()
+    expect(vi.getTimerCount()).toBe(0)
   })
 })

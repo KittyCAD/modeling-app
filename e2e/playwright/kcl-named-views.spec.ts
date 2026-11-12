@@ -276,74 +276,86 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     }
   )
 
-  test('a Top view centres on its own target, not the current one', async ({
-    homePage,
-    scene,
-    toolbar,
-    page,
-    folderSetupFn,
-  }) => {
-    const u = await getUtils(page)
-    await folderSetupFn(writeTopTargetProject)
-    await homePage.openProject('top-target')
-    await scene.settled()
-    await u.openDebugPanel()
-    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`a Top view centres on its own target, not the current one ${rendererTag}`, async ({
+      homePage,
+      scene,
+      toolbar,
+      page,
+      folderSetupFn,
+    }) => {
+      const u = await getUtils(page)
+      await folderSetupFn(writeTopTargetProject)
+      await homePage.openProject('top-target')
+      await scene.settled()
+      if (rendererTag === '@streamRenderer') await u.openDebugPanel()
+      await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
 
-    await u.clearCommandLogs()
-    await page
-      .locator(VIEW_SWITCHER_PANE)
-      .getByRole('button', { name: 'Apply TopAt', exact: true })
-      .click()
+      if (rendererTag === '@streamRenderer') await u.clearCommandLogs()
+      await page
+        .locator(VIEW_SWITCHER_PANE)
+        .getByRole('button', { name: 'Apply TopAt', exact: true })
+        .click()
 
-    // Top and bottom take the quaternion route rather than a look-at.
-    await u.waitForCmdReceive('default_camera_set_view')
-    await u.clearCommandLogs()
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_get_settings',
-      },
+      if (rendererTag === '@streamRenderer') {
+        // Top and bottom take the quaternion route rather than a look-at.
+        await u.waitForCmdReceive('default_camera_set_view')
+        await u.clearCommandLogs()
+        await u.sendCustomCmd({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_get_settings',
+          },
+        })
+        await u.waitForCmdReceive('default_camera_get_settings')
+      }
+      if (rendererTag === '@localRenderer') {
+        await expect
+          .poll(async () => (await scene.getCameraInfo()).position)
+          .toEqual([10, 20, 100])
+      } else {
+        // The view's target, not the model's centre.
+        await expect(page.getByTestId('cam-x-position')).toHaveValue('10')
+        await expect(page.getByTestId('cam-y-position')).toHaveValue('20')
+        await expect(page.getByTestId('cam-z-position')).toHaveValue('100')
+      }
     })
-    await u.waitForCmdReceive('default_camera_get_settings')
 
-    // The view's target, not the model's centre.
-    await expect(page.getByTestId('cam-x-position')).toHaveValue('10')
-    await expect(page.getByTestId('cam-y-position')).toHaveValue('20')
-    await expect(page.getByTestId('cam-z-position')).toHaveValue('100')
-  })
+    test(`an Isometric view uses its own target and distance ${rendererTag}`, async ({
+      homePage,
+      scene,
+      toolbar,
+      page,
+      folderSetupFn,
+    }) => {
+      const u = await getUtils(page)
+      await folderSetupFn(writeIsometricTargetProject)
+      await homePage.openProject('isometric-target')
+      await scene.settled()
+      if (rendererTag === '@streamRenderer') await u.openDebugPanel()
+      await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
 
-  test('an Isometric view uses its own target and distance', async ({
-    homePage,
-    scene,
-    toolbar,
-    page,
-    folderSetupFn,
-  }) => {
-    const u = await getUtils(page)
-    await folderSetupFn(writeIsometricTargetProject)
-    await homePage.openProject('isometric-target')
-    await scene.settled()
-    await u.openDebugPanel()
-    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
+      if (rendererTag === '@streamRenderer') await u.clearCommandLogs()
+      await page
+        .locator(VIEW_SWITCHER_PANE)
+        .getByRole('button', { name: 'Apply IsometricAt', exact: true })
+        .click()
 
-    await u.clearCommandLogs()
-    await page
-      .locator(VIEW_SWITCHER_PANE)
-      .getByRole('button', { name: 'Apply IsometricAt', exact: true })
-      .click()
+      if (rendererTag === '@streamRenderer')
+        await u.waitForCmdReceive('default_camera_set_view')
+      await expect(async () => {
+        const camera = await scene.getCameraInfo()
 
-    await u.waitForCmdReceive('default_camera_set_view')
-    const camera = await scene.getCameraInfo()
-
-    expect(camera.target).toEqual([10, 20, 0])
-    const distance = Math.hypot(
-      camera.position[0] - camera.target[0],
-      camera.position[1] - camera.target[1],
-      camera.position[2] - camera.target[2]
-    )
-    // The debug camera properties round each coordinate to two decimal places.
-    expect(Math.abs(distance - 100)).toBeLessThanOrEqual(0.01)
-  })
+        expect(camera.target).toEqual([10, 20, 0])
+        const distance = Math.hypot(
+          camera.position[0] - camera.target[0],
+          camera.position[1] - camera.target[1],
+          camera.position[2] - camera.target[2]
+        )
+        // The debug camera properties round each coordinate to two decimal places.
+        expect(Math.abs(distance - 100)).toBeLessThanOrEqual(0.01)
+      }).toPass({ timeout: 5_000 })
+    })
+  }
 })

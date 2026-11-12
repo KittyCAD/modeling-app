@@ -1,4 +1,28 @@
 import {
+  projectStorageProvidersValueSpec,
+  type ProjectStorage,
+} from '@src/lib/projectSession/storage'
+import fsZds from '@src/lib/fs-zds'
+import { getProjectInfo, writeProjectThumbnailFile } from '@src/lib/desktop'
+import {
+  ASK_TO_OPEN_QUERY_PARAM,
+  PROJECT_ID_QUERY_PARAM,
+  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+} from '@src/lib/constants'
+import {
+  PATHS,
+  joinRouterPaths,
+  safeEncodeForRouterPaths,
+} from '@src/lib/paths'
+import { shouldNavigateToRequestedPath } from '@src/routes/Onboarding/navigation'
+import { routerService } from '@src/registry/contracts/router'
+import { settingsService } from '@src/registry/contracts/settings'
+import { engineConnectionService } from '@src/registry/contracts/engineConnection'
+import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import { lspService } from '@src/lang/lsp/registry/contract'
+import { ExpectedFileOperationError } from '@src/lib/fileSystem/operationErrors'
+import { flushActiveTextFileWrite } from '@src/lib/activeTextFile'
+import {
   defineRegistryItem,
   defineRegistryItemFactory,
   provideService,
@@ -9,7 +33,10 @@ import {
   createTextFileIO,
   type TextFileIO,
 } from '@src/lib/projectSession/textFileIO'
-import { fileOperationsService } from '@src/registry/contracts/fileOperations'
+import {
+  type FileOperationsRegistryService,
+  fileOperationsService,
+} from '@src/registry/contracts/fileOperations'
 import {
   projectSession,
   type ProjectSessionService,
@@ -17,6 +44,7 @@ import {
 
 export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   const project = signal<ZDSProject | undefined>(undefined)
+  let refreshGeneration = 0
   const executingEditor = computed(() => {
     const currentProject = project.value
     const editor = currentProject?.executingEditor.value
@@ -38,16 +66,167 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   let textFileIO: TextFileIO | undefined
   const electron = window.electron
 
+  const watchers = new Map<string, () => void>()
+  const storageFor = (path: string): ProjectStorage => {
+    for (const resolve of ctx.valueSpecs.get(
+      projectStorageProvidersValueSpec
+    )) {
+      const storage = resolve(path)
+      if (storage) return storage
+    }
+    return {
+      root: path,
+      writeAvailability: computed(() => ({ writable: true })),
+      externalChanges: 'files',
+      deletionHistory: 'archive',
+      createMissingEntrypoint: true,
+      watch: (path, key, onEvent) => {
+        electron?.watchFileOn(path, key, onEvent)
+        return () => electron?.watchFileOff(path, key)
+      },
+      batch: (_path, run) => run(ctx.services.get(fileOperationsService)),
+      refresh: async () => {},
+      retry: async () => {},
+      editorChanged: () => {},
+      writeThumbnail: (bytes) =>
+        writeProjectThumbnailFile(
+          ctx.services.get(fileOperationsService),
+          bytes,
+          path
+        ),
+    }
+  }
+
   const serviceImpl: ProjectSessionService = {
+    storageFor,
+    editorChanged: (path) => storageFor(path).editorChanged(path),
+    writeThumbnail: (path, bytes) => storageFor(path).writeThumbnail(bytes),
     get textFileIO() {
       return (textFileIO ??= createTextFileIO(
         ctx.services.get(fileOperationsService),
         {
-          watch: (path, key, onEvent) =>
-            electron?.watchFileOn(path, key, onEvent),
-          unwatch: (path, key) => electron?.watchFileOff(path, key),
+          watch: (path, key, onEvent) => {
+            const watchKey = `${key}:${path}`
+            watchers.get(watchKey)?.()
+            watchers.set(watchKey, storageFor(path).watch(path, key, onEvent))
+          },
+          unwatch: (path, key) => {
+            const watchKey = `${key}:${path}`
+            watchers.get(watchKey)?.()
+            watchers.delete(watchKey)
+          },
         }
       ))
+    },
+    refreshProject: async () => {
+      const current = project.peek()
+      if (!current) return
+      const generation = ++refreshGeneration
+      const metadata = current.projectIORefSignal.peek()
+      const wasm = ctx.valueSpecs.get(wasmPromiseValueSpec)
+      if (!wasm) return Promise.reject(new Error('Missing WASM promise.'))
+      const refreshed = await getProjectInfo(
+        ctx.services.get(fileOperationsService),
+        current.path,
+        await wasm,
+        {
+          createMissingEntrypoint: storageFor(current.path)
+            .createMissingEntrypoint,
+        }
+      )
+      if (project.peek() !== current || refreshGeneration !== generation) return
+      current.projectIORefSignal.value = {
+        ...refreshed,
+        cloudProjectId: refreshed.cloudProjectId ?? metadata.cloudProjectId,
+        libraryPath: metadata.libraryPath,
+        libraryType: metadata.libraryType,
+      }
+      return current.projectIORefSignal.peek()
+    },
+    openFile: async (path, options = {}) => {
+      const router = ctx.services.get(routerService)
+      const location = router.getLocation()
+      const target = joinRouterPaths(
+        PATHS.FILE,
+        safeEncodeForRouterPaths(path),
+        options.subRoute ?? ''
+      )
+      const settings = ctx.services.optional(settingsService)?.get()
+      const isStaleOnboardingNavigation = Boolean(
+        settings &&
+          !shouldNavigateToRequestedPath({
+            currentPathname: location.pathname,
+            onboardingStatus: settings.app.onboardingStatus.current,
+            requestedPath: target,
+          })
+      )
+      if (isStaleOnboardingNavigation) return
+      const current = project.peek()
+      const editor = current?.executingEditor.peek()
+      const lsp = ctx.services.optional(lspService)
+      lsp?.onFileClose(editor?.path ?? null, current?.path ?? null)
+      lsp?.onFileOpen(
+        path,
+        options.projectPath ?? current?.path ?? fsZds.dirname(path)
+      )
+      ctx.services
+        .optional(engineConnectionService)
+        ?.manager.rejectAllModelingCommands(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
+      if (editor) {
+        if (editor.path && editor.path !== path) editor.resetForFileSwitch()
+        editor.isExecuting = false
+      }
+      // TODO: Move share-link query consumption into route navigation and remove
+      // clearProjectId from ProjectSessionService. These parameters trigger the
+      // desktop-open prompt and shared-project import, not session behavior.
+      // Keep cleanup in this navigation until that move: updating the old URL
+      // separately can navigate back and reopen the project's default file.
+      const params = new URLSearchParams(location.search)
+      params.delete(ASK_TO_OPEN_QUERY_PARAM)
+      if (options.clearProjectId) params.delete(PROJECT_ID_QUERY_PARAM)
+      const search = params.toString()
+      await router.navigate(target + (search ? `?${search}` : ''), {
+        replace: target.includes(String(PATHS.ONBOARDING)),
+      })
+    },
+    rename: async (source, destination) => {
+      if (source === destination) return
+      const current = project.peek()
+      const editor = current?.executingEditor.peek()
+      const affected =
+        editor &&
+        (editor.path === source ||
+          editor.path.startsWith(`${source}${fsZds.sep}`))
+      if (
+        affected &&
+        !(await editor.flushWriteToFile({ suppressConflictToast: true }))
+      )
+        return Promise.reject(
+          new ExpectedFileOperationError(
+            'File has unsaved changes that could not be written. Rename canceled.'
+          )
+        )
+      await flushActiveTextFileWrite()
+      const operations = ctx.services.get(fileOperationsService)
+      if (await operations.exists(destination))
+        return Promise.reject(
+          new ExpectedFileOperationError('Name already exists.')
+        )
+      const rename = async (operations: FileOperationsRegistryService) => {
+        await operations.rename(source, destination)
+        const path = current?.executingPathSignal.peek()
+        if (
+          project.peek() === current &&
+          path &&
+          (path.peek() === source ||
+            path.peek().startsWith(`${source}${fsZds.sep}`))
+        )
+          path.value = fsZds.join(
+            destination,
+            fsZds.relative(source, path.peek())
+          )
+      }
+      await storageFor(source).batch(source, rename)
     },
     project,
     executingEditor,
@@ -68,6 +247,10 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   return {
     id: 'project-session-extension',
     providesServices: [provideService(projectSession, serviceImpl)],
+    dispose: () => {
+      for (const stop of watchers.values()) stop()
+      watchers.clear()
+    },
   }
 }, 'project-session-extension')
 

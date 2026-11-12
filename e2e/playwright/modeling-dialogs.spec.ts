@@ -8,54 +8,60 @@ sketch001 = sketch(on = XY) {
 region001 = region(segments = [sketch001.circle1])`
 
 test.describe('Modeling dialogs', { tag: '@web' }, () => {
-  test('Submits with Enter after scene selection', async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    modelingDialog,
-  }) => {
-    const code = `@settings(kclVersion = 3.0)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Submits with Enter after scene selection ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      modelingDialog,
+    }) => {
+      const code = `@settings(kclVersion = 3.0)
 sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [var 20mm, var 0mm], center = [var 0mm, var 0mm])
 }`
-    await homePage.goToModelingScene()
-    await scene.settled()
-    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
-    await scene.moveCameraTo({ x: 0, y: -100, z: 0 })
-    await editor.selectText('sketch(on = XZ)')
-    await toolbar.extrudeButton.click()
-    await expect(modelingDialog.selection('Profiles')).toBeFocused()
-    await expect(modelingDialog.selection('Profiles')).toHaveText(
-      'Select in the scene'
-    )
-    await expect(modelingDialog.submitButton).toBeDisabled()
-    // Reproduce the reported sticky-Shift flow: clicking a region can retain
-    // the editor's sketch selection, which Extrude Profiles must reject.
-    await editor.selectText('sketch(on = XZ)')
-    // The Extrude tooltip can cover the upper part of this region in WebKit.
-    const [selectProfile] = scene.makeMouseHelpers(0.38, 0.6, {
-      format: 'ratio',
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
+      await scene.moveCameraTo({ x: 0, y: -100, z: 0 })
+      await editor.selectText('sketch(on = XZ)')
+      await toolbar.extrudeButton.click()
+      await expect(modelingDialog.selection('Profiles')).toBeFocused()
+      await expect(modelingDialog.selection('Profiles')).toHaveText(
+        'Select in the scene'
+      )
+      await expect(modelingDialog.submitButton).toBeDisabled()
+      // Reproduce the reported sticky-Shift flow: clicking a region can retain
+      // the editor's sketch selection, which Extrude Profiles must reject.
+      await editor.selectText('sketch(on = XZ)')
+      // The Extrude tooltip can cover the upper part of this region in WebKit.
+      const [selectProfile] = await scene.makeSelectionHelpers({
+        kind: 'face',
+        index: 0,
+        stream: { x: 0.38, y: 0.6, format: 'ratio' },
+      })
+      await page.keyboard.down('Shift')
+      try {
+        await selectProfile()
+        await expect(modelingDialog.selection('Profiles')).toHaveText(
+          '1 region'
+        )
+      } finally {
+        await page.keyboard.up('Shift')
+      }
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      await expect(modelingDialog.selection('Profiles')).not.toBeFocused()
+      await scene.waitForExecutionDoneAfter(async () => {
+        await page.keyboard.press('Enter')
+        await expect(modelingDialog.locator).not.toBeAttached()
+      })
+      await editor.expectEditor.toContain('extrude(region001, length = 5)')
+      await expect(editor.activeLine).toHaveText(
+        'extrude001 = extrude(region001, length = 5)'
+      )
     })
-    await page.keyboard.down('Shift')
-    try {
-      await selectProfile()
-      await expect(modelingDialog.selection('Profiles')).toHaveText('1 region')
-    } finally {
-      await page.keyboard.up('Shift')
-    }
-    await expect(modelingDialog.submitButton).toBeEnabled()
-    await expect(modelingDialog.selection('Profiles')).not.toBeFocused()
-    await scene.waitForExecutionDoneAfter(async () => {
-      await page.keyboard.press('Enter')
-      await expect(modelingDialog.locator).not.toBeAttached()
-    })
-    await editor.expectEditor.toContain('extrude(region001, length = 5)')
-    await expect(editor.activeLine).toHaveText(
-      'extrude001 = extrude(region001, length = 5)'
-    )
-  })
+  }
 
   test(
     'Command palette opens Extrude dialog with variable and optional inputs',
@@ -87,9 +93,9 @@ sketch001 = sketch(on = XZ) {
       ).toHaveValue('length001')
 
       const bidirectionalLength = modelingDialog.input('bidirectional length')
-      await bidirectionalLength.fill('10')
+      await modelingDialog.fillInput('bidirectional length', '10')
       await expect(bidirectionalLength).toHaveText('10')
-      await bidirectionalLength.fill('')
+      await modelingDialog.fillInput('bidirectional length', '')
       await expect(bidirectionalLength).toHaveAttribute(
         'aria-placeholder',
         'Use defaults'
@@ -123,7 +129,7 @@ sketch001 = sketch(on = XZ) {
       await modelingDialog
         .options('body type')
         .selectOption({ label: 'Surface' })
-      await modelingDialog.input('bidirectional length').fill('1 +')
+      await modelingDialog.fillInput('bidirectional length', '1 +')
       await expect(modelingDialog.submitButton).toBeDisabled()
       await modelingDialog.cancelButton.click()
       await expect(modelingDialog.locator).not.toBeAttached()
