@@ -32,7 +32,7 @@ export const playwrightLayoutConfig = {
           label: 'Feature Tree',
           type: 'split',
           icon: 'model',
-          sizes: [75, 25],
+          sizes: [100],
           orientation: 'block',
           children: [
             {
@@ -40,12 +40,6 @@ export const playwrightLayoutConfig = {
               label: 'Feature Tree',
               type: 'simple',
               areaType: 'featureTree',
-            },
-            {
-              id: 'bodies-list',
-              label: 'Bodies List',
-              type: 'simple',
-              areaType: 'bodies',
             },
           ],
         },

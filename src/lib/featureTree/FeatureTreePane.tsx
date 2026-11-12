@@ -13,7 +13,10 @@ import {
   isOffsetPlane,
 } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
-import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
+import {
+  getArtifactFromRange,
+  getBodiesFromArtifactGraph,
+} from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import {
   base64Decode,
@@ -34,6 +37,7 @@ import {
   type OperationTreeNode,
 } from '@src/lib/featureTree/featureTreeOperationTree'
 import {
+  getHideOpByArtifactId,
   getHideOperations,
   getOperationCalculatedDisplay,
   getOperationIcon,
@@ -91,6 +95,8 @@ import {
   keymapService,
 } from '@src/registry/contracts/keymap'
 import { projectSession } from '@src/registry/contracts/projectSession'
+import { BodyItem } from '@src/lib/featureTree/BodiesPane'
+import { buildBodyOperationTree } from '@src/lib/featureTree/featureTreeBodyTree'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: feature-tree file opening (useNavigate).
 import { useNavigate } from 'react-router-dom'
@@ -280,6 +286,17 @@ export const FeatureTreePaneContents = memo(() => {
     [operationsByModule]
   )
   const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
+  const artifactGraph = kclManager.execStateSignal.value.artifactGraph
+  const bodyTree = useMemo(
+    () =>
+      buildBodyOperationTree(
+        operationList,
+        getBodiesFromArtifactGraph(artifactGraph),
+        artifactGraph
+      ),
+    [operationList, artifactGraph]
+  )
+  const bodyOperations = getAllOperations(operationsByModule)
 
   // Live execution tracking: expand only the active module branch.
   const liveActiveModuleId = kclManager.liveActiveModuleId
@@ -298,6 +315,24 @@ export const FeatureTreePaneContents = memo(() => {
       firstParseDiagnostic.to
     )
   }
+
+  const renderOperation = (node: OperationTreeNode, index: number) => (
+    <OperationTreeNodeItem
+      key={getOperationTreeNodeKey(node, index)}
+      node={node}
+      code={operationsCode}
+      isStaleReference={isReadOnlyFeatureTree}
+      sketchNoFace={sketchNoFace}
+      systemDeps={systemDeps}
+      modelingActor={modelingActor}
+      engineCommandManager={engineCommandManager}
+      onSelect={selectOperation}
+      visibilityOperations={visibilityOperations}
+      editorSelection={editorSelection}
+      liveActiveModuleId={liveActiveModuleId}
+      liveLatestOperationKey={liveLatestOperationKey}
+    />
+  )
 
   return (
     <div className="relative">
@@ -375,23 +410,61 @@ export const FeatureTreePaneContents = memo(() => {
               </div>
             </div>
           )}
-          {operationList.map((node, index) => (
-            <OperationTreeNodeItem
-              key={getOperationTreeNodeKey(node, index)}
-              node={node}
-              code={operationsCode}
-              isStaleReference={isReadOnlyFeatureTree}
-              sketchNoFace={sketchNoFace}
-              systemDeps={systemDeps}
-              modelingActor={modelingActor}
-              engineCommandManager={engineCommandManager}
-              onSelect={selectOperation}
-              visibilityOperations={visibilityOperations}
-              editorSelection={editorSelection}
-              liveActiveModuleId={liveActiveModuleId}
-              liveLatestOperationKey={liveLatestOperationKey}
-            />
-          ))}
+          {bodyTree.operations.map(renderOperation)}
+          {bodyTree.branches.map(({ id, artifact, operations }, bodyIndex) => {
+            const patternIndex =
+              artifact.type === 'pattern'
+                ? Math.max(0, artifact.copyIds.indexOf(id) + 1)
+                : undefined
+            const hideOperation =
+              getHideOpByArtifactId(bodyOperations, id) ??
+              (artifact.type === 'pattern' && patternIndex === 0
+                ? getHideOpByArtifactId(bodyOperations, artifact.sourceId)
+                : undefined)
+            return (
+              <Disclosure
+                as="div"
+                key={id}
+                defaultOpen
+                data-testid="feature-tree-body-branch"
+              >
+                <div
+                  className="flex items-start gap-1"
+                  data-testid="feature-tree-body"
+                >
+                  <Disclosure.Button
+                    aria-label={`Toggle Body ${bodyIndex + 1} features`}
+                    className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2"
+                  >
+                    <CustomIcon
+                      name="caretDown"
+                      className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
+                      aria-hidden
+                    />
+                  </Disclosure.Button>
+                  <div className="flex-1 min-w-0">
+                    <BodyItem
+                      label={`Body ${bodyIndex + 1}`}
+                      artifact={artifact}
+                      artifactGraph={artifactGraph}
+                      hideOperation={hideOperation}
+                      engineEntityId={
+                        artifact.type === 'pattern' ? id : undefined
+                      }
+                      patternIndex={patternIndex}
+                      disabled={isReadOnlyFeatureTree || kclManager.isExecuting}
+                    />
+                  </div>
+                </div>
+                <Disclosure.Panel
+                  className="border-l b-4 ml-6"
+                  data-testid="feature-tree-body-features"
+                >
+                  {operations.map(renderOperation)}
+                </Disclosure.Panel>
+              </Disclosure>
+            )
+          })}
         </>
       </section>
     </div>

@@ -378,7 +378,52 @@ describe('Layout utils', () => {
   })
 
   describe('persisted layout migrations', () => {
-    it('adds the bodies list split around a v2 feature tree pane', () => {
+    it('reclaims the Bodies split without changing sibling panes or their sizes', () => {
+      const legacyTree: Layout = {
+        id: 'feature-tree',
+        label: 'Feature Tree',
+        type: LayoutType.Splits,
+        orientation: 'block',
+        sizes: [70, 30],
+        children: [
+          {
+            id: 'operations-list',
+            label: 'Feature Tree',
+            type: LayoutType.Simple,
+            areaType: AreaType.FeatureTree,
+          },
+          {
+            id: 'bodies-list',
+            label: 'Bodies',
+            type: LayoutType.Simple,
+            areaType: AreaType.Bodies,
+          },
+        ],
+      }
+      const sibling: Layout = {
+        id: 'code',
+        label: 'Code',
+        type: LayoutType.Simple,
+        areaType: AreaType.Code,
+      }
+      const migrated = parseLayoutWithMigrations({
+        version: 'v4',
+        layout: {
+          id: 'root',
+          label: 'Root',
+          type: LayoutType.Splits,
+          orientation: 'block',
+          sizes: [60, 40],
+          children: [legacyTree, sibling],
+        },
+      })
+      expect(migrated).toMatchObject({
+        version: 'v5',
+        layout: { sizes: [60, 40], children: [featureTreePaneConfig, sibling] },
+      })
+    })
+
+    it('migrates a v2 feature tree to the unified tree', () => {
       const migrated = parseLayoutWithMigrations({
         version: 'v2',
         layout: {
@@ -391,16 +436,13 @@ describe('Layout utils', () => {
 
       expect(migrated).not.toBeInstanceOf(Error)
       // Migrations chain, so a v2 layout lands on the latest version.
-      expect(migrated).toHaveProperty('version', 'v4')
+      expect(migrated).toHaveProperty('version', 'v5')
       expect(migrated).toHaveProperty('layout.type', LayoutType.Splits)
       expect(migrated).toHaveProperty(
         'layout.children[0].areaType',
         AreaType.FeatureTree
       )
-      expect(migrated).toHaveProperty(
-        'layout.children[1].areaType',
-        AreaType.Bodies
-      )
+      expect(migrated).toHaveProperty('layout.children.length', 1)
     })
 
     it('appends the view switcher to a v3 pane bar, closed', () => {
@@ -419,7 +461,7 @@ describe('Layout utils', () => {
       })
 
       expect(migrated).not.toBeInstanceOf(Error)
-      expect(migrated).toHaveProperty('version', 'v4')
+      expect(migrated).toHaveProperty('version', 'v5')
       expect(migrated).toHaveProperty(
         'layout.children[1].areaType',
         AreaType.NamedViews
@@ -447,7 +489,7 @@ describe('Layout utils', () => {
       })
 
       expect(migrated).not.toBeInstanceOf(Error)
-      expect(migrated).toHaveProperty('version', 'v4')
+      expect(migrated).toHaveProperty('version', 'v5')
       expect(migrated).toHaveProperty('layout.children.length', 2)
     })
 

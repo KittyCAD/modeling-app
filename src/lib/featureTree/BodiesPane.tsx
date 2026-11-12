@@ -87,20 +87,23 @@ function BodiesList({
     <section className="overflow-auto mr-1 pb-8">
       <ul>
         {Array.from(bodies.entries()).map(([id, props], i) => (
-          <BodyItem key={id || i} {...props} />
+          <li key={id || i}>
+            <BodyItem {...props} />
+          </li>
         ))}
       </ul>
     </section>
   )
 }
 
-function BodyItem({
+export function BodyItem({
   label,
   artifact,
   artifactGraph,
   hideOperation,
   engineEntityId,
   patternIndex,
+  disabled = false,
 }: {
   label: string
   artifact: SolidArtifact
@@ -108,6 +111,7 @@ function BodyItem({
   hideOperation?: HideOperation
   engineEntityId?: string
   patternIndex?: number
+  disabled?: boolean
 }) {
   const { kclManager } = useSingletons()
   const {
@@ -167,52 +171,59 @@ function BodyItem({
   }
 
   return (
-    <li className="px-1 py-0.5 group/visibilityToggle">
+    <div className="px-1 py-0.5 group/visibilityToggle">
       <RowItemWithIconMenuAndToggle
         icon="body"
+        disabled={disabled}
         onClick={onSelect}
         onContextMenu={() => onSelect()}
         isSelected={isSelected}
-        menuItems={[
-          <ContextMenuItem
-            onClick={handleDelete}
-            data-testid="context-menu-delete"
-          >
-            Delete
-          </ContextMenuItem>,
-        ]}
+        menuItems={
+          disabled
+            ? undefined
+            : [
+                <ContextMenuItem
+                  onClick={handleDelete}
+                  data-testid="context-menu-delete"
+                >
+                  Delete
+                </ContextMenuItem>,
+              ]
+        }
         Toggle={
-          <VisibilityToggle
-            visible={hideOperation === undefined}
-            onVisibilityChange={() => {
-              if (hideOperation === undefined) {
-                onHide({
-                  ast: kclManager.ast,
-                  artifactGraph: kclManager.artifactGraph,
-                  modelingActor,
-                  objects: selections,
-                })
-              } else {
-                onUnhide({
-                  hideOperation,
-                  targetArtifact: artifact,
-                  kclManager,
-                })
-                  .then((result) => {
-                    if (err(result)) {
-                      toast.error(result.message || 'Error while unhiding.')
-                    }
+          disabled ? undefined : (
+            <VisibilityToggle
+              visible={hideOperation === undefined}
+              onVisibilityChange={() => {
+                if (hideOperation === undefined) {
+                  onHide({
+                    ast: kclManager.ast,
+                    artifactGraph: kclManager.artifactGraph,
+                    modelingActor,
+                    objects: selections,
                   })
-                  .catch((e) => {
-                    toast.error(e.message || 'Error while unhiding.')
+                } else {
+                  onUnhide({
+                    hideOperation,
+                    targetArtifact: artifact,
+                    kclManager,
                   })
-              }
-            }}
-          />
+                    .then((result) => {
+                      if (err(result)) {
+                        toast.error(result.message || 'Error while unhiding.')
+                      }
+                    })
+                    .catch((e) => {
+                      toast.error(e.message || 'Error while unhiding.')
+                    })
+                }
+              }}
+            />
+          )
         }
       >
         {label}
       </RowItemWithIconMenuAndToggle>
-    </li>
+    </div>
   )
 }

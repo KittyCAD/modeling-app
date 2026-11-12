@@ -271,10 +271,31 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
         await toolbar.openFeatureTreePane()
       })
 
-      const bodiesPane = page.locator('#bodies-list-pane')
+      const bodiesPane = page.getByTestId('feature-tree-body')
+
+      await test.step('Bodies and their features share one collapsible tree', async () => {
+        await expect(page.locator('#bodies-list-pane')).toHaveCount(0)
+        const branch = page.getByTestId('feature-tree-body-branch').first()
+        const toggle = branch.getByRole('button', {
+          name: 'Toggle Body 1 features',
+          exact: true,
+        })
+        const features = branch.getByTestId('feature-tree-body-features')
+        await expect(features).toBeVisible()
+        await expect(
+          features.getByTestId('feature-tree-operation-item').first()
+        ).toBeVisible()
+        await toggle.click()
+        await expect(features).toBeHidden()
+        await expect(
+          branch.getByRole('button', { name: 'Body 1', exact: true })
+        ).toBeVisible()
+        await toggle.click()
+        await expect(features).toBeVisible()
+      })
 
       await test.step('Verify both bodies are hidden', async () => {
-        await expect(bodiesPane).toBeVisible({ timeout: 15_000 })
+        await expect(bodiesPane).toHaveCount(2, { timeout: 15_000 })
         const bodyToggles = bodiesPane.getByTestId(
           'feature-tree-visibility-toggle'
         )
