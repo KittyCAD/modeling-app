@@ -88,6 +88,21 @@ for (const backing of ['local', 'cloud'] as const) {
       const tree = page.getByTestId('file-pane-scroll-container')
       const row = (name: string) =>
         tree.getByRole('treeitem', { name, exact: true })
+      const waitForExplorerReady = async () => {
+        await expect(tree.getByRole('treeitem').first()).toHaveAttribute(
+          'aria-disabled',
+          'false',
+          { timeout: 30_000 }
+        )
+      }
+      const finishNamingEntry = async (name: string) => {
+        const field = page.getByTestId('file-rename-field')
+        await field.fill(name)
+        await field.press('Enter')
+        await expect(field).toBeHidden()
+        // Rows can appear before the mutation and project refresh finish.
+        await waitForExplorerReady()
+      }
       const read = async (name: string) =>
         backing === 'cloud'
           ? remote.project.files[name]
@@ -95,8 +110,7 @@ for (const backing of ['local', 'cloud'] as const) {
 
       await test.step('a filename collision allocates a sibling without replacing bytes', async () => {
         await page.getByTestId('create-file-button').click()
-        await page.getByTestId('file-rename-field').fill('main')
-        await page.keyboard.press('Enter')
+        await finishNamingEntry('main')
         await expect(page).toHaveURL(/main-1\.kcl$/)
         expect(await read('main.kcl')).toBe(code)
         await expect(row('main.kcl')).toBeVisible()
@@ -108,13 +122,13 @@ for (const backing of ['local', 'cloud'] as const) {
         const activeUrl = page.url()
         await row('parts').click({ button: 'right' })
         await page.getByRole('button', { name: 'Rename', exact: true }).click()
-        await page.getByTestId('file-rename-field').fill('components')
-        await page.keyboard.press('Enter')
+        await finishNamingEntry('components')
         await expect(row('components')).toBeVisible()
         await expect(page).toHaveURL(activeUrl)
       })
       await test.step('moving an open file keeps subsequent edits durable', async () => {
         await row('live.kcl').dragTo(row('components'))
+        await waitForExplorerReady()
         await expect(page).toHaveURL(
           new RegExp(
             encodeURIComponent(await fs.join(root, 'components', 'live.kcl'))
@@ -133,8 +147,7 @@ for (const backing of ['local', 'cloud'] as const) {
       })
       await test.step('an empty folder survives reloading either backing', async () => {
         await page.getByTestId('create-folder-button').click()
-        await page.getByTestId('file-rename-field').fill('empty-folder')
-        await page.keyboard.press('Enter')
+        await finishNamingEntry('empty-folder')
         await expect(row('empty-folder')).toBeVisible()
         if (backing === 'cloud')
           await expect
@@ -147,6 +160,7 @@ for (const backing of ['local', 'cloud'] as const) {
         await row('main.kcl').click()
         await expect(page).toHaveURL(/main\.kcl$/)
         await row('main.kcl').dragTo(row('components'))
+        await waitForExplorerReady()
         const movedEntrypoint = new RegExp(
           encodeURIComponent(await fs.join(root, 'components', 'main.kcl'))
         )
