@@ -283,11 +283,11 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> Result<(crate::std::StdFn, St
             StdFnProps::default("std::gdt::distance"),
         ),
         ("gdt", "diameter") => (
-            |e, a| Box::pin(crate::std::gdt::diameter(e, a).map(|r| r.map(KclValue::continue_))),
+            |e, a| Box::pin(crate::std::gdt::diameter(e, a).map(|r| r.map(KclValue::normal))),
             StdFnProps::default("std::gdt::diameter"),
         ),
         ("gdt", "radius") => (
-            |e, a| Box::pin(crate::std::gdt::radius(e, a).map(|r| r.map(KclValue::continue_))),
+            |e, a| Box::pin(crate::std::gdt::radius(e, a).map(|r| r.map(KclValue::normal))),
             StdFnProps::default("std::gdt::radius"),
         ),
         ("gdt", "profile") => (
