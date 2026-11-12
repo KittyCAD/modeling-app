@@ -96,7 +96,7 @@ export interface EditorViewMetadata {
 }
 /** A mode binds its typed context once; the registry stores its uniform rendering interface. */
 export interface EditorViewContribution extends EditorViewMetadata {
-  bind: (host: EditorViewHost) => ComponentType<EditorSurfaceProps>
+  bind: (host: EditorViewHost) => ComponentType<EditorSurfaceProps> | Error
 }
 
 /** Binding is deferred during CodeMirror updates; failed providers carry no renderable component. */
@@ -116,14 +116,15 @@ export interface EditorViewState {
 export interface EditorCapability {
   id: string
   matches: EditorMatcher
-  setup: (host: EditorResourceHost) => void
+  /** Return an Error when setup fails; the host releases registered resources and reports it. */
+  setup: (host: EditorResourceHost) => Error | undefined
 }
 
 /** Native CodeMirror behavior is installed separately in every matching Code surface. */
 export interface CodeEditorExtension {
   id: string
   matches: EditorMatcher
-  extensions: Extension | ((host: CodeEditorHost) => Extension)
+  extensions: Extension | ((host: CodeEditorHost) => Extension | Error)
 }
 
 /** Informational decorations contributed alongside a buffer's tab label. */
@@ -137,21 +138,21 @@ export interface EditorTabIndicator {
 export interface EditorsService {
   editors: ReadonlySignal<readonly Editor[]>
   views: ReadonlySignal<readonly EditorViewInstance[]>
-  createView: (editor: Editor, modeId?: string) => EditorViewInstance
-  closeView: (id: symbol) => void
+  createView: (editor: Editor, modeId?: string) => EditorViewInstance | Error
+  closeView: (id: symbol) => Error | undefined
   /** Create an unsaved buffer, without reading or creating a file. */
-  createEditor: (contents?: string) => Editor
+  createEditor: (contents?: string) => Editor | Error
   /** Synchronously create an independent document from contents already loaded by the caller. */
-  openEditor: (src: string | undefined, contents: string) => Editor
+  openEditor: (src: string | undefined, contents: string) => Editor | Error
   /** Update an editor's source after a rename or reassociation; performs no file IO. */
-  setSource: (id: symbol, src: string) => void
+  setSource: (id: symbol, src: string) => Error | undefined
   /** Explicitly choose a registered language, or clear the choice to resume source classification. */
   setLanguage: (id: symbol, languageId: string | undefined) => Error | undefined
   /** Observe the modes and choice of one presentation, independently of React mounts. */
   viewState: (instance: EditorViewInstance) => ReadonlySignal<EditorViewState>
   /** Choose a matching surface without replacing the buffer or its capabilities. */
-  setView: (id: symbol, viewId: string) => void
-  closeEditor: (id: symbol) => void
+  setView: (id: symbol, viewId: string) => Error | undefined
+  closeEditor: (id: symbol) => Error | undefined
 }
 
 export const editorsContract = defineContract({

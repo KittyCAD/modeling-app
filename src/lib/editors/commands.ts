@@ -2,6 +2,7 @@ import type { Command } from '@src/lib/commandTypes'
 import type { EditorsService } from '@src/lib/editors/registry/contract'
 import { loadProjectEditor } from '@src/lib/editors/loadProjectEditor'
 import fsZds from '@src/lib/fs-zds'
+import { isErr } from '@src/lib/trap'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type { ProjectSessionService } from '@src/lib/projectSession/next/contract'
 import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
@@ -64,8 +65,8 @@ export function createOpenEditorCommand(
         { reuseExisting: true }
       )
       if (editor instanceof Error) return editor
-      editors.createView(editor)
-      return editor
+      const view = editors.createView(editor)
+      return isErr(view) ? view : editor
     },
   }
 }

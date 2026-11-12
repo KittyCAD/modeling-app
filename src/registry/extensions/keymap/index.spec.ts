@@ -1,4 +1,4 @@
-import { codeSurface } from '@src/lib/editors/testViews'
+import { requireSuccess, codeSurface } from '@src/lib/editors/testViews'
 import '@src/lib/projectSession/next/testFeature'
 import {
   defineRegistryItem,
@@ -89,8 +89,8 @@ describe('keymap extension', () => {
       { send, extraItems: [editorsExtension] }
     )
     const editors = registry.get(editorsService)
-    const first = editors.openEditor('first.txt', 'original')
-    const second = editors.openEditor('second.txt', 'separate')
+    const first = requireSuccess(editors.openEditor('first.txt', 'original'))
+    const second = requireSuccess(editors.openEditor('second.txt', 'separate'))
     document.body.append(
       codeSurface(registry.get(editorsService), first).dom,
       codeSurface(registry.get(editorsService), second).dom

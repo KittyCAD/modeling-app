@@ -39,6 +39,7 @@ import {
   provideCommand,
 } from '@src/registry/contracts/commands'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
+import { isErr } from '@src/lib/trap'
 import { keymapEventOwnersValueSpec } from '@src/registry/contracts/keymap'
 
 /** All resources for an editor share one owner, including while contributed code initializes it. */
@@ -94,9 +95,9 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
     editors,
     views: presentations,
     createView: (editor, modeId) => {
-      contextBoundary.assertCanManageEditors()
-      // eslint-disable-next-line suggest-no-throw/suggest-no-throw -- A closed buffer cannot acquire a presentation.
-      if (!records.has(editor.id)) throw new Error('The editor is closed')
+      const blocked = contextBoundary.checkCanManageEditors()
+      if (blocked) return blocked
+      if (!records.has(editor.id)) return new Error('The editor is closed')
       const resources = createEditorCleanup()
       const instance: EditorViewInstance = {
         id: Symbol('editor-view'),
@@ -115,12 +116,12 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
       if (modeId) modes.select(modeId)
       else modes.refresh()
       if (resources.closed || editor.signal.aborted)
-        // eslint-disable-next-line suggest-no-throw/suggest-no-throw -- A closed document cannot return a usable presentation.
-        throw new Error('The editor closed during view initialization')
+        return new Error('The editor closed during view initialization')
       return instance
     },
     closeView: (id) => {
-      contextBoundary.assertCanManageEditors()
+      const blocked = contextBoundary.checkCanManageEditors()
+      if (blocked) return blocked
       const record = presentationRecords.get(id)
       if (!record) return
       presentationRecords.delete(id)
@@ -137,9 +138,9 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
     },
     createEditor: (contents = '') => service.openEditor(undefined, contents),
     openEditor: (src, contents) => {
-      contextBoundary.assertCanManageEditors()
-      // eslint-disable-next-line suggest-no-throw/suggest-no-throw -- This synchronous API cannot produce an editor after shutdown.
-      if (disposed) throw new Error('The editors service is closed')
+      const blocked = contextBoundary.checkCanManageEditors()
+      if (blocked) return blocked
+      if (disposed) return new Error('The editors service is closed')
       // A later project selection must not adopt resources being constructed for this opening.
       const lifetime = services
         .optional(projectSessionService)
@@ -174,21 +175,23 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
         resources.onDispose(
           watchEditorCapabilities(editor, capabilities, contextBoundary)
         )
-        if (resources.closed || lifetime?.aborted || disposed)
-          // eslint-disable-next-line suggest-no-throw/suggest-no-throw -- Do not return a destroyed editor from the synchronous creation API.
-          throw new Error('The editor closed during initialization')
+        if (resources.closed || lifetime?.aborted || disposed) {
+          closeEditor(editor.id)
+          resources.dispose()
+          return new Error('The editor closed during initialization')
+        }
         // Subscribers may react to publication; always append to the current collection.
         editors.value = [...editors.peek(), editor]
         return editor
       } catch (cause) {
         closeEditor(editor.id)
         resources.dispose()
-        // eslint-disable-next-line suggest-no-throw/suggest-no-throw -- Preserve the capability failure after rolling back synchronous construction.
-        throw cause
+        return isErr(cause) ? cause : new Error(String(cause))
       }
     },
     setSource: (id, src) => {
-      contextBoundary.assertCanManageEditors()
+      const blocked = contextBoundary.checkCanManageEditors()
+      if (blocked) return blocked
       const record = records.get(id)
       if (!record) return
       record.source.value = src
@@ -197,7 +200,8 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
           presentation.modes.refresh()
     },
     setLanguage: (id, languageId) => {
-      contextBoundary.assertCanManageEditors()
+      const blocked = contextBoundary.checkCanManageEditors()
+      if (blocked) return blocked
       const record = records.get(id)
       if (!record) return new Error('The editor is closed')
       const result = record.language.select(languageId)
@@ -210,11 +214,13 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
     viewState: (instance) =>
       presentationRecords.get(instance.id)?.modes.state ?? closedViewState,
     setView: (id, viewId) => {
-      contextBoundary.assertCanManageEditors()
+      const blocked = contextBoundary.checkCanManageEditors()
+      if (blocked) return blocked
       presentationRecords.get(id)?.modes.select(viewId)
     },
     closeEditor: (id) => {
-      contextBoundary.assertCanManageEditors()
+      const blocked = contextBoundary.checkCanManageEditors()
+      if (blocked) return blocked
       closeEditor(id)
     },
   }
@@ -264,7 +270,12 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
         needsReview: false,
         onSubmit: () => {
           const editor = service.createEditor()
-          service.createView(editor, 'editors.code')
+          if (isErr(editor)) return editor
+          const view = service.createView(editor, 'editors.code')
+          if (isErr(view)) {
+            service.closeEditor(editor.id)
+            return view
+          }
           return editor
         },
       }),

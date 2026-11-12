@@ -1,5 +1,5 @@
 import * as cloudPolling from '@src/lib/cloudProjects/polling'
-import { codeSurface } from '@src/lib/editors/testViews'
+import { requireSuccess, codeSurface } from '@src/lib/editors/testViews'
 import '@src/lib/projectSession/next/testFeature'
 import { editorsService } from '@src/lib/editors/registry/contract'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
@@ -220,7 +220,7 @@ describe('project system', () => {
         metadata: { title: 'Project', readWriteAccess: true },
       })
       const editors = app.registry.get(editorsService)
-      const editor = editors.openEditor('/project/main.kcl', '')
+      const editor = requireSuccess(editors.openEditor('/project/main.kcl', ''))
       const destroy = vi.spyOn(codeSurface(editors, editor), 'destroy')
       // Exercise Home's actual close boundary without starting unrelated folder IO.
       loadHomeProjects({

@@ -6,6 +6,7 @@ import type {
 import { matchesEditor, editorMatchContext } from '@src/lib/editors/matching'
 import { createEditorCleanup } from '@src/lib/editors/lifecycle'
 import type { createEditorContextBoundary } from '@src/lib/editors/contextBoundary'
+import { isErr, trap } from '@src/lib/trap'
 
 /** Document capabilities have no dependency on a Code surface or React mount. */
 export function watchEditorCapabilities(
@@ -17,48 +18,53 @@ export function watchEditorCapabilities(
     EditorCapability,
     ReturnType<typeof createEditorCleanup>
   >()
-  let stop: () => void
-  try {
-    stop = effect(() => {
-      const context = editorMatchContext(editor)
-      const matching = contributions.value.filter((capability) =>
-        matchesEditor(capability.matches, context)
-      )
-      untracked(() => {
-        for (const [capability, resources] of instances) {
-          if (!matching.includes(capability)) {
-            instances.delete(capability)
-            resources.dispose()
-          }
+  const failed = new Set<EditorCapability>()
+  const stop = effect(() => {
+    const context = editorMatchContext(editor)
+    const matching = contributions.value.filter((capability) =>
+      matchesEditor(capability.matches, context)
+    )
+    untracked(() => {
+      for (const [capability, resources] of instances) {
+        if (!matching.includes(capability)) {
+          instances.delete(capability)
+          resources.dispose()
         }
-        for (const capability of matching) {
-          if (instances.has(capability)) continue
-          const resources = createEditorCleanup()
+      }
+      // Retry failed setup only after the capability stops matching or is replaced,
+      // rather than reporting the same failure on every keystroke.
+      for (const capability of failed) {
+        if (!matching.includes(capability)) failed.delete(capability)
+      }
+      for (const capability of matching) {
+        if (instances.has(capability) || failed.has(capability)) continue
+        const resources = createEditorCleanup()
+        let failure: Error | undefined
+        try {
+          failure = boundary.run(() =>
+            capability.setup({
+              editor,
+              onDispose: (callback) =>
+                resources.onDispose(() => boundary.run(callback)),
+            })
+          )
+        } catch (cause) {
+          failure = isErr(cause) ? cause : new Error(String(cause))
+        }
+        if (isErr(failure)) {
+          resources.dispose()
+          failed.add(capability)
+          trap(failure)
+        } else {
           instances.set(capability, resources)
-          try {
-            boundary.run(() =>
-              capability.setup({
-                editor,
-                onDispose: (callback) =>
-                  resources.onDispose(() => boundary.run(callback)),
-              })
-            )
-          } catch (cause) {
-            resources.dispose()
-            // eslint-disable-next-line suggest-no-throw/suggest-no-throw -- Editor construction must roll back a failed capability.
-            throw cause
-          }
         }
-      })
+      }
     })
-  } catch (cause) {
-    for (const resources of instances.values()) resources.dispose()
-    // eslint-disable-next-line suggest-no-throw/suggest-no-throw -- Propagate setup failure after releasing previously acquired capabilities.
-    throw cause
-  }
+  })
   return () => {
     stop()
     for (const resources of instances.values()) resources.dispose()
     instances.clear()
+    failed.clear()
   }
 }

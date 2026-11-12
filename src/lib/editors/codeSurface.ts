@@ -17,6 +17,7 @@ import type {
   CodeEditorExtension,
   EditorViewHost,
 } from '@src/lib/editors/registry/contract'
+import { isErr, trap } from '@src/lib/trap'
 import { editorMatchContext, matchesEditor } from '@src/lib/editors/matching'
 
 /** Each Code surface owns its DOM and selection; only text changes enter document history. */
@@ -97,7 +98,9 @@ export function createCodeSurface(
     CodeEditorExtension,
     { extension: Extension; resources: ReturnType<typeof createEditorCleanup> }
   >()
+  const failed = new Set<CodeEditorExtension>()
   host.onDispose(() => {
+    failed.clear()
     for (const instance of instances.values()) instance.resources.dispose()
     instances.clear()
   })
@@ -116,13 +119,18 @@ export function createCodeSurface(
         instance.resources.dispose()
       }
     }
-    const next = definitions.map((definition) => {
+    for (const definition of failed) {
+      if (!definitions.includes(definition)) failed.delete(definition)
+    }
+    const next = definitions.flatMap<Extension>((definition) => {
+      if (failed.has(definition)) return []
       const existing = instances.get(definition)
-      if (existing) return existing.extension
+      if (existing) return [existing.extension]
       const resources = createEditorCleanup()
+      let extension: Extension | Error
       try {
         const provided = definition.extensions
-        const extension =
+        extension =
           typeof provided === 'function'
             ? run(() =>
                 provided({
@@ -133,13 +141,18 @@ export function createCodeSurface(
                 })
               )
             : provided
-        instances.set(definition, { extension, resources })
-        return extension
       } catch (cause) {
-        resources.dispose()
-        // eslint-disable-next-line suggest-no-throw/suggest-no-throw -- Mode initialization reports the failed factory after releasing its partial resources.
-        throw cause
+        extension = isErr(cause) ? cause : new Error(String(cause))
       }
+      if (isErr(extension)) {
+        resources.dispose()
+        // A failed factory can retry after withdrawal or losing its match, not on every edit.
+        failed.add(definition)
+        trap(extension)
+        return []
+      }
+      instances.set(definition, { extension, resources })
+      return [extension]
     })
     if (
       next.length === current.length &&

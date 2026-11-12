@@ -1,12 +1,13 @@
-import { reportRejection } from '@src/lib/trap'
+import { isErr, trap, reportRejection } from '@src/lib/trap'
 
 /** Editor and mode resources close once, in reverse acquisition order, including partial setup. */
 export function createEditorCleanup() {
-  const callbacks: (() => void)[] = []
+  const callbacks: (() => unknown)[] = []
   let closed = false
-  const run = (callback: () => void) => {
+  const run = (callback: () => unknown) => {
     try {
-      callback()
+      const result = callback()
+      if (isErr(result)) trap(result)
     } catch (cause) {
       reportRejection(cause)
     }
@@ -15,7 +16,7 @@ export function createEditorCleanup() {
     get closed() {
       return closed
     },
-    onDispose: (callback: () => void) => {
+    onDispose: (callback: () => unknown) => {
       if (closed) run(callback)
       else callbacks.push(callback)
     },

@@ -1,4 +1,4 @@
-import { codeSurface } from '@src/lib/editors/testViews'
+import { requireSuccess, codeSurface } from '@src/lib/editors/testViews'
 import '@src/lib/projectSession/next/testFeature'
 import { EditorView } from '@codemirror/view'
 import { EditorState } from '@codemirror/state'
@@ -67,7 +67,9 @@ it('updates path and content capabilities without reentrant dispatch or resettin
     }),
   ])
   const editors = registry.get(editorsService)
-  const editor = editors.openEditor('/project/other.toml', 'original')
+  const editor = requireSuccess(
+    editors.openEditor('/project/other.toml', 'original')
+  )
   expect(
     codeSurface(registry.get(editorsService), editor).state.tabSize
   ).not.toBe(7)

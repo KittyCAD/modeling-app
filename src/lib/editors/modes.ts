@@ -57,26 +57,23 @@ export function createEditorModes(
       let instance = instances.get(selected)
       if (!instance) {
         const resources = createEditorCleanup()
-        let binding: EditorViewBinding
+        let component: ReturnType<EditorViewContribution['bind']>
         try {
-          binding = {
-            type: 'ready',
-            Component: contextBoundary.run(() =>
-              selected.bind({
-                editor,
-                instance: presentation,
-                onDispose: (callback) =>
-                  resources.onDispose(() => contextBoundary.run(callback)),
-              })
-            ),
-          }
+          component = contextBoundary.run(() =>
+            selected.bind({
+              editor,
+              instance: presentation,
+              onDispose: (callback) =>
+                resources.onDispose(() => contextBoundary.run(callback)),
+            })
+          )
         } catch (cause) {
-          resources.dispose()
-          binding = {
-            type: 'error',
-            error: isErr(cause) ? cause : new Error(String(cause)),
-          }
+          component = isErr(cause) ? cause : new Error(String(cause))
         }
+        const binding: EditorViewBinding = isErr(component)
+          ? { type: 'error', error: component }
+          : { type: 'ready', Component: component }
+        if (isErr(component)) resources.dispose()
         if (lifetime.closed) {
           resources.dispose()
           return

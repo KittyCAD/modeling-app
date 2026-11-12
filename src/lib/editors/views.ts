@@ -16,11 +16,11 @@ type ContextualMode<C> = EditorViewMetadata & {
 
 /** Capture the provider's context type before inferring component props, then package both together. */
 export function defineEditorView<C>(
-  provider: (host: EditorViewHost) => C
+  provider: (host: EditorViewHost) => C | Error
 ): (definition: ContextualMode<C>) => EditorViewContribution
 export function defineEditorView(definition: PlainMode): EditorViewContribution
 export function defineEditorView<C>(
-  input: PlainMode | ((host: EditorViewHost) => C)
+  input: PlainMode | ((host: EditorViewHost) => C | Error)
 ):
   | EditorViewContribution
   | ((definition: ContextualMode<C>) => EditorViewContribution) {
@@ -29,6 +29,7 @@ export function defineEditorView<C>(
       ...metadata,
       bind: (host) => {
         const context = input(host)
+        if (context instanceof Error) return context
         return function BoundEditorMode(props) {
           return createElement(Component, { ...props, context })
         }

@@ -43,9 +43,11 @@ the user explicitly selects another language. `'*'` matches every buffer.
 
 ```ts
 const editor = editors.createEditor('# Draft')
-editors.setLanguage(editor.id, 'markdown')
-// Later, resume inference from the current source and contents:
-editors.setLanguage(editor.id, undefined)
+if (!(editor instanceof Error)) {
+  editors.setLanguage(editor.id, 'markdown')
+  // Later, resume inference from the current source and contents:
+  editors.setLanguage(editor.id, undefined)
+}
 ```
 
 The language must be registered; an unknown ID returns an `Error` without changing
@@ -61,8 +63,11 @@ leases, and similar resources there; release them with `onDispose`. Opening or c
 buffers, renaming them, and changing language/mode choices belong in commands or
 explicit UI actions.
 
-The editors service rejects these operations synchronously during provider setup
-and registered cleanup. Setup failures appear as mode errors; cleanup failures are
+Creation methods return an Editor or view instance on success and an Error on
+failure; callers must check the result before using it. Management methods return
+an Error when called during provider setup or registered cleanup, without changing
+any editor. A provider should return that Error to its host. Setup failures appear
+as mode errors; cleanup failures are
 reported while remaining callbacks continue. Project/service shutdown still releases
 all owned resources. This prevents recursive opens and cleanup that discards another
 buffer through this service.
@@ -88,6 +93,12 @@ behavior once per matching document, even when no Code surface is mounted. Savin
 and collaboration belong here. Document changes go through `editor.dispatch`;
 `editor.subscribe` observes transactions, and `editor.signal` marks final disposal.
 
+Setup returns no value on success or an `Error` on failure. The host also catches
+unexpected exceptions from setup. Either failure releases registered resources,
+reports the error, and leaves the document and other capabilities usable. Failed
+setup is retried only after the contribution stops matching and matches again,
+or a replacement contribution is registered, avoiding repeated errors on each edit.
+
 `codeEditorExtensionValueSpec` supplies `extensions`, either native CodeMirror
 extensions or a factory receiving `{ editor, instance, view, onDispose }`. Every
 Code presentation gets its own matching extensions. Syntax, keymaps, decorations,
@@ -104,3 +115,9 @@ An editor owns history even before a Code view opens. Each Code surface routes
 undo and redo to that history; selecting a mode or reconfiguring syntax does not
 replace it. Providers should register document edits as meaningful transactions
 rather than replacing the buffer to synchronize it.
+
+Mode context providers and Code extension factories can return an Error instead of
+throwing. A failed mode binding releases its partial resources and displays the
+error. A failed Code extension factory releases its resources and reports the
+error while keeping the Code surface and other extensions usable. Like document
+capabilities, a failed Code factory retries after losing its match or replacement.

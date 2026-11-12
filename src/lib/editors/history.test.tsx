@@ -1,3 +1,4 @@
+import { requireSuccess } from '@src/lib/editors/testViews'
 import '@src/lib/projectSession/next/testFeature'
 import { defineRegistryItem, provide, Registry } from '@kittycad/registry'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
@@ -55,10 +56,10 @@ afterEach(() => {
 })
 function open() {
   const editors = registry.get(editorsService)
-  const first = editors.openEditor('/first.kcl', 'first')
-  const second = editors.openEditor('/second.kcl', 'second')
-  const left = editors.createView(first)
-  const right = editors.createView(second)
+  const first = requireSuccess(editors.openEditor('/first.kcl', 'first'))
+  const second = requireSuccess(editors.openEditor('/second.kcl', 'second'))
+  const left = requireSuccess(editors.createView(first))
+  const right = requireSuccess(editors.createView(second))
   render(
     <>
       <EditorView instance={left} editors={editors} />
@@ -124,13 +125,17 @@ it('leaves text field history local instead of undoing the model', () => {
 })
 it('handles native Code history after switching modes and stops routing to a closed view', () => {
   const { editors, second, right } = open()
-  act(() => editors.setView(right.id, 'editors.code'))
+  act(() => {
+    requireSuccess(editors.setView(right.id, 'editors.code'))
+  })
   right.codeView.peek()!.focus()
   menu('Edit.Undo')
   expect(second.contents.peek()).toBe('second')
   menu('Edit.Redo')
   expect(second.contents.peek()).toBe('second changed')
-  act(() => editors.closeView(right.id))
+  act(() => {
+    requireSuccess(editors.closeView(right.id))
+  })
   menu('Edit.Undo')
   expect(second.contents.peek()).toBe('second changed')
   registry[Symbol.dispose]()

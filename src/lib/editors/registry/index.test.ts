@@ -1,4 +1,8 @@
-import { codeSurface, presentation } from '@src/lib/editors/testViews'
+import {
+  requireSuccess,
+  codeSurface,
+  presentation,
+} from '@src/lib/editors/testViews'
 import '@src/lib/projectSession/next/testFeature'
 import { language } from '@codemirror/language'
 import { EditorState } from '@codemirror/state'
@@ -96,7 +100,9 @@ describe('editors extension', () => {
 
   it('creates a fully populated view synchronously without reading storage', () => {
     const service = registry.get(editorsService)
-    const editor = service.openEditor('/main.kcl', 'initial contents')
+    const editor = requireSuccess(
+      service.openEditor('/main.kcl', 'initial contents')
+    )
     expect(
       codeSurface(registry.get(editorsService), editor).state.doc.toString()
     ).toBe('initial contents')
@@ -107,8 +113,8 @@ describe('editors extension', () => {
   it('tracks independent editor instances for the same source', () => {
     const service = registry.get(editorsService)
     const src = '/projects/bracket/main.kcl'
-    const first = service.openEditor(src, '')
-    const second = service.openEditor(src, '')
+    const first = requireSuccess(service.openEditor(src, ''))
+    const second = requireSuccess(service.openEditor(src, ''))
     expect(first.id).not.toBe(second.id)
     expect(service.editors.value).toEqual([first, second])
     service.closeEditor(first.id)
@@ -339,7 +345,9 @@ describe('editors extension', () => {
         ],
       }),
     ])
-    const editor = registry.get(editorsService).openEditor(src, '')
+    const editor = requireSuccess(
+      registry.get(editorsService).openEditor(src, '')
+    )
     expect(
       codeSurface(registry.get(editorsService), editor).state.tabSize
     ).toBe(2)
@@ -362,9 +370,11 @@ describe('editors extension', () => {
       })
     registry.configure([editorsExtension, markdownExtension, slot.of()])
     const service = registry.get(editorsService)
-    const first = service.openEditor('/main.kcl', '')
-    const second = service.openEditor('/main.kcl', '')
-    const markdown = service.openEditor('cloud:project/notes.md', '')
+    const first = requireSuccess(service.openEditor('/main.kcl', ''))
+    const second = requireSuccess(service.openEditor('/main.kcl', ''))
+    const markdown = requireSuccess(
+      service.openEditor('cloud:project/notes.md', '')
+    )
     const view = codeSurface(registry.get(editorsService), first)
     view.dispatch({
       changes: { from: 0, insert: 'hello' },
@@ -442,7 +452,7 @@ describe('editors extension', () => {
 
   it('reclassifies renamed sources and preserves the view, contents, and history', () => {
     const service = registry.get(editorsService)
-    const editor = service.openEditor('/notes.MD', '# Heading')
+    const editor = requireSuccess(service.openEditor('/notes.MD', '# Heading'))
     const view = codeSurface(registry.get(editorsService), editor)
     expect(view.state.facet(language)?.name).toBe('markdown')
     const sources: (string | undefined)[] = []
@@ -485,8 +495,8 @@ describe('editors extension', () => {
     const slot = new Slot()
     registry.configure([editorsExtension, markdownExtension, slot.of()])
     const service = registry.get(editorsService)
-    const closed = service.openEditor('/main.kcl', '')
-    const open = service.openEditor('/main.kcl', '')
+    const closed = requireSuccess(service.openEditor('/main.kcl', ''))
+    const open = requireSuccess(service.openEditor('/main.kcl', ''))
     const closedDestroy = vi.spyOn(
       codeSurface(registry.get(editorsService), closed),
       'destroy'
@@ -538,7 +548,9 @@ describe('editors extension', () => {
         provides: [provide(codeEditorsExtensionValueSpec, capability)],
       }),
     ])
-    const editor = registry.get(editorsService).openEditor('/main.kcl', '')
+    const editor = requireSuccess(
+      registry.get(editorsService).openEditor('/main.kcl', '')
+    )
     expect(
       codeSurface(registry.get(editorsService), editor).state.tabSize
     ).toBe(2)
@@ -554,27 +566,103 @@ describe('editors extension', () => {
       codeSurface(registry.get(editorsService), editor).state.tabSize
     ).toBe(4) // this is the default value from CodeMirror, tabSize of 4
   })
-  it('releases a partially initialized document capability when setup fails', () => {
+
+  it('returns errors for creation after an editor or its service closes', () => {
+    const editors = registry.get(editorsService)
+    const editor = requireSuccess(editors.createEditor())
+    editors.closeEditor(editor.id)
+    expect(editors.createView(editor)).toBeInstanceOf(Error)
+    expect(editors.views.peek()).toHaveLength(0)
+    registry[Symbol.dispose]()
+    expect(editors.createEditor()).toBeInstanceOf(Error)
+    expect(editors.editors.peek()).toHaveLength(0)
+  })
+
+  it('keeps edits and other capabilities working when a newly matching capability fails', () => {
+    const failure = new Error('Capability initialization failed')
     const release = vi.fn()
-    registry.configure([
-      editorsExtension,
-      defineRegistryItem({
-        provides: [
-          provide(editorCapabilityValueSpec, {
-            id: 'broken',
-            matches: '*',
-            setup: ({ onDispose }) => {
-              onDispose(release)
-              throw new Error('Capability initialization failed')
-            },
-          }),
-        ],
-      }),
-    ])
-    expect(() => registry.get(editorsService).createEditor()).toThrow(
-      'Capability initialization failed'
-    )
-    expect(registry.get(editorsService).editors.peek()).toHaveLength(0)
-    expect(release).toHaveBeenCalledOnce()
+    const startHealthy = vi.fn()
+    const releaseHealthy = vi.fn()
+    const report = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      registry.configure([
+        editorsExtension,
+        defineRegistryItem({
+          provides: [
+            provide(editorCapabilityValueSpec, {
+              id: 'broken',
+              matches: ({ contents }) => contents.startsWith('activate'),
+              setup: ({ onDispose }) => {
+                onDispose(release)
+                throw failure
+              },
+            }),
+            provide(editorCapabilityValueSpec, {
+              id: 'healthy',
+              matches: ({ contents }) => contents.startsWith('activate'),
+              setup: ({ onDispose }) => {
+                startHealthy()
+                onDispose(releaseHealthy)
+              },
+            }),
+          ],
+        }),
+      ])
+      const editors = registry.get(editorsService)
+      const editor = requireSuccess(editors.createEditor())
+
+      expect(() =>
+        editor.dispatch({ changes: { from: 0, insert: 'activate' } })
+      ).not.toThrow()
+      expect(editor.contents.peek()).toBe('activate')
+      expect(release).toHaveBeenCalledOnce()
+      expect(report).toHaveBeenCalledWith(failure)
+      expect(startHealthy).toHaveBeenCalledOnce()
+
+      editor.dispatch({ changes: { from: 8, insert: ' again' } })
+      expect(report).toHaveBeenCalledTimes(1)
+      editor.dispatch({
+        changes: { from: 0, to: editor.state.doc.length, insert: '' },
+      })
+      editor.dispatch({ changes: { from: 0, insert: 'activate' } })
+      expect(report).toHaveBeenCalledTimes(2)
+      editors.closeEditor(editor.id)
+      expect(release).toHaveBeenCalledTimes(2)
+      expect(releaseHealthy).toHaveBeenCalledTimes(2)
+    } finally {
+      report.mockRestore()
+    }
+  })
+
+  it('keeps an editor open when initial capability setup returns an error', () => {
+    const failure = new Error('Capability initialization failed')
+    const release = vi.fn()
+    const report = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      registry.configure([
+        editorsExtension,
+        defineRegistryItem({
+          provides: [
+            provide(editorCapabilityValueSpec, {
+              id: 'broken',
+              matches: '*',
+              setup: ({ onDispose }) => {
+                onDispose(release)
+                return failure
+              },
+            }),
+          ],
+        }),
+      ])
+      const editors = registry.get(editorsService)
+      const editor = requireSuccess(editors.createEditor())
+      expect(editors.editors.peek()).toContain(editor)
+      expect(report).toHaveBeenCalledWith(failure)
+      expect(release).toHaveBeenCalledOnce()
+      editors.closeEditor(editor.id)
+      expect(release).toHaveBeenCalledOnce()
+    } finally {
+      report.mockRestore()
+    }
   })
 })

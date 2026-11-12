@@ -6,7 +6,7 @@
  * The `EditorsService` implementation shares one guard across its documents and views.
  * `createEditorModes` and `watchEditorCapabilities` wrap their setup and registered
  * `onDispose` callbacks in `run`. During those callbacks,
- * `assertCanManageEditors` rejects service calls that open or close editors or
+ * `checkCanManageEditors` rejects service calls that open or close editors or
  * change their source, language, or selected mode, including for other editors.
  *
  * `createCodeSurface` uses the same guard for Code extension factories and cleanup.
@@ -25,10 +25,9 @@ export function createEditorContextBoundary() {
         depth--
       }
     },
-    assertCanManageEditors() {
+    checkCanManageEditors(): Error | undefined {
       if (depth)
-        // eslint-disable-next-line suggest-no-throw/suggest-no-throw -- Fail synchronously before a contributed context can mutate editor ownership.
-        throw new Error(
+        return new Error(
           'Editor management is unavailable during mode setup or cleanup'
         )
     },

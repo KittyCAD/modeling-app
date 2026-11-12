@@ -1,4 +1,8 @@
-import { codeSurface, presentation } from '@src/lib/editors/testViews'
+import {
+  requireSuccess,
+  codeSurface,
+  presentation,
+} from '@src/lib/editors/testViews'
 import '@src/lib/projectSession/next/testFeature'
 import { Registry, Slot, defineRegistryItem, provide } from '@kittycad/registry'
 import { useSignals } from '@preact/signals-react/runtime'
@@ -49,14 +53,20 @@ it('retains typed mode context across switches and remounts, and releases it whe
   registry = new Registry()
   registry.configure([editorsExtension, slot.of(contribution)])
   const editors = registry.get(editorsService)
-  const editor = editors.openEditor('/notes.txt', 'original')
+  const editor = requireSuccess(editors.openEditor('/notes.txt', 'original'))
   const workspace = render(
     <EditorView instance={presentation(editors, editor)} editors={editors} />
   )
   expect(screen.getByText('ORIGINAL')).toBeVisible()
-  act(() => editors.setView(presentation(editors, editor).id, 'editors.code'))
+  act(() => {
+    requireSuccess(
+      editors.setView(presentation(editors, editor).id, 'editors.code')
+    )
+  })
   act(() => editor.dispatch({ changes: { from: 0, insert: 'edited ' } }))
-  act(() => editors.setView(presentation(editors, editor).id, 'preview'))
+  act(() => {
+    requireSuccess(editors.setView(presentation(editors, editor).id, 'preview'))
+  })
   expect(screen.getByText('EDITED ORIGINAL')).toBeVisible()
   workspace.unmount()
   render(
@@ -77,7 +87,9 @@ it('retains typed mode context across switches and remounts, and releases it whe
   act(() => registry.reconfigure(slot, [contribution]))
   editors.setView(presentation(editors, editor).id, 'preview')
   expect(bind).toHaveBeenCalledTimes(2)
-  act(() => editors.closeEditor(editor.id))
+  act(() => {
+    requireSuccess(editors.closeEditor(editor.id))
+  })
   expect(release).toHaveBeenCalledTimes(2)
 })
 
@@ -106,7 +118,7 @@ it('defers content-matched binding until the CodeMirror update completes and rel
     }),
   ])
   const editors = registry.get(editorsService)
-  const editor = editors.openEditor('/notes.txt', 'plain')
+  const editor = requireSuccess(editors.openEditor('/notes.txt', 'plain'))
   editors.createView(editor)
   expect(bind).not.toHaveBeenCalled()
   editor.dispatch({ changes: { from: 0, insert: 'render:' } })
@@ -143,10 +155,11 @@ it('keeps source/content matching and explicit mode choices independent for dupl
       ],
     }),
   ])
-  const first = service.openEditor('/project/project.toml', 'title = "Project"')
-  const second = service.openEditor(
-    '/project/project.toml',
-    'title = "Other buffer"'
+  const first = requireSuccess(
+    service.openEditor('/project/project.toml', 'title = "Project"')
+  )
+  const second = requireSuccess(
+    service.openEditor('/project/project.toml', 'title = "Other buffer"')
   )
   service.setView(presentation(service, first).id, 'editors.code')
   expect(
@@ -199,7 +212,9 @@ it('rejects recursive editor creation during mode setup', () => {
         provide(
           editorViewsValueSpec,
           defineEditorView(() => {
-            registry.get(editorsService).openEditor('/helper.parent', 'helper')
+            return registry
+              .get(editorsService)
+              .openEditor('/helper.parent', 'helper')
           })({
             id: 'parent',
             label: 'Parent',
@@ -211,7 +226,7 @@ it('rejects recursive editor creation during mode setup', () => {
     }),
   ])
   const editors = registry.get(editorsService)
-  const parent = editors.openEditor('/main.parent', 'parent')
+  const parent = requireSuccess(editors.openEditor('/main.parent', 'parent'))
   presentation(editors, parent)
   expect(
     editors.editors.peek().map((editor) => editor.contents.peek())
@@ -249,9 +264,9 @@ it('protects other buffers from mode cleanup and continues releasing owned resou
     }),
   ])
   const editors = registry.get(editorsService)
-  const parent = editors.openEditor('/main.parent', '')
+  const parent = requireSuccess(editors.openEditor('/main.parent', ''))
   presentation(editors, parent)
-  child = editors.createEditor()
+  child = requireSuccess(editors.createEditor())
   const destroy = vi.spyOn(
     codeSurface(registry.get(editorsService), child),
     'destroy'
@@ -267,39 +282,49 @@ it('protects other buffers from mode cleanup and continues releasing owned resou
   report.mockRestore()
 })
 
-it('releases partially initialized mode resources in reverse order and surfaces the failure', () => {
-  const released: string[] = []
-  registry = new Registry()
-  registry.configure([
-    editorsExtension,
-    defineRegistryItem({
-      provides: [
-        provide(
-          editorViewsValueSpec,
-          defineEditorView(({ onDispose }) => {
-            onDispose(() => released.push('first'))
-            onDispose(() => released.push('second'))
-            // eslint-disable-next-line suggest-no-throw/suggest-no-throw -- Exercise cleanup when a contributed provider throws.
-            throw new Error('Mode initialization failed')
-          })({
-            id: 'broken',
-            label: 'Broken',
-            matches: '*',
-            Component: () => null,
-          })
-        ),
-      ],
-    }),
-  ])
-  const editors = registry.get(editorsService)
-  const editor = editors.createEditor()
-  render(
-    <EditorView instance={presentation(editors, editor)} editors={editors} />
-  )
-  expect(screen.getByText('Mode initialization failed')).toBeVisible()
-  expect(released).toEqual(['second', 'first'])
-  act(() => editors.setView(presentation(editors, editor).id, 'editors.code'))
-  expect(screen.getByRole('textbox')).toBeVisible()
-  act(() => editors.closeEditor(editor.id))
-  expect(released).toHaveLength(2)
-})
+it.each(['return', 'throw'] as const)(
+  'releases partial mode resources when its provider fails by %s',
+  (failureMode) => {
+    const released: string[] = []
+    registry = new Registry()
+    registry.configure([
+      editorsExtension,
+      defineRegistryItem({
+        provides: [
+          provide(
+            editorViewsValueSpec,
+            defineEditorView(({ onDispose }) => {
+              onDispose(() => released.push('first'))
+              onDispose(() => released.push('second'))
+              const failure = new Error('Mode initialization failed')
+              if (failureMode === 'throw') throw failure
+              return failure
+            })({
+              id: 'broken',
+              label: 'Broken',
+              matches: '*',
+              Component: () => null,
+            })
+          ),
+        ],
+      }),
+    ])
+    const editors = registry.get(editorsService)
+    const editor = requireSuccess(editors.createEditor())
+    render(
+      <EditorView instance={presentation(editors, editor)} editors={editors} />
+    )
+    expect(screen.getByText('Mode initialization failed')).toBeVisible()
+    expect(released).toEqual(['second', 'first'])
+    act(() => {
+      requireSuccess(
+        editors.setView(presentation(editors, editor).id, 'editors.code')
+      )
+    })
+    expect(screen.getByRole('textbox')).toBeVisible()
+    act(() => {
+      requireSuccess(editors.closeEditor(editor.id))
+    })
+    expect(released).toHaveLength(2)
+  }
+)

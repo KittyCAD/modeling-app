@@ -1,4 +1,8 @@
-import { codeSurface, presentation } from '@src/lib/editors/testViews'
+import {
+  requireSuccess,
+  codeSurface,
+  presentation,
+} from '@src/lib/editors/testViews'
 import '@src/lib/projectSession/next/testFeature'
 import { EditorState } from '@codemirror/state'
 import { language } from '@codemirror/language'
@@ -26,7 +30,7 @@ it('lets an unnamed buffer choose Markdown, retaining that choice until source i
   registry = new Registry()
   registry.configure([editorsExtension, markdownExtension, kclExtension])
   const editors = registry.get(editorsService)
-  const editor = editors.createEditor('# Draft')
+  const editor = requireSuccess(editors.createEditor('# Draft'))
   expect(editor.classification.value).toBeUndefined()
   expect(editors.setLanguage(editor.id, 'markdown')).toBeUndefined()
   expect(editor.src.value).toBeUndefined()
@@ -108,7 +112,7 @@ it('reclassifies from live source/content contributions and makes media metadata
     }),
   ])
   const editors = registry.get(editorsService)
-  const editor = editors.openEditor('/data', 'a,b')
+  const editor = requireSuccess(editors.openEditor('/data', 'a,b'))
   expect(
     editors.viewState(presentation(registry.get(editorsService), editor)).value
       .selected?.id
