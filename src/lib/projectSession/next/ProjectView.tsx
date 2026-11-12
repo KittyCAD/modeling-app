@@ -1,3 +1,4 @@
+import { reportRejection } from '@src/lib/trap'
 import { useSignals } from '@preact/signals-react/runtime'
 import { Logo } from '@src/components/Logo'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
@@ -17,7 +18,7 @@ import {
 } from '@src/lib/layout/types'
 import { PATHS } from '@src/lib/paths'
 import type { OpenProjectSession } from '@src/lib/projectSession/next/contract'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 /**
@@ -48,6 +49,9 @@ function ProjectHeader({ title }: { title: string }) {
 export function ProjectView({ session }: { session: OpenProjectSession }) {
   useSignals()
   const { registry, commands } = useApp()
+  useEffect(() => {
+    void window.electron?.createEditorPageMenu?.().catch(reportRejection)
+  }, [])
   const editors = registry.get(editorsService)
   const { contents, metadata } = session.project.value
   const [layout, setLayout] = useState(() => structuredClone(tempLayout))

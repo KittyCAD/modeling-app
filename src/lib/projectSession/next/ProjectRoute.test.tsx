@@ -83,6 +83,28 @@ describe('project screen', () => {
     services[Symbol.dispose]()
   })
 
+  it('installs editor-owned native history when the new project shell opens', async () => {
+    const original = window.electron
+    const createEditorPageMenu = vi.fn(async () => {})
+    window.electron = {
+      os: { isMac: true },
+      createEditorPageMenu,
+      menuOn: () => () => {},
+    } as unknown as Window['electron']
+    try {
+      render(
+        <MemoryRouter>
+          <ProjectView session={createSession('Bracket')} />
+        </MemoryRouter>
+      )
+      await vi.waitFor(() =>
+        expect(createEditorPageMenu).toHaveBeenCalledOnce()
+      )
+    } finally {
+      window.electron = original
+    }
+  })
+
   it('shows the captured project without reading or writing files', () => {
     const session = createSession('Bracket', [
       { name: 'main.kcl', path: '/projects/Bracket/main.kcl', children: null },
