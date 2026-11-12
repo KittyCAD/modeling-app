@@ -2238,13 +2238,18 @@ export class KclManager extends File {
             jsAppSettings(this.systemDeps.settings),
             this.path
           )
-          this.estimatedCommandCount.value = plan.count
-          this.engineCommandManager.executionProgress.setPlan(plan)
+          if (isCurrent() && !this._cancelTokens.get(currentExecutionId)) {
+            this.estimatedCommandCount.value = plan.count
+            this.engineCommandManager.executionProgress.setPlan(plan)
+          }
         } catch (error) {
           // A failed estimate must not prevent real execution.
           console.warn('Command-count estimate unavailable', error)
         }
       }
+
+      // A superseded run must not execute or clean up a newer run's state.
+      if (this.executionGeneration !== generation) return
 
       if (
         this.path !== pathThatExecuted ||
