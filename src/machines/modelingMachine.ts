@@ -2173,7 +2173,6 @@ export const modelingMachine = setup({
         const { store, engineCommandManager, kclManager } = context
         kclManager.sceneInfra.camControls.cancelSketchCameraTransition()
         const camControls = kclManager.sceneInfra.camControls
-        let cameraRestored = false
         try {
           camControls.syncDirection = 'clientToEngine'
 
@@ -2183,7 +2182,6 @@ export const modelingMachine = setup({
             await camControls.disableSketchMode()
           }
 
-          cameraRestored = true
           camControls.syncDirection = 'engineToClient'
 
           // TODO: Re-evaluate if this pause/play logic is needed.
@@ -2208,9 +2206,9 @@ export const modelingMachine = setup({
         } finally {
           kclManager.sceneEntitiesManager.tearDownSketch({ removeAxis: false })
           kclManager.sceneEntitiesManager.removeSketchGrid()
-          camControls.enablePan = cameraRestored
-          camControls.enableRotate = cameraRestored
-          if (cameraRestored) camControls.syncDirection = 'engineToClient'
+          camControls.enablePan = true
+          camControls.enableRotate = true
+          camControls.syncDirection = 'engineToClient'
           kclManager.sceneEntitiesManager.resetOverlays()
           kclManager.sceneInfra.stop()
         }
@@ -6563,17 +6561,9 @@ export const modelingMachine = setup({
               actions: ['reset sketch metadata'],
             },
             onError: {
-              target: 'exitFailed',
-              actions: ['toastError'],
+              target: '#Modeling.idle',
+              actions: ['toastError', 'reset sketch metadata'],
             },
-          },
-        },
-        exitFailed: {
-          // Keep the real exit action available without claiming the model or
-          // camera is ready. Repeating it retries the failed engine handoff.
-          on: {
-            'Exit sketch': 'exiting',
-            Cancel: 'exiting',
           },
         },
       },

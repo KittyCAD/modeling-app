@@ -1,4 +1,3 @@
-import type { BatchResponse, WebSocketResponse } from '@kittycad/lib'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
@@ -1981,9 +1980,12 @@ sketch001 = sketch(on = YZ) {
       })
     })
 
-    it.each(['Exit sketch', 'Cancel'])(
-      'keeps a failed exit out of modeling mode and retries with %s',
-      async (retry) => {
+    it.each<{ projection: 'perspective' | 'orthographic' }>([
+      { projection: 'perspective' },
+      { projection: 'orthographic' },
+    ])(
+      'exits a disposed sketch when the disconnected engine cannot restore $projection',
+      async ({ projection }) => {
         const {
           instance,
           kclManager,
@@ -1992,51 +1994,8 @@ sketch001 = sketch(on = YZ) {
           commandBarActor,
           machineManager,
         } = await buildTheWorldAndNoEngineConnection()
-        // The shared WebGL fixture omits the native clear operation used by stop.
         kclManager.sceneInfra.renderer.clear = vi.fn()
         toastErrorSpy.mockClear()
-        let attempts = 0
-        vi.spyOn(engineCommandManager, 'sendSceneCommand').mockImplementation(
-          async (command): Promise<WebSocketResponse | null> => {
-            if (
-              command.type !== 'modeling_cmd_batch_req' ||
-              command.requests[0]?.cmd.type !== 'sketch_mode_disable'
-            )
-              return null
-            if (++attempts === 1) throw new Error('sketch exit failed')
-            const responses: Record<string, BatchResponse> = {}
-            for (const request of command.requests) {
-              if (request.cmd.type === 'default_camera_get_settings') {
-                responses[request.cmd_id] = {
-                  response: {
-                    type: 'default_camera_get_settings',
-                    data: {
-                      settings: {
-                        pos: { x: 0, y: -10, z: 10 },
-                        center: { x: 0, y: 0, z: 0 },
-                        orientation: { x: 0, y: 0, z: 0, w: 1 },
-                        up: { x: 0, y: 0, z: 1 },
-                        ortho: false,
-                      },
-                    },
-                  },
-                }
-              } else if (
-                request.cmd.type === 'sketch_mode_disable' ||
-                request.cmd.type === 'default_camera_perspective_settings'
-              ) {
-                responses[request.cmd_id] = {
-                  response: { type: request.cmd.type, data: {} },
-                }
-              } else throw new Error('Unexpected exit command')
-            }
-            return {
-              success: true,
-              request_id: command.batch_id,
-              resp: { type: 'modeling_batch', data: { responses } },
-            }
-          }
-        )
         const context = generateModelingMachineDefaultContext({
           kclManager,
           rustContext,
@@ -2046,7 +2005,7 @@ sketch001 = sketch(on = YZ) {
           machineManager,
         })
         const settings = kclManager.systemDeps.settings.getSnapshot().context
-        settings.modeling.cameraProjection.user = 'perspective'
+        settings.modeling.cameraProjection.user = projection
         context.store.defaultUnit = settings.modeling.defaultUnit
         context.store.cameraProjection = settings.modeling.cameraProjection
         kclManager.sceneInfra.camControls.camera.position.set(0, -10, 10)
@@ -2082,32 +2041,31 @@ sketch001 = sketch(on = YZ) {
           await waitFor(actor, (snapshot) =>
             snapshot.matches({ sketchSolveMode: 'active' })
           )
+          toastErrorSpy.mockClear()
           actor.send({ type: 'Exit sketch' })
           await waitFor(
             actor,
             (snapshot) =>
-              snapshot.matches({ sketchSolveMode: 'exitFailed' }) ||
-              snapshot.matches('idle')
+              snapshot.matches('idle') ||
+              toastErrorSpy.mock.calls.some(
+                ([message]) =>
+                  message ===
+                  'Camera command sketch_mode_disable was not acknowledged'
+              )
           )
-          expect(
-            actor.getSnapshot().matches({ sketchSolveMode: 'exitFailed' })
-          ).toBe(true)
-          expect(actor.getSnapshot().matches('idle')).toBe(false)
-          expect(kclManager.sceneInfra.camControls.enableRotate).toBe(false)
-          expect(kclManager.sceneInfra.camControls.enablePan).toBe(false)
-          expect(attempts).toBe(1)
-          expect(toastErrorSpy).toHaveBeenCalledWith('sketch exit failed')
-          if (retry === 'Exit sketch') actor.send({ type: 'Exit sketch' })
-          else actor.send({ type: 'Cancel' })
-          await waitFor(actor, (snapshot) => snapshot.matches('idle'))
-          expect(attempts).toBe(2)
+          expect(actor.getSnapshot().matches('idle')).toBe(true)
           expect(kclManager.sceneInfra.camControls.enableRotate).toBe(true)
           expect(kclManager.sceneInfra.camControls.enablePan).toBe(true)
           expect(kclManager.sceneInfra.camControls.syncDirection).toBe(
             'engineToClient'
           )
+          expect(toastErrorSpy).toHaveBeenCalledWith(
+            'Camera command sketch_mode_disable was not acknowledged'
+          )
+          expect(actor.getSnapshot().context.sketchDetails).toBeNull()
         } finally {
           actor.stop()
+          kclManager.close()
         }
       }
     )
