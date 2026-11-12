@@ -14,7 +14,7 @@ const TUTORIAL_PROJECT_ID = '12902000-0000-4000-8000-000000000001'
 for (const loadDelay of [0, 7_000]) {
   test(
     `Onboarding Scene creates and opens blank.kcl before allowing advance${loadDelay ? ' after a seven-second project load' : ''}`,
-    { tag: ['@web', '@localRenderer'] },
+    { tag: ['@web', '@browsers', '@localRenderer'] },
     async ({ context, page }, testInfo) => {
       const tutorialProjectFiles = {
         'main.kcl': 'plateLength = 10\n',

@@ -17,7 +17,7 @@ async function openDialog(page: Page, contents = '') {
 for (const initial of ['', '5']) {
   test(
     `replaces and clears ${initial ? 'prefilled' : 'empty optional'} CodeMirror fields`,
-    { tag: '@web' },
+    { tag: ['@web', '@browsers'] },
     async ({ page }) => {
       const dialog = await openDialog(page)
       const editor = await page.evaluateHandle(async (initial) => {
@@ -37,7 +37,7 @@ for (const initial of ['', '5']) {
 
 test(
   'updates native color and text fields through input events',
-  { tag: '@web' },
+  { tag: ['@web', '@browsers'] },
   async ({ page }) => {
     const dialog = await openDialog(
       page,

@@ -94,6 +94,7 @@ After reviewing, tell the human what should be smoke tested and whether the PR's
 - Component tests should prefer user-visible queries (`screen.getByRole`, `screen.getByText`) when practical. `data-testid` is fine for controls or generated content without a stable accessible label.
 - Keep mocks narrow and reset state in `beforeEach` or `afterEach` when tests touch localStorage, timers, singleton modules, or machine actors.
 - For e2e tests (Playwright), prefer writing a `@web`-tagged test unless it is specifically covering `@desktop` functionality.
+- Include the `@browsers` tag on `@web` tests that are regression tests to be run against all supported browsers.
 
 ## Common verification
 

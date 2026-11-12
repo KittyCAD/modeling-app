@@ -2,7 +2,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe(
   'browser filesystem path resolution',
-  { tag: ['@web', '@localRenderer'] },
+  { tag: ['@web', '@browsers', '@localRenderer'] },
   () => {
     test('keeps top-level and overlapping directory names distinct', async ({
       fs,
