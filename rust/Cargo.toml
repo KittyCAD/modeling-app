@@ -32,7 +32,8 @@ kittycad = { version = "0.6.0", default-features = false, features = [
   "js",
   "requests",
 ] }
-kittycad-modeling-cmds = { version = "0.2.259", features = [
+# Use the immutable viewport schema revision until its registry release.
+kittycad-modeling-cmds = { version = "0.2.259", git = "https://github.com/KittyCAD/modeling-api.git", rev = "077290210a3ddeebab16e3682441a667754134a3", features = [
   "ts-rs",
   "websocket",
 ] }
@@ -111,7 +112,6 @@ debug = "line-tables-only"
 # - Publication: Cargo omits these patches from packaged manifests and removes
 #   dependency paths, keeping the declared registry version requirements.
 [patch.crates-io]
-kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", rev = "077290210a3ddeebab16e3682441a667754134a3" }
 kcl-api = { path = "kcl-api" }
 kcl-error = { path = "kcl-error" }
 
