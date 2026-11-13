@@ -74,6 +74,7 @@ async function prepareStorage(
     }
   }
   await navigate('/home')
+  await waitForAppLoad(page)
   const home = new HomePageFixture(page)
   await expect(page.getByTestId('home-header')).toBeVisible()
   const fs = FsFixture(page)
@@ -270,6 +271,7 @@ for (const cached of [false, true]) {
       if (cached)
         await page.getByRole('button', { name: 'Refresh projects' }).click()
       else await page.reload({ waitUntil: 'domcontentloaded' })
+      await waitForAppLoad(page)
       await expect.poll(() => started).toBe(true)
       await expect(
         page.getByRole('status', { name: 'Loading projects', exact: true })
@@ -387,6 +389,7 @@ test(
     })
     try {
       await page.reload({ waitUntil: 'domcontentloaded' })
+      await waitForAppLoad(page)
       await expect.poll(() => listingStarted).toBe(true)
       expect(
         await page.evaluate(

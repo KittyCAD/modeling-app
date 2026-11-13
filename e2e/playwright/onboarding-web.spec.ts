@@ -92,6 +92,7 @@ for (const loadDelay of [0, 7_000]) {
         /kclVersion\s*=\s*3\.0/
       )
       await page.reload()
+      await waitForAppLoad(page)
       await expect(page).toHaveURL(/%2Fblank\.kcl\/onboarding\/desktop\/scene/)
       await expect(page.getByTestId('onboarding-next')).toBeVisible()
     }
