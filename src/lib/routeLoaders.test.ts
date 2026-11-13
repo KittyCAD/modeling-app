@@ -57,6 +57,7 @@ vi.mock('@src/lib/app', () => ({
     beginFileRouteLoad = vi.fn(() => vi.fn())
     registry = {
       get: vi.fn(),
+      required: vi.fn(),
       optional: vi.fn(),
     }
     settings = {
@@ -121,7 +122,7 @@ describe('fileLoader legacy web bookmarks', () => {
   it('opens another file in the current project without reloading settings or the project', async () => {
     const app = new App(App.getDefaultSystems())
     const openEditor = vi.fn(async () => undefined)
-    const registryGet = vi.spyOn(app.registry, 'get')
+    const registryRequired = vi.spyOn(app.registry, 'required')
     app.project = {
       path: '/project',
       openEditor,
@@ -155,11 +156,11 @@ describe('fileLoader legacy web bookmarks', () => {
       }
     )
     expect(loadAndValidateSettings).not.toHaveBeenCalled()
-    expect(registryGet).not.toHaveBeenCalled()
+    expect(registryRequired).not.toHaveBeenCalled()
   })
   it('canonicalizes an explicit local id without requesting cloud services', async () => {
     const app = new App(App.getDefaultSystems())
-    const registryGet = vi.spyOn(app.registry, 'get')
+    const registryRequired = vi.spyOn(app.registry, 'required')
     const id = 'local:/projects/example/main.kcl'
     const result = await fileLoader({
       app,
@@ -177,7 +178,7 @@ describe('fileLoader legacy web bookmarks', () => {
     expect((result as Response).headers.get('Location')).toBe(
       '/file/%2Fprojects%2Fexample%2Fmain.kcl/onboarding/desktop/scene?mode=test'
     )
-    expect(registryGet).not.toHaveBeenCalled()
+    expect(registryRequired).not.toHaveBeenCalled()
     expect(loadAndValidateSettings).not.toHaveBeenCalled()
   })
   it('refreshes a direct cloud file route before loading project settings', async () => {
@@ -185,7 +186,7 @@ describe('fileLoader legacy web bookmarks', () => {
     const refreshed = Promise.withResolvers<undefined>()
     const refreshProject = vi.fn(() => refreshed.promise)
     const openProject = vi.fn()
-    vi.spyOn(app.registry, 'get').mockReturnValue({
+    vi.spyOn(app.registry, 'required').mockReturnValue({
       root: '/__zoo_cloud__',
       idFor: () => 'one',
       refreshProject,
@@ -240,8 +241,8 @@ describe('local directory loader', () => {
       readFile: vi.fn(async () => new TextEncoder().encode('file contents')),
     }
     vi.spyOn(app.registry, 'optional').mockReturnValue(sessions)
-    vi.spyOn(app.registry, 'get')
-      .mockImplementation(registry.get.bind(registry))
+    vi.spyOn(app.registry, 'required')
+      .mockImplementation(registry.required.bind(registry))
       .mockReturnValueOnce(operations)
       .mockReturnValueOnce(sessions)
     const data: Project = {
@@ -283,7 +284,7 @@ describe('local directory loader', () => {
       expect(result).toBeInstanceOf(Response)
       if (!(result instanceof Response)) throw new Error('Expected a redirect')
       expect(result.headers.get('Location')).toBe(PATHS.HOME)
-      expect(vi.spyOn(app.registry, 'get')).not.toHaveBeenCalled()
+      expect(vi.spyOn(app.registry, 'required')).not.toHaveBeenCalled()
       expect(readProject).not.toHaveBeenCalled()
     } finally {
       environment.projectRouteEnabled = true
@@ -570,7 +571,7 @@ describe('cloud project loader', () => {
           unstable_pattern: '/project/:id',
         })
       ).rejects.toThrow('Cloud projects are not yet supported')
-      expect(vi.spyOn(app.registry, 'get')).not.toHaveBeenCalled()
+      expect(vi.spyOn(app.registry, 'required')).not.toHaveBeenCalled()
       expect(readProject).not.toHaveBeenCalled()
       expect(loadAndValidateSettings).not.toHaveBeenCalled()
     }
@@ -592,7 +593,7 @@ describe('cloud project loader', () => {
       expect(result).toBeInstanceOf(Response)
       if (!(result instanceof Response)) throw new Error('Expected a redirect')
       expect(result.headers.get('Location')).toBe(PATHS.HOME)
-      expect(vi.spyOn(app.registry, 'get')).not.toHaveBeenCalled()
+      expect(vi.spyOn(app.registry, 'required')).not.toHaveBeenCalled()
     } finally {
       environment.projectRouteEnabled = true
     }

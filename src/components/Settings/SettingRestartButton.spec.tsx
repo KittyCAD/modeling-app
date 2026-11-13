@@ -37,7 +37,7 @@ function setup({ connected = true } = {}) {
   }
   vi.mocked(useApp).mockReturnValue({
     settings: { actor },
-    registry: { get: () => router },
+    registry: { required: () => router },
   } as unknown as ReturnType<typeof useApp>)
   vi.mocked(useSingletons).mockReturnValue({
     kclManager: {

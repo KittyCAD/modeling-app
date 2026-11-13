@@ -32,7 +32,6 @@ import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
 import { createTestWasmRegistryItem, loadWasm } from '@src/unitTestUtils'
 import { plugins } from 'plankton'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-
 const mockProject: Project = createProjectForTest('/some-dir/test', {
   default_file: 'main.kcl',
   kcl_file_count: 1,
@@ -70,7 +69,7 @@ afterAll(() => {
 })
 async function waitForSettingsIdle(app: App) {
   if (app.settings.actor.getSnapshot().matches('idle')) {
-    return
+    return app.registryReady
   }
   await new Promise<void>((resolve) => {
     const subscription = app.settings.actor.subscribe((snapshot) => {
@@ -81,6 +80,7 @@ async function waitForSettingsIdle(app: App) {
       resolve()
     })
   })
+  await app.registryReady
 }
 async function waitForAuthSettled(app: App) {
   if (!app.auth.actor.getSnapshot().matches('checkIfLoggedIn')) {
@@ -286,7 +286,7 @@ describe('project system', () => {
       )
       expect(snapshot.mock.calls.at(-1)?.[1]).toHaveLength(2)
     } finally {
-      app.dispose()
+      await app.dispose()
       await fsZds.rm(path, {
         recursive: true,
         force: true,
@@ -308,9 +308,9 @@ describe('project system', () => {
     })
     expect(closeFn).toHaveBeenCalled()
     app.closeProject()
-    app.dispose()
+    await app.dispose()
   })
-  it('uses registry runtime dependencies by default', () => {
+  it('uses registry runtime dependencies by default', async () => {
     const app = createAppForTest()
     try {
       const registryUserFeatures = app.registry.required(userFeaturesService)
@@ -336,7 +336,7 @@ describe('project system', () => {
         registryProjectSession.currentProjectLibraryId
       )
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
   it('follows the executing project editor and releases it on close', async () => {
@@ -398,7 +398,7 @@ describe('project system', () => {
       })
       expect(execution.value).toBeUndefined()
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
   it('does not replay scene settings when selecting the executing editor again', async () => {
@@ -434,6 +434,7 @@ describe('project system', () => {
       const clear = vi.spyOn(first.rustContext, 'clearSceneAndBustCache')
       engine.connection = {
         connected: true,
+        disconnectAll: () => {},
       } as typeof engine.connection
       project.executingPath = first.path
       expect(theme).not.toHaveBeenCalled()
@@ -461,7 +462,7 @@ describe('project system', () => {
       expect(edges).toHaveBeenCalledTimes(1)
       expect(backface).toHaveBeenCalledTimes(1)
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
   it('assigns scene settings to the executing project editor rather than the singleton', async () => {
@@ -505,6 +506,7 @@ describe('project system', () => {
       ).mockResolvedValue(undefined)
       app.engineCommandManager.connection = {
         connected: true,
+        disconnectAll: () => {},
       } as typeof app.engineCommandManager.connection
       const setting = app.settings.get().modeling.highlightEdges
       setting.user = !setting.current
@@ -521,7 +523,7 @@ describe('project system', () => {
       expect(firstExecute).toHaveBeenCalledTimes(1)
       expect(secondExecute).toHaveBeenCalledTimes(1)
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
   it.each([false, true])(
@@ -599,7 +601,7 @@ describe('project system', () => {
         }
       } finally {
         read.mockRestore()
-        app.dispose()
+        await app.dispose()
       }
     }
   )
@@ -642,7 +644,7 @@ describe('project system', () => {
       gate.resolve(undefined)
       await app.project?.modelingReady
       read.mockRestore()
-      app.dispose()
+      await app.dispose()
     }
   })
   it('resolves editor metadata from the open project signal without consulting project listings', async () => {
@@ -673,7 +675,7 @@ describe('project system', () => {
       }
     } finally {
       read.mockRestore()
-      app.dispose()
+      await app.dispose()
     }
   })
   it('rebinds the legacy editor to the next owning project signal', async () => {
@@ -712,7 +714,7 @@ describe('project system', () => {
       )
     } finally {
       read.mockRestore()
-      app.dispose()
+      await app.dispose()
     }
   })
   it('keeps cloud polling through tree refreshes and disposes it when the opening changes', async () => {
@@ -751,7 +753,7 @@ describe('project system', () => {
       }
       expect(polling).toHaveBeenCalledTimes(2)
     } finally {
-      app.dispose()
+      await app.dispose()
       polling.mockRestore()
     }
   })
@@ -782,7 +784,7 @@ describe('project system', () => {
         })
       )
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
   it('sets KCL runtime flags when the app wasm instance becomes active', async () => {
@@ -800,7 +802,7 @@ describe('project system', () => {
         expectedRuntimeFlags()
       )
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
   it('updates KCL runtime flags when user features change', async () => {
@@ -820,7 +822,7 @@ describe('project system', () => {
         expectedRuntimeFlags()
       )
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
   it('sets KCL runtime flags on lifecycle-announced wasm instances', async () => {
@@ -840,7 +842,7 @@ describe('project system', () => {
         expectedRuntimeFlags()
       )
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
   it('syncs plugin settings into plugin activation and only persists overrides', async () => {
@@ -912,7 +914,7 @@ describe('project system', () => {
         getChangedSettingsAtLevel(app.settings.get(), 'user').plugins
       ).toBeUndefined()
     } finally {
-      app.dispose()
+      await app.dispose()
       window.electron = previousElectron
     }
   })
@@ -922,6 +924,7 @@ describe('project system', () => {
       userFeatures,
     })
     try {
+      await app.registryReady
       expect(
         app.registry
           .get(commandsFacet)
@@ -953,7 +956,7 @@ describe('project system', () => {
       expect(snapshot.context.currentArgument?.name).toBe('name')
     } finally {
       await waitForAuthSettled(app)
-      app.dispose()
+      await app.dispose()
     }
   })
   it('loads the code editor automatically render plugin setting enabled by default', async () => {
@@ -986,7 +989,7 @@ describe('project system', () => {
       expect(textEditorSettings.automaticallyRender.current).toBe(true)
       expect(textEditorSettings.automaticallyRender.hideOnLevel).toBe('project')
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
   it('reloads settings without dropping extension-backed plugin settings', async () => {
@@ -1008,7 +1011,7 @@ describe('project system', () => {
       expect(app.settings.get().plugins[pluginId].current).toBe(true)
       expect(app.registry.required(plugin.service).active.value).toBe(true)
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
   it('refreshes project folders after Zookeeper undo and redo changes the file set', async () => {
@@ -1081,7 +1084,7 @@ describe('project system', () => {
         'created = true\n'
       )
     } finally {
-      app.dispose()
+      await app.dispose()
       await fsZds.rm(libraryPath, {
         recursive: true,
         force: true,
@@ -1119,6 +1122,7 @@ describe('project system', () => {
       const editor = await opened.openEditor(mainPath)
       editor.engineCommandManager.connection = {
         connected: true,
+        disconnectAll: () => {},
       } as typeof editor.engineCommandManager.connection
       await writeText(nestedPath, '@settings(kclVersion = 3.0)\nsize = 2\n')
       await fsZds.rm(oldPath)
@@ -1142,7 +1146,7 @@ describe('project system', () => {
       expect(execute).toHaveBeenCalledOnce()
       expect(opened.projectIORefSignal.value.cloudProjectId).toBe('remote-one')
     } finally {
-      app.dispose()
+      await app.dispose()
       await fsZds.rm(projectPath, {
         recursive: true,
         force: true,
@@ -1202,6 +1206,7 @@ describe('project system', () => {
       ).mockResolvedValue({} as never)
       kclManager.engineCommandManager.connection = {
         connected: true,
+        disconnectAll: () => {},
       } as typeof kclManager.engineCommandManager.connection
       vi.useFakeTimers()
       const openAlternatePromise = openedProject.openEditor(
@@ -1229,7 +1234,7 @@ describe('project system', () => {
       expect(sendUpdateFile).not.toHaveBeenCalled()
     } finally {
       vi.useRealTimers()
-      app.dispose()
+      await app.dispose()
       await fsZds.rm(projectPath, {
         recursive: true,
         force: true,
@@ -1311,7 +1316,7 @@ describe('project system', () => {
       } finally {
         snapshot.resolve(undefined)
         vi.useRealTimers()
-        app.dispose()
+        await app.dispose()
         await fsZds.rm(projectPath, {
           recursive: true,
           force: true,
@@ -1387,7 +1392,7 @@ describe('project system', () => {
       expect(kclManager.code).toBe('main = true\n')
       expect(openedProject.executingPath).toBe(mainPath)
     } finally {
-      app.dispose()
+      await app.dispose()
       await fsZds.rm(projectPath, {
         recursive: true,
         force: true,
@@ -1422,7 +1427,7 @@ describe('project system', () => {
       app.closeProject()
       expect(app.project).toBeUndefined()
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
 })
