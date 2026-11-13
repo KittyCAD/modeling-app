@@ -579,6 +579,7 @@ export class CameraControls {
       this.camera.bottom = -ORTHOGRAPHIC_CAMERA_SIZE
     }
     this.camera.updateProjectionMatrix()
+    this.cameraChange.dispatch()
   }
 
   onMouseDown = (event: PointerEvent) => {
