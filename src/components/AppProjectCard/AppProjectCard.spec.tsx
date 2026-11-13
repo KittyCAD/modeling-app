@@ -1113,7 +1113,7 @@ describe('ProjectCard', () => {
       enabled: true,
       shiftKey: true,
       local: false,
-      standalone: false,
+      standalone: true,
     },
   ])(
     '$name uses the expected project route',
@@ -1129,10 +1129,10 @@ describe('ProjectCard', () => {
       } satisfies HomeProjectEntry
       const { projectActions } = renderProjectCard({ project })
       const link = screen.getByTestId('project-link')
-      if (enabled && local) {
+      if (enabled) {
         expect(link).toHaveAttribute(
           'title',
-          'Shift-click to open without an editor'
+          'Shift-click to open in the new project shell'
         )
       } else {
         expect(link).not.toHaveAttribute('title')
@@ -1141,7 +1141,9 @@ describe('ProjectCard', () => {
       await waitFor(() =>
         expect(window.location.pathname).toBe(
           standalone
-            ? `${PATHS.LOCAL}/${encodeURIComponent('/projects/Bracket demo')}`
+            ? local
+              ? `${PATHS.LOCAL}/${encodeURIComponent('/projects/Bracket demo')}`
+              : `${PATHS.PROJECT}/${encodeURIComponent(cloudProject.remoteProjectId)}`
             : `${PATHS.FILE}/${encodeURIComponent(cloudProject.defaultFile)}`
         )
       )
