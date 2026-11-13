@@ -4,6 +4,20 @@ Terminology for describing parametric CAD models in KCL and interpreting their m
 
 ## Language
 
+### Code blocks
+
+**Code block**:
+A group of KCL statements supplied to a function without immediate evaluation. The receiving function determines how those statements are used.
+
+**Block value**:
+A code block together with bindings captured from its surrounding scope. A block value can be stored and passed between functions without evaluating its statements.
+
+**Block parameter**:
+A function input declared to accept a code block.
+
+**Trailing block**:
+A code block written syntactically after a function call and supplied to that function's block parameter.
+
 ### Sketching
 
 **Sketch**:
