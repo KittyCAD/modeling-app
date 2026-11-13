@@ -1,3 +1,13 @@
+import {
+  readEditorCode,
+  holdFileRead,
+  holdModelingOpen,
+} from '@e2e/playwright/lib/editorTestUtils'
+import {
+  installPausedClock,
+  pauseAppClock,
+  openLayoutPanes,
+} from '@e2e/playwright/lib/appTestUtils'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { expect, test } from '@e2e/playwright/base-test'
 import {
@@ -21,13 +31,8 @@ test(
     const root = `/__zoo_cloud__/${projectId}`
     await page.goto(`/file/${encodeURIComponent(`${root}/main.kcl`)}`)
     await page.locator('.cm-content').first().waitFor({ state: 'visible' })
-    await page.evaluate(
-      (id) => window.app.layout.openPane(id),
-      DefaultLayoutPaneID.Files
-    )
-    const clockStart = new Date()
-    await page.clock.install({ time: clockStart })
-    await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+    await openLayoutPanes(page, DefaultLayoutPaneID.Files)
+    await installPausedClock(page)
     const initialReads = { ...remote.reads }
     await page.clock.runFor(8_000)
     await expect
@@ -151,9 +156,7 @@ test(
       `/file/${encodeURIComponent(`/__zoo_cloud__/${projectId}/main.kcl`)}`
     )
     await page.locator('.cm-content').first().waitFor({ state: 'visible' })
-    await page.clock.pauseAt(
-      new Date((await page.evaluate(() => Date.now())) + 1_000)
-    )
+    await pauseAppClock(page)
     const probes = await page.evaluateHandle((projectId) => {
       const originalFetch = window.fetch
       let started = 0
@@ -301,10 +304,7 @@ for (const kind of ['file', 'directory']) {
       const root = `/__zoo_cloud__/${projectId}`
       await page.goto(`/file/${encodeURIComponent(`${root}/main.kcl`)}`)
       await page.locator('.cm-content').first().waitFor({ state: 'visible' })
-      await page.evaluate(
-        (id) => window.app.layout.openPane(id),
-        DefaultLayoutPaneID.Files
-      )
+      await openLayoutPanes(page, DefaultLayoutPaneID.Files)
       const parts = page.getByRole('treeitem', { name: 'parts', exact: true })
       await parts.click()
       const handle = page.getByRole('treeitem', {
@@ -413,10 +413,7 @@ test(
     await page.goto(`/file/${encodeURIComponent(`${root}/main.kcl`)}`)
     await waitForAppLoad(page)
     await page.locator('.cm-content').first().waitFor({ state: 'visible' })
-    await page.evaluate(
-      (id) => window.app.layout.openPane(id),
-      DefaultLayoutPaneID.Files
-    )
+    await openLayoutPanes(page, DefaultLayoutPaneID.Files)
     const note = page.getByRole('treeitem', { name: 'note.md', exact: true })
     const historyBefore = await page.evaluate(
       () => window.app.singletons.kclManager.globalHistoryView.undoDepth
@@ -593,9 +590,7 @@ test(
     await expect
       .poll(() => page.evaluate(() => window.app.fileOperations.pending()))
       .toBe(0)
-    const clockStart = new Date()
-    await page.clock.install({ time: clockStart })
-    await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+    await installPausedClock(page)
     await expect
       .poll(() => page.evaluate(() => window.app.fileOperations.pending()))
       .toBe(0)
@@ -666,32 +661,12 @@ test(
       .click()
     await page.locator('.cm-content').first().waitFor({ state: 'visible' })
     await expect(page).toHaveURL(/main\.kcl/)
-    await page.evaluate(
-      (ids) => {
-        for (const id of ids) window.app.layout.openPane(id)
-      },
-      [DefaultLayoutPaneID.Code, DefaultLayoutPaneID.Files]
+    await openLayoutPanes(
+      page,
+      ...[DefaultLayoutPaneID.Code, DefaultLayoutPaneID.Files]
     )
     const originalProject = await page.evaluateHandle(() => window.app.project)
-    const releaseBuffer = await page.evaluateHandle(() => {
-      const target = window.app.project?.files.find((file) =>
-        file.path.endsWith('/other.kcl')
-      )
-      if (!target) throw new Error('Missing target file')
-      const read = target.read.bind(target)
-      let release!: () => void
-      const gate = new Promise<void>((resolve) => {
-        release = resolve
-      })
-      target.read = async () => {
-        await gate
-        return read()
-      }
-      return () => {
-        target.read = read
-        release()
-      }
-    })
+    const releaseBuffer = await holdFileRead(page, 'other.kcl')
     const save = Promise.withResolvers<undefined>()
     let blockedSave = false
     await context.route('**/user/projects/**', async (route) => {
@@ -701,33 +676,7 @@ test(
       }
       await route.fallback()
     })
-    const releaseModeling = await page.evaluateHandle(() => {
-      const rust = window.app.rustContext
-      const original = rust.sendOpenProject.bind(rust)
-      const originalUpdate = rust.sendUpdateFile.bind(rust)
-      const sourceId = window.app.singletons.kclManager.id
-      let updatesBeforeReady = 0
-      let ready = false
-      rust.sendUpdateFile = async (...args) => {
-        if (!ready && args[0] !== sourceId) updatesBeforeReady += 1
-        return originalUpdate(...args)
-      }
-      let release!: () => void
-      const gate = new Promise<void>((resolve) => {
-        release = resolve
-      })
-      rust.sendOpenProject = async (...args) => {
-        await gate
-        return original(...args)
-      }
-      return () => {
-        rust.sendOpenProject = original
-        rust.sendUpdateFile = originalUpdate
-        ready = true
-        release()
-        return updatesBeforeReady
-      }
-    })
+    const releaseModeling = await holdModelingOpen(page)
     try {
       await page.evaluate(() =>
         window.app.singletons.kclManager.updateCodeEditor(
@@ -860,7 +809,7 @@ test(
       },
     })
     await expect
-      .poll(() => page.evaluate(() => window.app.singletons.kclManager.code), {
+      .poll(() => readEditorCode(page), {
         timeout: 30_000,
       })
       .toContain('width = 42')

@@ -443,7 +443,9 @@ export class ZDSProject {
       this.app.project === this && this.executingEditor.peek() === editor
     const storage = this.app.projectSession.storageFor(this.path)
     await editor.refreshFileBeforeSketchInsertion(async (isFileCurrent) => {
-      await storage.refresh(() => isCurrent() && isFileCurrent())
+      const update = await storage.refresh(() => isCurrent() && isFileCurrent())
+      if (update?.refreshed)
+        await this.reloadFilesFromStorage(() => isCurrent() && isFileCurrent())
     })
     if (!isCurrent())
       return Promise.reject(
@@ -495,17 +497,23 @@ export class ZDSProject {
     else currentFile.text = editor.code
     await editor.rustContext.sendOpenProject(editor.path, apiFiles)
     if (!isCurrent() || this.executingEditor.value !== editor) return
-    if (
-      editor.engineCommandManager.connection?.connected &&
-      !editor.modelingState?.matches('Sketch') &&
-      !editor.modelingState?.matches('sketchSolveMode') &&
-      getAutomaticallyRenderEnabledFromSettings(
-        getSettingsFromActorContext(this.app.settings.actor)
+    if (editor.engineCommandManager.connection?.connected) {
+      if (editor.modelingState?.matches('sketchSolveMode')) {
+        // Rebuild the live sketch as well as Rust's file registry. A plain file
+        // snapshot leaves handles and tool previews on the previous geometry.
+        // Receiving a snapshot must not upload a fresh thumbnail/revision.
+        editor.scheduleCurrentCodeExecution(false, { updateThumbnail: false })
+        await editor.flushPendingEditorExecution()
+      } else if (
+        !editor.modelingState?.matches('Sketch') &&
+        getAutomaticallyRenderEnabledFromSettings(
+          getSettingsFromActorContext(this.app.settings.actor)
+        )
       )
-    )
-      void editor
-        .executeCode(editor.code, { updateThumbnail: false })
-        .catch(reportRejection)
+        void editor
+          .executeCode(editor.code, { updateThumbnail: false })
+          .catch(reportRejection)
+    }
   }
 
   /**

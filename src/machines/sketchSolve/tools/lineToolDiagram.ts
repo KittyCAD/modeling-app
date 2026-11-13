@@ -132,6 +132,7 @@ export const machine = setup({
           }
 
           const settings = jsAppSettings(rustContext.settingsActor)
+          await rustContext.prepareForSketchInsertion()
           const result = await rustContext.addSegment(
             0, // version - TODO: Get this from actual context
             sketchId, // sketchId from context
@@ -495,6 +496,7 @@ export const machine = setup({
             },
           }
 
+          await rustContext.prepareForSketchInsertion()
           const chainResult = await rustContext.chainSegment(
             0,
             sketchId,
