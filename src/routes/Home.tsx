@@ -386,11 +386,12 @@ const Home = () => {
   const visibleLibraries = selectedProjectLibrary
     ? [selectedProjectLibrary]
     : projectLibraries
+  const projectsInitiallyLoaded = visibleLibraries.every((library) =>
+    settledLibraryIds.includes(library.id)
+  )
   const projectsLoaded =
     app.projectOperations.pending.value === 0 &&
-    visibleLibraries.every((library) =>
-      settledLibraryIds.includes(library.id)
-    ) &&
+    projectsInitiallyLoaded &&
     !loadingLibraryIds.some(
       (id) => !selectedProjectLibraryId || id === selectedProjectLibraryId
     )
@@ -779,7 +780,7 @@ const Home = () => {
             projectShellEnabled={projectShellEnabled}
             searchResults={searchResults ?? []}
             projects={scopedHomeProjectEntries}
-            projectsLoaded={projectsLoaded}
+            projectsLoaded={projectsInitiallyLoaded}
             query={query}
             sort={sort}
             projectStatuses={projectStatuses}
@@ -797,7 +798,7 @@ const Home = () => {
             libraries={projectLibraries}
             searchResults={searchResults ?? []}
             projects={homeProjectEntries}
-            projectsLoaded={projectsLoaded}
+            projectsLoaded={projectsInitiallyLoaded}
             query={query}
             sort={sort}
             projectStatuses={projectStatuses}

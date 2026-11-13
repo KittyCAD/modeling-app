@@ -98,6 +98,7 @@ type ConfiguredProjectLibraryScanInput = {
 type ConfiguredProjectLibraryScanState = {
   input: ConfiguredProjectLibraryScanInput
   abortController?: AbortController
+  settled: boolean
   realizations: ProjectLibraryRealizationContribution[]
 }
 
@@ -375,7 +376,7 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
         return (
           state &&
           state.input.library.type !== CLOUD_PROJECT_LIBRARY_TYPE &&
-          !state.abortController
+          state.settled
         )
       })
       loadingLibraryIds.value = currentLibraryIds.filter((libraryId) =>
@@ -421,21 +422,22 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
         )
         scanStates.set(library.id, {
           input,
+          settled: true,
           realizations: [],
         })
         return
       }
 
       const abortController = new AbortController()
+      const sameSource = configuredProjectLibrarySourceIsEqual(
+        cachedScan?.input,
+        input
+      )
       const state: ConfiguredProjectLibraryScanState = {
         input,
         abortController,
-        realizations: configuredProjectLibrarySourceIsEqual(
-          cachedScan?.input,
-          input
-        )
-          ? (cachedScan?.realizations ?? [])
-          : [],
+        settled: sameSource && (cachedScan?.settled ?? false),
+        realizations: sameSource ? (cachedScan?.realizations ?? []) : [],
       }
       scanStates.set(library.id, state)
 
@@ -454,6 +456,7 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
         }
 
         state.abortController = undefined
+        state.settled = true
         state.realizations = nextRealizations
         updateRealizations()
       })
