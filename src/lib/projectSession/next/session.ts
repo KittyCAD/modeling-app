@@ -106,6 +106,18 @@ export function createProjectSessionService(
       })
       return next
     },
+    updateProject: (session, project) => {
+      const current = currentSession.peek()
+      if (current !== session || current.signal.aborted)
+        return new Error('The project opening is no longer active')
+      const previous = current.project.peek()
+      if (
+        previous.contents.path !== project.contents.path ||
+        previous.storage?.projectId !== project.storage?.projectId
+      )
+        return new Error('A snapshot cannot change the project identity')
+      current.project.value = project
+    },
     updateMetadata: (session, metadata) => {
       const current = currentSession.peek()
       if (current !== session || current.signal.aborted) return
