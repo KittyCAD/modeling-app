@@ -411,6 +411,7 @@ test(
       return root
     })
     await page.goto(`/file/${encodeURIComponent(`${root}/main.kcl`)}`)
+    await waitForAppLoad(page)
     await page.locator('.cm-content').first().waitFor({ state: 'visible' })
     await page.evaluate(
       (id) => window.app.layout.openPane(id),
@@ -454,6 +455,7 @@ test(
       .click()
     await expect(note).not.toBeVisible()
     await page.reload({ waitUntil: 'domcontentloaded' })
+    await waitForAppLoad(page)
     await expect(page.locator('.cm-content').first()).toBeVisible()
     await expect
       .poll(() =>
