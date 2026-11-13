@@ -180,7 +180,27 @@ font_point_size: number,
 /**
  * The scale of the leader (dot or arrow). Defaults to 1.
  */
-leader_scale: number, };
+leader_scale: number, 
+/**
+ * Supplemental text above the complete annotation label, outside any control frame.
+ * Uses the annotation font and scale. Empty or omitted text adds no spacing.
+ */
+text_above?: string | null, 
+/**
+ * Supplemental text below the complete annotation label, outside any control frame.
+ * Uses the annotation font and scale. Empty or omitted text adds no spacing.
+ */
+text_below?: string | null, 
+/**
+ * Supplemental text left the complete annotation label, outside any control frame.
+ * Uses the annotation font and scale. Empty or omitted text adds no spacing.
+ */
+text_left?: string | null, 
+/**
+ * Supplemental text right the complete annotation label, outside any control frame.
+ * Uses the annotation font and scale. Empty or omitted text adds no spacing.
+ */
+text_right?: string | null, };
 
 /**
  * Parameters for defining an MBD Feature Tag Annotation state
@@ -239,7 +259,27 @@ font_point_size: number,
 /**
  * The scale of the leader (dot or arrow). Defaults to 1.
  */
-leader_scale: number, };
+leader_scale: number, 
+/**
+ * Supplemental text above the complete annotation label, outside any control frame.
+ * Uses the annotation font and scale. Empty or omitted text adds no spacing.
+ */
+text_above?: string | null, 
+/**
+ * Supplemental text below the complete annotation label, outside any control frame.
+ * Uses the annotation font and scale. Empty or omitted text adds no spacing.
+ */
+text_below?: string | null, 
+/**
+ * Supplemental text left the complete annotation label, outside any control frame.
+ * Uses the annotation font and scale. Empty or omitted text adds no spacing.
+ */
+text_left?: string | null, 
+/**
+ * Supplemental text right the complete annotation label, outside any control frame.
+ * Uses the annotation font and scale. Empty or omitted text adds no spacing.
+ */
+text_right?: string | null, };
 
 /**
  * Annotation line end type

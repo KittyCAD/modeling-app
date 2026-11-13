@@ -18,6 +18,10 @@ gdt::profileSurface(
   leaderScale?: number(_),
   fontSize?: number(Length),
   annotationName?: string,
+  textAbove?: string,
+  textBelow?: string,
+  textLeft?: string,
+  textRight?: string,
 ): [GdtAnnotation; 1+]
 ```
 
@@ -38,6 +42,10 @@ Profile of a surface is a three-dimensional tolerance zone that applies across t
 | `leaderScale` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`. | No |
 | `fontSize` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit. This changes the scene size, not the internal raster texture quality. | No |
 | `annotationName` | [`string`](/docs/kcl-std/types/std-types-string) | Human-friendly name for this annotation in exports and model metadata. This is not displayed visually. | No |
+| `textAbove` | [`string`](/docs/kcl-std/types/std-types-string) | Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing. | No |
+| `textBelow` | [`string`](/docs/kcl-std/types/std-types-string) | Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing. | No |
+| `textLeft` | [`string`](/docs/kcl-std/types/std-types-string) | Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing. | No |
+| `textRight` | [`string`](/docs/kcl-std/types/std-types-string) | Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing. | No |
 
 ### Returns
 

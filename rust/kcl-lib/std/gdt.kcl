@@ -77,6 +77,14 @@ export fn datum(
   fontSize?: number(Length),
   /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
   annotationName?: string,
+  /// Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textAbove?: string,
+  /// Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textBelow?: string,
+  /// Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textLeft?: string,
+  /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textRight?: string,
 ): GdtAnnotation {}
 
 /// GD&T annotation specifying how flat faces should be.
@@ -166,6 +174,14 @@ export fn flatness(
   fontSize?: number(Length),
   /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
   annotationName?: string,
+  /// Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textAbove?: string,
+  /// Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textBelow?: string,
+  /// Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textLeft?: string,
+  /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textRight?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T annotation specifying how straight a feature must be.
@@ -275,6 +291,14 @@ export fn straightness(
   fontSize?: number(Length),
   /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
   annotationName?: string,
+  /// Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textAbove?: string,
+  /// Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textBelow?: string,
+  /// Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textLeft?: string,
+  /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textRight?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T annotation specifying how circular (round) a feature must be.
@@ -352,6 +376,14 @@ export fn circularity(
   fontSize?: number(Length),
   /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
   annotationName?: string,
+  /// Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textAbove?: string,
+  /// Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textBelow?: string,
+  /// Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textLeft?: string,
+  /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textRight?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T annotation specifying how closely a feature must conform to a perfect cylinder.
@@ -430,6 +462,14 @@ export fn cylindricity(
   fontSize?: number(Length),
   /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
   annotationName?: string,
+  /// Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textAbove?: string,
+  /// Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textBelow?: string,
+  /// Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textLeft?: string,
+  /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textRight?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T concentricity annotation specifying how closely a feature's median axis must align with datum references.
@@ -521,6 +561,14 @@ export fn concentricity(
   fontSize?: number(Length),
   /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
   annotationName?: string,
+  /// Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textAbove?: string,
+  /// Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textBelow?: string,
+  /// Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textLeft?: string,
+  /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textRight?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T symmetry annotation specifying how closely a feature's median plane must align with datum references.
@@ -646,6 +694,14 @@ export fn symmetry(
   fontSize?: number(Length),
   /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
   annotationName?: string,
+  /// Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textAbove?: string,
+  /// Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textBelow?: string,
+  /// Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textLeft?: string,
+  /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textRight?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T annotation specifying circular runout relative to a datum axis.
@@ -742,6 +798,14 @@ export fn runout(
   fontSize?: number(Length),
   /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
   annotationName?: string,
+  /// Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textAbove?: string,
+  /// Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textBelow?: string,
+  /// Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textLeft?: string,
+  /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textRight?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T angularity annotation specifying how much faces or edges may deviate from an orientation at a basic angle relative to datum references.
@@ -885,6 +949,14 @@ export fn angularity(
   fontSize?: number(Length),
   /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
   annotationName?: string,
+  /// Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textAbove?: string,
+  /// Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textBelow?: string,
+  /// Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textLeft?: string,
+  /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textRight?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T perpendicularity annotation specifying how much faces or edges may deviate from perpendicular orientation relative to datum references.
@@ -957,6 +1029,14 @@ export fn perpendicularity(
   fontSize?: number(Length),
   /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
   annotationName?: string,
+  /// Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textAbove?: string,
+  /// Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textBelow?: string,
+  /// Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textLeft?: string,
+  /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textRight?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T parallelism annotation specifying how much faces or edges may deviate from parallel orientation relative to datum references.
@@ -1029,6 +1109,14 @@ export fn parallelism(
   fontSize?: number(Length),
   /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
   annotationName?: string,
+  /// Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textAbove?: string,
+  /// Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textBelow?: string,
+  /// Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textLeft?: string,
+  /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textRight?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T position annotation specifying how much faces or edges may deviate from their ideal location.
@@ -1101,6 +1189,14 @@ export fn position(
   fontSize?: number(Length),
   /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
   annotationName?: string,
+  /// Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textAbove?: string,
+  /// Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textBelow?: string,
+  /// Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textLeft?: string,
+  /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textRight?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T annotation for attaching manufacturing text to faces or edges.
@@ -1166,6 +1262,14 @@ export fn annotation(
   fontSize?: number(Length),
   /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
   annotationName?: string,
+  /// Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textAbove?: string,
+  /// Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textBelow?: string,
+  /// Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textLeft?: string,
+  /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textRight?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T note for adding free-floating manufacturing text that is not attached to a face or edge.
@@ -1236,6 +1340,14 @@ export fn note(
   fontSize?: number(Length),
   /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
   annotationName?: string,
+  /// Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textAbove?: string,
+  /// Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textBelow?: string,
+  /// Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textLeft?: string,
+  /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textRight?: string,
 ): GdtAnnotation {}
 
 /// GD&T distance annotation for displaying measured edge lengths or distances between two entities.
@@ -1419,6 +1531,14 @@ export fn profile(
   fontSize?: number(Length),
   /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
   annotationName?: string,
+  /// Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textAbove?: string,
+  /// Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textBelow?: string,
+  /// Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textLeft?: string,
+  /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textRight?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T profile-of-a-line annotation specifying how much edges may deviate from their ideal shape.
@@ -1497,6 +1617,14 @@ export fn profileLine(
   fontSize?: number(Length),
   /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
   annotationName?: string,
+  /// Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textAbove?: string,
+  /// Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textBelow?: string,
+  /// Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textLeft?: string,
+  /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textRight?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T profile-of-a-surface annotation specifying how much faces may deviate from their ideal shape.
@@ -1541,6 +1669,14 @@ export fn profileSurface(
   fontSize?: number(Length),
   /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
   annotationName?: string,
+  /// Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textAbove?: string,
+  /// Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textBelow?: string,
+  /// Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textLeft?: string,
+  /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textRight?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// Annotate the measured diameter of a circular edge or cylindrical face.
@@ -1574,6 +1710,14 @@ export fn diameter(
   fontSize?: number(Length),
   /// Human-friendly annotation name in exports and model metadata.
   annotationName?: string,
+  /// Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textAbove?: string,
+  /// Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textBelow?: string,
+  /// Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textLeft?: string,
+  /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textRight?: string,
 ): GdtAnnotation {}
 
 /// Annotate the measured radius of a circular edge or cylindrical face.
@@ -1608,4 +1752,12 @@ export fn radius(
   fontSize?: number(Length),
   /// Human-friendly annotation name in exports and model metadata.
   annotationName?: string,
+  /// Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textAbove?: string,
+  /// Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textBelow?: string,
+  /// Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textLeft?: string,
+  /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textRight?: string,
 ): GdtAnnotation {}

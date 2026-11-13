@@ -111,6 +111,8 @@ debug = "line-tables-only"
 # - Publication: Cargo omits these patches from packaged manifests and removes
 #   dependency paths, keeping the declared registry version requirements.
 [patch.crates-io]
+# Temporary for the companion draft; replace with a published modeling-cmds release before merge.
+kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", rev = "6df1fc8c4e6b05babb8a2c93743d5833798b36b4" }
 kcl-api = { path = "kcl-api" }
 kcl-error = { path = "kcl-error" }
 
