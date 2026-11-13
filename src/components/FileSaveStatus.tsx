@@ -1,10 +1,13 @@
 import { useSignals } from '@preact/signals-react/runtime'
-import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
+import { useApp } from '@src/lib/boot'
+import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 
 import { reportRejection, trap } from '@src/lib/trap'
 
-export function FileSaveStatus({ app, className }: AppHeaderItemProps) {
+export function FileSaveStatus() {
   useSignals()
+  const app = useApp()
+  const className = defaultStatusBarItemClassNames
   const path = app.projectSignal.value?.path
   if (!path) return null
   const editor = app.projectSignal.value?.executingEditor.value

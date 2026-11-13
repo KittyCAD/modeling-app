@@ -1,3 +1,4 @@
+import { signal } from '@preact/signals-core'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import {
   FREE_CLOUD_PROJECT_TRAINING_POLICY_URL,
@@ -18,6 +19,7 @@ const cloudLibrary = {
 } satisfies ProjectLibrary
 
 const projectActions = {
+  pendingActions: signal(new Map()),
   watchRemoteThumbnail: vi.fn(() => vi.fn()),
   canOpen: vi.fn(() => false),
   canDuplicate: vi.fn(() => false),

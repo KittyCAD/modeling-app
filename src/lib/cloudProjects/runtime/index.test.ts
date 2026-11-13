@@ -970,6 +970,59 @@ describe.each([
     expect(fs.pending()).toBe(0)
   })
 
+  it.each([false, true])(
+    'acknowledges an identical rejected upload without discarding the next edit (thumbnail: %s)',
+    async (thumbnail) => {
+      vi.useFakeTimers()
+      const { fs } = setup()
+      const root = await fs.openProject('one')
+      const file = paths.join(root, 'main.kcl')
+      const gate = Promise.withResolvers<typeof remote>()
+      vi.mocked(api.updateRemoteProject)
+        .mockReturnValueOnce(gate.promise)
+        .mockResolvedValue({ ...remote, revision: '4' })
+      const reconciled = vi.fn()
+      fs.subscribeReconciled(reconciled)
+      if (thumbnail)
+        await fs.stageThumbnail(root, new Uint8Array([0, 255, 128]))
+      const first = fs.writeFile(file, encoder.encode('first committed shape'))
+      const next = fs.writeFile(file, encoder.encode('newer committed shape'))
+      await vi.advanceTimersByTimeAsync(7_000)
+      expect(api.updateRemoteProject).toHaveBeenCalledTimes(1)
+      vi.mocked(api.getRemoteProject).mockResolvedValue({
+        ...remote,
+        revision: '3',
+      })
+      vi.mocked(parseProjectArchive).mockResolvedValue([
+        {
+          relativePath: 'main.kcl',
+          data: encoder.encode('first committed shape'),
+        },
+        ...(thumbnail
+          ? [
+              {
+                relativePath: 'thumbnail.png',
+                data: new Uint8Array([0, 255, 128]),
+              },
+            ]
+          : []),
+      ])
+      gate.reject(new api.CloudApiError(409, 'Already uploaded'))
+      await Promise.all([first, next])
+      await vi.advanceTimersByTimeAsync(0)
+      expect(reconciled).not.toHaveBeenCalled()
+      if (thumbnail)
+        expect(await fs.readFile(paths.join(root, 'thumbnail.png'))).toEqual(
+          new Uint8Array([0, 255, 128])
+        )
+      expect(await fs.readFile(file, 'utf8')).toBe('newer committed shape')
+      expect(api.updateRemoteProject).toHaveBeenLastCalledWith(
+        expect.objectContaining({ expectedRevision: '3' })
+      )
+      expect(fs.saves.value.get('one')?.state).toBe('saved')
+    }
+  )
+
   it.each(['same', 'different'] as const)(
     'adopts the cloud snapshot after a lost acknowledgement and conflict (%s contents)',
     async (contents) => {

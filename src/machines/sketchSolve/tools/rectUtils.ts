@@ -122,6 +122,9 @@ export async function createDraftRectangle({
   sceneGraphDelta: SceneGraphDelta
   draft: RectDraftIds
 }> {
+  // All sides and constraints form one draft. Refreshing between them would
+  // replace the Rust model before the combined source reaches the editor.
+  await rustContext.prepareForSketchInsertion()
   const units = baseUnitToNumericSuffix(
     kclManager.fileSettings.defaultLengthUnit
   )

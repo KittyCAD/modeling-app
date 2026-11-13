@@ -89,7 +89,8 @@ export const isSketchToolbarTransitioning = (
   state.matches('animating to plane') ||
   state.matches('animating to existing sketch') ||
   state.matches('animating to sketch solve mode') ||
-  state.matches('animating to existing sketch solve')
+  state.matches('animating to existing sketch solve') ||
+  state.matches({ sketchSolveMode: 'exiting' })
 
 export type ToolbarDropdown = {
   id: string
