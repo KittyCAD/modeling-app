@@ -62,6 +62,40 @@ function bodies(...artifacts: BodyArtifact[]) {
 }
 
 describe('body feature hierarchy', () => {
+  it('keeps expansion identities when execution changes engine IDs, offsets and body order', () => {
+    const parent: Extract<Operation, { type: 'ModuleInstance' }> = {
+      type: 'ModuleInstance',
+      name: 'part',
+      moduleId: 1,
+      sourceRange: codeRef(0).range,
+      nodePath: { steps: [] },
+    }
+    function execute(offset: number, reverse = false) {
+      const features = [0, 1].map(
+        (index): Operation => ({
+          ...call(offset + index * 20),
+          sourceRange: codeRef(offset + index * 20, 1).range,
+          nodePath: { steps: [{ type: 'ProgramBodyItem', index }] },
+        })
+      )
+      const importedBodies = features.map((feature, index) => ({
+        ...sweep(`${offset}-${index}`, 0),
+        codeRef: {
+          ...codeRef(0),
+          definitionRange:
+            'sourceRange' in feature ? feature.sourceRange : undefined,
+        },
+      }))
+      if (reverse) importedBodies.reverse()
+      return buildBodyOperationTree(
+        [{ parent, children: features }],
+        bodies(...importedBodies),
+        graph(...importedBodies)
+      ).branches.map((body) => body.expansionKey)
+    }
+    expect(execute(100, true)).toEqual(execute(10).reverse())
+  })
+
   it('shows distinct creation histories for imported bodies without in-place edits', () => {
     const parent: Extract<Operation, { type: 'ModuleInstance' }> = {
       type: 'ModuleInstance',

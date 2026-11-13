@@ -768,7 +768,7 @@ function getBodyTreeNodeExpansionKey(
   node: BodyTreeNode,
   index: number
 ): string {
-  if (!isArray(node) && 'body' in node) return `body-${node.body.index}`
+  if (!isArray(node) && 'body' in node) return `body-${node.body.expansionKey}`
   if (!isArray(node) && 'parent' in node)
     return `module-${node.parent.moduleId}`
   return `operation-${index}`

@@ -14,6 +14,7 @@ export type BodyArtifact = Extract<
 
 export type BodyOperationTreeBranch = {
   id: string
+  expansionKey: string
   artifact: BodyArtifact
   index: number
   ownerModuleId: number
@@ -147,6 +148,7 @@ export function buildBodyOperationTree(
     patternsByBody.set(sourceId, patterns)
   }
   const assigned = new Set<OperationTreeNode>()
+  const bodyOccurrences = new Map<string, number>()
   const branches = Array.from(groupedBodies, ([id, artifact], index) => {
     const patterns =
       patternsByBody.get(id) ??
@@ -246,8 +248,26 @@ export function buildBodyOperationTree(
       artifact.codeRef.definitionRange?.[2] ??
       moduleByImportRange.get(artifact.codeRef.range.join('-')) ??
       artifact.codeRef.range[2]
+    const definitionRange =
+      artifact.codeRef.definitionRange ?? artifact.codeRef.range
+    const creation = Array.from(operationOrder.keys()).find(
+      (operation) =>
+        'sourceRange' in operation &&
+        operation.sourceRange.every(
+          (value, index) => value === definitionRange[index]
+        )
+    )
+    // Engine IDs and byte offsets can change when editing a sketch.
+    const nodePath =
+      creation && 'nodePath' in creation
+        ? creation.nodePath
+        : artifact.codeRef.nodePath
+    const sourceKey = JSON.stringify([moduleId, nodePath])
+    const occurrence = bodyOccurrences.get(sourceKey) ?? 0
+    bodyOccurrences.set(sourceKey, occurrence + 1)
     return {
       id,
+      expansionKey: `${sourceKey}-${occurrence}`,
       artifact,
       index,
       ownerModuleId: modulePaths.has(moduleId) ? moduleId : 0,
