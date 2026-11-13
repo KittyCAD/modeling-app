@@ -10,6 +10,7 @@ import {
 import type { KclManager } from '@src/lang/KclManager'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
 import { artifactToEntityRef, getNodeFromPath } from '@src/lang/queryAst'
+import { getWallCodeRef } from '@src/lang/std/artifactGraph'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import {
   removeSingleConstraint,
@@ -27,8 +28,10 @@ import {
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type RustContext from '@src/lib/rustContext'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { getAstAndArtifactGraph } from '@src/lib/testHelpers'
 import { StepSchema } from '@src/lib/stepSchema'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import {
@@ -49,6 +52,7 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 import {
   buildTheWorldAndConnectToEngine,
   buildTheWorldAndNoEngineConnection,
+  createProjectForTest,
 } from '@src/unitTestUtils'
 import toast from 'react-hot-toast'
 import { Group } from 'three'
@@ -116,6 +120,79 @@ function useEngineWorld() {
 beforeAll(async () => {
   worldWithoutEngine = await buildTheWorldAndNoEngineConnection()
   setTestWorld(worldWithoutEngine)
+})
+
+describe('sketch entry on swept sketch-block faces', () => {
+  useEngineWorld()
+
+  it.each([
+    { face: 'top', start: '[0mm, 2mm]', normal: 1 },
+    { face: 'bottom', start: '[3mm, -2mm]', normal: -1 },
+  ])('starts a sketch on the $face face', async ({ face, start, normal }) => {
+    const code = `@settings(defaultLengthUnit = mm, kclVersion = 3.0)
+profile = sketch(on = XZ) {
+  left = line(start = [0mm, -2mm], end = [0mm, 2mm])
+  top = line(start = [0mm, 2mm], end = [3mm, 2mm])
+  right = line(start = [3mm, 2mm], end = [3mm, -2mm])
+  bottom = line(start = [3mm, -2mm], end = [0mm, -2mm])
+}
+path = sketch(on = XY) {
+  arc1 = arc(start = [0mm, 0mm], end = [20mm, 20mm], center = [20mm, 0mm], direction = CW)
+}
+body = profile |> sweep(path = path)
+`
+    const { artifactGraph } = await getAstAndArtifactGraph(
+      code,
+      instanceInThisFile,
+      kclManagerInThisFile
+    )
+    expect(kclManagerInThisFile.errors).toEqual([])
+    const segmentStart = code.indexOf(`line(start = ${start}`)
+    const wall = [...artifactGraph.values()].find((artifact) => {
+      if (artifact.type !== 'wall') return false
+      const source = getWallCodeRef(artifact, artifactGraph)
+      return !isErr(source) && source.range[0] === segmentStart
+    })
+    if (!wall) throw new Error(`Missing ${face} sweep face`)
+
+    const implementation =
+      modelingMachine.implementations.actors['animate-to-sketch-solve']
+    const logic = 'src' in implementation ? implementation.src : implementation
+    const actor = createActor(logic, {
+      input: {
+        artifactOrPlaneId: wall.id,
+        kclManager: kclManagerInThisFile,
+        rustContext: rustContextInThisFile,
+        engineCommandManager: engineCommandManagerInThisFile,
+        wasmInstance: instanceInThisFile,
+        projectRef: { current: createProjectForTest() },
+      },
+    })
+    try {
+      const done = toPromise(actor)
+      actor.start()
+      const result = await done
+      expect(result.plane.zAxis[2]).toBeCloseTo(normal)
+      expect(kclManagerInThisFile.code).toContain(
+        `face001 = faceOf(body, face = ${face})`
+      )
+      expect(kclManagerInThisFile.code).toContain(
+        'sketch001 = sketch(on = face001)'
+      )
+      expect(result.initialSceneGraphDelta.exec_outcome?.issues).toEqual([])
+
+      const reloaded = await rustContextInThisFile.hackSetProgram(
+        assertParse(kclManagerInThisFile.code, instanceInThisFile),
+        jsAppSettings(rustContextInThisFile.settingsActor)
+      )
+      expect(reloaded.type).toBe('Success')
+      if (reloaded.type === 'Success') {
+        expect(reloaded.execOutcome.issues).toEqual([])
+      }
+    } finally {
+      actor.stop()
+    }
+  })
 })
 
 describe('STEP schema export requests', () => {

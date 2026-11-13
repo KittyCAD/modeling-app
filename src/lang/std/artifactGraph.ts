@@ -729,7 +729,7 @@ export function isFaceFromLegacySketch(
     return false
   }
 
-  return path.subType === 'sketch'
+  return path.subType === 'sketch' && !path.sketchBlockId
 }
 
 function getPlaneFromPath(
