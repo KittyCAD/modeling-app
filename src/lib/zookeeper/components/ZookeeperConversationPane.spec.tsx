@@ -83,6 +83,9 @@ type FakeSnapshot = {
     defaultMode?: string
     modeOptions?: MlCopilotModeOption[]
     setupFailed: boolean
+    replayNextCursor?: string
+    replayPageRequestId?: string
+    replayPageError?: string
   }
   matches: (state: unknown) => boolean
 }
@@ -222,6 +225,53 @@ beforeEach(() => {
 })
 
 describe('ZookeeperConversationPane', () => {
+  test('maps history paging state and delegates page requests to the actor', () => {
+    const fake = createFakeController({
+      actorContext: {
+        conversation: completedConversation,
+        replayNextCursor: 'older-cursor',
+        replayPageRequestId: 'pending-request',
+        replayPageError: 'Please try again',
+      },
+    })
+    render(
+      <MemoryRouter>
+        <ZookeeperConversationPane {...createPaneProps(fake.controller)} />
+      </MemoryRouter>
+    )
+    const props = latestConversationProps()
+    expect(props.canLoadOlderMessages).toBe(true)
+    expect(props.isLoadingOlderMessages).toBe(true)
+    expect(props.olderMessagesError).toBe('Please try again')
+    act(() => props.onLoadOlderMessages?.())
+    expect(fake.actor.send).toHaveBeenCalledWith({
+      type: ZookeeperManagerTransitions.ReplayPageFetch,
+    })
+  })
+
+  test('reconnects a terminal history error without clearing the conversation', () => {
+    const fake = createFakeController({
+      actorContext: {
+        conversation: completedConversation,
+        replayPageError: 'Please reconnect',
+      },
+    })
+    render(
+      <MemoryRouter>
+        <ZookeeperConversationPane {...createPaneProps(fake.controller)} />
+      </MemoryRouter>
+    )
+    act(() => latestConversationProps().onReconnect())
+    expect(fake.actor.send).toHaveBeenCalledWith({
+      type: ZookeeperManagerTransitions.AbruptClose,
+    })
+    expect(fake.reconnect).toHaveBeenCalledOnce()
+    expect(fake.actor.send.mock.invocationCallOrder[0]).toBeLessThan(
+      fake.reconnect.mock.invocationCallOrder[0]
+    )
+    expect(fake.clearConversation).not.toHaveBeenCalled()
+  })
+
   test('maps actor state, controller signals, and visual context to the conversation', () => {
     const attachmentFetches = {
       'prompt:0:0': { status: 'loading' as const },
