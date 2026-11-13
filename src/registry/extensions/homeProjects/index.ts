@@ -1,3 +1,4 @@
+import { withHomeProjectActionStatus } from '@src/lib/homeProjectActions'
 import { selectCommand } from '@src/lib/commandUtils'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import {
@@ -241,7 +242,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       (target) => target.library.id === targetLibraryId
     )
 
-  const serviceImpl: HomeProjectActionsService = {
+  const serviceImpl: Omit<HomeProjectActionsService, 'pendingActions'> = {
     watchRemoteThumbnail: (id) =>
       ctx.valueSpecs
         .get(homeProjectEntriesValueSpec)
@@ -313,9 +314,6 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         })
       ) {
         const message = `Project with title "${requestedName}" already exists`
-        if (options?.notify !== false) {
-          toast.error(message)
-        }
         return Promise.reject(new Error(message))
       }
 
@@ -427,7 +425,12 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
 
   return {
     id: 'home-projects.actions',
-    providesServices: [provideService(homeProjectActionsService, serviceImpl)],
+    providesServices: [
+      provideService(
+        homeProjectActionsService,
+        withHomeProjectActionStatus(serviceImpl)
+      ),
+    ],
   }
 }, 'home-projects.actions')
 

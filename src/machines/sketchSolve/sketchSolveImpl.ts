@@ -114,7 +114,13 @@ export type SpawnToolActor = <K extends EquipTool>(
   }
 ) => ActorRefFrom<(typeof equipTools)[K]>
 
+export type SketchSourceChangedEvent = {
+  type: 'sketch source changed'
+  data: { sketchNames: readonly string[] }
+}
+
 export type SketchSolveMachineEvent =
+  | SketchSourceChangedEvent
   | { type: 'exit' }
   | { type: 'escape' }
   | { type: 'pick hovered tool' }

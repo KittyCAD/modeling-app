@@ -101,6 +101,10 @@ describe('rectUtils.createDraftRectangle', () => {
   it('adds center rectangle construction geometry and constraints in center mode', async () => {
     const rustContext = createMockRustContext()
     const kclManager = createMockKclManager()
+    const ready = Promise.withResolvers<undefined>()
+    const prepare = vi
+      .spyOn(rustContext, 'prepareForSketchInsertion')
+      .mockReturnValue(ready.promise)
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const addSegmentMock = vi.mocked(rustContext.addSegment)
     // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -169,13 +173,18 @@ describe('rectUtils.createDraftRectangle', () => {
       }
     )
 
-    const result = await createDraftRectangle({
+    const pending = createDraftRectangle({
       rustContext,
       kclManager,
       sketchId: 7,
       mode: 'center',
       origin: [12, 8],
     })
+    await Promise.resolve()
+    expect(addSegmentMock).not.toHaveBeenCalled()
+    ready.resolve(undefined)
+    const result = await pending
+    expect(prepare).toHaveBeenCalledOnce()
 
     expect(addSegmentMock).toHaveBeenCalledTimes(7)
     expect(addConstraintMock).toHaveBeenCalledTimes(15)

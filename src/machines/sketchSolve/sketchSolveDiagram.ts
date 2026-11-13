@@ -500,11 +500,59 @@ export const sketchSolveMachine = setup({
       description:
         'the outside world can request that sketch mode exit, but it needs to handle its own teardown first.',
     },
-    'update sketch outcome': {
-      actions: 'update sketch outcome',
-      description:
-        'Updates the sketch execution outcome in the context when tools complete operations',
+    'sketch source changed': {
+      guard: ({ context, event }) => {
+        const sketch =
+          context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+            context.sketchId
+          ]
+        return (
+          sketch?.kind.type === 'Sketch' &&
+          Boolean(sketch.label) &&
+          !event.data.sketchNames.includes(sketch.label)
+        )
+      },
+      target: '#Sketch Solve Mode.exiting',
+      actions: [
+        'clear hover callbacks',
+        'clear draft entities',
+        'send tool unequipped to parent',
+      ],
     },
+    'update sketch outcome': [
+      {
+        guard: ({ context, event }) => {
+          const previous =
+            context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+              context.sketchId
+            ]
+          const current =
+            event.data.sceneGraphDelta.new_graph.objects[context.sketchId]
+          return (
+            previous?.kind.type === 'Sketch' &&
+            (current?.kind.type !== 'Sketch' ||
+              current.label !== previous.label)
+          )
+        },
+        target: '#Sketch Solve Mode.exiting',
+        // Rust already replaced the file. Its old draft IDs must never be used
+        // to delete objects or recast source into the refreshed document.
+        actions: [
+          ({ context, event }) =>
+            context.kclManager.syncSketchSolveOutcome(
+              event.data.sourceDelta.text,
+              event.data.sceneGraphDelta
+            ),
+          'clear hover callbacks',
+          'clear draft entities',
+          'send tool unequipped to parent',
+        ],
+      },
+      {
+        actions: 'update sketch outcome',
+        description: 'Refreshes the active sketch while it still exists.',
+      },
+    ],
     'set draft entities': {
       actions: 'set draft entities',
       description:
