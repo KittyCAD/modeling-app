@@ -405,11 +405,7 @@ export default defineConfig([
   },
   {
     files: ['packages/ui-components/**/*.{ts,tsx}'],
-    plugins: { zds: zdsPlugin, '@typescript-eslint': typescriptEslint },
     languageOptions: {
-      parser: tsParser,
-      ecmaVersion: 'latest',
-      sourceType: 'module',
       parserOptions: { project: ['./packages/ui-components/tsconfig.json'] },
     },
   },
@@ -421,8 +417,12 @@ export default defineConfig([
     },
   },
   {
-    files: ['packages/plankton/src/**/*.{ts,tsx}'],
+    files: [
+      'packages/plankton/src/**/*.{ts,tsx}',
+      'packages/ui-components/src/web-components/feature-tree/feature-tree-model.ts',
+    ],
     rules: {
+      // These synchronous validation APIs reject malformed graph structures.
       'suggest-no-throw/suggest-no-throw': 'off',
     },
   },
@@ -451,13 +451,18 @@ export default defineConfig([
     },
     rules: { 'zds/prefer-theme-utilities': 'warn' },
   },
+  {
+    files: [
+      'packages/ui-components/src/web-components/feature-tree-row/feature-tree-row.ts',
+    ],
+    rules: {
+      // Lit binds declarative event handlers to their component instance.
+      '@typescript-eslint/unbound-method': 'off',
+    },
+  },
   // Disjoint scopes prevent a privileged owner from disabling unrelated rules.
   ...[
     { files: ['**/*.{ts,tsx}'], syntax: restrictedSyntax },
-    {
-      files: ['packages/ui-components/src/web-components/**/*.{ts,tsx}'],
-      syntax: ['error'],
-    },
     { files: ['**/*.{js,jsx}'], syntax: ['error'] },
     ...wasmOwners.map((owner) => ({
       files: [owner],
