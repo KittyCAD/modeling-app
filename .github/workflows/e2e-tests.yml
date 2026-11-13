@@ -232,22 +232,26 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shardIndex: [1, 2]
-        shardTotal: [2]
+        shardIndex: [1, 2, 3]
+        shardTotal: [3]
         config:
           - os: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
-            label: linux, chrome
+            label: linux+chrome
             test_script: test:e2e:web
             playwright_cache_path: ~/.cache/ms-playwright
-          - os: namespace-profile-macos-8-cores
-            label: macos, webkit
-            test_script: test:e2e:web:webkit
-            playwright_cache_path: ~/Library/Caches/ms-playwright
-            optional: true # WebKit coverage is non-blocking for external callers
           - os: namespace-profile-windows-8-cores
-            label: windows, chrome
+            label: windows+chrome
             test_script: test:e2e:web
             playwright_cache_path: ~/AppData/Local/ms-playwright
+        include:
+          - shardIndex: 1
+            shardTotal: 1
+            config:
+              os: namespace-profile-macos-8-cores
+              label: macos+webkit
+              test_script: test:e2e:web:webkit
+              playwright_cache_path: ~/Library/Caches/ms-playwright
+              optional: true # WebKit coverage is non-blocking for external callers
 
     steps:
       - uses: actions/create-github-app-token@v3
@@ -355,8 +359,8 @@ jobs:
       matrix:
         os:
           - namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
-        shardIndex: [1, 2, 3, 4, 5, 6, 7, 8]
-        shardTotal: [8]
+        shardIndex: [1, 2, 3, 4, 5, 6, 7]
+        shardTotal: [7]
         playwright_cache_path:
           - ~/.cache/ms-playwright
         include:
