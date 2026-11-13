@@ -1,0 +1,9 @@
+# Share one sketch-block implementation across KCL versions
+
+Sketch blocks in every supported KCL version use the new Rust implementation and one shared representation, exposed to TypeScript as one kind of sketch block. The program's KCL version controls behavioral differences within that implementation. TypeScript consumers may be updated for the shared representation. This preserves historical sketch semantics without maintaining separate legacy and generalized implementations, Rust structs, or TypeScript variants.
+
+Before changing the current sketch implementation or representation, add regression tests that pin its observable behavior and establish a passing baseline. Retain those tests through the refactor with explicit historical cases: no version declaration, `1.0`, `2.0`, `3.0-preview`, and `3.0`. Coverage includes name resolution, return and unwind cleanup, call recognition and argument behavior, result bindings and metadata, and sketch-specific restrictions. The baseline also covers the contracts used by sketch editing: serialization and formatting round trips, source lookup and path traversal, and editing state. Assertions should describe observable behavior so the shared representation can change without retaining an old AST shape.
+
+This test-only stage precedes the shared implementation and TypeScript migration; new generalized KCL 4 behavior receives separate coverage. Capturing the current behavior first prevents the refactor from redefining its own compatibility expectations.
+
+The user-facing feature remains limited to KCL 4, including `4.0-preview`, and later, as recorded in [the KCL language decision](../../rust/dev-docs/adr/0001-kcl-4-generalized-blocks.md). The feature originates in the [KCL Blocks RFC, kcl-experiments PR #32](https://github.com/KittyCAD/kcl-experiments/pull/32); its Future Possibilities remain outside this project's scope.
