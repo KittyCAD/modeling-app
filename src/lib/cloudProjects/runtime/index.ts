@@ -4,7 +4,7 @@ import {
   encodeCloudDirectories,
 } from '@src/lib/cloudProjects/runtime/directories'
 import { PROJECT_IMAGE_NAME } from '@src/lib/constants'
-import { signal } from '@preact/signals-core'
+import { computed, signal } from '@preact/signals-core'
 import { v4 } from 'uuid'
 import * as api from '@src/lib/cloudProjects/runtime/api'
 import {
@@ -61,6 +61,7 @@ export function createCloudProjectRuntime(
   const saves = signal<ReadonlyMap<string, CloudSaveState>>(new Map())
   const projects = signal<readonly RemoteProjectSummary[]>([])
   let listGeneration = 0
+  const pendingProjectLists = signal(0)
   const opened = new Map<string, OpenCloudProject>()
   // Update checks capture these per-project counters and discard downloaded
   // snapshots if edits or acknowledged revision changes advance them.
@@ -571,16 +572,22 @@ export function createCloudProjectRuntime(
     ...fs,
     root,
     projects,
+    projectsLoading: computed(() => pendingProjectLists.value > 0),
     listProjects: async () => {
       const generation = ++listGeneration
       const requestConfig = config()
-      const result = await api.listRemoteProjects(requestConfig)
-      if (
-        generation === listGeneration &&
-        requestConfig.accountId === config().accountId
-      )
-        projects.value = result
-      return result
+      pendingProjectLists.value = pendingProjectLists.peek() + 1
+      try {
+        const result = await api.listRemoteProjects(requestConfig)
+        if (
+          generation === listGeneration &&
+          requestConfig.accountId === config().accountId
+        )
+          projects.value = result
+        return result
+      } finally {
+        pendingProjectLists.value = pendingProjectLists.peek() - 1
+      }
     },
     exists: async (id: string) => {
       try {

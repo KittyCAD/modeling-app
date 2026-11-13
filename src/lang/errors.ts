@@ -29,7 +29,7 @@ export class KCLError extends Error {
   artifactGraph: ArtifactGraph
   filenames: { [x: number]: ModulePath | undefined }
   defaultPlanes: DefaultPlanes | null
-  /** The engine scene generation after the failed run, or null when the error did not come from a run. */
+  /** Rust-owned scene generation when known, including unchanged scenes after parse errors. */
   engineSceneGeneration: number | null
 
   constructor(

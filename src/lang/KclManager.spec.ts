@@ -1,3 +1,8 @@
+import { effect, signal } from '@preact/signals-core'
+import { createProjectForTest } from '@src/unitTestUtils'
+import * as screenshot from '@src/lib/screenshot'
+import * as desktop from '@src/lib/desktop'
+import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { Diagnostic } from '@codemirror/lint'
 import { EditorView } from '@codemirror/view'
 import type {
@@ -17,12 +22,15 @@ import {
   operationsStateField,
   setOperationsEffect,
 } from '@src/editor/plugins/operations'
-import { KclManager } from '@src/lang/KclManager'
+import { KclManager, KclManagerEvents } from '@src/lang/KclManager'
 import { KCLError } from '@src/lang/errors'
+import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
+import { Connection } from '@src/lib/engineConnection/connection'
 import { File } from '@src/lib/projectSession'
 import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { Themes } from '@src/lib/theme'
+import * as UserFeatures from '@src/machines/userFeaturesMachine'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { waitFor } from 'xstate'
 
@@ -33,6 +41,9 @@ const toastMocks = vi.hoisted(() => ({
   success: vi.fn(),
   error: vi.fn(),
 }))
+
+// Headless editor tests must not bootstrap the global browser App.
+vi.mock('@src/lib/boot', () => ({ useApp: vi.fn(), useSingletons: vi.fn() }))
 
 vi.mock('@src/lib/fileSystem/operationErrors', () => ({
   reportFileOperationError: clientErrorMocks.reportFileOperationError,
@@ -47,7 +58,7 @@ import {
   getLatestDispatchedDiagnostics,
 } from '@src/lang/testHelpers/kclManagerTestHarness'
 import type { Artifact, ArtifactGraph, ExecState } from '@src/lang/wasm'
-import { defaultNodePath, emptyExecState } from '@src/lang/wasm'
+import { defaultNodePath, emptyExecState, parse } from '@src/lang/wasm'
 import { getOperationVariableName } from '@src/lib/operations'
 import { createSceneGraphDelta } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -178,6 +189,123 @@ function enableSketchSolveEditorExecution(kclManager: KclManager) {
   } as unknown as typeof kclManager.engineCommandManager.connection
 }
 
+async function startInterruptibleEditorExecution() {
+  const features = vi
+    .spyOn(UserFeatures, 'waitForUserFeaturesSettled')
+    .mockResolvedValue(undefined)
+  const { app, kclManager } = createKclManagerTestHarness('x = 1')
+  const instance = await kclManager.wasmInstancePromise
+  const ast = await kclManager.safeParse(kclManager.code)
+  if (!ast) expect.fail('Expected the initial KCL to parse')
+  vi.useFakeTimers()
+  const manager = kclManager.engineCommandManager
+  const connection = new Connection({
+    url: 'ws://editor-execution.test',
+    token: '',
+    handleOnDataChannelMessage: vi.fn(),
+    recordShutdownTrigger: () => false,
+    tearDownManager: vi.fn(),
+    rejectPendingCommand: vi.fn(),
+    handleMessage: vi.fn(),
+    getCloudProjectId: () => undefined,
+  })
+  connection.connected = true
+  vi.spyOn(connection, 'send').mockImplementation(() => {})
+  manager.connection = connection
+  manager.started = true
+  const commandId = '00000000-0000-4000-8000-000000000001'
+  const unwind = Promise.withResolvers<undefined>()
+  const latest = Promise.withResolvers<ReturnType<typeof emptyExecState>>()
+  const finalState = { ...emptyExecState(), engineSceneGeneration: 2 }
+  const publishedGenerations: Array<number | null> = []
+  const stopObserving = effect(() => {
+    publishedGenerations.push(kclManager.engineSceneGenerationSignal.value)
+  })
+  const parseFlags: boolean[] = []
+  vi.spyOn(kclManager.rustContext, 'parseForExecution').mockImplementation(
+    async (code) => {
+      parseFlags.push(manager.executionIsStale)
+      return parse(code, instance)
+    }
+  )
+  let active = 0
+  let maximumActive = 0
+  let executions = 0
+  const execute = vi
+    .spyOn(kclManager.rustContext, 'execute')
+    .mockImplementation(async () => {
+      active += 1
+      maximumActive = Math.max(maximumActive, active)
+      const first = executions++ === 0
+      try {
+        if (!first) return await latest.promise
+        try {
+          await manager.sendModelingCommandFromWasm(
+            commandId,
+            '[0,0,0]',
+            JSON.stringify({
+              type: 'modeling_cmd_req',
+              cmd_id: commandId,
+              cmd: { type: 'begin_execution', enable_render: true },
+            }),
+            '{}'
+          )
+          return finalState
+        } catch (failure) {
+          // Model Wasm unwinding after the real pending command is rejected.
+          await unwind.promise
+          const partial = emptyExecState()
+          throw new KCLError(
+            'engine',
+            String(failure),
+            [0, 0, 0],
+            [],
+            [],
+            partial.variables,
+            partial.operations,
+            partial.artifactGraph,
+            partial.filenames,
+            null,
+            99
+          )
+        }
+      } finally {
+        active -= 1
+      }
+    })
+  const initialExecution = kclManager.executeAst({ ast })
+  await vi.waitFor(() =>
+    expect(manager.pendingCommands).toHaveProperty(commandId)
+  )
+  return {
+    kclManager,
+    manager,
+    commandId,
+    execute,
+    initialExecution,
+    unwind,
+    latest,
+    finalState,
+    parseFlags,
+    publishedGenerations,
+    maximumActive: () => maximumActive,
+    async dispose() {
+      manager.rejectAllModelingCommands(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
+      unwind.resolve(undefined)
+      latest.resolve(finalState)
+      await Promise.allSettled([
+        initialExecution,
+        kclManager.flushPendingEditorExecution(),
+      ])
+      stopObserving()
+      manager.started = false
+      kclManager.close()
+      app.dispose()
+      features.mockRestore()
+    },
+  }
+}
+
 afterEach(() => {
   vi.clearAllMocks()
   vi.clearAllTimers()
@@ -238,6 +366,44 @@ describe('KclManager line wrapping settings', () => {
           afterClose.textEditor.textWrapping
       )
       expect(updateWrapping).not.toHaveBeenCalled()
+    } finally {
+      kclManager.close()
+      app.dispose()
+    }
+  })
+})
+
+describe('KclManager default plane visibility', () => {
+  it.each([
+    { visible: true, all: false },
+    { visible: false, all: false },
+    { visible: true, all: true },
+    { visible: false, all: true },
+  ])('updates the requested planes together: %j', async ({ visible, all }) => {
+    const { app, kclManager } = createKclManagerTestHarness('')
+    const planes = {
+      xy: 'xy-plane',
+      yz: 'yz-plane',
+      xz: 'xz-plane',
+      negXy: 'negative-xy',
+      negYz: 'negative-yz',
+      negXz: 'negative-xz',
+    }
+    const hidden = vi
+      .spyOn(kclManager.engineCommandManager, 'setObjectsHidden')
+      .mockResolvedValue(undefined)
+    const individual = vi
+      .spyOn(kclManager.engineCommandManager, 'setPlaneHidden')
+      .mockResolvedValue(undefined)
+    vi.spyOn(kclManager, 'defaultPlanes', 'get').mockReturnValue(planes)
+    try {
+      await (visible ? kclManager.showPlanes(all) : kclManager.hidePlanes(all))
+      const ids = [planes.xy, planes.yz, planes.xz]
+      if (all) ids.push(planes.negXy, planes.negYz, planes.negXz)
+      expect(hidden).toHaveBeenCalledExactlyOnceWith(
+        new Map(ids.map((id) => [id, !visible]))
+      )
+      expect(individual).not.toHaveBeenCalled()
     } finally {
       kclManager.close()
       app.dispose()
@@ -544,7 +710,557 @@ describe('KclManager settings ownership', () => {
   })
 })
 
+describe('KclManager storage checks before sketch insertion', () => {
+  async function setup() {
+    const { app, kclManager } = createKclManagerTestHarness()
+    await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+    await KclManager.fromFile(
+      new File('/project/main.kcl', kclManager.textFileIO),
+      kclManager.systemDeps,
+      kclManager,
+      'width = 1',
+      { shouldSyncRustOnOpen: false }
+    )
+    const schedule = vi
+      .spyOn(kclManager, 'scheduleCurrentCodeExecution')
+      .mockImplementation(() => {})
+    const execute = vi
+      .spyOn(kclManager, 'flushPendingEditorExecution')
+      .mockResolvedValue()
+    return { app, kclManager, schedule, execute }
+  }
+
+  it('preserves the live sketch and its selection when storage is unchanged', async () => {
+    const { app, kclManager, schedule, execute } = await setup()
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('width = 1')
+    const send = vi.spyOn(kclManager, 'sendModelingEvent')
+    try {
+      await kclManager.refreshFileBeforeSketchInsertion()
+      expect(schedule).not.toHaveBeenCalled()
+      expect(execute).not.toHaveBeenCalled()
+      expect(send).not.toHaveBeenCalled()
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it.each(['local', 'cloud'] as const)(
+    'uses newer %s contents before generating geometry after a seven-second read',
+    async (kind) => {
+      const { app, kclManager, schedule, execute } = await setup()
+      vi.useFakeTimers()
+      const gate = Promise.withResolvers<string>()
+      const read = vi
+        .spyOn(kclManager.textFileIO, 'read')
+        .mockImplementation(() =>
+          kind === 'local' ? gate.promise : Promise.resolve('width = 2')
+        )
+      const write = vi.spyOn(kclManager.textFileIO, 'write')
+      const refresh = vi.fn(async () => {
+        await gate.promise
+      })
+      try {
+        const ready = kclManager.refreshFileBeforeSketchInsertion(
+          kind === 'cloud' ? refresh : undefined
+        )
+        await vi.advanceTimersByTimeAsync(7_000)
+        expect(kclManager.code).toBe('width = 1')
+        expect(execute).not.toHaveBeenCalled()
+        if (kind === 'cloud') {
+          expect(refresh).toHaveBeenCalledOnce()
+          expect(read).not.toHaveBeenCalled()
+        }
+        gate.resolve('width = 2')
+        await ready
+        expect(kclManager.code).toBe('width = 2')
+        expect(kclManager.hasUnsavedLocalChanges()).toBe(false)
+        expect(schedule).toHaveBeenCalledWith(false)
+        expect(execute).toHaveBeenCalledOnce()
+        expect(write).not.toHaveBeenCalled()
+      } finally {
+        gate.resolve('width = 2')
+        app.dispose()
+        vi.useRealTimers()
+      }
+    }
+  )
+
+  it.each(['local', 'cloud'] as const)(
+    'keeps unsaved %s sketch source available while storage is slow',
+    async (kind) => {
+      const { app, kclManager, schedule } = await setup()
+      vi.useFakeTimers()
+      const gate = Promise.withResolvers<string>()
+      const read = vi
+        .spyOn(kclManager.textFileIO, 'read')
+        .mockReturnValue(gate.promise)
+      const write = vi.spyOn(kclManager.textFileIO, 'write')
+      const refresh = vi.fn(async () => {
+        await gate.promise
+      })
+      kclManager.updateCodeEditor('width = 2', {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      })
+      let ready = false
+      const insertion = kclManager
+        .refreshFileBeforeSketchInsertion(
+          kind === 'cloud' ? refresh : undefined
+        )
+        .then(() => {
+          ready = true
+        })
+      try {
+        await vi.advanceTimersByTimeAsync(7_000)
+        expect(ready).toBe(true)
+        expect(kclManager.code).toBe('width = 2')
+        expect(kclManager.hasUnsavedLocalChanges()).toBe(true)
+        expect(read).not.toHaveBeenCalled()
+        expect(write).not.toHaveBeenCalled()
+        expect(refresh).not.toHaveBeenCalled()
+        expect(schedule).not.toHaveBeenCalled()
+      } finally {
+        gate.resolve('width = 1')
+        await insertion.catch(() => undefined)
+        app.dispose()
+        vi.useRealTimers()
+      }
+    }
+  )
+
+  it('synchronizes newer text already loaded by a watcher before generating geometry', async () => {
+    const { app, kclManager, schedule, execute } = await setup()
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('width = 2')
+    try {
+      kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
+        filePath: kclManager.path,
+        nextContent: 'width = 2',
+      })
+      await kclManager.refreshFileBeforeSketchInsertion()
+      expect(schedule).toHaveBeenCalledWith(false)
+      expect(execute).toHaveBeenCalledOnce()
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('stops before refreshing storage if existing edits could not be saved', async () => {
+    const { app, kclManager, schedule } = await setup()
+    vi.spyOn(kclManager, 'flushWriteToFile').mockResolvedValue(false)
+    const refresh = vi.fn()
+    const read = vi.spyOn(kclManager.textFileIO, 'read')
+    try {
+      await expect(
+        kclManager.refreshFileBeforeSketchInsertion(refresh)
+      ).rejects.toThrow('Save your current edits')
+      expect(refresh).not.toHaveBeenCalled()
+      expect(read).not.toHaveBeenCalled()
+      expect(schedule).not.toHaveBeenCalled()
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it.each(['typing', 'switching', 'closing', 'read failure'] as const)(
+    'cancels insertion on %s during the storage check',
+    async (change) => {
+      const { app, kclManager, schedule, execute } = await setup()
+      const gate = Promise.withResolvers<string>()
+      const read = vi
+        .spyOn(kclManager.textFileIO, 'read')
+        .mockReturnValue(gate.promise)
+      try {
+        const ready = kclManager.refreshFileBeforeSketchInsertion()
+        const rejected = expect(ready).rejects.toThrow()
+        await vi.waitFor(() => expect(read).toHaveBeenCalledOnce())
+        if (change === 'typing')
+          kclManager.updateCodeEditor('width = 3', {
+            shouldExecute: false,
+            shouldWriteToDisk: false,
+          })
+        else if (change === 'switching') kclManager.path = '/project/other.kcl'
+        else if (change === 'closing') kclManager.close()
+        if (change === 'read failure') gate.reject(new Error('Read failed'))
+        else gate.resolve('width = 2')
+        await rejected
+        expect(kclManager.code).toBe(
+          change === 'typing' ? 'width = 3' : 'width = 1'
+        )
+        expect(schedule).not.toHaveBeenCalled()
+        expect(execute).not.toHaveBeenCalled()
+      } finally {
+        gate.resolve('width = 2')
+        app.dispose()
+      }
+    }
+  )
+})
+
+describe('KclManager deferred editor ownership', () => {
+  it.each(['closed', 'different project'])(
+    'drops a delayed request after its owner is %s',
+    async (state) => {
+      vi.useFakeTimers()
+      const { app, kclManager } = createKclManagerTestHarness()
+      const executeCode = vi
+        .spyOn(kclManager, 'executeCode')
+        .mockResolvedValue(undefined)
+      try {
+        kclManager.scheduleCurrentCodeExecution(false)
+        await vi.advanceTimersByTimeAsync(999)
+        expect(executeCode).not.toHaveBeenCalled()
+
+        if (state === 'closed') kclManager.close()
+        else {
+          kclManager.systemDeps.projectPath = signal('other-project')
+        }
+        await vi.advanceTimersByTimeAsync(1)
+        await kclManager.flushPendingEditorExecution()
+        expect(executeCode).not.toHaveBeenCalled()
+      } finally {
+        app.dispose()
+      }
+    }
+  )
+
+  it.each(['source.kcl', 'destination.kcl'])(
+    'does not execute an old request after reopening %s without Rust sync',
+    async (destination) => {
+      const code = '@settings(kclVersion = 3.0)\nx = 2\n'
+      const { app, kclManager } = createKclManagerTestHarness(code)
+      try {
+        kclManager.path = 'source.kcl'
+        const ast = await kclManager.safeParse(code)
+        if (ast === null)
+          throw new Error('Expected the queued file fixture to parse')
+        kclManager.engineCommandManager.started = true
+        const pending = createDeferred<typeof kclManager.execState>()
+        const execute = vi
+          .spyOn(kclManager.rustContext, 'execute')
+          .mockReturnValueOnce(pending.promise)
+        const executeCode = vi
+          .spyOn(kclManager, 'executeCode')
+          .mockResolvedValue(undefined)
+        vi.spyOn(kclManager, 'flushWriteToFile').mockResolvedValue(true)
+
+        const rendering = kclManager.executeAst({ ast, executionId: 7002 })
+        await vi.waitFor(() => expect(execute).toHaveBeenCalledOnce())
+        kclManager.scheduleCurrentCodeExecution(false)
+        await KclManager.fromFile(
+          new File(destination, kclManager.textFileIO),
+          kclManager.systemDeps,
+          kclManager,
+          code,
+          { shouldSyncRustOnOpen: false }
+        )
+        pending.resolve(kclManager.execState)
+        await rendering
+        await kclManager.flushPendingEditorExecution()
+
+        expect(executeCode).not.toHaveBeenCalled()
+        expect(execute).toHaveBeenCalledOnce()
+        expect(kclManager.path).toBe(destination)
+        expect(kclManager.code).toBe(code)
+      } finally {
+        app.dispose()
+      }
+    }
+  )
+})
+
+describe('KclManager delayed artifact publication', () => {
+  function setupPublication(artifactGraph: ArtifactGraph) {
+    const fixture = createKclManagerTestHarness()
+    const { kclManager } = fixture
+    kclManager.engineCommandManager.started = true
+    const publish = vi
+      .spyOn(kclManager.engineCommandManager, 'modelingSend')
+      .mockImplementation(() => {})
+    vi.spyOn(kclManager, 'defaultPlanes', 'get').mockReturnValue({
+      xy: 'xy-plane',
+      yz: 'yz-plane',
+      xz: 'xz-plane',
+      negXy: 'negative-xy',
+      negYz: 'negative-yz',
+      negXz: 'negative-xz',
+    })
+    const execute = vi
+      .spyOn(kclManager.rustContext, 'execute')
+      .mockResolvedValue({ ...kclManager.execState, artifactGraph })
+    return { ...fixture, publish, execute }
+  }
+
+  it.each([false, true])(
+    'retains the 200ms event delay for a populated=%s graph',
+    async (populated) => {
+      vi.useFakeTimers()
+      const graph = populated
+        ? createArtifactGraphWithPreviousFileEntry()
+        : defaultArtifactGraph()
+      const { app, kclManager, publish } = setupPublication(graph)
+      try {
+        await kclManager.executeAst({ ast: createEmptyAst() })
+        expect(kclManager.artifactGraph).toBe(graph)
+        expect(publish).not.toHaveBeenCalled()
+        await vi.advanceTimersByTimeAsync(199)
+        expect(publish).not.toHaveBeenCalled()
+        await vi.advanceTimersByTimeAsync(1)
+        expect(publish.mock.calls).toEqual([
+          [
+            {
+              type: populated
+                ? 'Artifact graph populated'
+                : 'Artifact graph emptied',
+            },
+          ],
+          [{ type: 'Artifact graph initialized' }],
+        ])
+      } finally {
+        app.dispose()
+      }
+    }
+  )
+
+  it.each(['closed', 'different file', 'different project', 'new connection'])(
+    'does not publish a delayed graph after its owner has a %s state',
+    async (state) => {
+      vi.useFakeTimers()
+      const { app, kclManager, publish } = setupPublication(
+        createArtifactGraphWithPreviousFileEntry()
+      )
+      try {
+        await kclManager.executeAst({ ast: createEmptyAst() })
+        if (state === 'closed') kclManager.close()
+        else if (state === 'different file') kclManager.path = 'other.kcl'
+        else if (state === 'different project') {
+          kclManager.systemDeps.projectPath = signal('other-project')
+        } else {
+          // Constructing a Connection does not open a transport.
+          kclManager.engineCommandManager.connection = new Connection({
+            url: 'ws://localhost',
+            token: '',
+            handleOnDataChannelMessage: () => {},
+            recordShutdownTrigger: () => false,
+            tearDownManager: () => {},
+            rejectPendingCommand: () => {},
+            handleMessage: () => {},
+            getCloudProjectId: () => undefined,
+          })
+        }
+        await vi.advanceTimersByTimeAsync(200)
+        expect(publish).not.toHaveBeenCalled()
+      } finally {
+        app.dispose()
+      }
+    }
+  )
+
+  it.each([false, true])(
+    'publishes only the latest graph update when the same graph is reused=%s',
+    async (reuseGraph) => {
+      vi.useFakeTimers()
+      const graph = createArtifactGraphWithPreviousFileEntry()
+      const { app, kclManager, publish, execute } = setupPublication(graph)
+      try {
+        await kclManager.executeAst({ ast: createEmptyAst() })
+        const nextGraph = reuseGraph ? graph : defaultArtifactGraph()
+        execute.mockResolvedValue({
+          ...kclManager.execState,
+          artifactGraph: nextGraph,
+        })
+        await kclManager.executeAst({ ast: createEmptyAst() })
+        await vi.advanceTimersByTimeAsync(200)
+        expect(publish.mock.calls).toEqual([
+          [
+            {
+              type: reuseGraph
+                ? 'Artifact graph populated'
+                : 'Artifact graph emptied',
+            },
+          ],
+          [{ type: 'Artifact graph initialized' }],
+        ])
+      } finally {
+        app.dispose()
+      }
+    }
+  )
+})
+
 describe('KclManager live operation updates', () => {
+  it.each([
+    { dirty: false, connected: false },
+    { dirty: true, connected: false },
+    { dirty: false, connected: true },
+    { dirty: true, connected: true },
+  ])(
+    'refreshes cloud contents without rendering through a disconnected engine: %j',
+    async ({ dirty, connected }) => {
+      const { app } = createKclManagerTestHarness()
+      const metadata = createProjectForTest('/project')
+      metadata.cloudProjectId = 'remote'
+      metadata.children = [
+        { name: 'main.kcl', path: metadata.default_file, children: null },
+      ]
+      const read = vi
+        .spyOn(app.projectSession.textFileIO, 'read')
+        .mockResolvedValue('')
+      const getProjectInfo = vi
+        .spyOn(desktop, 'getProjectInfo')
+        .mockResolvedValue(metadata)
+      const execution = Promise.withResolvers<undefined>()
+      try {
+        const project = await app.openProject(metadata)
+        const editor = await project.openEditor(
+          metadata.default_file,
+          undefined,
+          '',
+          false
+        )
+        project.executingPath = editor.path
+        editor.engineCommandManager.connection = {
+          connected,
+        } as typeof editor.engineCommandManager.connection
+        if (dirty)
+          editor.updateCodeEditor('local draft', {
+            shouldExecute: false,
+            shouldWriteToDisk: false,
+          })
+        read.mockResolvedValue('downloaded source')
+        const write = vi.spyOn(editor.textFileIO, 'write')
+        const open = vi
+          .spyOn(editor.rustContext, 'sendOpenProject')
+          .mockResolvedValue()
+        const execute = vi
+          .spyOn(editor, 'executeCode')
+          .mockReturnValue(execution.promise)
+        await project.reloadFilesFromStorage(() => true)
+        expect(getProjectInfo).toHaveBeenCalledWith(
+          app.fileOperations,
+          metadata.path,
+          expect.anything(),
+          { createMissingEntrypoint: false }
+        )
+        expect(open).toHaveBeenCalledOnce()
+        expect(open).toHaveBeenCalledWith(
+          editor.path,
+          expect.arrayContaining([
+            expect.objectContaining({
+              path: editor.path,
+              text: dirty ? 'local draft' : 'downloaded source',
+            }),
+          ])
+        )
+        expect(editor.code).toBe(dirty ? 'local draft' : 'downloaded source')
+        if (connected)
+          expect(execute).toHaveBeenCalledWith(editor.code, {
+            updateThumbnail: false,
+          })
+        else expect(execute).not.toHaveBeenCalled()
+        expect(write).not.toHaveBeenCalled()
+      } finally {
+        execution.resolve(undefined)
+        getProjectInfo.mockRestore()
+        read.mockRestore()
+        app.dispose()
+      }
+    }
+  )
+
+  it.each([
+    { cloud: false, localRenderer: false },
+    { cloud: true, localRenderer: false },
+    { cloud: false, localRenderer: true },
+    { cloud: true, localRenderer: true },
+  ])(
+    'routes generated thumbnails through the project session (cloud: $cloud, local renderer: $localRenderer)',
+    async ({ cloud, localRenderer }) => {
+      const { app } = createKclManagerTestHarness()
+      const originalDirectory = projectFsManager.dir
+      const thumbnail = vi
+        .spyOn(screenshot, 'createProjectThumbnail')
+        .mockImplementation(() => {})
+      const read = vi
+        .spyOn(app.projectSession.textFileIO, 'read')
+        .mockResolvedValue('')
+      try {
+        const metadata = {
+          ...createProjectForTest('/project'),
+          cloudProjectId: cloud ? 'remote' : undefined,
+        }
+        const project = await app.openProject(metadata)
+        const editor = await project.openEditor(
+          metadata.default_file,
+          undefined,
+          '',
+          false
+        )
+        projectFsManager.dir = metadata.path
+        editor.engineCommandManager.started = true
+        vi.spyOn(
+          editor.engineCommandManager,
+          'geometryOnly',
+          'get'
+        ).mockReturnValue(localRenderer)
+        vi.spyOn(editor.rustContext, 'execute').mockResolvedValue(
+          editor.execState
+        )
+        const edit = (code: string) =>
+          editor.updateCodeEditor(code, {
+            shouldExecute: false,
+            shouldWriteToDisk: false,
+          })
+        const onExecutionDone = vi.fn(() => {
+          expect(editor.isExecuting).toBe(false)
+        })
+        editor.addEventListener('execution-done', onExecutionDone)
+        edit('@settings(kclVersion = 3.0)\nwidth = 1\n')
+        await editor.executeAst({ ast: createEmptyAst(), executionId: 101 })
+        expect(onExecutionDone).toHaveBeenCalledOnce()
+        const capture = editor.captureProjectThumbnail
+        expect(capture).toEqual(expect.any(Function))
+        if (localRenderer) {
+          expect(thumbnail).not.toHaveBeenCalled()
+          capture?.(document.createElement('canvas'))
+        }
+        expect(thumbnail).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({ writeThumbnail: expect.any(Function) })
+        )
+        const { isCurrent } = thumbnail.mock.calls[0][0]
+        expect(isCurrent()).toBe(true)
+        thumbnail.mockClear()
+        await editor.executeAst({ ast: createEmptyAst() })
+        expect(thumbnail).not.toHaveBeenCalled()
+        expect(editor.captureProjectThumbnail).toBeUndefined()
+        edit('@settings(kclVersion = 3.0)\nwidth = 2\n')
+        await editor.executeAst({
+          ast: createEmptyAst(),
+          updateThumbnail: false,
+        })
+        expect(thumbnail).not.toHaveBeenCalled()
+        expect(editor.captureProjectThumbnail).toBeUndefined()
+        editor.path = '/project/other.kcl'
+        expect(isCurrent()).toBe(false)
+        await editor.executeAst({ ast: createEmptyAst() })
+        expect(thumbnail).not.toHaveBeenCalled()
+        project.projectIORefSignal.value = {
+          ...metadata,
+          default_file: editor.path,
+        }
+        edit('@settings(kclVersion = 3.0)\nwidth = 3\n')
+        await editor.executeAst({ ast: createEmptyAst() })
+        if (localRenderer)
+          editor.captureProjectThumbnail?.(document.createElement('canvas'))
+        expect(thumbnail).toHaveBeenCalledOnce()
+      } finally {
+        projectFsManager.dir = originalDirectory
+        thumbnail.mockRestore()
+        read.mockRestore()
+        app.dispose()
+      }
+    }
+  )
+
   it('finishes execution when a live UI publication throws', async () => {
     const { kclManager } = createKclManagerTestHarness()
     const liveOperations = liveOperationTestApi(kclManager)
@@ -628,6 +1344,18 @@ describe('KclManager resolved views', () => {
     vi.spyOn(instance.Context.prototype, 'execute').mockResolvedValueOnce(delta)
     await kclManager.executeAst({ ast: createEmptyAst() })
   }
+
+  it('notifies renderer consumers only after execution becomes idle', async () => {
+    const executionStates: boolean[] = []
+    const onComplete = () => executionStates.push(kclManager.isExecuting)
+    kclManager.addEventListener(KclManagerEvents.ExecutionDone, onComplete)
+    try {
+      await executeActualViews(resolvedViews('rendered-object'))
+      expect(executionStates).toEqual([false])
+    } finally {
+      kclManager.removeEventListener(KclManagerEvents.ExecutionDone, onComplete)
+    }
+  })
 
   it('stores actual results and replaces them with a resolved empty Default', async () => {
     expect(kclManager.execState.namedViews).toBeNull()
@@ -1099,7 +1827,7 @@ describe('KclManager file switching', () => {
       expect(previousEditorArtifactGraph.size).toBe(1)
     }
 
-    kclManager.switchedFiles = true
+    kclManager.resetForFileSwitch()
 
     expect(kclManager.execState.namedViews).toBeNull()
     expect(kclManager.operationsByModule).toStrictEqual(
@@ -1563,102 +2291,97 @@ describe('KclManager diagnostics', () => {
     expect(flushCompleted).toBe(true)
   })
 
-  it('waits for a direct editor execution queued behind an active render', async () => {
-    const { kclManager } = createKclManagerTestHarness('x = 1')
-    const activeRender = createDeferred<typeof kclManager.execState>()
-    const queuedRender = createDeferred<typeof kclManager.execState>()
-    const finalExecState = { ...kclManager.execState }
-    const editedAst = await kclManager.safeParse('x = 2')
+  it('interrupts an active render and flushes only after the latest direct edit finishes', async () => {
+    const run = await startInterruptibleEditorExecution()
+    try {
+      run.kclManager.editorView.dispatch({
+        changes: { from: 4, to: 5, insert: '2' },
+      })
+      run.kclManager.editorView.dispatch({
+        changes: { from: 4, to: 5, insert: '3' },
+      })
+      let flushed = false
+      const flush = run.kclManager.flushPendingEditorExecution().then(() => {
+        flushed = true
+      })
+      await flushPromises(10)
+      expect(run.manager.pendingCommands).not.toHaveProperty(run.commandId)
+      expect(run.execute).toHaveBeenCalledOnce()
+      expect(flushed).toBe(false)
 
-    if (editedAst === null) {
-      throw new Error('Expected edited KCL to parse')
+      run.unwind.resolve(undefined)
+      await vi.waitFor(() => expect(run.execute).toHaveBeenCalledTimes(2))
+      expect(run.parseFlags).toEqual([false])
+      expect(run.maximumActive()).toBe(1)
+      expect(flushed).toBe(false)
+      expect(run.publishedGenerations).not.toContain(99)
+      run.latest.resolve(run.finalState)
+      await Promise.all([run.initialExecution, flush])
+      expect(run.kclManager.code).toBe('x = 3')
+      expect(run.kclManager.lastSuccessfulCode).toBe('x = 3')
+      expect(run.kclManager.isExecuting).toBe(false)
+      expect(flushed).toBe(true)
+    } finally {
+      await run.dispose()
     }
-
-    kclManager.engineCommandManager.started = true
-    kclManager.engineCommandManager.connection = { connected: true } as any
-    const rustExecuteSpy = vi
-      .spyOn(kclManager.rustContext, 'execute')
-      .mockReturnValueOnce(activeRender.promise)
-      .mockReturnValueOnce(queuedRender.promise)
-    vi.spyOn(kclManager, 'executeCode').mockImplementation(() =>
-      kclManager.executeAst({ ast: editedAst })
-    )
-
-    const render = kclManager.executeAst({
-      ast: createEmptyAst(),
-      executionId: 101,
-    })
-    await vi.waitFor(() => expect(rustExecuteSpy).toHaveBeenCalledTimes(1))
-
-    kclManager.editorView.dispatch({
-      changes: { from: 4, to: 5, insert: '2' },
-    })
-
-    let flushCompleted = false
-    const flush = kclManager.flushPendingEditorExecution().then(() => {
-      flushCompleted = true
-    })
-    await vi.waitFor(() => expect(kclManager.executeIsStale).not.toBeNull())
-    expect(flushCompleted).toBe(false)
-
-    activeRender.resolve(finalExecState)
-    await vi.waitFor(() => expect(rustExecuteSpy).toHaveBeenCalledTimes(2))
-    expect(flushCompleted).toBe(false)
-
-    queuedRender.resolve(finalExecState)
-    await Promise.all([render, flush])
-    expect(flushCompleted).toBe(true)
   })
 
-  it('flushes an edit scheduled while the execution queue is draining', async () => {
-    vi.useFakeTimers()
+  it('clears interruption before parsing a coalesced invalid edit without publishing the old result', async () => {
+    const run = await startInterruptibleEditorExecution()
+    try {
+      run.kclManager.editorView.dispatch({
+        changes: { from: 4, to: 5, insert: '2' },
+      })
+      run.kclManager.editorView.dispatch({
+        changes: { from: 4, to: 5, insert: '' },
+      })
+      const flush = run.kclManager.flushPendingEditorExecution()
+      await flushPromises(10)
+      expect(run.manager.pendingCommands).not.toHaveProperty(run.commandId)
+      run.unwind.resolve(undefined)
+      await Promise.all([run.initialExecution, flush])
 
-    const { kclManager } = createKclManagerTestHarness('x = 1')
-    const queueDrain = createDeferred<undefined>()
-    kclManager.engineCommandManager.connection = {
-      connected: true,
-    } as unknown as typeof kclManager.engineCommandManager.connection
-    const executeCodeSpy = vi
-      .spyOn(kclManager, 'executeCode')
-      .mockResolvedValue(undefined)
-    const waitForExecutionQueueToIdleSpy = vi
-      .spyOn(
-        kclManager as unknown as {
-          waitForExecutionQueueToIdle(): Promise<void>
-        },
-        'waitForExecutionQueueToIdle'
-      )
-      .mockReturnValueOnce(queueDrain.promise)
-      .mockResolvedValueOnce(undefined)
+      expect(run.parseFlags).toEqual([false])
+      expect(run.execute).toHaveBeenCalledOnce()
+      expect(run.maximumActive()).toBe(1)
+      expect(run.kclManager.code).toBe('x = ')
+      expect(run.kclManager.hasParseErrors()).toBe(true)
+      expect(run.kclManager.lastSuccessfulCode).not.toBe('x = 1')
+      expect(run.publishedGenerations).not.toContain(99)
+      expect(run.manager.executionIsStale).toBe(false)
+      expect(run.kclManager.executeIsStale).toBeNull()
+      expect(run.kclManager.isExecuting).toBe(false)
+    } finally {
+      await run.dispose()
+    }
+  })
 
-    kclManager.editorView.dispatch({
-      changes: { from: 4, to: 5, insert: '2' },
-    })
+  it('does not interrupt typing with automatic rendering disabled unless a reload is forced', async () => {
+    const run = await startInterruptibleEditorExecution()
+    try {
+      run.kclManager.setEditorAutomaticallyRender(false)
+      run.kclManager.editorView.dispatch({
+        changes: { from: 4, to: 5, insert: '2' },
+      })
+      await flushPromises(10)
+      expect(run.manager.pendingCommands).toHaveProperty(run.commandId)
+      expect(run.manager.executionIsStale).toBe(false)
+      expect(run.execute).toHaveBeenCalledOnce()
 
-    let flushCompleted = false
-    const flush = kclManager.flushPendingEditorExecution().then(() => {
-      flushCompleted = true
-    })
-    await vi.waitFor(() =>
-      expect(waitForExecutionQueueToIdleSpy).toHaveBeenCalledTimes(1)
-    )
-
-    kclManager.editorView.dispatch({
-      changes: { from: 4, to: 5, insert: '3' },
-    })
-    expect(executeCodeSpy).toHaveBeenCalledTimes(1)
-    expect(flushCompleted).toBe(false)
-
-    queueDrain.resolve(undefined)
-    await flush
-
-    expect(waitForExecutionQueueToIdleSpy).toHaveBeenCalledTimes(2)
-    expect(executeCodeSpy).toHaveBeenCalledTimes(2)
-    expect(executeCodeSpy).toHaveBeenLastCalledWith('x = 3')
-    expect(flushCompleted).toBe(true)
-
-    await vi.advanceTimersByTimeAsync(1000)
-    expect(executeCodeSpy).toHaveBeenCalledTimes(2)
+      run.kclManager.scheduleCurrentCodeExecution(false)
+      const flush = run.kclManager.flushPendingEditorExecution()
+      await flushPromises(10)
+      expect(run.manager.pendingCommands).not.toHaveProperty(run.commandId)
+      run.unwind.resolve(undefined)
+      await vi.waitFor(() => expect(run.execute).toHaveBeenCalledTimes(2))
+      expect(run.parseFlags).toEqual([false])
+      expect(run.maximumActive()).toBe(1)
+      run.latest.resolve(run.finalState)
+      await Promise.all([run.initialExecution, flush])
+      expect(run.kclManager.lastSuccessfulCode).toBe('x = 2')
+    } finally {
+      await run.dispose()
+    }
   })
 
   it('tracks whether the editor differs from the last execution', () => {
@@ -1817,7 +2540,7 @@ describe('KclManager diagnostics', () => {
       shouldResetCamera: false,
     })
 
-    await vi.advanceTimersByTimeAsync(999)
+    await vi.advanceTimersByTimeAsync(1_499)
     expect(writeSpy).not.toHaveBeenCalled()
 
     await vi.advanceTimersByTimeAsync(1)
@@ -1857,7 +2580,7 @@ describe('KclManager diagnostics', () => {
     expect(writeSpy).toHaveBeenCalledTimes(1)
     expect(writeSpy).toHaveBeenCalledWith('full generated extrusion')
 
-    await vi.advanceTimersByTimeAsync(1000)
+    await vi.advanceTimersByTimeAsync(1_500)
     expect(writeSpy).toHaveBeenCalledTimes(1)
   })
 
@@ -1879,7 +2602,7 @@ describe('KclManager diagnostics', () => {
     kclManager.path = destinationPath
     ;(kclManager as any).markFileCodeAsSynced(destinationCode)
 
-    await vi.advanceTimersByTimeAsync(1_000)
+    await vi.advanceTimersByTimeAsync(1_500)
     await pendingWrite
 
     expect(writeSpy).not.toHaveBeenCalled()
@@ -1932,22 +2655,270 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.code).toBe(destinationCode)
   })
 
-  it('reloads clean editor state from disk watcher updates', async () => {
-    const { kclManager } = createKclManagerTestHarness('from disk')
+  it('drops an outgoing file execution scheduled before the user switches buffers', async () => {
+    vi.useFakeTimers()
+    const { kclManager } = createKclManagerTestHarness('source')
+    kclManager.path = '/project/a.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('source')
+    const execute = vi
+      .spyOn(kclManager, 'executeCode')
+      .mockResolvedValue(undefined)
+    kclManager.scheduleCurrentCodeExecution(true)
+    await KclManager.fromFile(
+      new File('/project/b.kcl', kclManager.textFileIO),
+      kclManager.systemDeps,
+      kclManager,
+      'target',
+      { shouldSyncRustOnOpen: false, backgroundSave: true }
+    )
+    await vi.advanceTimersByTimeAsync(1_000)
+    expect(kclManager.code).toBe('target')
+    expect(execute).not.toHaveBeenCalled()
+  })
 
-    kclManager.path = '/tmp/kcl-manager-watch-test.kcl'
-    ;(kclManager as any).systemDeps.projectPath.value = '/tmp/project'
-    ;(kclManager as any).markFileCodeAsSynced('from disk')
+  it('displays the target buffer while an outgoing save is waiting for acknowledgement', async () => {
+    const { kclManager } = createKclManagerTestHarness('original')
+    kclManager.path = '/project/a.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('original')
+    const gate = Promise.withResolvers<undefined>()
+    const read = vi
+      .spyOn(kclManager.textFileIO, 'read')
+      .mockImplementation(async (path) =>
+        path.endsWith('a.kcl') ? 'original' : 'target'
+      )
+    const write = vi
+      .spyOn(kclManager.textFileIO, 'write')
+      .mockImplementation(async () => gate.promise)
+    kclManager.updateCodeEditor('edited source', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+    await KclManager.fromFile(
+      new File('/project/b.kcl', kclManager.textFileIO),
+      kclManager.systemDeps,
+      kclManager,
+      undefined,
+      { shouldSyncRustOnOpen: false, backgroundSave: true }
+    )
+    expect(kclManager.path).toBe('/project/b.kcl')
+    expect(kclManager.code).toBe('target')
+    await vi.waitFor(() =>
+      expect(write).toHaveBeenCalledWith('/project/a.kcl', 'edited source')
+    )
+    await KclManager.fromFile(
+      new File('/project/a.kcl', kclManager.textFileIO),
+      kclManager.systemDeps,
+      kclManager,
+      undefined,
+      { shouldSyncRustOnOpen: false, backgroundSave: true }
+    )
+    expect(kclManager.code).toBe('edited source')
+    gate.resolve(undefined)
+    await vi.waitFor(() =>
+      expect(kclManager.getPendingFileCode('/project/a.kcl')).toBeUndefined()
+    )
+    expect(kclManager.code).toBe('edited source')
+    expect(write).toHaveBeenCalledTimes(1)
+    read.mockRestore()
+    write.mockRestore()
+  })
 
-    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('external edit')
+  it('preserves newer outgoing edits while an earlier save is in flight', async () => {
+    const { kclManager } = createKclManagerTestHarness('original')
+    kclManager.path = '/project/a.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('original')
+    const files = new Map([
+      ['/project/a.kcl', 'original'],
+      ['/project/b.kcl', 'target'],
+    ])
+    const gate = Promise.withResolvers<undefined>()
+    const read = vi
+      .spyOn(kclManager.textFileIO, 'read')
+      .mockImplementation(async (path) => files.get(path) ?? '')
+    const write = vi
+      .spyOn(kclManager.textFileIO, 'write')
+      .mockImplementation(async (path, code) => {
+        files.set(path, code)
+        await gate.promise
+      })
+    kclManager.updateCodeEditor('first edit', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+    const saving = kclManager.flushWriteToFile()
+    await vi.waitFor(() => expect(write).toHaveBeenCalledOnce())
+    kclManager.updateCodeEditor('latest edit', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+    await KclManager.fromFile(
+      new File('/project/b.kcl', kclManager.textFileIO),
+      kclManager.systemDeps,
+      kclManager,
+      undefined,
+      { shouldSyncRustOnOpen: false, backgroundSave: true }
+    )
+    expect(kclManager.code).toBe('target')
+    gate.resolve(undefined)
+    await saving
+    await vi.waitFor(() =>
+      expect(files.get('/project/a.kcl')).toBe('latest edit')
+    )
+    expect(files.get('/project/b.kcl')).toBe('target')
+    read.mockRestore()
+    write.mockRestore()
+  })
 
-    const watchHandler = kclManager.onWatchEvent.at(-1)
-    expect(watchHandler).toBeDefined()
-
-    watchHandler?.('change', kclManager.path)
+  it('recognizes its outgoing save when the file is selected and edited again', async () => {
+    const { kclManager } = createKclManagerTestHarness('original')
+    kclManager.path = '/project/a.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('original')
+    let stored = 'original'
+    const gate = Promise.withResolvers<undefined>()
+    const read = vi
+      .spyOn(kclManager.textFileIO, 'read')
+      .mockImplementation(async (path) =>
+        path.endsWith('a.kcl') ? stored : 'target'
+      )
+    const write = vi
+      .spyOn(kclManager.textFileIO, 'write')
+      .mockImplementation(async (_path, code) => {
+        stored = code
+        await gate.promise
+      })
+    kclManager.updateCodeEditor('outgoing edit', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+    await KclManager.fromFile(
+      new File('/project/b.kcl', kclManager.textFileIO),
+      kclManager.systemDeps,
+      kclManager,
+      undefined,
+      { shouldSyncRustOnOpen: false, backgroundSave: true }
+    )
+    await vi.waitFor(() => expect(write).toHaveBeenCalledOnce())
+    await KclManager.fromFile(
+      new File('/project/a.kcl', kclManager.textFileIO),
+      kclManager.systemDeps,
+      kclManager,
+      undefined,
+      { shouldSyncRustOnOpen: false, backgroundSave: true }
+    )
+    kclManager.updateCodeEditor('newer edit', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+    kclManager.onWatchEvent.at(-1)?.('change', '/project/a.kcl')
     await flushPromises()
+    expect(kclManager.code).toBe('newer edit')
+    expect(toastMocks.error).not.toHaveBeenCalled()
+    gate.resolve(undefined)
+    await kclManager.waitForFileSaves()
+    read.mockRestore()
+    write.mockRestore()
+  })
 
-    expect(kclManager.code).toBe('external edit')
+  it('retains outgoing edits in memory if their background save fails', async () => {
+    const { kclManager } = createKclManagerTestHarness('original')
+    kclManager.path = '/project/a.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('original')
+    const read = vi
+      .spyOn(kclManager.textFileIO, 'read')
+      .mockResolvedValue('original')
+    const write = vi
+      .spyOn(kclManager.textFileIO, 'write')
+      .mockRejectedValue(new Error('Offline'))
+    kclManager.updateCodeEditor('unsaved source', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+    await KclManager.fromFile(
+      new File('/project/b.kcl', kclManager.textFileIO),
+      kclManager.systemDeps,
+      kclManager,
+      'target',
+      { shouldSyncRustOnOpen: false, backgroundSave: true }
+    )
+    await vi.waitFor(() =>
+      expect(toastMocks.error).toHaveBeenCalledWith(
+        'Could not save the outgoing file. Its edits remain in memory.'
+      )
+    )
+    await KclManager.fromFile(
+      new File('/project/a.kcl', kclManager.textFileIO),
+      kclManager.systemDeps,
+      kclManager,
+      undefined,
+      { shouldSyncRustOnOpen: false, backgroundSave: true }
+    )
+    expect(kclManager.code).toBe('unsaved source')
+    read.mockRestore()
+    write.mockRestore()
+  })
+
+  it.each([false, true])(
+    'reloads clean editor state and defers execution to snapshot storage refresh (snapshot storage: %s)',
+    async (snapshotStorage) => {
+      const { app, kclManager } = createKclManagerTestHarness('from disk')
+      const update = vi.spyOn(kclManager, 'updateCodeEditor')
+
+      kclManager.path = '/tmp/kcl-manager-watch-test.kcl'
+      kclManager.systemDeps.project = signal(
+        createProjectForTest('/tmp/project')
+      )
+      kclManager.systemDeps.projectPath.value = '/tmp/project'
+      const storage = app.projectSession.storageFor('/tmp/project')
+      kclManager.systemDeps.projectSession = {
+        editorChanged: app.projectSession.editorChanged,
+        writeThumbnail: app.projectSession.writeThumbnail,
+        storageFor: () => ({
+          ...storage,
+          externalChanges: snapshotStorage ? 'snapshot' : 'files',
+        }),
+      }
+      ;(kclManager as any).markFileCodeAsSynced('from disk')
+
+      vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('external edit')
+
+      const watchHandler = kclManager.onWatchEvent.at(-1)
+      expect(watchHandler).toBeDefined()
+
+      watchHandler?.('change', kclManager.path)
+      await flushPromises()
+
+      expect(kclManager.code).toBe('external edit')
+      expect(update).toHaveBeenCalledWith(
+        'external edit',
+        expect.objectContaining({
+          shouldExecute: !snapshotStorage,
+          shouldWriteToDisk: false,
+        })
+      )
+    }
+  )
+
+  it('blocks edits when storage denies writes while allowing authoritative contents to load', () => {
+    const { app, kclManager } = createKclManagerTestHarness('original')
+    const storage = app.projectSession.storageFor('/project')
+    kclManager.systemDeps.projectSession = {
+      editorChanged: app.projectSession.editorChanged,
+      writeThumbnail: app.projectSession.writeThumbnail,
+      storageFor: () => ({
+        ...storage,
+        writeAvailability: signal({ writable: false, reason: 'Read only' }),
+      }),
+    }
+    kclManager.updateCodeEditor('blocked', {
+      shouldExecute: false,
+      shouldWriteToDisk: true,
+    })
+    expect(kclManager.code).toBe('original')
+    kclManager.updateCodeEditor('authoritative', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+    expect(kclManager.code).toBe('authoritative')
   })
 
   it('does not reload Zookeeper disk watcher updates into the active editor', async () => {
@@ -2105,7 +3076,7 @@ describe('KclManager diagnostics', () => {
 
     expect(kclManager.code).toBe('')
 
-    await vi.advanceTimersByTimeAsync(1000)
+    await vi.advanceTimersByTimeAsync(1_500)
 
     const defaultVersionLiteral = DEFAULT_KCL_VERSION.includes('preview')
       ? JSON.stringify(DEFAULT_KCL_VERSION)
@@ -2115,7 +3086,7 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.code).toBe(expectedCode)
     expect(writeSpy).not.toHaveBeenCalled()
 
-    await vi.advanceTimersByTimeAsync(1000)
+    await vi.advanceTimersByTimeAsync(1_500)
 
     expect(writeSpy).toHaveBeenCalledTimes(1)
     expect(writeSpy).toHaveBeenCalledWith(expectedCode)
@@ -2425,7 +3396,7 @@ describe('KclManager diagnostics', () => {
       shouldResetCamera: false,
     })
 
-    await vi.advanceTimersByTimeAsync(1000)
+    await vi.advanceTimersByTimeAsync(1_500)
 
     expect(writeSpy).not.toHaveBeenCalled()
     expect(kclManager.code).toBe('local newer')
@@ -2465,6 +3436,60 @@ describe('KclManager diagnostics', () => {
     expect(readSpy).not.toHaveBeenCalled()
     expect(writeSpy).not.toHaveBeenCalled()
   })
+
+  it.each(['success', 'failure'] as const)(
+    'adopts cloud contents and ignores superseded save completion (%s)',
+    async (outcome) => {
+      vi.useFakeTimers()
+      const { kclManager } = createKclManagerTestHarness('base')
+      kclManager.path = '/cloud/project/main.kcl'
+      kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
+        filePath: kclManager.path,
+        nextContent: 'base',
+        shouldSyncRust: false,
+      })
+      kclManager.engineCommandManager.started = true
+      vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('base')
+      const gate = Promise.withResolvers<undefined>()
+      const write = vi
+        .spyOn(kclManager, 'write')
+        .mockReturnValueOnce(gate.promise)
+      kclManager.updateCodeEditor('submitted edit', {
+        shouldExecute: false,
+        shouldWriteToDisk: true,
+      })
+      await vi.advanceTimersByTimeAsync(1_500)
+      expect(write).toHaveBeenCalledOnce()
+      kclManager.updateCodeEditor('queued stale edit', {
+        shouldExecute: false,
+        shouldWriteToDisk: true,
+      })
+      localStorage.setItem(
+        'kclRecovery:/cloud/project/closed.kcl',
+        'stale closed-file buffer'
+      )
+      localStorage.setItem(
+        'kclRecovery:/cloud/project-other/main.kcl',
+        'other project buffer'
+      )
+      kclManager.adoptStorageSnapshot('/cloud/project', 'cloud truth')
+      expect(
+        localStorage.getItem('kclRecovery:/cloud/project/closed.kcl')
+      ).toBeNull()
+      expect(
+        localStorage.getItem('kclRecovery:/cloud/project-other/main.kcl')
+      ).toBe('other project buffer')
+      await vi.advanceTimersByTimeAsync(7_000)
+      if (outcome === 'success') gate.resolve(undefined)
+      else gate.reject(new Error('Superseded save failed'))
+      await vi.advanceTimersByTimeAsync(0)
+      expect(kclManager.code).toBe('cloud truth')
+      expect(kclManager.hasUnsavedLocalChanges()).toBe(false)
+      expect(kclManager.saveState.value).toBe('saved')
+      await kclManager.flushWriteToFile()
+      expect(write).toHaveBeenCalledOnce()
+    }
+  )
 
   it('reports KCL autosave failures without including source or path', async () => {
     const path = '/tmp/kcl-manager-reporting-test.kcl'
@@ -2563,6 +3588,37 @@ describe('KclManager diagnostics', () => {
     expect(reopened.code).toBe('recovered newer')
     expect((reopened as any).hasUnsavedLocalChanges()).toBe(true)
   })
+  it.each([
+    { draft: 'unsaved edit', cloud: 'newer cloud edit', warns: true },
+    { draft: 'unsaved edit', cloud: undefined, warns: true },
+    { draft: 'accepted edit', cloud: 'accepted edit', warns: false },
+    { draft: 'base', cloud: 'newer cloud edit', warns: false },
+  ])(
+    'explains cloud replacement only when unsaved contents differ: $draft / $cloud',
+    ({ draft, cloud, warns }) => {
+      const { app, kclManager } = createKclManagerTestHarness('base')
+      kclManager.path = '/cloud/project/main.kcl'
+      kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
+        filePath: kclManager.path,
+        nextContent: 'base',
+        shouldSyncRust: false,
+      })
+      kclManager.updateCodeEditor(draft, {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      })
+      kclManager.adoptStorageSnapshot('/cloud/project', cloud)
+      expect(kclManager.code).toBe(cloud ?? '')
+      expect(kclManager.hasUnsavedLocalChanges()).toBe(false)
+      if (warns)
+        expect(toastMocks.error).toHaveBeenCalledExactlyOnceWith(
+          'This project changed in the cloud. The latest cloud version replaced your unsaved edits.',
+          { id: 'cloud-project-conflict' }
+        )
+      else expect(toastMocks.error).not.toHaveBeenCalled()
+      app.dispose()
+    }
+  )
 })
 
 describe('reconnect execution queue', () => {

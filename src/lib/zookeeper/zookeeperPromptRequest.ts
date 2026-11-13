@@ -44,6 +44,7 @@ export interface ConstructZookeeperUserPromptRequestArgs {
   applicationProjectDirectory: string
   selections: Selections | null
   projectFiles: FileMeta[]
+  includeProjectFiles?: boolean
   projectName: string
   currentFile: { entry: FileEntry; content: string }
   artifactGraph: ArtifactGraph
@@ -726,6 +727,7 @@ export async function constructZookeeperUserPromptRequest({
   prompt,
   selections,
   projectFiles,
+  includeProjectFiles = true,
   applicationProjectDirectory,
   artifactGraph,
   projectName,
@@ -741,18 +743,16 @@ export async function constructZookeeperUserPromptRequest({
   const files: KittyCadLibFile[] = []
 
   projectFiles.forEach((file) => {
-    let data: Blob
-    if (file.type === 'other') {
-      data = file.data
-    } else {
-      if (Number.isInteger(file.execStateFileNamesIndex)) {
-        kclFilesMap[file.execStateFileNamesIndex] = file
-      }
-      data = new Blob([file.fileContents], { type: 'text/kcl' })
+    if (file.type === 'kcl' && Number.isInteger(file.execStateFileNamesIndex)) {
+      kclFilesMap[file.execStateFileNamesIndex] = file
     }
+    if (!includeProjectFiles) return
     files.push({
       name: file.relPath,
-      data,
+      data:
+        file.type === 'other'
+          ? file.data
+          : new Blob([file.fileContents], { type: 'text/kcl' }),
     })
   })
 

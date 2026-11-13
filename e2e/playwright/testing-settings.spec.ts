@@ -643,63 +643,83 @@ test.describe(
       }
     )
 
-    test(
-      `Changing system theme preferences (via media query) should update UI and stream`,
-      { tag: ['@macos', '@windows'] },
-      async ({ page, homePage, tronApp }) => {
-        if (!tronApp) throwTronAppMissing()
+    for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+      test(
+        `Changing system theme preferences (via media query) should update UI and stream ${rendererTag}`,
+        { tag: ['@macos', '@windows'] },
+        async ({ page, homePage, tronApp }) => {
+          if (!tronApp) throwTronAppMissing()
 
-        await tronApp.cleanProjectDir({
-          // Override the settings so that the theme is set to `system`
-          ...TEST_SETTINGS_DEFAULT_THEME,
-        })
+          await tronApp.cleanProjectDir({
+            // Override the settings so that the theme is set to `system`
+            ...TEST_SETTINGS_DEFAULT_THEME,
+          })
 
-        const u = await getUtils(page)
+          const u = await getUtils(page)
 
-        // Selectors and constants
-        const darkBackgroundCss = 'oklch(0.3012 0 264.48)'
-        const lightBackgroundCss = 'oklch(0.9911 0 264.48)'
-        const darkBackgroundColor: [number, number, number] = [50, 40, 51] // planes are on
-        const lightBackgroundColor: [number, number, number] = [227, 222, 230] // planes are on
-        const streamBackgroundColorTolerance = 20
-        const streamBackgroundPixelIsColor = async (
-          color: [number, number, number]
-        ) => {
-          return u.getGreatestPixDiff({ x: 1000, y: 200 }, color)
+          // Selectors and constants
+          const darkBackgroundCss = 'oklch(0.3012 0 264.48)'
+          const lightBackgroundCss = 'oklch(0.9911 0 264.48)'
+          const darkBackgroundColor: [number, number, number] = [50, 40, 51] // planes are on
+          const lightBackgroundColor: [number, number, number] = [227, 222, 230] // planes are on
+          const backgroundColorTolerance = 20
+          const backgroundPixelIsColor = async (
+            streamColor: [number, number, number],
+            localColor: [number, number, number]
+          ) => {
+            const local = await page.evaluate(
+              () => window.engineCommandManager.geometryOnly
+            )
+            // Probe clear canvas in local mode; the old point includes translucent
+            // stream planes whose colours differ between renderers.
+            return u.getGreatestPixDiff(
+              local ? { x: 1180, y: 20 } : { x: 1000, y: 200 },
+              local ? localColor : streamColor
+            )
+          }
+          const toolbar = page
+            .locator('menu')
+            .filter({ hasText: 'Start Sketch' })
+
+          await test.step(`Test setup`, async () => {
+            await page.emulateMedia({ colorScheme: 'light' })
+            await page.setBodyDimensions({ width: 1200, height: 500 })
+            await homePage.goToModelingScene()
+            await u.waitForPageLoad()
+            await page.waitForTimeout(1000)
+            await expect(toolbar).toBeVisible()
+          })
+
+          await test.step(`Check the background color is light before`, async () => {
+            await expect(toolbar).toHaveCSS(
+              'background-color',
+              lightBackgroundCss
+            )
+            await expect
+              .poll(() =>
+                backgroundPixelIsColor(lightBackgroundColor, [250, 250, 250])
+              )
+              .toBeLessThanOrEqual(backgroundColorTolerance)
+          })
+
+          await test.step(`Change media query preference to dark, emulating dusk with system theme`, async () => {
+            await page.emulateMedia({ colorScheme: 'dark' })
+          })
+
+          await test.step(`Check the background color is dark after`, async () => {
+            await expect(toolbar).toHaveCSS(
+              'background-color',
+              darkBackgroundCss
+            )
+            await expect
+              .poll(() =>
+                backgroundPixelIsColor(darkBackgroundColor, [30, 30, 30])
+              )
+              .toBeLessThanOrEqual(backgroundColorTolerance)
+          })
         }
-        const toolbar = page.locator('menu').filter({ hasText: 'Start Sketch' })
-
-        await test.step(`Test setup`, async () => {
-          await page.emulateMedia({ colorScheme: 'light' })
-          await page.setBodyDimensions({ width: 1200, height: 500 })
-          await homePage.goToModelingScene()
-          await u.waitForPageLoad()
-          await page.waitForTimeout(1000)
-          await expect(toolbar).toBeVisible()
-        })
-
-        await test.step(`Check the background color is light before`, async () => {
-          await expect(toolbar).toHaveCSS(
-            'background-color',
-            lightBackgroundCss
-          )
-          await expect
-            .poll(() => streamBackgroundPixelIsColor(lightBackgroundColor))
-            .toBeLessThanOrEqual(streamBackgroundColorTolerance)
-        })
-
-        await test.step(`Change media query preference to dark, emulating dusk with system theme`, async () => {
-          await page.emulateMedia({ colorScheme: 'dark' })
-        })
-
-        await test.step(`Check the background color is dark after`, async () => {
-          await expect(toolbar).toHaveCSS('background-color', darkBackgroundCss)
-          await expect
-            .poll(() => streamBackgroundPixelIsColor(darkBackgroundColor))
-            .toBeLessThanOrEqual(streamBackgroundColorTolerance)
-        })
-      }
-    )
+      )
+    }
 
     test(
       `Changing system theme preferences should not override fixed light theme`,

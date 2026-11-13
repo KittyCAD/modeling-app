@@ -13,18 +13,21 @@ export const FileExplorerHeaderActions = ({
   onRefreshExplorer,
   onCollapseExplorer,
   onDownloadProject,
+  readOnly = false,
 }: {
   onCreateFile: () => void
   onCreateFolder: () => void
   onRefreshExplorer: () => void
   onCollapseExplorer: () => void
   onDownloadProject?: () => void
+  readOnly?: boolean
 }) => {
   return (
     <>
       <ActionButton
         Element="button"
         data-testid="create-file-button"
+        disabled={readOnly}
         iconStart={{
           icon: 'filePlus',
           iconClassName: '!text-current',
@@ -39,6 +42,7 @@ export const FileExplorerHeaderActions = ({
       <ActionButton
         Element="button"
         data-testid="create-folder-button"
+        disabled={readOnly}
         iconStart={{
           icon: 'folderPlus',
           iconClassName: '!text-current',

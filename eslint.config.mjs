@@ -215,6 +215,7 @@ export default defineConfig([
       'src/lib/cloudSync/conflictInspection.ts',
       'src/lib/cloudSync/index.ts',
       'src/registry/extensions/fileOperations/index.ts',
+      'src/lib/cloudProjects/registry/extension.ts',
       'src/**/*.{test,spec}.{ts,tsx}',
     ],
     rules: {

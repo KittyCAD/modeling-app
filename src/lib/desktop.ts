@@ -658,7 +658,7 @@ const kclFileCount = (file: FileEntry) => {
   let count = 0
   if (file.children) {
     for (const entry of file.children) {
-      if (entry.name.endsWith('.kcl')) {
+      if (entry.children === null && entry.name.endsWith('.kcl')) {
         count += 1
       } else {
         count += kclFileCount(entry)
