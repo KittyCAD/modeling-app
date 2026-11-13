@@ -77,7 +77,7 @@ function runTestForTheme(mode: Themes) {
       },
     })
 
-    await folderSetupFn(async (dir: string) => {
+    await folderSetupFn(async () => {
       const userDir = await fs.join(
         await fs.getPath('appData'),
         'dev.zoo.modeling-app-local'
@@ -85,9 +85,6 @@ function runTestForTheme(mode: Themes) {
       await fs.mkdir(userDir, { recursive: true })
       const userSettingsPath = await fs.resolve(userDir, 'settings.toml')
       await fs.writeFile(userSettingsPath, new TextEncoder().encode(tomlStr))
-
-      const projectDir = await fs.join(dir, 'demo-project')
-      await fs.mkdir(projectDir, { recursive: true })
     })
 
     const [rectCorner1] = scene.makeMouseHelpers(0.24, 0.28, {
@@ -98,7 +95,7 @@ function runTestForTheme(mode: Themes) {
     })
 
     await page.setViewportSize(SCREENSHOT_SIZE)
-    await homePage.openProject('demo-project')
+    await homePage.createAndGoToProject('demo-project')
     await scene.settled()
     await waitForThemeApplied(page, mode)
     let step = 1
@@ -126,6 +123,12 @@ function runTestForTheme(mode: Themes) {
       await toolbar.rectangleBtn.click()
       await rectCorner1()
       await rectCorner2()
+      await expect
+        .poll(async () => {
+          const code = await editor.getCurrentCode()
+          return (code.match(/\bline\(/g) ?? []).length
+        })
+        .toBe(4)
 
       await expect(page).toHaveScreenshot(
         screenshotName(step++, 'sketch-drawn', mode),
@@ -137,10 +140,12 @@ function runTestForTheme(mode: Themes) {
       await toolbar.exitSketchBtn.click()
       await expect(toolbar.startSketchBtn).not.toBeDisabled()
       await scene.settled()
+      await toolbar.extrudeButton.hover()
       await expect(
-        page.getByRole('tooltip').filter({
-          hasText: 'Extrude',
-        })
+        page
+          .getByRole('tooltip')
+          .filter({ hasText: 'Extrude' })
+          .getByRole('link', { name: 'Open KCL docs' })
       ).toBeVisible()
 
       await expect(page).toHaveScreenshot(

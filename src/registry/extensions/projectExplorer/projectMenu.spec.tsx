@@ -1,3 +1,4 @@
+import { createProjectForTest } from '@src/lib/projectTestUtils'
 import { Registry } from '@kittycad/registry'
 import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import type { App } from '@src/lib/app'
@@ -18,30 +19,30 @@ afterEach(() => {
 })
 
 const now = Date.now()
-const projectWellFormed = {
-  name: '550e8400-e29b-41d4-a716-446655440000',
-  title: 'Simple Box',
-  path: '/some/path/550e8400-e29b-41d4-a716-446655440000',
-  children: [
-    {
-      name: 'main.kcl',
-      path: '/some/path/550e8400-e29b-41d4-a716-446655440000/main.kcl',
-      children: [],
+const projectWellFormed = createProjectForTest(
+  '/some/path/550e8400-e29b-41d4-a716-446655440000',
+  {
+    name: '550e8400-e29b-41d4-a716-446655440000',
+    title: 'Simple Box',
+    children: [
+      {
+        name: 'main.kcl',
+        path: '/some/path/550e8400-e29b-41d4-a716-446655440000/main.kcl',
+        children: [],
+      },
+    ],
+    metadata: {
+      created: now,
+      modified: now,
+      size: 32,
+      accessed: null,
+      type: null,
+      permission: null,
     },
-  ],
-  readWriteAccess: true,
-  metadata: {
-    created: now,
-    modified: now,
-    size: 32,
-    accessed: null,
-    type: null,
-    permission: null,
-  },
-  kcl_file_count: 1,
-  directory_count: 0,
-  default_file: '/some/path/550e8400-e29b-41d4-a716-446655440000/main.kcl',
-} satisfies Project
+    kcl_file_count: 1,
+    default_file: '/some/path/550e8400-e29b-41d4-a716-446655440000/main.kcl',
+  }
+) satisfies Project
 
 function renderWithRouter(children: ReactNode) {
   return render(<BrowserRouter>{children}</BrowserRouter>)
@@ -67,9 +68,10 @@ function createProjectMenuApp() {
         actor: commandsActor,
         send: vi.fn(),
       },
-      systemIOActor: {
-        send: vi.fn(),
+      projectOperations: {
+        duplicateProject: vi.fn(async () => ({ path: '/projects/duplicated' })),
       },
+      projectSession: { openFile: vi.fn(async () => undefined) },
       settings: {
         actor: {},
         useSettings: () => ({
@@ -155,14 +157,11 @@ describe('project explorer project menu', () => {
       }
       fireEvent.click(duplicateButton)
 
-      expect(app.systemIOActor.send).toHaveBeenCalledWith({
-        type: 'duplicate project',
-        data: {
-          projectName: projectWellFormed.name,
-          projectPath: projectWellFormed.path,
-          requestedProjectName: projectWellFormed.title,
-        },
-      })
+      expect(app.projectOperations.duplicateProject).toHaveBeenCalledWith(
+        projectWellFormed,
+        projectWellFormed.title,
+        undefined
+      )
     } finally {
       dispose()
     }

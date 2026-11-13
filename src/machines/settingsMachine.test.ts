@@ -1,5 +1,5 @@
 import type { MachineManager } from '@src/lib/MachineManager'
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 import * as settingsUtils from '@src/lib/settings/settingsUtils'
@@ -22,6 +22,179 @@ vi.mock('react-hot-toast', () => ({ default: mockToast }))
 afterEach(() => vi.restoreAllMocks())
 
 describe('settingsMachine', () => {
+  it.each([
+    ['retrocad', true],
+    ['phosphor', true],
+    ['retrocad', false],
+    ['phosphor', false],
+  ] as const)(
+    'preserves the SSAO preference across %s style changes when initially %s',
+    async (style, enabled) => {
+      const initialSettings = createSettings()
+      initialSettings.modeling.enableSSAO.user = enabled
+      const wasmInstancePromise = Promise.resolve({} as ModuleType)
+      const commandBarActor = createActor(commandBarMachine, {
+        input: {
+          commands: [],
+          wasmInstancePromise,
+          machineManager: {} as MachineManager,
+        },
+      }).start()
+      const persisted: Array<{
+        style: string
+        ssao: boolean
+        level?: string
+      }> = []
+      const actor = createActor(
+        settingsMachine.provide({
+          actors: {
+            loadUserSettings: fromPromise(async () => initialSettings),
+            persistSettings: fromPromise(async ({ input }) => {
+              persisted.push({
+                style: input.context.modeling.viewportRendering.current,
+                ssao: input.context.modeling.enableSSAO.current,
+                level: input.level,
+              })
+              return undefined
+            }),
+            registerCommands: fromCallback(() => () => {}),
+            watchSystemTheme: fromCallback(() => () => {}),
+          },
+        }),
+        {
+          input: {
+            ...initialSettings,
+            commandBarActor,
+            defaultProjectLibraries: [],
+            projectLibrarySettingDefaultPolicies: [],
+            extensionSettings: {},
+            fileOperations: testFileOperations,
+            wasmInstancePromise,
+          },
+        }
+      ).start()
+      try {
+        await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+        actor.send({
+          type: 'set.modeling.viewportRendering',
+          data: { level: 'user', value: style },
+        })
+        await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+        expect(persisted.at(-1)).toEqual({
+          style,
+          ssao: enabled,
+          level: 'user',
+        })
+
+        for (const local of [true, false]) {
+          actor.send({
+            type: 'set.modeling.useLocalRenderer',
+            data: { level: 'user', value: local },
+          })
+          await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+          expect(persisted.at(-1)).toEqual({
+            style,
+            ssao: enabled,
+            level: 'user',
+          })
+        }
+
+        actor.send({
+          type: 'set.modeling.enableSSAO',
+          data: { level: 'user', value: !enabled },
+        })
+        await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+        expect(persisted.at(-1)).toEqual({
+          style,
+          ssao: !enabled,
+          level: 'user',
+        })
+        actor.send({
+          type: 'set.modeling.viewportRendering',
+          data: { level: 'user', value: 'default' },
+        })
+        await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+        expect(persisted.at(-1)).toEqual({
+          style: 'default',
+          ssao: !enabled,
+          level: 'user',
+        })
+
+        const restored = createSettings()
+        restored.modeling.viewportRendering.user = style
+        restored.modeling.enableSSAO.user = enabled
+        actor.send({ type: 'Set all settings', settings: restored })
+        expect(actor.getSnapshot().context.modeling.enableSSAO.current).toBe(
+          enabled
+        )
+        expect(
+          actor.getSnapshot().context.modeling.viewportRendering.current
+        ).toBe(style)
+      } finally {
+        actor.stop()
+        commandBarActor.stop()
+      }
+    }
+  )
+
+  it('updates the rendering style command when switching renderers', async () => {
+    const initialSettings = createSettings()
+    initialSettings.commandBar.includeSettings.user = true
+    const wasmInstancePromise = Promise.resolve({} as ModuleType)
+    const commandBarActor = createActor(commandBarMachine, {
+      input: {
+        commands: [],
+        wasmInstancePromise,
+        machineManager: {} as MachineManager,
+      },
+    }).start()
+    const actor = createActor(
+      settingsMachine.provide({
+        actors: {
+          loadUserSettings: fromPromise(async () => initialSettings),
+          persistSettings: fromPromise(async () => undefined),
+          watchSystemTheme: fromCallback(() => () => {}),
+        },
+      }),
+      {
+        input: {
+          ...initialSettings,
+          commandBarActor,
+          defaultProjectLibraries: [],
+          projectLibrarySettingDefaultPolicies: [],
+          extensionSettings: {},
+          fileOperations: testFileOperations,
+          wasmInstancePromise,
+        },
+      }
+    ).start()
+    const renderingCommand = () =>
+      commandBarActor
+        .getSnapshot()
+        .context.commands.find(
+          (command) => command.name === 'modeling.viewportRendering'
+        )
+
+    try {
+      await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+      expect(renderingCommand()?.displayName).toBe(
+        'Settings · modeling · Rendering style'
+      )
+
+      for (const local of [true, false, true]) {
+        actor.send({
+          type: 'set.modeling.useLocalRenderer',
+          data: { level: 'user', value: local },
+        })
+        await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+        expect(renderingCommand() !== undefined).toBe(!local)
+      }
+    } finally {
+      actor.stop()
+      commandBarActor.stop()
+    }
+  })
+
   it('keeps service dependencies out of settings values', () => {
     const settings = createSettings()
     const wasmInstancePromise = Promise.resolve({} as ModuleType)

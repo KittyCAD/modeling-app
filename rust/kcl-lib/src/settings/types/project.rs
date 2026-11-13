@@ -131,7 +131,8 @@ pub struct ProjectModelingSettings {
     /// Highlight edges of 3D objects?
     #[serde(default, skip_serializing_if = "is_default")]
     pub highlight_edges: DefaultTrue,
-    /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
+    /// Legacy Screen Space Ambient Occlusion (SSAO) setting.
+    /// Zoo Design Studio ignores this project setting. Use the user-level `enable_ssao` setting instead.
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
     /// When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.

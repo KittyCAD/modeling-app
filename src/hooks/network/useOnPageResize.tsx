@@ -1,11 +1,8 @@
 import { useAppState } from '@src/AppState'
 import { EngineDebugger } from '@src/lib/debugger'
-import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from '@src/lib/timings'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { getDimensions } from '@src/lib/engineConnection/utils'
-import { useEffect, useRef } from 'react'
-
-const TIME_TO_WAIT_AFTER_DEBOUNCE_IS_DONE = 250
+import { useEffect } from 'react'
 
 /**
  * Event handler that will watch for the page to resize and call the handleResize function to
@@ -20,12 +17,8 @@ export const useOnPageResize = ({
   videoWrapperRef: React.RefObject<HTMLDivElement | null>
   videoRef: React.RefObject<HTMLVideoElement | null>
   canvasRef: React.RefObject<HTMLCanvasElement | null>
-  engineCommandManager: ConnectionManager
+  engineCommandManager: Pick<ConnectionManager, 'connection' | 'handleResize'>
 }) => {
-  const setSizeOneMoreTime = useRef<NodeJS.Timeout | null>(null)
-  const last = useRef<number>(Date.now())
-  // When streamIdleMode is changed, setup or teardown the timeouts
-  const timeoutStart = useRef<number | null>(null)
   const { isStreamAcceptingInput } = useAppState()
   useEffect(() => {
     if (!videoWrapperRef.current) return
@@ -41,50 +34,45 @@ export const useOnPageResize = ({
     }
 
     const wrapper = videoWrapperRef.current
-    const observer = new ResizeObserver(() => {
-      // Prevents:
-      // `Uncaught ResizeObserver loop completed with undelivered notifications`
-      window.requestAnimationFrame(() => {
-        if (
-          Date.now() - last.current <
-          REASONABLE_TIME_TO_REFRESH_STREAM_SIZE
-        ) {
-          // If the user spams multiple debounces then clear the previous timeouts
-          // We only want one to run once the debouncing stops
-          if (setSizeOneMoreTime.current) {
-            clearTimeout(setSizeOneMoreTime.current)
-            setSizeOneMoreTime.current = null
-          }
-
-          // Create new timeout to run after the debouncing stops
-          const resizeTimeoutId = setTimeout(() => {
-            const { width, height } = getDimensions(
-              wrapper.clientWidth,
-              wrapper.clientHeight
-            )
-            engineCommandManager.handleResize({ width, height }).catch((e) => {
-              console.warn('handleResize', e)
-            })
-          }, TIME_TO_WAIT_AFTER_DEBOUNCE_IS_DONE)
-          setSizeOneMoreTime.current = resizeTimeoutId
-          return
-        }
-        last.current = Date.now()
-        timeoutStart.current = Date.now()
+    let active = true
+    let frame: number | null = null
+    let pending = false
+    let resizing = false
+    const scheduleResize = () => {
+      pending = true
+      // One current-size update per frame also avoids ResizeObserver loops.
+      if (!active || resizing || frame !== null) return
+      const connection = engineCommandManager.connection
+      frame = requestAnimationFrame(() => {
+        frame = null
+        if (!active || engineCommandManager.connection !== connection) return
+        pending = false
+        resizing = true
         const { width, height } = getDimensions(
           wrapper.clientWidth,
           wrapper.clientHeight
         )
-        engineCommandManager.handleResize({ width, height }).catch((e) => {
-          console.warn('handleResize', e)
-        })
+        const resize = async () => {
+          await connection?.deferredConnection?.promise
+          if (!active || engineCommandManager.connection !== connection) return
+          await engineCommandManager.handleResize({ width, height })
+        }
+        resize()
+          .catch((e) => console.warn('handleResize', e))
+          .finally(() => {
+            resizing = false
+            if (active && pending) scheduleResize()
+          })
       })
-    })
+    }
+    const observer = new ResizeObserver(scheduleResize)
 
     observer.observe(wrapper)
 
     return () => {
+      active = false
       observer.disconnect()
+      if (frame !== null) cancelAnimationFrame(frame)
     }
   }, [
     videoWrapperRef,

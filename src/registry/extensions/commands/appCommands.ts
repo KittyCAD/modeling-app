@@ -134,7 +134,6 @@ export function createAppCommands(
 
     return resetCameraPosition({
       sceneInfra: kclManager.sceneInfra,
-      engineCommandManager: kclManager.engineCommandManager,
       settingsActor: kclManager.systemDeps.settings,
     })
   }

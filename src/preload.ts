@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises'
+import type { StatOptions } from '@src/lib/fs-zds/interface'
 import os from 'node:os'
 import path from 'path'
 import type { DeviceFlowAuthorization } from '@root/interface'
@@ -174,8 +175,10 @@ const writeFile = (
   options?: { flag?: 'w' | 'wx' }
 ) => fs.writeFile(path, data, { encoding: 'utf-8', flag: options?.flag ?? 'w' })
 const readdir = (path: string) => fs.readdir(path, 'utf-8')
-const stat = (path: string) => {
-  return fs.stat(path).catch((e) => Promise.reject(e.code))
+const stat = (path: string, options?: StatOptions) => {
+  const result =
+    options?.followSymlinks === false ? fs.lstat(path) : fs.stat(path)
+  return result.catch((e) => Promise.reject(e.code))
 }
 
 /**
@@ -298,6 +301,10 @@ const createHomePageMenu = async (): Promise<any> => {
 
 // Creating a menu will refresh the state of the menu
 // Anything that was enabled will be reset to the hard coded state of the original menu
+const createEditorPageMenu = async (): Promise<void> => {
+  return ipcRenderer.invoke('create-menu', { page: 'editor' })
+}
+
 const createModelingPageMenu = async (): Promise<any> => {
   return ipcRenderer.invoke('create-menu', { page: 'modeling' })
 }
@@ -415,6 +422,7 @@ contextBridge.exposeInMainWorld('electron', {
   getMachineApiRunning,
   setMachineApiState,
   createHomePageMenu,
+  createEditorPageMenu,
   createModelingPageMenu,
   createFallbackMenu,
   enableMenu,

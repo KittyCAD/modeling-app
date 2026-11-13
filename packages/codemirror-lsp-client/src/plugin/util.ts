@@ -6,27 +6,6 @@ import type * as LSP from 'vscode-languageserver-protocol'
 
 import { isArray } from '../lib/utils'
 
-// takes a function and executes it after the wait time, if the function is called again before the wait time is up, the timer is reset
-export function deferExecution<T>(func: (args: T) => any, wait: number) {
-  let timeout: ReturnType<typeof setTimeout> | null
-  let latestArgs: T
-
-  function later() {
-    timeout = null
-    func(latestArgs)
-  }
-
-  function deferred(args: T) {
-    latestArgs = args
-    if (timeout) {
-      clearTimeout(timeout)
-    }
-    timeout = setTimeout(later, wait)
-  }
-
-  return deferred
-}
-
 export function posToOffset(
   doc: Text,
   pos: { line: number; character: number }
@@ -131,10 +110,8 @@ export function showErrorMessage(view: EditorView, message: string) {
 
   document.body.appendChild(tooltip)
 
-  // Remove after 3 seconds
+  // zds-performance-exception: feedback-lifetime -- Keep the immediately shown error readable for three seconds, then remove it without a fade.
   setTimeout(() => {
-    tooltip.style.opacity = '0'
-    tooltip.style.transition = 'opacity 0.2s'
-    setTimeout(() => tooltip.remove(), 200)
+    tooltip.remove()
   }, 3000)
 }

@@ -1,5 +1,10 @@
+import type {
+  ProjectDeletion,
+  ProjectStorage,
+} from '@src/lib/projectSession/storage'
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal, Signal } from '@preact/signals-core'
+import type { Project } from '@src/lib/project'
 import type { ZDSProject } from '@src/lib/projectSession'
 import type { TextFileIO } from '@src/lib/projectSession/textFileIO'
 
@@ -33,6 +38,33 @@ export interface ExecutingEditor {
  * fields delegate to this service while call sites are migrated.
  */
 export interface ProjectSessionService {
+  storageFor: (path: string) => ProjectStorage
+  /** Retry persistence and reconcile saved contents only with the owning editor. */
+  retrySave: () => Promise<Error | undefined>
+  /** Flush edits and capture backing-owned undo history before deleting an entry. */
+  deleteEntry: (path: string) => Promise<ProjectDeletion | Error | undefined>
+  /** Adopt an authoritative storage snapshot without applying it to a replacement session. */
+  applyStorageSnapshot: (
+    root: string,
+    files: readonly { relativePath: string; data: Uint8Array }[]
+  ) => Promise<void> | undefined
+  /** Keep derived thumbnail persistence behind continued editor activity. */
+  editorChanged: (path: string) => void
+  /** Stage cloud thumbnails for the next save; write directory thumbnails immediately. */
+  writeThumbnail: (projectPath: string, bytes: Uint8Array) => Promise<void>
+  /** Reload the captured project's tree; stale results never replace another session. */
+  refreshProject: () => Promise<Project | undefined>
+  /** Navigate through the router and resolve when its loader completes. */
+  openFile: (
+    path: string,
+    options?: {
+      projectPath?: string
+      subRoute?: string
+      clearProjectId?: boolean
+    }
+  ) => Promise<void>
+  /** Flush an affected editor, rename on storage, then update its owned path. */
+  rename: (source: string, destination: string) => Promise<void>
   readonly textFileIO: TextFileIO
   /** The current editor capability; absent when the session has no executing editor. */
   readonly executingEditor: ReadonlySignal<ExecutingEditor | undefined>

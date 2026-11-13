@@ -408,7 +408,7 @@ impl Context {
             .map_err(|error| js_value_from_serde(&error))?;
 
         let (source_delta, scene_graph_delta) = guard
-            .add_segment(&ctx, version, sketch, segment.with_exact_coordinates(), label)
+            .add_segment(&ctx, version, sketch, segment, label)
             .await
             .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
         let checkpoint_id = if create_checkpoint {
@@ -476,13 +476,7 @@ impl Context {
                 &ctx,
                 version,
                 sketch,
-                segments
-                    .into_iter()
-                    .map(|mut segment| {
-                        segment.ctor = segment.ctor.with_exact_coordinates();
-                        segment
-                    })
-                    .collect(),
+                segments,
                 EditSegmentsOptions {
                     anchor_segment_ids,
                     drag_anchors,
@@ -1026,14 +1020,7 @@ impl Context {
             .map_err(|error| js_value_from_serde(&error))?;
 
         let (source_delta, scene_graph_delta) = guard
-            .chain_segment(
-                &ctx,
-                version,
-                sketch,
-                previous_segment_end_point_id,
-                segment.with_exact_coordinates(),
-                label,
-            )
+            .chain_segment(&ctx, version, sketch, previous_segment_end_point_id, segment, label)
             .await
             .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
         let checkpoint_id = if create_checkpoint {

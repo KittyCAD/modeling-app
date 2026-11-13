@@ -1,0 +1,40 @@
+/* Semantic roles resolve the palette once, so component utilities work in either theme. */
+:root {
+  --_surface-default: var(--_chalkboard-10);
+  --_surface-2: var(--_chalkboard-20);
+  --_surface-3: var(--_chalkboard-30);
+  --_surface-4: var(--_chalkboard-70);
+  --_surface-5: var(--_chalkboard-90);
+  --_surface-6: var(--_chalkboard-100);
+  --_foreground-default: var(--_chalkboard-100);
+  --_foreground-2: var(--_chalkboard-70);
+  --_foreground-3: var(--_chalkboard-50);
+  --_foreground-4: var(--_chalkboard-30);
+  --_foreground-5: var(--_chalkboard-20);
+  --_foreground-6: var(--_chalkboard-10);
+  --_border-default: var(--_chalkboard-100);
+  --_border-2: var(--_chalkboard-70);
+  --_border-3: var(--_chalkboard-50);
+  --_border-4: var(--_chalkboard-30);
+  --_border-5: var(--_chalkboard-20);
+}
+
+.dark {
+  --_surface-default: var(--_chalkboard-100);
+  --_surface-2: var(--_chalkboard-90);
+  --_surface-3: var(--_chalkboard-70);
+  --_surface-4: var(--_chalkboard-30);
+  --_surface-5: var(--_chalkboard-20);
+  --_surface-6: var(--_chalkboard-10);
+  --_foreground-default: var(--_chalkboard-10);
+  --_foreground-2: var(--_chalkboard-30);
+  --_foreground-3: var(--_chalkboard-50);
+  --_foreground-4: var(--_chalkboard-70);
+  --_foreground-5: var(--_chalkboard-90);
+  --_foreground-6: var(--_chalkboard-100);
+  --_border-default: var(--_chalkboard-10);
+  --_border-2: var(--_chalkboard-30);
+  --_border-3: var(--_chalkboard-50);
+  --_border-4: var(--_chalkboard-80);
+  --_border-5: var(--_chalkboard-90);
+}

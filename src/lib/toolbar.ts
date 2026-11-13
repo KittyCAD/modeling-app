@@ -1,3 +1,4 @@
+import { selectCommand } from '@src/lib/commandUtils'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import {
@@ -572,11 +573,7 @@ export function buildToolbarConfig(
       icon: icon ?? commandConfig?.icon,
       status: status === 'experimental' ? 'experimental' : 'available',
       links: [stdLibDocsLink(stdLibName), ...extraLinks],
-      onClick: () =>
-        commands.send({
-          type: 'Find and select command',
-          data: { name, groupId: 'modeling' },
-        }),
+      onClick: () => selectCommand(commands, { name, groupId: 'modeling' }),
     }
   }
 
@@ -840,10 +837,7 @@ export function buildToolbarConfig(
           id: 'insert',
           command: 'code:Insert',
           onClick: () =>
-            commands.send({
-              type: 'Find and select command',
-              data: { name: 'Import', groupId: 'code' },
-            }),
+            selectCommand(commands, { name: 'Import', groupId: 'code' }),
           icon: 'import',
           status: 'available',
           title: 'Import',
@@ -1046,12 +1040,9 @@ export function buildToolbarConfig(
                   })
                 ),
               onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: {
-                    name: 'Constrain length',
-                    groupId: 'modeling',
-                  },
+                selectCommand(commands, {
+                  name: 'Constrain length',
+                  groupId: 'modeling',
                 }),
               icon: 'dimension',
               status: 'available',

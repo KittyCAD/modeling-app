@@ -39,6 +39,7 @@ import {
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
 import { registerFileProtocolCsp } from '@src/lib/csp'
+import { getDeviceFlowError } from '@src/lib/deviceFlowErrors'
 import { DeviceFlowSessionStore } from '@src/lib/deviceFlowSessions'
 import { discoverMachineApi } from '@src/lib/discoverMachineApi'
 import {
@@ -805,7 +806,7 @@ ipcMain.handle('startDeviceFlow', async (event, host: string) => {
   const deviceAuthorizationResponse = await initiateDeviceAuthorization(
     config,
     {}
-  )
+  ).catch((error: unknown) => Promise.reject(getDeviceFlowError(error)))
   const verificationUri =
     deviceAuthorizationResponse.verification_uri_complete ??
     deviceAuthorizationResponse.verification_uri
@@ -876,8 +877,8 @@ ipcMain.handle('loginWithDeviceFlow', async (event) => {
     const tokenSet = await deviceFlowSession.handle.poll()
     console.log('Received token set')
     return tokenSet.access_token
-  } catch (e) {
-    console.log(e)
+  } catch (error) {
+    return Promise.reject(getDeviceFlowError(error))
   } finally {
     deviceFlowSessions.deleteIfCurrent(targetWindow, deviceFlowSession)
   }

@@ -41,7 +41,7 @@ import type {
   Point3d,
 } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
-import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
+import { enterSketchModeAndSyncCamera } from '@src/clientSideScene/CameraControls'
 import { deleteSegmentsOrProfiles } from '@src/clientSideScene/deleteSegment'
 import {
   orthoScale,
@@ -54,7 +54,10 @@ import {
 } from '@src/clientSideScene/sceneConstants'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { OnMoveCallbackArgs } from '@src/clientSideScene/sceneInfra'
-import { DRAFT_POINT } from '@src/clientSideScene/sceneUtils'
+import {
+  DRAFT_POINT,
+  SKETCH_GROUP_SEGMENTS,
+} from '@src/clientSideScene/sceneUtils'
 import { createProfileStartHandle } from '@src/clientSideScene/segments'
 import {
   applyConstraintEqualAngle,
@@ -134,6 +137,7 @@ import {
   getSketchBlockForArtifact,
   isFaceFromLegacySketch,
 } from '@src/lang/std/artifactGraph'
+import { namedViewsForExport } from '@src/lang/std/kclNamedViews'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import {
   crossProduct,
@@ -268,6 +272,25 @@ function findSceneObjectForPlaneSelection(
   })
 }
 
+/**
+ * Aims the camera at a sketch solve plane before the sketch machine starts.
+ * The engine does this itself when streaming; with the local renderer we have to.
+ */
+export async function positionLocalSketchSolveCamera(
+  kclManager: KclManager,
+  plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane,
+  signal?: AbortSignal
+) {
+  const { sceneEntitiesManager, sceneInfra } = kclManager
+  // The camera is aimed at the sketch group, which the sketch machine only
+  // orients once it starts.
+  sceneEntitiesManager.initSketchSolveEntityOrientation(plane)
+  await sceneInfra.camControls.transitionToSketch(
+    sceneEntitiesManager.sketchSolveGroup,
+    signal
+  )
+}
+
 async function enterSketchSolveFromSketchBlockArtifact({
   sketchBlockArtifact,
   kclManager,
@@ -275,6 +298,7 @@ async function enterSketchSolveFromSketchBlockArtifact({
   engineCommandManager,
   projectRef,
   wasmInstance,
+  signal,
 }: {
   sketchBlockArtifact: Extract<Artifact, { type: 'sketchBlock' }>
   kclManager: KclManager
@@ -282,6 +306,7 @@ async function enterSketchSolveFromSketchBlockArtifact({
   engineCommandManager: ConnectionManager
   projectRef?: { current: Project | undefined }
   wasmInstance: ModuleType
+  signal?: AbortSignal
 }): Promise<{
   plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
   sketchSolveId: number
@@ -315,7 +340,15 @@ async function enterSketchSolveFromSketchBlockArtifact({
 
   const id =
     planeData.type === 'extrudeFace' ? planeData.faceId : planeData.planeId
-  await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+  await enterSketchModeAndSyncCamera(
+    engineCommandManager,
+    id,
+    kclManager.sceneInfra.camControls,
+    planeData.type === 'extrudeFace'
+  )
+  if (engineCommandManager.geometryOnly) {
+    await positionLocalSketchSolveCamera(kclManager, planeData, signal)
+  }
   kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
   const project = projectRef?.current
@@ -1018,8 +1051,7 @@ export const modelingMachine = setup({
     ),
     'hide default planes': assign({
       defaultPlaneVisibility: ({ context }) => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        context.kclManager.hidePlanes()
+        context.kclManager.hidePlanes().catch(reportRejection)
         return { xy: false, xz: false, yz: false }
       },
     }),
@@ -1424,8 +1456,7 @@ export const modelingMachine = setup({
     }),
     'show default planes': assign({
       defaultPlaneVisibility: ({ context }) => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        context.kclManager.showPlanes()
+        context.kclManager.showPlanes().catch(reportRejection)
         return { xy: true, xz: true, yz: true }
       },
     }),
@@ -1434,8 +1465,7 @@ export const modelingMachine = setup({
         context: { kclManager, defaultPlaneVisibility },
       }) => {
         if (!kclManager.hasErrors()) {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          kclManager.showPlanes()
+          kclManager.showPlanes().catch(reportRejection)
           return { xy: true, xz: true, yz: true }
         }
         return { ...defaultPlaneVisibility }
@@ -1447,7 +1477,7 @@ export const modelingMachine = setup({
         // When entering via right-click "Start sketch on selection", show planes only if not requested to keep current visibility
         return {}
       }
-      void context.kclManager.showPlanes()
+      context.kclManager.showPlanes().catch(reportRejection)
       return { defaultPlaneVisibility: { xy: true, xz: true, yz: true } }
     }),
     'setup noPoints onClick listener': ({
@@ -1511,6 +1541,7 @@ export const modelingMachine = setup({
     },
     'restore modeling camera controls': ({ context }) => {
       const camControls = context.kclManager.sceneInfra.camControls
+      camControls.cancelSketchCameraTransition()
       camControls.enablePan = true
       camControls.enableRotate = true
       camControls.syncDirection = 'engineToClient'
@@ -1965,7 +1996,7 @@ export const modelingMachine = setup({
         return {}
       }
     ),
-    'Set mouse state': assign(({ context, event }) => {
+    'Set mouse state': assign(({ context, event, self }) => {
       if (event.type !== 'Set mouse state') return {}
       const nextSegmentHoverMap = () => {
         if (event.data.type === 'isHovering') {
@@ -1995,15 +2026,27 @@ export const modelingMachine = setup({
           const pathToNodeString = JSON.stringify(
             mouseOnParent?.userData?.pathToNode
           )
-          const timeoutId = setTimeout(() => {
-            context.kclManager.sceneInfra.modelingSend({
+          const filePath = context.kclManager.path
+          const projectPath = context.kclManager.systemDeps.projectPath.peek()
+          // zds-performance-exception: feedback-lifetime -- Keep the visible toolbar reachable while the pointer crosses its 20px gap to the controls.
+          const timeoutId = window.setTimeout(() => {
+            const snapshot = self.getSnapshot()
+            if (
+              snapshot.status !== 'active' ||
+              snapshot.context.kclManager.path !== filePath ||
+              snapshot.context.kclManager.systemDeps.projectPath.peek() !==
+                projectPath ||
+              snapshot.context.segmentHoverMap[pathToNodeString] !== timeoutId
+            )
+              return
+            self.send({
               type: 'Set mouse state',
               data: {
                 type: 'timeoutEnd',
                 pathToNodeString,
               },
             })
-          }, OVERLAY_TIMEOUT_MS) as unknown as number
+          }, OVERLAY_TIMEOUT_MS)
           return {
             ...context.segmentHoverMap,
             [pathToNodeString]: timeoutId,
@@ -2042,16 +2085,9 @@ export const modelingMachine = setup({
         return {}
       },
     }),
-    'Center camera on selection': ({ context: { engineCommandManager } }) => {
-      engineCommandManager
-        .sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'default_camera_center_to_selection',
-            camera_movement: 'vantage',
-          },
-        })
+    'Center camera on selection': ({ context: { kclManager } }) => {
+      kclManager.sceneInfra.camControls
+        .centerOnSelection()
         .catch(reportRejection)
     },
     'Set sketchDetails': assign(({ context: { sketchDetails }, event }) => {
@@ -2147,21 +2183,18 @@ export const modelingMachine = setup({
       async (args: { input: { context: ModelingMachineContext } }) => {
         const context = args.input.context
         const { store, engineCommandManager, kclManager } = context
+        kclManager.sceneInfra.camControls.cancelSketchCameraTransition()
+        const camControls = kclManager.sceneInfra.camControls
         try {
-          // When cancelling the sketch mode we should disable sketch mode within the engine.
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: { type: 'sketch_mode_disable' },
-          })
-
-          kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+          camControls.syncDirection = 'clientToEngine'
 
           if (store.cameraProjection?.current === 'perspective') {
-            await kclManager.sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            await camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+          } else {
+            await camControls.disableSketchMode()
           }
 
-          kclManager.sceneInfra.camControls.syncDirection = 'engineToClient'
+          camControls.syncDirection = 'engineToClient'
 
           // TODO: Re-evaluate if this pause/play logic is needed.
           // TODO: Do I need this video element?
@@ -2183,7 +2216,6 @@ export const modelingMachine = setup({
             })
             .catch(reportRejection)
         } finally {
-          const camControls = kclManager.sceneInfra.camControls
           kclManager.sceneEntitiesManager.tearDownSketch({ removeAxis: false })
           kclManager.sceneEntitiesManager.removeSketchGrid()
           camControls.enablePan = true
@@ -3104,7 +3136,12 @@ export const modelingMachine = setup({
           }
 
           const id = plane.type === 'extrudeFace' ? plane.faceId : plane.planeId
-          await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+          await enterSketchModeAndSyncCamera(
+            engineCommandManager,
+            id,
+            kclManager.sceneInfra.camControls,
+            plane.type === 'extrudeFace'
+          )
           kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
           return {
             sketchEntryNodePath: [],
@@ -3113,6 +3150,8 @@ export const modelingMachine = setup({
             zAxis: plane.zAxis,
             yAxis: plane.yAxis,
             origin: plane.position,
+            animateTargetId: id,
+            animateTargetIsFace: plane.type === 'extrudeFace',
           }
         }
         const { modifiedAst, pathToNode } = startSketchOnDefault(
@@ -3125,9 +3164,10 @@ export const modelingMachine = setup({
           kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode
         kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
-        await letEngineAnimateAndSyncCamAfter(
+        await enterSketchModeAndSyncCamera(
           engineCommandManager,
-          plane.planeId
+          plane.planeId,
+          kclManager.sceneInfra.camControls
         )
 
         return {
@@ -3144,7 +3184,9 @@ export const modelingMachine = setup({
     'animate-to-sketch-solve': fromPromise(
       async ({
         input,
+        signal,
       }: {
+        signal: AbortSignal
         input:
           | {
               artifactOrPlaneId: ArtifactId | undefined
@@ -3173,6 +3215,7 @@ export const modelingMachine = setup({
           wasmInstance,
           projectRef,
         } = input
+        await rustContext.prepareForSketchInsertion()
         await kclManager.flushPendingEditorExecution()
         if (kclManager.hasParseErrors()) {
           return reject(
@@ -3328,6 +3371,7 @@ export const modelingMachine = setup({
             engineCommandManager,
             projectRef,
             wasmInstance,
+            signal,
           })
         }
 
@@ -3413,7 +3457,15 @@ export const modelingMachine = setup({
 
         const id =
           result.type === 'extrudeFace' ? result.faceId : result.planeId
-        await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+        await enterSketchModeAndSyncCamera(
+          engineCommandManager,
+          id,
+          kclManager.sceneInfra.camControls,
+          result.type === 'extrudeFace'
+        )
+        if (engineCommandManager.geometryOnly) {
+          await positionLocalSketchSolveCamera(kclManager, result, signal)
+        }
 
         kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
         kclManager.updateCodeEditor(
@@ -3436,7 +3488,9 @@ export const modelingMachine = setup({
     'animate-to-existing-sketch-solve': fromPromise(
       async ({
         input,
+        signal,
       }: {
+        signal: AbortSignal
         input:
           | {
               artifactId: ArtifactId | undefined
@@ -3480,6 +3534,7 @@ export const modelingMachine = setup({
           engineCommandManager,
           projectRef,
           wasmInstance,
+          signal,
         })
       }
     ),
@@ -3624,7 +3679,9 @@ export const modelingMachine = setup({
     'setup-client-side-sketch-segments': fromPromise(
       async ({
         input: { sketchDetails, selectionRanges, kclManager },
+        signal,
       }: {
+        signal: AbortSignal
         input: {
           sketchDetails: SketchDetails | null
           selectionRanges: Selections
@@ -3639,6 +3696,18 @@ export const modelingMachine = setup({
           // empty if its the first profile in a sketch, but we still need to tear down and cancel the current tool properly.
           kclManager.sceneInfra.resetMouseListeners()
           kclManager.sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+          const plane = kclManager.sceneEntitiesManager.intersectionPlane
+          plane.quaternion.copy(
+            quaternionFromUpNForward(
+              new Vector3(...sketchDetails.yAxis),
+              new Vector3(...sketchDetails.zAxis)
+            )
+          )
+          plane.position.set(...sketchDetails.origin)
+          await kclManager.sceneInfra.camControls.transitionToSketch(
+            plane,
+            signal
+          )
           return
         }
         kclManager.sceneInfra.resetMouseListeners()
@@ -3652,6 +3721,16 @@ export const modelingMachine = setup({
           selectionRanges,
         })
         kclManager.sceneInfra.resetMouseListeners()
+
+        const sketchGroup = kclManager.sceneInfra.scene.children.find(
+          (object) => object.userData.type === SKETCH_GROUP_SEGMENTS
+        )
+        if (sketchGroup) {
+          await kclManager.sceneInfra.camControls.transitionToSketch(
+            sketchGroup,
+            signal
+          )
+        }
 
         kclManager.sceneEntitiesManager.setupSketchIdleCallbacks({
           sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
@@ -3750,9 +3829,10 @@ export const modelingMachine = setup({
               kclManager.ast,
               planeCodeRef.range
             )
-            await letEngineAnimateAndSyncCamAfter(
+            await enterSketchModeAndSyncCamera(
               engineCommandManager,
-              artifact.id
+              artifact.id,
+              kclManager.sceneInfra.camControls
             )
             const normal = crossProduct(planeVar.xAxis, planeVar.yAxis)
             return {
@@ -3770,9 +3850,11 @@ export const modelingMachine = setup({
           await kclManager.sceneEntitiesManager.getSketchOrientationDetails(
             sketch.value
           )
-        await letEngineAnimateAndSyncCamAfter(
+        await enterSketchModeAndSyncCamera(
           engineCommandManager,
-          info?.sketchDetails?.faceId || ''
+          info?.sketchDetails?.faceId || '',
+          kclManager.sceneInfra.camControls,
+          sketch.value.on.type !== 'plane'
         )
 
         const sketchArtifact = kclManager.artifactGraph.get(mainPath)
@@ -3803,6 +3885,7 @@ export const modelingMachine = setup({
             (a) => a / kclManager.sceneInfra.baseUnitMultiplier
           ) as [number, number, number],
           animateTargetId: info?.sketchDetails?.faceId || '',
+          animateTargetIsFace: sketch.value.on.type !== 'plane',
         }
       }
     ),
@@ -4457,6 +4540,17 @@ export const modelingMachine = setup({
           defaultUnit?.current ??
           // Fall back to app default units if the project setting is absent.
           DEFAULT_DEFAULT_LENGTH_UNIT
+
+        if (format.type === 'gltf' || format.type === 'step') {
+          const { camControls } = kclManager.sceneInfra
+          format.views = namedViewsForExport({
+            artifactGraph: kclManager.artifactGraph,
+            filenames: kclManager.execState.filenames,
+            fallbackDistance: camControls.camera.position.distanceTo(
+              camControls.target
+            ),
+          })
+        }
 
         // Set all the un-configurable defaults here.
         if (format.type === 'gltf') {
@@ -5357,8 +5451,29 @@ export const modelingMachine = setup({
               target: 'SketchIdle',
               guard: 'is editing existing sketch',
             },
+            {
+              target: 'Position camera for new sketch',
+              guard: ({ context }) => context.engineCommandManager.geometryOnly,
+            },
             'Line tool',
           ],
+        },
+
+        'Position camera for new sketch': {
+          invoke: {
+            src: 'setup-client-side-sketch-segments',
+            input: ({ context }) => ({
+              sketchDetails: context.sketchDetails,
+              selectionRanges: context.selectionRanges,
+              kclManager: context.kclManager,
+              wasmInstance: context.wasmInstance,
+            }),
+            onDone: 'Line tool',
+            onError: {
+              target: 'undo startSketchOn',
+              actions: ({ event }) => reportRejection(event.error),
+            },
+          },
         },
 
         'Tangential arc to': {
@@ -6460,7 +6575,7 @@ export const modelingMachine = setup({
             },
             onError: {
               target: '#Modeling.idle',
-              actions: ['reset sketch metadata'],
+              actions: ['toastError', 'reset sketch metadata'],
             },
           },
         },

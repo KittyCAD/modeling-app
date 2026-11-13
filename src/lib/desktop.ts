@@ -1,3 +1,5 @@
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
+import { writeFileWithParents } from '@src/lib/fileSystem/writeFile'
 import type { UserResponse } from '@kittycad/lib'
 import { users } from '@kittycad/lib'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
@@ -59,8 +61,6 @@ import { getInVariableCase, isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
-
-const textDecoder = new TextDecoder()
 
 function getProjectSettingsSection(
   config: DeepPartial<Configuration> | Configuration
@@ -131,9 +131,7 @@ async function readProjectTomlMetadata(
 ) {
   const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
   try {
-    const projectToml = textDecoder.decode(
-      await fileOperations.readFile(projectTomlPath)
-    )
+    const projectToml = await readTextFile(fileOperations, projectTomlPath)
     const environmentName = getEnvironmentNameFromEnv(env())
     return {
       title: getProjectTitleFromProjectTomlContents(projectToml),
@@ -152,7 +150,7 @@ async function readProjectTomlMetadata(
   }
 }
 
-async function ensureProjectTomlTitle({
+export async function ensureProjectTomlTitle({
   fileOperations,
   projectPath,
   title,
@@ -169,9 +167,7 @@ async function ensureProjectTomlTitle({
   let projectToml = ''
   if (readExistingProjectToml) {
     try {
-      projectToml = textDecoder.decode(
-        await fileOperations.readFile(projectTomlPath)
-      )
+      projectToml = await readTextFile(fileOperations, projectTomlPath)
     } catch (error) {
       if (!isPathNotFoundError(error)) {
         return Promise.reject(error)
@@ -585,7 +581,8 @@ export async function getDefaultKclFileForDir(
   fileOperations: FileOperationsRegistryService,
   projectDir: string,
   file: FileEntry,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  createMissingEntrypoint = true
 ) {
   // Make sure the dir is a directory.
   const isFileEntryDir = await statIsDirectory(fileOperations, projectDir)
@@ -601,7 +598,7 @@ export async function getDefaultKclFileForDir(
       // Find a kcl file in the directory.
       if (file.children) {
         for (const entry of file.children) {
-          if (entry.name.endsWith('.kcl')) {
+          if (entry.children === null && entry.name.endsWith('.kcl')) {
             return fsZds.join(projectDir, entry.name)
           } else if ((entry.children?.length ?? 0) > 0) {
             // Recursively find a kcl file in the directory.
@@ -609,10 +606,12 @@ export async function getDefaultKclFileForDir(
               fileOperations,
               entry.path,
               entry,
-              wasmInstance
+              wasmInstance,
+              createMissingEntrypoint
             )
           }
         }
+        if (!createMissingEntrypoint) return defaultFilePath
         // If we didn't find a kcl file, create one.
         const configuration = await readAppSettingsFile(
           fileOperations,
@@ -655,7 +654,7 @@ const kclFileCount = (file: FileEntry) => {
   let count = 0
   if (file.children) {
     for (const entry of file.children) {
-      if (entry.name.endsWith('.kcl')) {
+      if (entry.children === null && entry.name.endsWith('.kcl')) {
         count += 1
       } else {
         count += kclFileCount(entry)
@@ -685,7 +684,8 @@ const directoryCount = (file: FileEntry) => {
 export async function getProjectInfo(
   fileOperations: FileOperationsRegistryService,
   projectPath: string,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  options: { createMissingEntrypoint?: boolean } = {}
 ): Promise<Project> {
   // Check the directory.
   let stats: FileStat | undefined
@@ -693,9 +693,7 @@ export async function getProjectInfo(
     stats = await fileOperations.stat(projectPath)
   } catch (e) {
     if (isPathNotFoundError(e)) {
-      return Promise.reject(
-        new Error(`Project directory does not exist: ${projectPath}`)
-      )
+      return Promise.reject(e)
     }
   }
 
@@ -740,7 +738,8 @@ export async function getProjectInfo(
       fileOperations,
       projectPath,
       walked,
-      wasmInstance
+      wasmInstance,
+      options.createMissingEntrypoint
     )
   }
   const projectTomlMetadata = canReadWriteProjectPath
@@ -778,8 +777,9 @@ export async function overwriteProjectTomlWithNewSettings(
   }
   let projectToml = tomlStr
   try {
-    const existingProjectToml = textDecoder.decode(
-      await fileOperations.readFile(projectSettingsFilePath)
+    const existingProjectToml = await readTextFile(
+      fileOperations,
+      projectSettingsFilePath
     )
     projectToml = preserveProjectTomlMetadataInProjectSettingsContents(
       existingProjectToml,
@@ -806,9 +806,7 @@ export async function writeProjectTitleToProjectToml(
   await ensureDirectory(fileOperations, projectPath)
   let projectToml = ''
   try {
-    projectToml = textDecoder.decode(
-      await fileOperations.readFile(projectSettingsFilePath)
-    )
+    projectToml = await readTextFile(fileOperations, projectSettingsFilePath)
   } catch (error) {
     if (!isPathNotFoundError(error)) {
       return Promise.reject(error)
@@ -887,7 +885,7 @@ export const getEnvironmentConfigurationPath = async (
   return fsZds.join(fullPath, `${environmentName}.json`)
 }
 
-export const getEnvironmentFilePath = async () => {
+async function getAppDataFilePath(fileName: string) {
   const isTestEnv = env().NODE_ENV === 'test'
   const appConfig = await fsZds.getPath('appData')
 
@@ -902,44 +900,16 @@ export const getEnvironmentFilePath = async () => {
     }
   }
 
-  return fsZds.join(fullPath, ENVIRONMENT_FILE_NAME)
+  return fsZds.join(fullPath, fileName)
 }
 
-const getTelemetryFilePath = async () => {
-  const isTestEnv = env().NODE_ENV === 'test'
+export const getEnvironmentFilePath = () =>
+  getAppDataFilePath(ENVIRONMENT_FILE_NAME)
 
-  const appConfig = await fsZds.getPath('appData')
-  let fullPath = fsZds.join(appConfig, getAppFolderName())
+const getTelemetryFilePath = () => getAppDataFilePath(TELEMETRY_FILE_NAME)
 
-  if (isTestEnv && window.electron) {
-    const testSettingsPath = await window.electron.getAppTestProperty(
-      'TEST_SETTINGS_FILE_KEY'
-    )
-    if (testSettingsPath) {
-      fullPath = fsZds.resolve(testSettingsPath, '..')
-    }
-  }
-
-  return fsZds.join(fullPath, TELEMETRY_FILE_NAME)
-}
-
-const getRawTelemetryFilePath = async () => {
-  const isTestEnv = env().NODE_ENV === 'test'
-
-  const appConfig = await fsZds.getPath('appData')
-  let fullPath = fsZds.join(appConfig, getAppFolderName())
-
-  if (isTestEnv && window.electron) {
-    const testSettingsPath = await window.electron.getAppTestProperty(
-      'TEST_SETTINGS_FILE_KEY'
-    )
-    if (testSettingsPath) {
-      fullPath = fsZds.resolve(testSettingsPath, '..')
-    }
-  }
-
-  return fsZds.join(fullPath, TELEMETRY_RAW_FILE_NAME)
-}
+const getRawTelemetryFilePath = () =>
+  getAppDataFilePath(TELEMETRY_RAW_FILE_NAME)
 
 const getProjectSettingsFilePath = async (projectPath: string) => {
   return fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
@@ -977,9 +947,7 @@ export const readProjectSettingsFile = async (
     }
   }
 
-  const configToml = textDecoder.decode(
-    await fileOperations.readFile(settingsPath)
-  )
+  const configToml = await readTextFile(fileOperations, settingsPath)
   const configObj = parseProjectSettings(configToml, wasmInstance)
   if (err(configObj)) {
     return Promise.reject(configObj)
@@ -1051,9 +1019,7 @@ const readPersistedAppSettingsFile = async (
   // The file exists, read it and parse it.
   try {
     await fileOperations.stat(settingsPath)
-    const configToml = textDecoder.decode(
-      await fileOperations.readFile(settingsPath)
-    )
+    const configToml = await readTextFile(fileOperations, settingsPath)
     const parsedAppConfig = parseAppSettings(configToml, wasmInstance)
     if (err(parsedAppConfig)) {
       return Promise.reject(parsedAppConfig)
@@ -1113,8 +1079,8 @@ export const writeAppSettingsFile = async (
   if (err(tomlStr)) {
     return Promise.reject(tomlStr)
   }
-  await ensureDirectory(fileOperations, fsZds.dirname(appSettingsFilePath))
-  return fileOperations.writeFile(appSettingsFilePath, tomlStr)
+
+  return writeFileWithParents(fileOperations, appSettingsFilePath, tomlStr)
 }
 
 export const readEnvironmentConfigurationFile = async (
@@ -1124,9 +1090,7 @@ export const readEnvironmentConfigurationFile = async (
   const path = await getEnvironmentConfigurationPath(environmentName)
   try {
     await fileOperations.stat(path)
-    const configurationJSON = textDecoder.decode(
-      await fileOperations.readFile(path)
-    )
+    const configurationJSON = await readTextFile(fileOperations, path)
     if (!configurationJSON) {
       return null
     }
@@ -1137,23 +1101,36 @@ export const readEnvironmentConfigurationFile = async (
   }
 }
 
+async function updateEnvironmentConfiguration(
+  fileOperations: FileOperationsRegistryService,
+  environmentName: string,
+  update: Partial<EnvironmentConfiguration>
+) {
+  const path = await getEnvironmentConfigurationPath(environmentName)
+  const environmentConfiguration = await getEnvironmentConfigurationObject(
+    fileOperations,
+    environmentName
+  )
+  Object.assign(environmentConfiguration, update)
+  const requestedConfiguration = JSON.stringify(environmentConfiguration)
+  const result = await writeFileWithParents(
+    fileOperations,
+    path,
+    requestedConfiguration
+  )
+  console.log(`wrote ${environmentName}.json to disk`)
+  return result
+}
+
 export const writeEnvironmentConfigurationToken = async (
   fileOperations: FileOperationsRegistryService,
   environmentName: string,
   token: string
 ) => {
   environmentName = environmentName.trim()
-  const path = await getEnvironmentConfigurationPath(environmentName)
-  const environmentConfiguration = await getEnvironmentConfigurationObject(
-    fileOperations,
-    environmentName
-  )
-  environmentConfiguration.token = token
-  const requestedConfiguration = JSON.stringify(environmentConfiguration)
-  await ensureDirectory(fileOperations, fsZds.dirname(path))
-  const result = await fileOperations.writeFile(path, requestedConfiguration)
-  console.log(`wrote ${environmentName}.json to disk`)
-  return result
+  return updateEnvironmentConfiguration(fileOperations, environmentName, {
+    token,
+  })
 }
 
 export const writeEnvironmentConfigurationKittycadWebSocketUrl = async (
@@ -1162,17 +1139,9 @@ export const writeEnvironmentConfigurationKittycadWebSocketUrl = async (
   kittycadWebSocketUrl: string
 ) => {
   kittycadWebSocketUrl = kittycadWebSocketUrl.trim()
-  const path = await getEnvironmentConfigurationPath(environmentName)
-  const environmentConfiguration = await getEnvironmentConfigurationObject(
-    fileOperations,
-    environmentName
-  )
-  environmentConfiguration.kittycadWebSocketUrl = kittycadWebSocketUrl
-  const requestedConfiguration = JSON.stringify(environmentConfiguration)
-  await ensureDirectory(fileOperations, fsZds.dirname(path))
-  const result = await fileOperations.writeFile(path, requestedConfiguration)
-  console.log(`wrote ${environmentName}.json to disk`)
-  return result
+  return updateEnvironmentConfiguration(fileOperations, environmentName, {
+    kittycadWebSocketUrl,
+  })
 }
 
 export const getEnvironmentConfigurationObject = async (
@@ -1227,17 +1196,9 @@ export const writeEnvironmentConfigurationZookeeperWebSocketUrl = async (
   zookeeperWebSocketUrl: string
 ) => {
   zookeeperWebSocketUrl = zookeeperWebSocketUrl.trim()
-  const path = await getEnvironmentConfigurationPath(environmentName)
-  const environmentConfiguration = await getEnvironmentConfigurationObject(
-    fileOperations,
-    environmentName
-  )
-  environmentConfiguration.zookeeperWebSocketUrl = zookeeperWebSocketUrl
-  const requestedConfiguration = JSON.stringify(environmentConfiguration)
-  await ensureDirectory(fileOperations, fsZds.dirname(path))
-  const result = await fileOperations.writeFile(path, requestedConfiguration)
-  console.log(`wrote ${environmentName}.json to disk`)
-  return result
+  return updateEnvironmentConfiguration(fileOperations, environmentName, {
+    zookeeperWebSocketUrl,
+  })
 }
 
 export const readEnvironmentConfigurationZookeeperWebSocketUrl = async (
@@ -1265,9 +1226,7 @@ export const readEnvironmentFile = async (
 
   try {
     await fileOperations.stat(environmentFilePath)
-    const environment = textDecoder.decode(
-      await fileOperations.readFile(environmentFilePath)
-    )
+    const environment = await readTextFile(fileOperations, environmentFilePath)
     if (!environment) {
       return ''
     }
@@ -1291,8 +1250,9 @@ export const writeEnvironmentFile = async (
   if (err(environment)) {
     return Promise.reject(environment)
   }
-  await ensureDirectory(fileOperations, fsZds.dirname(environmentFilePath))
-  const result = await fileOperations.writeFile(
+
+  const result = await writeFileWithParents(
+    fileOperations,
     environmentFilePath,
     environment
   )
@@ -1341,8 +1301,8 @@ export const writeTelemetryFile = async (
   if (err(content)) {
     return Promise.reject(content)
   }
-  await ensureDirectory(fileOperations, fsZds.dirname(telemetryFilePath))
-  return fileOperations.writeFile(telemetryFilePath, content)
+
+  return writeFileWithParents(fileOperations, telemetryFilePath, content)
 }
 
 export const writeRawTelemetryFile = async (
@@ -1353,8 +1313,8 @@ export const writeRawTelemetryFile = async (
   if (err(content)) {
     return Promise.reject(content)
   }
-  await ensureDirectory(fileOperations, fsZds.dirname(rawTelemetryFilePath))
-  return fileOperations.writeFile(rawTelemetryFilePath, content)
+
+  return writeFileWithParents(fileOperations, rawTelemetryFilePath, content)
 }
 
 let appStateStore: Project | undefined
