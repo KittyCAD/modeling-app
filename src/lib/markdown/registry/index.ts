@@ -5,10 +5,15 @@ import {
   editorLanguagesFacet,
 } from '@src/lib/editors/registry/contract'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
-import { contribute, type InputOf, type Subtree } from 'plankton'
+import {
+  extension as defineExtension,
+  contribute,
+  type InputOf,
+  type Extension,
+} from 'plankton'
 
 /** Markdown editing behavior, independent of execution or preview services. */
-const extension: Subtree = {
+const extension: Extension = defineExtension({
   key: 'markdown',
   create: () => {
     const _editorLanguagesContribution: InputOf<typeof editorLanguagesFacet> = {
@@ -37,5 +42,5 @@ const extension: Subtree = {
       ],
     }
   },
-}
+})
 export default withProjectShellFeature(extension, 'markdown')

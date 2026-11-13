@@ -1,7 +1,7 @@
 import { MachineManager } from '@src/lib/MachineManager'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
-import { provide, type Subtree } from 'plankton'
-export const machineManagerExtension = {
+import { extension as defineExtension, provide, type Extension } from 'plankton'
+export const machineManagerExtension = defineExtension({
   key: 'machine-manager-extension',
   create: () => {
     const machineManager =
@@ -16,5 +16,5 @@ export const machineManagerExtension = {
       items: [provide(machineManagerService, { manager: machineManager })],
     }
   },
-} satisfies Subtree
+}) satisfies Extension
 export default [machineManagerExtension]

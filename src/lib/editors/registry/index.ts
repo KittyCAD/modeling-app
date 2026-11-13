@@ -35,7 +35,13 @@ import {
 } from '@src/registry/contracts/commands'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { keymapEventOwnersFacet } from '@src/registry/contracts/keymap'
-import { contribute, type InputOf, provide, type Subtree } from 'plankton'
+import {
+  extension as defineExtension,
+  contribute,
+  type InputOf,
+  provide,
+  type Extension,
+} from 'plankton'
 import { createElement } from 'react'
 
 /** All resources for an editor share one owner, including while contributed code initializes it. */
@@ -47,9 +53,9 @@ interface EditorRecord {
 }
 
 /** The service owns buffers; capability and mode lifecycles are scoped to each record. */
-const extension: Subtree = {
+const extension: Extension = defineExtension({
   key: 'editors',
-  create: (scope) => {
+  create: (_dependencies, scope) => {
     const editors = signal<readonly Editor[]>([])
     const records = new Map<symbol, EditorRecord>()
     const presentations = signal<readonly EditorViewInstance[]>([])
@@ -313,5 +319,5 @@ const extension: Subtree = {
       },
     }
   },
-}
+})
 export default withProjectShellFeature(extension, 'editors')

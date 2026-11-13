@@ -3,7 +3,12 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
-import { provide, Registry, type Subtree } from 'plankton'
+import {
+  extension as defineExtension,
+  provide,
+  Registry,
+  type Extension,
+} from 'plankton'
 import { afterEach, expect, it, vi } from 'vitest'
 import debug from '.'
 
@@ -22,14 +27,14 @@ async function createRegistry() {
   registries.push(registry)
   await registry.configure([
     debug,
-    {
+    defineExtension({
       create: () => ({
         items: [
           provide(engineConnectionService, { manager }),
           provide(rustContextService, { context }),
         ],
       }),
-    } satisfies Subtree,
+    }) satisfies Extension,
   ])
   registry.inspect()
   return { registry, manager, context, sendSceneCommand }

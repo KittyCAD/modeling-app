@@ -4,7 +4,7 @@ import {
   type RouterRuntimeValues,
   routerService,
 } from '@src/registry/contracts/router'
-import { provide, type Subtree } from 'plankton'
+import { extension as defineExtension, provide, type Extension } from 'plankton'
 import {
   createPath,
   type Location,
@@ -155,7 +155,7 @@ export const createRouterRegistryService = (): RouterRegistryService => {
 
   return serviceImpl
 }
-export const routerExtension = {
+export const routerExtension = defineExtension({
   key: 'router-extension',
   create: () => {
     const serviceImpl = createRouterRegistryService()
@@ -165,5 +165,5 @@ export const routerExtension = {
       dispose: serviceImpl.reset,
     }
   },
-} satisfies Subtree
+}) satisfies Extension
 export default [routerExtension]

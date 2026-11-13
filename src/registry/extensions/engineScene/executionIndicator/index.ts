@@ -4,14 +4,18 @@ import {
   nullableStatusBarItem,
   statusBarLocalItemsFacet,
 } from '@src/registry/contracts/statusBar'
-import { contribute, type Subtree } from 'plankton'
+import {
+  extension as defineExtension,
+  contribute,
+  type Extension,
+} from 'plankton'
 import { createElement } from 'react'
 import { EXECUTION_INDICATOR_STATUS_BAR_ITEM_ID } from './constants'
 import { EngineExecutionStatusTooltip } from './EngineExecutionStatusTooltip'
 
-const executionIndicator = {
+const executionIndicator = defineExtension({
   key: 'execution-indicator.status-bar-item',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     const session = computed(() => ctx.optional(projectSession))
     const executionService = computed(
       () => session.value?.executingEditor.value
@@ -55,5 +59,5 @@ const executionIndicator = {
       items: [contribute(statusBarLocalItemsFacet, () => statusBarItem.value)],
     }
   },
-} satisfies Subtree
+}) satisfies Extension
 export default executionIndicator

@@ -1,5 +1,11 @@
 import { appHeaderItemsFacet } from '@src/registry/contracts/appHeader'
-import { contribute, type InputOf, Registry, type Subtree } from 'plankton'
+import {
+  extension as defineExtension,
+  contribute,
+  type InputOf,
+  Registry,
+  type Extension,
+} from 'plankton'
 import { describe, expect, it } from 'vitest'
 
 const FirstItem = () => null
@@ -8,7 +14,7 @@ describe('app header registry contract', () => {
   it('allows extensions to contribute ordered header items', async () => {
     const registry = new Registry()
     await registry.configure([
-      {
+      defineExtension({
         create: () => ({
           items: [
             contribute(
@@ -22,8 +28,8 @@ describe('app header registry contract', () => {
             ),
           ],
         }),
-      } satisfies Subtree,
-      {
+      }) satisfies Extension,
+      defineExtension({
         create: () => ({
           items: [
             contribute(
@@ -37,7 +43,7 @@ describe('app header registry contract', () => {
             ),
           ],
         }),
-      } satisfies Subtree,
+      }) satisfies Extension,
     ])
     expect(registry.get(appHeaderItemsFacet).map((item) => item.id)).toEqual([
       'first',

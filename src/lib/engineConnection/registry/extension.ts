@@ -4,10 +4,10 @@ import {
   engineConnectionService,
 } from '@src/lib/engineConnection/registry/contract'
 import { settingsService } from '@src/registry/contracts/settings'
-import { provide, type Subtree } from 'plankton'
-export const engineConnectionExtension = {
+import { extension as defineExtension, provide, type Extension } from 'plankton'
+export const engineConnectionExtension = defineExtension({
   key: 'engine-connection-extension',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     let service: EngineConnectionService | undefined
 
     const ensureService = () => {
@@ -38,5 +38,5 @@ export const engineConnectionExtension = {
       },
     }
   },
-} satisfies Subtree
+}) satisfies Extension
 export default [engineConnectionExtension]

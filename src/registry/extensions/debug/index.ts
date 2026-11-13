@@ -5,7 +5,7 @@ import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import { reportRejection } from '@src/lib/trap'
 import { engineStreamZoomToFit } from '@src/lib/utils'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
-import { type Subtree } from 'plankton'
+import { extension as defineExtension, type Extension } from 'plankton'
 
 declare global {
   interface Window {
@@ -68,9 +68,9 @@ function exposeGlobals(target: Window, properties: PropertyDescriptorMap) {
     if (currentState.entries.length === 0) installations.delete(target)
   }
 }
-export default {
+export default defineExtension({
   key: 'debug',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     if (typeof window === 'undefined')
       return {
         items: [],
@@ -157,4 +157,4 @@ export default {
       },
     }
   },
-} satisfies Subtree
+}) satisfies Extension

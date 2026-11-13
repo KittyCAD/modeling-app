@@ -9,9 +9,9 @@ import {
 } from '@src/lib/billing/registry/contract'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { useSelector } from '@xstate/react'
-import { provide, type Subtree } from 'plankton'
+import { extension as defineExtension, provide, type Extension } from 'plankton'
 import { createActor } from 'xstate'
-export const billingExtension = {
+export const billingExtension = defineExtension({
   key: 'billing-extension',
   create: () => {
     const actor = createActor(billingMachine, {
@@ -43,5 +43,5 @@ export const billingExtension = {
       },
     }
   },
-} satisfies Subtree
+}) satisfies Extension
 export default [billingExtension]

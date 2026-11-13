@@ -6,7 +6,12 @@ import {
 } from '@src/registry/contracts/fileOperations'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
-import { provide, Registry, type Subtree } from 'plankton'
+import {
+  extension as defineExtension,
+  provide,
+  Registry,
+  type Extension,
+} from 'plankton'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const createSession = async (text: string) => {
@@ -19,11 +24,11 @@ const createSession = async (text: string) => {
   const registry = new Registry()
   await registry.configure([
     projectSessionRegistryItem,
-    {
+    defineExtension({
       create: () => ({
         items: [provide(fileOperationsService, operations)],
       }),
-    } satisfies Subtree,
+    }) satisfies Extension,
   ])
   const session = registry.required(projectSession)
   const file = new File('/project/main.kcl', session.textFileIO, 7)

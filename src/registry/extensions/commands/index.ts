@@ -18,7 +18,12 @@ import { projectSession } from '@src/registry/contracts/projectSession'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
-import { contribute, provide, type Subtree } from 'plankton'
+import {
+  extension as defineExtension,
+  contribute,
+  provide,
+  type Extension,
+} from 'plankton'
 import { createActor } from 'xstate'
 import { createAppCommands } from './appCommands'
 import { createToolbarCommands } from './toolbarCommands'
@@ -29,9 +34,9 @@ type FindAndSelectCommandEvent = Extract<
     type: 'Find and select command'
   }
 >
-export const commandsExtension = {
+export const commandsExtension = defineExtension({
   key: 'commands-extension',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     const commandsSignal = ctx.observe(commandsFacet)
     let commandBarActor: CommandSystemService['actor'] | undefined
     let commandPaletteScopeOwner: CommandScopeService | undefined
@@ -173,10 +178,10 @@ export const commandsExtension = {
       },
     }
   },
-} satisfies Subtree
-export const toolbarCommandsItem = {
+}) satisfies Extension
+export const toolbarCommandsItem = defineExtension({
   key: 'toolbar-commands',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     const getExecutingEditor = () =>
       untracked(
         () =>
@@ -198,6 +203,6 @@ export const toolbarCommandsItem = {
       ],
     }
   },
-} satisfies Subtree
+}) satisfies Extension
 const commandsRegistryItem = [commandsExtension, toolbarCommandsItem]
 export default commandsRegistryItem

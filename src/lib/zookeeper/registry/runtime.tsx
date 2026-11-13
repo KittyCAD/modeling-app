@@ -43,7 +43,11 @@ import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
-import { contribute, type Subtree } from 'plankton'
+import {
+  extension as defineExtension,
+  contribute,
+  type Extension,
+} from 'plankton'
 import { lazy, Suspense } from 'react'
 
 const ZookeeperConversationPaneWrapper = lazy(async () => {
@@ -388,9 +392,9 @@ export function ZookeeperPaneOutlet({
     </Suspense>
   )
 }
-export const zookeeperRuntimeRegistryItem: Subtree = {
+export const zookeeperRuntimeRegistryItem: Extension = defineExtension({
   key: 'zookeeper.runtime',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     const layout = computed(() => ctx.optional(layoutService))
     const runtime = createZookeeperRuntime({
       auth: computed(() => ctx.optional(authService)),
@@ -431,4 +435,4 @@ export const zookeeperRuntimeRegistryItem: Subtree = {
       dispose: () => runtime.dispose(),
     }
   },
-}
+})

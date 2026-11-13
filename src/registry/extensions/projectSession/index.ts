@@ -17,7 +17,7 @@ import { wasmPromiseFacet } from '@src/registry/contracts/wasm';
 import { lspService } from '@src/lang/lsp/registry/contract';
 import { ExpectedFileOperationError } from '@src/lib/fileSystem/operationErrors';
 import { flushActiveTextFileWrite, adoptStorageTextSnapshot } from '@src/lib/activeTextFile';
-import { contribute, provide } from "plankton";
+import { extension as defineExtension, contribute, provide } from "plankton";
 import { computed, signal } from '@preact/signals-core';
 import { projectStorageProvidersFacet, type ProjectStorage } from '@src/lib/projectSession/storage';
 import type { ZDSProject } from '@src/lib/projectSession';
@@ -36,9 +36,9 @@ const FileSaveStatus = lazy(async () => {
     default: FileSaveStatus
   };
 });
-export const projectSessionExtension = {
+export const projectSessionExtension = defineExtension({
   key: 'project-session-extension',
-  create: ctx => {
+  create: _dependencies, ctx => {
     const project = signal<ZDSProject | undefined>(undefined);
     let refreshGeneration = 0;
     let reconciliationGeneration = 0;
@@ -275,5 +275,5 @@ export const projectSessionExtension = {
       }
     };
   }
-};
+});
 export default [projectSessionExtension, projectStorageWatcher];

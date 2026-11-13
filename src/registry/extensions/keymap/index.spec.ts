@@ -37,6 +37,7 @@ import {
 } from '@src/registry/contracts/keymap'
 import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
 import {
+  extension as defineExtension,
   contribute,
   slot as createSlot,
   type InputOf,
@@ -1072,7 +1073,7 @@ describe('keymap extension', () => {
     const registry = new Registry()
     await registry.configure([
       keymapExtension,
-      {
+      defineExtension({
         ...keymapSlot,
         create: () => ({
           items: [
@@ -1092,7 +1093,7 @@ describe('keymap extension', () => {
             ],
           ],
         }),
-      },
+      }),
     ])
     const keymap = registry.required(keymapService)
     expect(keymap.keymap.value.items).toContainEqual(
@@ -1125,12 +1126,12 @@ async function createRegistryWithKeymapItems(
       ? [createTestCommandSystemItem(commands, options.send ?? vi.fn())]
       : []),
     ...(options.extraItems ?? []),
-    {
+    defineExtension({
       ...keymapSlot,
       create: () => ({
         items: [[...items.map(provideKeymapItem)]],
       }),
-    },
+    }),
   ])
   return registry
 }

@@ -5,12 +5,12 @@ import { projectLibrariesService } from '@src/registry/contracts/projectLibrarie
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { routerService } from '@src/registry/contracts/router'
 import { settingsService } from '@src/registry/contracts/settings'
-import { provide, type Subtree } from 'plankton'
+import { extension as defineExtension, provide, type Extension } from 'plankton'
 
 /** Resolve dependencies when used so library discovery does not eagerly open a session. */
-export default {
+export default defineExtension({
   key: 'project-libraries.service',
-  create: (scope) => ({
+  create: (_dependencies, scope) => ({
     items: [
       provide(
         projectLibrariesService,
@@ -30,4 +30,4 @@ export default {
       ),
     ],
   }),
-} satisfies Subtree
+}) satisfies Extension

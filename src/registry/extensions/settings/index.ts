@@ -22,11 +22,17 @@ import {
 import { statusBarGlobalItemsFacet } from '@src/registry/contracts/statusBar'
 import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
-import { contribute, type InputOf, provide, type Subtree } from 'plankton'
+import {
+  extension as defineExtension,
+  contribute,
+  type InputOf,
+  provide,
+  type Extension,
+} from 'plankton'
 import { createActor } from 'xstate'
-export const settingsExtension = {
+export const settingsExtension = defineExtension({
   key: 'settings-extension',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     const settingsSignal = signal<SettingsType>(createSettings())
     let settingsActor: SettingsActorType | undefined
     let settingsSubscription:
@@ -96,7 +102,7 @@ export const settingsExtension = {
       },
     }
   },
-} satisfies Subtree
+}) satisfies Extension
 const settingsRegistryItem = [
   contribute(
     statusBarGlobalItemsFacet,

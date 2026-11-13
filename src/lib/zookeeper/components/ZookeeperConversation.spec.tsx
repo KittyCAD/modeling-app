@@ -57,7 +57,7 @@ import {
 } from '@src/registry/contracts/engineScene'
 import { viewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
 import { ZOODLE_BRUSH_SIZE_DEFAULT_PX } from '@src/registry/contracts/zoodle'
-import { provide, Registry } from 'plankton'
+import { extension as defineExtension, provide, Registry } from 'plankton'
 
 const captureViewportScreenshot = vi.fn<() => string>()
 
@@ -65,12 +65,12 @@ const configureTestRegistry = async () => {
   const registry = new Registry()
   await registry.configure([
     provide(viewportScreenshotService, { capture: captureViewportScreenshot }),
-    {
+    defineExtension({
       ...engineSceneRuntimeExtensionsSlot,
       create: () => ({
         items: [],
       }),
-    },
+    }),
   ])
   bootMockState.registry = registry
   return registry

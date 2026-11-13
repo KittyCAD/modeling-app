@@ -56,7 +56,13 @@ import {
   settingsService,
 } from '@src/registry/contracts/settings'
 import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
-import { contribute, type InputOf, provide, type Subtree } from 'plankton'
+import {
+  extension as defineExtension,
+  contribute,
+  type InputOf,
+  provide,
+  type Extension,
+} from 'plankton'
 function areProjectLibrariesEqual(
   left: readonly ProjectLibrary[],
   right: readonly ProjectLibrary[]
@@ -324,9 +330,9 @@ function watchConfiguredProjectLibraries({
  * directory library. This layer owns local realization discovery and library
  * membership only; cloud identity and duplicate policy are handled by cloudSync.
  */
-const configuredProjectLibraryRealizations: Subtree = {
+const configuredProjectLibraryRealizations: Extension = defineExtension({
   key: 'project-libraries.configured-realizations',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     const settings = computed(() => ctx.optional(settingsService))
     const libraryTypes = ctx.observe(projectLibraryTypesFacet)
     const realizations = signal<ProjectLibraryRealizationContribution[]>([])
@@ -477,7 +483,7 @@ const configuredProjectLibraryRealizations: Subtree = {
       },
     }
   },
-}
+})
 const projectLibraryRealizationsRegistryService = [
   provide(projectLibraryRealizationsService, {
     invalidate: invalidateProjectLibraryRealizations,
@@ -606,9 +612,9 @@ function reportDirectoryProjectStatFailures({
     },
   })
 }
-const directoryProjectLibraryType: Subtree = {
+const directoryProjectLibraryType: Extension = defineExtension({
   key: 'project-libraries.directory-library-type',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     const fileOperations = () => ctx.required(fileOperationsService)
     const getWasmPromise = () =>
       ctx.get(wasmPromiseFacet) ??
@@ -799,7 +805,7 @@ const directoryProjectLibraryType: Subtree = {
       ],
     }
   },
-}
+})
 const _projectLibrarySettingDefaultPoliciesContribution: InputOf<
   typeof projectLibrarySettingDefaultPoliciesFacet
 > = {

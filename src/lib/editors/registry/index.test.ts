@@ -2,7 +2,7 @@ import '@src/lib/projectSession/next/testFeature'
 import { requireSuccess, codeSurface, presentation } from '@src/lib/editors/testViews';
 import { language } from '@codemirror/language';
 import { EditorState } from '@codemirror/state';
-import { Registry, provide, contribute, slot as createSlot } from "plankton";
+import { extension as defineExtension, Registry, provide, contribute, slot as createSlot } from "plankton";
 import { signal } from '@preact/signals-core';
 import { OPEN_EDITOR_COMMAND, NEW_EDITOR_COMMAND } from '@src/lib/editors/commands';
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds';
@@ -307,12 +307,12 @@ describe('editors extension', () => {
       matches,
       extensions: EditorState.readOnly.of(true)
     }))];
-    await registry.configure([editorsExtension, markdownExtension, {
+    await registry.configure([editorsExtension, markdownExtension, defineExtension({
       ...slot,
       create: () => ({
         items: []
       })
-    }]);
+    })]);
     const service = registry.required(editorsService);
     const first = requireSuccess(service.openEditor('/main.kcl', ''));
     const second = requireSuccess(service.openEditor('/main.kcl', ''));
@@ -423,12 +423,12 @@ describe('editors extension', () => {
   });
   it('destroys closed views and stops updating them on registry changes', async () => {
     const slot = createSlot([], Symbol());
-    await registry.configure([editorsExtension, markdownExtension, {
+    await registry.configure([editorsExtension, markdownExtension, defineExtension({
       ...slot,
       create: () => ({
         items: []
       })
-    }]);
+    })]);
     const service = registry.required(editorsService);
     const closed = requireSuccess(service.openEditor('/main.kcl', ''));
     const open = requireSuccess(service.openEditor('/main.kcl', ''));

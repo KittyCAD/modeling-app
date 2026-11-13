@@ -13,7 +13,7 @@ import {
   projectOperationsService,
 } from '@src/registry/contracts/fileOperations'
 import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
-import { provide, type Subtree } from 'plankton'
+import { extension as defineExtension, provide, type Extension } from 'plankton'
 
 /** Coordinates file operations over contributed backings without owning their lifetimes. */
 export function createFileOperationsServices(
@@ -40,24 +40,25 @@ export function createFileOperationsServices(
 }
 export const createFileOperationsExtension = (
   backing: IZooDesignStudioFS
-): Subtree => ({
-  key: 'file-operations-extension',
-  create: (ctx) => {
-    const services = createFileOperationsServices(
-      backing,
-      () =>
-        ctx.get(wasmPromiseFacet) ??
-        Promise.reject(new Error('Missing WASM promise.')),
-      () => ctx.get(fileOperationsMountsFacet)
-    )
-    return {
-      items: [
-        provide(projectOperationsService, services.projects),
-        provide(fileOperationsService, services.operations),
-      ],
-      dispose: services.dispose,
-    }
-  },
-})
+): Extension =>
+  defineExtension({
+    key: 'file-operations-extension',
+    create: (_dependencies, ctx) => {
+      const services = createFileOperationsServices(
+        backing,
+        () =>
+          ctx.get(wasmPromiseFacet) ??
+          Promise.reject(new Error('Missing WASM promise.')),
+        () => ctx.get(fileOperationsMountsFacet)
+      )
+      return {
+        items: [
+          provide(projectOperationsService, services.projects),
+          provide(fileOperationsService, services.operations),
+        ],
+        dispose: services.dispose,
+      }
+    },
+  })
 export const fileOperationsExtension = createFileOperationsExtension(fsZds)
 export default [fileOperationsExtension]

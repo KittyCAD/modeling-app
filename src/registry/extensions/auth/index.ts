@@ -13,7 +13,12 @@ import {
 } from '@src/registry/contracts/auth'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { useSelector } from '@xstate/react'
-import { contribute, provide, type Subtree } from 'plankton'
+import {
+  extension as defineExtension,
+  contribute,
+  provide,
+  type Extension,
+} from 'plankton'
 import { createActor } from 'xstate'
 
 const expireAuthSession: AuthSessionExpiredListener = ({ auth }) => {
@@ -23,9 +28,9 @@ const expireAuthSession: AuthSessionExpiredListener = ({ auth }) => {
 
   auth.send({ type: 'Session expired' })
 }
-export const authExtension = {
+export const authExtension = defineExtension({
   key: 'auth-extension',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     // Defer service resolution until registry graph construction has completed.
     const fileOperations = Promise.resolve().then(() =>
       ctx.required(fileOperationsService)
@@ -87,5 +92,5 @@ export const authExtension = {
       },
     }
   },
-} satisfies Subtree
+}) satisfies Extension
 export default [authExtension]

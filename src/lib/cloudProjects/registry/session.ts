@@ -7,12 +7,16 @@ import { isOffline } from '@src/lib/networkStatus'
 import { projectStorageProvidersFacet } from '@src/lib/projectSession/storage'
 import { reportRejection } from '@src/lib/trap'
 import { projectSession } from '@src/registry/contracts/projectSession'
-import { contribute, type Subtree } from 'plankton'
+import {
+  extension as defineExtension,
+  contribute,
+  type Extension,
+} from 'plankton'
 
 /** Binds cloud storage to sessions; the session retains ownership of editors and Rust. */
-export const cloudProjectSessionExtension: Subtree = {
+export const cloudProjectSessionExtension: Extension = defineExtension({
   key: 'cloud-project-session',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     const offline = signal(isOffline())
     const clouds = computed(() => ctx.optional(cloudStorageService))
     const sessions = computed(() => ctx.optional(projectSession))
@@ -83,4 +87,4 @@ export const cloudProjectSessionExtension: Subtree = {
       },
     }
   },
-}
+})

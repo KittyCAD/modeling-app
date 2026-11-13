@@ -4,10 +4,10 @@ import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { routerService } from '@src/registry/contracts/router'
-import { type Subtree } from 'plankton'
-export const cloudProjectPollingExtension: Subtree = {
+import { extension as defineExtension, type Extension } from 'plankton'
+export const cloudProjectPollingExtension: Extension = defineExtension({
   key: 'cloud-project-polling',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     const clouds = computed(() => ctx.optional(cloudStorageService))
     const sessions = computed(() => ctx.optional(projectSession))
     const files = computed(() => ctx.optional(fileOperationsService))
@@ -47,4 +47,4 @@ export const cloudProjectPollingExtension: Subtree = {
       },
     }
   },
-}
+})

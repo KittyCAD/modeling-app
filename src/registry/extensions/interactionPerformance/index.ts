@@ -2,9 +2,9 @@ import { interactionOutcomes } from '@src/lib/interactionPerformance/outcomes'
 import type * as RecorderModule from '@src/lib/interactionPerformance/recorder'
 import type { InteractionSnapshot } from '@src/lib/interactionPerformance/types'
 import { interactionPerformanceService } from '@src/registry/contracts/interactionPerformance'
-import { provide, type Subtree } from 'plankton'
+import { extension as defineExtension, provide, type Extension } from 'plankton'
 export default import.meta.env.VITE_INTERACTION_PERFORMANCE === '1'
-  ? ({
+  ? (defineExtension({
       key: 'interaction-performance',
       create: () => {
         const interactionDefinitions = Object.values(interactionOutcomes)
@@ -67,5 +67,5 @@ export default import.meta.env.VITE_INTERACTION_PERFORMANCE === '1'
           },
         }
       },
-    } satisfies Subtree)
+    }) satisfies Extension)
   : undefined

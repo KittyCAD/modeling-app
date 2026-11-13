@@ -3,10 +3,10 @@ import { createLspService } from '@src/lang/lsp/service'
 import { authService } from '@src/registry/contracts/auth'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
-import { provide, type Subtree } from 'plankton'
-export const lspExtension: Subtree = {
+import { extension as defineExtension, provide, type Extension } from 'plankton'
+export const lspExtension: Extension = defineExtension({
   key: 'lsp-extension',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     const lsp = createLspService({
       getFileOperations: () => ctx.required(fileOperationsService),
       getAuth: () => ctx.required(authService),
@@ -17,5 +17,5 @@ export const lspExtension: Subtree = {
       dispose: lsp.dispose,
     }
   },
-}
+})
 export default [lspExtension]

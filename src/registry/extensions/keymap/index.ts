@@ -48,7 +48,12 @@ import {
   readUserKeymapFile,
   writeUserKeymapFile,
 } from '@src/registry/extensions/keymap/persistence'
-import { contribute, provide, type Subtree } from 'plankton'
+import {
+  extension as defineExtension,
+  contribute,
+  provide,
+  type Extension,
+} from 'plankton'
 import { createElement } from 'react'
 
 const PARTIAL_MATCH_TIMEOUT_MS = 1500
@@ -57,9 +62,9 @@ type BuiltInKeymapCommand = {
   scopes: CommandScopes
   run: (item: KeymapItem) => unknown
 }
-const keymapExtension: Subtree = {
+const keymapExtension: Extension = defineExtension({
   key: 'keymap-extension',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     const fileOperations = () => ctx.required(fileOperationsService)
     const contributedKeymapSignal = ctx.observe(keymapFacet)
     const commandScopesSignal = ctx.observe(commandScopesFacet)
@@ -519,7 +524,7 @@ const keymapExtension: Subtree = {
       },
     }
   },
-}
+})
 const keymapRegistryItem = [keymapExtension, defaultKeymapItem]
 function keyboardEventToKeymapChord(event: KeyboardEvent) {
   if (isModifierKey(event.key)) {
