@@ -79,7 +79,11 @@ export function buildBodyOperationTree(
       )
       .flatMap((artifact) =>
         'codeRef' in artifact && artifact.codeRef
-          ? [artifact.codeRef.range.join('-')]
+          ? [
+              (artifact.codeRef.definitionRange ?? artifact.codeRef.range).join(
+                '-'
+              ),
+            ]
           : []
       )
   )
@@ -164,7 +168,9 @@ export function buildBodyOperationTree(
       const before = Math.min(
         entry.before,
         'codeRef' in next && next.codeRef
-          ? (sourceOrder.get(next.codeRef.range.join('-')) ?? Infinity)
+          ? (sourceOrder.get(
+              (next.codeRef.definitionRange ?? next.codeRef.range).join('-')
+            ) ?? Infinity)
           : Infinity
       )
       pending.push(
@@ -186,9 +192,12 @@ export function buildBodyOperationTree(
           (source) =>
             'codeRef' in source &&
             source.codeRef &&
-            source.codeRef.range[2] === range[2] &&
-            source.codeRef.range[0] >= range[0] &&
-            source.codeRef.range[1] <= range[1]
+            (source.codeRef.definitionRange ?? source.codeRef.range)[2] ===
+              range[2] &&
+            (source.codeRef.definitionRange ?? source.codeRef.range)[0] >=
+              range[0] &&
+            (source.codeRef.definitionRange ?? source.codeRef.range)[1] <=
+              range[1]
         )
       )
         return true
@@ -234,6 +243,7 @@ export function buildBodyOperationTree(
     // Imported artifacts point to the import statement for source navigation.
     // That range belongs to the caller, while moduleId identifies the part.
     const moduleId =
+      artifact.codeRef.definitionRange?.[2] ??
       moduleByImportRange.get(artifact.codeRef.range.join('-')) ??
       artifact.codeRef.range[2]
     return {

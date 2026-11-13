@@ -56,6 +56,10 @@ import toast from 'react-hot-toast'
 export { buildOperationTree } from '@src/lib/featureTree/featureTreeOperationTree'
 
 import { Disclosure } from '@headlessui/react'
+import {
+  FeatureTreeDisclosure,
+  FeatureTreeExpansionProvider,
+} from '@src/lib/featureTree/FeatureTreeDisclosure'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -300,8 +304,6 @@ export const FeatureTreePaneContents = memo(() => {
     [operationList, artifactGraph]
   )
 
-  // Live execution tracking: expand only the active module branch.
-  const liveActiveModuleId = kclManager.liveActiveModuleId
   const liveLatestOperationKey = kclManager.liveLatestOperationKey
 
   function goToError() {
@@ -322,6 +324,7 @@ export const FeatureTreePaneContents = memo(() => {
     <OperationTreeNodeItem
       key={getBodyTreeNodeKey(node, index)}
       node={node}
+      expansionKey={getBodyTreeNodeExpansionKey(node, index)}
       code={operationsCode}
       isStaleReference={isReadOnlyFeatureTree}
       sketchNoFace={sketchNoFace}
@@ -331,12 +334,11 @@ export const FeatureTreePaneContents = memo(() => {
       onSelect={selectOperation}
       visibilityOperations={visibilityOperations}
       editorSelection={editorSelection}
-      liveActiveModuleId={liveActiveModuleId}
       liveLatestOperationKey={liveLatestOperationKey}
     />
   )
 
-  return (
+  const tree = (
     <div className="relative">
       <section
         data-testid="debug-panel"
@@ -417,6 +419,11 @@ export const FeatureTreePaneContents = memo(() => {
       </section>
     </div>
   )
+  return (
+    <FeatureTreeExpansionProvider filePath={kclManager.path}>
+      {tree}
+    </FeatureTreeExpansionProvider>
+  )
 })
 
 function BodyBranchGroup({
@@ -424,6 +431,7 @@ function BodyBranchGroup({
   childItems,
   ...props
 }: Omit<OperationProps, 'item'> & {
+  expansionKey: string
   branch: BodyOperationTreeBranch
   childItems: BodyTreeNode[]
   isModuleOwned?: boolean
@@ -443,7 +451,11 @@ function BodyBranchGroup({
       ? getHideOpByArtifactId(bodyOperations, artifact.sourceId)
       : undefined)
   return (
-    <Disclosure as="div" data-testid="feature-tree-body-branch">
+    <FeatureTreeDisclosure
+      expansionKey={props.expansionKey}
+      as="div"
+      data-testid="feature-tree-body-branch"
+    >
       <div className="flex items-start gap-1" data-testid="feature-tree-body">
         <Disclosure.Button
           aria-label={`Toggle Body ${index + 1} features`}
@@ -482,12 +494,13 @@ function BodyBranchGroup({
               key={getBodyTreeNodeKey(node, index)}
               node={node}
               {...props}
+              expansionKey={`${props.expansionKey}/${getBodyTreeNodeExpansionKey(node, index)}`}
               isModuleOwned={isModuleOwned}
             />
           )
         })}
       </Disclosure.Panel>
-    </Disclosure>
+    </FeatureTreeDisclosure>
   )
 }
 
@@ -500,6 +513,7 @@ interface VisibilityToggleProps {
  * A grouping of operation items into a disclosure (or dropdown)
  */
 function OperationItemGroup({
+  expansionKey,
   items,
   code,
   isStaleReference,
@@ -513,6 +527,7 @@ function OperationItemGroup({
   isModuleOwned = false,
   liveLatestOperationKey,
 }: Omit<OperationProps, 'item'> & {
+  expansionKey: string
   items: Operation[]
   isModuleOwned?: boolean
 }) {
@@ -551,7 +566,7 @@ function OperationItemGroup({
     }
 
     return (
-      <Disclosure>
+      <FeatureTreeDisclosure expansionKey={expansionKey}>
         <div className="flex items-start gap-1">
           <Disclosure.Button
             data-testid="operation-group-caret"
@@ -604,12 +619,12 @@ function OperationItemGroup({
             })}
           </div>
         </Disclosure.Panel>
-      </Disclosure>
+      </FeatureTreeDisclosure>
     )
   }
 
   return (
-    <Disclosure>
+    <FeatureTreeDisclosure expansionKey={expansionKey}>
       <Disclosure.Button className="reset w-full min-w-[0px] !px-1 flex items-center gap-2 text-left text-base !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25">
         <CustomIcon
           name="caretDown"
@@ -644,11 +659,12 @@ function OperationItemGroup({
           })}
         </div>
       </Disclosure.Panel>
-    </Disclosure>
+    </FeatureTreeDisclosure>
   )
 }
 
 function OperationBranchGroup({
+  expansionKey,
   parentItem,
   childItems,
   code,
@@ -661,9 +677,9 @@ function OperationBranchGroup({
   visibilityOperations,
   editorSelection,
   isModuleOwned = false,
-  liveActiveModuleId,
   liveLatestOperationKey,
 }: Omit<OperationProps, 'item'> & {
+  expansionKey: string
   parentItem: ModuleInstanceOperation
   childItems: BodyTreeNode[]
   isModuleOwned?: boolean
@@ -687,18 +703,8 @@ function OperationBranchGroup({
     )
   }
 
-  // During live execution, only expand the branch whose module received the
-  // latest operation. Outside live execution every branch defaults closed.
-  // Changing the key forces a Disclosure remount with the new defaultOpen
-  // (headlessui v1 does not support a controlled `open` prop).
-  const isLive = liveActiveModuleId != null
-  const shouldBeOpen = isLive && liveActiveModuleId === parentItem.moduleId
-
   return (
-    <Disclosure
-      key={`${parentItem.moduleId}-${shouldBeOpen}`}
-      defaultOpen={shouldBeOpen}
-    >
+    <FeatureTreeDisclosure expansionKey={expansionKey}>
       <div
         className="flex items-start gap-1"
         data-module-branch={parentItem.moduleId}
@@ -737,6 +743,7 @@ function OperationBranchGroup({
               <OperationTreeNodeItem
                 key={getBodyTreeNodeKey(node, index)}
                 node={node}
+                expansionKey={`${expansionKey}/${getBodyTreeNodeExpansionKey(node, index)}`}
                 code={code}
                 isStaleReference={isStaleReference}
                 sketchNoFace={sketchNoFace}
@@ -753,14 +760,25 @@ function OperationBranchGroup({
           })}
         </div>
       </Disclosure.Panel>
-    </Disclosure>
+    </FeatureTreeDisclosure>
   )
+}
+
+function getBodyTreeNodeExpansionKey(
+  node: BodyTreeNode,
+  index: number
+): string {
+  if (!isArray(node) && 'body' in node) return `body-${node.body.index}`
+  if (!isArray(node) && 'parent' in node)
+    return `module-${node.parent.moduleId}`
+  return `operation-${index}`
 }
 
 const OperationTreeNodeItem = memo(function OperationTreeNodeItem({
   node,
   ...props
 }: Omit<OperationProps, 'item'> & {
+  expansionKey: string
   node: BodyTreeNode
   isModuleOwned?: boolean
 }) {
@@ -942,8 +960,6 @@ interface OperationProps {
   editorSelection: EditorSelection
   size?: 'default' | 'sm'
   isModuleOwned?: boolean
-  /** During live execution, the module that received the latest operation. */
-  liveActiveModuleId?: number | null
   /** During live execution, the operation that was most recently added. */
   liveLatestOperationKey: string | null
   /** When set, this item is a deduplicated module reference; clicking scrolls to the expanded branch. */

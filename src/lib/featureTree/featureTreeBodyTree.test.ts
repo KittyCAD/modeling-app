@@ -62,6 +62,76 @@ function bodies(...artifacts: BodyArtifact[]) {
 }
 
 describe('body feature hierarchy', () => {
+  it('shows distinct creation histories for imported bodies without in-place edits', () => {
+    const parent: Extract<Operation, { type: 'ModuleInstance' }> = {
+      type: 'ModuleInstance',
+      name: 'part',
+      moduleId: 1,
+      sourceRange: codeRef(0).range,
+      nodePath: { steps: [] },
+    }
+    const features = [10, 30].map((start) => ({
+      ...call(start),
+      sourceRange: codeRef(start, 1).range,
+    }))
+    const importedBodies = features.map((feature, index) => ({
+      ...sweep(`body-${index}`, 0),
+      codeRef: { ...codeRef(0), definitionRange: feature.sourceRange },
+    }))
+    const tree = buildBodyOperationTree(
+      [{ parent, children: features }],
+      bodies(...importedBodies),
+      graph(...importedBodies)
+    )
+    expect(tree.nodes).toEqual([
+      {
+        parent,
+        children: importedBodies.map((_, index) => ({
+          body: tree.branches[index],
+          children: [features[index]],
+        })),
+      },
+    ])
+  })
+
+  it('uses the definition module for bodies remapped to an outer assembly import', () => {
+    const outer: Extract<Operation, { type: 'ModuleInstance' }> = {
+      type: 'ModuleInstance',
+      name: 'assembly',
+      moduleId: 1,
+      sourceRange: codeRef(0).range,
+      nodePath: { steps: [] },
+    }
+    const inner = {
+      ...outer,
+      name: 'part',
+      moduleId: 2,
+      sourceRange: codeRef(20, 1).range,
+    }
+    const feature = { ...call(100), sourceRange: codeRef(100, 2).range }
+    const body = {
+      ...sweep('body', 0),
+      codeRef: { ...codeRef(0), definitionRange: feature.sourceRange },
+    }
+    const tree = buildBodyOperationTree(
+      [{ parent: outer, children: [{ parent: inner, children: [feature] }] }],
+      bodies(body),
+      graph(body)
+    )
+    expect(tree.branches[0].ownerModuleId).toBe(2)
+    expect(tree.nodes).toEqual([
+      {
+        parent: outer,
+        children: [
+          {
+            parent: inner,
+            children: [{ body: tree.branches[0], children: [feature] }],
+          },
+        ],
+      },
+    ])
+  })
+
   it('does not include later edits to the source in a clone history', () => {
     const a = sweep('a', 10)
     const copy: BodyArtifact = { ...sweep('copy', 30), sourceSweepId: 'a' }

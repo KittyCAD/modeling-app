@@ -2,6 +2,32 @@
 
 use super::*;
 
+#[test]
+fn imported_code_refs_preserve_definition_location() {
+    let code = "import fan from \"fan.kcl\"";
+    let ast = crate::parsing::parse_str(code, ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+    let import_range = SourceRange::new(0, code.len(), ModuleId::default());
+    let definition_range = SourceRange::new(100, 120, ModuleId::from_usize(1));
+    let import_node_path = NodePath::from_range(&programs, 0, import_range).unwrap();
+    let import_code_refs = AHashMap::from_iter([(
+        definition_range.module_id(),
+        ImportCodeRef {
+            range: import_range,
+            node_path: import_node_path.clone(),
+        },
+    )]);
+
+    let code_ref = code_ref_for_range(&programs, 0, definition_range, &import_code_refs);
+    assert_eq!(code_ref.range, import_range);
+    assert_eq!(code_ref.node_path, import_node_path);
+    assert_eq!(code_ref.definition_range, Some(definition_range));
+
+    let local = code_ref_for_range(&programs, 0, import_range, &AHashMap::default());
+    assert_eq!(local.range, import_range);
+    assert_eq!(local.definition_range, None);
+}
+
 #[tokio::test]
 async fn offset_plane_artifact_transform_includes_function_local_planes_and_units() {
     let result = crate::execution::parse_execute(
