@@ -2037,10 +2037,20 @@ export async function getEventForQueryEntityTypeWithPoint(
   const patternArtifact = entityId
     ? getPatternArtifactForCopyId(entityId, artifactGraph)
     : undefined
-  const patternCopyIndex =
+  let patternCopyIndex =
     patternArtifact?.type === 'pattern' && entityId
       ? patternArtifact.copyIds.indexOf(entityId) + 1
       : 0
+  if (
+    !patternCopyIndex &&
+    patternArtifact &&
+    entityId &&
+    artifactGraph.get(patternArtifact.sourceId)?.type === 'path' &&
+    patternArtifact.copyFaceIds.length === patternArtifact.copyIds.length
+  ) {
+    // A copied 2D profile is picked by its face, not its path object ID.
+    patternCopyIndex = patternArtifact.copyFaceIds.indexOf(entityId) + 1
+  }
   const selection: Selection = {
     entityRef,
     codeRef: codeRefs?.[0],
