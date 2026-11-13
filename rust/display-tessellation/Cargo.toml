@@ -9,7 +9,7 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 serde = { workspace = true, features = ["derive"] }
-kittycad-native-brep = { path = "../vendor/kittycad-native-brep" }
+kittycad-modeling-cmds = { workspace = true }
 serde_json.workspace = true
 earcutr = "0.4.3"
 

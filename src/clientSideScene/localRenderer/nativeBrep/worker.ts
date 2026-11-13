@@ -1,3 +1,4 @@
+import type { NativeBrepSceneSnapshot, NativeBrepSnapshot } from '@kittycad/lib'
 import init, {
   tessellate_snapshot,
 } from '@rust/display-tessellation/pkg/display_tessellation.js'
@@ -49,13 +50,11 @@ async function drain() {
           continue
         }
         const startedAt = performance.now()
-        const input: {
-          version: number
-          coordinateSystem?: string
-          bodies?: { brep: unknown }[]
-          errors?: string[]
-        } = JSON.parse(request.snapshot)
-        if (input.version !== 1) {
+        const input = JSON.parse(
+          request.snapshot
+        ) as Partial<NativeBrepSceneSnapshot> & Partial<NativeBrepSnapshot>
+        const { version } = input
+        if (version !== 1) {
           self.postMessage({
             id: request.id,
             error: 'Unsupported native B-rep snapshot version',
@@ -81,7 +80,10 @@ async function drain() {
           )
         const snapshots = input.bodies
           ? input.bodies.map((body) =>
-              JSON.stringify({ version: input.version, brep: body.brep })
+              JSON.stringify({
+                version,
+                brep: body.brep,
+              } satisfies NativeBrepSnapshot)
             )
           : [request.snapshot]
         const bodiesPackedAt = performance.now()

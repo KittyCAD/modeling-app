@@ -1,15 +1,15 @@
 //! Experimental, GPU-independent display tessellation of B-rep snapshots.
 //! Inputs use the engine IR's surfaces, oriented faces and UV trim traces.
 
-pub use kittycad_native_brep::Brep;
-use kittycad_native_brep::Curve;
+pub use kittycad_modeling_cmds::format::native_brep::Brep;
+use kittycad_modeling_cmds::format::native_brep::Curve;
 #[cfg(test)]
-use kittycad_native_brep::Nurbs;
-use kittycad_native_brep::Point;
-pub use kittycad_native_brep::Snapshot;
-use kittycad_native_brep::Surface;
-use kittycad_native_brep::Uv;
-use kittycad_native_brep::VERSION;
+use kittycad_modeling_cmds::format::native_brep::Nurbs;
+use kittycad_modeling_cmds::format::native_brep::Point;
+pub use kittycad_modeling_cmds::format::native_brep::Snapshot;
+use kittycad_modeling_cmds::format::native_brep::Surface;
+use kittycad_modeling_cmds::format::native_brep::Uv;
+use kittycad_modeling_cmds::format::native_brep::VERSION;
 #[cfg(test)]
 use serde::Deserialize;
 use serde::Serialize;

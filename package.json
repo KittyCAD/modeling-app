@@ -34,7 +34,7 @@
     "@csstools/postcss-oklab-function": "^4.0.12",
     "@headlessui/react": "^1.7.19",
     "@headlessui/tailwindcss": "^0.2.2",
-    "@kittycad/lib": "git+https://github.com/KittyCAD/kittycad.ts.git#cbf5bd09d0df1bd9a045e2fabcd2caea7c2952e2",
+    "@kittycad/lib": "git+https://github.com/KittyCAD/kittycad.ts.git#bd014c5e0b133f95c36a05f6f46252f5f2a6bf4d",
     "@lezer/highlight": "^1.2.4",
     "@lezer/lr": "^1.4.10",
     "@microlink/react-json-view": "^1.31.38",
