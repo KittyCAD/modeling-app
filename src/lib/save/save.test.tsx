@@ -40,7 +40,7 @@ import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { LayoutType } from '@src/lib/layout/types'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 
 vi.mock('@src/lib/paths', () => ({ PATHS: { INDEX: '/' } }))
 
