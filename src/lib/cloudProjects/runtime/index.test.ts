@@ -555,10 +555,9 @@ describe.each([
             onApply: () => {},
           })
         : () => {}
-      vi.mocked(api.getRemoteProject).mockResolvedValue({
-        ...remote,
-        revision: '2',
-      })
+      vi.mocked(api.getRemoteProject).mockResolvedValue(
+        remoteSnapshot('2', 'remote edit')
+      )
       vi.mocked(parseProjectArchive).mockResolvedValue([
         { relativePath: 'main.kcl', data: encoder.encode('remote edit') },
       ])

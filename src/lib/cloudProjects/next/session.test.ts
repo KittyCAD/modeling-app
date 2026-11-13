@@ -47,6 +47,16 @@ const archive = (text: string) => [
   file('main.kcl', text),
   file('project.toml', 'title="Bracket"'),
 ]
+const remoteSnapshot = (revision: string, files = archive('original')) => ({
+  id: 'one',
+  revision,
+  files: files.map((file) => ({
+    id: `${revision}-${file.relativePath}`,
+    relative_path: file.relativePath,
+    byte_size: file.data.byteLength,
+    sha256: `hash-${revision}-${file.relativePath}`,
+  })),
+})
 let registry: Registry
 let cloudServices: ReturnType<typeof createCloudProjectsServices>
 let fileServices: ReturnType<typeof createFileOperationsServices>
@@ -55,18 +65,12 @@ beforeAll(async () => {
   await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
 })
 beforeEach(() => {
-  vi.mocked(api.getRemoteProject).mockResolvedValue({
-    id: 'one',
-    revision: '1',
-  })
+  vi.mocked(api.getRemoteProject).mockResolvedValue(remoteSnapshot('1'))
   vi.mocked(api.downloadRemoteProjectArchive).mockResolvedValue(
     new ArrayBuffer(0)
   )
   vi.mocked(parseProjectArchive).mockResolvedValue(archive('original'))
-  vi.mocked(api.updateRemoteProject).mockResolvedValue({
-    id: 'one',
-    revision: '2',
-  })
+  vi.mocked(api.updateRemoteProject).mockResolvedValue(remoteSnapshot('2'))
 })
 afterEach(async () => {
   stop?.()
@@ -118,14 +122,9 @@ async function setup(bridge = false) {
 
 it('updates clean buffers, baselines, and the file list together after a remote change', async () => {
   const { cloud, projects, editor, saving } = await setup()
-  vi.mocked(api.getRemoteProject).mockResolvedValue({
-    id: 'one',
-    revision: '2',
-  })
-  vi.mocked(parseProjectArchive).mockResolvedValue([
-    ...archive('remote edit'),
-    file('nested/added.md', 'new file'),
-  ])
+  const files = [...archive('remote edit'), file('nested/added.md', 'new file')]
+  vi.mocked(api.getRemoteProject).mockResolvedValue(remoteSnapshot('2', files))
+  vi.mocked(parseProjectArchive).mockResolvedValue(files)
   await cloud.checkForUpdates('one', () => true)
   expect(editor.contents.peek()).toBe('remote edit')
   expect(saving.state(editor).peek().dirty).toBe(false)
@@ -142,10 +141,9 @@ it('protects unsaved edits from polling but adopts remote contents after a confl
       insert: 'my unsaved edit',
     },
   })
-  vi.mocked(api.getRemoteProject).mockResolvedValue({
-    id: 'one',
-    revision: '2',
-  })
+  vi.mocked(api.getRemoteProject).mockResolvedValue(
+    remoteSnapshot('2', archive('other person’s edit'))
+  )
   vi.mocked(parseProjectArchive).mockResolvedValue(
     archive('other person’s edit')
   )
@@ -170,10 +168,9 @@ it('drops its snapshot veto and subscriptions when the project closes', async ()
   const { cloud, editor, projects } = await setup()
   editor.dispatch({ changes: { from: 0, insert: 'dirty ' } })
   projects.closeProject()
-  vi.mocked(api.getRemoteProject).mockResolvedValue({
-    id: 'one',
-    revision: '2',
-  })
+  vi.mocked(api.getRemoteProject).mockResolvedValue(
+    remoteSnapshot('2', archive('remote edit'))
+  )
   vi.mocked(parseProjectArchive).mockResolvedValue(archive('remote edit'))
   expect(await cloud.checkForUpdates('one', () => true)).toEqual({
     changed: true,
@@ -210,10 +207,9 @@ it('withdraws cloud policies and the snapshot veto outside the new cloud route',
     online.mockReturnValue(true)
     window.dispatchEvent(new Event('online'))
     editor.dispatch({ changes: { from: 0, insert: 'dirty ' } })
-    vi.mocked(api.getRemoteProject).mockResolvedValue({
-      id: 'one',
-      revision: '2',
-    })
+    vi.mocked(api.getRemoteProject).mockResolvedValue(
+      remoteSnapshot('2', archive('remote edit'))
+    )
     vi.mocked(parseProjectArchive).mockResolvedValue(archive('remote edit'))
     expect(await cloud.checkForUpdates('one', () => true)).toEqual({
       changed: true,
