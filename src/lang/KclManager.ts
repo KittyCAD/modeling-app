@@ -176,6 +176,10 @@ import { resetCameraAfterExecution } from '@src/lib/resetCameraPosition'
 import { createProjectThumbnail } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { type Themes, getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
+import {
+  getViewportPostEffect,
+  getViewportTheme,
+} from '@src/lib/settings/viewportRendering'
 import type {
   ModelingMachineEvent,
   modelingMachine,
@@ -3009,7 +3013,18 @@ export class KclManager extends File {
   }
   async updateTheme(newTheme: Themes, updateEngine = true) {
     const resolvedTheme = getResolvedTheme(newTheme)
-    const opposingTheme = getOppositeTheme(newTheme)
+    const settings = getSettingsFromActorContext(this.systemDeps.settings)
+    const useLocalRenderer =
+      this.engineCommandManager.connection?.geometryOnly ??
+      settings.modeling.useLocalRenderer.current
+    const opposingTheme = getOppositeTheme(
+      useLocalRenderer
+        ? newTheme
+        : getViewportTheme(
+            newTheme,
+            settings.modeling.viewportRendering.current
+          )
+    )
     this.sceneInfra.theme = opposingTheme
     this.sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
     this.setEditorTheme(resolvedTheme)
@@ -3099,6 +3114,21 @@ export class KclManager extends File {
       (value) => this.setCursorBlinking(value)
     )
     const theme = computed(() => settings.value.app.theme.currentSignal.value)
+    const viewportRendering = computed(() =>
+      getViewportPostEffect(
+        settings.value.modeling.viewportRendering.currentSignal.value,
+        settings.value.modeling.enableSSAO.currentSignal.value
+      )
+    )
+    watchValue(
+      () => viewportRendering.value,
+      (value) => {
+        this.updateTheme(theme.peek(), false).catch(reportRejection)
+        this.sceneEntitiesManager.updateSketchGrid()
+        this.engineCommandManager.setViewportRendering(value)
+      },
+      true
+    )
     watchValue(
       () => theme.value,
       (value) => {

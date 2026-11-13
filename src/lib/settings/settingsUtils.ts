@@ -53,6 +53,11 @@ import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type { ProjectLibrarySettingDefaultPolicy } from '@src/registry/contracts/projectLibraries'
 import { resolveProjectLibrarySettingDefaults } from '@src/registry/contracts/projectLibraries'
+import {
+  getViewportPostEffect,
+  isViewportRendering,
+  viewportRenderingFromStoredValue,
+} from '@src/lib/settings/viewportRendering'
 import decamelize from 'decamelize'
 import { NIL as uuidNIL, v4 } from 'uuid'
 
@@ -486,6 +491,14 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
   ]),
   defineAppOnlySection('modeling', [
     defineMappedAppOnlyField(
+      { category: 'modeling', field: 'viewportRendering' },
+      'viewport_rendering',
+      {
+        fromToml: viewportRenderingFromStoredValue,
+        toToml: (value) => (isViewportRendering(value) ? value : 'default'),
+      }
+    ),
+    defineMappedAppOnlyField(
       { category: 'modeling', field: 'mouseControls' },
       'mouse_controls',
       {
@@ -646,6 +659,16 @@ export function configurationToSettingsPayload(
   configuration: DeepPartial<Configuration>,
   extensionSettings: ResolvedExtensionSettings = {}
 ): DeepPartial<SaveSettingsPayload> {
+  const storedStyle = getTomlSettingsSection(
+    configuration?.settings,
+    'modeling'
+  )?.viewport_rendering
+  const enableSSAO =
+    storedStyle === 'ssao'
+      ? true
+      : storedStyle === 'noeffect'
+        ? false
+        : toUndefinedIfNull(configuration?.settings?.modeling?.enable_ssao)
   const payload = mergeSettingsPayloads(
     {
       app: {
@@ -669,9 +692,7 @@ export function configurationToSettingsPayload(
         highlightEdges: toUndefinedIfNull(
           configuration?.settings?.modeling?.highlight_edges
         ),
-        enableSSAO: toUndefinedIfNull(
-          configuration?.settings?.modeling?.enable_ssao
-        ),
+        enableSSAO,
         backfaceColor: toUndefinedIfNull(
           configuration?.settings?.modeling?.backface_color
         ),
@@ -829,7 +850,6 @@ export function projectConfigurationToSettingsPayload(
       modeling: {
         defaultUnit: configuration?.settings?.modeling?.base_unit ?? undefined,
         highlightEdges: configuration?.settings?.modeling?.highlight_edges,
-        enableSSAO: configuration?.settings?.modeling?.enable_ssao,
         fixedSizeGrid: toUndefinedIfNull(
           configuration?.settings?.modeling?.fixed_size_grid
         ),
@@ -867,7 +887,6 @@ export function settingsPayloadToProjectConfiguration(
   const typedModelingSection = compactRecord({
     base_unit: configuration?.modeling?.defaultUnit,
     highlight_edges: configuration?.modeling?.highlightEdges,
-    enable_ssao: configuration?.modeling?.enableSSAO,
     fixed_size_grid: configuration?.modeling?.fixedSizeGrid,
   })
 
@@ -1314,8 +1333,10 @@ export function setSettingsAtLevel(
 export function shouldHideSetting(
   setting: Setting<unknown>,
   settingsLevel: SettingsLevel,
+  settings: SettingsType,
   hasFeature?: (feature: Feature) => boolean
 ): boolean {
+  if (setting.hideWhenDisabled && !setting.isEnabled(settings)) return true
   // Async functions should have been resolved in loadAndValidateSettings,
   // but if we encounter one (shouldn't happen), default to hidden
   const hideOnPlatform = setting.hideOnPlatform
@@ -1344,9 +1365,15 @@ export function shouldHideSetting(
 export function shouldShowSettingInput(
   setting: Setting<unknown>,
   settingsLevel: SettingsLevel,
+  settings: SettingsType,
   hasFeature?: (feature: Feature) => boolean
 ): boolean {
-  const isHidden = shouldHideSetting(setting, settingsLevel, hasFeature)
+  const isHidden = shouldHideSetting(
+    setting,
+    settingsLevel,
+    settings,
+    hasFeature
+  )
   if (isHidden) {
     return false
   }
@@ -1396,7 +1423,15 @@ export function getSettingsFromActorContext(
 
 export function jsAppSettings(s: SettingsType | SettingsActorType) {
   const settings = 'send' in s ? getSettingsFromActorContext(s) : s
-  return settingsPayloadToConfiguration(getAllCurrentSettings(settings))
+  const payload = getAllCurrentSettings(settings)
+  // Rust uses SSAO for streaming only. The local renderer reads the saved
+  // preference directly, including while a renderer restart is pending.
+  payload.modeling.enableSSAO =
+    getViewportPostEffect(
+      settings.modeling.viewportRendering.current,
+      settings.modeling.enableSSAO.current
+    ) === 'ssao'
+  return settingsPayloadToConfiguration(payload)
 }
 
 /**

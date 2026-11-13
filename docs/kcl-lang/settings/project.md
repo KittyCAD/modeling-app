@@ -102,7 +102,7 @@ The default unit to use in modeling dimensions.
 
 ##### enable_ssao
 
-Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
+Legacy Screen Space Ambient Occlusion (SSAO) setting. Zoo Design Studio ignores this project setting. Use the user-level &#x60;enable_ssao&#x60; setting instead.
 
 
 **Default:** None
