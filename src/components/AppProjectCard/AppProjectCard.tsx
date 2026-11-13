@@ -1,4 +1,5 @@
 import { PATHS } from '@src/lib/paths'
+import { getFileRoute } from '@src/lib/paths'
 import {
   type ProjectCardClassNames,
   ProjectCard as UiProjectCard,
@@ -238,6 +239,8 @@ function AppProjectCard({
         name: newProjectName,
         modified: Date.now(),
       })
+    } else {
+      setOptimisticProjectName(null)
     }
 
     projectActions
@@ -318,7 +321,7 @@ function AppProjectCard({
     : `Are you sure you want to delete "${deleteProjectDisplayName}"? This action cannot be undone.`
   const openHref =
     project.readWriteAccess && project.defaultFile
-      ? `${PATHS.FILE}/${encodeURIComponent(project.defaultFile)}`
+      ? getFileRoute(project.defaultFile)
       : ''
   const statusBadgeLabel =
     !showCloudSyncUi || !showSourceStatusBadges
@@ -654,9 +657,7 @@ function AppProjectCard({
           if (result?.defaultFile) {
             // Navigation can finish before React commits the next view. Keep
             // this card busy until it unmounts after a successful handoff.
-            await navigate(
-              `${PATHS.FILE}/${encodeURIComponent(result.defaultFile)}`
-            )
+            await navigate(getFileRoute(result.defaultFile))
           } else {
             setIsOpening(false)
           }

@@ -1,3 +1,4 @@
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { effect, signal } from '@preact/signals-core'
 import { createProjectForTest } from '@src/unitTestUtils'
 import * as screenshot from '@src/lib/screenshot'
@@ -23,6 +24,9 @@ import {
   setOperationsEffect,
 } from '@src/editor/plugins/operations'
 import { KclManager, KclManagerEvents } from '@src/lang/KclManager'
+import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
+import fsZds from '@src/lib/fs-zds'
+import { posix } from '@chainner/node-path'
 import { KCLError } from '@src/lang/errors'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import { Connection } from '@src/lib/engineConnection/connection'
@@ -62,6 +66,10 @@ import { defaultNodePath, emptyExecState, parse } from '@src/lang/wasm'
 import { getOperationVariableName } from '@src/lib/operations'
 import { createSceneGraphDelta } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+
+function waitForSettingsIdle(actor: SettingsActorType) {
+  return waitFor(actor, (snapshot) => snapshot.matches('idle'))
+}
 
 function createDeferred<T>() {
   let resolve!: (value: T) => void
@@ -320,7 +328,7 @@ describe('KclManager line wrapping settings', () => {
       lineWrappingCompartment.get(kclManager.editorView.state) ===
       EditorView.lineWrapping
     try {
-      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      await waitForSettingsIdle(app.settings.actor)
       const originalSetting =
         app.settings.actor.getSnapshot().context.textEditor.textWrapping
       originalSetting.user = true
@@ -412,9 +420,46 @@ describe('KclManager default plane visibility', () => {
 })
 
 describe('KclManager settings ownership', () => {
+  it.each([true, false])(
+    'uses the active renderer for sketch colors while the local preference is %s',
+    async (useLocalRenderer) => {
+      const { app, kclManager } = createKclManagerTestHarness()
+      try {
+        await waitFor(app.settings.actor, (snapshot) =>
+          snapshot.matches('idle')
+        )
+        const settings = app.settings.get()
+        settings.modeling.useLocalRenderer.user = useLocalRenderer
+        const updateSegmentBaseColor = vi.spyOn(
+          kclManager.sceneEntitiesManager,
+          'updateSegmentBaseColor'
+        )
+
+        for (const geometryOnly of [true, false]) {
+          kclManager.engineCommandManager.connection = {
+            geometryOnly,
+          } as typeof kclManager.engineCommandManager.connection
+          for (const mode of ['retrocad', 'phosphor'] as const) {
+            settings.modeling.viewportRendering.user = mode
+            await kclManager.updateTheme(Themes.Light, false)
+            expect(updateSegmentBaseColor).toHaveBeenLastCalledWith(
+              geometryOnly ? Themes.Dark : Themes.Light
+            )
+          }
+        }
+      } finally {
+        kclManager.engineCommandManager.connection = undefined
+        app.dispose()
+      }
+    }
+  )
+
   function mockEngineSettings(kclManager: KclManager) {
     const engine = kclManager.engineCommandManager
     const setTheme = vi.spyOn(engine, 'setTheme').mockResolvedValue(undefined)
+    const setViewportRendering = vi
+      .spyOn(engine, 'setViewportRendering')
+      .mockImplementation(() => {})
     const setHighlightEdges = vi
       .spyOn(engine, 'setHighlightEdges')
       .mockResolvedValue(undefined)
@@ -432,6 +477,7 @@ describe('KclManager settings ownership', () => {
     } as typeof engine.connection
     return {
       setTheme,
+      setViewportRendering,
       setHighlightEdges,
       setDefaultSystemProperties,
       executeCode,
@@ -439,10 +485,33 @@ describe('KclManager settings ownership', () => {
     }
   }
 
-  it('updates each editor and its local scene directly from settings', async () => {
+  it('reacts to shared SSAO only when the effective cloud style changes', async () => {
     const { app, kclManager } = createKclManagerTestHarness()
     try {
       await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      const { setViewportRendering } = mockEngineSettings(kclManager)
+      const settings = app.settings.get()
+      settings.modeling.enableSSAO.user = true
+      kclManager.setSceneSettingsActive(true)
+      expect(setViewportRendering).toHaveBeenLastCalledWith('ssao')
+      settings.modeling.enableSSAO.user = false
+      expect(setViewportRendering).toHaveBeenLastCalledWith('noeffect')
+      settings.modeling.viewportRendering.user = 'retrocad'
+      expect(setViewportRendering).toHaveBeenLastCalledWith('retrocad')
+      setViewportRendering.mockClear()
+      settings.modeling.enableSSAO.user = true
+      expect(setViewportRendering).not.toHaveBeenCalled()
+      settings.modeling.viewportRendering.user = 'default'
+      expect(setViewportRendering).toHaveBeenCalledExactlyOnceWith('ssao')
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('updates each editor and its local scene directly from settings', async () => {
+    const { app, kclManager } = createKclManagerTestHarness()
+    try {
+      await waitForSettingsIdle(app.settings.actor)
       const settings = app.settings.get()
       const blink = vi.spyOn(kclManager, 'setCursorBlinking')
       const theme = vi.spyOn(kclManager, 'setEditorTheme')
@@ -482,7 +551,7 @@ describe('KclManager settings ownership', () => {
   it('applies the latest scene settings when an inactive editor becomes active', async () => {
     const { app, kclManager } = createKclManagerTestHarness()
     try {
-      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      await waitForSettingsIdle(app.settings.actor)
       const mocks = mockEngineSettings(kclManager)
       const settings = app.settings.get()
       settings.app.theme.user = Themes.Light
@@ -513,7 +582,7 @@ describe('KclManager settings ownership', () => {
   it('follows replacement settings without resending unchanged engine values', async () => {
     const { app, kclManager } = createKclManagerTestHarness()
     try {
-      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      await waitForSettingsIdle(app.settings.actor)
       const mocks = mockEngineSettings(kclManager)
       kclManager.setSceneSettingsActive(true)
       for (const mock of Object.values(mocks)) mock.mockClear()
@@ -550,9 +619,7 @@ describe('KclManager settings ownership', () => {
       const { app, kclManager } = createKclManagerTestHarness()
       const other = new KclManager('other.kcl', '', kclManager.systemDeps)
       try {
-        await waitFor(app.settings.actor, (snapshot) =>
-          snapshot.matches('idle')
-        )
+        await waitForSettingsIdle(app.settings.actor)
         const mocks = mockEngineSettings(kclManager)
         const otherExecute = vi
           .spyOn(other, 'executeCode')
@@ -584,9 +651,7 @@ describe('KclManager settings ownership', () => {
     async (name) => {
       const { app, kclManager } = createKclManagerTestHarness()
       try {
-        await waitFor(app.settings.actor, (snapshot) =>
-          snapshot.matches('idle')
-        )
+        await waitForSettingsIdle(app.settings.actor)
         const mocks = mockEngineSettings(kclManager)
         kclManager.setSceneSettingsActive(true)
         const grid = vi.spyOn(
@@ -610,9 +675,7 @@ describe('KclManager settings ownership', () => {
     async (mode) => {
       const { app, kclManager } = createKclManagerTestHarness()
       try {
-        await waitFor(app.settings.actor, (snapshot) =>
-          snapshot.matches('idle')
-        )
+        await waitForSettingsIdle(app.settings.actor)
         const controls = kclManager.sceneInfra.camControls
         const projection = vi.spyOn(controls, 'engineCameraProjection', 'set')
         kclManager.modelingState = {
@@ -635,9 +698,7 @@ describe('KclManager settings ownership', () => {
     async (state) => {
       const { app, kclManager } = createKclManagerTestHarness()
       try {
-        await waitFor(app.settings.actor, (snapshot) =>
-          snapshot.matches('idle')
-        )
+        await waitForSettingsIdle(app.settings.actor)
         const mocks = mockEngineSettings(kclManager)
         const pending = createDeferred<KclManager['execState']>()
         mocks.clearScene.mockReturnValue(pending.promise)
@@ -661,7 +722,7 @@ describe('KclManager settings ownership', () => {
   it('waits for a backface cache clear before rendering newer engine settings', async () => {
     const { app, kclManager } = createKclManagerTestHarness()
     try {
-      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      await waitForSettingsIdle(app.settings.actor)
       const mocks = mockEngineSettings(kclManager)
       const pending = createDeferred<KclManager['execState']>()
       mocks.clearScene.mockReturnValue(pending.promise)
@@ -682,7 +743,7 @@ describe('KclManager settings ownership', () => {
   it('restarts subscriptions when a closed manager is reused for another file', async () => {
     const { app, kclManager } = createKclManagerTestHarness()
     try {
-      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      await waitForSettingsIdle(app.settings.actor)
       kclManager.close()
       const settings = app.settings.get()
       settings.textEditor.textWrapping.user = false
@@ -1845,7 +1906,81 @@ describe('KclManager diagnostics', () => {
       }
     }
   )
-
+  it.each([false, true])(
+    'saves local edits without an engine and blocks offline cloud edits (cloud: %s)',
+    async (cloud) => {
+      vi.useFakeTimers()
+      const originalFs = { ...fsZds }
+      Object.assign(fsZds, {
+        resolve: posix.resolve.bind(posix),
+        join: posix.join.bind(posix),
+        relative: posix.relative.bind(posix),
+        extname: posix.extname.bind(posix),
+        basename: posix.basename.bind(posix),
+        dirname: posix.dirname.bind(posix),
+        sep: posix.sep,
+      })
+      const { app, kclManager } = createKclManagerTestHarness()
+      const root = cloud
+        ? app.registry.get(cloudStorageService).pathFor('remote')
+        : '/project'
+      const path = `${root}/main.kcl`
+      const base = '@settings(kclVersion = 3.0)\n'
+      kclManager.systemDeps.projectSession = app.projectSession
+      kclManager.path = path
+      kclManager.systemDeps.project = signal(
+        createProjectForTest(root, {
+          cloudProjectId: cloud ? 'remote' : undefined,
+        })
+      )
+      kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
+        filePath: path,
+        nextContent: base,
+        shouldSyncRust: false,
+      })
+      kclManager.engineCommandManager.started = false
+      let disk = base
+      vi.spyOn(kclManager.textFileIO, 'read').mockImplementation(
+        async () => disk
+      )
+      const write = vi
+        .spyOn(kclManager, 'write')
+        .mockImplementation(async (code) => {
+          disk = code
+        })
+      const online = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
+      try {
+        window.dispatchEvent(new Event('offline'))
+        await vi.advanceTimersByTimeAsync(7_000)
+        kclManager.editorView.dispatch({
+          changes: { from: base.length, insert: '// disconnected edit\n' },
+        })
+        await vi.advanceTimersByTimeAsync(1_500)
+        expect(kclManager.code).toBe(
+          cloud ? base : `${base}// disconnected edit\n`
+        )
+        expect(disk).toBe(kclManager.code)
+        expect(write).toHaveBeenCalledTimes(cloud ? 0 : 1)
+        if (cloud) {
+          kclManager.updateCodeEditor(`${base}// command edit\n`)
+          expect(kclManager.code).toBe(base)
+        }
+        online.mockReturnValue(true)
+        window.dispatchEvent(new Event('online'))
+        const current = kclManager.code
+        kclManager.editorView.dispatch({
+          changes: { from: current.length, insert: '// online edit\n' },
+        })
+        await vi.advanceTimersByTimeAsync(1_500)
+        expect(disk).toBe(`${current}// online edit\n`)
+        expect(kclManager.hasUnsavedLocalChanges()).toBe(false)
+      } finally {
+        online.mockRestore()
+        app.dispose()
+        Object.assign(fsZds, originalFs)
+      }
+    }
+  )
   // Compare the diagnostic data exactly; renderMessage only changes its display.
   const withoutRenderMessage = (diagnostics: Diagnostic[]) =>
     diagnostics.map((diagnostic) => {
@@ -3375,21 +3510,7 @@ describe('KclManager diagnostics', () => {
         shouldExecute: false,
         shouldWriteToDisk: true,
       })
-      localStorage.setItem(
-        'kclRecovery:/cloud/project/closed.kcl',
-        'stale closed-file buffer'
-      )
-      localStorage.setItem(
-        'kclRecovery:/cloud/project-other/main.kcl',
-        'other project buffer'
-      )
       kclManager.adoptStorageSnapshot('/cloud/project', 'cloud truth')
-      expect(
-        localStorage.getItem('kclRecovery:/cloud/project/closed.kcl')
-      ).toBeNull()
-      expect(
-        localStorage.getItem('kclRecovery:/cloud/project-other/main.kcl')
-      ).toBe('other project buffer')
       await vi.advanceTimersByTimeAsync(7_000)
       if (outcome === 'success') gate.resolve(undefined)
       else gate.reject(new Error('Superseded save failed'))
@@ -3466,39 +3587,99 @@ describe('KclManager diagnostics', () => {
     expect(clientErrorMocks.reportFileOperationError).not.toHaveBeenCalled()
   })
 
-  it('restores the local recovery snapshot when reopening a file after unsaved edits', async () => {
-    vi.useFakeTimers()
+  it.each([
+    { cloud: false, contents: 'original saved contents' },
+    { cloud: false, contents: 'newer contents from another device' },
+    { cloud: true, contents: 'original saved contents' },
+    { cloud: true, contents: 'newer contents from another device' },
+  ])(
+    'opens saved contents instead of a persisted draft (cloud: $cloud, contents: $contents)',
+    async ({ cloud, contents }) => {
+      vi.useFakeTimers()
+      const path = '/project/main.kcl'
+      const { app, kclManager } = createKclManagerTestHarness()
+      kclManager.systemDeps.project = signal(
+        createProjectForTest('/project', {
+          cloudProjectId: cloud ? 'remote' : undefined,
+        })
+      )
+      localStorage.setItem(
+        getRecoverySnapshotKey(path),
+        JSON.stringify({
+          version: 1,
+          path,
+          code: 'older offline draft',
+          diskCode: 'original saved contents',
+          savedAt: new Date().toISOString(),
+        })
+      )
+      localStorage.setItem('kclRecovery:/unopened/main.kcl', 'obsolete draft')
+      localStorage.setItem('unrelated-setting', 'keep')
+      const download = createDeferred<string>()
+      vi.spyOn(kclManager.textFileIO, 'read').mockReturnValueOnce(
+        download.promise
+      )
+      const write = vi
+        .spyOn(kclManager.textFileIO, 'write')
+        .mockResolvedValue(undefined)
+      const opening = KclManager.fromFile(
+        new File(path, kclManager.textFileIO, 99),
+        kclManager.systemDeps
+      )
+      await vi.advanceTimersByTimeAsync(7_000)
+      expect(write).not.toHaveBeenCalled()
+      download.resolve(contents)
+      const reopened = await opening
+      expect(reopened.code).toBe(contents)
+      expect(reopened.hasUnsavedLocalChanges()).toBe(false)
+      expect(localStorage.getItem(getRecoverySnapshotKey(path))).toBeNull()
+      expect(localStorage.getItem('kclRecovery:/unopened/main.kcl')).toBeNull()
+      expect(localStorage.getItem('unrelated-setting')).toBe('keep')
 
-    const path = '/tmp/kcl-manager-recovery-test.kcl'
-    const recoveryKey = getRecoverySnapshotKey(path)
-    const { kclManager } = createKclManagerTestHarness('disk base')
+      // Subsequent saves must preserve the contents loaded from storage.
+      vi.spyOn(reopened.textFileIO, 'read').mockResolvedValue(contents)
+      reopened.updateCodeEditor(`${contents}\n// next edit`, {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      })
+      const saving = reopened.writeToFile()
+      await vi.advanceTimersByTimeAsync(1_500)
+      await saving
+      expect(write).toHaveBeenCalledExactlyOnceWith(
+        path,
+        `${contents}\n// next edit`
+      )
+      reopened.close()
+      app.dispose()
+    }
+  )
 
-    kclManager.path = path
-    ;(kclManager as any).markFileCodeAsSynced('disk base')
+  it.each([false, true])(
+    'keeps unsaved edits only in memory (cloud: %s)',
+    async (cloud) => {
+      vi.useFakeTimers()
+      const path = '/project/main.kcl'
+      const { app, kclManager } = createKclManagerTestHarness('saved contents')
+      kclManager.path = path
+      kclManager.systemDeps.project = signal(
+        createProjectForTest('/project', {
+          cloudProjectId: cloud ? 'remote' : undefined,
+        })
+      )
+      kclManager.updateCodeEditor('offline edit', {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      })
+      await vi.advanceTimersByTimeAsync(7_000)
+      expect(kclManager.code).toBe('offline edit')
+      expect(kclManager.hasUnsavedLocalChanges()).toBe(true)
+      expect(localStorage.getItem(getRecoverySnapshotKey(path))).toBeNull()
+      kclManager.close()
+      expect(localStorage.getItem(getRecoverySnapshotKey(path))).toBeNull()
+      app.dispose()
+    }
+  )
 
-    kclManager.updateCodeEditor('recovered newer', {
-      shouldExecute: false,
-      shouldWriteToDisk: false,
-      shouldResetCamera: false,
-      shouldAddToHistory: false,
-    })
-
-    await vi.advanceTimersByTimeAsync(300)
-
-    const persistedSnapshot = localStorage.getItem(recoveryKey)
-    expect(persistedSnapshot).not.toBeNull()
-    expect(persistedSnapshot!).toContain('recovered newer')
-
-    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('disk base')
-
-    const reopened = await KclManager.fromFile(
-      new File(path, kclManager.textFileIO, 99),
-      (kclManager as any).systemDeps
-    )
-
-    expect(reopened.code).toBe('recovered newer')
-    expect((reopened as any).hasUnsavedLocalChanges()).toBe(true)
-  })
   it.each([
     { draft: 'unsaved edit', cloud: 'newer cloud edit', warns: true },
     { draft: 'unsaved edit', cloud: undefined, warns: true },

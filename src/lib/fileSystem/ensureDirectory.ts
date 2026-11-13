@@ -6,7 +6,10 @@ import type { FileOperationsRegistryService } from '@src/registry/contracts/file
  * semantics for callers that need to detect collisions.
  */
 export async function ensureDirectory(
-  fileOperations: FileOperationsRegistryService,
+  fileOperations: Pick<
+    FileOperationsRegistryService,
+    'createDirectory' | 'stat'
+  >,
   path: string
 ): Promise<void> {
   try {

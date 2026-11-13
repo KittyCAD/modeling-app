@@ -1,4 +1,9 @@
-import type { Feature, UnitAngle, UnitLength } from '@kittycad/lib'
+import type {
+  Feature,
+  PostEffectType,
+  UnitAngle,
+  UnitLength,
+} from '@kittycad/lib'
 import type { Registry } from '@kittycad/registry'
 
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
@@ -22,7 +27,7 @@ export type RgbaColor = {
 export interface SettingsViaQueryString {
   theme: Themes
   highlightEdges: boolean
-  enableSSAO: boolean
+  viewportRendering: PostEffectType
   showScaleGrid: boolean
   cameraProjection: CameraProjectionType
   cameraOrbit: CameraOrbitType
@@ -126,6 +131,7 @@ export interface SettingProps<T = unknown> {
   validate: (v: T) => boolean
 
   isEnabled?: (settings: any) => boolean // TODO any not too nice
+  hideWhenDisabled?: boolean
   /**
    * A command argument configuration for the setting.
    * If this is provided, the setting will appear in the command bar.

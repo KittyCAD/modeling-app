@@ -246,6 +246,8 @@ pub struct ModelingSettings {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub highlight_edges: Option<DefaultTrue>,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
+    /// In Zoo Design Studio this is a user-only preference, shared by local and cloud rendering.
+    /// Retro CAD and Phosphor temporarily disable cloud SSAO without changing this preference.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub enable_ssao: Option<DefaultTrue>,
     /// The default color to use for surface backfaces.

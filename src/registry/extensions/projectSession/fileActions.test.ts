@@ -1,5 +1,10 @@
+import { FileAlreadyExists } from '@src/lib/fileSystem/fileOperations'
+import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
+import noopfs from '@src/lib/fs-zds/noopfs'
+import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
+import { createProjectForTest } from '@src/lib/projectTestUtils'
 import { posix } from '@chainner/node-path'
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import {
   projectStorageProvidersValueSpec,
   type ProjectStorage,
@@ -31,7 +36,7 @@ import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { cloudProjectSessionExtension } from '@src/lib/cloudProjects/registry/session'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
 import { createRouterRegistryService } from '@src/registry/extensions/router'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, assert, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lib/fs-zds', () => ({ default: posix }))
 vi.mock('@src/lib/desktop', () => ({
@@ -43,17 +48,13 @@ vi.mock('@src/lib/activeTextFile', () => ({
   adoptStorageTextSnapshot: vi.fn(),
 }))
 
-const metadata = (title = 'Project'): Project => ({
-  name: 'project',
-  path: '/project',
-  title,
-  children: [],
-  default_file: '/project/main.kcl',
-  directory_count: 0,
-  kcl_file_count: 1,
-  metadata: null,
-  readWriteAccess: true,
-})
+const metadata = (title = 'Project'): Project =>
+  createProjectForTest('/project', {
+    name: 'project',
+    title,
+    default_file: '/project/main.kcl',
+    kcl_file_count: 1,
+  })
 const registries: Registry[] = []
 afterEach(() => {
   for (const registry of registries.splice(0)) registry[Symbol.dispose]()
@@ -64,21 +65,24 @@ function createProject(path = '/project/parts/main.kcl') {
   const flush = vi.fn(async () => true)
   const resetForFileSwitch = vi.fn()
   const editor = {
-    get path() {
-      return filePath.value
-    },
+    path,
     flushWriteToFile: flush,
     resetForFileSwitch,
   } as unknown as KclManager
   const project = {
     path: '/project',
+    editors: new Map([[0, editor]]),
     projectIORefSignal: signal(metadata()),
     executingPathSignal: signal(filePath),
     executingEditor: signal(editor),
   } as unknown as ZDSProject
   return { project, filePath, flush, resetForFileSwitch }
 }
-function setup(cloud?: CloudStorageService, storage?: ProjectStorage) {
+function setup(
+  cloud?: CloudStorageService,
+  storage?: ProjectStorage,
+  operations?: FileOperationsRegistryService
+) {
   if (cloud) {
     cloud = Object.assign(
       {
@@ -91,7 +95,11 @@ function setup(cloud?: CloudStorageService, storage?: ProjectStorage) {
     )
   }
   const exists = vi.fn(async () => false)
-  const rename = vi.fn(async () => {})
+  const rename = vi.fn(async (_source: string, _destination: string) => {})
+  const readFile = vi.fn(async () =>
+    new TextEncoder().encode('title = "Project"\ndefault_file = "main.kcl"\n')
+  )
+  const writeFile = vi.fn(async () => {})
   const router = createRouterRegistryService()
   const navigate = vi.fn(async (_path?: unknown, _options?: unknown) => {})
   router.setNavigate(navigate)
@@ -109,10 +117,16 @@ function setup(cloud?: CloudStorageService, storage?: ProjectStorage) {
           : []),
       ],
       providesServices: [
-        provideService(fileOperationsService, {
-          exists,
-          rename,
-        } as unknown as FileOperationsRegistryService),
+        provideService(
+          fileOperationsService,
+          operations ??
+            ({
+              exists,
+              rename,
+              readFile,
+              writeFile,
+            } as unknown as FileOperationsRegistryService)
+        ),
         provideService(routerService, router),
         ...(cloud ? [provideService(cloudStorageService, cloud)] : []),
       ],
@@ -128,6 +142,8 @@ function setup(cloud?: CloudStorageService, storage?: ProjectStorage) {
     session,
     exists,
     rename,
+    readFile,
+    writeFile,
     router,
     navigate,
     ...current,
@@ -374,6 +390,80 @@ describe('direct project session file actions', () => {
     expect(s.filePath.value).toBe('/project/renamed/main.kcl')
   })
 
+  it('rebinds both the editor and navigation path after moving an open file', async () => {
+    const s = setup()
+    await s.session.rename('/project/parts/main.kcl', '/project/moved.kcl')
+    expect(s.project.executingEditor.peek()!.path).toBe('/project/moved.kcl')
+    expect(s.filePath.value).toBe('/project/moved.kcl')
+  })
+
+  it('does not rebind an active file when an unrelated sibling prefix is renamed', async () => {
+    const s = setup()
+    s.filePath.value = '/project/parts-extra/main.kcl'
+    s.project.executingEditor.peek()!.path = s.filePath.value
+    await s.session.rename('/project/parts', '/project/components')
+    expect(s.filePath.value).toBe('/project/parts-extra/main.kcl')
+    expect(s.project.executingEditor.peek()!.path).toBe(s.filePath.value)
+    expect(s.flush).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    [
+      '/project/main.kcl',
+      '/project/components/main.kcl',
+      'components/main.kcl',
+    ],
+  ])(
+    'updates entrypoint metadata when moving %s',
+    async (source, destination, relative) => {
+      const s = setup()
+      await s.session.rename(source, destination)
+      expect(s.writeFile).toHaveBeenCalledWith(
+        '/project/project.toml',
+        expect.stringContaining(`default_file = "${relative}"`)
+      )
+    }
+  )
+
+  it('keeps the old path while a cloud move takes seven seconds, then rebinds before persistence', async () => {
+    vi.useFakeTimers()
+    const gate = Promise.withResolvers<undefined>()
+    const persisted = Promise.withResolvers<undefined>()
+    const rename = vi.fn(async () => {
+      await gate.promise
+    })
+    const batch = vi.fn(
+      async (
+        _path: string,
+        run: (operations: FileOperationsRegistryService) => Promise<void>
+      ) => {
+        await run({ rename } as unknown as FileOperationsRegistryService)
+        await persisted.promise
+      }
+    )
+    const s = setup({ root: '/cloud', batch } as unknown as CloudStorageService)
+    s.filePath.value = '/cloud/project/parts/main.kcl'
+    s.project.executingEditor.peek()!.path = s.filePath.value
+    const moving = s.session.rename(
+      '/cloud/project/parts',
+      '/cloud/project/components'
+    )
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(rename).toHaveBeenCalledOnce()
+    expect(s.project.executingEditor.peek()!.path).toBe(
+      '/cloud/project/parts/main.kcl'
+    )
+    gate.resolve(undefined)
+    await vi.advanceTimersByTimeAsync(0)
+    expect(s.project.executingEditor.peek()!.path).toBe(
+      '/cloud/project/components/main.kcl'
+    )
+    expect(s.filePath.value).toBe('/cloud/project/components/main.kcl')
+    persisted.resolve(undefined)
+    await moving
+    vi.useRealTimers()
+  })
+
   it('cancels a rename when pending edits cannot be saved', async () => {
     const s = setup()
     s.flush.mockResolvedValueOnce(false)
@@ -386,11 +476,56 @@ describe('direct project session file actions', () => {
 
   it('refuses a destination collision', async () => {
     const s = setup()
-    s.exists.mockResolvedValueOnce(true)
+    s.rename.mockRejectedValueOnce(
+      new FileAlreadyExists({
+        operation: 'rename',
+        path: '/project/parts',
+        cause: { code: 'EEXIST' },
+        message: 'Name already exists.',
+      })
+    )
     await expect(
       s.session.rename('/project/parts', '/project/existing')
     ).rejects.toThrow('already exists')
-    expect(s.rename).not.toHaveBeenCalled()
+    expect(s.filePath.value).toBe('/project/parts/main.kcl')
+  })
+
+  it('rebinds the live editor after a case-only rename on a case-insensitive backing', async () => {
+    const memory = createMemoryFileSystem({
+      ...noopfs.impl,
+      ...posix,
+      resolve: (...parts) =>
+        posix
+          .resolve(...parts)
+          .normalize('NFD')
+          .toLowerCase(),
+    })
+    await memory.mkdir('/project/parts', { recursive: true })
+    await memory.writeFile('/project/parts/main.kcl', new Uint8Array([42]))
+    const scheduler = createFileOperationsScheduler({
+      ...memory,
+      resolve: (...parts) => posix.resolve(...parts),
+    })
+    const s = setup()
+    s.exists.mockResolvedValue(true)
+    s.rename.mockImplementation((...args) =>
+      scheduler.operations.rename(...args)
+    )
+    try {
+      await s.session.rename(
+        '/project/parts/main.kcl',
+        '/project/parts/Main.kcl'
+      )
+      expect(s.filePath.value).toBe('/project/parts/Main.kcl')
+      expect(s.project.executingEditor.peek()?.path).toBe(
+        '/project/parts/Main.kcl'
+      )
+      expect(
+        await scheduler.operations.readFile('/project/parts/Main.kcl')
+      ).toEqual(new Uint8Array([42]))
+    } finally {
+      await scheduler.dispose()
+    }
   })
 
   it('does not update a replaced project after a captured rename completes', async () => {
@@ -422,6 +557,7 @@ describe('direct project session file actions', () => {
     )
     const s = setup({ root: '/cloud', batch } as unknown as CloudStorageService)
     s.filePath.value = '/cloud/project/parts/main.kcl'
+    s.project.executingEditor.peek()!.path = s.filePath.value
     await expect(
       s.session.rename('/cloud/project/parts', '/cloud/project/renamed')
     ).rejects.toBe(error)
@@ -435,7 +571,10 @@ function storageForTest(): ProjectStorage {
     root: '/project',
     writeAvailability: signal({ writable: true }),
     externalChanges: 'snapshot',
-    deletionHistory: 'storage',
+    removeWithHistory: vi.fn(async () => ({
+      undo: vi.fn(async () => {}),
+      redo: vi.fn(async () => {}),
+    })),
     createMissingEntrypoint: false,
     watch: vi.fn(() => vi.fn()),
     batch: vi.fn(async (_path, run) => run({ ...testFileOperations })),
@@ -482,4 +621,106 @@ it('uses the provider entrypoint policy when refreshing a project', async () => 
   expect(s.session.project.peek()?.projectIORefSignal.peek().title).toBe(
     'Snapshot'
   )
+})
+
+describe('project deletion through storage capabilities', () => {
+  it('deletes and restores real memory-backed files without a cloud service', async () => {
+    const memory = createMemoryFileSystem({ ...noopfs.impl, ...posix })
+    await memory.mkdir('/project/parts', { recursive: true })
+    await memory.writeFile(
+      '/project/parts/main.kcl',
+      new TextEncoder().encode('original contents')
+    )
+    const scheduler = createFileOperationsScheduler(memory)
+    const s = setup(undefined, undefined, scheduler.operations)
+    try {
+      const deletion = await s.session.deleteEntry('/project/parts')
+      assert(deletion && !(deletion instanceof Error))
+      await expect(scheduler.operations.exists('/project/parts')).resolves.toBe(
+        false
+      )
+      await deletion.undo()
+      expect(
+        new TextDecoder().decode(
+          await scheduler.operations.readFile('/project/parts/main.kcl')
+        )
+      ).toBe('original contents')
+      await deletion.redo()
+      await expect(scheduler.operations.exists('/project/parts')).resolves.toBe(
+        false
+      )
+    } finally {
+      await scheduler.dispose()
+    }
+  })
+
+  it('waits for a seven-second editor save before deleting through its backing', async () => {
+    vi.useFakeTimers()
+    const storage = storageForTest()
+    const s = setup(undefined, storage)
+    const saving = Promise.withResolvers<boolean>()
+    s.flush.mockReturnValue(saving.promise)
+    try {
+      const deleting = s.session.deleteEntry('/project/parts')
+      await vi.advanceTimersByTimeAsync(7_000)
+      expect(storage.removeWithHistory).not.toHaveBeenCalled()
+      saving.resolve(true)
+      const deletion = await deleting
+      assert(deletion && !(deletion instanceof Error))
+      expect(storage.removeWithHistory).toHaveBeenCalledWith('/project/parts')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('keeps the file when unsaved edits cannot be persisted', async () => {
+    const storage = storageForTest()
+    const s = setup(undefined, storage)
+    s.flush.mockResolvedValue(false)
+    await expect(
+      s.session.deleteEntry('/project/parts')
+    ).resolves.toBeInstanceOf(Error)
+    expect(storage.removeWithHistory).not.toHaveBeenCalled()
+  })
+
+  it.each(['save', 'deletion'] as const)(
+    'does not attach history to a replacement project after a slow %s',
+    async (phase) => {
+      vi.useFakeTimers()
+      const storage = storageForTest()
+      const s = setup(undefined, storage)
+      const pending = Promise.withResolvers<undefined>()
+      if (phase === 'save')
+        s.flush.mockImplementation(async () => {
+          await pending.promise
+          return true
+        })
+      else
+        vi.mocked(storage.removeWithHistory).mockImplementation(async () => {
+          await pending.promise
+          return { undo: vi.fn(async () => {}), redo: vi.fn(async () => {}) }
+        })
+      try {
+        const deleting = s.session.deleteEntry('/project/parts')
+        await vi.advanceTimersByTimeAsync(7_000)
+        s.session.setProject(createProject().project)
+        pending.resolve(undefined)
+        await expect(deleting).resolves.toBeUndefined()
+        if (phase === 'save')
+          expect(storage.removeWithHistory).not.toHaveBeenCalled()
+      } finally {
+        vi.useRealTimers()
+      }
+    }
+  )
+
+  it('rejects a path in a neighboring project before flushing or deleting', async () => {
+    const storage = storageForTest()
+    const s = setup(undefined, storage)
+    await expect(
+      s.session.deleteEntry('/project-other/main.kcl')
+    ).resolves.toBeInstanceOf(Error)
+    expect(s.flush).not.toHaveBeenCalled()
+    expect(storage.removeWithHistory).not.toHaveBeenCalled()
+  })
 })

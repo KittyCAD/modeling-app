@@ -2,6 +2,7 @@ import { APP_NAME } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import {
   fileNameHasExtension,
+  getFileRoute,
   getFilePathRelativeToProject,
   getProjectRelativeFilePath,
   getRouterSearchFromRequestUrl,
@@ -508,5 +509,13 @@ describe('testing fileNameHasExtension', () => {
     expect(fileNameHasExtension('.gitignore')).toBe(false)
     expect(fileNameHasExtension('bracket.')).toBe(false)
     expect(fileNameHasExtension('')).toBe(false)
+  })
+})
+
+describe('getFileRoute', () => {
+  it('encodes a local file path as one route segment', () => {
+    expect(getFileRoute('/documents/Offline worker/main.kcl')).toBe(
+      '/file/%2Fdocuments%2FOffline%20worker%2Fmain.kcl'
+    )
   })
 })

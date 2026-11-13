@@ -1,3 +1,4 @@
+import { selectCommand } from '@src/lib/commandUtils'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
 import { useApp, useSingletons } from '@src/lib/boot'
@@ -32,10 +33,7 @@ export const useDefaultActionLibrary = () => {
           },
           shortcut: 'Ctrl + Shift + E',
           execute: () =>
-            commands.send({
-              type: 'Find and select command',
-              data: { name: 'Export', groupId: 'modeling' },
-            }),
+            selectCommand(commands, { name: 'Export', groupId: 'modeling' }),
         },
         addFileToProject: {
           useHidden: () => false,
@@ -60,10 +58,7 @@ export const useDefaultActionLibrary = () => {
           },
           shortcut: 'Ctrl + Shift + M',
           execute: () =>
-            commands.send({
-              type: 'Find and select command',
-              data: { name: 'Make', groupId: 'modeling' },
-            }),
+            selectCommand(commands, { name: 'Make', groupId: 'modeling' }),
           useHidden: () => !isDesktop() || !machineApiEnabled,
         },
         ...registeredActionLibrary,

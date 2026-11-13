@@ -6,7 +6,7 @@ import type {
   RemoteProjectSummary,
 } from '@src/lib/cloudProjects/runtime/types'
 import { createCloudProjectRuntime } from '@src/lib/cloudProjects/runtime'
-import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
+import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import type { FileOperationsMount } from '@src/lib/fileSystem/mounts'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
@@ -21,7 +21,7 @@ export function createCloudProjectsServices(
 ) {
   const fileSystem = createCloudProjectRuntime(paths, config)
   const { projects } = fileSystem
-  const runtime = createFileOperationsRuntime(fileSystem, {
+  const scheduler = createFileOperationsScheduler(fileSystem, {
     // Cloud paths remain case-sensitive on every desktop platform.
     pathLockKey: (path) => path,
     atomicFileReads: true,
@@ -86,7 +86,7 @@ export function createCloudProjectsServices(
     backing: IZooDesignStudioFS,
     run: (operations: FileOperationsRegistryService) => Promise<T>
   ) => {
-    const scoped = createFileOperationsRuntime(backing)
+    const scoped = createFileOperationsScheduler(backing)
     try {
       return await run(scoped.operations)
     } finally {
@@ -165,7 +165,7 @@ export function createCloudProjectsServices(
     root: fileSystem.root,
     batch: cloud.batch,
     operations: {
-      ...runtime.operations,
+      ...scheduler.operations,
       // Move may issue mkdir, rename, or copy/remove. Persist the whole operation
       // once so a failed acknowledgement cannot be mistaken for rename failure.
       move: (source: string, destination: string) =>
@@ -177,7 +177,7 @@ export function createCloudProjectsServices(
               )
             ),
       pending: async () =>
-        (await runtime.operations.pending()) + fileSystem.pending(),
+        (await scheduler.operations.pending()) + fileSystem.pending(),
     },
   }
   return {
@@ -187,7 +187,7 @@ export function createCloudProjectsServices(
       disposed = true
       stopThumbnailWatcher()
       await fileSystem.detach()
-      await runtime.dispose()
+      await scheduler.dispose()
     },
   }
 }

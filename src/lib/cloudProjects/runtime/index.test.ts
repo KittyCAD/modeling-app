@@ -1,4 +1,6 @@
+import fc from 'fast-check'
 import { CLOUD_DIRECTORIES_FILE } from '@src/lib/cloudProjects/runtime/directories'
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import { posix, win32 } from '@chainner/node-path'
 import * as api from '@src/lib/cloudProjects/runtime/api'
 import { parseProjectArchive } from '@src/lib/cloudProjects/runtime/archive'
@@ -11,6 +13,7 @@ vi.mock('@src/lib/cloudProjects/runtime/api', async (original) => ({
   ...(await original<typeof api>()),
   getRemoteProject: vi.fn(),
   listRemoteProjects: vi.fn(),
+  getRemoteProjectVersion: vi.fn(),
   downloadRemoteProjectArchive: vi.fn(),
   updateRemoteProject: vi.fn(),
   createRemoteProject: vi.fn(),
@@ -19,11 +22,42 @@ vi.mock('@src/lib/cloudProjects/runtime/api', async (original) => ({
 vi.mock('@src/lib/cloudProjects/runtime/archive', () => ({
   parseProjectArchive: vi.fn(),
 }))
-const remote = { id: 'one', revision: '1', description: '', category_ids: [] }
+const remote = {
+  id: 'one',
+  revision: '1',
+  description: '',
+  category_ids: [],
+  files: [
+    {
+      id: 'main-1',
+      relative_path: 'main.kcl',
+      byte_size: 28,
+      sha256: 'main-hash',
+    },
+  ],
+}
 const encoder = new TextEncoder()
+const remoteSnapshot = (
+  revision: string,
+  contents = '@settings(kclVersion = 3.0)\n'
+) => ({
+  ...remote,
+  revision,
+  files: [
+    {
+      id: `main-${revision}`,
+      relative_path: 'main.kcl',
+      byte_size: encoder.encode(contents).length,
+      sha256: `hash-${revision}`,
+    },
+  ],
+})
 const instances: ReturnType<typeof createCloudProjectRuntime>[] = []
 beforeEach(() => {
   vi.mocked(api.getRemoteProject).mockResolvedValue(remote)
+  vi.mocked(api.getRemoteProjectVersion).mockImplementation(
+    async (_config, project, revision) => ({ ...project, revision })
+  )
   vi.mocked(api.downloadRemoteProjectArchive).mockResolvedValue(
     new ArrayBuffer(0)
   )
@@ -117,6 +151,181 @@ describe.each([
     expect(fs.projects.value).toEqual([remote])
   })
 
+  const setupDeletion = async (
+    accountId = () => 'account',
+    contents = new Uint8Array([0, 255, 42]),
+    emptyDirectories: string[] = []
+  ) => {
+    const files = [
+      { relativePath: 'main.kcl', data: encoder.encode('original main') },
+      { relativePath: 'parts/deleted.bin', data: new Uint8Array(contents) },
+      ...(emptyDirectories.length
+        ? [
+            {
+              relativePath: CLOUD_DIRECTORIES_FILE,
+              data: encoder.encode(JSON.stringify(emptyDirectories)),
+            },
+          ]
+        : []),
+    ]
+    const metadata = files.map((file) => ({
+      id: file.relativePath,
+      relative_path: file.relativePath,
+      byte_size: file.data.length,
+      sha256: file.relativePath,
+    }))
+    const original = { ...remote, files: metadata }
+    vi.mocked(api.getRemoteProject).mockResolvedValue(original)
+    vi.mocked(api.getRemoteProjectVersion).mockResolvedValue(original)
+    vi.mocked(parseProjectArchive).mockResolvedValue(files)
+    let revision = 1
+    vi.mocked(api.updateRemoteProject).mockImplementation(
+      async ({ files }) => ({
+        ...remote,
+        revision: String(++revision),
+        files: files.map((file) => ({
+          id: file.relativePath,
+          relative_path: file.relativePath,
+          byte_size: file.data.length,
+          sha256: file.relativePath,
+        })),
+      })
+    )
+    const result = setup(accountId)
+    const root = await result.fs.openProject('one')
+    const path = paths.join(root, 'parts', 'deleted.bin')
+    return { ...result, root, path, files }
+  }
+
+  it('preserves arbitrary binary contents across deletion, undo, redo, and another undo', async () => {
+    await fc.assert(
+      fc.asyncProperty(fc.uint8Array({ maxLength: 128 }), async (contents) => {
+        const { fs, path } = await setupDeletion(() => 'account', contents)
+        const deletion = await fs.deletePathWithRevision(path)
+        await fs.restoreDeletedPath(deletion)
+        expect(await fs.readFile(path)).toEqual(contents)
+        await fs.redoPathDeletion(deletion)
+        await expect(fs.readFile(path)).rejects.toMatchObject({
+          code: 'ENOENT',
+        })
+        await fs.restoreDeletedPath(deletion)
+        expect(await fs.readFile(path)).toEqual(contents)
+      }),
+      { numRuns: 30 }
+    )
+  })
+
+  it('restores directory contents and empty folders without deleting newly added directories on redo', async () => {
+    const { fs, root } = await setupDeletion(
+      () => 'account',
+      new Uint8Array([1]),
+      ['parts/empty']
+    )
+    const deletion = await fs.deletePathWithRevision(paths.join(root, 'parts'))
+    await fs.restoreDeletedPath(deletion)
+    expect(await fs.readdir(paths.join(root, 'parts'))).toEqual(
+      expect.arrayContaining(['empty', 'deleted.bin'])
+    )
+    await fs.mkdir(paths.join(root, 'parts/new-empty'), { recursive: true })
+    await expect(fs.redoPathDeletion(deletion)).rejects.toThrow(
+      'restored files have changed'
+    )
+    await expect(
+      fs.stat(paths.join(root, 'parts/new-empty'))
+    ).resolves.toBeDefined()
+    expect(await fs.readFile(paths.join(root, 'parts/deleted.bin'))).toEqual(
+      new Uint8Array([1])
+    )
+  })
+
+  it('undoes cloud deletion from its saved revision without reverting other edits, and redoes it', async () => {
+    const { fs, root, path, diskWrite } = await setupDeletion()
+    const deletion = await fs.deletePathWithRevision(path)
+    expect(deletion).toEqual({
+      projectId: 'one',
+      revision: '1',
+      relativePath: 'parts/deleted.bin',
+      directory: false,
+      accountId: 'account',
+    })
+    await expect(fs.readFile(path)).rejects.toMatchObject({ code: 'ENOENT' })
+    await fs.writeFile(paths.join(root, 'main.kcl'), encoder.encode('new main'))
+    await fs.restoreDeletedPath(deletion)
+    expect(await fs.readFile(path)).toEqual(new Uint8Array([0, 255, 42]))
+    expect(await fs.readFile(paths.join(root, 'main.kcl'), 'utf8')).toBe(
+      'new main'
+    )
+    expect(api.getRemoteProjectVersion).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.anything(),
+      '1'
+    )
+    expect(api.downloadRemoteProjectArchive).toHaveBeenLastCalledWith(
+      expect.anything(),
+      'one',
+      '1',
+      ['parts/deleted.bin']
+    )
+    await fs.redoPathDeletion(deletion)
+    await expect(fs.readFile(path)).rejects.toMatchObject({ code: 'ENOENT' })
+    expect(await fs.readFile(paths.join(root, 'main.kcl'), 'utf8')).toBe(
+      'new main'
+    )
+    expect(diskWrite).not.toHaveBeenCalled()
+  })
+
+  it('does not overwrite a recreated path on undo or delete changed contents on redo', async () => {
+    const { fs, path } = await setupDeletion()
+    const deletion = await fs.deletePathWithRevision(path)
+    await fs.writeFile(path, encoder.encode('other device replacement'))
+    await expect(fs.restoreDeletedPath(deletion)).rejects.toThrow(
+      'another entry'
+    )
+    expect(await fs.readFile(path, 'utf8')).toBe('other device replacement')
+    expect(fs.saves.value.get('one')?.state).toBe('saved')
+    await expect(fs.redoPathDeletion(deletion)).rejects.toThrow(
+      'restored files have changed'
+    )
+    expect(await fs.readFile(path, 'utf8')).toBe('other device replacement')
+  })
+
+  it('keeps unrelated saves responsive during a seven-second historical download', async () => {
+    const { fs, root, path } = await setupDeletion()
+    const deletion = await fs.deletePathWithRevision(path)
+    const gate = Promise.withResolvers<ArrayBuffer>()
+    vi.mocked(api.downloadRemoteProjectArchive).mockReturnValueOnce(
+      gate.promise
+    )
+    const restoration = fs.restoreDeletedPath(deletion)
+    await vi.waitFor(() =>
+      expect(api.downloadRemoteProjectArchive).toHaveBeenCalledTimes(2)
+    )
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    await fs.writeFile(
+      paths.join(root, 'main.kcl'),
+      encoder.encode('saved during slow undo')
+    )
+    await expect(fs.readFile(path)).rejects.toMatchObject({ code: 'ENOENT' })
+    gate.resolve(new ArrayBuffer(0))
+    await restoration
+    expect(await fs.readFile(path)).toEqual(new Uint8Array([0, 255, 42]))
+    expect(await fs.readFile(paths.join(root, 'main.kcl'), 'utf8')).toBe(
+      'saved during slow undo'
+    )
+  })
+
+  it('rejects history from a different account before downloading contents', async () => {
+    let account = 'account'
+    const { fs, path } = await setupDeletion(() => account)
+    const deletion = await fs.deletePathWithRevision(path)
+    account = 'another account'
+    await expect(fs.restoreDeletedPath(deletion)).rejects.toThrow(
+      'different project or account'
+    )
+    expect(api.getRemoteProjectVersion).not.toHaveBeenCalled()
+  })
+
   it('rejects offline mutations before staging them and permits editing after reconnect', async () => {
     vi.useFakeTimers()
     const { fs } = setup()
@@ -207,17 +416,68 @@ describe.each([
     const { fs } = setup()
     await fs.refreshProject('one')
     expect(api.downloadRemoteProjectArchive).toHaveBeenCalledTimes(1)
+    vi.mocked(api.getRemoteProject).mockResolvedValueOnce({
+      ...remote,
+      revision: '2',
+      files: [
+        {
+          id: 'main-2',
+          relative_path: 'main.kcl',
+          byte_size: encoder.encode('updated remotely').length,
+        },
+      ],
+    })
     vi.mocked(parseProjectArchive).mockResolvedValueOnce([
       { relativePath: 'main.kcl', data: encoder.encode('updated remotely') },
     ])
     await fs.refreshProject('one')
     expect(api.downloadRemoteProjectArchive).toHaveBeenCalledTimes(2)
-    expect(
-      new TextDecoder().decode(
-        await fs.readFile(paths.join(fs.root, 'one', 'main.kcl'))
-      )
-    ).toBe('updated remotely')
+    expect(await readTextFile(fs, paths.join(fs.root, 'one', 'main.kcl'))).toBe(
+      'updated remotely'
+    )
     expect(api.updateRemoteProject).not.toHaveBeenCalled()
+  })
+
+  it('preserves retained files in the next whole-project upload and deletes only paths from the refreshed snapshot', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    vi.mocked(api.getRemoteProject).mockResolvedValueOnce({
+      ...remote,
+      revision: 'refresh-revision',
+      files: [
+        ...remote.files,
+        { id: 'new-1', relative_path: 'nested/data.bin', byte_size: 2 },
+      ],
+    })
+    vi.mocked(parseProjectArchive).mockResolvedValueOnce([
+      { relativePath: 'nested/data.bin', data: new Uint8Array([0, 255]) },
+    ])
+    await fs.refreshProject('one')
+    expect(api.downloadRemoteProjectArchive).toHaveBeenLastCalledWith(
+      expect.anything(),
+      'one',
+      'refresh-revision',
+      ['new-1'],
+      undefined
+    )
+    await fs.writeFile(paths.join(root, 'main.kcl'), encoder.encode('edited'))
+    expect(api.updateRemoteProject).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        expectedRevision: 'refresh-revision',
+        deletedPaths: [],
+        files: expect.arrayContaining([
+          { relativePath: 'main.kcl', data: encoder.encode('edited') },
+          { relativePath: 'nested/data.bin', data: new Uint8Array([0, 255]) },
+        ]),
+      })
+    )
+    await fs.rm(paths.join(root, 'nested/data.bin'))
+    expect(api.updateRemoteProject).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        expectedRevision: '2',
+        deletedPaths: ['nested/data.bin'],
+      })
+    )
   })
 
   it('polls metadata without downloading unchanged project files', async () => {
@@ -238,14 +498,14 @@ describe.each([
     const gate = Promise.withResolvers<typeof remote>()
     vi.mocked(api.getRemoteProject)
       .mockReturnValueOnce(gate.promise)
-      .mockResolvedValue({ ...remote, revision: '2' })
+      .mockResolvedValue(remoteSnapshot('2', 'remote edit'))
     vi.mocked(parseProjectArchive).mockResolvedValueOnce([
       { relativePath: 'main.kcl', data: encoder.encode('remote edit') },
     ])
     vi.mocked(api.downloadRemoteProjectArchive).mockClear()
     const first = fs.checkForUpdates('one', () => true)
     const second = fs.checkForUpdates('one', () => true)
-    gate.resolve({ ...remote, revision: '2' })
+    gate.resolve(remoteSnapshot('2', 'remote edit'))
     expect(await Promise.all([first, second])).toEqual([
       { changed: true, refreshed: true },
       { changed: true, refreshed: true },
@@ -264,10 +524,7 @@ describe.each([
   it('observes remote changes while dirty or Zookeeper is working, then refreshes when safe', async () => {
     const { fs } = setup()
     await fs.openProject('one')
-    vi.mocked(api.getRemoteProject).mockResolvedValue({
-      ...remote,
-      revision: '2',
-    })
+    vi.mocked(api.getRemoteProject).mockResolvedValue(remoteSnapshot('2'))
     vi.mocked(api.downloadRemoteProjectArchive).mockClear()
     expect(await fs.checkForUpdates('one', () => false)).toEqual({
       changed: true,
@@ -289,10 +546,9 @@ describe.each([
     const root = await fs.openProject('one')
     const file = paths.join(root, 'main.kcl')
     const original = await fs.readFile(file, 'utf8')
-    vi.mocked(api.getRemoteProject).mockResolvedValue({
-      ...remote,
-      revision: '2',
-    })
+    vi.mocked(api.getRemoteProject).mockResolvedValue(
+      remoteSnapshot('2', 'remote edit')
+    )
     const gate = Promise.withResolvers<ArrayBuffer>()
     vi.mocked(api.downloadRemoteProjectArchive).mockReturnValueOnce(
       gate.promise
@@ -319,28 +575,65 @@ describe.each([
     expect(await fs.readFile(file, 'utf8')).toBe(original)
   })
 
-  it('does not pair a moving download with an older revision or overwrite a failed save', async () => {
+  it('pins a slow polling download to its observed revision while the cloud advances', async () => {
     const { fs } = setup()
     const root = await fs.openProject('one')
     const file = paths.join(root, 'main.kcl')
-    const original = await fs.readFile(file, 'utf8')
     vi.mocked(api.getRemoteProject)
-      .mockResolvedValueOnce({ ...remote, revision: '2' })
-      .mockResolvedValue({ ...remote, revision: '3' })
+      .mockResolvedValueOnce(remoteSnapshot('2', 'revision two'))
+      .mockResolvedValue(remoteSnapshot('3', 'revision three'))
+    vi.mocked(api.getRemoteProject).mockClear()
+    vi.mocked(parseProjectArchive).mockResolvedValueOnce([
+      { relativePath: 'main.kcl', data: encoder.encode('revision two') },
+    ])
+    const gate = Promise.withResolvers<ArrayBuffer>()
+    vi.mocked(api.downloadRemoteProjectArchive).mockReturnValueOnce(
+      gate.promise
+    )
+    const poll = fs.checkForUpdates('one', () => true)
+    await vi.waitFor(() =>
+      expect(api.downloadRemoteProjectArchive).toHaveBeenCalledTimes(2)
+    )
+    vi.useFakeTimers()
+    await vi.advanceTimersByTimeAsync(7_000)
+    expect(api.getRemoteProject).toHaveBeenCalledOnce()
+    expect(api.downloadRemoteProjectArchive).toHaveBeenLastCalledWith(
+      expect.anything(),
+      'one',
+      '2',
+      ['main-2'],
+      expect.any(AbortSignal)
+    )
+    expect(await fs.readFile(file, 'utf8')).toBe(
+      '@settings(kclVersion = 3.0)\n'
+    )
+    gate.resolve(new ArrayBuffer(0))
+    expect(await poll).toEqual({ changed: true, refreshed: true })
+    expect(await fs.readFile(file, 'utf8')).toBe('revision two')
+    vi.mocked(parseProjectArchive).mockResolvedValueOnce([
+      { relativePath: 'main.kcl', data: encoder.encode('revision three') },
+    ])
     expect(await fs.checkForUpdates('one', () => true)).toEqual({
       changed: true,
-      refreshed: false,
+      refreshed: true,
     })
-    expect(await fs.readFile(file, 'utf8')).toBe(original)
+    expect(await fs.readFile(file, 'utf8')).toBe('revision three')
+  })
+
+  it('does not overwrite a failed save while polling', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    const file = paths.join(root, 'main.kcl')
     vi.mocked(api.updateRemoteProject).mockRejectedValueOnce(
       new Error('Conflict')
     )
     await expect(
       fs.writeFile(file, encoder.encode('unsaved edit'))
     ).rejects.toThrow('Conflict')
+    vi.mocked(api.getRemoteProject).mockResolvedValue(remoteSnapshot('2'))
     vi.mocked(api.downloadRemoteProjectArchive).mockClear()
     expect(await fs.checkForUpdates('one', () => true)).toEqual({
-      changed: false,
+      changed: true,
       refreshed: false,
     })
     expect(await fs.readFile(file, 'utf8')).toBe('unsaved edit')
@@ -379,10 +672,7 @@ describe.each([
     const { fs } = setup()
     const root = await fs.openProject('one')
     const file = paths.join(root, 'main.kcl')
-    vi.mocked(api.getRemoteProject).mockResolvedValue({
-      ...remote,
-      revision: 'remote',
-    })
+    vi.mocked(api.getRemoteProject).mockResolvedValue(remoteSnapshot('remote'))
     const gate = Promise.withResolvers<ArrayBuffer>()
     vi.mocked(api.downloadRemoteProjectArchive).mockReturnValueOnce(
       gate.promise

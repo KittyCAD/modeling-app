@@ -6,8 +6,8 @@ import {
 } from '@src/lib/fileSystem/mounts'
 import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import noopfs from '@src/lib/fs-zds/noopfs'
-import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import { describe, expect, it, vi } from 'vitest'
 import fc from 'fast-check'
 
@@ -217,11 +217,14 @@ describe('project storage routing', () => {
     await cloud.mkdir('/cloud/project/parts', { recursive: true })
     const bytes = new Uint8Array([0, 255, 42])
     await cloud.writeFile('/cloud/project/parts/main.kcl', bytes)
-    const localRuntime = createFileOperationsRuntime(local)
-    const cloudRuntime = createFileOperationsRuntime(cloud)
+    const localScheduler = createFileOperationsScheduler(local)
+    const cloudScheduler = createFileOperationsScheduler(cloud)
     try {
-      const router = createMountedFileOperations(localRuntime.operations, posix)
-      router.mount({ root: '/cloud', operations: cloudRuntime.operations })
+      const router = createMountedFileOperations(
+        localScheduler.operations,
+        posix
+      )
+      router.mount({ root: '/cloud', operations: cloudScheduler.operations })
       const destination = '/archive/cloud/project/parts/main.kcl'
       await router.operations.copy(
         '/cloud/project/parts/main.kcl',
@@ -233,7 +236,7 @@ describe('project storage routing', () => {
         bytes
       )
     } finally {
-      await Promise.all([localRuntime.dispose(), cloudRuntime.dispose()])
+      await Promise.all([localScheduler.dispose(), cloudScheduler.dispose()])
     }
   })
 
@@ -251,8 +254,8 @@ describe('project storage routing', () => {
           await local.writeFile('/local/main.kcl', sourceBytes)
           if (destinationExists)
             await cloud.writeFile('/cloud/main.kcl', destinationBytes)
-          const a = createFileOperationsRuntime(local)
-          const b = createFileOperationsRuntime(cloud)
+          const a = createFileOperationsScheduler(local)
+          const b = createFileOperationsScheduler(cloud)
           const router = createMountedFileOperations(a.operations, posix)
           router.mount({ root: '/cloud', operations: b.operations })
           try {
@@ -311,8 +314,8 @@ describe('project storage routing', () => {
         '/local/main.kcl',
         new TextEncoder().encode('captured')
       )
-      const a = createFileOperationsRuntime(local)
-      const b = createFileOperationsRuntime(cloud)
+      const a = createFileOperationsScheduler(local)
+      const b = createFileOperationsScheduler(cloud)
       const started = Promise.withResolvers<undefined>()
       const upload = Promise.withResolvers<undefined>()
       const router = createMountedFileOperations(a.operations, posix)
@@ -425,10 +428,10 @@ it('routes Windows mount roots independently of drive and directory casing', asy
 
 it('uses replacement mount contributions without losing the local backing', async () => {
   const memory = createMemoryFileSystem({ ...noopfs.impl, ...posix })
-  const backing = createFileOperationsRuntime(memory)
+  const backing = createFileOperationsScheduler(memory)
   const localMemory = createMemoryFileSystem({ ...noopfs.impl, ...posix })
   await localMemory.mkdir('/projects', { recursive: true })
-  const local = createFileOperationsRuntime(localMemory)
+  const local = createFileOperationsScheduler(localMemory)
   await memory.mkdir('/projects', { recursive: true })
   await memory.writeFile(
     '/projects/main.kcl',

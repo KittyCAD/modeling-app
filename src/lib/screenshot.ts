@@ -1,4 +1,5 @@
 import type { LocalRenderer } from '@src/clientSideScene/localRenderer/LocalRenderer'
+import { base64ToBytes } from '@src/lib/base64'
 import { writeProjectThumbnailFile } from '@src/lib/desktop'
 import { getVisibleElementRect } from '@src/lib/viewportElement'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
@@ -183,11 +184,7 @@ export function dataUrlToFile(dataUrl: string, fileName: string): File | Error {
   }
 
   const mime = header.match(/:(.*?);/)?.[1] ?? 'application/octet-stream'
-  const bytes = atob(base64)
-  const buf = new Uint8Array(bytes.length)
-  for (let i = 0; i < bytes.length; i++) {
-    buf[i] = bytes.charCodeAt(i)
-  }
+  const buf = base64ToBytes(base64)
 
   return new File([buf], fileName, { type: mime })
 }
