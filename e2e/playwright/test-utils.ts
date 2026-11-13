@@ -474,19 +474,18 @@ export const getMovementUtils = (opts: any) => {
 
 async function waitForAuth(page: Page) {
   if (process.env.VERCEL_BASE_URL) {
-    // set bypass secret for the page's requests based on the hostname
+    // Set bypass secret for the page's requests based on the hostname
     let secret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
     if (secret) {
       await page.route('**/*', async (route, request) => {
         const url = request.url()
-
-        // Only apply to Vercel preview domain
-        if (new URL(url).hostname.endsWith('vercel.dev.zoo.dev')) {
+        const hostname = new URL(url).hostname
+        // Only apply to non-production environments
+        if (hostname.endsWith('dev.zoo.dev')) {
           const headers = {
             ...request.headers(),
             'X-Vercel-Protection-Bypass': secret,
           }
-
           await route.continue({ headers })
         } else {
           await route.continue()

@@ -568,7 +568,9 @@ jobs:
   custom:
     name: e2e:web (custom)
     if: ${{ inputs.grep }}
-    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
+    runs-on: namespace-profile-ubuntu-8-cores
+    env:
+      VERCEL_BASE_URL: https://app.dev.zoo.dev
 
     steps:
       - uses: actions/create-github-app-token@v3
@@ -583,29 +585,10 @@ jobs:
           repository: kittycad/modeling-app # required for 'workflow_call'
           token: ${{ steps.app-token.outputs.token }}
 
-      - name: Use correct Rust toolchain
-        shell: bash
-        run: |
-          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
-
-      - name: Install Rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
-        with:
-          cache: false
-          rustflags: '' # use .cargo/config.toml
-
-      - name: Install Wasm pack
-        uses: taiki-e/install-action@c30ba1cbe2face7f695d394a2c95af204d417b29
-        with:
-          tool: wasm-pack
-
-      - name: Build Wasm
-        shell: bash
-        run: ./scripts/build-wasm.sh
-
       - uses: actions/setup-node@v7.1.0
         with:
           node-version-file: .nvmrc
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -619,8 +602,14 @@ jobs:
       - name: Install browsers
         run: npm run playwright install --with-deps
 
+      - name: Check Vercel
+        run: .github/ci-cd-scripts/check-vercel.sh
+        env:
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+
       - run: npm run test:e2e:web -- --grep=${{ inputs.grep }}
         env:
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
