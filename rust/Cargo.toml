@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+  "display-tessellation",
   "kcl-api",
   "kcl-bumper",
   "kcl-derive-docs",
@@ -111,6 +112,7 @@ debug = "line-tables-only"
 # - Publication: Cargo omits these patches from packaged manifests and removes
 #   dependency paths, keeping the declared registry version requirements.
 [patch.crates-io]
+kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", rev = "e185c32ca4f03abd06a2f167206effcc5e527c42" }
 kcl-api = { path = "kcl-api" }
 kcl-error = { path = "kcl-error" }
 

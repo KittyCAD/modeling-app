@@ -26,6 +26,11 @@ runs:
         name: prepared-wasm-interaction-${{ inputs.variant }}
         path: app/rust/kcl-wasm-lib/pkg
     - uses: actions/download-artifact@v8
+      if: hashFiles('app/rust/display-tessellation/Cargo.toml') != ''
+      with:
+        name: prepared-display-tessellation-interaction-${{ inputs.variant }}
+        path: app/rust/display-tessellation/pkg
+    - uses: actions/download-artifact@v8
       with:
         name: prepared-ts-rs-bindings-interaction-${{ inputs.variant }}
         path: app/rust/kcl-lib/bindings

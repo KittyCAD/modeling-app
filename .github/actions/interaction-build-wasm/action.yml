@@ -27,6 +27,10 @@ runs:
       run: |
         cargo fetch --locked --manifest-path rust/Cargo.toml
         ./scripts/build-wasm.sh
+    - name: Build preview tessellator when present in this application
+      if: hashFiles('rust/display-tessellation/Cargo.toml') != ''
+      shell: bash
+      run: wasm-pack build rust/display-tessellation --release --target web --out-dir pkg -- --locked
     - name: Record Wasm provenance and reject lockfile drift
       shell: bash
       run: node .performance-pipeline/e2e/performance/build-comparison.cjs wasm .
@@ -42,5 +46,12 @@ runs:
       with:
         name: prepared-ts-rs-bindings-interaction-${{ inputs.variant }}
         path: rust/kcl-lib/bindings/*
+        if-no-files-found: error
+        retention-days: 7
+    - uses: actions/upload-artifact@v7
+      if: hashFiles('rust/display-tessellation/Cargo.toml') != ''
+      with:
+        name: prepared-display-tessellation-interaction-${{ inputs.variant }}
+        path: rust/display-tessellation/pkg/display_tessellation*
         if-no-files-found: error
         retention-days: 7

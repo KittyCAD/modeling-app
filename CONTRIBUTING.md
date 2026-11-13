@@ -47,17 +47,28 @@ npm run install:wasm-pack:cargo
 
 ### Building the app
 
-To build the Wasm layer, run:
+For first-time setup, build both Wasm packages:
 
 ```
 # macOS/Linux
-npm run build:wasm
+npm run build:wasm:all
 
 # Windows
-npm run build:wasm:windows
+npm run build:wasm:all:windows
 ```
 
-That will build the Wasm binary and put in the `public` dir (though gitignored).
+This builds the KCL bundle in `rust/kcl-wasm-lib/pkg` (also copied to `public`)
+and the preview tessellator in `rust/display-tessellation/pkg`. Both are gitignored.
+
+During development, rebuild only the package you changed:
+
+- KCL/Rust types: `npm run build:wasm:dev` (or `build:wasm:dev:windows`).
+- Preview mesher: `npm run build:display-tessellation` on all platforms.
+- Both, including CI and production builds: `npm run build:wasm:all`
+  (or `build:wasm:all:windows`).
+
+The existing `build:wasm` commands remain KCL-only release builds. Changes to
+shared contracts may require rebuilding both packages.
 
 Finally, to build the desktop app locally, pointing to our production zoo.dev infrastructure, accessible to everyone, run:
 
@@ -90,7 +101,7 @@ web-based tests that use the production API for modeling commands.
 
 ### Developing live with Electron
 
-To spin up the desktop app, `npm install` and `npm run build:wasm` need to have been done before hand then:
+To spin up the desktop app, `npm install` and `npm run build:wasm:all` need to have been done before hand then:
 
 ```
 npm run tron:start
@@ -235,7 +246,7 @@ If you already haven't, run the following:
 
 ```
 npm
-npm run build:wasm
+npm run build:wasm:all
 npm start
 ```
 

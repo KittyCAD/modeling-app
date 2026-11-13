@@ -2646,7 +2646,7 @@ export type OutputFormat2d = { "type": "dxf" } & DxfExportOptions;
 /**
  * Output 3D format specifier.
  */
-export type OutputFormat3d = { "type": "fbx" } & FbxExportOptions | { "type": "gltf" } & GltfExportOptions | { "type": "obj" } & ObjExportOptions | { "type": "ply" } & PlyExportOptions | { "type": "step" } & StepExportOptions | { "type": "stl" } & StlExportOptions;
+export type OutputFormat3d = { "type": "fbx" } & FbxExportOptions | { "type": "gltf" } & GltfExportOptions | { "type": "obj" } & ObjExportOptions | { "type": "ply" } & PlyExportOptions | { "type": "step" } & StepExportOptions | { "type": "stl" } & StlExportOptions | { "type": "native_brep" };
 
 /**
  *Options for importing Parasolid part format.

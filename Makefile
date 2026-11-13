@@ -70,14 +70,17 @@ TYPESCRIPT_SOURCES := tsconfig.* $(wildcard src/*.ts src/*/*.ts src/*/*/*.ts src
 VITE_SOURCES := .env* $(wildcard vite.*)
 
 .PHONY: build
-build: install public/kcl_wasm_lib_bg.wasm public/kcl-samples/manifest.json .vite/build/main.js
+build: install public/kcl_wasm_lib_bg.wasm rust/display-tessellation/pkg/display_tessellation_bg.wasm public/kcl-samples/manifest.json .vite/build/main.js
 
-public/kcl_wasm_lib_bg.wasm: $(CARGO_SOURCES) $(RUST_SOURCES)
+public/kcl_wasm_lib_bg.wasm: $(filter-out rust/display-tessellation/%,$(CARGO_SOURCES)) $(filter-out rust/display-tessellation/%,$(RUST_SOURCES))
 ifdef WINDOWS
 	npm run build:wasm:windows
 else
 	npm run build:wasm
 endif
+
+rust/display-tessellation/pkg/display_tessellation_bg.wasm: rust/display-tessellation/Cargo.toml rust/Cargo.toml rust/Cargo.lock $(wildcard rust/display-tessellation/src/*.rs)
+	npm run build:display-tessellation
 
 public/kcl-samples/manifest.json: $(KCL_SOURCES)
 ifndef WINDOWS
@@ -100,7 +103,7 @@ format: install ## Format the code
 	cd rust && cargo +nightly fmt
 
 .PHONY: lint
-lint: install public/kcl_wasm_lib_bg.wasm ## Lint the code
+lint: install public/kcl_wasm_lib_bg.wasm rust/display-tessellation/pkg/display_tessellation_bg.wasm ## Lint the code
 	npm run tsc
 	npm run lint
 
