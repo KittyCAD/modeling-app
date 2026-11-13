@@ -1,4 +1,4 @@
-import type { Project } from '@src/lib/project'
+import { createProjectForTest } from '@src/lib/projectTestUtils'
 import { defineRegistryItem } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import env from '@src/env'
@@ -33,19 +33,7 @@ import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { join } from 'path'
 import { createActor } from 'xstate'
 
-/** Minimal project metadata for editors whose tests need an owning project. */
-export function createProjectForTest(path = 'some-project'): Project {
-  return {
-    name: 'test',
-    path,
-    children: [],
-    default_file: join(path, 'main.kcl'),
-    directory_count: 0,
-    kcl_file_count: 0,
-    metadata: null,
-    readWriteAccess: true,
-  }
-}
+export { createProjectForTest } from '@src/lib/projectTestUtils'
 
 /**
  * Throw x if it's an Error. Only use this in tests.

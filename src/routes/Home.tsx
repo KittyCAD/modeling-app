@@ -1,4 +1,5 @@
 import { PROJECT_SHELL_FEATURE } from '@src/lib/projectSession/next/feature'
+import { selectCommand } from '@src/lib/commandUtils'
 import { canReadWriteDirectory } from '@src/lib/desktop'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
@@ -444,15 +445,12 @@ const Home = () => {
         return
       }
 
-      commands.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Clone project',
-          argDefaultValues: {
-            project: project.id,
-            ...(libraryId ? { library: libraryId } : {}),
-          },
+      selectCommand(commands, {
+        groupId: 'projects',
+        name: 'Clone project',
+        argDefaultValues: {
+          project: project.id,
+          ...(libraryId ? { library: libraryId } : {}),
         },
       })
     },
@@ -533,45 +531,33 @@ const Home = () => {
     if (data.menuLabel === 'File.Create project') {
       openCreateProjectCommand()
     } else if (data.menuLabel === 'File.Open project') {
-      commands.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Open project',
-        },
+      selectCommand(commands, {
+        groupId: 'projects',
+        name: 'Open project',
       })
     } else if (data.menuLabel === 'Edit.Rename project') {
       const currentProject = settingsActor.getSnapshot().context.currentProject
-      commands.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Rename project',
-          argDefaultValues: {
-            oldName: currentProject?.name,
-            newName: currentProject?.name,
-          },
+      selectCommand(commands, {
+        groupId: 'projects',
+        name: 'Rename project',
+        argDefaultValues: {
+          oldName: currentProject?.name,
+          newName: currentProject?.name,
         },
       })
     } else if (data.menuLabel === 'Edit.Delete project') {
       const currentProject = settingsActor.getSnapshot().context.currentProject
-      commands.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Delete project',
-          argDefaultValues: {
-            name: currentProject?.name,
-          },
+      selectCommand(commands, {
+        groupId: 'projects',
+        name: 'Delete project',
+        argDefaultValues: {
+          name: currentProject?.name,
         },
       })
     } else if (data.menuLabel === 'File.Import file from URL') {
-      commands.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Import file from URL',
-        },
+      selectCommand(commands, {
+        groupId: 'projects',
+        name: 'Import file from URL',
       })
     } else if (data.menuLabel === 'File.Preferences.User settings') {
       void navigate(PATHS.HOME + PATHS.SETTINGS)
@@ -589,33 +575,24 @@ const Home = () => {
     ) {
       commands.send({ type: 'Open' })
     } else if (data.menuLabel === 'File.Preferences.Theme') {
-      commands.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'settings',
-          name: 'app.theme',
-        },
+      selectCommand(commands, {
+        groupId: 'settings',
+        name: 'app.theme',
       })
     } else if (data.menuLabel === 'File.Add file to project') {
-      commands.send({
-        type: 'Find and select command',
-        data: {
-          name: 'add-kcl-file-to-project',
-          groupId: 'application',
-        },
+      selectCommand(commands, {
+        name: 'add-kcl-file-to-project',
+        groupId: 'application',
       })
     }
   }
   const openCreateProjectCommand = () =>
-    commands.send({
-      type: 'Find and select command',
-      data: {
-        groupId: 'projects',
-        name: 'Create project',
-        argDefaultValues: selectedProjectLibrary
-          ? { libraryId: selectedProjectLibrary.id }
-          : undefined,
-      },
+    selectCommand(commands, {
+      groupId: 'projects',
+      name: 'Create project',
+      argDefaultValues: selectedProjectLibrary
+        ? { libraryId: selectedProjectLibrary.id }
+        : undefined,
     })
 
   useMenuListener(cb)
@@ -726,17 +703,14 @@ const Home = () => {
               <ActionButton
                 Element="button"
                 onClick={() =>
-                  commands.send({
-                    type: 'Find and select command',
-                    data: {
-                      groupId: 'application',
-                      name: 'create-a-sample',
-                      argDefaultValues: {
-                        source: 'kcl-samples',
-                        ...(selectedProjectLibrary
-                          ? { libraryId: selectedProjectLibrary.id }
-                          : {}),
-                      },
+                  selectCommand(commands, {
+                    groupId: 'application',
+                    name: 'create-a-sample',
+                    argDefaultValues: {
+                      source: 'kcl-samples',
+                      ...(selectedProjectLibrary
+                        ? { libraryId: selectedProjectLibrary.id }
+                        : {}),
                     },
                   })
                 }

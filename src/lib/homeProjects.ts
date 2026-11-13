@@ -13,6 +13,17 @@ export function getHomeProjectDisplayName(project: HomeProjectEntry) {
   return (project.title || project.name).replace(FILE_EXT, '')
 }
 
+export function findHomeProjectByPath(
+  entries: readonly HomeProjectEntry[],
+  projectPath: string
+) {
+  return entries.find(
+    (entry) =>
+      entry.localProjectPath === projectPath ||
+      entry.projectPath === projectPath
+  )
+}
+
 export function homeProjectDisplayNameExists({
   entries,
   requestedName,

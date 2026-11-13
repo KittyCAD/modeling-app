@@ -4,6 +4,7 @@ import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import noopfs from '@src/lib/fs-zds/noopfs'
 import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
 import { fileOperationsMountsValueSpec } from '@src/registry/contracts/fileOperations'
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import { tmpdir } from 'node:os'
 import { Registry } from '@kittycad/registry'
 import nodeFileSystem from '@src/lib/fs-zds/nodefs'
@@ -41,9 +42,7 @@ describe('file operations extension', () => {
     const operations = registry.get(fileOperationsService)
     await operations.writeFile(file, 'line([0, 0], [1, 1])')
 
-    expect(new TextDecoder().decode(await operations.readFile(file))).toBe(
-      'line([0, 0], [1, 1])'
-    )
+    expect(await readTextFile(operations, file)).toBe('line([0, 0], [1, 1])')
     await expect(operations.exists(file)).resolves.toBe(true)
     await expect(operations.stat(file)).resolves.toMatchObject({
       kind: 'file',

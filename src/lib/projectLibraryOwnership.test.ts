@@ -1,3 +1,4 @@
+import { createProjectForTest } from '@src/lib/projectTestUtils'
 import { posix } from '@chainner/node-path'
 import {
   getProjectLibraryOwnership,
@@ -26,16 +27,11 @@ function cloudLibrary(path: string): ProjectLibrarySetting {
   }
 }
 
-const baseProject: Project = {
+const baseProject: Project = createProjectForTest('/projects/bracket', {
   name: 'bracket',
   default_file: '/projects/bracket/main.kcl',
-  directory_count: 0,
   kcl_file_count: 1,
-  metadata: null,
-  path: '/projects/bracket',
-  readWriteAccess: true,
-  children: [],
-}
+})
 
 describe('project library ownership', () => {
   it('uses the most specific normalized containing library path', async () => {

@@ -1,9 +1,14 @@
+import { getFileRoute } from '@src/lib/paths'
 import type { ProjectOperationsService } from '@src/lib/projectSession/projectOperations'
 import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
 import fsZds from '@src/lib/fs-zds'
 import { reportRejection } from '@src/lib/trap'
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
-import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
+import type {
+  Command,
+  CommandArgumentConfig,
+  CommandArgumentOption,
+} from '@src/lib/commandTypes'
 import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
 import {
   getHomeProjectDeleteWarningMessage,
@@ -56,6 +61,23 @@ export interface CreateProjectLibraryTarget {
     ProjectLibraryCreateProjectInput,
     Project | undefined
   >
+}
+
+export function createProjectLibraryArgument(
+  options: () => CommandArgumentOption<string>[],
+  defaultValue: () => string
+): CommandArgumentConfig<string> {
+  return {
+    displayName: 'Library',
+    required: () => options().length > 1,
+    prepopulate: true,
+    hidden: () => options().length <= 1,
+    inputType: 'options',
+    options,
+    defaultValue,
+    valueSummary: (value) =>
+      options().find((option) => option.value === value)?.name ?? 'Library',
+  }
 }
 
 type HomeProjectCommandAction = 'open' | 'rename' | 'delete' | 'cloneToLibrary'
@@ -212,7 +234,7 @@ export function createProjectCommands({
       return
     }
 
-    const targetPath = `${PATHS.FILE}/${encodeURIComponent(filePath)}`
+    const targetPath = getFileRoute(filePath)
     if (window.location.hash) {
       window.location.hash = targetPath
       return
@@ -414,22 +436,10 @@ export function createProjectCommands({
         inputType: 'string',
         defaultValue: defaultProjectFolderNameSnapshot,
       },
-      libraryId: {
-        displayName: 'Library',
-        required: () => createProjectLibraryOptions().length > 1,
-        prepopulate: true,
-        hidden: () => createProjectLibraryOptions().length <= 1,
-        inputType: 'options',
-        options: createProjectLibraryOptions,
-        defaultValue: defaultCreateProjectLibraryId,
-        valueSummary(value) {
-          return (
-            createProjectLibraryOptions().find(
-              (option) => option.value === value
-            )?.name ?? 'Library'
-          )
-        },
-      },
+      libraryId: createProjectLibraryArgument(
+        createProjectLibraryOptions,
+        defaultCreateProjectLibraryId
+      ),
     },
   }
 

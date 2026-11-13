@@ -1,3 +1,4 @@
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import { tmpdir } from 'node:os'
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
 import {
@@ -580,11 +581,9 @@ describe('Effect filesystem operations', () => {
       'copy',
       'remove',
     ])
-    expect(
-      new TextDecoder().decode(
-        await runtime.operations.readFile(destinationFile)
-      )
-    ).toBe('updated')
+    expect(await readTextFile(runtime.operations, destinationFile)).toBe(
+      'updated'
+    )
     await expect(runtime.operations.exists(project)).resolves.toBe(false)
   })
 
@@ -782,9 +781,7 @@ describe('Effect filesystem operations', () => {
         path,
       })
     )
-    expect(
-      new TextDecoder().decode(await runtime.operations.readFile(path))
-    ).toBe('first')
+    expect(await readTextFile(runtime.operations, path)).toBe('first')
   })
 
   it('uses strict creation without an existence preflight', async () => {

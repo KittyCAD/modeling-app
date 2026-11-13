@@ -1,5 +1,6 @@
 import { signal } from '@preact/signals-core'
 import { createCloudProjectStorageProvider } from '@src/lib/cloudProjects/storage'
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import type * as ArchiveModule from '@src/lib/cloudProjects/runtime/archive'
 import { parseProjectArchive } from '@src/lib/cloudProjects/runtime/archive'
 import { posix } from '@chainner/node-path'
@@ -14,6 +15,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 vi.mock('@src/lib/cloudProjects/runtime/api', async (original) => ({
   CloudApiError: (await original<typeof api>()).CloudApiError,
   getRemoteProject: vi.fn(),
+  getRemoteProjectVersion: vi.fn(),
   downloadRemoteProjectArchive: vi.fn(),
   updateRemoteProject: vi.fn(),
   createRemoteProject: vi.fn(),
@@ -35,7 +37,16 @@ vi.mock('@src/lib/cloudProjects/runtime/archive', async (original) => ({
   ]),
 }))
 
-const remote = { id: 'one', revision: '1', description: '', category_ids: [] }
+const remote = {
+  id: 'one',
+  revision: '1',
+  description: '',
+  category_ids: [],
+  files: [
+    { id: 'main-1', relative_path: 'main.kcl', byte_size: 8 },
+    { id: 'toml-1', relative_path: 'project.toml', byte_size: 24 },
+  ],
+}
 const runtimes: { dispose: () => Promise<void> }[] = []
 beforeEach(() => {
   vi.mocked(parseProjectArchive).mockResolvedValue([
@@ -50,6 +61,9 @@ beforeEach(() => {
     'data:image/png;base64,dGh1bWI='
   )
   vi.mocked(api.getRemoteProject).mockResolvedValue(remote)
+  vi.mocked(api.getRemoteProjectVersion).mockImplementation(
+    async (_config, project, revision) => ({ ...project, revision })
+  )
   vi.mocked(api.updateRemoteProject).mockResolvedValue({
     ...remote,
     revision: '2',
@@ -108,9 +122,7 @@ describe('memory cloud storage', () => {
     expect(finished).toBe(false)
     expect(storage.saves.value.get('one')?.state).toBe('saving')
     expect(
-      new TextDecoder().decode(
-        await storage.operations.readFile(posix.join(root, 'main.kcl'))
-      )
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
     ).toBe('changed')
     gate.resolve({ ...remote, revision: '2' })
     await write
@@ -167,9 +179,7 @@ describe('memory cloud storage', () => {
       gate.reject(new api.CloudApiError(409, 'Revision changed'))
       await first
       await canceled
-      expect(
-        new TextDecoder().decode(await storage.operations.readFile(file))
-      ).toBe('cloud truth')
+      expect(await readTextFile(storage.operations, file)).toBe('cloud truth')
       expect(api.updateRemoteProject).toHaveBeenCalledOnce()
       expect(storage.saves.value.get('one')?.state).toBe('saved')
       await storage.operations.writeFile(file, 'fresh edit')
@@ -192,9 +202,7 @@ describe('memory cloud storage', () => {
     })
     expect(storage.saves.value.get('one')?.state).toBe('failed')
     expect(
-      new TextDecoder().decode(
-        await storage.operations.readFile(posix.join(root, 'main.kcl'))
-      )
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
     ).toBe('unsaved')
     await storage.retry('one')
     expect(api.updateRemoteProject).toHaveBeenLastCalledWith(
@@ -262,9 +270,7 @@ describe('memory cloud storage', () => {
       )
       expect(await storage.operations.exists(target)).toBe(false)
       expect(
-        new TextDecoder().decode(
-          await storage.operations.readFile(posix.join(root, 'main.kcl'))
-        )
+        await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
       ).toBe('main')
       expect(diskWrite).not.toHaveBeenCalled()
     }
@@ -293,9 +299,7 @@ describe('memory cloud storage', () => {
     gate.resolve({ ...remote, revision: '2' })
     await Promise.all([first, second])
     expect(
-      new TextDecoder().decode(
-        await storage.operations.readFile(posix.join(root, 'main.kcl'))
-      )
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
     ).toBe('second')
     expect(
       vi
@@ -347,9 +351,7 @@ describe('memory cloud storage', () => {
       expect.objectContaining({ deletedPaths: ['main.kcl'] })
     )
     expect(await storage.operations.exists(source)).toBe(false)
-    expect(
-      new TextDecoder().decode(await storage.operations.readFile(destination))
-    ).toBe('original')
+    expect(await readTextFile(storage.operations, destination)).toBe('original')
     expect(storage.saves.value.get('one')?.state).toBe('failed')
   })
 
@@ -368,9 +370,7 @@ describe('memory cloud storage', () => {
         'project.toml',
       ])
       expect(
-        new TextDecoder().decode(
-          await args.fileOperations.readFile(posix.join(root, 'main.kcl'))
-        )
+        await readTextFile(args.fileOperations, posix.join(root, 'main.kcl'))
       ).toBe('original')
       return { remoteProjectId: 'one' }
     })
@@ -528,6 +528,10 @@ describe('memory cloud storage', () => {
     vi.mocked(api.getRemoteProject).mockResolvedValue({
       ...remote,
       revision: '3',
+      files: [
+        { id: 'new-3', relative_path: 'nested/new.bin', byte_size: 2 },
+        { id: 'toml-3', relative_path: 'project.toml', byte_size: 7 },
+      ],
     })
     vi.mocked(parseProjectArchive).mockResolvedValueOnce([
       { relativePath: 'nested/new.bin', data: new Uint8Array([0, 255]) },
@@ -573,9 +577,7 @@ describe('memory cloud storage', () => {
       'preserve unsaved changes'
     )
     expect(
-      new TextDecoder().decode(
-        await storage.operations.readFile(posix.join(root, 'main.kcl'))
-      )
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
     ).toBe('unsaved')
     expect(api.downloadRemoteProjectArchive).not.toHaveBeenCalled()
     expect(storage.saves.value.get('one')?.state).toBe('failed')
@@ -584,17 +586,20 @@ describe('memory cloud storage', () => {
   it('keeps the entire previous snapshot when download validation fails', async () => {
     const { storage } = setup()
     const root = await storage.openProject('one')
+    vi.mocked(api.getRemoteProject).mockResolvedValueOnce({
+      ...remote,
+      revision: '2',
+      files: [{ id: 'main-2', relative_path: 'main.kcl', byte_size: 1 }],
+    })
     vi.mocked(parseProjectArchive).mockResolvedValueOnce([
       { relativePath: 'main.kcl', data: new Uint8Array([1]) },
       { relativePath: '../escape.kcl', data: new Uint8Array([2]) },
     ])
     await expect(storage.refreshProject('one')).rejects.toThrow(
-      'outside its project'
+      'does not match the selected version files'
     )
     expect(
-      new TextDecoder().decode(
-        await storage.operations.readFile(posix.join(root, 'main.kcl'))
-      )
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
     ).toBe('original')
     expect(storage.saves.value.get('one')?.state).toBe('saved')
   })
@@ -602,6 +607,10 @@ describe('memory cloud storage', () => {
   it('discards a fetched snapshot after its session is replaced', async () => {
     const { storage } = setup()
     const root = await storage.openProject('one')
+    vi.mocked(api.getRemoteProject).mockResolvedValueOnce({
+      ...remote,
+      revision: '2',
+    })
     const gate = Promise.withResolvers<ArrayBuffer>()
     vi.mocked(api.downloadRemoteProjectArchive).mockReturnValueOnce(
       gate.promise
@@ -616,21 +625,17 @@ describe('memory cloud storage', () => {
     await vi.advanceTimersByTimeAsync(7_000)
     expect(storage.projects.value[0].revision).toBe('1')
     expect(
-      new TextDecoder().decode(
-        await storage.operations.readFile(posix.join(root, 'main.kcl'))
-      )
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
     ).toBe('original')
     gate.resolve(new ArrayBuffer(0))
     await refresh
     expect(
-      new TextDecoder().decode(
-        await storage.operations.readFile(posix.join(root, 'main.kcl'))
-      )
+      await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
     ).toBe('original')
     expect(storage.projects.value[0].revision).toBe('1')
   })
 
-  it('uses a mutation revision for the refreshed snapshot and its next save without fetching metadata', async () => {
+  it('fetches the mutation version metadata for refresh and uses that revision for the next save', async () => {
     const { storage } = setup()
     const root = await storage.openProject('one')
     vi.mocked(api.getRemoteProject).mockClear()
