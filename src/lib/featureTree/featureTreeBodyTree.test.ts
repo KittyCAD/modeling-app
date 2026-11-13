@@ -253,6 +253,59 @@ describe('body feature hierarchy', () => {
     expect(tree.branches[0].operations).toEqual(nodes)
   })
 
+  it('keeps extrude and revolve features under a subtraction whose inputs use profile IDs', () => {
+    const extrusion = { ...sweep('extrusion', 20, 'profile-a'), consumed: true }
+    const revolution = {
+      ...sweep('revolution', 50, 'profile-b'),
+      subType: 'revolve' as const,
+      consumed: true,
+    }
+    function profile(body: typeof extrusion, start: number): Artifact {
+      return {
+        type: 'path',
+        id: body.pathId ?? '',
+        subType: 'region',
+        planeId: 'xy',
+        segIds: [],
+        sweepId: body.id,
+        trajectorySweepId: null,
+        consumed: true,
+        codeRef: codeRef(start),
+      }
+    }
+    const result: BodyArtifact = {
+      type: 'compositeSolid',
+      id: 'result',
+      subType: 'subtract',
+      consumed: false,
+      solidIds: ['profile-a'],
+      toolIds: ['profile-b'],
+      codeRef: codeRef(60),
+    }
+    const nodes = [
+      call(10),
+      call(20),
+      call(30, 'extrusion'),
+      call(40),
+      { ...call(50), name: 'revolve' },
+      { ...call(60), name: 'subtract' },
+      { ...call(70, 'result'), name: 'appearance' },
+    ]
+    const tree = buildBodyOperationTree(
+      nodes,
+      bodies(result),
+      graph(
+        profile(extrusion, 10),
+        extrusion,
+        profile(revolution, 40),
+        revolution,
+        result
+      )
+    )
+    expect(tree.nodes).toEqual([{ body: tree.branches[0], children: nodes }])
+    expect(tree.operations).toEqual([])
+  })
+
   it('keeps pattern copies and their edits in the source body history', () => {
     const a = sweep('a', 10, 'path')
     const pattern: BodyArtifact = {

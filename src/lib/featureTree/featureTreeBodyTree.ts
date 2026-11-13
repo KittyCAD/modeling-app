@@ -363,7 +363,13 @@ function getSourceArtifactIds(
     ].filter((id): id is string => !!id)
   }
   if (artifact.type === 'compositeSolid') {
-    return [...artifact.solidIds, ...artifact.toolIds]
+    return [...artifact.solidIds, ...artifact.toolIds].flatMap((id) => {
+      // Swept Boolean inputs use their profile's engine ID.
+      const input = graph.get(id)
+      return input?.type === 'path' && input.sweepId
+        ? [id, input.sweepId]
+        : [id]
+    })
   }
   if (artifact.type === 'pattern') {
     const source = graph.get(artifact.sourceId)
