@@ -3132,7 +3132,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds"
 version = "0.2.259"
-source = "git+https://github.com/KittyCAD/modeling-api.git?rev=10859d846e1621a0e3caa3c0c8b0cc1b924f64cb#10859d846e1621a0e3caa3c0c8b0cc1b924f64cb"
+source = "git+https://github.com/KittyCAD/modeling-api.git?rev=3ea2a3dfc9459826ab8dc4c36a673cba3c24619a#3ea2a3dfc9459826ab8dc4c36a673cba3c24619a"
 dependencies = [
  "anyhow",
  "bon",
@@ -3166,7 +3166,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.14"
-source = "git+https://github.com/KittyCAD/modeling-api.git?rev=10859d846e1621a0e3caa3c0c8b0cc1b924f64cb#10859d846e1621a0e3caa3c0c8b0cc1b924f64cb"
+source = "git+https://github.com/KittyCAD/modeling-api.git?rev=3ea2a3dfc9459826ab8dc4c36a673cba3c24619a#3ea2a3dfc9459826ab8dc4c36a673cba3c24619a"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -3177,7 +3177,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.15"
-source = "git+https://github.com/KittyCAD/modeling-api.git?rev=10859d846e1621a0e3caa3c0c8b0cc1b924f64cb#10859d846e1621a0e3caa3c0c8b0cc1b924f64cb"
+source = "git+https://github.com/KittyCAD/modeling-api.git?rev=3ea2a3dfc9459826ab8dc4c36a673cba3c24619a#3ea2a3dfc9459826ab8dc4c36a673cba3c24619a"
 dependencies = [
  "proc-macro2",
  "quote",
