@@ -14,8 +14,10 @@ import {
 } from 'three'
 import {
   type EdgeSelectionTarget,
+  EdgeTargetType,
   SELECTION_INDEX_ATTRIBUTE,
 } from '@src/clientSideScene/localRenderer/EdgeRenderer'
+import { LOCAL_EDGE_PICK_RADIUS_PX } from '@src/clientSideScene/localRenderer/config'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
 import {
   attribute,
@@ -36,7 +38,13 @@ import {
   type WebGPURenderer,
 } from 'three/webgpu'
 
+// Uses a material to draw the selection lines with this width
 const SELECTION_LINE_WIDTH_PX = 24
+
+// This is the line width for the draw buffer, not the radius used for edge
+// selection. The radius is used to search for these lines
+const VISIBLE_EDGE_LINE_WIDTH_PX = 2
+
 // The ID of whatever can't be picked: occluders, line segments that aren't
 // targets, and the background, which clears to 0. targetById[0] is null to match.
 const NO_TARGET_ID = 0
@@ -148,20 +156,23 @@ export class IntegerIdPicker {
       addMesh(target, this.targetById.push(target) - 1)
     }
     if (edges) {
-      this.edgeObject = this.addLines(edges)
+      this.edgeObject = this.addLines(edges, VISIBLE_EDGE_LINE_WIDTH_PX)
       if (this.edgeObject) {
         this.edgeObject.visible = this.edgesVisible
       }
     }
     if (sketchLines) {
-      this.addLines(sketchLines)
+      this.addLines(sketchLines, SELECTION_LINE_WIDTH_PX)
     }
   }
 
   // One batch of lines, each segment drawn with its target ID. The lines are
   // drawn from the source's geometry, which is not ours to dispose: disposing a
   // geometry destroys the GPU buffers of all its attributes.
-  private addLines({ source, targets }: LineTargets) {
+  private addLines(
+    { source, targets }: LineTargets,
+    linewidth = SELECTION_LINE_WIDTH_PX
+  ) {
     // The source numbers its targets from 1, in this order.
     const idBeforeFirstTarget = this.targetById.length - 1
     for (const { object } of targets) {
@@ -174,7 +185,7 @@ export class IntegerIdPicker {
     }
 
     const material = new Line2NodeMaterial({
-      linewidth: SELECTION_LINE_WIDTH_PX,
+      linewidth,
     })
     material.worldUnits = false
     material.alphaToCoverage = false
@@ -243,6 +254,14 @@ export class IntegerIdPicker {
     }
 
     const target = this.ensureRenderTarget()
+
+    // [x, y] are the coords in the "stream", which is the video element
+    // that still exists even when local renderer is used.
+    // getNormalisedCoordinates turns mouse events into stream coordinates, but
+    // local renderer is hijacking/getting the command so we have to turn them
+    // back into renderer coordinates
+    const clampPixel = (value: number, size: number) =>
+      Math.max(0, Math.min(value, size - 1))
     const readbackPixelX = clampPixel(
       Math.floor((x / streamWidth) * target.width),
       target.width
@@ -251,6 +270,20 @@ export class IntegerIdPicker {
       Math.floor((y / streamHeight) * target.height),
       target.height
     )
+
+    const bounds = this.renderer.domElement.getBoundingClientRect()
+    const pixelWidth = Math.max(bounds.width, 1) / target.width
+    const pixelHeight = Math.max(bounds.height, 1) / target.height
+    // Read only the pixels that could contain an edge within the CSS-pixel
+    // picking radius; the center pixel still supplies the face fallback.
+    const radiusX = Math.ceil(LOCAL_EDGE_PICK_RADIUS_PX / pixelWidth)
+    const radiusY = Math.ceil(LOCAL_EDGE_PICK_RADIUS_PX / pixelHeight)
+    const left = Math.max(0, readbackPixelX - radiusX)
+    const top = Math.max(0, readbackPixelY - radiusY)
+    const right = Math.min(target.width - 1, readbackPixelX + radiusX)
+    const bottom = Math.min(target.height - 1, readbackPixelY + radiusY)
+    const width = right - left + 1
+    const height = bottom - top + 1
     const version = this.version
     const targetById = this.targetById
 
@@ -260,17 +293,51 @@ export class IntegerIdPicker {
 
     const pixels = await this.renderer.readRenderTargetPixelsAsync(
       target,
-      readbackPixelX,
+      left,
       // WebGL counts rows from the bottom.
-      this.packsIdsIntoColor
-        ? target.height - 1 - readbackPixelY
-        : readbackPixelY,
-      1,
-      1
+      this.packsIdsIntoColor ? target.height - 1 - bottom : top,
+      width,
+      height
     )
-    const selectionId = this.packsIdsIntoColor
-      ? pixels[0] | (pixels[1] << 8) | (pixels[2] << 16)
-      : Number(pixels[0] ?? 0)
+
+    // WebGL returns bottom-up RGBA bytes; WebGPU returns top-down integer IDs.
+    // Translate both layouts back to the same top-left pixel coordinates.
+    const idAt = (pixelX: number, pixelY: number) => {
+      // y * width + x index math and * 4 for WebGL color layout
+      const index = this.packsIdsIntoColor
+        ? ((bottom - pixelY) * width + pixelX - left) * 4
+        : (pixelY - top) * width + pixelX - left
+      return decodeSelectionId(pixels, index, this.packsIdsIntoColor)
+    }
+
+    const centerId = idAt(readbackPixelX, readbackPixelY)
+    let selectionId = centerId
+
+    // If the center isn't on an edge or sketch, check if an edge is nearby
+    const centerType = targetById[centerId]?.userData.type
+    if (
+      centerType !== EdgeTargetType.BodyEdge &&
+      centerType !== EdgeTargetType.SketchLine
+    ) {
+      // look for nearby edges and prioritize selecting them
+      let nearestDistance =
+        LOCAL_EDGE_PICK_RADIUS_PX * LOCAL_EDGE_PICK_RADIUS_PX
+      for (let pixelY = top; pixelY <= bottom; pixelY++) {
+        for (let pixelX = left; pixelX <= right; pixelX++) {
+          const id = idAt(pixelX, pixelY)
+          if (targetById[id]?.userData.type !== EdgeTargetType.BodyEdge) {
+            continue
+          }
+          const distance =
+            ((pixelX - readbackPixelX) * pixelWidth) ** 2 +
+            ((pixelY - readbackPixelY) * pixelHeight) ** 2
+          if (distance < nearestDistance) {
+            nearestDistance = distance
+            selectionId = id
+          }
+        }
+      }
+    }
     const stale = version !== this.version
 
     return {
@@ -349,6 +416,14 @@ export class IntegerIdPicker {
   }
 }
 
-function clampPixel(value: number, size: number) {
-  return Math.max(0, Math.min(size - 1, value))
+function decodeSelectionId(
+  pixels: ArrayLike<number>,
+  index: number,
+  packed: boolean
+) {
+  return packed
+    ? (pixels[index] ?? 0) |
+        ((pixels[index + 1] ?? 0) << 8) |
+        ((pixels[index + 2] ?? 0) << 16)
+    : Number(pixels[index] ?? 0)
 }
