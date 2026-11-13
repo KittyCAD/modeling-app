@@ -21,11 +21,11 @@ test(
     const millimetersButton = page.getByRole('button', { name: 'Millimeters' })
 
     await expect(millimetersButton).toBeVisible()
-    await scene.waitForExecutionDoneAfter(() => millimetersButton.click())
-
-    // Look out for the toast message
     const toastMessage = page.getByText('Updated per-file units to mm.')
-    await expect(toastMessage).toBeVisible()
+    await scene.waitForExecutionDoneAfter(async () => {
+      await millimetersButton.click()
+      await expect(toastMessage).toBeVisible()
+    })
 
     // Verify that the popover has closed
     await expect(millimetersButton).not.toBeAttached()

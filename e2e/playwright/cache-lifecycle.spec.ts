@@ -184,6 +184,9 @@ test.describe('Rust-owned execution cache lifecycle', { tag: '@web' }, () => {
             )
           )
           .not.toBe(before.sessionId)
+        await scene.connectionEstablished()
+        // Sketch availability depends on the code cursor, not just model readiness.
+        await scene.networkToggleConnected.focus()
         await scene.settled()
         await waitForValidModel(page, interruptedCode)
         const after = await modelReceipt(page)
