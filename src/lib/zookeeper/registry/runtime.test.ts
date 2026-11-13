@@ -151,6 +151,26 @@ function createControllerLoader(
 }
 
 describe('Zookeeper runtime', () => {
+  it('provides library projects to the session without a feature service', async () => {
+    const { services } = createServices()
+    const libraryProjects = signal([])
+    const { createZookeeperSessionController, loadController } =
+      createControllerLoader()
+    const runtime = createZookeeperRuntime(
+      { ...services, libraryProjects },
+      loadController
+    )
+
+    await vi.waitFor(() => {
+      expect(createZookeeperSessionController).toHaveBeenCalledOnce()
+    })
+    expect(createZookeeperSessionController.mock.calls[0]?.[0]).toEqual(
+      expect.objectContaining({ libraryProjects })
+    )
+
+    await runtime.dispose()
+  })
+
   it('starts without waiting for the pane once auth is hydrated', async () => {
     const { services, token } = createServices({ apiToken: '' })
     const { createZookeeperSessionController, loadController } =

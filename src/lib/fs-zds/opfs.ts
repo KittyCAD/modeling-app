@@ -3,7 +3,11 @@ import { reportClientError } from '@src/lib/clientErrors'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { conservativePathLockKey } from '@src/lib/fileSystem/pathLocking'
 // The Origin Private File System. Used for browser environments.
-import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import type {
+  IStat,
+  IZooDesignStudioFS,
+  StatOptions,
+} from '@src/lib/fs-zds/interface'
 import { resolveOPFSHandle as walk } from '@src/lib/fs-zds/opfsHandle'
 import OPFSWorker from '@src/lib/fs-zds/opfsWorker.ts?worker&inline'
 import type {
@@ -152,7 +156,10 @@ const scan = async (
   return visited
 }
 
-const stat = async (targetPath: string): Promise<IStat> => {
+const stat = async (
+  targetPath: string,
+  options?: StatOptions
+): Promise<IStat> => {
   const handle = await walk(targetPath)
   if (handle === undefined) return Promise.reject('ENOENT')
 
@@ -204,8 +211,10 @@ const stat = async (targetPath: string): Promise<IStat> => {
   }
 
   if (!isMetaFileDirectoryData(obj)) {
-    obj = createDirectoryMetadata()
-    await writeDirectoryMetadata(metaFilePath, obj)
+    obj = options?.readOnly ? { mtimeMs: 0 } : createDirectoryMetadata()
+    if (!options?.readOnly) {
+      await writeDirectoryMetadata(metaFilePath, obj)
+    }
   }
 
   return {

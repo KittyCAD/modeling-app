@@ -1,4 +1,5 @@
 import path from 'path'
+import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 const workerRead = vi.hoisted(() =>
@@ -468,6 +469,33 @@ describe('opfs', () => {
 
     expect(stat.mtimeMs).toEqual(expect.any(Number))
     expect(JSON.parse(repaired)).toEqual({ mtimeMs: stat.mtimeMs })
+  })
+
+  test('read-only stat does not create directory metadata', async () => {
+    const projects = root.addDirectory('projects')
+    const project = projects.addDirectory('project')
+    project.addDirectory('empty')
+    const opfs = await getOpfs()
+
+    const runtime = createFileOperationsScheduler(opfs.impl)
+    try {
+      const stat = await runtime.operations.stat(
+        path.join(projectPath, 'empty'),
+        {
+          readOnly: true,
+        }
+      )
+
+      expect(stat.kind).toBe('directory')
+      expect(project.children.has('._meta')).toBe(false)
+      expect(
+        (
+          project.children.get('empty') as MockFileSystemDirectoryHandle
+        ).children.has('._meta')
+      ).toBe(false)
+    } finally {
+      await runtime.dispose()
+    }
   })
 
   test('copies files from nested directories', async () => {

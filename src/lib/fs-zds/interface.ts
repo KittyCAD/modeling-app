@@ -9,6 +9,8 @@ export interface CopyOptions {
 /** Whether metadata describes a link's target (default) or the link itself. */
 export interface StatOptions {
   readonly followSymlinks?: boolean
+  /** Avoid repairing missing OPFS directory metadata during a reference read. */
+  readonly readOnly?: boolean
 }
 
 /** File replacement policy supported by every filesystem backing. */
