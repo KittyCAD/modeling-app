@@ -50,8 +50,8 @@ async function prepare(
     }
   }
   await navigate('/home')
-  await expect(page.getByTestId('home-header')).toBeVisible()
   await waitForAppLoad(page)
+  await expect(page.getByTestId('home-header')).toBeVisible()
   const localSource = {
     type: 'directory' as const,
     title: 'Source',

@@ -271,6 +271,7 @@ for (const cached of [false, true]) {
       if (cached)
         await page.getByRole('button', { name: 'Refresh projects' }).click()
       else await page.reload({ waitUntil: 'domcontentloaded' })
+      await waitForAppLoad(page)
       await expect.poll(() => started).toBe(true)
       await expect(
         page.getByRole('status', { name: 'Loading projects', exact: true })
@@ -388,6 +389,7 @@ test(
     })
     try {
       await page.reload({ waitUntil: 'domcontentloaded' })
+      await waitForAppLoad(page)
       await expect.poll(() => listingStarted).toBe(true)
       expect(
         await page.evaluate(
