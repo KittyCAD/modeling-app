@@ -24,6 +24,6 @@ description: Physical properties truss-structure.kcl
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 189929.67524916737
+    "value": 189929.67524916725
   }
 }

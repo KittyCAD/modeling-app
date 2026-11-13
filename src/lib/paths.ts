@@ -1,3 +1,4 @@
+import { getContainedRelativePath } from '@src/lib/fileSystem/pathContainment'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { APP_NAME, ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import { getEXTNoPeriod } from '@src/lib/fileExtensions'
@@ -13,10 +14,6 @@ import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-
-const SETTINGS = '/settings'
-const HOME = '/home'
-const LIBRARY = '/library'
 
 export type ProjectRoute = {
   projectName: string | null
@@ -46,24 +43,15 @@ function getProjectDirectorySetting(
   return typeof directory === 'string' ? directory : undefined
 }
 
-function getRelativePathIfContained(
+export function getRelativePathIfContained(
   parentDirectory: string,
   targetPath: string
-): string | undefined {
-  const relativePath = fsZds.relative(parentDirectory, targetPath)
-  if (relativePath === '') {
-    return relativePath
-  }
-  if (
-    relativePath === '..' ||
-    relativePath.startsWith(`..${fsZds.sep}`) ||
-    relativePath.startsWith('/') ||
-    relativePath.startsWith('\\') ||
-    /^[a-zA-Z]:/.test(relativePath)
-  ) {
-    return undefined
-  }
-  return relativePath
+) {
+  return getContainedRelativePath(
+    { relative: fsZds.relative, sep: fsZds.sep },
+    parentDirectory,
+    targetPath
+  )
 }
 
 export function normalizeFilesystemPathForComparison(path: string): string {
@@ -83,20 +71,7 @@ function areFilesystemPathsEqual(left: string, right: string): boolean {
   )
 }
 
-export const PATHS = {
-  INDEX: '/',
-  HOME,
-  LIBRARY,
-  FILE: '/file',
-  SETTINGS,
-  SETTINGS_USER: `${SETTINGS}?tab=user` as const,
-  SETTINGS_PROJECT: `${SETTINGS}?tab=project` as const,
-  SETTINGS_KEYBINDINGS: `${SETTINGS}?tab=keybindings` as const,
-  HOME_SETTINGS: `${HOME}${SETTINGS}` as const,
-  SIGN_IN: '/signin',
-  ONBOARDING: '/onboarding',
-  TELEMETRY: '/telemetry',
-} as const
+export { PATHS } from '@src/lib/routePaths'
 
 export function getRouterSearchFromRequestUrl(
   requestUrl: string,
@@ -482,4 +457,9 @@ export async function toArchivePath(absolutePath: string) {
   // Make that make sense, right? So our archive paths need to replace that character.
   const absolutePathWithSafeDriveName = absolutePath.replace(':', '_DRIVE')
   return fsZds.join(basePath, absolutePathWithSafeDriveName)
+}
+
+/** Route to a file whose path is encoded as one router segment. */
+export function getFileRoute(path: string): string {
+  return `${PATHS.FILE}/${safeEncodeForRouterPaths(path)}`
 }

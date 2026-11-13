@@ -348,6 +348,7 @@ impl UploadedProject {
                 map: response.operations,
             },
             artifact_graph: response.artifact_graph,
+            named_views: None,
             scene_objects: response.scene_objects,
             source_range_to_object: Default::default(),
             var_solutions: Default::default(),

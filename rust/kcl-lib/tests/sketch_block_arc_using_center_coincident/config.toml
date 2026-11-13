@@ -1,3 +1,2 @@
+test_graphics = "CpuEngineRender"
 redact_uuids = true
-[test_graphics.EngineRender]
-reason = "No bodies to export"

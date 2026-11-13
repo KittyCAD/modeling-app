@@ -1,5 +1,6 @@
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import {
   type DuplicateProjectResult,
   duplicateProjectInDirectory,
@@ -79,7 +80,7 @@ async function duplicateSourceProject({
 }
 
 async function readText(path: string) {
-  return new TextDecoder().decode(await fsZds.readFile(path))
+  return await readTextFile(fsZds, path)
 }
 
 describe('duplicateProjectInDirectory', () => {

@@ -113,7 +113,7 @@ function DisplayObj({
       node?.end === obj?.end &&
       node.type === obj?.type
     ) {
-      ref?.current?.scrollIntoView?.({ behavior: 'smooth', block: 'center' })
+      ref?.current?.scrollIntoView?.({ behavior: 'instant', block: 'center' })
       setHasCursor(true)
     } else {
       setHasCursor(false)

@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 
 test(
   'initializes web fixture storage after an opaque startup document',
-  { tag: '@web' },
+  { tag: ['@web', '@localRenderer'] },
   async ({ context, page }, testInfo) => {
     const errors: string[] = []
     page.on('pageerror', (error) => errors.push(error.message))

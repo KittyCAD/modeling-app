@@ -1,4 +1,4 @@
-import type { CreateProjectLibraryTarget } from '@src/lib/commandBarConfigs/projectsCommandConfig'
+import type { CreateProjectLibraryTarget } from '@src/lib/homeProjects/commands'
 import {
   DEFAULT_PROJECT_LIBRARY_ID,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,

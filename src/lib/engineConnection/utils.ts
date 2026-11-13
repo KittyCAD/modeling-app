@@ -98,6 +98,14 @@ export function isHighlightSetEntity_type(
   return data.entity_id && data.sequence
 }
 
+export function isExecutionBoundaryCommand(command: EngineCommand): boolean {
+  return (
+    command.type === 'modeling_cmd_req' &&
+    (command.cmd.type === 'begin_execution' ||
+      command.cmd.type === 'end_execution')
+  )
+}
+
 export type Value<T, U> = U extends undefined
   ? { type: T; value: U }
   : // eslint-disable-next-line @typescript-eslint/no-invalid-void-type

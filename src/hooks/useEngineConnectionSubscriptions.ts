@@ -15,27 +15,29 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { isArray, uuidv4 } from '@src/lib/utils'
 
-const HOVER_ENTITY_REFERENCE_DEBOUNCE_MS = 250
-
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
   const { engineCommandManager, kclManager, rustContext, wasmInstance } =
     context
   const stateRef = useRef(state)
-  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const hoverFrameRef = useRef<number | null>(null)
   const hoveredEntityIdRef = useRef<string | null>(null)
   const resolvedEntityIdRef = useRef<string | null>(null)
   const pendingEntityIdRef = useRef<string | null>(null)
   const hoverRequestTokenRef = useRef(0)
+  const hoverOwnerRef = useRef({
+    connection: engineCommandManager.connection,
+    graph: kclManager.artifactGraph,
+  })
   stateRef.current = state
 
   useEffect(() => {
     if (!engineCommandManager) return
 
-    const clearHoverTimer = () => {
-      if (hoverTimerRef.current !== null) {
-        clearTimeout(hoverTimerRef.current)
-        hoverTimerRef.current = null
+    const clearHoverFrame = () => {
+      if (hoverFrameRef.current !== null) {
+        cancelAnimationFrame(hoverFrameRef.current)
+        hoverFrameRef.current = null
       }
     }
 
@@ -79,53 +81,77 @@ export function useEngineConnectionSubscriptions() {
       entityId: string,
       requestToken: number
     ) => {
-      let res = await engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'query_entity_type',
-          entity_id: entityId,
-        },
-        cmd_id: uuidv4(),
-      })
+      const connection = engineCommandManager.connection
+      const graph = kclManager.artifactGraph
+      try {
+        let res = await engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd: {
+            type: 'query_entity_type',
+            entity_id: entityId,
+          },
+          cmd_id: uuidv4(),
+        })
 
-      if (
-        hoverRequestTokenRef.current !== requestToken ||
-        hoveredEntityIdRef.current !== entityId
-      ) {
-        return
-      }
+        if (
+          hoverRequestTokenRef.current !== requestToken ||
+          hoveredEntityIdRef.current !== entityId ||
+          engineCommandManager.connection !== connection ||
+          kclManager.artifactGraph !== graph
+        ) {
+          return
+        }
 
-      pendingEntityIdRef.current = null
-
-      if (!res) {
-        applyHoverReference(undefined)
-        resolvedEntityIdRef.current = entityId
-        return
-      }
-
-      if (isArray(res)) {
-        res = res[0]
-      }
-
-      if (isModelingResponse(res)) {
-        const mr = res.resp.data.modeling_response
-        if (mr.type === 'query_entity_type') {
-          applyHoverReference(mr.data?.reference)
+        if (!res) {
+          applyHoverReference(undefined)
           resolvedEntityIdRef.current = entityId
           return
         }
-      }
 
-      applyHoverReference(undefined)
-      resolvedEntityIdRef.current = entityId
+        if (isArray(res)) {
+          res = res[0]
+        }
+
+        if (isModelingResponse(res)) {
+          const mr = res.resp.data.modeling_response
+          if (mr.type === 'query_entity_type') {
+            applyHoverReference(mr.data?.reference)
+            resolvedEntityIdRef.current = entityId
+            return
+          }
+        }
+
+        applyHoverReference(undefined)
+        resolvedEntityIdRef.current = entityId
+      } finally {
+        // A rejected query must be retryable, but an old owner's completion
+        // must not release a newer request for the same entity.
+        if (hoverRequestTokenRef.current === requestToken) {
+          pendingEntityIdRef.current = null
+        }
+      }
     }
 
     const unSubHover = engineCommandManager.subscribeToUnreliable({
-      // Immediate hover now uses `highlight_set_entity` for visual feedback,
-      // then requests the heavier EntityReference payload only after the hover
-      // remains stable on the same entity for a short debounce window.
+      // Coalesce pointer samples into the entity actually hovered this frame.
       event: 'highlight_set_entity',
-      callback: ({ data }: { data: any }) => {
+      callback: ({ data }) => {
+        const owner = hoverOwnerRef.current
+        if (
+          owner.connection !== engineCommandManager.connection ||
+          owner.graph !== kclManager.artifactGraph
+        ) {
+          hoverRequestTokenRef.current += 1
+          hoveredEntityIdRef.current = null
+          resolvedEntityIdRef.current = null
+          pendingEntityIdRef.current = null
+          hoverOwnerRef.current = {
+            connection: engineCommandManager.connection,
+            graph: kclManager.artifactGraph,
+          }
+          clearHoverFrame()
+          clearHoverRanges()
+        }
         const entityId =
           data?.entity_id && typeof data.entity_id === 'string'
             ? data.entity_id
@@ -136,7 +162,7 @@ export function useEngineConnectionSubscriptions() {
           hoveredEntityIdRef.current = null
           resolvedEntityIdRef.current = null
           pendingEntityIdRef.current = null
-          clearHoverTimer()
+          clearHoverFrame()
           clearHoverRanges()
           return
         }
@@ -145,7 +171,7 @@ export function useEngineConnectionSubscriptions() {
           if (
             resolvedEntityIdRef.current === entityId ||
             pendingEntityIdRef.current === entityId ||
-            hoverTimerRef.current !== null
+            hoverFrameRef.current !== null
           ) {
             return
           }
@@ -154,17 +180,36 @@ export function useEngineConnectionSubscriptions() {
           hoveredEntityIdRef.current = entityId
           resolvedEntityIdRef.current = null
           pendingEntityIdRef.current = null
-          clearHoverTimer()
+          clearHoverFrame()
         }
 
         const requestToken = hoverRequestTokenRef.current
-        hoverTimerRef.current = setTimeout(() => {
-          hoverTimerRef.current = null
+        const connection = engineCommandManager.connection
+        hoverFrameRef.current = requestAnimationFrame(() => {
+          hoverFrameRef.current = null
+          if (engineCommandManager.connection !== connection) return
+          const graph = kclManager.artifactGraph
+          const artifact = graph.get(entityId)
+          // Rust creates wall/cap artifacts with the engine face ID. The
+          // highlight response already identifies that face, so resolving its
+          // source ranges needs no second engine round trip. Other topology
+          // still needs the query's edge/vertex/import reference information.
+          if (artifact?.type === 'wall' || artifact?.type === 'cap') {
+            const refs = getCodeRefsFromEntityReference(
+              { type: 'face', face_id: entityId },
+              graph
+            )
+            if (refs?.length) {
+              kclManager.setHighlightRange(refs.map((ref) => ref.range))
+              resolvedEntityIdRef.current = entityId
+              return
+            }
+          }
           pendingEntityIdRef.current = entityId
           void queryHoverReference(entityId, requestToken).catch(
             reportRejection
           )
-        }, HOVER_ENTITY_REFERENCE_DEBOUNCE_MS)
+        })
       },
     })
     const unSubClick = engineCommandManager.subscribeTo({
@@ -257,7 +302,11 @@ export function useEngineConnectionSubscriptions() {
       },
     })
     return () => {
-      clearHoverTimer()
+      clearHoverFrame()
+      hoverRequestTokenRef.current += 1
+      hoveredEntityIdRef.current = null
+      resolvedEntityIdRef.current = null
+      pendingEntityIdRef.current = null
       unSubHover()
       unSubClick()
     }

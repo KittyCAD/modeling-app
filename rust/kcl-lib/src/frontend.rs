@@ -586,6 +586,7 @@ impl FrontendState {
                 // generation rather than the one stored with the checkpoint.
                 exec_outcome: ExecOutcome {
                     engine_scene_generation: cache.engine_scene_generation().await,
+                    named_views: None,
                     ..checkpoint.exec_outcome
                 },
             },
@@ -1047,10 +1048,9 @@ impl SketchApi for FrontendState {
                                     } else {
                                         line_ctor.end = ctor.position;
                                     }
-                                } else if let SegmentCtor::Line(mut line_ctor) =
-                                    line.ctor.clone().with_exact_coordinates()
-                                {
+                                } else if let SegmentCtor::Line(line_ctor) = &line.ctor {
                                     // Line owner is not in final_edits yet -> create it
+                                    let mut line_ctor = line_ctor.clone();
                                     if line.start == segment_id {
                                         line_ctor.start = ctor.position;
                                     } else {
@@ -1083,8 +1083,8 @@ impl SketchApi for FrontendState {
                                     } else {
                                         arc_ctor.center = ctor.position;
                                     }
-                                } else if let SegmentCtor::Arc(mut arc_ctor) = arc.ctor.clone().with_exact_coordinates()
-                                {
+                                } else if let SegmentCtor::Arc(arc_ctor) = &arc.ctor {
+                                    let mut arc_ctor = arc_ctor.clone();
                                     if arc.start == segment_id {
                                         arc_ctor.start = ctor.position;
                                     } else if arc.end == segment_id {
@@ -1114,9 +1114,8 @@ impl SketchApi for FrontendState {
                                     } else {
                                         circle_ctor.center = ctor.position;
                                     }
-                                } else if let SegmentCtor::Circle(mut circle_ctor) =
-                                    circle.ctor.clone().with_exact_coordinates()
-                                {
+                                } else if let SegmentCtor::Circle(circle_ctor) = &circle.ctor {
+                                    let mut circle_ctor = circle_ctor.clone();
                                     if circle.start == segment_id {
                                         circle_ctor.start = ctor.position;
                                     } else {
@@ -1147,9 +1146,8 @@ impl SketchApi for FrontendState {
                                         ))));
                                     };
                                     spline_ctor.points[control_index] = ctor.position;
-                                } else if let SegmentCtor::ControlPointSpline(mut spline_ctor) =
-                                    spline.ctor.clone().with_exact_coordinates()
-                                {
+                                } else if let SegmentCtor::ControlPointSpline(spline_ctor) = &spline.ctor {
+                                    let mut spline_ctor = spline_ctor.clone();
                                     spline_ctor.points[control_index] = ctor.position;
                                     final_edits.insert(owner_id, SegmentCtor::ControlPointSpline(spline_ctor));
                                 } else {
@@ -2098,6 +2096,7 @@ impl FrontendState {
             var_solutions,
             refactor_metadata,
             issues: non_fatal,
+            named_views: None,
             source_files,
             default_planes,
         })
@@ -6991,10 +6990,10 @@ fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
             pre_comments: Default::default(),
             comment_start: Default::default(),
         }))),
-        Expr::Var(number) | Expr::VarExact(number) => Ok(ast::Expr::SketchVar(BoxNode::new(ast::Node {
+        Expr::Var(number) => Ok(ast::Expr::SketchVar(BoxNode::new(ast::Node {
             inner: ast::SketchVar {
                 initial: Some(BoxNode::new(ast::Node {
-                    inner: to_source_number_with_precision(*number, matches!(expr, Expr::VarExact(_)))?,
+                    inner: to_source_number(*number)?,
                     start: Default::default(),
                     end: Default::default(),
                     module_id: Default::default(),
@@ -7018,18 +7017,10 @@ fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
 }
 
 fn to_source_number(number: Number) -> anyhow::Result<ast::NumericLiteral> {
-    to_source_number_with_precision(number, false)
-}
-
-fn to_source_number_with_precision(number: Number, preserve_precision: bool) -> anyhow::Result<ast::NumericLiteral> {
     Ok(ast::NumericLiteral {
         value: number.value,
         suffix: number.units,
-        raw: if preserve_precision {
-            format_number_literal_full_precision(number.value, number.units)?
-        } else {
-            format_number_literal(number.value, number.units, None)?
-        },
+        raw: format_number_literal_full_precision(number.value, number.units)?,
         digest: None,
     })
 }
@@ -7591,84 +7582,160 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
 
     #[tokio::test]
     async fn test_grid_precision_survives_create_edit_and_reload() {
-        let point = |x, y| Point2d {
-            x: Expr::VarExact(Number {
-                value: x,
-                units: NumericSuffix::Mm,
-            }),
-            y: Expr::VarExact(Number {
-                value: y,
-                units: NumericSuffix::Mm,
-            }),
-        };
         let mock_ctx = ExecutorContext::new_mock(None).await;
-        for step in [0.125, 2.3333 / 17.0, 0.0000125, 1e-12] {
-            let mut frontend = FrontendState::new();
-            let program = Program::parse("s = sketch(on = XY) {}\n").unwrap().0.unwrap();
-            seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
-            let sketch_id = find_first_sketch_object(&frontend.scene_graph).unwrap().id;
-            let (source, _) = frontend
-                .add_segment(
-                    &mock_ctx,
-                    Version(0),
-                    sketch_id,
-                    SegmentCtor::Line(LineCtor {
-                        start: point(step, -step),
-                        end: point(1.0 + step, 2.0 + step),
-                        construction: None,
-                    }),
-                    None,
-                )
-                .await
-                .unwrap();
-            let (point_id, other_id) = frontend
-                .scene_graph
-                .objects
-                .iter()
-                .find_map(|object| {
-                    if let ObjectKind::Segment {
-                        segment: Segment::Line(line),
-                    } = &object.kind
-                    {
-                        Some((line.start, line.end))
-                    } else {
-                        None
-                    }
-                })
-                .unwrap();
-            let position = point_position(&frontend.scene_graph, point_id);
-            assert_eq!(position.x.value, step);
-            assert_eq!(position.y.value, -step);
-
-            let saved = Program::parse(&source.text).unwrap().0.unwrap();
-            seed_frontend_with_mock(&mut frontend, &mock_ctx, &saved).await;
-            let position = point_position(&frontend.scene_graph, point_id);
-            assert_eq!(position.x.value, step);
-            assert_eq!(position.y.value, -step);
-            let (source, _) = frontend
-                .edit_segments(
-                    &mock_ctx,
-                    Version(0),
-                    sketch_id,
-                    vec![ExistingSegmentCtor {
-                        id: point_id,
-                        ctor: SegmentCtor::Point(PointCtor {
-                            position: point(-step, step),
+        let constructors: [fn(Number) -> Expr; 2] = [Expr::Var, Expr::Number];
+        for make_expr in constructors {
+            let point = |x, y| Point2d {
+                x: make_expr(Number {
+                    value: x,
+                    units: NumericSuffix::Mm,
+                }),
+                y: make_expr(Number {
+                    value: y,
+                    units: NumericSuffix::Mm,
+                }),
+            };
+            for step in [0.125, 2.3333 / 17.0, 0.0000125, 1e-12] {
+                let mut frontend = FrontendState::new();
+                let program = Program::parse("@settings(kclVersion = 3.0)\ns = sketch(on = XY) {}\n")
+                    .unwrap()
+                    .0
+                    .unwrap();
+                seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+                let sketch_id = find_first_sketch_object(&frontend.scene_graph).unwrap().id;
+                let (source, _) = frontend
+                    .add_segment(
+                        &mock_ctx,
+                        Version(0),
+                        sketch_id,
+                        SegmentCtor::Line(LineCtor {
+                            start: point(step, -step),
+                            end: point(1.0 + step, 2.0 + step),
+                            construction: None,
                         }),
-                    }],
-                )
-                .await
-                .unwrap();
-            let saved = Program::parse(&source.text).unwrap().0.unwrap();
-            seed_frontend_with_mock(&mut frontend, &mock_ctx, &saved).await;
-            let position = point_position(&frontend.scene_graph, point_id);
-            assert_eq!(position.x.value, -step);
-            assert_eq!(position.y.value, step);
-            let untouched = point_position(&frontend.scene_graph, other_id);
-            assert_eq!(untouched.x.value, 1.0 + step);
-            assert_eq!(untouched.y.value, 2.0 + step);
+                        None,
+                    )
+                    .await
+                    .unwrap();
+                let (point_id, other_id) = frontend
+                    .scene_graph
+                    .objects
+                    .iter()
+                    .find_map(|object| {
+                        if let ObjectKind::Segment {
+                            segment: Segment::Line(line),
+                        } = &object.kind
+                        {
+                            Some((line.start, line.end))
+                        } else {
+                            None
+                        }
+                    })
+                    .unwrap();
+                let position = point_position(&frontend.scene_graph, point_id);
+                assert_eq!(position.x.value, step);
+                assert_eq!(position.y.value, -step);
+
+                let saved = Program::parse(&source.text).unwrap().0.unwrap();
+                seed_frontend_with_mock(&mut frontend, &mock_ctx, &saved).await;
+                let position = point_position(&frontend.scene_graph, point_id);
+                assert_eq!(position.x.value, step);
+                assert_eq!(position.y.value, -step);
+                let (source, _) = frontend
+                    .edit_segments(
+                        &mock_ctx,
+                        Version(0),
+                        sketch_id,
+                        vec![ExistingSegmentCtor {
+                            id: point_id,
+                            ctor: SegmentCtor::Point(PointCtor {
+                                position: point(-step, step),
+                            }),
+                        }],
+                    )
+                    .await
+                    .unwrap();
+                let saved = Program::parse(&source.text).unwrap().0.unwrap();
+                seed_frontend_with_mock(&mut frontend, &mock_ctx, &saved).await;
+                let position = point_position(&frontend.scene_graph, point_id);
+                assert_eq!(position.x.value, -step);
+                assert_eq!(position.y.value, step);
+                let untouched = point_position(&frontend.scene_graph, other_id);
+                assert_eq!(untouched.x.value, 1.0 + step);
+                assert_eq!(untouched.y.value, 2.0 + step);
+            }
         }
         mock_ctx.close().await;
+    }
+
+    #[tokio::test]
+    async fn test_fixed_preserves_fractional_coordinates_after_reload() {
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut frontend = FrontendState::new();
+        let program = Program::parse(
+            "@settings(kclVersion = 3.0)\ns = sketch(on = XY) { p = point(at = [var 0.125mm, var -0.375mm]) }",
+        )
+        .unwrap()
+        .0
+        .unwrap();
+        seed_frontend_with_mock(&mut frontend, &ctx, &program).await;
+        let sketch_id = find_first_sketch_object(&frontend.scene_graph).unwrap().id;
+        let point_id = frontend
+            .scene_graph
+            .objects
+            .iter()
+            .find_map(|object| {
+                matches!(
+                    &object.kind,
+                    ObjectKind::Segment {
+                        segment: Segment::Point(_)
+                    }
+                )
+                .then_some(object.id)
+            })
+            .unwrap();
+        let position = point_number_mm(0.125, -0.375);
+        let (source, _) = frontend
+            .add_constraint(
+                &ctx,
+                Version(0),
+                sketch_id,
+                Constraint::Fixed(Fixed {
+                    points: vec![FixedPoint {
+                        point: point_id,
+                        position: position.clone(),
+                    }],
+                }),
+            )
+            .await
+            .unwrap();
+        let saved = Program::parse(&source.text).unwrap().0.unwrap();
+        seed_frontend_with_mock(&mut frontend, &ctx, &saved).await;
+        assert_eq!(point_position(&frontend.scene_graph, point_id), position);
+        ctx.close().await;
+    }
+
+    #[test]
+    fn test_commit_var_solution_preserves_fractional_coordinates() {
+        let program =
+            Program::parse("@settings(kclVersion = 3.0)\ns = sketch(on = XY) { p = point(at = [var 1mm, var 0mm]) }")
+                .unwrap()
+                .0
+                .unwrap();
+        let (range, path) = collect_sketch_var_literals_with_value(&program, 1.0).pop().unwrap();
+        let mut frontend = FrontendState::new();
+        frontend.program = program;
+        let outcome = empty_exec_outcome_with_var_solutions(vec![(
+            range,
+            Some(path),
+            Number {
+                value: 0.125,
+                units: NumericSuffix::Mm,
+            },
+        )]);
+        let source = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
+        let saved = Program::parse(&source.text).unwrap().0.unwrap();
+        assert_eq!(collect_sketch_var_literals_with_value(&saved, 0.125).len(), 1);
     }
 
     #[test]
@@ -7902,13 +7969,15 @@ sketch(on = XY) {
         let other = ExecutorContext::new_mock(None).await;
         let program = Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
         let outcome = ctx.run_with_caching(program).await.unwrap();
+        assert!(outcome.named_views.is_some());
         let checkpoint = frontend.create_sketch_checkpoint(&ctx.cache, outcome).await.unwrap();
         ctx.cache.clear_mem_cache().await;
         assert!(ctx.cache.read_old_memory_var("x").await.is_none());
-        frontend
+        let restored = frontend
             .restore_sketch_checkpoint(&ctx.cache, checkpoint)
             .await
             .unwrap();
+        assert!(restored.scene_graph_delta.exec_outcome.named_views.is_none());
         assert!(ctx.cache.read_old_memory_var("x").await.is_some());
         assert!(other.cache.read_old_memory_var("x").await.is_none());
         ctx.close().await;
@@ -9423,6 +9492,7 @@ cylinder = startSketchOn(XY)
             test_program_memory: Default::default(),
             operations: Default::default(),
             artifact_graph: Default::default(),
+            named_views: None,
             scene_objects: Default::default(),
             source_range_to_object: Default::default(),
             var_solutions: Default::default(),
@@ -9580,6 +9650,7 @@ sketch(on = XY) {
             test_program_memory: Default::default(),
             operations: Default::default(),
             artifact_graph: Default::default(),
+            named_views: None,
             scene_objects: Default::default(),
             source_range_to_object: Default::default(),
             var_solutions,
@@ -11342,8 +11413,8 @@ sketch(on = XY) {
         let initial_source = "\
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
-  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
-  angle([line1, line2]) == 60deg
+  line2 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
+  angle([line1, line2]) == 90deg
 }
 ";
 
@@ -11386,8 +11457,8 @@ sketch(on = XY) {
             "\
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
-  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.46mm])
-  angle([line1, line2], labelPosition = [10mm, 11mm]) == 60deg
+  line2 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
+  angle([line1, line2], labelPosition = [10mm, 11mm]) == 90deg
 }
 "
         );
@@ -11409,8 +11480,8 @@ sketch(on = XY) {
         let initial_source = "\
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
-  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
-  60deg == angleDimension(lines = [line1, line2], sector = 1)
+  line2 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
+  90deg == angleDimension(lines = [line1, line2], sector = 1)
 }
 ";
 
@@ -11453,8 +11524,8 @@ sketch(on = XY) {
             "\
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
-  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.46mm])
-  60deg == angleDimension(lines = [line1, line2], sector = 1, labelPosition = [10mm, 11mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
+  90deg == angleDimension(lines = [line1, line2], sector = 1, labelPosition = [10mm, 11mm])
 }
 "
         );
