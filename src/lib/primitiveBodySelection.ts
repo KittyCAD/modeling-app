@@ -2,7 +2,7 @@ import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getPatternArtifactForCopyId,
-  getSweepFromSuspectedSweepSurface,
+  getBodyFromSurface,
 } from '@src/lang/std/artifactGraph'
 import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
@@ -60,10 +60,7 @@ export function getBodySelectionFromPrimitiveParentEntityId(
     parentArtifact.type === 'wall' ||
     parentArtifact.type === 'edgeCut'
   ) {
-    const parentSweep = getSweepFromSuspectedSweepSurface(
-      parentArtifact.id,
-      artifactGraph
-    )
+    const parentSweep = getBodyFromSurface(parentArtifact.id, artifactGraph)
     if (!err(parentSweep)) {
       return {
         artifact: parentSweep as Artifact,

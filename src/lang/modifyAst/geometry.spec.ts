@@ -499,6 +499,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
       )
     ).toBe(false)
     // Simulate missing ownership metadata as well as missing sketch lineage.
+    delete cut.bodyId
     for (const artifact of artifactGraph.values()) {
       if (artifact.type === 'sweep')
         artifact.surfaceIds = artifact.surfaceIds.filter((id) => id !== cut.id)
