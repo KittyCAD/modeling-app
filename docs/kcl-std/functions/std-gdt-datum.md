@@ -103,4 +103,3 @@ gdt::datum(
 ![Rendered example of gdt::datum 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-datum1.png)
 
 
-

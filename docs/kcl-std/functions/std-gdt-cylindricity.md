@@ -123,4 +123,3 @@ gdt::cylindricity(
 ![Rendered example of gdt::cylindricity 2](/kcl-test-outputs/serial_test_example_fn_std-gdt-cylindricity2.png)
 
 
-

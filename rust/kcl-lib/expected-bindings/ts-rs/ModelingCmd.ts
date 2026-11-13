@@ -4499,4 +4499,3 @@ padding: number,
  * Whether or not to animate the camera movement.
  */
 animated: boolean, };
-

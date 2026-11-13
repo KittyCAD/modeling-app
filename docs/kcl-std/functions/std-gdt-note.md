@@ -102,4 +102,3 @@ gdt::note(note = "Note on custom Plane", framePlane = notePlane, framePosition =
 ![Rendered example of gdt::note 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-note1.png)
 
 
-

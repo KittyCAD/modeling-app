@@ -1761,4 +1761,3 @@ export fn radius(
   /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
   textRight?: string,
 ): GdtAnnotation {}
-

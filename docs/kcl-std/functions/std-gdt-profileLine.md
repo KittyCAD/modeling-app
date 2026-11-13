@@ -112,4 +112,3 @@ gdt::profileLine(
 ![Rendered example of gdt::profileLine 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-profileLine1.png)
 
 
-

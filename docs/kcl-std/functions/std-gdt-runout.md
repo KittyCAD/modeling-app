@@ -127,4 +127,3 @@ gdt::runout(
 ![Rendered example of gdt::runout 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-runout0.png)
 
 
-

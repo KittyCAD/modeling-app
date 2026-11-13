@@ -106,4 +106,3 @@ gdt::profile(
 ![Rendered example of gdt::profile 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-profile1.png)
 
 
-

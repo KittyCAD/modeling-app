@@ -122,4 +122,3 @@ gdt::circularity(
 ![Rendered example of gdt::circularity 2](/kcl-test-outputs/serial_test_example_fn_std-gdt-circularity2.png)
 
 
-

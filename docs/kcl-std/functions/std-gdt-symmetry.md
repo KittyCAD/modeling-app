@@ -186,4 +186,3 @@ gdt::symmetry(
 ![Rendered example of gdt::symmetry 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-symmetry1.png)
 
 
-

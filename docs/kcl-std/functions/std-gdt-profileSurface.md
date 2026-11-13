@@ -73,4 +73,3 @@ gdt::profileSurface(
 ![Rendered example of gdt::profileSurface 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-profileSurface0.png)
 
 
-

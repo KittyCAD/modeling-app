@@ -138,4 +138,3 @@ gdt::flatness(
 ![Rendered example of gdt::flatness 3](/kcl-test-outputs/serial_test_example_fn_std-gdt-flatness3.png)
 
 
-

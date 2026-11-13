@@ -73,4 +73,3 @@ gdt::radius(
 ![Rendered example of gdt::radius 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-radius0.png)
 
 
-

@@ -117,4 +117,3 @@ gdt::parallelism(
 ![Rendered example of gdt::parallelism 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-parallelism1.png)
 
 
-

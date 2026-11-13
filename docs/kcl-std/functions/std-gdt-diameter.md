@@ -70,4 +70,3 @@ gdt::diameter(
 ![Rendered example of gdt::diameter 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-diameter0.png)
 
 
-
