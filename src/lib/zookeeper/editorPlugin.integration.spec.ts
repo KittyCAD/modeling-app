@@ -38,13 +38,13 @@ beforeAll(async () => {
 })
 
 afterEach(async () => {
-  vi.restoreAllMocks()
   for (const disposeHistory of historyDisposers.splice(0)) {
     disposeHistory()
   }
   for (const app of apps.splice(0)) {
-    app.dispose()
+    await app.dispose()
   }
+  vi.restoreAllMocks()
 })
 
 describe('Zookeeper project history integration', () => {

@@ -149,7 +149,7 @@ function createApp({
       },
     },
     registry: {
-      optional: (service: unknown) => {
+      required: (service: unknown) => {
         if (service === homeProjectActionsService) {
           return homeProjectActions
         }
@@ -161,6 +161,17 @@ function createApp({
             idFor: () => 'remote-123',
           }
         }
+        return undefined
+      },
+      optional: (service: unknown) => {
+        if (service === homeProjectActionsService) return homeProjectActions
+        if (service === cloudStorageService)
+          return {
+            publishCurrentProject: mockState.publishCurrentProject,
+            getCurrentProjectPublicationDetails:
+              mockState.getCurrentProjectPublicationDetails,
+            idFor: () => 'remote-123',
+          }
         return undefined
       },
       get: (valueSpec: unknown) => {

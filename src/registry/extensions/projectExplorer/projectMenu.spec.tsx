@@ -10,7 +10,6 @@ import { BrowserRouter } from 'react-router-dom'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import { createActor, createMachine } from 'xstate'
 import projectExplorerExtension from '.'
-
 const originalElectron = window.electron
 afterEach(() => {
   window.electron = originalElectron
@@ -110,7 +109,7 @@ describe('project explorer project menu', () => {
         screen.getByText('Go to Home').closest('li')
       )
     } finally {
-      dispose()
+      await dispose()
     }
   })
   test('hides the contributed desktop app link on desktop', async () => {
@@ -125,7 +124,7 @@ describe('project explorer project menu', () => {
         screen.queryByTestId('project-menu-get-desktop-app')
       ).not.toBeInTheDocument()
     } finally {
-      dispose()
+      await dispose()
     }
   })
   test('duplicates the current project', async () => {
@@ -149,7 +148,7 @@ describe('project explorer project menu', () => {
         undefined
       )
     } finally {
-      dispose()
+      await dispose()
     }
   })
   test('reveals the current project from the contributed menu item on desktop', async () => {
@@ -173,7 +172,7 @@ describe('project explorer project menu', () => {
       )
       expect(showInFolder).toHaveBeenCalledWith(projectWellFormed.path)
     } finally {
-      dispose()
+      await dispose()
     }
   })
 })

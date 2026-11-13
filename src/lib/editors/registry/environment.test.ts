@@ -19,7 +19,6 @@ import {
 } from '@src/registry/contracts/userFeatures'
 import { provide, Registry } from 'plankton'
 import { afterEach, describe, expect, it } from 'vitest'
-
 const granted = signal(false)
 const featureFlags = [
   provide(userFeaturesService, {
@@ -30,7 +29,7 @@ const featureFlags = [
 describe('experimental editor registration', () => {
   let registry: Registry | undefined
   afterEach(async () => {
-    registry?.dispose()
+    await registry?.dispose()
   })
   it.each([false, true])(
     'registers experimental services and commands only with the project-shell flag: %s',

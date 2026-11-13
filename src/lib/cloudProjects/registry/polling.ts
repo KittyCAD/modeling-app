@@ -10,6 +10,8 @@ export const cloudProjectPollingExtension: Subtree = {
   create: (ctx) => {
     const clouds = computed(() => ctx.optional(cloudStorageService))
     const sessions = computed(() => ctx.optional(projectSession))
+    const files = computed(() => ctx.optional(fileOperationsService))
+    const routers = computed(() => ctx.optional(routerService))
     const currentProject = computed(() => sessions.value?.project.value)
     const currentId = computed(
       () => currentProject.value?.projectIORefSignal.value.cloudProjectId
@@ -23,14 +25,17 @@ export const cloudProjectPollingExtension: Subtree = {
         const session = sessions.value
         const project = currentProject.value
         const id = currentId.value
-        if (!cloud || !session || !project || !id) return
+        const fileOperations = files.value
+        const router = routers.value
+        if (!cloud || !session || !project || !id || !fileOperations || !router)
+          return
         return watchCloudProject({
           cloud,
           session,
           project,
           id,
-          fileOperations: ctx.required(fileOperationsService),
-          router: ctx.required(routerService),
+          fileOperations,
+          router,
         })
       })
     })
