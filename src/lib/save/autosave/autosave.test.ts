@@ -22,7 +22,7 @@ import {
   editorSaveService,
 } from '@src/lib/save/registry/contract'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 
 import type { Setting } from '@src/lib/settings/Setting'
