@@ -197,7 +197,7 @@ sketch001 = sketch(on = XY) {
     for (point, y) in endpoints.into_iter().zip([0.125 - offset, 0.125 + offset]) {
         assert!((point[0] - 0.375).abs() < 1e-12, "{point:?}\n{}", result.kcl_code);
         assert!((point[1] - y).abs() < 1e-12, "{point:?}\n{}", result.kcl_code);
-        assert!(((point[0] - center[0]).hypot(point[1] - center[1]) - 1.0).abs() < 1e-12);
+        assert!((libm::hypot(point[0] - center[0], point[1] - center[1]) - 1.0).abs() < 1e-12);
     }
 }
 
