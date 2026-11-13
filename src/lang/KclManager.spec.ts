@@ -24,6 +24,9 @@ import {
   setOperationsEffect,
 } from '@src/editor/plugins/operations'
 import { KclManager, KclManagerEvents } from '@src/lang/KclManager'
+import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
+import fsZds from '@src/lib/fs-zds'
+import { posix } from '@chainner/node-path'
 import { KCLError } from '@src/lang/errors'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import { Connection } from '@src/lib/engineConnection/connection'
@@ -1846,12 +1849,26 @@ describe('KclManager diagnostics', () => {
     'saves local edits without an engine and blocks offline cloud edits (cloud: %s)',
     async (cloud) => {
       vi.useFakeTimers()
+      const originalFs = { ...fsZds }
+      Object.assign(fsZds, {
+        resolve: posix.resolve.bind(posix),
+        join: posix.join.bind(posix),
+        relative: posix.relative.bind(posix),
+        extname: posix.extname.bind(posix),
+        basename: posix.basename.bind(posix),
+        dirname: posix.dirname.bind(posix),
+        sep: posix.sep,
+      })
       const { app, kclManager } = createKclManagerTestHarness()
-      const path = '/project/main.kcl'
+      const root = cloud
+        ? app.registry.get(cloudStorageService).pathFor('remote')
+        : '/project'
+      const path = `${root}/main.kcl`
       const base = '@settings(kclVersion = 3.0)\n'
+      kclManager.systemDeps.projectSession = app.projectSession
       kclManager.path = path
       kclManager.systemDeps.project = signal(
-        createProjectForTest('/project', {
+        createProjectForTest(root, {
           cloudProjectId: cloud ? 'remote' : undefined,
         })
       )
@@ -1872,6 +1889,7 @@ describe('KclManager diagnostics', () => {
         })
       const online = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
       try {
+        window.dispatchEvent(new Event('offline'))
         await vi.advanceTimersByTimeAsync(7_000)
         kclManager.editorView.dispatch({
           changes: { from: base.length, insert: '// disconnected edit\n' },
@@ -1887,6 +1905,7 @@ describe('KclManager diagnostics', () => {
           expect(kclManager.code).toBe(base)
         }
         online.mockReturnValue(true)
+        window.dispatchEvent(new Event('online'))
         const current = kclManager.code
         kclManager.editorView.dispatch({
           changes: { from: current.length, insert: '// online edit\n' },
@@ -1897,6 +1916,7 @@ describe('KclManager diagnostics', () => {
       } finally {
         online.mockRestore()
         app.dispose()
+        Object.assign(fsZds, originalFs)
       }
     }
   )
