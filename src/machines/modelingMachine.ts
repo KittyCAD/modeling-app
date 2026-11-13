@@ -169,6 +169,7 @@ import {
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
+import { exportProjectZip } from '@src/lib/exportProjectZip'
 import { exportSave } from '@src/lib/exportSave'
 import { toProjectRelativePath, webSafePathSplit } from '@src/lib/paths'
 import { toPlaneName } from '@src/lib/planes'
@@ -4521,7 +4522,6 @@ export const modelingMachine = setup({
         const { data, kclManager, rustContext, defaultUnit, fileName } = input
 
         if (data.type === 'kcl') {
-          const { exportProjectZip } = await import('@src/lib/exportProjectZip')
           await exportProjectZip({
             fileOperations: kclManager.systemDeps.fileOperations,
             project: input.project,
