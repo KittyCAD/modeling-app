@@ -1,9 +1,12 @@
+import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import { createKclManagerTestHarness } from '@src/lang/testHelpers/kclManagerTestHarness'
 import { topLevelRange } from '@src/lang/util'
 import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import {
   buildSegmentCtorFromObject,
+  isSketchBlockSelected,
   sendToActorIfActive,
   updateHoveredId,
   updateSelectedCodeHighlight,
@@ -21,6 +24,60 @@ import {
 import toast from 'react-hot-toast'
 import { describe, expect, test, vi } from 'vitest'
 import { createActor } from 'xstate'
+
+test.each(['replaced', 'removed', 'missing parent'] as const)(
+  'resolves cached sketch selections against the live artifact graph (%s)',
+  (change) => {
+    const codeRef = {
+      range: [0, 10, 0] as [number, number, number],
+      pathToNode: [],
+      nodePath: { steps: [] },
+    }
+    const selected: Artifact = {
+      type: 'segment',
+      id: 'segment',
+      pathId: 'old-path',
+      edgeIds: [],
+      commonSurfaceIds: [],
+      codeRef,
+    }
+    const selection: Selections = {
+      otherSelections: [],
+      graphSelections: [{ artifact: selected, codeRef }],
+    }
+    const graph: ArtifactGraph = new Map()
+    graph.set('sketch', {
+      type: 'sketchBlock',
+      id: 'sketch',
+      codeRef,
+      planeId: 'plane',
+      sketchId: 7,
+    })
+    if (change !== 'removed')
+      graph.set('segment', { ...selected, pathId: 'new-path' })
+    if (change === 'replaced')
+      graph.set('new-path', {
+        type: 'path',
+        subType: 'sketch',
+        id: 'new-path',
+        codeRef,
+        planeId: 'plane',
+        segIds: ['segment'],
+        trajectorySweepId: null,
+        consumed: false,
+        sketchBlockId: 'sketch',
+      })
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      expect(isSketchBlockSelected(selection, graph)).toBe(
+        change === 'replaced'
+      )
+      expect(log).not.toHaveBeenCalled()
+    } finally {
+      log.mockRestore()
+    }
+  }
+)
 
 function createSketchApiObject(id: number) {
   return {

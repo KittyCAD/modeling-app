@@ -1,7 +1,9 @@
 import { signal } from '@preact/signals-core'
+import toast from 'react-hot-toast'
 
 import { MAX_TEXT_FILE_BYTES } from '@src/lib/constants'
 import { isPathNotFoundError } from '@src/lib/desktop'
+import { EDITOR_SAVE_DEBOUNCE_MS } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { decodeTextFile } from '@src/lib/textFiles'
 import { isErr, reportRejection } from '@src/lib/trap'
@@ -44,9 +46,6 @@ export const activeTextFileSignal = signal<ActiveTextFile | null>(null)
 
 const FILE_TOO_LARGE_MESSAGE = 'Text files larger than 1 MiB cannot be edited.'
 
-/** Debounce for writing edits to disk, mirroring `KclManager.writeToFile`. */
-const WRITE_DEBOUNCE_MS = 1000
-
 /**
  * Guards the async read in `openActiveTextFile` against races: if a newer open
  * (or a clear) happens while an older read is in flight, the older read's result
@@ -63,16 +62,42 @@ let pendingWrite: {
   path: string
   text: string
 } | null = null
+const outgoingWrites = new Map<
+  string,
+  { text: string; promise: Promise<void> }
+>()
+const fileGenerations = new Map<string, number>()
 let pendingWriteTimeout: ReturnType<typeof setTimeout> | undefined
+
+/** Include debounced and failed writes when deciding whether a remote refresh is safe. */
+export function hasPendingActiveTextFileWrite(projectPath: string): boolean {
+  const belongs = (path: string) =>
+    path.startsWith(`${projectPath}/`) || path.startsWith(`${projectPath}\\`)
+  return (
+    Boolean(pendingWrite && belongs(pendingWrite.path)) ||
+    [...outgoingWrites.keys()].some(belongs)
+  )
+}
 
 async function performWrite(
   fileOperations: FileOperationsRegistryService,
   path: string,
   text: string
 ): Promise<void> {
-  try {
+  const generation = fileGenerations.get(path) ?? 0
+  const previous = outgoingWrites.get(path)
+  const write = { text, promise: Promise.resolve() }
+  outgoingWrites.set(path, write)
+  write.promise = (async () => {
+    await previous?.promise.catch(() => undefined)
+    if ((fileGenerations.get(path) ?? 0) !== generation) return
     await fileOperations.writeFile(path, text)
+  })()
+  try {
+    await write.promise
+    if (outgoingWrites.get(path) === write) outgoingWrites.delete(path)
   } catch (error) {
+    if ((fileGenerations.get(path) ?? 0) !== generation) return
     // The file may have been deleted/moved out from under us (e.g. via the
     // file tree). Don't recreate it or surface a scary error in that case.
     if (isPathNotFoundError(error)) {
@@ -91,6 +116,68 @@ async function performWrite(
     // Surface (but never throw) so a transient auto-save failure can't turn into
     // an unhandled rejection.
     reportRejection(error)
+  }
+}
+
+/** Replace text buffers when a cloud conflict is resolved in favor of storage. */
+export function adoptStorageTextSnapshot(
+  root: string,
+  files: ReadonlyMap<string, Uint8Array>
+) {
+  const belongs = (path: string) =>
+    path.startsWith(`${root}/`) || path.startsWith(`${root}\\`)
+  const active = activeTextFileSignal.peek()
+  const paths = new Set([
+    ...outgoingWrites.keys(),
+    ...(pendingWrite ? [pendingWrite.path] : []),
+    ...(active ? [active.path] : []),
+  ])
+  const discardedEdits = [...paths].some((path) => {
+    if (!belongs(path)) return false
+    const draft =
+      pendingWrite?.path === path
+        ? pendingWrite.text
+        : outgoingWrites.get(path)?.text
+    if (draft === undefined) return false
+    const submitted = new TextEncoder().encode(draft)
+    const remote = files.get(path)
+    return (
+      remote === undefined ||
+      submitted.length !== remote.length ||
+      submitted.some((byte, index) => byte !== remote[index])
+    )
+  })
+  if (discardedEdits)
+    toast.error(
+      'This project changed in the cloud. The latest cloud version replaced your unsaved edits.',
+      { id: 'cloud-project-conflict' }
+    )
+  for (const path of paths)
+    if (belongs(path)) {
+      fileGenerations.set(path, (fileGenerations.get(path) ?? 0) + 1)
+      outgoingWrites.delete(path)
+    }
+  if (pendingWrite && belongs(pendingWrite.path)) {
+    clearTimeout(pendingWriteTimeout)
+    pendingWriteTimeout = undefined
+    pendingWrite = null
+  }
+  if (!active || !belongs(active.path)) return
+  latestOpenRequestId += 1
+  const contents = files.get(active.path)
+  if (!contents) {
+    activeTextFileSignal.value = null
+    return
+  }
+  const text = decodeTextFile(contents)
+  if (isErr(text)) {
+    setActiveTextFileError(active.path, active.name, text.message)
+    return
+  }
+  activeTextFileSignal.value = {
+    ...active,
+    status: 'ready',
+    text,
   }
 }
 
@@ -137,7 +224,7 @@ export function scheduleActiveTextFileWrite(
     if (write) {
       void performWrite(write.fileOperations, write.path, write.text)
     }
-  }, WRITE_DEBOUNCE_MS)
+  }, EDITOR_SAVE_DEBOUNCE_MS)
 }
 
 /** Clear the active text file, persisting any pending edits first. */
@@ -157,8 +244,8 @@ export async function openActiveTextFile(
   path: string
 ): Promise<void> {
   const requestId = ++latestOpenRequestId
-  // Persist edits to the outgoing file before switching.
-  await flushActiveTextFileWrite()
+  // The outgoing write owns its path and buffer; display the next file immediately.
+  void flushActiveTextFileWrite()
   if (requestId !== latestOpenRequestId) return
 
   const name = fsZds.basename(path)
@@ -177,6 +264,7 @@ export async function openActiveTextFile(
       return setActiveTextFileError(path, name, FILE_TOO_LARGE_MESSAGE)
     }
 
+    const outgoing = outgoingWrites.get(path)
     const bytes = await fileOperations.readFile(path)
     if (requestId !== latestOpenRequestId) {
       return
@@ -193,7 +281,7 @@ export async function openActiveTextFile(
     activeTextFileSignal.value = {
       path,
       name,
-      text,
+      text: outgoingWrites.get(path)?.text ?? outgoing?.text ?? text,
       status: 'ready',
     }
   } catch (error) {

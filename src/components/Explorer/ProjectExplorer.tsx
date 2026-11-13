@@ -40,6 +40,7 @@ import { isErr, trap, reportRejection } from '@src/lib/trap'
 import type { MaybePressOrBlur } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE } from '@src/registry/contracts/commands'
+
 import {
   keymapService,
   PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
@@ -621,7 +622,7 @@ export const ProjectExplorer = ({
         scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'arrow-up',
         groupId: 'project-explorer',
-        displayName: 'Move project explorer selection up',
+        displayName: 'Clone project explorer selection up',
         needsReview: false,
         hideFromSearch: true,
         onSubmit: () => projectExplorerCommandHandlersRef.current.arrowUp(),
@@ -631,7 +632,7 @@ export const ProjectExplorer = ({
         scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'arrow-down',
         groupId: 'project-explorer',
-        displayName: 'Move project explorer selection down',
+        displayName: 'Clone project explorer selection down',
         needsReview: false,
         hideFromSearch: true,
         onSubmit: () => projectExplorerCommandHandlersRef.current.arrowDown(),
@@ -1024,6 +1025,23 @@ export const ProjectExplorer = ({
             const shouldWeNavigate =
               isPathWithinFileExplorerEntry(file?.path, child.path) &&
               canNavigate
+
+            if (
+              app.projectSession.storageFor(project.path).deletionHistory ===
+              'storage'
+            ) {
+              void runFileTreeMutation(async () => {
+                // Storage-owned history retains the previous revision; archive entries
+                // need an archive move and an archive-based history event.
+                await fileOperations.remove(child.path)
+                if (shouldWeNavigate && app.project?.path === project.path)
+                  await app.projectSession.openFile(project.default_file, {
+                    projectPath: project.path,
+                  })
+                toast.success('Deleted successfully')
+              })
+              return
+            }
 
             if (shouldWeNavigate && file && file.path) {
               const src = child.path

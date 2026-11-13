@@ -15,12 +15,14 @@ import {
 import {
   type HomeProjectEntry,
   homeProjectActionsService,
+  homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
 import { projectLibraryTypesValueSpec } from '@src/registry/contracts/projectLibraries'
 import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
+
 import homeProjectsExtension from '@src/registry/extensions/homeProjects'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -45,6 +47,33 @@ const project = {
 } satisfies HomeProjectEntry
 
 describe('home project actions', () => {
+  it('connects visible Home cards to their provider thumbnail watcher', () => {
+    const stop = vi.fn()
+    const watchThumbnail = vi.fn(() => stop)
+    const registry = new Registry()
+    registry.configure([
+      homeProjectsExtension,
+      defineRegistryItem({
+        id: 'thumbnail-storage',
+        provides: [
+          provide(homeProjectEntriesValueSpec, { ...project, watchThumbnail }),
+        ],
+      }),
+    ])
+    try {
+      const stopWatching = registry
+        .get(homeProjectActionsService)
+        .watchRemoteThumbnail(project.remoteProjectId)
+      expect(watchThumbnail).toHaveBeenCalledOnce()
+      expect(stop).not.toHaveBeenCalled()
+      if (!stopWatching) throw new Error('Missing thumbnail watcher cleanup')
+      stopWatching()
+      expect(stop).toHaveBeenCalledOnce()
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
   it('allows a project library to duplicate a remote-only project', () => {
     const registry = new Registry()
     const settings = signal({

@@ -3203,6 +3203,7 @@ export const modelingMachine = setup({
           wasmInstance,
           projectRef,
         } = input
+        await rustContext.prepareForSketchInsertion()
         await kclManager.flushPendingEditorExecution()
         if (kclManager.hasParseErrors()) {
           return reject(

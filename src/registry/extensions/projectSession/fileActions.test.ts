@@ -9,6 +9,7 @@ import {
   provide,
   provideService,
   Registry,
+  Slot,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
@@ -17,12 +18,17 @@ import type { Project } from '@src/lib/project'
 import type { ZDSProject } from '@src/lib/projectSession'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
+  cloudStorageService,
+  type CloudStorageService,
+} from '@src/lib/cloudProjects/registry/contract'
+import {
   fileOperationsService,
   type FileOperationsRegistryService,
 } from '@src/registry/contracts/fileOperations'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { routerService } from '@src/registry/contracts/router'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import { cloudProjectSessionExtension } from '@src/lib/cloudProjects/registry/session'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
 import { createRouterRegistryService } from '@src/registry/extensions/router'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -34,6 +40,7 @@ vi.mock('@src/lib/desktop', () => ({
 }))
 vi.mock('@src/lib/activeTextFile', () => ({
   flushActiveTextFileWrite: vi.fn(async () => {}),
+  adoptStorageTextSnapshot: vi.fn(),
 }))
 
 const metadata = (title = 'Project'): Project => ({
@@ -71,15 +78,29 @@ function createProject(path = '/project/parts/main.kcl') {
   } as unknown as ZDSProject
   return { project, filePath, flush, resetForFileSwitch }
 }
-function setup(storage?: ProjectStorage) {
+function setup(cloud?: CloudStorageService, storage?: ProjectStorage) {
+  if (cloud) {
+    cloud = Object.assign(
+      {
+        root: '/',
+        idFor: (path: string) =>
+          posix.relative(cloud!.root, path).match(/^[^/]+/)?.[0] ?? '',
+        saves: signal(new Map()),
+      },
+      cloud
+    )
+  }
   const exists = vi.fn(async () => false)
   const rename = vi.fn(async () => {})
   const router = createRouterRegistryService()
   const navigate = vi.fn(async (_path?: unknown, _options?: unknown) => {})
   router.setNavigate(navigate)
   const registry = new Registry()
+  const lateCloud = new Slot()
   registry.configure([
     projectSessionRegistryItem,
+    cloudProjectSessionExtension,
+    lateCloud.of(),
     defineRegistryItem({
       provides: [
         provide(wasmPromiseValueSpec, Promise.resolve({} as ModuleType)),
@@ -93,6 +114,7 @@ function setup(storage?: ProjectStorage) {
           rename,
         } as unknown as FileOperationsRegistryService),
         provideService(routerService, router),
+        ...(cloud ? [provideService(cloudStorageService, cloud)] : []),
       ],
     }),
   ])
@@ -102,6 +124,7 @@ function setup(storage?: ProjectStorage) {
   session.setProject(current.project)
   return {
     registry,
+    lateCloud,
     session,
     exists,
     rename,
@@ -112,35 +135,173 @@ function setup(storage?: ProjectStorage) {
 }
 
 describe('direct project session file actions', () => {
-  it.each([undefined, 'remote-after-sync'])(
-    'refreshes cloud identity and preserves library ownership ($0)',
-    async (discoveredId) => {
-      const s = setup()
+  it.each([false, true])(
+    'retries cloud storage before flushing the live editor on reconnect (switch project: %s)',
+    async (switchProject) => {
+      vi.useFakeTimers()
+      const gate = Promise.withResolvers<undefined>()
+      const retry = vi.fn(() => gate.promise)
+      const s = setup({ retry } as unknown as CloudStorageService)
       s.project.projectIORefSignal.value = {
         ...metadata(),
         cloudProjectId: 'remote',
-        libraryPath: '/library',
-        libraryType: 'cloud',
       }
-      vi.mocked(getProjectInfo).mockResolvedValueOnce({
-        ...metadata('Fresh'),
-        cloudProjectId: discoveredId,
-      })
-      await s.session.refreshProject()
-      expect(getProjectInfo).toHaveBeenCalledWith(
-        expect.anything(),
-        '/project',
-        expect.anything(),
-        { createMissingEntrypoint: true }
-      )
-      expect(s.project.projectIORefSignal.value).toMatchObject({
-        title: 'Fresh',
-        cloudProjectId: discoveredId ?? 'remote',
-        libraryPath: '/library',
-        libraryType: 'cloud',
-      })
+      try {
+        window.dispatchEvent(new Event('online'))
+        expect(retry).toHaveBeenCalledExactlyOnceWith('remote')
+        await vi.advanceTimersByTimeAsync(7_000)
+        expect(s.flush).not.toHaveBeenCalled()
+        if (switchProject) s.session.clearProject()
+        gate.resolve(undefined)
+        await vi.advanceTimersByTimeAsync(0)
+        expect(s.flush).toHaveBeenCalledTimes(switchProject ? 0 : 1)
+      } finally {
+        vi.useRealTimers()
+      }
     }
   )
+
+  it('subscribes when cloud storage becomes available and applies its authoritative snapshot', async () => {
+    const s = setup()
+    const adopt = vi.fn()
+    Object.assign(s.project.executingEditor.peek()!, {
+      adoptStorageSnapshot: adopt,
+    })
+    const reload = vi.fn(async () => {})
+    Object.assign(s.project, { reloadFilesFromStorage: reload })
+    await Promise.resolve()
+    let listener:
+      | ((
+          root: string,
+          files: { relativePath: string; data: Uint8Array }[]
+        ) => void)
+      | undefined
+    const stop = vi.fn()
+    const subscribeReconciled = vi.fn((next: NonNullable<typeof listener>) => {
+      listener = next
+      return stop
+    })
+    s.registry.reconfigure(s.lateCloud, [
+      defineRegistryItem({
+        id: 'late-cloud-storage',
+        providesServices: [
+          provideService(cloudStorageService, {
+            subscribeReconciled,
+          } as unknown as CloudStorageService),
+        ],
+      }),
+    ])
+    await vi.waitFor(() => expect(subscribeReconciled).toHaveBeenCalledOnce())
+    listener!('/another-project', [])
+    expect(adopt).not.toHaveBeenCalled()
+    listener!('/project', [
+      {
+        relativePath: 'parts/main.kcl',
+        data: new TextEncoder().encode('cloud truth'),
+      },
+    ])
+    expect(adopt).toHaveBeenCalledWith('/project', 'cloud truth')
+    await vi.waitFor(() => expect(reload).toHaveBeenCalledOnce())
+    s.registry[Symbol.dispose]()
+    registries.splice(registries.indexOf(s.registry), 1)
+    expect(stop).toHaveBeenCalledOnce()
+  })
+
+  it.each(['tree refresh', 'new snapshot', 'project switch'] as const)(
+    'keeps a cloud rebuild current across %s only when its snapshot still owns the project',
+    async (operation) => {
+      let reconcile:
+        | ((
+            root: string,
+            files: { relativePath: string; data: Uint8Array }[]
+          ) => void)
+        | undefined
+      const s = setup({
+        subscribeReconciled: (listener: NonNullable<typeof reconcile>) => {
+          reconcile = listener
+          return () => {}
+        },
+      } as unknown as CloudStorageService)
+      Object.assign(s.project.executingEditor.peek()!, {
+        adoptStorageSnapshot: vi.fn(),
+      })
+      const pending = Promise.withResolvers<undefined>()
+      const reload = vi.fn(async (_isCurrent: () => boolean) => pending.promise)
+      Object.assign(s.project, { reloadFilesFromStorage: reload })
+      await vi.waitFor(() => expect(reconcile).toBeDefined())
+      const files = [
+        {
+          relativePath: 'parts/main.kcl',
+          data: new TextEncoder().encode('cloud source'),
+        },
+      ]
+      try {
+        reconcile!('/project', files)
+        const isCurrent = reload.mock.calls[0][0]
+        expect(isCurrent()).toBe(true)
+        vi.useFakeTimers()
+        await vi.advanceTimersByTimeAsync(7_000)
+        if (operation === 'tree refresh') {
+          vi.mocked(getProjectInfo).mockResolvedValueOnce(metadata('Fresh'))
+          await s.session.refreshProject()
+        } else if (operation === 'new snapshot') reconcile!('/project', files)
+        else s.session.setProject(createProject().project)
+        expect(isCurrent()).toBe(operation === 'tree refresh')
+      } finally {
+        pending.resolve(undefined)
+        vi.useRealTimers()
+      }
+    }
+  )
+
+  it('stages cloud thumbnails and forwards editor activity without file writes', async () => {
+    const stageThumbnail = vi.fn(async () => {})
+    const editorChanged = vi.fn()
+    const s = setup({
+      root: '/cloud',
+      stageThumbnail,
+      editorChanged,
+    } as unknown as CloudStorageService)
+    const bytes = new Uint8Array([1, 2])
+    await s.session.writeThumbnail('/cloud/project', bytes)
+    s.session.editorChanged('/cloud/project/main.kcl')
+    s.session.editorChanged('/local/main.kcl')
+    expect(stageThumbnail).toHaveBeenCalledExactlyOnceWith(
+      '/cloud/project',
+      bytes
+    )
+    expect(editorChanged).toHaveBeenCalledExactlyOnceWith(
+      '/cloud/project/main.kcl'
+    )
+  })
+
+  it('preserves cloud identity and library ownership when refreshing the tree', async () => {
+    const s = setup({
+      root: '/',
+      idFor: () => 'project',
+      saves: signal(new Map()),
+    } as unknown as CloudStorageService)
+    s.project.projectIORefSignal.value = {
+      ...metadata(),
+      cloudProjectId: 'remote',
+      libraryPath: '/library',
+      libraryType: 'cloud',
+    }
+    vi.mocked(getProjectInfo).mockResolvedValueOnce(metadata('Fresh'))
+    await s.session.refreshProject()
+    expect(getProjectInfo).toHaveBeenCalledWith(
+      expect.anything(),
+      '/project',
+      expect.anything(),
+      { createMissingEntrypoint: false }
+    )
+    expect(s.project.projectIORefSignal.value).toMatchObject({
+      title: 'Fresh',
+      cloudProjectId: 'remote',
+      libraryPath: '/library',
+      libraryType: 'cloud',
+    })
+  })
 
   it('discards a tree read completed after the project changed', async () => {
     const s = setup()
@@ -246,6 +407,27 @@ describe('direct project session file actions', () => {
     await renaming
     expect(next.filePath.value).toBe('/project/parts/main.kcl')
   })
+  it('keeps the editor at the renamed memory path if cloud persistence fails', async () => {
+    const error = new Error('Save failed')
+    const batch = vi.fn(
+      async (
+        _path: string,
+        run: (operations: FileOperationsRegistryService) => Promise<void>
+      ) => {
+        await run({
+          rename: vi.fn(async () => {}),
+        } as unknown as FileOperationsRegistryService)
+        return Promise.reject(error)
+      }
+    )
+    const s = setup({ root: '/cloud', batch } as unknown as CloudStorageService)
+    s.filePath.value = '/cloud/project/parts/main.kcl'
+    await expect(
+      s.session.rename('/cloud/project/parts', '/cloud/project/renamed')
+    ).rejects.toBe(error)
+    expect(s.filePath.value).toBe('/cloud/project/renamed/main.kcl')
+    expect(s.rename).not.toHaveBeenCalled()
+  })
 })
 
 function storageForTest(): ProjectStorage {
@@ -273,7 +455,7 @@ it('releases captured watchers when a watch is replaced, removed, or the session
     .mockReturnValueOnce(first)
     .mockReturnValueOnce(second)
     .mockReturnValueOnce(third)
-  const s = setup(storage)
+  const s = setup(undefined, storage)
   const io = s.session.textFileIO
   io.watch('/project/main.kcl', 'editor', vi.fn())
   io.watch('/project/main.kcl', 'editor', vi.fn())
@@ -288,7 +470,7 @@ it('releases captured watchers when a watch is replaced, removed, or the session
 })
 
 it('uses the provider entrypoint policy when refreshing a project', async () => {
-  const s = setup(storageForTest())
+  const s = setup(undefined, storageForTest())
   vi.mocked(getProjectInfo).mockResolvedValueOnce(metadata('Snapshot'))
   await s.session.refreshProject()
   expect(getProjectInfo).toHaveBeenCalledWith(

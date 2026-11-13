@@ -1547,10 +1547,16 @@ export function isSketchBlockSelected(
   const first = selectionRanges.graphSelections[0]
   if (!first) return false
   const resolved = resolveToCodeRef(first, artifactGraph)
-  const sketchBlock = getSketchBlockForArtifact(
-    resolved?.artifact,
-    artifactGraph
+  // Selections can retain artifact objects from the previous execution. Resolve
+  // their current identity before following relationships in the live graph.
+  const artifact = resolved?.artifact && artifactGraph.get(resolved.artifact.id)
+  if (
+    artifact &&
+    (artifact.type === 'segment' || artifact.type === 'solid2d') &&
+    !artifactGraph.has(artifact.pathId)
   )
+    return false
+  const sketchBlock = getSketchBlockForArtifact(artifact, artifactGraph)
   return (
     sketchBlock?.type === 'sketchBlock' &&
     typeof sketchBlock.sketchId === 'number'

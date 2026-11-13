@@ -1,7 +1,8 @@
 import { Popover } from '@headlessui/react'
 import type { MarkdownEditorActions } from '@kittycad/ui-components'
 import { PublishDialog } from '@src/components/PublishDialog'
-import type { CurrentProjectPublicationDetails } from '@src/lib/share'
+import type { CurrentProjectPublicationDetails } from '@src/lib/publishing/publication'
+
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -110,26 +111,21 @@ describe('PublishDialog', () => {
     ).toBeInTheDocument()
   })
 
-  it('discloses when publishing will move the project to Personal Cloud', () => {
+  it('discloses when publishing creates a new project in Personal Cloud', () => {
     render(
       <Popover>
         <PublishDialog
           onSubmit={vi.fn()}
           accountUrl="https://zoo.dev/account"
-          willMoveProjectToCloud={true}
+          willCloneProjectToCloud={true}
         />
       </Popover>
     )
 
-    const cloudMoveWarning = screen.getByText(
-      /Publishing will also move this project from its current folder to your Personal Cloud library/
+    const cloudCloneWarning = screen.getByText(
+      /Publishing creates a new project in Personal Cloud/
     )
-    expect(cloudMoveWarning).toBeInTheDocument()
-    expect(cloudMoveWarning).toHaveClass(
-      'w-full',
-      'border-destroy-40',
-      'text-destroy-80'
-    )
+    expect(cloudCloneWarning).toBeInTheDocument()
     expect(
       screen.getByText(/This will also be used as the project title/)
     ).toBeInTheDocument()

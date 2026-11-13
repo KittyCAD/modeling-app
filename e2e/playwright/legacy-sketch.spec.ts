@@ -36,6 +36,9 @@ profile001 = startProfile(sketch001, at = [0, 0])
     })
 
     await test.step('Double-clicking the sketch in the feature tree shows a toast', async () => {
+      await page.mouse.move(0, 0)
+      await page.keyboard.press('Escape')
+      await expect(page.locator('.cm-tooltip')).toBeHidden()
       const sketchOperation = await toolbar.getFeatureTreeOperation('Sketch', 0)
       await sketchOperation.dblclick()
       await expect(

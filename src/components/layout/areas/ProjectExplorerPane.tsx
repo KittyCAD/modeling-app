@@ -26,6 +26,10 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const metadata = project?.projectIORefSignal.value
+  const readOnly = project
+    ? !app.projectSession.storageFor(project.path).writeAvailability.value
+        .writable
+    : false
   const projects = useMemo(() => (metadata ? [metadata] : []), [metadata])
   const projectRef = useRef(project?.projectIORefSignal)
   const [theProject, setTheProject] = useState<Project | null>(null)
@@ -105,14 +109,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             .openFile(entry.path, { projectPath: project?.path })
             .catch(reportRejection)
         }
-        const navigateAfterFlush = () => {
-          void kclManager
-            .flushWriteToFile()
-            .then((saved) => {
-              if (saved) navigateHelper()
-            })
-            .catch(reportRejection)
-        }
         if (modelingMachineState.matches('Sketch')) {
           modelingSend({ type: 'Cancel' })
           const waitForIdlePromise = new Promise((resolve) => {
@@ -124,10 +120,11 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             })
           })
           waitForIdlePromise.catch(reportRejection).finally(() => {
-            navigateAfterFlush()
+            navigateHelper()
           })
         } else {
-          navigateAfterFlush()
+          // The current project captures outgoing saves without blocking selection.
+          navigateHelper()
         }
       } else if (projectRef.current?.value.name && entry.children == null) {
         // Inspect file contents before allowing edits, regardless of extension.
@@ -137,7 +134,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     },
     [
       fileOperations,
-      kclManager,
       modelingActor,
       modelingMachineState,
       modelingSend,
@@ -160,6 +156,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         title={props.layout.label}
         Menu={
           <FileExplorerHeaderActions
+            readOnly={readOnly}
             onCreateFile={() => {
               setCreateFilePressed(performance.now())
             }}
@@ -193,7 +190,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             onRowDoubleClicked={onRowDoubleClicked}
             onRowEnter={onRowClicked}
             canNavigate={true}
-            readOnly={false}
+            readOnly={readOnly}
             overrideApplicationProjectDirectory={
               app.projectLibraries.projectDirectoryPath
             }

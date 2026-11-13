@@ -92,6 +92,23 @@ function scopedInitScript(script: unknown, arg: unknown, testScope: string) {
   }
 }
 
+async function selectBrowserProjectLibrary(page: Page) {
+  // Browser storage does not read the localStorage TOML seed as an app
+  // settings file. Select the local library used by this fixture explicitly.
+  await page.waitForFunction(() =>
+    window.app?.settings.actor.getSnapshot().matches('idle')
+  )
+  await page.evaluate((libraries) => {
+    window.app.settings.actor.send({
+      type: 'set.app.libraries',
+      data: { level: 'user', value: libraries },
+    })
+  }, playwrightProjectLibraries())
+  await page.waitForFunction(() =>
+    window.app.settings.actor.getSnapshot().matches('idle')
+  )
+}
+
 export class AuthenticatedApp {
   public readonly page: Page
   public readonly context: BrowserContext
@@ -128,6 +145,7 @@ export class AuthenticatedApp {
     await this.page.setViewportSize(this.viewPortSize)
 
     await u.waitForAuth()
+    await selectBrowserProjectLibrary(this.page)
     if (!mockApiRoutes) await waitForAuthentication(this.page)
   }
   getInputFile = (fileName: string) => {
@@ -408,6 +426,10 @@ export class ElectronZoo {
       }
     }
 
+    // Electron reuses its context; prior tests may have mocked the engine socket.
+    await this.context.routeWebSocket('**/ws/modeling/commands**', (socket) => {
+      socket.connectToServer()
+    })
     await startRendererCrashDiagnostics(this.electron)
     if (this.tracingEnabled) {
       await this.context.tracing.startChunk()
@@ -733,6 +755,18 @@ const fixturesBasedOnProcessEnvPlatform = {
         return fn(projectDirPath)
           .then(() => page.reload())
           .then(() => waitForAppLoad(page))
+          .then(() => selectBrowserProjectLibrary(page))
+          .then(async () => {
+            if (
+              await page
+                .getByRole('heading', {
+                  name: 'Project Libraries',
+                  exact: true,
+                })
+                .isVisible()
+            )
+              await new HomePageFixture(page).projectsLoaded()
+          })
           .then(() => ({
             dir: projectDirPath,
           }))
@@ -743,6 +777,17 @@ const fixturesBasedOnProcessEnvPlatform = {
         return fn(projectDirName)
           .then(() => page.reload())
           .then(() => waitForAppLoad(page))
+          .then(async () => {
+            if (
+              await page
+                .getByRole('heading', {
+                  name: 'Project Libraries',
+                  exact: true,
+                })
+                .isVisible()
+            )
+              await new HomePageFixture(page).projectsLoaded()
+          })
           .then(() => ({
             dir: projectDirName,
           }))

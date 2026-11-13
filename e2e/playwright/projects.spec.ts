@@ -1,3 +1,4 @@
+import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   closeOnboardingModalIfPresent,
@@ -786,6 +787,7 @@ test.describe(
       })
 
       await test.step(`Check the project was deleted and we navigated home`, async () => {
+        await new HomePageFixture(page).projectsLoaded()
         await expect(noProjectsMessage).toBeVisible()
       })
     })
@@ -1017,6 +1019,7 @@ test.describe(
 
       await test.step(`Check the project was deleted`, async () => {
         await expect(projectHomeLink).not.toBeVisible()
+        await new HomePageFixture(page).projectsLoaded()
         await expect(noProjectsMessage).toBeVisible()
       })
     })
