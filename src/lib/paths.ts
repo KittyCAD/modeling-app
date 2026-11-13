@@ -1,4 +1,5 @@
 import { getContainedRelativePath } from '@src/lib/fileSystem/pathContainment'
+import { PATHS } from '@src/lib/routePaths'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { APP_NAME, ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import { getEXTNoPeriod } from '@src/lib/fileExtensions'
@@ -71,7 +72,7 @@ function areFilesystemPathsEqual(left: string, right: string): boolean {
   )
 }
 
-export { PATHS } from '@src/lib/routePaths'
+export { PATHS }
 
 export function getRouterSearchFromRequestUrl(
   requestUrl: string,
