@@ -24,6 +24,12 @@ beforeAll(async () => {
 
 const absolutePath = (...parts: string[]) => fsZds.join(fsZds.sep, ...parts)
 
+it('encodes a project file path as one file-route segment', () => {
+  expect(getFileRoute('/projects/My Model/main.kcl')).toBe(
+    '/file/%2Fprojects%2FMy%20Model%2Fmain.kcl'
+  )
+})
+
 describe('testing parseProjectRoute', () => {
   it('should parse a project as a subpath of project dir', async () => {
     const projectDirectory = absolutePath('home', 'somebody', 'projects')

@@ -11,7 +11,10 @@ import { expect, test as appTest } from '@e2e/playwright/zoo-test'
 import { test as browserTest } from '@e2e/playwright/base-test'
 import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
-import { doAndWaitForImageDiff } from '@e2e/playwright/test-utils'
+import {
+  doAndWaitForImageDiff,
+  waitForAppLoad,
+} from '@e2e/playwright/test-utils'
 import { uploadedProject } from '@e2e/playwright/lib/cloudStorageFixture'
 import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
 import type { Page } from '@playwright/test'
@@ -80,6 +83,14 @@ async function createThroughHome(
   if (title !== undefined) await home.projectTextName.fill(title)
   await home.projectButtonContinue.click()
   await expect(page).toHaveURL(/\/file\/.*main\.kcl$/)
+  await page.waitForFunction(() => {
+    const project = window.app.project
+    const editor = project?.executingEditor.peek()
+    return (
+      editor != null &&
+      editor.path === project?.projectIORefSignal.peek().default_file
+    )
+  })
   await expect(page.locator('.cm-content').first()).toBeVisible()
   const root = await page.evaluate(() => window.app.project?.path)
   if (!root) throw new Error('Created project did not open')
@@ -2282,14 +2293,26 @@ for (const kind of ['local', 'cloud'] as const) {
         }
       })
 
-      test('creates twelve projects using the default title and keeps every project accessible', async ({
+      test('creates default-title projects after ten existing projects and keeps every project accessible', async ({
         page,
         context,
       }, testInfo) => {
         test.setTimeout(180_000)
         const storage = await prepareStorage(kind, page, context, testInfo)
         const roots = new Set<string>()
-        for (let index = 0; index < 12; index++) {
+        const existing = new Map<string, string>()
+        for (let index = 0; index < 10; index++) {
+          const title =
+            kind === 'local' && index > 0 ? `untitled-${index}` : 'untitled'
+          const code = `${blankCode}// Existing project ${index}\n`
+          const root = await storage.seed(title, code)
+          roots.add(root)
+          existing.set(root, code)
+        }
+        await storage.refresh()
+        await storage.home.projectsLoaded()
+        await expect(storage.home.projectCard).toHaveCount(10)
+        for (let index = 10; index < 12; index++) {
           roots.add(await createThroughHome(page, storage.home))
           await storage.goHome()
           await expect(storage.home.projectCard).toHaveCount(index + 1)
@@ -2304,6 +2327,8 @@ for (const kind of ['local', 'cloud'] as const) {
           .toEqual(titles.sort())
         expect(roots.size).toBe(12)
         for (const root of roots) await storage.assertStorage(root)
+        for (const [root, code] of existing)
+          expect(await storage.read(root)).toBe(code)
       })
 
       for (const next of ['broken', 'empty'] as const) {
