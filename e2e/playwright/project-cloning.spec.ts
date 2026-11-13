@@ -1,3 +1,9 @@
+import {
+  installPausedClock,
+  navigateToAppRoute,
+  openProjectLibrary,
+  selectProjectLibraries,
+} from '@e2e/playwright/lib/appTestUtils'
 import { expect, test as browserTest } from '@e2e/playwright/base-test'
 import { test as appTest } from '@e2e/playwright/zoo-test'
 import {
@@ -40,15 +46,7 @@ async function prepare(
     'parts/note.md': 'nested bytes',
   }
   if (web) await setup(context, page, info)
-  const navigate = async (route: string) => {
-    if (web) await page.goto(route)
-    else {
-      const url = new URL(page.url())
-      url.hash = route
-      await page.goto(url.toString())
-      await page.reload({ waitUntil: 'domcontentloaded' })
-    }
-  }
+  const navigate = (route: string) => navigateToAppRoute(page, route)
   await navigate('/home')
   await waitForAppLoad(page)
   await expect(page.getByTestId('home-header')).toBeVisible()
@@ -75,7 +73,7 @@ async function prepare(
     { source, localPath: localSource.path, id: remote.project.id }
   )
   await page.evaluate(
-    async ({ root, files, source, libraries, destinationPath }) => {
+    async ({ root, files, source, destinationPath }) => {
       const fs = window.fsZds
       if (source === 'local') {
         await fs.mkdir(`${root}/parts`, { recursive: true })
@@ -86,29 +84,16 @@ async function prepare(
           )
       }
       await fs.mkdir(destinationPath, { recursive: true })
-      window.app.settings.actor.send({
-        type: 'set.app.libraries',
-        data: { level: 'user', value: libraries },
-      })
     },
     {
       root,
       files: remote.project.files,
       source,
-      libraries: [sourceLibrary, destinationLibrary],
       destinationPath: localDestination.path,
     }
   )
-  await expect
-    .poll(() =>
-      page.evaluate(() => window.app.settings.actor.getSnapshot().value)
-    )
-    .toBe('idle')
-  const openLibrary = page.getByRole('link', {
-    name: `Open ${sourceLibrary.title} library`,
-    exact: true,
-  })
-  await openLibrary.click()
+  await selectProjectLibraries(page, [sourceLibrary, destinationLibrary])
+  await openProjectLibrary(page, sourceLibrary.title)
   const card = page
     .getByTestId('project-link')
     .filter({ has: page.getByText('Original', { exact: true }) })
@@ -169,14 +154,7 @@ async function prepare(
       await navigate('/home')
       await waitForAppLoad(page)
       await expect(page.getByTestId('home-header')).toBeVisible()
-      const library = page.getByRole('link', {
-        name: `Open ${destinationLibrary.title} library`,
-        exact: true,
-      })
-      await library.click()
-      await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-        destinationLibrary.title
-      )
+      await openProjectLibrary(page, destinationLibrary.title)
       let title = 'Original'
       for (const nextTitle of ['Renamed clone', 'Original']) {
         const clonedCard = page.getByTestId('project-link').filter({
@@ -224,9 +202,7 @@ for (const [source, destination] of [
         await storage.clone()
         if (destination === 'cloud') {
           await started.promise
-          const clockStart = new Date()
-          await page.clock.install({ time: clockStart })
-          await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+          await installPausedClock(page)
           await page.clock.runFor(7_000)
           await page.evaluate(
             async ({ root, contents }) =>
@@ -319,9 +295,7 @@ test(
     try {
       await storage.clone()
       await started.promise
-      const clockStart = new Date()
-      await page.clock.install({ time: clockStart })
-      await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+      await installPausedClock(page)
       await page.clock.runFor(7_000)
       await page.evaluate(
         async ({ root, contents }) =>

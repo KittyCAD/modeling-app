@@ -1,29 +1,29 @@
 import { setTimeout as delay } from 'node:timers/promises'
+import {
+  readEditorCode,
+  expandFileTreeFolder,
+  holdFileRead,
+  holdModelingOpen,
+  holdEditorWrites,
+} from '@e2e/playwright/lib/editorTestUtils'
 import { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
-import { randomUUID } from 'node:crypto'
-import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import { expect, test as appTest } from '@e2e/playwright/zoo-test'
 import { test as browserTest } from '@e2e/playwright/base-test'
 import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import {
-  setup,
-  waitForAppLoad,
-  mockClientErrorReports,
   doAndWaitForImageDiff,
+  waitForAppLoad,
 } from '@e2e/playwright/test-utils'
+import { uploadedProject } from '@e2e/playwright/lib/cloudStorageFixture'
+import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import type { Page } from '@playwright/test'
+import { prepareStorage } from '@e2e/playwright/lib/projectStorageFixture'
 import {
-  mockCloudStorage,
-  uploadedProject,
-} from '@e2e/playwright/lib/cloudStorageFixture'
-import { projectToml } from '@e2e/playwright/lib/cloudProjectTestUtils'
-import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
-import { FsFixture } from '@e2e/playwright/fixtures/fsFixture'
-import type { BrowserContext, Page, TestInfo } from '@playwright/test'
-import {
-  getDefaultCloudProjectLibrarySetting,
-  type ProjectLibrarySetting,
-} from '@src/lib/projectLibraries'
+  openLayoutPanes,
+  installPausedClock,
+  pauseAppClock,
+} from '@e2e/playwright/lib/appTestUtils'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 // Browser-local storage is OPFS; desktop-local storage uses Electron's filesystem.
@@ -39,174 +39,38 @@ const solidCode = `${blankCode}profile = sketch(on = XY) {
 section = region(point = [10mm, 10mm], sketch = profile)
 body = extrude(section, length = 10mm)
 `
-type StorageKind = 'local' | 'cloud'
 
-async function prepareStorage(
-  kind: StorageKind,
-  page: Page,
-  context: BrowserContext,
-  testInfo: TestInfo,
-  {
-    modeling = false,
-    creationGate,
-  }: {
-    modeling?: boolean
-    creationGate?: Promise<void>
-  } = {}
+async function openExistingSketch(toolbar: ToolbarFixture, name: string) {
+  await toolbar.openFeatureTreePane()
+  await (await toolbar.getFeatureTreeOperation(name, 0)).dblclick()
+  await expect(toolbar.exitSketchBtn).toBeEnabled()
+}
+
+async function flushEditorAndThumbnailSaves(page: Page) {
+  await page.evaluate(() => window.app.singletons.kclManager.flushWriteToFile())
+  await installPausedClock(page)
+  await page.clock.runFor(7_000)
+  await page.clock.resume()
+  await expect(
+    page
+      .locator('#statusbar')
+      .getByRole('status')
+      .filter({ hasText: 'Saving...' })
+  ).not.toBeAttached()
+}
+
+async function expectStoredThumbnail(
+  storage: Awaited<ReturnType<typeof prepareStorage>>,
+  root: string
 ) {
-  await mockClientErrorReports(context)
-  // Intercept Projects even for local cases: unexpected cloud mutations are observable.
-  const remote = await mockCloudStorage(context, {
-    startEmpty: true,
-    mockModeling: !modeling,
-    beforeCreate:
-      kind === 'cloud' && creationGate ? () => creationGate : undefined,
-  })
-  if (process.env.TARGET === 'web') await setup(context, page, testInfo)
-  const navigate = async (route: string) => {
-    if (process.env.TARGET === 'web') await page.goto(route)
-    else {
-      const url = new URL(page.url())
-      url.hash = route
-      await page.goto(url.toString())
-      // Fragment navigation can retain the current document in Electron.
-      // Direct entry must load storage again, as browser navigation does.
-      await page.reload({ waitUntil: 'domcontentloaded' })
-    }
-  }
-  await navigate('/home')
-  await waitForAppLoad(page)
-  const home = new HomePageFixture(page)
-  await expect(page.getByTestId('home-header')).toBeVisible()
-  const fs = FsFixture(page)
-  const localDirectory =
-    process.env.TARGET === 'web'
-      ? '/documents/project-workflows'
-      : testInfo.outputPath('projects')
-  await fs.mkdir(localDirectory, { recursive: true })
-  const library: ProjectLibrarySetting =
-    kind === 'cloud'
-      ? getDefaultCloudProjectLibrarySetting()
-      : { title: 'Local Projects', type: 'directory', path: localDirectory }
-  const selectLibrary = async () => {
-    await waitForAppLoad(page)
-    await page.waitForFunction(() =>
-      window.app?.settings.actor.getSnapshot().matches('idle')
-    )
-    await page.evaluate((library) => {
-      window.app.settings.actor.send({
-        type: 'set.app.libraries',
-        data: { level: 'user', value: [library] },
-      })
-    }, library)
-    await page.waitForFunction(() =>
-      window.app?.settings.actor.getSnapshot().matches('idle')
-    )
-  }
-  const enterLibrary = async () => {
-    const heading = page.getByRole('heading', { level: 1 })
-    await expect(heading).toHaveText(
-      /^(Project Libraries|Local Projects|Personal Cloud|Projects)$/
-    )
-    if ((await heading.innerText()) === 'Project Libraries') {
-      await page
-        .getByRole('link', {
-          name: `Open ${library.title} library`,
-          exact: true,
-        })
-        .click()
-      await expect(heading).toHaveText(library.title)
-    }
-    await home.projectsLoaded()
-  }
-  const goHome = async () => {
-    await page.getByTestId('app-logo').click()
-    await enterLibrary()
-  }
-  await selectLibrary()
-  await enterLibrary()
-  const seed = async (
-    name: string,
-    code: string,
-    extraFiles: Record<string, string> = {}
-  ) => {
-    const files = {
-      'main.kcl': code,
-      'project.toml': projectToml(name),
-      ...extraFiles,
-    }
-    if (kind === 'cloud') {
-      const id = randomUUID()
-      remote.projects.push({ id, title: name, revision: '1', files })
-      return fs.resolve('/__zoo_cloud__', id)
-    }
-    const root = await fs.join(
-      localDirectory,
-      getProjectDirectoryNameFromTitle(name, 'untitled')
-    )
-    for (const [relativePath, contents] of Object.entries(files)) {
-      const path = await fs.join(root, relativePath)
-      await fs.mkdir(await fs.dirname(path), { recursive: true })
-      await fs.writeFile(path, new TextEncoder().encode(contents))
-    }
-    await expect(fs.stat(root)).resolves.toBeDefined()
-    await expect(
-      fs.readFile(await fs.join(root, 'main.kcl'), 'utf8')
-    ).resolves.toBe(code)
-    return root
-  }
-  const read = async (root: string, relativePath = 'main.kcl') => {
-    if (kind === 'cloud') {
-      return remote.projects.find((project) => root.endsWith(project.id))
-        ?.files[relativePath]
-    }
-    return new TextDecoder().decode(
-      await fs.readFile(await fs.join(root, relativePath))
-    )
-  }
-  const replace = async (root: string, code: string) => {
-    if (kind === 'cloud') {
-      const project = remote.projects.find((project) =>
-        root.endsWith(project.id)
+  await expect
+    .poll(() =>
+      storage.read(root, 'thumbnail.png').then(
+        (contents) => Boolean(contents),
+        () => false
       )
-      if (!project) throw new Error('Missing remote project')
-      project.files['main.kcl'] = code
-      project.revision = String(Number(project.revision) + 1)
-    } else {
-      await fs.writeFile(
-        await fs.join(root, 'main.kcl'),
-        new TextEncoder().encode(code)
-      )
-    }
-  }
-  const refresh = async () => {
-    await page.reload({ waitUntil: 'domcontentloaded' })
-    await page.waitForFunction(() => Boolean(window.app?.settings))
-    await selectLibrary()
-  }
-  const assertStorage = async (root: string) => {
-    if (kind === 'cloud') {
-      await expect(fs.stat(root)).rejects.toBeDefined()
-    } else {
-      await expect(
-        fs.stat(await fs.join(root, 'main.kcl'))
-      ).resolves.toBeDefined()
-      expect(remote.creates).toHaveLength(0)
-      expect(remote.uploads).toHaveLength(0)
-    }
-  }
-  return {
-    remote,
-    fs,
-    home,
-    goHome,
-    seed,
-    read,
-    replace,
-    refresh,
-    assertStorage,
-    navigate,
-  }
+    )
+    .toBe(true)
 }
 
 async function createThroughHome(
@@ -219,6 +83,14 @@ async function createThroughHome(
   if (title !== undefined) await home.projectTextName.fill(title)
   await home.projectButtonContinue.click()
   await expect(page).toHaveURL(/\/file\/.*main\.kcl$/)
+  await page.waitForFunction(() => {
+    const project = window.app.project
+    const editor = project?.executingEditor.peek()
+    return (
+      editor != null &&
+      editor.path === project?.projectIORefSignal.peek().default_file
+    )
+  })
   await expect(page.locator('.cm-content').first()).toBeVisible()
   const root = await page.evaluate(() => window.app.project?.path)
   if (!root) throw new Error('Created project did not open')
@@ -253,9 +125,7 @@ for (const cached of [false, true]) {
         storage.home.projectCard.filter({ hasText: 'Slow listing' })
       ).toBeVisible()
       await storage.seed('Added during refresh', blankCode)
-      await page.clock.pauseAt(
-        new Date((await page.evaluate(() => Date.now())) + 1_000)
-      )
+      await pauseAppClock(page)
       await expect(
         page.getByRole('button', { name: 'Refresh projects' })
       ).toBeEnabled()
@@ -298,6 +168,47 @@ for (const cached of [false, true]) {
   })
 }
 
+test('keeps the modeling viewport stable when the save status changes @web', async ({
+  page,
+  context,
+}, testInfo) => {
+  const storage = await prepareStorage('local', page, context, testInfo, {
+    modeling: true,
+  })
+  await storage.seedAndOpen('Stable save status', solidCode)
+  await new SceneFixture(page).settled()
+  await page.evaluate(() => window.app.singletons.kclManager.flushWriteToFile())
+  const stream = page.getByTestId('stream')
+  const header = page.getByTestId('app-header')
+  const statusBar = page.locator('#statusbar')
+  const originalHeader = await header.boundingBox()
+  const originalStream = await stream.boundingBox()
+  const video = await page.locator('#video-stream').elementHandle()
+  for (const state of ['saving', 'failed', 'saved'] as const) {
+    await page.evaluate((state) => {
+      window.app.singletons.kclManager.saveState.value = state
+    }, state)
+    if (state === 'saving')
+      await expect(
+        statusBar.getByRole('status').filter({ hasText: 'Saving...' })
+      ).toBeVisible()
+    if (state === 'failed')
+      await expect(
+        statusBar.getByRole('button', { name: 'Save failed. Retry' })
+      ).toBeVisible()
+    if (state === 'saved')
+      await expect(statusBar.getByRole('status')).not.toBeAttached()
+    expect(await header.boundingBox(), state).toEqual(originalHeader)
+    expect(await stream.boundingBox(), state).toEqual(originalStream)
+    expect(
+      await video?.evaluate(
+        (node) => node === document.getElementById('video-stream')
+      ),
+      state
+    ).toBe(true)
+  }
+})
+
 test('polls cloud project membership, pauses offline and stops outside the projects view @web', async ({
   page,
   context,
@@ -308,9 +219,7 @@ test('polls cloud project membership, pauses offline and stops outside the proje
   const card = (title: string) =>
     storage.home.projectCard.filter({ hasText: title })
   await expect(card('Original cloud project')).toBeVisible()
-  const clock = new Date()
-  await page.clock.install({ time: clock })
-  await page.clock.pauseAt(new Date(clock.getTime() + 1_000))
+  await installPausedClock(page)
   const listRoute = /\/user\/projects(?:\?.*)?$/
   let requests = 0
   await context.route(listRoute, async (route) => {
@@ -342,8 +251,7 @@ test('polls cloud project membership, pauses offline and stops outside the proje
     await storage.home.openProject('Added on another device')
     await expectEditor(page, blankCode)
     const afterLeaving = requests
-    const now = await page.evaluate(() => Date.now())
-    await page.clock.pauseAt(new Date(now + 1_000))
+    await pauseAppClock(page)
     await page.clock.runFor(7_000)
     expect(requests).toBe(afterLeaving)
   } finally {
@@ -402,9 +310,7 @@ test(
         exact: true,
       })
       await expect(listSpinner).toBeVisible()
-      const clockStart = new Date()
-      await page.clock.install({ time: clockStart })
-      await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+      await installPausedClock(page)
       await page.clock.runFor(7_000)
       await expect(listSpinner).toBeVisible()
       await page.screenshot({
@@ -421,9 +327,7 @@ test(
         exact: true,
       })
       await expect(cardSpinner).toBeVisible()
-      await page.clock.pauseAt(
-        new Date((await page.evaluate(() => Date.now())) + 1_000)
-      )
+      await pauseAppClock(page)
       await page.clock.runFor(7_000)
       await expect(cardSpinner).toBeVisible()
       await page.screenshot({
@@ -483,9 +387,12 @@ for (const workerWrites of [false, true]) {
       await expect(page.getByTestId('gizmo')).toBeVisible()
       await page.waitForLoadState('networkidle')
       const code = `${blankCode}// saved by the offline worker\n`
+      await installPausedClock(page)
       try {
         await context.setOffline(true)
-        await page.waitForTimeout(7_000)
+        await page.waitForFunction(() => !navigator.onLine)
+        await page.clock.runFor(7_000)
+        await page.clock.resume()
         await editThroughUI(page, code)
         await expect.poll(() => storage.read(root)).toBe(code)
       } finally {
@@ -496,6 +403,52 @@ for (const workerWrites of [false, true]) {
     }
   )
 }
+
+test('keeps newer cloud edits when a rejected upload already matches the cloud', async ({
+  page,
+  context,
+}, testInfo) => {
+  const storage = await prepareStorage('cloud', page, context, testInfo)
+  const root = await storage.seed('Already uploaded', blankCode)
+  await storage.refresh()
+  await storage.home.openProject('Already uploaded')
+  await expectEditor(page, blankCode)
+  const gate = Promise.withResolvers<undefined>()
+  let started = false
+  await context.route('**/user/projects/*', async (route) => {
+    if (route.request().method() !== 'PUT' || started) return route.fallback()
+    started = true
+    const upload = await uploadedProject(route)
+    const project = storage.remote.projects.find((project) =>
+      root.endsWith(project.id)
+    )
+    if (!project) throw new Error('Missing cloud project')
+    project.files = upload.files
+    project.revision = String(Number(project.revision) + 1)
+    await gate.promise
+    await route.fulfill({ status: 409, json: { message: 'Already uploaded' } })
+  })
+  const first = `${blankCode}width = 10\n`
+  const newer = `${blankCode}width = 20\n`
+  try {
+    await editThroughUI(page, first)
+    await expect.poll(() => started).toBe(true)
+    await editThroughUI(page, newer)
+    await installPausedClock(page)
+    await page.clock.runFor(7_000)
+    await expectEditor(page, newer)
+    gate.resolve(undefined)
+    await page.clock.resume()
+    await expect.poll(() => storage.read(root)).toBe(newer)
+    await expectEditor(page, newer)
+    await expect(
+      page.getByText('This project changed in the cloud.', { exact: false })
+    ).not.toBeVisible()
+  } finally {
+    gate.resolve(undefined)
+    await page.clock.resume()
+  }
+})
 
 // Both implementations execute the same actions and UI assertions. Naming policy
 // and persistence inspection are the explicit implementation-specific boundaries.
@@ -519,11 +472,7 @@ for (const kind of ['local', 'cloud'] as const) {
         let started = false
         const listRoute = /\/user\/projects(?:\?.*)?$/
         const button = page.getByRole('button', { name: 'Refresh projects' })
-        if (kind === 'cloud') {
-          await page.clock.pauseAt(
-            new Date((await page.evaluate(() => Date.now())) + 1_000)
-          )
-        }
+        if (kind === 'cloud') await pauseAppClock(page)
         await expect(button).toBeEnabled()
         if (kind === 'cloud') {
           await context.route(listRoute, async (route) => {
@@ -580,10 +529,7 @@ for (const kind of ['local', 'cloud'] as const) {
         await storage.refresh()
         await storage.home.openProject('Existing sketch')
         await scene.settled()
-        await toolbar.openFeatureTreePane()
-        const operation = await toolbar.getFeatureTreeOperation('profile', 0)
-        await operation.dblclick()
-        await expect(toolbar.exitSketchBtn).toBeEnabled()
+        await openExistingSketch(toolbar, 'profile')
         await page.getByTestId('point').click()
         const [click] = scene.makeMouseHelpers(0.7, 0.65, { format: 'ratio' })
         await click()
@@ -608,6 +554,540 @@ for (const kind of ['local', 'cloud'] as const) {
           .toBe(2)
         expect(missingArtifacts).toEqual([])
       })
+
+      test('disables Exit Sketch immediately and throughout slow cleanup and engine handoff', async ({
+        page,
+        context,
+      }, testInfo) => {
+        const storage = await prepareStorage(kind, page, context, testInfo, {
+          modeling: true,
+        })
+        const scene = new SceneFixture(page)
+        const toolbar = new ToolbarFixture(page)
+        await storage.seed(
+          'Slow sketch exit',
+          `${blankCode}profile = sketch(on = XY) {
+  line(start = [var 0mm, var 0mm], end = [var 2mm, var 2mm])
+}
+`
+        )
+        await storage.refresh()
+        await storage.home.openProject('Slow sketch exit')
+        await scene.settled()
+        await openExistingSketch(toolbar, 'profile')
+        await expect(
+          page.locator('[data-handle="sketch-point-handle"]')
+        ).toHaveCount(2)
+        const pending = await page.evaluateHandle(() => {
+          const editor = window.app.singletons.kclManager
+          const rust = editor.rustContext
+          const exitSketch = rust.exitSketch.bind(rust)
+          const executeCode = editor.executeCode.bind(editor)
+          const exit = Promise.withResolvers<undefined>()
+          const execution = Promise.withResolvers<undefined>()
+          let exitCalls = 0
+          let executing = false
+          rust.exitSketch = async (...args) => {
+            exitCalls++
+            await exit.promise
+            return exitSketch.apply(rust, args)
+          }
+          editor.executeCode = async (...args) => {
+            executing = true
+            await execution.promise
+            return executeCode.apply(editor, args)
+          }
+          return {
+            exitCalls: () => exitCalls,
+            executing: () => executing,
+            releaseExit: () => exit.resolve(undefined),
+            releaseExecution: () => execution.resolve(undefined),
+            restore: () => {
+              rust.exitSketch = exitSketch
+              editor.executeCode = executeCode
+            },
+          }
+        })
+        await page.clock.install()
+        try {
+          await toolbar.exitSketchBtn.click()
+          await expect
+            .poll(() => pending.evaluate((p) => p.exitCalls()))
+            .toBe(1)
+          await expect(toolbar.exitSketchBtn).toBeDisabled()
+          await pauseAppClock(page)
+          await page.clock.runFor(7_000)
+          await expect(toolbar.exitSketchBtn).toBeDisabled()
+          expect(
+            await page.evaluate(
+              () => window.app.singletons.kclManager.isExecuting
+            )
+          ).toBe(false)
+          await page.clock.resume()
+          await pending.evaluate((p) => p.releaseExit())
+          await expect
+            .poll(() => pending.evaluate((p) => p.executing()))
+            .toBe(true)
+          // The child has finished cleanup, but the parent still owns the exit.
+          await expect(toolbar.exitSketchBtn).toBeDisabled()
+          await pauseAppClock(page)
+          await page.clock.runFor(7_000)
+          await expect(toolbar.exitSketchBtn).toBeDisabled()
+          expect(await pending.evaluate((p) => p.exitCalls())).toBe(1)
+          await page.clock.resume()
+          await pending.evaluate((p) => p.releaseExecution())
+          await expect(toolbar.exitSketchBtn).not.toBeVisible()
+          await expect(toolbar.startSketchBtn).toBeEnabled()
+        } finally {
+          await page.clock.resume()
+          await pending.evaluate((p) => {
+            p.releaseExit()
+            p.releaseExecution()
+            p.restore()
+          })
+          await pending.dispose()
+        }
+      })
+
+      test('previews circle code before the radius click without saving unfinished circles', async ({
+        page,
+        context,
+      }, testInfo) => {
+        const storage = await prepareStorage(kind, page, context, testInfo, {
+          modeling: true,
+        })
+        const scene = new SceneFixture(page)
+        const toolbar = new ToolbarFixture(page)
+        const initialCode = `${blankCode}profile = sketch(on = XY) {\n  line(start = [var 0mm, var 0mm], end = [var 2mm, var 2mm])\n}\n`
+        const root = await storage.seedAndOpen('Circle live code', initialCode)
+        await scene.settled()
+        await openExistingSketch(toolbar, 'profile')
+        await page.evaluate(() =>
+          window.app.singletons.kclManager.flushWriteToFile()
+        )
+        const before = await storage.read(root)
+        const code = () => readEditorCode(page)
+        const [center] = scene.makeMouseHelpers(0.35, 0.35, { format: 'ratio' })
+        const [radius, moveRadius] = scene.makeMouseHelpers(0.6, 0.6, {
+          format: 'ratio',
+        })
+        const [, moveFurther] = scene.makeMouseHelpers(0.7, 0.7, {
+          format: 'ratio',
+        })
+        await toolbar.circleBtn.click()
+        await center()
+        await moveRadius()
+        await expect.poll(code).toContain('circle(')
+        const firstPreview = await code()
+        await moveFurther()
+        await expect.poll(code).not.toBe(firstPreview)
+        await installPausedClock(page)
+        await page.clock.runFor(7_000)
+        expect(await storage.read(root)).toBe(before)
+        await page.clock.resume()
+        await page.keyboard.press('Escape')
+        await expect.poll(code).not.toContain('circle(')
+        expect(await storage.read(root)).toBe(before)
+        await toolbar.circleBtn.click()
+        await center()
+        await moveRadius()
+        await expect.poll(code).toContain('circle(')
+        await radius()
+        await expect.poll(() => storage.read(root)).toContain('circle(')
+        await page.keyboard.press('Escape')
+        await expect
+          .poll(
+            async () =>
+              (await storage.read(root))?.match(/circle\(/g)?.length ?? 0
+          )
+          .toBe(1)
+        const undo = page.getByRole('button', { name: /^arrow turn left\b/ })
+        const redo = page.getByRole('button', { name: /^arrow turn right\b/ })
+        await undo.click()
+        await expect.poll(code).not.toContain('circle(')
+        await expect.poll(() => storage.read(root)).not.toContain('circle(')
+        await redo.click()
+        await expect.poll(() => storage.read(root)).toContain('circle(')
+      })
+
+      test('shows new sketch geometry and coalesces saves while persistence takes seven seconds', async ({
+        page,
+        context,
+      }, testInfo) => {
+        test.setTimeout(180_000)
+        const storage = await prepareStorage(kind, page, context, testInfo, {
+          modeling: true,
+        })
+        const scene = new SceneFixture(page)
+        const toolbar = new ToolbarFixture(page)
+        const initialCode = `${blankCode}profile = sketch(on = XY) {\n  line(start = [var 0mm, var 0mm], end = [var 2mm, var 2mm])\n}\n`
+        const root = await storage.seedAndOpen(
+          'Background sketch saves',
+          initialCode
+        )
+        await scene.settled()
+        await openExistingSketch(toolbar, 'profile')
+        await flushEditorAndThumbnailSaves(page)
+        await expectStoredThumbnail(storage, root)
+        const savedBefore = await storage.read(root)
+        const uploadsBefore = storage.remote.uploads.length
+        const revisionBefore = storage.remote.projects.find((project) =>
+          root.endsWith(project.id)
+        )?.revision
+        const upload = Promise.withResolvers<undefined>()
+        let uploadStarted = false
+        const uploadedContents: string[] = []
+        const uploadRoute = '**/user/projects/*'
+        if (kind === 'cloud')
+          await context.route(uploadRoute, async (route) => {
+            if (route.request().method() !== 'PUT') return route.fallback()
+            const data = await uploadedProject(route)
+            if (data.files['main.kcl'])
+              uploadedContents.push(data.files['main.kcl'])
+            if (!uploadStarted) {
+              uploadStarted = true
+              await upload.promise
+            }
+            await route.fallback()
+          })
+        const localGate =
+          kind === 'local'
+            ? await holdEditorWrites(
+                page,
+                await storage.fs.join(root, 'main.kcl')
+              )
+            : undefined
+        try {
+          await page.getByTestId('point').click()
+          for (const [index, position] of [
+            [0.25, 0.35],
+            [0.7, 0.6],
+            [0.3, 0.65],
+          ].entries()) {
+            const [click] = scene.makeMouseHelpers(position[0], position[1], {
+              format: 'ratio',
+            })
+            await click()
+            await expect(
+              page.locator('[data-handle="sketch-point-handle"]')
+            ).toHaveCount(3 + index)
+            if (index === 0)
+              await expect
+                .poll(() =>
+                  localGate
+                    ? localGate.evaluate((gate) => gate.started())
+                    : uploadStarted
+                )
+                .toBe(true)
+          }
+          await pauseAppClock(page)
+          await page.clock.runFor(7_000)
+          expect(await storage.read(root)).toBe(savedBefore)
+          await expect
+            .poll(() =>
+              page.evaluate(
+                () =>
+                  window.app.singletons.kclManager.code.match(/point\(/g)
+                    ?.length ?? 0
+              )
+            )
+            .toBe(3)
+          expect(
+            localGate
+              ? await localGate.evaluate((gate) => gate.contents().length)
+              : uploadedContents.length
+          ).toBe(1)
+          await page.clock.resume()
+          if (localGate) await localGate.evaluate((gate) => gate.release())
+          else upload.resolve(undefined)
+          await expect
+            .poll(
+              async () =>
+                (await storage.read(root))?.match(/point\(/g)?.length ?? 0
+            )
+            .toBe(3)
+          const writes = localGate
+            ? await localGate.evaluate((gate) => gate.contents())
+            : uploadedContents
+          expect(
+            writes.map((code) => code.match(/point\(/g)?.length ?? 0)
+          ).toEqual([1, 3])
+          if (kind === 'cloud')
+            expect(storage.remote.uploads.slice(uploadsBefore)).toEqual([
+              revisionBefore,
+              String(Number(revisionBefore) + 1),
+            ])
+        } finally {
+          upload.resolve(undefined)
+          if (localGate) {
+            await localGate.evaluate((gate) => {
+              gate.release()
+              gate.restore()
+            })
+            await localGate.dispose()
+          }
+          if (kind === 'cloud') await context.unroute(uploadRoute)
+          await page.clock.resume()
+        }
+      })
+
+      test('keeps line and rectangle source updating throughout draft movement', async ({
+        page,
+        context,
+      }, testInfo) => {
+        test.setTimeout(180_000)
+        const storage = await prepareStorage(kind, page, context, testInfo, {
+          modeling: true,
+        })
+        const scene = new SceneFixture(page)
+        const toolbar = new ToolbarFixture(page)
+        const root = await storage.seedAndOpen('Live sketch drafts', blankCode)
+        await scene.settled()
+        await toolbar.startSketchOnDefaultPlane('Top plane')
+        await toolbar.lineBtn.click()
+        const [start] = scene.makeMouseHelpers(0.25, 0.3, { format: 'ratio' })
+        const [finish, move] = scene.makeMouseHelpers(0.4, 0.6, {
+          format: 'ratio',
+        })
+        await start()
+        await expect(
+          page.locator('[data-handle="sketch-point-handle"]')
+        ).toHaveCount(2)
+        const initialLine = await readEditorCode(page)
+        await move()
+        await expect.poll(() => readEditorCode(page)).not.toBe(initialLine)
+        await finish()
+        await page.keyboard.press('Escape')
+        await expect
+          .poll(
+            async () =>
+              (await storage.read(root))?.match(/line\(/g)?.length ?? 0
+          )
+          .toBe(1)
+        await toolbar.rectangleBtn.click()
+        const [corner] = scene.makeMouseHelpers(0.6, 0.35, { format: 'ratio' })
+        const [opposite, moveRectangle] = scene.makeMouseHelpers(0.8, 0.65, {
+          format: 'ratio',
+        })
+        await corner()
+        const [, previewRectangle] = scene.makeMouseHelpers(0.7, 0.5, {
+          format: 'ratio',
+        })
+        await expect
+          .poll(async () => {
+            // Continue moving while the first-click draft finishes solving.
+            await previewRectangle()
+            return page.evaluate(
+              () =>
+                window.app.singletons.kclManager.code.match(/line\(/g)
+                  ?.length ?? 0
+            )
+          })
+          .toBe(5)
+        const initialRectangle = await readEditorCode(page)
+        await moveRectangle()
+        await expect.poll(() => readEditorCode(page)).not.toBe(initialRectangle)
+        await opposite()
+        await page.keyboard.press('Escape')
+        await expect
+          .poll(
+            async () =>
+              (await storage.read(root))?.match(/line\(/g)?.length ?? 0
+          )
+          .toBe(5)
+        await storage.assertStorage(root)
+      })
+
+      test('refreshes external geometry while an existing sketch stays open', async ({
+        page,
+        context,
+      }, testInfo) => {
+        test.setTimeout(180_000)
+        const storage = await prepareStorage(kind, page, context, testInfo, {
+          modeling: true,
+        })
+        const scene = new SceneFixture(page)
+        const toolbar = new ToolbarFixture(page)
+        const initialCode = `${blankCode}profile = sketch(on = XY) {\n  line(start = [var 0mm, var 0mm], end = [var 2mm, var 2mm])\n}\n`
+        const root = await storage.seedAndOpen(
+          'Updated open sketch',
+          initialCode
+        )
+        await scene.settled()
+        await flushEditorAndThumbnailSaves(page)
+        // Prove thumbnail generation is working before asserting that a refresh skips it.
+        await expectStoredThumbnail(storage, root)
+        await openExistingSketch(toolbar, 'profile')
+        await expect(
+          page.locator('[data-handle="sketch-point-handle"]')
+        ).toHaveCount(2)
+        // Drain initial rendering and thumbnail work before measuring a refresh.
+        await flushEditorAndThumbnailSaves(page)
+        const uploadsBefore = storage.remote.uploads.length
+        const updatedCode = initialCode.replace(
+          '\n}',
+          '\n  point(at = [var 8mm, var 9mm])\n}'
+        )
+        await storage.replace(root, updatedCode)
+        if (kind === 'local' && process.env.TARGET === 'web') {
+          // OPFS has no desktop file-watcher events. Inject only that boundary;
+          // editor execution and the live sketch still run against real Wasm.
+          await page.evaluate(() => {
+            const editor = window.app.project?.executingEditor.peek()
+            if (editor)
+              for (const onChange of editor.onWatchEvent)
+                onChange('change', editor.path)
+          })
+        }
+        await expectEditor(page, updatedCode)
+        await expect(
+          page.locator('[data-handle="sketch-point-handle"]')
+        ).toHaveCount(3)
+        await expect(toolbar.exitSketchBtn).toBeEnabled()
+        // No re-entering the sketch and no new insertion should be required.
+        await expect.poll(() => storage.read(root)).toBe(updatedCode)
+        // A read-only refresh must not generate another cloud revision by
+        // uploading a thumbnail after the capture and save debounce timers.
+        await pauseAppClock(page)
+        await page.clock.runFor(7_000)
+        await expect(
+          page
+            .locator('#statusbar')
+            .getByRole('status')
+            .filter({ hasText: 'Saving...' })
+        ).not.toBeAttached()
+        expect(storage.remote.uploads).toHaveLength(uploadsBefore)
+        await page.clock.resume()
+      })
+
+      for (const removal of [
+        'editor',
+        'storage',
+        'editor leaving a broken reference',
+      ] as const) {
+        test(`exits sketch mode when the active sketch is deleted through ${removal}`, async ({
+          page,
+          context,
+        }, testInfo) => {
+          const storage = await prepareStorage(kind, page, context, testInfo, {
+            modeling: true,
+          })
+          const scene = new SceneFixture(page)
+          const toolbar = new ToolbarFixture(page)
+          const activeSketch =
+            'profile = sketch(on = XY) {\n  line(start = [var 0mm, var 0mm], end = [var 2mm, var 2mm])\n}\n'
+          const remainingSketch =
+            'other = sketch(on = XY) {\n  point(at = [var 8mm, var 9mm])\n}\n'
+          const brokenReference =
+            removal === 'editor leaving a broken reference'
+              ? 'result = profile\n'
+              : ''
+          const initialCode =
+            blankCode + activeSketch + remainingSketch + brokenReference
+          const updatedCode = blankCode + remainingSketch + brokenReference
+          const root = await storage.seedAndOpen(
+            'Deleted active sketch',
+            initialCode
+          )
+          await scene.settled()
+          await openExistingSketch(toolbar, 'profile')
+          await page.evaluate(() =>
+            window.app.singletons.kclManager.flushWriteToFile()
+          )
+          await page.getByTestId('point').click()
+          if (removal === 'editor') {
+            await editThroughUI(page, `${initialCode}unfinished = (`)
+            await expect
+              .poll(() =>
+                page.evaluate(() =>
+                  window.app.singletons.kclManager.hasParseErrors()
+                )
+              )
+              .toBe(true)
+            expect(
+              await page.evaluate(() =>
+                window.app.singletons.kclManager.modelingState?.matches(
+                  'sketchSolveMode'
+                )
+              )
+            ).toBe(true)
+          }
+          if (removal.startsWith('editor'))
+            await editThroughUI(page, updatedCode)
+          else
+            await scene.waitForExecutionDoneAfter(async () => {
+              const download = Promise.withResolvers<undefined>()
+              let downloading = false
+              if (kind === 'cloud')
+                await context.route(
+                  '**/versions/*/download*',
+                  async (route) => {
+                    downloading = true
+                    await download.promise
+                    await route.fallback()
+                  }
+                )
+              try {
+                await storage.replace(root, updatedCode)
+                if (kind === 'cloud') {
+                  await expect.poll(() => downloading).toBe(true)
+                  await installPausedClock(page)
+                  await page.clock.runFor(7_000)
+                  await expect(toolbar.exitSketchBtn).toBeEnabled()
+                }
+              } finally {
+                download.resolve(undefined)
+                if (kind === 'cloud') await page.clock.resume()
+              }
+              if (kind === 'local' && process.env.TARGET === 'web')
+                await page.evaluate(() => {
+                  const editor = window.app.project?.executingEditor.peek()
+                  if (editor)
+                    for (const onChange of editor.onWatchEvent)
+                      onChange('change', editor.path)
+                })
+            })
+          await expectEditor(page, updatedCode)
+          if (removal.startsWith('editor'))
+            await page.evaluate(() =>
+              window.app.singletons.kclManager.flushPendingEditorExecution()
+            )
+          await expect
+            .poll(() =>
+              page.evaluate(() =>
+                window.app.singletons.kclManager.modelingState?.matches(
+                  'sketchSolveMode'
+                )
+              )
+            )
+            .toBe(false)
+          await expect(toolbar.exitSketchBtn).not.toBeVisible()
+          await expect(
+            page.locator('[data-handle="sketch-point-handle"]')
+          ).toHaveCount(0)
+          await expect.poll(() => storage.read(root)).toBe(updatedCode)
+          if (brokenReference) {
+            await editThroughUI(page, blankCode + remainingSketch)
+            await expectEditor(page, blankCode + remainingSketch)
+            await expect
+              .poll(() =>
+                page.evaluate(
+                  () => window.app.singletons.kclManager.diagnostics
+                )
+              )
+              .toEqual([])
+          }
+          // The surviving sketch remains editable; exiting must not delete its objects.
+          await (await toolbar.getFeatureTreeOperation('other', 0)).dblclick()
+          await expect(toolbar.exitSketchBtn).toBeEnabled()
+          await expect(
+            page.locator('[data-handle="sketch-point-handle"]')
+          ).toHaveCount(1)
+          await expect
+            .poll(() => storage.read(root))
+            .toBe(blankCode + remainingSketch)
+        })
+      }
 
       test('reads newer file contents before inserting each sketch shape', async ({
         page,
@@ -643,6 +1123,11 @@ for (const kind of ['local', 'cloud'] as const) {
           [0.25, 0.35],
           [0.65, 0.6],
         ].entries()) {
+          // This case changes an acknowledged file. Concurrent external edits
+          // during an active save are covered by conflict/reconciliation tests.
+          await page.evaluate(() =>
+            window.app.singletons.kclManager.waitForFileSaves()
+          )
           const previous = await storage.read(root)
           if (!previous) throw new Error('Missing saved sketch')
           const marker = `// external edit ${index}\n`
@@ -675,28 +1160,22 @@ for (const kind of ['local', 'cloud'] as const) {
           modeling: true,
         })
         const code = `${blankCode}import value from "dependency.kcl"\nresult = value\n`
-        await storage.seed('Import diagnostics', blankCode, {
+        await storage.seedAndOpen('Import diagnostics', blankCode, {
           'broken/one.kcl': code,
           'broken/dependency.kcl': `${blankCode}export value = 7\n`,
           'healthy/two.kcl': code,
           'healthy/dependency.kcl': `${blankCode}export value = 23\n`,
         })
-        await storage.refresh()
-        await storage.home.openProject('Import diagnostics')
         await new SceneFixture(page).settled()
         await expectEditor(page, blankCode)
-        await page.evaluate(
-          (id) => window.app.layout.openPane(id),
-          DefaultLayoutPaneID.Files
-        )
+        await openLayoutPanes(page, DefaultLayoutPaneID.Files)
         const item = (name: string) =>
           page.getByRole('treeitem', { name, exact: true })
-        await item('broken').click()
+        await expandFileTreeFolder(page, 'broken')
         await item('dependency.kcl').click({ button: 'right' })
         await page.getByRole('button', { name: 'Delete', exact: true }).click()
         await page.getByTestId('delete-confirmation').click()
         await expect(item('dependency.kcl')).not.toBeAttached()
-        await item('healthy').click()
         const diagnostics = () =>
           page.evaluate(() =>
             window.app.singletons.kclManager.diagnostics.map(
@@ -704,6 +1183,7 @@ for (const kind of ['local', 'cloud'] as const) {
             )
           )
         for (let visit = 0; visit < 2; visit++) {
+          await expandFileTreeFolder(page, 'broken')
           await item('one.kcl').click()
           await expectEditor(page, code)
           await expect
@@ -712,6 +1192,7 @@ for (const kind of ['local', 'cloud'] as const) {
               /(?:could not find file|Unable to read-file).*dependency\.kcl/i
             )
           await expect(page.locator('.cm-lint-marker-error')).not.toHaveCount(0)
+          await expandFileTreeFolder(page, 'healthy')
           await item('two.kcl').click()
           await expectEditor(page, code)
           await expect.poll(diagnostics).toEqual([])
@@ -735,12 +1216,10 @@ for (const kind of ['local', 'cloud'] as const) {
         })
         const code = `${blankCode}import value from "dependency.kcl"\nimport healthyValue from "healthy.kcl"\nresult = value + healthyValue\n`
         const healthyCode = `${blankCode}export healthyValue = 23\n`
-        await storage.seed('Active import diagnostics', code, {
+        await storage.seedAndOpen('Active import diagnostics', code, {
           'dependency.kcl': `${blankCode}export value = 7\n`,
           'healthy.kcl': healthyCode,
         })
-        await storage.refresh()
-        await storage.home.openProject('Active import diagnostics')
         await new SceneFixture(page).settled()
         await expectEditor(page, code)
         await expect
@@ -750,10 +1229,7 @@ for (const kind of ['local', 'cloud'] as const) {
             )
           )
           .toBe(code)
-        await page.evaluate(
-          (id) => window.app.layout.openPane(id),
-          DefaultLayoutPaneID.Files
-        )
+        await openLayoutPanes(page, DefaultLayoutPaneID.Files)
         const item = (name: string) =>
           page.getByRole('treeitem', { name, exact: true })
         await item('dependency.kcl').click({ button: 'right' })
@@ -784,18 +1260,13 @@ for (const kind of ['local', 'cloud'] as const) {
         })
         const brokenCode = `${blankCode}import value from "missing.kcl"\nresult = value\n`
         const healthyCode = `${blankCode}result = 23\n`
-        await storage.seed('Deleted editor diagnostics', blankCode, {
+        await storage.seedAndOpen('Deleted editor diagnostics', blankCode, {
           'broken.kcl': brokenCode,
           'healthy.kcl': healthyCode,
         })
-        await storage.refresh()
-        await storage.home.openProject('Deleted editor diagnostics')
         await new SceneFixture(page).settled()
         await expectEditor(page, blankCode)
-        await page.evaluate(
-          (id) => window.app.layout.openPane(id),
-          DefaultLayoutPaneID.Files
-        )
+        await openLayoutPanes(page, DefaultLayoutPaneID.Files)
         const item = (name: string) =>
           page.getByRole('treeitem', { name, exact: true })
         await item('broken.kcl').click()
@@ -823,14 +1294,9 @@ for (const kind of ['local', 'cloud'] as const) {
         context,
       }, testInfo) => {
         const storage = await prepareStorage(kind, page, context, testInfo)
-        const root = await storage.seed('Sample destination', blankCode)
-        await storage.refresh()
-        await storage.home.openProject('Sample destination')
+        const root = await storage.seedAndOpen('Sample destination', blankCode)
         await expectEditor(page, blankCode)
-        await page.evaluate(
-          (id) => window.app.layout.openPane(id),
-          DefaultLayoutPaneID.Files
-        )
+        await openLayoutPanes(page, DefaultLayoutPaneID.Files)
         const cmdBar = new CmdBarFixture(page)
         for (const folder of ['ball-bearing', 'ball-bearing-1']) {
           await page.getByTestId('add-file-to-project-pane-button').click()
@@ -874,16 +1340,11 @@ for (const kind of ['local', 'cloud'] as const) {
       }, testInfo) => {
         const storage = await prepareStorage(kind, page, context, testInfo)
         const removedCode = `${blankCode}original = 7\n`
-        const root = await storage.seed('Deletion history', blankCode, {
+        const root = await storage.seedAndOpen('Deletion history', blankCode, {
           'deleted.kcl': removedCode,
         })
-        await storage.refresh()
-        await storage.home.openProject('Deletion history')
         await expectEditor(page, blankCode)
-        await page.evaluate(
-          (id) => window.app.layout.openPane(id),
-          DefaultLayoutPaneID.Files
-        )
+        await openLayoutPanes(page, DefaultLayoutPaneID.Files)
         const deletedFile = page.getByRole('treeitem', {
           name: 'deleted.kcl',
           exact: true,
@@ -959,11 +1420,13 @@ for (const kind of ['local', 'cloud'] as const) {
       }, testInfo) => {
         const storage = await prepareStorage(kind, page, context, testInfo)
         const code = `${blankCode}original = 7\n`
-        const root = await storage.seed('Folder deletion history', blankCode, {
-          'folder/active.kcl': code,
-        })
-        await storage.refresh()
-        await storage.home.openProject('Folder deletion history')
+        const root = await storage.seedAndOpen(
+          'Folder deletion history',
+          blankCode,
+          {
+            'folder/active.kcl': code,
+          }
+        )
         await expectEditor(page, blankCode)
         await page.evaluate(
           async ({ root, pane }) => {
@@ -1035,20 +1498,18 @@ for (const kind of ['local', 'cloud'] as const) {
         context,
       }, testInfo) => {
         const storage = await prepareStorage(kind, page, context, testInfo)
-        const root = await storage.seed('Offline editing', blankCode, {
+        const root = await storage.seedAndOpen('Offline editing', blankCode, {
           'note.md': '# Note\n',
         })
-        await storage.refresh()
-        await storage.home.openProject('Offline editing')
         await expectEditor(page, blankCode)
-        await page.evaluate(
-          (id) => window.app.layout.openPane(id),
-          DefaultLayoutPaneID.Files
-        )
+        await openLayoutPanes(page, DefaultLayoutPaneID.Files)
         await page.waitForLoadState('networkidle')
+        await installPausedClock(page)
         try {
           await context.setOffline(true)
-          await page.waitForTimeout(7_000)
+          await page.waitForFunction(() => !navigator.onLine)
+          await page.clock.runFor(7_000)
+          await page.clock.resume()
           const code = `${blankCode}// local edit without internet\n`
           if (kind === 'cloud') {
             await expect(
@@ -1121,16 +1582,20 @@ for (const kind of ['local', 'cloud'] as const) {
           context,
         }, testInfo) => {
           const storage = await prepareStorage(kind, page, context, testInfo)
-          const root = await storage.seed('Interrupted cloud edit', blankCode)
-          await storage.refresh()
-          await storage.home.openProject('Interrupted cloud edit')
+          const root = await storage.seedAndOpen(
+            'Interrupted cloud edit',
+            blankCode
+          )
           await expectEditor(page, blankCode)
           await page.waitForLoadState('networkidle')
           const code = `${blankCode}// typed just before disconnection\n`
+          await installPausedClock(page)
           await editThroughUI(page, code)
           try {
             await context.setOffline(true)
-            await page.waitForTimeout(7_000)
+            await page.waitForFunction(() => !navigator.onLine)
+            await page.clock.runFor(7_000)
+            await page.clock.resume()
             await expectEditor(page, code)
             expect(await storage.read(root)).toBe(blankCode)
             await context.setOffline(false)
@@ -1146,9 +1611,7 @@ for (const kind of ['local', 'cloud'] as const) {
         context,
       }, testInfo) => {
         const storage = await prepareStorage(kind, page, context, testInfo)
-        const root = await storage.seed('Recoverable save', blankCode)
-        await storage.refresh()
-        await storage.home.openProject('Recoverable save')
+        const root = await storage.seedAndOpen('Recoverable save', blankCode)
         await expectEditor(page, blankCode)
         const code = `${blankCode}// Retained after a failed save\n`
         const gate = Promise.withResolvers<undefined>()
@@ -1204,9 +1667,7 @@ for (const kind of ['local', 'cloud'] as const) {
                 : localFailure.evaluate((f) => f.started())
             )
             .toBe(true)
-          const clockStart = new Date()
-          await page.clock.install({ time: clockStart })
-          await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+          await installPausedClock(page)
           await page.clock.runFor(7_000)
           await expect(
             page.getByRole('status').filter({ hasText: 'Saving...' })
@@ -1216,7 +1677,9 @@ for (const kind of ['local', 'cloud'] as const) {
           gate.resolve(undefined)
           await localFailure.evaluate((f) => f.release())
           await page.clock.resume()
-          const retry = page.getByRole('button', { name: 'Save failed. Retry' })
+          const retry = page.locator('#statusbar').getByRole('button', {
+            name: 'Save failed. Retry',
+          })
           await expect(retry).toBeVisible()
           await expectEditor(page, code)
           expect(await storage.read(root)).toBe(blankCode)
@@ -1276,22 +1739,16 @@ for (const kind of ['local', 'cloud'] as const) {
       }, testInfo) => {
         const storage = await prepareStorage(kind, page, context, testInfo)
         const nestedCode = `${blankCode}// Nested file\n`
-        const root = await storage.seed('Nested operations', blankCode, {
+        const root = await storage.seedAndOpen('Nested operations', blankCode, {
           'parts/source.kcl': nestedCode,
           'parts/existing.kcl': `${blankCode}// Keep existing\n`,
           'unrelated/keep.kcl': `${blankCode}// Keep unrelated\n`,
         })
-        await storage.refresh()
-        await storage.home.openProject('Nested operations')
         await expectEditor(page, blankCode)
-        await page.evaluate(
-          (id) => window.app.layout.openPane(id),
-          DefaultLayoutPaneID.Files
-        )
+        await openLayoutPanes(page, DefaultLayoutPaneID.Files)
         const item = (name: string) =>
           page.getByRole('treeitem', { name, exact: true })
-        if ((await item('parts').getAttribute('aria-expanded')) !== 'true')
-          await item('parts').click()
+        await expandFileTreeFolder(page, 'parts')
         await item('source.kcl').click()
         await expectEditor(page, nestedCode)
         const rename = async (name: string, from = 'source.kcl') => {
@@ -1346,16 +1803,11 @@ for (const kind of ['local', 'cloud'] as const) {
         context,
       }, testInfo) => {
         const storage = await prepareStorage(kind, page, context, testInfo)
-        const root = await storage.seed('Nested creation', blankCode, {
+        const root = await storage.seedAndOpen('Nested creation', blankCode, {
           'parts/existing.kcl': blankCode,
         })
-        await storage.refresh()
-        await storage.home.openProject('Nested creation')
         await expectEditor(page, blankCode)
-        await page.evaluate(
-          (id) => window.app.layout.openPane(id),
-          DefaultLayoutPaneID.Files
-        )
+        await openLayoutPanes(page, DefaultLayoutPaneID.Files)
         const item = (name: string) =>
           page.getByRole('treeitem', { name, exact: true })
         await item('parts').click()
@@ -1393,6 +1845,150 @@ for (const kind of ['local', 'cloud'] as const) {
         await expect(item('components')).toBeHidden()
         expect(await storage.read(root)).toBe(blankCode)
         await storage.assertStorage(root)
+      })
+
+      test('shows project action progress and closes dialogs while storage takes seven seconds', async ({
+        page,
+        context,
+      }, testInfo) => {
+        test.skip(
+          kind === 'local' && process.env.TARGET !== 'web',
+          'This storage delay uses OPFS Web Locks; native-storage progress is covered at the shared action boundary.'
+        )
+        const storage = await prepareStorage(kind, page, context, testInfo)
+        const root = await storage.seed('Slow project', blankCode)
+        await storage.seed('Other project', blankCode)
+        await storage.refresh()
+        const projectCard = storage.home.projectCard.filter({
+          hasText: 'Slow project',
+        })
+        await expect(projectCard).toBeVisible()
+        await page.clock.install()
+        for (const action of ['rename', 'delete'] as const) {
+          const gate = Promise.withResolvers<undefined>()
+          let started = false
+          const routePattern = /\/user\/projects\/[^/?]+(?:\?.*)?$/
+          const local =
+            kind === 'local'
+              ? await page.evaluateHandle(
+                  async ({ root, action }) => {
+                    const gate = Promise.withResolvers<undefined>()
+                    const acquired = Promise.withResolvers<undefined>()
+                    const lockName = `zds-opfs-write:${window.fsZds.join(root, 'project.toml')}`
+                    // Hold the browser storage lock used by real OPFS reads/writes.
+                    const lock =
+                      action === 'rename'
+                        ? navigator.locks.request(lockName, async () => {
+                            acquired.resolve(undefined)
+                            await gate.promise
+                          })
+                        : Promise.resolve()
+                    if (action === 'rename') await acquired.promise
+                    const prototype = FileSystemDirectoryHandle.prototype
+                    // Preserve the native method for restoration; the wrapper calls it with its handle.
+                    // eslint-disable-next-line @typescript-eslint/unbound-method
+                    const removeEntry = prototype.removeEntry
+                    let started = false
+                    if (action === 'delete')
+                      prototype.removeEntry = async function (name, options) {
+                        if (
+                          name === window.fsZds.basename(root) &&
+                          this.name ===
+                            window.fsZds.basename(window.fsZds.dirname(root))
+                        ) {
+                          started = true
+                          await gate.promise
+                        }
+                        return removeEntry.call(this, name, options)
+                      }
+                    return {
+                      started: async () =>
+                        action === 'rename'
+                          ? (await navigator.locks.query()).pending?.some(
+                              (entry) => entry.name === lockName
+                            )
+                          : started,
+                      release: () => {
+                        gate.resolve(undefined)
+                        return lock
+                      },
+                      restore: () => {
+                        prototype.removeEntry = removeEntry
+                      },
+                    }
+                  },
+                  { root, action }
+                )
+              : undefined
+          if (kind === 'cloud')
+            await context.route(routePattern, async (route) => {
+              if (
+                route.request().method() ===
+                (action === 'rename' ? 'PUT' : 'DELETE')
+              ) {
+                started = true
+                await gate.promise
+              }
+              await route.fallback()
+            })
+          const card = storage.home.projectCard.filter({
+            hasText:
+              action === 'rename' ? 'Slow project' : 'Renamed slow project',
+          })
+          try {
+            await card.click({ button: 'right' })
+            await page.getByTestId(`project-card-context-${action}`).click()
+            if (action === 'rename') {
+              await page
+                .getByTestId('project-rename-input')
+                .fill('Renamed slow project')
+              await page.keyboard.press('Enter')
+              await expect(
+                page.getByTestId('project-rename-input')
+              ).not.toBeAttached()
+            } else {
+              await page.getByTestId('delete-confirmation').click()
+            }
+            await expect(page.getByRole('dialog')).not.toBeVisible()
+            await expect
+              .poll(() =>
+                local ? local.evaluate((gate) => gate.started()) : started
+              )
+              .toBe(true)
+            const busy = page.getByRole('status', {
+              name: `${action === 'rename' ? 'Renaming' : 'Deleting'} project Renamed slow project`,
+            })
+            await expect(busy).toBeVisible()
+            await pauseAppClock(page)
+            await page.clock.runFor(7_000)
+            await expect(busy).toBeVisible()
+            await expect(
+              storage.home.projectCard.filter({ hasText: 'Other project' })
+            ).toBeVisible()
+            await expect(page).not.toHaveURL(/\/file\//)
+            await page.clock.resume()
+            gate.resolve(undefined)
+            await local?.evaluate((gate) => gate.release())
+            await expect(busy).not.toBeAttached()
+            if (action === 'delete')
+              await expect(
+                storage.home.projectCard.filter({
+                  hasText: 'Renamed slow project',
+                })
+              ).not.toBeAttached()
+          } finally {
+            gate.resolve(undefined)
+            if (local) {
+              await local.evaluate(async (gate) => {
+                await gate.release()
+                gate.restore()
+              })
+              await local.dispose()
+            }
+            if (kind === 'cloud') await context.unroute(routePattern)
+            await page.clock.resume()
+          }
+        }
       })
 
       test('renames and deletes a project from Home while preserving the other project', async ({
@@ -1446,16 +2042,11 @@ for (const kind of ['local', 'cloud'] as const) {
           context,
         }, testInfo) => {
           const storage = await prepareStorage(kind, page, context, testInfo)
-          const root = await storage.seed('Text conflict', blankCode, {
+          const root = await storage.seedAndOpen('Text conflict', blankCode, {
             'note.md': '# Original note\n',
           })
-          await storage.refresh()
-          await storage.home.openProject('Text conflict')
           await expectEditor(page, blankCode)
-          await page.evaluate(
-            (id) => window.app.layout.openPane(id),
-            DefaultLayoutPaneID.Files
-          )
+          await openLayoutPanes(page, DefaultLayoutPaneID.Files)
           await page
             .getByRole('treeitem', { name: 'note.md', exact: true })
             .click()
@@ -1486,9 +2077,7 @@ for (const kind of ['local', 'cloud'] as const) {
             ...beforeConflict,
             submittedRevision,
           ])
-          const clockStart = new Date()
-          await page.clock.install({ time: clockStart })
-          await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+          await installPausedClock(page)
           await page.clock.runFor(7_000)
           expect(storage.remote.uploads).toEqual([
             ...beforeConflict,
@@ -1518,9 +2107,10 @@ for (const kind of ['local', 'cloud'] as const) {
             context,
           }, testInfo) => {
             const storage = await prepareStorage(kind, page, context, testInfo)
-            const root = await storage.seed('Conflict recovery', blankCode)
-            await storage.refresh()
-            await storage.home.openProject('Conflict recovery')
+            const root = await storage.seedAndOpen(
+              'Conflict recovery',
+              blankCode
+            )
             await expectEditor(page, blankCode)
             const code = `${blankCode}// Uploaded before connection loss\n`
             let loseAcknowledgement = true
@@ -1570,9 +2160,7 @@ for (const kind of ['local', 'cloud'] as const) {
               ...beforeLoss,
               submittedRevision,
             ])
-            const clockStart = new Date()
-            await page.clock.install({ time: clockStart })
-            await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+            await installPausedClock(page)
             await page.clock.runFor(7_000)
             expect(storage.remote.uploads).toEqual([
               ...beforeLoss,
@@ -1609,9 +2197,7 @@ for (const kind of ['local', 'cloud'] as const) {
         await storage.home.projectTextName.fill(title)
         await storage.home.projectButtonContinue.click()
         if (kind === 'cloud') {
-          const clockStart = new Date()
-          await page.clock.install({ time: clockStart })
-          await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+          await installPausedClock(page)
           try {
             await expect.poll(() => storage.remote.creates.length).toBe(1)
             await page.clock.runFor(7_000)
@@ -1707,14 +2293,26 @@ for (const kind of ['local', 'cloud'] as const) {
         }
       })
 
-      test('creates twelve projects using the default title and keeps every project accessible', async ({
+      test('creates default-title projects after ten existing projects and keeps every project accessible', async ({
         page,
         context,
       }, testInfo) => {
         test.setTimeout(180_000)
         const storage = await prepareStorage(kind, page, context, testInfo)
         const roots = new Set<string>()
-        for (let index = 0; index < 12; index++) {
+        const existing = new Map<string, string>()
+        for (let index = 0; index < 10; index++) {
+          const title =
+            kind === 'local' && index > 0 ? `untitled-${index}` : 'untitled'
+          const code = `${blankCode}// Existing project ${index}\n`
+          const root = await storage.seed(title, code)
+          roots.add(root)
+          existing.set(root, code)
+        }
+        await storage.refresh()
+        await storage.home.projectsLoaded()
+        await expect(storage.home.projectCard).toHaveCount(10)
+        for (let index = 10; index < 12; index++) {
           roots.add(await createThroughHome(page, storage.home))
           await storage.goHome()
           await expect(storage.home.projectCard).toHaveCount(index + 1)
@@ -1729,6 +2327,8 @@ for (const kind of ['local', 'cloud'] as const) {
           .toEqual(titles.sort())
         expect(roots.size).toBe(12)
         for (const root of roots) await storage.assertStorage(root)
+        for (const [root, code] of existing)
+          expect(await storage.read(root)).toBe(code)
       })
 
       for (const next of ['broken', 'empty'] as const) {
@@ -1766,14 +2366,12 @@ for (const kind of ['local', 'cloud'] as const) {
             await storage.home.openProject('Rendered project')
             if (kind === 'cloud') {
               await expect.poll(() => downloadStarted).toBe(true)
-              await page.clock.pauseAt(
-                new Date((await page.evaluate(() => Date.now())) + 1_000)
-              )
+              await pauseAppClock(page)
               await page.clock.runFor(7_000)
               expect(storage.remote.uploads).toHaveLength(0)
-              expect(
-                await page.evaluate(() => window.app.singletons.kclManager.code)
-              ).not.toContain('body = extrude(section')
+              expect(await readEditorCode(page)).not.toContain(
+                'body = extrude(section'
+              )
             }
           } finally {
             download.resolve(undefined)
@@ -1861,11 +2459,9 @@ for (const kind of ['local', 'cloud'] as const) {
           .toBe(`${blankCode}// Original buffer\n`)
         await storage.home.openProject('Switching project')
         await expectEditor(page, `${blankCode}// Original buffer\n`)
-        await page.evaluate(
-          (ids) => {
-            for (const id of ids) window.app.layout.openPane(id)
-          },
-          [DefaultLayoutPaneID.Code, DefaultLayoutPaneID.Files]
+        await openLayoutPanes(
+          page,
+          ...[DefaultLayoutPaneID.Code, DefaultLayoutPaneID.Files]
         )
         const originalProject = await page.evaluateHandle(
           () => window.app.project
@@ -1881,67 +2477,15 @@ for (const kind of ['local', 'cloud'] as const) {
             await route.fallback()
           })
         }
-        const gate = await page.evaluateHandle((holdSave) => {
-          const file = window.app.project!.files.find((file) =>
-            file.path.endsWith('other.kcl')
-          )!
-          const read = file.read.bind(file)
-          const source = window.app.project!.files.find((file) =>
-            file.path.endsWith('main.kcl')
-          )!
-          const io = window.app.singletons.kclManager.textFileIO
-          const write = io.write.bind(io)
-          const saving = Promise.withResolvers<undefined>()
-          let saveStarted = false
-          if (holdSave)
-            Object.assign(io, {
-              write: async (path: string, contents: string) => {
-                if (path === source.path) {
-                  saveStarted = true
-                  await saving.promise
-                }
-                return write(path, contents)
-              },
-            })
-          const rust = window.app.rustContext
-          const open = rust.sendOpenProject.bind(rust)
-          const update = rust.sendUpdateFile.bind(rust)
-          const sourceId = window.app.singletons.kclManager.id
-          let ready = false
-          let updatesBeforeReady = 0
-          rust.sendUpdateFile = async (...args) => {
-            if (!ready && args[0] !== sourceId) updatesBeforeReady += 1
-            return update(...args)
-          }
-          const buffer = Promise.withResolvers<undefined>()
-          const modeling = Promise.withResolvers<undefined>()
-          file.read = async () => {
-            await buffer.promise
-            return read()
-          }
-          rust.sendOpenProject = async (...args) => {
-            await modeling.promise
-            return open(...args)
-          }
-          return {
-            saveStarted: () => saveStarted,
-            releaseBuffer: () => {
-              file.read = read
-              buffer.resolve(undefined)
-            },
-            release: () => {
-              file.read = read
-              Object.assign(io, { write })
-              saving.resolve(undefined)
-              rust.sendOpenProject = open
-              rust.sendUpdateFile = update
-              ready = true
-              buffer.resolve(undefined)
-              modeling.resolve(undefined)
-              return updatesBeforeReady
-            },
-          }
-        }, kind === 'local')
+        const buffer = await holdFileRead(page, 'other.kcl')
+        const modeling = await holdModelingOpen(page)
+        const localSave =
+          kind === 'local'
+            ? await holdEditorWrites(
+                page,
+                await storage.fs.join(root, 'main.kcl')
+              )
+            : undefined
         const code = `${blankCode}// Outgoing edit\n`
         try {
           await editThroughUI(page, code)
@@ -1954,22 +2498,20 @@ for (const kind of ['local', 'cloud'] as const) {
           await expect(
             page.locator('#code-mirror-override').locator('..')
           ).toHaveAttribute('inert', '')
-          const clockStart = new Date()
-          await page.clock.install({ time: clockStart })
-          await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+          await installPausedClock(page)
           await page.clock.runFor(7_000)
           await expect
             .poll(() =>
               kind === 'cloud'
                 ? cloudSaveStarted
-                : gate.evaluate((gate) => gate.saveStarted())
+                : localSave!.evaluate((gate) => gate.started())
             )
             .toBe(true)
           await page.clock.runFor(7_000)
           await expect(
             page.getByRole('status', { name: 'Loading file' })
           ).toBeVisible()
-          await gate.evaluate((gate) => gate.releaseBuffer())
+          await buffer.evaluate((release) => release())
           await page.clock.resume()
           await expectEditor(page, `${blankCode}// Target buffer\n`)
           await expect(
@@ -1987,7 +2529,18 @@ for (const kind of ['local', 'cloud'] as const) {
           await expectEditor(page, code)
         } finally {
           save.resolve(undefined)
-          expect(await gate.evaluate((gate) => gate.release())).toBe(0)
+          // Restore all browser boundaries in one turn, before released work runs.
+          expect(
+            await page.evaluate(
+              ({ buffer, modeling, save }) => {
+                buffer()
+                save?.release()
+                save?.restore()
+                return modeling()
+              },
+              { buffer, modeling, save: localSave }
+            )
+          ).toBe(0)
           await page.clock.resume()
         }
         await expect.poll(() => storage.read(root)).toBe(code)
