@@ -28,6 +28,11 @@ export interface ProjectSessionService {
   /** Flatten the current project's file tree, excluding directories; no filesystem I/O. */
   listFiles: () => readonly FileEntry[]
   openProject: (project: Project) => OpenProjectSession
+  /** Adopt fresh project data for this opening, preserving its root and storage identity. */
+  updateProject: (
+    session: OpenProjectSession,
+    project: Project
+  ) => Error | undefined
   /** Refresh descriptive metadata for the captured opening; closed/replaced openings are ignored. */
   updateMetadata: (
     session: OpenProjectSession,

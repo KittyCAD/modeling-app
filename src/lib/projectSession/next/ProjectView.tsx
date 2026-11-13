@@ -1,3 +1,4 @@
+import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { reportRejection } from '@src/lib/trap'
 import { useSignals } from '@preact/signals-react/runtime'
 import { Logo } from '@src/components/Logo'
@@ -33,6 +34,9 @@ const tempLayout: Layout = {
 
 /** Minimal project chrome while the new route takes shape. */
 function ProjectHeader({ title }: { title: string }) {
+  useSignals()
+  const app = useApp()
+  const items = app.registry.signal(appHeaderItemsValueSpec).value
   return (
     <header
       className={`flex shrink-0 select-none items-center gap-3 border-b b-4 py-2 [-webkit-app-region:drag] ${window.electron?.os.isMac ? 'pl-24 pr-3' : 'px-3'}`}
@@ -41,6 +45,15 @@ function ProjectHeader({ title }: { title: string }) {
         <Logo className="h-4 w-auto" />
       </Link>
       <h1 className="truncate text-sm font-semibold">{title}</h1>
+      <div className="ml-auto flex shrink-0 items-center gap-2 [-webkit-app-region:no-drag]">
+        {items.map(({ id, Component }) => (
+          <Component
+            key={id}
+            app={app}
+            className="inline-flex h-6 items-center gap-1.5 rounded border b-4 bg-2 px-2 text-xs text-default"
+          />
+        ))}
+      </div>
     </header>
   )
 }
@@ -99,7 +112,9 @@ export function ProjectView({ session }: { session: OpenProjectSession }) {
           {
             id: 'project-path',
             element: 'text',
-            label: contents.path,
+            label: session.project.value.storage
+              ? 'Personal Cloud'
+              : contents.path,
             className: 'max-w-[50vw] [&>span]:truncate',
             toolTip: { children: contents.path },
           },
