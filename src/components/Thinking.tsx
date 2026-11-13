@@ -25,6 +25,7 @@ import {
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import {
   collectActivityItems,
+  legacyAttachmentWarningText,
   type ActivityItem,
   type ZookeeperActivity,
 } from '@src/lib/zookeeper/activityMessages'
@@ -400,15 +401,15 @@ const ToolActivityRow = (props: {
   )
 }
 
-type ActionItem = Exclude<ActivityItem, { kind: 'commentary' }>
+type ActionItem = Exclude<ActivityItem, { kind: 'commentary' | 'warning' }>
 type ActivitySection =
-  | Extract<ActivityItem, { kind: 'commentary' }>
+  | Extract<ActivityItem, { kind: 'commentary' | 'warning' }>
   | { kind: 'actions'; items: ActionItem[]; startIndex: number }
 
 const groupActivityItems = (items: ActivityItem[]): ActivitySection[] => {
   const sections: ActivitySection[] = []
   items.forEach((item, index) => {
-    if (item.kind === 'commentary') {
+    if (item.kind === 'commentary' || item.kind === 'warning') {
       sections.push(item)
       return
     }
@@ -1146,13 +1147,18 @@ export const Thinking = (
   // Structured activity replaces the old progress text and model summary.
   // Retain file and other rich artifacts, and keep old conversations unchanged.
   const displayedItems = hasStructuredActivity
-    ? activityItems.filter(
-        (item) =>
-          item.kind !== 'legacy' ||
-          !('reasoning' in item.message) ||
-          (item.message.reasoning.type !== 'text' &&
-            item.message.reasoning.type !== 'markdown')
-      )
+    ? activityItems.flatMap((item): ActivityItem[] => {
+        if (item.kind !== 'legacy' || !('reasoning' in item.message)) {
+          return [item]
+        }
+        const warningText = legacyAttachmentWarningText(item.message)
+        if (warningText !== undefined)
+          return [{ kind: 'warning', text: warningText }]
+        const reasoning = item.message.reasoning
+        return reasoning.type === 'text' || reasoning.type === 'markdown'
+          ? []
+          : [item]
+      })
     : activityItems
   const sections = hasStructuredActivity
     ? groupActivityItems(displayedItems)
@@ -1163,6 +1169,21 @@ export const Thinking = (
           return (
             <div key={sectionIndex} className="py-1">
               <MarkdownText text={section.text} />
+            </div>
+          )
+        }
+        if (section.kind === 'warning') {
+          return (
+            <div
+              key={sectionIndex}
+              role="note"
+              className="my-2 flex items-start gap-2 rounded bg-chalkboard-20 px-2 py-1.5 text-chalkboard-70 dark:bg-chalkboard-80 dark:text-chalkboard-30"
+            >
+              <CustomIcon
+                name="triangleExclamation"
+                className="mt-0.5 h-4 w-4 shrink-0"
+              />
+              <span>{section.text}</span>
             </div>
           )
         }

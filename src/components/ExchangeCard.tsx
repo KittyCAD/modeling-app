@@ -11,7 +11,10 @@ import Tooltip from '@src/components/Tooltip'
 import { isImageMimetype } from '@src/lib/mimeTypes'
 import { ZookeeperAttachment } from '@src/lib/zookeeper/components/ZookeeperAttachment'
 import { ZookeeperAttachmentPreview } from '@src/lib/zookeeper/components/ZookeeperAttachmentPreview'
-import { parseZookeeperActivity } from '@src/lib/zookeeper/activityMessages'
+import {
+  legacyAttachmentWarningText,
+  parseZookeeperActivity,
+} from '@src/lib/zookeeper/activityMessages'
 import {
   type Exchange,
   getZookeeperAttachmentKey,
@@ -564,6 +567,16 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
       latestToolLabel = activity.label || activity.name.replaceAll('_', ' ')
     }
   }
+  let latestWarning: string | undefined
+  for (let index = props.responses.length - 1; index >= 0; index--) {
+    const response = props.responses[index]
+    const activity = parseZookeeperActivity(response)
+    latestWarning =
+      activity?.kind === 'warning'
+        ? activity.text
+        : legacyAttachmentWarningText(response)
+    if (latestWarning !== undefined) break
+  }
   const progressStatus = latestCommentary ?? 'Working…'
   const durationText = `${isEndOfStream ? 'Worked' : 'Working'} for ${elapsedLabel}`
   const activityCardClass = `rounded-md border border-chalkboard-30 p-3 text-xs text-chalkboard-70 dark:border-chalkboard-70 dark:text-chalkboard-30 ${
@@ -611,6 +624,15 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
                     className="mt-2 block h-1 w-full animate-shimmer rounded-full bg-chalkboard-40 dark:bg-chalkboard-30"
                   />
                 </>
+              )}
+              {latestWarning && (
+                <span className="mt-2 flex items-start gap-2 rounded bg-chalkboard-20 px-2 py-1.5 text-chalkboard-70 dark:bg-chalkboard-80 dark:text-chalkboard-30">
+                  <CustomIcon
+                    name="triangleExclamation"
+                    className="mt-0.5 h-4 w-4 shrink-0"
+                  />
+                  <span>{latestWarning}</span>
+                </span>
               )}
               <span className="mt-2 flex items-center justify-between gap-2">
                 <span>{durationText}</span>

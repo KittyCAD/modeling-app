@@ -483,6 +483,94 @@ describe('ExchangeCard replay attachments', () => {
     expect(screen.queryByText('Internal model text')).not.toBeInTheDocument()
   })
 
+  test('keeps attachment warnings in activity after tool updates arrive', () => {
+    render(
+      <ExchangeCard
+        {...exchangeProps}
+        responses={[
+          {
+            reasoning: {
+              type: 'markdown',
+              content:
+                ZOOKEEPER_ACTIVITY_PREFIX +
+                JSON.stringify({
+                  kind: 'warning',
+                  text: 'Some files were not supported and will be ignored: bad.xyz',
+                }),
+            },
+          },
+          {
+            reasoning: {
+              type: 'markdown',
+              content:
+                ZOOKEEPER_ACTIVITY_PREFIX +
+                JSON.stringify({
+                  kind: 'tool',
+                  call_id: 'call-1',
+                  name: 'read_project_file',
+                  status: 'started',
+                  label: 'Read main.kcl',
+                }),
+            },
+          },
+          { reasoning: { type: 'text', content: 'Reading project files...' } },
+        ]}
+      />
+    )
+
+    expect(screen.getByTestId('zookeeper-activity-card')).toHaveTextContent(
+      'Some files were not supported and will be ignored: bad.xyz'
+    )
+    fireEvent.click(screen.getByRole('button', { name: /View activity/ }))
+
+    expect(screen.getByRole('note')).toHaveTextContent(
+      'Some files were not supported and will be ignored: bad.xyz'
+    )
+    expect(screen.getByText(/Read main\.kcl/)).toBeVisible()
+    expect(
+      screen.queryByText('Reading project files...')
+    ).not.toBeInTheDocument()
+  })
+
+  test('keeps a plain-text attachment warning from the older stream', () => {
+    render(
+      <ExchangeCard
+        {...exchangeProps}
+        responses={[
+          {
+            reasoning: {
+              type: 'text',
+              content:
+                '⚠️ Some files were not supported and will be ignored: bad.xyz',
+            },
+          },
+          {
+            reasoning: {
+              type: 'markdown',
+              content:
+                ZOOKEEPER_ACTIVITY_PREFIX +
+                JSON.stringify({
+                  kind: 'tool',
+                  call_id: 'call-1',
+                  name: 'read_project_file',
+                  status: 'started',
+                }),
+            },
+          },
+        ]}
+      />
+    )
+
+    expect(screen.getByTestId('zookeeper-activity-card')).toHaveTextContent(
+      'Some files were not supported and will be ignored: bad.xyz'
+    )
+    fireEvent.click(screen.getByRole('button', { name: /View activity/ }))
+
+    expect(screen.getByRole('note')).toHaveTextContent(
+      'Some files were not supported and will be ignored: bad.xyz'
+    )
+  })
+
   test('shows commentary after a tool starts in the same card', () => {
     render(
       <ExchangeCard

@@ -1,9 +1,12 @@
 import type { MlCopilotServerMessage } from '@kittycad/lib'
 
 export const ZOOKEEPER_ACTIVITY_PREFIX = 'zk_activity_v1:'
+const LEGACY_ATTACHMENT_WARNING =
+  '⚠️ Some files were not supported and will be ignored:'
 
 export type ZookeeperActivity =
   | { kind: 'commentary'; text: string }
+  | { kind: 'warning'; text: string }
   | {
       kind: 'tool'
       call_id: string
@@ -16,6 +19,19 @@ export type ZookeeperActivity =
 export type ActivityItem =
   | ZookeeperActivity
   | { kind: 'legacy'; message: MlCopilotServerMessage }
+
+export const legacyAttachmentWarningText = (
+  message: MlCopilotServerMessage
+): string | undefined => {
+  if (
+    !('reasoning' in message) ||
+    (message.reasoning.type !== 'text' &&
+      message.reasoning.type !== 'markdown') ||
+    !message.reasoning.content.startsWith(LEGACY_ATTACHMENT_WARNING)
+  )
+    return undefined
+  return message.reasoning.content.replace(/^⚠️\s*/, '')
+}
 
 export const parseZookeeperActivity = (
   message: MlCopilotServerMessage
@@ -33,6 +49,11 @@ export const parseZookeeperActivity = (
     if ('kind' in value && value.kind === 'commentary') {
       return 'text' in value && typeof value.text === 'string'
         ? { kind: 'commentary', text: value.text }
+        : undefined
+    }
+    if ('kind' in value && value.kind === 'warning') {
+      return 'text' in value && typeof value.text === 'string'
+        ? { kind: 'warning', text: value.text }
         : undefined
     }
     if (
@@ -73,7 +94,7 @@ export const collectActivityItems = (
     const activity = parseZookeeperActivity(message)
     if (activity === undefined) {
       items.push({ kind: 'legacy', message })
-    } else if (activity.kind === 'commentary') {
+    } else if (activity.kind === 'commentary' || activity.kind === 'warning') {
       items.push(activity)
     } else if (activity.status === 'started') {
       toolIndexes.set(activity.call_id, items.length)
