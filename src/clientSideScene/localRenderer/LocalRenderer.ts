@@ -1,3 +1,8 @@
+import { fitOrthographicDepthRange } from '@src/clientSideScene/localRenderer/orthographicDepth'
+import {
+  applyFaceDepthBiasDeferred,
+  exportedFacePlane,
+} from '@src/clientSideScene/localRenderer/faceDepthBias'
 import type {
   EntityReference,
   EntityType,
@@ -50,6 +55,7 @@ import {
   type Object3D,
   OrthographicCamera,
   PerspectiveCamera,
+  type Plane,
   Scene,
   Texture,
   Vector3,
@@ -178,6 +184,7 @@ export class LocalRenderer {
   private readonly disposers: (() => void)[] = []
   private animationFrameId = -1
   private currentModel: Object3D | null = null
+  private readonly modelBounds = new Box3()
   private readonly gltfLoader = new GLTFLoader()
   // Shared by all model materials, so a new color doesn't rebuild their shaders.
   private readonly backfaceColor = uniform(new Color())
@@ -191,6 +198,7 @@ export class LocalRenderer {
   private ambientOcclusionRadius = 0.01
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
   private baseRenderDirty = true
+  private previewDepthDirty = true
   private disposed = false
   // What the engine last said is selected, kept so that the highlight can be
   // redrawn when the meshes are rebuilt.
@@ -511,6 +519,7 @@ export class LocalRenderer {
         !this.previewCamera
       )
         return {}
+      this.preparePreviewDepth()
       const requestVersion = isHover
         ? ++this.hoverRequestVersion
         : this.hoverRequestVersion
@@ -825,12 +834,27 @@ export class LocalRenderer {
     }
   }
 
+  private preparePreviewDepth() {
+    if (!this.previewDepthDirty) return
+    this.previewDepthDirty = false
+    const { previewCamera, gpu } = this
+    if (!gpu || !(previewCamera instanceof OrthographicCamera)) return
+    const depthBounds = this.modelBounds.clone()
+    // Reference planes change size with zoom. Include their actual drawn
+    // bounds (and labels), while keeping model bounds cached across frames.
+    depthBounds.union(gpu.planeRenderer.getDrawnBounds())
+    fitOrthographicDepthRange(previewCamera, depthBounds)
+    gpu.integerIdPicker.invalidate()
+  }
+
   private renderPreview() {
     const { previewCamera, gpu } = this
     if (!previewCamera || !gpu) {
       return
     }
     const { renderer, scene, selectionHighlightRenderer } = gpu
+
+    this.preparePreviewDepth()
 
     const baseRendered = selectionHighlightRenderer.beginFrame(
       this.baseRenderDirty
@@ -926,6 +950,7 @@ export class LocalRenderer {
       this.kclManager.isExecuting
     )
       return []
+    this.preparePreviewDepth()
     const version = this.executionVersion
     const rect = canvas.getBoundingClientRect()
     this.currentModel.updateWorldMatrix(true, true)
@@ -1018,6 +1043,7 @@ export class LocalRenderer {
 
   private invalidateBaseRender() {
     this.baseRenderDirty = true
+    this.previewDepthDirty = true
     this.scheduleRender()
   }
 
@@ -1061,6 +1087,7 @@ export class LocalRenderer {
 
   private clearModel() {
     const { gpu } = this
+    this.modelBounds.makeEmpty()
     this.loadedSceneGeneration = null
     this.engineEntityReferences.clear()
     this.bodyFacesById.clear()
@@ -1111,6 +1138,8 @@ export class LocalRenderer {
     const renderer = new WebGPURenderer({
       antialias: true,
       alpha: false,
+      // Match the engine; Three also selects floating-point depth attachments.
+      reversedDepthBuffer: true,
       device,
     })
     await renderer.init()
@@ -1335,7 +1364,7 @@ export class LocalRenderer {
 
       this.clearModel()
 
-      assignFaceUuids(gltf)
+      const facePlanes = assignFaceUuids(gltf)
       this.currentModel = gltf.scene
       const { gpu } = this
       gpu?.scene.add(gltf.scene)
@@ -1353,11 +1382,26 @@ export class LocalRenderer {
 
       this.rebuildSelectionTargets()
       const bounds = new Box3().setFromObject(gltf.scene)
+      this.modelBounds.copy(bounds)
       this.updateAmbientOcclusionScale(bounds)
       this.resetCameraIfPending()
       this.invalidateBaseRender()
       this.loadedSceneGeneration = sceneGeneration
       this.onModelLoadSettled?.(true)
+      const model = gltf.scene
+      const isModelCurrent = () => !this.disposed && this.currentModel === model
+      void applyFaceDepthBiasDeferred(
+        model,
+        isModelCurrent,
+        undefined,
+        facePlanes
+      )
+        .then((applied) => {
+          if (!applied || !isModelCurrent()) return
+          this.rebuildSelectionTargets()
+          this.invalidateBaseRender()
+        })
+        .catch(reportRejection)
     } catch (error) {
       if (isCurrent()) this.handleModelLoadError(error)
     }
@@ -1475,12 +1519,13 @@ function fillEmptyBrepArrays(gltf: KITTYCAD_GLTF) {
 
 /** Attach B-rep face IDs to the corresponding glTF primitive meshes. */
 export function assignFaceUuids(gltf: KITTYCAD_GLTF) {
+  const planes = new Map<Mesh, Plane>()
   const brep = gltf.userData.gltfExtensions?.KITTYCAD_boundary_representation
   if (!brep) {
     console.warn(
       '[LocalWebGPUScene] The model has no B-rep data, so its faces and edges cannot be selected.'
     )
-    return
+    return planes
   }
   const faceIdsBySolidMesh = new Map<number, number[]>()
 
@@ -1518,5 +1563,10 @@ export function assignFaceUuids(gltf: KITTYCAD_GLTF) {
     const face = faceIndex === undefined ? undefined : brep.faces[faceIndex]
     const uuid = face?.extras?.KITTYCAD?.uuid
     if (uuid) object.userData.faceUuid = uuid
+    const plane = exportedFacePlane(
+      face ? brep.surfaces[face.surface[0]] : undefined
+    )
+    if (plane) planes.set(object, plane)
   })
+  return planes
 }

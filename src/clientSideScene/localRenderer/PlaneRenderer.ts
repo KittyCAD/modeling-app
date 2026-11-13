@@ -194,6 +194,16 @@ export class PlaneRenderer {
     }
   }
 
+  /** Actual visible geometry in glTF meters, including zoom scaling and labels. */
+  getDrawnBounds() {
+    const bounds = new Box3()
+    this.group.updateWorldMatrix(true, true)
+    this.group.traverseVisible((object) => {
+      if (object instanceof Mesh) bounds.union(new Box3().setFromObject(object))
+    })
+    return bounds
+  }
+
   /**
    * The visible planes' bounds as the engine's Plane::getBoundingBox gives
    * them: centered on the origin, spanning the plane's size along its X and Y

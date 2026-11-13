@@ -34,6 +34,21 @@ describe('PlaneRenderer default planes', () => {
     return { scene, planes, root: scene.children[0] }
   }
 
+  it('uses visible drawn bounds and zoom scaling for depth clipping', () => {
+    const { planes } = fixture()
+    planes.setDefaultVisibility({ xy: true, yz: false, xz: false })
+    const initial = planes.getDrawnBounds().getSize(new Vector3())
+    planes.updateScale(100000)
+    const zoomed = planes.getDrawnBounds().getSize(new Vector3())
+    expect(zoomed.x).toBeGreaterThan(initial.x)
+    expect(zoomed.z).toBeGreaterThan(initial.z)
+    // Hidden perpendicular planes must not inflate depth range for a flat view.
+    expect(zoomed.y).toBeLessThan(1e-8)
+    planes.setDefaultVisibility({ xy: false, yz: false, xz: false })
+    expect(planes.getDrawnBounds().isEmpty()).toBe(true)
+    planes.dispose()
+  })
+
   it('populates IDs when available and rekeys defaults without recreating their visuals', () => {
     const planes = new PlaneRenderer(Themes.Light)
     planes.updateDefaultPlanes(null)
