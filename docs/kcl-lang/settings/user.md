@@ -93,7 +93,7 @@ The projection mode the camera should use while modeling.
 
 ##### enable_ssao
 
-Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
+Whether or not Screen Space Ambient Occlusion (SSAO) is enabled. In Zoo Design Studio this is a user-only preference, shared by local and cloud rendering. Retro CAD and Phosphor temporarily disable cloud SSAO without changing this preference.
 
 
 **Default:** None

@@ -420,9 +420,46 @@ describe('KclManager default plane visibility', () => {
 })
 
 describe('KclManager settings ownership', () => {
+  it.each([true, false])(
+    'uses the active renderer for sketch colors while the local preference is %s',
+    async (useLocalRenderer) => {
+      const { app, kclManager } = createKclManagerTestHarness()
+      try {
+        await waitFor(app.settings.actor, (snapshot) =>
+          snapshot.matches('idle')
+        )
+        const settings = app.settings.get()
+        settings.modeling.useLocalRenderer.user = useLocalRenderer
+        const updateSegmentBaseColor = vi.spyOn(
+          kclManager.sceneEntitiesManager,
+          'updateSegmentBaseColor'
+        )
+
+        for (const geometryOnly of [true, false]) {
+          kclManager.engineCommandManager.connection = {
+            geometryOnly,
+          } as typeof kclManager.engineCommandManager.connection
+          for (const mode of ['retrocad', 'phosphor'] as const) {
+            settings.modeling.viewportRendering.user = mode
+            await kclManager.updateTheme(Themes.Light, false)
+            expect(updateSegmentBaseColor).toHaveBeenLastCalledWith(
+              geometryOnly ? Themes.Dark : Themes.Light
+            )
+          }
+        }
+      } finally {
+        kclManager.engineCommandManager.connection = undefined
+        app.dispose()
+      }
+    }
+  )
+
   function mockEngineSettings(kclManager: KclManager) {
     const engine = kclManager.engineCommandManager
     const setTheme = vi.spyOn(engine, 'setTheme').mockResolvedValue(undefined)
+    const setViewportRendering = vi
+      .spyOn(engine, 'setViewportRendering')
+      .mockImplementation(() => {})
     const setHighlightEdges = vi
       .spyOn(engine, 'setHighlightEdges')
       .mockResolvedValue(undefined)
@@ -440,12 +477,36 @@ describe('KclManager settings ownership', () => {
     } as typeof engine.connection
     return {
       setTheme,
+      setViewportRendering,
       setHighlightEdges,
       setDefaultSystemProperties,
       executeCode,
       clearScene,
     }
   }
+
+  it('reacts to shared SSAO only when the effective cloud style changes', async () => {
+    const { app, kclManager } = createKclManagerTestHarness()
+    try {
+      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      const { setViewportRendering } = mockEngineSettings(kclManager)
+      const settings = app.settings.get()
+      settings.modeling.enableSSAO.user = true
+      kclManager.setSceneSettingsActive(true)
+      expect(setViewportRendering).toHaveBeenLastCalledWith('ssao')
+      settings.modeling.enableSSAO.user = false
+      expect(setViewportRendering).toHaveBeenLastCalledWith('noeffect')
+      settings.modeling.viewportRendering.user = 'retrocad'
+      expect(setViewportRendering).toHaveBeenLastCalledWith('retrocad')
+      setViewportRendering.mockClear()
+      settings.modeling.enableSSAO.user = true
+      expect(setViewportRendering).not.toHaveBeenCalled()
+      settings.modeling.viewportRendering.user = 'default'
+      expect(setViewportRendering).toHaveBeenCalledExactlyOnceWith('ssao')
+    } finally {
+      app.dispose()
+    }
+  })
 
   it('updates each editor and its local scene directly from settings', async () => {
     const { app, kclManager } = createKclManagerTestHarness()
