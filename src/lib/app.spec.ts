@@ -855,6 +855,7 @@ describe('project system', () => {
         name: 'zoo-modeling-app',
       },
       getAppTestProperty: vi.fn().mockResolvedValue(undefined),
+      menuOn: vi.fn(() => vi.fn()),
       pluginIpc: {
         invoke: vi.fn(),
         syncActivePlugins,
