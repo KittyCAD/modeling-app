@@ -36,6 +36,7 @@ import {
 } from '@src/registry/contracts/settings'
 
 const extra = new Slot()
+const policies = new Slot()
 let registry: Registry
 let settings: ReturnType<typeof createSettings>
 const required = signal(false)
@@ -54,6 +55,7 @@ beforeEach(async () => {
     editorsExtension,
     savingExtension,
     extra.of(),
+    policies.of(),
     defineRegistryItem({
       providesServices: [
         provideService(fileOperationsService, {
@@ -68,7 +70,7 @@ beforeEach(async () => {
           required,
         }),
         provide(editorReadOnlyPoliciesValueSpec, {
-          id: 'test.offline',
+          id: 'test.read-only',
           matches: '*',
           readOnly,
         }),
@@ -98,7 +100,7 @@ const change = (editor: Editor, contents: string) =>
     changes: { from: 0, to: editor.state.doc.length, insert: contents },
   })
 
-it('honors manual saving locally while a required policy saves the latest edit after inactivity', async () => {
+it('lets a required autosave policy override the disabled user preference after inactivity', async () => {
   const editor = open()
   change(editor, 'local edit')
   await vi.advanceTimersByTimeAsync(2000)
@@ -132,7 +134,7 @@ it('shares one autosave across views and cancels it when the document closes', a
   expect(writeFile).toHaveBeenCalledTimes(1)
 })
 
-it('blocks document and Code edits while read-only, then saves the pending edit after reconnecting', async () => {
+it('blocks document and Code edits while read-only, then saves the pending edit when the restriction is lifted', async () => {
   required.value = true
   const editor = open()
   const code = codeSurface(registry.get(editorsService), editor)
@@ -153,8 +155,84 @@ it('blocks document and Code edits while read-only, then saves the pending edit 
     '/project/main.kcl',
     'pending edit'
   )
-  change(editor, 'online edit')
-  expect(editor.contents.peek()).toBe('online edit')
+  change(editor, 'editable again')
+  expect(editor.contents.peek()).toBe('editable again')
+})
+
+it('requires autosave while any matching policy requires it', async () => {
+  const anotherRequired = signal(true)
+  await registry.reconfigureAsync(policies, [
+    defineRegistryItem({
+      provides: [
+        provide(editorAutosavePoliciesValueSpec, {
+          id: 'test.another-autosave',
+          matches: '.kcl',
+          required: anotherRequired,
+        }),
+        provide(editorAutosavePoliciesValueSpec, {
+          id: 'test.markdown-autosave',
+          matches: '.md',
+          required: signal(true),
+        }),
+      ],
+    }),
+  ])
+  const editor = open()
+  required.value = true
+  change(editor, 'required by both')
+  await vi.advanceTimersByTimeAsync(1500)
+  expect(writeFile).toHaveBeenLastCalledWith(
+    editor.src.peek(),
+    'required by both'
+  )
+
+  required.value = false
+  change(editor, 'still required')
+  await vi.advanceTimersByTimeAsync(1500)
+  expect(writeFile).toHaveBeenLastCalledWith(
+    editor.src.peek(),
+    'still required'
+  )
+
+  anotherRequired.value = false
+  change(editor, 'autosave disabled')
+  await vi.advanceTimersByTimeAsync(1500)
+  expect(writeFile).toHaveBeenCalledTimes(2)
+  expect(registry.get(editorSaveService).state(editor).peek().dirty).toBe(true)
+})
+
+it('allows editing only after every matching read-only policy is lifted', async () => {
+  const anotherReadOnly = signal(true)
+  await registry.reconfigureAsync(policies, [
+    defineRegistryItem({
+      provides: [
+        provide(editorReadOnlyPoliciesValueSpec, {
+          id: 'test.another-read-only',
+          matches: '.kcl',
+          readOnly: anotherReadOnly,
+        }),
+        provide(editorReadOnlyPoliciesValueSpec, {
+          id: 'test.markdown-read-only',
+          matches: '.md',
+          readOnly: signal(true),
+        }),
+      ],
+    }),
+  ])
+  const editor = open()
+  readOnly.value = true
+  change(editor, 'blocked by both')
+  expect(editor.contents.peek()).toBe('original')
+
+  readOnly.value = false
+  change(editor, 'still blocked')
+  expect(editor.readOnly.peek()).toBe(true)
+  expect(editor.contents.peek()).toBe('original')
+
+  anotherReadOnly.value = false
+  change(editor, 'editable again')
+  expect(editor.readOnly.peek()).toBe(false)
+  expect(editor.contents.peek()).toBe('editable again')
 })
 
 it('does not autosave unnamed buffers', async () => {

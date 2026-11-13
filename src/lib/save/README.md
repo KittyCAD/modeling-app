@@ -17,8 +17,12 @@ buffer, using `EDITOR_SAVE_DEBOUNCE_MS` (1.5 seconds). It is on by default for
 local projects and can be disabled through the user Autosave setting. The setting
 and behavior require the new project shell feature flag.
 `editorAutosavePoliciesValueSpec` allows a host to require autosave independently
-of that preference; cloud project sessions do so. Read-only documents pause their
-timers and resume saving pending changes when editing becomes available.
+of that preference; cloud project sessions do so. Any matching required policy
+keeps autosave enabled. `editorReadOnlyPoliciesValueSpec` accepts independent
+editing restrictions from hosts or extensions, including offline state. Editing
+resumes only after every matching restriction is lifted. Read-only documents
+pause their timers and resume saving pending changes when editing becomes
+available.
 
 Cloud snapshot adoption uses `editorSaveService.adopt` to advance the baseline
 alongside a document update. Background adoption requires clean editors; a
