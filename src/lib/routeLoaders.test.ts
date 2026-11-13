@@ -1,4 +1,5 @@
 import { posix } from '@chainner/node-path'
+import type * as FsZdsModule from '@src/lib/fs-zds'
 import type { ZDSProject } from '@src/lib/projectSession'
 import { App } from '@src/lib/app'
 import '@src/lib/projectSession/next/testFeature'
@@ -24,7 +25,10 @@ import {
 } from 'vitest'
 
 const environment = vi.hoisted(() => ({ projectRouteEnabled: true }))
-vi.mock('@src/lib/fs-zds', () => ({ default: posix }))
+vi.mock('@src/lib/fs-zds', async (importOriginal) => ({
+  ...(await importOriginal<typeof FsZdsModule>()),
+  default: posix,
+}))
 
 // Transitive loader imports reach this wrapper even though redirects never use
 // Wasm. Unit tests run without the generated Wasm JavaScript or binary.

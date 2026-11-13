@@ -34,7 +34,6 @@ import { readProject } from '@src/lib/projectSession/next/utils'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import { loadProjectEditor } from '@src/lib/editors/loadProjectEditor'
 import { editorsService } from '@src/lib/editors/registry/contract'
-import fsZds from '@src/lib/fs-zds'
 import { isErr } from '@src/lib/trap'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
