@@ -125,10 +125,10 @@ futures-lite = "2.6.1"
 js-sys = { version = "0.3.72" }
 tokio = { workspace = true, features = ["sync", "time"] }
 tower-lsp = { workspace = true, features = ["runtime-agnostic"] }
-wasm-bindgen = "0.2.99"
-wasm-bindgen-futures = "0.4.49"
+wasm-bindgen = "0.2.130"
+wasm-bindgen-futures = "0.4.80"
 wasm-timer = { package = "zduny-wasm-timer", version = "0.2.5" }
-web-sys = { version = "0.3.76", features = ["console"] }
+web-sys = { version = "0.3.107", features = ["console"] }
 
 [dev-dependencies]
 approx = "0.5"

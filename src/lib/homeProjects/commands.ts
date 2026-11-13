@@ -38,7 +38,7 @@ export type ProjectsCommandSchema = {
     name: string
     libraryId?: string
   }
-  'Move project': {
+  'Clone project': {
     project: string
     library: string
   }
@@ -58,7 +58,7 @@ export interface CreateProjectLibraryTarget {
   >
 }
 
-type HomeProjectCommandAction = 'open' | 'rename' | 'delete' | 'moveToLibrary'
+type HomeProjectCommandAction = 'open' | 'rename' | 'delete' | 'cloneToLibrary'
 
 interface HomeProjectCommandTarget {
   actions: HomeProjectActionsService
@@ -131,8 +131,8 @@ export function createProjectCommands({
         return actions.canRename(project)
       case 'delete':
         return actions.canDelete(project)
-      case 'moveToLibrary':
-        return actions.canMoveToLibrary(project)
+      case 'cloneToLibrary':
+        return actions.canCloneToLibrary(project)
     }
   }
 
@@ -180,7 +180,7 @@ export function createProjectCommands({
   }
 
   const projectOptions = (action: HomeProjectCommandAction) => {
-    if (action === 'moveToLibrary') {
+    if (action === 'cloneToLibrary') {
       return homeProjectOptions(action) ?? []
     }
 
@@ -256,22 +256,22 @@ export function createProjectCommands({
     )
   }
 
-  const moveToLibraryTargets = (projectId: unknown) => {
-    const target = selectedHomeProjectTarget(projectId, 'moveToLibrary')
+  const cloneToLibraryTargets = (projectId: unknown) => {
+    const target = selectedHomeProjectTarget(projectId, 'cloneToLibrary')
     if (!target) {
       return []
     }
 
     return target.actions
-      .getMoveToLibraryTargets(target.project)
-      .map((moveTarget) => ({
+      .getCloneToLibraryTargets(target.project)
+      .map((cloneTarget) => ({
         actions: target.actions,
         project: target.project,
-        moveTarget,
+        cloneTarget,
       }))
   }
 
-  const selectedMoveToLibraryTarget = ({
+  const selectedCloneToLibraryTarget = ({
     projectId,
     libraryId,
   }: {
@@ -282,32 +282,32 @@ export function createProjectCommands({
       return undefined
     }
 
-    return moveToLibraryTargets(projectId).find(
-      ({ moveTarget }) => moveTarget.library.id === libraryId
+    return cloneToLibraryTargets(projectId).find(
+      ({ cloneTarget }) => cloneTarget.library.id === libraryId
     )
   }
 
-  const moveToLibraryOptions = ({
+  const cloneToLibraryOptions = ({
     argumentsToSubmit,
   }: {
     argumentsToSubmit: Record<string, unknown>
   }) =>
-    moveToLibraryTargets(argumentsToSubmit.project).map(({ moveTarget }) => ({
-      name: moveTarget.library.title,
-      value: moveTarget.library.id,
+    cloneToLibraryTargets(argumentsToSubmit.project).map(({ cloneTarget }) => ({
+      name: cloneTarget.library.title,
+      value: cloneTarget.library.id,
       isCurrent: false,
     }))
 
-  const defaultMoveToLibraryId = (
+  const defaultCloneToLibraryId = (
     context: ContextFrom<typeof commandBarMachine>
-  ) => moveToLibraryOptions(context)[0]?.value ?? ''
-  const hasSelectedMoveToLibraryTarget = ({
+  ) => cloneToLibraryOptions(context)[0]?.value ?? ''
+  const hasSelectedCloneToLibraryTarget = ({
     argumentsToSubmit,
   }: {
     argumentsToSubmit: Record<string, unknown>
   }) =>
     Boolean(
-      selectedMoveToLibraryTarget({
+      selectedCloneToLibraryTarget({
         projectId: argumentsToSubmit.project,
         libraryId: argumentsToSubmit.library,
       })
@@ -433,12 +433,12 @@ export function createProjectCommands({
     },
   }
 
-  const moveToLibraryCommand: Command = {
+  const cloneToLibraryCommand: Command = {
     scopes: GLOBAL_COMMAND_SCOPES,
     icon: 'folder',
-    name: 'Move project',
-    displayName: 'Move project',
-    description: 'Move a project to another library',
+    name: 'Clone project',
+    displayName: 'Clone project',
+    description: 'Create an independent project in another library',
     groupId: 'projects',
     needsReview: true,
     onSubmit: (record) => {
@@ -446,7 +446,7 @@ export function createProjectCommands({
         return
       }
 
-      const target = selectedMoveToLibraryTarget({
+      const target = selectedCloneToLibraryTarget({
         projectId: record.project,
         libraryId: record.library,
       })
@@ -456,7 +456,7 @@ export function createProjectCommands({
       }
 
       return target.actions
-        .moveToLibrary(target.project, target.moveTarget.library.id)
+        .cloneToLibrary(target.project, target.cloneTarget.library.id)
         .then((result) => {
           if (isCurrentHomeProject(target.project) && result?.defaultFile) {
             navigateToProjectFile(result.defaultFile)
@@ -464,16 +464,16 @@ export function createProjectCommands({
         })
     },
     reviewMessage: ({ argumentsToSubmit }) => {
-      const target = selectedMoveToLibraryTarget({
+      const target = selectedCloneToLibraryTarget({
         projectId: argumentsToSubmit.project,
         libraryId: argumentsToSubmit.library,
       })
       const projectName = projectDisplayNameFromCommandValue(
         argumentsToSubmit.project,
-        'moveToLibrary'
+        'cloneToLibrary'
       )
-      const sourceLibrary = target?.moveTarget.sourceLibrary
-      const targetLibrary = target?.moveTarget.library
+      const sourceLibrary = target?.cloneTarget.sourceLibrary
+      const targetLibrary = target?.cloneTarget.library
       const differentType =
         sourceLibrary &&
         targetLibrary &&
@@ -481,31 +481,27 @@ export function createProjectCommands({
 
       return CommandBarOverwriteWarning({
         heading: differentType
-          ? 'Move project to a different library type?'
-          : 'Move project?',
+          ? 'Create a project in a different library type?'
+          : 'Clone project?',
         message: target
-          ? `This will move "${projectName}" from "${sourceLibrary?.title}" to "${targetLibrary?.title}".${
-              differentType
-                ? ' Library-specific behavior such as cloud syncing may change.'
-                : ''
-            }`
-          : `This will move "${projectName}" to another library.`,
+          ? `Create a new project in "${targetLibrary?.title}" from "${projectName}". The original project in "${sourceLibrary?.title}" will be kept.`
+          : `Create a new project from "${projectName}" in another library. The original will be kept.`,
       })
     },
     args: {
       project: {
         inputType: 'options',
         required: true,
-        hidden: hasSelectedMoveToLibraryTarget,
-        options: () => projectOptions('moveToLibrary'),
+        hidden: hasSelectedCloneToLibraryTarget,
+        options: () => projectOptions('cloneToLibrary'),
       },
       library: {
         inputType: 'options',
         required: true,
         prepopulate: true,
-        hidden: hasSelectedMoveToLibraryTarget,
-        options: moveToLibraryOptions,
-        defaultValue: defaultMoveToLibraryId,
+        hidden: hasSelectedCloneToLibraryTarget,
+        options: cloneToLibraryOptions,
+        defaultValue: defaultCloneToLibraryId,
       },
     },
   }
@@ -740,7 +736,7 @@ export function createProjectCommands({
   return [
     openProjectCommand,
     createProjectCommand,
-    moveToLibraryCommand,
+    cloneToLibraryCommand,
     deleteProjectCommand,
     renameProjectCommand,
     importFileFromURL,

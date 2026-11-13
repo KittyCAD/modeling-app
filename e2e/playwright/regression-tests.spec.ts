@@ -312,7 +312,7 @@ extrude001 = extrude(sketch001, length = 50)
 
   test(
     'window resize updates should reconfigure the stream',
-    { tag: '@skipLocalEngine' },
+    { tag: ['@skipLocalEngine', '@streamRenderer'] },
     async ({ scene, page, homePage, cmdBar, toolbar }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
@@ -553,9 +553,7 @@ extrude002 = extrude(profile002, length = 150)`
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       // Locators
-      const projectsHeading = page.getByRole('heading', {
-        name: 'Projects',
-      })
+      const projectsHeading = page.getByRole('heading', { level: 1 })
       const projectLink = page.getByRole('link', { name: 'bracket' })
       const networkHealthIndicator = page.getByTestId(/network-toggle/)
 
@@ -643,7 +641,7 @@ extrude002 = extrude(profile002, length = 150)`
     })
   })
 
-  test(`Refreshing the app doesn't cause the stream to pause on long-executing files`, async ({
+  test(`Refreshing the app doesn't cause the stream to pause on long-executing files @streamRenderer`, async ({
     homePage,
     scene,
     toolbar,
