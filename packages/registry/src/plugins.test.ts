@@ -1,3 +1,4 @@
+import { extension } from './algebra'
 import fc from 'fast-check'
 import { expect, it } from 'vitest'
 import {
@@ -6,7 +7,7 @@ import {
   Facet,
   plugins,
   Registry,
-  type Subtree,
+  type Extension,
 } from './next'
 
 const info = {
@@ -30,7 +31,7 @@ it('keeps controller and metadata installed through generated toggle histories',
         )
         let acquired = 0
         let released = 0
-        const resource: Subtree = {
+        const resource: Extension = extension({
           create: () => {
             acquired++
             return {
@@ -41,7 +42,7 @@ it('keeps controller and metadata installed through generated toggle histories',
               },
             }
           },
-        }
+        })
         await registry.configure([
           createPlugin({ ...info, items: [resource], enabledByDefault }),
         ])
@@ -88,7 +89,7 @@ it('publishes disabled content before awaiting its resource cleanup', async () =
   let finish: () => void = () => {
     throw new Error('Cleanup has not begun')
   }
-  const resource: Subtree = {
+  const resource: Extension = extension({
     create: () => ({
       items: [],
       dispose: () =>
@@ -96,7 +97,7 @@ it('publishes disabled content before awaiting its resource cleanup', async () =
           finish = resolve
         }),
     }),
-  }
+  })
   await registry.configure([createPlugin({ ...info, items: [resource] })])
   const [record] = registry.get(plugins)
   const controller = registry.required(record.service)
@@ -123,7 +124,7 @@ it('retains the committed disabled state when cleanup rejects', async () => {
   const registry = new Registry()
   const failure = new Error('Cleanup failed')
   let releases = 0
-  const resource: Subtree = {
+  const resource: Extension = extension({
     create: () => ({
       items: [],
       dispose: () => {
@@ -131,7 +132,7 @@ it('retains the committed disabled state when cleanup rejects', async () => {
         throw failure
       },
     }),
-  }
+  })
   await registry.configure([createPlugin({ ...info, items: [resource] })])
   const [record] = registry.get(plugins)
   const controller = registry.required(record.service)
@@ -150,11 +151,11 @@ it('retains the committed disabled state when cleanup rejects', async () => {
 it('keeps a disabled plugin disabled when enabling its resources fails', async () => {
   const registry = new Registry()
   const failure = new Error('Acquisition failed')
-  const resource: Subtree = {
+  const resource: Extension = extension({
     create: () => {
       throw failure
     },
-  }
+  })
   await registry.configure([
     createPlugin({ ...info, items: [resource], enabledByDefault: false }),
   ])
@@ -182,11 +183,11 @@ it('exposes active state as a readonly live signal', async () => {
 it('selects the first plugin with a repeated ID before acquiring the discarded definition', async () => {
   const registry = new Registry()
   const commands = new Facet('commands', (values: readonly string[]) => values)
-  const discarded: Subtree = {
+  const discarded: Extension = extension({
     create: () => {
       throw new Error('Discarded plugin must not acquire')
     },
-  }
+  })
   await registry.configure([
     createPlugin({ ...info, items: [contribute(commands, () => 'first')] }),
     createPlugin({ ...info, title: 'Discarded', items: [discarded] }),

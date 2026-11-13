@@ -4,7 +4,8 @@ Reactive registry framework for Zoo Design Studio.
 
 The new runtime is available separately at `@kittycad/registry/next`; the default
 entrypoint below remains unchanged. See the [algebra and next runtime guide](./ALGEBRA.md)
-for Facets, keyed Subtrees, transactional reconfiguration, diagnostics, and plugins.
+for Facets, typed Extension dependencies, transactional reconfiguration, diagnostics,
+and plugins.
 
 ```ts
 import { Registry, Facet, contribute, slot } from '@kittycad/registry/next'

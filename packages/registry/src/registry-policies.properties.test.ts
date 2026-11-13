@@ -1,6 +1,7 @@
+import { extension } from './algebra'
 import fc from 'fast-check'
 import { expect, it } from 'vitest'
-import { contribute, Facet, type Precedence, type Subtree } from './algebra'
+import { contribute, Facet, type Precedence, type Extension } from './algebra'
 import { Registry } from './next'
 
 const priorities = ['highest', 'high', 'default', 'low', 'lowest'] as const
@@ -95,19 +96,21 @@ it('retains keyed resources across rebuilt definitions and reacquires only after
             if (!previous.has(id)) expectedAcquired[id]++
           for (const id of previous)
             if (!selected.has(id)) expectedReleased[id]++
-          const definitions: Subtree[] = selection.map((id) => ({
-            key: `resource-${id}`,
-            create: () => {
-              const resource = { id, generation: ++acquired[id] }
-              return {
-                items: [contribute(facet, () => resource)],
-                dispose: async () => {
-                  await Promise.resolve()
-                  released[id]++
-                },
-              }
-            },
-          }))
+          const definitions: Extension[] = selection.map((id) =>
+            extension({
+              key: `resource-${id}`,
+              create: () => {
+                const resource = { id, generation: ++acquired[id] }
+                return {
+                  items: [contribute(facet, () => resource)],
+                  dispose: async () => {
+                    await Promise.resolve()
+                    released[id]++
+                  },
+                }
+              },
+            })
+          )
           await registry.configure(definitions)
           const resources = registry.get(facet)
           expect(resources.map(({ id }) => id)).toEqual([...selected])
