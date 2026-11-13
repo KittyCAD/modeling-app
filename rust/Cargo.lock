@@ -354,6 +354,7 @@ dependencies = [
  "derive_more",
  "glam 0.32.1",
  "itertools 0.14.0",
+ "libm",
  "rand 0.10.2",
  "rand_distr",
  "serde",
@@ -2002,6 +2003,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f70749695b063ecbf6b62949ccccde2e733ec3ecbbd71d467dca4e5c6c97cca0"
 dependencies = [
  "bytemuck",
+ "libm",
  "rand 0.10.2",
  "serde_core",
 ]
@@ -2019,6 +2021,7 @@ dependencies = [
  "bevy_math",
  "gltf",
  "image",
+ "libm",
  "serde_json",
 ]
 

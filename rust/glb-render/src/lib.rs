@@ -256,15 +256,16 @@ impl ViewProjection {
         let extent = maximum - minimum;
         // Reserve five percent on each side, plus half a stroke so its outside
         // edge stays within the padded rectangle. Degenerate axes do not limit fit.
-        let available_width = (width as f32 * (1.0 - 2.0 * FRAME_PADDING) - LINE_WIDTH).max(1.0);
-        let available_height = (height as f32 * (1.0 - 2.0 * FRAME_PADDING) - LINE_WIDTH).max(1.0);
-        let scale = (available_width / extent.x.max(f32::EPSILON)).min(available_height / extent.y.max(f32::EPSILON));
+        let available_width = libm::fmaxf(width as f32 * (1.0 - 2.0 * FRAME_PADDING) - LINE_WIDTH, 1.0);
+        let available_height = libm::fmaxf(height as f32 * (1.0 - 2.0 * FRAME_PADDING) - LINE_WIDTH, 1.0);
+        let scale = libm::fminf(
+            available_width / libm::fmaxf(extent.x, f32::EPSILON),
+            available_height / libm::fmaxf(extent.y, f32::EPSILON),
+        );
         // Keep the fitted scale, then trim each axis to the geometry plus its
         // stroke and proportional padding. Round up to avoid clipping a margin.
         let trimmed_size = |extent: f32, maximum: u32| {
-            ((extent * scale + LINE_WIDTH) / (1.0 - 2.0 * FRAME_PADDING))
-                .ceil()
-                .clamp(1.0, maximum as f32) as u32
+            libm::ceilf((extent * scale + LINE_WIDTH) / (1.0 - 2.0 * FRAME_PADDING)).clamp(1.0, maximum as f32) as u32
         };
         let width = trimmed_size(extent.x, width);
         let height = trimmed_size(extent.y, height);
@@ -458,7 +459,7 @@ fn material_color(material: gltf::Material<'_>) -> Rgba<u8> {
         linear_to_srgb_u8(red),
         linear_to_srgb_u8(green),
         linear_to_srgb_u8(blue),
-        (alpha.clamp(0.0, 1.0) * 255.0).round() as u8,
+        libm::roundf(alpha.clamp(0.0, 1.0) * 255.0) as u8,
     ])
 }
 
@@ -467,9 +468,9 @@ fn linear_to_srgb_u8(linear: f32) -> u8 {
     let srgb = if linear <= 0.003_130_8 {
         linear * 12.92
     } else {
-        1.055 * linear.powf(1.0 / 2.4) - 0.055
+        1.055 * libm::powf(linear, 1.0 / 2.4) - 0.055
     };
-    (srgb * 255.0).round() as u8
+    libm::roundf(srgb * 255.0) as u8
 }
 
 fn draw_triangle(image: &mut RgbaImage, depth_buffer: &mut [f32], points: [ScreenPoint; 3], color: Rgba<u8>) {
@@ -479,7 +480,7 @@ fn draw_triangle(image: &mut RgbaImage, depth_buffer: &mut [f32], points: [Scree
     }
     let edge = |a: ScreenPoint, b: ScreenPoint, x: f32, y: f32| (x - a.x) * (b.y - a.y) - (y - a.y) * (b.x - a.x);
     let area = triangle_area(points);
-    if area.abs() <= f32::EPSILON {
+    if libm::fabsf(area) <= f32::EPSILON {
         return;
     }
     // glTF front faces wind counterclockwise. Projection flips Y, so this
@@ -487,31 +488,15 @@ fn draw_triangle(image: &mut RgbaImage, depth_buffer: &mut [f32], points: [Scree
     let color = if area < 0.0 { Rgba([0, 213, 255, 255]) } else { color };
     let max_pixel_x = image.width().saturating_sub(1) as f32;
     let max_pixel_y = image.height().saturating_sub(1) as f32;
-    let min_x = points
-        .iter()
-        .map(|point| point.x)
-        .fold(f32::INFINITY, f32::min)
-        .floor()
+    let min_x = libm::floorf(points.iter().map(|point| point.x).fold(f32::INFINITY, libm::fminf))
         .clamp(0.0, max_pixel_x) as u32;
-    let max_x = points
-        .iter()
-        .map(|point| point.x)
-        .fold(f32::NEG_INFINITY, f32::max)
-        .ceil()
+    let max_x = libm::ceilf(points.iter().map(|point| point.x).fold(f32::NEG_INFINITY, libm::fmaxf))
         .clamp(0.0, max_pixel_x) as u32;
-    let min_y = points
-        .iter()
-        .map(|point| point.y)
-        .fold(f32::INFINITY, f32::min)
-        .floor()
+    let min_y = libm::floorf(points.iter().map(|point| point.y).fold(f32::INFINITY, libm::fminf))
         .clamp(0.0, max_pixel_y) as u32;
-    let max_y = points
-        .iter()
-        .map(|point| point.y)
-        .fold(f32::NEG_INFINITY, f32::max)
-        .ceil()
+    let max_y = libm::ceilf(points.iter().map(|point| point.y).fold(f32::NEG_INFINITY, libm::fmaxf))
         .clamp(0.0, max_pixel_y) as u32;
-    let sign = area.signum();
+    let sign = libm::copysignf(1.0, area);
     let inverse_area = 1.0 / area;
 
     for y in min_y..=max_y {
@@ -539,14 +524,16 @@ fn draw_line(image: &mut RgbaImage, start: (f32, f32), end: (f32, f32), line_wid
     let dy = end.1 - start.1;
     let length_squared = dx * dx + dy * dy;
     let radius = line_width * 0.5;
-    let min_x = (start.0.min(end.0) - radius).floor().max(0.0) as u32;
-    let max_x = (start.0.max(end.0) + radius)
-        .ceil()
-        .min(image.width().saturating_sub(1) as f32) as u32;
-    let min_y = (start.1.min(end.1) - radius).floor().max(0.0) as u32;
-    let max_y = (start.1.max(end.1) + radius)
-        .ceil()
-        .min(image.height().saturating_sub(1) as f32) as u32;
+    let min_x = libm::fmaxf(libm::floorf(libm::fminf(start.0, end.0) - radius), 0.0) as u32;
+    let max_x = libm::fminf(
+        libm::ceilf(libm::fmaxf(start.0, end.0) + radius),
+        image.width().saturating_sub(1) as f32,
+    ) as u32;
+    let min_y = libm::fmaxf(libm::floorf(libm::fminf(start.1, end.1) - radius), 0.0) as u32;
+    let max_y = libm::fminf(
+        libm::ceilf(libm::fmaxf(start.1, end.1) + radius),
+        image.height().saturating_sub(1) as f32,
+    ) as u32;
 
     for y in min_y..=max_y {
         for x in min_x..=max_x {
@@ -559,7 +546,9 @@ fn draw_line(image: &mut RgbaImage, start: (f32, f32), end: (f32, f32), line_wid
             };
             let closest_x = start.0 + t * dx;
             let closest_y = start.1 + t * dy;
-            let distance_squared = (px - closest_x).powi(2) + (py - closest_y).powi(2);
+            let offset_x = px - closest_x;
+            let offset_y = py - closest_y;
+            let distance_squared = offset_x * offset_x + offset_y * offset_y;
             if distance_squared > radius * radius {
                 continue;
             }
@@ -581,14 +570,16 @@ fn draw_depth_tested_line(
     let dy = end.y - start.y;
     let length_squared = dx * dx + dy * dy;
     let radius = line_width * 0.5;
-    let min_x = (start.x.min(end.x) - radius).floor().max(0.0) as u32;
-    let max_x = (start.x.max(end.x) + radius)
-        .ceil()
-        .min(image.width().saturating_sub(1) as f32) as u32;
-    let min_y = (start.y.min(end.y) - radius).floor().max(0.0) as u32;
-    let max_y = (start.y.max(end.y) + radius)
-        .ceil()
-        .min(image.height().saturating_sub(1) as f32) as u32;
+    let min_x = libm::fmaxf(libm::floorf(libm::fminf(start.x, end.x) - radius), 0.0) as u32;
+    let max_x = libm::fminf(
+        libm::ceilf(libm::fmaxf(start.x, end.x) + radius),
+        image.width().saturating_sub(1) as f32,
+    ) as u32;
+    let min_y = libm::fmaxf(libm::floorf(libm::fminf(start.y, end.y) - radius), 0.0) as u32;
+    let max_y = libm::fminf(
+        libm::ceilf(libm::fmaxf(start.y, end.y) + radius),
+        image.height().saturating_sub(1) as f32,
+    ) as u32;
 
     for y in min_y..=max_y {
         for x in min_x..=max_x {
@@ -606,7 +597,9 @@ fn draw_depth_tested_line(
             }
             let closest_x = start.x + t * dx;
             let closest_y = start.y + t * dy;
-            let distance_squared = (px - closest_x).powi(2) + (py - closest_y).powi(2);
+            let offset_x = px - closest_x;
+            let offset_y = py - closest_y;
+            let distance_squared = offset_x * offset_x + offset_y * offset_y;
             if distance_squared > radius * radius {
                 continue;
             }
@@ -700,18 +693,24 @@ mod tests {
         let mut max_y = f32::NEG_INFINITY;
         for &point in points {
             let point = view.project(point);
-            min_x = min_x.min(point.x);
-            max_x = max_x.max(point.x);
-            min_y = min_y.min(point.y);
-            max_y = max_y.max(point.y);
+            min_x = libm::fminf(min_x, point.x);
+            max_x = libm::fmaxf(max_x, point.x);
+            min_y = libm::fminf(min_y, point.y);
+            max_y = libm::fmaxf(max_y, point.y);
         }
         let padding_x = view.width as f32 * FRAME_PADDING + LINE_WIDTH * 0.5;
         let padding_y = view.height as f32 * FRAME_PADDING + LINE_WIDTH * 0.5;
-        assert!((min_x + max_x - view.width as f32).abs() < 0.1, "horizontal centering");
-        assert!((min_y + max_y - view.height as f32).abs() < 0.1, "vertical centering");
+        assert!(
+            libm::fabsf(min_x + max_x - view.width as f32) < 0.1,
+            "horizontal centering"
+        );
+        assert!(
+            libm::fabsf(min_y + max_y - view.height as f32) < 0.1,
+            "vertical centering"
+        );
         assert!(min_x >= padding_x - 0.1 && min_y >= padding_y - 0.1, "minimum padding");
         assert!(
-            (min_x - padding_x).abs() < 0.6 && (min_y - padding_y).abs() < 0.6,
+            libm::fabsf(min_x - padding_x) < 0.6 && libm::fabsf(min_y - padding_y) < 0.6,
             "five percent margins on both axes, allowing pixel rounding"
         );
     }
@@ -766,7 +765,7 @@ mod tests {
             ];
             let view = ViewProjection::from_points(points, 1280, 720).unwrap();
             assert_padded_fit(view, &points);
-            assert!((view.scale - (720.0 * 0.9 - LINE_WIDTH) * 0.5).abs() < 0.1);
+            assert!(libm::fabsf(view.scale - (720.0 * 0.9 - LINE_WIDTH) * 0.5) < 0.1);
         }
     }
 

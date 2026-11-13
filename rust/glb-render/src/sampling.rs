@@ -1,5 +1,7 @@
+use bevy_math::DVec3;
 use bevy_math::Vec3;
 use gltf::kittycad_boundary_representation::Endpoints;
+use gltf::kittycad_boundary_representation::curve::Circle3d;
 use gltf::kittycad_boundary_representation::curve::Curve3d;
 use gltf::kittycad_boundary_representation::curve::Geometry3d;
 use gltf::kittycad_boundary_representation::curve::Nurbs3d;
@@ -59,7 +61,7 @@ fn sample_edge(edge: &gltf::Edge<'_>) -> Result<Vec<Vec3>, String> {
         }
         Geometry3d::Circle(circle) => {
             let count = circle_segment_count(circle.radius(), domain.1 - domain.0);
-            sample_uniformly(&curve, domain, count)?
+            sample_circle(&circle, domain, count)?
         }
         Geometry3d::Nurbs(nurbs) => {
             validate_nurbs(&nurbs, domain)?;
@@ -89,9 +91,17 @@ fn sample_edge(edge: &gltf::Edge<'_>) -> Result<Vec<Vec3>, String> {
     Ok(samples)
 }
 
-fn sample_uniformly(curve: &Curve3d<'_>, domain: (f64, f64), count: usize) -> Result<Vec<Vec3>, String> {
+fn sample_circle(circle: &Circle3d<'_>, domain: (f64, f64), count: usize) -> Result<Vec<Vec3>, String> {
+    let origin = DVec3::from_array(circle.origin());
+    let xaxis = DVec3::from_array(circle.xaxis());
+    let yaxis = DVec3::from_array(circle.yaxis());
     (0..=count)
-        .map(|step| world_point(curve.evaluate(lerp(domain.0, domain.1, step as f64 / count as f64))))
+        .map(|step| {
+            let t = lerp(domain.0, domain.1, step as f64 / count as f64);
+            // The glTF circle evaluator uses platform trigonometry.
+            let (sine, cosine) = libm::sincos(t);
+            world_point((origin + (xaxis * cosine + yaxis * sine) * circle.radius()).to_array())
+        })
         .collect()
 }
 
@@ -100,8 +110,8 @@ fn lerp(start: f64, end: f64, t: f64) -> f64 {
 }
 
 fn circle_segment_count(radius: f64, sweep: f64) -> usize {
-    let radius = radius.abs();
-    let sweep = sweep.abs();
+    let radius = libm::fabs(radius);
+    let sweep = libm::fabs(sweep);
     if radius <= f64::EPSILON || sweep <= f64::EPSILON {
         return MIN_CURVE_SEGMENTS;
     }
@@ -109,14 +119,14 @@ fn circle_segment_count(radius: f64, sweep: f64) -> usize {
     let max_angle = if raw_error >= radius {
         std::f64::consts::PI
     } else {
-        2.0 * (1.0 - raw_error / radius).clamp(-1.0, 1.0).acos()
+        2.0 * libm::acos((1.0 - raw_error / radius).clamp(-1.0, 1.0))
     };
     let minimum = if sweep >= std::f64::consts::TAU * 0.99 {
         MIN_CLOSED_CURVE_SEGMENTS
     } else {
         MIN_CURVE_SEGMENTS
     };
-    ((sweep / max_angle.max(1.0e-6)).ceil() as usize).clamp(minimum, MAX_CURVE_SEGMENTS)
+    (libm::ceil(sweep / libm::fmax(max_angle, 1.0e-6)) as usize).clamp(minimum, MAX_CURVE_SEGMENTS)
 }
 
 fn validate_nurbs(nurbs: &Nurbs3d<'_>, domain: (f64, f64)) -> Result<(), String> {
@@ -133,7 +143,7 @@ fn validate_nurbs(nurbs: &Nurbs3d<'_>, domain: (f64, f64)) -> Result<(), String>
     }
     let minimum = knots[order - 1];
     let maximum = knots[points.len()];
-    if minimum >= maximum || domain.0.min(domain.1) < minimum || domain.0.max(domain.1) > maximum {
+    if minimum >= maximum || libm::fmin(domain.0, domain.1) < minimum || libm::fmax(domain.0, domain.1) > maximum {
         return Err("curve parameter interval is outside the NURBS knot domain".into());
     }
     Ok(())
@@ -155,7 +165,7 @@ fn subdivide_nurbs(
     let chord_error = [quarter, midpoint, three_quarter]
         .into_iter()
         .map(|point| distance_to_segment(point, start_point, end_point))
-        .fold(0.0, f32::max);
+        .fold(0.0, libm::fmaxf);
     if chord_error <= CURVE_CHORD_ERROR || depth >= MAX_NURBS_SUBDIVISION_DEPTH {
         samples.push(end_point);
         return Ok(());
@@ -244,6 +254,22 @@ mod tests {
         assert!(points.last().unwrap().distance(Vec3::X * 10.0) < 1.0e-5);
     }
 
+    #[test]
+    fn samples_circle_with_origin_and_axes() {
+        let data = sample(json!({
+            "vertices": [[0.02, 0.03, 0.05], [0.02, 0.04, 0.04]],
+            "edges": [{"curve": [0, 1], "start": 0, "end": 1, "t": [0, std::f64::consts::FRAC_PI_2]}],
+            "curves3D": [{"type": "circle", "circle": {
+                "radius": 0.01, "origin": [0.02, 0.03, 0.04],
+                "xAxis": [0, 0, 1], "yAxis": [0, 1, 0]
+            }}]
+        }))
+        .unwrap();
+        let points = &data.edge_polylines[0];
+        assert!(points.first().unwrap().distance(Vec3::new(20.0, 30.0, 50.0)) < 1.0e-5);
+        assert!(points.last().unwrap().distance(Vec3::new(20.0, 40.0, 40.0)) < 1.0e-5);
+    }
+
     fn nurbs() -> Value {
         json!({
             "vertices": [[0.01, 0, 0], [0, 0.01, 0]],
@@ -262,7 +288,7 @@ mod tests {
         let data = sample(extension.clone()).unwrap();
         let points = &data.edge_polylines[0];
         assert!(points.len() > 2);
-        assert!(points.iter().all(|point| (point.length() - 10.0).abs() < 1.0e-5));
+        assert!(points.iter().all(|point| libm::fabsf(point.length() - 10.0) < 1.0e-5));
         extension["edges"][0]["t"] = json!([0.25, 0.75]);
         let data = sample(extension).unwrap();
         let points = &data.edge_polylines[0];
@@ -320,7 +346,7 @@ mod tests {
             );
             for pair in points.windows(2) {
                 let middle = (pair[0] + pair[1]) * 0.5;
-                let radius = (middle.y - 40.0).hypot(middle.z + 30.0);
+                let radius = libm::hypotf(middle.y - 40.0, middle.z + 30.0);
                 assert!(5.0 - radius <= CURVE_CHORD_ERROR + 1.0e-4);
             }
         }
