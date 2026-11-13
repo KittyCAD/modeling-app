@@ -17,6 +17,10 @@ gdt::radius(
   leaderScale?: number(_),
   fontSize?: number(Length),
   annotationName?: string,
+  textAbove?: string,
+  textBelow?: string,
+  textLeft?: string,
+  textRight?: string,
 ): GdtAnnotation
 ```
 
@@ -34,6 +38,10 @@ gdt::radius(
 | `leaderScale` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Arrow scale. Must be greater than zero; defaults to 1. | No |
 | `fontSize` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Model-space text height. Must be greater than zero; defaults to 10mm. | No |
 | `annotationName` | [`string`](/docs/kcl-std/types/std-types-string) | Human-friendly annotation name in exports and model metadata. | No |
+| `textAbove` | [`string`](/docs/kcl-std/types/std-types-string) | Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing. | No |
+| `textBelow` | [`string`](/docs/kcl-std/types/std-types-string) | Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing. | No |
+| `textLeft` | [`string`](/docs/kcl-std/types/std-types-string) | Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing. | No |
+| `textRight` | [`string`](/docs/kcl-std/types/std-types-string) | Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing. | No |
 
 ### Returns
 
@@ -63,5 +71,6 @@ gdt::radius(
 
 
 ![Rendered example of gdt::radius 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-radius0.png)
+
 
 

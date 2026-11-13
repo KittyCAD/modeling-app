@@ -388,6 +388,10 @@ async fn inner_datum(
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
     let feature_control = AnnotationFeatureControl::builder()
+        .maybe_text_above(args.get_kw_arg_opt("textAbove", &RuntimeType::string(), exec_state)?)
+        .maybe_text_below(args.get_kw_arg_opt("textBelow", &RuntimeType::string(), exec_state)?)
+        .maybe_text_left(args.get_kw_arg_opt("textLeft", &RuntimeType::string(), exec_state)?)
+        .maybe_text_right(args.get_kw_arg_opt("textRight", &RuntimeType::string(), exec_state)?)
         .maybe_entity_id(Some(face_id))
         // Point to the center of the face.
         .entity_pos(KPoint2d { x: 0.5, y: 0.5 })
@@ -471,6 +475,10 @@ async fn inner_note(
     // A note does not attach to a face. Passing the plane as the entity tells the engine to
     // place the note inline on that plane with no leader (an MBD free note).
     let feature_tag = AnnotationFeatureTag::builder()
+        .maybe_text_above(args.get_kw_arg_opt("textAbove", &RuntimeType::string(), exec_state)?)
+        .maybe_text_below(args.get_kw_arg_opt("textBelow", &RuntimeType::string(), exec_state)?)
+        .maybe_text_left(args.get_kw_arg_opt("textLeft", &RuntimeType::string(), exec_state)?)
+        .maybe_text_right(args.get_kw_arg_opt("textRight", &RuntimeType::string(), exec_state)?)
         .maybe_entity_id(Some(frame_plane.id))
         .entity_pos(KPoint2d { x: 0.0, y: 0.0 })
         .leader_type(AnnotationLineEnd::None)
@@ -1213,6 +1221,10 @@ async fn circular_dimension(symbol: MbdSymbol, exec_state: &mut ExecState, args:
     .await?;
     let display_units = exec_state.length_unit();
     let feature_control = AnnotationFeatureControl::builder()
+        .maybe_text_above(args.get_kw_arg_opt("textAbove", &RuntimeType::string(), exec_state)?)
+        .maybe_text_below(args.get_kw_arg_opt("textBelow", &RuntimeType::string(), exec_state)?)
+        .maybe_text_left(args.get_kw_arg_opt("textLeft", &RuntimeType::string(), exec_state)?)
+        .maybe_text_right(args.get_kw_arg_opt("textRight", &RuntimeType::string(), exec_state)?)
         .maybe_entity_id(endpoint.entity_id)
         .maybe_edge_reference(endpoint.edge_reference)
         .entity_leader_pos(AnnotationMbdLeaderPosition::NormalizedPos {
@@ -1960,6 +1972,10 @@ async fn create_feature_control_annotation(
         datums,
     );
     let feature_control = AnnotationFeatureControl::builder()
+        .maybe_text_above(args.get_kw_arg_opt("textAbove", &RuntimeType::string(), exec_state)?)
+        .maybe_text_below(args.get_kw_arg_opt("textBelow", &RuntimeType::string(), exec_state)?)
+        .maybe_text_left(args.get_kw_arg_opt("textLeft", &RuntimeType::string(), exec_state)?)
+        .maybe_text_right(args.get_kw_arg_opt("textRight", &RuntimeType::string(), exec_state)?)
         .maybe_entity_id(entity_id)
         .maybe_edge_reference(edge_reference)
         .entity_pos(KPoint2d { x: 0.5, y: 0.5 })
@@ -2057,6 +2073,10 @@ async fn create_annotation(
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
     let feature_control = AnnotationFeatureControl::builder()
+        .maybe_text_above(args.get_kw_arg_opt("textAbove", &RuntimeType::string(), exec_state)?)
+        .maybe_text_below(args.get_kw_arg_opt("textBelow", &RuntimeType::string(), exec_state)?)
+        .maybe_text_left(args.get_kw_arg_opt("textLeft", &RuntimeType::string(), exec_state)?)
+        .maybe_text_right(args.get_kw_arg_opt("textRight", &RuntimeType::string(), exec_state)?)
         .maybe_entity_id(entity_id)
         .maybe_edge_reference(edge_reference)
         .entity_pos(KPoint2d { x: 0.5, y: 0.5 })
@@ -2180,6 +2200,52 @@ mod tests {
     use crate::execution::ExecutorSettings;
     use crate::execution::MockConfig;
     use crate::execution::parse_execute;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn supplemental_text_preserves_each_annotation_kind() {
+        let geometry = r#"
+@settings(kclVersion = 3.0)
+profile = sketch(on = XY) {
+  rim = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}
+solid = extrude(region(segments = [profile.rim]), length = 5mm, tagEnd = $top)
+"#;
+        for call in [
+            "gdt::diameter(target = solid.sketch.tags.rim",
+            "gdt::radius(target = solid.sketch.tags.rim",
+            "gdt::flatness(faces = [top], tolerance = 0.05mm",
+            "gdt::datum(face = top, name = \"A\"",
+            "gdt::annotation(faces = [top], annotation = \"Deburr\"",
+            "gdt::note(note = \"Manufacturing note\"",
+        ] {
+            let plain = gdt_commands(&format!("{geometry}\n{call})")).await;
+            let decorated = gdt_commands(&format!(
+                "{geometry}\n{call}, textAbove = \"UP\\nLINE\", textBelow = \"REFERENCE\", textLeft = \"4X\", textRight = \"THRU\")"
+            ))
+            .await;
+            let plain = annotation_options(&plain[new_annotation_command_index(&plain).unwrap()]).unwrap();
+            let decorated = annotation_options(&decorated[new_annotation_command_index(&decorated).unwrap()]).unwrap();
+            if let Some(control) = &decorated.feature_control {
+                let original = plain.feature_control.as_ref().unwrap();
+                assert_eq!(control.dimension, original.dimension, "{call}");
+                assert_eq!(control.control_frame, original.control_frame, "{call}");
+                assert_eq!(control.defined_datum, original.defined_datum, "{call}");
+                assert_eq!(control.prefix, original.prefix, "{call}");
+                assert_eq!(control.text_above.as_deref(), Some("UP\nLINE"));
+                assert_eq!(control.text_below.as_deref(), Some("REFERENCE"));
+                assert_eq!(control.text_left.as_deref(), Some("4X"));
+                assert_eq!(control.text_right.as_deref(), Some("THRU"));
+                assert!(original.text_above.is_none());
+            } else {
+                let tag = decorated.feature_tag.as_ref().unwrap();
+                assert_eq!(tag.value, plain.feature_tag.as_ref().unwrap().value);
+                assert_eq!(tag.text_above.as_deref(), Some("UP\nLINE"));
+                assert_eq!(tag.text_below.as_deref(), Some("REFERENCE"));
+                assert_eq!(tag.text_left.as_deref(), Some("4X"));
+                assert_eq!(tag.text_right.as_deref(), Some("THRU"));
+            }
+        }
+    }
 
     const GDT_DISTANCE_KCL_TEMPLATE: &str = r#"
 @settings(defaultLengthUnit = __UNIT__, kclVersion = 2)
