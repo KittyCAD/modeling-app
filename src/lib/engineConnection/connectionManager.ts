@@ -678,7 +678,6 @@ export class ConnectionManager extends EventTarget {
         .useLocalRenderer.current
     if (useLocalRenderer) return
     if (!connection) {
-      this.online()
       return
     }
     const connectedMode =
