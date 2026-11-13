@@ -12,14 +12,12 @@ export const FileExplorerHeaderActions = ({
   onCreateFolder,
   onRefreshExplorer,
   onCollapseExplorer,
-  onDownloadProject,
   readOnly = false,
 }: {
   onCreateFile: () => void
   onCreateFolder: () => void
   onRefreshExplorer: () => void
   onCollapseExplorer: () => void
-  onDownloadProject?: () => void
   readOnly?: boolean
 }) => {
   return (
@@ -67,22 +65,6 @@ export const FileExplorerHeaderActions = ({
       >
         <Tooltip position="bottom-right">Refresh Explorer</Tooltip>
       </ActionButton>
-
-      {onDownloadProject && (
-        <ActionButton
-          Element="button"
-          data-testid="download-project-zip"
-          iconStart={{
-            icon: 'download',
-            iconClassName: '!text-current',
-            bgClassName: 'bg-transparent',
-          }}
-          className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
-          onClick={onDownloadProject}
-        >
-          <Tooltip position="bottom-right">Download project files</Tooltip>
-        </ActionButton>
-      )}
 
       <ActionButton
         Element="button"

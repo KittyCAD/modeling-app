@@ -1,4 +1,3 @@
-import { selectCommand } from '@src/lib/commandUtils'
 import { useSignals } from '@preact/signals-react/runtime'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
@@ -23,7 +22,7 @@ import { use, useCallback, useEffect, useRef, useState, useMemo } from 'react'
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   useSignals()
   const app = useApp()
-  const { commands, fileOperations, project, layout } = app
+  const { fileOperations, project, layout } = app
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const metadata = project?.projectIORefSignal.value
@@ -69,13 +68,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   const openCodeEditorPaneIfClosed = useCallback(() => {
     layout.openPane(DefaultLayoutPaneID.Code)
   }, [layout])
-
-  const downloadProjectZip = useCallback(() => {
-    selectCommand(commands, {
-      name: 'export-project-zip',
-      groupId: 'application',
-    })
-  }, [commands])
 
   const onRowDoubleClicked = useCallback(
     (entry: FileExplorerEntry) => {
@@ -167,9 +159,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             onCollapseExplorer={() => {
               setCollapsedPressed(performance.now())
             }}
-            onDownloadProject={
-              !window.electron ? downloadProjectZip : undefined
-            }
           />
         }
         onClose={props.onClose}

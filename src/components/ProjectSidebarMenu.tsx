@@ -212,10 +212,6 @@ function ProjectMenuPopover({
   ).value
 
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
-  const exportProjectZipCommandInfo = {
-    name: 'export-project-zip',
-    groupId: 'application',
-  }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
   const findCommand = useCallback(
     (obj: { name: string; groupId: string }) =>
@@ -387,28 +383,6 @@ function ProjectMenuPopover({
           ),
           disabled: !findCommand(exportCommandInfo),
           onClick: () => selectCommand(commands, exportCommandInfo),
-        },
-        {
-          id: 'download-project-zip',
-          Element: 'button' as const,
-          className: isDesktop() ? 'hidden' : '',
-          children: (
-            <>
-              <span className={projectMenuItemLabelClassName}>
-                Download project files
-              </span>
-              {!findCommand(exportProjectZipCommandInfo) && (
-                <Tooltip
-                  position="right"
-                  wrapperClassName="!max-w-none min-w-fit"
-                >
-                  Project export unavailable
-                </Tooltip>
-              )}
-            </>
-          ),
-          disabled: !findCommand(exportProjectZipCommandInfo),
-          onClick: () => selectCommand(commands, exportProjectZipCommandInfo),
         },
         {
           id: 'make',

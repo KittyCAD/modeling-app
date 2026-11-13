@@ -169,6 +169,7 @@ import {
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
+import { exportProjectZip } from '@src/lib/exportProjectZip'
 import { exportSave } from '@src/lib/exportSave'
 import { toProjectRelativePath, webSafePathSplit } from '@src/lib/paths'
 import { toPlaneName } from '@src/lib/planes'
@@ -4511,6 +4512,7 @@ export const modelingMachine = setup({
               rustContext: RustContext
               defaultUnit?: ModelingMachineContext['store']['defaultUnit']
               fileName: string
+              project?: Project
             }
           | undefined
       }) => {
@@ -4518,6 +4520,17 @@ export const modelingMachine = setup({
           return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
         const { data, kclManager, rustContext, defaultUnit, fileName } = input
+
+        if (data.type === 'kcl') {
+          await exportProjectZip({
+            fileOperations: kclManager.systemDeps.fileOperations,
+            project: input.project,
+            currentFilePath: kclManager.path,
+            currentFileContents: kclManager.code,
+            wasmInstance: await kclManager.wasmInstancePromise,
+          })
+          return
+        }
 
         if (kclManager.hasErrors() || kclManager.ast.body.length === 0) {
           let errorMessage = 'Unable to Export '
@@ -5063,7 +5076,6 @@ export const modelingMachine = setup({
 
         Export: {
           target: 'Exporting',
-          guard: 'Has exportable geometry',
         },
 
         Make: {
@@ -7543,6 +7555,7 @@ export const modelingMachine = setup({
             rustContext: context.rustContext,
             defaultUnit: context.store.defaultUnit,
             fileName,
+            project,
           }
         },
         onDone: ['idle'],

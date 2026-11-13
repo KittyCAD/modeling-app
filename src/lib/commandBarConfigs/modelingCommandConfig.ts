@@ -77,7 +77,7 @@ import { MODE_SKETCHING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 
 type OutputFormat = OutputFormat3d
-type OutputTypeKey = OutputFormat['type']
+type OutputTypeKey = OutputFormat['type'] | 'kcl'
 type ExtractStorageTypes<T> = T extends { storage?: infer U }
   ? NonNullable<U>
   : never
@@ -88,6 +88,10 @@ const exportOptionalArgSupportByType: Partial<
   Record<OutputTypeKey, Partial<Record<ExportOptionalArg, boolean>>>
 > = {
   gltf: {
+    up: false,
+    scale: false,
+  },
+  kcl: {
     up: false,
     scale: false,
   },
@@ -467,7 +471,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   ],
   Export: {
     forceCommandBar: true,
-    description: 'Export the current model.',
+    description: 'Export the current model or KCL project files.',
     icon: 'floppyDiskArrow',
     needsReview: true,
     args: {
@@ -481,6 +485,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'STL', isCurrent: false, value: 'stl' },
           { name: 'STEP', isCurrent: false, value: 'step' },
           { name: 'PLY', isCurrent: false, value: 'ply' },
+          {
+            name: 'KCL (as .zip archive of all project files)',
+            isCurrent: false,
+            value: 'kcl',
+          },
         ],
       },
       storage: {
@@ -541,6 +550,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             case 'step':
             case 'obj':
             case 'fbx':
+            case 'kcl':
             default:
               return []
           }

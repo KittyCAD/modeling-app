@@ -1,3 +1,4 @@
+import { tmpdir } from 'node:os'
 import { createProjectZipArchive } from '@src/lib/exportProjectZip'
 import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
@@ -47,7 +48,10 @@ describe('createProjectZipArchive', () => {
   })
 
   it('zips every project file and uses the current editor contents for the active file', async () => {
-    const projectPath = `/tmp/export-project-zip-${crypto.randomUUID()}`
+    const projectPath = fsZds.join(
+      tmpdir(),
+      `export-project-zip-${crypto.randomUUID()}`
+    )
     createdProjectPaths.push(projectPath)
 
     await fsZds.mkdir(fsZds.join(projectPath, 'parts'), { recursive: true })
@@ -101,7 +105,10 @@ describe('createProjectZipArchive', () => {
   })
 
   it('uses the project title for the ZIP name and root when it differs from the folder name', async () => {
-    const projectPath = `/tmp/export-project-zip-${crypto.randomUUID()}`
+    const projectPath = fsZds.join(
+      tmpdir(),
+      `export-project-zip-${crypto.randomUUID()}`
+    )
     createdProjectPaths.push(projectPath)
 
     await fsZds.mkdir(projectPath, { recursive: true })

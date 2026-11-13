@@ -27,6 +27,7 @@ import {
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type RustContext from '@src/lib/rustContext'
+import * as projectExport from '@src/lib/exportProjectZip'
 import { StepSchema } from '@src/lib/stepSchema'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -118,7 +119,55 @@ beforeAll(async () => {
   setTestWorld(worldWithoutEngine)
 })
 
-describe('STEP schema export requests', () => {
+describe('export requests', () => {
+  it('exports KCL project files even with KCL errors and an empty scene', async () => {
+    const world = worldWithoutEngine
+    const project = world.kclManager.systemDeps.project.value
+    const hasErrors = vi
+      .spyOn(world.kclManager, 'hasErrors')
+      .mockReturnValue(true)
+    const ast = vi
+      .spyOn(world.kclManager, 'ast', 'get')
+      .mockReturnValue(
+        assertParse('@settings(kclVersion = 3.0)', world.instance)
+      )
+    const exportZip = vi
+      .spyOn(projectExport, 'exportProjectZip')
+      .mockResolvedValue(undefined)
+    const engineExport = vi.spyOn(world.rustContext, 'export')
+    const implementation =
+      modelingMachine.implementations.actors.exportFromEngine
+    const logic = 'src' in implementation ? implementation.src : implementation
+    const actor = createActor(logic, {
+      input: {
+        data: { type: 'kcl' },
+        kclManager: world.kclManager,
+        rustContext: world.rustContext,
+        fileName: 'project.zip',
+        project,
+      },
+    })
+    try {
+      const done = toPromise(actor)
+      actor.start()
+      await done
+      expect(exportZip).toHaveBeenCalledWith({
+        fileOperations: world.kclManager.systemDeps.fileOperations,
+        project,
+        currentFilePath: world.kclManager.path,
+        currentFileContents: world.kclManager.code,
+        wasmInstance: world.instance,
+      })
+      expect(engineExport).not.toHaveBeenCalled()
+    } finally {
+      actor.stop()
+      engineExport.mockRestore()
+      exportZip.mockRestore()
+      ast.mockRestore()
+      hasErrors.mockRestore()
+    }
+  })
+
   async function exportFormat(data: ModelingCommandSchema['Export']) {
     const world = worldWithoutEngine
     const program = assertParse(
