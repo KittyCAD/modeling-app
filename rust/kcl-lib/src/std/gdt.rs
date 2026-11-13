@@ -2220,7 +2220,7 @@ solid = extrude(region(segments = [profile.rim]), length = 5mm, tagEnd = $top)
         ] {
             let plain = gdt_commands(&format!("{geometry}\n{call})")).await;
             let decorated = gdt_commands(&format!(
-                "{geometry}\n{call}, textAbove = \"UP\\nLINE\", textBelow = \"REFERENCE\", textLeft = \"4X\", textRight = \"THRU\")"
+                "{geometry}\n{call}, textAbove = \"UP\nLINE\", textBelow = \"REFERENCE\", textLeft = \"4X\", textRight = \"THRU\")"
             ))
             .await;
             let plain = annotation_options(&plain[new_annotation_command_index(&plain).unwrap()]).unwrap();
