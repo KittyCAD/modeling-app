@@ -237,7 +237,7 @@ jobs:
         config:
           - os: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
             label: chrome
-            test_script: test:e2e:web
+            test_command: npm run test:e2e:web
             playwright_cache_path: ~/.cache/ms-playwright
         include:
           - shardIndex: 1
@@ -245,14 +245,14 @@ jobs:
             config:
               os: namespace-profile-ubuntu-8-cores
               label: firefox
-              test_script: test:e2e:web:firefox
+              test_command: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:web:firefox
               playwright_cache_path: ~/.cache/ms-playwright
           - shardIndex: 1
             shardTotal: 1
             config:
               os: namespace-profile-macos-8-cores
               label: webkit
-              test_script: test:e2e:web:webkit
+              test_command: npm run test:e2e:web:webkit
               playwright_cache_path: ~/Library/Caches/ms-playwright
               optional: true # WebKit coverage is non-blocking for external callers
 
@@ -318,7 +318,7 @@ jobs:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
           OS_NAME: ${{ env.OS_NAME }}
 
-      - run: npm run ${{ matrix.config.test_script }} -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+      - run: ${{ matrix.config.test_command }} -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}

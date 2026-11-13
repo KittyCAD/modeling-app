@@ -57,7 +57,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         channel: 'chrome',
         contextOptions: {
-          /* Chromium is the only one with these permission types */
+          // Chromium is the only one with these permission types
           permissions: ['clipboard-write', 'clipboard-read'],
         },
         launchOptions: {
@@ -75,7 +75,18 @@ export default defineConfig({
     },
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: {
+        ...devices['Desktop Firefox'],
+        // Headless Firefox on Linux CI blocks WebGL2
+        headless: !(process.env.CI && process.platform === 'linux'),
+        launchOptions: {
+          firefoxUserPrefs: {
+            'webgl.disabled': false,
+            'webgl.enable-webgl2': true,
+            'webgl.force-enabled': true,
+          },
+        },
+      },
     },
   ],
 
