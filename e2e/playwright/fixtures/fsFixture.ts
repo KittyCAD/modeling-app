@@ -28,7 +28,15 @@ export const FsFixture = (page: Page): PromisifiedZooDesignStudioFS => {
                 // @ts-expect-error
                 (window.fsZds[args[0].toString()] || (() => {}))
 
-              return f(...args.slice(1))
+              try {
+                return await f(...args.slice(1))
+              } catch (error) {
+                // Firefox's evaluate bridge drops non-Error rejections
+                // (OPFS uses Promise.reject('ENOENT')), which then surfaces as
+                // pageerror "uncaught exception: ENOENT" or page.evaluate: undefined.
+                if (typeof error === 'string') throw new Error(error)
+                throw error
+              }
             },
             [propertyName, ...argsBuffersToUint8Arrays]
           )

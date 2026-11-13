@@ -244,6 +244,22 @@ export const isErrorWhitelisted = (exception: Error) => {
         'e2e/playwright/file-tree.spec.ts finishes importing dropped files before enabling the explorer again',
     },
     {
+      name: 'uncaught exception',
+      message: 'ENOENT',
+      stack: 'uncaught exception: ENOENT\n    at _promiseAwareJsonValueNoThrow',
+      project: 'firefox',
+      foundInSpec:
+        'e2e/playwright/opfs.spec.ts keeps top-level and overlapping directory names distinct',
+    },
+    {
+      name: 'Error',
+      message: 'ENOENT',
+      stack: 'Error: ENOENT\n    at eval',
+      project: 'firefox',
+      foundInSpec:
+        'e2e/playwright/opfs.spec.ts keeps top-level and overlapping directory names distinct',
+    },
+    {
       name: '  - internal_engine',
       stack: `
 `,
