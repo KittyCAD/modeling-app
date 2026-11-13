@@ -45,11 +45,16 @@ export function buildBodyOperationTree(
   const operationOrder = new Map<Operation, number>()
   const sourceOrder = new Map<string, number>()
   const modulePaths = new Map<number, number[]>()
+  const moduleByImportRange = new Map<string, number>()
   function indexOperations(items: OperationTreeNode[], path: number[] = []) {
     for (const node of items) {
       if (isOperationTreeBranch(node)) {
         const modulePath = [...path, node.parent.moduleId]
         modulePaths.set(node.parent.moduleId, modulePath)
+        moduleByImportRange.set(
+          node.parent.sourceRange.join('-'),
+          node.parent.moduleId
+        )
         indexOperations(node.children, modulePath)
       } else {
         for (const operation of isArray(node) ? node : [node]) {
@@ -173,7 +178,8 @@ export function buildBodyOperationTree(
     }
 
     const matches = (operation: Operation): boolean => {
-      if (!('sourceRange' in operation)) return false
+      if (!('sourceRange' in operation) || operation.type === 'ModuleInstance')
+        return false
       const range = operation.sourceRange
       if (
         Array.from(ancestors.values()).some(
@@ -225,7 +231,11 @@ export function buildBodyOperationTree(
       })
     }
 
-    const moduleId = artifact.codeRef.range[2]
+    // Imported artifacts point to the import statement for source navigation.
+    // That range belongs to the caller, while moduleId identifies the part.
+    const moduleId =
+      moduleByImportRange.get(artifact.codeRef.range.join('-')) ??
+      artifact.codeRef.range[2]
     return {
       id,
       artifact,

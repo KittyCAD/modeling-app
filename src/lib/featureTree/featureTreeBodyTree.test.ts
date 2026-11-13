@@ -4,6 +4,7 @@ import {
   buildBodyOperationTree,
   type BodyArtifact,
 } from '@src/lib/featureTree/featureTreeBodyTree'
+import { buildOperationTree } from '@src/lib/featureTree/featureTreeOperationTree'
 import { describe, expect, it } from 'vitest'
 
 function codeRef(start: number, moduleId = 0): CodeRef {
@@ -298,6 +299,57 @@ describe('body feature hierarchy', () => {
       body: tree.branches[3],
       children: [call(100)],
     })
+  })
+
+  it('owns imported bodies by the import statement when KCL remaps their code references', () => {
+    const names = ['fanHousing', 'motor', 'fan']
+    const parts = names.map((name, index) => {
+      const parent: Extract<Operation, { type: 'ModuleInstance' }> = {
+        type: 'ModuleInstance',
+        name,
+        moduleId: index + 1,
+        sourceRange: codeRef(index * 20).range,
+        nodePath: { steps: [] },
+      }
+      const appearance = {
+        ...call(100, name),
+        name: 'appearance',
+        sourceRange: codeRef(100, index + 1).range,
+      }
+      return { parent, children: [appearance] }
+    })
+    // KCL's code_ref_for_range replaces the producing file's range with its
+    // import statement range so scene/code selection navigates to main.kcl.
+    const importedBodies = names.map((name, index) => ({
+      ...sweep(name, 100),
+      codeRef: codeRef(index * 20),
+    }))
+    const operations = buildOperationTree(
+      {
+        map: {
+          0: parts.map((part) => part.parent),
+          1: parts[0].children,
+          2: parts[1].children,
+          3: parts[2].children,
+        },
+      },
+      0
+    )
+    const tree = buildBodyOperationTree(
+      operations,
+      bodies(...importedBodies),
+      graph(...importedBodies)
+    )
+    expect(tree.nodes).toHaveLength(3)
+    for (let index = 0; index < parts.length; index++) {
+      expect(tree.nodes[index]).toEqual({
+        parent: parts[index].parent,
+        children: [
+          { body: tree.branches[index], children: parts[index].children },
+        ],
+      })
+      expect(tree.branches[index].ownerModuleId).toBe(index + 1)
+    }
   })
 
   it('nests bodies at the correct depth in imported subassemblies', () => {
