@@ -480,6 +480,7 @@ for (const workerWrites of [false, true]) {
       await storage.refresh()
       await storage.home.openProject('Offline worker')
       await expectEditor(page, blankCode)
+      await expect(page.getByTestId('gizmo')).toBeVisible()
       await page.waitForLoadState('networkidle')
       const code = `${blankCode}// saved by the offline worker\n`
       try {
