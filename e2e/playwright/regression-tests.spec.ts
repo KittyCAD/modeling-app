@@ -236,7 +236,7 @@ extrude001 = extrude(sketch001, length = 50)
   test(
     'Position _ Is Out Of Range... regression test',
     { tag: '@localRenderer' },
-    async ({ context, page, homePage, scene }) => {
+    async ({ context, page, homePage, scene, editor }) => {
       const u = await getUtils(page)
       // const PUR = 400 / 37.5 //pixeltoUnitRatio
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -256,6 +256,7 @@ extrude001 = extrude(sketch001, length = 50)
       })
       await homePage.goToModelingScene()
       await scene.connectionEstablished()
+      await u.openKclCodePanel()
 
       await expect(async () => {
         // error in guter
@@ -274,20 +275,9 @@ extrude001 = extrude(sketch001, length = 50)
       await expect(page.getByText('Unexpected token: |').first()).toBeVisible()
 
       // Okay execution finished, let's start editing text below the error.
-      await u.codeLocator.click()
-      // Go to the end of the editor
-      // This bug happens when there is a diagnostic in the editor and you try to
-      // edit text below it.
-      // Or delete a huge chunk of text and then try to edit below it.
-      await page.keyboard.press('ControlOrMeta+ArrowDown')
-      await page.keyboard.press('End')
-      await page.keyboard.down('Shift')
-      await page.keyboard.press('ArrowUp')
-      await page.keyboard.press('ArrowUp')
-      await page.keyboard.press('ArrowUp')
-      await page.keyboard.press('ArrowUp')
-      await page.keyboard.press('End')
-      await page.keyboard.up('Shift')
+      // Select the invalid trailing pipeline regardless of wrapped line count.
+      await editor.scrollToText('\n      |>\n', true)
+      await page.keyboard.press('ControlOrMeta+Shift+End')
       await page.keyboard.press('Backspace')
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 

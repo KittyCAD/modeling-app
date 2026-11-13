@@ -1755,6 +1755,7 @@ extrude001 = extrude(profile001, length = 500)`
 
       await test.step(`Fill the modeling dialog without preselected faces`, async () => {
         await editor.closePane()
+        await toolbar.closeFeatureTreePane()
         await toolbar.shellButton.click()
         await modelingDialog.selection('Faces').click()
         const [clickOnCap] = await scene.makeSelectionHelpers({
@@ -2081,6 +2082,7 @@ hide(sketch001)`
         editor.replaceCode('', initialCode)
       )
       await editor.closePane()
+      await toolbar.closeFeatureTreePane()
       await scene.moveCameraTo(
         { x: 39.68, y: -7.24, z: 19.4 },
         { x: 15, y: 10, z: 6 }

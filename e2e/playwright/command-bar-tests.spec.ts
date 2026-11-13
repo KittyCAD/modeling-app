@@ -109,6 +109,8 @@ test.describe(
       await homePage.goToModelingScene()
       await scene.settled()
 
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+
       // Put the cursor in the code editor
       await page.locator('.cm-content').click()
 
@@ -325,7 +327,8 @@ export exported = 1
       })
 
       await editor.expectEditor.toContain(
-        `a = 5b = a * amyParameter001 = b - 5c = 3 + a`
+        `a = 5b = a * amyParameter001 = b - 5c = 3 + a`,
+        { shouldNormalise: true }
       )
 
       const newValue = `2 * b + a`

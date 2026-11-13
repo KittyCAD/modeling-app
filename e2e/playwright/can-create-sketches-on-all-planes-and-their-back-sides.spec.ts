@@ -52,7 +52,7 @@ test.describe(
         await page.waitForTimeout(600) // wait for animation
       })
 
-      await editor.expectEditor.toContain(code)
+      await editor.expectEditor.toContain(code, { shouldNormalise: true })
     }
 
     const planeConfigs = [

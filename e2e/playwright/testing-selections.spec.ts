@@ -94,17 +94,17 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     }) => {
       const cases = [
         {
-          pos: [0.31, 0.5],
+          pos: [0.3563, 0.5],
           edgeIndex: 0,
           expectedCode: 'line(end = [74.36, 130.4], tag = $seg01)',
         },
         {
-          pos: [0.448, 0.557],
+          pos: [0.4607, 0.557],
           edgeIndex: 2,
           expectedCode: 'angledLine(angle = segAng(seg01), length = yo)',
         },
         {
-          pos: [0.753, 0.5],
+          pos: [0.6914, 0.5],
           edgeIndex: 4,
           expectedCode: 'tangentialArc(endAbsolute = [167.95, -28.85])',
         },
@@ -129,6 +129,7 @@ part001 = startSketchOn(XZ)
       })
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.openProject('demo-project')
+      await page.getByTestId('code-pane-button').click()
       await scene.settled()
 
       // end setup, now test hover and selects
@@ -412,10 +413,10 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = .1)`
           { x: 1.76, y: 2.635, z: 0.5 }
         )
       }
-      // Visible face 3 is the original inner face, topology primitive index 7.
+      // Visible face 2 is the original inner face, topology primitive index 7.
       const [clickOnInnerFace] = await scene.makeSelectionHelpers({
         kind: 'face',
-        index: 3,
+        index: 2,
         stream: { x: 0.6, y: 0.4, format: 'ratio' },
       })
 
@@ -499,7 +500,7 @@ sketch001 = sketch(on = face001) {
         const [clickEdgeForFillet] = await scene.makeSelectionHelpers({
           kind: 'edge',
           index: 12,
-          stream: { x: 0.4457, y: 0.5014, format: 'ratio' },
+          stream: { x: 0.4633, y: 0.5014, format: 'ratio' },
         })
         await clickEdgeForFillet()
 

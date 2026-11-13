@@ -89,7 +89,7 @@ sketch002 = startSketchOn(extrude001, face = seg01)`
         await test.step('check code does nothing when geometry is defined in an import', async () => {
           const [, hoverOverImported] = await scene.makeSelectionHelpers({
             kind: 'face',
-            index: 4,
+            index: 3,
             stream: { x: 940, y: 150, format: 'pixels' },
           })
           await hoverOverImported()

@@ -679,7 +679,7 @@ test.describe(
             // Probe clear canvas in local mode; the old point includes translucent
             // stream planes whose colours differ between renderers.
             return u.getGreatestPixDiff(
-              local ? { x: 1180, y: 20 } : { x: 1000, y: 200 },
+              local ? { x: 1080, y: 450 } : { x: 1000, y: 200 },
               local ? localColor : streamColor
             )
           }

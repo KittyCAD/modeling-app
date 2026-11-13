@@ -243,6 +243,7 @@ test.describe(
             // Give the dialog room to move away from the projected face.
             await toolbar.closePane(DefaultLayoutPaneID.Code)
             await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+            await toolbar.closePane(DefaultLayoutPaneID.Files)
           }
           // The bracket is only visible in the lower-right of the default view
           if (await modelingDialog.locator.isVisible()) {

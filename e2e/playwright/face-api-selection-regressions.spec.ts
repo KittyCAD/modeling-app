@@ -241,6 +241,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
       editor.replaceCode('', standaloneHelixCode)
     )
     await editor.closePane()
+    await toolbar.closeFeatureTreePane()
     await scene.moveCameraTo({ x: 24, y: -24, z: 18 }, { x: 0, y: 0, z: 10 })
     await toolbar.translateButton.click()
     await expect

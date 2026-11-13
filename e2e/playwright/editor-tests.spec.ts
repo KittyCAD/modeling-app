@@ -43,6 +43,7 @@ test.describe('Editor tests', { tag: '@desktop' }, () => {
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await openPane(page, 'code-pane-button')
 
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -94,6 +95,7 @@ sketch001 = startSketchOn(XY)
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await openPane(page, 'code-pane-button')
       await u.waitForPageLoad()
 
       await u.codeLocator.click()
@@ -149,6 +151,7 @@ sketch001 = startSketchOn(XY)
 
       await homePage.waitForAuthentication()
       await homePage.goToModelingScene()
+      await openPane(page, 'code-pane-button')
       await scene.settled()
 
       await u.codeLocator.click()
@@ -203,6 +206,7 @@ sketch001 = startSketchOn(XY)
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await openPane(page, 'code-pane-button')
 
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -252,6 +256,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await openPane(page, 'code-pane-button')
       await scene.connectionEstablished()
 
       // check no error to begin with
@@ -303,6 +308,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await openPane(page, 'code-pane-button')
 
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -370,6 +376,7 @@ my_var = 1 + 2`.replaceAll('\n', '')
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await openPane(page, 'code-pane-button')
 
       // TODO: Jess needs to fix this but you have to mod the code to get them to show
       // up, its an annoying codemirror thing.
@@ -440,6 +447,7 @@ my_var = 1 + 2`.replaceAll('\n', '')
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await openPane(page, 'code-pane-button')
 
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -489,6 +497,7 @@ my_var = 1 + 2`.replaceAll('\n', '')
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await openPane(page, 'code-pane-button')
 
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -534,6 +543,7 @@ my_var = 1 + 2`.replaceAll('\n', '')
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await openPane(page, 'code-pane-button')
 
       await u.openDebugPanel()
       await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -602,6 +612,7 @@ my_var = 1 + 2`.replaceAll('\n', '')
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await openPane(page, 'code-pane-button')
 
       await scene.connectionEstablished()
 
@@ -656,6 +667,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await openPane(page, 'code-pane-button')
 
       await scene.connectionEstablished()
 
@@ -746,7 +758,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   test(
     'if you fixup kcl errors you clear lints',
     { tag: '@localRenderer' },
-    async ({ page, homePage, scene }) => {
+    async ({ page, homePage, scene, editor }) => {
       const u = await getUtils(page)
       await page.addInitScript(async () => {
         localStorage.setItem(
@@ -763,6 +775,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await scene.waitForExecutionDoneAfter(() => homePage.goToModelingScene())
+      await openPane(page, 'code-pane-button')
 
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -778,7 +791,8 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await expect(
         page.locator('.cm-lint-marker-error').first()
       ).not.toBeVisible()
-      await page.keyboard.press('End')
+      // Move to the logical line end, independent of soft wrapping.
+      await editor.scrollToText('\n    |> line(end = [2.66, 1.17])', true)
       await page.keyboard.press('Backspace')
 
       await expect(editedLine).toHaveText('    |> line(end = [2.48, 2.44]')
@@ -910,6 +924,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await openPane(page, 'code-pane-button')
 
       await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
 
@@ -930,6 +945,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
+        await openPane(page, 'code-pane-button')
 
         // tests clicking on an option, selection the first option
         // and arrowing down to an option
@@ -1002,6 +1018,7 @@ sketch001 = startSketchOn(XZ)
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
+        await openPane(page, 'code-pane-button')
 
         // this test might be brittle as we add and remove functions
         // but should also be easy to update.
@@ -1165,6 +1182,7 @@ sketch001 = startSketchOn(XZ)
 
       await test.step(`Open the empty file`, async () => {
         await projectLink.click()
+        await openPane(page, 'code-pane-button')
         await scene.settled()
       })
       await test.step(`Write the import function line`, async () => {
