@@ -1,7 +1,9 @@
+import { extension } from './algebra'
 import { computed, signal } from '@preact/signals-core'
 import fc from 'fast-check'
 import { expect, it } from 'vitest'
 import {
+  type Binding,
   contribute,
   createScope,
   Facet,
@@ -10,9 +12,8 @@ import {
   provide,
   required,
   ServiceResolutionError,
-  type Binding,
   type Source,
-  type Subtree,
+  type Extension,
   service,
   slot,
 } from './algebra'
@@ -240,11 +241,11 @@ it('acquires slot snapshots with child order, identity, and duplicates intact', 
         }
       )
 
-      const instance = subtree.create(scope)
+      const instance = subtree.create({}, scope)
       expect(instance.dispose).toBeUndefined()
       expect(instance.items).toHaveLength(expected.length)
       for (const [index, child] of expected.entries()) {
-        expect(instance.items[index]).toBe(child)
+        expect(instance.items![index]).toBe(child)
       }
       expect(Object.isFrozen(instance.items)).toBe(true)
     }),
@@ -252,7 +253,7 @@ it('acquires slot snapshots with child order, identity, and duplicates intact', 
   )
 })
 
-it('slot acquisition neither acquires nested subtrees nor reads contributions', () => {
+it('slot acquisition neither acquires nested extensions nor reads contributions', () => {
   fc.assert(
     fc.property(fc.array(fc.boolean()), (choices) => {
       let acquisitions = 0
@@ -262,12 +263,12 @@ it('slot acquisition neither acquires nested subtrees nor reads contributions', 
         reads++
         return 1
       })
-      const child: Subtree = {
+      const child: Extension = extension({
         create: () => {
           acquisitions++
           return { items: [binding] }
         },
-      }
+      })
       const children = choices.map((nested) => (nested ? child : binding))
       const subtree = slot(children)
       const scope = createScope(
@@ -282,7 +283,7 @@ it('slot acquisition neither acquires nested subtrees nor reads contributions', 
         }
       )
 
-      subtree.create(scope)
+      subtree.create({}, scope)
       expect(acquisitions).toBe(0)
       expect(reads).toBe(0)
     }),
@@ -297,7 +298,7 @@ it('forwards replacement of any subtree without reacquiring or disposing its own
       let disposals = 0
       const facet = new Facet('values', (inputs: readonly number[]) => inputs)
       const initial = contribute(facet, () => -1)
-      const owner: Subtree = {
+      const owner: Extension = extension({
         create: () => {
           acquisitions++
           return {
@@ -307,9 +308,9 @@ it('forwards replacement of any subtree without reacquiring or disposing its own
             },
           }
         },
-      }
+      })
       const replacement = values.map((value) => contribute(facet, () => value))
-      const requests: { subtree: Subtree; items: readonly Item[] }[] = []
+      const requests: { subtree: Extension; items: readonly Item[] }[] = []
       const scope = createScope(
         { id: 'owner', path: 'root/owner' },
         {
@@ -321,7 +322,7 @@ it('forwards replacement of any subtree without reacquiring or disposing its own
           },
         }
       )
-      const instance = owner.create(scope)
+      const instance = owner.create({}, scope)
 
       await scope.replace(owner, replacement)
       expect(requests).toHaveLength(1)

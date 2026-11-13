@@ -1,7 +1,6 @@
 import fc from 'fast-check'
 import { expect, it } from 'vitest'
-import type { Item, Subtree } from './algebra'
-import { slot } from './algebra'
+import { extension, type Extension, type Item, slot } from './algebra'
 import { formatPath } from './path'
 import { DependencyCycleError, plan } from './planner'
 
@@ -13,70 +12,59 @@ const neverInstall = (): never => {
   throw new Error('Planning must not install bindings')
 }
 
-// Lower-index edges construct DAGs with shared dependencies and duplicate edges.
+// Extensions depend on earlier extensions; root groups also exercise flattening.
 const dag = fc
   .tuple(
-    fc.array(
-      fc.record({
-        kind: fc.constantFrom('binding', 'group', 'subtree'),
-        edges: fc.array(fc.nat({ max: 20 }), { maxLength: 3 }),
-      }),
-      { minLength: 1, maxLength: 8 }
-    ),
+    fc.array(fc.array(fc.nat({ max: 20 }), { maxLength: 3 }), {
+      minLength: 1,
+      maxLength: 8,
+    }),
     fc.array(fc.nat({ max: 20 }), { maxLength: 8 })
   )
   .map(([rows, rootIndices]) => {
-    const graph = rows.map((row, index) => ({
-      kind: row.kind,
-      edges:
-        index === 0 || row.kind === 'binding'
-          ? []
-          : row.edges.map((edge) => edge % index),
-    }))
-    const nodes: Item[] = []
-    for (const row of graph) {
-      const children = Object.freeze(row.edges.map((edge) => nodes[edge]))
+    const edges = rows.map((row, index) =>
+      index ? row.map((edge) => edge % index) : []
+    )
+    const nodes: Extension[] = []
+    for (const dependencies of edges) {
       nodes.push(
-        Object.freeze(
-          row.kind === 'binding'
-            ? { install: neverInstall }
-            : row.kind === 'group'
-              ? children
-              : { dependencies: children, create: neverCreate }
-        )
+        extension({
+          dependencies: Object.fromEntries(
+            dependencies.map((edge, index) => [
+              `dependency${index}`,
+              nodes[edge],
+            ])
+          ),
+          create: neverCreate,
+        })
       )
     }
     const roots = rootIndices.map((root) => root % nodes.length)
-    return { graph, nodes, roots }
+    return { edges, nodes, roots }
   })
 
 it('matches expanded declaration order with first occurrence retained', () => {
   fc.assert(
-    fc.property(dag, ({ graph, nodes, roots }) => {
-      // A deliberately unoptimized oracle expands every occurrence, then deduplicates.
+    fc.property(dag, ({ edges, nodes, roots }) => {
+      // Expand all paths before deduplicating, independently of the planner's DFS.
       const expanded: { index: number; path: string }[] = []
       const expand = (index: number, path: string): void => {
-        const row = graph[index]
-        for (const [position, edge] of row.edges.entries()) {
-          expand(
-            edge,
-            `${path}/${row.kind === 'group' ? 'items' : 'dependencies'}[${position}]`
-          )
+        for (const [position, edge] of edges[index].entries()) {
+          expand(edge, `${path}/dependencies["dependency${position}"]`)
         }
-        if (row.kind !== 'group') expanded.push({ index, path })
+        expanded.push({ index, path })
       }
-      roots.forEach((root, index) => expand(root, `root[${index}]`))
+      roots.forEach((root, index) => expand(root, `root[0]/items[${index}]`))
       const expected = expanded.filter(
         (entry, index) =>
           expanded.findIndex((other) => other.index === entry.index) === index
       )
-      const actual = plan(Object.freeze(roots.map((root) => nodes[root])))
-
+      const actual = plan([Object.freeze(roots.map((root) => nodes[root]))])
       expect(actual).toHaveLength(expected.length)
-      for (const [index, entry] of expected.entries()) {
+      expected.forEach((entry, index) => {
         expect(actual[index].item).toBe(nodes[entry.index])
         expect(formatPath(actual[index].path)).toBe(entry.path)
-      }
+      })
     }),
     runs
   )
@@ -92,10 +80,12 @@ it('appending repeated roots cannot change the selected items or their provenanc
   )
 })
 
-it('keeps distinct subtree objects even when their definitions are identical', () => {
+it('keeps distinct extension objects even when their definitions are identical', () => {
   fc.assert(
     fc.property(fc.nat({ max: 30 }), (length) => {
-      const items = Array.from({ length }, () => ({ create: neverCreate }))
+      const items = Array.from({ length }, () =>
+        extension({ create: neverCreate })
+      )
       const actual = plan(items)
       expect(actual).toHaveLength(items.length)
       items.forEach((item, index) => expect(actual[index].item).toBe(item))
@@ -115,24 +105,24 @@ it('rejects exactly the reachable cyclic graphs according to dependency eliminat
       (rows, rootIndices) => {
         const edges = rows.map((row) => row.map((edge) => edge % rows.length))
         const roots = rootIndices.map((root) => root % rows.length)
-        const nodes = rows.map(() => ({
+        const nodes: {
+          create: typeof neverCreate
+          dependencies: Record<string, Extension>
+        }[] = rows.map(() => ({
           create: neverCreate,
-          dependencies: [] as Item[],
+          dependencies: {},
         }))
         edges.forEach((dependencies, index) => {
-          nodes[index].dependencies.push(
-            ...dependencies.map((edge) => nodes[edge])
-          )
+          dependencies.forEach((edge, position) => {
+            nodes[index].dependencies[`dependency${position}`] = nodes[edge]
+          })
           Object.freeze(nodes[index].dependencies)
           Object.freeze(nodes[index])
         })
-
-        // Reachability plus repeated removal of dependency-free vertices is an
-        // independent cycle oracle; it has no DFS stack or active-path bookkeeping.
+        // Repeated dependency-free elimination gives an independent cycle oracle.
         const reachable = new Set(roots)
-        for (const vertex of reachable) {
+        for (const vertex of reachable)
           edges[vertex].forEach((dependency) => reachable.add(dependency))
-        }
         const remaining = new Set(reachable)
         while (remaining.size) {
           const ready = [...remaining].filter((vertex) =>
@@ -141,7 +131,6 @@ it('rejects exactly the reachable cyclic graphs according to dependency eliminat
           if (!ready.length) break
           ready.forEach((vertex) => remaining.delete(vertex))
         }
-
         const items = roots.map((root) => nodes[root])
         if (remaining.size) {
           expect(() => plan(items)).toThrow(DependencyCycleError)
@@ -153,11 +142,10 @@ it('rejects exactly the reachable cyclic graphs according to dependency eliminat
           expect(actual).toHaveLength(reachable.size)
           for (const vertex of reachable) {
             expect(positions.has(nodes[vertex])).toBe(true)
-            for (const dependency of edges[vertex]) {
+            for (const dependency of edges[vertex])
               expect(positions.get(nodes[dependency])).toBeLessThan(
                 positions.get(nodes[vertex])!
               )
-            }
           }
         }
       }
@@ -166,10 +154,11 @@ it('rejects exactly the reachable cyclic graphs according to dependency eliminat
   )
 })
 
-it('reports the active path for cycles through groups and dependencies', () => {
-  const group: Item[] = []
-  const owner: Subtree = { create: neverCreate, dependencies: [group] }
-  group.push(owner)
+it('reports the active path for a named dependency cycle', () => {
+  const dependencies: Record<string, Extension> = {}
+  const owner = { create: neverCreate, dependencies }
+  const dependency = { create: neverCreate, dependencies: { owner } }
+  dependencies.files = dependency
   let failure: unknown
   try {
     plan([owner])
@@ -179,12 +168,12 @@ it('reports the active path for cycles through groups and dependencies', () => {
   expect(failure).toBeInstanceOf(DependencyCycleError)
   if (!(failure instanceof DependencyCycleError)) throw failure
   expect(failure.message).toBe(
-    'Cyclic item dependency: root[0] -> root[0]/dependencies[0] -> root[0]/dependencies[0]/items[0]'
+    'Cyclic item dependency: root[0] -> root[0]/dependencies["files"] -> root[0]/dependencies["files"]/dependencies["owner"]'
   )
   expect(failure.paths).toEqual([
     [0],
-    [0, ['dependencies', 0]],
-    [0, ['dependencies', 0], ['items', 0]],
+    [0, ['dependencies', 'files']],
+    [0, ['dependencies', 'files'], ['dependencies', 'owner']],
   ])
 })
 
@@ -203,36 +192,37 @@ it('does not inspect slot children or invoke even a create getter', () => {
   const hiddenCycle: Item[] = []
   hiddenCycle.push(hiddenCycle)
   const container = slot(hiddenCycle)
-  const owner: Subtree = {
-    dependencies: [container],
-    get create(): Subtree['create'] {
+  const owner: Extension = {
+    dependencies: { container },
+    get create(): Extension['create'] {
       throw new Error('Do not inspect acquisition')
     },
   }
   expect(plan([owner])).toEqual([
-    { item: container, path: [0, ['dependencies', 0]] },
+    { item: container, path: [0, ['dependencies', 'container']] },
     { item: owner, path: [0] },
   ])
 })
 
-it('structured paths navigate back to their exact item using valid traversal indices', () => {
+it('structured paths navigate back to their exact item using valid edge names and indices', () => {
   fc.assert(
     fc.property(dag, ({ nodes, roots }) => {
-      const items = roots.map((root) => nodes[root])
+      const items: readonly Item[] = [roots.map((root) => nodes[root])]
       for (const entry of plan(items)) {
         const [root, ...steps] = entry.path
         expect(Number.isInteger(root) && root >= 0).toBe(true)
-        let item = items[root]
-        for (const [edge, index] of steps) {
-          expect(Number.isInteger(index) && index >= 0).toBe(true)
+        let item: Item = items[root]
+        for (const [edge, position] of steps) {
           if (edge === 'dependencies') {
-            if (!('create' in item))
-              throw new Error('Dependency edge requires a subtree')
-            item = item.dependencies![index]
+            if (!('create' in item) || !('dependencies' in item))
+              throw new Error('Dependency edge requires an extension')
+            expect(Object.hasOwn(item.dependencies!, position)).toBe(true)
+            item = item.dependencies![position]
           } else {
+            expect(Number.isInteger(position) && position >= 0).toBe(true)
             if ('create' in item || 'install' in item)
               throw new Error('Item edge requires a group')
-            item = item[index]
+            item = item[position]
           }
         }
         expect(item).toBe(entry.item)

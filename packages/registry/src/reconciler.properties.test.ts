@@ -1,14 +1,8 @@
+import { extension } from './algebra'
 import { computed, signal } from '@preact/signals-core'
 import fc from 'fast-check'
 import { expect, it } from 'vitest'
-import {
-  contribute,
-  createScope,
-  Facet,
-  provide,
-  type Subtree,
-  service,
-} from './algebra'
+import { contribute, Facet, provide, type Extension, service } from './algebra'
 import { Registry } from './nextRegistry'
 
 const runs = { numRuns: 150 }
@@ -31,7 +25,7 @@ it('preserves owners and surviving children through generated replacement histor
         const released: (number | string)[] = []
         let owners = 0
         let dependencies = 0
-        const dependency: Subtree = {
+        const dependency: Extension = extension({
           create: () => {
             dependencies++
             return {
@@ -42,23 +36,25 @@ it('preserves owners and surviving children through generated replacement histor
               },
             }
           },
-        }
-        const children: Subtree[] = acquisitions.map((_, id) => ({
-          create: () => {
-            acquisitions[id]++
-            const resource = { id }
-            return {
-              items: [contribute(facet, () => resource)],
-              dispose: async () => {
-                await Promise.resolve()
-                disposals[id]++
-                released.push(id)
-              },
-            }
-          },
-        }))
-        const owner: Subtree = {
-          dependencies: [dependency],
+        })
+        const children: Extension[] = acquisitions.map((_, id) =>
+          extension({
+            create: () => {
+              acquisitions[id]++
+              const resource = { id }
+              return {
+                items: [contribute(facet, () => resource)],
+                dispose: async () => {
+                  await Promise.resolve()
+                  disposals[id]++
+                  released.push(id)
+                },
+              }
+            },
+          })
+        )
+        const owner: Extension = extension({
+          dependencies: { dependency0: dependency },
           create: () => {
             owners++
             return {
@@ -69,7 +65,7 @@ it('preserves owners and surviving children through generated replacement histor
               },
             }
           },
-        }
+        })
         const mounting = reconciler.configure([owner])
         expect(owners).toBe(1)
         await mounting
@@ -133,7 +129,7 @@ it('rolls back failed acquisition without publishing bindings or releasing old o
         let oldDisposals = 0
         let ownerDisposals = 0
         const original = { value: initial }
-        const old: Subtree = {
+        const old: Extension = extension({
           create: () => ({
             items: [
               contribute(facet, () => value.value),
@@ -143,8 +139,8 @@ it('rolls back failed acquisition without publishing bindings or releasing old o
               oldDisposals++
             },
           }),
-        }
-        const owner: Subtree = {
+        })
+        const owner: Extension = extension({
           create: () => {
             owners++
             return {
@@ -154,7 +150,7 @@ it('rolls back failed acquisition without publishing bindings or releasing old o
               },
             }
           },
-        }
+        })
         await reconciler.configure([owner])
         const originalSurface = reconciler.required(capability)
         const observation = reconciler.observe(facet)
@@ -165,16 +161,16 @@ it('rolls back failed acquisition without publishing bindings or releasing old o
         )
         const failure = new Error('acquisition failed')
         let attempted = 0
-        let next: Subtree = {
+        let next: Extension = extension({
           create: () => {
             attempted++
             throw failure
           },
-        }
+        })
         for (let index = payloads.length - 1; index >= 0; index--) {
           const child = next
           const id = index
-          next = {
+          next = extension({
             create: () => {
               acquired.push(id)
               return {
@@ -185,7 +181,7 @@ it('rolls back failed acquisition without publishing bindings or releasing old o
                 },
               }
             },
-          }
+          })
         }
 
         await expect(reconciler.replace(owner, [next])).rejects.toBe(failure)
@@ -197,11 +193,7 @@ it('rolls back failed acquisition without publishing bindings or releasing old o
         expect(owners).toBe(1)
         expect(oldDisposals).toBe(0)
         expect(ownerDisposals).toBe(0)
-        const scope = createScope(
-          { id: 'reader', path: 'root/reader' },
-          reconciler
-        )
-        expect(scope.required(capability)).toBe(originalSurface)
+        expect(reconciler.required(capability)).toBe(originalSurface)
         // The old graph remains reactive and can participate in another transaction.
         value.value = initial === 0 ? 1 : 0
         expect(observation.value).toEqual([value.value])
@@ -256,11 +248,11 @@ it('commits mixed Facet types together, isolates registries, and discards failed
           strings: readonly string[]
         } = { numbers: [], strings: [] }
         const failure = new Error('discard this draft')
-        const broken: Subtree = {
+        const broken: Extension = extension({
           create: () => {
             throw failure
           },
-        }
+        })
         for (const change of history) {
           const before = combined.value
           const publicationCount = published.length

@@ -7,7 +7,7 @@ export type Signal<T> = ReadonlySignal<T>
 /** Explicit reads admit constants and signals without inspecting value shapes. */
 export type Source<T> = () => T
 
-/** Stable Subtree identities and facet-scoped contribution identities. */
+/** Stable Extension identities and facet-scoped contribution identities. */
 export type Key = object | string | symbol
 export type Precedence = 'highest' | 'high' | 'default' | 'low' | 'lowest'
 export const precedenceRank: Record<Precedence, number> = {
@@ -217,7 +217,7 @@ export type Contract = Readonly<Record<string, Facet<never, unknown>>>
 interface Sink {
   readonly origin: Origin
   readonly runtime?: CellRegistry
-  contribute<I, O>(facet: Facet<I, O>, source: Source<NoInfer<I>>): void
+  contribute<I>(facet: Facet<I, unknown>, source: Source<NoInfer<I>>): void
 }
 
 interface ContributionOptions {
@@ -229,8 +229,8 @@ export interface Binding extends ContributionOptions {
   readonly install: (sink: Sink) => void
 }
 
-export function contribute<I, O>(
-  facet: Facet<I, O>,
+export function contribute<I>(
+  facet: Facet<I, unknown>,
   source: Source<NoInfer<I>>,
   options: ContributionOptions = {}
 ): Binding {
@@ -254,56 +254,96 @@ export function provide<T extends object>(
   }
 }
 
-/** The graph consists of contributions, groups, and owned subtrees. */
-export type Item = Binding | readonly Item[] | Subtree
-
-/** A slot acquires a snapshot of supplied children, with no resources of its own. */
-export function slot(items: readonly Item[] = [], key?: Key): Subtree {
-  const initial = Object.freeze([...items])
-  return { key, create: () => ({ items: initial }) }
-}
+/** Contributions, groups, and resource-owning Extensions form the graph. */
+export type Item = Binding | readonly Item[] | Extension
 
 type Cleanup = () => void | PromiseLike<void>
 
-/** Initial children and owner cleanup; replacing children retains this instance. */
-export interface Instance {
-  readonly items: readonly Item[]
+/** Resources and exports stay with their owner while its child items can change. */
+export interface Instance<Exports = unknown> {
+  readonly exports: Exports
+  readonly items?: readonly Item[]
   readonly dispose?: Cleanup
 }
 
-/**
- * One owned lifetime, identified by `key` when supplied or by this object otherwise.
- * Declared dependencies remain required while mounted. Only `create` reveals
- * children, so the planner cannot inspect them without acquiring resources.
- * `replace` changes children while retaining the owner's instance and resources.
- */
-export interface Subtree {
+type Dependencies = Readonly<Record<string, Extension>>
+type Inputs<D extends Dependencies> = {
+  readonly [K in keyof D]: D[K] extends Extension<infer E> ? E : never
+}
+type Definition<D extends Dependencies, R> = {
   readonly key?: Key
-  readonly create: (scope: Scope) => Instance
-  readonly dependencies?: readonly Item[]
+  readonly dependencies?: D
+  readonly create: (dependencies: Inputs<D>, scope: Scope) => R
+}
+type EmptyInstance = Omit<Instance<undefined>, 'exports'>
+
+/** One acquired lifetime and its public exports, shared by every declared dependent. */
+export interface Extension<Exports = unknown> {
+  readonly key?: Key
+  readonly dependencies?: Dependencies
+  create(
+    dependencies: Readonly<Record<string, unknown>>,
+    scope: Scope
+  ): Instance<Exports>
 }
 
-/** Interpreter operations, independent of any particular subtree's ownership. */
+export function extension<
+  const D extends Dependencies = Record<never, never>,
+  E = unknown,
+>(definition: Definition<D, Instance<E>>): Extension<E>
+export function extension<const D extends Dependencies = Record<never, never>>(
+  definition: Definition<D, EmptyInstance>
+): Extension<undefined>
+export function extension<const D extends Dependencies>(
+  definition: Definition<D, EmptyInstance & { readonly exports?: unknown }>
+): Extension {
+  return {
+    ...definition,
+    create: (dependencies, scope) => {
+      // `Registry.reconcile` pairs each declared dependency key with its captured exports.
+      // TypeScript loses that per-key type mapping when the record is assembled.
+      const instance = definition.create(dependencies as Inputs<D>, scope)
+      return {
+        get exports() {
+          return instance.exports
+        },
+        get items() {
+          return instance.items
+        },
+        get dispose() {
+          return instance.dispose?.bind(instance)
+        },
+      }
+    },
+  }
+}
+
+/** A slot owns replaceable children and exports no capability. */
+export function slot(
+  items: readonly Item[] = [],
+  key?: Key
+): Extension<undefined> {
+  const initial = Object.freeze([...items])
+  return extension({ key, create: () => ({ items: initial }) })
+}
+
+/** Interpreter operations, independent of any particular extension's ownership. */
 export interface ScopeHost {
   observe<I, O>(facet: Facet<I, O>): Signal<O>
   /** Replace children only; release owner resources after its children on unmount. */
-  replace(subtree: Subtree, items: readonly Item[]): Promise<void>
+  replace(extension: Extension, items: readonly Item[]): Promise<void>
 }
 
-/** Owner-local authoring conveniences, derived from observation and ownership. */
+/** Owner controls and observations; constructor capabilities come from declared dependencies. */
 export interface Scope extends ScopeHost {
   readonly origin: Origin
-  required<T extends object>(token: Service<T>): T
-  optional<T extends object>(token: Service<T>): T | undefined
 }
 
 export function createScope(origin: Origin, host: ScopeHost): Scope {
   return {
     origin: Object.freeze({ ...origin }),
     observe: (facet) => host.observe(facet),
-    replace: (subtree, items) => host.replace(subtree, items),
-    required: (token) => required(token, host.observe(token).value),
-    optional: (token) => optional(token, host.observe(token).value),
+    replace: (extension, items) => host.replace(extension, items),
   }
 }
 
@@ -312,7 +352,7 @@ export function contract<const T extends Contract>(tokens: T): Readonly<T> {
   return Object.freeze({ ...tokens })
 }
 
-/** Binding keys belong to a Facet; Subtree keys identify mounted owners. */
+/** Binding keys belong to a Facet; Extension keys identify mounted owners. */
 export function itemKey(item: Item): Key {
   return 'create' in item ? (item.key ?? item) : item
 }
