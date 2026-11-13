@@ -9,12 +9,13 @@ import { toUtf16 } from '@src/lang/errors'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
   type Artifact,
+  type CodeRef,
   getBodiesFromArtifactGraph,
   getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
 import { type ArtifactGraph, getAllOperations } from '@src/lang/wasm'
+import { engineIdForArtifact } from '@src/lang/std/kclNamedViews'
 import { useSingletons } from '@src/lib/boot'
-import { sendSelectionEvent } from '@src/lib/featureTree'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import {
   type HideOperation,
@@ -121,14 +122,38 @@ export function BodyItem({
   } = useModelingContext()
 
   const sourceRange = sourceRangeFromRust(artifact.codeRef.range)
-  const codeRef = getCodeRefsByArtifactId(artifact.id, artifactGraph)?.[0] ?? {
+  const artifactCodeRef = getCodeRefsByArtifactId(
+    artifact.id,
+    artifactGraph
+  )?.[0] ?? {
     range: sourceRange,
     pathToNode: [],
   }
+  const codeRef: CodeRef = {
+    ...artifactCodeRef,
+    range: [
+      toUtf16(artifactCodeRef.range[0], kclManager.code),
+      toUtf16(artifactCodeRef.range[1], kclManager.code),
+      artifactCodeRef.range[2],
+    ],
+  }
+  const sourceArtifact = engineEntityId
+    ? artifactGraph.get(engineEntityId)
+    : artifact
+  const bodyEngineId = engineIdForArtifact({
+    id: engineEntityId ?? artifact.id,
+    artifact:
+      sourceArtifact?.type === 'sweep' ||
+      sourceArtifact?.type === 'compositeSolid'
+        ? sourceArtifact
+        : artifact,
+    artifactGraph,
+  })
   const selection: Selection = {
     artifact,
     codeRef,
-    ...(engineEntityId ? { engineEntityId } : {}),
+    entityRef: { type: 'solid3d', solid3d_id: bodyEngineId },
+    engineEntityId: bodyEngineId,
     ...(patternIndex !== undefined ? { patternIndex } : {}),
   }
   const selections: Selections = {
@@ -136,30 +161,19 @@ export function BodyItem({
     otherSelections: [],
   }
 
-  const isSelected = engineEntityId
-    ? modelingContext.selectionRanges.graphSelections.some(
-        (selection) => selection.engineEntityId === engineEntityId
-      )
-    : kclManager.editorState.selection.main.from >=
-        toUtf16(sourceRange[0], kclManager.code) &&
-      kclManager.editorState.selection.main.to <=
-        toUtf16(sourceRange[1], kclManager.code)
+  const isSelected = modelingContext.selectionRanges.graphSelections.some(
+    (selection) =>
+      selection.engineEntityId === bodyEngineId ||
+      (selection.entityRef?.type === 'solid3d' &&
+        selection.entityRef.solid3d_id === bodyEngineId)
+  )
   const onSelect = () => {
-    if (engineEntityId) {
-      modelingSend({
-        type: 'Set selection',
-        data: {
-          selectionType: 'singleCodeCursor',
-          selection,
-        },
-      })
-      return
-    }
-
-    sendSelectionEvent({
-      sourceRange,
-      kclManager,
-      modelingSend,
+    modelingSend({
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection,
+      },
     })
   }
   const handleDelete = () => {
