@@ -1457,6 +1457,95 @@ describe('KclManager resolved views', () => {
     expect(invalidate).not.toHaveBeenCalled()
   })
 
+  it('continues actual execution when command estimation fails', async () => {
+    vi.spyOn(
+      kclManager.engineCommandManager,
+      'geometryOnly',
+      'get'
+    ).mockReturnValue(true)
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    vi.spyOn(kclManager.rustContext, 'estimateCommandPlan').mockRejectedValue(
+      new Error('Estimate unavailable')
+    )
+    const execute = vi
+      .spyOn(kclManager.rustContext, 'execute')
+      .mockResolvedValue(emptyExecState())
+    await kclManager.executeAst({ ast: createEmptyAst() })
+    expect(execute).toHaveBeenCalledOnce()
+    expect(kclManager.estimatedCommandCount.value).toBeNull()
+    expect(kclManager.isExecuting).toBe(false)
+  })
+
+  it.each(['file switch', 'cancellation'] as const)(
+    'does not start actual execution after %s during command estimation',
+    async (change) => {
+      vi.spyOn(
+        kclManager.engineCommandManager,
+        'geometryOnly',
+        'get'
+      ).mockReturnValue(true)
+      const pending = createDeferred<{ count: number; milestones: [] }>()
+      const estimate = vi
+        .spyOn(kclManager.rustContext, 'estimateCommandPlan')
+        .mockReturnValueOnce(pending.promise)
+      const execute = vi
+        .spyOn(kclManager.rustContext, 'execute')
+        .mockResolvedValue(emptyExecState())
+      const completed = vi.fn()
+      kclManager.addEventListener('execution-done', completed)
+      const execution = kclManager.executeAst({
+        ast: createEmptyAst(),
+        executionId: 124,
+      })
+      await vi.waitFor(() => expect(estimate).toHaveBeenCalledOnce())
+      if (change === 'file switch') kclManager.path = '/other/main.kcl'
+      else kclManager.cancelAllExecutions()
+      pending.resolve({ count: 1, milestones: [] })
+      await execution
+      expect(execute).not.toHaveBeenCalled()
+      expect(kclManager.isExecuting).toBe(false)
+      expect(completed).toHaveBeenCalledOnce()
+      expect(completed.mock.calls[0][0].detail).toMatchObject({
+        isInterrupted: true,
+        successful: false,
+      })
+    }
+  )
+
+  it.each(['resolve', 'reject'] as const)(
+    'ignores an estimate that finishes after disposal (%s)',
+    async (result) => {
+      vi.spyOn(
+        kclManager.engineCommandManager,
+        'geometryOnly',
+        'get'
+      ).mockReturnValue(true)
+      const pending = createDeferred<{ count: number; milestones: [] }>()
+      const estimate = vi
+        .spyOn(kclManager.rustContext, 'estimateCommandPlan')
+        .mockReturnValueOnce(pending.promise)
+      const setPlan = vi.spyOn(
+        kclManager.engineCommandManager.executionProgress,
+        'setPlan'
+      )
+      const execute = vi
+        .spyOn(kclManager.rustContext, 'execute')
+        .mockResolvedValue(emptyExecState())
+      vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const completed = vi.fn()
+      kclManager.addEventListener('execution-done', completed)
+      const execution = kclManager.executeAst({ ast: createEmptyAst() })
+      await vi.waitFor(() => expect(estimate).toHaveBeenCalledOnce())
+      kclManager.close()
+      if (result === 'resolve') pending.resolve({ count: 1, milestones: [] })
+      else pending.reject(new Error('Estimate unavailable'))
+      await execution
+      expect(setPlan).not.toHaveBeenCalled()
+      expect(execute).not.toHaveBeenCalled()
+      expect(completed).not.toHaveBeenCalled()
+    }
+  )
+
   it('does not accept a cancelled actual execution', async () => {
     const previous = resolvedViews('previous-object')
     await executeActualViews(previous)

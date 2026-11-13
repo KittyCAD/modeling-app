@@ -325,6 +325,7 @@ export enum KclManagerEvents {
 }
 
 export interface KclExecutionDoneDetail {
+  path?: string
   successful: boolean
   isInterrupted: boolean
   hasErrors: boolean
@@ -537,6 +538,8 @@ export class KclManager extends File {
     this.dispatchUpdateAst(ast)
   }
   livePathsToWatch = signal<string[]>([])
+
+  readonly estimatedCommandCount = signal<number | null>(null)
 
   private _execState = signal<ExecState>(emptyExecState())
   private stopNamedViewInvalidation: (() => void) | undefined
@@ -2475,9 +2478,56 @@ export class KclManager extends File {
       this.captureProjectThumbnail = undefined
 
       const codeThatExecuted = this.code
+      const pathThatExecuted = this.path
+      this.estimatedCommandCount.value = null
+      if (this.engineCommandManager.geometryOnly) {
+        try {
+          const plan = await this.rustContext.estimateCommandPlan(
+            ast,
+            jsAppSettings(this.systemDeps.settings),
+            this.path
+          )
+          if (isCurrent() && !this._cancelTokens.get(currentExecutionId)) {
+            this.estimatedCommandCount.value = plan.count
+            this.engineCommandManager.executionProgress.setPlan(plan)
+          }
+        } catch (error) {
+          // A failed estimate must not prevent real execution.
+          console.warn('Command-count estimate unavailable', error)
+        }
+      }
+
+      // A superseded run must not execute or clean up a newer run's state.
+      if (this.executionGeneration !== generation) return
+
+      if (
+        this.path !== pathThatExecuted ||
+        this._cancelTokens.get(currentExecutionId)
+      ) {
+        this.endLiveOperationUpdates()
+        this._cancelTokens.delete(currentExecutionId)
+        markOnce('code/endExecuteAst')
+        this.notifyExecutionCompletion('cancelled')
+        this.isExecuting = false
+        this.dispatchEvent(
+          new CustomEvent<KclExecutionDoneDetail>(
+            KclManagerEvents.ExecutionDone,
+            {
+              detail: {
+                path: pathThatExecuted,
+                successful: false,
+                isInterrupted: true,
+                hasErrors: false,
+              },
+            }
+          )
+        )
+        return
+      }
+
       const { logs, errors, execState, isInterrupted } = await executeAst({
         ast,
-        path: this.path,
+        path: pathThatExecuted,
         rustContext: this.rustContext,
         callbacks: this.createExecutionCallbacks(currentExecutionId),
       })
@@ -2629,6 +2679,7 @@ export class KclManager extends File {
       }
 
       completedExecution = {
+        path: pathThatExecuted,
         successful: !isInterrupted && errors.length === 0,
         isInterrupted,
         hasErrors: errors.length > 0,

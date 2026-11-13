@@ -4,20 +4,14 @@ import {
 } from '@src/clientSideScene/localRenderer/LocalRenderer'
 import { Spinner } from '@src/components/Spinner'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import type { KclManager } from '@src/lang/KclManager'
 import { useSingletons } from '@src/lib/boot'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 // The default planes are shown or hidden about 200 ms after an execution, so
 // the thumbnail waits for them, like the streamed one does.
 const THUMBNAIL_DELAY_MS = 500
-// How often the pending command count is read, as the status bar's tooltip does.
-const PENDING_COMMAND_POLL_MS = 100
-
-/** Engine commands sent and not yet answered, as the status bar counts them. */
-function getPendingCommandCount(kclManager: KclManager) {
-  return Object.keys(kclManager.engineCommandManager.pendingCommands).length
-}
+// Read completed work without rerendering for every command response.
+const COMMAND_PROGRESS_POLL_MS = 100
 
 export const LocalWebGPUScene = (props: LocalRendererProps) => {
   const {
@@ -37,7 +31,8 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   const defaultPlaneVisibility = state.context.defaultPlaneVisibility
   const isExecuting = kclManager.isExecutingSignal.value
   const [isAwaitingModel, setIsAwaitingModel] = useState(false)
-  const [pendingCommandCount, setPendingCommandCount] = useState(0)
+  const [progress, setProgress] = useState(0)
+  const estimatedCommandCount = kclManager.estimatedCommandCount.value
   const isLoadingModel = isExecuting || isAwaitingModel
 
   latestPropsRef.current = props
@@ -45,11 +40,15 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   useEffect(() => {
     if (isExecuting) {
       setIsAwaitingModel(true)
-      setPendingCommandCount(getPendingCommandCount(kclManager))
-      const intervalId = window.setInterval(
-        () => setPendingCommandCount(getPendingCommandCount(kclManager)),
-        PENDING_COMMAND_POLL_MS
-      )
+      setProgress(0)
+      const intervalId = window.setInterval(() => {
+        const total = kclManager.estimatedCommandCount.peek()
+        if (total && total > 0) {
+          const fraction =
+            kclManager.engineCommandManager.executionProgress.fraction
+          setProgress((previous) => Math.max(previous, fraction))
+        }
+      }, COMMAND_PROGRESS_POLL_MS)
       return () => window.clearInterval(intervalId)
     }
   }, [isExecuting, kclManager])
@@ -127,7 +126,11 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
     <>
       <div
         ref={containerRef}
-        className="pointer-events-none absolute inset-0 h-full w-full transition-opacity duration-200 opacity-0"
+        data-testid="local-renderer-viewport"
+        className="pointer-events-none absolute inset-0 h-full w-full transition-[opacity,filter] duration-200 motion-reduce:transition-none opacity-0"
+        style={{
+          filter: isLoadingModel ? 'grayscale(1) opacity(0.55)' : undefined,
+        }}
       />
       {isLoadingModel && (
         <output
@@ -135,12 +138,24 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
           className="pointer-events-none absolute bottom-4 left-1/2 z-40 -translate-x-1/2 rounded-full border border-chalkboard-30/80 bg-chalkboard-10/90 px-4 py-2.5 shadow-md backdrop-blur dark:border-chalkboard-70 dark:bg-chalkboard-90/90"
         >
           <div className="flex items-center gap-2.5 text-[15px] leading-[21px] text-chalkboard-70 dark:text-chalkboard-30">
-            <Spinner className="h-[21px] w-[21px]" />
-            <span>
-              {isExecuting
-                ? `Executing (${pendingCommandCount})`
-                : 'Updating model…'}
-            </span>
+            {!estimatedCommandCount || !isExecuting ? (
+              <Spinner className="h-[21px] w-[21px]" />
+            ) : (
+              <div
+                role="progressbar"
+                aria-label="Model execution"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.round(progress * 100)}
+                className="h-2 w-32 overflow-hidden rounded-full bg-chalkboard-30 dark:bg-chalkboard-70"
+              >
+                <div
+                  className="h-full bg-primary transition-[width] duration-200"
+                  style={{ width: `${progress * 100}%` }}
+                />
+              </div>
+            )}
+            <span>{isExecuting ? 'Executing' : 'Updating model…'}</span>
           </div>
         </output>
       )}

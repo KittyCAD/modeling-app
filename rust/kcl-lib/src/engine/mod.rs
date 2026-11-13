@@ -177,10 +177,55 @@ impl EngineBatchContext {
     }
 }
 
+#[derive(Clone, Debug, serde::Serialize, ts_rs::TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct CommandProgressMilestone {
+    pub command: String,
+    pub source_range: SourceRange,
+}
+
+#[derive(Clone, Debug, serde::Serialize, ts_rs::TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct CommandProgressPlan {
+    pub count: usize,
+    pub milestones: Vec<CommandProgressMilestone>,
+}
+
 #[derive(Default, Debug)]
 pub struct EngineStats {
     pub commands_batched: AtomicUsize,
     pub batches_sent: AtomicUsize,
+    pub progress_trace: std::sync::Mutex<Option<Vec<CommandProgressMilestone>>>,
+}
+
+impl EngineStats {
+    pub fn record_command(&self, source_range: SourceRange, cmd: &ModelingCmd) {
+        self.commands_batched.fetch_add(1, Ordering::Relaxed);
+        if let Ok(mut trace) = self.progress_trace.lock()
+            && let Some(trace) = trace.as_mut()
+        {
+            let command = serde_json::to_value(kcmc::ModelingCmdEndpoint::from(cmd))
+                .ok()
+                .and_then(|value| value.as_str().map(str::to_owned))
+                .unwrap_or_default();
+            trace.push(CommandProgressMilestone { command, source_range });
+        }
+    }
+
+    /// Record queries suppressed by mock geometry, only during progress planning.
+    pub fn record_mock_query(&self, source_range: SourceRange, command: &str) {
+        if let Ok(mut trace) = self.progress_trace.lock()
+            && let Some(trace) = trace.as_mut()
+        {
+            self.commands_batched.fetch_add(1, Ordering::Relaxed);
+            trace.push(CommandProgressMilestone {
+                command: command.to_owned(),
+                source_range,
+            });
+        }
+    }
 }
 
 impl Clone for EngineStats {
@@ -188,6 +233,7 @@ impl Clone for EngineStats {
         Self {
             commands_batched: AtomicUsize::new(self.commands_batched.load(Ordering::Relaxed)),
             batches_sent: AtomicUsize::new(self.batches_sent.load(Ordering::Relaxed)),
+            progress_trace: std::sync::Mutex::new(None),
         }
     }
 }
