@@ -344,15 +344,6 @@ export function platform(): Platform {
   return ''
 }
 
-export function isReducedMotion(): boolean {
-  return (
-    typeof window !== 'undefined' &&
-    window.matchMedia &&
-    // TODO/Note I (Kurt) think '(prefers-reduced-motion: reduce)' and '(prefers-reduced-motion)' are equivalent, but not 100% sure
-    window.matchMedia('(prefers-reduced-motion)').matches
-  )
-}
-
 /**
  * Get the list of delete key names for the current platform.
  * Backspace only on macOS as Windows and Linux have dedicated Delete key.
@@ -805,4 +796,15 @@ export function hexToRgba(hex: string): RgbaColor | null {
     b: b / 255,
     a: 1,
   }
+}
+
+/** Increment a per-key counter, starting missing keys at zero. */
+export function incrementMapCounter<Key>(counts: Map<Key, number>, key: Key) {
+  return counts.set(key, (counts.get(key) ?? 0) + 1)
+}
+
+/** Register a listener and return its disposer. */
+export function subscribeToSet<T>(listeners: Set<T>, listener: T) {
+  listeners.add(listener)
+  return () => listeners.delete(listener)
 }

@@ -2,7 +2,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
   'Tooltip popovers stay anchored when native CSS anchor positioning is unavailable',
-  { tag: '@web' },
+  { tag: ['@web', '@localRenderer'] },
   async ({ page }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
 

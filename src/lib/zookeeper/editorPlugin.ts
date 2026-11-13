@@ -1,3 +1,5 @@
+import { incrementMapCounter } from '@src/lib/utils'
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import { invertedEffects } from '@codemirror/commands'
 import type { Extension, Transaction } from '@codemirror/state'
 import { Annotation, Compartment, StateEffect } from '@codemirror/state'
@@ -16,7 +18,7 @@ import {
   type ZookeeperEditPatchFile,
   type ZookeeperModifiedPatchFile,
 } from '@src/lib/zookeeper/zookeeperEditPatch'
-import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
+import { reportFileOperationError } from '@src/lib/fileSystem/operationErrors'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { EditorView } from 'codemirror'
 import {
@@ -709,12 +711,9 @@ function patchTargetLinesAlreadyPresent(
       const prefix = line[0]
       const content = line.slice(1)
       if (prefix === '-') {
-        removedLineCounts.set(
-          content,
-          (removedLineCounts.get(content) ?? 0) + 1
-        )
+        incrementMapCounter(removedLineCounts, content)
       } else if (prefix === '+') {
-        addedLineCounts.set(content, (addedLineCounts.get(content) ?? 0) + 1)
+        incrementMapCounter(addedLineCounts, content)
       }
     }
   }
@@ -736,7 +735,7 @@ function patchTargetLinesAlreadyPresent(
 function countLines(lines: string[]) {
   const counts = new Map<string, number>()
   for (const line of lines) {
-    counts.set(line, (counts.get(line) ?? 0) + 1)
+    incrementMapCounter(counts, line)
   }
   return counts
 }
@@ -768,7 +767,7 @@ async function writeZookeeperPatchReplay(
       }
     }
 
-    reportSystemIOError({
+    reportFileOperationError({
       error,
       operation: 'zookeeper_history_replay',
       risk: 'destructive',
@@ -835,7 +834,7 @@ async function readTextFileIfExists(
   path: string
 ): Promise<string | null> {
   try {
-    return new TextDecoder().decode(await fileOperations.readFile(path))
+    return await readTextFile(fileOperations, path)
   } catch (error: unknown) {
     if (isPathNotFoundError(error)) {
       return null

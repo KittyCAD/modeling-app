@@ -1,4 +1,5 @@
 import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
+import { PATHS } from '@src/lib/paths'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
 import type {
   HomeProjectActionsService,
@@ -16,18 +17,36 @@ import {
   waitFor,
   within,
 } from '@testing-library/react'
+import { lazy, Suspense, type ReactElement } from 'react'
 import toast from 'react-hot-toast'
-import { BrowserRouter } from 'react-router-dom'
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+import {
+  BrowserRouter,
+  createMemoryRouter,
+  RouterProvider,
+  Routes,
+  Route,
+} from 'react-router-dom'
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  test,
+  vi,
+  type Mock,
+} from 'vitest'
+
+const environment = vi.hoisted(() => ({ projectShellEnabled: true }))
 
 const fileOperations = {
   stat: vi.fn().mockResolvedValue({}),
   readFile: vi.fn().mockResolvedValue(new Uint8Array()),
 }
 
+const NativeURL = URL
 const now = Date.now()
-let createObjectURLMock: ReturnType<typeof vi.fn>
-let revokeObjectURLMock: ReturnType<typeof vi.fn>
+let createObjectURLMock: Mock<typeof URL.createObjectURL>
+let revokeObjectURLMock: Mock<typeof URL.revokeObjectURL>
 const intersectionObservers = new Map<
   Element,
   {
@@ -95,7 +114,7 @@ function createProjectActions({
     canOpen,
     canRename: () => true,
     canDelete: () => true,
-    canMoveToLibrary: () => true,
+    canCloneToLibrary: () => true,
     canReviewDuplicateRealizations: (project) =>
       Boolean(project.duplicateRealizations?.length),
     canSeparateProjectCopies: (project) =>
@@ -108,8 +127,8 @@ function createProjectActions({
     duplicate: vi.fn().mockResolvedValue(undefined),
     rename,
     delete: vi.fn().mockResolvedValue(undefined),
-    getMoveToLibraryTargets: vi.fn(() => []),
-    moveToLibrary: vi.fn().mockResolvedValue(undefined),
+    getCloneToLibraryTargets: vi.fn(() => []),
+    cloneToLibrary: vi.fn().mockResolvedValue(undefined),
     deleteDuplicateRealizations: vi.fn().mockResolvedValue(undefined),
     separateProjectCopies: vi.fn().mockResolvedValue(undefined),
   }
@@ -131,6 +150,7 @@ function renderProjectCard({
   render(
     <BrowserRouter>
       <AppProjectCard
+        projectShellEnabled={environment.projectShellEnabled}
         density={density}
         project={project}
         projectActions={projectActions}
@@ -161,6 +181,7 @@ function submitRenameProject() {
 
 describe('ProjectCard', () => {
   beforeEach(() => {
+    environment.projectShellEnabled = true
     vi.clearAllMocks()
     fileOperations.readFile.mockResolvedValue(new Uint8Array())
     createObjectURLMock = vi.fn(() => 'blob:thumbnail')
@@ -198,6 +219,195 @@ describe('ProjectCard', () => {
 
   afterEach(() => vi.unstubAllGlobals())
 
+  test.each(['local', 'cloud'] as const)(
+    'keeps the %s card busy through project opening and navigation',
+    async (kind) => {
+      vi.useFakeTimers()
+      vi.stubGlobal(
+        'URL',
+        class extends NativeURL {
+          static createObjectURL = createObjectURLMock
+          static revokeObjectURL = revokeObjectURLMock
+        }
+      )
+      const opening =
+        Promise.withResolvers<
+          Awaited<ReturnType<HomeProjectActionsService['open']>>
+        >()
+      const navigation = Promise.withResolvers<undefined>()
+      const projectActions = createProjectActions()
+      vi.mocked(projectActions.open).mockReturnValue(opening.promise)
+      const project: HomeProjectEntry =
+        kind === 'local'
+          ? cloudProject
+          : {
+              ...cloudProject,
+              source: 'remote',
+              status: 'cloud-only',
+              localProjectPath: undefined,
+            }
+      const router = createMemoryRouter(
+        [
+          {
+            path: '/home',
+            element: (
+              <AppProjectCard
+                project={project}
+                projectActions={projectActions}
+                fileOperations={fileOperations}
+              />
+            ),
+          },
+          {
+            path: '*',
+            loader: () => navigation.promise,
+            element: <p>Editor ready</p>,
+          },
+        ],
+        { initialEntries: ['/home'] }
+      )
+      render(<RouterProvider router={router} />)
+      try {
+        const link = screen.getByTestId('project-link')
+        fireEvent.click(link)
+        expect(
+          screen.getByRole('status', {
+            name: 'Opening project Old cloud title',
+          })
+        ).toBeInTheDocument()
+        expect(link.closest('li')).toHaveAttribute('aria-busy', 'true')
+        fireEvent.click(link)
+        expect(projectActions.open).toHaveBeenCalledOnce()
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(7_000)
+        })
+        expect(screen.getByRole('status')).toBeInTheDocument()
+        await act(async () => {
+          opening.resolve({ defaultFile: '/project/main.kcl' })
+          await opening.promise
+        })
+        expect(screen.getByRole('status')).toBeInTheDocument()
+        await act(async () => {
+          navigation.resolve(undefined)
+          await navigation.promise
+        })
+        expect(screen.getByText('Editor ready')).toBeInTheDocument()
+        expect(screen.queryByRole('status')).not.toBeInTheDocument()
+      } finally {
+        opening.resolve(undefined)
+        navigation.resolve(undefined)
+        router.dispose()
+        vi.useRealTimers()
+      }
+    }
+  )
+
+  test.each(['local', 'cloud'] as const)(
+    'keeps the %s card busy until the next view commits',
+    async (kind) => {
+      vi.useFakeTimers()
+      vi.stubGlobal(
+        'URL',
+        class extends NativeURL {
+          static createObjectURL = createObjectURLMock
+          static revokeObjectURL = revokeObjectURLMock
+        }
+      )
+      const previousUrl = window.location.href
+      const nextView = Promise.withResolvers<{ default: () => ReactElement }>()
+      const Editor = lazy(() => nextView.promise)
+      const projectActions = createProjectActions()
+      vi.mocked(projectActions.open).mockResolvedValue({
+        defaultFile: '/project/main.kcl',
+      })
+      const project: HomeProjectEntry =
+        kind === 'local'
+          ? cloudProject
+          : {
+              ...cloudProject,
+              source: 'remote',
+              status: 'cloud-only',
+              localProjectPath: undefined,
+            }
+      window.history.replaceState(null, '', '/home')
+      const view = render(
+        <BrowserRouter>
+          <Suspense fallback={<p>Loading view</p>}>
+            <Routes>
+              <Route
+                path="/home"
+                element={
+                  <AppProjectCard
+                    project={project}
+                    projectActions={projectActions}
+                    fileOperations={fileOperations}
+                  />
+                }
+              />
+              <Route path="*" element={<Editor />} />
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
+      )
+      try {
+        await act(async () => {
+          fireEvent.click(screen.getByTestId('project-link'))
+          await vi.advanceTimersByTimeAsync(7_000)
+        })
+        expect(
+          screen.getByRole('status', {
+            name: 'Opening project Old cloud title',
+          })
+        ).toBeVisible()
+        expect(screen.queryByText('Editor ready')).not.toBeInTheDocument()
+        fireEvent.click(screen.getByTestId('project-link'))
+        expect(projectActions.open).toHaveBeenCalledOnce()
+        await act(async () => {
+          nextView.resolve({ default: () => <p>Editor ready</p> })
+          await nextView.promise
+        })
+        expect(screen.getByText('Editor ready')).toBeVisible()
+        expect(screen.queryByRole('status')).not.toBeInTheDocument()
+      } finally {
+        nextView.resolve({ default: () => <p>Editor ready</p> })
+        view.unmount()
+        window.history.replaceState(null, '', previousUrl)
+        vi.useRealTimers()
+      }
+    }
+  )
+
+  test.each(['empty', 'rejected'] as const)(
+    'allows retry after an %s project open',
+    async (outcome) => {
+      const projectActions = createProjectActions()
+      const opening =
+        Promise.withResolvers<
+          Awaited<ReturnType<HomeProjectActionsService['open']>>
+        >()
+      vi.mocked(projectActions.open)
+        .mockReturnValueOnce(opening.promise)
+        .mockResolvedValue(undefined)
+      const log = vi.spyOn(console, 'error').mockImplementation(() => {})
+      try {
+        renderProjectCard({ projectActions })
+        fireEvent.click(screen.getByTestId('project-link'))
+        expect(screen.getByRole('status')).toBeInTheDocument()
+        await act(async () => {
+          if (outcome === 'rejected')
+            opening.reject(new Error('Opening failed'))
+          else opening.resolve(undefined)
+          await opening.promise.catch(() => undefined)
+        })
+        expect(screen.queryByRole('status')).not.toBeInTheDocument()
+        fireEvent.click(screen.getByTestId('project-link'))
+        expect(projectActions.open).toHaveBeenCalledTimes(2)
+      } finally {
+        log.mockRestore()
+      }
+    }
+  )
+
   test.each(['grid', 'library preview'])(
     'only loads thumbnails for in-view cards in the %s',
     (view) => {
@@ -219,7 +429,7 @@ describe('ProjectCard', () => {
         fileOperations,
         projectStatuses: new Map<string, ProjectStatus>(),
         showCloudSyncUi: true,
-        onMoveToLibrary: vi.fn(),
+        onCloneToLibrary: vi.fn(),
       }
       const { unmount } = render(
         <BrowserRouter>
@@ -445,6 +655,44 @@ describe('ProjectCard', () => {
       )
     )
   })
+
+  test.each(['local', 'cloud'] as const)(
+    'returns a %s project to its original title before refreshed metadata arrives',
+    async (kind) => {
+      const project = {
+        ...cloudProject,
+        id: kind === 'local' ? 'local:/projects/original' : cloudProject.id,
+        title: 'Original',
+        status: kind === 'local' ? 'local' : 'synced',
+        remoteProjectId:
+          kind === 'local' ? undefined : cloudProject.remoteProjectId,
+      } satisfies HomeProjectEntry
+      const rename = vi.fn().mockResolvedValue(undefined)
+      renderProjectCard({
+        project,
+        projectActions: createProjectActions({ rename }),
+      })
+
+      // Keep the original props while the library's metadata refresh is pending.
+      for (const title of ['Renamed clone', 'Original']) {
+        clickRenameProject()
+        fireEvent.change(screen.getByTestId('project-rename-input'), {
+          target: { value: title },
+        })
+        submitRenameProject()
+        await waitFor(() =>
+          expect(
+            screen.queryByTestId('project-rename-input')
+          ).not.toBeInTheDocument()
+        )
+        expect(screen.getByTestId('project-title')).toHaveTextContent(title)
+      }
+      expect(rename.mock.calls.map(([, title]) => title)).toEqual([
+        'Renamed clone',
+        'Original',
+      ])
+    }
+  )
 
   test('shows status badges for project cards with one source', () => {
     renderProjectCard({
@@ -694,22 +942,22 @@ describe('ProjectCard', () => {
   })
 
   test('opens move to library from the card context menu', () => {
-    const onMoveToLibrary = vi.fn()
+    const onCloneToLibrary = vi.fn()
     render(
       <BrowserRouter>
         <AppProjectCard
           project={cloudProject}
           projectActions={createProjectActions()}
           fileOperations={fileOperations}
-          onMoveToLibrary={onMoveToLibrary}
+          onCloneToLibrary={onCloneToLibrary}
         />
       </BrowserRouter>
     )
 
     fireEvent.contextMenu(screen.getByTestId('project-link'))
-    fireEvent.click(screen.getByTestId('project-card-context-move-to-library'))
+    fireEvent.click(screen.getByTestId('project-card-context-clone-to-library'))
 
-    expect(onMoveToLibrary).toHaveBeenCalledWith(cloudProject)
+    expect(onCloneToLibrary).toHaveBeenCalledWith(cloudProject)
   })
 
   test('clarifies that deleting a cloud-backed non-cloud library project keeps the cloud version', () => {
@@ -874,6 +1122,82 @@ describe('ProjectCard', () => {
         previousEditedTime ?? ''
       )
     )
+  })
+
+  test.each([
+    {
+      name: 'flag-enabled Shift-click',
+      enabled: true,
+      shiftKey: true,
+      local: true,
+      standalone: true,
+    },
+    {
+      name: 'flag-enabled normal click',
+      enabled: true,
+      shiftKey: false,
+      local: true,
+      standalone: false,
+    },
+    {
+      name: 'flag-disabled Shift-click',
+      enabled: false,
+      shiftKey: true,
+      local: true,
+      standalone: false,
+    },
+    {
+      name: 'cloud-only Shift-click',
+      enabled: true,
+      shiftKey: true,
+      local: false,
+      standalone: false,
+    },
+  ])(
+    '$name uses the expected project route',
+    async ({ enabled, shiftKey, local, standalone }) => {
+      environment.projectShellEnabled = enabled
+      window.history.replaceState({}, '', PATHS.HOME)
+      const project = {
+        ...cloudProject,
+        source: local ? 'local' : 'remote',
+        status: local ? 'synced' : 'cloud-only',
+        localProjectPath: local ? '/projects/Bracket demo' : undefined,
+        defaultFile: local ? cloudProject.defaultFile : undefined,
+      } satisfies HomeProjectEntry
+      const { projectActions } = renderProjectCard({ project })
+      const link = screen.getByTestId('project-link')
+      if (enabled && local) {
+        expect(link).toHaveAttribute(
+          'title',
+          'Shift-click to open without an editor'
+        )
+      } else {
+        expect(link).not.toHaveAttribute('title')
+      }
+      fireEvent.click(link, { shiftKey })
+      await waitFor(() =>
+        expect(window.location.pathname).toBe(
+          standalone
+            ? `${PATHS.LOCAL}/${encodeURIComponent('/projects/Bracket demo')}`
+            : `${PATHS.FILE}/${encodeURIComponent(cloudProject.defaultFile)}`
+        )
+      )
+      if (standalone) {
+        expect(projectActions.open).not.toHaveBeenCalled()
+      } else {
+        expect(projectActions.open).toHaveBeenCalledExactlyOnceWith(project)
+      }
+    }
+  )
+
+  test('Shift-click preserves disabled project cards', () => {
+    window.history.replaceState({}, '', PATHS.HOME)
+    const projectActions = createProjectActions({ canOpen: () => false })
+    renderProjectCard({ projectActions })
+    fireEvent.click(screen.getByTestId('project-link'), { shiftKey: true })
+    expect(window.location.pathname).toBe(PATHS.HOME)
+    expect(projectActions.open).not.toHaveBeenCalled()
   })
 
   test('opens conflicted project cards without resolving cloud conflicts on Home', async () => {

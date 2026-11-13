@@ -25,12 +25,15 @@ export const PROJECT_FOLDER = 'zoo-design-studio-projects'
  * @link - https://zoo.dev/docs/kcl
  * */
 export const FILE_EXT = '.kcl'
+export const MAX_TEXT_FILE_BYTES = 1024 * 1024
 export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: Feature =
   'sketch_experimental_features'
 export const LEGACY_SKETCH_MODE_REMOVED_MESSAGE =
   'Editing of KCL 1.0 sketches is no longer supported.'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
+/** Save editor buffers after this much uninterrupted inactivity. */
+export const EDITOR_SAVE_DEBOUNCE_MS = 1_500
 /** Thumbnail file name */
 export const PROJECT_IMAGE_NAME = `thumbnail.png`
 /** The default name given to new kcl files in a project */

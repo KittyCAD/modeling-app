@@ -17,6 +17,8 @@ import noDirectFsZdsIo from './src/eslint/rules/no-direct-fszds-io.mjs'
 import noInternalFileSystemImports from './src/eslint/rules/no-internal-file-system-imports.mjs'
 import noReactRouterHooks from './src/eslint/rules/no-react-router-hooks.mjs'
 import interactionExpectations from './src/eslint/rules/interaction-expectations.mjs'
+import preferThemeUtilities from './src/eslint/rules/prefer-theme-utilities.mjs'
+import * as cssParser from './src/eslint/css-parser.mjs'
 
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
@@ -56,6 +58,7 @@ export default defineConfig([
       zds: {
         rules: {
           'interaction-expectations': interactionExpectations,
+          'prefer-theme-utilities': preferThemeUtilities,
           'no-codemirror-printable-keymap-keystrokes':
             noCodemirrorPrintableKeymapKeystrokes,
           'no-direct-fszds-io': noDirectFsZdsIo,
@@ -215,6 +218,7 @@ export default defineConfig([
       'src/lib/cloudSync/conflictInspection.ts',
       'src/lib/cloudSync/index.ts',
       'src/registry/extensions/fileOperations/index.ts',
+      'src/lib/cloudProjects/registry/extension.ts',
       'src/**/*.{test,spec}.{ts,tsx}',
     ],
     rules: {
@@ -264,9 +268,50 @@ export default defineConfig([
     },
   },
   {
+    files: [
+      'src/**/*.{test,spec}.{ts,tsx}',
+      'packages/**/*.{test,spec}.{ts,tsx}',
+    ],
+    rules: {
+      // Tests deliberately exercise throwing providers and rejected callbacks.
+      'suggest-no-throw/suggest-no-throw': 'off',
+    },
+  },
+  {
+    files: ['packages/ui-components/**/*.{ts,tsx}'],
+    languageOptions: {
+      parserOptions: { project: ['./packages/ui-components/tsconfig.json'] },
+    },
+  },
+  {
     files: ['packages/registry/src/**/*.{ts,tsx}'],
     rules: {
       'suggest-no-throw/suggest-no-throw': 'off',
     },
+  },
+  // Expand this scope as components migrate; central palettes and test fixtures remain explicit.
+  {
+    files: [
+      'src/lib/{editors,executors,kcl,markdown,png,toml,dot,collaboration}/**/*.{ts,tsx}',
+      'src/lib/settings/registry/**/*.{ts,tsx}',
+      'src/lib/projectSession/next/ProjectView.tsx',
+      'src/components/{TabViewPicker,FilePaneEmptyState}.tsx',
+      'packages/ui-components/src/components/{Tabs,TabPicker,EmptyState}/**/*.tsx',
+    ],
+    ignores: ['**/*.test.*', '**/*.spec.*'],
+    rules: { 'zds/prefer-theme-utilities': 'warn' },
+  },
+  {
+    files: [
+      'src/lib/{editors,executors,kcl,markdown,png,toml,dot,collaboration}/**/*.css',
+      'src/lib/settings/registry/**/*.css',
+      'src/components/FilePaneEmptyState.module.css',
+      'packages/ui-components/src/components/{Tabs,TabPicker,EmptyState}/**/*.css',
+    ],
+    languageOptions: { parser: cssParser },
+    plugins: {
+      zds: { rules: { 'prefer-theme-utilities': preferThemeUtilities } },
+    },
+    rules: { 'zds/prefer-theme-utilities': 'warn' },
   },
 ])

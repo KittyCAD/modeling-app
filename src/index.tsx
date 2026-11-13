@@ -1,152 +1,57 @@
-import { AppStreamProvider } from '@src/AppState'
-import { Router } from '@src/Router'
-import ReactDOM from 'react-dom/client'
-import toast, { Toaster } from 'react-hot-toast'
-import { HotkeysProvider } from 'react-hotkeys-hook'
-import ModalContainer from 'react-modal-promise'
-import '@src/index.css'
-import type { App } from '@src/lib/app'
+import { createRoot } from 'react-dom/client'
+import { AppToaster } from '@src/components/AppToaster'
+import { OpenInDesktopApp } from '@src/components/OpenInDesktopApp'
 import {
-  clearAutoUpdateDownloadProgress,
-  setAutoUpdateDownloadProgress,
-  setAutoUpdateReady,
-} from '@src/lib/autoUpdate'
-import { AppContext, app } from '@src/lib/boot'
-import { initializeClientErrorReporting } from '@src/lib/clientErrors'
-import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
-import { initializeElectronLifecycleClientReporting } from '@src/lib/electronLifecycleClientReporting'
-import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
-import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
-import { markOnce } from '@src/lib/performance'
+  readDesktopHandoffTheme,
+  shouldShowDesktopHandoff,
+} from '@src/lib/browserHandoff'
+import { ASK_TO_OPEN_QUERY_PARAM } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import {
+  darkModeMatcher,
+  getResolvedTheme,
+  setThemeClass,
+  Themes,
+} from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import reportWebVitals from '@src/reportWebVitals'
+import '@src/index.css'
 
-// Here's the entry-point for the whole app 🚀
-launchApp(app)
-
-/** The initialization sequence for this app */
-function launchApp(app: App) {
-  initSingletonBehavior(app)
-  if (window.electron) {
-    initElectronBehavior(window.electron, app)
-  }
-  mountAppToReact(app)
-}
-
-/** initialize behaviors that rely on singletons */
-function initSingletonBehavior(app: App) {
-  initializeClientErrorReporting(app.auth.isLoggedIn)
-  const { singletons } = app
-  markOnce('code/willAuth')
-  initializeWindowExceptionHandler(singletons.kclManager)
-
-  // Don't start the app machine until all these singletons
-  // are initialized, and the wasm module is loaded.
-  singletons.kclManager.wasmInstancePromise
-    .then((wasmInstance) => {
-      // Application commands must be created after the initPromise because
-      // it calls WASM functions to file extensions, this dependency is not available during initialization, it is an async dependency
-      app.commands.send({
-        type: 'Add commands',
-        data: {
-          commands: [
-            ...createApplicationCommands({
-              app,
-              wasmInstance,
-            }),
-          ],
-        },
-      })
+const container = document.getElementById('root')
+if (!container) {
+  console.error('Unable to mount Design Studio: root element is missing.')
+} else {
+  const root = createRoot(container)
+  if (shouldShowDesktopHandoff(location.search, isDesktop())) {
+    let theme = Themes.System
+    const applyTheme = () => setThemeClass(getResolvedTheme(theme))
+    const onSystemThemeChange = () => {
+      if (theme === Themes.System) applyTheme()
+    }
+    applyTheme()
+    darkModeMatcher?.addEventListener('change', onSystemThemeChange)
+    // Appearance is optional and must not delay the chooser's first paint.
+    void readDesktopHandoffTheme().then((storedTheme) => {
+      if (storedTheme === undefined) return
+      theme = storedTheme
+      applyTheme()
     })
-    .catch(reportRejection)
-}
-
-/** initialize behaviors that rely on electron (this is only available on desktop) */
-function initElectronBehavior(
-  electron: NonNullable<typeof window.electron>,
-  app: App
-) {
-  initializeElectronLifecycleClientReporting(electron, app.auth.isLoggedIn)
-
-  // Monkey patch to prevent issues in the web app with automated browser translation
-  // This mitigates https://github.com/KittyCAD/modeling-app/issues/8667, until
-  // we roll out our own i18n solution and can disable browser translation altogether.
-  // https://github.com/KittyCAD/modeling-app/issues/4959
-  monkeyPatchForBrowserTranslation()
-
-  electron.onUpdateChecking(() => {
-    console.log('Checking for updates...')
-  })
-
-  electron.onUpdateNotAvailable(() => {
-    clearAutoUpdateDownloadProgress()
-    const message = "You're already using the latest version of the app."
-    console.log(message)
-    toast.success(message)
-  })
-
-  electron.onUpdateDownloadStart((progress) => {
-    console.log('Downloading app update...', progress)
-    setAutoUpdateDownloadProgress(progress)
-  })
-
-  electron.onUpdateDownloadProgress((progress) => {
-    setAutoUpdateDownloadProgress(progress)
-  })
-
-  electron.onUpdateError(({ error }) => {
-    clearAutoUpdateDownloadProgress()
-    console.error(error)
-  })
-
-  electron.onUpdateDownloaded(({ version, releaseNotes }) => {
-    clearAutoUpdateDownloadProgress()
-    setAutoUpdateReady({ version, releaseNotes })
-    console.log(
-      `A new update (${version}) was downloaded and is ready to install.`
+    root.render(
+      <>
+        <OpenInDesktopApp
+          onContinue={() => {
+            const next = new URL(location.href)
+            next.searchParams.delete(ASK_TO_OPEN_QUERY_PARAM)
+            // Load the full app only in the destination document, after the
+            // choice. Failed network navigation remains browser-owned.
+            location.assign(next)
+          }}
+        />
+        <AppToaster />
+      </>
     )
-  })
-}
-
-/** mount the app as a React node and begin rendering its components */
-function mountAppToReact(app: App) {
-  const root = ReactDOM.createRoot(
-    document.getElementById('root') as HTMLElement
-  )
-
-  root.render(
-    <AppContext.Provider value={app}>
-      <HotkeysProvider>
-        <AppStreamProvider>
-          <Router />
-          <Toaster
-            position="bottom-center"
-            toastOptions={{
-              style: {
-                borderRadius: '3px',
-                maxInlineSize: 'min(480px, 100%)',
-              },
-              className:
-                'bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-110 dark:text-chalkboard-10 rounded-sm border-chalkboard-20/50 dark:border-chalkboard-80/50',
-              success: {
-                iconTheme: {
-                  primary: 'oklch(89% 0.16 143.4deg)',
-                  secondary: 'oklch(48.62% 0.1654 142.5deg)',
-                },
-                // We shouldn't have a different duration in tests than prod, it might
-                // lead to issues.
-                duration: 1500,
-              },
-            }}
-          />
-          <ModalContainer />
-        </AppStreamProvider>
-      </HotkeysProvider>
-    </AppContext.Provider>
-  )
-
-  // If you want to start measuring performance in your app, pass a function
-  // to log results (for example: reportWebVitals(console.log))
-  // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-  reportWebVitals()
+  } else {
+    void import('@src/launchApp')
+      .then(({ launchApp }) => launchApp(root))
+      .catch(reportRejection)
+  }
 }

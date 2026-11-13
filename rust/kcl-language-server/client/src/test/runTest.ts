@@ -65,7 +65,6 @@ async function main() {
   }
 }
 
-/* eslint-disable */
 if (require.main === module) {
-  main()
+  void main()
 }

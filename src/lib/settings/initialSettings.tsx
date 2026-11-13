@@ -31,6 +31,11 @@ import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray } from '@src/lib/utils'
 import { hexToRgba } from '@src/lib/utils'
 import { Setting } from '@src/lib/settings/Setting'
+import {
+  isViewportRendering,
+  viewportRenderingOptions,
+  type ViewportRendering,
+} from '@src/lib/settings/viewportRendering'
 
 const MS_IN_MINUTE = 1000 * 60
 const COLOR_INPUT_DEBOUNCE_MS = 500
@@ -224,10 +229,55 @@ function createCoreSettings() {
       }),
       enableSSAO: new Setting<boolean>({
         defaultValue: true,
+        hideOnLevel: 'project',
         description:
-          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.',
+          'Add ambient occlusion. Unavailable with Retro CAD and Phosphor in cloud rendering.',
         validate: (v) => typeof v === 'boolean',
-        hideOnPlatform: 'both', //for now
+        isEnabled: (context) =>
+          context.modeling.useLocalRenderer.current ||
+          context.modeling.viewportRendering.current === 'default',
+      }),
+      /**
+       * Whether the 3D scene is rendered on this device or streamed as video
+       * from the engine. Read once when the scene mounts, because each renderer
+       * needs its own kind of engine session.
+       */
+      useLocalRenderer: new Setting<boolean>({
+        defaultValue: false,
+        hideOnLevel: 'project',
+        description:
+          'Render the 3D scene on this device instead of streaming it as video from the engine. Takes effect after restarting the app.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+        // geometryOnly reads as false without a session, so check for one first.
+        restartRequired: (value, engineCommandManager) =>
+          engineCommandManager.connection !== undefined &&
+          engineCommandManager.geometryOnly !== value,
+      }),
+      viewportRendering: new Setting<ViewportRendering>({
+        title: 'Rendering style',
+        hideOnLevel: 'project',
+        defaultValue: 'default',
+        description: 'Choose how streamed models look in the viewport.',
+        validate: isViewportRendering,
+        isEnabled: (context) => !context.modeling.useLocalRenderer.current,
+        hideWhenDisabled: true,
+        commandConfig: {
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.modeling.viewportRendering.current,
+          options: (_cmdContext, settingsContext) =>
+            viewportRenderingOptions.map((option) => ({
+              ...option,
+              isCurrent:
+                settingsContext.modeling.viewportRendering.shouldShowCurrentLabel(
+                  'user',
+                  option.value
+                ),
+            })),
+        },
       }),
       backfaceColor: new Setting<string>({
         defaultValue: DEFAULT_BACKFACE_COLOR,
