@@ -97,6 +97,7 @@ test(
     await page.goto(
       `/file/${encodeURIComponent(`/__zoo_cloud__/${projectId}/main.kcl`)}`
     )
+    await waitForAppLoad(page)
     await page.locator('.cm-content').first().waitFor({ state: 'visible' })
     const release = await page.evaluateHandle(() => {
       const project = window.app.project
