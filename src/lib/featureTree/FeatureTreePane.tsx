@@ -443,7 +443,7 @@ function BodyBranchGroup({
       ? getHideOpByArtifactId(bodyOperations, artifact.sourceId)
       : undefined)
   return (
-    <Disclosure as="div" defaultOpen data-testid="feature-tree-body-branch">
+    <Disclosure as="div" data-testid="feature-tree-body-branch">
       <div className="flex items-start gap-1" data-testid="feature-tree-body">
         <Disclosure.Button
           aria-label={`Toggle Body ${index + 1} features`}
@@ -688,11 +688,11 @@ function OperationBranchGroup({
   }
 
   // During live execution, only expand the branch whose module received the
-  // latest operation.  Outside live execution every branch defaults open.
+  // latest operation. Outside live execution every branch defaults closed.
   // Changing the key forces a Disclosure remount with the new defaultOpen
   // (headlessui v1 does not support a controlled `open` prop).
   const isLive = liveActiveModuleId != null
-  const shouldBeOpen = !isLive || liveActiveModuleId === parentItem.moduleId
+  const shouldBeOpen = isLive && liveActiveModuleId === parentItem.moduleId
 
   return (
     <Disclosure

@@ -281,6 +281,11 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
           exact: true,
         })
         const features = branch.getByTestId('feature-tree-body-features')
+        await expect(features).toBeHidden()
+        await expect(
+          branch.getByRole('button', { name: 'Body 1', exact: true })
+        ).toBeVisible()
+        await toggle.click()
         await expect(features).toBeVisible()
         await expect(
           features.getByTestId('feature-tree-operation-item').first()
