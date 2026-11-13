@@ -14,6 +14,7 @@ test.describe(
   () => {
     for (const grid of [
       { major: 1, minor: 4, snaps: 2 },
+      { major: 1, minor: 128, snaps: 1 },
       { major: 2.3333, minor: 17, snaps: 1 },
     ]) {
       test(`preserves grid precision through creation, dragging, and reload (${grid.major}/${grid.minor}/${grid.snaps})`, async ({
@@ -184,7 +185,7 @@ test.describe(
         const expectOnGrid = (values: number[] | null) => {
           expect(values).toHaveLength(4)
           for (const value of values ?? []) {
-            expect(value).toBeCloseTo(Math.round(value / step) * step, 6)
+            expect(value / step).toBeCloseTo(Math.round(value / step), 10)
           }
         }
         expectOnGrid(snappedLineValues)

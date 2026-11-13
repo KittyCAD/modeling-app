@@ -1,7 +1,5 @@
 import type { Coords2d } from '@src/lang/util'
-import { roundOff } from '@src/lib/utils'
-
-const GRID_COORDINATE_DECIMALS = 6
+import { roundToSignificantDigits } from '@src/lib/utils'
 
 export type GridSnapOptions = {
   majorGridSpacing: number
@@ -76,7 +74,7 @@ export function snapPointToGrid(
   // dragging all use the same coordinate without floating-point tails in KCL.
   const coordinateAt = (index: number) => {
     const coordinate = majorSpacing * (index / divisions)
-    const rounded = roundOff(coordinate, GRID_COORDINATE_DECIMALS)
+    const rounded = roundToSignificantDigits(coordinate)
     // Keep fine grids working when rounding would select a different grid point.
     return Math.round(rounded / snapSpacing) === index ? rounded : coordinate
   }
