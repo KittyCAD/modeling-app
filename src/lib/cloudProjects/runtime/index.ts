@@ -99,6 +99,30 @@ export function createCloudProjectRuntime(
   const reconciliationListeners = new Set<
     (root: string, files: readonly ProjectArchiveFile[]) => void
   >()
+  const snapshotObservers = new Set<{
+    projectId: string
+    canApply: () => boolean
+    onApply: (
+      files: readonly ProjectArchiveFile[],
+      adoptedRemote: boolean
+    ) => void
+  }>()
+  const canAdopt = (id: string) =>
+    [...snapshotObservers].every(
+      (observer) => observer.projectId !== id || observer.canApply()
+    )
+  // Only the new session's observers require online delivery to its read-only buffers.
+  const hasOfflineObserver = (id: string) =>
+    isOffline() &&
+    [...snapshotObservers].some((observer) => observer.projectId === id)
+  const adopted = (
+    id: string,
+    files: readonly ProjectArchiveFile[],
+    adoptedRemote = false
+  ) => {
+    for (const observer of snapshotObservers)
+      if (observer.projectId === id) observer.onApply(files, adoptedRemote)
+  }
   const listeners = new Set<(changes: readonly CloudFileChange[]) => void>()
   const ready = memory.mkdir(root, { recursive: true })
   const pathFor = (id: string) => paths.join(root, id)
@@ -272,6 +296,7 @@ export function createCloudProjectRuntime(
       return Promise.reject(
         new Error('Cloud project changed during reconciliation.')
       )
+    if (hasOfflineObserver(id)) return Promise.reject(offlineError())
     const submittedByPath = new Map(
       submitted?.map((file) => [file.relativePath, file.data])
     )
@@ -294,6 +319,7 @@ export function createCloudProjectRuntime(
     if (submitted && !alreadyInvalidated) project.generation += 1
     await hydrate(id, archive)
     acknowledge(id, remote, archive)
+    adopted(id, archive, true)
     for (const listener of reconciliationListeners)
       listener(pathFor(id), archive)
     notify([{ path: pathFor(id), eventType: 'change' }])
@@ -853,6 +879,20 @@ export function createCloudProjectRuntime(
     subscribeProjectChanges: (listener: (id: string) => void) =>
       subscribeToSet(projectChangeSubscribers, listener),
     pending: () => pendingRequests,
+    /** Sessions veto background adoption while dirty and apply downloaded bytes synchronously. */
+    watchSnapshots: (observer: {
+      projectId: string
+      canApply: () => boolean
+      onApply: (
+        files: readonly ProjectArchiveFile[],
+        adoptedRemote: boolean
+      ) => void
+    }) => {
+      snapshotObservers.add(observer)
+      return () => {
+        snapshotObservers.delete(observer)
+      }
+    },
     subscribeReconciled: (
       listener: (root: string, files: readonly ProjectArchiveFile[]) => void
     ) => subscribeToSet(reconciliationListeners, listener),
@@ -895,7 +935,9 @@ export function createCloudProjectRuntime(
         if (!remote.revision) return { changed, refreshed: false }
         const safe = () =>
           current() &&
+          !hasOfflineObserver(id) &&
           canApply() &&
+          canAdopt(id) &&
           projectChangeCounters.get(id) === changeCounter &&
           saves.peek().get(id)?.state !== 'failed' &&
           !opened.get(id)?.needsReconciliation
@@ -918,6 +960,7 @@ export function createCloudProjectRuntime(
             clearThumbnail(id)
             await hydrate(id, archive)
             acknowledge(id, remote, archive)
+            adopted(id, archive)
             refreshed = true
           },
           { persist: false, reportSaveFailure: false }
@@ -944,6 +987,10 @@ export function createCloudProjectRuntime(
         id,
         async (previousState) => {
           if (!isCurrent()) return
+          if (!canAdopt(id))
+            return Promise.reject(
+              new Error('Cloud refresh postponed to preserve unsaved edits.')
+            )
           if (previousState?.state === 'failed')
             return Promise.reject(
               new Error(
@@ -969,10 +1016,17 @@ export function createCloudProjectRuntime(
             return Promise.reject(
               new Error('Cloud account changed during refresh.')
             )
-          if (!archive || !isCurrent()) return
+          if (
+            !archive ||
+            !isCurrent() ||
+            !canAdopt(id) ||
+            hasOfflineObserver(id)
+          )
+            return
           clearThumbnail(id)
           await hydrate(id, archive)
           acknowledge(id, remote, archive)
+          adopted(id, archive)
         },
         { persist: false, reportSaveFailure: false }
       )

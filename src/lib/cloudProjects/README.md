@@ -41,3 +41,49 @@ Cloud identity remains explicit where it is part of a user workflow or external
 protocol, such as library entries, routes, publishing, and Zookeeper tool results.
 Those boundaries can request operations on cloud projects without spreading
 cloud persistence policy into the editor or filesystem coordinator.
+
+## Autosave and concurrent writes
+
+The new project shell forces autosave for cloud projects, using the same 1.5-second
+inactivity timeout as KclManager. Local projects also autosave by default; users
+with the project shell feature flag can disable Autosave in settings for manual
+saving. Named documents share one autosave timer across their views and modes.
+
+Cloud writes include the acknowledged revision. If the server rejects a write
+with HTTP 409, the runtime downloads and adopts the remote project, replacing
+local working files and open buffers. This follows the existing editor's policy:
+concurrent edits are not merged or preserved in a recovery dialog. The Save
+baseline follows the adopted snapshot, rather than the discarded submission.
+Background polling still leaves dirty or saving buffers alone.
+
+While offline, cloud documents are read-only in every mode. Both CodeMirror and
+the backing document enforce that policy, including undo and redo. Pending edits
+remain in memory, and autosave resumes after reconnecting. Failed cloud writes
+are retried on reconnect; other failures remain visible in the project status.
+A future CRDT extension can provide offline editing and reconciliation instead.
+
+## New project shell
+
+With `zds_project_shell_refactor` enabled, Shift-click a Personal Cloud card to
+open `/project/:id`. The ID is the API project ID; the loader waits for auth,
+opens the cloud storage mount, reads the project, and opens its initial editor
+through the same helper as `/local/:path`. Failed or cancelled discovery leaves
+the previous session selected. No local copy or default file is created.
+
+`next/session.ts` binds polling to the captured session's abort signal. Accepted
+snapshots update the file tree, editor contents, and Save baselines together.
+Returning Home releases that opening's editors and poller.
+
+### Smoke test
+
+1. Open a disposable cloud project with Shift-click from Home. Edit Code and wait
+   about 1.5 seconds. The unsaved dot should clear without Cmd/Ctrl+S; reloading
+   should restore the saved text.
+2. Disconnect the network. Code should become read-only and a compact status
+   should explain why. Reconnect; pending edits should save and editing resume.
+3. To exercise a concurrent write, edit the same project in two windows nearly
+   simultaneously. A write against an outdated revision adopts the cloud version
+   without a dialog. Use disposable work: the competing local edit is discarded.
+
+`e2e/playwright/cloud-project-shell.spec.ts` exercises autosave, offline editing
+restrictions, and remote adoption against an intercepted cloud API.
