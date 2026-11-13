@@ -1,6 +1,6 @@
 import * as cloudPolling from '@src/lib/cloudProjects/polling'
-import { requireSuccess, codeSurface } from '@src/lib/editors/testViews'
 import '@src/lib/projectSession/next/testFeature'
+import { requireSuccess, codeSurface } from '@src/lib/editors/testViews'
 import { editorsService } from '@src/lib/editors/registry/contract'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
