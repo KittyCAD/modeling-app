@@ -6,4 +6,4 @@
  * Rust mirror of the KCL enum `std::view::Orientation`. Serialized variant
  * names match the KCL spellings exactly.
  */
-export type Orientation = "Front" | "Back" | "Left" | "Right" | "Top" | "Bottom" | "Isometric";
+export type ViewOrientation = "Front" | "Back" | "Left" | "Right" | "Top" | "Bottom" | "Isometric";

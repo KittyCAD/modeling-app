@@ -6,4 +6,4 @@
  * Rust mirror of the KCL enum `std::view::Projection`. Serialized variant
  * names match the KCL spellings exactly.
  */
-export type Projection = "Orthographic" | "Perspective";
+export type ViewProjection = "Orthographic" | "Perspective";
