@@ -454,6 +454,7 @@ test(
       .click()
     await expect(note).not.toBeVisible()
     await page.reload({ waitUntil: 'domcontentloaded' })
+    await waitForAppLoad(page)
     await expect(page.locator('.cm-content').first()).toBeVisible()
     await expect
       .poll(() =>
