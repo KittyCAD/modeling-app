@@ -48,6 +48,7 @@ test.describe(
       await folderSetupFn(async (dir) => {
         const testDir = join(dir, projectName)
         await fsp.mkdir(testDir, { recursive: true })
+        await fsp.writeFile(join(testDir, 'main.kcl'), '')
       })
 
       await page.setBodyDimensions({ width: 1200, height: 500 })
