@@ -9,7 +9,7 @@ import type {
   ScopeHost,
   Service,
   Signal,
-  Subtree,
+  Extension,
 } from './algebra'
 import {
   createScope,
@@ -23,13 +23,13 @@ import { DependencyCycleError, plan } from './planner'
 
 /** One selected graph occurrence; keys and acquisition origins survive reconfiguration. */
 interface DebugItem {
-  readonly kind: 'binding' | 'subtree'
+  readonly kind: 'binding' | 'extension'
   readonly key: Key
   readonly origin: Origin
 }
 
 interface RegistryInspection {
-  readonly subtrees: number
+  readonly extensions: number
   readonly bindings: number
   readonly facets: number
   readonly items: readonly DebugItem[]
@@ -50,7 +50,10 @@ function originFor(key: Key, path: ItemPath): Origin {
 
 /** `replace` changes `children` while retaining `instance` and its cleanup. */
 interface Mounted {
+  readonly definition: Extension
+  readonly dependencies: ReadonlyMap<string, Mounted>
   readonly instance: Instance
+  readonly exports: unknown
   readonly children: readonly Item[]
   readonly origin: Origin
 }
@@ -59,6 +62,7 @@ interface Mounted {
 export class Registry implements ScopeHost {
   private roots: readonly Item[] = []
   private mounted = new Map<Key, Mounted>()
+  private disposal: readonly Mounted[] = []
   private clears = new Set<() => void>()
   private phase: 'idle' | 'acquiring' | 'settling' | 'disposed' = 'idle'
   private combining = 0
@@ -89,7 +93,7 @@ export class Registry implements ScopeHost {
   inspect(): RegistryInspection {
     const items = this.graph.value
     return {
-      subtrees: this.mounted.size,
+      extensions: this.mounted.size,
       bindings: items.filter((item) => item.kind === 'binding').length,
       facets: this.clears.size,
       items,
@@ -135,23 +139,23 @@ export class Registry implements ScopeHost {
     return this.reconcile(Object.freeze([...items]))
   }
 
-  replace(subtree: Subtree, items: readonly Item[]): Promise<void> {
+  replace(extension: Extension, items: readonly Item[]): Promise<void> {
     this.assertMutable()
     return this.reconcile(this.roots, {
-      subtree,
+      extension,
       items: Object.freeze([...items]),
     })
   }
 
   private async reconcile(
     roots: readonly Item[],
-    replacement?: { subtree: Subtree; items: readonly Item[] }
+    replacement?: { extension: Extension; items: readonly Item[] }
   ): Promise<void> {
     if (this.phase === 'disposed') throw new Error('Registry is disposed')
     if (this.phase !== 'idle')
       throw new Error('A reconciliation is already in progress')
-    if (replacement && !this.mounted.has(itemKey(replacement.subtree))) {
-      throw new Error('Cannot replace an unmounted subtree')
+    if (replacement && !this.mounted.has(itemKey(replacement.extension))) {
+      throw new Error('Cannot replace an unmounted Extension')
     }
     this.phase = 'acquiring'
     const next = new Map<Key, Mounted>()
@@ -161,7 +165,8 @@ export class Registry implements ScopeHost {
     const writes = new Map<() => void, () => void>()
     const registrations: { precedence: number; install: () => void }[] = []
     const debugItems: DebugItem[] = []
-    const created: Instance[] = []
+    const created = new Set<Instance>()
+    let order: readonly Mounted[] = []
     const seen = new Set<Key>()
     const selected = new Map<Key, Item>()
     const active = new Map<Key, ItemPath>()
@@ -217,21 +222,61 @@ export class Registry implements ScopeHost {
         }
 
         active.set(key, path)
+        const dependencies = new Map<string, Mounted>()
+        for (const [name, dependency] of Object.entries(
+          item.dependencies ?? {}
+        )) {
+          const acquired = next.get(itemKey(dependency))
+          if (!acquired || acquired.definition !== dependency)
+            throw new Error(
+              `Dependency ${JSON.stringify(name)} does not match the selected Extension`
+            )
+          dependencies.set(name, acquired)
+        }
         let mounted = this.mounted.get(key)
+        if (
+          mounted &&
+          (mounted.dependencies.size !== dependencies.size ||
+            [...dependencies].some(
+              ([name, dependency]) =>
+                mounted!.dependencies.get(name)?.instance !==
+                dependency.instance
+            ))
+        )
+          throw new Error(
+            `Cannot change dependencies of retained Extension ${mounted.origin.id}`
+          )
         if (!mounted) {
           const origin = originFor(key, path)
-          const instance = item.create(createScope(origin, this))
-          created.push(instance)
+          const inputs = Object.freeze(
+            Object.fromEntries(
+              [...dependencies].map(([name, dependency]) => [
+                name,
+                dependency.exports,
+              ])
+            )
+          )
+          const instance = item.create(inputs, createScope(origin, this))
           mounted = {
+            definition: item,
+            dependencies,
             instance,
-            children: Object.freeze([...instance.items]),
+            exports: undefined,
+            children: [],
             origin,
           }
+          created.add(instance)
+          next.set(key, mounted)
+          mounted = {
+            ...mounted,
+            exports: instance.exports,
+            children: Object.freeze([...(instance.items ?? [])]),
+          }
         }
-        if (replacement && itemKey(replacement.subtree) === key)
+        if (replacement && itemKey(replacement.extension) === key)
           mounted = { ...mounted, children: replacement.items }
         next.set(key, mounted)
-        debugItems.push({ kind: 'subtree', key, origin: mounted.origin })
+        debugItems.push({ kind: 'extension', key, origin: mounted.origin })
         visit(mounted.children, path, mounted.origin)
         active.delete(key)
       }
@@ -240,27 +285,35 @@ export class Registry implements ScopeHost {
     try {
       try {
         visit(roots)
+        order = disposalOrder(next)
         for (const registration of registrations.sort(
           (a, b) => a.precedence - b.precedence
         ))
           registration.install()
       } catch (error) {
         this.phase = 'settling'
-        // Await rollback before `finally` allows another reconciliation.
-        return await release(created, {
-          error,
-          message: 'Acquisition and rollback failed',
-        })
+        // Failed child expansion may leave a cycle. Rollback still releases every
+        // returned instance once, before another reconciliation can begin.
+        return await release(
+          disposalOrder(next, false)
+            .filter((mounted) => created.has(mounted.instance))
+            .map(({ instance }) => instance),
+          {
+            error,
+            message: 'Acquisition and rollback failed',
+          }
+        )
       }
       this.phase = 'settling'
 
-      const removed = [...this.mounted]
-        .filter(([item]) => !next.has(item))
-        .map(([, value]) => value.instance)
+      const removed = this.disposal
+        .filter((mounted) => !next.has(itemKey(mounted.definition)))
+        .map(({ instance }) => instance)
       // Publish only after every acquisition succeeds. Cleanup failures occur after
       // commit and cannot roll back resources that have already been released.
       this.roots = roots
       this.mounted = next
+      this.disposal = order
       const previousClears = this.clears
       this.clears = new Set(writes.keys())
       let failure: { error: unknown; message: string } | undefined
@@ -282,6 +335,55 @@ export class Registry implements ScopeHost {
   }
 }
 
+/** Dependency consumers and owned children release before the resources they need. */
+function disposalOrder(
+  mounted: ReadonlyMap<Key, Mounted>,
+  strict = true
+): readonly Mounted[] {
+  const before = new Map<Key, Set<Key>>()
+  const precedes = (first: Key, second: Key) => {
+    let entries = before.get(second)
+    if (!entries) before.set(second, (entries = new Set()))
+    entries.add(first)
+  }
+  const children = (
+    items: readonly Item[],
+    owner: Key,
+    groups = new Set<Item>()
+  ): void => {
+    for (const item of items) {
+      if ('create' in item) precedes(itemKey(item), owner)
+      else if (!('install' in item) && !groups.has(item)) {
+        groups.add(item)
+        children(item, owner, groups)
+      }
+    }
+  }
+  for (const [key, value] of mounted) {
+    for (const dependency of value.dependencies.values())
+      precedes(key, itemKey(dependency.definition))
+    children(value.children, key)
+  }
+  const result: Mounted[] = []
+  const complete = new Set<Key>()
+  const active = new Set<Key>()
+  const visit = (key: Key): void => {
+    if (complete.has(key)) return
+    if (active.has(key)) {
+      if (strict) throw new Error('Cyclic Extension lifetimes')
+      return
+    }
+    active.add(key)
+    for (const prerequisite of before.get(key) ?? []) visit(prerequisite)
+    active.delete(key)
+    complete.add(key)
+    const value = mounted.get(key)
+    if (value) result.push(value)
+  }
+  for (const key of [...mounted.keys()].reverse()) visit(key)
+  return result
+}
+
 /**
  * Release children/consumers before owners/dependencies. Preserve an earlier
  * acquisition or publication failure alongside any cleanup failures.
@@ -291,7 +393,7 @@ async function release(
   primary?: { error: unknown; message: string }
 ): Promise<void> {
   const failures: unknown[] = []
-  for (const instance of [...instances].reverse()) {
+  for (const instance of instances) {
     try {
       await instance.dispose?.()
     } catch (error) {
@@ -299,7 +401,7 @@ async function release(
     }
   }
   const cleanup = failures.length
-    ? new AggregateError(failures, 'Subtree cleanup failed')
+    ? new AggregateError(failures, 'Extension cleanup failed')
     : undefined
   if (primary) {
     if (cleanup)

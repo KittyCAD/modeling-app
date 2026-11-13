@@ -1,12 +1,3 @@
-export {
-  Facet,
-  ServiceResolutionError,
-  contract,
-  contribute,
-  provide,
-  service,
-  slot,
-} from './algebra'
 export type {
   Binding,
   CapabilityOf,
@@ -18,11 +9,21 @@ export type {
   Service,
   Signal,
   Source,
-  Subtree,
+  Extension,
 } from './algebra'
-export { Registry } from './nextRegistry'
+export {
+  contract,
+  contribute,
+  extension,
+  Facet,
+  provide,
+  ServiceResolutionError,
+  service,
+  slot,
+} from './algebra'
 export type { ItemPath } from './path'
 export { formatPath } from './path'
 export { DependencyCycleError, plan } from './planner'
-export { createPlugin, plugins } from './plugins'
 export type { PluginController, PluginRecord } from './plugins'
+export { createPlugin, plugins } from './plugins'
+export { Registry } from './nextRegistry'

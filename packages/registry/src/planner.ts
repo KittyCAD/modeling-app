@@ -1,10 +1,10 @@
-import type { Binding, Item, Key, Subtree } from './algebra'
+import type { Binding, Item, Key, Extension } from './algebra'
 import { itemKey } from './algebra'
 import { formatPath, type ItemPath } from './path'
 
 /** A unique executable item and the path where planning first encountered it. */
 interface PlannedItem {
-  readonly item: Binding | Subtree
+  readonly item: Binding | Extension
   readonly path: ItemPath
 }
 
@@ -41,9 +41,8 @@ export function plan(
     active.set(key, path)
 
     if ('create' in item) {
-      item.dependencies?.forEach((dependency, index) =>
-        visit(dependency, [...path, ['dependencies', index]])
-      )
+      for (const [name, dependency] of Object.entries(item.dependencies ?? {}))
+        visit(dependency, [...path, ['dependencies', name]])
       result.push({ item, path })
     } else if ('install' in item) {
       result.push({ item, path })

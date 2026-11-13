@@ -1,10 +1,12 @@
 import { computed, signal } from '@preact/signals-core'
 import { assertType, expect, it } from 'vitest'
+import { createScope, optional, required, type ScopeHost } from './algebra'
 import {
   type CapabilityOf,
   type Contract,
   contract,
   contribute,
+  extension,
   Facet,
   type InputOf,
   type OutputOf,
@@ -13,11 +15,11 @@ import {
   ServiceResolutionError,
   type Signal,
   type Source,
-  type Subtree,
+  type Extension,
   service,
   slot,
 } from './next'
-import { createScope, optional, required, type ScopeHost } from './algebra'
+import { Registry } from './nextRegistry'
 
 it('keeps capability and facet types through a shared contract', () => {
   const contract = {
@@ -106,11 +108,14 @@ it.each([
     if (!(failure instanceof ServiceResolutionError)) throw failure
     expect(failure.serviceName).toBe('document')
     expect(failure.providers).toEqual(providers)
-    for (const id of ids) expect(failure.message).toContain(JSON.stringify(id))
+    for (const id of ids) {
+      expect(failure.message).toContain(JSON.stringify(id))
+      expect(failure.message).toContain(JSON.stringify(`root/${id}`))
+    }
   }
 })
 
-it('derives adapter types from tokens and rejects callable subtrees', () => {
+it('derives adapter types from tokens and rejects callable extensions', () => {
   const _count = new Facet(
     'count',
     (values: readonly number[]) => `${values.length}`
@@ -125,60 +130,27 @@ it('derives adapter types from tokens and rejects callable subtrees', () => {
   assertType<OutputOf<typeof _count>>(42)
   // @ts-expect-error Capability types retain required methods.
   assertType<CapabilityOf<typeof _save>>({ load: () => {} })
-  // @ts-expect-error Subtrees are objects with a create operation.
-  assertType<Subtree>(() => ({ items: [] }))
+  // @ts-expect-error Extensions are objects with a create operation.
+  assertType<Extension>(() => ({ items: [] }))
 })
 
-it('looks up the supplied token and observes subsequent service replacements', () => {
-  const first = service<{ value: number }>('first')
-  const second = service<{ value: number }>('second')
-  const initial = { value: 1 }
-  const replacement = { value: 2 }
-  const resolution = signal(
-    first.combine([{ id: 'provider', path: 'root', value: initial }])
-  )
-  const secondResolution = signal(second.combine([]))
-  const scope = createScope(
-    { id: 'consumer', path: 'root/consumer' },
-    observationHost([
-      [first, resolution],
-      [second, secondResolution],
-    ])
-  )
-
-  expect(scope.required(first)).toBe(initial)
-  secondResolution.value = second.combine([])
-  expect(scope.optional(second)).toBeUndefined()
-  expect(() => scope.required(second)).toThrow(
-    'second: expected one provider, received 0'
-  )
-  secondResolution.value = second.combine([
-    { id: 'replacement', path: 'root', value: replacement },
-  ])
-  expect(scope.required(second)).toBe(replacement)
-  expect(scope.optional(second)).toBe(replacement)
-  expect(scope.required(first)).toBe(initial)
-})
-
-it('rejects conflicts through both scope lookup operations with source paths', () => {
-  const token = service<{ value: number }>('document')
-  const resolution = signal(
-    token.combine([
-      { id: 'filesystem', path: 'root/plugins/local', value: { value: 1 } },
-      { id: 'cloud', path: 'root/plugins/remote', value: { value: 2 } },
-    ])
-  )
-  const scope = createScope(
-    { id: 'consumer', path: 'root/consumer' },
-    observationHost([[token, resolution]])
-  )
-
-  for (const read of [
-    () => scope.required(token),
-    () => scope.optional(token),
-  ]) {
-    expect(read).toThrow('"filesystem" at "root/plugins/local"')
-    expect(read).toThrow('"cloud" at "root/plugins/remote"')
+it('injects each named dependency before the consumer constructor runs', async () => {
+  const registry = new Registry()
+  const results = new Facet('results', (values: readonly number[]) => values)
+  const first = extension({ create: () => ({ exports: { read: () => 1 } }) })
+  const second = extension({ create: () => ({ exports: { read: () => 2 } }) })
+  const consumer = extension({
+    dependencies: { first, second },
+    create({ first, second }) {
+      const result = first.read() * 10 + second.read()
+      return { items: [contribute(results, () => result)] }
+    },
+  })
+  try {
+    await registry.configure([consumer])
+    expect(registry.get(results)).toEqual([12])
+  } finally {
+    await registry.dispose()
   }
 })
 
@@ -202,7 +174,7 @@ it('snapshots contracts and slot content without freezing author-owned container
     observationHost([])
   )
   items.length = 0
-  const instance = subtree.create(scope)
+  const instance = subtree.create({}, scope)
   expect(instance.items).toEqual([binding])
   expect(Object.isFrozen(instance.items)).toBe(true)
   expect(instance.dispose).toBeUndefined()

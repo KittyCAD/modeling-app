@@ -1,3 +1,7 @@
+import { extension } from './algebra'
+import { signal } from '@preact/signals-core'
+import { useSignals } from '@preact/signals-react/runtime'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import {
   contribute,
   createPlugin,
@@ -8,19 +12,60 @@ import {
   type Signal,
   service,
 } from '@kittycad/registry/next'
-import { signal } from '@preact/signals-core'
-import { useSignals } from '@preact/signals-react/runtime'
-import { act, fireEvent, render, screen } from '@testing-library/react'
 import { expect, it } from 'vitest'
 
-it('keeps document state live while a plugin is disabled and enabled through the public next API', async () => {
+it('tracks optional services directly as providers appear, change, and disappear', async () => {
+  const registry = new Registry()
+  const session = service<{ readonly text: Signal<string> }>('session')
+  const first = signal('First document')
+  const second = signal('Second document')
+  function CurrentDocument() {
+    useSignals()
+    const model = registry.optional(session)
+    return (
+      <output aria-label="Current document">
+        {model?.text.value ?? 'No document'}
+      </output>
+    )
+  }
+  const view = render(<CurrentDocument />)
+  const output = screen.getByLabelText('Current document')
+  try {
+    expect(output).toHaveTextContent('No document')
+    await act(async () => {
+      await registry.configure([provide(session, { text: first })])
+    })
+    expect(output).toHaveTextContent('First document')
+    act(() => {
+      first.value = 'Edited document'
+    })
+    expect(output).toHaveTextContent('Edited document')
+    await act(async () => {
+      await registry.configure([provide(session, { text: second })])
+    })
+    expect(output).toHaveTextContent('Second document')
+    act(() => {
+      first.value = 'Stale document'
+    })
+    expect(output).toHaveTextContent('Second document')
+    await act(async () => {
+      await registry.configure([])
+    })
+    expect(output).toHaveTextContent('No document')
+  } finally {
+    view.unmount()
+    await registry.dispose()
+  }
+})
+
+it('keeps document state live while a plugin is disabled and enabled through the public Plankton API', async () => {
   const registry = new Registry()
   const document = service<{ readonly text: Signal<string>; edit(): void }>(
     'document'
   )
   const panels = new Facet('panels', (values: readonly string[]) => values)
   await registry.configure([
-    {
+    extension({
       key: 'document-owner',
       create: () => {
         const text = signal('original')
@@ -35,7 +80,7 @@ it('keeps document state live while a plugin is disabled and enabled through the
           ],
         }
       },
-    },
+    }),
     createPlugin({
       id: 'search',
       title: 'Search',

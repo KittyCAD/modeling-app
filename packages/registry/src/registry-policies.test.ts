@@ -1,10 +1,11 @@
+import { extension } from './algebra'
 import { signal } from '@preact/signals-core'
 import { expect, it } from 'vitest'
 import {
   contribute,
   Facet,
   provide,
-  type Subtree,
+  type Extension,
   service,
   slot,
 } from './algebra'
@@ -12,22 +13,25 @@ import { Registry } from './next'
 
 it('ignores dependencies of a discarded keyed definition', async () => {
   const registry = new Registry()
-  const first: Subtree = { key: 'owner', create: () => ({ items: [] }) }
-  const discarded: Subtree = {
+  const first: Extension = extension({
     key: 'owner',
-    dependencies: [
-      {
+    create: () => ({ items: [] }),
+  })
+  const discarded: Extension = extension({
+    key: 'owner',
+    dependencies: {
+      dependency0: extension({
         create: () => {
           throw new Error('Discarded dependency must not acquire')
         },
-      },
-    ],
+      }),
+    },
     create: () => {
       throw new Error('Discarded owner must not acquire')
     },
-  }
+  })
   await registry.configure([first, discarded])
-  expect(registry.inspect().subtrees).toBe(1)
+  expect(registry.inspect().extensions).toBe(1)
   await registry.dispose()
 })
 
@@ -74,17 +78,17 @@ it('shows only selected contributions and updates inspection after replacement',
     )
   ).toBe(true)
   expect(reads).toBe(0)
-  expect(registry.inspect()).toMatchObject({ subtrees: 1, facets: 1 })
+  expect(registry.inspect()).toMatchObject({ extensions: 1, facets: 1 })
   expect(registry.get(facet)).toEqual([2, 3])
   await registry.replace(owner, [])
   expect(debug.value).toEqual([])
   expect(registry.inspect()).toMatchObject({
-    subtrees: 1,
+    extensions: 1,
     bindings: 0,
     facets: 0,
   })
   await registry.dispose()
-  expect(registry.inspect().subtrees).toBe(0)
+  expect(registry.inspect().extensions).toBe(0)
 })
 
 it('keeps disposal terminal and idempotent even when a finalizer fails', async () => {
@@ -92,7 +96,7 @@ it('keeps disposal terminal and idempotent even when a finalizer fails', async (
   const facet = new Facet('values', (values: readonly number[]) => values)
   const cleanup = new Error('cleanup failed')
   let disposals = 0
-  const owner: Subtree = {
+  const owner: Extension = extension({
     create: () => ({
       items: [contribute(facet, () => 1)],
       dispose: () => {
@@ -100,7 +104,7 @@ it('keeps disposal terminal and idempotent even when a finalizer fails', async (
         throw cleanup
       },
     }),
-  }
+  })
   await registry.configure([owner])
   const closing = registry.dispose()
   expect(registry.dispose()).toBe(closing)
@@ -161,41 +165,43 @@ it('keeps the declared keyed definition when acquisition discovers a conflicting
   let legitimateDependencies = 0
   let discardedAcquisitions = 0
   let discardedDependencies = 0
-  const declared: Subtree = {
+  const declared: Extension = extension({
     key: 'shared',
-    dependencies: [
-      {
+    dependencies: {
+      dependency0: extension({
         create: () => {
           legitimateDependencies++
           return { items: [contribute(facet, () => 'dependency')] }
         },
-      },
-    ],
+      }),
+    },
     create: () => {
       declaredAcquisitions++
       return { items: [contribute(facet, () => 'declared')] }
     },
-  }
-  const discovered: Subtree = {
+  })
+  const discovered: Extension = extension({
     key: 'shared',
-    dependencies: [
-      {
+    dependencies: {
+      dependency0: extension({
         create: () => {
           discardedDependencies++
           throw new Error(
             'A discarded definition must not activate its dependencies'
           )
         },
-      },
-    ],
+      }),
+    },
     create: () => {
       discardedAcquisitions++
       throw new Error(
         'A discovered duplicate must not replace the declared definition'
       )
     },
-  }
-  const outer: Subtree = { create: () => ({ items: [discovered] }) }
+  })
+  const outer: Extension = extension({
+    create: () => ({ items: [discovered] }),
+  })
 
   await registry.configure([outer, declared])
   expect(registry.get(facet)).toEqual(['dependency', 'declared'])
@@ -211,22 +217,22 @@ it('acquires a declared definition once when an earlier owner returns that exact
   const facet = new Facet('values', (values: readonly string[]) => values)
   let acquisitions = 0
   let dependencies = 0
-  const declared: Subtree = {
+  const declared: Extension = extension({
     key: 'shared',
-    dependencies: [
-      {
+    dependencies: {
+      dependency0: extension({
         create: () => {
           dependencies++
           return { items: [] }
         },
-      },
-    ],
+      }),
+    },
     create: () => {
       acquisitions++
       return { items: [contribute(facet, () => 'declared')] }
     },
-  }
-  const outer: Subtree = { create: () => ({ items: [declared] }) }
+  })
+  const outer: Extension = extension({ create: () => ({ items: [declared] }) })
 
   await registry.configure([outer, declared])
   expect(registry.get(facet)).toEqual(['declared'])

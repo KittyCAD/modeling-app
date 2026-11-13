@@ -1,3 +1,4 @@
+import { extension } from './algebra'
 import { signal } from '@preact/signals-core'
 import { expect, it } from 'vitest'
 import {
@@ -5,12 +6,12 @@ import {
   createScope,
   Facet,
   provide,
-  type Subtree,
+  type Extension,
   service,
   slot,
 } from './algebra'
-import { Registry } from './nextRegistry'
 import { DependencyCycleError } from './planner'
+import { Registry } from './nextRegistry'
 
 it('keeps returned service observations live across provider replacement', async () => {
   const reconciler = new Registry()
@@ -19,12 +20,11 @@ it('keeps returned service observations live across provider replacement', async
   const second = { value: 2 }
   const providers = slot([provide(token, first)])
   await reconciler.configure([providers])
-  const observed = reconciler.observe(token)
   const scope = createScope({ id: 'consumer', path: 'consumer' }, reconciler)
-  expect(scope.required(token)).toEqual(first)
+  const observed = scope.observe(token)
+  expect(observed.value).toEqual({ kind: 'ready', value: first })
   await scope.replace(providers, [provide(token, second)])
   expect(observed.value).toEqual({ kind: 'ready', value: second })
-  expect(scope.required(token)).toEqual(second)
   await reconciler.configure([])
   expect(observed.value).toEqual({ kind: 'missing' })
 })
@@ -35,7 +35,7 @@ it('waits for children before releasing their owner and rejects overlapping muta
   let finish: () => void = () => {
     throw new Error('Cleanup was not started')
   }
-  const child: Subtree = {
+  const child: Extension = extension({
     create: () => ({
       items: [],
       dispose: () => {
@@ -48,15 +48,15 @@ it('waits for children before releasing their owner and rejects overlapping muta
         })
       },
     }),
-  }
-  const owner: Subtree = {
+  })
+  const owner: Extension = extension({
     create: () => ({
       items: [child],
       dispose: () => {
         events.push('owner')
       },
     }),
-  }
+  })
   await reconciler.configure([owner])
   const completion = reconciler.configure([])
   expect(events).toEqual(['child started'])
@@ -73,7 +73,7 @@ it('releases every removed resource after cleanup failures and keeps the committ
   const facet = new Facet('values', (values: readonly number[]) => values)
   const failure = new Error('cleanup failed')
   const released: string[] = []
-  const child: Subtree = {
+  const child: Extension = extension({
     create: () => ({
       items: [],
       dispose: () => {
@@ -81,15 +81,15 @@ it('releases every removed resource after cleanup failures and keeps the committ
         throw failure
       },
     }),
-  }
-  const owner: Subtree = {
+  })
+  const owner: Extension = extension({
     create: () => ({
       items: [child],
       dispose: () => {
         released.push('owner')
       },
     }),
-  }
+  })
   await reconciler.configure([owner])
   const replacement = contribute(facet, () => 7)
   await expect(reconciler.configure([replacement])).rejects.toMatchObject({
@@ -108,15 +108,15 @@ it('preserves acquisition and rollback errors while releasing all newly acquired
   const acquisitionFailure = new Error('acquisition failed')
   const cleanupFailure = new Error('cleanup failed')
   const released: string[] = []
-  const good: Subtree = {
+  const good: Extension = extension({
     create: () => ({
       items: [],
       dispose: () => {
         released.push('good')
       },
     }),
-  }
-  const badCleanup: Subtree = {
+  })
+  const badCleanup: Extension = extension({
     create: () => ({
       items: [],
       dispose: async () => {
@@ -124,12 +124,12 @@ it('preserves acquisition and rollback errors while releasing all newly acquired
         throw cleanupFailure
       },
     }),
-  }
-  const badAcquire: Subtree = {
+  })
+  const badAcquire: Extension = extension({
     create: () => {
       throw acquisitionFailure
     },
-  }
+  })
   await expect(
     reconciler.configure([good, badCleanup, badAcquire])
   ).rejects.toMatchObject({
@@ -144,21 +144,21 @@ it('rolls back dynamically discovered cycles and performs no acquisition for dec
   const reconciler = new Registry()
   let acquired = 0
   let disposed = 0
-  const dependencies: Subtree[] = []
-  const declared: Subtree = {
+  const dependencies: Record<string, Extension> = {}
+  const declared: Extension = extension({
     dependencies,
     create: () => {
       acquired++
       return { items: [] }
     },
-  }
-  dependencies.push(declared)
+  })
+  dependencies.self = declared
   await expect(reconciler.configure([declared])).rejects.toBeInstanceOf(
     DependencyCycleError
   )
   expect(acquired).toBe(0)
 
-  const dynamic: Subtree = {
+  const dynamic: Extension = extension({
     create: () => {
       acquired++
       return {
@@ -168,7 +168,7 @@ it('rolls back dynamically discovered cycles and performs no acquisition for dec
         },
       }
     },
-  }
+  })
   await expect(reconciler.configure([dynamic])).rejects.toBeInstanceOf(
     DependencyCycleError
   )
@@ -184,7 +184,7 @@ it('rolls back binding installation failures and forbids eager reads during acqu
   const current = signal(1)
   await reconciler.configure([contribute(facet, () => current.value)])
   let disposed = 0
-  const owner: Subtree = {
+  const owner: Extension = extension({
     create: () => ({
       items: [
         {
@@ -197,17 +197,17 @@ it('rolls back binding installation failures and forbids eager reads during acqu
         disposed++
       },
     }),
-  }
+  })
   await expect(reconciler.configure([owner])).rejects.toThrow(
     'installation failed'
   )
   expect(disposed).toBe(1)
-  const eager: Subtree = {
-    create: (scope) => {
+  const eager: Extension = extension({
+    create: (_dependencies, scope) => {
       void scope.observe(facet).value
       return { items: [] }
     },
-  }
+  })
   await expect(reconciler.configure([eager])).rejects.toThrow(
     'Defer observations'
   )
@@ -220,14 +220,14 @@ it('rolls back binding installation failures and forbids eager reads during acqu
 it('registers service provenance under its acquiring owner', async () => {
   const reconciler = new Registry()
   const token = service<{ value: number }>('value')
-  const owner: Subtree = {
-    create: (scope) => ({
+  const owner: Extension = extension({
+    create: (_dependencies, scope) => ({
       items: [provide(token, { value: 1 }), provide(token, { value: 2 })],
       dispose: () => {
         expect(scope.origin.path).toBe('root[0]')
       },
     }),
-  }
+  })
   await reconciler.configure([owner])
   const resolution = reconciler.observe(token).value
   expect(resolution.kind).toBe('conflict')
@@ -243,7 +243,7 @@ it('registers service provenance under its acquiring owner', async () => {
 it('rolls back a returned instance even when reading its children fails', async () => {
   const reconciler = new Registry()
   let disposed = 0
-  const owner: Subtree = {
+  const owner: Extension = extension({
     create: () => ({
       get items(): readonly [] {
         throw new Error('children failed')
@@ -252,7 +252,7 @@ it('rolls back a returned instance even when reading its children fails', async 
         disposed++
       },
     }),
-  }
+  })
   await expect(reconciler.configure([owner])).rejects.toThrow('children failed')
   expect(disposed).toBe(1)
 })
@@ -301,11 +301,11 @@ it('does not reuse abandoned cell drafts in a later successful transaction', asy
   await expect(
     reconciler.configure([
       contribute(facet, () => 1),
-      {
+      extension({
         create: () => {
           throw failure
         },
-      },
+      }),
     ])
   ).rejects.toBe(failure)
   expect(observed.value).toEqual([])
@@ -326,7 +326,7 @@ it.each([false, true])(
     const publication = new Error('publication failed')
     const cleanup = new Error('cleanup failed')
     let disposals = 0
-    const owner: Subtree = {
+    const owner: Extension = extension({
       create: () => ({
         items: [contribute(facet, () => 1)],
         dispose: () => {
@@ -334,7 +334,7 @@ it.each([false, true])(
           if (cleanupFails) throw cleanup
         },
       }),
-    }
+    })
     await reconciler.configure([owner])
     let failPublication = false
     const unsubscribe = reconciler.observe(facet).subscribe(() => {
@@ -362,7 +362,7 @@ it('keeps mutations blocked until failed acquisition finishes its asynchronous r
   let finish: () => void = () => {
     throw new Error('Rollback has not started')
   }
-  const acquired: Subtree = {
+  const acquired: Extension = extension({
     create: () => ({
       items: [],
       dispose: () =>
@@ -370,13 +370,13 @@ it('keeps mutations blocked until failed acquisition finishes its asynchronous r
           finish = resolve
         }),
     }),
-  }
+  })
   const failure = new Error('acquisition failed')
-  const broken: Subtree = {
+  const broken: Extension = extension({
     create: () => {
       throw failure
     },
-  }
+  })
   const completion = reconciler.configure([acquired, broken])
   await expect(reconciler.configure([])).rejects.toThrow('already in progress')
   finish()
