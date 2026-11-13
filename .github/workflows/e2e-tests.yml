@@ -236,16 +236,16 @@ jobs:
         shardTotal: [2]
         config:
           - os: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
-            label: ubuntu
+            label: linux, chrome
             test_script: test:e2e:web
             playwright_cache_path: ~/.cache/ms-playwright
           - os: namespace-profile-macos-8-cores
-            label: macos
+            label: macos, webkit
             test_script: test:e2e:web:webkit
             playwright_cache_path: ~/Library/Caches/ms-playwright
             optional: true # WebKit coverage is non-blocking for external callers
           - os: namespace-profile-windows-8-cores
-            label: windows
+            label: windows, chrome
             test_script: test:e2e:web
             playwright_cache_path: ~/AppData/Local/ms-playwright
 
