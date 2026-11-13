@@ -408,8 +408,12 @@ export default defineConfig([
     },
   },
   {
-    files: ['packages/registry/src/**/*.{ts,tsx}'],
+    files: [
+      'packages/registry/src/**/*.{ts,tsx}',
+      'packages/ui-components/src/web-components/feature-tree/feature-tree-model.ts',
+    ],
     rules: {
+      // These synchronous validation APIs reject malformed graph structures.
       'suggest-no-throw/suggest-no-throw': 'off',
     },
   },
@@ -437,6 +441,15 @@ export default defineConfig([
       zds: zdsPlugin,
     },
     rules: { 'zds/prefer-theme-utilities': 'warn' },
+  },
+  {
+    files: [
+      'packages/ui-components/src/web-components/feature-tree-row/feature-tree-row.ts',
+    ],
+    rules: {
+      // Lit binds declarative event handlers to their component instance.
+      '@typescript-eslint/unbound-method': 'off',
+    },
   },
   // Disjoint scopes prevent a privileged owner from disabling unrelated rules.
   ...[
