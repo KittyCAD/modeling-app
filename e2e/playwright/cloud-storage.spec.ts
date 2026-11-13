@@ -1,6 +1,10 @@
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { expect, test } from '@e2e/playwright/base-test'
-import { mockClientErrorReports, setup } from '@e2e/playwright/test-utils'
+import {
+  mockClientErrorReports,
+  setup,
+  waitForAppLoad,
+} from '@e2e/playwright/test-utils'
 import { mockCloudStorage } from '@e2e/playwright/lib/cloudStorageFixture'
 import { cloudProjectResponse } from '@e2e/playwright/lib/cloudProjectTestUtils'
 import { decode } from '@msgpack/msgpack'
@@ -388,7 +392,7 @@ test(
     await mockCloudStorage(context)
     await setup(context, page, testInfo)
     await page.goto('/home')
-    await expect(page.getByTestId('project-link').first()).toBeVisible()
+    await waitForAppLoad(page)
     const root = await page.evaluate(async () => {
       const fs = window.fsZds
       const root = fs.join(
@@ -508,6 +512,7 @@ test(
     expect(remote.uploads).toContain('1')
     await page.reload({ waitUntil: 'domcontentloaded' })
     await expect(page).toHaveURL(/__zoo_cloud__.*main\.kcl/)
+    await page.locator('.cm-content').first().waitFor({ state: 'visible' })
     await expect
       .poll(
         () =>

@@ -74,6 +74,7 @@ async function prepareStorage(
     }
   }
   await navigate('/home')
+  await waitForAppLoad(page)
   const home = new HomePageFixture(page)
   await expect(page.getByTestId('home-header')).toBeVisible()
   const fs = FsFixture(page)
