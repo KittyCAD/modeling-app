@@ -10,7 +10,7 @@ description: Physical properties import_async.kcl
       "z": 0.18249988555908203
     },
     "dimensions": {
-      "x": 46.228996121982185,
+      "x": 46.228996121982206,
       "y": 96.5113036665606,
       "z": 13.635000228881836
     },
@@ -18,12 +18,12 @@ description: Physical properties import_async.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 4134.0832415657505
+    "value": 4741.84896843971
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 8.701953493954935
+    "value": 9.70010950531445
   }
 }
