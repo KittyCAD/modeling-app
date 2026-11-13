@@ -12,7 +12,8 @@ import {
   type ToolContext,
   type ToolEvents,
   addPointListener,
-  createCircleActor,
+  createDraftCircle,
+  commitCircle,
   removePointListener,
   sendResultToParent,
   showRadiusPreviewListener,
@@ -43,7 +44,8 @@ export const machine = setup({
     },
   },
   actors: {
-    createCircle: fromPromise(createCircleActor),
+    createDraftCircle: fromPromise(createDraftCircle),
+    commitCircle: fromPromise(commitCircle),
     finishPreview: fromPromise(async ({ input }: { input: ToolContext }) => {
       await input.preview?.pending
     }),
@@ -79,7 +81,7 @@ export const machine = setup({
       entry: 'add point listener',
       on: {
         'add point': {
-          target: showingRadiusPreview,
+          target: 'Creating draft circle',
           guard: ({ event }) => {
             if (event.type !== 'add point') return false
             return 'clickNumber' in event
@@ -89,11 +91,6 @@ export const machine = setup({
           actions: assign(({ event }) => {
             assertEvent(event, 'add point')
             return {
-              preview: {
-                active: true,
-                pending: Promise.resolve(),
-                segmentIds: [],
-              },
               centerPoint: event.data,
               centerSnapTarget: event.snapTarget,
             }
@@ -101,6 +98,69 @@ export const machine = setup({
         },
         escape: {
           target: 'unequipping',
+        },
+      },
+    },
+
+    'Creating draft circle': {
+      entry: 'remove point listener',
+      on: {
+        unequip: { actions: assign({ unequipRequested: true }) },
+        escape: { actions: assign({ unequipRequested: true }) },
+      },
+      invoke: {
+        src: 'createDraftCircle',
+        input: ({ context }) => {
+          if (!context.centerPoint) return { error: 'Center point not set' }
+          return {
+            centerPoint: context.centerPoint,
+            centerSnapTarget: context.centerSnapTarget,
+            rustContext: context.rustContext,
+            kclManager: context.kclManager,
+            sketchId: context.sketchId,
+          }
+        },
+        onDone: [
+          {
+            guard: 'invoke output has error',
+            target: 'ready for center click',
+            actions: 'toast sketch solve error',
+          },
+          {
+            target: showingRadiusPreview,
+            actions: [
+              assign(({ event }) => {
+                if ('error' in event.output) return {}
+                return {
+                  preview: {
+                    active: true,
+                    pending: Promise.resolve(),
+                    circleId: event.output.draft.circleId,
+                    segmentIds: event.output.draft.segmentIds,
+                  },
+                }
+              }),
+              ({ event, self }) => {
+                if ('error' in event.output) return
+                self._parent?.send({
+                  type: 'set draft entities',
+                  data: event.output.draft,
+                })
+                self._parent?.send({
+                  type: 'update sketch outcome',
+                  data: {
+                    sourceDelta: event.output.kclSource,
+                    sceneGraphDelta: event.output.sceneGraphDelta,
+                    writeToDisk: false,
+                  },
+                })
+              },
+            ],
+          },
+        ],
+        onError: {
+          target: 'ready for center click',
+          actions: 'toast sketch solve error',
         },
       },
     },
@@ -133,10 +193,10 @@ export const machine = setup({
         escape: { actions: assign({ unequipRequested: true }) },
       },
       invoke: {
-        src: 'createCircle',
+        src: 'commitCircle',
         input: ({ event, context }) => {
           assertEvent(event, 'add point')
-          if (!context.centerPoint) {
+          if (!context.centerPoint || !context.preview) {
             return {
               error: 'Center point not set',
             }
@@ -144,11 +204,7 @@ export const machine = setup({
           return {
             centerPoint: context.centerPoint,
             startPoint: event.data,
-            circleId: context.preview?.circleId,
-            centerSnapTarget:
-              context.preview?.circleId === undefined
-                ? context.centerSnapTarget
-                : undefined,
+            circleId: context.preview.circleId,
             startSnapTarget: event.snapTarget,
             rustContext: context.rustContext,
             kclManager: context.kclManager,

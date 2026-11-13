@@ -3,7 +3,8 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
-  createCircleActor,
+  createDraftCircle,
+  commitCircle,
   sendResultToParent,
   showRadiusPreviewListener,
   removePointListener,
@@ -32,21 +33,23 @@ type CreatingCircleEvent = {
 }
 
 describe('circleToolImpl', () => {
-  describe('createCircleActor', () => {
+  describe('draft creation and commit', () => {
     it('creates a circle segment using the circle label', async () => {
       const rustContext = createMockRustContext()
       const spiedFn = vi.spyOn(rustContext, 'addSegment')
       const kclManager = createMockKclManager()
-      const sceneGraphDelta = createSceneGraphDelta([], [])
+      const sceneGraphDelta = createSceneGraphDelta(
+        [createCircleApiObject({ id: 3, start: 2 })],
+        [3]
+      )
       ;(rustContext.addSegment as any).mockResolvedValue({
         kclSource: { text: 'circle' },
         sceneGraphDelta,
       })
 
-      const result = await createCircleActor({
+      const result = await createDraftCircle({
         input: {
           centerPoint: [10, 20],
-          startPoint: [30, 40],
           rustContext,
           kclManager,
           sketchId: 7,
@@ -63,15 +66,15 @@ describe('circleToolImpl', () => {
             y: { type: 'Var', value: 20, units: 'Mm' },
           },
           start: {
-            x: { type: 'Var', value: 30, units: 'Mm' },
-            y: { type: 'Var', value: 40, units: 'Mm' },
+            x: { type: 'Var', value: 10.1, units: 'Mm' },
+            y: { type: 'Var', value: 20, units: 'Mm' },
           },
         },
         'circle',
         expect.any(Object),
-        true
+        false
       )
-      expect(result).toEqual({
+      expect(result).toMatchObject({
         kclSource: { text: 'circle' },
         sceneGraphDelta,
       })
@@ -93,22 +96,46 @@ describe('circleToolImpl', () => {
       }
       const centerSnapResult = {
         kclSource: { text: 'center-snap' },
-        sceneGraphDelta: createSceneGraphDelta([], [10]),
+        sceneGraphDelta: createSceneGraphDelta(
+          [centerPoint, startPoint, circleObj],
+          [10]
+        ),
       }
       const startSnapResult = {
         kclSource: { text: 'start-snap' },
-        sceneGraphDelta: createSceneGraphDelta([], [11]),
+        sceneGraphDelta: createSceneGraphDelta(
+          [centerPoint, startPoint, circleObj],
+          [11]
+        ),
       }
       ;(rustContext.addSegment as any).mockResolvedValue(addSegmentResult)
       ;(rustContext.addConstraint as any)
         .mockResolvedValueOnce(centerSnapResult)
         .mockResolvedValueOnce(startSnapResult)
 
-      const result = await createCircleActor({
+      vi.spyOn(rustContext, 'editSegments').mockResolvedValue({
+        kclSource: { text: 'resized' },
+        sceneGraphDelta: createSceneGraphDelta([
+          centerPoint,
+          startPoint,
+          circleObj,
+        ]),
+      })
+      const draft = await createDraftCircle({
+        input: {
+          centerPoint: [10, 20],
+          centerSnapTarget: { type: 'origin' },
+          rustContext,
+          kclManager,
+          sketchId: 7,
+        },
+      })
+      expect(draft).not.toHaveProperty('error')
+      const result = await commitCircle({
         input: {
           centerPoint: [10, 20],
           startPoint: [30, 40],
-          centerSnapTarget: { type: 'origin' },
+          circleId: 3,
           startSnapTarget: { type: 'point', id: 99 },
           rustContext,
           kclManager,
@@ -124,8 +151,7 @@ describe('circleToolImpl', () => {
           type: 'Coincident',
           segments: [1, 'ORIGIN'],
         },
-        expect.anything(),
-        true
+        expect.anything()
       )
       expect(addConstraintSpy).toHaveBeenNthCalledWith(
         2,
@@ -142,7 +168,7 @@ describe('circleToolImpl', () => {
         kclSource: { text: 'start-snap' },
         sceneGraphDelta: {
           ...startSnapResult.sceneGraphDelta,
-          new_objects: [1, 2, 3, 10, 11],
+          new_objects: [11],
         },
         checkpointId: null,
       })
@@ -181,7 +207,8 @@ describe('circleToolImpl', () => {
     const preview: CirclePreview = {
       active: true,
       pending: Promise.resolve(),
-      segmentIds: [],
+      circleId: 3,
+      segmentIds: [1, 2, 3],
     }
     const args = {
       context: {
@@ -211,7 +238,7 @@ describe('circleToolImpl', () => {
       expect(parentSend).toHaveBeenCalledWith({
         type: 'update sketch outcome',
         data: {
-          sourceDelta: { text: 'circle draft' },
+          sourceDelta: { text: 'circle resized' },
           sceneGraphDelta: delta,
           writeToDisk: false,
         },
@@ -219,8 +246,8 @@ describe('circleToolImpl', () => {
       expect(send).not.toHaveBeenCalled()
       await callbacks.onMove?.(move(20))
       await preview.pending
-      expect(add).toHaveBeenCalledTimes(1)
-      expect(prepare).toHaveBeenCalledTimes(1)
+      expect(add).not.toHaveBeenCalled()
+      expect(prepare).not.toHaveBeenCalled()
       expect(edit).toHaveBeenCalledWith(
         0,
         7,
@@ -228,7 +255,7 @@ describe('circleToolImpl', () => {
         expect.any(Object),
         false
       )
-      const committed = await createCircleActor({
+      const committed = await commitCircle({
         input: {
           centerPoint: [0, 0],
           startPoint: [30, 0],
@@ -246,7 +273,7 @@ describe('circleToolImpl', () => {
         expect.any(Object),
         true
       )
-      expect(prepare).toHaveBeenCalledTimes(1)
+      expect(prepare).not.toHaveBeenCalled()
     } finally {
       removePointListener(args)
       visual.mockRestore()

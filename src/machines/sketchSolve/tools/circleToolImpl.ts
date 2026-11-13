@@ -21,6 +21,7 @@ import {
   applyConstraintsForSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
+import { MIN_DRAFT_GEOMETRY_DELTA_MM } from '@src/machines/sketchSolve/tools/draftGeometryPolicy'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import {
   clearToolSnappingState,
@@ -54,7 +55,7 @@ export type ToolEvents =
 export interface CirclePreview {
   active: boolean
   pending: Promise<void>
-  circleId?: number
+  circleId: number
   segmentIds: number[]
 }
 
@@ -96,46 +97,14 @@ export function showRadiusPreviewListener({ self, context }: ToolActionArgs) {
       while (nextPoint && preview.active) {
         const point = nextPoint
         nextPoint = undefined
-        const result = await createCircleActor({
-          input: {
-            centerPoint,
-            startPoint: point,
-            centerSnapTarget:
-              preview.circleId === undefined
-                ? context.centerSnapTarget
-                : undefined,
-            rustContext: context.rustContext,
-            kclManager: context.kclManager,
-            sketchId: context.sketchId,
-            circleId: preview.circleId,
-            createCheckpoint: false,
-          },
+        const result = await updateDraftCircle({
+          centerPoint,
+          startPoint: point,
+          rustContext: context.rustContext,
+          kclManager: context.kclManager,
+          sketchId: context.sketchId,
+          circleId: preview.circleId,
         })
-        if ('error' in result) {
-          toastSketchSolveError(result)
-          return
-        }
-        if (preview.circleId === undefined) {
-          preview.circleId = result.sceneGraphDelta.new_objects.find((id) =>
-            isCircleSegment(result.sceneGraphDelta.new_graph.objects[id])
-          )
-          preview.segmentIds = result.sceneGraphDelta.new_objects.filter(
-            (id) =>
-              result.sceneGraphDelta.new_graph.objects[id]?.kind.type ===
-              'Segment'
-          )
-          self._parent?.send({
-            type: 'set draft entities',
-            data: {
-              segmentIds: preview.segmentIds,
-              constraintIds: result.sceneGraphDelta.new_objects.filter(
-                (id) =>
-                  result.sceneGraphDelta.new_graph.objects[id]?.kind.type ===
-                  'Constraint'
-              ),
-            },
-          })
-        }
         if (preview.active)
           self._parent?.send({
             type: 'update sketch outcome',
@@ -352,34 +321,112 @@ export function sendResultToParent({
   }
 }
 
-export async function createCircleActor({
+type CircleGeometryInput = {
+  centerPoint: Coords2d
+  startPoint: Coords2d
+  rustContext: RustContext
+  kclManager: KclManager
+  sketchId: number
+}
+
+type CircleResult = {
+  kclSource: SourceDelta
+  sceneGraphDelta: SceneGraphDelta
+  checkpointId?: number | null
+}
+
+type DraftCircleInput = Omit<CircleGeometryInput, 'startPoint'> & {
+  centerSnapTarget?: SnapTarget
+}
+
+type CircleUpdateInput = CircleGeometryInput & { circleId: number }
+
+function circleSegment(input: CircleGeometryInput): SegmentCtor {
+  const units = baseUnitToNumericSuffix(
+    input.kclManager.fileSettings.defaultLengthUnit
+  )
+  return {
+    type: 'Circle',
+    center: {
+      x: { type: 'Var', value: roundOff(input.centerPoint[0]), units },
+      y: { type: 'Var', value: roundOff(input.centerPoint[1]), units },
+    },
+    start: {
+      x: { type: 'Var', value: roundOff(input.startPoint[0]), units },
+      y: { type: 'Var', value: roundOff(input.startPoint[1]), units },
+    },
+  }
+}
+
+export async function createDraftCircle({
+  input,
+}: {
+  input: DraftCircleInput | { error: string }
+}) {
+  if ('error' in input) return input
+  const result = await createOrUpdateCircle({
+    ...input,
+    startPoint: [
+      input.centerPoint[0] + MIN_DRAFT_GEOMETRY_DELTA_MM,
+      input.centerPoint[1],
+    ],
+    createCheckpoint: false,
+  })
+  if ('error' in result) return result
+  const circleId = result.sceneGraphDelta.new_objects.find((id) =>
+    isCircleSegment(result.sceneGraphDelta.new_graph.objects[id])
+  )
+  if (circleId === undefined)
+    return { error: 'The draft circle was not created.' }
+  return {
+    ...result,
+    draft: {
+      circleId,
+      segmentIds: result.sceneGraphDelta.new_objects.filter(
+        (id) =>
+          result.sceneGraphDelta.new_graph.objects[id]?.kind.type === 'Segment'
+      ),
+      constraintIds: result.sceneGraphDelta.new_objects.filter(
+        (id) =>
+          result.sceneGraphDelta.new_graph.objects[id]?.kind.type ===
+          'Constraint'
+      ),
+    },
+  }
+}
+
+export function updateDraftCircle(
+  input: CircleUpdateInput
+): Promise<CircleResult> {
+  return input.rustContext.editSegments(
+    0,
+    input.sketchId,
+    [{ id: input.circleId, ctor: circleSegment(input) }],
+    jsAppSettings(input.rustContext.settingsActor),
+    false
+  )
+}
+
+export function commitCircle({
   input,
 }: {
   input:
-    | {
+    | (CircleUpdateInput & { startSnapTarget?: SnapTarget })
+    | { error: string }
+}) {
+  return createOrUpdateCircle(input)
+}
+
+async function createOrUpdateCircle(
+  input:
+    | (CircleGeometryInput & {
         circleId?: number
         createCheckpoint?: boolean
-        centerPoint: [number, number]
-        startPoint: [number, number]
         centerSnapTarget?: SnapTarget
         startSnapTarget?: SnapTarget
-        rustContext: RustContext
-        kclManager: KclManager
-        sketchId: number
-      }
-    | {
-        error: string
-      }
-}): Promise<
-  | {
-      kclSource: SourceDelta
-      sceneGraphDelta: SceneGraphDelta
-      checkpointId?: number | null
-    }
-  | {
-      error: string
-    }
-> {
+      })
+    | { error: string }
+): Promise<CircleResult | { error: string }> {
   if ('error' in input) {
     return { error: input.error }
   }
@@ -387,30 +434,13 @@ export async function createCircleActor({
   const {
     circleId,
     createCheckpoint = true,
-    centerPoint,
-    startPoint,
     centerSnapTarget,
     startSnapTarget,
     rustContext,
-    kclManager,
     sketchId,
   } = input
-  const units = baseUnitToNumericSuffix(
-    kclManager.fileSettings.defaultLengthUnit
-  )
-
   try {
-    const segmentCtor: SegmentCtor = {
-      type: 'Circle',
-      center: {
-        x: { type: 'Var', value: roundOff(centerPoint[0]), units },
-        y: { type: 'Var', value: roundOff(centerPoint[1]), units },
-      },
-      start: {
-        x: { type: 'Var', value: roundOff(startPoint[0]), units },
-        y: { type: 'Var', value: roundOff(startPoint[1]), units },
-      },
-    }
+    const segmentCtor = circleSegment(input)
 
     const settings = jsAppSettings(rustContext.settingsActor)
     if (circleId === undefined) await rustContext.prepareForSketchInsertion()
