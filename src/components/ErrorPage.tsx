@@ -1,9 +1,12 @@
+import { useSignals } from '@preact/signals-react/runtime'
 import { useEffect } from 'react'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: route-loader error presentation (useRouteError).
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom'
 import UAParser from 'ua-parser-js'
 
 import { ActionButton } from '@src/components/ActionButton'
+import { AutoUpdateStatus } from '@src/components/StatusBar/AutoUpdateStatus'
+import { autoUpdateReadySignal } from '@src/lib/autoUpdate'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -51,11 +54,19 @@ function browserDetails() {
 }
 
 export const ErrorPage = () => {
+  useSignals()
   const error = useRouteError()
+  const updateReady = autoUpdateReadySignal.value
   const browserCompatibilityError = isBrowserCompatibilityError(error)
   const latestDownloadUrl = withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`)
   // We log the error to the console no matter what
   console.error('error', error)
+
+  useEffect(() => {
+    if (isDesktop()) {
+      window.electron?.appCheckForUpdates().catch(reportRejection)
+    }
+  }, [])
 
   useEffect(() => {
     const isRouteError = isRouteErrorResponse(error)
@@ -118,6 +129,18 @@ export const ErrorPage = () => {
             ? 'Your browser is out of date and cannot open Zoo Design Studio projects. Update your browser or use the latest Chrome, Edge, Firefox, or Safari.'
             : "We're sorry, something went wrong. The error has been reported to our team."}
         </p>
+        {isDesktop() && (
+          <div
+            role="group"
+            aria-label="App update"
+            className="flex flex-wrap items-center gap-2"
+          >
+            {updateReady && (
+              <p>An update is available, which could help with this issue.</p>
+            )}
+            <AutoUpdateStatus />
+          </div>
+        )}
         <div className="flex justify-between gap-2 mt-6">
           {browserCompatibilityError ? (
             <>

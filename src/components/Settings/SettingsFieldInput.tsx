@@ -94,11 +94,13 @@ export function SettingsFieldInput({
           )}
           name={`${category}-${settingName}`}
           data-testid={`${category}-${settingName}`}
+          disabled={!setting.isEnabled(context)}
         />
       )
     case 'options':
       return (
         <select
+          disabled={!setting.isEnabled(context)}
           name={`${category}-${settingName}`}
           data-testid={`${category}-${settingName}`}
           className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full"

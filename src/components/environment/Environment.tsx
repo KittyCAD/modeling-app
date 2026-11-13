@@ -1,3 +1,4 @@
+import { selectCommand } from '@src/lib/commandUtils'
 import { ActionButton } from '@src/components/ActionButton'
 import {
   getEnvironmentLabel,
@@ -43,14 +44,11 @@ export function EnvironmentDescription() {
               onClick={() => {
                 const environment = env().VITE_ZOO_BASE_DOMAIN
                 if (environment) {
-                  commands.send({
-                    type: 'Find and select command',
-                    data: {
-                      groupId: 'application',
-                      name: 'switch-environments',
-                      argDefaultValues: {
-                        environment,
-                      },
+                  selectCommand(commands, {
+                    groupId: 'application',
+                    name: 'switch-environments',
+                    argDefaultValues: {
+                      environment,
                     },
                   })
                 }
@@ -79,14 +77,11 @@ export function EnvironmentDescription() {
             <ActionButton
               Element="button"
               onClick={() => {
-                commands.send({
-                  type: 'Find and select command',
-                  data: {
-                    groupId: 'application',
-                    name: 'override-engine',
-                    argDefaultValues: {
-                      url: env().VITE_KITTYCAD_WEBSOCKET_URL,
-                    },
+                selectCommand(commands, {
+                  groupId: 'application',
+                  name: 'override-engine',
+                  argDefaultValues: {
+                    url: env().VITE_KITTYCAD_WEBSOCKET_URL,
                   },
                 })
               }}
@@ -106,14 +101,11 @@ export function EnvironmentDescription() {
             <ActionButton
               Element="button"
               onClick={() => {
-                commands.send({
-                  type: 'Find and select command',
-                  data: {
-                    groupId: 'application',
-                    name: 'override-zookeeper',
-                    argDefaultValues: {
-                      url: env().VITE_ZOOKEEPER_WEBSOCKET_URL,
-                    },
+                selectCommand(commands, {
+                  groupId: 'application',
+                  name: 'override-zookeeper',
+                  argDefaultValues: {
+                    url: env().VITE_ZOOKEEPER_WEBSOCKET_URL,
                   },
                 })
               }}

@@ -341,6 +341,7 @@ export interface ExecState {
   variables: { [key in string]?: KclValueView }
   operations: OperationsByModule
   artifactGraph: ArtifactGraph
+  namedViews: RustExecOutcome['namedViews']
   legacyAngleRefactorMetadata: LegacyAngleRefactorMeta[]
   issues: CompilationIssue[]
   filenames: { [x: number]: ModulePath | undefined }
@@ -391,6 +392,7 @@ export function emptyExecState(): ExecState {
     variables: {},
     operations: emptyOperationsByModule(),
     artifactGraph: defaultArtifactGraph(),
+    namedViews: null,
     legacyAngleRefactorMetadata: [],
     issues: [],
     filenames: [],
@@ -504,6 +506,7 @@ export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
     variables: execOutcome.variables,
     operations: execOutcome.operations,
     artifactGraph,
+    namedViews: execOutcome.namedViews,
     legacyAngleRefactorMetadata,
     issues: execOutcome.issues,
     filenames: execOutcome.filenames,

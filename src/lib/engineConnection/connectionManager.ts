@@ -1,12 +1,13 @@
 import type {
   ModelingCmdReq,
-  WebSocketRequest,
+  PostEffectType,
   WebSocketResponse,
 } from '@kittycad/lib'
 import {
   decode as msgpackDecode,
   encode as msgpackEncode,
 } from '@msgpack/msgpack'
+import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import { defaultSourceRange } from '@src/lang/sourceRange'
@@ -46,6 +47,7 @@ import {
   EngineConnectionManagerEvents,
   EngineConnectionStateType,
   getResponseErrorMessage,
+  isExecutionBoundaryCommand,
   REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
   validateStreamDimensions,
   type EngineDisconnectEventDetail,
@@ -58,6 +60,11 @@ import {
 import type RustContext from '@src/lib/rustContext'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
+import {
+  getViewportBackgroundColor,
+  getViewportPostEffect,
+  getViewportTheme,
+} from '@src/lib/settings/viewportRendering'
 import {
   darkModeMatcher,
   edgeColor,
@@ -78,6 +85,47 @@ import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 
 const RECONNECT_CAMERA_CAPTURE_TIMEOUT_MS = 300
+
+/**
+ * Commands the engine can only run in its graphics scene. A geometry-only
+ * session has no graphics, so it fails every one of them with "Graphics have
+ * not been enabled for this geometry context". The local renderer answers
+ * hover and click queries itself, but not while picking is off.
+ * `enable_sketch_mode` needs graphics only to adjust the camera, and
+ * `set_default_system_properties` only for a backface color, so neither is
+ * here.
+ */
+const GRAPHICS_ONLY_COMMANDS: ReadonlySet<ModelingCmdReq['cmd']['type']> =
+  new Set([
+    'camera_drag_start',
+    'camera_drag_move',
+    'camera_drag_end',
+    'default_camera_center_to_scene',
+    'default_camera_center_to_selection',
+    'default_camera_focus_on',
+    'default_camera_get_settings',
+    'default_camera_get_view',
+    'default_camera_look_at',
+    'default_camera_perspective_settings',
+    'default_camera_set_orthographic',
+    'default_camera_set_perspective',
+    'default_camera_set_view',
+    'default_camera_zoom',
+    'edge_lines_visible',
+    'highlight_set_entity',
+    'orient_to_face',
+    'plane_intersect_and_project',
+    'query_entity_type_with_point',
+    'reconfigure_stream',
+    'select_with_point',
+    'set_background_color',
+    'set_grid_auto_scale',
+    'set_grid_scale',
+    'set_order_independent_transparency',
+    'take_snapshot',
+    'view_isometric',
+    'zoom_to_fit',
+  ])
 
 export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
@@ -114,12 +162,14 @@ export class ConnectionManager extends EventTarget {
   get engineSessionId(): string | undefined {
     return this.connection?.id
   }
+
   private reconnectingConnection: Connection | undefined
   private prepareForReconnect:
     | ((signal: AbortSignal) => Promise<undefined | Error>)
     | undefined
   private reconnectPreparation: AbortController | undefined
   private reconnectPreparationFinished = false
+  private localSelectionCommandHandler: LocalSelectionCommandHandler | undefined
   private readonly activeExecutions = new Set<symbol>()
   private readonly activeRecoveries = new Set<symbol>()
 
@@ -136,6 +186,11 @@ export class ConnectionManager extends EventTarget {
 
   get apiCallId(): string | undefined {
     return this.connection?.apiCallId
+  }
+
+  /** Rendering mode of the active session; reevaluated after every reconnect. */
+  get geometryOnly(): boolean {
+    return this.connection?.geometryOnly ?? false
   }
 
   /** True when a scene command sent now reaches the engine. */
@@ -158,7 +213,10 @@ export class ConnectionManager extends EventTarget {
     return {
       theme: s.app.theme.current,
       highlightEdges: s.modeling.highlightEdges.current,
-      enableSSAO: s.modeling.enableSSAO.current,
+      viewportRendering: getViewportPostEffect(
+        s.modeling.viewportRendering.current,
+        s.modeling.enableSSAO.current
+      ),
       showScaleGrid: s.modeling.showScaleGrid.current,
       cameraProjection: s.modeling.cameraProjection.current,
       cameraOrbit: s.modeling.cameraOrbit.current,
@@ -351,6 +409,7 @@ export class ConnectionManager extends EventTarget {
     unitTestWebrtc,
     unitTestGeometryOnly,
     rustContext,
+    geometryOnly = false,
     kclVersion,
     prepareForReconnect,
   }: {
@@ -362,6 +421,7 @@ export class ConnectionManager extends EventTarget {
     unitTestWebrtc?: boolean
     unitTestGeometryOnly?: boolean
     rustContext?: RustContext
+    geometryOnly?: boolean
     kclVersion?: KclVersion
     prepareForReconnect?: (signal: AbortSignal) => Promise<undefined | Error>
   }) {
@@ -383,7 +443,8 @@ export class ConnectionManager extends EventTarget {
       )
     }
 
-    const invalidStreamDimensions = validateStreamDimensions({ width, height })
+    const invalidStreamDimensions =
+      !geometryOnly && validateStreamDimensions({ width, height })
     if (invalidStreamDimensions) {
       return Promise.reject(invalidStreamDimensions)
     }
@@ -402,10 +463,11 @@ export class ConnectionManager extends EventTarget {
 
     const handleMessage = this.createMessageHandler(rustContext)
 
-    const url = this.generateWebsocketURL(kclVersion)
+    const url = this.generateWebsocketURL(geometryOnly, kclVersion)
     this.connection = new Connection({
       url,
       token,
+      geometryOnly,
       handleOnDataChannelMessage: this.handleOnDataChannelMessage.bind(this),
       recordShutdownTrigger: this.recordShutdownTrigger.bind(this),
       tearDownManager: this.tearDown.bind(this),
@@ -449,7 +511,7 @@ export class ConnectionManager extends EventTarget {
     // Moved from ondatachannelopen in RTCPeerConnection.
     this.inSequence = 1
 
-    if (!this.connection.peerConnection) {
+    if (!geometryOnly && !this.connection.peerConnection) {
       return Promise.reject(
         new Error('this.connection.peerConnection is undefined')
       )
@@ -541,6 +603,7 @@ export class ConnectionManager extends EventTarget {
     // Engine is ready to start sending events!
     // Gotcha: The other listenerse above need to be initialized otherwise this will halt forever.
     await onEngineConnectionOpened()
+    this.setViewportRendering(this.settings.viewportRendering)
   }
 
   /**
@@ -548,6 +611,10 @@ export class ConnectionManager extends EventTarget {
    */
   handleOnDataChannelMessage(event: MessageEvent<any>) {
     const result: UnreliableResponses = JSON.parse(event.data)
+    this.dispatchUnreliableSubscribers(result)
+  }
+
+  private dispatchUnreliableSubscribers(result: UnreliableResponses) {
     Object.values(this.unreliableSubscriptions[result.type] || {}).forEach(
       // Hover/highlight responses may arrive out of order on the unreliable
       // channel. Only apply the newest sequenced result we have seen.
@@ -569,21 +636,59 @@ export class ConnectionManager extends EventTarget {
     )
   }
 
-  generateWebsocketURL(kclVersion: KclVersion | undefined) {
-    let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
+  private dispatchReliableSubscribers(result: {
+    type: string
+    data: Record<string, unknown>
+  }) {
+    Object.values(this.subscriptions[result.type] || {}).forEach((callback) => {
+      callback(result)
+    })
+  }
+
+  generateWebsocketURL(geometryOnly = false, kclVersion?: KclVersion) {
+    const versionQuery =
+      kclVersion === undefined
+        ? ''
+        : `&kcl_version=${encodeURIComponent(kclVersion)}`
+    if (geometryOnly) {
+      // No video either, but the engine frames camera moves such as zoom to
+      // fit for this size.
+      const resolution = validateStreamDimensions(this.streamDimensions)
+        ? ''
+        : `&video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}`
+      return withKittycadWebSocketURL(
+        `?geometry_only=true&webrtc=false${resolution}${versionQuery}`
+      )
+    }
+    let additionalSettings = `&post_effect=${this.settings.viewportRendering}`
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
-    if (kclVersion !== undefined) {
-      additionalSettings += `&kcl_version=${encodeURIComponent(kclVersion)}`
-    }
+    additionalSettings += versionQuery
     const url = withKittycadWebSocketURL(
       `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )
     return url
   }
 
+  setViewportRendering(mode: PostEffectType) {
+    const connection = this.connection
+    const useLocalRenderer =
+      connection?.geometryOnly ??
+      getSettingsFromActorContext(this.systemDeps.settingsActor).modeling
+        .useLocalRenderer.current
+    if (useLocalRenderer) return
+    if (!connection) {
+      return
+    }
+    const connectedMode =
+      new URL(connection.url).searchParams.get('post_effect') ?? 'noeffect'
+    if (connectedMode !== mode) connection.requestReconnect()
+  }
+
   // Set the engine's theme
   async setTheme(theme: Themes) {
+    if (this.geometryOnly) return
+
     if (!this.isReady) {
       EngineDebugger.addLog({
         label: 'connectionManager',
@@ -597,6 +702,9 @@ export class ConnectionManager extends EventTarget {
 
     await this.connection?.deferredConnection?.promise
 
+    const mode = this.settings.viewportRendering
+    const backgroundColor = getViewportBackgroundColor(theme, mode)
+
     // Set the stream background color
     // This takes RGBA values from 0-1
     // So we convert from the conventional 0-255 found in Figma
@@ -606,7 +714,7 @@ export class ConnectionManager extends EventTarget {
       metadata: {
         cmd: {
           type: 'set_background_color',
-          color: getThemeColorForEngine(theme),
+          color: backgroundColor,
         },
       },
     })
@@ -615,7 +723,7 @@ export class ConnectionManager extends EventTarget {
       type: 'modeling_cmd_req',
       cmd: {
         type: 'set_background_color',
-        color: getThemeColorForEngine(theme),
+        color: backgroundColor,
       },
     })
     EngineDebugger.addLog({
@@ -624,13 +732,13 @@ export class ConnectionManager extends EventTarget {
       metadata: {
         cmd: {
           type: 'set_background_color',
-          color: getThemeColorForEngine(theme),
+          color: backgroundColor,
         },
       },
     })
 
     // Sets the default line colors
-    const opposingTheme = getOppositeTheme(theme)
+    const opposingTheme = getOppositeTheme(getViewportTheme(theme, mode))
     const defaultSystemColor = getThemeColorForEngine(opposingTheme)
     const setDefaultSystemPropertiesCmd = {
       type: 'set_default_system_properties',
@@ -675,6 +783,8 @@ export class ConnectionManager extends EventTarget {
 
   /** Set default system properties in the engine, with debug logging */
   async setDefaultSystemProperties(backfaceColor: string) {
+    if (this.geometryOnly) return
+
     const backfaceRgbaColor = hexToRgba(backfaceColor)
     if (!backfaceRgbaColor) {
       EngineDebugger.addLog({
@@ -724,6 +834,8 @@ export class ConnectionManager extends EventTarget {
 
   /** Set the edge highlighting setting in the engine, with debug logging */
   async setHighlightEdges(shouldHighlight: boolean) {
+    if (this.geometryOnly) return
+
     const cmd = {
       type: 'edge_lines_visible',
       hidden: !shouldHighlight,
@@ -761,6 +873,8 @@ export class ConnectionManager extends EventTarget {
 
   /** Set the "show scale grid" setting in the engine, with debug logging */
   async setShowScaleGrid(shouldShowGrid: boolean) {
+    if (this.geometryOnly) return
+
     const cmd = {
       type: 'edge_lines_visible',
       hidden: !shouldShowGrid,
@@ -796,10 +910,58 @@ export class ConnectionManager extends EventTarget {
     debugLog('done')
   }
 
+  /**
+   * Lets the local renderer answer selection commands in place of the engine.
+   * Returns a function that removes the handler again.
+   */
+  setLocalSelectionCommandHandler(handler: LocalSelectionCommandHandler) {
+    this.localSelectionCommandHandler = handler
+    return () => {
+      if (this.localSelectionCommandHandler === handler) {
+        this.localSelectionCommandHandler = undefined
+      }
+    }
+  }
+
   async sendSceneCommand(
     command: EngineCommand,
     forceWebsocket = false
   ): Promise<WebSocketResponse | [WebSocketResponse] | null> {
+    // The handler declines without a promise, so a command it does not want
+    // (or any command when there is no handler) is still sent in this step.
+    const localSelection = this.localSelectionCommandHandler?.(command, {
+      streamDimensions: this.streamDimensions,
+    })
+    if (localSelection) {
+      const localSelectionResult = await localSelection
+      if (localSelectionResult) {
+        if (localSelectionResult.unreliableModelingResponse) {
+          this.dispatchUnreliableSubscribers(
+            localSelectionResult.unreliableModelingResponse as UnreliableResponses
+          )
+        }
+        if (localSelectionResult.modelingResponse) {
+          this.dispatchReliableSubscribers(
+            localSelectionResult.modelingResponse
+          )
+        }
+        return Promise.resolve(localSelectionResult.websocketResponse ?? null)
+      }
+    }
+
+    if (
+      this.geometryOnly &&
+      command.type === 'modeling_cmd_req' &&
+      GRAPHICS_ONLY_COMMANDS.has(command.cmd.type)
+    ) {
+      EngineDebugger.addLog({
+        label: 'sendSceneCommand',
+        message: 'not sent: a geometry-only engine has no graphics for it',
+        metadata: { type: command.cmd.type },
+      })
+      return Promise.resolve(null)
+    }
+
     if (
       this.connection === undefined ||
       !this.started ||
@@ -832,10 +994,15 @@ export class ConnectionManager extends EventTarget {
     }
 
     if (command.type === 'modeling_cmd_batch_req') {
-      this.connection.send(command)
-      // TODO - handlePendingCommands does not handle batch commands
-      // return this.handlePendingCommand(command.requests[0].cmd_id, command.cmd)
-      return Promise.resolve(null)
+      if (!command.responses) {
+        this.connection.send(command)
+        return null
+      }
+      return this.sendCommand(
+        command.batch_id,
+        { command, idToRangeMap: {}, range: defaultSourceRange() },
+        true
+      ).then(([response]) => response)
     }
 
     if (command.type !== 'modeling_cmd_req') {
@@ -1104,42 +1271,36 @@ export class ConnectionManager extends EventTarget {
         message.resp.type === 'modeling_batch' &&
         pending.command.type === 'modeling_cmd_batch_req'
       ) {
-        const individualPendingResponses: {
-          [key: string]: WebSocketRequest
-        } = {}
+        const responses = message.resp.data.responses
+        // Response maps are unordered. Deliver each acknowledged command in
+        // request order, before the resolved promise's continuation runs.
         pending.command.requests.forEach(({ cmd, cmd_id }) => {
-          individualPendingResponses[cmd_id] = {
-            type: 'modeling_cmd_req',
-            cmd,
-            cmd_id,
-          }
-        })
-        Object.entries(message.resp.data.responses).forEach(
-          ([commandId, response]) => {
-            if (!('response' in response)) return
-            const command = individualPendingResponses[commandId]
-            if (!command) return
-            if (command.type === 'modeling_cmd_req')
-              this.addCommandLog({
-                type: CommandLogType.ReceiveReliable,
-                data: {
-                  type: 'modeling',
-                  data: {
-                    modeling_response: response.response,
-                  },
-                },
-                id: commandId,
-                cmd_type: command?.cmd?.type,
-              })
-
-            this.responseMap[commandId] = {
+          const response = responses[cmd_id]
+          if (!response || !('response' in response)) return
+          this.addCommandLog({
+            type: CommandLogType.ReceiveReliable,
+            data: {
               type: 'modeling',
               data: {
                 modeling_response: response.response,
               },
-            }
+            },
+            id: cmd_id,
+            cmd_type: cmd.type,
+          })
+
+          if (response.response.type === cmd.type) {
+            Object.values(
+              this.subscriptions[response.response.type] || {}
+            ).forEach((callback) => callback(response.response))
           }
-        )
+          this.responseMap[cmd_id] = {
+            type: 'modeling',
+            data: {
+              modeling_response: response.response,
+            },
+          }
+        })
       }
     }
   }
@@ -1213,7 +1374,17 @@ export class ConnectionManager extends EventTarget {
   }
 
   async handleResize({ width, height }: { width: number; height: number }) {
-    if (!this.connection) {
+    if (this.geometryOnly) {
+      // There is no video to resize, but the local renderer maps pointer
+      // positions through these dimensions.
+      if (!validateStreamDimensions({ width, height })) {
+        this.streamDimensions = { width, height }
+      }
+      return
+    }
+
+    const connection = this.connection
+    if (!connection) {
       console.warn('unable to resize, connection is not found')
       return
     }
@@ -1224,23 +1395,50 @@ export class ConnectionManager extends EventTarget {
     }
 
     // Make sure the connection is ready otherwise you are sending the events too early.
-    await this.connection.deferredConnection?.promise
-
-    this.streamDimensions = {
-      width,
-      height,
+    await connection.deferredConnection?.promise
+    // A resize belongs to the stream that requested it, not a replacement
+    // connection created while its readiness was pending.
+    if (this.connection !== connection) {
+      return
     }
 
+    if (
+      this.streamDimensions.width === width &&
+      this.streamDimensions.height === height
+    )
+      return
+
+    const cmdId = uuidv4()
     const resizeCmd: EngineCommand = {
       type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
+      cmd_id: cmdId,
       cmd: {
         type: 'reconfigure_stream',
-        ...this.streamDimensions,
+        width,
+        height,
         fps: 60, // This is required but it does next to nothing
       },
     }
-    this.connection.send(resizeCmd)
+    const previousDimensions = this.streamDimensions
+    const dimensions = { width, height }
+    // The viewport observer serializes resizes. Later reliable pointer commands
+    // must use the viewport of the resize queued ahead of them, before its ACK.
+    this.streamDimensions = dimensions
+    try {
+      await this.sendCommand(
+        cmdId,
+        { command: resizeCmd, idToRangeMap: {}, range: defaultSourceRange() },
+        true
+      )
+    } catch (error) {
+      if (
+        this.connection === connection &&
+        this.streamDimensions === dimensions
+      ) {
+        this.streamDimensions = previousDimensions
+      }
+      return Promise.reject(error)
+    }
   }
 
   recordShutdownTrigger(options: ManagerTearDown) {
@@ -1447,14 +1645,13 @@ export class ConnectionManager extends EventTarget {
     this.tearDown({ route: 'window-offline', initiatedBy: 'client' })
   }
 
-  // VITEST ONLY
   online() {
     this.dispatchEvent(
       new CustomEvent(EngineConnectionManagerEvents.OnlineRequest, {})
     )
     EngineDebugger.addLog({
       label: 'connectionManager',
-      message: 'online - EngineRestartRequest',
+      message: 'online - OnlineRequest',
     })
   }
 
@@ -1634,7 +1831,8 @@ export class ConnectionManager extends EventTarget {
       JSON.parse(idToRangeStr)
     // Current execution is stale, going to interrupt, a new execution will trigger
     // Used in conjunction with rejectAllModelingCommands
-    if (this.executionIsStale) {
+    // Preserve execution boundaries so interruption can still restore rendering quality.
+    if (!isExecutionBoundaryCommand(command) && this.executionIsStale) {
       return Promise.reject(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
     }
     try {
@@ -1744,11 +1942,35 @@ export class ConnectionManager extends EventTarget {
       })
     )
 
-    return await this.sendSceneCommand({
+    const response = await this.sendSceneCommand({
       type: 'modeling_cmd_batch_req',
       batch_id: uuidv4(),
       requests,
-      responses: false,
+      responses: true,
     })
+    const acknowledgement = isArray(response) ? response[0] : response
+    const results =
+      acknowledgement &&
+      isModelingBatchResponse(acknowledgement) &&
+      acknowledgement.success
+        ? acknowledgement.resp.data.responses
+        : undefined
+    for (const request of requests) {
+      const result = results?.[request.cmd_id]
+      if (
+        !result ||
+        !('response' in result) ||
+        result.response.type !== 'object_visible'
+      ) {
+        return Promise.reject(
+          new Error(
+            getResponseErrorMessage(
+              result && 'errors' in result ? [result] : response,
+              'Object visibility command was not acknowledged'
+            )
+          )
+        )
+      }
+    }
   }
 }

@@ -219,11 +219,7 @@ export function applyVectorToPoint2D(
 function extractNumericValue(
   expr: Expr
 ): { value: number; units: string } | null {
-  if (
-    expr.type === 'Number' ||
-    expr.type === 'Var' ||
-    expr.type === 'VarExact'
-  ) {
+  if (expr.type === 'Number' || expr.type === 'Var') {
     return {
       value: expr.value,
       units: expr.units,
@@ -239,10 +235,8 @@ function extractNumericValue(
  */
 export function hasNumericValue(
   expr: Expr
-): expr is Extract<Expr, { type: 'Number' | 'Var' | 'VarExact' }> {
-  return (
-    expr.type === 'Number' || expr.type === 'Var' || expr.type === 'VarExact'
-  )
+): expr is Extract<Expr, { type: 'Number' | 'Var' }> {
+  return expr.type === 'Number' || expr.type === 'Var'
 }
 
 /**
@@ -250,11 +244,7 @@ export function hasNumericValue(
  * Returns the value if the Expr is a Number or Var, otherwise returns the default value (0).
  */
 export function getNumericValue(expr: Expr, defaultValue = 0): number {
-  if (
-    expr.type === 'Number' ||
-    expr.type === 'Var' ||
-    expr.type === 'VarExact'
-  ) {
+  if (expr.type === 'Number' || expr.type === 'Var') {
     return expr.value
   }
   return defaultValue

@@ -46,8 +46,9 @@ interface ProjectLibraryPreviewRowProps {
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
   fileOperations: Pick<FileOperationsRegistryService, 'stat' | 'readFile'>
+  projectShellEnabled?: boolean
   showCloudSyncUi: boolean
-  onMoveToLibrary: (project: HomeProjectEntry) => void
+  onCloneToLibrary: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
   projectLibraryTypes?: ReadonlyMap<string, ProjectLibraryTypeContribution>
 }
@@ -84,8 +85,9 @@ export function ProjectLibraryPreviewRow({
   projectStatuses,
   projectActions,
   fileOperations,
+  projectShellEnabled = false,
   showCloudSyncUi,
-  onMoveToLibrary,
+  onCloneToLibrary,
   projectLibraryDrag,
   projectLibraryTypes,
 }: ProjectLibraryPreviewRowProps) {
@@ -97,7 +99,7 @@ export function ProjectLibraryPreviewRow({
     projectLibraryDrag?.getLibraryDropTargetProps(library)
   const isActiveDropTarget =
     projectLibraryDrag?.isLibraryDragOver(library) ?? false
-  const sectionClassName = `mx-1 flex flex-col gap-3 rounded-sm border p-2 transition-colors ${
+  const sectionClassName = `mx-1 flex flex-col gap-3 rounded-sm border p-2 ${
     isActiveDropTarget
       ? 'border-primary bg-primary/5 ring-2 ring-primary/30 dark:bg-primary/10'
       : 'border-transparent'
@@ -165,9 +167,10 @@ export function ProjectLibraryPreviewRow({
           projectStatuses={projectStatuses}
           projectActions={projectActions}
           fileOperations={fileOperations}
+          projectShellEnabled={projectShellEnabled}
           showCloudSyncUi={showCloudSyncUi}
           showSourceStatusBadges={false}
-          onMoveToLibrary={onMoveToLibrary}
+          onCloneToLibrary={onCloneToLibrary}
           projectLibraryDrag={projectLibraryDrag}
           density="compact"
           className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
@@ -189,8 +192,9 @@ interface ProjectCardListProps {
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
   fileOperations: Pick<FileOperationsRegistryService, 'stat' | 'readFile'>
+  projectShellEnabled?: boolean
   showCloudSyncUi: boolean
-  onMoveToLibrary: (project: HomeProjectEntry) => void
+  onCloneToLibrary: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
   density?: 'default' | 'compact'
   showDetails?: boolean
@@ -203,8 +207,9 @@ export function ProjectCardList({
   projectStatuses,
   projectActions,
   fileOperations,
+  projectShellEnabled = false,
   showCloudSyncUi,
-  onMoveToLibrary,
+  onCloneToLibrary,
   projectLibraryDrag,
   density = 'default',
   showDetails = true,
@@ -230,9 +235,10 @@ export function ProjectCardList({
             }
             density={density}
             showDetails={showDetails}
+            projectShellEnabled={projectShellEnabled}
             showCloudSyncUi={showCloudSyncUi}
             showSourceStatusBadges={showSourceStatusBadges}
-            onMoveToLibrary={onMoveToLibrary}
+            onCloneToLibrary={onCloneToLibrary}
             {...projectDragProps}
           />
         )

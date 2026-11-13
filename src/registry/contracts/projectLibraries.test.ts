@@ -196,13 +196,13 @@ describe('project library settings', () => {
     }
 
     expect(getProjectLibrarySummaryDescription(cloudLibrary)).toBe(
-      'Projects in this library sync to your Zoo account'
+      'Projects in this library are saved to your Zoo account'
     )
     expect(getProjectLibrarySummaryTooltip(cloudLibrary)).toContain(
       'Technical source: zoo://personal'
     )
     expect(getProjectLibraryDetailsDescription(cloudLibrary)).toBe(
-      'Projects in this library sync to your Zoo account. Storage type and model-training controls depend on your plan.'
+      'Projects in this library are saved to your Zoo account. Storage type and model-training controls depend on your plan.'
     )
     expect(getProjectLibraryLocationLabel(cloudLibrary)).toBe(
       'Technical source'

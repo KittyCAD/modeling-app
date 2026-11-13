@@ -1,3 +1,5 @@
+import type { LocalRenderer } from '@src/clientSideScene/localRenderer/LocalRenderer'
+import { base64ToBytes } from '@src/lib/base64'
 import { writeProjectThumbnailFile } from '@src/lib/desktop'
 import { getVisibleElementRect } from '@src/lib/viewportElement'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
@@ -43,7 +45,7 @@ const getVisibleCanvasCrop = (canvas: HTMLCanvasElement) => {
 }
 
 const drawVisibleVideoStream = (
-  video: HTMLVideoElement,
+  frameSource: HTMLVideoElement | HTMLCanvasElement,
   canvas: HTMLCanvasElement,
   targetCanvas: HTMLCanvasElement
 ) => {
@@ -60,7 +62,7 @@ const drawVisibleVideoStream = (
     return null
   }
 
-  fullContext.drawImage(video, 0, 0, fullCanvas.width, fullCanvas.height)
+  fullContext.drawImage(frameSource, 0, 0, fullCanvas.width, fullCanvas.height)
   targetCanvas.width = crop.sourceWidth
   targetCanvas.height = crop.sourceHeight
   const targetContext = targetCanvas.getContext('2d')
@@ -82,6 +84,28 @@ const drawVisibleVideoStream = (
   return crop
 }
 
+/** Copies the frame before returning, and encodes it afterwards. */
+function encodeVisibleFrame(
+  frameSource: HTMLVideoElement | HTMLCanvasElement,
+  canvas: HTMLCanvasElement
+): Promise<Blob | null> {
+  const frameCanvas = document.createElement('canvas')
+  const crop = drawVisibleVideoStream(frameSource, canvas, frameCanvas)
+  if (!crop) {
+    return Promise.resolve(null)
+  }
+  return new Promise((resolve, reject) => {
+    // Serialize thumbnails asynchronously so PNG encoding does not block input.
+    frameCanvas.toBlob((blob) => {
+      if (blob) {
+        resolve(blob)
+      } else {
+        reject(new Error('Failed to encode project thumbnail'))
+      }
+    }, 'image/png')
+  })
+}
+
 async function takeScreenshotOfVideoStreamCanvas(): Promise<Blob | null> {
   const canvas = document.querySelector('[data-engine]')
   const video = document.getElementById('video-stream')
@@ -91,44 +115,45 @@ async function takeScreenshotOfVideoStreamCanvas(): Promise<Blob | null> {
     canvas instanceof HTMLCanvasElement &&
     video instanceof HTMLVideoElement
   ) {
-    const videoCanvas = document.createElement('canvas')
-    const crop = drawVisibleVideoStream(video, canvas, videoCanvas)
-    if (!crop) {
-      return null
-    }
-    return new Promise((resolve, reject) => {
-      // Serialize thumbnails asynchronously so PNG encoding does not block input.
-      videoCanvas.toBlob((blob) => {
-        if (blob) {
-          resolve(blob)
-        } else {
-          reject(new Error('Failed to encode project thumbnail'))
-        }
-      }, 'image/png')
-    })
+    return encodeVisibleFrame(video, canvas)
   } else {
     return null
   }
 }
 
 /**
- * Captures the video stream canvas composited with the gizmo overlay,
- * matching what the user sees in the modeling viewport.
+ * Draws the visible part of the 3D scene: from the local renderer if there is
+ * one, else from the video.
  */
-export function takeViewportScreenshot(): string {
+const drawVisibleScene = (
+  targetCanvas: HTMLCanvasElement,
+  localRenderer?: LocalRenderer | null
+) => {
+  if (localRenderer) {
+    return localRenderer.readFrame((renderedCanvas) =>
+      drawVisibleVideoStream(renderedCanvas, renderedCanvas, targetCanvas)
+    )
+  }
   const canvas = document.querySelector('[data-engine]')
   const video = document.getElementById('video-stream')
   if (
-    !canvas ||
-    !video ||
-    !(canvas instanceof HTMLCanvasElement) ||
-    !(video instanceof HTMLVideoElement)
+    canvas instanceof HTMLCanvasElement &&
+    video instanceof HTMLVideoElement
   ) {
-    return ''
+    return drawVisibleVideoStream(video, canvas, targetCanvas)
   }
+  return null
+}
 
+/**
+ * Captures the 3D scene composited with the gizmo overlay, matching what the
+ * user sees in the modeling viewport.
+ */
+export function takeViewportScreenshot(
+  localRenderer?: LocalRenderer | null
+): string {
   const compositeCanvas = document.createElement('canvas')
-  const crop = drawVisibleVideoStream(video, canvas, compositeCanvas)
+  const crop = drawVisibleScene(compositeCanvas, localRenderer)
   const ctx = compositeCanvas.getContext('2d')
   if (!crop) return ''
   if (!ctx) return ''
@@ -159,35 +184,38 @@ export function dataUrlToFile(dataUrl: string, fileName: string): File | Error {
   }
 
   const mime = header.match(/:(.*?);/)?.[1] ?? 'application/octet-stream'
-  const bytes = atob(base64)
-  const buf = new Uint8Array(bytes.length)
-  for (let i = 0; i < bytes.length; i++) {
-    buf[i] = bytes.charCodeAt(i)
-  }
+  const buf = base64ToBytes(base64)
 
   return new File([buf], fileName, { type: mime })
 }
 
-export function createThumbnailPNGOnDesktop({
+export function createProjectThumbnail({
   fileOperations,
   projectDirectoryWithoutEndingSlash,
+  renderedCanvas,
+  isCurrent,
+  writeThumbnail = (path, bytes) =>
+    writeProjectThumbnailFile(fileOperations, bytes, path),
 }: {
   fileOperations: FileOperationsRegistryService
   projectDirectoryWithoutEndingSlash: string
+  /**
+   * A canvas the local renderer drew in this same task, used instead of the
+   * video stream. WebGPU and WebGL canvases read back blank afterwards, so it
+   * is copied before this returns.
+   */
+  renderedCanvas?: HTMLCanvasElement
+  isCurrent: () => boolean
+  writeThumbnail?: (path: string, bytes: Uint8Array) => Promise<void>
 }) {
-  setTimeout(() => {
-    if (!projectDirectoryWithoutEndingSlash) {
-      return
-    }
-    // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
-    takeScreenshotOfVideoStreamCanvas()
+  if (!isCurrent()) return
+  const save = (screenshot: Promise<Blob | null>) => {
+    screenshot
       .then(async (thumbnail) => {
-        if (!thumbnail) return
-        await writeProjectThumbnailFile(
-          fileOperations,
-          new Uint8Array(await thumbnail.arrayBuffer()),
-          projectDirectoryWithoutEndingSlash
-        )
+        if (!thumbnail || !isCurrent()) return
+        const bytes = new Uint8Array(await thumbnail.arrayBuffer())
+        if (!isCurrent()) return
+        await writeThumbnail(projectDirectoryWithoutEndingSlash, bytes)
       })
       .catch((e) => {
         console.error(
@@ -195,5 +223,18 @@ export function createThumbnailPNGOnDesktop({
         )
         console.error(e)
       })
+  }
+  if (renderedCanvas) {
+    if (projectDirectoryWithoutEndingSlash) {
+      save(encodeVisibleFrame(renderedCanvas, renderedCanvas))
+    }
+    return
+  }
+  setTimeout(() => {
+    if (!projectDirectoryWithoutEndingSlash || !isCurrent()) {
+      return
+    }
+    // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
+    save(takeScreenshotOfVideoStreamCanvas())
   }, 500)
 }

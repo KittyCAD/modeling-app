@@ -1,3 +1,4 @@
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import {
@@ -41,9 +42,7 @@ export async function separateProjectsSharingProjectId({
         projectPath,
         PROJECT_SETTINGS_FILE_NAME
       )
-      const contents = new TextDecoder().decode(
-        await fileOperations.readFile(projectTomlPath)
-      )
+      const contents = await readTextFile(fileOperations, projectTomlPath)
       return {
         contents,
         projectId: getProjectIdFromProjectTomlContents(contents),

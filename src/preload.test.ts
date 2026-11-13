@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const fsPromisesMock = vi.hoisted(() => ({
   rename: vi.fn(),
   stat: vi.fn(),
+  lstat: vi.fn(),
   mkdir: vi.fn(),
   cp: vi.fn(),
   rm: vi.fn(),
@@ -13,6 +14,8 @@ const fsPromisesMock = vi.hoisted(() => ({
   readdir: vi.fn(),
   constants: { R_OK: 4, W_OK: 2 },
 }))
+
+const exposeInMainWorldMock = vi.hoisted(() => vi.fn())
 
 const ipcRendererMock = vi.hoisted(() => ({
   on: vi.fn(),
@@ -26,7 +29,7 @@ vi.mock('node:fs/promises', () => ({
 
 vi.mock('electron', () => ({
   contextBridge: {
-    exposeInMainWorld: vi.fn(),
+    exposeInMainWorld: exposeInMainWorldMock,
   },
   ipcRenderer: ipcRendererMock,
 }))
@@ -42,6 +45,22 @@ vi.mock('chokidar', () => ({
 }))
 
 import { move, openExternal } from '@src/preload'
+
+describe('filesystem stat bridge', () => {
+  // Capture the exposed API before other suites clear mock call history.
+  const api = exposeInMainWorldMock.mock.calls.find(
+    ([name]) => name === 'electron'
+  )![1] as NonNullable<typeof window.electron>
+
+  it('can inspect a link without following its target', async () => {
+    const link = { mode: 0xa000 }
+    fsPromisesMock.lstat.mockResolvedValueOnce(link)
+    await expect(
+      api.stat('/project/link', { followSymlinks: false })
+    ).resolves.toBe(link)
+    expect(fsPromisesMock.lstat).toHaveBeenCalledWith('/project/link')
+  })
+})
 
 describe('move', () => {
   beforeEach(() => {

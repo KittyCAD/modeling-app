@@ -1,3 +1,4 @@
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 /** Text access and watch hooks shared by a project session's files and editors. */
@@ -17,8 +18,7 @@ export function createTextFileIO(
   watcher: Pick<TextFileIO, 'watch' | 'unwatch'>
 ): TextFileIO {
   return {
-    read: async (path) =>
-      new TextDecoder().decode(await operations.readFile(path)),
+    read: async (path) => await readTextFile(operations, path),
     write: (path, content) => operations.writeFile(path, content),
     watch: (path, key, onEvent) => watcher.watch(path, key, onEvent),
     unwatch: (path, key) => watcher.unwatch(path, key),

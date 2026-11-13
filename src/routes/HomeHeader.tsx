@@ -22,6 +22,8 @@ type ReadWriteProjectState = {
 
 interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
   title: string
+  onRefresh?: () => void
+  isRefreshing?: boolean
   library?: ProjectLibrary
   showLibraryBackLink?: boolean
   setQuery: (query: string) => void
@@ -35,6 +37,8 @@ interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
 
 export function HomeHeader({
   title,
+  onRefresh,
+  isRefreshing = false,
   library,
   showLibraryBackLink = false,
   setQuery,
@@ -87,6 +91,23 @@ export function HomeHeader({
           </div>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+          {onRefresh && (
+            <ActionButton
+              Element="button"
+              onClick={onRefresh}
+              disabled={isRefreshing}
+              aria-label="Refresh projects"
+              aria-busy={isRefreshing}
+              className="text-xs border-primary/10"
+              iconStart={{
+                icon: 'arrowRotateRight',
+                bgClassName: 'bg-transparent',
+                iconClassName: isRefreshing ? 'animate-spin' : '',
+              }}
+            >
+              Refresh
+            </ActionButton>
+          )}
           <ProjectSearchBar
             setQuery={setQuery}
             keybinding={projectSearchKeybinding}
