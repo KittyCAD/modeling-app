@@ -1,4 +1,8 @@
 import {
+  serveFileReads,
+  type FileReadOperations,
+} from '@src/lib/fileSystem/workerBridge'
+import {
   FromServer,
   IntoServer,
   LanguageServerClient,
@@ -50,17 +54,20 @@ type FileSnapshot = {
 }
 
 type CreateLspServiceOptions = {
+  getFileOperations?: () => FileReadOperations
   getAuth: () => AuthRegistryService
   getUserFeatures: () => UserFeaturesRegistryService
 }
 
 export function createLspService({
   getAuth,
+  getFileOperations,
   getUserFeatures,
 }: CreateLspServiceOptions): {
   service: LspService
   dispose: () => void
 } {
+  let disposeFileReads: (() => void) | undefined
   let auth: AuthRegistryService | null = null
   let authSubscription: Subscription | undefined
   let userFeatures: UserFeaturesRegistryService | null = null
@@ -101,6 +108,7 @@ export function createLspService({
       kclManager?.clearGlobalHistory()
       currentProjectSnapshot = null
       currentFileSnapshot = null
+      reconcileRuntime()
     },
     onProjectOpen: (project, file) => {
       currentProjectSnapshot = { project }
@@ -108,11 +116,13 @@ export function createLspService({
         filePath: file?.path || null,
         projectPath: project?.path || null,
       }
+      reconcileRuntime()
       notifyProjectOpen(project, file)
       reattachCodeMirror()
     },
     onFileOpen: (filePath, projectPath) => {
       currentFileSnapshot = { filePath, projectPath }
+      reconcileRuntime()
       const documentUri = filePathToUri(filePath || PROJECT_ENTRYPOINT)
       forEachClient((client) => {
         client.textDocumentDidOpen({
@@ -136,6 +146,7 @@ export function createLspService({
       })
       if (currentFileSnapshot?.filePath === filePath) {
         currentFileSnapshot = null
+        reconcileRuntime()
       }
     },
     onFileCreate: (file) => {
@@ -204,7 +215,12 @@ export function createLspService({
 
   function reconcileRuntime() {
     const token = getAuthToken()
-    if (!kclManager || !token || !canStartWorkerRuntime()) {
+    // The app also attaches a blank editor on Home. Only an owned project or
+    // file needs a language server, including while waiting for auth or flags.
+    const hasOpenContext = Boolean(
+      currentProjectSnapshot?.project?.path || currentFileSnapshot?.filePath
+    )
+    if (!kclManager || !hasOpenContext || !token || !canStartWorkerRuntime()) {
       stopRuntime()
       return
     }
@@ -308,14 +324,24 @@ export function createLspService({
       kclRuntimeFlags,
     }
 
-    lspWorker.postMessage({
-      worker: LspWorker.Kcl,
-      eventType: LspWorkerEventType.Init,
-      eventData: initEvent,
-    })
+    if (getFileOperations) {
+      const channel = new MessageChannel()
+      disposeFileReads = serveFileReads(channel.port1, getFileOperations())
+      initEvent.fileReads = channel.port2
+    }
+    lspWorker.postMessage(
+      {
+        worker: LspWorker.Kcl,
+        eventType: LspWorkerEventType.Init,
+        eventData: initEvent,
+      },
+      initEvent.fileReads ? [initEvent.fileReads] : []
+    )
   }
 
   function stopRuntime() {
+    disposeFileReads?.()
+    disposeFileReads = undefined
     pendingStartup?.abortController.abort()
     pendingStartup = undefined
     detachCodeMirror()

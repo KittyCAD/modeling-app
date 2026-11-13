@@ -1,6 +1,6 @@
+import type { FileReadOperations } from '@src/lib/fileSystem/workerBridge'
 import type { Abortable } from 'events'
 import type { ObjectEncodingOptions, OpenMode } from 'fs'
-import fsZds from '@src/lib/fs-zds'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 
 import electronfs from '@src/lib/fs-zds/electronfs'
@@ -11,10 +11,35 @@ import opfs from '@src/lib/fs-zds/opfs'
 /// project since it is solely used by the std lib when executing code.
 export class FileSystemManager {
   private _fs: IZooDesignStudioFS
+  private operations: FileReadOperations
   private _dir: string | null = null
 
   constructor(fs: IZooDesignStudioFS) {
     this._fs = fs
+    this.operations = {
+      readFile: (path) => fs.readFile(path),
+      exists: async (path) => {
+        try {
+          await fs.stat(path)
+          return true
+        } catch (error) {
+          if (
+            error === 'ENOENT' ||
+            (error &&
+              typeof error === 'object' &&
+              'code' in error &&
+              error.code === 'ENOENT')
+          )
+            return false
+          return Promise.reject(error)
+        }
+      },
+      readDirectory: (path) => fs.readdir(path),
+    }
+  }
+
+  setOperations(operations: FileReadOperations) {
+    this.operations = operations
   }
 
   get dir() {
@@ -41,7 +66,7 @@ export class FileSystemManager {
     if (targetPath.startsWith(dir)) {
       targetPath = targetPath.slice(dir.length)
     }
-    return fsZds.join(dir, targetPath)
+    return this._fs.join(dir, targetPath)
   }
 
   /**
@@ -74,8 +99,9 @@ export class FileSystemManager {
       | null
   ): Promise<string | Uint8Array<ArrayBufferLike>> {
     const filePath = this.join(this.dir, targetPath)
-    const data = await this._fs.readFile(filePath, options || undefined)
-    return data
+    const data = await this.operations.readFile(filePath)
+    const encoding = typeof options === 'string' ? options : options?.encoding
+    return encoding ? new TextDecoder(encoding).decode(data) : data
   }
 
   /**
@@ -83,14 +109,7 @@ export class FileSystemManager {
    */
   async exists(targetPath: string): Promise<boolean> {
     const file = this.join(this.dir, targetPath)
-    try {
-      await this._fs.stat(file)
-    } catch (e) {
-      if (e === 'ENOENT') {
-        return false
-      }
-    }
-    return true
+    return this.operations.exists(file)
   }
 
   /**
@@ -98,14 +117,7 @@ export class FileSystemManager {
    */
   async getAllFiles(targetPath: string): Promise<string[]> {
     const filepath = this.join(this.dir, targetPath)
-    return await this._fs
-      .readdir(filepath)
-      .catch((error: Error) => {
-        return Promise.reject(new Error(`Error reading dir: ${error}`))
-      })
-      .then((files: string[]) => {
-        return files.map((filePath) => filePath)
-      })
+    return [...(await this.operations.readDirectory(filepath))]
   }
 }
 

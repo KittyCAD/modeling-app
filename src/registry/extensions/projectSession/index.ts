@@ -1,8 +1,7 @@
-import {
-  projectStorageProvidersValueSpec,
-  type ProjectStorage,
-} from '@src/lib/projectSession/storage'
+import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
+import { FileSaveStatus } from '@src/components/FileSaveStatus'
 import fsZds from '@src/lib/fs-zds'
+import { reportRejection } from '@src/lib/trap'
 import { getProjectInfo, writeProjectThumbnailFile } from '@src/lib/desktop'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
@@ -21,14 +20,24 @@ import { engineConnectionService } from '@src/registry/contracts/engineConnectio
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { ExpectedFileOperationError } from '@src/lib/fileSystem/operationErrors'
-import { flushActiveTextFileWrite } from '@src/lib/activeTextFile'
+import {
+  flushActiveTextFileWrite,
+  adoptStorageTextSnapshot,
+} from '@src/lib/activeTextFile'
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
   provideService,
+  provide,
 } from '@kittycad/registry'
 import { computed, signal } from '@preact/signals-core'
+import {
+  projectStorageProvidersValueSpec,
+  type ProjectStorage,
+} from '@src/lib/projectSession/storage'
 import type { ZDSProject } from '@src/lib/projectSession'
+import projectStorageWatcher from '@src/lib/projectSession/registry/storageWatcher'
+import { retryProjectSave } from '@src/lib/projectSession/retrySave'
 import {
   createTextFileIO,
   type TextFileIO,
@@ -45,6 +54,7 @@ import {
 export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   const project = signal<ZDSProject | undefined>(undefined)
   let refreshGeneration = 0
+  let reconciliationGeneration = 0
   const executingEditor = computed(() => {
     const currentProject = project.value
     const editor = currentProject?.executingEditor.value
@@ -65,7 +75,6 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   const currentProjectLibraryId = signal<string | undefined>(undefined)
   let textFileIO: TextFileIO | undefined
   const electron = window.electron
-
   const watchers = new Map<string, () => void>()
   const storageFor = (path: string): ProjectStorage => {
     for (const resolve of ctx.valueSpecs.get(
@@ -98,7 +107,43 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   }
 
   const serviceImpl: ProjectSessionService = {
+    applyStorageSnapshot: (root, files) => {
+      const current = project.peek()
+      if (!current || current.path !== root) return
+      adoptStorageTextSnapshot(
+        root,
+        new Map(
+          files.map((file) => [fsZds.join(root, file.relativePath), file.data])
+        )
+      )
+      const editor = current.executingEditor.peek()
+      const file = files.find(
+        (file) => fsZds.join(root, file.relativePath) === editor?.path
+      )
+      editor?.adoptStorageSnapshot(
+        root,
+        file ? new TextDecoder().decode(file.data) : undefined
+      )
+      // Tree refreshes must not cancel rebuilding an adopted storage snapshot.
+      ++refreshGeneration
+      const generation = ++reconciliationGeneration
+      const isCurrent = () =>
+        project.peek() === current && reconciliationGeneration === generation
+      return current
+        .reloadFilesFromStorage(isCurrent)
+        .then(async () => {
+          if (!isCurrent()) return
+          if (!file) {
+            const target = current.projectIORefSignal.peek().default_file
+            if (target) await serviceImpl.openFile(target)
+            else await ctx.services.get(routerService).navigate(PATHS.HOME)
+          }
+        })
+        .catch(reportRejection)
+    },
     storageFor,
+    retrySave: () =>
+      retryProjectSave({ getProject: () => project.peek(), storageFor }),
     editorChanged: (path) => storageFor(path).editorChanged(path),
     writeThumbnail: (path, bytes) => storageFor(path).writeThumbnail(bytes),
     get textFileIO() {
@@ -137,7 +182,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       if (project.peek() !== current || refreshGeneration !== generation) return
       current.projectIORefSignal.value = {
         ...refreshed,
-        cloudProjectId: refreshed.cloudProjectId ?? metadata.cloudProjectId,
+        cloudProjectId: metadata.cloudProjectId,
         libraryPath: metadata.libraryPath,
         libraryType: metadata.libraryType,
       }
@@ -246,6 +291,13 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
 
   return {
     id: 'project-session-extension',
+    provides: [
+      provide(appHeaderItemsValueSpec, {
+        id: 'file-save-status',
+        order: 20,
+        Component: FileSaveStatus,
+      }),
+    ],
     providesServices: [provideService(projectSession, serviceImpl)],
     dispose: () => {
       for (const stop of watchers.values()) stop()
@@ -256,5 +308,5 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
 
 export default defineRegistryItem({
   id: 'project-session',
-  uses: [projectSessionExtension],
+  uses: [projectSessionExtension, projectStorageWatcher],
 })

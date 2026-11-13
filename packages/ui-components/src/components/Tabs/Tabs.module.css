@@ -1,0 +1,71 @@
+.tabItem {
+  @apply relative flex shrink-0 items-center gap-1 border-r b-4;
+}
+.tabItem[data-selected="true"] {
+  @apply bg-default;
+}
+/* Override the app-wide button treatment so tabs stay flat and contiguous. */
+.tab.tab {
+  @apply m-0 block h-7 max-w-64 truncate rounded-none border-0 bg-transparent px-2 py-0 text-left text-xs text-inherit shadow-none;
+}
+.tabItem[data-closable="true"] {
+  @apply pr-1;
+}
+.tabItem[data-closable="true"] .tab,
+.tabItem[data-accessory="true"] .tab {
+  @apply pr-1;
+}
+.accessory {
+  @apply flex shrink-0 items-center;
+}
+.tab.tab:hover {
+  @apply bg-default/60;
+}
+.tabItem[data-selected="true"]::after {
+  content: "";
+  @apply pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-primary;
+}
+.closeButton.closeButton {
+  /* Keep its flex space while hidden so hovering does not move neighboring tabs. */
+  @apply pointer-events-none m-0 grid h-4 w-4 shrink-0 place-items-center rounded-sm border-0 bg-transparent p-0 text-inherit opacity-0 shadow-none;
+}
+.closeButton.closeButton:hover {
+  @apply bg-3/60;
+}
+.tabItem:hover .closeButton,
+.tabItem:focus-within .closeButton {
+  @apply pointer-events-auto opacity-100;
+}
+.tab:focus-visible,
+.closeButton:focus-visible {
+  @apply outline outline-1 -outline-offset-2 outline-primary;
+}
+
+.tabItem[data-position="bottom"][data-selected="true"]::after {
+  @apply top-auto bottom-0;
+}
+
+.root {
+  @apply flex min-h-0 min-w-0 flex-1 flex-col bg-default text-default;
+}
+.strip {
+  @apply flex min-h-7 min-w-0 shrink-0 items-stretch border-b b-4 bg-2;
+}
+.strip[data-position="bottom"] {
+  @apply order-last border-b-0 border-t;
+}
+.list {
+  @apply flex min-w-0 gap-0 overflow-x-auto;
+}
+.controls {
+  @apply flex shrink-0 items-center;
+}
+.controls[data-align="end"] {
+  @apply ms-auto;
+}
+.panels {
+  @apply min-h-0 flex-1;
+}
+.panel {
+  @apply h-full min-h-0;
+}
