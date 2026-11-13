@@ -1,3 +1,4 @@
+import type { ReadonlySignal } from '@preact/signals-core'
 import {
   defineContract,
   defineService,
@@ -121,7 +122,18 @@ export interface HomeProjectCloneToLibraryTarget {
   sourceLibrary: ProjectLibrary
 }
 
+export type HomeProjectAction =
+  | 'Opening'
+  | 'Renaming'
+  | 'Deleting'
+  | 'Duplicating'
+  | 'Cloning'
+  | 'Separating'
+
 export interface HomeProjectActionsService {
+  readonly pendingActions: ReadonlySignal<
+    ReadonlyMap<string, HomeProjectAction>
+  >
   /** Keep a remote thumbnail current only while its card is in view. */
   watchRemoteThumbnail: (remoteProjectId: string) => (() => void) | undefined
   canOpen: (project: HomeProjectEntry) => boolean

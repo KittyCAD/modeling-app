@@ -548,7 +548,7 @@ export default class RustContext {
     }
   }
 
-  /** Only insertion paths call this; drag edits must stay free of storage reads. */
+  /** Call once before a tool first generates source, never between draft mutations. */
   async prepareForSketchInsertion() {
     await this.beforeSketchInsertion?.()
   }
@@ -686,7 +686,6 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     createCheckpoint = false
   ): Promise<SketchMutationResult> {
-    await this.prepareForSketchInsertion()
     const instance = await this._checkContextInstance()
 
     try {
@@ -1030,7 +1029,6 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     createCheckpoint = false
   ): Promise<SketchMutationResult> {
-    await this.prepareForSketchInsertion()
     const instance = await this._checkContextInstance()
 
     try {

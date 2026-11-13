@@ -112,6 +112,7 @@ function createSketchSolveHarness(objects: ApiObject[] = []) {
   const rustContext = createMockRustContext()
   const kclManager = {
     code: 'sketch001 = startSketchOn(XY)',
+    dispatch: vi.fn(),
     editorView: {
       dispatch: vi.fn(),
     },
@@ -121,6 +122,7 @@ function createSketchSolveHarness(objects: ApiObject[] = []) {
     sceneInfra,
     sceneEntitiesManager: {
       initSketchSolveEntityOrientation: vi.fn(),
+      removeSketchGrid: vi.fn(),
     },
     rustContext,
     setHighlightRange: vi.fn(),
@@ -151,8 +153,88 @@ function createSketchSolveHarness(objects: ApiObject[] = []) {
   ).start()
   startedActors.push(actor)
 
-  return { actor, getPlaneIntersectPoint, rustContext, scene }
+  return { actor, getPlaneIntersectPoint, rustContext, scene, kclManager }
 }
+
+describe('deleted active sketch', () => {
+  it.each([
+    'missing',
+    'reused by a segment',
+    'reused by another sketch',
+  ] as const)(
+    'exits without persisting old drafts when its object is %s',
+    (change) => {
+      const sketch = createSketchApiObject({ id: 0, segments: [] })
+      const { actor, rustContext, kclManager } = createSketchSolveHarness([
+        sketch,
+      ])
+      const remove = vi.spyOn(rustContext, 'deleteObjects')
+      actor.send({ type: 'equip tool', data: { tool: 'dimensionTool' } })
+      actor.send({
+        type: 'set draft entities',
+        data: { segmentIds: [12], constraintIds: [13] },
+      })
+      const replacement = createSketchApiObject({ id: 0, segments: [] })
+      replacement.label = 'another sketch'
+      const delta = createSceneGraphDelta(
+        change === 'missing'
+          ? []
+          : change === 'reused by a segment'
+            ? [createPointApiObject({ id: 0 })]
+            : [replacement]
+      )
+      delta.invalidates_ids = true
+      actor.send({
+        type: 'update sketch outcome',
+        data: {
+          sourceDelta: { text: 'updated contents' },
+          sceneGraphDelta: delta,
+          updateEditor: false,
+          writeToDisk: false,
+        },
+      })
+      expect(actor.getSnapshot().status).toBe('done')
+      expect(actor.getSnapshot().context.draftEntities).toBeUndefined()
+      expect(remove).not.toHaveBeenCalled()
+      expect(kclManager.updateCodeEditor).not.toHaveBeenCalled()
+      expect(kclManager.syncSketchSolveOutcome).toHaveBeenCalledWith(
+        'updated contents',
+        delta
+      )
+    }
+  )
+
+  it.each([true, false])(
+    'checks parsed sketch names after execution fails (removed: %s)',
+    (removed) => {
+      const sketch = createSketchApiObject({ id: 0, segments: [] })
+      sketch.label = 'profile'
+      const { actor } = createSketchSolveHarness([sketch])
+      actor.send({
+        type: 'sketch source changed',
+        data: { sketchNames: removed ? ['other'] : ['profile', 'other'] },
+      })
+      expect(actor.getSnapshot().status).toBe(removed ? 'done' : 'active')
+    }
+  )
+
+  it('stays in sketch mode when another sketch is deleted', () => {
+    const sketch = createSketchApiObject({ id: 0, segments: [] })
+    const other = createSketchApiObject({ id: 5, segments: [] })
+    const { actor } = createSketchSolveHarness([sketch, other])
+    actor.send({
+      type: 'update sketch outcome',
+      data: {
+        sourceDelta: { text: 'active sketch remains' },
+        sceneGraphDelta: createSceneGraphDelta([sketch]),
+        updateEditor: false,
+        writeToDisk: false,
+      },
+    })
+    expect(actor.getSnapshot().status).toBe('active')
+    expect(actor.getSnapshot().matches('move and select')).toBe(true)
+  })
+})
 
 describe('sketchSolveMachine selection clearing', () => {
   it('clears the selection when an equipped child tool completes', () => {

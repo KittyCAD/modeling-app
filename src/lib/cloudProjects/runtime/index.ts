@@ -240,18 +240,31 @@ export function createCloudProjectRuntime(
     state(id, { state: 'saved' })
     if (project?.remote.revision !== remote.revision) recordProjectChange(id)
   }
-  const reconcile = async (id: string, requestConfig: CloudApiConfig) => {
+  const reconcile = async (
+    id: string,
+    requestConfig: CloudApiConfig,
+    submitted?: readonly ProjectArchiveFile[]
+  ) => {
     const project = opened.get(id)!
-    // Invalidate work submitted against the superseded snapshot, even if fetching fails.
-    if (!project.needsReconciliation) project.generation += 1
+    const alreadyInvalidated = project.needsReconciliation
+    // A rejected retry can be an acknowledgement of our own earlier upload.
+    // Keep its waiting edits valid unless the downloaded contents actually differ.
+    if (!submitted && !alreadyInvalidated) project.generation += 1
     project.needsReconciliation = true
     clearThumbnail(id)
-    const remote = await api.getRemoteProject(requestConfig, id)
-    const archive = await downloadArchive(
-      requestConfig,
-      id,
-      String(remote.revision ?? '')
-    )
+    let remote: RemoteProject
+    let archive: ProjectArchiveFile[]
+    try {
+      remote = await api.getRemoteProject(requestConfig, id)
+      archive = await downloadArchive(
+        requestConfig,
+        id,
+        String(remote.revision ?? '')
+      )
+    } catch (error) {
+      if (submitted && !alreadyInvalidated) project.generation += 1
+      return Promise.reject(error)
+    }
     if (
       config().accountId !== requestConfig.accountId ||
       opened.get(id) !== project
@@ -259,6 +272,26 @@ export function createCloudProjectRuntime(
       return Promise.reject(
         new Error('Cloud project changed during reconciliation.')
       )
+    const submittedByPath = new Map(
+      submitted?.map((file) => [file.relativePath, file.data])
+    )
+    const sameContents =
+      submitted !== undefined &&
+      archive.length === submitted.length &&
+      archive.every((file) => {
+        const bytes = submittedByPath.get(file.relativePath)
+        return (
+          bytes?.length === file.data.length &&
+          bytes.every((byte, index) => byte === file.data[index])
+        )
+      })
+    if (sameContents) {
+      // Keep staged thumbnail bytes in memory too, without replacing editor source.
+      await hydrate(id, archive)
+      acknowledge(id, remote, archive)
+      return
+    }
+    if (submitted && !alreadyInvalidated) project.generation += 1
     await hydrate(id, archive)
     acknowledge(id, remote, archive)
     for (const listener of reconciliationListeners)
@@ -305,7 +338,7 @@ export function createCloudProjectRuntime(
       })
     } catch (error) {
       if (error instanceof api.CloudApiError && error.status === 409)
-        return reconcile(id, requestConfig)
+        return reconcile(id, requestConfig, archive)
       return Promise.reject(error)
     }
     if (config().accountId !== requestConfig.accountId)
