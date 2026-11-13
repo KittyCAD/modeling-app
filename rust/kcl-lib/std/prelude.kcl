@@ -30,6 +30,8 @@ export import "std::operation"
 export import "std::hole"
 @(experimental = true)
 export import "std::gear"
+export import "std::sprocket"
+export import "std::rail"
 @(experimental = true)
 export import * from "std::runtime"
 export import "std::view"
@@ -699,6 +701,465 @@ export fn assert(
   error?: string,
 ) {}
 
+/// Create a closed NACA four-digit airfoil profile from a numeric designation.
+///
+/// The first digit is maximum camber as a percentage of the chord, the second digit
+/// is the position of maximum camber in tenths of the chord, and the final two digits
+/// are maximum thickness as a percentage of the chord. For example, `2414` describes
+/// 2 percent camber at 40 percent chord with 14 percent thickness. Leading zeroes on
+/// symmetric designations may be omitted, so NACA 0012 is passed as `12`.
+/// Thicknesses from 4 through 40 percent of the chord are supported.
+///
+/// The profile uses tangent biarcs to approximate the NACA surface. It uses `-0.1036`
+/// as the final thickness coefficient so the tapered trailing edge closes, producing
+/// a watertight profile suitable for `region`, `extrude`, and `loft`.
+///
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
+///
+/// naca2414 = airfoil(
+///   sketchPlane = YZ,
+///   chordLength = 1m,
+///   naca4Code = 2414,
+/// )
+/// airfoilRegion = region(point = [0.5m, 0mm], sketch = naca2414)
+/// extrude(airfoilRegion, length = 50mm)
+/// ```
+@(experimental = true)
+export fn airfoil(
+  /// Plane on which to create the profile. The leading edge starts at the plane origin
+  /// and the chord follows its positive X axis.
+  sketchPlane: Plane,
+  /// Distance from the leading edge to the trailing edge.
+  chordLength: number(Length),
+  /// Numeric four-digit NACA designation. Leading zeroes may be omitted.
+  naca4Code: number(_),
+): Sketch {
+  fn nacaSurfaceData(chordFraction, maxCamber, camberPosition, thicknessRatio, surfaceSign) {
+    camberData = if maxCamber == 0 {
+      {
+        ordinate = 0,
+        slope = 0,
+        curvature = 0
+      }
+    } else if chordFraction < camberPosition {
+      {
+        ordinate = maxCamber / (camberPosition ^ 2) * (2 * camberPosition * chordFraction - (chordFraction ^ 2)),
+        slope = 2 * maxCamber / (camberPosition ^ 2) * (camberPosition - chordFraction),
+        curvature = -2 * maxCamber / (camberPosition ^ 2)
+      }
+    } else {
+      {
+        ordinate = maxCamber / ((1 - camberPosition) ^ 2) * (1 - (2 * camberPosition) + 2 * camberPosition * chordFraction - (chordFraction ^ 2)),
+        slope = 2 * maxCamber / ((1 - camberPosition) ^ 2) * (camberPosition - chordFraction),
+        curvature = -2 * maxCamber / ((1 - camberPosition) ^ 2)
+      }
+    }
+    halfThickness = 5 * thicknessRatio * (0.2969 * sqrt(chordFraction) - (0.1260 * chordFraction) - (0.3516 * chordFraction ^ 2) + 0.2843 * chordFraction ^ 3 - (0.1036 * chordFraction ^ 4))
+    halfThicknessSlope = if chordFraction == 0 {
+      0
+    } else {
+      5 * thicknessRatio * (0.14845 / sqrt(chordFraction) - 0.1260 - (0.7032 * chordFraction) + 0.8529 * chordFraction ^ 2 - (0.4144 * chordFraction ^ 3))
+    }
+    camberLength = sqrt(1 + camberData.slope ^ 2)
+    camberSine = camberData.slope / camberLength
+    camberCosine = 1 / camberLength
+    camberAngleSlope = camberData.curvature / (camberLength ^ 2)
+    calculatedPoint = {
+      x = chordFraction - (surfaceSign * halfThickness * camberSine),
+      y = camberData.ordinate + surfaceSign * halfThickness * camberCosine
+    }
+    surfacePoint = if chordFraction == 0 {
+      { x = 0, y = 0 }
+    } else if chordFraction == 1 {
+      { x = 1, y = 0 }
+    } else {
+      calculatedPoint
+    }
+    surfaceDx = 1 - (surfaceSign * (halfThicknessSlope * camberSine + halfThickness * camberAngleSlope * camberCosine))
+    surfaceDy = camberData.slope + surfaceSign * (halfThicknessSlope * camberCosine - (halfThickness * camberAngleSlope * camberSine))
+    surfaceSpeed = sqrt(surfaceDx ^ 2 + surfaceDy ^ 2)
+    leadingSlope = if maxCamber == 0 {
+      0
+    } else {
+      2 * maxCamber / camberPosition
+    }
+    leadingLength = sqrt(1 + leadingSlope ^ 2)
+    surfaceTangent = if chordFraction == 0 {
+      {
+        x = -surfaceSign * leadingSlope / leadingLength,
+        y = surfaceSign / leadingLength
+      }
+    } else {
+      {
+        x = surfaceDx / surfaceSpeed,
+        y = surfaceDy / surfaceSpeed
+      }
+    }
+    return {
+      point = surfacePoint,
+      tangent = surfaceTangent
+    }
+  }
+  fn balancedBiarc(point0, tangent0, point1, tangent1) {
+    spanX = point1.x - point0.x
+    spanY = point1.y - point0.y
+    spanSquared = spanX ^ 2 + spanY ^ 2
+    rawTangentDot = tangent0.x * tangent1.x + tangent0.y * tangent1.y
+    tangentDot = if rawTangentDot > 1 {
+      1
+    } else if rawTangentDot < -1 {
+      -1
+    } else {
+      rawTangentDot
+    }
+    tangentProjection = spanX * (tangent0.x + tangent1.x) + spanY * (tangent0.y + tangent1.y)
+    rootTerm = tangentProjection ^ 2 + 2 * (1 - tangentDot) * spanSquared
+    rawStableDenominator = sqrt(rootTerm) + tangentProjection
+    stableDenominator = if rawStableDenominator > 0.000000001 {
+      rawStableDenominator
+    } else {
+      0.000000001
+    }
+    tangentDistance = spanSquared / stableDenominator
+    joinPoint = {
+      x = (point0.x + point1.x + tangentDistance * (tangent0.x - tangent1.x)) / 2,
+      y = (point0.y + point1.y + tangentDistance * (tangent0.y - tangent1.y)) / 2
+    }
+    firstNormal = { x = -tangent0.y, y = tangent0.x }
+    firstDelta = {
+      x = joinPoint.x - point0.x,
+      y = joinPoint.y - point0.y
+    }
+    rawFirstDenominator = 2 * (firstDelta.x * firstNormal.x + firstDelta.y * firstNormal.y)
+    firstDenominator = if rawFirstDenominator > 0.000000001 {
+      rawFirstDenominator
+    } else if rawFirstDenominator < -0.000000001 {
+      rawFirstDenominator
+    } else if rawFirstDenominator >= 0 {
+      0.000000001
+    } else {
+      -0.000000001
+    }
+    firstScale = (firstDelta.x ^ 2 + firstDelta.y ^ 2) / firstDenominator
+    firstCenter = {
+      x = point0.x + firstScale * firstNormal.x,
+      y = point0.y + firstScale * firstNormal.y
+    }
+    secondNormal = { x = -tangent1.y, y = tangent1.x }
+    secondDelta = {
+      x = joinPoint.x - point1.x,
+      y = joinPoint.y - point1.y
+    }
+    rawSecondDenominator = 2 * (secondDelta.x * secondNormal.x + secondDelta.y * secondNormal.y)
+    secondDenominator = if rawSecondDenominator > 0.000000001 {
+      rawSecondDenominator
+    } else if rawSecondDenominator < -0.000000001 {
+      rawSecondDenominator
+    } else if rawSecondDenominator >= 0 {
+      0.000000001
+    } else {
+      -0.000000001
+    }
+    secondScale = (secondDelta.x ^ 2 + secondDelta.y ^ 2) / secondDenominator
+    secondCenter = {
+      x = point1.x + secondScale * secondNormal.x,
+      y = point1.y + secondScale * secondNormal.y
+    }
+    return {
+      join = joinPoint,
+      firstCenter = firstCenter,
+      secondCenter = secondCenter,
+      firstDirection = if firstScale > 0 {
+        CCW
+      } else {
+        CW
+      },
+      secondDirection = if secondScale > 0 {
+        CCW
+      } else {
+        CW
+      }
+    }
+  }
+
+  assert(chordLength, isGreaterThan = 0mm, error = "chordLength must be positive")
+  assert(
+    naca4Code,
+    isGreaterThanOrEqual = 4,
+    isLessThan = 10000,
+    error = "naca4Code must be a four-digit NACA designation; leading zeroes may be omitted",
+  )
+  assertIs(naca4Code == floor(naca4Code), error = "naca4Code must be an integer")
+  maxCamberPercent = floor(naca4Code / 1000)
+  camberPositionDigit = floor(naca4Code / 100) % 10
+  thicknessPercent = naca4Code % 100
+  assertIs(maxCamberPercent == 0 & camberPositionDigit == 0 | maxCamberPercent > 0 & camberPositionDigit > 0, error = "a symmetric NACA designation needs 00 as its first two digits; a cambered designation needs a nonzero second digit")
+  assert(
+    thicknessPercent,
+    isGreaterThanOrEqual = 4,
+    isLessThanOrEqual = 40,
+    error = "the supported NACA thickness range is 04 through 40 percent",
+  )
+  maxCamber = maxCamberPercent / 100
+  camberPosition = camberPositionDigit / 10
+  thicknessRatio = thicknessPercent / 100
+  stations = [
+    0,
+    0.0025,
+    0.02,
+    0.08,
+    0.22,
+    0.45,
+    0.72,
+    0.92,
+    1
+  ]
+  upperData = map(
+    stations,
+    f = fn(@station) {
+      return nacaSurfaceData(
+        chordFraction = station,
+        maxCamber = maxCamber,
+        camberPosition = camberPosition,
+        thicknessRatio = thicknessRatio,
+        surfaceSign = 1,
+      )
+    },
+  )
+  lowerData = map(
+    stations,
+    f = fn(@station) {
+      return nacaSurfaceData(
+        chordFraction = station,
+        maxCamber = maxCamber,
+        camberPosition = camberPosition,
+        thicknessRatio = thicknessRatio,
+        surfaceSign = -1,
+      )
+    },
+  )
+  intervalIndexes = [0, 1, 2, 3, 4, 5, 6, 7]
+  upperBiarcs = map(
+    intervalIndexes,
+    f = fn(@index) {
+      return balancedBiarc(
+        point0 = upperData[index].point,
+        tangent0 = upperData[index].tangent,
+        point1 = upperData[index + 1].point,
+        tangent1 = upperData[index + 1].tangent,
+      )
+    },
+  )
+  lowerBiarcs = map(
+    intervalIndexes,
+    f = fn(@index) {
+      return balancedBiarc(
+        point0 = lowerData[index].point,
+        tangent0 = lowerData[index].tangent,
+        point1 = lowerData[index + 1].point,
+        tangent1 = lowerData[index + 1].tangent,
+      )
+    },
+  )
+  // Coordinates are already determined analytically. Keeping them fixed avoids
+  // an unnecessary nonlinear solve and makes the profile independent of seed guesses.
+  airfoilSketch = sketch(on = sketchPlane) {
+    upperLeadA = arc(
+      start = [upperData[0].point.x * chordLength, upperData[0].point.y * chordLength],
+      end = [upperBiarcs[0].join.x * chordLength, upperBiarcs[0].join.y * chordLength],
+      center = [upperBiarcs[0].firstCenter.x * chordLength, upperBiarcs[0].firstCenter.y * chordLength],
+      direction = upperBiarcs[0].firstDirection,
+    )
+    upperLeadB = arc(
+      start = [upperBiarcs[0].join.x * chordLength, upperBiarcs[0].join.y * chordLength],
+      end = [upperData[1].point.x * chordLength, upperData[1].point.y * chordLength],
+      center = [upperBiarcs[0].secondCenter.x * chordLength, upperBiarcs[0].secondCenter.y * chordLength],
+      direction = upperBiarcs[0].secondDirection,
+    )
+    upperNoseA = arc(
+      start = [upperData[1].point.x * chordLength, upperData[1].point.y * chordLength],
+      end = [upperBiarcs[1].join.x * chordLength, upperBiarcs[1].join.y * chordLength],
+      center = [upperBiarcs[1].firstCenter.x * chordLength, upperBiarcs[1].firstCenter.y * chordLength],
+      direction = upperBiarcs[1].firstDirection,
+    )
+    upperNoseB = arc(
+      start = [upperBiarcs[1].join.x * chordLength, upperBiarcs[1].join.y * chordLength],
+      end = [upperData[2].point.x * chordLength, upperData[2].point.y * chordLength],
+      center = [upperBiarcs[1].secondCenter.x * chordLength, upperBiarcs[1].secondCenter.y * chordLength],
+      direction = upperBiarcs[1].secondDirection,
+    )
+    upperFrontA = arc(
+      start = [upperData[2].point.x * chordLength, upperData[2].point.y * chordLength],
+      end = [upperBiarcs[2].join.x * chordLength, upperBiarcs[2].join.y * chordLength],
+      center = [upperBiarcs[2].firstCenter.x * chordLength, upperBiarcs[2].firstCenter.y * chordLength],
+      direction = upperBiarcs[2].firstDirection,
+    )
+    upperFrontB = arc(
+      start = [upperBiarcs[2].join.x * chordLength, upperBiarcs[2].join.y * chordLength],
+      end = [upperData[3].point.x * chordLength, upperData[3].point.y * chordLength],
+      center = [upperBiarcs[2].secondCenter.x * chordLength, upperBiarcs[2].secondCenter.y * chordLength],
+      direction = upperBiarcs[2].secondDirection,
+    )
+    upperShoulderA = arc(
+      start = [upperData[3].point.x * chordLength, upperData[3].point.y * chordLength],
+      end = [upperBiarcs[3].join.x * chordLength, upperBiarcs[3].join.y * chordLength],
+      center = [upperBiarcs[3].firstCenter.x * chordLength, upperBiarcs[3].firstCenter.y * chordLength],
+      direction = upperBiarcs[3].firstDirection,
+    )
+    upperShoulderB = arc(
+      start = [upperBiarcs[3].join.x * chordLength, upperBiarcs[3].join.y * chordLength],
+      end = [upperData[4].point.x * chordLength, upperData[4].point.y * chordLength],
+      center = [upperBiarcs[3].secondCenter.x * chordLength, upperBiarcs[3].secondCenter.y * chordLength],
+      direction = upperBiarcs[3].secondDirection,
+    )
+    upperCrownA = arc(
+      start = [upperData[4].point.x * chordLength, upperData[4].point.y * chordLength],
+      end = [upperBiarcs[4].join.x * chordLength, upperBiarcs[4].join.y * chordLength],
+      center = [upperBiarcs[4].firstCenter.x * chordLength, upperBiarcs[4].firstCenter.y * chordLength],
+      direction = upperBiarcs[4].firstDirection,
+    )
+    upperCrownB = arc(
+      start = [upperBiarcs[4].join.x * chordLength, upperBiarcs[4].join.y * chordLength],
+      end = [upperData[5].point.x * chordLength, upperData[5].point.y * chordLength],
+      center = [upperBiarcs[4].secondCenter.x * chordLength, upperBiarcs[4].secondCenter.y * chordLength],
+      direction = upperBiarcs[4].secondDirection,
+    )
+    upperMidA = arc(
+      start = [upperData[5].point.x * chordLength, upperData[5].point.y * chordLength],
+      end = [upperBiarcs[5].join.x * chordLength, upperBiarcs[5].join.y * chordLength],
+      center = [upperBiarcs[5].firstCenter.x * chordLength, upperBiarcs[5].firstCenter.y * chordLength],
+      direction = upperBiarcs[5].firstDirection,
+    )
+    upperMidB = arc(
+      start = [upperBiarcs[5].join.x * chordLength, upperBiarcs[5].join.y * chordLength],
+      end = [upperData[6].point.x * chordLength, upperData[6].point.y * chordLength],
+      center = [upperBiarcs[5].secondCenter.x * chordLength, upperBiarcs[5].secondCenter.y * chordLength],
+      direction = upperBiarcs[5].secondDirection,
+    )
+    upperRearA = arc(
+      start = [upperData[6].point.x * chordLength, upperData[6].point.y * chordLength],
+      end = [upperBiarcs[6].join.x * chordLength, upperBiarcs[6].join.y * chordLength],
+      center = [upperBiarcs[6].firstCenter.x * chordLength, upperBiarcs[6].firstCenter.y * chordLength],
+      direction = upperBiarcs[6].firstDirection,
+    )
+    upperRearB = arc(
+      start = [upperBiarcs[6].join.x * chordLength, upperBiarcs[6].join.y * chordLength],
+      end = [upperData[7].point.x * chordLength, upperData[7].point.y * chordLength],
+      center = [upperBiarcs[6].secondCenter.x * chordLength, upperBiarcs[6].secondCenter.y * chordLength],
+      direction = upperBiarcs[6].secondDirection,
+    )
+    upperTailA = arc(
+      start = [upperData[7].point.x * chordLength, upperData[7].point.y * chordLength],
+      end = [upperBiarcs[7].join.x * chordLength, upperBiarcs[7].join.y * chordLength],
+      center = [upperBiarcs[7].firstCenter.x * chordLength, upperBiarcs[7].firstCenter.y * chordLength],
+      direction = upperBiarcs[7].firstDirection,
+    )
+    upperTailB = arc(
+      start = [upperBiarcs[7].join.x * chordLength, upperBiarcs[7].join.y * chordLength],
+      end = [upperData[8].point.x * chordLength, upperData[8].point.y * chordLength],
+      center = [upperBiarcs[7].secondCenter.x * chordLength, upperBiarcs[7].secondCenter.y * chordLength],
+      direction = upperBiarcs[7].secondDirection,
+    )
+    lowerLeadA = arc(
+      start = [lowerData[0].point.x * chordLength, lowerData[0].point.y * chordLength],
+      end = [lowerBiarcs[0].join.x * chordLength, lowerBiarcs[0].join.y * chordLength],
+      center = [lowerBiarcs[0].firstCenter.x * chordLength, lowerBiarcs[0].firstCenter.y * chordLength],
+      direction = lowerBiarcs[0].firstDirection,
+    )
+    lowerLeadB = arc(
+      start = [lowerBiarcs[0].join.x * chordLength, lowerBiarcs[0].join.y * chordLength],
+      end = [lowerData[1].point.x * chordLength, lowerData[1].point.y * chordLength],
+      center = [lowerBiarcs[0].secondCenter.x * chordLength, lowerBiarcs[0].secondCenter.y * chordLength],
+      direction = lowerBiarcs[0].secondDirection,
+    )
+    lowerNoseA = arc(
+      start = [lowerData[1].point.x * chordLength, lowerData[1].point.y * chordLength],
+      end = [lowerBiarcs[1].join.x * chordLength, lowerBiarcs[1].join.y * chordLength],
+      center = [lowerBiarcs[1].firstCenter.x * chordLength, lowerBiarcs[1].firstCenter.y * chordLength],
+      direction = lowerBiarcs[1].firstDirection,
+    )
+    lowerNoseB = arc(
+      start = [lowerBiarcs[1].join.x * chordLength, lowerBiarcs[1].join.y * chordLength],
+      end = [lowerData[2].point.x * chordLength, lowerData[2].point.y * chordLength],
+      center = [lowerBiarcs[1].secondCenter.x * chordLength, lowerBiarcs[1].secondCenter.y * chordLength],
+      direction = lowerBiarcs[1].secondDirection,
+    )
+    lowerFrontA = arc(
+      start = [lowerData[2].point.x * chordLength, lowerData[2].point.y * chordLength],
+      end = [lowerBiarcs[2].join.x * chordLength, lowerBiarcs[2].join.y * chordLength],
+      center = [lowerBiarcs[2].firstCenter.x * chordLength, lowerBiarcs[2].firstCenter.y * chordLength],
+      direction = lowerBiarcs[2].firstDirection,
+    )
+    lowerFrontB = arc(
+      start = [lowerBiarcs[2].join.x * chordLength, lowerBiarcs[2].join.y * chordLength],
+      end = [lowerData[3].point.x * chordLength, lowerData[3].point.y * chordLength],
+      center = [lowerBiarcs[2].secondCenter.x * chordLength, lowerBiarcs[2].secondCenter.y * chordLength],
+      direction = lowerBiarcs[2].secondDirection,
+    )
+    lowerShoulderA = arc(
+      start = [lowerData[3].point.x * chordLength, lowerData[3].point.y * chordLength],
+      end = [lowerBiarcs[3].join.x * chordLength, lowerBiarcs[3].join.y * chordLength],
+      center = [lowerBiarcs[3].firstCenter.x * chordLength, lowerBiarcs[3].firstCenter.y * chordLength],
+      direction = lowerBiarcs[3].firstDirection,
+    )
+    lowerShoulderB = arc(
+      start = [lowerBiarcs[3].join.x * chordLength, lowerBiarcs[3].join.y * chordLength],
+      end = [lowerData[4].point.x * chordLength, lowerData[4].point.y * chordLength],
+      center = [lowerBiarcs[3].secondCenter.x * chordLength, lowerBiarcs[3].secondCenter.y * chordLength],
+      direction = lowerBiarcs[3].secondDirection,
+    )
+    lowerCrownA = arc(
+      start = [lowerData[4].point.x * chordLength, lowerData[4].point.y * chordLength],
+      end = [lowerBiarcs[4].join.x * chordLength, lowerBiarcs[4].join.y * chordLength],
+      center = [lowerBiarcs[4].firstCenter.x * chordLength, lowerBiarcs[4].firstCenter.y * chordLength],
+      direction = lowerBiarcs[4].firstDirection,
+    )
+    lowerCrownB = arc(
+      start = [lowerBiarcs[4].join.x * chordLength, lowerBiarcs[4].join.y * chordLength],
+      end = [lowerData[5].point.x * chordLength, lowerData[5].point.y * chordLength],
+      center = [lowerBiarcs[4].secondCenter.x * chordLength, lowerBiarcs[4].secondCenter.y * chordLength],
+      direction = lowerBiarcs[4].secondDirection,
+    )
+    lowerMidA = arc(
+      start = [lowerData[5].point.x * chordLength, lowerData[5].point.y * chordLength],
+      end = [lowerBiarcs[5].join.x * chordLength, lowerBiarcs[5].join.y * chordLength],
+      center = [lowerBiarcs[5].firstCenter.x * chordLength, lowerBiarcs[5].firstCenter.y * chordLength],
+      direction = lowerBiarcs[5].firstDirection,
+    )
+    lowerMidB = arc(
+      start = [lowerBiarcs[5].join.x * chordLength, lowerBiarcs[5].join.y * chordLength],
+      end = [lowerData[6].point.x * chordLength, lowerData[6].point.y * chordLength],
+      center = [lowerBiarcs[5].secondCenter.x * chordLength, lowerBiarcs[5].secondCenter.y * chordLength],
+      direction = lowerBiarcs[5].secondDirection,
+    )
+    lowerRearA = arc(
+      start = [lowerData[6].point.x * chordLength, lowerData[6].point.y * chordLength],
+      end = [lowerBiarcs[6].join.x * chordLength, lowerBiarcs[6].join.y * chordLength],
+      center = [lowerBiarcs[6].firstCenter.x * chordLength, lowerBiarcs[6].firstCenter.y * chordLength],
+      direction = lowerBiarcs[6].firstDirection,
+    )
+    lowerRearB = arc(
+      start = [lowerBiarcs[6].join.x * chordLength, lowerBiarcs[6].join.y * chordLength],
+      end = [lowerData[7].point.x * chordLength, lowerData[7].point.y * chordLength],
+      center = [lowerBiarcs[6].secondCenter.x * chordLength, lowerBiarcs[6].secondCenter.y * chordLength],
+      direction = lowerBiarcs[6].secondDirection,
+    )
+    lowerTailA = arc(
+      start = [lowerData[7].point.x * chordLength, lowerData[7].point.y * chordLength],
+      end = [lowerBiarcs[7].join.x * chordLength, lowerBiarcs[7].join.y * chordLength],
+      center = [lowerBiarcs[7].firstCenter.x * chordLength, lowerBiarcs[7].firstCenter.y * chordLength],
+      direction = lowerBiarcs[7].firstDirection,
+    )
+    lowerTailB = arc(
+      start = [lowerBiarcs[7].join.x * chordLength, lowerBiarcs[7].join.y * chordLength],
+      end = [lowerData[8].point.x * chordLength, lowerData[8].point.y * chordLength],
+      center = [lowerBiarcs[7].secondCenter.x * chordLength, lowerBiarcs[7].secondCenter.y * chordLength],
+      direction = lowerBiarcs[7].secondDirection,
+    )
+  }
+  return airfoilSketch
+}
 
 /// Given a face index, find its ID.
 /// In general, you should prefer tagging faces to using this function. Use this function if
