@@ -3867,6 +3867,7 @@ annotation001 = gdt::note(note = "INSPECT", framePosition = [-20mm, 30mm], fontS
     scene,
     editor,
     toolbar,
+    modelingDialog,
   }) => {
     const code = `@settings(kclVersion = 3.0)
 sketch001 = sketch(on = XY) {
@@ -3909,7 +3910,7 @@ region001 = region(segments = [sketch001.circle1])`
       .getByRole('combobox', { name: /^orientation/i })
       .selectOption({ label: 'Front' })
     await dialog.getByText('Advanced', { exact: true }).click()
-    await dialog.getByRole('textbox', { name: /^distance/i }).fill('200mm')
+    await modelingDialog.fillInput('distance', '200mm')
     await dialog
       .locator('#command-kcl-input-distance-variable-checkbox')
       .check()
@@ -3965,7 +3966,7 @@ region001 = region(segments = [sketch001.circle1])`
       .getByRole('combobox', { name: /^orientation/i })
       .selectOption({ label: 'Top' })
     await dialog.getByText('Advanced', { exact: true }).click()
-    await dialog.getByRole('textbox', { name: /^distance/i }).fill('200mm')
+    await modelingDialog.fillInput('distance', '200mm')
     await dialog
       .locator('#command-kcl-input-distance-variable-checkbox')
       .check()
