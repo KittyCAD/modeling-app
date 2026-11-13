@@ -48,9 +48,9 @@ async function prepare(
       await page.goto(url.toString())
       await page.reload({ waitUntil: 'domcontentloaded' })
     }
+    await waitForAppLoad(page)
   }
   await navigate('/home')
-  await waitForAppLoad(page)
   await expect(page.getByTestId('home-header')).toBeVisible()
   const localSource = {
     type: 'directory' as const,
