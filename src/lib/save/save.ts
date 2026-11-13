@@ -10,13 +10,19 @@ import type { EditorSave, EditorOnSave } from '@src/lib/save/registry/contract'
 import { matchesEditor } from '@src/lib/editors/matching'
 import { isErr, trap, reportRejection } from '@src/lib/trap'
 
+/** In-flight writes share a source's adoption revision, including across buffers. */
+interface SourceSaveQueue {
+  adoption: number
+  pending?: Promise<undefined | Error>
+}
+
 /** A document baseline survives capability reconfiguration; attached entries own subscriptions. */
 export function createEditorSave(
   getSaveHandlers: () => readonly EditorOnSave[]
 ) {
   const entries = new WeakMap<Editor, ReturnType<typeof createEntry>>()
   const attached = new Set<Editor>()
-  const saves = new Map<string, Promise<undefined | Error>>()
+  const saves = new Map<string, SourceSaveQueue>()
   const lastFocusedEditor = signal<Editor | undefined>(undefined)
   let disposed = false
 
@@ -49,6 +55,9 @@ export function createEditorSave(
       if (disposed || !attached.has(editor))
         return new Error('This editor is no longer open')
       const entry = entryFor(editor)
+      const src = editor.src.peek()
+      const queue = src ? saves.get(src) : undefined
+      if (queue) queue.adoption++
       batch(() => {
         entry.saved.value = Text.of(contents.split(/\r\n?|\n/))
         entry.error.value = undefined
@@ -76,7 +85,10 @@ export function createEditorSave(
         contents: document.toString(),
         ...editor.classification.peek(),
       }
-      const previous = saves.get(src)
+      const queue: SourceSaveQueue = saves.get(src) ?? { adoption: 0 }
+      saves.set(src, queue)
+      const previous = queue.pending
+      const adoption = queue.adoption
       entry.pending.value++
       entry.error.value = undefined
       const runSave = async (): Promise<undefined | Error> => {
@@ -85,9 +97,7 @@ export function createEditorSave(
         if (disposed || !attached.has(editor) || editor.src.peek() !== src) {
           return fail(new Error('The editor changed before saving started'))
         }
-        // Remote adoption can replace the document while a write awaits its
-        // acknowledgement. That adopted baseline must outlive this older save.
-        const baseline = entry.saved.peek()
+        if (queue.adoption !== adoption) return undefined
         try {
           const handlers = getSaveHandlers()
             .filter((handler) => matchesEditor(handler.matches, saved))
@@ -108,13 +118,15 @@ export function createEditorSave(
                 new Error('The editor changed before saving completed')
               )
             }
+            if (queue.adoption !== adoption) return undefined
             const result = await handler.onSave(saved)
+            if (queue.adoption !== adoption) return undefined
             if (isErr(result)) return fail(result)
           }
           if (disposed || !attached.has(editor) || editor.src.peek() !== src) {
             return fail(new Error('The editor changed before saving completed'))
           }
-          if (entry.saved.peek() !== baseline) return undefined
+          if (queue.adoption !== adoption) return undefined
           batch(() => {
             entry.error.value = undefined
             // All buffers for this source compare with the completed save snapshot.
@@ -124,7 +136,7 @@ export function createEditorSave(
             }
           })
         } catch (cause) {
-          if (entry.saved.peek() !== baseline) return undefined
+          if (queue.adoption !== adoption) return undefined
           const error = isErr(cause)
             ? cause
             : new Error('Unable to save the editor', { cause })
@@ -133,9 +145,9 @@ export function createEditorSave(
       }
       const result = runSave().finally(() => {
         if (!disposed && attached.has(editor)) entry.pending.value--
-        if (saves.get(src) === result) saves.delete(src)
+        if (queue.pending === result) saves.delete(src)
       })
-      saves.set(src, result)
+      queue.pending = result
       return result
     },
   }

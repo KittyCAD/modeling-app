@@ -23,7 +23,10 @@ timers and resume saving pending changes when editing becomes available.
 Cloud snapshot adoption uses `editorSaveService.adopt` to advance the baseline
 alongside a document update. Background adoption requires clean editors; a
 revision conflict instead adopts remote contents using the cloud runtime's policy.
-An in-flight save cannot overwrite a baseline supplied by that adoption.
+Adoption supersedes older save requests for the same source across all buffers.
+Queued snapshots are discarded before writing; an in-flight handler may finish,
+but its result cannot run later handlers or overwrite an adopted baseline. New
+save requests can persist edits made after adoption.
 
 An unnamed buffer needs a source before Save or autosave can persist it. Save As,
 durable draft recovery, and confirmation before closing dirty buffers are
