@@ -3,7 +3,7 @@ import { waitFor } from 'xstate'
 
 import { ActionButton } from '@src/components/ActionButton'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { restartApp } from '@src/lib/settings/restartApp'
+import { PATHS } from '@src/lib/paths'
 import type { Setting } from '@src/lib/settings/Setting'
 import { reportRejection } from '@src/lib/trap'
 import { routerService } from '@src/registry/contracts/router'
@@ -34,7 +34,13 @@ export function SettingRestartButton({
         const router = registry.get(routerService)
         // Reloading before the change is saved would start with the old value.
         waitFor(settings.actor, (state) => state.matches('idle'))
-          .then(() => restartApp(router))
+          // The settings dialog is a route, so leave it or the reload reopens it.
+          .then(() =>
+            router.navigate(
+              router.getLocation().pathname.replace(PATHS.SETTINGS, '')
+            )
+          )
+          .then(() => window.location.reload())
           .catch(reportRejection)
       }}
       iconStart={{ icon: 'refresh', size: 'sm', className: 'p-1' }}

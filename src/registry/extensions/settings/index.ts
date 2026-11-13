@@ -6,12 +6,9 @@ import {
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
-import { getPropertyByPath } from '@src/lib/objectPropertyByPath'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
-import { restartApp } from '@src/lib/settings/restartApp'
-import { Setting } from '@src/lib/settings/Setting'
 import {
   getOnlySettingsFromContext,
   type SettingsActorType,
@@ -19,8 +16,6 @@ import {
 } from '@src/machines/settingsMachine'
 import { commandSystemService } from '@src/registry/contracts/commands'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
-import { engineConnectionService } from '@src/registry/contracts/engineConnection'
-import { routerService } from '@src/registry/contracts/router'
 import {
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibrarySettingDefaultsValueSpec,
@@ -33,7 +28,7 @@ import {
 import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
-import { createActor, fromPromise } from 'xstate'
+import { createActor } from 'xstate'
 
 export const settingsExtension = defineRegistryItemFactory((ctx) => {
   const settingsSignal = signal<SettingsType>(createSettings())
@@ -57,37 +52,17 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
     const projectLibrarySettingDefaultPolicies = ctx.valueSpecs.get(
       projectLibrarySettingDefaultPoliciesValueSpec
     )
-    const actor = createActor(
-      settingsMachine.provide({
-        guards: {
-          restartRequired: ({ context }) => {
-            if (!context.pendingRestart) return false
-            const setting = getPropertyByPath(context, context.pendingRestart)
-            const engine = ctx.services.get(engineConnectionService).manager
-            return (
-              setting instanceof Setting &&
-              Boolean(setting.restartRequired?.(setting.current, engine))
-            )
-          },
-        },
-        actors: {
-          restartApp: fromPromise(({ signal }) =>
-            restartApp(ctx.services.get(routerService), signal)
-          ),
-        },
-      }),
-      {
-        input: {
-          ...createSettings(extensionSettings),
-          commandBarActor: commands.actor,
-          defaultProjectLibraries,
-          projectLibrarySettingDefaultPolicies,
-          extensionSettings,
-          fileOperations: ctx.services.get(fileOperationsService),
-          wasmInstancePromise: getWasmPromise(),
-        },
-      }
-    ).start()
+    const actor = createActor(settingsMachine, {
+      input: {
+        ...createSettings(extensionSettings),
+        commandBarActor: commands.actor,
+        defaultProjectLibraries,
+        projectLibrarySettingDefaultPolicies,
+        extensionSettings,
+        fileOperations: ctx.services.get(fileOperationsService),
+        wasmInstancePromise: getWasmPromise(),
+      },
+    }).start()
 
     settingsSignal.value = getOnlySettingsFromContext(
       actor.getSnapshot().context

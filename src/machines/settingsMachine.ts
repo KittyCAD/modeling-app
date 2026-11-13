@@ -6,6 +6,7 @@ import {
 import type { Command } from '@src/lib/commandTypes'
 import type { Project } from '@src/lib/project'
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
+import { Setting } from '@src/lib/settings/Setting'
 import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
@@ -19,7 +20,6 @@ import type {
 } from '@src/lib/settings/settingsTypes'
 import {
   clearSettingsAtLevel,
-  getOnlySettingsFromContext,
   loadAndValidateSettings,
   saveSettings,
 } from '@src/lib/settings/settingsUtils'
@@ -29,8 +29,8 @@ import {
   setThemeClass,
   Themes,
 } from '@src/lib/theme'
+import { hasProperty } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { isErr, trap } from '@src/lib/trap'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type { ProjectLibrarySettingDefaultPolicy } from '@src/registry/contracts/projectLibraries'
@@ -85,16 +85,10 @@ export type SettingsMachineEvent = (
   | { type: 'load.project'; project: Project }
   | { type: 'reload.settings' }
   | { type: 'clear.project' }
-  | { type: 'Apply pending restart' }
-) & {
-  doNotPersist?: boolean
-  /** Command bar changes apply settings that need a restart after saving. */
-  restartAfterPersist?: SettingsPaths
-}
+) & { doNotPersist?: boolean }
 
 export type SettingsMachineContext = SettingsMachineInput & {
   deferredEvents: SettingsMachineEvent[]
-  pendingRestart?: SettingsPaths
 }
 
 export type SettingsActorType = ActorRefFrom<typeof settingsMachine>
@@ -121,25 +115,26 @@ export const settingsMachine = setup({
 
       const {
         currentProject,
+        defaultProjectLibraries: _defaultProjectLibraries,
         extensionSettings,
         wasmInstancePromise,
+        commandBarActor: _c,
         fileOperations,
+        ...settings
       } = input.context
 
-      const result = await saveSettings(
+      await saveSettings(
         fileOperations,
         wasmInstancePromise,
-        getOnlySettingsFromContext(input.context),
+        settings,
         extensionSettings,
         input.level === 'user' ? undefined : currentProject?.path
       )
-      if (isErr(result)) return Promise.reject(result)
 
       if (input.toastCallback) {
         input.toastCallback()
       }
     }),
-    restartApp: fromPromise(async () => {}),
     loadUserSettings: fromPromise<
       SettingsType,
       {
@@ -293,23 +288,8 @@ export const settingsMachine = setup({
       addCommands(input.commandBarActor)
     }),
   },
-  guards: {
-    restartRequired: () => false,
-  },
   actions: {
-    requestRestart: assign({
-      pendingRestart: ({ context, event }) =>
-        (!event.doNotPersist && event.restartAfterPersist) ||
-        context.pendingRestart,
-    }),
-    clearPendingRestart: assign({ pendingRestart: undefined }),
-    checkPendingRestart: ({ context, self }) => {
-      if (context.pendingRestart) {
-        // Process this after raised events have replayed any queued changes.
-        self.send({ type: 'Apply pending restart' })
-      }
-    },
-    toastSuccess: ({ event }) => {
+    toastSuccess: ({ context, event }) => {
       if (!('data' in event)) {
         return
       }
@@ -329,7 +309,7 @@ export const settingsMachine = setup({
         return
       }
       const truncatedNewValue = event.data.value?.toString().slice(0, 28)
-      const message =
+      let message =
         `Set ${decamelize(eventParts[1], { separator: ' ' })}` +
         (truncatedNewValue
           ? ` to "${truncatedNewValue}${
@@ -340,6 +320,13 @@ export const settingsMachine = setup({
                 : ' as a user default'
             }`
           : '')
+      const category: unknown = context[eventParts[0]]
+      const setting = hasProperty(category, eventParts[1])
+        ? category[eventParts[1]]
+        : undefined
+      if (setting instanceof Setting && setting.restartRequired) {
+        message = 'Reload the app to apply this change'
+      }
       toast.success(`${message}.`, {
         duration: message.split(' ').length * 100 + 1500,
         id: `${event.type}.success`,
@@ -463,13 +450,9 @@ export const settingsMachine = setup({
   ],
   states: {
     idle: {
-      entry: ['setThemeClass', 'sendThemeToWatcher', 'checkPendingRestart'],
+      entry: ['setThemeClass', 'sendThemeToWatcher'],
 
       on: {
-        'Apply pending restart': [
-          { guard: 'restartRequired', target: 'restarting' },
-          { actions: 'clearPendingRestart' },
-        ],
         '*': {
           target: 'persisting settings',
           actions: ['setSettingAtLevel', 'toastSuccess'],
@@ -629,7 +612,6 @@ export const settingsMachine = setup({
     },
     reloadingSettings: {
       on: {
-        'Apply pending restart': {},
         '*': { actions: ['deferEventUntilSettingsPersist'] },
       },
       invoke: {
@@ -650,7 +632,6 @@ export const settingsMachine = setup({
         onError: {
           target: 'idle',
           actions: [
-            'clearPendingRestart',
             ({ event }) => {
               console.error('Error reloading settings', event)
             },
@@ -670,9 +651,7 @@ export const settingsMachine = setup({
     },
 
     'persisting settings': {
-      entry: 'requestRestart',
       on: {
-        'Apply pending restart': {},
         '*': {
           actions: ['deferEventUntilSettingsPersist'],
         },
@@ -686,13 +665,8 @@ export const settingsMachine = setup({
         onError: {
           target: 'idle',
           actions: [
-            'clearPendingRestart',
-            ({ event }) => {
-              trap(
-                new Error('Could not save settings. Please try again.', {
-                  cause: event.error,
-                })
-              )
+            () => {
+              console.error('Error persisting settings')
             },
             'flushDeferredSettingsEvents',
           ],
@@ -722,33 +696,6 @@ export const settingsMachine = setup({
             context,
             level,
           }
-        },
-      },
-    },
-
-    restarting: {
-      on: {
-        'Apply pending restart': {},
-        '*': {
-          target: 'idle',
-          actions: enqueueActions(({ event, enqueue }) => enqueue.raise(event)),
-        },
-      },
-      invoke: {
-        src: 'restartApp',
-        onDone: { target: 'idle', actions: 'clearPendingRestart' },
-        onError: {
-          target: 'idle',
-          actions: [
-            'clearPendingRestart',
-            ({ event }) => {
-              trap(
-                new Error('Could not restart the app. Please try again.', {
-                  cause: event.error,
-                })
-              )
-            },
-          ],
         },
       },
     },
@@ -825,4 +772,19 @@ export const settingsMachine = setup({
   },
 })
 
-export { getOnlySettingsFromContext } from '@src/lib/settings/settingsUtils'
+export function getOnlySettingsFromContext(
+  s: SettingsMachineContext
+): SettingsType {
+  const {
+    currentProject: _c,
+    commandBarActor: _cba,
+    defaultProjectLibraries: _defaultProjectLibraries,
+    projectLibrarySettingDefaultPolicies: _projectLibrarySettingDefaultPolicies,
+    extensionSettings: _extensionSettings,
+    fileOperations: _fileOperations,
+    wasmInstancePromise: _w,
+    deferredEvents: _deferredEvents,
+    ...settings
+  } = s
+  return settings
+}

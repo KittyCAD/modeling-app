@@ -122,9 +122,7 @@ export function createSettingsCommand({ type, actor }: CreateSettingsArgs) {
       .split('.')
       .map((segment) => formatSettingsLabel(segment))
       .join(' · ')}`,
-    description: setting.restartRequired
-      ? `${setting.description} Restarts automatically when changed here.`
-      : setting.description,
+    description: setting.description,
     groupId: 'settings',
     icon: 'settings',
     needsReview: false,
@@ -137,11 +135,7 @@ export function createSettingsCommand({ type, actor }: CreateSettingsArgs) {
       ) {
         // TS would not let me get this to type properly
         const coercedData = data as unknown as SetEventTypes['data']
-        actor.send({
-          type: `set.${type}`,
-          data: coercedData,
-          restartAfterPersist: setting.restartRequired ? type : undefined,
-        })
+        actor.send({ type: `set.${type}`, data: coercedData })
       } else {
         console.error('Invalid data submitted to settings command', data)
         return new Error('Invalid data submitted to settings command', data)
