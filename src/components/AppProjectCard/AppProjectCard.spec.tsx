@@ -656,6 +656,44 @@ describe('ProjectCard', () => {
     )
   })
 
+  test.each(['local', 'cloud'] as const)(
+    'returns a %s project to its original title before refreshed metadata arrives',
+    async (kind) => {
+      const project = {
+        ...cloudProject,
+        id: kind === 'local' ? 'local:/projects/original' : cloudProject.id,
+        title: 'Original',
+        status: kind === 'local' ? 'local' : 'synced',
+        remoteProjectId:
+          kind === 'local' ? undefined : cloudProject.remoteProjectId,
+      } satisfies HomeProjectEntry
+      const rename = vi.fn().mockResolvedValue(undefined)
+      renderProjectCard({
+        project,
+        projectActions: createProjectActions({ rename }),
+      })
+
+      // Keep the original props while the library's metadata refresh is pending.
+      for (const title of ['Renamed clone', 'Original']) {
+        clickRenameProject()
+        fireEvent.change(screen.getByTestId('project-rename-input'), {
+          target: { value: title },
+        })
+        submitRenameProject()
+        await waitFor(() =>
+          expect(
+            screen.queryByTestId('project-rename-input')
+          ).not.toBeInTheDocument()
+        )
+        expect(screen.getByTestId('project-title')).toHaveTextContent(title)
+      }
+      expect(rename.mock.calls.map(([, title]) => title)).toEqual([
+        'Renamed clone',
+        'Original',
+      ])
+    }
+  )
+
   test('shows status badges for project cards with one source', () => {
     renderProjectCard({
       project: {

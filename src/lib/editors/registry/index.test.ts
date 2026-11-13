@@ -18,8 +18,8 @@ import {
   OPEN_EDITOR_COMMAND,
   NEW_EDITOR_COMMAND,
 } from '@src/lib/editors/commands'
-import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
@@ -194,14 +194,15 @@ describe('editors extension', () => {
     })
     const options = sourceOptions()
     expect(options.map(({ name }) => name)).toEqual([
-      'parts/main.kcl',
-      'parts/notes.md',
+      fsZds.join('parts', 'main.kcl'),
+      fsZds.join('parts', 'notes.md'),
       'photo.png',
       'README',
     ])
-    expect(options.find(({ name }) => name === 'parts/main.kcl')?.value).toBe(
-      '/project/parts/main.kcl'
-    )
+    expect(
+      options.find(({ name }) => name === fsZds.join('parts', 'main.kcl'))
+        ?.value
+    ).toBe('/project/parts/main.kcl')
     expect(readFile).not.toHaveBeenCalled()
     await openCommand().onSubmit({ src: '/project/photo.png' })
     expect(registry.get(editorsService).editors.value[0].src.value).toBe(

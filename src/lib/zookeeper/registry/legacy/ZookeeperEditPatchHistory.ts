@@ -1,3 +1,4 @@
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import type { EditorState } from '@codemirror/state'
 import type { KclManager } from '@src/lang/KclManager'
 import { isCodeTheSame } from '@src/lib/codeEditor'
@@ -636,7 +637,7 @@ async function readZookeeperSnapshotFileIfExists(
   path: string
 ) {
   try {
-    return new TextDecoder().decode(await fileOperations.readFile(path))
+    return await readTextFile(fileOperations, path)
   } catch (error: unknown) {
     if (error instanceof FileNotFound) {
       return null

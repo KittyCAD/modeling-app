@@ -1,9 +1,14 @@
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { FileSaveStatus } from '@src/components/FileSaveStatus'
+import { FileAlreadyExists } from '@src/lib/fileSystem/fileOperations'
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
+import { getContainedRelativePath } from '@src/lib/fileSystem/pathContainment'
+import { setProjectDefaultFileInProjectTomlContents } from '@src/lib/projectTomlMetadata'
 import fsZds from '@src/lib/fs-zds'
 import { reportRejection } from '@src/lib/trap'
 import { getProjectInfo, writeProjectThumbnailFile } from '@src/lib/desktop'
 import {
+  PROJECT_SETTINGS_FILE_NAME,
   ASK_TO_OPEN_QUERY_PARAM,
   PROJECT_ID_QUERY_PARAM,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
@@ -87,7 +92,14 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       root: path,
       writeAvailability: computed(() => ({ writable: true })),
       externalChanges: 'files',
-      deletionHistory: 'archive',
+      removeWithHistory: async (path) => {
+        const operations = ctx.services.get(fileOperationsService)
+        const snapshot = await operations.removeWithSnapshot(path)
+        return {
+          undo: () => operations.replayDeletion(snapshot, true),
+          redo: () => operations.replayDeletion(snapshot, false),
+        }
+      },
       createMissingEntrypoint: true,
       watch: (path, key, onEvent) => {
         electron?.watchFileOn(path, key, onEvent)
@@ -144,6 +156,34 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     storageFor,
     retrySave: () =>
       retryProjectSave({ getProject: () => project.peek(), storageFor }),
+    deleteEntry: async (path) => {
+      const current = project.peek()
+      if (!current) return
+      if (
+        getContainedRelativePath(
+          { relative: fsZds.relative, sep: fsZds.sep },
+          current.path,
+          path
+        ) === undefined
+      )
+        return new Error('The file belongs to a different project.')
+      try {
+        for (const editor of current.editors.values()) {
+          if (!(await editor.flushWriteToFile()))
+            return new Error('Save pending edits before deleting a file.')
+          if (project.peek() !== current) return
+        }
+        await flushActiveTextFileWrite()
+        if (project.peek() !== current) return
+        const deletion = await storageFor(path).removeWithHistory(path)
+        if (project.peek() !== current) return
+        return { ...deletion, projectPath: current.path }
+      } catch (error) {
+        return error instanceof Error
+          ? error
+          : new Error('Deleting the file failed.')
+      }
+    },
     editorChanged: (path) => storageFor(path).editorChanged(path),
     writeThumbnail: (path, bytes) => storageFor(path).writeThumbnail(bytes),
     get textFileIO() {
@@ -238,6 +278,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       if (source === destination) return
       const current = project.peek()
       const editor = current?.executingEditor.peek()
+      const editorPath = editor?.path
       const affected =
         editor &&
         (editor.path === source ||
@@ -253,12 +294,51 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
         )
       await flushActiveTextFileWrite()
       const operations = ctx.services.get(fileOperationsService)
-      if (await operations.exists(destination))
-        return Promise.reject(
-          new ExpectedFileOperationError('Name already exists.')
-        )
+      const metadata = current?.projectIORefSignal.peek()
+      const entrypointRelative = metadata
+        ? getContainedRelativePath(
+            { relative: fsZds.relative, sep: fsZds.sep },
+            source,
+            metadata.default_file
+          )
+        : undefined
+      const nextEntrypoint =
+        entrypointRelative !== undefined
+          ? fsZds.join(destination, entrypointRelative)
+          : undefined
+      const tomlPath = current
+        ? fsZds.join(current.path, PROJECT_SETTINGS_FILE_NAME)
+        : undefined
+      const nextToml =
+        nextEntrypoint && current && tomlPath
+          ? setProjectDefaultFileInProjectTomlContents(
+              await readTextFile(operations, tomlPath),
+              fsZds.relative(current.path, nextEntrypoint)
+            )
+          : undefined
       const rename = async (operations: FileOperationsRegistryService) => {
-        await operations.rename(source, destination)
+        await operations
+          .rename(source, destination)
+          .catch((error: unknown) =>
+            Promise.reject(
+              error instanceof FileAlreadyExists
+                ? new ExpectedFileOperationError('Name already exists.')
+                : error
+            )
+          )
+        // Rebind immediately after the move, even if persisting metadata fails.
+        if (
+          affected &&
+          editor &&
+          project.peek() === current &&
+          current?.executingEditor.peek() === editor &&
+          editor.path === editorPath
+        ) {
+          editor.path = fsZds.join(
+            destination,
+            fsZds.relative(source, editor.path)
+          )
+        }
         const path = current?.executingPathSignal.peek()
         if (
           project.peek() === current &&
@@ -270,6 +350,14 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
             destination,
             fsZds.relative(source, path.peek())
           )
+        if (nextEntrypoint && current && project.peek() === current) {
+          current.projectIORefSignal.value = {
+            ...current.projectIORefSignal.peek(),
+            default_file: nextEntrypoint,
+          }
+        }
+        if (nextToml !== undefined && tomlPath)
+          await operations.writeFile(tomlPath, nextToml)
       }
       await storageFor(source).batch(source, rename)
     },

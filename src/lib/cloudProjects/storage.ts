@@ -35,7 +35,13 @@ export function createCloudProjectStorageProvider(
       writeAvailability,
       saveState: computed(() => cloud.saves.value.get(id)),
       externalChanges: 'snapshot',
-      deletionHistory: 'storage',
+      removeWithHistory: async (path) => {
+        const snapshot = await cloud.deletePathWithRevision(path)
+        return {
+          undo: () => cloud.restoreDeletedPath(snapshot),
+          redo: () => cloud.redoPathDeletion(snapshot),
+        }
+      },
       createMissingEntrypoint: false,
       watch: (path, _key, onEvent) =>
         cloud.subscribe((changes) => {

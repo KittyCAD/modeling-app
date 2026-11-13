@@ -2,8 +2,9 @@ import { posix } from '@chainner/node-path'
 import { defineRegistryItem, provide, Slot } from '@kittycad/registry'
 import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import noopfs from '@src/lib/fs-zds/noopfs'
-import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
+import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import { fileOperationsMountsValueSpec } from '@src/registry/contracts/fileOperations'
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import { tmpdir } from 'node:os'
 import { Registry } from '@kittycad/registry'
 import nodeFileSystem from '@src/lib/fs-zds/nodefs'
@@ -27,7 +28,7 @@ describe('file operations extension', () => {
     )
   })
 
-  it('mounts one file operations runtime behind the registry capability', async () => {
+  it('mounts one file operations scheduler behind the registry capability', async () => {
     const root = nodeFileSystem.impl.join(
       tmpdir(),
       `zds-effect-file-operations-registry-${crypto.randomUUID()}`
@@ -41,9 +42,7 @@ describe('file operations extension', () => {
     const operations = registry.get(fileOperationsService)
     await operations.writeFile(file, 'line([0, 0], [1, 1])')
 
-    expect(new TextDecoder().decode(await operations.readFile(file))).toBe(
-      'line([0, 0], [1, 1])'
-    )
+    expect(await readTextFile(operations, file)).toBe('line([0, 0], [1, 1])')
     await expect(operations.exists(file)).resolves.toBe(true)
     await expect(operations.stat(file)).resolves.toMatchObject({
       kind: 'file',
@@ -64,7 +63,7 @@ it('routes through registry mount replacements without replacing the file servic
     '/projects/main.kcl',
     new TextEncoder().encode('memory')
   )
-  const runtime = createFileOperationsRuntime(memory)
+  const runtime = createFileOperationsScheduler(memory)
   const registry = new Registry()
   const slot = new Slot()
   registry.configure([createFileOperationsExtension(disk), slot.of()])
