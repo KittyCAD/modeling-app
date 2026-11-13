@@ -6584,8 +6584,8 @@ body = extrude(region(segments = [profile.c]), length = 5mm)
                 env,
             ))
             .await;
-        let live = ExecutorContext::new_with_engine(mock.engine.clone(), mock.settings.clone())
-            .with_cache(mock.cache.clone());
+        let live =
+            ExecutorContext::new_with_engine(mock.engine.clone(), mock.settings.clone()).with_cache(mock.cache.clone());
         // A mock/live mode mismatch makes the cache request settings reapplication.
         mock.settings.geometry_only = false;
         assert!(
