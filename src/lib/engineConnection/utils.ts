@@ -3,17 +3,39 @@ import type {
   OkModelingCmdResponse,
   RtcSessionDescription,
   WebSocketResponse,
+  ModelingCmd,
 } from '@kittycad/lib/dist/types/src'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
 import type { Connection } from '@src/lib/engineConnection/connection'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import { isArray } from '@src/lib/utils'
+import { isArray, uuidv4 } from '@src/lib/utils'
 
 // Ping/Pong every 1 second
 export const PING_INTERVAL_MS = 1_000
 
 export type ModelTypes = OkModelingCmdResponse['type']
+
+/** Query evaluated geometry, retaining the SDK's discriminated response type. */
+export async function queryModelingCommand(
+  engine: ConnectionManager,
+  cmd: ModelingCmd
+) {
+  try {
+    const result = await engine.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd,
+    })
+    const response = isArray(result) ? result[0] : result
+    return isModelingResponse(response)
+      ? response.resp.data.modeling_response
+      : undefined
+  } catch {
+    return undefined
+  }
+}
 
 /** Normalized result for engine commands whose successful response carries data. */
 export type ModelingDataResult =

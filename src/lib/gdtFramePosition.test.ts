@@ -9,6 +9,7 @@ import {
   getDefaultGdtFramePositionSignsFromNormal,
   getEngineEntityIdsForGdtSelections,
   getExistingGdtFontSize,
+  getOutsideDistanceSetback,
   getPlanarFaceEntityIdsForGdtSelections,
   withDefaultGdtFrameDefaults,
 } from '@src/lib/gdtFramePosition'
@@ -659,4 +660,38 @@ describe('GD&T frame defaults', () => {
 
     expect(getExistingGdtFontSize(ast, sourceCode)?.valueText).toBe('4mm')
   })
+})
+it.each(['XY', 'XZ', 'YZ'])(
+  'places dimensions outside either side of a translated body on %s',
+  (plane) => {
+    const point = (x: number, y: number) =>
+      plane === 'XY'
+        ? { x, y, z: 0 }
+        : plane === 'XZ'
+          ? { x, y: 0, z: y }
+          : { x: 0, y: x, z: y }
+    const bounds = { center: point(500, 200), dimensions: point(100, 100) }
+    for (const y of [160, 240]) {
+      const from = point(480, y),
+        to = point(520, y)
+      const offset = getOutsideDistanceSetback(from, to, plane, bounds)
+      expect(offset).toBe(y < 200 ? -21.25 : 21.25)
+      expect(getOutsideDistanceSetback(to, from, plane, bounds)).toBe(offset)
+      expect(Math.abs(y - 200 + 0.8 * (offset ?? 0))).toBeGreaterThan(50)
+    }
+  }
+)
+
+it('clears diagonal geometry and declines a degenerate measurement', () => {
+  const bounds = {
+    center: { x: 0, y: 0, z: 0 },
+    dimensions: { x: 100, y: 100, z: 0 },
+  }
+  const from = { x: -10, y: -30, z: 0 },
+    to = { x: 10, y: -10, z: 0 }
+  const offset = getOutsideDistanceSetback(from, to, 'XY', bounds)
+  expect((from.y - from.x) / Math.SQRT2 + 0.8 * (offset ?? 0)).toBeLessThan(
+    -100 / Math.SQRT2
+  )
+  expect(getOutsideDistanceSetback(from, from, 'XY', bounds)).toBeUndefined()
 })

@@ -1,6 +1,11 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { validateSolidEdgeSelections } from '@src/lang/modifyAst/validateSolidEdgeSelections'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import {
+  getEdgeSelections,
+  isEdgeSelection,
+  isEnginePrimitiveSelection,
+} from '@src/lang/queryAst'
 
 import {
   addIntersect,
@@ -23,6 +28,7 @@ import {
   addCylindricityGdt,
   addDatumGdt,
   addDistanceGdt,
+  getDistanceMeasurementMode,
   addFlatnessGdt,
   addNoteGdt,
   addParallelismGdt,
@@ -77,7 +83,11 @@ import {
   modelingStdLibCommandUsesExperimentalFeatures,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
-import { withDefaultGdtFrameDefaults } from '@src/lib/gdtFramePosition'
+import {
+  withDefaultGdtFrameDefaults,
+  getDistanceFrameDefaults,
+} from '@src/lib/gdtFramePosition'
+import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type CommandArgsByName = {
@@ -286,6 +296,61 @@ const withGdtDefaults = <
     },
   })
 
+const distanceCodemod = defineModelingCodemod<
+  CommandArgsByName['GDT Distance']
+>({
+  ...withStdLibExperimentalFeatures('GDT Distance'),
+  run: async ({ args, ast, kclManager, wasmInstance }) => {
+    const context = {
+      ast,
+      artifactGraph: kclManager.artifactGraph,
+      wasmInstance,
+    }
+    // Edit selections are display-only; preserve the original arguments and omissions.
+    if (args.nodeToEdit) return addDistanceGdt(addCodemodArgs(args, context))
+    const objects = args.objects
+    const targets = getEdgeSelections(objects)
+    const mode = getDistanceMeasurementMode(
+      targets.map((selection) => ({
+        kind: isEdgeSelection(selection) ? 'edge' : 'face',
+      }))
+    )
+    if (isErr(mode)) return mode
+    const measurements =
+      mode === 'between'
+        ? [objects]
+        : targets.map(
+            (selection): Selections =>
+              isEnginePrimitiveSelection(selection)
+                ? {
+                    graphSelections: [],
+                    otherSelections: [selection],
+                  }
+                : { graphSelections: [selection], otherSelections: [] }
+          )
+    const frameDefaults = await Promise.all(
+      measurements.map((measurement) =>
+        getDistanceFrameDefaults({
+          data: { ...args, objects: measurement },
+          mode,
+          engineCommandManager: kclManager.engineCommandManager,
+          artifactGraph: kclManager.artifactGraph,
+          ast,
+          sourceCode: kclManager.code,
+          outputUnit: kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+          variables: kclManager.variables,
+        })
+      )
+    )
+    return addDistanceGdt({
+      ...addCodemodArgs(args, context),
+      objects,
+      frameDefaults,
+    })
+  },
+})
+
 export const modelingCommandCodemods = {
   'Named View': withArtifactGraph('Named View', addNamedView, {
     focusPath: false,
@@ -346,10 +411,7 @@ export const modelingCommandCodemods = {
     withGdtDefaults('GDT Profile', addProfileGdt),
     'objects'
   ),
-  'GDT Distance': withSolidEdgeSelections(
-    withGdtDefaults('GDT Distance', addDistanceGdt),
-    'objects'
-  ),
+  'GDT Distance': withSolidEdgeSelections(distanceCodemod, 'objects'),
   'GDT Perpendicularity': withSolidEdgeSelections(
     withGdtDefaults('GDT Perpendicularity', addPerpendicularityGdt),
     'objects'

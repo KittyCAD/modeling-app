@@ -1548,6 +1548,59 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('resolves primitive edges to the Boolean body as fillet does', async () => {
+      const code = `@settings(kclVersion = 3.0)
+profile = sketch(on = XY) {
+  outer = circle(center = [0mm, 0mm], start = [20mm, 0mm])
+}
+plate = extrude(region(sketch = profile, point = [0mm, 0mm]), length = 10mm)
+toolProfile = sketch(on = XY) {
+  inner = circle(center = [0mm, 0mm], start = [5mm, 0mm])
+}
+tool = extrude(region(sketch = toolProfile, point = [0mm, 0mm]), length = 10mm)
+part = subtract(plate, tools = tool)`
+      const { ast, artifactGraph } = await executeCode(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweep = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweep'
+      )
+      if (sweep?.type !== 'sweep') throw new Error('Missing extrusion')
+      const result = addDistanceGdt({
+        ast,
+        artifactGraph,
+        objects: {
+          graphSelections: [
+            {
+              entityRef: {
+                type: 'edge',
+                side_faces: ['engine-only-side', 'engine-only-cap'],
+              },
+              engineTopologyFallback: { parentId: sweep.id, primitiveIndex: 0 },
+            },
+          ],
+          otherSelections: [],
+        },
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toContain('edgeId(part, index = 0)')
+      const executed = await executeCode(
+        newCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(
+        [...executed.artifactGraph.values()].some(
+          (artifact) => artifact.type === 'gdtAnnotation'
+        )
+      ).toBe(true)
+    })
+
     it('should add edge length annotations to multiple selected edges', async () => {
       const { artifactGraph, ast } = await executeCode(
         box,
