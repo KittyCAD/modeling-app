@@ -2,6 +2,13 @@ cnr := "cargo nextest run --retries 3 --no-fail-fast"
 cita := "cargo insta test --accept"
 kcl_lib_flags := "-p kcl-lib --features artifact-graph"
 
+# Check existing snapshots, even when the calling shell enables updates.
+[positional-arguments]
+verify *args:
+    INSTA_UPDATE=no INSTA_FORCE_PASS=0 INSTA_FORCE_UPDATE=0 INSTA_FORCE_UPDATE_SNAPSHOTS=0 \
+        EXPECTORATE=check TWENTY_TWENTY=check ZOO_SIM_UPDATE=never \
+        cargo nextest run --workspace --features=artifact-graph --no-fail-fast "$@"
+
 # Run the same lint checks we run in CI.
 lint:
     # All features.

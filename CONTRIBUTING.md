@@ -130,6 +130,39 @@ Integration tests will be slower, require more dependencies, and could be flaky.
 
 ## Running tests
 
+### Verifying without updating results
+
+Use these commands to compare against existing expected results. Existing
+formatting and update commands remain available for making changes and reviewing
+their diffs.
+
+| Check | Verification command | Apply changes or update expected results |
+| --- | --- | --- |
+| Formatting, TypeScript types, and ESLint | `make verify` | `make check` |
+| Formatting only | `make format-check` | `make format` |
+| Rust tests and snapshots, from `rust/` | `just verify` | Existing snapshot update commands below and in `rust/justfile` |
+| One simulation test, from `rust/` | `just verify simulation_tests::foo_bar::` | `just overwrite-sim-test foo_bar` |
+| Generated stdlib Markdown, from `rust/` | `just verify docs::gen_std_tests::test_generate_stdlib` | `just redo-kcl-stdlib-docs-no-imgs` |
+| TypeScript bindings | `npm run bindings:verify` | `npm run bindings:update` |
+| Browser snapshots | `npm run test:snapshots:verify` | `npm run test:snapshots -- --update-snapshots` |
+
+Run commands from the repository root unless the table specifies `rust/`.
+Prepare dependencies and the Wasm build separately using the setup instructions
+above. `make verify` and `make format-check` do not install dependencies or rebuild
+generated files. `bindings:verify` regenerates the ignored bindings and compares
+them with the committed copies without replacing those copies.
+
+`just verify` accepts Cargo Nextest arguments, including test filters. It disables
+snapshot updates even when update settings are exported in the calling shell.
+Engine tests still require `ZOO_API_TOKEN`; parse-only tests and generated Markdown
+checks can run without it. Browser verification fails for missing snapshots as
+well as mismatches and can write diagnostic artifacts in the test report folders.
+
+When an expected result needs to change, use the existing update command, inspect
+the resulting diff, and rerun verification. Keep local Wasm build artifacts intact;
+use a clean checkout without built Wasm when checking that unit tests work without
+it.
+
 ### Playwright tests
 
 Prepare these system dependencies:

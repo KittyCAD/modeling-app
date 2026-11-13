@@ -28,16 +28,19 @@ This file applies to Rust development under `rust/`. It supplements the repo roo
 
 - Many tests require an API token. If `ZOO_API_TOKEN` isn't already defined as an environment variable, ask to have the tests run with the token.
 - Build the LSP (from `rust/kcl-language-server`): `npm install` then `cargo build`.
-- Run KCL snapshot tests (requires a Zoo dev token):
+- Verify KCL snapshots from `rust/` (requires a Zoo dev token for engine tests): `just verify`. Append a test filter to narrow the run, for example `just verify simulation_tests::cube::`.
+- Update KCL image snapshots when intentionally changing expected results:
   - `export ZOO_API_TOKEN=your-token-here`
   - `TWENTY_TWENTY=update cargo nextest run --workspace --no-fail-fast`
 - Generate stdlib markdown docs (from `rust/`): `just redo-kcl-stdlib-docs-no-imgs`
-- Run `npm run bindings:update` before pushing.
+- Verify generated stdlib markdown docs without updating them: `just verify docs::gen_std_tests::test_generate_stdlib`.
+- Verify TypeScript bindings from the repository root with `npm run bindings:verify` before pushing. For intentional API changes, run `npm run bindings:update`, inspect the diff, then verify again.
 
 ## Simulation tests
 
 - Create a new sim test: `just new-sim-test foo_bar` (this creates a directory for your sim test like `kcl-lib/tests/foo/`, with an empty `input.kcl` that you should put code in).
-- Run/update the sim test: `just overwrite-sim-test foo_bar`
+- Verify existing sim test results: `just verify simulation_tests::foo_bar::`. For public samples, use `just verify simulation_tests::kcl_samples` to include sample metadata checks.
+- Update expected sim test results: `just overwrite-sim-test foo_bar`
 - Inspect generated outputs and check for `execution_error.snap` before committing.
 - Optionally execute one `input.kcl` under multiple KCL versions via `config.toml`: `kcl_versions = ["2.0", "3.0-preview"]`. Shared snapshots go in `output/`; execution snapshots go in `output/kcl-<version>/` (prerelease suffixes like `-preview` are dropped, so `3.0-preview` writes to `output/kcl-3.0/`).
 

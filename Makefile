@@ -94,6 +94,16 @@ endif
 .PHONY: check
 check: format lint
 
+.PHONY: verify
+verify: format-check ## Check formatting, types, and lints without rewriting source files
+	npm run tsc
+	npm run lint
+
+.PHONY: format-check
+format-check: ## Check formatting without rewriting files
+	npm run fmt:check
+	cd rust && cargo +nightly fmt --check
+
 .PHONY: format
 format: install ## Format the code
 	npm run fmt
