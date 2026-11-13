@@ -23,7 +23,11 @@ import type {
   DynamicSettingsCategories,
   ResolvedExtensionSettings,
 } from '@src/lib/settings/extensionSettings'
-import type { BaseUnit, SettingsLevel } from '@src/lib/settings/settingsTypes'
+import type {
+  BaseUnit,
+  SettingComponentProps,
+  SettingsLevel,
+} from '@src/lib/settings/settingsTypes'
 import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { Themes } from '@src/lib/theme'
 import { isEnumMember } from '@src/lib/types'
@@ -37,6 +41,29 @@ import {
 } from '@src/lib/settings/viewportRendering'
 
 const MS_IN_MINUTE = 1000 * 60
+
+// Settings reloads must reuse this component so the native picker stays open.
+function BackfaceColorInput({
+  value,
+  updateValue,
+}: SettingComponentProps<string>) {
+  return (
+    <div className="flex items-center gap-3">
+      <input
+        type="color"
+        value={value.toLowerCase()}
+        onChange={(event) => {
+          const nextValue = event.target.value.toUpperCase()
+          updateValue(nextValue)
+        }}
+        className="h-9 w-14 cursor-pointer rounded-sm border border-chalkboard-30 bg-transparent p-0"
+      />
+      <span className="text-xs font-mono text-chalkboard-70 dark:text-chalkboard-30">
+        {value.toUpperCase()}
+      </span>
+    </div>
+  )
+}
 
 function createCoreSettings() {
   const settings = {
@@ -287,24 +314,7 @@ function createCoreSettings() {
           defaultValueFromContext: (context) =>
             context.modeling.backfaceColor.current,
         },
-        Component: ({ value, updateValue }) => {
-          return (
-            <div className="flex items-center gap-3">
-              <input
-                type="color"
-                value={value.toLowerCase()}
-                onChange={(event) => {
-                  const nextValue = event.target.value.toUpperCase()
-                  updateValue(nextValue)
-                }}
-                className="h-9 w-14 cursor-pointer rounded-sm border border-chalkboard-30 bg-transparent p-0"
-              />
-              <span className="text-xs font-mono text-chalkboard-70 dark:text-chalkboard-30">
-                {value.toUpperCase()}
-              </span>
-            </div>
-          )
-        },
+        Component: BackfaceColorInput,
       }),
       /**
        * The controls for how to navigate the 3D view
