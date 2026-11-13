@@ -19,6 +19,8 @@ import type { ComponentType } from 'react'
 
 /** One live working document, independent of the views displaying it. */
 export interface Editor {
+  /** Effective document policy; every mode must honor it, not only CodeMirror. */
+  readonly readOnly: ReadonlySignal<boolean>
   readonly id: symbol
   /** Undefined for a new buffer; otherwise a local path or cloud ID plus relative path. */
   readonly src: ReadonlySignal<string | undefined>
@@ -127,6 +129,13 @@ export interface CodeEditorExtension {
   extensions: Extension | ((host: CodeEditorHost) => Extension | Error)
 }
 
+/** A backing or extension can prohibit document edits across every presentation. */
+export interface EditorReadOnlyPolicy {
+  id: string
+  matches: EditorMatcher
+  readOnly: ReadonlySignal<boolean>
+}
+
 /** Informational decorations contributed alongside a buffer's tab label. */
 export interface EditorTabIndicator {
   id: string
@@ -156,6 +165,9 @@ export interface EditorsService {
 }
 
 export const editorsContract = defineContract({
+  editorReadOnlyPoliciesValueSpec: appendValueSpec<EditorReadOnlyPolicy>(
+    'editors.readOnlyPolicies'
+  ),
   editorLanguagesValueSpec:
     appendValueSpec<EditorLanguage>('editors.languages'),
   editorViewsValueSpec:
@@ -175,6 +187,7 @@ export const editorsContract = defineContract({
 export const {
   editorsService,
   editorLanguagesValueSpec,
+  editorReadOnlyPoliciesValueSpec,
   editorCapabilityValueSpec,
   editorTabIndicatorsValueSpec,
   editorViewsValueSpec,

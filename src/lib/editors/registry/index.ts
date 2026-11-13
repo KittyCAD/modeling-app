@@ -1,10 +1,17 @@
+import { matchesEditor } from '@src/lib/editors/matching'
+import { ReadOnlyIndicator } from '@src/lib/editors/ReadOnlyIndicator'
 import { createEditorHistory } from '@src/lib/editors/history'
 import {
   defineRegistryItemFactory,
   provide,
   provideService,
 } from '@kittycad/registry'
-import { signal, type Signal } from '@preact/signals-core'
+import {
+  computed,
+  signal,
+  type Signal,
+  type ReadonlySignal,
+} from '@preact/signals-core'
 import { watchEditorCapabilities } from '@src/lib/editors/capabilities'
 import { createElement } from 'react'
 import type { EditorView as NativeEditorView } from '@codemirror/view'
@@ -28,6 +35,8 @@ import {
   editorLanguagesValueSpec,
   editorsService,
   editorViewsValueSpec,
+  editorReadOnlyPoliciesValueSpec,
+  editorTabIndicatorsValueSpec,
 } from '@src/lib/editors/registry/contract'
 import { defineEditorView } from '@src/lib/editors/views'
 import { createEditorClassification } from '@src/lib/editors/classification'
@@ -147,11 +156,23 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
         ?.currentSession.peek()?.signal
       const resources = createEditorCleanup()
       const source = signal(src)
-      const backing = createEditorDocument(contents)
+      const backing = createEditorDocument(contents, () => !readOnly.peek())
       resources.onDispose(backing.dispose)
       const text = backing.document.contents
       const language = createEditorClassification(source, text, languages)
+      const readOnly: ReadonlySignal<boolean> = computed(() =>
+        valueSpecs.signal(editorReadOnlyPoliciesValueSpec).value.some(
+          (policy) =>
+            policy.readOnly.value &&
+            matchesEditor(policy.matches, {
+              src: source.value ?? '',
+              contents: text.value,
+              ...language.classification.value,
+            })
+        )
+      )
       const editor: Editor = {
+        readOnly,
         ...backing.document,
         get state() {
           return backing.document.state
@@ -228,6 +249,10 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
   return {
     id: 'editors',
     provides: [
+      provide(editorTabIndicatorsValueSpec, {
+        id: 'editors.read-only',
+        component: ReadOnlyIndicator,
+      }),
       provide(
         editorViewsValueSpec,
         defineEditorView((host) => {

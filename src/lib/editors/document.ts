@@ -5,7 +5,10 @@ import { batch, signal } from '@preact/signals-core'
 import type { Editor } from '@src/lib/editors/registry/contract'
 
 /** Document transactions and undo history exist without a mounted CodeMirror surface. */
-export function createEditorDocument(contents: string) {
+export function createEditorDocument(
+  contents: string,
+  canEdit: () => boolean = () => true
+) {
   const text = signal(contents)
   const lifetime = new AbortController()
   let state = EditorState.create({
@@ -14,7 +17,8 @@ export function createEditorDocument(contents: string) {
   })
   const listeners = new Set<(transaction: Transaction) => void>()
   const apply = (transaction: Transaction) => {
-    if (lifetime.signal.aborted) return
+    if (lifetime.signal.aborted || (transaction.docChanged && !canEdit()))
+      return
     state = transaction.state
     batch(() => {
       if (transaction.docChanged) text.value = state.doc.toString()
@@ -41,6 +45,7 @@ export function createEditorDocument(contents: string) {
     },
     undo: () =>
       !lifetime.signal.aborted &&
+      canEdit() &&
       undo({
         get state() {
           return state
@@ -49,6 +54,7 @@ export function createEditorDocument(contents: string) {
       }),
     redo: () =>
       !lifetime.signal.aborted &&
+      canEdit() &&
       redo({
         get state() {
           return state

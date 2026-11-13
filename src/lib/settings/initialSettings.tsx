@@ -736,6 +736,7 @@ function instantiateExtensionSettings(
 type CoreSettingsType = ReturnType<typeof createCoreSettings>
 
 export type SettingsType = CoreSettingsType & {
+  textEditor: CoreSettingsType['textEditor'] & { autosave: Setting<boolean> }
   app: CoreSettingsType['app'] & {
     libraries: Setting<ProjectLibrarySetting[]>
   }
