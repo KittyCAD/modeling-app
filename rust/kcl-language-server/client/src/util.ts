@@ -68,10 +68,6 @@ class Logger {
 
 export const log = new Logger()
 
-export function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
 export type KclDocument = vscode.TextDocument & { languageId: 'kcl' }
 export type KclEditor = vscode.TextEditor & { document: KclDocument }
 

@@ -2579,7 +2579,7 @@ solid001 = extrude(region001, length = 5)`
               'Use defaults'
             )
             // Update arc degrees from 360deg to 180
-            await modelingDialog.input('arc degrees').fill('180')
+            await modelingDialog.fillInput('arc degrees', '180')
 
             // Review changes to arc degrees
             await expect(modelingDialog.submitButton).toBeEnabled()

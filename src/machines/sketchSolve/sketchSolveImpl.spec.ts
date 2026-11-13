@@ -1,7 +1,9 @@
 import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import { createKclManagerTestHarness } from '@src/lang/testHelpers/kclManagerTestHarness'
 import { topLevelRange } from '@src/lang/util'
+import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import {
   buildSegmentCtorFromObject,
   isSketchBlockSelected,
@@ -21,6 +23,7 @@ import {
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import toast from 'react-hot-toast'
 import { describe, expect, test, vi } from 'vitest'
+import { createActor } from 'xstate'
 
 test.each(['replaced', 'removed', 'missing parent'] as const)(
   'resolves cached sketch selections against the live artifact graph (%s)',
@@ -586,50 +589,61 @@ describe('updateSketchOutcome', () => {
     )
   })
 
-  test('syncs sketch solve operations only when the debounced editor update runs', () => {
-    vi.useFakeTimers()
+  test('commits consecutive outcomes immediately with their matching editor, variables, and history checkpoints', async () => {
+    const initialCode = '@settings(kclVersion = 3.0)\nx = 1\n'
+    const { app, kclManager } = createKclManagerTestHarness(initialCode)
+    await kclManager.wasmInstancePromise
+    kclManager.updateCodeEditor(
+      initialCode,
+      {
+        shouldClearHistory: true,
+        shouldWriteToDisk: false,
+        shouldAddToHistory: false,
+      },
+      { sketchCheckpointId: 1 }
+    )
+    const actor = createActor(sketchSolveMachine, {
+      input: {
+        kclManager,
+        sketchId: 0,
+        initialSceneGraphDelta: createSceneGraphDelta([]),
+      },
+    }).start()
     try {
-      const setSketchSolveDiagnostics = vi.fn()
-      const dispatch = vi.fn()
-      const updateCodeEditor = vi.fn()
-      const syncSketchSolveOutcome = vi.fn()
-      const sceneGraphDelta = createSceneGraphDelta([])
-
-      updateSketchOutcome({
-        context: {
-          kclManager: {
-            code: 'old code',
-            dispatch,
-            setSketchSolveDiagnostics,
-            updateCodeEditor,
-            syncSketchSolveOutcome,
-          },
-          selectedIds: [],
-          duringAreaSelectIds: [],
-        },
-        event: {
+      for (const checkpointId of [2, 3]) {
+        const code = `@settings(kclVersion = 3.0)\nx = ${checkpointId}\n`
+        const sceneGraphDelta = createSceneGraphDelta([])
+        sceneGraphDelta.exec_outcome.variables = {
+          x: { type: 'Number', value: checkpointId, ty: { type: 'Unknown' } },
+        }
+        actor.send({
           type: 'update sketch outcome',
           data: {
-            sourceDelta: { text: 'new code' },
+            sourceDelta: { text: code },
             sceneGraphDelta,
-            debounceEditorUpdate: true,
+            checkpointId,
+            writeToDisk: false,
+            addToHistory: true,
           },
-        },
-      } as any)
-
-      expect(updateCodeEditor).not.toHaveBeenCalled()
-      expect(syncSketchSolveOutcome).not.toHaveBeenCalled()
-
-      vi.advanceTimersByTime(200)
-
-      expect(updateCodeEditor).toHaveBeenCalled()
-      expect(syncSketchSolveOutcome).toHaveBeenCalledWith(
-        'new code',
-        sceneGraphDelta,
-        { refreshLintDiagnostics: true }
-      )
+        })
+        expect(kclManager.code).toBe(code)
+        expect(kclManager.currentSketchCheckpointId).toBe(checkpointId)
+        expect(kclManager.variables.x).toEqual({
+          type: 'Number',
+          value: checkpointId,
+          ty: { type: 'Unknown' },
+        })
+        expect(
+          actor.getSnapshot().context.sketchExecOutcome?.sceneGraphDelta
+        ).toBe(sceneGraphDelta)
+        expect(kclManager.undoDepth.peek()).toBeGreaterThan(0)
+      }
+      await Promise.resolve()
+      expect(kclManager.code).toBe('@settings(kclVersion = 3.0)\nx = 3\n')
+      expect(kclManager.currentSketchCheckpointId).toBe(3)
     } finally {
-      vi.useRealTimers()
+      actor.stop()
+      app.dispose()
     }
   })
 
