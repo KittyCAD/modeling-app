@@ -831,6 +831,19 @@ export class LocalRenderer {
       return
     }
     const { renderer, scene, selectionHighlightRenderer } = gpu
+    const width = this.container.clientWidth
+    const height = this.container.clientHeight
+    if (width === 0 || height === 0) {
+      return
+    }
+    const pixelRatio = window.devicePixelRatio
+    if (
+      renderer.domElement.width !== Math.floor(width * pixelRatio) ||
+      renderer.domElement.height !== Math.floor(height * pixelRatio) ||
+      renderer.getPixelRatio() !== pixelRatio
+    ) {
+      renderer.setDrawingBufferSize(width, height, pixelRatio)
+    }
 
     const baseRendered = selectionHighlightRenderer.beginFrame(
       this.baseRenderDirty
@@ -1029,7 +1042,6 @@ export class LocalRenderer {
       return
     }
 
-    renderer.setDrawingBufferSize(width, height, window.devicePixelRatio)
     this.syncPreviewCameraFromShared()
   }
 
