@@ -301,6 +301,10 @@ const createHomePageMenu = async (): Promise<any> => {
 
 // Creating a menu will refresh the state of the menu
 // Anything that was enabled will be reset to the hard coded state of the original menu
+const createEditorPageMenu = async (): Promise<void> => {
+  return ipcRenderer.invoke('create-menu', { page: 'editor' })
+}
+
 const createModelingPageMenu = async (): Promise<any> => {
   return ipcRenderer.invoke('create-menu', { page: 'modeling' })
 }
@@ -418,6 +422,7 @@ contextBridge.exposeInMainWorld('electron', {
   getMachineApiRunning,
   setMachineApiState,
   createHomePageMenu,
+  createEditorPageMenu,
   createModelingPageMenu,
   createFallbackMenu,
   enableMenu,

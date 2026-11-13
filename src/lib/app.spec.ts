@@ -1,5 +1,7 @@
 import * as cloudPolling from '@src/lib/cloudProjects/polling'
 import '@src/lib/projectSession/next/testFeature'
+import { requireSuccess, codeSurface } from '@src/lib/editors/testViews'
+import { editorsService } from '@src/lib/editors/registry/contract'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
 import { createProjectForTest } from '@src/lib/projectTestUtils'
@@ -207,16 +209,19 @@ function expectedRuntimeFlags() {
 }
 
 describe('project system', () => {
-  it('closes the next project session through the Home navigation boundary', async () => {
+  it('closes project editor resources through the Home navigation boundary', async () => {
     const app = createAppForTest()
     try {
       await waitForSettingsIdle(app)
       await waitForAuthSettled(app)
       const projects = app.registry.get(projectSessionService)
       const session = projects.openProject({
-        contents: { name: 'standalone', path: '/standalone', children: [] },
-        metadata: { title: 'Standalone', readWriteAccess: true },
+        contents: { name: 'project', path: '/project', children: [] },
+        metadata: { title: 'Project', readWriteAccess: true },
       })
+      const editors = app.registry.get(editorsService)
+      const editor = requireSuccess(editors.openEditor('/project/main.kcl', ''))
+      const destroy = vi.spyOn(codeSurface(editors, editor), 'destroy')
       // Exercise Home's actual close boundary without starting unrelated folder IO.
       loadHomeProjects({
         projectLibraries: { refreshProjects: vi.fn(async () => {}) },
@@ -225,6 +230,8 @@ describe('project system', () => {
       })
       expect(projects.currentSession.value).toBeUndefined()
       expect(session.signal.aborted).toBe(true)
+      expect(editors.editors.value).toEqual([])
+      expect(destroy).toHaveBeenCalledOnce()
     } finally {
       await app.disposeAsync()
     }
@@ -848,6 +855,7 @@ describe('project system', () => {
         name: 'zoo-modeling-app',
       },
       getAppTestProperty: vi.fn().mockResolvedValue(undefined),
+      menuOn: vi.fn(() => vi.fn()),
       pluginIpc: {
         invoke: vi.fn(),
         syncActivePlugins,
