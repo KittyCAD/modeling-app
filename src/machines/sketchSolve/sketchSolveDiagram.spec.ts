@@ -7,6 +7,7 @@ import { CHILD_TOOL_DONE_EVENT } from '@src/machines/sketchSolve/sketchSolveImpl
 import {
   createArcApiObject,
   createCircleApiObject,
+  createConstraintApiObject,
   createLineApiObject,
   createMockRustContext,
   createPointApiObject,
@@ -110,6 +111,15 @@ function createSketchSolveHarness(objects: ApiObject[] = []) {
     theme: Themes.Light,
   }
   const rustContext = createMockRustContext()
+  const addConstraintMock = vi.fn(
+    async (..._args: Parameters<typeof rustContext.addConstraint>) => {
+      throw new Error('Unexpected add constraint call')
+    }
+  )
+  rustContext.addConstraint = addConstraintMock
+  const pointToUnit = vi.fn(
+    (point: string) => JSON.parse(point) as [number, number]
+  )
   const kclManager = {
     code: 'sketch001 = startSketchOn(XY)',
     editorView: {
@@ -127,7 +137,7 @@ function createSketchSolveHarness(objects: ApiObject[] = []) {
     setSketchSolveDiagnostics: vi.fn(),
     syncSketchSolveOutcome: vi.fn(),
     updateCodeEditor: vi.fn(),
-    wasmInstancePromise: Promise.resolve({}),
+    wasmInstancePromise: Promise.resolve({ point_to_unit: pointToUnit }),
     systemDeps: {
       settings: {},
     },
@@ -151,8 +161,71 @@ function createSketchSolveHarness(objects: ApiObject[] = []) {
   ).start()
   startedActors.push(actor)
 
-  return { actor, getPlaneIntersectPoint, rustContext, scene }
+  return {
+    actor,
+    addConstraintMock,
+    getPlaneIntersectPoint,
+    pointToUnit,
+    rustContext,
+    scene,
+  }
 }
+
+describe('sketchSolveMachine duplicate dimensions', () => {
+  it('does not add a preselected line length that already exists', async () => {
+    const point0 = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const point1 = createPointApiObject({ id: 2, x: 4, y: 3 })
+    const line = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const dimension = createConstraintApiObject({
+      id: 20,
+      constraint: {
+        type: 'Distance',
+        segments: [1, 2],
+        distance: { value: 5, units: 'Mm' },
+        source: { expr: '5', is_literal: true },
+      },
+    })
+    const { actor, addConstraintMock, pointToUnit } = createSketchSolveHarness([
+      point0,
+      point1,
+      line,
+      dimension,
+    ])
+
+    actor.send({ type: 'update selected ids', data: { selectedIds: [10] } })
+    actor.send({ type: 'Dimension' })
+
+    await vi.waitFor(() => expect(pointToUnit).toHaveBeenCalledTimes(4))
+    expect(addConstraintMock).not.toHaveBeenCalled()
+  })
+
+  it('does not add a preselected circle diameter that already exists', async () => {
+    const center = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const start = createPointApiObject({ id: 2, x: 3, y: 4 })
+    const circle = createCircleApiObject({ id: 10, center: 1, start: 2 })
+    const dimension = createConstraintApiObject({
+      id: 20,
+      constraint: {
+        type: 'Diameter',
+        arc: 10,
+        diameter: { value: 10, units: 'Mm' },
+        source: { expr: '10', is_literal: true },
+      },
+    })
+    const { actor, addConstraintMock, pointToUnit } = createSketchSolveHarness([
+      center,
+      start,
+      circle,
+      dimension,
+    ])
+
+    actor.send({ type: 'update selected ids', data: { selectedIds: [10] } })
+    actor.send({ type: 'Dimension' })
+
+    await vi.waitFor(() => expect(pointToUnit).toHaveBeenCalledTimes(4))
+    expect(addConstraintMock).not.toHaveBeenCalled()
+  })
+})
 
 describe('sketchSolveMachine selection clearing', () => {
   it('clears the selection when an equipped child tool completes', () => {
