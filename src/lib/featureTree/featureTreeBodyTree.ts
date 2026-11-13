@@ -2,6 +2,7 @@ import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
 import {
   isOperationTreeBranch,
+  getOperationTreeNodeKey,
   type OperationTreeNode,
 } from '@src/lib/featureTree/featureTreeOperationTree'
 import { isArray } from '@src/lib/utils'
@@ -11,6 +12,31 @@ export type BodyArtifact = Extract<
   { type: 'sweep' | 'compositeSolid' | 'pattern' }
 >
 
+export type BodyOperationTreeBranch = {
+  id: string
+  artifact: BodyArtifact
+  index: number
+  ownerModuleId: number
+  operations: OperationTreeNode[]
+}
+
+export type BodyTreeNode =
+  | Operation
+  | Operation[]
+  | {
+      parent: Extract<Operation, { type: 'ModuleInstance' }>
+      children: BodyTreeNode[]
+    }
+  | { body: BodyOperationTreeBranch; children: BodyTreeNode[] }
+
+export function getBodyTreeNodeKey(node: BodyTreeNode, index: number): string {
+  if (!isArray(node) && 'body' in node) return `body-${node.body.id}`
+  if (!isArray(node) && 'parent' in node) {
+    return getOperationTreeNodeKey(node.parent, index)
+  }
+  return getOperationTreeNodeKey(node, index)
+}
+
 export function buildBodyOperationTree(
   nodes: OperationTreeNode[],
   bodies: Map<string, BodyArtifact>,
@@ -18,10 +44,13 @@ export function buildBodyOperationTree(
 ) {
   const operationOrder = new Map<Operation, number>()
   const sourceOrder = new Map<string, number>()
-  function indexOperations(items: OperationTreeNode[]) {
+  const modulePaths = new Map<number, number[]>()
+  function indexOperations(items: OperationTreeNode[], path: number[] = []) {
     for (const node of items) {
       if (isOperationTreeBranch(node)) {
-        indexOperations(node.children)
+        const modulePath = [...path, node.parent.moduleId]
+        modulePaths.set(node.parent.moduleId, modulePath)
+        indexOperations(node.children, modulePath)
       } else {
         for (const operation of isArray(node) ? node : [node]) {
           const index = operationOrder.size
@@ -109,7 +138,7 @@ export function buildBodyOperationTree(
     patternsByBody.set(sourceId, patterns)
   }
   const assigned = new Set<OperationTreeNode>()
-  const branches = Array.from(groupedBodies, ([id, artifact]) => {
+  const branches = Array.from(groupedBodies, ([id, artifact], index) => {
     const patterns =
       patternsByBody.get(id) ??
       new Set<Extract<BodyArtifact, { type: 'pattern' }>>()
@@ -196,7 +225,14 @@ export function buildBodyOperationTree(
       })
     }
 
-    return { id, artifact, operations: selectNodes(nodes) }
+    const moduleId = artifact.codeRef.range[2]
+    return {
+      id,
+      artifact,
+      index,
+      ownerModuleId: modulePaths.has(moduleId) ? moduleId : 0,
+      operations: selectNodes(nodes),
+    }
   })
 
   function unassigned(items: OperationTreeNode[]): OperationTreeNode[] {
@@ -211,7 +247,44 @@ export function buildBodyOperationTree(
     })
   }
 
-  return { branches, operations: unassigned(nodes) }
+  function bodyFeatures(
+    items: OperationTreeNode[],
+    path: Set<number>
+  ): OperationTreeNode[] {
+    return items.flatMap((node): OperationTreeNode[] =>
+      isOperationTreeBranch(node) && path.has(node.parent.moduleId)
+        ? bodyFeatures(node.children, path)
+        : [node]
+    )
+  }
+
+  function assemble(
+    items: OperationTreeNode[],
+    moduleId: number
+  ): BodyTreeNode[] {
+    const result = items.flatMap((node): BodyTreeNode[] => {
+      if (isOperationTreeBranch(node)) {
+        const children = assemble(node.children, node.parent.moduleId)
+        return children.length > 0 || !assigned.has(node)
+          ? [{ parent: node.parent, children }]
+          : []
+      }
+      return assigned.has(node) ? [] : [node]
+    })
+    for (const body of branches) {
+      if (body.ownerModuleId !== moduleId) continue
+      result.push({
+        body,
+        children: bodyFeatures(
+          body.operations,
+          new Set(modulePaths.get(moduleId) ?? [])
+        ),
+      })
+    }
+    return result
+  }
+
+  return { branches, operations: unassigned(nodes), nodes: assemble(nodes, 0) }
 }
 
 function referencesBody(

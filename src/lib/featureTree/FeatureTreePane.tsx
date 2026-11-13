@@ -33,8 +33,6 @@ import {
   findSameVisibleStdLibOperationAfterSourceChange,
   getOperationKey,
   getOperationTreeNodeKey,
-  isOperationTreeBranch,
-  type OperationTreeNode,
 } from '@src/lib/featureTree/featureTreeOperationTree'
 import {
   getHideOpByArtifactId,
@@ -96,7 +94,12 @@ import {
 } from '@src/registry/contracts/keymap'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { BodyItem } from '@src/lib/featureTree/BodiesPane'
-import { buildBodyOperationTree } from '@src/lib/featureTree/featureTreeBodyTree'
+import {
+  buildBodyOperationTree,
+  getBodyTreeNodeKey,
+  type BodyTreeNode,
+  type BodyOperationTreeBranch,
+} from '@src/lib/featureTree/featureTreeBodyTree'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: feature-tree file opening (useNavigate).
 import { useNavigate } from 'react-router-dom'
@@ -296,7 +299,6 @@ export const FeatureTreePaneContents = memo(() => {
       ),
     [operationList, artifactGraph]
   )
-  const bodyOperations = getAllOperations(operationsByModule)
 
   // Live execution tracking: expand only the active module branch.
   const liveActiveModuleId = kclManager.liveActiveModuleId
@@ -316,9 +318,9 @@ export const FeatureTreePaneContents = memo(() => {
     )
   }
 
-  const renderOperation = (node: OperationTreeNode, index: number) => (
+  const renderOperation = (node: BodyTreeNode, index: number) => (
     <OperationTreeNodeItem
-      key={getOperationTreeNodeKey(node, index)}
+      key={getBodyTreeNodeKey(node, index)}
       node={node}
       code={operationsCode}
       isStaleReference={isReadOnlyFeatureTree}
@@ -410,66 +412,84 @@ export const FeatureTreePaneContents = memo(() => {
               </div>
             </div>
           )}
-          {bodyTree.operations.map(renderOperation)}
-          {bodyTree.branches.map(({ id, artifact, operations }, bodyIndex) => {
-            const patternIndex =
-              artifact.type === 'pattern'
-                ? Math.max(0, artifact.copyIds.indexOf(id) + 1)
-                : undefined
-            const hideOperation =
-              getHideOpByArtifactId(bodyOperations, id) ??
-              (artifact.type === 'pattern' && patternIndex === 0
-                ? getHideOpByArtifactId(bodyOperations, artifact.sourceId)
-                : undefined)
-            return (
-              <Disclosure
-                as="div"
-                key={id}
-                defaultOpen
-                data-testid="feature-tree-body-branch"
-              >
-                <div
-                  className="flex items-start gap-1"
-                  data-testid="feature-tree-body"
-                >
-                  <Disclosure.Button
-                    aria-label={`Toggle Body ${bodyIndex + 1} features`}
-                    className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2"
-                  >
-                    <CustomIcon
-                      name="caretDown"
-                      className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
-                      aria-hidden
-                    />
-                  </Disclosure.Button>
-                  <div className="flex-1 min-w-0">
-                    <BodyItem
-                      label={`Body ${bodyIndex + 1}`}
-                      artifact={artifact}
-                      artifactGraph={artifactGraph}
-                      hideOperation={hideOperation}
-                      engineEntityId={
-                        artifact.type === 'pattern' ? id : undefined
-                      }
-                      patternIndex={patternIndex}
-                      disabled={isReadOnlyFeatureTree || kclManager.isExecuting}
-                    />
-                  </div>
-                </div>
-                <Disclosure.Panel
-                  className="border-l b-4 ml-6"
-                  data-testid="feature-tree-body-features"
-                >
-                  {operations.map(renderOperation)}
-                </Disclosure.Panel>
-              </Disclosure>
-            )
-          })}
+          {bodyTree.nodes.map(renderOperation)}
         </>
       </section>
     </div>
   )
 })
+
+function BodyBranchGroup({
+  branch,
+  childItems,
+  ...props
+}: Omit<OperationProps, 'item'> & {
+  branch: BodyOperationTreeBranch
+  childItems: BodyTreeNode[]
+  isModuleOwned?: boolean
+}) {
+  useSignals()
+  const { kclManager } = props.systemDeps
+  const artifactGraph = kclManager.execStateSignal.value.artifactGraph
+  const bodyOperations = props.visibilityOperations
+  const { id, artifact, index } = branch
+  const patternIndex =
+    artifact.type === 'pattern'
+      ? Math.max(0, artifact.copyIds.indexOf(id) + 1)
+      : undefined
+  const hideOperation =
+    getHideOpByArtifactId(bodyOperations, id) ??
+    (artifact.type === 'pattern' && patternIndex === 0
+      ? getHideOpByArtifactId(bodyOperations, artifact.sourceId)
+      : undefined)
+  return (
+    <Disclosure as="div" defaultOpen data-testid="feature-tree-body-branch">
+      <div className="flex items-start gap-1" data-testid="feature-tree-body">
+        <Disclosure.Button
+          aria-label={`Toggle Body ${index + 1} features`}
+          className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2"
+        >
+          <CustomIcon
+            name="caretDown"
+            className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
+            aria-hidden
+          />
+        </Disclosure.Button>
+        <div className="flex-1 min-w-0">
+          <BodyItem
+            label={`Body ${index + 1}`}
+            artifact={artifact}
+            artifactGraph={artifactGraph}
+            hideOperation={hideOperation}
+            engineEntityId={artifact.type === 'pattern' ? id : undefined}
+            patternIndex={patternIndex}
+            disabled={props.isStaleReference || kclManager.isExecuting}
+          />
+        </div>
+      </div>
+      <Disclosure.Panel
+        className="border-l b-4 ml-6"
+        data-testid="feature-tree-body-features"
+      >
+        {childItems.map((node, index) => {
+          const operation = isArray(node) ? node[0] : node
+          const isModuleOwned =
+            operation && 'sourceRange' in operation
+              ? operation.sourceRange[2] !== ROOT_MODULE_ID
+              : props.isModuleOwned
+          return (
+            <OperationTreeNodeItem
+              key={getBodyTreeNodeKey(node, index)}
+              node={node}
+              {...props}
+              isModuleOwned={isModuleOwned}
+            />
+          )
+        })}
+      </Disclosure.Panel>
+    </Disclosure>
+  )
+}
 
 interface VisibilityToggleProps {
   visible: boolean
@@ -645,7 +665,7 @@ function OperationBranchGroup({
   liveLatestOperationKey,
 }: Omit<OperationProps, 'item'> & {
   parentItem: ModuleInstanceOperation
-  childItems: OperationTreeNode[]
+  childItems: BodyTreeNode[]
   isModuleOwned?: boolean
 }) {
   if (childItems.length === 0) {
@@ -715,7 +735,7 @@ function OperationBranchGroup({
           {childItems.map((node, index) => {
             return (
               <OperationTreeNodeItem
-                key={getOperationTreeNodeKey(node, index)}
+                key={getBodyTreeNodeKey(node, index)}
                 node={node}
                 code={code}
                 isStaleReference={isStaleReference}
@@ -741,14 +761,24 @@ const OperationTreeNodeItem = memo(function OperationTreeNodeItem({
   node,
   ...props
 }: Omit<OperationProps, 'item'> & {
-  node: OperationTreeNode
+  node: BodyTreeNode
   isModuleOwned?: boolean
 }) {
   if (isArray(node)) {
     return <OperationItemGroup items={node} {...props} />
   }
 
-  if (isOperationTreeBranch(node)) {
+  if ('body' in node) {
+    return (
+      <BodyBranchGroup
+        branch={node.body}
+        childItems={node.children}
+        {...props}
+      />
+    )
+  }
+
+  if ('parent' in node) {
     return (
       <OperationBranchGroup
         parentItem={node.parent}

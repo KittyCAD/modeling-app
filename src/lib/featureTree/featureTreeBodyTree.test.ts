@@ -223,7 +223,7 @@ describe('body feature hierarchy', () => {
     expect(tree.branches[1].operations).toEqual([nodes[3]])
   })
 
-  it('retains the module hierarchy and leaves unrelated module features at the root', () => {
+  it('places imported bodies inside their part with unrelated module features alongside them', () => {
     const a = { ...sweep('a', 10), codeRef: codeRef(10, 1) }
     const feature: Operation = {
       ...call(10),
@@ -246,6 +246,92 @@ describe('body feature hierarchy', () => {
       { parent, children: [feature] },
     ])
     expect(tree.operations).toEqual([{ parent, children: [other] }])
+    expect(tree.nodes).toEqual([
+      {
+        parent,
+        children: [other, { body: tree.branches[0], children: [feature] }],
+      },
+    ])
+  })
+
+  it('keeps assembly bodies at the root and places part bodies under the matching imports', () => {
+    const parts = ['fanHousing', 'motor', 'fan'].map((name, index) => {
+      const parent: Extract<Operation, { type: 'ModuleInstance' }> = {
+        type: 'ModuleInstance',
+        name,
+        moduleId: index + 1,
+        sourceRange: codeRef(index * 10).range,
+        nodePath: { steps: [] },
+      }
+      return {
+        parent,
+        children: [{ ...call(10), sourceRange: codeRef(10, index + 1).range }],
+      }
+    })
+    const partBodies = parts.map(({ parent }, index) => ({
+      ...sweep(parent.name, 10),
+      codeRef: codeRef(10, index + 1),
+    }))
+    const local = sweep('assemblyBody', 100)
+    const assemblyEdit = call(50, 'fan')
+    const tree = buildBodyOperationTree(
+      [...parts, assemblyEdit, call(100)],
+      bodies(...partBodies, local),
+      graph(...partBodies, local)
+    )
+    expect(tree.nodes).toHaveLength(4)
+    for (let index = 0; index < parts.length; index++) {
+      expect(tree.nodes[index]).toEqual({
+        parent: parts[index].parent,
+        children: [
+          {
+            body: tree.branches[index],
+            children:
+              index === 2
+                ? [...parts[index].children, assemblyEdit]
+                : parts[index].children,
+          },
+        ],
+      })
+    }
+    expect(tree.nodes[3]).toEqual({
+      body: tree.branches[3],
+      children: [call(100)],
+    })
+  })
+
+  it('nests bodies at the correct depth in imported subassemblies', () => {
+    const outer: Extract<Operation, { type: 'ModuleInstance' }> = {
+      type: 'ModuleInstance',
+      name: 'subassembly',
+      moduleId: 1,
+      sourceRange: [0, 10, 0],
+      nodePath: { steps: [] },
+    }
+    const inner: Extract<Operation, { type: 'ModuleInstance' }> = {
+      ...outer,
+      name: 'part',
+      moduleId: 2,
+      sourceRange: [0, 10, 1],
+    }
+    const feature = { ...call(10), sourceRange: codeRef(10, 2).range }
+    const body = { ...sweep('partBody', 10), codeRef: codeRef(10, 2) }
+    const tree = buildBodyOperationTree(
+      [{ parent: outer, children: [{ parent: inner, children: [feature] }] }],
+      bodies(body),
+      graph(body)
+    )
+    expect(tree.nodes).toEqual([
+      {
+        parent: outer,
+        children: [
+          {
+            parent: inner,
+            children: [{ body: tree.branches[0], children: [feature] }],
+          },
+        ],
+      },
+    ])
   })
 
   it('keeps sketch groups intact and terminates on cyclic provenance', () => {
