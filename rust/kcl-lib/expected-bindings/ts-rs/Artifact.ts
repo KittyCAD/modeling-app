@@ -125,7 +125,11 @@ cmdId: string, };
 
 export type CapSubType = "start" | "end";
 
-export type CodeRef = { range: SourceRange, nodePath: NodePath, pathToNode: Array<[string | number, string]>, };
+export type CodeRef = { range: SourceRange, 
+/**
+ * Original feature location when range navigates to an import statement.
+ */
+definitionRange?: SourceRange, nodePath: NodePath, pathToNode: Array<[string | number, string]>, };
 
 export type CompositeSolid = { id: ArtifactId, 
 /**
