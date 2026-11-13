@@ -507,16 +507,17 @@ profile001 = ${circleCode}`
     }
   )
 
-  test(`Fillet point-and-click`, async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    modelingDialog,
-  }) => {
-    // Code samples
-    const initialCode = `sketch001 = startSketchOn(XY)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`Fillet point-and-click ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      modelingDialog,
+    }) => {
+      // Code samples
+      const initialCode = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-12, -6])
   |> line(end = [0, 12])
   |> line(end = [24, 0])
@@ -525,86 +526,90 @@ profile001 = ${circleCode}`
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[seg01,extrude001.faces.capEnd001]}], radius=5`
+      const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[seg01,extrude001.faces.capEnd001]}], radius=5`
 
-    // Setup
-    await test.step(`Initial test setup`, async () => {
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', initialCode)
-      )
-    })
-
-    // Test 1: Modeling dialog with preselected edges
-    await test.step(`Select first edge`, async () => {
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-      // Aim at the original sketch-plane edge: for this negative extrusion,
-      // the solid edge at Z = 0 borders capEnd, not capStart.
-      await scene.moveCameraTo({ x: 36, y: -48, z: 36 }, { x: 0, y: -6, z: 0 })
-      const [clickOnFirstEdge] = scene.makeMouseHelpers(0.5, 0.5, {
-        format: 'ratio',
+      // Setup
+      await test.step(`Initial test setup`, async () => {
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', initialCode)
+        )
       })
-      await clickOnFirstEdge()
-      await expect(toolbar.selectionStatus).toContainText('1 edge')
-    })
 
-    await test.step(`Apply fillet to the preselected edge`, async () => {
-      await page.waitForTimeout(100)
-      await toolbar.filletButton.click()
-      await modelingDialog.selection('Selection').click()
+      // Test 1: Modeling dialog with preselected edges
+      await test.step(`Select first edge`, async () => {
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+        // Aim at the original sketch-plane edge: for this negative extrusion,
+        // the solid edge at Z = 0 borders capEnd, not capStart.
+        await scene.moveCameraTo(
+          { x: 36, y: -48, z: 36 },
+          { x: 0, y: -6, z: 0 }
+        )
+        const [clickOnFirstEdge] = scene.makeMouseHelpers(0.5, 0.5, {
+          format: 'ratio',
+        })
+        await clickOnFirstEdge()
+        await expect(toolbar.selectionStatus).toContainText('1 edge')
+      })
 
-      await expect(modelingDialog.input('radius')).toHaveText('5')
+      await test.step(`Apply fillet to the preselected edge`, async () => {
+        await page.waitForTimeout(100)
+        await toolbar.filletButton.click()
+        await modelingDialog.selection('Selection').click()
 
-      await expect(modelingDialog.submitButton).toBeEnabled()
-      await modelingDialog.submit()
-    })
+        await expect(modelingDialog.input('radius')).toHaveText('5')
 
-    await test.step(`Confirm code is added to the editor`, async () => {
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(firstFilletDeclaration, {
-        shouldNormalise: true,
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
+      })
+
+      await test.step(`Confirm code is added to the editor`, async () => {
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(firstFilletDeclaration, {
+          shouldNormalise: true,
+        })
+      })
+
+      // Test 1.1: Edit the existing viewport-selected fillet
+      async function editFillet(
+        featureTreeIndex: number,
+        oldValue: string,
+        newValue: string
+      ) {
+        await scene.settled()
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Fillet',
+          featureTreeIndex
+        )
+        await operationButton.dblclick({ button: 'left' })
+        await expect(modelingDialog.input('radius')).toHaveText(oldValue)
+        await modelingDialog.input('radius').fill(newValue)
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      }
+
+      await test.step('Edit fillet via feature tree selection works', async () => {
+        const firstFilletFeatureTreeIndex = 0
+        const editedRadius = '1'
+        await editFillet(firstFilletFeatureTreeIndex, '5', editedRadius)
+        await editor.expectEditor.toContain(
+          firstFilletDeclaration.replace('radius=5', 'radius=' + editedRadius),
+          { shouldNormalise: true }
+        )
+
+        // Edit back to original radius
+        await editFillet(firstFilletFeatureTreeIndex, editedRadius, '5')
+        await editor.expectEditor.toContain(firstFilletDeclaration, {
+          shouldNormalise: true,
+        })
       })
     })
-
-    // Test 1.1: Edit the existing viewport-selected fillet
-    async function editFillet(
-      featureTreeIndex: number,
-      oldValue: string,
-      newValue: string
-    ) {
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'Fillet',
-        featureTreeIndex
-      )
-      await operationButton.dblclick({ button: 'left' })
-      await expect(modelingDialog.input('radius')).toHaveText(oldValue)
-      await modelingDialog.input('radius').fill(newValue)
-
-      await expect(modelingDialog.submitButton).toBeEnabled()
-      await modelingDialog.submit()
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-    }
-
-    await test.step('Edit fillet via feature tree selection works', async () => {
-      const firstFilletFeatureTreeIndex = 0
-      const editedRadius = '1'
-      await editFillet(firstFilletFeatureTreeIndex, '5', editedRadius)
-      await editor.expectEditor.toContain(
-        firstFilletDeclaration.replace('radius=5', 'radius=' + editedRadius),
-        { shouldNormalise: true }
-      )
-
-      // Edit back to original radius
-      await editFillet(firstFilletFeatureTreeIndex, editedRadius, '5')
-      await editor.expectEditor.toContain(firstFilletDeclaration, {
-        shouldNormalise: true,
-      })
-    })
-  })
+  }
 
   test(
     `Fillet point-and-click edit standalone expression`,
