@@ -19,7 +19,7 @@ import {
   NEW_EDITOR_COMMAND,
 } from '@src/lib/editors/commands'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
