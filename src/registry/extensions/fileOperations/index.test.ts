@@ -2,7 +2,7 @@ import { posix } from '@chainner/node-path'
 import { defineRegistryItem, provide, Slot } from '@kittycad/registry'
 import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import noopfs from '@src/lib/fs-zds/noopfs'
-import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
+import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import { fileOperationsMountsValueSpec } from '@src/registry/contracts/fileOperations'
 import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import { tmpdir } from 'node:os'
@@ -28,7 +28,7 @@ describe('file operations extension', () => {
     )
   })
 
-  it('mounts one file operations runtime behind the registry capability', async () => {
+  it('mounts one file operations scheduler behind the registry capability', async () => {
     const root = nodeFileSystem.impl.join(
       tmpdir(),
       `zds-effect-file-operations-registry-${crypto.randomUUID()}`
@@ -63,7 +63,7 @@ it('routes through registry mount replacements without replacing the file servic
     '/projects/main.kcl',
     new TextEncoder().encode('memory')
   )
-  const runtime = createFileOperationsRuntime(memory)
+  const runtime = createFileOperationsScheduler(memory)
   const registry = new Registry()
   const slot = new Slot()
   registry.configure([createFileOperationsExtension(disk), slot.of()])

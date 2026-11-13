@@ -323,18 +323,6 @@ export function createProjectCommands({
   const defaultCloneToLibraryId = (
     context: ContextFrom<typeof commandBarMachine>
   ) => cloneToLibraryOptions(context)[0]?.value ?? ''
-  const hasSelectedCloneToLibraryTarget = ({
-    argumentsToSubmit,
-  }: {
-    argumentsToSubmit: Record<string, unknown>
-  }) =>
-    Boolean(
-      selectedCloneToLibraryTarget({
-        projectId: argumentsToSubmit.project,
-        libraryId: argumentsToSubmit.library,
-      })
-    )
-
   const openProjectCommand: Command = {
     scopes: GLOBAL_COMMAND_SCOPES,
     icon: 'folder',
@@ -502,14 +490,17 @@ export function createProjectCommands({
       project: {
         inputType: 'options',
         required: true,
-        hidden: hasSelectedCloneToLibraryTarget,
+        valueSummary: (value) =>
+          projectDisplayNameFromCommandValue(value, 'cloneToLibrary'),
         options: () => projectOptions('cloneToLibrary'),
       },
       library: {
         inputType: 'options',
         required: true,
         prepopulate: true,
-        hidden: hasSelectedCloneToLibraryTarget,
+        valueSummary: (value) =>
+          getProjectLibraries?.().find((library) => library.id === value)
+            ?.title ?? 'Library',
         options: cloneToLibraryOptions,
         defaultValue: defaultCloneToLibraryId,
       },

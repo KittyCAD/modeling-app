@@ -33,10 +33,14 @@ export function homeProjectDisplayNameExists({
   requestedName: string
   projectId: string
 }) {
+  const selected = entries?.find((project) => project.id === projectId)
   return Boolean(
     entries?.some(
       (project) =>
         project.id !== projectId &&
+        (!selected?.libraryIds?.length ||
+          !project.libraryIds?.length ||
+          project.libraryIds.some((id) => selected.libraryIds!.includes(id))) &&
         getHomeProjectDisplayName(project) === requestedName
     )
   )

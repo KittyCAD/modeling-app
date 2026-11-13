@@ -343,8 +343,6 @@ window.EditorSelection = EditorSelection
 window.EditorView = EditorView
 
 const PERSIST_CODE_KEY = 'persistCode'
-const RECOVERY_SNAPSHOT_VERSION = 1
-const RECOVERY_SNAPSHOT_DEBOUNCE_MS = 300
 
 const keymapCompartment = new Compartment()
 const executionCompartment = new Compartment()
@@ -788,8 +786,6 @@ export class KclManager extends File {
   }
 
   readonly storageReadOnlyCompartment = new Compartment()
-  private timeoutRecoverySnapshot: ReturnType<typeof setTimeout> | undefined =
-    undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
   /** Only the executing editor may change the shared engine scene. */
@@ -797,11 +793,6 @@ export class KclManager extends File {
   private disposeSettings: (() => void) | undefined
   private _automaticallyRenderEnabled = true
   private _lastKnownFileCode = ''
-  private pendingRecoverySnapshot: {
-    path: string
-    code: string
-    diskCode: string
-  } | null = null
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
   public zookeeperManagerMachineBulkManipulatingFileSystem = false
   /**
@@ -1292,7 +1283,6 @@ export class KclManager extends File {
         newCode,
         this.lastExecutedCode
       )
-      this.persistRecoverySnapshot()
       const shouldSkipRustUpdate = update.transactions.some((tr) =>
         tr.effects.some((e) => e.is(requestSkipRustUpdate) && e.value)
       )
@@ -1662,7 +1652,7 @@ export class KclManager extends File {
   /**
    * `EditorView.setState` bypasses the usual editor update effects. After
    * restoring a captured state for Zookeeper history, manually resync the
-   * manager state, recovery snapshot, Rust file contents, and deferred
+   * manager state, Rust file contents, and deferred
    * execution that ordinary editor writes would have triggered.
    */
   private refreshRestoredEditorStateAfterFileSwitch(
@@ -1674,7 +1664,6 @@ export class KclManager extends File {
       code,
       this.lastExecutedCode
     )
-    this.persistRecoverySnapshot()
     if (!options.shouldSyncRustOnOpen) {
       return
     }
@@ -1699,7 +1688,6 @@ export class KclManager extends File {
       Boolean(tr.annotation(updateOutsideEditorEvent.type))
     )
     const notIgnoredUpdate =
-      this.engineCommandManager.started &&
       update.docChanged &&
       update.transactions.some((tr) => {
         const ignoredEvents = [
@@ -2004,14 +1992,9 @@ export class KclManager extends File {
     const pendingBeforeRead = providedEditor?.fileSwitchSaves.get(file.path)
     const diskCode = normalizeLineEndings(providedCode ?? (await file.read()))
     options.assertCurrent?.()
-    const recoverySnapshot = readRecoverySnapshot(file.path)
     const pendingSave =
       providedEditor?.fileSwitchSaves.get(file.path) ?? pendingBeforeRead
-    const initialCode =
-      pendingSave?.code ??
-      (recoverySnapshot && !isCodeTheSame(recoverySnapshot.code, diskCode)
-        ? normalizeLineEndings(recoverySnapshot.code)
-        : diskCode)
+    const initialCode = pendingSave?.code ?? diskCode
 
     if (!providedEditor) {
       const editor = new KclManager(file.path, initialCode, systemDeps, file.id)
@@ -2027,7 +2010,6 @@ export class KclManager extends File {
     // TODO: remove all this once the app can handle an undefined currently-executing editor
     if (!options.backgroundSave)
       await providedEditor.flushWriteToFile({ suppressConflictToast: true })
-    providedEditor.flushRecoverySnapshot()
     providedEditor.editorStatesByPath.set(
       providedEditor.path,
       providedEditor.editorView.state
@@ -2089,6 +2071,13 @@ export class KclManager extends File {
     fileId = 0
   ) {
     super(path, systemDeps.textFileIO, fileId)
+    // Remove obsolete persisted drafts, including files not opened this session.
+    if (typeof window !== 'undefined') {
+      for (let index = localStorage.length - 1; index >= 0; index--) {
+        const key = localStorage.key(index)
+        if (key?.startsWith('kclRecovery:')) localStorage.removeItem(key)
+      }
+    }
     // Register our additional, KclManager-specific watch event handler
     this.onWatchEvent.push(this.#onWatchEvent)
     this.systemDeps = systemDeps
@@ -2166,7 +2155,6 @@ export class KclManager extends File {
     this.disposeSettings?.()
     this.disposeSettings = undefined
     this.disposeGlobalHistorySubscription?.()
-    this.flushRecoverySnapshot()
     this.unwatch()
   }
 
@@ -2176,7 +2164,6 @@ export class KclManager extends File {
   private markFileCodeAsSynced(code: string) {
     this.saveState.value = 'saved'
     this._lastKnownFileCode = normalizeLineEndings(code)
-    this.persistRecoverySnapshot()
   }
 
   /** Discard buffers and saves based on a storage snapshot that has been superseded. */
@@ -2196,22 +2183,10 @@ export class KclManager extends File {
     this.timeoutRewatch = undefined
     this._documentVersion += 1
     this.cloudSnapshotGeneration += 1
-    // Closed files can still have recovery buffers from an earlier app session.
     const belongs = (path: string) =>
       path.startsWith(`${root}/`) || path.startsWith(`${root}\\`)
-    const recoveryPrefixes = ['/', '\\'].map((separator) =>
-      getRecoverySnapshotKey(root + separator)
-    )
-    for (let index = localStorage.length - 1; index >= 0; index--) {
-      const key = localStorage.key(index)
-      if (key && recoveryPrefixes.some((prefix) => key.startsWith(prefix)))
-        safeLSRemoveItem(key)
-    }
     for (const path of this.editorStatesByPath.keys())
-      if (belongs(path)) {
-        this.editorStatesByPath.delete(path)
-        clearRecoverySnapshot(path)
-      }
+      if (belongs(path)) this.editorStatesByPath.delete(path)
     for (const path of this.fileSwitchSaves.keys())
       if (belongs(path)) this.fileSwitchSaves.delete(path)
     this.updateCodeEditor(contents ?? '', {
@@ -2226,42 +2201,6 @@ export class KclManager extends File {
 
   hasUnsavedLocalChanges() {
     return !isCodeTheSame(this.code, this._lastKnownFileCode)
-  }
-
-  private persistRecoverySnapshot() {
-    if (!this.path) {
-      return
-    }
-
-    if (isCodeTheSame(this.code, this._lastKnownFileCode)) {
-      this.pendingRecoverySnapshot = null
-      clearTimeout(this.timeoutRecoverySnapshot)
-      this.timeoutRecoverySnapshot = undefined
-      clearRecoverySnapshot(this.path)
-      return
-    }
-
-    this.pendingRecoverySnapshot = {
-      path: this.path,
-      code: this.code,
-      diskCode: this._lastKnownFileCode,
-    }
-    clearTimeout(this.timeoutRecoverySnapshot)
-    this.timeoutRecoverySnapshot = setTimeout(() => {
-      this.flushRecoverySnapshot()
-    }, RECOVERY_SNAPSHOT_DEBOUNCE_MS)
-  }
-
-  private flushRecoverySnapshot() {
-    clearTimeout(this.timeoutRecoverySnapshot)
-    this.timeoutRecoverySnapshot = undefined
-
-    if (!this.pendingRecoverySnapshot) {
-      return
-    }
-
-    writeRecoverySnapshot(this.pendingRecoverySnapshot)
-    this.pendingRecoverySnapshot = null
   }
 
   clearAst() {
@@ -3562,12 +3501,6 @@ export class KclManager extends File {
     }
 
     this.editorStatesByPath.set(filePath, synchronizedState)
-    if (this.pendingRecoverySnapshot?.path === filePath) {
-      clearTimeout(this.timeoutRecoverySnapshot)
-      this.timeoutRecoverySnapshot = undefined
-      this.pendingRecoverySnapshot = null
-    }
-    clearRecoverySnapshot(filePath)
     return true
   }
   synchronizeCurrentEditorAfterDirectGlobalReplay({
@@ -3970,7 +3903,6 @@ export class KclManager extends File {
       structuredClone(KclManager.defaultUpdateCodeEditorOptions),
       options
     )
-
     if (
       resolvedOptions.shouldWriteToDisk &&
       this.storage?.writeAvailability.peek().writable === false
@@ -4474,78 +4406,4 @@ export class KclManager extends File {
 function safeLSGetItem(key: string) {
   if (typeof window === 'undefined') return
   return localStorage?.getItem(key)
-}
-
-function safeLSSetItem(key: string, value: string) {
-  if (typeof window === 'undefined') return
-  localStorage?.setItem(key, value)
-}
-
-function safeLSRemoveItem(key: string) {
-  if (typeof window === 'undefined') return
-  localStorage?.removeItem(key)
-}
-
-type RecoverySnapshot = {
-  version: typeof RECOVERY_SNAPSHOT_VERSION
-  path: string
-  code: string
-  diskCode: string
-  savedAt: string
-}
-
-function getRecoverySnapshotKey(path: string) {
-  return `kclRecovery:${path || '__untitled__'}`
-}
-
-function readRecoverySnapshot(path: string): RecoverySnapshot | null {
-  const persisted = safeLSGetItem(getRecoverySnapshotKey(path))
-  if (!persisted) return null
-
-  try {
-    const parsed = JSON.parse(persisted) as Partial<RecoverySnapshot>
-    if (
-      parsed.version !== RECOVERY_SNAPSHOT_VERSION ||
-      typeof parsed.code !== 'string' ||
-      typeof parsed.diskCode !== 'string' ||
-      typeof parsed.path !== 'string'
-    ) {
-      return null
-    }
-
-    return {
-      version: RECOVERY_SNAPSHOT_VERSION,
-      path: parsed.path,
-      code: parsed.code,
-      diskCode: parsed.diskCode,
-      savedAt: typeof parsed.savedAt === 'string' ? parsed.savedAt : '',
-    }
-  } catch {
-    return null
-  }
-}
-
-function writeRecoverySnapshot({
-  path,
-  code,
-  diskCode,
-}: {
-  path: string
-  code: string
-  diskCode: string
-}) {
-  safeLSSetItem(
-    getRecoverySnapshotKey(path),
-    JSON.stringify({
-      version: RECOVERY_SNAPSHOT_VERSION,
-      path,
-      code,
-      diskCode,
-      savedAt: new Date().toISOString(),
-    } satisfies RecoverySnapshot)
-  )
-}
-
-function clearRecoverySnapshot(path: string) {
-  safeLSRemoveItem(getRecoverySnapshotKey(path))
 }

@@ -7,6 +7,16 @@ export type ProjectWriteAvailability =
   | { readonly writable: true }
   | { readonly writable: false; readonly reason: string }
 
+/** A deletion retained only by the current session's in-memory undo history. */
+export interface StorageDeletion {
+  undo: () => Promise<void>
+  redo: () => Promise<void>
+}
+
+export interface ProjectDeletion extends StorageDeletion {
+  readonly projectPath: string
+}
+
 /** Storage behavior captured for one project, independent of its presentation or backing. */
 export interface ProjectStorage {
   readonly root: string
@@ -16,7 +26,7 @@ export interface ProjectStorage {
   >
   /** Snapshot backings rebuild and execute the complete project after external changes. */
   readonly externalChanges: 'files' | 'snapshot'
-  readonly deletionHistory: 'archive' | 'storage'
+  removeWithHistory: (path: string) => Promise<StorageDeletion>
   readonly createMissingEntrypoint: boolean
   watch: (
     path: string,

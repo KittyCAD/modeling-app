@@ -1,4 +1,7 @@
-import type { ProjectStorage } from '@src/lib/projectSession/storage'
+import type {
+  ProjectDeletion,
+  ProjectStorage,
+} from '@src/lib/projectSession/storage'
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal, Signal } from '@preact/signals-core'
 import type { Project } from '@src/lib/project'
@@ -38,6 +41,8 @@ export interface ProjectSessionService {
   storageFor: (path: string) => ProjectStorage
   /** Retry persistence and reconcile saved contents only with the owning editor. */
   retrySave: () => Promise<Error | undefined>
+  /** Flush edits and capture backing-owned undo history before deleting an entry. */
+  deleteEntry: (path: string) => Promise<ProjectDeletion | Error | undefined>
   /** Adopt an authoritative storage snapshot without applying it to a replacement session. */
   applyStorageSnapshot: (
     root: string,

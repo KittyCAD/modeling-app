@@ -4,7 +4,7 @@ import {
   createNewProjectDirectory,
   overwriteProjectTomlWithNewSettings,
 } from '@src/lib/desktop'
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'

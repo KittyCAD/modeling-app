@@ -1,6 +1,6 @@
 import { posix } from '@chainner/node-path'
 import { createStagedProject } from '@src/lib/fileSystem/createStagedProject'
-import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
+import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import noopfs from '@src/lib/fs-zds/noopfs'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
@@ -8,31 +8,31 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 vi.mock('@src/lib/fs-zds', () => ({ default: posix }))
 
 let memory: ReturnType<typeof createMemoryFileSystem>
-let runtime: ReturnType<typeof createFileOperationsRuntime>
+let scheduler: ReturnType<typeof createFileOperationsScheduler>
 
 beforeEach(async () => {
   memory = createMemoryFileSystem({ ...noopfs.impl, ...posix })
   await memory.mkdir('/projects/source', { recursive: true })
   await memory.writeFile('/projects/source/main.kcl', new Uint8Array([1, 2]))
-  runtime = createFileOperationsRuntime(memory)
+  scheduler = createFileOperationsScheduler(memory)
 })
-afterEach(async () => runtime.dispose())
+afterEach(async () => scheduler.dispose())
 
 it('keeps the destination absent until population finishes, then publishes its bytes', async () => {
   const ready = Promise.withResolvers<undefined>()
   const release = Promise.withResolvers<undefined>()
   const creating = createStagedProject(
-    runtime.operations,
+    scheduler.operations,
     '/projects/copy',
     async (temporary) => {
-      await runtime.operations.copy('/projects/source', temporary)
+      await scheduler.operations.copy('/projects/source', temporary)
       ready.resolve(undefined)
       await release.promise
     }
   )
   try {
     await ready.promise
-    expect(await runtime.operations.exists('/projects/copy')).toBe(false)
+    expect(await scheduler.operations.exists('/projects/copy')).toBe(false)
   } finally {
     release.resolve(undefined)
     await creating
@@ -49,8 +49,11 @@ it.each(['populate', 'rename'] as const)(
     const failure = new Error('Destination failed')
     const operations =
       stage === 'rename'
-        ? { ...runtime.operations, rename: vi.fn().mockRejectedValue(failure) }
-        : runtime.operations
+        ? {
+            ...scheduler.operations,
+            rename: vi.fn().mockRejectedValue(failure),
+          }
+        : scheduler.operations
     await expect(
       createStagedProject(operations, '/projects/copy', async (temporary) => {
         await operations.copy('/projects/source', temporary)
@@ -70,7 +73,7 @@ it('does not remove a directory it failed to create', async () => {
   await expect(
     createStagedProject(
       {
-        ...runtime.operations,
+        ...scheduler.operations,
         createDirectory: vi.fn().mockRejectedValue(failure),
         remove,
       },
