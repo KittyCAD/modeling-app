@@ -2,6 +2,7 @@ import * as cloudPolling from '@src/lib/cloudProjects/polling'
 import '@src/lib/projectSession/next/testFeature'
 import { requireSuccess, codeSurface } from '@src/lib/editors/testViews'
 import { editorsService } from '@src/lib/editors/registry/contract'
+import { executorsService } from '@src/lib/executors/registry/contract'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
 import { createProjectForTest } from '@src/lib/projectTestUtils'
@@ -209,7 +210,7 @@ function expectedRuntimeFlags() {
 }
 
 describe('project system', () => {
-  it('closes project editor resources through the Home navigation boundary', async () => {
+  it('closes project editor and executor resources through the Home navigation boundary', async () => {
     const app = createAppForTest()
     try {
       await waitForSettingsIdle(app)
@@ -220,8 +221,10 @@ describe('project system', () => {
         metadata: { title: 'Project', readWriteAccess: true },
       })
       const editors = app.registry.get(editorsService)
+      const executors = app.registry.get(executorsService)
       const editor = requireSuccess(editors.openEditor('/project/main.kcl', ''))
       const destroy = vi.spyOn(codeSurface(editors, editor), 'destroy')
+      executors.createExecutor(editor)
       // Exercise Home's actual close boundary without starting unrelated folder IO.
       loadHomeProjects({
         projectLibraries: { refreshProjects: vi.fn(async () => {}) },
@@ -231,6 +234,7 @@ describe('project system', () => {
       expect(projects.currentSession.value).toBeUndefined()
       expect(session.signal.aborted).toBe(true)
       expect(editors.editors.value).toEqual([])
+      expect(executors.executors.value).toEqual([])
       expect(destroy).toHaveBeenCalledOnce()
     } finally {
       await app.disposeAsync()

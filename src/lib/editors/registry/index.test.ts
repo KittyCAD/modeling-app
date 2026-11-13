@@ -453,7 +453,8 @@ describe('editors extension', () => {
   it('reclassifies renamed sources and preserves the view, contents, and history', () => {
     const service = registry.get(editorsService)
     const editor = requireSuccess(service.openEditor('/notes.MD', '# Heading'))
-    const view = codeSurface(registry.get(editorsService), editor)
+    const instance = requireSuccess(service.createView(editor, 'editors.code'))
+    const view = instance.codeView.peek()!
     expect(view.state.facet(language)?.name).toBe('markdown')
     const sources: (string | undefined)[] = []
     const languages: (string | undefined)[] = []
@@ -469,7 +470,7 @@ describe('editors extension', () => {
     expect(editor.src.value).toBe('/parts/model.KCL')
     expect(editor.classification.value).toEqual({ languageId: 'kcl' })
     expect(view.state.facet(language)?.name).toBe('kcl')
-    expect(codeSurface(registry.get(editorsService), editor)).toBe(view)
+    expect(instance.codeView.peek()).toBe(view)
     expect(view.state.doc.toString()).toBe('prefix # Heading')
     expect(view.state.selection.main.anchor).toBe(3)
     service.setSource(editor.id, '/moved/model.kcl')
