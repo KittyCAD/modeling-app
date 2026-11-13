@@ -21,14 +21,14 @@ import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import { runtimeService } from '@src/registry/contracts/runtime'
 import { settingsService } from '@src/registry/contracts/settings'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
-import { provide, type Subtree } from 'plankton'
+import { extension as defineExtension, provide, type Extension } from 'plankton'
 import type { SnapshotFrom } from 'xstate'
 
 const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
 const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
-export const layoutExtension = {
+export const layoutExtension = defineExtension({
   key: 'layout-extension',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     let layout: LayoutService | undefined
     let disposeLayout: (() => void) | undefined
 
@@ -257,5 +257,5 @@ export const layoutExtension = {
       },
     }
   },
-} satisfies Subtree
+}) satisfies Extension
 export default [layoutExtension]

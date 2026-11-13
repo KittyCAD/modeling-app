@@ -8,7 +8,11 @@ import {
   statusBarLocalItemsFacet,
 } from '@src/registry/contracts/statusBar'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
-import { contribute, type Subtree } from 'plankton'
+import {
+  extension as defineExtension,
+  contribute,
+  type Extension,
+} from 'plankton'
 import { createElement, lazy, Suspense } from 'react'
 
 const ZookeeperCreditsMenu = lazy(async () => {
@@ -24,9 +28,9 @@ const ZookeeperCreditsStatusBarItem = () =>
     { fallback: null },
     createElement(ZookeeperCreditsMenu)
   )
-const zookeeperCreditsStatusBarItem = {
+const zookeeperCreditsStatusBarItem = defineExtension({
   key: 'zookeeper.credits-status-bar-item',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     const layout = computed(() => ctx.optional(layoutService))
     const item = computed(() => {
       const layoutSystem = layout.value
@@ -49,7 +53,7 @@ const zookeeperCreditsStatusBarItem = {
       items: [contribute(statusBarLocalItemsFacet, () => item.value)],
     }
   },
-} satisfies Subtree
+}) satisfies Extension
 const zookeeper = createZdsPlugin({
   id: 'zookeeper',
   title: 'Zookeeper',

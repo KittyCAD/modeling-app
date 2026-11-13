@@ -10,7 +10,7 @@ import {
   ZOODLE_BRUSH_SIZE_MIN_PX,
   zoodleService,
 } from '@src/registry/contracts/zoodle'
-import { Registry } from 'plankton'
+import { extension as defineExtension, Registry } from 'plankton'
 import { describe, expect, it, vi } from 'vitest'
 import engineSceneExtension from '.'
 import { activateZoodleRuntimeExtension } from './zoodleRuntimeExtension'
@@ -20,12 +20,12 @@ describe('zoodle runtime extension', () => {
     const registry = new Registry()
     await registry.configure([
       engineSceneExtension,
-      {
+      defineExtension({
         ...engineSceneRuntimeExtensionsSlot,
         create: () => ({
           items: [],
         }),
-      },
+      }),
     ])
     await activateZoodleRuntimeExtension(registry, {
       imageDataUrl: 'data:image/png;base64,aGVsbG8=',
@@ -44,12 +44,12 @@ describe('zoodle runtime extension', () => {
     const registry = new Registry()
     await registry.configure([
       engineSceneExtension,
-      {
+      defineExtension({
         ...engineSceneRuntimeExtensionsSlot,
         create: () => ({
           items: [],
         }),
-      },
+      }),
     ])
     await activateZoodleRuntimeExtension(registry, {
       imageDataUrl: 'data:image/png;base64,aGVsbG8=',

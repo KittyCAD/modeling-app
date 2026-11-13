@@ -3,10 +3,15 @@ import { createCloudProjectsServices } from '@src/lib/cloudProjects/service'
 import fsZds from '@src/lib/fs-zds'
 import { authService } from '@src/registry/contracts/auth'
 import { fileOperationsMountsFacet } from '@src/registry/contracts/fileOperations'
-import { contribute, provide, type Subtree } from 'plankton'
-export const cloudProjectsExtension: Subtree = {
+import {
+  extension as defineExtension,
+  contribute,
+  provide,
+  type Extension,
+} from 'plankton'
+export const cloudProjectsExtension: Extension = defineExtension({
   key: 'cloud-projects-storage',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     const services = createCloudProjectsServices(fsZds, () => ({
       enabled: true,
       token: ctx.optional(authService)?.token.peek(),
@@ -22,4 +27,4 @@ export const cloudProjectsExtension: Subtree = {
       dispose: services.dispose,
     }
   },
-}
+})

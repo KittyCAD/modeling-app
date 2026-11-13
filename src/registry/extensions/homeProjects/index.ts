@@ -1,7 +1,7 @@
 import { withHomeProjectActionStatus } from '@src/lib/homeProjectActions';
 import { selectCommand } from '@src/lib/commandUtils';
 import { projectSession } from '@src/registry/contracts/projectSession';
-import { provide, contribute } from "plankton";
+import { extension as defineExtension, provide, contribute } from "plankton";
 import { computed } from '@preact/signals-core';
 import { findHomeProjectByPath, getHomeProjectDisplayName, homeProjectDisplayNameExists } from '@src/lib/homeProjects';
 import { separateProjectsSharingProjectId } from '@src/lib/projectIdentity';
@@ -62,9 +62,9 @@ export function deriveHomeProjectEntryContributions({
     deleteRemoteOnDelete: false
   }));
 }
-const homeProjectActions = {
+const homeProjectActions = defineExtension({
   key: 'home-projects.actions',
-  create: ctx => {
+  create: _dependencies, ctx => {
     const settings = computed(() => ctx.optional(settingsService));
 
     /**
@@ -262,16 +262,16 @@ const homeProjectActions = {
       items: [provide(homeProjectActionsService, withHomeProjectActionStatus(serviceImpl))]
     };
   }
-};
+});
 
 /**
  * Sole Home entry producer for project cards. External extensions contribute
  * local realizations, and cloudSync publishes explicit relationships through
  * its singleton service. Home derives view models from those domain models.
  */
-const homeProjectEntryViewModels = {
+const homeProjectEntryViewModels = defineExtension({
   key: 'home-projects.view-models',
-  create: ctx => {
+  create: _dependencies, ctx => {
     const realizations = ctx.observe(projectLibraryRealizationsFacet);
     const entries = computed(() => deriveHomeProjectEntryContributions({
       realizations: realizations.value
@@ -282,10 +282,10 @@ const homeProjectEntryViewModels = {
       })]
     };
   }
-};
-const cloneProjectToLibraryProjectMenuItem = {
+});
+const cloneProjectToLibraryProjectMenuItem = defineExtension({
   key: 'home-projects.clone-to-library-project-menu-item',
-  create: ctx => {
+  create: _dependencies, ctx => {
     const findProject = (projectPath: string) => findHomeProjectByPath(ctx.get(homeProjectEntriesFacet), projectPath);
     return {
       items: [contribute(projectExplorerProjectMenuItemsFacet, () => ({
@@ -321,6 +321,6 @@ const cloneProjectToLibraryProjectMenuItem = {
       })]
     };
   }
-};
+});
 const homeProjectsExtension = [homeProjectActions, homeProjectEntryViewModels, cloneProjectToLibraryProjectMenuItem];
 export default homeProjectsExtension;

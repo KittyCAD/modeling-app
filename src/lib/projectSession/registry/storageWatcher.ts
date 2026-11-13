@@ -4,10 +4,10 @@ import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { projectLibrariesService } from '@src/registry/contracts/projectLibraries'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { routerService } from '@src/registry/contracts/router'
-import { type Subtree } from 'plankton'
-export default {
+import { extension as defineExtension, type Extension } from 'plankton'
+export default defineExtension({
   key: 'project-session.storage-watcher',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     const sessions = computed(() => ctx.optional(projectSession))
     const files = computed(() => ctx.optional(fileOperationsService))
     const libraries = computed(() => ctx.optional(projectLibrariesService))
@@ -53,4 +53,4 @@ export default {
       },
     }
   },
-} satisfies Subtree
+}) satisfies Extension

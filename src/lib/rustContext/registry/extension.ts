@@ -7,10 +7,10 @@ import {
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { settingsService } from '@src/registry/contracts/settings'
 import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
-import { provide, type Subtree } from 'plankton'
-export const rustContextExtension: Subtree = {
+import { extension as defineExtension, provide, type Extension } from 'plankton'
+export const rustContextExtension: Extension = defineExtension({
   key: 'rust-context-extension',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     let service: RustContextRegistryService | undefined
     const ensureService = () => {
       if (service) {
@@ -47,5 +47,5 @@ export const rustContextExtension: Subtree = {
       ],
     }
   },
-}
+})
 export default [rustContextExtension]

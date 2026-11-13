@@ -85,6 +85,7 @@ import {
   coreRegistryItems,
 } from '@src/registry/registry'
 import {
+  extension as defineExtension,
   slot as createSlot,
   type Item,
   plugins,
@@ -253,18 +254,18 @@ export class App implements AppSubsystems {
     const appRegistry = new Registry()
     const registryReady = appRegistry.configure([
       createSlot([...registryOverrides], appRegistryOverridesSlot.key),
-      {
+      defineExtension({
         ...appCommandsSlot,
         create: () => ({
           items: [],
         }),
-      },
-      {
+      }),
+      defineExtension({
         ...appViewportScreenshotSlot,
         create: () => ({
           items: [],
         }),
-      },
+      }),
       createSlot([], engineSceneRuntimeExtensionsSlot.key),
       ...coreRegistryItems,
     ])

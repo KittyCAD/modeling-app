@@ -11,6 +11,7 @@ import {
 } from '@src/registry/contracts/fileOperations'
 import { createFileOperationsExtension } from '@src/registry/extensions/fileOperations'
 import {
+  extension as defineExtension,
   contribute,
   slot as createSlot,
   type InputOf,
@@ -80,12 +81,12 @@ it('routes through registry mount replacements without replacing the file servic
   const slot = createSlot([], Symbol())
   await registry.configure([
     createFileOperationsExtension(disk),
-    {
+    defineExtension({
       ...slot,
       create: () => ({
         items: [],
       }),
-    },
+    }),
   ])
   try {
     const files = registry.required(fileOperationsService)

@@ -4,7 +4,12 @@ import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
-import { provide, Registry, type Subtree } from 'plankton'
+import {
+  extension as defineExtension,
+  provide,
+  Registry,
+  type Extension,
+} from 'plankton'
 import { afterEach, describe, expect, it } from 'vitest'
 import cursorBlinking from '.'
 
@@ -15,11 +20,11 @@ async function createRegistry() {
   const registry = new Registry()
   await registry.configure([
     cursorBlinking,
-    {
+    defineExtension({
       create: () => ({
         items: [provide(settingsService, service)],
       }),
-    } satisfies Subtree,
+    }) satisfies Extension,
   ])
   registry.required(settingsService)
   return { registry, current }
@@ -71,11 +76,11 @@ describe('global cursor blinking', () => {
     await expect(
       registry.configure([
         cursorBlinking,
-        {
+        defineExtension({
           create: () => {
             throw failure
           },
-        },
+        }),
       ])
     ).rejects.toBe(failure)
     const current = signal(createSettings())

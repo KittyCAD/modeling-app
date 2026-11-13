@@ -24,7 +24,11 @@ import {
   statusBarLocalItemsFacet,
 } from '@src/registry/contracts/statusBar'
 import { viewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
-import { contribute, type Subtree } from 'plankton'
+import {
+  extension as defineExtension,
+  contribute,
+  type Extension,
+} from 'plankton'
 import { createElement, lazy, Suspense } from 'react'
 import executionIndicator from './executionIndicator'
 import { measurementToolService } from './measurementToolService'
@@ -267,9 +271,9 @@ const EngineSceneScreenshotStatusBarItem = () =>
  * behavior. For now it contributes always-on local status bar items owned by
  * the scene and the default view chrome rendered around the engine stream.
  */
-const engineSceneExtension = {
+const engineSceneExtension = defineExtension({
   key: 'engine-scene-extension',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     const session = computed(() => ctx.optional(projectSession))
     const executionService = computed(
       () => session.value?.executingEditor.value
@@ -441,5 +445,5 @@ const engineSceneExtension = {
       ],
     }
   },
-} satisfies Subtree
+}) satisfies Extension
 export default engineSceneExtension

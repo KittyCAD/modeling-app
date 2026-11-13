@@ -1,10 +1,10 @@
 import { computed, effect } from '@preact/signals-core'
 import { settingsService } from '@src/registry/contracts/settings'
-import { type Subtree } from 'plankton'
+import { extension as defineExtension, type Extension } from 'plankton'
 /** Apply the cursor preference to native text inputs throughout the app. */
-export default {
+export default defineExtension({
   key: 'cursor-blinking',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     const settings = computed(() => ctx.optional(settingsService))
     let disposed = false
     let stop: (() => void) | undefined
@@ -40,4 +40,4 @@ export default {
       },
     }
   },
-} satisfies Subtree
+}) satisfies Extension

@@ -9,9 +9,9 @@ import {
   userFeaturesService,
 } from '@src/registry/contracts/userFeatures'
 import { useSelector } from '@xstate/react'
-import { provide, type Subtree } from 'plankton'
+import { extension as defineExtension, provide, type Extension } from 'plankton'
 import { createActor } from 'xstate'
-export const userFeaturesExtension = {
+export const userFeaturesExtension = defineExtension({
   key: 'user-features-extension',
   create: () => {
     const actor = createActor(userFeaturesMachine).start()
@@ -47,5 +47,5 @@ export const userFeaturesExtension = {
       },
     }
   },
-} satisfies Subtree
+}) satisfies Extension
 export default [userFeaturesExtension]

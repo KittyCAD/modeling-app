@@ -14,6 +14,7 @@ import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { LayoutType } from '@src/lib/layout/types'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import {
+  extension as defineExtension,
   contribute,
   slot as createSlot,
   Registry,
@@ -78,12 +79,12 @@ describe('EditorsPane', () => {
     registry = new Registry()
     await registry.configure([
       editorsExtension,
-      {
+      defineExtension({
         ...extraViews,
         create: () => ({
           items: [],
         }),
-      },
+      }),
     ])
     service = registry.required(editorsService)
   })

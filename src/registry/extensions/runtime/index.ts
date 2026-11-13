@@ -11,7 +11,7 @@ import {
   type RuntimeTarget,
   runtimeService,
 } from '@src/registry/contracts/runtime'
-import { provide, type Subtree } from 'plankton'
+import { extension as defineExtension, provide, type Extension } from 'plankton'
 
 function readIsPlaywright(hasWindow: boolean) {
   const electronRuntimePlaywright =
@@ -47,7 +47,7 @@ function readRuntimeInfo(): RuntimeInfo {
     appUrl: environment.VITE_ZOO_SITE_APP_URL,
   }
 }
-export const runtimeExtension = {
+export const runtimeExtension = defineExtension({
   key: 'runtime-extension',
   create: () => {
     const current = signal(readRuntimeInfo())
@@ -70,5 +70,5 @@ export const runtimeExtension = {
       },
     }
   },
-} satisfies Subtree
+}) satisfies Extension
 export default [runtimeExtension]

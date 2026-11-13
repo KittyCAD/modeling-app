@@ -3,7 +3,14 @@ import { effect } from '@preact/signals-core'
 import { reportRejection } from '@src/lib/trap'
 import type { UserFeaturesService } from '@src/machines/userFeaturesMachine'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
-import { contribute, Facet, type Item, type Subtree, slot } from 'plankton'
+import {
+  extension as defineExtension,
+  contribute,
+  Facet,
+  type Item,
+  type Extension,
+  slot,
+} from 'plankton'
 
 export const PROJECT_SHELL_FEATURE =
   'zds_project_shell_refactor' satisfies Feature
@@ -14,16 +21,16 @@ export function hasProjectShellFeature(
   return features?.has(PROJECT_SHELL_FEATURE, false) ?? false
 }
 
-/** Install a subtree only while the default-off project-shell flag is granted. */
-export function withProjectShellFeature(item: Item, id: string): Subtree {
+/** Install an Extension only while the default-off project-shell flag is granted. */
+export function withProjectShellFeature(item: Item, id: string): Extension {
   const content = slot([])
   const installed = new Facet(
     `${id}.installed`,
     (values: readonly boolean[]) => values.length > 0
   )
-  return {
+  return defineExtension({
     key: `${id}.feature-gate`,
-    create: (scope) => {
+    create: (_dependencies, scope) => {
       let disposed = false
       let active = false
       let stop: (() => void) | undefined
@@ -61,5 +68,5 @@ export function withProjectShellFeature(item: Item, id: string): Subtree {
         },
       }
     },
-  }
+  })
 }

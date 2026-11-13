@@ -26,7 +26,7 @@ import { projectSession } from '@src/registry/contracts/projectSession'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
-import { provide, Registry, slot } from 'plankton'
+import { extension as defineExtension, provide, Registry, slot } from 'plankton'
 import { describe, expect, it, vi } from 'vitest'
 import { commandsExtension, toolbarCommandsItem } from '.'
 import { APP_COMMAND_IDS, createAppCommands } from './appCommands'
@@ -91,12 +91,12 @@ describe('commands extension', () => {
         }),
       ],
       commandsExtension,
-      {
+      defineExtension({
         ...commandsSlot,
         create: () => ({
           items: [commandItem],
         }),
-      },
+      }),
     ])
     const commandSystem = registry.required(commandSystemService)
     expect(commandSystem.actor.getSnapshot().context.commands).toEqual([
@@ -126,12 +126,12 @@ describe('commands extension', () => {
         }),
       ],
       commandsExtension,
-      {
+      defineExtension({
         ...commandsSlot,
         create: () => ({
           items: [],
         }),
-      },
+      }),
     ])
     const commandSystem = registry.required(commandSystemService)
     commandSystem.send({

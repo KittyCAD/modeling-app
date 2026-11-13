@@ -32,12 +32,17 @@ import {
 } from '@src/registry/contracts/projectLibraries'
 import { routerService } from '@src/registry/contracts/router'
 import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
-import { contribute, type InputOf, type Subtree } from 'plankton'
+import {
+  extension as defineExtension,
+  contribute,
+  type InputOf,
+  type Extension,
+} from 'plankton'
 
 /** Cloud library entries come from the server; configured legacy disk paths are never opened. */
-export default {
+export default defineExtension({
   key: 'cloud-projects-library',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     const cloud = () => ctx.required(cloudStorageService)
     const operations = () => ctx.required(fileOperationsService)
     const wasm = () =>
@@ -328,4 +333,4 @@ export default {
       },
     }
   },
-} satisfies Subtree
+}) satisfies Extension

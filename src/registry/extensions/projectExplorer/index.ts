@@ -17,10 +17,15 @@ import {
   projectExplorerRowContextMenuItemsFacet,
 } from '@src/registry/contracts/projectExplorer'
 import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
-import { contribute, type InputOf, type Subtree } from 'plankton'
-const importInCurrentFileExtension: Subtree = {
+import {
+  extension as defineExtension,
+  contribute,
+  type InputOf,
+  type Extension,
+} from 'plankton'
+const importInCurrentFileExtension: Extension = defineExtension({
   key: 'project-explorer.import-in-current-file',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     const importExtensions = signal<string[]>([])
     let disposed = false
     let wasmRevision = 0
@@ -102,7 +107,7 @@ const importInCurrentFileExtension: Subtree = {
       },
     }
   },
-}
+})
 const _projectExplorerProjectMenuItemsContribution: InputOf<
   typeof projectExplorerProjectMenuItemsFacet
 > = {

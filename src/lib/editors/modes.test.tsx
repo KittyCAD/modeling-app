@@ -18,6 +18,7 @@ import { defineEditorView } from '@src/lib/editors/views'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { act, cleanup, render, screen } from '@testing-library/react'
 import {
+  extension as defineExtension,
   contribute,
   slot as createSlot,
   Registry,
@@ -63,12 +64,12 @@ it('retains typed mode context across switches and remounts, and releases it whe
   registry = new Registry()
   await registry.configure([
     editorsExtension,
-    {
+    defineExtension({
       ...slot,
       create: () => ({
         items: [contribution],
       }),
-    },
+    }),
   ])
   const editors = registry.required(editorsService)
   const editor = requireSuccess(editors.openEditor('/notes.txt', 'original'))
@@ -169,12 +170,12 @@ it('keeps source/content matching and explicit mode choices independent for dupl
   registry = new Registry()
   await registry.configure([
     editorsExtension,
-    {
+    defineExtension({
       ...extraViews,
       create: () => ({
         items: [],
       }),
-    },
+    }),
   ])
   const service = registry.required(editorsService)
   const _editorViewsContribution2: InputOf<typeof editorViewsFacet> =

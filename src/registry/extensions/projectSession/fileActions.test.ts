@@ -6,7 +6,7 @@ import { createProjectForTest } from '@src/lib/projectTestUtils';
 import { posix } from '@chainner/node-path';
 import { testFileOperations } from '@src/lib/fileSystem/testScheduler';
 import { projectStorageProvidersFacet, type ProjectStorage } from '@src/lib/projectSession/storage';
-import { Registry, slot as createSlot, contribute, provide } from "plankton";
+import { extension as defineExtension, Registry, slot as createSlot, contribute, provide } from "plankton";
 import { signal } from '@preact/signals-core';
 import type { KclManager } from '@src/lang/KclManager';
 import { getProjectInfo } from '@src/lib/desktop';
@@ -84,12 +84,12 @@ async function setup(cloud?: CloudStorageService, storage?: ProjectStorage, oper
   router.setNavigate(navigate);
   const registry = new Registry();
   const lateCloud = createSlot([], Symbol());
-  await registry.configure([projectSessionRegistryItem, cloudProjectSessionExtension, {
+  await registry.configure([projectSessionRegistryItem, cloudProjectSessionExtension, defineExtension({
     ...lateCloud,
     create: () => ({
       items: []
     })
-  }, [contribute(wasmPromiseFacet, () => Promise.resolve({} as ModuleType)), ...(storage ? [contribute(projectStorageProvidersFacet, () => () => storage)] : []), provide(fileOperationsService, operations ?? {
+  }), [contribute(wasmPromiseFacet, () => Promise.resolve({} as ModuleType)), ...(storage ? [contribute(projectStorageProvidersFacet, () => () => storage)] : []), provide(fileOperationsService, operations ?? {
     exists,
     rename,
     readFile,

@@ -36,7 +36,12 @@ import {
   SLICER_COMMAND_OPTIONS,
   type SlicerId,
 } from '@src/registry/plugins/slicer/slicerDefinitions'
-import { contribute, type InputOf, type Subtree } from 'plankton'
+import {
+  extension as defineExtension,
+  contribute,
+  type InputOf,
+  type Extension,
+} from 'plankton'
 type ExportToSlicerCommandArgs = {
   slicer: SlicerId
 }
@@ -112,9 +117,9 @@ function createExportToSlicerCommand({
     },
   }
 }
-const exportToSlicerSidebarItem: Subtree = {
+const exportToSlicerSidebarItem: Extension = defineExtension({
   key: 'slicer.left-toolbar.item',
-  create: (ctx) => {
+  create: (_dependencies, ctx) => {
     const getCommandSystem = () => ctx.required(commandSystemService)
     const getKclManager = () =>
       ctx.optional(projectSession)?.project.value?.executingEditor.value ??
@@ -170,7 +175,7 @@ const exportToSlicerSidebarItem: Subtree = {
       ],
     }
   },
-}
+})
 const slicer = createZdsPlugin({
   id: SLICER_PLUGIN_ID,
   title: 'Slicer export',
