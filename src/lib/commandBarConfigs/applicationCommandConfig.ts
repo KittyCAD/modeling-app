@@ -7,7 +7,6 @@ import {
   writeEnvironmentFile,
 } from '@src/lib/desktop'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
-import { exportProjectZip } from '@src/lib/exportProjectZip'
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
@@ -584,32 +583,8 @@ export function createApplicationCommands({
     },
   }
 
-  const exportProjectZipCommand: Command = {
-    scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
-    name: 'export-project-zip',
-    displayName: 'Download project files',
-    description: 'Download every file in the current project as a ZIP archive.',
-    needsReview: false,
-    icon: 'download',
-    groupId: 'application',
-    onSubmit: async () => {
-      const project = app.project?.projectIORefSignal.value
-      const executingEditor = app.project?.executingEditor.value
-      const wasmInstance = await app.wasmPromise
-
-      await exportProjectZip({
-        fileOperations: app.fileOperations,
-        project,
-        currentFilePath: app.project?.executingPath,
-        currentFileContents: executingEditor?.code,
-        wasmInstance,
-      })
-    },
-  }
-
   return [
     addKCLFileToProject,
-    ...(!isDesktop() ? [exportProjectZipCommand] : []),
     ...(isDesktop() ? [checkForUpdatesCommand] : []),
     resetLayoutCommand,
     setLayoutCommand,
