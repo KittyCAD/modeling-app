@@ -30,6 +30,7 @@ test(
     await setup(context, page, testInfo)
     const root = `/__zoo_cloud__/${projectId}`
     await page.goto(`/file/${encodeURIComponent(`${root}/main.kcl`)}`)
+    await waitForAppLoad(page)
     await page.locator('.cm-content').first().waitFor({ state: 'visible' })
     await openLayoutPanes(page, DefaultLayoutPaneID.Files)
     await installPausedClock(page)
@@ -303,6 +304,7 @@ for (const kind of ['file', 'directory']) {
       await setup(context, page, testInfo)
       const root = `/__zoo_cloud__/${projectId}`
       await page.goto(`/file/${encodeURIComponent(`${root}/main.kcl`)}`)
+      await waitForAppLoad(page)
       await page.locator('.cm-content').first().waitFor({ state: 'visible' })
       await openLayoutPanes(page, DefaultLayoutPaneID.Files)
       const parts = page.getByRole('treeitem', { name: 'parts', exact: true })
