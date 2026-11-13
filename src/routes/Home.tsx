@@ -464,11 +464,15 @@ const Home = () => {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: projectLibraryWatchKey tracks library identity and paths without rebinding on icon/title-only renders.
   useEffect(() => {
-    return projectLibraryRealizations?.watchConfiguredLibraries({
-      libraries: projectLibraries,
-    })
+    for (const library of projectLibraries) {
+      projectLibraryRealizations?.invalidate({ libraryId: library.id })
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- projectLibraryWatchKey tracks library identity and paths without rebinding on icon/title-only renders.
-  }, [projectLibraryRealizations, projectLibraryWatchKey])
+  }, [
+    projectLibraryRealizations,
+    projectLibraryWatchKey,
+    selectedProjectLibraryId,
+  ])
 
   useEffect(() => {
     session.setCurrentProjectLibraryId(selectedProjectLibraryId)

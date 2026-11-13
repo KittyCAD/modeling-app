@@ -27,7 +27,6 @@ import {
 import { authService } from '@src/registry/contracts/auth'
 
 import { routerService } from '@src/registry/contracts/router'
-import { pollProjectList } from '@src/lib/projectListPolling'
 import { PATHS } from '@src/lib/paths'
 import { isOffline } from '@src/lib/networkStatus'
 
@@ -59,6 +58,7 @@ export default defineRegistryItemFactory((ctx) => {
     Promise.reject(new Error('Missing WASM promise.'))
   const auth = ctx.services.signal(authService)
   const router = ctx.services.signal(routerService)
+  const pathname = computed(() => router.value?.location.value.pathname)
   const settledAccount = signal<{ id: string | undefined } | undefined>(
     undefined
   )
@@ -69,30 +69,26 @@ export default defineRegistryItemFactory((ctx) => {
     stop = effect(() => {
       const loggedIn = auth.value?.isLoggedIn.value
       const token = auth.value?.token.value
-      const location = router.value?.location.value
+      const path = pathname.value
       void token
       if (
         !loggedIn ||
         !(
-          location?.pathname === PATHS.HOME ||
-          location?.pathname ===
-            `${PATHS.LIBRARY}/${PERSONAL_CLOUD_PROJECT_LIBRARY_ID}`
+          path === PATHS.HOME ||
+          path === `${PATHS.LIBRARY}/${PERSONAL_CLOUD_PROJECT_LIBRARY_ID}`
         )
       )
         return
       const accountId = auth.value?.user.value?.id
-      return pollProjectList(async () => {
-        // Manual refresh uses the same backend. Never overlap its pending request.
-        if (cloud().projectsLoading.peek()) return false
-        const previous = JSON.stringify(cloud().projects.peek())
-        try {
-          const projects = await cloud().listProjects()
-          return previous !== JSON.stringify(projects)
-        } finally {
+      const storage = cloud()
+      if (storage.projectsLoading.peek()) return
+      void storage
+        .listProjects()
+        .catch(reportRejection)
+        .finally(() => {
           if (!disposed && auth.peek()?.user.peek()?.id === accountId)
             settledAccount.value = { id: accountId }
-        }
-      }, reportRejection)
+        })
     })
   })
 
