@@ -234,6 +234,16 @@ export const isErrorWhitelisted = (exception: Error) => {
       foundInSpec: 'e2e/playwright/basic-sketch.spec.ts',
     },
     {
+      name: 'SecurityError',
+      message: 'The operation is insecure.',
+      stack: `SecurityError: The operation is insecure.
+    at  (debugger eval code:7:7)
+    at evaluateScriptSafely (chrome://juggler/content/content/Runtime.js`,
+      project: 'firefox',
+      foundInSpec:
+        'e2e/playwright/file-tree.spec.ts finishes importing dropped files before enabling the explorer again',
+    },
+    {
       name: '  - internal_engine',
       stack: `
 `,
