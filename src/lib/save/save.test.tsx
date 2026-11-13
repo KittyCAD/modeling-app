@@ -351,6 +351,66 @@ describe('contributed editor saving', () => {
     expect(saving().state(second).value.dirty).toBe(false)
   })
 
+  it.each(['same buffer', 'another buffer'])(
+    'discards saves queued before remote adoption in %s',
+    async (target) => {
+      const editor = open()
+      const adopted = target === 'same buffer' ? editor : open()
+      const pending = deferred()
+      writeFile.mockReturnValueOnce(pending.promise)
+      change(editor, 'first local edit')
+      const first = saving().save(editor)
+      await Promise.resolve()
+      change(editor, 'queued local edit')
+      const queued = saving().save(editor)
+
+      change(adopted, 'remote contents')
+      expect(saving().adopt(adopted, 'remote contents')).toBeUndefined()
+      pending.resolve()
+      await Promise.all([first, queued])
+
+      expect(writeFile.mock.calls.map(([, contents]) => contents)).toEqual([
+        'first local edit',
+      ])
+      expect(saving().state(adopted).peek()).toMatchObject({
+        dirty: false,
+        saving: false,
+        error: undefined,
+      })
+      expect(saving().state(editor).peek().saving).toBe(false)
+
+      change(adopted, 'edit after adoption')
+      expect(await saving().save(adopted)).toBeUndefined()
+      expect(writeFile).toHaveBeenLastCalledWith(
+        adopted.src.peek(),
+        'edit after adoption'
+      )
+      expect(saving().state(adopted).peek().dirty).toBe(false)
+    }
+  )
+
+  it('preserves the remote baseline adopted by another buffer during a save', async () => {
+    const editor = open(),
+      adopted = open()
+    const pending = deferred()
+    writeFile.mockReturnValueOnce(pending.promise)
+    change(editor, 'local edit')
+    const saved = saving().save(editor)
+    await Promise.resolve()
+
+    change(adopted, 'remote contents')
+    expect(saving().adopt(adopted, 'remote contents')).toBeUndefined()
+    pending.resolve()
+    expect(await saved).toBeUndefined()
+
+    expect(adopted.contents.peek()).toBe('remote contents')
+    expect(saving().state(adopted).peek().dirty).toBe(false)
+    expect(saving().state(editor).peek()).toMatchObject({
+      dirty: true,
+      saving: false,
+    })
+  })
+
   it('skips queued saves for closed or reassociated buffers', async () => {
     const first = open(),
       closed = open(),
