@@ -10,6 +10,7 @@ import { isolateHistory } from '@codemirror/commands'
 import {
   batch,
   computed,
+  effect,
   untracked,
   type ReadonlySignal,
 } from '@preact/signals-core'
@@ -28,15 +29,21 @@ export function createCodeSurface(
 ) {
   const { editor } = host
   const compartment = new Compartment()
+  const editing = new Compartment()
   let sending = false
   let updating = false
   let closed = false
   const view = new EditorView({
     state: EditorState.create({
       doc: editor.state.doc,
-      extensions: compartment.of([]),
+      extensions: [compartment.of([]), editing.of([])],
     }),
     dispatchTransactions: (transactions) => {
+      if (
+        editor.readOnly.peek() &&
+        transactions.some((transaction) => transaction.docChanged)
+      )
+        return
       updating = true
       try {
         batch(() => {
@@ -81,6 +88,20 @@ export function createCodeSurface(
     closed = true
     view.destroy()
   })
+  host.onDispose(
+    effect(() => {
+      const readOnly = editor.readOnly.value
+      queueMicrotask(() => {
+        if (!closed)
+          view.dispatch({
+            effects: editing.reconfigure([
+              EditorState.readOnly.of(readOnly),
+              EditorView.editable.of(!readOnly),
+            ]),
+          })
+      })
+    })
+  )
   view.dom.dataset.editorCode = ''
   host.onDispose(
     editor.subscribe((transaction) => {
