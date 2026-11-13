@@ -1,6 +1,9 @@
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 
-import { viewRows } from '@src/components/layout/areas/KclNamedViewsPane'
+import {
+  canManageNamedView,
+  viewRows,
+} from '@src/components/layout/areas/KclNamedViewsPane'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import { initialiseWasmNode } from '@src/lang/wasmUtilsNode'
 import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
@@ -20,10 +23,12 @@ function view({
   name,
   id = `view-${name}`,
   modulePath,
+  moduleId = 0,
 }: {
   name: string
   id?: string
   modulePath?: ModulePath
+  moduleId?: number
 }): KclNamedView {
   return {
     artifact: {
@@ -40,7 +45,7 @@ function view({
       hideIds: [],
       codeRef: CODE_REF,
     },
-    moduleId: 0,
+    moduleId,
     modulePath,
   }
 }
@@ -63,7 +68,7 @@ describe('viewRows', () => {
       {
         key: 'kcl-default',
         label: getKclDefaultViewName(),
-        identity: null,
+        identity: 'kclDefault',
         target: { kind: 'kclDefault' },
       },
     ])
@@ -97,6 +102,33 @@ describe('viewRows', () => {
     ])
   })
 
+  it('summarizes camera intent, omitting distances that fit the model', () => {
+    const front = view({ name: 'Plate' })
+    front.artifact.camera.distance = 200
+    const directed = view({ name: 'Inspection' })
+    directed.artifact.camera = {
+      look: {
+        type: 'directed',
+        direction: { x: 0, y: 1, z: 0, units: null },
+        up: { x: 0, y: 0, z: 1, units: null },
+      },
+      target: null,
+      distance: 125.555,
+      projection: 'perspective',
+    }
+
+    expect(
+      viewRows([view({ name: 'Overview' }), front, directed]).map(
+        (row) => row.details
+      )
+    ).toEqual([
+      undefined,
+      'Front Orthographic',
+      'Front 200mm Orthographic',
+      'Directed 125.56mm Perspective',
+    ])
+  })
+
   it('gives two collided rows distinct identities', () => {
     const rows = viewRows([
       view({ name: 'Front', id: 'root', modulePath: LOCAL_MAIN }),
@@ -104,7 +136,7 @@ describe('viewRows', () => {
     ])
 
     expect(rows.map((row) => row.identity)).toEqual([
-      null,
+      'kclDefault',
       { name: 'Front', moduleKey: 'Local:/project/main.kcl' },
       { name: 'Front', moduleKey: 'Local:/project/parts/bracket.kcl' },
     ])
@@ -127,5 +159,19 @@ describe('viewRows', () => {
     const rows = viewRows([view({ name: 'Front', id: 'view-1' })])
 
     expect(rows.map((row) => row.key)).toEqual(['kcl-default', 'view-1'])
+  })
+
+  it('only manages root-module views declared outside functions', () => {
+    expect(canManageNamedView(view({ name: 'Root' }))).toBe(true)
+    expect(canManageNamedView(view({ name: 'Import', moduleId: 1 }))).toBe(
+      false
+    )
+
+    const generated = view({ name: 'Generated' })
+    generated.artifact.codeRef = {
+      ...generated.artifact.codeRef,
+      pathToNode: [['body', 'FunctionExpression']],
+    }
+    expect(canManageNamedView(generated)).toBe(false)
   })
 })

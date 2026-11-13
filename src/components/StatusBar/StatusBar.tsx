@@ -19,7 +19,7 @@ export function StatusBar({
   return (
     <footer
       id="statusbar"
-      className="relative z-10 flex justify-between items-center bg-chalkboard-20 dark:bg-chalkboard-90 text-chalkboard-80 dark:text-chalkboard-30 border-t border-t-chalkboard-30 dark:border-t-chalkboard-80"
+      className="relative z-10 box-content h-8 shrink-0 flex justify-between items-stretch bg-chalkboard-20 dark:bg-chalkboard-90 text-chalkboard-80 dark:text-chalkboard-30 border-t border-t-chalkboard-30 dark:border-t-chalkboard-80"
     >
       <menu id="statusbar-globals" className="flex items-stretch">
         {globalItems.map((item, index, arr) => (
@@ -54,7 +54,7 @@ export function StatusBar({
 }
 
 export const defaultStatusBarItemClassNames =
-  'flex items-center gap-2 px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10  focus:outline-none focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50'
+  'flex items-center gap-2 my-0 px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10  focus:outline-none focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50'
 
 function StatusBarItem(
   props: StatusBarItemType & {
@@ -101,7 +101,7 @@ function StatusBarItem(
       )
     case 'popover':
       return (
-        <Popover className="relative">
+        <Popover className="relative flex">
           <Popover.Button
             as={ActionButton}
             Element="button"

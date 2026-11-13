@@ -25,22 +25,6 @@ let kclManagerInThisFile: KclManager = null!
 let rustContextInThisFile: RustContext = null!
 let engineCommandManagerInThisFile: ConnectionManager | null = null
 
-beforeAll(async () => {
-  const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine()
-  instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
-  engineCommandManagerInThisFile = engineCommandManager
-  rustContextInThisFile = rustContext
-}, 60_000)
-
-afterAll(() => {
-  engineCommandManagerInThisFile?.tearDown({
-    route: 'user-requested',
-    initiatedBy: 'client',
-  })
-})
-
 const sketchBlockBooleanFilletFaceApi = `startX = 2
 
 baseSketch = sketch(on = XY) {
@@ -81,6 +65,25 @@ function getRegionTagName(expr: Expr): string | null {
 const describeWithEngine = env().VITE_ZOO_API_TOKEN ? describe : describe.skip
 
 describeWithEngine('edges sketch block face api regression', () => {
+  beforeAll(async () => {
+    const { instance, kclManager, engineCommandManager, rustContext } =
+      await buildTheWorldAndConnectToEngine({
+        webrtc: false,
+        geometryOnly: true,
+      })
+    instanceInThisFile = instance
+    kclManagerInThisFile = kclManager
+    engineCommandManagerInThisFile = engineCommandManager
+    rustContextInThisFile = rustContext
+  }, 60_000)
+
+  afterAll(() => {
+    engineCommandManagerInThisFile?.tearDown({
+      route: 'user-requested',
+      initiatedBy: 'client',
+    })
+  })
+
   it('emits baseRegion.tags.* sideFaces for sketch block boolean fillet codemod', async () => {
     const { artifactGraph, ast } = await getAstAndArtifactGraph(
       sketchBlockBooleanFilletFaceApi,

@@ -4,7 +4,7 @@ import {
   createNewProjectDirectory,
   overwriteProjectTomlWithNewSettings,
 } from '@src/lib/desktop'
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
@@ -33,6 +33,7 @@ const createTempDirectoryPath = () =>
 
 describe('createNewProjectDirectory', () => {
   afterEach(async () => {
+    vi.restoreAllMocks()
     await Promise.all(
       createdProjectDirectoryPaths.map((projectDirectoryPath) =>
         fsZds.rm(projectDirectoryPath, { recursive: true, force: true })
@@ -284,7 +285,7 @@ describe('createNewProjectDirectory', () => {
     expect(projectToml).toContain('title = "Windows Dropbox"')
   })
 
-  it('preserves project metadata when writing project settings', async () => {
+  it('preserves project metadata and skips unchanged project settings writes', async () => {
     const projectDirectoryPath = createTempDirectoryPath()
     const projectPath = fsZds.join(projectDirectoryPath, 'test-1')
     createdProjectDirectoryPaths.push(projectDirectoryPath)
@@ -297,6 +298,7 @@ describe('createNewProjectDirectory', () => {
       )
     )
 
+    const writeFile = vi.spyOn(testFileOperations, 'writeFile')
     await overwriteProjectTomlWithNewSettings(
       testFileOperations,
       projectPath,
@@ -314,5 +316,15 @@ describe('createNewProjectDirectory', () => {
     expect(projectToml).toContain('project_id = "project-123"')
     expect(projectToml).toContain('id = "new-settings-id"')
     expect(projectToml).not.toContain('old-settings-id')
+
+    expect(writeFile).toHaveBeenCalledTimes(1)
+
+    writeFile.mockClear()
+    await overwriteProjectTomlWithNewSettings(
+      testFileOperations,
+      projectPath,
+      '[settings.meta]\nid = "new-settings-id"\n'
+    )
+    expect(writeFile).not.toHaveBeenCalled()
   })
 })

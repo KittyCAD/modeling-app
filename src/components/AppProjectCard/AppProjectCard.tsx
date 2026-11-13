@@ -1,3 +1,5 @@
+import { PATHS } from '@src/lib/paths'
+import { getFileRoute } from '@src/lib/paths'
 import {
   type ProjectCardClassNames,
   ProjectCard as UiProjectCard,
@@ -11,13 +13,13 @@ import {
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
 import Tooltip from '@src/components/Tooltip'
+import { Spinner } from '@src/components/Spinner'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
 import {
   getHomeProjectDeleteWarningMessage,
   getHomeProjectDisplayName,
   shouldPreserveRemoteOnHomeProjectDelete,
 } from '@src/lib/homeProjects'
-import { PATHS } from '@src/lib/paths'
 import { reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
@@ -38,10 +40,11 @@ type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   fileOperations: Pick<FileOperationsRegistryService, 'stat' | 'readFile'>
   projectStatus?: ProjectStatus
   density?: 'default' | 'compact'
+  projectShellEnabled?: boolean
   showCloudSyncUi?: boolean
   showDetails?: boolean
   showSourceStatusBadges?: boolean
-  onMoveToLibrary?: (project: HomeProjectEntry) => void
+  onCloneToLibrary?: (project: HomeProjectEntry) => void
 }
 
 const homeProjectStatusBadgeLabels: Record<HomeProjectEntry['status'], string> =
@@ -150,10 +153,11 @@ function AppProjectCard({
   fileOperations,
   projectStatus,
   density = 'default',
+  projectShellEnabled = false,
   showCloudSyncUi = true,
   showDetails = true,
   showSourceStatusBadges = true,
-  onMoveToLibrary,
+  onCloneToLibrary,
   ...props
 }: AppProjectCardProps) {
   const cardRef = useRef<HTMLLIElement>(null)
@@ -183,6 +187,7 @@ function AppProjectCard({
   const navigate = useNavigate()
   useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
+  const [isOpening, setIsOpening] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isReviewingDuplicates, setIsReviewingDuplicates] = useState(false)
@@ -234,6 +239,8 @@ function AppProjectCard({
         name: newProjectName,
         modified: Date.now(),
       })
+    } else {
+      setOptimisticProjectName(null)
     }
 
     projectActions
@@ -250,19 +257,22 @@ function AppProjectCard({
       return
     }
 
-    // Context menu actions run before the Headless UI dialog finishes closing.
-    // Select after that focus restoration so project rename behaves like the
-    // old hover action buttons.
-    const timeout = window.setTimeout(() => {
-      if (!inputRef.current) {
+    // Headless UI restores focus in an unmount microtask. This effect runs
+    // after that cleanup has queued, so select the committed rename input
+    // after the old focus owner releases it, without a timer or extra frame.
+    let cancelled = false
+    queueMicrotask(() => {
+      if (cancelled || !inputRef.current) {
         return
       }
 
       inputRef.current.focus()
       inputRef.current.select()
-    }, 0)
+    })
 
-    return () => window.clearTimeout(timeout)
+    return () => {
+      cancelled = true
+    }
   }, [isEditing])
 
   useEffect(() => {
@@ -296,8 +306,8 @@ function AppProjectCard({
   const projectCopyPaths = project.localProjectPath
     ? [project.localProjectPath, ...(project.duplicateProjectIdPaths ?? [])]
     : []
-  const canMoveToLibrary = Boolean(
-    onMoveToLibrary && projectActions.canMoveToLibrary(project)
+  const canCloneToLibrary = Boolean(
+    onCloneToLibrary && projectActions.canCloneToLibrary(project)
   )
   const deleteProjectDisplayName = projectName || 'this file'
   const deleteWarningMessage = getHomeProjectDeleteWarningMessage(
@@ -311,7 +321,7 @@ function AppProjectCard({
     : `Are you sure you want to delete "${deleteProjectDisplayName}"? This action cannot be undone.`
   const openHref =
     project.readWriteAccess && project.defaultFile
-      ? `${PATHS.FILE}/${encodeURIComponent(project.defaultFile)}`
+      ? getFileRoute(project.defaultFile)
       : ''
   const statusBadgeLabel =
     !showCloudSyncUi || !showSourceStatusBadges
@@ -518,9 +528,22 @@ function AppProjectCard({
     <UiProjectCard
       {...props}
       rootRef={cardRef}
-      title={projectName}
+      title={
+        <span className="flex items-center gap-2">
+          <span className="min-w-0 flex-1 truncate">{projectName}</span>
+          <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center text-chalkboard-60 dark:text-chalkboard-30">
+            {isOpening && (
+              <span role="status" aria-label={`Opening project ${projectName}`}>
+                <Spinner aria-hidden="true" className="h-4 w-4" />
+                <span className="sr-only">Opening project...</span>
+              </span>
+            )}
+          </span>
+        </span>
+      }
       titleText={projectName}
-      canOpen={canOpen}
+      canOpen={canOpen && !isOpening}
+      aria-busy={isOpening}
       isEditing={isEditing}
       thumbnailUrl={imageUrl}
       badges={badges}
@@ -550,13 +573,13 @@ function AppProjectCard({
               Rename project
             </ContextMenuItem>,
             <ContextMenuItem
-              key="move-to-library"
+              key="clone-to-library"
               icon="folder"
-              disabled={!canMoveToLibrary}
-              data-testid="project-card-context-move-to-library"
-              onClick={() => onMoveToLibrary?.(project)}
+              disabled={!canCloneToLibrary}
+              data-testid="project-card-context-clone-to-library"
+              onClick={() => onCloneToLibrary?.(project)}
             >
-              Move to another library
+              Clone to another library
             </ContextMenuItem>,
             ...(hasDuplicateRealizations
               ? [
@@ -621,23 +644,40 @@ function AppProjectCard({
       dialogs={dialogs}
       onOpen={(e) => {
         e.preventDefault()
-        if (!canOpen) {
-          return
-        }
-
-        void projectActions
-          .open(project)
-          .then((result) => {
-            if (result?.defaultFile) {
-              void navigate(
-                `${PATHS.FILE}/${encodeURIComponent(result.defaultFile)}`
-              )
-            }
-          })
-          .catch(reportRejection)
+        if (!canOpen || isOpening) return
+        setIsOpening(true)
+        void (async () => {
+          if (projectShellEnabled && e.shiftKey && project.localProjectPath) {
+            await navigate(
+              `${PATHS.LOCAL}/${encodeURIComponent(project.localProjectPath)}`
+            )
+            return
+          }
+          const result = await projectActions.open(project)
+          if (result?.defaultFile) {
+            // Navigation can finish before React commits the next view. Keep
+            // this card busy until it unmounts after a successful handoff.
+            await navigate(getFileRoute(result.defaultFile))
+          } else {
+            setIsOpening(false)
+          }
+        })().catch((error: unknown) => {
+          setIsOpening(false)
+          reportRejection(error)
+        })
       }}
-      renderOpenLink={({ href: _href, ...linkProps }) => (
-        <Link {...linkProps} to={openHref} />
+      renderOpenLink={({ href: _href, children, ...linkProps }) => (
+        <Link
+          {...linkProps}
+          to={openHref}
+          title={
+            projectShellEnabled && canOpen && project.localProjectPath
+              ? 'Shift-click to open without an editor'
+              : undefined
+          }
+        >
+          {children}
+        </Link>
       )}
     />
   )

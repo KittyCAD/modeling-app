@@ -78,7 +78,6 @@ export function useViewControlMenuItems() {
         onClick={() => {
           resetCameraPosition({
             sceneInfra: kclManager.sceneInfra,
-            engineCommandManager: kclManager.engineCommandManager,
             settingsActor: settings.actor,
           }).catch(reportRejection)
         }}
@@ -149,11 +148,7 @@ export function useViewControlMenuItems() {
               data: { forceNewSketch: true, keepDefaultPlaneVisibility: true },
             })
 
-            void selectSketchPlane(
-              planeOrFaceId,
-              modelingState.context.store.useSketchSolveMode?.current,
-              kclManager
-            )
+            void selectSketchPlane(planeOrFaceId, kclManager)
           }
         }}
         disabled={!planeOrFaceId}
@@ -202,7 +197,6 @@ export function useViewControlMenuItems() {
       planeOrFaceId,
       firstValidSelection,
       modelingSend,
-      modelingState.context.store.useSketchSolveMode,
       sketching,
       showSketchGrid,
       snapToGrid,

@@ -318,7 +318,7 @@ export type AnnotationMbdLeaderPosition = { "normalized_pos": {
 /**
  * The position
  */
-pos: Point2d<number>, } } | { "centroid": Record<symbol, never> };
+pos: Point2d<number>, } } | { "centroid": Record<symbol, never> } | { "step_from": Record<symbol, never> } | { "auto": Record<symbol, never> };
 
 /**
  * Options for annotations
@@ -1563,9 +1563,13 @@ edge_id?: string | null,
 edge_reference?: EdgeSpecifier | null, };
 
 /**
- * An edge/vertex can be defined by the faces that it is connected to.
+ * A reference identifying a selectable scene entity.
  */
-export type EntityReference = { "type": "plane", 
+export type EntityReference = { "type": "annotation", 
+/**
+ * Id of the annotation object being referenced.
+ */
+annotation_id: string, } | { "type": "plane", 
 /**
  * Id of the plane being referenced.
  */
@@ -1679,7 +1683,7 @@ opacity: number, };
 /**
  * The type of entity
  */
-export type EntityType = "entity" | "object" | "path" | "segment" | "curve" | "solid2d" | "solid3d" | "edge" | "face" | "plane" | "vertex" | "region" | "patterngroup";
+export type EntityType = "entity" | "object" | "path" | "segment" | "curve" | "solid2d" | "solid3d" | "edge" | "face" | "plane" | "vertex" | "region" | "patterngroup" | "annotation";
 
 /**
  * Export the scene to a file.
@@ -1694,7 +1698,11 @@ entity_ids: Array<string>,
 /**
  * The file format to export to.
  */
-format: OutputFormat3d, };
+format: OutputFormat3d, 
+/**
+ * KCL source to embed in formats that support source metadata.
+ */
+kcl_source?: KclProject | null, };
 
 /**
  * Export a sketch to a file.
@@ -1722,7 +1730,11 @@ entity_ids: Array<string>,
 /**
  * The file format to export to.
  */
-format: OutputFormat3d, };
+format: OutputFormat3d, 
+/**
+ * KCL source to embed in formats that support source metadata.
+ */
+kcl_source?: KclProject | null, };
 
 /**
  * Extend a path by adding a new segment which starts at the path's "pen".
@@ -2006,6 +2018,11 @@ export type GetSketchModePlane = Record<symbol, never>;
 export type GlobalAxis = "x" | "y" | "z";
 
 /**
+ * Additional data that can be included in a glTF 2.0 export.
+ */
+export type GltfExportExtra = "sketches" | "regions" | "imported_files" | "mbd" | "geometry_uuids";
+
+/**
  * Options for exporting glTF 2.0.
  */
 export type GltfExportOptions = { 
@@ -2018,9 +2035,17 @@ storage: GltfStorage,
  */
 presentation: GltfPresentation, 
 /**
- * Include engine UUIDs in glTF extras. Defaults to false.
+ * Include geometry UUIDs. Setting this to true is equivalent to adding `geometry_uuids` to `extras`.
  */
-include_uuids: boolean, };
+include_uuids: boolean, 
+/**
+ * Additional data to include in the exported glTF. Defaults to an empty set.
+ */
+extras: Array<GltfExportExtra>, 
+/**
+ * Named views in the scene.
+ */
+views: { [key in string]: NamedView }, };
 
 /**
  * Options for importing glTF 2.0.
@@ -2153,6 +2178,34 @@ coords: System,
  * Defaults to `false` but is implicitly `true` when importing into the engine.
  */
 split_closed_faces: boolean, };
+
+/**
+ * A file in a KCL project.
+ */
+export type KclFile = { 
+/**
+ * Where is the file, relative to the project directory?
+ */
+path: SafeFilepath, 
+/**
+ * Raw file contents. KCL source is UTF-8; imported assets may be binary.
+ */
+contents: Array<number>, };
+
+/**
+ * A KCL project.
+ */
+export type KclProject = { 
+/**
+ * All files in the project.
+ */
+files: Array<KclFile>, 
+/**
+ * Which file is the entrypoint?
+ * This is the first KCL file to be executed,
+ * the root of the KCL module tree.
+ */
+entrypoint: SafeFilepath, };
 
 /**
  * A length unit is wrapper around an f64 that represents a length in some unit.
@@ -2364,6 +2417,37 @@ path: ModelingCmdId,
  * Where the path's pen should be.
  */
 to: Point3d<LengthUnit>, };
+
+/**
+ * Options for exporting glTF 2.0.
+ */
+export type NamedView = { 
+/**
+ * Vantage point.
+ */
+vantage: Point3d<number>, 
+/**
+ * Target point.
+ */
+target: Point3d<number>, 
+/**
+ * Up direction.
+ */
+up: Point3d<number>, 
+/**
+ * Projection kind.
+ */
+projection: Projection, 
+/**
+ * Baseline visibility.
+ *
+ * Determines whether entities are visible or by default.
+ */
+baseline: Visibility, 
+/**
+ * Exceptions to the baseline visibility.
+ */
+except_ids: Array<ModelingCmdId>, };
 
 /**
  * Create a new annotation
@@ -3016,6 +3100,11 @@ points: Array<Point3d<number>>,
 use_plane_coords: boolean, };
 
 /**
+ * Data item selection.
+ */
+export type Projection = { "type": "orthographic" } | { "type": "perspective" };
+
+/**
  * Query the type of entity given its id. E.g. if a face is selected the face id is
  * returned, if an edge/vertex is selected then the face ids that uniquely define the edge/vertex are
  * returned (typically two).
@@ -3192,6 +3281,11 @@ angle: Angle,
  * Origin of the rotation. If one isn't provided, the object will rotate about its own bounding box center.
  */
 origin: OriginType, };
+
+/**
+ * Filepath which is guaranteed to be relative and not contain parent directory jumps like '..'
+ */
+export type SafeFilepath = string;
 
 /**
  * Removes all of the Objects in the scene
@@ -3952,7 +4046,15 @@ units: UnitLength,
 /**
  * Presentation style.
  */
-presentation: StepPresentation, };
+presentation: StepPresentation, 
+/**
+ * STEP application protocol schema. Defaults to AP242.
+ */
+schema: StepSchema, 
+/**
+ * Named views in the scene.
+ */
+views: { [key in string]: NamedView }, };
 
 /**
  * Options for importing STEP format.
@@ -3986,6 +4088,11 @@ export type StepImportTargetRepresentation = "mesh" | "brep";
  * Describes the presentation style of the EXPRESS exchange format.
  */
 export type StepPresentation = "compact" | "pretty";
+
+/**
+ * Specifies the STEP application protocol schema for export.
+ */
+export type StepSchema = "ap203" | "ap214" | "ap242";
 
 /**
  * Options for exporting STL.
@@ -4324,6 +4431,11 @@ export type ViewIsometric = {
  * and padding = -0.2 means the view will span 80% of the object(s) bounding box.
  */
 padding: number, };
+
+/**
+ * Identifies the visibility of entities.
+ */
+export type Visibility = "show" | "hide";
 
 /**
  * Get the volume of entities in the scene or the default scene.

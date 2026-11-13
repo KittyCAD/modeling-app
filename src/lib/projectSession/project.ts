@@ -1,3 +1,6 @@
+import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
+import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
+import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import {
   type Signal,
   type ReadonlySignal,
@@ -9,7 +12,7 @@ import { KclManager } from '@src/lang/KclManager'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { FileEntry, Project } from '@src/lib/project'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { resetCameraAfterExecution } from '@src/lib/resetCameraPosition'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
@@ -20,24 +23,31 @@ import type { ConnectionManager } from '@src/lib/engineConnection'
 import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { App } from '@src/lib/app'
-import type { MachineManager } from '@src/lib/MachineManager'
 import { File } from '@src/lib/projectSession/file'
 import type { TextFileIO } from '@src/lib/projectSession/textFileIO'
-import { projectSession } from '@src/registry/contracts/projectSession'
-import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import {
+  projectSession,
+  type ProjectSessionService,
+} from '@src/registry/contracts/projectSession'
+import { type FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 // Each of our singletons has dependencies on _other_ singletons, so importing
 // can easily become cyclic. Each will have its own Singletons type.
 export interface ProjectSystemDeps {
-  machineManager: MachineManager
-  /** Live metadata for the editor's owning project; absent before a project opens. */
+  /** Live metadata for the editor owning cloud saves and thumbnails. */
   project: ReadonlySignal<Project | undefined>
   /** Storage access for editor-owned export and thumbnail workflows. */
   fileOperations: FileOperationsRegistryService
   textFileIO: TextFileIO
+  modelingReady?: () => Promise<void>
+  projectSession?: Pick<
+    ProjectSessionService,
+    'editorChanged' | 'writeThumbnail' | 'storageFor'
+  >
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
   commandBar: CommandBarActorType
+  projectPath: Signal<string>
   engineCommandManager: ConnectionManager
   rustContext: RustContext
   userFeatures: UserFeaturesSettleService
@@ -72,6 +82,10 @@ export class ZDSProject {
     children: [],
   }))
 
+  private modelingPreparation: Promise<void> = Promise.resolve()
+  get modelingReady() {
+    return this.modelingPreparation
+  }
   private fileWatcherId = uuidv4()
 
   constructor(
@@ -80,7 +94,7 @@ export class ZDSProject {
     public readonly textFileIO: TextFileIO
   ) {
     this.files = this.collectProjectFiles(projectIORefSignal.value)
-    window.electron?.watchFileOn(
+    this.textFileIO.watch(
       projectIORefSignal.value.path,
       this.fileWatcherId,
       this.onUpdateFromDisk
@@ -90,7 +104,7 @@ export class ZDSProject {
   /** Clean up resources and watchers for Project */
   public close() {
     this.closeAllEditors()
-    window.electron?.watchFileOff(
+    this.textFileIO.unwatch(
       this.projectIORefSignal.value.path,
       this.fileWatcherId
     )
@@ -107,9 +121,6 @@ export class ZDSProject {
 
   get executingPath() {
     return this.#executingPath.value?.value ?? null
-  }
-  get executingPathSignal() {
-    return this.#executingPath
   }
   set executingPath(newPath: string | null) {
     // TODO: Clear current executing editor's execution status
@@ -133,6 +144,9 @@ export class ZDSProject {
     this.#executingPath.value = foundPathSignal[0]
     if (changedEditor) found.setSceneSettingsActive(true)
   }
+  get executingPathSignal() {
+    return this.#executingPath
+  }
   findEditor(path: string) {
     return Array.from(this.editors.entries()).find(([p]) => p.value === path)
   }
@@ -151,7 +165,8 @@ export class ZDSProject {
      */
     providedCode?: string,
     isExecuting = true,
-    assertCurrent: () => void = () => {}
+    assertCurrent: () => void = () => {},
+    options: { deferModeling?: boolean } = {}
   ) {
     const foundEditor = this.findEditor(path)
     const found = foundEditor?.[1]
@@ -160,28 +175,28 @@ export class ZDSProject {
       (!providedEditor || found !== providedEditor || found.path === path)
     ) {
       console.warn(`Attempted to overwrite editor with path "${path}"`)
-      if (isExecuting) {
-        await found.modelingActorPromise
-        assertCurrent()
-      }
       return found
     }
 
     const systemDeps: ProjectSystemDeps = {
-      machineManager: this.app.machineManager,
       project: this.projectIORefSignal,
       fileOperations: this.app.fileOperations,
       textFileIO: this.textFileIO,
+      modelingReady: () => this.modelingPreparation,
+      projectSession: this.app.projectSession,
       wasmInstancePromise: this.app.wasmPromise,
       commandBar: this.app.commands.actor,
       settings: this.app.settings.actor,
       engineCommandManager: this.app.engineCommandManager,
       rustContext: this.app.rustContext,
       userFeatures: this.app.userFeatures,
+      projectPath: computed(() => this.projectIORefSignal.value.path),
     }
 
     if (providedEditor) {
       providedEditor.systemDeps.project = systemDeps.project
+      providedEditor.systemDeps.projectPath = systemDeps.projectPath
+      providedEditor.systemDeps.modelingReady = systemDeps.modelingReady
     }
 
     const foundFileIndex = this.files.findIndex((f) => f.path === path)
@@ -209,6 +224,7 @@ export class ZDSProject {
       // before that snapshot has registered the file.
       {
         shouldSyncRustOnOpen: !providedEditor,
+        backgroundSave: options.deferModeling,
         assertCurrent,
       }
     )
@@ -226,9 +242,11 @@ export class ZDSProject {
       newEditor.path = path
     }
 
-    if (!foundEditor) {
-      this.set(signal(path), newEditor)
+    // A reused editor owns only its current path; older buffers live in its history/save cache.
+    for (const [key, editor] of this.editors) {
+      if (editor === newEditor && key.peek() !== path) this.editors.delete(key)
     }
+    this.set(this.findEditor(path)?.[0] ?? signal(path), newEditor)
 
     // Initialize a snapshot of the project for Rust
     // to have for executions and code mods
@@ -236,36 +254,60 @@ export class ZDSProject {
       this.executingPath = path
     }
 
-    markOnce('project/startCollectFiles')
-    const apiFiles = await this.getAllKclFiles()
-    markOnce('project/endCollectFiles')
-    assertCurrent()
-
-    markOnce('project/startSendProjectToWasm')
-    await newEditor.rustContext
-      .sendOpenProject(path, apiFiles)
-      .catch(reportRejection)
-    markOnce('project/endSendProjectToWasm')
-    assertCurrent()
-
-    if (
-      isExecuting &&
-      providedEditor &&
-      newEditor.engineCommandManager.connection?.connected
-    ) {
-      await newEditor.executeCode(newEditor.code)
+    const assertModelingCurrent = () => {
       assertCurrent()
-      await resetCameraPosition({
-        sceneInfra: newEditor.sceneInfra,
-        engineCommandManager: newEditor.engineCommandManager,
-        settingsActor: this.app.settings.actor,
-      })
+      if (
+        this.app.project !== this ||
+        (isExecuting && this.executingPath !== path)
+      ) {
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw new DOMException('Superseded editor preparation', 'AbortError')
+      }
     }
-    if (isExecuting) {
-      // Finish preparing modeling before the route commits its view. Rendering
-      // an already loaded file must not introduce another Suspense loading screen.
-      await newEditor.modelingActorPromise
-      assertCurrent()
+    const prepareModeling = async () => {
+      assertModelingCurrent()
+      markOnce('project/startCollectFiles')
+      const apiFiles = await this.getAllKclFiles()
+      markOnce('project/endCollectFiles')
+      assertModelingCurrent()
+
+      markOnce('project/startSendProjectToWasm')
+      await newEditor.rustContext
+        .sendOpenProject(path, apiFiles)
+        .catch(reportRejection)
+      markOnce('project/endSendProjectToWasm')
+      assertModelingCurrent()
+    }
+    const renderModeling = async () => {
+      assertModelingCurrent()
+      if (
+        isExecuting &&
+        providedEditor &&
+        newEditor.engineCommandManager.connection?.connected
+      ) {
+        await newEditor.executeCode(newEditor.code)
+        assertModelingCurrent()
+        await resetCameraAfterExecution({
+          sceneInfra: newEditor.sceneInfra,
+          settingsActor: this.app.settings.actor,
+        })
+      }
+    }
+    const reportPreparationFailure = (error: unknown) => {
+      if (!(error instanceof DOMException && error.name === 'AbortError'))
+        reportRejection(error)
+    }
+    if (options.deferModeling) {
+      this.modelingPreparation = this.modelingPreparation
+        .catch(() => undefined)
+        .then(prepareModeling)
+        .catch(reportPreparationFailure)
+      void this.modelingPreparation
+        .then(renderModeling)
+        .catch(reportPreparationFailure)
+    } else {
+      await prepareModeling()
+      await renderModeling()
     }
     return newEditor
   }
@@ -276,11 +318,15 @@ export class ZDSProject {
       console.warn(`Attempted to close nonexistent editor with path "${path}"`)
       return
     }
+    if (this.executingEditor.peek() === foundPathSignal[1]) {
+      this.executingPath = null
+    }
     foundPathSignal[1].close()
     this.editors.delete(foundPathSignal[0])
   }
 
   closeAllEditors() {
+    this.executingPath = null
     for (const editor of this.editors.values()) {
       editor.close()
     }
@@ -306,8 +352,9 @@ export class ZDSProject {
     if (path.endsWith('.kcl')) {
       switch (eventType) {
         case 'add':
-          const newFile = new File(path, this.textFileIO, this.nextFileId++)
-          this.files.push(newFile)
+          const newFile =
+            foundFile ?? new File(path, this.textFileIO, this.nextFileId++)
+          if (!foundFile) this.files.push(newFile)
           newFile
             .asRustApiFile()
             .then((file) => editor?.rustContext.sendAddFile(file))
@@ -315,11 +362,16 @@ export class ZDSProject {
           break
         case 'change':
           if (foundFile && path !== this.executingPath) {
-            foundFile
-              .read()
-              .then((text) =>
-                editor?.rustContext.sendUpdateFile(foundFile.id, text)
-              )
+            this.modelingReady
+              .then(() => foundFile.read())
+              .then((text) => {
+                if (
+                  this.app.project === this &&
+                  this.files.includes(foundFile) &&
+                  path !== this.executingPath
+                )
+                  return editor?.rustContext.sendUpdateFile(foundFile.id, text)
+              })
               .catch(reportRejection)
           }
           break
@@ -342,7 +394,7 @@ export class ZDSProject {
   ): File[] => {
     if (fileOrDir.children) {
       for (let entry of fileOrDir.children) {
-        if (entry.name.endsWith('.kcl')) {
+        if (entry.children === null && entry.name.endsWith('.kcl')) {
           const id = this.nextFileId++
           const path = entry.path
           files.push(new File(path, this.textFileIO, id))
@@ -357,7 +409,103 @@ export class ZDSProject {
 
   /** Get all the KCL files in this project as a flat array. */
   private async getAllKclFiles(): Promise<ApiFile[]> {
-    return Promise.all(this.files.map((file) => file.asRustApiFile()))
+    const editor = this.executingEditor.peek()
+    const missing = new Set<File>()
+    const files = await Promise.all(
+      this.files.map(async (file) => {
+        if (editor?.path === file.path)
+          return { id: file.id, path: file.path, text: editor.code }
+        const pending = editor?.getPendingFileCode(file.path)
+        if (pending !== undefined)
+          return { id: file.id, path: file.path, text: pending }
+        try {
+          return await file.asRustApiFile()
+        } catch (error) {
+          if (!isPathNotFoundError(error)) return Promise.reject(error)
+          // Deletion may precede its watch notification, including in OPFS.
+          // A missing dependency belongs to the executor's diagnostics, not a
+          // failed snapshot rebuild that leaves the previous file active.
+          missing.add(file)
+          return undefined
+        }
+      })
+    )
+    this.files = this.files.filter((file) => !missing.has(file))
+    return files.filter((file) => file !== undefined)
+  }
+
+  /** Read through the storage authority before a new sketch/segment is generated. */
+  async prepareForSketchInsertion() {
+    const editor = this.executingEditor.peek()
+    if (!editor)
+      return Promise.reject(new Error('No active editor for sketch insertion.'))
+    const isCurrent = () =>
+      this.app.project === this && this.executingEditor.peek() === editor
+    const storage = this.app.projectSession.storageFor(this.path)
+    await editor.refreshFileBeforeSketchInsertion(async (isFileCurrent) => {
+      await storage.refresh(() => isCurrent() && isFileCurrent())
+    })
+    if (!isCurrent())
+      return Promise.reject(
+        new Error('The project changed before sketch insertion.')
+      )
+  }
+
+  /** Rebuild the complete Rust snapshot after an authoritative storage refresh. */
+  async reloadFilesFromStorage(isCurrent: () => boolean) {
+    const editor = this.executingEditor.value
+    if (!editor || !isCurrent()) return
+    const project = await getProjectInfo(
+      this.app.fileOperations,
+      this.path,
+      await this.app.wasmPromise,
+      { createMissingEntrypoint: false }
+    )
+    if (!isCurrent()) return
+    const existing = new Map(this.files.map((file) => [file.path, file]))
+    const files = this.collectProjectFiles(project).map(
+      (file) => existing.get(file.path) ?? file
+    )
+    const apiFiles = await Promise.all(
+      files.map((file) => file.asRustApiFile())
+    )
+    if (!isCurrent() || this.executingEditor.value !== editor) return
+    this.files = files
+    this.projectIORefSignal.value = {
+      ...this.projectIORefSignal.value,
+      ...project,
+      cloudProjectId: this.projectIORefSignal.value.cloudProjectId,
+    }
+    for (const [, openEditor] of this.editors)
+      if (
+        openEditor !== editor &&
+        !files.some((file) => file.path === openEditor.path)
+      )
+        this.closeEditor(openEditor.path)
+    // The controller navigates to the default file when the executing file was
+    // removed. Never execute the deleted editor's stale buffer.
+    const currentFile = apiFiles.find((file) => file.path === editor.path)
+    if (!currentFile) return
+    if (!editor.hasUnsavedLocalChanges() || editor.code === currentFile.text)
+      editor.synchronizeCurrentEditorAfterDirectGlobalReplay({
+        filePath: editor.path,
+        nextContent: currentFile.text,
+        shouldSyncRust: false,
+      })
+    else currentFile.text = editor.code
+    await editor.rustContext.sendOpenProject(editor.path, apiFiles)
+    if (!isCurrent() || this.executingEditor.value !== editor) return
+    if (
+      editor.engineCommandManager.connection?.connected &&
+      !editor.modelingState?.matches('Sketch') &&
+      !editor.modelingState?.matches('sketchSolveMode') &&
+      getAutomaticallyRenderEnabledFromSettings(
+        getSettingsFromActorContext(this.app.settings.actor)
+      )
+    )
+      void editor
+        .executeCode(editor.code, { updateThumbnail: false })
+        .catch(reportRejection)
   }
 
   /**

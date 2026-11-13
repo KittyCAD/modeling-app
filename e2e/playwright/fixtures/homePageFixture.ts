@@ -1,4 +1,7 @@
-import { closeOnboardingModalIfPresent } from '@e2e/playwright/test-utils'
+import {
+  closeOnboardingModalIfPresent,
+  waitForAuthentication,
+} from '@e2e/playwright/test-utils'
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
@@ -90,6 +93,7 @@ export class HomePageFixture {
    * Maybe there a good sanity check we can do each time?
    */
   expectState = async (expectedState: HomePageState) => {
+    await this.projectsLoaded()
     await expect.poll(this._serialiseSortBy).toEqual(expectedState.sortBy)
 
     for (const projectCard of expectedState.projectCards) {
@@ -100,68 +104,38 @@ export class HomePageFixture {
   expectIsCurrentPage = async () => {
     await expect(this.page).toHaveURL(/.*home/)
     await expect(
-      this.page.getByRole('heading', { name: 'Projects' })
+      this.page.getByTestId('home-header').getByRole('heading', { level: 1 })
     ).toBeVisible()
   }
 
-  waitForAuthentication = async () => {
-    // A document reload can finish while Auth still hides the Home route.
-    try {
-      await this.page.waitForFunction(() => {
-        const snapshot = window.app?.auth.actor.getSnapshot()
-        return snapshot !== undefined && !snapshot.matches('checkIfLoggedIn')
-      })
-    } catch (error) {
-      let diagnosticTimeout: ReturnType<typeof setTimeout> | undefined
-      try {
-        // Bound this failure-only read so a renderer hang cannot block cleanup.
-        const diagnostic = await Promise.race([
-          this.page
-            .evaluate(() => {
-              const snapshot = window.app?.auth.actor.getSnapshot()
-              return {
-                readyState: document.readyState,
-                visibility: document.visibilityState,
-                focused: document.hasFocus(),
-                appPresent: window.app !== undefined,
-                authStatus: snapshot?.status ?? null,
-                authState: snapshot?.value ?? null,
-                didAuth:
-                  performance.getEntriesByName('code/didAuth', 'mark').length >
-                  0,
-                online: navigator.onLine,
-              }
-            })
-            .catch(() => ({ diagnosticUnavailable: true })),
-          new Promise<{ diagnosticUnavailable: true }>((resolve) => {
-            diagnosticTimeout = setTimeout(
-              () => resolve({ diagnosticUnavailable: true }),
-              2000
-            )
-          }),
-        ])
-        throw new Error(
-          `Home authentication readiness failed: ${JSON.stringify(diagnostic)}`,
-          { cause: error }
-        )
-      } finally {
-        if (diagnosticTimeout) clearTimeout(diagnosticTimeout)
-      }
-    }
-    expect(
-      await this.page.evaluate(() => window.app.auth.actor.getSnapshot().value),
-      'Home startup requires loggedIn authentication'
-    ).toBe('loggedIn')
-  }
+  waitForAuthentication = () => waitForAuthentication(this.page)
 
   projectsLoaded = async () => {
     // Library defaults are applied during settings initialization after a reload.
     await this.page.waitForFunction(() =>
       window.app?.settings.actor.getSnapshot().matches('idle')
     )
+    const libraryLink = this.page
+      .getByRole('link', { name: /^Open .+ library$/ })
+      .first()
     const projectLink = this.page.getByTestId('project-link').first()
     const noProjects = this.page.getByTestId('projects-none')
-    await expect(projectLink.or(noProjects)).toBeVisible()
+    // Initial listing is I/O readiness; use the configured action budget.
+    await projectLink.or(noProjects).or(libraryLink).first().waitFor({
+      state: 'visible',
+    })
+    // A single library may be selected automatically while this fixture runs.
+    // Query and activate the link in one browser turn, before it can disappear.
+    await libraryLink.evaluateAll((links) => {
+      const link = links[0]
+      if (link instanceof HTMLAnchorElement) link.click()
+    })
+    await projectLink.or(noProjects).first().waitFor({ state: 'visible' })
+    // Cached cards can be visible before the current refresh completes.
+    await this.page
+      .getByRole('button', { name: 'Refresh projects', includeHidden: true })
+      .and(this.page.locator('[aria-busy="false"]'))
+      .waitFor({ state: 'visible' })
   }
 
   createAndGoToProject = async (projectTitle = 'untitled') => {
@@ -170,11 +144,12 @@ export class HomePageFixture {
     await this.projectTextName.fill(projectTitle)
     await this.projectButtonContinue.click()
 
-    await this.page.waitForTimeout(1000)
+    // The stream visibility assertion also waits for project navigation.
     await closeOnboardingModalIfPresent(this.page)
   }
 
   openProject = async (projectTitle: string) => {
+    await this.projectsLoaded()
     const projectCard = this.projectCard.locator(
       this.page.getByText(projectTitle)
     )

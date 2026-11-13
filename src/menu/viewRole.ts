@@ -133,7 +133,7 @@ export const modelingViewRole = (
         id: 'View.Named views',
         submenu: [
           {
-            label: 'Create Named View',
+            label: 'Create Named View (Legacy)',
             id: 'View.Named views.Create named view',
             click: sendMenuAction(
               mainWindow,
@@ -141,7 +141,7 @@ export const modelingViewRole = (
             ),
           },
           {
-            label: 'Load Named View',
+            label: 'Load Named View (Legacy)',
             id: 'View.Named views.Load named view',
             click: sendMenuAction(
               mainWindow,
@@ -149,7 +149,7 @@ export const modelingViewRole = (
             ),
           },
           {
-            label: 'Delete Named View',
+            label: 'Delete Named View (Legacy)',
             id: 'View.Named views.Delete named view',
             click: sendMenuAction(
               mainWindow,

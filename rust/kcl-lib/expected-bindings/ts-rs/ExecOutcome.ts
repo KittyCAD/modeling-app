@@ -7,6 +7,7 @@ import type { ModuleId } from "./ModuleId";
 import type { ModulePath } from "./ModulePath";
 import type { OperationsByModule } from "./OperationsByModule";
 import type { RefactorMetadata } from "./RefactorMetadata";
+import type { ResolvedViewBatch } from "./ResolvedViewBatch";
 
 /**
  * Outcome of executing a program.  This is used in TS.
@@ -26,6 +27,10 @@ operations: OperationsByModule,
  */
 artifactGraph: ArtifactGraph, 
 /**
+ * Resolved views (default and any named views)
+ */
+namedViews: ResolvedViewBatch | null, 
+/**
  * Execution-backed metadata used by Z0006 and future auto-refactors.
  */
 refactorMetadata: Array<RefactorMetadata>, 
@@ -38,10 +43,11 @@ issues: Array<CompilationIssue>,
  */
 filenames: { [key in ModuleId]: ModulePath }, 
 /**
- * Whether this outcome was reused from the previous run because the
- * program had not changed, which leaves the engine's geometry untouched.
+ * The engine scene generation when this outcome was produced: the number of
+ * runs so far that changed the engine scene. Runs answered from the cache
+ * and mock runs leave it unchanged.
  */
-fromCache: boolean, 
+engineSceneGeneration: number, 
 /**
  * The default planes.
  */

@@ -2,13 +2,15 @@ import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type {
   IStat as BackingFileStat,
   IZooDesignStudioFS,
+  StatOptions,
 } from '@src/lib/fs-zds/interface'
 import * as Context from 'effect/Context'
 import * as Data from 'effect/Data'
 import * as Effect from 'effect/Effect'
 import * as Layer from 'effect/Layer'
 
-export type FileKind = 'file' | 'directory'
+export type FileKind = 'file' | 'directory' | 'symlink'
+export type { StatOptions } from '@src/lib/fs-zds/interface'
 
 declare const ownedFileContentsBrand: unique symbol
 
@@ -42,11 +44,11 @@ export type FileSystemOperation =
   | 'create-file'
   | 'read-directory'
   | 'read-file'
-  | 'realpath'
   | 'remove'
   | 'rename'
   | 'stat'
   | 'write-file'
+  | 'validate-mutation'
 
 interface FileSystemErrorDetails {
   readonly operation: FileSystemOperation
@@ -96,11 +98,14 @@ export type FileSystemError =
  * service built above this capability.
  */
 export interface FileSystemService {
-  readonly stat: (path: string) => Effect.Effect<FileStat, FileSystemError>
-  readonly statReadOnly: (
-    path: string
+  readonly isSameEntry?: (
+    source: string,
+    destination: string
+  ) => Effect.Effect<boolean, FileSystemError>
+  readonly stat: (
+    path: string,
+    options?: StatOptions
   ) => Effect.Effect<FileStat, FileSystemError>
-  readonly realpath: (path: string) => Effect.Effect<string, FileSystemError>
   readonly canReadWrite: (
     path: string
   ) => Effect.Effect<boolean, FileSystemError>
@@ -222,7 +227,12 @@ function tryBacking<A>(
 
 function toFileStat(stat: BackingFileStat): FileStat {
   return {
-    kind: stat.mode & fsZdsConstants.S_IFDIR ? 'directory' : ('file' as const),
+    kind:
+      (stat.mode & fsZdsConstants.S_IFMT) === fsZdsConstants.S_IFLNK
+        ? 'symlink'
+        : (stat.mode & fsZdsConstants.S_IFMT) === fsZdsConstants.S_IFDIR
+          ? 'directory'
+          : 'file',
     device: stat.dev,
     inode: stat.ino,
     size: stat.size,
@@ -241,14 +251,11 @@ function toFileStat(stat: BackingFileStat): FileStat {
  * responsible for selecting the platform backing.
  */
 export function makeFileSystem(backing: IZooDesignStudioFS): FileSystemService {
-  const stat = (path: string) =>
-    tryBacking('stat', path, () => backing.stat(path)).pipe(
-      Effect.map(toFileStat)
-    )
-  const statReadOnly = (path: string) =>
-    tryBacking('stat', path, () => backing.stat(path, { readOnly: true })).pipe(
-      Effect.map(toFileStat)
-    )
+  const isSameEntry = backing.isSameEntry
+  const stat = (path: string, options?: StatOptions) =>
+    tryBacking('stat', path, () =>
+      options ? backing.stat(path, options) : backing.stat(path)
+    ).pipe(Effect.map(toFileStat))
 
   const exists = (path: string) =>
     stat(path).pipe(
@@ -283,10 +290,18 @@ export function makeFileSystem(backing: IZooDesignStudioFS): FileSystemService {
     ).pipe(Effect.asVoid)
 
   const service: FileSystemService = {
+    ...(isSameEntry
+      ? {
+          isSameEntry: (source: string, destination: string) =>
+            tryBacking(
+              'stat',
+              source,
+              () => isSameEntry(source, destination),
+              destination
+            ),
+        }
+      : {}),
     stat,
-    statReadOnly,
-    realpath: (path) =>
-      tryBacking('realpath', path, () => backing.realpath(path)),
     canReadWrite,
     exists,
     readFile,
@@ -325,11 +340,10 @@ export function makeFileSystem(backing: IZooDesignStudioFS): FileSystemService {
 export const fileSystemLayer = (backing: IZooDesignStudioFS) =>
   Layer.succeed(FileSystem, makeFileSystem(backing))
 
-export const stat = (path: string) =>
-  FileSystem.pipe(Effect.flatMap((fileSystem) => fileSystem.stat(path)))
-
-export const realpath = (path: string) =>
-  FileSystem.pipe(Effect.flatMap((fileSystem) => fileSystem.realpath(path)))
+export const stat = (path: string, options?: StatOptions) =>
+  FileSystem.pipe(
+    Effect.flatMap((fileSystem) => fileSystem.stat(path, options))
+  )
 
 export const canReadWrite = (path: string) =>
   FileSystem.pipe(Effect.flatMap((fileSystem) => fileSystem.canReadWrite(path)))

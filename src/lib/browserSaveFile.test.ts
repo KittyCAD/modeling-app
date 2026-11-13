@@ -89,28 +89,29 @@ describe('browserSaveFile', () => {
     expect(document.querySelector('a')).toBeNull()
   })
 
-  it('falls back to download when the file picker is blocked', async () => {
-    const blob = new Blob(['contents'])
-    const showSaveFilePicker = vi
-      .fn()
-      .mockRejectedValue(
-        new DOMException('Denied by platform policy', 'NotAllowedError')
+  it.each(['NotAllowedError', 'SecurityError'])(
+    'falls back to download when the file picker rejects with %s',
+    async (name) => {
+      const blob = new Blob(['contents'])
+      const showSaveFilePicker = vi
+        .fn()
+        .mockRejectedValue(new DOMException('File picker blocked', name))
+      setShowSaveFilePicker(showSaveFilePicker)
+
+      await browserSaveFile(blob, 'main.step', 'toast-id')
+
+      expect(showSaveFilePicker).toHaveBeenCalledWith(
+        getShowSaveFilePickerOptions('main.step')
       )
-    setShowSaveFilePicker(showSaveFilePicker)
-
-    await browserSaveFile(blob, 'main.step', 'toast-id')
-
-    expect(showSaveFilePicker).toHaveBeenCalledWith(
-      getShowSaveFilePickerOptions('main.step')
-    )
-    expect(createObjectURL).toHaveBeenCalledWith(blob)
-    expect(clickSpy).toHaveBeenCalledTimes(1)
-    expect(mockToast.error).not.toHaveBeenCalled()
-    expect(mockToast.success).toHaveBeenCalledWith(
-      EXPORT_TOAST_MESSAGES.SUCCESS,
-      { id: 'toast-id' }
-    )
-  })
+      expect(createObjectURL).toHaveBeenCalledWith(blob)
+      expect(clickSpy).toHaveBeenCalledTimes(1)
+      expect(mockToast.error).not.toHaveBeenCalled()
+      expect(mockToast.success).toHaveBeenCalledWith(
+        EXPORT_TOAST_MESSAGES.SUCCESS,
+        { id: 'toast-id' }
+      )
+    }
+  )
 
   it('does not fall back to download when the user cancels the file picker', async () => {
     const showSaveFilePicker = vi

@@ -49,10 +49,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 245,
-            "end": 251,
+            "commentStart": 235,
+            "end": 241,
             "moduleId": 0,
-            "start": 245,
+            "start": 235,
             "type": "TagDeclarator",
             "value": "bottom"
           },
@@ -63,10 +63,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 322,
-            "end": 327,
+            "commentStart": 312,
+            "end": 317,
             "moduleId": 0,
-            "start": 322,
+            "start": 312,
             "type": "TagDeclarator",
             "value": "right"
           },
@@ -77,10 +77,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 396,
-            "end": 399,
+            "commentStart": 386,
+            "end": 389,
             "moduleId": 0,
-            "start": 396,
+            "start": 386,
             "type": "TagDeclarator",
             "value": "top"
           },
@@ -91,10 +91,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 468,
-            "end": 472,
+            "commentStart": 458,
+            "end": 462,
             "moduleId": 0,
-            "start": 468,
+            "start": 458,
             "type": "TagDeclarator",
             "value": "left"
           },
@@ -116,10 +116,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 245,
-              "end": 251,
+              "commentStart": 235,
+              "end": 241,
               "moduleId": 0,
-              "start": 245,
+              "start": 235,
               "type": "TagDeclarator",
               "value": "bottom"
             },
@@ -140,10 +140,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 322,
-              "end": 327,
+              "commentStart": 312,
+              "end": 317,
               "moduleId": 0,
-              "start": 322,
+              "start": 312,
               "type": "TagDeclarator",
               "value": "right"
             },
@@ -164,10 +164,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 396,
-              "end": 399,
+              "commentStart": 386,
+              "end": 389,
               "moduleId": 0,
-              "start": 396,
+              "start": 386,
               "type": "TagDeclarator",
               "value": "top"
             },
@@ -188,10 +188,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 468,
-              "end": 472,
+              "commentStart": 458,
+              "end": 462,
               "moduleId": 0,
-              "start": 468,
+              "start": 458,
               "type": "TagDeclarator",
               "value": "left"
             },
@@ -359,10 +359,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 245,
-            "end": 251,
+            "commentStart": 235,
+            "end": 241,
             "moduleId": 0,
-            "start": 245,
+            "start": 235,
             "type": "TagDeclarator",
             "value": "bottom"
           },
@@ -373,10 +373,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 322,
-            "end": 327,
+            "commentStart": 312,
+            "end": 317,
             "moduleId": 0,
-            "start": 322,
+            "start": 312,
             "type": "TagDeclarator",
             "value": "right"
           },
@@ -387,10 +387,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 396,
-            "end": 399,
+            "commentStart": 386,
+            "end": 389,
             "moduleId": 0,
-            "start": 396,
+            "start": 386,
             "type": "TagDeclarator",
             "value": "top"
           },
@@ -401,10 +401,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 468,
-            "end": 472,
+            "commentStart": 458,
+            "end": 462,
             "moduleId": 0,
-            "start": 468,
+            "start": 458,
             "type": "TagDeclarator",
             "value": "left"
           },
@@ -426,10 +426,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 245,
-              "end": 251,
+              "commentStart": 235,
+              "end": 241,
               "moduleId": 0,
-              "start": 245,
+              "start": 235,
               "type": "TagDeclarator",
               "value": "bottom"
             },
@@ -450,10 +450,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 322,
-              "end": 327,
+              "commentStart": 312,
+              "end": 317,
               "moduleId": 0,
-              "start": 322,
+              "start": 312,
               "type": "TagDeclarator",
               "value": "right"
             },
@@ -474,10 +474,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 396,
-              "end": 399,
+              "commentStart": 386,
+              "end": 389,
               "moduleId": 0,
-              "start": 396,
+              "start": 386,
               "type": "TagDeclarator",
               "value": "top"
             },
@@ -498,10 +498,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 468,
-              "end": 472,
+              "commentStart": 458,
+              "end": 462,
               "moduleId": 0,
-              "start": 468,
+              "start": 458,
               "type": "TagDeclarator",
               "value": "left"
             },
@@ -867,10 +867,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
                     -10.0
                   ],
                   "tag": {
-                    "commentStart": 245,
-                    "end": 251,
+                    "commentStart": 235,
+                    "end": 241,
                     "moduleId": 0,
-                    "start": 245,
+                    "start": 235,
                     "type": "TagDeclarator",
                     "value": "bottom"
                   },
@@ -891,10 +891,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
                     -10.0
                   ],
                   "tag": {
-                    "commentStart": 322,
-                    "end": 327,
+                    "commentStart": 312,
+                    "end": 317,
                     "moduleId": 0,
-                    "start": 322,
+                    "start": 312,
                     "type": "TagDeclarator",
                     "value": "right"
                   },
@@ -915,10 +915,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 396,
-                    "end": 399,
+                    "commentStart": 386,
+                    "end": 389,
                     "moduleId": 0,
-                    "start": 396,
+                    "start": 386,
                     "type": "TagDeclarator",
                     "value": "top"
                   },
@@ -939,10 +939,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 468,
-                    "end": 472,
+                    "commentStart": 458,
+                    "end": 462,
                     "moduleId": 0,
-                    "start": 468,
+                    "start": 458,
                     "type": "TagDeclarator",
                     "value": "left"
                   },
@@ -1303,10 +1303,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
             -10.0
           ],
           "tag": {
-            "commentStart": 245,
-            "end": 251,
+            "commentStart": 235,
+            "end": 241,
             "moduleId": 0,
-            "start": 245,
+            "start": 235,
             "type": "TagDeclarator",
             "value": "bottom"
           },
@@ -1327,10 +1327,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
             -10.0
           ],
           "tag": {
-            "commentStart": 322,
-            "end": 327,
+            "commentStart": 312,
+            "end": 317,
             "moduleId": 0,
-            "start": 322,
+            "start": 312,
             "type": "TagDeclarator",
             "value": "right"
           },
@@ -1351,10 +1351,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
             10.0
           ],
           "tag": {
-            "commentStart": 396,
-            "end": 399,
+            "commentStart": 386,
+            "end": 389,
             "moduleId": 0,
-            "start": 396,
+            "start": 386,
             "type": "TagDeclarator",
             "value": "top"
           },
@@ -1375,10 +1375,10 @@ description: Variables in memory after executing chamfer_multiple_tags_v3.kcl
             10.0
           ],
           "tag": {
-            "commentStart": 468,
-            "end": 472,
+            "commentStart": 458,
+            "end": 462,
             "moduleId": 0,
-            "start": 468,
+            "start": 458,
             "type": "TagDeclarator",
             "value": "left"
           },

@@ -3,7 +3,7 @@
 // Categories: Medical & Assistive
 
 // Define units
-@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 
 // Import all components
 import "housing.kcl" as housing

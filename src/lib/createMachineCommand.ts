@@ -87,6 +87,8 @@ export function createMachineCommand<
       .filter((c) => c !== null) as Command<T, typeof type, S[typeof type]>[]
   }
 
+  if (commandConfig.available?.(state.context) === false) return null
+
   // Hide commands based on platform or development status by returning `null`
   // so the consumer can filter them out
   if ('hide' in commandConfig) {
@@ -252,6 +254,8 @@ export function buildCommandArgument<
       defaultValue: arg.defaultValue,
       ...baseCommandArgument,
     } satisfies CommandArgument<O, T> & { inputType: 'kcl' }
+  } else if (arg.inputType === 'camera') {
+    return { inputType: arg.inputType, ...baseCommandArgument }
   } else if (arg.inputType === 'vector3d') {
     return {
       inputType: arg.inputType,

@@ -21,7 +21,7 @@ import {
 import {
   createEdgeRefObjectExpression,
   entityReferenceToEdgeRefPayload,
-  retrieveEdgeSelectionsFromSingleEdgeRef,
+  retrieveEdgeSelectionFromOpValue,
 } from '@src/lang/modifyAst/edges'
 import {
   getFacesExprsFromSelection,
@@ -1171,14 +1171,14 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
       }
     } else if ('sideFaces' in axisValue.value) {
       axisOrEdge = 'Edge'
-      const edgeSelection = retrieveEdgeSelectionsFromSingleEdgeRef(
-        opArg,
+      const edgeSelection = retrieveEdgeSelectionFromOpValue(
+        axisValue,
         artifactGraph
       )
       if (err(edgeSelection)) {
         return new Error("Couldn't retrieve edge selection from axis")
       }
-      edge = edgeSelection
+      edge = { graphSelections: [edgeSelection], otherSelections: [] }
     } else {
       return new Error('No direction vector for axis')
     }

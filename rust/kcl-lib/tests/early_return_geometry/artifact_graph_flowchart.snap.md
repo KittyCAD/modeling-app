@@ -1,21 +1,21 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[227, 252, 0]<br>Consumed: true"]
+    2["Path<br>[217, 242, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 1 }]
-    3["Segment<br>[260, 281, 0]"]
+    3["Segment<br>[250, 271, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 2 }]
-    4["Segment<br>[289, 310, 0]"]
+    4["Segment<br>[279, 300, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 3 }]
-    5["Segment<br>[318, 340, 0]"]
+    5["Segment<br>[308, 330, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 4 }]
-    6["Segment<br>[348, 355, 0]"]
+    6["Segment<br>[338, 345, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 5 }]
     7[Solid2d]
   end
-  1["Plane<br>[202, 219, 0]"]
+  1["Plane<br>[192, 209, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
-  8["Sweep Extrusion<br>[363, 385, 0]<br>Consumed: false"]
+  8["Sweep Extrusion<br>[353, 375, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 6 }]
   9[Wall]
     %% face_code_ref=Missing NodePath

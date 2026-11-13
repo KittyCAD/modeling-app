@@ -47,6 +47,23 @@ Omitted values use the client's existing environment defaults (`ZOO_API_TOKEN`
 or `KITTYCAD_API_TOKEN` for the token; `ZOO_HOST` or `KITTYCAD_HOST` for the API
 origin). Mock sessions do not create an API client.
 
+Session constructors and network execution helpers also accept an optional
+`headers` dictionary. These headers apply to HTTP requests and the modeling
+WebSocket handshake. A supplied `User-Agent` replaces the default value:
+
+```python
+async with await kcl.new_kcl_session_code(
+    code,
+    token=api_token,
+    base_url=api_origin,
+    headers={"User-Agent": "MyApp/1.0", "X-Request-Source": "example"},
+) as session:
+    outcome = session.outcome
+```
+
+Omitting `headers`, passing `None`, or passing an empty dictionary preserves
+the default headers. Header names are case-insensitive.
+
 For exports and measurements that do not need images, pass `geometry_only=True`
 to either constructor. This selects the CPU engine pool and skips rendering setup:
 
@@ -78,10 +95,10 @@ pipx install maturin
 >
 > `pip install maturin` should also work if you don't want to use pipx.
 
-There are four main commands:
+The main commands are:
 
-- `maturin publish` builds the crate into python packages and publishes them to pypi.
-- `maturin build` builds the wheels and stores them in a folder (`target/wheels` by default), but doesn't upload them. It's possible to upload those with [twine](https://github.com/pypa/twine) or `maturin upload`.
+- `maturin build` builds the wheels and stores them in a folder (`target/wheels` by default).
+- `uv publish <path-to-distributions>/*` uploads previously built wheels and source distributions to PyPI. Set `UV_PUBLISH_TOKEN` to your PyPI API token.
 - `maturin develop` builds the crate and installs it as a python module directly in the current virtualenv. Note that while `maturin develop` is faster, it doesn't support all the feature that running `pip install` after `maturin build` supports.
 
 `pyo3` bindings are automatically detected. 

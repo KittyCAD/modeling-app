@@ -31,6 +31,7 @@ const _INPUT_TYPES = [
   'selection',
   'boolean',
   'vector3d',
+  'camera',
 ] as const
 type INPUT_TYPE = typeof _INPUT_TYPES
 export interface KclExpression {
@@ -46,6 +47,11 @@ export interface KclExpressionWithVariable extends KclExpression {
 }
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
 export type CommandInputType = INPUT_TYPE[number]
+export type CommandInputValidationState = {
+  canSubmit: boolean
+  isChecking: boolean
+  message?: string
+}
 type CommandStatus =
   | 'active'
   | 'development'
@@ -149,7 +155,7 @@ export type Command<
   disabled?: boolean
   /** Keep unsupported modeling flows in the command bar instead of a dialog. */
   forceCommandBar?: boolean
-  /** Resolved from forceCommandBar and the modeling_dialogs feature gate. */
+  /** Resolved from the command group and forceCommandBar. */
   useModelingDialog?: boolean
   status?: CommandStatus
 }
@@ -170,6 +176,8 @@ export type CommandConfig<
   | 'scopes'
   | 'useModelingDialog'
 > & {
+  /** Whether to offer this command in the current machine context. */
+  available?: (context: ContextFrom<T>) => boolean
   needsReview?: boolean
   status?: CommandStatus
   scopes?: CommandScopes
@@ -285,6 +293,9 @@ export type CommandArgumentConfig<
         context: CommandBarContext
         machineContext?: C
       }) => Promise<boolean | string>
+    }
+  | {
+      inputType: 'camera'
     }
   | {
       inputType: 'text'
@@ -478,6 +489,9 @@ export type CommandArgument<
             wasmInstance?: ModuleType
           ) => OutputType)
       filters: FiltersConfig
+    }
+  | {
+      inputType: 'camera'
     }
   | {
       inputType: 'text'

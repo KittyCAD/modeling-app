@@ -216,6 +216,17 @@ export function scenarioActions(
         {
           definition: interactions.extrudeOpen,
           verify: async () => {
+            const dialog = page.getByTestId('modeling-dialog')
+            if (await dialog.isVisible()) {
+              await expect(dialog).toHaveAttribute('aria-label', 'Extrude')
+              const selection = dialog.getByRole('button', {
+                name: 'Select Profiles',
+                exact: true,
+              })
+              await expect(selection).toBeVisible()
+              await expect(selection).toBeEnabled()
+              return
+            }
             await expect(page.getByTestId('command-name')).toHaveText('Extrude')
             await expect(page.locator('#arg-form label')).toContainText(
               'Please select'
@@ -227,8 +238,19 @@ export function scenarioActions(
         },
         {
           definition: interactions.extrudeCancel,
+          control: page
+            .getByTestId(interactions.extrudeCancel.testId)
+            .or(
+              page
+                .getByTestId('modeling-dialog')
+                .getByRole('button', { name: 'Cancel', exact: true })
+            ),
           verify: () =>
-            expect(page.getByTestId('command-bar-wrapper')).toHaveCount(0),
+            expect(
+              page
+                .getByTestId('command-bar-wrapper')
+                .or(page.getByTestId('modeling-dialog'))
+            ).toHaveCount(0),
         },
       ]
 }

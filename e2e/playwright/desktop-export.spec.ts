@@ -11,7 +11,15 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
   'export works on the first try',
-  { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
+  {
+    tag: [
+      '@desktop',
+      '@macos',
+      '@windows',
+      '@skipLocalEngine',
+      '@localRenderer',
+    ],
+  },
   async (
     { page, scene, tronApp, cmdBar, toolbar, folderSetupFn },
     testInfo
@@ -172,7 +180,15 @@ test(
 
 test(
   'DXF export works from feature tree sketch context menu',
-  { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
+  {
+    tag: [
+      '@desktop',
+      '@macos',
+      '@windows',
+      '@skipLocalEngine',
+      '@localRenderer',
+    ],
+  },
   async (
     { page, scene, tronApp, cmdBar, toolbar, folderSetupFn },
     testInfo
@@ -267,7 +283,15 @@ extrude001 = extrude(profile001, length = 5)`
 
 test(
   'DXF export works for second sketch in feature tree',
-  { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
+  {
+    tag: [
+      '@desktop',
+      '@macos',
+      '@windows',
+      '@skipLocalEngine',
+      '@localRenderer',
+    ],
+  },
   async (
     { page, scene, tronApp, cmdBar, toolbar, folderSetupFn },
     testInfo

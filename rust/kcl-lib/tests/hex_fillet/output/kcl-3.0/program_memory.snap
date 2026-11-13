@@ -85,10 +85,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 82,
-            "end": 87,
+            "commentStart": 72,
+            "end": 77,
             "moduleId": 0,
-            "start": 82,
+            "start": 72,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -99,10 +99,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 165,
-            "end": 169,
+            "commentStart": 155,
+            "end": 159,
             "moduleId": 0,
-            "start": 165,
+            "start": 155,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -113,10 +113,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 382,
-            "end": 387,
+            "commentStart": 372,
+            "end": 377,
             "moduleId": 0,
-            "start": 382,
+            "start": 372,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -127,10 +127,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 502,
-            "end": 506,
+            "commentStart": 492,
+            "end": 496,
             "moduleId": 0,
-            "start": 502,
+            "start": 492,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -141,10 +141,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 717,
-            "end": 722,
+            "commentStart": 707,
+            "end": 712,
             "moduleId": 0,
-            "start": 717,
+            "start": 707,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -155,10 +155,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 838,
-            "end": 842,
+            "commentStart": 828,
+            "end": 832,
             "moduleId": 0,
-            "start": 838,
+            "start": 828,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -169,10 +169,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1054,
-            "end": 1059,
+            "commentStart": 1044,
+            "end": 1049,
             "moduleId": 0,
-            "start": 1054,
+            "start": 1044,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -183,10 +183,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1175,
-            "end": 1179,
+            "commentStart": 1165,
+            "end": 1169,
             "moduleId": 0,
-            "start": 1175,
+            "start": 1165,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -197,10 +197,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1631,
-            "end": 1638,
+            "commentStart": 1621,
+            "end": 1628,
             "moduleId": 0,
-            "start": 1631,
+            "start": 1621,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -211,10 +211,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1723,
-            "end": 1730,
+            "commentStart": 1713,
+            "end": 1720,
             "moduleId": 0,
-            "start": 1723,
+            "start": 1713,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -225,10 +225,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1848,
-            "end": 1855,
+            "commentStart": 1838,
+            "end": 1845,
             "moduleId": 0,
-            "start": 1848,
+            "start": 1838,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -239,10 +239,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2153,
-            "end": 2165,
+            "commentStart": 2143,
+            "end": 2155,
             "moduleId": 0,
-            "start": 2153,
+            "start": 2143,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -253,10 +253,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2128,
-            "end": 2138,
+            "commentStart": 2118,
+            "end": 2128,
             "moduleId": 0,
-            "start": 2128,
+            "start": 2118,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -288,10 +288,10 @@ description: Variables in memory after executing hex_fillet.kcl
               1.6593171489068888
             ],
             "tag": {
-              "commentStart": 82,
-              "end": 87,
+              "commentStart": 72,
+              "end": 77,
               "moduleId": 0,
-              "start": 82,
+              "start": 72,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -318,10 +318,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 1.4601890993789832,
             "tag": {
-              "commentStart": 165,
-              "end": 169,
+              "commentStart": 155,
+              "end": 159,
               "moduleId": 0,
-              "start": 165,
+              "start": 155,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -342,10 +342,10 @@ description: Variables in memory after executing hex_fillet.kcl
               2.491142512175489
             ],
             "tag": {
-              "commentStart": 382,
-              "end": 387,
+              "commentStart": 372,
+              "end": 377,
               "moduleId": 0,
-              "start": 382,
+              "start": 372,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -372,10 +372,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 2.3835627974334934,
             "tag": {
-              "commentStart": 502,
-              "end": 506,
+              "commentStart": 492,
+              "end": 496,
               "moduleId": 0,
-              "start": 502,
+              "start": 492,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -396,10 +396,10 @@ description: Variables in memory after executing hex_fillet.kcl
               -2.9788872040368455
             ],
             "tag": {
-              "commentStart": 717,
-              "end": 722,
+              "commentStart": 707,
+              "end": 712,
               "moduleId": 0,
-              "start": 717,
+              "start": 707,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -426,10 +426,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 2.877294619476584,
             "tag": {
-              "commentStart": 838,
-              "end": 842,
+              "commentStart": 828,
+              "end": 832,
               "moduleId": 0,
-              "start": 838,
+              "start": 828,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -450,10 +450,10 @@ description: Variables in memory after executing hex_fillet.kcl
               -4.3228878246913265
             ],
             "tag": {
-              "commentStart": 1054,
-              "end": 1059,
+              "commentStart": 1044,
+              "end": 1049,
               "moduleId": 0,
-              "start": 1054,
+              "start": 1044,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -480,10 +480,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 3.162182113239889,
             "tag": {
-              "commentStart": 1175,
-              "end": 1179,
+              "commentStart": 1165,
+              "end": 1169,
               "moduleId": 0,
-              "start": 1175,
+              "start": 1165,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -510,10 +510,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.8374365647617735,
             "tag": {
-              "commentStart": 1631,
-              "end": 1638,
+              "commentStart": 1621,
+              "end": 1628,
               "moduleId": 0,
-              "start": 1631,
+              "start": 1621,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -540,10 +540,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.8969392398596462,
             "tag": {
-              "commentStart": 1723,
-              "end": 1730,
+              "commentStart": 1713,
+              "end": 1720,
               "moduleId": 0,
-              "start": 1723,
+              "start": 1713,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -570,10 +570,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.5630275304103698,
             "tag": {
-              "commentStart": 1848,
-              "end": 1855,
+              "commentStart": 1838,
+              "end": 1845,
               "moduleId": 0,
-              "start": 1848,
+              "start": 1838,
               "type": "TagDeclarator",
               "value": "circle3"
             },
@@ -711,10 +711,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 82,
-            "end": 87,
+            "commentStart": 72,
+            "end": 77,
             "moduleId": 0,
-            "start": 82,
+            "start": 72,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -725,10 +725,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 165,
-            "end": 169,
+            "commentStart": 155,
+            "end": 159,
             "moduleId": 0,
-            "start": 165,
+            "start": 155,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -739,10 +739,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 382,
-            "end": 387,
+            "commentStart": 372,
+            "end": 377,
             "moduleId": 0,
-            "start": 382,
+            "start": 372,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -753,10 +753,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 502,
-            "end": 506,
+            "commentStart": 492,
+            "end": 496,
             "moduleId": 0,
-            "start": 502,
+            "start": 492,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -767,10 +767,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 717,
-            "end": 722,
+            "commentStart": 707,
+            "end": 712,
             "moduleId": 0,
-            "start": 717,
+            "start": 707,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -781,10 +781,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 838,
-            "end": 842,
+            "commentStart": 828,
+            "end": 832,
             "moduleId": 0,
-            "start": 838,
+            "start": 828,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -795,10 +795,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1054,
-            "end": 1059,
+            "commentStart": 1044,
+            "end": 1049,
             "moduleId": 0,
-            "start": 1054,
+            "start": 1044,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -809,10 +809,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1175,
-            "end": 1179,
+            "commentStart": 1165,
+            "end": 1169,
             "moduleId": 0,
-            "start": 1175,
+            "start": 1165,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -823,10 +823,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1631,
-            "end": 1638,
+            "commentStart": 1621,
+            "end": 1628,
             "moduleId": 0,
-            "start": 1631,
+            "start": 1621,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -837,10 +837,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1723,
-            "end": 1730,
+            "commentStart": 1713,
+            "end": 1720,
             "moduleId": 0,
-            "start": 1723,
+            "start": 1713,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -851,10 +851,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1848,
-            "end": 1855,
+            "commentStart": 1838,
+            "end": 1845,
             "moduleId": 0,
-            "start": 1848,
+            "start": 1838,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -865,10 +865,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2153,
-            "end": 2165,
+            "commentStart": 2143,
+            "end": 2155,
             "moduleId": 0,
-            "start": 2153,
+            "start": 2143,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -879,10 +879,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2128,
-            "end": 2138,
+            "commentStart": 2118,
+            "end": 2128,
             "moduleId": 0,
-            "start": 2128,
+            "start": 2118,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -914,10 +914,10 @@ description: Variables in memory after executing hex_fillet.kcl
               1.6593171489068888
             ],
             "tag": {
-              "commentStart": 82,
-              "end": 87,
+              "commentStart": 72,
+              "end": 77,
               "moduleId": 0,
-              "start": 82,
+              "start": 72,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -944,10 +944,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 1.4601890993789832,
             "tag": {
-              "commentStart": 165,
-              "end": 169,
+              "commentStart": 155,
+              "end": 159,
               "moduleId": 0,
-              "start": 165,
+              "start": 155,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -968,10 +968,10 @@ description: Variables in memory after executing hex_fillet.kcl
               2.491142512175489
             ],
             "tag": {
-              "commentStart": 382,
-              "end": 387,
+              "commentStart": 372,
+              "end": 377,
               "moduleId": 0,
-              "start": 382,
+              "start": 372,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -998,10 +998,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 2.3835627974334934,
             "tag": {
-              "commentStart": 502,
-              "end": 506,
+              "commentStart": 492,
+              "end": 496,
               "moduleId": 0,
-              "start": 502,
+              "start": 492,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -1022,10 +1022,10 @@ description: Variables in memory after executing hex_fillet.kcl
               -2.9788872040368455
             ],
             "tag": {
-              "commentStart": 717,
-              "end": 722,
+              "commentStart": 707,
+              "end": 712,
               "moduleId": 0,
-              "start": 717,
+              "start": 707,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1052,10 +1052,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 2.877294619476584,
             "tag": {
-              "commentStart": 838,
-              "end": 842,
+              "commentStart": 828,
+              "end": 832,
               "moduleId": 0,
-              "start": 838,
+              "start": 828,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -1076,10 +1076,10 @@ description: Variables in memory after executing hex_fillet.kcl
               -4.3228878246913265
             ],
             "tag": {
-              "commentStart": 1054,
-              "end": 1059,
+              "commentStart": 1044,
+              "end": 1049,
               "moduleId": 0,
-              "start": 1054,
+              "start": 1044,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1106,10 +1106,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 3.162182113239889,
             "tag": {
-              "commentStart": 1175,
-              "end": 1179,
+              "commentStart": 1165,
+              "end": 1169,
               "moduleId": 0,
-              "start": 1175,
+              "start": 1165,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -1136,10 +1136,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.8374365647617735,
             "tag": {
-              "commentStart": 1631,
-              "end": 1638,
+              "commentStart": 1621,
+              "end": 1628,
               "moduleId": 0,
-              "start": 1631,
+              "start": 1621,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -1166,10 +1166,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.8969392398596462,
             "tag": {
-              "commentStart": 1723,
-              "end": 1730,
+              "commentStart": 1713,
+              "end": 1720,
               "moduleId": 0,
-              "start": 1723,
+              "start": 1713,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -1196,10 +1196,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.5630275304103698,
             "tag": {
-              "commentStart": 1848,
-              "end": 1855,
+              "commentStart": 1838,
+              "end": 1845,
               "moduleId": 0,
-              "start": 1848,
+              "start": 1838,
               "type": "TagDeclarator",
               "value": "circle3"
             },
@@ -1337,10 +1337,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 82,
-            "end": 87,
+            "commentStart": 72,
+            "end": 77,
             "moduleId": 0,
-            "start": 82,
+            "start": 72,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1351,10 +1351,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 165,
-            "end": 169,
+            "commentStart": 155,
+            "end": 159,
             "moduleId": 0,
-            "start": 165,
+            "start": 155,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -1365,10 +1365,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 382,
-            "end": 387,
+            "commentStart": 372,
+            "end": 377,
             "moduleId": 0,
-            "start": 382,
+            "start": 372,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1379,10 +1379,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 502,
-            "end": 506,
+            "commentStart": 492,
+            "end": 496,
             "moduleId": 0,
-            "start": 502,
+            "start": 492,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -1393,10 +1393,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 717,
-            "end": 722,
+            "commentStart": 707,
+            "end": 712,
             "moduleId": 0,
-            "start": 717,
+            "start": 707,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1407,10 +1407,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 838,
-            "end": 842,
+            "commentStart": 828,
+            "end": 832,
             "moduleId": 0,
-            "start": 838,
+            "start": 828,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -1421,10 +1421,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1054,
-            "end": 1059,
+            "commentStart": 1044,
+            "end": 1049,
             "moduleId": 0,
-            "start": 1054,
+            "start": 1044,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1435,10 +1435,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1175,
-            "end": 1179,
+            "commentStart": 1165,
+            "end": 1169,
             "moduleId": 0,
-            "start": 1175,
+            "start": 1165,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -1449,10 +1449,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1631,
-            "end": 1638,
+            "commentStart": 1621,
+            "end": 1628,
             "moduleId": 0,
-            "start": 1631,
+            "start": 1621,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -1463,10 +1463,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1723,
-            "end": 1730,
+            "commentStart": 1713,
+            "end": 1720,
             "moduleId": 0,
-            "start": 1723,
+            "start": 1713,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -1477,10 +1477,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1848,
-            "end": 1855,
+            "commentStart": 1838,
+            "end": 1845,
             "moduleId": 0,
-            "start": 1848,
+            "start": 1838,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -1491,10 +1491,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2153,
-            "end": 2165,
+            "commentStart": 2143,
+            "end": 2155,
             "moduleId": 0,
-            "start": 2153,
+            "start": 2143,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -1505,10 +1505,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2128,
-            "end": 2138,
+            "commentStart": 2118,
+            "end": 2128,
             "moduleId": 0,
-            "start": 2128,
+            "start": 2118,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -1540,10 +1540,10 @@ description: Variables in memory after executing hex_fillet.kcl
               1.6593171489068888
             ],
             "tag": {
-              "commentStart": 82,
-              "end": 87,
+              "commentStart": 72,
+              "end": 77,
               "moduleId": 0,
-              "start": 82,
+              "start": 72,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1570,10 +1570,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 1.4601890993789832,
             "tag": {
-              "commentStart": 165,
-              "end": 169,
+              "commentStart": 155,
+              "end": 159,
               "moduleId": 0,
-              "start": 165,
+              "start": 155,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -1594,10 +1594,10 @@ description: Variables in memory after executing hex_fillet.kcl
               2.491142512175489
             ],
             "tag": {
-              "commentStart": 382,
-              "end": 387,
+              "commentStart": 372,
+              "end": 377,
               "moduleId": 0,
-              "start": 382,
+              "start": 372,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1624,10 +1624,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 2.3835627974334934,
             "tag": {
-              "commentStart": 502,
-              "end": 506,
+              "commentStart": 492,
+              "end": 496,
               "moduleId": 0,
-              "start": 502,
+              "start": 492,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -1648,10 +1648,10 @@ description: Variables in memory after executing hex_fillet.kcl
               -2.9788872040368455
             ],
             "tag": {
-              "commentStart": 717,
-              "end": 722,
+              "commentStart": 707,
+              "end": 712,
               "moduleId": 0,
-              "start": 717,
+              "start": 707,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1678,10 +1678,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 2.877294619476584,
             "tag": {
-              "commentStart": 838,
-              "end": 842,
+              "commentStart": 828,
+              "end": 832,
               "moduleId": 0,
-              "start": 838,
+              "start": 828,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -1702,10 +1702,10 @@ description: Variables in memory after executing hex_fillet.kcl
               -4.3228878246913265
             ],
             "tag": {
-              "commentStart": 1054,
-              "end": 1059,
+              "commentStart": 1044,
+              "end": 1049,
               "moduleId": 0,
-              "start": 1054,
+              "start": 1044,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1732,10 +1732,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 3.162182113239889,
             "tag": {
-              "commentStart": 1175,
-              "end": 1179,
+              "commentStart": 1165,
+              "end": 1169,
               "moduleId": 0,
-              "start": 1175,
+              "start": 1165,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -1762,10 +1762,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.8374365647617735,
             "tag": {
-              "commentStart": 1631,
-              "end": 1638,
+              "commentStart": 1621,
+              "end": 1628,
               "moduleId": 0,
-              "start": 1631,
+              "start": 1621,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -1792,10 +1792,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.8969392398596462,
             "tag": {
-              "commentStart": 1723,
-              "end": 1730,
+              "commentStart": 1713,
+              "end": 1720,
               "moduleId": 0,
-              "start": 1723,
+              "start": 1713,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -1822,10 +1822,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.5630275304103698,
             "tag": {
-              "commentStart": 1848,
-              "end": 1855,
+              "commentStart": 1838,
+              "end": 1845,
               "moduleId": 0,
-              "start": 1848,
+              "start": 1838,
               "type": "TagDeclarator",
               "value": "circle3"
             },
@@ -1963,10 +1963,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 82,
-            "end": 87,
+            "commentStart": 72,
+            "end": 77,
             "moduleId": 0,
-            "start": 82,
+            "start": 72,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1977,10 +1977,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 165,
-            "end": 169,
+            "commentStart": 155,
+            "end": 159,
             "moduleId": 0,
-            "start": 165,
+            "start": 155,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -1991,10 +1991,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 382,
-            "end": 387,
+            "commentStart": 372,
+            "end": 377,
             "moduleId": 0,
-            "start": 382,
+            "start": 372,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2005,10 +2005,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 502,
-            "end": 506,
+            "commentStart": 492,
+            "end": 496,
             "moduleId": 0,
-            "start": 502,
+            "start": 492,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -2019,10 +2019,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 717,
-            "end": 722,
+            "commentStart": 707,
+            "end": 712,
             "moduleId": 0,
-            "start": 717,
+            "start": 707,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2033,10 +2033,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 838,
-            "end": 842,
+            "commentStart": 828,
+            "end": 832,
             "moduleId": 0,
-            "start": 838,
+            "start": 828,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -2047,10 +2047,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1054,
-            "end": 1059,
+            "commentStart": 1044,
+            "end": 1049,
             "moduleId": 0,
-            "start": 1054,
+            "start": 1044,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2061,10 +2061,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1175,
-            "end": 1179,
+            "commentStart": 1165,
+            "end": 1169,
             "moduleId": 0,
-            "start": 1175,
+            "start": 1165,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -2075,10 +2075,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1631,
-            "end": 1638,
+            "commentStart": 1621,
+            "end": 1628,
             "moduleId": 0,
-            "start": 1631,
+            "start": 1621,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2089,10 +2089,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1723,
-            "end": 1730,
+            "commentStart": 1713,
+            "end": 1720,
             "moduleId": 0,
-            "start": 1723,
+            "start": 1713,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -2103,10 +2103,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1848,
-            "end": 1855,
+            "commentStart": 1838,
+            "end": 1845,
             "moduleId": 0,
-            "start": 1848,
+            "start": 1838,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -2117,10 +2117,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2153,
-            "end": 2165,
+            "commentStart": 2143,
+            "end": 2155,
             "moduleId": 0,
-            "start": 2153,
+            "start": 2143,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -2131,10 +2131,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2128,
-            "end": 2138,
+            "commentStart": 2118,
+            "end": 2128,
             "moduleId": 0,
-            "start": 2128,
+            "start": 2118,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -2166,10 +2166,10 @@ description: Variables in memory after executing hex_fillet.kcl
               1.6593171489068888
             ],
             "tag": {
-              "commentStart": 82,
-              "end": 87,
+              "commentStart": 72,
+              "end": 77,
               "moduleId": 0,
-              "start": 82,
+              "start": 72,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2196,10 +2196,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 1.4601890993789832,
             "tag": {
-              "commentStart": 165,
-              "end": 169,
+              "commentStart": 155,
+              "end": 159,
               "moduleId": 0,
-              "start": 165,
+              "start": 155,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -2220,10 +2220,10 @@ description: Variables in memory after executing hex_fillet.kcl
               2.491142512175489
             ],
             "tag": {
-              "commentStart": 382,
-              "end": 387,
+              "commentStart": 372,
+              "end": 377,
               "moduleId": 0,
-              "start": 382,
+              "start": 372,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2250,10 +2250,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 2.3835627974334934,
             "tag": {
-              "commentStart": 502,
-              "end": 506,
+              "commentStart": 492,
+              "end": 496,
               "moduleId": 0,
-              "start": 502,
+              "start": 492,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -2274,10 +2274,10 @@ description: Variables in memory after executing hex_fillet.kcl
               -2.9788872040368455
             ],
             "tag": {
-              "commentStart": 717,
-              "end": 722,
+              "commentStart": 707,
+              "end": 712,
               "moduleId": 0,
-              "start": 717,
+              "start": 707,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2304,10 +2304,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 2.877294619476584,
             "tag": {
-              "commentStart": 838,
-              "end": 842,
+              "commentStart": 828,
+              "end": 832,
               "moduleId": 0,
-              "start": 838,
+              "start": 828,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -2328,10 +2328,10 @@ description: Variables in memory after executing hex_fillet.kcl
               -4.3228878246913265
             ],
             "tag": {
-              "commentStart": 1054,
-              "end": 1059,
+              "commentStart": 1044,
+              "end": 1049,
               "moduleId": 0,
-              "start": 1054,
+              "start": 1044,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2358,10 +2358,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 3.162182113239889,
             "tag": {
-              "commentStart": 1175,
-              "end": 1179,
+              "commentStart": 1165,
+              "end": 1169,
               "moduleId": 0,
-              "start": 1175,
+              "start": 1165,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -2388,10 +2388,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.8374365647617735,
             "tag": {
-              "commentStart": 1631,
-              "end": 1638,
+              "commentStart": 1621,
+              "end": 1628,
               "moduleId": 0,
-              "start": 1631,
+              "start": 1621,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -2418,10 +2418,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.8969392398596462,
             "tag": {
-              "commentStart": 1723,
-              "end": 1730,
+              "commentStart": 1713,
+              "end": 1720,
               "moduleId": 0,
-              "start": 1723,
+              "start": 1713,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -2448,10 +2448,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.5630275304103698,
             "tag": {
-              "commentStart": 1848,
-              "end": 1855,
+              "commentStart": 1838,
+              "end": 1845,
               "moduleId": 0,
-              "start": 1848,
+              "start": 1838,
               "type": "TagDeclarator",
               "value": "circle3"
             },
@@ -2602,10 +2602,10 @@ description: Variables in memory after executing hex_fillet.kcl
             1.6593171489068888
           ],
           "tag": {
-            "commentStart": 82,
-            "end": 87,
+            "commentStart": 72,
+            "end": 77,
             "moduleId": 0,
-            "start": 82,
+            "start": 72,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2632,10 +2632,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 1.4601890993789832,
           "tag": {
-            "commentStart": 165,
-            "end": 169,
+            "commentStart": 155,
+            "end": 159,
             "moduleId": 0,
-            "start": 165,
+            "start": 155,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -2656,10 +2656,10 @@ description: Variables in memory after executing hex_fillet.kcl
             2.491142512175489
           ],
           "tag": {
-            "commentStart": 382,
-            "end": 387,
+            "commentStart": 372,
+            "end": 377,
             "moduleId": 0,
-            "start": 382,
+            "start": 372,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2686,10 +2686,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 2.3835627974334934,
           "tag": {
-            "commentStart": 502,
-            "end": 506,
+            "commentStart": 492,
+            "end": 496,
             "moduleId": 0,
-            "start": 502,
+            "start": 492,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -2710,10 +2710,10 @@ description: Variables in memory after executing hex_fillet.kcl
             -2.9788872040368455
           ],
           "tag": {
-            "commentStart": 717,
-            "end": 722,
+            "commentStart": 707,
+            "end": 712,
             "moduleId": 0,
-            "start": 717,
+            "start": 707,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2740,10 +2740,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 2.877294619476584,
           "tag": {
-            "commentStart": 838,
-            "end": 842,
+            "commentStart": 828,
+            "end": 832,
             "moduleId": 0,
-            "start": 838,
+            "start": 828,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -2764,10 +2764,10 @@ description: Variables in memory after executing hex_fillet.kcl
             -4.3228878246913265
           ],
           "tag": {
-            "commentStart": 1054,
-            "end": 1059,
+            "commentStart": 1044,
+            "end": 1049,
             "moduleId": 0,
-            "start": 1054,
+            "start": 1044,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2794,10 +2794,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 3.162182113239889,
           "tag": {
-            "commentStart": 1175,
-            "end": 1179,
+            "commentStart": 1165,
+            "end": 1169,
             "moduleId": 0,
-            "start": 1175,
+            "start": 1165,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -2841,10 +2841,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 0.8374365647617735,
           "tag": {
-            "commentStart": 1631,
-            "end": 1638,
+            "commentStart": 1621,
+            "end": 1628,
             "moduleId": 0,
-            "start": 1631,
+            "start": 1621,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2888,10 +2888,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 0.8969392398596462,
           "tag": {
-            "commentStart": 1723,
-            "end": 1730,
+            "commentStart": 1713,
+            "end": 1720,
             "moduleId": 0,
-            "start": 1723,
+            "start": 1713,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -2935,10 +2935,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 0.5630275304103698,
           "tag": {
-            "commentStart": 1848,
-            "end": 1855,
+            "commentStart": 1838,
+            "end": 1845,
             "moduleId": 0,
-            "start": 1848,
+            "start": 1838,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -3092,10 +3092,10 @@ description: Variables in memory after executing hex_fillet.kcl
             1.6593171489068888
           ],
           "tag": {
-            "commentStart": 82,
-            "end": 87,
+            "commentStart": 72,
+            "end": 77,
             "moduleId": 0,
-            "start": 82,
+            "start": 72,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3122,10 +3122,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 1.4601890993789832,
           "tag": {
-            "commentStart": 165,
-            "end": 169,
+            "commentStart": 155,
+            "end": 159,
             "moduleId": 0,
-            "start": 165,
+            "start": 155,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -3146,10 +3146,10 @@ description: Variables in memory after executing hex_fillet.kcl
             2.491142512175489
           ],
           "tag": {
-            "commentStart": 382,
-            "end": 387,
+            "commentStart": 372,
+            "end": 377,
             "moduleId": 0,
-            "start": 382,
+            "start": 372,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3176,10 +3176,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 2.3835627974334934,
           "tag": {
-            "commentStart": 502,
-            "end": 506,
+            "commentStart": 492,
+            "end": 496,
             "moduleId": 0,
-            "start": 502,
+            "start": 492,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -3200,10 +3200,10 @@ description: Variables in memory after executing hex_fillet.kcl
             -2.9788872040368455
           ],
           "tag": {
-            "commentStart": 717,
-            "end": 722,
+            "commentStart": 707,
+            "end": 712,
             "moduleId": 0,
-            "start": 717,
+            "start": 707,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3230,10 +3230,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 2.877294619476584,
           "tag": {
-            "commentStart": 838,
-            "end": 842,
+            "commentStart": 828,
+            "end": 832,
             "moduleId": 0,
-            "start": 838,
+            "start": 828,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -3254,10 +3254,10 @@ description: Variables in memory after executing hex_fillet.kcl
             -4.3228878246913265
           ],
           "tag": {
-            "commentStart": 1054,
-            "end": 1059,
+            "commentStart": 1044,
+            "end": 1049,
             "moduleId": 0,
-            "start": 1054,
+            "start": 1044,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3284,10 +3284,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 3.162182113239889,
           "tag": {
-            "commentStart": 1175,
-            "end": 1179,
+            "commentStart": 1165,
+            "end": 1169,
             "moduleId": 0,
-            "start": 1175,
+            "start": 1165,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -3314,10 +3314,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 0.8374365647617735,
           "tag": {
-            "commentStart": 1631,
-            "end": 1638,
+            "commentStart": 1621,
+            "end": 1628,
             "moduleId": 0,
-            "start": 1631,
+            "start": 1621,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -3344,10 +3344,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 0.8969392398596462,
           "tag": {
-            "commentStart": 1723,
-            "end": 1730,
+            "commentStart": 1713,
+            "end": 1720,
             "moduleId": 0,
-            "start": 1723,
+            "start": 1713,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -3374,10 +3374,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 0.5630275304103698,
           "tag": {
-            "commentStart": 1848,
-            "end": 1855,
+            "commentStart": 1838,
+            "end": 1845,
             "moduleId": 0,
-            "start": 1848,
+            "start": 1838,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -5078,10 +5078,10 @@ description: Variables in memory after executing hex_fillet.kcl
                     1.6593171489068888
                   ],
                   "tag": {
-                    "commentStart": 82,
-                    "end": 87,
+                    "commentStart": 72,
+                    "end": 77,
                     "moduleId": 0,
-                    "start": 82,
+                    "start": 72,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -5108,10 +5108,10 @@ description: Variables in memory after executing hex_fillet.kcl
                   ],
                   "radius": 1.4601890993789832,
                   "tag": {
-                    "commentStart": 165,
-                    "end": 169,
+                    "commentStart": 155,
+                    "end": 159,
                     "moduleId": 0,
-                    "start": 165,
+                    "start": 155,
                     "type": "TagDeclarator",
                     "value": "arc1"
                   },
@@ -5132,10 +5132,10 @@ description: Variables in memory after executing hex_fillet.kcl
                     2.491142512175489
                   ],
                   "tag": {
-                    "commentStart": 382,
-                    "end": 387,
+                    "commentStart": 372,
+                    "end": 377,
                     "moduleId": 0,
-                    "start": 382,
+                    "start": 372,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -5162,10 +5162,10 @@ description: Variables in memory after executing hex_fillet.kcl
                   ],
                   "radius": 2.3835627974334934,
                   "tag": {
-                    "commentStart": 502,
-                    "end": 506,
+                    "commentStart": 492,
+                    "end": 496,
                     "moduleId": 0,
-                    "start": 502,
+                    "start": 492,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -5186,10 +5186,10 @@ description: Variables in memory after executing hex_fillet.kcl
                     -2.9788872040368455
                   ],
                   "tag": {
-                    "commentStart": 717,
-                    "end": 722,
+                    "commentStart": 707,
+                    "end": 712,
                     "moduleId": 0,
-                    "start": 717,
+                    "start": 707,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -5216,10 +5216,10 @@ description: Variables in memory after executing hex_fillet.kcl
                   ],
                   "radius": 2.877294619476584,
                   "tag": {
-                    "commentStart": 838,
-                    "end": 842,
+                    "commentStart": 828,
+                    "end": 832,
                     "moduleId": 0,
-                    "start": 838,
+                    "start": 828,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -5240,10 +5240,10 @@ description: Variables in memory after executing hex_fillet.kcl
                     -4.3228878246913265
                   ],
                   "tag": {
-                    "commentStart": 1054,
-                    "end": 1059,
+                    "commentStart": 1044,
+                    "end": 1049,
                     "moduleId": 0,
-                    "start": 1054,
+                    "start": 1044,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -5270,10 +5270,10 @@ description: Variables in memory after executing hex_fillet.kcl
                   ],
                   "radius": 3.162182113239889,
                   "tag": {
-                    "commentStart": 1175,
-                    "end": 1179,
+                    "commentStart": 1165,
+                    "end": 1169,
                     "moduleId": 0,
-                    "start": 1175,
+                    "start": 1165,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -5317,10 +5317,10 @@ description: Variables in memory after executing hex_fillet.kcl
                   ],
                   "radius": 0.8374365647617735,
                   "tag": {
-                    "commentStart": 1631,
-                    "end": 1638,
+                    "commentStart": 1621,
+                    "end": 1628,
                     "moduleId": 0,
-                    "start": 1631,
+                    "start": 1621,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -5364,10 +5364,10 @@ description: Variables in memory after executing hex_fillet.kcl
                   ],
                   "radius": 0.8969392398596462,
                   "tag": {
-                    "commentStart": 1723,
-                    "end": 1730,
+                    "commentStart": 1713,
+                    "end": 1720,
                     "moduleId": 0,
-                    "start": 1723,
+                    "start": 1713,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -5411,10 +5411,10 @@ description: Variables in memory after executing hex_fillet.kcl
                   ],
                   "radius": 0.5630275304103698,
                   "tag": {
-                    "commentStart": 1848,
-                    "end": 1855,
+                    "commentStart": 1838,
+                    "end": 1845,
                     "moduleId": 0,
-                    "start": 1848,
+                    "start": 1838,
                     "type": "TagDeclarator",
                     "value": "circle3"
                   },

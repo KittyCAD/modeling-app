@@ -1,5 +1,6 @@
 import type { ReadonlySignal } from '@preact/signals-core'
 import fsZds from '@src/lib/fs-zds'
+import type { FileStat } from '@src/lib/fileSystem/fileOperations'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/pathUtils'
 import { isRecord } from '@src/lib/utils'
@@ -12,6 +13,7 @@ const MAX_FILE_BYTES = 256 * 1024
 const READ_CHARS = 8_000
 const MAX_LIST_PAGE_BYTES = 32 * 1024
 const MAX_DEPTH = 16
+const READ_STAT_OPTIONS = { followSymlinks: false, readOnly: true } as const
 
 class ProjectReferenceCommandError extends Error {}
 
@@ -87,6 +89,7 @@ function isSafeRelativePath(path: string): boolean {
   return (
     path.length > 0 &&
     path.length <= 1_000 &&
+    parts.length > 0 &&
     parts.length <= MAX_DEPTH &&
     parts.every(
       (part) =>
@@ -225,24 +228,28 @@ export function createProjectReferenceCommands(deps: {
     }
   }
 
-  async function resolvedProjectPath(root: string, path: string) {
-    const resolved = await deps.fileOperations.realpath(path)
-    const relative = fsZds.relative(root, resolved)
-    if (
-      relative === '..' ||
-      relative.startsWith(`..${fsZds.sep}`) ||
-      relative.startsWith(fsZds.sep) ||
-      relative.includes(':')
-    ) {
+  async function inspectChild(parent: string, name: string) {
+    const absolute = fsZds.join(parent, name)
+    const stat = await deps.fileOperations.stat(absolute, READ_STAT_OPTIONS)
+    if (stat.kind === 'symlink') {
       return undefined
     }
-    return resolved
+    return { absolute, stat }
+  }
+
+  async function inspectRoot(root: string) {
+    const stat = await deps.fileOperations.stat(root, READ_STAT_OPTIONS)
+    if (stat.kind !== 'directory') {
+      return Promise.reject(
+        new ProjectReferenceCommandError('Library project is not a directory.')
+      )
+    }
   }
 
   async function localFiles(root: string): Promise<string[]> {
     const found: string[] = []
-    const projectRoot = await deps.fileOperations.realpath(root)
-    const queue = [{ absolute: projectRoot, relative: '', depth: 0 }]
+    await inspectRoot(root)
+    const queue = [{ absolute: root, relative: '', depth: 0 }]
     const seenDirectories = new Set<string>()
     let visited = 0
     while (queue.length) {
@@ -268,20 +275,20 @@ export function createProjectReferenceCommands(deps: {
             )
           )
         }
-        const absolute = await resolvedProjectPath(
-          projectRoot,
-          fsZds.join(current.absolute, name)
-        )
-        if (!absolute) {
+        const child = await inspectChild(current.absolute, name)
+        if (!child) {
           continue
         }
         const relative = current.relative
           ? webSafeJoin([current.relative, name])
           : name
-        const stat = await deps.fileOperations.statReadOnly(absolute)
-        if (stat.kind === 'directory' && current.depth + 1 < MAX_DEPTH) {
-          queue.push({ absolute, relative, depth: current.depth + 1 })
-        } else if (stat.kind === 'file' && isReadableFile(relative)) {
+        if (child.stat.kind === 'directory' && current.depth + 1 < MAX_DEPTH) {
+          queue.push({
+            absolute: child.absolute,
+            relative,
+            depth: current.depth + 1,
+          })
+        } else if (child.stat.kind === 'file' && isReadableFile(relative)) {
           found.push(relative)
         }
       }
@@ -342,20 +349,26 @@ export function createProjectReferenceCommands(deps: {
         )
       )
     }
-    const projectRoot = await deps.fileOperations.realpath(
-      entry.localProjectPath
-    )
-    const absolute = await resolvedProjectPath(
-      projectRoot,
-      fsZds.join(entry.localProjectPath, ...webSafePathSplit(path))
-    )
-    if (!absolute) {
-      return Promise.reject(
-        new ProjectReferenceCommandError('File is not in the library project.')
-      )
+    await inspectRoot(entry.localProjectPath)
+    let absolute = entry.localProjectPath
+    let stat: FileStat | undefined
+    const parts = webSafePathSplit(path)
+    for (const [index, part] of parts.entries()) {
+      const child = await inspectChild(absolute, part)
+      if (
+        !child ||
+        (index < parts.length - 1 && child.stat.kind !== 'directory')
+      ) {
+        return Promise.reject(
+          new ProjectReferenceCommandError(
+            'File is not in the library project.'
+          )
+        )
+      }
+      absolute = child.absolute
+      stat = child.stat
     }
-    const stat = await deps.fileOperations.statReadOnly(absolute)
-    if (stat.kind !== 'file' || stat.size > MAX_FILE_BYTES) {
+    if (stat?.kind !== 'file' || stat.size > MAX_FILE_BYTES) {
       return Promise.reject(
         new ProjectReferenceCommandError('File is not a supported text file.')
       )

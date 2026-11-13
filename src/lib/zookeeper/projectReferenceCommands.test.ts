@@ -2,7 +2,7 @@ import { mkdtemp, mkdir, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { signal } from '@preact/signals-core'
-import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
+import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import nodeFileSystem from '@src/lib/fs-zds/nodefs'
 import { createProjectReferenceCommands } from '@src/lib/zookeeper/projectReferenceCommands'
@@ -71,21 +71,26 @@ function fixture(
       return []
     }
   )
-  const statReadOnly = vi.fn(async (path: string) => ({
-    kind:
-      path.endsWith('/assets') || path.endsWith('/parts')
-        ? ('directory' as const)
-        : ('file' as const),
-    size: 20,
-  }))
-  const stat = vi.fn()
-  const realpath = vi.fn(async (path: string) => path)
+  const stat = vi.fn(
+    async (
+      path: string
+    ): Promise<{
+      kind: 'directory' | 'file' | 'symlink'
+      size: number
+    }> => ({
+      kind:
+        path.endsWith('/assets') || path.endsWith('/parts')
+          ? ('directory' as const)
+          : path === '/private/library/TRUCK'
+            ? ('directory' as const)
+            : ('file' as const),
+      size: 20,
+    })
+  )
   const fileOperations = {
     readDirectory,
     readFile,
-    realpath,
     stat,
-    statReadOnly,
     writeFile: vi.fn(),
   } as unknown as FileOperationsRegistryService
   const { sent, ws } = makeSocket()
@@ -127,11 +132,9 @@ function fixture(
     fileOperations,
     readDirectory,
     readFile,
-    realpath,
     request,
     sent,
     stat,
-    statReadOnly,
     ws,
   }
 }
@@ -216,15 +219,8 @@ describe('Zookeeper project reference commands', () => {
   })
 
   it('ignores requests and in-flight results from an earlier socket', async () => {
-    const {
-      commands,
-      entries,
-      readDirectory,
-      request,
-      sent,
-      statReadOnly,
-      ws,
-    } = fixture()
+    const { commands, entries, readDirectory, request, sent, stat, ws } =
+      fixture()
     commands.advertise(ws)
     const projectId = await searchProjectId(request, 'TRUCK')
     let finishRead!: (names: readonly string[]) => void
@@ -269,7 +265,12 @@ describe('Zookeeper project reference commands', () => {
     ).toBe('rejected')
 
     finishRead(['main.kcl'])
-    await vi.waitFor(() => expect(statReadOnly).toHaveBeenCalledOnce())
+    await vi.waitFor(() =>
+      expect(stat).toHaveBeenCalledWith('/private/library/TRUCK/main.kcl', {
+        followSymlinks: false,
+        readOnly: true,
+      })
+    )
     await new Promise((resolve) => setTimeout(resolve, 0))
     expect(sent.some((frame) => frame.request_id === 'in-flight-read')).toBe(
       false
@@ -311,8 +312,10 @@ describe('Zookeeper project reference commands', () => {
     })
     expect(read.result?.content).toBe('wheel = circle(10)')
     expect(readFile).toHaveBeenCalledWith('/private/library/TRUCK/main.kcl')
-    expect(fileOperations.stat).not.toHaveBeenCalled()
-    expect(fileOperations.statReadOnly).toHaveBeenCalled()
+    expect(fileOperations.stat).toHaveBeenCalledWith(
+      '/private/library/TRUCK/main.kcl',
+      { followSymlinks: false, readOnly: true }
+    )
     expect(fileOperations.writeFile).not.toHaveBeenCalled()
   })
 
@@ -349,8 +352,7 @@ describe('Zookeeper project reference commands', () => {
   })
 
   it('does not follow a project symlink outside its root', async () => {
-    const { readDirectory, readFile, realpath, request, statReadOnly } =
-      fixture()
+    const { readDirectory, readFile, request, stat } = fixture()
     readDirectory.mockImplementation(async (path) => {
       if (path === '/private/library/TRUCK') {
         return ['linked']
@@ -360,17 +362,12 @@ describe('Zookeeper project reference commands', () => {
       }
       return []
     })
-    realpath.mockImplementation(async (path) => {
-      if (path === '/private/library/TRUCK/linked') {
-        return '/private/outside'
-      }
-      if (path === '/private/library/TRUCK/linked/secret.kcl') {
-        return '/private/outside/secret.kcl'
-      }
-      return path
-    })
-    statReadOnly.mockImplementation(async (path) => ({
-      kind: path.endsWith('/linked') ? 'directory' : 'file',
+    stat.mockImplementation(async (path) => ({
+      kind: path.endsWith('/linked')
+        ? 'symlink'
+        : path === '/private/library/TRUCK'
+          ? 'directory'
+          : 'file',
       size: 20,
     }))
     const projectId = await searchProjectId(request, 'TRUCK')
@@ -392,7 +389,7 @@ describe('Zookeeper project reference commands', () => {
     const temp = await mkdtemp(path.join(tmpdir(), 'zds-project-reference-'))
     const root = path.join(temp, 'project')
     const outside = path.join(temp, 'outside')
-    const runtime = createFileOperationsRuntime(nodeFileSystem.impl)
+    const runtime = createFileOperationsScheduler(nodeFileSystem.impl)
     try {
       await mkdir(root)
       await mkdir(outside)

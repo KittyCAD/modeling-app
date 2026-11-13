@@ -47,10 +47,11 @@ export function createSceneGraphDelta(
       variables: {},
       operations: emptyOperationsByModule(),
       artifactGraph: { map: {}, itemCount: 0 },
+      namedViews: null,
       filenames: {},
       defaultPlanes: null,
       refactorMetadata: [],
-      fromCache: false,
+      engineSceneGeneration: 0,
     },
   }
 }

@@ -59,7 +59,6 @@ export default function useStateMachineCommands<
     EXPERIMENTAL_POINT_AND_CLICK_FLAG,
     false
   )
-  const modelingDialogsEnabled = userFeatures.useHas('modeling_dialogs', false)
   const settingsValues = settings.useSettings()
   const { overallState } = useNetworkContext()
   const { isStreamReady } = useAppState()
@@ -101,9 +100,7 @@ export default function useStateMachineCommands<
           ? {
               ...command,
               useModelingDialog:
-                modelingDialogsEnabled &&
-                command.groupId === 'modeling' &&
-                !command.forceCommandBar,
+                command.groupId === 'modeling' && !command.forceCommandBar,
             }
           : command
       )
@@ -122,14 +119,11 @@ export default function useStateMachineCommands<
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [
-    actor,
-    send,
     shouldDisableEngineCommands,
     showExperimentalCommands,
     commandBarConfig,
     getDefaultDescription,
     kclProgramVersion,
-    modelingDialogsEnabled,
     scopes,
   ])
 }

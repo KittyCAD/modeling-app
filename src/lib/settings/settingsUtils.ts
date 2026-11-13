@@ -59,6 +59,7 @@ import { NIL as uuidNIL, v4 } from 'uuid'
 const INITIALISM_MAPPING: Record<string, string> = {
   api: 'API',
   id: 'ID',
+  ssao: 'SSAO',
   ui: 'UI',
   url: 'URL',
 }
@@ -507,8 +508,8 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
       'enable_touch_controls'
     ),
     defineBooleanAppOnlyField(
-      { category: 'modeling', field: 'useSketchSolveMode' },
-      'use_sketch_solve_mode'
+      { category: 'modeling', field: 'useLocalRenderer' },
+      'use_local_renderer'
     ),
     defineBooleanAppOnlyField(
       { category: 'modeling', field: 'showSketchGrid' },
@@ -558,6 +559,16 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
     ),
   ]),
   defineAppOnlySection('layout', [
+    defineMappedAppOnlyField(
+      { category: 'layout', field: 'paneOpenBehavior' },
+      'tab_open_behavior',
+      {
+        fromToml: (value) =>
+          value === 'multiple' || value === 'single' ? value : undefined,
+        toToml: (value) =>
+          value === 'multiple' || value === 'single' ? value : undefined,
+      }
+    ),
     defineLayoutsAppOnlyField(
       { category: 'layout', field: 'configs' },
       'configs'

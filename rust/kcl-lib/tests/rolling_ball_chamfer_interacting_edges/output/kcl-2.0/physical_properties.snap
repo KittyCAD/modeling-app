@@ -7,12 +7,12 @@ description: Physical properties rolling_ball_chamfer_interacting_edges.kcl
     "center": {
       "x": 0.0,
       "y": 0.0,
-      "z": -0.0004999999999881766
+      "z": -0.0004999999998744897
     },
     "dimensions": {
       "x": 22.860000000000007,
       "y": 22.860000000000007,
-      "z": 304.80099999999993
+      "z": 304.80100000000016
     },
     "unit": "mm"
   },

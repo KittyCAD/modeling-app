@@ -38,6 +38,7 @@ __all__ = [
     "InventorImportOptions",
     "KclErrorInfo",
     "KclSession",
+    "NamedView",
     "NxImportOptions",
     "ObjExportOptions",
     "ObjImportOptions",
@@ -57,6 +58,7 @@ __all__ = [
     "StepImportOptions",
     "StepImportTargetRepresentation",
     "StepPresentation",
+    "StepSchema",
     "StlExportOptions",
     "StlImportOptions",
     "StlStorage",
@@ -95,6 +97,9 @@ __all__ = [
 
 @typing.final
 class AcisImportOptions:
+    r"""
+    Options for importing ACIS part format.
+    """
     def __new__(cls) -> AcisImportOptions:
         r"""
         Set the options to their defaults.
@@ -129,6 +134,9 @@ class CameraLookAt:
 
 @typing.final
 class CatiaImportOptions:
+    r"""
+    Options for importing CATIA part format.
+    """
     def __new__(cls) -> CatiaImportOptions:
         r"""
         Set the options to their defaults.
@@ -146,6 +154,9 @@ class CompilationIssue:
 
 @typing.final
 class CreoImportOptions:
+    r"""
+    Options for importing PTC Creo part format.
+    """
     def __new__(cls) -> CreoImportOptions:
         r"""
         Set the options to their defaults.
@@ -447,6 +458,9 @@ class InputFormat3d:
 
 @typing.final
 class InventorImportOptions:
+    r"""
+    Options for importing Autodesk Inventor part format.
+    """
     def __new__(cls) -> InventorImportOptions:
         r"""
         Set the options to their defaults.
@@ -520,7 +534,17 @@ class KclSession:
         """
 
 @typing.final
+class NamedView:
+    r"""
+    Options for exporting glTF 2.0.
+    """
+    ...
+
+@typing.final
 class NxImportOptions:
+    r"""
+    Options for importing Siemens NX part format.
+    """
     def __new__(cls) -> NxImportOptions:
         r"""
         Set the options to their defaults.
@@ -548,6 +572,9 @@ class ObjImportOptions:
 
 @typing.final
 class ParasolidImportOptions:
+    r"""
+    Options for importing Parasolid part format.
+    """
     def __new__(cls) -> ParasolidImportOptions:
         r"""
         Set the options to their defaults.
@@ -727,6 +754,9 @@ class SketchConstraintStatus:
 
 @typing.final
 class SldprtImportOptions:
+    r"""
+    Options for importing SolidWorks part format.
+    """
     def __new__(cls) -> SldprtImportOptions:
         r"""
         Set the options to their defaults.
@@ -1026,6 +1056,26 @@ class StepPresentation(enum.Enum):
     Pretty = ...
     r"""
     Add extra spaces to make the text more easily readable.
+    
+    This is the default setting.
+    """
+
+@typing.final
+class StepSchema(enum.Enum):
+    r"""
+    Specifies the STEP application protocol schema for export.
+    """
+    Ap203 = ...
+    r"""
+    AP203 edition 2.
+    """
+    Ap214 = ...
+    r"""
+    AP214.
+    """
+    Ap242 = ...
+    r"""
+    AP242.
     
     This is the default setting.
     """
@@ -1371,34 +1421,34 @@ async def default_units(path: builtins.str) -> zooDefaultUnits:
     Get the default length and angle units from a kcl file.
     """
 
-async def execute(path: builtins.str, *, geometry_only: builtins.bool = ...) -> zooExecOutcome:
+async def execute(path: builtins.str, *, geometry_only: builtins.bool = ..., headers: typing.Optional[typing.Mapping[builtins.str, builtins.str]] = None) -> zooExecOutcome:
     r"""
     Execute the kcl code from a file path.
     """
 
-async def execute_and_bounding_box(path: builtins.str, entity_ids: typing.Optional[typing.Sequence[builtins.str]] = None, output_unit: typing.Optional[UnitLength] = None, *, geometry_only: builtins.bool = ...) -> zooBoundingBoxResponse:
+async def execute_and_bounding_box(path: builtins.str, entity_ids: typing.Optional[typing.Sequence[builtins.str]] = None, output_unit: typing.Optional[UnitLength] = None, *, geometry_only: builtins.bool = ..., headers: typing.Optional[typing.Mapping[builtins.str, builtins.str]] = None) -> zooBoundingBoxResponse:
     r"""
     Execute a kcl file and return the model's bounding box.
     """
 
-async def execute_and_export(path: builtins.str, export_format: zooFileExportFormat, *, geometry_only: builtins.bool = ...) -> builtins.list[RawFile]:
+async def execute_and_export(path: builtins.str, export_format: zooFileExportFormat, *, geometry_only: builtins.bool = ..., headers: typing.Optional[typing.Mapping[builtins.str, builtins.str]] = None) -> builtins.list[RawFile]:
     r"""
     Execute a kcl file and export it to a specific file format.
     """
 
-async def execute_and_measure(path: builtins.str, request: zooPhysicalPropertiesRequest, *, geometry_only: builtins.bool = ...) -> zooPhysicalPropertiesResponse:
+async def execute_and_measure(path: builtins.str, request: zooPhysicalPropertiesRequest, *, geometry_only: builtins.bool = ..., headers: typing.Optional[typing.Mapping[builtins.str, builtins.str]] = None) -> zooPhysicalPropertiesResponse:
     r"""
     Execute a kcl file and measure physical properties of the resulting model.
     """
 
-async def execute_and_snapshot(path: builtins.str, image_format: zooImageFormat, *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.int]:
+async def execute_and_snapshot(path: builtins.str, image_format: zooImageFormat, *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None, headers: typing.Optional[typing.Mapping[builtins.str, builtins.str]] = None) -> builtins.list[builtins.int]:
     r"""
     Execute a kcl file and snapshot it in a specific format.
     """
 
-async def execute_and_snapshot_views(path: builtins.str, image_format: zooImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.list[builtins.int]]: ...
+async def execute_and_snapshot_views(path: builtins.str, image_format: zooImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None, headers: typing.Optional[typing.Mapping[builtins.str, builtins.str]] = None) -> builtins.list[builtins.list[builtins.int]]: ...
 
-async def execute_code(code: builtins.str, *, geometry_only: builtins.bool = ...) -> zooExecOutcome:
+async def execute_code(code: builtins.str, *, geometry_only: builtins.bool = ..., headers: typing.Optional[typing.Mapping[builtins.str, builtins.str]] = None) -> zooExecOutcome:
     r"""
     Execute the kcl code.
     """
@@ -1413,19 +1463,19 @@ async def format_dir(dir: builtins.str) -> None:
     Format a whole directory of kcl code.
     """
 
-async def get_sketch_constraint_status(path: builtins.str) -> zooSketchConstraintReport:
+async def get_sketch_constraint_status(path: builtins.str, *, headers: typing.Optional[typing.Mapping[builtins.str, builtins.str]] = None) -> zooSketchConstraintReport:
     r"""
     Execute a kcl file and return a report of sketch constraint status.
     """
 
-async def get_sketch_constraint_status_code(code: builtins.str) -> zooSketchConstraintReport:
+async def get_sketch_constraint_status_code(code: builtins.str, *, headers: typing.Optional[typing.Mapping[builtins.str, builtins.str]] = None) -> zooSketchConstraintReport:
     r"""
     Execute kcl code and return a report of sketch constraint status.
     """
 
-async def import_and_snapshot(filepaths: typing.Sequence[builtins.str], format: zooInputFormat3d, image_format: zooImageFormat, *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.int]: ...
+async def import_and_snapshot(filepaths: typing.Sequence[builtins.str], format: zooInputFormat3d, image_format: zooImageFormat, *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None, headers: typing.Optional[typing.Mapping[builtins.str, builtins.str]] = None) -> builtins.list[builtins.int]: ...
 
-async def import_and_snapshot_views(filepaths: typing.Sequence[builtins.str], format: zooInputFormat3d, image_format: zooImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.list[builtins.int]]: ...
+async def import_and_snapshot_views(filepaths: typing.Sequence[builtins.str], format: zooInputFormat3d, image_format: zooImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None, headers: typing.Optional[typing.Mapping[builtins.str, builtins.str]] = None) -> builtins.list[builtins.list[builtins.int]]: ...
 
 def lint(code: builtins.str) -> builtins.list[Discovered]:
     r"""
@@ -1455,7 +1505,7 @@ async def mock_execute_code(code: builtins.str) -> zooExecOutcome:
     Mock execute the kcl code.
     """
 
-async def new_kcl_session(path: builtins.str, *, mock: builtins.bool = ..., geometry_only: builtins.bool = ..., highlight_edges: typing.Optional[builtins.bool] = None, video_res_width: typing.Optional[builtins.int] = None, video_res_height: typing.Optional[builtins.int] = None, token: typing.Optional[builtins.str] = None, base_url: typing.Optional[builtins.str] = None) -> KclSession:
+async def new_kcl_session(path: builtins.str, *, mock: builtins.bool = ..., geometry_only: builtins.bool = ..., highlight_edges: typing.Optional[builtins.bool] = None, video_res_width: typing.Optional[builtins.int] = None, video_res_height: typing.Optional[builtins.int] = None, token: typing.Optional[builtins.str] = None, base_url: typing.Optional[builtins.str] = None, headers: typing.Optional[typing.Mapping[builtins.str, builtins.str]] = None) -> KclSession:
     r"""
     Execute this KCL project.
     Return an executed KCL project with its connection still available.
@@ -1463,9 +1513,10 @@ async def new_kcl_session(path: builtins.str, *, mock: builtins.bool = ..., geom
     `geometry_only` uses the CPU engine pool without initializing rendering.
     `token` and `base_url` override the client environment settings for this session.
     Omitted values retain the client's existing environment defaults.
+    `headers` adds HTTP and WebSocket handshake headers. A supplied User-Agent replaces the default.
     """
 
-async def new_kcl_session_code(code: builtins.str, *, mock: builtins.bool = ..., geometry_only: builtins.bool = ..., highlight_edges: typing.Optional[builtins.bool] = None, video_res_width: typing.Optional[builtins.int] = None, video_res_height: typing.Optional[builtins.int] = None, token: typing.Optional[builtins.str] = None, base_url: typing.Optional[builtins.str] = None) -> KclSession:
+async def new_kcl_session_code(code: builtins.str, *, mock: builtins.bool = ..., geometry_only: builtins.bool = ..., highlight_edges: typing.Optional[builtins.bool] = None, video_res_width: typing.Optional[builtins.int] = None, video_res_height: typing.Optional[builtins.int] = None, token: typing.Optional[builtins.str] = None, base_url: typing.Optional[builtins.str] = None, headers: typing.Optional[typing.Mapping[builtins.str, builtins.str]] = None) -> KclSession:
     r"""
     Execute this KCL source code string.
     Return an executed KCL project with its connection still available.
@@ -1473,6 +1524,7 @@ async def new_kcl_session_code(code: builtins.str, *, mock: builtins.bool = ...,
     `geometry_only` uses the CPU engine pool without initializing rendering.
     `token` and `base_url` override the client environment settings for this session.
     Omitted values retain the client's existing environment defaults.
+    `headers` adds HTTP and WebSocket handshake headers. A supplied User-Agent replaces the default.
     """
 
 async def parse(path: builtins.str) -> builtins.bool:

@@ -17,8 +17,6 @@ import {
   GLOBAL_COMMAND_SCOPES,
   HOME_COMMAND_SCOPE,
   MODE_MODELING_COMMAND_SCOPE,
-  MODE_SKETCHING_COMMAND_SCOPE,
-  MODE_SKETCH_NO_FACE_COMMAND_SCOPE,
   MODE_SKETCH_SOLVE_COMMAND_SCOPE,
   SETTINGS_COMMAND_SCOPE,
   SKETCH_COMMAND_SCOPES,
@@ -296,24 +294,6 @@ describe('commands extension', () => {
         (command) => command.id === TOOLBAR_COMMAND_IDS.modeling.sketch
       )?.scopes
     ).toEqual([MODE_MODELING_COMMAND_SCOPE])
-    expect(
-      toolbarCommands.find(
-        (command) => command.id === TOOLBAR_COMMAND_IDS.sketching.exit
-      )?.scopes
-    ).toEqual([MODE_SKETCHING_COMMAND_SCOPE, MODE_SKETCH_NO_FACE_COMMAND_SCOPE])
-    expect(
-      toolbarCommands
-        .filter(
-          (command) =>
-            command.id?.startsWith('zds.toolbar.sketchLegacy.') &&
-            command.id !== TOOLBAR_COMMAND_IDS.sketching.exit
-        )
-        .every(
-          (command) =>
-            command.scopes.length === 1 &&
-            command.scopes[0] === MODE_SKETCHING_COMMAND_SCOPE
-        )
-    ).toBe(true)
     expect(
       toolbarCommands
         .filter((command) => command.id?.startsWith('zds.toolbar.sketch.'))

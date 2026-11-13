@@ -3,6 +3,8 @@
 use std::collections::BTreeMap;
 use std::future::Future;
 use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use anyhow::Result;
 pub use artifact::ArtifactCommand;
@@ -178,6 +180,10 @@ pub(crate) mod kcl_value_view;
 pub(crate) mod machine;
 mod memory;
 mod modeling;
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod named_view_tests;
+#[cfg(not(target_arch = "wasm32"))]
+mod remote;
 mod sketch_solve;
 mod solver_arc;
 mod state;
@@ -192,7 +198,7 @@ pub(crate) const SKETCH_OBJECT_META_SKETCH: &str = "sketch";
 /// returning early if it is some kind of early return or stripping off the
 /// control flow otherwise. If it's an early return, it's returned as a
 /// `Result::Ok`.
-macro_rules! control_continue {
+macro_rules! control_normal {
     ($control_flow:expr) => {{
         let cf = $control_flow;
         if cf.is_some_return() {
@@ -203,7 +209,7 @@ macro_rules! control_continue {
     }};
 }
 // Expose the macro to other modules.
-pub(crate) use control_continue;
+pub(crate) use control_normal;
 
 /// Convenience macro for handling [`KclValueControlFlow`] in execution by
 /// returning early if it is some kind of early return or stripping off the
@@ -226,7 +232,7 @@ pub(crate) use early_return;
 pub enum ControlFlowKind {
     /// Normal control flow. Continue to the next step.
     #[default]
-    Continue,
+    Normal,
     /// A `return` statement executed under KCL 3.0: unwind to the nearest
     /// function-call boundary, which absorbs it as the function's result. Never
     /// constructed under older entry points, whose `return` uses
@@ -241,7 +247,7 @@ impl ControlFlowKind {
     /// Returns true if this is any kind of early return.
     pub fn is_some_return(&self) -> bool {
         match self {
-            ControlFlowKind::Continue => false,
+            ControlFlowKind::Normal => false,
             ControlFlowKind::Return => true,
             ControlFlowKind::Exit => true,
         }
@@ -251,16 +257,16 @@ impl ControlFlowKind {
 #[must_use = "You should always handle the control flow value when it is returned"]
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct KclValueControlFlow {
-    /// Use [control_continue] or [Self::into_value] to get the value.
+    /// Use [control_normal] or [Self::into_value] to get the value.
     value: Box<KclValue>,
     pub control: ControlFlowKind,
 }
 
 impl KclValue {
-    pub(crate) fn continue_(self) -> KclValueControlFlow {
+    pub(crate) fn normal(self) -> KclValueControlFlow {
         KclValueControlFlow {
             value: Box::new(self),
-            control: ControlFlowKind::Continue,
+            control: ControlFlowKind::Normal,
         }
     }
 
@@ -374,6 +380,8 @@ pub struct ExecOutcome {
     pub operations: OperationsByModule,
     /// Output artifact graph.
     pub artifact_graph: ArtifactGraph,
+    /// Resolved views (default and any named views)
+    pub named_views: Option<crate::named_views::ResolvedViewBatch>,
     /// Objects in the scene, created from execution.
     #[serde(skip)]
     pub scene_objects: Vec<Object>,
@@ -389,9 +397,10 @@ pub struct ExecOutcome {
     pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
-    /// Whether this outcome was reused from the previous run because the
-    /// program had not changed, which leaves the engine's geometry untouched.
-    pub from_cache: bool,
+    /// The engine scene generation when this outcome was produced: the number of
+    /// runs so far that changed the engine scene. Runs answered from the cache
+    /// and mock runs leave it unchanged.
+    pub engine_scene_generation: usize,
     /// Source code of each module, for rendering issues against the module
     /// their source range points into. Not serialized to keep the WASM
     /// payload small; native callers (e.g. the Python bindings) read it
@@ -400,6 +409,19 @@ pub struct ExecOutcome {
     pub source_files: IndexMap<ModuleId, ModuleSource>,
     /// The default planes.
     pub default_planes: Option<DefaultPlanes>,
+}
+
+/// Parsing an execution source also owns file-switch and engine-session semantics.
+/// The Rust scene generation distinguishes recreated planes with deterministic
+/// reused IDs from an unchanged scene observed by another parse.
+/// The AST and its version are present together, or absent on parse errors.
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub struct ParsedExecutionSource {
+    pub program: Option<crate::parsing::ParsedProgram>,
+    pub issues: Vec<CompilationIssue>,
+    pub default_planes: Option<DefaultPlanes>,
+    pub engine_scene_generation: usize,
 }
 
 /// Per-segment freedom used by the constraint report. Mirrors
@@ -965,10 +987,6 @@ pub struct ExecutorContext {
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
     pub execution_callbacks: Option<Arc<dyn ExecutionCallbacks>>,
-    /// Which executor evaluates KCL. Crate-internal: set before the first
-    /// run and immutable during execution (run methods take &self). Cloned
-    /// contexts (fresh roots, Args) inherit the same executor.
-    pub(crate) executor_kind: machine::ExecutorKind,
     /// Call-depth limit for the machine executor's runaway-recursion guard.
     /// Crate-internal policy, not user configuration.
     pub(crate) machine_call_depth_limit: usize,
@@ -976,6 +994,10 @@ pub struct ExecutorContext {
     /// KCL. This might need to be false if the engine server is disabling
     /// rendering because it's in a headless context.
     pub configure_engine_render: bool,
+    /// If the last execution needed order-independent transparency (OIT).
+    /// In a CPU-only engine, this to see if you should enable OIT in the engine.
+    /// In a GPU-enabled engine, this is done for you by the KCL runtime during the `appearance` function.
+    pub(crate) needs_oit: Arc<AtomicBool>,
 }
 
 impl std::fmt::Debug for ExecutorContext {
@@ -985,8 +1007,8 @@ impl std::fmt::Debug for ExecutorContext {
             .field("engine_batch", &self.engine_batch)
             .field("settings", &self.settings)
             .field("context_type", &self.context_type)
+            .field("needs_oit", &self.needs_oit)
             .field("execution_callbacks", &self.execution_callbacks)
-            .field("executor_kind", &self.executor_kind)
             .field("machine_call_depth_limit", &self.machine_call_depth_limit)
             .finish()
     }
@@ -1174,6 +1196,9 @@ struct CachedExecution {
     preserve_mem: PreserveMem,
 }
 
+type ImportedModuleResult = (ModuleId, Result<ModuleRepr, KclError>);
+
+#[cfg_attr(not(target_arch = "wasm32"), bon::bon)]
 impl ExecutorContext {
     /// Use an existing cache for another handle to the same session, or for
     /// associated mock execution. Independent sessions must use independent caches.
@@ -1196,9 +1221,9 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Live,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         }
     }
 
@@ -1206,16 +1231,14 @@ impl ExecutorContext {
         Self {
             engine: self.engine.clone(),
             cache: self.cache.clone(),
-            engine_batch: EngineBatchContext::new(),
+            engine_batch: self.engine_batch.fresh(),
             fs: self.fs.clone(),
             settings: self.settings.clone(),
             context_type: self.context_type.clone(),
             execution_callbacks: self.execution_callbacks.clone(),
-            // Imported modules execute on this cloned context; keep them on
-            // the executor selected for the run instead of the default.
-            executor_kind: self.executor_kind,
             machine_call_depth_limit: self.machine_call_depth_limit,
             configure_engine_render: true,
+            needs_oit: self.needs_oit.clone(),
         }
     }
 
@@ -1238,6 +1261,17 @@ impl ExecutorContext {
             )
             .await
             .map(|_| ())?;
+
+        if self.needs_oit.load(Ordering::Relaxed) {
+            self.engine
+                .send_modeling_cmd(
+                    &self.engine_batch,
+                    exec_state.next_uuid(),
+                    source_range,
+                    &ModelingCmd::from(mcmd::SetOrderIndependentTransparency::builder().enabled(true).build()),
+                )
+                .await?;
+        }
 
         Ok(())
     }
@@ -1293,11 +1327,7 @@ impl ExecutorContext {
                 },
                 replay: settings.replay.clone(),
                 show_grid: if settings.show_grid { Some(true) } else { None },
-                pool: if settings.geometry_only {
-                    Some("cpu".to_string())
-                } else {
-                    settings.pool.clone()
-                },
+                pool: settings.pool.clone(),
                 geometry_only: Some(settings.geometry_only),
                 pr,
                 unlocked_framerate: None,
@@ -1340,9 +1370,9 @@ impl ExecutorContext {
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         }
     }
 
@@ -1356,9 +1386,9 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         }
     }
 
@@ -1379,9 +1409,9 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         })
     }
 
@@ -1395,9 +1425,9 @@ impl ExecutorContext {
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         }
     }
 
@@ -1413,8 +1443,32 @@ impl ExecutorContext {
         engine_addr: Option<String>,
         kcl_version: KclVersion,
     ) -> Result<Self> {
+        Self::builder()
+            .settings(settings)
+            .maybe_token(token)
+            .maybe_engine_addr(engine_addr)
+            .kcl_version(kcl_version)
+            .build()
+            .await
+    }
+
+    /// Build a native executor with optional client credentials and HTTP/WebSocket headers.
+    /// Resolve `kcl_version` from the entrypoint with `Program::language_version()`.
+    #[cfg(not(target_arch = "wasm32"))]
+    #[builder(finish_fn = build, builder_type = ExecutorContextBuilder)]
+    pub async fn builder(
+        settings: ExecutorSettings,
+        token: Option<String>,
+        engine_addr: Option<String>,
+        kcl_version: KclVersion,
+        headers: Option<BTreeMap<String, String>>,
+    ) -> Result<Self> {
         // Create the client.
-        let client = crate::engine::new_zoo_client(token, engine_addr)?;
+        let client = crate::engine::zoo_client()
+            .maybe_token(token)
+            .maybe_engine_addr(engine_addr)
+            .maybe_headers(headers)
+            .build()?;
 
         let ctx = Self::new(&client, settings, kcl_version).await?;
         Ok(ctx)
@@ -1521,6 +1575,7 @@ impl ExecutorContext {
                 self.settings.geometry_only,
             )
             .await?;
+        self.needs_oit.store(false, Ordering::Relaxed);
         // OIT requires a graphical context with SSAO enabled.
         if !self.settings.geometry_only && self.settings.enable_ssao {
             let cmd_id = exec_state.next_uuid();
@@ -1534,8 +1589,11 @@ impl ExecutorContext {
         Ok(())
     }
 
+    /// WARNING: NO ONE CAN CALL THIS FUNCTION WITHOUT FIRST ASKING @jessfraz.
+    ///
     /// Clear the KCL-lib internal cache and clear the entire engine scene.
     /// Only executors sharing this session cache are affected.
+    /// Do not expose this escape hatch to JavaScript. Fix cache validity in Rust.
     pub async fn bust_cache_and_reset_scene(&self) -> Result<ExecOutcome, KclErrorWithOutputs> {
         self.cache.bust_cache().await;
 
@@ -1690,39 +1748,108 @@ impl ExecutorContext {
         Ok((exec_state, main_ref))
     }
 
+    /// Parse the next entry point without discarding a usable model for an
+    /// incomplete edit in the same file. A different invalid file must never
+    /// display the previous file's geometry or inherit its mock memory.
+    pub async fn parse_for_execution(&self, source: &str) -> Result<ParsedExecutionSource, KclErrorWithOutputs> {
+        let parsed = crate::Program::parse(source);
+        let invalid = match &parsed {
+            Ok((program, issues)) => program.is_none() || issues.iter().any(|issue| issue.severity.is_err()),
+            Err(_) => true,
+        };
+        if invalid {
+            let session = self
+                .engine_batch
+                .expected_session()
+                .cloned()
+                .unwrap_or_else(|| self.engine.session_identity());
+            let batch = EngineBatchContext::for_session(session);
+            let (cache, owner_changed) = self
+                .cache
+                .for_execution(&self.engine, &batch, &self.settings)
+                .await
+                .map_err(KclErrorWithOutputs::no_outputs)?;
+            let mut ctx = self.clone().with_cache(cache);
+            ctx.engine_batch = batch;
+            if owner_changed {
+                // Ordinary empty execution applies the normal Rust scene and
+                // cache lifecycle. JavaScript never decides what to invalidate.
+                ctx.run_with_caching(crate::Program::empty()).await?;
+            }
+        }
+        let default_planes = self.engine.get_default_planes().read().await.clone();
+        let engine_scene_generation = self.cache.engine_scene_generation().await;
+        let (program, issues) = parsed.map_err(|error| KclErrorWithOutputs {
+            default_planes: default_planes.clone(),
+            engine_scene_generation: Some(engine_scene_generation),
+            ..KclErrorWithOutputs::no_outputs(error)
+        })?;
+        Ok(ParsedExecutionSource {
+            program: program.map(|program| crate::parsing::ParsedProgram {
+                kcl_version: program.kcl_version,
+                ast: program.ast,
+            }),
+            issues,
+            default_planes,
+            engine_scene_generation,
+        })
+    }
+
     /// Plan, execute, and save in separate phases so cache-management stack
     /// frames are not held underneath deep KCL execution in debug builds.
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
-        let exec_fut = self.run_with_caching_inner(program);
-        let result = if self.configure_engine_render {
-            self.with_engine_execution(Box::pin(exec_fut)).await
+        let session = self
+            .engine_batch
+            .expected_session()
+            .cloned()
+            .unwrap_or_else(|| self.engine.session_identity());
+        let batch = EngineBatchContext::for_session(session);
+        let (cache, _) = self
+            .cache
+            .for_execution(&self.engine, &batch, &self.settings)
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+        let mut ctx = self.clone().with_cache(cache);
+        ctx.engine_batch = batch;
+        let exec_fut = ctx.run_with_caching_inner(program);
+        let result = if ctx.configure_engine_render {
+            ctx.with_engine_execution(Box::pin(exec_fut)).await
         } else {
             exec_fut.await
         };
 
-        if result.is_err() {
-            self.cache.bust_cache().await;
+        match result {
+            Ok(outcome) => Ok(outcome),
+            Err(mut err) => {
+                ctx.cache.bust_cache().await;
+                err.engine_scene_generation = Some(ctx.cache.engine_scene_generation().await);
+                Err(err)
+            }
         }
-        result
     }
 
     async fn run_with_caching_inner(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         let original_program = program.clone();
+        let prepared = self.prepare_cached_execution(program).await;
+        self.engine
+            .validate_session(&self.engine_batch, SourceRange::default())
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+        if !matches!(prepared, Ok(PreparedCachedExecution::Cached(_))) {
+            // Anything but a cache hit may have changed the engine scene, even
+            // if it went on to fail.
+            self.cache.bump_engine_scene_generation().await;
+        }
         let CachedExecution {
             program,
             mut exec_state,
             universe_info,
             preserve_mem,
-        } = *match self.prepare_cached_execution(program).await? {
-            PreparedCachedExecution::Cached(outcome) => {
-                return Ok(ExecOutcome {
-                    from_cache: true,
-                    ..*outcome
-                });
-            }
+        } = *match prepared? {
+            PreparedCachedExecution::Cached(outcome) => return Ok(*outcome),
             PreparedCachedExecution::Execute(execution) => execution,
         };
+        exec_state.global.named_views = None;
         let result = self
             .run_concurrent_inner(&program, &mut exec_state, universe_info, preserve_mem)
             .await;
@@ -1976,12 +2103,14 @@ impl ExecutorContext {
     fn finish_cached_execution(
         &self,
         original_program: crate::Program,
-        exec_state: Box<ExecState>,
+        mut exec_state: Box<ExecState>,
         result: Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs>,
     ) -> BoxFuture<'_, Result<ExecOutcome, KclErrorWithOutputs>> {
         Box::pin(async move {
             // Throw the error.
             let result = result?;
+
+            exec_state.resolve_named_views();
 
             // Save this as the last successful execution to the cache.
             // Gotcha: `CacheResult::ReExecute.program` may be diff-based, do not save that AST
@@ -2027,12 +2156,17 @@ impl ExecutorContext {
         universe_info: Option<(Universe, UniverseMap)>,
         preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
+        exec_state.global.named_views = None;
         let execution_fut = self.run_concurrent_inner(program, exec_state, universe_info, preserve_mem);
-        if self.configure_engine_render {
+        let result = if self.configure_engine_render {
             self.with_engine_execution(Box::pin(execution_fut)).await
         } else {
             execution_fut.await
+        };
+        if result.is_ok() && !self.is_mock() {
+            exec_state.resolve_named_views();
         }
+        result
     }
 
     /// Enclose the entire execution, including scene setup and cached settings updates.
@@ -2068,7 +2202,7 @@ impl ExecutorContext {
         // Their IDs must not consume or collide with the model's stable artifact IDs.
         self.engine
             .send_modeling_cmd(
-                &EngineBatchContext::new(),
+                &self.engine_batch.fresh(),
                 uuid::Uuid::new_v4(),
                 SourceRange::synthetic(),
                 &cmd,
@@ -2167,11 +2301,7 @@ impl ExecutorContext {
             #[cfg(not(target_arch = "wasm32"))]
             let mut set = tokio::task::JoinSet::new();
 
-            #[allow(clippy::type_complexity)]
-            let (results_tx, mut results_rx): (
-                tokio::sync::mpsc::Sender<(ModuleId, ModulePath, Result<ModuleRepr, KclError>)>,
-                tokio::sync::mpsc::Receiver<_>,
-            ) = tokio::sync::mpsc::channel(1);
+            let (results_tx, results_rx) = tokio::sync::mpsc::channel::<ImportedModuleResult>(1);
 
             for module in modules {
                 let Some((import_stmt, module_id, module_path, repr)) = universe.get(&module) else {
@@ -2251,10 +2381,7 @@ impl ExecutorContext {
                         )
                         .await;
 
-                        results_tx
-                            .send((module_id, module_path, result))
-                            .await
-                            .unwrap_or_default();
+                        results_tx.send((module_id, result)).await.unwrap_or_default();
                     });
                 }
                 #[cfg(not(target_arch = "wasm32"))]
@@ -2273,45 +2400,14 @@ impl ExecutorContext {
                         )
                         .await;
 
-                        results_tx
-                            .send((module_id, module_path, result))
-                            .await
-                            .unwrap_or_default();
+                        results_tx.send((module_id, result)).await.unwrap_or_default();
                     });
                 }
             }
 
             drop(results_tx);
 
-            while let Some((module_id, _, result)) = results_rx.recv().await {
-                match result {
-                    Ok(new_repr) => {
-                        let mut repr = exec_state.global.module_infos[&module_id].take_repr();
-
-                        match &mut repr {
-                            ModuleRepr::Kcl(_, cache) => {
-                                let ModuleRepr::Kcl(_, session_data) = new_repr else {
-                                    unreachable!();
-                                };
-                                *cache = session_data;
-                            }
-                            ModuleRepr::Foreign(_, cache) => {
-                                let ModuleRepr::Foreign(_, session_data) = new_repr else {
-                                    unreachable!();
-                                };
-                                *cache = session_data;
-                            }
-                            ModuleRepr::Dummy | ModuleRepr::Root => unreachable!(),
-                        }
-
-                        exec_state.global.module_infos[&module_id].restore_repr(repr);
-                    }
-                    Err(e) => {
-                        let e = import_graph::add_import_backtrace(e, module_id, &universe);
-                        return Err(exec_state.error_with_outputs(e, None, default_planes));
-                    }
-                }
-            }
+            Self::settle_import_stage(results_rx, exec_state, &universe, &default_planes).await?;
         }
 
         // The early-pushed ModuleInstance operations have already served their
@@ -2345,6 +2441,51 @@ impl ExecutorContext {
                 }
                 error
             })
+    }
+
+    async fn settle_import_stage(
+        mut results_rx: tokio::sync::mpsc::Receiver<ImportedModuleResult>,
+        exec_state: &mut ExecState,
+        universe: &Universe,
+        default_planes: &Option<DefaultPlanes>,
+    ) -> Result<(), KclErrorWithOutputs> {
+        let mut first_error = None;
+        while let Some((module_id, result)) = results_rx.recv().await {
+            match result {
+                Ok(new_repr) => {
+                    let mut repr = exec_state.global.module_infos[&module_id].take_repr();
+
+                    match &mut repr {
+                        ModuleRepr::Kcl(_, cache) => {
+                            let ModuleRepr::Kcl(_, session_data) = new_repr else {
+                                unreachable!();
+                            };
+                            *cache = session_data;
+                        }
+                        ModuleRepr::Foreign(_, cache) => {
+                            let ModuleRepr::Foreign(_, session_data) = new_repr else {
+                                unreachable!();
+                            };
+                            *cache = session_data;
+                        }
+                        ModuleRepr::Dummy | ModuleRepr::Root => unreachable!(),
+                    }
+
+                    exec_state.global.module_infos[&module_id].restore_repr(repr);
+                }
+                Err(e) => {
+                    if first_error.is_none() {
+                        first_error = Some(import_graph::add_import_backtrace(e, module_id, universe));
+                    }
+                }
+            }
+        }
+        // Wasm's spawned siblings are not cancelled by dropping a join handle.
+        // Drain their results before ending execution or clearing its scene.
+        if let Some(error) = first_error {
+            return Err(exec_state.error_with_outputs(error, None, default_planes.clone()));
+        }
+        Ok(())
     }
 
     /// Get the universe & universe map of the program.
@@ -2712,17 +2853,13 @@ pub(crate) async fn parse_execute_with_project_dir(
     code: &str,
     project_directory: Option<TypedPath>,
 ) -> Result<ExecTestResults, KclError> {
-    // Differential testing: unit tests run under both executors.
-    parse_execute_with_executor_kind(code, project_directory, machine::ExecutorKind::resolve()).await
+    parse_execute_inner(code, project_directory, false).await
 }
 
 /// A mock-engine executor context for tests that need to inspect the context
 /// (e.g. the engine's batch queue) even when execution fails.
 #[cfg(test)]
-pub(crate) fn new_mock_executor_context(
-    project_directory: Option<TypedPath>,
-    executor_kind: machine::ExecutorKind,
-) -> ExecutorContext {
+pub(crate) fn new_mock_executor_context(project_directory: Option<TypedPath>) -> ExecutorContext {
     ExecutorContext {
         engine: Arc::new(EngineManager::new_mock()),
         cache: Cache::default(),
@@ -2734,19 +2871,10 @@ pub(crate) fn new_mock_executor_context(
         },
         context_type: ContextType::Mock,
         execution_callbacks: Default::default(),
-        executor_kind,
         machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         configure_engine_render: true,
+        needs_oit: Default::default(),
     }
-}
-
-#[cfg(test)]
-pub(crate) async fn parse_execute_with_executor_kind(
-    code: &str,
-    project_directory: Option<TypedPath>,
-    executor_kind: machine::ExecutorKind,
-) -> Result<ExecTestResults, KclError> {
-    parse_execute_inner(code, project_directory, executor_kind, false).await
 }
 
 /// Like [`parse_execute_with_project_dir`], but missing names are explained
@@ -2757,19 +2885,18 @@ pub(crate) async fn parse_execute_hinting_all(
     code: &str,
     project_directory: Option<TypedPath>,
 ) -> Result<ExecTestResults, KclError> {
-    parse_execute_inner(code, project_directory, machine::ExecutorKind::resolve(), true).await
+    parse_execute_inner(code, project_directory, true).await
 }
 
 #[cfg(test)]
 async fn parse_execute_inner(
     code: &str,
     project_directory: Option<TypedPath>,
-    executor_kind: machine::ExecutorKind,
     hint_all_not_yet_added: bool,
 ) -> Result<ExecTestResults, KclError> {
     let program = crate::Program::parse_no_errs(code)?;
 
-    let exec_ctxt = new_mock_executor_context(project_directory, executor_kind);
+    let exec_ctxt = new_mock_executor_context(project_directory);
     let mut exec_state = ExecState::new(&exec_ctxt);
     exec_state.global.hint_all_not_yet_added = hint_all_not_yet_added;
     let result = exec_ctxt.run(&program, &mut exec_state).await?;
@@ -3033,15 +3160,62 @@ mod tests {
     }
 
     #[test]
-    fn clone_with_fresh_execution_batch_keeps_executor_selection() {
-        // Imported modules execute on a context created by
-        // clone_with_fresh_execution_batch. They must stay on the executor
-        // selected for the run instead of silently reverting to the default.
-        let mut ctx = new_mock_executor_context(None, machine::ExecutorKind::Machine);
+    fn clone_with_fresh_execution_batch_keeps_call_depth_limit() {
+        let mut ctx = new_mock_executor_context(None);
         ctx.machine_call_depth_limit = 123;
         let cloned = ctx.clone_with_fresh_execution_batch();
-        assert_eq!(cloned.executor_kind, machine::ExecutorKind::Machine);
         assert_eq!(cloned.machine_call_depth_limit, 123);
+    }
+
+    #[tokio::test]
+    async fn appearance_oit_deferral() {
+        for (geometry_only, enable_ssao, opacity) in [
+            (true, true, 60),
+            (false, true, 60),
+            (true, false, 60),
+            (true, true, 100),
+        ] {
+            let ctx = ExecutorContext::new_mock(Some(ExecutorSettings {
+                geometry_only,
+                enable_ssao,
+                ..Default::default()
+            }))
+            .await;
+            let code = format!(
+                r##"@settings(kclVersion = 3.0)
+profile = sketch(on = XY) {{
+  c = circle(center = [var 0mm, var 0mm], start = [var 1mm, var 0mm])
+}}
+body = extrude(region(segments = [profile.c]), length = 2mm)
+appearance(body, color = "#dba09a", opacity = {opacity})
+"##
+            );
+            let program = crate::Program::parse_no_errs(&code).unwrap();
+            let mut state = ExecState::new(&ctx);
+            ctx.run(&program, &mut state).await.unwrap();
+
+            let needs_oit = enable_ssao && opacity < 100;
+            assert_eq!(ctx.needs_oit.load(Ordering::Relaxed), needs_oit);
+            let sent_oit = state.global.root_module_artifacts.commands.iter().any(|command| {
+                matches!(&command.command, ModelingCmd::SetOrderIndependentTransparency(command) if command.enabled == Some(true))
+            });
+            assert_eq!(sent_oit, needs_oit && !geometry_only);
+
+            let cloned = ctx.clone_with_fresh_execution_batch();
+            assert!(Arc::ptr_eq(&ctx.needs_oit, &cloned.needs_oit));
+            for _ in 0..2 {
+                cloned.enable_engine_graphics(&mut state).await.unwrap();
+                assert_eq!(state.geometry_only(), geometry_only);
+                cloned.disable_engine_graphics(&mut state).await.unwrap();
+                assert_eq!(state.geometry_only(), geometry_only);
+                assert_eq!(cloned.needs_oit.load(Ordering::Relaxed), needs_oit);
+            }
+            ctx.send_clear_scene(Some(program.kcl_version), &mut state, SourceRange::synthetic())
+                .await
+                .unwrap();
+            assert!(!cloned.needs_oit.load(Ordering::Relaxed));
+            ctx.close().await;
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3052,10 +3226,7 @@ mod tests {
             .unwrap();
 
         let program = crate::Program::parse_no_errs("import \"cube.obj\" as cube\n\nmodel = cube\n").unwrap();
-        let ctx = new_mock_executor_context(
-            Some(crate::TypedPath(tmpdir.path().into())),
-            machine::ExecutorKind::resolve(),
-        );
+        let ctx = new_mock_executor_context(Some(crate::TypedPath(tmpdir.path().into())));
         let mut exec_state = ExecState::new(&ctx);
         let (main_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
         let outcome = exec_state
@@ -3337,9 +3508,9 @@ mod tests {
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         };
         let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
         let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
@@ -4955,13 +5126,8 @@ forever(1)
 "#;
         let result = parse_execute(ast).await;
         let err = result.unwrap_err();
-        // The recursive executor's native-stack cap and the machine
-        // executor's call-depth guard report differently.
         let msg = err.to_string();
-        assert!(
-            msg.contains("stack size exceeded") || msg.contains("Call depth limit"),
-            "actual: {err:?}"
-        );
+        assert!(msg.contains("Call depth limit"), "actual: {err:?}");
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -5391,6 +5557,101 @@ solid7 = extrude(r7, length = width)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn cached_execution_contract_retired_future_cannot_overwrite_or_clear_replacement() {
+        let first = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let original = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
+        first.run_with_caching(original).await.unwrap();
+        let (stale, _) = first
+            .cache
+            .for_execution(
+                &first.engine,
+                &EngineBatchContext::for_session(first.engine.session_identity()),
+                &first.settings,
+            )
+            .await
+            .unwrap();
+        let old_ast = stale.read_old_ast().await.unwrap();
+        let old_memory = stale.read_old_memory().await.unwrap();
+        let replacement = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default())
+            .with_cache(first.cache.clone());
+        let updated = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 7").unwrap();
+        let replacement_outcome = replacement.run_with_caching(updated.clone()).await.unwrap();
+        // Complete every kind of old continuation after the replacement wins.
+        stale.write_old_ast(old_ast).await;
+        stale.write_old_memory(old_memory).await;
+        stale.bust_cache().await;
+        stale.clear_mem_cache().await;
+        stale.bump_engine_scene_generation().await;
+        assert_eq!(
+            replacement.cache.engine_scene_generation().await,
+            replacement_outcome.engine_scene_generation,
+            "a retired execution cannot advance the replacement scene's generation"
+        );
+        assert!(stale.read_old_ast().await.is_none());
+        assert!(stale.read_old_memory().await.is_none());
+        let error = stale
+            .for_execution(
+                &first.engine,
+                &EngineBatchContext::for_session(first.engine.session_identity()),
+                &first.settings,
+            )
+            .await
+            .unwrap_err();
+        assert!(
+            matches!(error, KclError::Engine { details } if details.message == "Execution cache owner was superseded.")
+        );
+        let cached = replacement.run_with_caching(updated).await.unwrap();
+        assert_eq!(
+            cached.engine_scene_generation,
+            replacement_outcome.engine_scene_generation
+        );
+        assert_number_variable(&cached.variables, "x", 7.0);
+        let mock = ExecutorContext::new_mock(None)
+            .await
+            .with_cache(replacement.cache.clone());
+        let expression = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\ny = x + 1").unwrap();
+        assert_number_variable(
+            &mock
+                .run_mock(&expression, &MockConfig::default())
+                .await
+                .unwrap()
+                .variables,
+            "y",
+            8.0,
+        );
+        first.close().await;
+        replacement.close().await;
+        mock.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn parsing_another_valid_entry_preserves_the_cached_owner_and_mock_memory() {
+        use std::sync::atomic::Ordering::Relaxed;
+
+        let project = tempfile::tempdir().unwrap();
+        let mut settings = ExecutorSettings::default();
+        settings.with_current_file(crate::TypedPath(project.path().join("main.kcl")));
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), settings);
+        let program = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
+        let original = ctx.run_with_caching(program.clone()).await.unwrap();
+        let mut probe = ctx.clone_with_fresh_execution_batch();
+        probe
+            .settings
+            .with_current_file(crate::TypedPath(project.path().join("other.kcl")));
+        let commands = ctx.engine.stats().commands_batched.load(Relaxed);
+        probe
+            .parse_for_execution("@settings(kclVersion = 3.0)\nx = 7")
+            .await
+            .unwrap();
+        assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), commands);
+        assert!(ctx.cache.read_old_memory_var("x").await.is_some());
+        let cached = ctx.run_with_caching(program).await.unwrap();
+        assert_eq!(cached.engine_scene_generation, original.engine_scene_generation);
+        assert_number_variable(&cached.variables, "x", 2.0);
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn session_cache_shares_clones_and_associated_mock_memory() {
         let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
         let program = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
@@ -5432,6 +5693,69 @@ solid7 = extrude(r7, length = width)
         assert_number_variable(&outcome.variables, "y", 3.0);
         ctx.close().await;
         mock.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn failed_import_stage_waits_for_its_pending_sibling() {
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let mut exec_state = ExecState::new(&ctx);
+        let root_range = SourceRange::new(0, 10, ModuleId::default());
+        let imported_range = SourceRange::new(20, 30, ModuleId::from_usize(1));
+        let first_error = KclError::new_engine(KclErrorDetails::new(
+            "first import failed".to_owned(),
+            vec![imported_range],
+        ))
+        .add_import_location("bad.kcl", root_range);
+        let (sender, receiver) = tokio::sync::mpsc::channel(1);
+        sender
+            .send((ModuleId::from_usize(1), Err(first_error.clone())))
+            .await
+            .unwrap();
+        let universe = Universe::default();
+        let default_planes = None;
+        let settling = ExecutorContext::settle_import_stage(receiver, &mut exec_state, &universe, &default_planes);
+        tokio::pin!(settling);
+        assert!(
+            futures::poll!(settling.as_mut()).is_pending(),
+            "the execution cannot end while a sibling still owns its sender"
+        );
+
+        sender
+            .send((
+                ModuleId::from_usize(2),
+                Err(KclError::new_semantic(KclErrorDetails::new(
+                    "later sibling failed".to_owned(),
+                    vec![SourceRange::new(40, 50, ModuleId::from_usize(2))],
+                ))),
+            ))
+            .await
+            .unwrap();
+        drop(sender);
+        let result = settling.await.unwrap_err();
+        assert_eq!(
+            result.error, first_error,
+            "preserve the first kind, ranges, and import backtrace"
+        );
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn engine_scene_generation_skips_cache_hits_and_counts_failures() {
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let program = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
+        let first = ctx.run_with_caching(program.clone()).await.unwrap();
+        assert_eq!(first.engine_scene_generation, 1);
+        let cached = ctx.run_with_caching(program).await.unwrap();
+        assert_eq!(cached.engine_scene_generation, 1, "a cache hit leaves the scene alone");
+
+        let invalid = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = missing").unwrap();
+        let err = ctx.run_with_caching(invalid).await.unwrap_err();
+        assert_eq!(
+            err.engine_scene_generation,
+            Some(2),
+            "a failed run may still change the scene"
+        );
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -6135,9 +6459,9 @@ face = disc()
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         }
     }
 
@@ -7170,9 +7494,7 @@ assert(total, isEqualTo = 6, error = "reduce total")
 
     /// unwind_return must decrement the machine call depth like a normal
     /// call completion; otherwise sequential early-return calls would
-    /// accumulate depth until the runaway guard trips. The recursive
-    /// executor doesn't use the counter, so the bound is trivially true
-    /// there.
+    /// accumulate depth until the runaway guard trips.
     #[tokio::test(flavor = "multi_thread")]
     async fn early_returns_do_not_leak_machine_call_depth() {
         let code = r#"@settings(kclVersion = "3.0-preview")
@@ -7578,7 +7900,7 @@ x = if false {{
     #[tokio::test(flavor = "multi_thread")]
     async fn error_inside_if_arm_unwinds_balanced_in_v3() {
         // The user's error surfaces (not an internal environment-imbalance
-        // error), on both executors.
+        // error).
         let code = r#"@settings(kclVersion = "3.0-preview")
 fn f() {
   dummy = if true {
@@ -8477,9 +8799,9 @@ type Color { | Red | Green | Red }
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         };
         let mut exec_state = ExecState::new(&ctx);
         // Close the context even if execution panics, then let the panic
@@ -9993,7 +10315,7 @@ x = [1, 2]: NewT
 
     #[tokio::test(flavor = "multi_thread")]
     async fn not_yet_added_records_whether_the_declaration_is_std() {
-        let ctx = new_mock_executor_context(None, machine::ExecutorKind::resolve());
+        let ctx = new_mock_executor_context(None);
         let mut exec_state = ExecState::new(&ctx);
         let version = |s: &str| annotations::VersionConstraint::parse(s).unwrap();
 
@@ -10077,7 +10399,7 @@ x = [1, 2]: NewT
     /// memory skips the prelude that writes them.
     #[tokio::test(flavor = "multi_thread")]
     async fn std_not_yet_added_records_survive_the_mock_memory_cache() {
-        let ctx = new_mock_executor_context(None, machine::ExecutorKind::resolve());
+        let ctx = new_mock_executor_context(None);
         let mut exec_state = ExecState::new(&ctx);
         let version = |s: &str| annotations::VersionConstraint::parse(s).unwrap();
         let program = crate::Program::parse_no_errs("x = 1").unwrap();

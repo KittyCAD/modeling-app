@@ -15,10 +15,10 @@ class TestWebSocket extends EventTarget {
 
 function createUnitTestConnection({
   webrtc,
-  pool,
+  geometryOnly,
 }: {
   webrtc?: boolean
-  pool?: 'cpu'
+  geometryOnly?: boolean
 }) {
   const callbackOnUnitTestingConnection = vi.fn()
   const connection = new Connection({
@@ -30,7 +30,7 @@ function createUnitTestConnection({
     rejectPendingCommand: vi.fn(),
     callbackOnUnitTestingConnection,
     unitTestWebrtc: webrtc,
-    unitTestPool: pool,
+    unitTestGeometryOnly: geometryOnly,
     handleMessage: vi.fn(),
     getCloudProjectId: () => undefined,
   })
@@ -47,28 +47,30 @@ describe('unit testing engine connection', () => {
     vi.unstubAllGlobals()
   })
 
-  it('can disable WebRTC without requesting the CPU pool', () => {
+  it('can disable WebRTC without requesting geometry-only mode', () => {
     createUnitTestConnection({ webrtc: false })
 
     const websocketUrl = new URL(TestWebSocket.instances[0].url)
     expect(websocketUrl.searchParams.get('webrtc')).toBe('false')
+    expect(websocketUrl.searchParams.get('geometry_only')).toBe('false')
     expect(websocketUrl.searchParams.has('pool')).toBe(false)
     expect(websocketUrl.searchParams.get('post_effect')).toBe('ssao')
   })
 
-  it('routes compatible tests without WebRTC to the CPU pool', () => {
-    createUnitTestConnection({ webrtc: false, pool: 'cpu' })
+  it('requests geometry-only mode without selecting an explicit pool', () => {
+    createUnitTestConnection({ webrtc: false, geometryOnly: true })
 
     const websocketUrl = new URL(TestWebSocket.instances[0].url)
     expect(websocketUrl.searchParams.get('webrtc')).toBe('false')
-    expect(websocketUrl.searchParams.get('pool')).toBe('cpu')
+    expect(websocketUrl.searchParams.get('geometry_only')).toBe('true')
+    expect(websocketUrl.searchParams.has('pool')).toBe(false)
     expect(websocketUrl.searchParams.has('post_effect')).toBe(false)
   })
 
   it('forwards engine errors to the command response handler', () => {
     const { connection } = createUnitTestConnection({
       webrtc: false,
-      pool: 'cpu',
+      geometryOnly: true,
     })
     const websocket = TestWebSocket.instances[0]
     const errorResponse = {

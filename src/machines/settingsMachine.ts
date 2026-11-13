@@ -91,6 +91,26 @@ export type SettingsMachineContext = SettingsMachineInput & {
 
 export type SettingsActorType = ActorRefFrom<typeof settingsMachine>
 
+type SettingsLoadInput = Omit<
+  SettingsActorDepsType,
+  'currentProject' | 'commandBarActor'
+>
+
+async function loadSettings(input: SettingsLoadInput, projectPath?: string) {
+  const { settings } = await loadAndValidateSettings(
+    input.fileOperations,
+    input.wasmInstancePromise,
+    {
+      defaultProjectLibraries: input.defaultProjectLibraries,
+      projectLibrarySettingDefaultPolicies:
+        input.projectLibrarySettingDefaultPolicies,
+      extensionSettings: input.extensionSettings,
+      projectPath,
+    }
+  )
+  return settings
+}
+
 export const settingsMachine = setup({
   types: {
     context: {} as SettingsMachineContext,
@@ -103,6 +123,7 @@ export const settingsMachine = setup({
       {
         doNotPersist: boolean
         context: SettingsMachineContext
+        level?: SettingsLevel
         toastCallback?: () => void
       }
     >(async ({ input }) => {
@@ -125,84 +146,24 @@ export const settingsMachine = setup({
         wasmInstancePromise,
         settings,
         extensionSettings,
-        currentProject?.path
+        input.level === 'user' ? undefined : currentProject?.path
       )
 
       if (input.toastCallback) {
         input.toastCallback()
       }
     }),
-    loadUserSettings: fromPromise<
-      SettingsType,
-      {
-        defaultProjectLibraries: readonly ProjectLibrarySetting[]
-        projectLibrarySettingDefaultPolicies: readonly ProjectLibrarySettingDefaultPolicy[]
-        extensionSettings: ResolvedExtensionSettings
-        fileOperations: FileOperationsRegistryService
-        wasmInstancePromise: Promise<ModuleType>
-      }
-    >(async ({ input }) => {
-      const { settings } = await loadAndValidateSettings(
-        input.fileOperations,
-        input.wasmInstancePromise,
-        {
-          defaultProjectLibraries: input.defaultProjectLibraries,
-          projectLibrarySettingDefaultPolicies:
-            input.projectLibrarySettingDefaultPolicies,
-          extensionSettings: input.extensionSettings,
-        }
-      )
-      return settings
-    }),
+    loadUserSettings: fromPromise<SettingsType, SettingsLoadInput>(
+      ({ input }) => loadSettings(input)
+    ),
     loadProjectSettings: fromPromise<
       SettingsType,
-      {
-        defaultProjectLibraries: readonly ProjectLibrarySetting[]
-        projectLibrarySettingDefaultPolicies: readonly ProjectLibrarySettingDefaultPolicy[]
-        extensionSettings: ResolvedExtensionSettings
-        fileOperations: FileOperationsRegistryService
-        project: Project
-        settings: SettingsType
-        wasmInstancePromise: Promise<ModuleType>
-      }
-    >(async ({ input }) => {
-      const { settings } = await loadAndValidateSettings(
-        input.fileOperations,
-        input.wasmInstancePromise,
-        {
-          defaultProjectLibraries: input.defaultProjectLibraries,
-          projectLibrarySettingDefaultPolicies:
-            input.projectLibrarySettingDefaultPolicies,
-          extensionSettings: input.extensionSettings,
-          projectPath: input.project.path,
-        }
-      )
-      return settings
-    }),
+      SettingsLoadInput & { project: Project; settings: SettingsType }
+    >(({ input }) => loadSettings(input, input.project.path)),
     reloadSettings: fromPromise<
       SettingsType,
-      {
-        currentProject?: Project
-        defaultProjectLibraries: readonly ProjectLibrarySetting[]
-        projectLibrarySettingDefaultPolicies: readonly ProjectLibrarySettingDefaultPolicy[]
-        extensionSettings: ResolvedExtensionSettings
-        fileOperations: FileOperationsRegistryService
-        wasmInstancePromise: Promise<ModuleType>
-      }
-    >(async ({ input }) => {
-      const { settings } = await loadAndValidateSettings(
-        input.fileOperations,
-        input.wasmInstancePromise,
-        {
-          defaultProjectLibraries: input.defaultProjectLibraries,
-          projectLibrarySettingDefaultPolicies:
-            input.projectLibrarySettingDefaultPolicies,
-          extensionSettings: input.extensionSettings,
-          projectPath: input.currentProject?.path,
-        }
-      )
-      return settings
-    }),
+      SettingsLoadInput & { currentProject?: Project }
+    >(({ input }) => loadSettings(input, input.currentProject?.path)),
     watchSystemTheme: fromCallback<{
       type: 'update.themeWatcher'
       theme: Themes
@@ -407,6 +368,11 @@ export const settingsMachine = setup({
     setEngineHighlightEdges: () => {
       // Implementation moved to singletons.ts to provide necessary singletons.
     },
+    updateRegisteredCommands: sendTo('registerCommands', ({ context }) => ({
+      type: 'update',
+      settings: getOnlySettingsFromContext(context),
+      commandBarActor: context.commandBarActor,
+    })),
     sendThemeToWatcher: sendTo('watchSystemTheme', ({ context }) => ({
       type: 'update.themeWatcher',
       theme: context.app.theme.current,
@@ -467,11 +433,7 @@ export const settingsMachine = setup({
           actions: [
             'setSettingAtLevel',
             'toastSuccess',
-            sendTo('registerCommands', ({ context }) => ({
-              type: 'update',
-              settings: getOnlySettingsFromContext(context),
-              commandBarActor: context.commandBarActor,
-            })),
+            'updateRegisteredCommands',
           ],
         },
 
@@ -552,11 +514,7 @@ export const settingsMachine = setup({
             'resetSettings',
             'toastSettingsReset',
             'sendThemeToWatcher',
-            sendTo('registerCommands', ({ context }) => ({
-              type: 'update',
-              settings: getOnlySettingsFromContext(context),
-              commandBarActor: context.commandBarActor,
-            })),
+            'updateRegisteredCommands',
           ],
         },
 
@@ -564,11 +522,7 @@ export const settingsMachine = setup({
           actions: [
             'setAllSettings',
             'sendThemeToWatcher',
-            sendTo('registerCommands', ({ context }) => ({
-              type: 'update',
-              settings: getOnlySettingsFromContext(context),
-              commandBarActor: context.commandBarActor,
-            })),
+            'updateRegisteredCommands',
           ],
         },
 
@@ -591,11 +545,7 @@ export const settingsMachine = setup({
           actions: [
             'clearProjectSettings',
             'clearCurrentProject',
-            sendTo('registerCommands', ({ context }) => ({
-              type: 'update',
-              settings: getOnlySettingsFromContext(context),
-              commandBarActor: context.commandBarActor,
-            })),
+            'updateRegisteredCommands',
           ],
         },
       },
@@ -612,11 +562,7 @@ export const settingsMachine = setup({
             'setAllSettings',
             'flushDeferredSettingsEvents',
             'sendThemeToWatcher',
-            sendTo('registerCommands', ({ context }) => ({
-              type: 'update',
-              settings: getOnlySettingsFromContext(context),
-              commandBarActor: context.commandBarActor,
-            })),
+            'updateRegisteredCommands',
           ],
         },
         onError: {
@@ -655,13 +601,19 @@ export const settingsMachine = setup({
         onError: {
           target: 'idle',
           actions: [
-            () => {
-              console.error('Error persisting settings')
+            ({ event }) => {
+              console.error('Error persisting settings', event.error)
             },
             'flushDeferredSettingsEvents',
           ],
         },
         input: ({ context, event }) => {
+          let level: SettingsLevel | undefined
+          if (event.type === 'Reset settings') {
+            level = event.level
+          } else if ('data' in event && 'level' in event.data) {
+            level = event.data.level
+          }
           if (
             event.type === 'set.app.namedViews' &&
             'toastCallback' in event.data
@@ -669,6 +621,7 @@ export const settingsMachine = setup({
             return {
               doNotPersist: event.doNotPersist ?? false,
               context,
+              level,
               toastCallback: event.data.toastCallback,
             }
           }
@@ -676,6 +629,7 @@ export const settingsMachine = setup({
           return {
             doNotPersist: event.doNotPersist ?? false,
             context,
+            level,
           }
         },
       },
@@ -697,11 +651,7 @@ export const settingsMachine = setup({
           actions: [
             'setAllSettings',
             'sendThemeToWatcher',
-            sendTo('registerCommands', ({ context }) => ({
-              type: 'update',
-              settings: getOnlySettingsFromContext(context),
-              commandBarActor: context.commandBarActor,
-            })),
+            'updateRegisteredCommands',
           ],
         },
         onError: {
@@ -727,11 +677,7 @@ export const settingsMachine = setup({
           actions: [
             'setAllSettings',
             'sendThemeToWatcher',
-            sendTo('registerCommands', ({ context }) => ({
-              type: 'update',
-              settings: getOnlySettingsFromContext(context),
-              commandBarActor: context.commandBarActor,
-            })),
+            'updateRegisteredCommands',
           ],
         },
         onError: 'idle',

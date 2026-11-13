@@ -7,8 +7,8 @@ import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRen
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import { reportRejection } from '@src/lib/trap'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   type KeymapDocument,
   MODE_MODELING_KEYMAP_SCOPE,
@@ -55,7 +55,8 @@ function RenderHeaderItem({ app }: AppHeaderItemProps) {
   const automaticallyRenderEnabled = useSelector(app.settings.actor, (state) =>
     getAutomaticallyRenderEnabledFromSettings(state.context)
   )
-  const executionService = app.registry.signal(executingEditorService).value
+  const executionService =
+    app.registry.signal(projectSession).value?.executingEditor.value
   const hasEditsSinceLastExecution =
     executionService?.hasEditsSinceLastExecution.value ?? false
   const keymap = app.registry.optional(keymapService)

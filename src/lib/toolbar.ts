@@ -1,3 +1,4 @@
+import { selectCommand } from '@src/lib/commandUtils'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import {
@@ -29,10 +30,6 @@ import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
-import {
-  isEditingExistingSketch,
-  pipeHasCircle,
-} from '@src/machines/modelingMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { constraintToolMetadata } from '@src/machines/sketchSolve/constraints/constraintMetadata'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
@@ -576,11 +573,7 @@ export function buildToolbarConfig(
       icon: icon ?? commandConfig?.icon,
       status: status === 'experimental' ? 'experimental' : 'available',
       links: [stdLibDocsLink(stdLibName), ...extraLinks],
-      onClick: () =>
-        commands.send({
-          type: 'Find and select command',
-          data: { name, groupId: 'modeling' },
-        }),
+      onClick: () => selectCommand(commands, { name, groupId: 'modeling' }),
     }
   }
 
@@ -612,7 +605,6 @@ export function buildToolbarConfig(
       items: [
         {
           id: 'sketch-exit',
-          command: TOOLBAR_COMMAND_IDS.sketching.exit,
           onClick: ({ modelingSend }) =>
             modelingSend({
               type: 'Cancel',
@@ -671,7 +663,6 @@ export function buildToolbarConfig(
               })
               void selectSketchPlane(
                 selectedSketchTarget,
-                modelingState.context.store.useSketchSolveMode?.current,
                 modelingState.context.kclManager
               )
             } else {
@@ -846,10 +837,7 @@ export function buildToolbarConfig(
           id: 'insert',
           command: 'code:Insert',
           onClick: () =>
-            commands.send({
-              type: 'Find and select command',
-              data: { name: 'Import', groupId: 'code' },
-            }),
+            selectCommand(commands, { name: 'Import', groupId: 'code' }),
           icon: 'import',
           status: 'available',
           title: 'Import',
@@ -985,7 +973,6 @@ export function buildToolbarConfig(
       items: [
         {
           id: 'sketch-exit',
-          command: TOOLBAR_COMMAND_IDS.sketching.exit,
           onClick: ({ modelingSend }) =>
             modelingSend({
               type: 'Cancel',
@@ -998,205 +985,6 @@ export function buildToolbarConfig(
           links: [],
         },
         'break',
-        {
-          id: 'line',
-          command: TOOLBAR_COMMAND_IDS.sketching.line,
-          onClick: ({ modelingState, modelingSend }) => {
-            modelingSend({
-              type: 'change tool',
-              data: {
-                tool: !modelingState.matches({ Sketch: 'Line tool' })
-                  ? 'line'
-                  : 'none',
-              },
-            })
-          },
-          icon: 'line',
-          status: 'available',
-          disabled: (state) => state.matches('Sketch no face'),
-          title: 'Line',
-          description: 'Start drawing straight lines.',
-          links: [],
-          isActive: (state) => state.matches({ Sketch: 'Line tool' }),
-        },
-        {
-          id: 'arcs',
-          array: [
-            {
-              id: 'three-point-arc',
-              command: TOOLBAR_COMMAND_IDS.sketching.threePointArc,
-              onClick: ({ modelingState, modelingSend }) =>
-                modelingSend({
-                  type: 'change tool',
-                  data: {
-                    tool: !modelingState.matches({
-                      Sketch: 'Arc three point tool',
-                    })
-                      ? 'arcThreePoint'
-                      : 'none',
-                  },
-                }),
-              icon: 'arc',
-              status: 'available',
-              title: 'Three-Point Arc',
-              showTitle: false,
-              description: 'Draw a circular arc defined by three points.',
-              links: [
-                {
-                  label: 'GitHub issue',
-                  url: 'https://github.com/KittyCAD/modeling-app/issues/1659',
-                },
-              ],
-              isActive: (state) =>
-                state.matches({ Sketch: 'Arc three point tool' }),
-            },
-            {
-              id: 'tangential-arc',
-              command: TOOLBAR_COMMAND_IDS.sketching.tangentialArc,
-              onClick: ({ modelingState, modelingSend }) =>
-                modelingSend({
-                  type: 'change tool',
-                  data: {
-                    tool: !modelingState.matches({
-                      Sketch: 'Tangential arc to',
-                    })
-                      ? 'tangentialArc'
-                      : 'none',
-                  },
-                }),
-              icon: 'arc',
-              status: 'available',
-              disabled: (state) => {
-                return (
-                  (!isEditingExistingSketch({
-                    sketchDetails: state.context.sketchDetails,
-                    kclManager: state.context.kclManager,
-                    wasmInstance: state.context.wasmInstance,
-                  }) &&
-                    !state.matches({ Sketch: 'Tangential arc to' })) ||
-                  pipeHasCircle({
-                    sketchDetails: state.context.sketchDetails,
-                    kclManager: state.context.kclManager,
-                    wasmInstance: state.context.wasmInstance,
-                  })
-                )
-              },
-              disabledReason: (state) => {
-                return !isEditingExistingSketch({
-                  sketchDetails: state.context.sketchDetails,
-                  kclManager: state.context.kclManager,
-                  wasmInstance: state.context.wasmInstance,
-                }) && !state.matches({ Sketch: 'Tangential arc to' })
-                  ? "Cannot start a tangential arc because there's no previous line to be tangential to.  Try drawing a line first or selecting an existing sketch to edit."
-                  : undefined
-              },
-              title: 'Tangential Arc',
-              description:
-                'Start drawing an arc tangent to the current segment.',
-              links: [],
-              isActive: (state) =>
-                state.matches({ Sketch: 'Tangential arc to' }),
-            },
-          ],
-        },
-        'break',
-        {
-          id: 'circles',
-          array: [
-            {
-              id: 'circle-center',
-              command: TOOLBAR_COMMAND_IDS.sketching.circleCenter,
-              onClick: ({ modelingState, modelingSend }) =>
-                modelingSend({
-                  type: 'change tool',
-                  data: {
-                    tool: !modelingState.matches({ Sketch: 'Circle tool' })
-                      ? 'circle'
-                      : 'none',
-                  },
-                }),
-              icon: 'circle',
-              status: 'available',
-              title: 'Center Circle',
-              disabled: (state) => state.matches('Sketch no face'),
-              isActive: (state) => state.matches({ Sketch: 'Circle tool' }),
-              showTitle: false,
-              description: 'Start drawing a circle from its center.',
-              links: [],
-            },
-            {
-              id: 'circle-three-points',
-              command: TOOLBAR_COMMAND_IDS.sketching.circleThreePoints,
-              onClick: ({ modelingState, modelingSend }) =>
-                modelingSend({
-                  type: 'change tool',
-                  data: {
-                    tool: !modelingState.matches({
-                      Sketch: 'Circle three point tool',
-                    })
-                      ? 'circleThreePoint'
-                      : 'none',
-                  },
-                }),
-              icon: 'circle',
-              status: 'available',
-              title: '3-Point Circle',
-              isActive: (state) =>
-                state.matches({ Sketch: 'Circle three point tool' }),
-              showTitle: false,
-              description: 'Draw a circle defined by three points.',
-              links: [],
-            },
-          ],
-        },
-        {
-          id: 'rectangles',
-          array: [
-            {
-              id: 'corner-rectangle',
-              command: TOOLBAR_COMMAND_IDS.sketching.cornerRectangle,
-              onClick: ({ modelingState, modelingSend }) =>
-                modelingSend({
-                  type: 'change tool',
-                  data: {
-                    tool: !modelingState.matches({ Sketch: 'Rectangle tool' })
-                      ? 'rectangle'
-                      : 'none',
-                  },
-                }),
-              icon: 'rectangle',
-              status: 'available',
-              disabled: (state) => state.matches('Sketch no face'),
-              title: 'Corner Rectangle',
-              description: 'Start drawing a rectangle.',
-              links: [],
-              isActive: (state) => state.matches({ Sketch: 'Rectangle tool' }),
-            },
-            {
-              id: 'center-rectangle',
-              command: TOOLBAR_COMMAND_IDS.sketching.centerRectangle,
-              onClick: ({ modelingState, modelingSend }) =>
-                modelingSend({
-                  type: 'change tool',
-                  data: {
-                    tool: !modelingState.matches({
-                      Sketch: 'Center Rectangle tool',
-                    })
-                      ? 'center rectangle'
-                      : 'none',
-                  },
-                }),
-              icon: 'rectangle',
-              status: 'available',
-              disabled: (state) => state.matches('Sketch no face'),
-              title: 'Center Rectangle',
-              description: 'Start drawing a rectangle from its center.',
-              links: [],
-              isActive: (state) =>
-                state.matches({ Sketch: 'Center Rectangle tool' }),
-            },
-          ],
-        },
         {
           id: 'polygon',
           onClick: () => console.error('Polygon not yet implemented'),
@@ -1252,12 +1040,9 @@ export function buildToolbarConfig(
                   })
                 ),
               onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: {
-                    name: 'Constrain length',
-                    groupId: 'modeling',
-                  },
+                selectCommand(commands, {
+                  name: 'Constrain length',
+                  groupId: 'modeling',
                 }),
               icon: 'dimension',
               status: 'available',

@@ -249,7 +249,8 @@ fn parse_tokens_with_version_policy(
 }
 
 /// A parsed AST and its KCL version.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, ts_rs::TS)]
+#[ts(export)]
 pub struct ParsedProgram {
     pub kcl_version: KclVersion,
     pub ast: Node<Program>,

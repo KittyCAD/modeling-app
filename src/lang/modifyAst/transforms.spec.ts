@@ -53,7 +53,7 @@ beforeEach(async () => {
   }
 
   const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine({ webrtc: false, pool: 'cpu' })
+    await buildTheWorldAndConnectToEngine({ webrtc: false, geometryOnly: true })
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
@@ -1262,6 +1262,31 @@ appearance(
   roughness = 2,
   opacity = 3,
 )`)
+    })
+
+    it('should add a call with backfaceColor', async () => {
+      const {
+        artifactGraph,
+        ast,
+        sketches: objects,
+      } = await getAstAndSketchSelections(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const result = addAppearance({
+        ast,
+        artifactGraph,
+        objects,
+        color: '#FF0000',
+        backfaceColor: '#00aa11',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${box}
+appearance(extrude001, color = "#FF0000", backfaceColor = "#00aa11")`)
     })
 
     async function runEditAppearanceTest(

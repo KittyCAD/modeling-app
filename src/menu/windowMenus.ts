@@ -8,7 +8,7 @@ import type { FileMenuActions } from '@src/menu/fileRole'
 import { isMac } from '@src/menu/utils'
 import { BrowserWindow, Menu } from 'electron'
 
-const APP_MENU_PAGES = ['project', 'modeling', 'fallback'] as const
+const APP_MENU_PAGES = ['project', 'editor', 'modeling', 'fallback'] as const
 
 export type AppMenuPage = (typeof APP_MENU_PAGES)[number]
 
@@ -110,8 +110,12 @@ export class WindowMenuManager {
     }
 
     let menu: Menu
-    if (page === 'project') {
-      menu = buildAndSetMenuForProjectPage(targetWindow, this.actions)
+    if (page === 'project' || page === 'editor') {
+      menu = buildAndSetMenuForProjectPage(
+        targetWindow,
+        this.actions,
+        page === 'editor' ? 'editor' : 'native'
+      )
     } else if (page === 'modeling') {
       menu = buildAndSetMenuForModelingPage(targetWindow, this.actions)
     } else {

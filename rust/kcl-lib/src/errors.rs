@@ -166,6 +166,8 @@ pub struct KclErrorWithOutputs {
     pub filenames: IndexMap<ModuleId, ModulePath>,
     pub source_files: IndexMap<ModuleId, ModuleSource>,
     pub default_planes: Option<DefaultPlanes>,
+    /// The owned engine scene generation, including unchanged scenes after parse errors.
+    pub engine_scene_generation: Option<usize>,
 }
 
 impl KclErrorWithOutputs {
@@ -201,6 +203,7 @@ impl KclErrorWithOutputs {
             filenames,
             source_files,
             default_planes,
+            engine_scene_generation: None,
         }
     }
 
@@ -220,6 +223,7 @@ impl KclErrorWithOutputs {
             filenames: Default::default(),
             source_files: Default::default(),
             default_planes: Default::default(),
+            engine_scene_generation: None,
         }
     }
 
@@ -240,6 +244,7 @@ impl KclErrorWithOutputs {
             filenames: outcome.filenames,
             source_files: outcome.source_files,
             default_planes: outcome.default_planes,
+            engine_scene_generation: Some(outcome.engine_scene_generation),
         }
     }
 

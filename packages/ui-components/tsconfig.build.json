@@ -13,7 +13,9 @@
     ".storybook",
     "dist",
     "src/**/*.stories.tsx",
+    "src/**/*.stories.ts",
     "src/**/*.test.tsx",
+    "src/**/*.test.ts",
     "src/**/*.unit.test.ts",
     "src/test"
   ]

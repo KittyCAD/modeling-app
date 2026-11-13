@@ -323,7 +323,7 @@ export fn directed(
 ///   except = [boss],
 /// )
 /// ```
-@(impl = std_rust, added_in = "3.0")
+@(impl = std_rust, added_in = "3.0", feature_tree = false)
 export fn named(
   /// The name of the view, as a reader should see it. Required, unique within
   /// the file, and compared exactly.

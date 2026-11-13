@@ -47,10 +47,11 @@ import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  EDITOR_SAVE_DEBOUNCE_MS,
   DEFAULT_EXPERIMENTAL_FEATURES,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
-import { getOperationKey } from '@src/lib/featureTreeOperationTree'
+import { getOperationKey } from '@src/lib/featureTree/featureTreeOperationTree'
 import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { markdownMessageElement } from '@src/lib/markdown'
 import { markOnce } from '@src/lib/performance'
@@ -77,7 +78,7 @@ import {
 import { err, reportRejection } from '@src/lib/trap'
 import { deferredCallback } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
+import { reportFileOperationError } from '@src/lib/fileSystem/operationErrors'
 import type {
   PlaneVisibilityMap,
   Selection,
@@ -113,12 +114,7 @@ import {
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
-import {
-  createActor,
-  type Actor,
-  type StateFrom,
-  type Subscription,
-} from 'xstate'
+import type { StateFrom } from 'xstate'
 
 import {
   addLineHighlight,
@@ -126,7 +122,6 @@ import {
 } from '@src/editor/highlightextension'
 
 import {
-  batch,
   computed,
   effect,
   signal,
@@ -172,14 +167,13 @@ import {
 } from '@src/editor/plugins/theme'
 import { requestWriteToFile } from '@src/editor/plugins/write'
 import { zookeeperHistoryExtension } from '@src/lib/zookeeper/editorPlugin'
-import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import { bracket } from '@src/lib/exampleKcl'
 import { setKclVersion } from '@src/lib/kclVersion'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import { resetCameraAfterExecution } from '@src/lib/resetCameraPosition'
+import { createProjectThumbnail } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { type Themes, getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
 import type {
@@ -187,20 +181,32 @@ import type {
   modelingMachine,
 } from '@src/machines/modelingMachine'
 import { waitForUserFeaturesSettled } from '@src/machines/userFeaturesMachine'
-import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
+import type { ExecutingEditor } from '@src/registry/contracts/projectSession'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
 } from '@src/registry/contracts/keymap'
 import toast from 'react-hot-toast'
-import { getStringAfterLastSeparator } from '@src/lib/paths'
-import type { Project } from '@src/lib/project'
 import type { ProjectSystemDeps } from '@src/lib/projectSession/project'
 import { File } from '@src/lib/projectSession/file'
+
+interface EditorExecutionRequest {
+  newCode: string
+  shouldResetCamera: boolean
+  requestedUserDocumentVersion: number
+  forceExecution?: boolean
+}
+
+interface DeferredEditorExecution extends EditorExecutionRequest {
+  requestedOwnershipVersion: number
+  requestedPath: string
+  requestedProjectPath: string | undefined
+}
 
 interface ExecuteArgs {
   ast?: Node<Program>
   executionId?: number
+  updateThumbnail?: boolean
 }
 
 type UpdateCodeEditorOptions = {
@@ -224,6 +230,7 @@ type UpdateCodeEditorAdditionalSpec = {
 type FromFileOptions = {
   shouldSyncRustOnOpen: boolean
   assertCurrent?: () => void
+  backgroundSave?: boolean
 }
 
 const requestSkipRustUpdate = StateEffect.define<boolean>()
@@ -314,6 +321,13 @@ type ExecutionCompletionResult = {
 
 export enum KclManagerEvents {
   LongExecution = 'long-execution',
+  ExecutionDone = 'execution-done',
+}
+
+export interface KclExecutionDoneDetail {
+  successful: boolean
+  isInterrupted: boolean
+  hasErrors: boolean
 }
 
 declare global {
@@ -329,8 +343,6 @@ window.EditorSelection = EditorSelection
 window.EditorView = EditorView
 
 const PERSIST_CODE_KEY = 'persistCode'
-const RECOVERY_SNAPSHOT_VERSION = 1
-const RECOVERY_SNAPSHOT_DEBOUNCE_MS = 300
 
 const keymapCompartment = new Compartment()
 const executionCompartment = new Compartment()
@@ -386,78 +398,19 @@ export class KclManager extends File {
     }
     return this._wasmInstance
   }
-  readonly systemDeps: ProjectSystemDeps
-  /** Modeling interactions live with this editor, independently of React mounts. */
-  private _modelingActor: Actor<typeof modelingMachine> | undefined
-  private _modelingActorPromise:
-    | Promise<Actor<typeof modelingMachine>>
-    | undefined
-  private modelingSubscription: Subscription | undefined
   private closed = false
-  private modelingGeneration = 0
+  private fileSelectionGeneration = 0
+  readonly systemDeps: ProjectSystemDeps
+  private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
+  /** React publishes modeling snapshots for consumers such as Named Views. */
   private readonly _modelingState = signal<StateFrom<
     typeof modelingMachine
   > | null>(null)
-
-  /** Resolve current project metadata at use time, including after legacy file reuse. */
-  readonly modelingProjectRef: { readonly current: Project | undefined }
 
   get modelingStateSignal(): ReadonlySignal<StateFrom<
     typeof modelingMachine
   > | null> {
     return this._modelingState
-  }
-
-  /** Retain a stopped actor for the outgoing view while its replacement loads. */
-  get modelingActor() {
-    return this._modelingActor
-  }
-
-  /** Lazily load the machine to keep editor construction independent of the UI import graph. */
-  get modelingActorPromise(): Promise<Actor<typeof modelingMachine>> {
-    return (this._modelingActorPromise ??= this.initializeModelingActor())
-  }
-
-  private async initializeModelingActor(): Promise<
-    Actor<typeof modelingMachine>
-  > {
-    const generation = this.modelingGeneration
-    const [{ modelingMachine }, wasmInstance] = await Promise.all([
-      import('@src/machines/modelingMachine'),
-      this.wasmInstancePromise,
-    ])
-    if (this.closed || generation !== this.modelingGeneration) {
-      return Promise.reject(
-        new Error('Cannot initialize modeling for a closed editor.')
-      )
-    }
-    const { modeling } = getSettingsFromActorContext(this.systemDeps.settings)
-    const actor = createActor(modelingMachine, {
-      input: {
-        kclManager: this,
-        engineCommandManager: this.engineCommandManager,
-        rustContext: this.rustContext,
-        machineManager: this.systemDeps.machineManager,
-        commandBarActor: this.systemDeps.commandBar,
-        wasmInstance,
-        fileName: getStringAfterLastSeparator(this.path),
-        projectRef: this.modelingProjectRef,
-        store: {
-          useSketchSolveMode: modeling.useSketchSolveMode,
-          cameraProjection: modeling.cameraProjection,
-          defaultUnit: modeling.defaultUnit,
-        },
-      },
-    })
-    this._modelingActor = actor
-    this.modelingSubscription = actor.subscribe((state) => {
-      batch(() => {
-        this.selectionRanges = state.context.selectionRanges
-        this._modelingState.value = state
-      })
-    })
-    actor.start()
-    return actor
   }
 
   // CORE STATE
@@ -496,7 +449,9 @@ export class KclManager extends File {
   private lastSketchCheckpointRestoreRequestId = 0
   private sketchCheckpointLimit = FALLBACK_SKETCH_CHECKPOINT_LIMIT
   private lastExecutedCode: string = ''
+  private sketchSourceNeedsRefresh = false
   lastSuccessfulCode: string = ''
+  captureProjectThumbnail?: (renderedCanvas?: HTMLCanvasElement) => void
   get code(): string {
     return this.editorView.state.doc.toString()
   }
@@ -527,7 +482,7 @@ export class KclManager extends File {
   get hasEditsSinceLastExecutionSignal() {
     return this._hasEditsSinceLastExecution
   }
-  get executingEditorService(): ExecutingEditorService {
+  get execution(): ExecutingEditor {
     return {
       code: this._code,
       hasEditsSinceLastExecution: this._hasEditsSinceLastExecution,
@@ -544,6 +499,7 @@ export class KclManager extends File {
   }
   private markCodeAsExecuted(code: string) {
     this.lastExecutedCode = code
+    if (isCodeTheSame(this.code, code)) this.sketchSourceNeedsRefresh = false
     this._hasEditsSinceLastExecution.value = !isCodeTheSame(this.code, code)
   }
 
@@ -581,15 +537,22 @@ export class KclManager extends File {
   livePathsToWatch = signal<string[]>([])
 
   private _execState = signal<ExecState>(emptyExecState())
+  private stopNamedViewInvalidation: (() => void) | undefined
   /**
-   * Counts the executions that rebuilt the engine scene.
+   * The engine scene generation from the last execution: the number of runs
+   * that changed the engine scene. Runs answered from the cache leave it
+   * unchanged.
    *
    * Sketch-solve syncs and mock executions replace `execState` without sending
    * an engine command.  A consumer that must act only on a rebuilt scene
    * subscribes here rather than to `execStateSignal`.
    */
   private _engineSceneGeneration = signal(0)
-  /** Incremented on every execution completion (success, failure, or cancel). Used so callers can wait for "next" run. */
+  /**
+   * Incremented on every execution completion (success, failure, or cancel),
+   * even if cached.
+   * Used so callers can wait for "next" run.
+   */
   private _executionGeneration = 0
   private _lastExecutionCompletion: ExecutionCompletionResult = {
     generation: 0,
@@ -608,6 +571,7 @@ export class KclManager extends File {
   /** Operation key (from getOperationKey) of the most recent live operation. */
   private _liveLatestOperationKey = signal<string | null>(null)
   private activeLiveOperationExecutionId: number | null = null
+  private executionGeneration = 0
 
   private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
@@ -684,13 +648,13 @@ export class KclManager extends File {
    */
   artifactGraph: ArtifactGraph = new Map()
   artifactIndex: ArtifactIndex = []
+  private artifactGraphPublicationVersion = 0
 
   // INTERNAL BOOKKEEPING STATE
 
   /**
    * Watching the file system for updates and reacting to them.
    * TODO: might need to watch for deletions here or in the project eventually.
-   * It's currently handled elsewhere in SystemIOMachine I believe.
    *
    * NOTE: This listener is in *addition* to the base File class one, so it must have a distinct name and
    * In future, event listeners like `onWatchEvent` should be Facets in the CodeMirror sense.
@@ -700,7 +664,7 @@ export class KclManager extends File {
     // a KclManager without a ZDSProject.
     if (
       path !== this.path ||
-      !this.systemDeps.project.value?.path ||
+      !this.systemDeps.projectPath.value ||
       this.path.length < 1
     ) {
       return
@@ -708,6 +672,9 @@ export class KclManager extends File {
     // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
     // unless the change was initiated by us (the currently running instance).
     const requestedDocumentVersion = this._documentVersion
+    const ownPendingCode =
+      this.fileSwitchSaves.get(path)?.code ??
+      this.inFlightFileWrites.get(path)?.code
     this.textFileIO
       .read(path)
       .then((code) => {
@@ -719,6 +686,15 @@ export class KclManager extends File {
           this.modelingState?.matches('sketchSolveMode')
 
         if (isCodeTheSame(code, this.code)) {
+          this.markFileCodeAsSynced(code)
+          return
+        }
+
+        if (
+          ownPendingCode !== undefined &&
+          isCodeTheSame(code, ownPendingCode)
+        ) {
+          // A background save may finish after this file was selected and edited again.
           this.markFileCodeAsSynced(code)
           return
         }
@@ -747,7 +723,9 @@ export class KclManager extends File {
           // Nothing written out yet by ourselves, or it's not the same as the current file content
           // -> this must be an external change -> re-execute.
           this.updateCodeEditor(code, {
-            shouldExecute: !isInSketchMode,
+            // Snapshot backings rebuild the full Rust project and execute once there.
+            shouldExecute:
+              !isInSketchMode && this.storage?.externalChanges !== 'snapshot',
             shouldResetCamera: !isInSketchMode,
             shouldAddToHistory: true,
             // We explicitly do not write to the file here since we are loading from
@@ -755,6 +733,7 @@ export class KclManager extends File {
             shouldWriteToDisk: false,
           })
           this.markFileCodeAsSynced(code)
+          this.sketchSourceNeedsRefresh = Boolean(isInSketchMode)
 
           toast('Reloading file from disk.', { icon: '📁' })
         }
@@ -763,7 +742,6 @@ export class KclManager extends File {
   }
   private _wasmInitFailed = signal<boolean | undefined>(undefined)
   private _astParseFailed = false
-  private _switchedFiles = false
   private _fileSettings: KclSettingsAnnotation = {}
   private _fileSettingsSignal = signal<KclSettingsAnnotation>(
     this._fileSettings
@@ -791,10 +769,23 @@ export class KclManager extends File {
   private _isAllTextSelected: boolean = false
   private _isShiftDown: boolean = false
   private _kclVersion: string = ''
+  private inFlightFileWrites = new Map<
+    string,
+    { code: string; promise: Promise<void> }
+  >()
+  private fileSwitchSaves = new Map<
+    string,
+    { code: string; baseline: string; promise: Promise<void> }
+  >()
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
   private timeoutRewatch: ReturnType<typeof setTimeout> | undefined = undefined
-  private timeoutRecoverySnapshot: ReturnType<typeof setTimeout> | undefined =
-    undefined
+  private get storage() {
+    return this.systemDeps.projectSession?.storageFor(
+      this.systemDeps.project.peek()?.path ?? this.path
+    )
+  }
+
+  readonly storageReadOnlyCompartment = new Compartment()
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
   /** Only the executing editor may change the shared engine scene. */
@@ -802,11 +793,6 @@ export class KclManager extends File {
   private disposeSettings: (() => void) | undefined
   private _automaticallyRenderEnabled = true
   private _lastKnownFileCode = ''
-  private pendingRecoverySnapshot: {
-    path: string
-    code: string
-    diskCode: string
-  } | null = null
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
   public zookeeperManagerMachineBulkManipulatingFileSystem = false
   /**
@@ -831,9 +817,7 @@ export class KclManager extends File {
   public longExecutionTimeMs = 1000 * 60 * 5
   private _hotkeys: { [key: string]: () => void } = {}
 
-  set switchedFiles(switchedFiles: boolean) {
-    this._switchedFiles = switchedFiles
-
+  resetForFileSwitch() {
     // These belonged to the previous file
     const emptyState = emptyExecState()
     this.execState = emptyState
@@ -867,6 +851,17 @@ export class KclManager extends File {
   private set execState(execState) {
     this._execState.value = execState
     this.variables = execState.variables
+  }
+
+  private clearNamedViews() {
+    this.execState = { ...this._execState.peek(), namedViews: null }
+  }
+
+  private watchNamedViewInvalidation() {
+    if (this.stopNamedViewInvalidation) return
+    this.stopNamedViewInvalidation = this.rustContext.namedViewsInvalidated.add(
+      () => this.clearNamedViews()
+    )
   }
 
   private beginLiveOperationUpdates(executionId: number) {
@@ -1016,7 +1011,7 @@ export class KclManager extends File {
   }
 
   private async waitForExecutionQueueToIdle(): Promise<void> {
-    while (this.isExecuting || this.executeIsStale) {
+    while (!this.closed && (this.isExecuting || this.executeIsStale)) {
       const generationBeforeWait = this._executionGeneration
       await this.waitForExecutionGenerationAfter(generationBeforeWait)
     }
@@ -1105,7 +1100,10 @@ export class KclManager extends File {
     this.diagnostics = []
     this.refreshSketchSolveAst(code, execState, options).catch(reportRejection)
 
-    this.execState = execState
+    this.execState = {
+      ...execState,
+      namedViews: execState.namedViews ?? this.execState.namedViews,
+    }
     this.lastSuccessfulVariables = execState.variables
     this.lastSuccessfulOperations = execState.operations
     this.lastSuccessfulCode = code
@@ -1148,7 +1146,6 @@ export class KclManager extends File {
       ast: parseResult.program,
       sourceCode: code,
       instance,
-      rustContext: this.rustContext,
       legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
       edgeRefactorMetadata: execState.edgeRefactorMetadata,
       directTagFilletMetadata: execState.directTagFilletMetadata,
@@ -1286,12 +1283,11 @@ export class KclManager extends File {
         newCode,
         this.lastExecutedCode
       )
-      this.persistRecoverySnapshot()
       const shouldSkipRustUpdate = update.transactions.some((tr) =>
         tr.effects.some((e) => e.is(requestSkipRustUpdate) && e.value)
       )
       if (!shouldSkipRustUpdate) {
-        this.rustContext.sendUpdateFile(this.id, newCode).catch(reportRejection)
+        this.syncCurrentFileToRust(newCode).catch(reportRejection)
       }
     }
   })
@@ -1348,6 +1344,20 @@ export class KclManager extends File {
    * discerns if the change is a kind that we want to re-execute on,
    * then fires (and forgets) an execution with a debounce.
    */
+  private async syncCurrentFileToRust(code: string) {
+    const path = this.path
+    const id = this.id
+    await this.systemDeps.modelingReady?.()
+    if (
+      this.closed ||
+      this.path !== path ||
+      this.id !== id ||
+      this.code !== code
+    )
+      return
+    await this.rustContext.sendUpdateFile(id, code)
+  }
+
   private executeKclEffect = EditorView.updateListener.of((update) => {
     const notIgnoredUpdate =
       this.engineCommandManager.connection?.connected && update.docChanged
@@ -1387,7 +1397,7 @@ export class KclManager extends File {
       if (isDirectSketchHistoryReplay) return
       if (shouldSkipExecutionForAnnotation) return
 
-      this.deferredExecution({
+      this.scheduleEditorExecution({
         newCode,
         shouldResetCamera,
         requestedUserDocumentVersion: this._userDocumentVersion,
@@ -1395,126 +1405,161 @@ export class KclManager extends File {
     }
   })
 
+  private editorOwnershipVersion = 0
+  private scheduleEditorExecution(request: EditorExecutionRequest) {
+    if (this.closed) return
+    if (
+      (this._automaticallyRenderEnabled || request.forceExecution) &&
+      this.isExecuting &&
+      !this.engineCommandManager.isReconnectPending
+    ) {
+      // Stop the old run now, but let it unwind before parsing the latest edit.
+      // Replaying a queued AST here would execute the superseded document.
+      this.executeIsStale = null
+      this.cancelAllExecutions()
+      this.engineCommandManager.executionIsStale = true
+      this.engineCommandManager.rejectAllModelingCommands(
+        EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
+      )
+    }
+    // Capture ownership before the delay, not when the callback starts.
+    this.deferredExecution({
+      ...request,
+      requestedOwnershipVersion: this.editorOwnershipVersion,
+      requestedPath: this.path,
+      requestedProjectPath: this.systemDeps.projectPath.peek(),
+    })
+  }
+
   private deferredExecution = deferredCallback(
-    async ({
-      newCode,
-      shouldResetCamera,
-      requestedUserDocumentVersion,
-      forceExecution = false,
-    }: {
-      newCode: string
-      shouldResetCamera: boolean
-      requestedUserDocumentVersion: number
-      forceExecution?: boolean
-    }) => {
-      if (!forceExecution && !this._automaticallyRenderEnabled) {
-        return
-      }
-
-      // If we're in sketchSolveMode, update Rust state with the latest AST
-      // This handles the case where the user directly edits in the CodeMirror editor
-      // these are short term hacks while in rapid development for sketch revamp
-      // should be clean up.
-      try {
-        if (this.modelingState?.matches('sketchSolveMode')) {
-          const isCurrentDirectEditorExecution = () =>
-            requestedUserDocumentVersion === this._userDocumentVersion &&
-            this.code === newCode
-
-          /*
-           * Direct CodeMirror edits are already present in the editor before this
-           * async work starts. `newCode` is the snapshot we executed, not an
-           * authoritative edit we can replay later. If the user keeps typing while
-           * executeCode or hackSetProgram awaits, the finished result belongs to an
-           * older document and must not update scene checkpoints or be forwarded to
-           * updateSketchOutcome. That event is also used by sketch tools, where
-           * sourceDelta is real generated KCL; letting this stale editor snapshot
-           * take that path is what overwrote freshly typed sketch lines.
-           */
-          await this.executeCode(newCode)
-          if (!isCurrentDirectEditorExecution()) return
-
-          const setProgramOutcome = await this.rustContext.hackSetProgram(
-            this.ast,
-            jsAppSettings(this.systemDeps.settings)
-          )
-          if (!isCurrentDirectEditorExecution()) return
-
-          if (setProgramOutcome.type === 'Success') {
-            // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
-            // Always invalidate IDs for direct edits since we don't know what the user changed
-            const sceneGraphDelta: SceneGraphDelta = {
-              new_graph: setProgramOutcome.sceneGraph,
-              new_objects: [],
-              invalidates_ids: true,
-              exec_outcome: setProgramOutcome.execOutcome,
-            }
-
-            const kclSource: SourceDelta = {
-              text: newCode,
-            }
-
-            const directEditCheckpointId =
-              setProgramOutcome.checkpointId ?? null
-            if (
-              directEditCheckpointId != null &&
-              this.pendingDirectSketchHistoryEntries.length
-            ) {
-              for (const pendingEntry of this
-                .pendingDirectSketchHistoryEntries) {
-                this.directSketchHistoryCheckpointsByEntryId.set(
-                  pendingEntry.entryId,
-                  {
-                    undoCheckpointId: pendingEntry.undoCheckpointId,
-                    redoCheckpointId: directEditCheckpointId,
-                  }
-                )
-              }
-              this.pruneDirectSketchHistoryCheckpoints()
-            }
-            this.pendingDirectSketchHistoryEntries = []
-
-            this.lastCommittedCode = newCode
-            this.lastCommittedAdditionalSpec =
-              directEditCheckpointId != null
-                ? {
-                    sketchCheckpointId: directEditCheckpointId,
-                  }
-                : undefined
-            this.lastCommittedSketchCheckpointId = directEditCheckpointId
-
-            // Send event to sketch solve machine via modeling machine
-            this.sendModelingEvent({
-              type: 'update sketch outcome',
-              data: {
-                sourceDelta: kclSource,
-                sceneGraphDelta,
-                updateEditor: false,
-                writeToDisk: false,
-                addToHistory: false,
-                checkpointId: directEditCheckpointId,
-              },
-            })
-          }
-        } else {
-          await this.executeCode(newCode)
-          if (shouldResetCamera) {
-            await resetCameraPosition({
-              sceneInfra: this.sceneInfra,
-              engineCommandManager: this.engineCommandManager,
-              settingsActor: this.systemDeps.settings,
-            })
-          }
-        }
-      } catch (error) {
-        console.error('Error when updating Rust state after user edit:', error)
-      }
-    },
+    (request: DeferredEditorExecution) => this.runEditorExecution(request),
     1000
   )
 
+  private async runEditorExecution({
+    newCode,
+    shouldResetCamera,
+    requestedUserDocumentVersion,
+    forceExecution = false,
+    requestedPath,
+    requestedProjectPath,
+    requestedOwnershipVersion,
+  }: DeferredEditorExecution) {
+    if (this.isExecuting || this.executeIsStale) {
+      await this.waitForExecutionQueueToIdle()
+    }
+    const isCurrent = () =>
+      !this.closed &&
+      this.editorOwnershipVersion === requestedOwnershipVersion &&
+      this.path === requestedPath &&
+      this.systemDeps.projectPath.peek() === requestedProjectPath &&
+      requestedUserDocumentVersion === this._userDocumentVersion &&
+      this.code === newCode
+    if (
+      !isCurrent() ||
+      (!forceExecution && !this._automaticallyRenderEnabled)
+    ) {
+      return
+    }
+
+    // If we're in sketchSolveMode, update Rust state with the latest AST
+    // This handles the case where the user directly edits in the CodeMirror editor
+    // these are short term hacks while in rapid development for sketch revamp
+    // should be clean up.
+    try {
+      if (this.modelingState?.matches('sketchSolveMode')) {
+        const isCurrentDirectEditorExecution = isCurrent
+
+        /*
+         * Direct CodeMirror edits are already present in the editor before this
+         * async work starts. `newCode` is the snapshot we executed, not an
+         * authoritative edit we can replay later. If the user keeps typing while
+         * executeCode or hackSetProgram awaits, the finished result belongs to an
+         * older document and must not update scene checkpoints or be forwarded to
+         * updateSketchOutcome. That event is also used by sketch tools, where
+         * sourceDelta is real generated KCL; letting this stale editor snapshot
+         * take that path is what overwrote freshly typed sketch lines.
+         */
+        await this.executeCode(newCode)
+        if (!isCurrentDirectEditorExecution()) return
+
+        const setProgramOutcome = await this.rustContext.hackSetProgram(
+          this.ast,
+          jsAppSettings(this.systemDeps.settings)
+        )
+        if (!isCurrentDirectEditorExecution()) return
+
+        if (setProgramOutcome.type === 'Success') {
+          // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
+          // Always invalidate IDs for direct edits since we don't know what the user changed
+          const sceneGraphDelta: SceneGraphDelta = {
+            new_graph: setProgramOutcome.sceneGraph,
+            new_objects: [],
+            invalidates_ids: true,
+            exec_outcome: setProgramOutcome.execOutcome,
+          }
+
+          const kclSource: SourceDelta = {
+            text: newCode,
+          }
+
+          const directEditCheckpointId = setProgramOutcome.checkpointId ?? null
+          if (
+            directEditCheckpointId != null &&
+            this.pendingDirectSketchHistoryEntries.length
+          ) {
+            for (const pendingEntry of this.pendingDirectSketchHistoryEntries) {
+              this.directSketchHistoryCheckpointsByEntryId.set(
+                pendingEntry.entryId,
+                {
+                  undoCheckpointId: pendingEntry.undoCheckpointId,
+                  redoCheckpointId: directEditCheckpointId,
+                }
+              )
+            }
+            this.pruneDirectSketchHistoryCheckpoints()
+          }
+          this.pendingDirectSketchHistoryEntries = []
+
+          this.lastCommittedCode = newCode
+          this.lastCommittedAdditionalSpec =
+            directEditCheckpointId != null
+              ? {
+                  sketchCheckpointId: directEditCheckpointId,
+                }
+              : undefined
+          this.lastCommittedSketchCheckpointId = directEditCheckpointId
+
+          // Send event to sketch solve machine via modeling machine
+          this.sendModelingEvent({
+            type: 'update sketch outcome',
+            data: {
+              sourceDelta: kclSource,
+              sceneGraphDelta,
+              updateEditor: false,
+              writeToDisk: false,
+              addToHistory: false,
+              checkpointId: directEditCheckpointId,
+            },
+          })
+        }
+      } else {
+        await this.executeCode(newCode)
+        if (!isCurrent()) return
+        if (shouldResetCamera) {
+          await resetCameraAfterExecution({
+            sceneInfra: this.sceneInfra,
+            settingsActor: this.systemDeps.settings,
+          })
+        }
+      }
+    } catch (error) {
+      console.error('Error when updating Rust state after user edit:', error)
+    }
+  }
+
   scheduleCurrentCodeExecution(shouldResetCamera: boolean) {
-    this.deferredExecution({
+    this.scheduleEditorExecution({
       newCode: this.code,
       shouldResetCamera,
       requestedUserDocumentVersion: this._userDocumentVersion,
@@ -1527,6 +1572,7 @@ export class KclManager extends File {
    * current AST or Rust scene graph.
    */
   async flushPendingEditorExecution(): Promise<void> {
+    await this.systemDeps.modelingReady?.()
     while (true) {
       const userDocumentVersion = this._userDocumentVersion
       await this.deferredExecution.flush()
@@ -1538,10 +1584,75 @@ export class KclManager extends File {
     }
   }
 
+  /** Refresh storage before adding geometry, never during pointer-move edits. */
+  async refreshFileBeforeSketchInsertion(
+    refreshStorage?: (isCurrent: () => boolean) => Promise<void>
+  ): Promise<void> {
+    const path = this.path
+    const generation = this.fileSelectionGeneration
+    const isCurrent = () =>
+      !this.closed &&
+      this.path === path &&
+      this.fileSelectionGeneration === generation
+    if (!path) return
+    // Drafts belong to the live sketch; flushing them here can delay the next click.
+    if (
+      this.hasUnsavedLocalChanges() ||
+      this.timeoutWriter !== undefined ||
+      this.inFlightFileWrites.has(path) ||
+      this.fileSwitchSaves.has(path)
+    )
+      return
+    if (!(await this.flushWriteToFile()))
+      return Promise.reject(
+        new Error('Save your current edits before adding sketch geometry.')
+      )
+    if (!isCurrent())
+      return Promise.reject(
+        new Error('The active file changed before sketch insertion.')
+      )
+    const version = this._documentVersion
+    await refreshStorage?.(() => isCurrent() && !this.hasUnsavedLocalChanges())
+    const contents = normalizeLineEndings(await this.textFileIO.read(path))
+    if (!isCurrent())
+      return Promise.reject(
+        new Error('The active file changed before sketch insertion.')
+      )
+    if (!isCodeTheSame(contents, this.code)) {
+      if (version !== this._documentVersion || this.hasUnsavedLocalChanges())
+        return Promise.reject(
+          new Error(
+            'The editor changed while checking for newer file contents. Try adding the geometry again.'
+          )
+        )
+      this.updateCodeEditor(contents, {
+        shouldExecute: false,
+        shouldSyncRust: false,
+        shouldWriteToDisk: false,
+        shouldClearHistory: true,
+      })
+      this.markFileCodeAsSynced(contents)
+      this.sketchSourceNeedsRefresh = true
+    }
+    // Unchanged storage must leave the running sketch and its object IDs alone.
+    // A watcher can load external text without synchronizing the Rust sketch.
+    if (!this.sketchSourceNeedsRefresh) return
+    this.sendModelingEvent({
+      type: 'Set selection',
+      data: { selection: {}, selectionType: 'singleCodeCursor' },
+    })
+    this.scheduleCurrentCodeExecution(false)
+    await this.flushPendingEditorExecution()
+    if (!isCurrent() || this.hasParseErrors())
+      return Promise.reject(
+        new Error('Cannot add sketch geometry until the current file is ready.')
+      )
+  }
+
   /**
    * `EditorView.setState` bypasses the usual editor update effects. After
    * restoring a captured state for Zookeeper history, manually resync the
-   * manager state, recovery snapshot, Rust file contents, and deferred
+   * manager state, Rust file contents, and deferred
    * execution that ordinary editor writes would have triggered.
    */
   private refreshRestoredEditorStateAfterFileSwitch(
@@ -1553,17 +1664,16 @@ export class KclManager extends File {
       code,
       this.lastExecutedCode
     )
-    this.persistRecoverySnapshot()
     if (!options.shouldSyncRustOnOpen) {
       return
     }
-    this.rustContext.sendUpdateFile(this.id, code).catch(reportRejection)
+    this.syncCurrentFileToRust(code).catch(reportRejection)
 
     if (!this.engineCommandManager.connection?.connected) {
       return
     }
 
-    this.deferredExecution({
+    this.scheduleEditorExecution({
       newCode: code,
       shouldResetCamera: true,
       requestedUserDocumentVersion: this._userDocumentVersion,
@@ -1578,7 +1688,6 @@ export class KclManager extends File {
       Boolean(tr.annotation(updateOutsideEditorEvent.type))
     )
     const notIgnoredUpdate =
-      this.engineCommandManager.started &&
       update.docChanged &&
       update.transactions.some((tr) => {
         const ignoredEvents = [
@@ -1727,7 +1836,7 @@ export class KclManager extends File {
               replayAdditionalSpec
             )
           } else if (isNonSketchHistoryReplay) {
-            this.deferredExecution({
+            this.scheduleEditorExecution({
               newCode: effect.value.redoCode,
               shouldResetCamera: effect.value.options.shouldResetCamera,
               requestedUserDocumentVersion: this._userDocumentVersion,
@@ -1801,6 +1910,19 @@ export class KclManager extends File {
 
     return [
       baseEditorExtensions(),
+      this.storageReadOnlyCompartment.of([]),
+      EditorState.transactionFilter.of((transaction) => {
+        const loadingContents =
+          transaction.annotation(updateOutsideEditorEvent.type) &&
+          transaction.effects.some(
+            (effect) => effect.is(requestWriteToFile) && !effect.value
+          )
+        return transaction.docChanged &&
+          this.storage?.writeAvailability.peek().writable === false &&
+          !loadingContents
+          ? []
+          : transaction
+      }),
       this.systemDeps.keymap
         ? Prec.highest(
             EditorView.domEventHandlers({
@@ -1861,13 +1983,18 @@ export class KclManager extends File {
     providedCode?: string,
     options: FromFileOptions = { shouldSyncRustOnOpen: true }
   ) {
+    if (
+      options.backgroundSave &&
+      providedEditor &&
+      providedEditor.path !== file.path
+    )
+      providedEditor.saveOutgoingFile()
+    const pendingBeforeRead = providedEditor?.fileSwitchSaves.get(file.path)
     const diskCode = normalizeLineEndings(providedCode ?? (await file.read()))
     options.assertCurrent?.()
-    const recoverySnapshot = readRecoverySnapshot(file.path)
-    const initialCode =
-      recoverySnapshot && !isCodeTheSame(recoverySnapshot.code, diskCode)
-        ? normalizeLineEndings(recoverySnapshot.code)
-        : diskCode
+    const pendingSave =
+      providedEditor?.fileSwitchSaves.get(file.path) ?? pendingBeforeRead
+    const initialCode = pendingSave?.code ?? diskCode
 
     if (!providedEditor) {
       const editor = new KclManager(file.path, initialCode, systemDeps, file.id)
@@ -1878,19 +2005,24 @@ export class KclManager extends File {
       return editor
     }
 
-    // The legacy singleton can be reopened after its previous project disposed it.
-    // Actor ownership still ends at close; reopening creates a fresh actor on demand.
-    if (providedEditor.closed) {
-      providedEditor._modelingActorPromise = undefined
-      providedEditor.closed = false
-    }
+    // A disposed legacy editor may be reused for the next file.
+    providedEditor.closed = false
     // TODO: remove all this once the app can handle an undefined currently-executing editor
-    await providedEditor.flushWriteToFile({ suppressConflictToast: true })
-    providedEditor.flushRecoverySnapshot()
+    if (!options.backgroundSave)
+      await providedEditor.flushWriteToFile({ suppressConflictToast: true })
     providedEditor.editorStatesByPath.set(
       providedEditor.path,
       providedEditor.editorView.state
     )
+    providedEditor.clearNamedViews()
+    providedEditor.executeIsStale = null
+    // A reused editor must stop accepting results from its previous file, even
+    // if the user returns to that path before an old execution finishes.
+    providedEditor.executionGeneration += 1
+    providedEditor.fileSelectionGeneration += 1
+    providedEditor.endLiveOperationUpdates()
+    providedEditor.isExecuting = false
+    providedEditor.editorOwnershipVersion += 1
     providedEditor.path = file.path
     providedEditor.id = file.id
     providedEditor.codeSignal.value = initialCode
@@ -1921,7 +2053,11 @@ export class KclManager extends File {
         shouldWriteToDisk: false,
       })
     }
-    providedEditor.markFileCodeAsSynced(diskCode)
+    providedEditor.diagnostics = []
+    providedEditor.errors = []
+    providedEditor.logs = []
+    providedEditor.markFileCodeAsSynced(pendingSave?.baseline ?? diskCode)
+    providedEditor.watchNamedViewInvalidation()
     providedEditor.startWatchingSettings()
     providedEditor.refreshEditorSettings()
     providedEditor.watch()
@@ -1935,14 +2071,16 @@ export class KclManager extends File {
     fileId = 0
   ) {
     super(path, systemDeps.textFileIO, fileId)
+    // Remove obsolete persisted drafts, including files not opened this session.
+    if (typeof window !== 'undefined') {
+      for (let index = localStorage.length - 1; index >= 0; index--) {
+        const key = localStorage.key(index)
+        if (key?.startsWith('kclRecovery:')) localStorage.removeItem(key)
+      }
+    }
     // Register our additional, KclManager-specific watch event handler
     this.onWatchEvent.push(this.#onWatchEvent)
     this.systemDeps = systemDeps
-    this.modelingProjectRef = {
-      get current() {
-        return systemDeps.project.value
-      },
-    }
     const getSettings = () =>
       getSettingsFromActorContext(this.systemDeps.settings)
     this.engineCommandManager = this.systemDeps.engineCommandManager
@@ -1975,6 +2113,7 @@ export class KclManager extends File {
         this.updateHistoryDepth()
       })
 
+    this.watchNamedViewInvalidation()
     this.startWatchingSettings()
 
     this.systemDeps.wasmInstancePromise
@@ -2003,66 +2142,65 @@ export class KclManager extends File {
   public close() {
     if (this.closed) return
     this.closed = true
-    this.modelingGeneration += 1
-    this.modelingSubscription?.unsubscribe()
-    this.modelingSubscription = undefined
-    this._modelingActor?.stop()
-    // The outgoing route can still render while its replacement is loading.
-    // Keep its stopped actor readable until reopening installs the next one.
-    this._modelingState.value = null
+    this.editorOwnershipVersion += 1
+    this.notifyExecutionCompletion('cleanup')
+    this.clearNamedViews()
+    this.stopNamedViewInvalidation?.()
+    this.stopNamedViewInvalidation = undefined
+    this.fileSelectionGeneration += 1
+    this.executionGeneration += 1
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
     this.sceneSettingsActive.value = false
     this.disposeSettings?.()
     this.disposeSettings = undefined
     this.disposeGlobalHistorySubscription?.()
-    this.flushRecoverySnapshot()
     this.unwatch()
   }
 
+  private cloudSnapshotGeneration = 0
+  readonly saveState = signal<'saved' | 'saving' | 'failed'>('saved')
+
   private markFileCodeAsSynced(code: string) {
+    this.saveState.value = 'saved'
     this._lastKnownFileCode = normalizeLineEndings(code)
-    this.persistRecoverySnapshot()
   }
 
-  private hasUnsavedLocalChanges() {
+  /** Discard buffers and saves based on a storage snapshot that has been superseded. */
+  adoptStorageSnapshot(root: string, contents: string | undefined) {
+    if (
+      this.hasUnsavedLocalChanges() &&
+      !isCodeTheSame(this.code, contents ?? '')
+    ) {
+      toast.error(
+        'This project changed in the cloud. The latest cloud version replaced your unsaved edits.',
+        { id: 'cloud-project-conflict' }
+      )
+    }
+    clearTimeout(this.timeoutWriter)
+    clearTimeout(this.timeoutRewatch)
+    this.timeoutWriter = undefined
+    this.timeoutRewatch = undefined
+    this._documentVersion += 1
+    this.cloudSnapshotGeneration += 1
+    const belongs = (path: string) =>
+      path.startsWith(`${root}/`) || path.startsWith(`${root}\\`)
+    for (const path of this.editorStatesByPath.keys())
+      if (belongs(path)) this.editorStatesByPath.delete(path)
+    for (const path of this.fileSwitchSaves.keys())
+      if (belongs(path)) this.fileSwitchSaves.delete(path)
+    this.updateCodeEditor(contents ?? '', {
+      shouldWriteToDisk: false,
+      shouldExecute: false,
+      shouldSyncRust: false,
+      shouldClearHistory: true,
+    })
+    this.markFileCodeAsSynced(contents ?? '')
+    this.watch()
+  }
+
+  hasUnsavedLocalChanges() {
     return !isCodeTheSame(this.code, this._lastKnownFileCode)
-  }
-
-  private persistRecoverySnapshot() {
-    if (!this.path) {
-      return
-    }
-
-    if (isCodeTheSame(this.code, this._lastKnownFileCode)) {
-      this.pendingRecoverySnapshot = null
-      clearTimeout(this.timeoutRecoverySnapshot)
-      this.timeoutRecoverySnapshot = undefined
-      clearRecoverySnapshot(this.path)
-      return
-    }
-
-    this.pendingRecoverySnapshot = {
-      path: this.path,
-      code: this.code,
-      diskCode: this._lastKnownFileCode,
-    }
-    clearTimeout(this.timeoutRecoverySnapshot)
-    this.timeoutRecoverySnapshot = setTimeout(() => {
-      this.flushRecoverySnapshot()
-    }, RECOVERY_SNAPSHOT_DEBOUNCE_MS)
-  }
-
-  private flushRecoverySnapshot() {
-    clearTimeout(this.timeoutRecoverySnapshot)
-    this.timeoutRecoverySnapshot = undefined
-
-    if (!this.pendingRecoverySnapshot) {
-      return
-    }
-
-    writeRecoverySnapshot(this.pendingRecoverySnapshot)
-    this.pendingRecoverySnapshot = null
   }
 
   clearAst() {
@@ -2082,27 +2220,6 @@ export class KclManager extends File {
       outerAttrs: [],
       preComments: [],
       commentStart: 0,
-    }
-  }
-
-  // (jess) I'm not in love with this, but it ensures we clear the scene and
-  // bust the cache on
-  // errors from parsing when opening new files.
-  // Why not just clear the cache on all parse errors, you ask? well its actually
-  // really nice to keep the cache on parse errors within the same file, and
-  // only bust on engine errors esp if they take a long time to execute and
-  // you hit the wrong key!
-  private async checkIfSwitchedFilesShouldClear() {
-    // If we were switching files and we hit an error on parse we need to bust
-    // the cache and clear the scene.
-    if (this._astParseFailed && this._switchedFiles) {
-      await this.rustContext.clearSceneAndBustCache(
-        jsAppSettings(this.systemDeps.settings),
-        this.path
-      )
-    } else if (this._switchedFiles) {
-      // Reset the switched files boolean.
-      this._switchedFiles = false
     }
   }
 
@@ -2140,27 +2257,31 @@ export class KclManager extends File {
     execStateArtifactGraph: ExecState['artifactGraph']
   ) {
     this.setArtifactGraphState(execStateArtifactGraph)
+    const publicationVersion = this.artifactGraphPublicationVersion
+    const ownershipVersion = this.editorOwnershipVersion
+    const path = this.path
+    const projectPath = this.systemDeps.projectPath.peek()
+    const connection = this.engineCommandManager.connection
+    const isCurrent = () =>
+      !this.closed &&
+      this.editorOwnershipVersion === ownershipVersion &&
+      this.path === path &&
+      this.systemDeps.projectPath.peek() === projectPath &&
+      this.engineCommandManager.connection === connection &&
+      this.artifactGraphPublicationVersion === publicationVersion &&
+      this.artifactGraph === execStateArtifactGraph
+    const eventType = this.artifactGraph.size
+      ? 'Artifact graph populated'
+      : 'Artifact graph emptied'
 
-    if (this.artifactGraph.size) {
-      // TODO: we wanna remove this logic from xstate, it is racey
-      // This defer is bullshit but playwright wants it
-      // It was like this in engineConnection.ts already
-      deferredCallback((_a?: null) => {
-        this.engineCommandManager.modelingSend({
-          type: 'Artifact graph populated',
-        })
-      }, 200)(null)
-    } else {
-      deferredCallback((_a?: null) => {
-        this.engineCommandManager.modelingSend({
-          type: 'Artifact graph emptied',
-        })
-      }, 200)(null)
-    }
-
-    // Send the 'artifact graph initialized' event for modelingMachine, only once, when default planes are also initialized.
+    // Keep the existing event delay, but never publish for an expired owner
+    // or a graph replaced while its notification was pending.
     deferredCallback((_a?: null) => {
-      if (this.defaultPlanes) {
+      if (!isCurrent()) return
+      this.engineCommandManager.modelingSend({ type: eventType })
+    }, 200)(null)
+    deferredCallback((_a?: null) => {
+      if (isCurrent() && this.defaultPlanes) {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph initialized',
         })
@@ -2171,6 +2292,7 @@ export class KclManager extends File {
   private setArtifactGraphState(
     execStateArtifactGraph: ExecState['artifactGraph']
   ) {
+    this.artifactGraphPublicationVersion += 1
     this.artifactGraph = execStateArtifactGraph
     this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
 
@@ -2189,9 +2311,24 @@ export class KclManager extends File {
 
   async safeParse(
     code: string,
-    wasmInstance: Promise<ModuleType> | ModuleType = this.wasmInstancePromise
+    wasmInstance: Promise<ModuleType> | ModuleType = this.wasmInstancePromise,
+    executionSource = false
   ): Promise<Node<Program> | null> {
-    const result = parse(code, await wasmInstance)
+    const version = this._userDocumentVersion
+    const path = this.path
+    const result = executionSource
+      ? await this.rustContext.parseForExecution(
+          code,
+          jsAppSettings(this.systemDeps.settings),
+          path
+        )
+      : parse(code, await wasmInstance)
+    if (
+      this.closed ||
+      this.path !== path ||
+      this._userDocumentVersion !== version
+    )
+      return null
     this.setSketchSolveDiagnostics([])
     this.diagnostics = []
     this._astParseFailed = false
@@ -2202,7 +2339,6 @@ export class KclManager extends File {
       this.diagnostics = kclErrorsToDiagnostics([kclError], code)
       this._astParseFailed = true
 
-      await this.checkIfSwitchedFilesShouldClear()
       return null
     }
 
@@ -2221,7 +2357,6 @@ export class KclManager extends File {
     if (result.errors.length > 0) {
       this._astParseFailed = true
 
-      await this.checkIfSwitchedFilesShouldClear()
       return null
     }
 
@@ -2254,12 +2389,21 @@ export class KclManager extends File {
     }
 
     const finishExecution = this.engineCommandManager.trackExecution()
+    const generation = ++this.executionGeneration
+    const currentExecutionId = args.executionId ?? generation
+    const pathThatExecuted = this.path
+    const isCurrent = () =>
+      !this.closed &&
+      this.executionGeneration === generation &&
+      this.path === pathThatExecuted
+    const connection = this.engineCommandManager.connection
+    let completion: ExecutionCompletionStatus = 'cleanup'
+    let completedExecution: KclExecutionDoneDetail | undefined
 
     try {
       const ast = args.ast || this.ast
       markOnce('code/startExecuteAst')
 
-      const currentExecutionId = args.executionId || Date.now()
       this._cancelTokens.set(currentExecutionId, false)
 
       this.isExecuting = true
@@ -2267,6 +2411,7 @@ export class KclManager extends File {
       this.logs = []
       this.setSketchSolveDiagnostics([])
       this.beginLiveOperationUpdates(currentExecutionId)
+      this.captureProjectThumbnail = undefined
 
       const codeThatExecuted = this.code
       const { logs, errors, execState, isInterrupted } = await executeAst({
@@ -2275,6 +2420,8 @@ export class KclManager extends File {
         rustContext: this.rustContext,
         callbacks: this.createExecutionCallbacks(currentExecutionId),
       })
+
+      if (!isCurrent()) return
 
       const livePathsToWatch = Object.values(execState.filenames)
         .filter((file) => {
@@ -2288,36 +2435,35 @@ export class KclManager extends File {
       // Program was not interrupted, setup the scene
       // Do not send send scene commands if the program was interrupted, go to clean up
       if (!isInterrupted) {
-        this.addDiagnostics(
-          await lintAst({
-            ast,
-            sourceCode: this.code,
-            instance: await this.systemDeps.wasmInstancePromise,
-            rustContext: this.rustContext,
-            legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
-            edgeRefactorMetadata: execState.edgeRefactorMetadata,
-            directTagFilletMetadata: execState.directTagFilletMetadata,
-            artifactGraph: execState.artifactGraph,
-          })
-        )
+        const diagnostics = await lintAst({
+          ast,
+          sourceCode: codeThatExecuted,
+          instance: await this.systemDeps.wasmInstancePromise,
+          legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
+          edgeRefactorMetadata: execState.edgeRefactorMetadata,
+          directTagFilletMetadata: execState.directTagFilletMetadata,
+          artifactGraph: execState.artifactGraph,
+        })
+        if (!isCurrent()) return
+        this.addDiagnostics(diagnostics)
+        const wasmInstance = await this.systemDeps.wasmInstancePromise
+        if (!isCurrent()) return
         if (this.sceneEntitiesManager) {
           setSelectionFilterToDefault({
             engineCommandManager: this.engineCommandManager,
             kclManager: this,
             sceneEntitiesManager: this.sceneEntitiesManager,
-            wasmInstance: await this.systemDeps.wasmInstancePromise,
+            wasmInstance,
           })
         }
       }
-
-      this.isExecuting = false
 
       // Check the cancellation token for this execution before applying side effects
       if (this._cancelTokens.get(currentExecutionId)) {
         this.endLiveOperationUpdates()
         this._cancelTokens.delete(currentExecutionId)
         markOnce('code/endExecuteAst')
-        this.notifyExecutionCompletion('cancelled')
+        completion = 'cancelled'
         return
       }
 
@@ -2325,6 +2471,7 @@ export class KclManager extends File {
         ast,
         await this.wasmInstancePromise
       )
+      if (!isCurrent()) return
       if (err(fileSettings)) {
         fileSettings = {}
       }
@@ -2347,6 +2494,10 @@ export class KclManager extends File {
           : compilationIssuesToDiagnostics(execState.issues, code)
       )
       this.execState = execState
+      const sourceChanged = !isCodeTheSame(
+        this.lastSuccessfulCode,
+        codeThatExecuted
+      )
       if (!errors.length) {
         this.lastSuccessfulVariables = execState.variables
         this.lastSuccessfulOperations = execState.operations
@@ -2356,7 +2507,12 @@ export class KclManager extends File {
       this.ast = structuredClone(ast)
       // updateArtifactGraph relies on updated executeState/variables
       await this.updateArtifactGraph(execState.artifactGraph)
-      this._engineSceneGeneration.value += 1
+      if (!isCurrent()) return
+      // Failed runs report their generation too. It is null only when no run
+      // reached the engine, which leaves the scene as it was.
+      if (execState.engineSceneGeneration !== null) {
+        this._engineSceneGeneration.value = execState.engineSceneGeneration
+      }
       this.dispatchUpdateOperations(
         getOperationsForCurrentFile({
           operationsByModule: execState.operations,
@@ -2381,17 +2537,66 @@ export class KclManager extends File {
 
       this._cancelTokens.delete(currentExecutionId)
       markOnce('code/endExecuteAst')
-      this.notifyExecutionCompletion('completed')
+      completion = 'completed'
 
-      // Update project thumbnail after successful execution
-      if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
-        createThumbnailPNGOnDesktop({
-          fileOperations: this.systemDeps.fileOperations,
-          projectDirectoryWithoutEndingSlash: projectFsManager.dir,
-        })
+      // Cloud thumbnails join the next editor save or flush after inactivity.
+      const project = this.systemDeps.project.peek()
+      const isCurrentEntrypoint = () =>
+        !this.closed &&
+        this.path === pathThatExecuted &&
+        this.code === codeThatExecuted &&
+        this.systemDeps.project.peek()?.path === project?.path &&
+        pathThatExecuted === this.systemDeps.project.peek()?.default_file
+      if (
+        args.updateThumbnail !== false &&
+        sourceChanged &&
+        !isInterrupted &&
+        errors.length === 0 &&
+        project &&
+        isCurrentEntrypoint()
+      ) {
+        this.captureProjectThumbnail = (renderedCanvas) =>
+          createProjectThumbnail({
+            fileOperations: this.systemDeps.fileOperations,
+            projectDirectoryWithoutEndingSlash: project.path,
+            writeThumbnail: this.systemDeps.projectSession?.writeThumbnail,
+            isCurrent: isCurrentEntrypoint,
+            renderedCanvas,
+          })
+        if (!this.engineCommandManager.geometryOnly)
+          this.captureProjectThumbnail()
+      }
+
+      completedExecution = {
+        successful: !isInterrupted && errors.length === 0,
+        isInterrupted,
+        hasErrors: errors.length > 0,
       }
     } finally {
+      this._cancelTokens.delete(currentExecutionId)
+      // Only this run may release its status; an old run must not stop a new one.
+      if (isCurrent()) {
+        if (
+          this.engineCommandManager.connection === connection &&
+          !this.executeIsStale
+        ) {
+          this.engineCommandManager.executionIsStale = false
+        }
+        this.isExecuting = false
+      }
+      this.notifyExecutionCompletion(completion)
       finishExecution()
+      if (completedExecution && isCurrent()) {
+        // The local renderer only loads a completed scene while execution is idle.
+        this.dispatchEvent(
+          new CustomEvent<KclExecutionDoneDetail>(
+            KclManagerEvents.ExecutionDone,
+            {
+              detail: completedExecution,
+            }
+          )
+        )
+      }
     }
   }
 
@@ -2413,6 +2618,12 @@ export class KclManager extends File {
       data: null,
     })
     markOnce('code/endExecuteAst')
+    // The local renderer shows its loading indicator until it hears this.
+    this.dispatchEvent(
+      new CustomEvent<KclExecutionDoneDetail>(KclManagerEvents.ExecutionDone, {
+        detail: { successful: false, isInterrupted: true, hasErrors: false },
+      })
+    )
   }
 
   // DO NOT CALL THIS from codemirror ever.
@@ -2439,8 +2650,10 @@ export class KclManager extends File {
     })
 
     this.logs = logs
-    this._execState.value = execState
-    this._variables.value = execState.variables
+    this.execState = {
+      ...execState,
+      namedViews: this.execState.namedViews,
+    }
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
@@ -2455,7 +2668,18 @@ export class KclManager extends File {
       this._cancelTokens.set(key, true)
     })
   }
-  async executeCode(newCode = this.codeSignal.value): Promise<void> {
+  async executeCode(
+    newCode = this.codeSignal.value,
+    options: Pick<ExecuteArgs, 'updateThumbnail'> = {}
+  ): Promise<void> {
+    const version = this._userDocumentVersion
+    const path = this.path
+    const isCurrent = () =>
+      !this.closed &&
+      this.path === path &&
+      this._userDocumentVersion === version
+    await this.systemDeps.modelingReady?.()
+    if (!isCurrent()) return
     if (!this.engineCommandManager.started) {
       console.warn('`executeCode` called before engine connection started')
       return
@@ -2465,8 +2689,14 @@ export class KclManager extends File {
     // not race that fetch, or it runs with the flags' defaults. Settled
     // features make this await instant.
     await waitForUserFeaturesSettled(this.systemDeps.userFeatures.actor)
+    if (!isCurrent()) return
     this.markCodeAsExecuted(newCode)
-    const ast = await this.safeParse(newCode, await this.wasmInstancePromise)
+    const ast = await this.safeParse(
+      newCode,
+      await this.wasmInstancePromise,
+      true
+    )
+    if (!isCurrent()) return
 
     if (!ast) {
       // By clearing the AST we indicate to our callers that there was an issue with execution and
@@ -2486,7 +2716,7 @@ export class KclManager extends File {
       this.dispatchEvent(new CustomEvent(KclManagerEvents.LongExecution, {}))
     }, this.longExecutionTimeMs)
 
-    await this.executeAst({ ast })
+    await this.executeAst({ ast, ...options })
   }
 
   async format() {
@@ -2583,54 +2813,24 @@ export class KclManager extends File {
   }
 
   showPlanes(all = false) {
-    if (!this.defaultPlanes) return Promise.all([])
-    const thePromises = [
-      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, false),
-      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, false),
-      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, false),
-    ]
-    if (all) {
-      thePromises.push(
-        this.engineCommandManager.setPlaneHidden(
-          this.defaultPlanes.negXy,
-          false
-        )
-      )
-      thePromises.push(
-        this.engineCommandManager.setPlaneHidden(
-          this.defaultPlanes.negYz,
-          false
-        )
-      )
-      thePromises.push(
-        this.engineCommandManager.setPlaneHidden(
-          this.defaultPlanes.negXz,
-          false
-        )
-      )
-    }
-    return Promise.all(thePromises)
+    return this.setPlanesHidden(false, all)
   }
 
   hidePlanes(all = false) {
-    if (!this.defaultPlanes) return Promise.all([])
-    const thePromises = [
-      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, true),
-      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true),
-      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true),
-    ]
+    return this.setPlanesHidden(true, all)
+  }
+
+  private setPlanesHidden(hidden: boolean, all: boolean) {
+    const planes = this.defaultPlanes
+    if (!planes) return Promise.resolve()
+    const ids = [planes.xy, planes.yz, planes.xz]
     if (all) {
-      thePromises.push(
-        this.engineCommandManager.setPlaneHidden(this.defaultPlanes.negXy, true)
-      )
-      thePromises.push(
-        this.engineCommandManager.setPlaneHidden(this.defaultPlanes.negYz, true)
-      )
-      thePromises.push(
-        this.engineCommandManager.setPlaneHidden(this.defaultPlanes.negXz, true)
-      )
+      ids.push(planes.negXy, planes.negYz, planes.negXz)
     }
-    return Promise.all(thePromises)
+    // One engine render boundary for the complete visibility change.
+    return this.engineCommandManager.setObjectsHidden(
+      new Map(ids.map((id) => [id, hidden]))
+    )
   }
 
   setPlaneVisibilityByKey(
@@ -2762,16 +2962,25 @@ export class KclManager extends File {
     this._selectionRanges = selectionRanges
     this._selectionRangesSignal.value = selectionRanges
   }
-  /** Send only while this editor owns a running modeling actor. */
+  set modelingSend(send: (eventInfo: ModelingMachineEvent) => void) {
+    this._modelingSend = send
+  }
+  /**
+   * Send an event to the modeling machine.
+   * Returns false if the modeling machine is not available.
+   */
   sendModelingEvent(event: ModelingMachineEvent): boolean {
-    if (this.closed || this._modelingActor?.getSnapshot().status !== 'active') {
-      return false
+    if (this._modelingSend) {
+      this._modelingSend(event)
+      return true
     }
-    this._modelingActor.send(event)
-    return true
+    return false
   }
   get modelingState(): StateFrom<typeof modelingMachine> | null {
     return this._modelingState.value
+  }
+  set modelingState(state: StateFrom<typeof modelingMachine>) {
+    this._modelingState.value = state
   }
   get highlightRange(): Array<[number, number]> {
     return this._highlightRange
@@ -3002,7 +3211,10 @@ export class KclManager extends File {
           highlightEdges: highlightEdges.value,
           backfaceColor: backfaceColor.value,
         }
-        const backfaceChanged = current.backfaceColor !== previous.backfaceColor
+        // The local renderer draws back faces itself, so the engine scene can stay.
+        const backfaceChanged =
+          current.backfaceColor !== previous.backfaceColor &&
+          !this.engineCommandManager.geometryOnly
         const engineSettingsChanged =
           current.showScaleGrid !== previous.showScaleGrid ||
           current.fixedSizeGrid !== previous.fixedSizeGrid ||
@@ -3012,12 +3224,12 @@ export class KclManager extends File {
         untracked(() => {
           if (!active || !this.engineCommandManager.connection) return
           const path = this.path
-          const projectPath = this.systemDeps.project.peek()?.path
+          const projectPath = this.systemDeps.projectPath.peek()
           const isCurrent = () =>
             !cancelled &&
             this.sceneSettingsActive.peek() &&
             this.path === path &&
-            this.systemDeps.project.peek()?.path === projectPath
+            this.systemDeps.projectPath.peek() === projectPath
           const executeIfCurrent = () => {
             if (isCurrent()) return this.executeCode()
           }
@@ -3289,31 +3501,30 @@ export class KclManager extends File {
     }
 
     this.editorStatesByPath.set(filePath, synchronizedState)
-    if (this.pendingRecoverySnapshot?.path === filePath) {
-      clearTimeout(this.timeoutRecoverySnapshot)
-      this.timeoutRecoverySnapshot = undefined
-      this.pendingRecoverySnapshot = null
-    }
-    clearRecoverySnapshot(filePath)
     return true
   }
   synchronizeCurrentEditorAfterDirectGlobalReplay({
     filePath,
     nextContent,
+    shouldSyncRust = true,
   }: {
     filePath: string
     nextContent: string | null
+    shouldSyncRust?: boolean
   }) {
     if (filePath !== this.path || nextContent === null) {
       return false
     }
 
+    if (!isCodeTheSame(this.code, nextContent))
+      this.sketchSourceNeedsRefresh = true
     this.updateCodeEditor(nextContent, {
       shouldAddToHistory: false,
       shouldClearHistory: false,
       shouldExecute: false,
       shouldResetCamera: false,
       shouldWriteToDisk: false,
+      shouldSyncRust,
     })
     this.markFileCodeAsSynced(nextContent)
     return true
@@ -3509,7 +3720,7 @@ export class KclManager extends File {
       return // don't repeat events
     }
     this._lastEvent = { event: stringEvent, time: Date.now() }
-    this.sendModelingEvent(eventInfo.modelingEvent)
+    this._modelingSend(eventInfo.modelingEvent)
     eventInfo.engineEvents.forEach((event) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.engineCommandManager.sendSceneCommand(event)
@@ -3692,6 +3903,11 @@ export class KclManager extends File {
       structuredClone(KclManager.defaultUpdateCodeEditorOptions),
       options
     )
+    if (
+      resolvedOptions.shouldWriteToDisk &&
+      this.storage?.writeAvailability.peek().writable === false
+    )
+      return
 
     // If the code hasn't changed, skip the full update to preserve cursor position
     const currentCode = this.editorState.doc.toString()
@@ -3808,12 +4024,11 @@ export class KclManager extends File {
     options: { suppressConflictToast?: boolean } = {}
   ) {
     if (this.path !== '') {
+      this.systemDeps.projectSession?.editorChanged(this.path)
       // KclManager is reused across file navigation. Bind this save to the
       // file that owned the buffer when the debounce was scheduled.
       const requestedPath = this.path
-      // Only write our buffer contents to file once per second. Any faster
-      // and file-system watchers which read, will receive empty data during
-      // writes.
+      // Reset the timer on every edit; save only after uninterrupted inactivity.
       clearTimeout(this.timeoutWriter)
       clearTimeout(this.timeoutRewatch)
       return new Promise((resolve, reject) => {
@@ -3825,7 +4040,7 @@ export class KclManager extends File {
             requestedPath,
             options,
           }).then(resolve, reject)
-        }, 1000)
+        }, EDITOR_SAVE_DEBOUNCE_MS)
       }).catch((err: unknown) => {
         if (isPathNotFoundError(err)) {
           return
@@ -3833,6 +4048,89 @@ export class KclManager extends File {
         return err
       })
     }
+  }
+
+  /** Capture an outgoing buffer; persistence must never hold up file selection. */
+  saveOutgoingFile() {
+    const path = this.path
+    if (
+      !path ||
+      (this.timeoutWriter === undefined && !this.hasUnsavedLocalChanges())
+    )
+      return
+    clearTimeout(this.timeoutWriter)
+    clearTimeout(this.timeoutRewatch)
+    this.timeoutWriter = undefined
+    this.timeoutRewatch = undefined
+    const previous = this.fileSwitchSaves.get(path)
+    const inFlight = this.inFlightFileWrites.get(path)
+    if (previous?.code === this.code) return
+    const snapshot = {
+      code: this.code,
+      baseline: this._lastKnownFileCode,
+      promise: Promise.resolve(),
+    }
+    this.fileSwitchSaves.set(path, snapshot)
+    snapshot.promise = (async () => {
+      await previous?.promise.catch(() => undefined)
+      await inFlight?.promise.catch(() => undefined)
+      if (isMainKclPath(path) && snapshot.code.trim() === '') {
+        const wasm = await this.wasmInstancePromise
+        if (typeof wasm !== 'string') {
+          const seeded = ensureDefaultKclVersionOnBlankMain(
+            path,
+            snapshot.code,
+            wasm
+          )
+          if (!err(seeded)) snapshot.code = seeded
+        }
+      }
+      const contents = normalizeLineEndings(await this.textFileIO.read(path))
+      if (!isCodeTheSame(contents, snapshot.code)) {
+        if (
+          !isCodeTheSame(contents, snapshot.baseline) &&
+          !(previous && isCodeTheSame(contents, previous.code)) &&
+          !(inFlight && isCodeTheSame(contents, inFlight.code))
+        )
+          return Promise.reject(
+            new Error(
+              'File changed since this buffer was loaded. Outgoing edits remain in memory.'
+            )
+          )
+        await this.textFileIO.write(path, snapshot.code)
+      }
+      snapshot.baseline = snapshot.code
+      if (this.fileSwitchSaves.get(path) === snapshot)
+        this.fileSwitchSaves.delete(path)
+      if (this.path === path && isCodeTheSame(this.code, snapshot.code))
+        this.markFileCodeAsSynced(snapshot.code)
+    })()
+    void snapshot.promise.catch((error: unknown) => {
+      reportFileOperationError({
+        error,
+        operation: 'save_kcl_file',
+        risk: 'write',
+        source: 'KclManager',
+        extra: {
+          phase: 'save_outgoing_file',
+          contentLength: snapshot.code.length,
+        },
+      })
+      toast.error(
+        'Could not save the outgoing file. Its edits remain in memory.'
+      )
+    })
+  }
+
+  async waitForFileSaves() {
+    await Promise.allSettled([
+      ...[...this.fileSwitchSaves.values()].map((save) => save.promise),
+      ...[...this.inFlightFileWrites.values()].map((save) => save.promise),
+    ])
+  }
+
+  getPendingFileCode(path: string) {
+    return this.fileSwitchSaves.get(path)?.code
   }
 
   async flushWriteToFile(
@@ -3907,16 +4205,24 @@ export class KclManager extends File {
       return
     }
 
+    const cloudSnapshotGeneration = this.cloudSnapshotGeneration
+    const baseline = this._lastKnownFileCode
+    const previousWrite =
+      this.inFlightFileWrites.get(requestedPath) ??
+      this.fileSwitchSaves.get(requestedPath)
+    await previousWrite?.promise.catch(() => undefined)
     let currentDiskCode: string | null = null
     try {
       currentDiskCode = normalizeLineEndings(
         await this.textFileIO.read(requestedPath)
       )
     } catch (err: unknown) {
+      if (cloudSnapshotGeneration !== this.cloudSnapshotGeneration) return
       if (isPathNotFoundError(err)) {
         currentDiskCode = null
       } else {
-        reportSystemIOError({
+        this.saveState.value = 'failed'
+        reportFileOperationError({
           error: err,
           operation: 'save_kcl_file',
           risk: 'write',
@@ -3944,8 +4250,9 @@ export class KclManager extends File {
 
     const diskChangedSinceLastSync =
       currentDiskCode !== null
-        ? !isCodeTheSame(currentDiskCode, this._lastKnownFileCode)
-        : this._lastKnownFileCode.length > 0
+        ? !isCodeTheSame(currentDiskCode, baseline) &&
+          !(previousWrite && isCodeTheSame(currentDiskCode, previousWrite.code))
+        : baseline.length > 0
     if (diskChangedSinceLastSync) {
       console.warn(
         'File changed on disk since last sync. Skipping save to avoid overwriting newer contents.'
@@ -3958,17 +4265,26 @@ export class KclManager extends File {
       return
     }
 
+    this.saveState.value = 'saving'
     this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
     this.unwatch()
 
     try {
-      await this.write(newCode)
-      if (
-        requestedDocumentVersion !== this._documentVersion ||
-        requestedPath !== this.path
-      ) {
-        return
+      const write = { code: newCode, promise: this.write(newCode) }
+      this.inFlightFileWrites.set(requestedPath, write)
+      try {
+        await write.promise
+      } finally {
+        if (this.inFlightFileWrites.get(requestedPath) === write)
+          this.inFlightFileWrites.delete(requestedPath)
       }
+      if (
+        requestedPath !== this.path ||
+        cloudSnapshotGeneration !== this.cloudSnapshotGeneration
+      )
+        return
+      if (this.fileSwitchSaves.get(requestedPath)?.code === newCode)
+        this.fileSwitchSaves.delete(requestedPath)
       this.markFileCodeAsSynced(newCode)
 
       // After a cooldown, start watching this file again on disk.
@@ -3978,9 +4294,11 @@ export class KclManager extends File {
       }, 1_000)
     } catch (err: unknown) {
       // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
+      if (cloudSnapshotGeneration !== this.cloudSnapshotGeneration) return
+      this.saveState.value = 'failed'
       console.warn('error saving file', err)
       if (!isPathNotFoundError(err)) {
-        reportSystemIOError({
+        reportFileOperationError({
           error: err,
           operation: 'save_kcl_file',
           risk: 'write',
@@ -4088,78 +4406,4 @@ export class KclManager extends File {
 function safeLSGetItem(key: string) {
   if (typeof window === 'undefined') return
   return localStorage?.getItem(key)
-}
-
-function safeLSSetItem(key: string, value: string) {
-  if (typeof window === 'undefined') return
-  localStorage?.setItem(key, value)
-}
-
-function safeLSRemoveItem(key: string) {
-  if (typeof window === 'undefined') return
-  localStorage?.removeItem(key)
-}
-
-type RecoverySnapshot = {
-  version: typeof RECOVERY_SNAPSHOT_VERSION
-  path: string
-  code: string
-  diskCode: string
-  savedAt: string
-}
-
-function getRecoverySnapshotKey(path: string) {
-  return `kclRecovery:${path || '__untitled__'}`
-}
-
-function readRecoverySnapshot(path: string): RecoverySnapshot | null {
-  const persisted = safeLSGetItem(getRecoverySnapshotKey(path))
-  if (!persisted) return null
-
-  try {
-    const parsed = JSON.parse(persisted) as Partial<RecoverySnapshot>
-    if (
-      parsed.version !== RECOVERY_SNAPSHOT_VERSION ||
-      typeof parsed.code !== 'string' ||
-      typeof parsed.diskCode !== 'string' ||
-      typeof parsed.path !== 'string'
-    ) {
-      return null
-    }
-
-    return {
-      version: RECOVERY_SNAPSHOT_VERSION,
-      path: parsed.path,
-      code: parsed.code,
-      diskCode: parsed.diskCode,
-      savedAt: typeof parsed.savedAt === 'string' ? parsed.savedAt : '',
-    }
-  } catch {
-    return null
-  }
-}
-
-function writeRecoverySnapshot({
-  path,
-  code,
-  diskCode,
-}: {
-  path: string
-  code: string
-  diskCode: string
-}) {
-  safeLSSetItem(
-    getRecoverySnapshotKey(path),
-    JSON.stringify({
-      version: RECOVERY_SNAPSHOT_VERSION,
-      path,
-      code,
-      diskCode,
-      savedAt: new Date().toISOString(),
-    } satisfies RecoverySnapshot)
-  )
-}
-
-function clearRecoverySnapshot(path: string) {
-  safeLSRemoveItem(getRecoverySnapshotKey(path))
 }

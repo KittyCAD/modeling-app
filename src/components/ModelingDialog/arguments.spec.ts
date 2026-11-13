@@ -109,7 +109,9 @@ describe('resolveArguments', () => {
           inputType: 'selection',
           required: true,
           multiple: false,
-          selectionTypes: ['enginePrimitiveFace'],
+          // Preserve existing references even when the creation collector
+          // accepts a different selection type.
+          selectionTypes: ['segment'],
         },
         hiddenMetadata: {
           inputType: 'kcl',

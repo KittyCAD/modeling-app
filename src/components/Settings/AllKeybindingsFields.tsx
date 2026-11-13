@@ -70,7 +70,7 @@ const keymapModifierDisplay: Record<string, string> = {
 }
 
 const iconButtonClassName =
-  'relative inline-flex h-6 w-6 items-center justify-center rounded border border-transparent bg-transparent p-0 text-chalkboard-70 transition-opacity hover:border-chalkboard-30 hover:bg-chalkboard-20 dark:text-chalkboard-30 dark:hover:border-chalkboard-70 dark:hover:bg-chalkboard-80'
+  'relative inline-flex h-6 w-6 items-center justify-center rounded border border-transparent bg-transparent p-0 text-chalkboard-70 hover:border-chalkboard-30 hover:bg-chalkboard-20 dark:text-chalkboard-30 dark:hover:border-chalkboard-70 dark:hover:bg-chalkboard-80'
 
 export const AllKeybindingsFields = forwardRef(
   (

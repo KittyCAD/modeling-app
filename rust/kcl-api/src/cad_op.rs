@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
 use schemars::JsonSchema;
@@ -93,7 +95,6 @@ impl Operation {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
-#[cfg_attr(not(target_arch = "wasm32"), expect(clippy::large_enum_variant))]
 pub enum Group {
     /// A function call.
     #[serde(rename_all = "camelCase")]
@@ -125,7 +126,7 @@ pub enum Group {
 pub struct OpArg {
     /// The runtime value of the argument.  Instead of using [`KclValue`], we
     /// refer to scene objects using their [`ArtifactId`]s.
-    value: OpKclValue,
+    value: Arc<OpKclValue>,
     /// The KCL code expression for the argument.  This is used in the UI so
     /// that the user can edit the expression.
     source_range: SourceRange,
@@ -133,7 +134,10 @@ pub struct OpArg {
 
 impl OpArg {
     pub fn new(value: OpKclValue, source_range: SourceRange) -> Self {
-        Self { value, source_range }
+        Self {
+            value: Arc::new(value),
+            source_range,
+        }
     }
 
     pub fn value(&self) -> &OpKclValue {

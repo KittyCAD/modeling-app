@@ -12,7 +12,6 @@ export type FileOperationsOperation =
   | 'move'
   | 'read-directory'
   | 'read-file'
-  | 'realpath'
   | 'remove'
   | 'rename'
   | 'stat'
@@ -68,7 +67,9 @@ function isExpectedCollision(
 ) {
   return (
     error._tag === 'FileAlreadyExists' &&
-    (operation === 'create-directory' || operation === 'create-file')
+    (operation === 'create-directory' ||
+      operation === 'create-file' ||
+      operation === 'rename')
   )
 }
 

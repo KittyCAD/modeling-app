@@ -11,12 +11,9 @@ import {
   zookeeperEditPatchHistoryEvent,
 } from '@src/lib/zookeeper/editorPlugin'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import { applyPatch, createTwoFilesPatch, parsePatch } from 'diff'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
-
-// Headless project tests must not bootstrap the browser App through modeling imports.
-vi.mock('@src/lib/boot', () => ({ useApp: vi.fn(), useSingletons: vi.fn() }))
 
 const apps: App[] = []
 

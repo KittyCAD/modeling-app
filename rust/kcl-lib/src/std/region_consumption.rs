@@ -552,7 +552,7 @@ newPolygon = polygon(sharedRegion, radius = 2mm, numSides = 5, center = [60mm, 0
         ];
 
         for (module, function) in readers {
-            let (_, props) = crate::std::std_fn(module, function);
+            let (_, props) = crate::std::std_fn(module, function).unwrap();
             assert_eq!(
                 props.region_behavior,
                 RegionBehavior::ReadLocal,
@@ -571,7 +571,7 @@ newPolygon = polygon(sharedRegion, radius = 2mm, numSides = 5, center = [60mm, 0
         ];
 
         for (module, function, expected_operation) in cases {
-            let (_, props) = crate::std::std_fn(module, function);
+            let (_, props) = crate::std::std_fn(module, function).unwrap();
             let RegionBehavior::Consume(policy) = props.region_behavior else {
                 panic!("`std::{module}::{function}` must register region consumption");
             };
