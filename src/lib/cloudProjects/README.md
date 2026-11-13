@@ -72,6 +72,8 @@ the previous session selected. No local copy or default file is created.
 
 `next/session.ts` binds polling to the captured session's abort signal. Accepted
 snapshots update the file tree, editor contents, and Save baselines together.
+Editor adoption replaces only the changed text range, preserving cursor mapping
+through unchanged text; identical contents do not dispatch a document change.
 Returning Home releases that opening's editors and poller.
 
 ### Smoke test

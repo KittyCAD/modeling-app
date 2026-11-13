@@ -132,6 +132,38 @@ it('updates clean buffers, baselines, and the file list together after a remote 
   expect(api.updateRemoteProject).not.toHaveBeenCalled()
 })
 
+it('maps the cursor through only the changed text when adopting a remote snapshot', async () => {
+  const { cloud, editor, saving } = await setup()
+  editor.dispatch({ selection: { anchor: 6 } })
+  const files = archive('orNEWiginal')
+  vi.mocked(api.getRemoteProject).mockResolvedValue(remoteSnapshot('2', files))
+  vi.mocked(parseProjectArchive).mockResolvedValue(files)
+
+  await cloud.checkForUpdates('one', () => true)
+
+  expect(editor.contents.peek()).toBe('orNEWiginal')
+  expect(editor.state.selection.main.head).toBe(9)
+  expect(saving.state(editor).peek().dirty).toBe(false)
+  expect(editor.undo()).toBe(false)
+})
+
+it('does not dispatch a document change for an unchanged remote snapshot', async () => {
+  const { cloud, editor, saving } = await setup()
+  const changed = vi.fn()
+  const unsubscribe = editor.subscribe((transaction) => {
+    if (transaction.docChanged) changed()
+  })
+  vi.mocked(api.getRemoteProject).mockResolvedValue(remoteSnapshot('2'))
+
+  try {
+    await cloud.checkForUpdates('one', () => true)
+    expect(changed).not.toHaveBeenCalled()
+    expect(saving.state(editor).peek().dirty).toBe(false)
+  } finally {
+    unsubscribe()
+  }
+})
+
 it('protects unsaved edits from polling but adopts remote contents after a conflicting write', async () => {
   const { cloud, editor, saving, projects } = await setup()
   editor.dispatch({

@@ -12,6 +12,7 @@ import type {
 } from '@src/lib/projectSession/next/contract'
 import type { EditorSave } from '@src/lib/save/registry/contract'
 import { reportRejection } from '@src/lib/trap'
+import { buildMinimalDocumentChange } from '@src/lib/minimalDocumentChange'
 
 /** One cloud opening owns its poller, snapshot veto, and editor subscriptions. */
 export function watchCloudEditorSession({
@@ -76,10 +77,15 @@ export function watchCloudEditorSession({
           if (text === undefined) {
             if (src) editors.closeEditor(editor.id)
           } else {
-            editor.dispatch({
-              changes: { from: 0, to: editor.state.doc.length, insert: text },
-              annotations: Transaction.addToHistory.of(false),
-            })
+            const changes = buildMinimalDocumentChange(
+              editor.contents.peek(),
+              text
+            )
+            if (changes)
+              editor.dispatch({
+                changes,
+                annotations: Transaction.addToHistory.of(false),
+              })
             saving.adopt(editor, text)
           }
         }
