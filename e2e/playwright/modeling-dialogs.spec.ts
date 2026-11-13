@@ -163,7 +163,7 @@ obstruction = extrude(region002, length = 20mm)`
       await expect(profiles).toHaveText('Select in the scene')
 
       const row = page
-        .locator('#bodies-list-pane')
+        .getByTestId('feature-tree-body')
         .getByRole('button', { name: 'Body 1', exact: true })
         .locator('..')
       await row.hover()

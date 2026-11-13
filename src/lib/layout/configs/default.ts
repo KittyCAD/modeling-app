@@ -47,7 +47,7 @@ export const featureTreePaneConfig: PaneChild = {
   label: 'Feature Tree',
   type: LayoutType.Splits,
   orientation: 'block',
-  sizes: [70, 30],
+  sizes: [100],
   icon: 'model',
   children: [
     {
@@ -55,12 +55,6 @@ export const featureTreePaneConfig: PaneChild = {
       label: 'Feature Tree',
       type: LayoutType.Simple,
       areaType: AreaType.FeatureTree,
-    },
-    {
-      id: 'bodies-list',
-      label: 'Bodies',
-      type: LayoutType.Simple,
-      areaType: AreaType.Bodies,
     },
   ],
 }

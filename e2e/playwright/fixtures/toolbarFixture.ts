@@ -369,11 +369,22 @@ export class ToolbarFixture {
   async getFeatureTreeOperation(operationName: string, operationIndex: number) {
     await this.openFeatureTreePane()
     await expect(this.featureTreePane).toBeVisible()
-    return this.featureTreePane
+    const operation = this.featureTreePane
       .getByRole('button', {
         name: operationName,
       })
       .nth(operationIndex)
+    // Reveal operations inside collapsed imported parts and bodies.
+    const collapsedBranches = this.featureTreePane.locator(
+      '[data-module-branch] > button[aria-expanded="false"], [data-testid="feature-tree-body"] > button[aria-expanded="false"]'
+    )
+    while (
+      (await operation.count()) === 0 &&
+      (await collapsedBranches.count()) > 0
+    ) {
+      await collapsedBranches.first().click()
+    }
+    return operation
   }
 
   async openFeatureTreeOperationContextMenu(
