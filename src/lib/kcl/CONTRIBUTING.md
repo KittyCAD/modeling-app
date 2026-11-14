@@ -137,3 +137,20 @@ The facade delegates to the owner; it does not copy selection into a global stor
 `context.session.resource.value?.selection.selected` remains the underlying view
 selection, suitable for seeding a new dialog. Clearing active dialog or sketch
 selection does not clear that underlying selection.
+
+### Geometry/source correspondence
+
+`createArtifactCorrespondence(graph)` queries the executed artifact graph; it
+creates no second provenance store. Results identify the target entity, source
+artifact, module-qualified source range, and relationship: `defined-by`,
+`generated-by`, `derived-from`, or `imported-through`. Explanation policies may
+include every relationship. Picking accepts only direct definitions/generators
+and must resolve each selected source location to exactly one compatible target.
+A multiple argument permits multiple unambiguous source selections, not arbitrary
+expansion of an ambiguous expression. No segment-to-wall or face-to-profile
+coercion occurs in this query layer.
+
+The `/file/:id` consumer still uses the extracted `legacyCorrespondence` policy,
+with its previous traversal and ordering. Region solver IDs, pattern copies, and
+KCL import-site provenance require further artifact support; they are explicit
+TODOs rather than guessed correspondences. Module IDs are local to an execution.
