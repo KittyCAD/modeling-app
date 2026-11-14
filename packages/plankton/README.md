@@ -102,10 +102,6 @@ application state. `InputOf`, `OutputOf`, and `CapabilityOf` derive adapter type
 
 ## Planning and acquisition
 
-![Planning visits dependencies before owners and skips repeated identities. Amber squares are Factories; teal diamonds are Bindings. The result is storage, editor, shortcut, search, with zero create calls.](docs/planner.gif)
-
-The shared `storage` dependency and repeated `editor` each appear once.
-
 `plan(items)` expands declared dependencies before their owners, flattens groups,
 and rejects dependency cycles and recursive groups. It never reads `create` or
 installs bindings. Its optional selected-definition map carries earlier decisions
