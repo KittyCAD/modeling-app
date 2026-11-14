@@ -779,6 +779,7 @@ export async function createArcActor({
       },
     }
 
+    await rustContext.prepareForSketchInsertion()
     return await rustContext.addSegment(
       0,
       sketchId,

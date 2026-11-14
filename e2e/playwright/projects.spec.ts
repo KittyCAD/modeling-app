@@ -594,6 +594,11 @@ test(
       await inputField.fill('lego')
       await page.keyboard.press('Enter')
       await expect(page.getByText('already exists')).toBeVisible()
+      await expect(
+        page.getByRole('status').filter({ hasText: 'already exists' })
+      ).toHaveCount(1)
+      await expect(page.getByText('bracket', { exact: true })).toBeVisible()
+      await expect(page.getByText('lego', { exact: true })).toBeVisible()
     })
   }
 )
