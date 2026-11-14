@@ -49,25 +49,28 @@ export type StdLibCommandDriftConfig = {
   flowArgOrder?: readonly string[]
 }
 
-type StdLibCommandArgOverride = Partial<
-  CommandArgumentConfig<unknown, ModelingMachineContext>
+type StdLibCommandArgOverride<C = ModelingMachineContext> = Partial<
+  CommandArgumentConfig<unknown, C>
 > &
   Record<string, unknown>
 
-type StdLibCommandArgsOptions = {
+type StdLibCommandArgsOptions<C = ModelingMachineContext> = {
   additionalStdLibNames?: readonly StdLibCommandName[]
   omitted?: readonly string[]
   includeDeprecated?: readonly string[]
   argAliases?: Readonly<Record<string, string>>
-  overrides?: Readonly<Record<string, StdLibCommandArgOverride>>
+  overrides?: Readonly<Record<string, StdLibCommandArgOverride<C>>>
   includeEditFlowArgs?: boolean
   flowArgOrder?: readonly string[]
 }
 
-type CommandArgConfigs<CommandArgs extends object> = {
+type CommandArgConfigs<
+  CommandArgs extends object,
+  C = ModelingMachineContext,
+> = {
   [ArgName in keyof CommandArgs]-?: CommandArgumentConfig<
     CommandArgs[ArgName],
-    ModelingMachineContext
+    C
   >
 }
 
@@ -134,12 +137,7 @@ const stdLibArgBaseConfig = (
   inputType: stdLibArgInputType(arg.ty),
   required: arg.required,
   ...((arg.addedIn || arg.removedIn) && {
-    available: (context: ModelingMachineContext) =>
-      isKclVersionAvailable(
-        context.kclManager.kclProgramVersionSignal.peek(),
-        arg,
-        context.wasmInstance
-      ),
+    availableInKclVersion: { addedIn: arg.addedIn, removedIn: arg.removedIn },
   }),
   ...(arg.experimental
     ? ({ status: 'experimental' } as const)
@@ -193,10 +191,13 @@ export function stdLibCommandSources(
   )
 }
 
-export function stdLibCommandArgs<CommandArgs extends object>(
+export function stdLibCommandArgs<
+  CommandArgs extends object,
+  C = ModelingMachineContext,
+>(
   stdLibName: StdLibCommandName,
-  options: StdLibCommandArgsOptions = {}
-): CommandArgConfigs<CommandArgs> {
+  options: StdLibCommandArgsOptions<C> = {}
+): CommandArgConfigs<CommandArgs, C> {
   const omitted = new Set(options.omitted ?? [])
   const includeDeprecated = new Set(options.includeDeprecated ?? [])
   const args: Record<string, Record<string, unknown>> = {}
@@ -230,10 +231,10 @@ export function stdLibCommandArgs<CommandArgs extends object>(
     }
   }
 
-  return orderCommandArgs(
-    args,
-    options.flowArgOrder
-  ) as CommandArgConfigs<CommandArgs>
+  return orderCommandArgs(args, options.flowArgOrder) as CommandArgConfigs<
+    CommandArgs,
+    C
+  >
 }
 
 export function stdLibCommandSummary(
@@ -707,15 +708,18 @@ export function modelingStdLibCommandAvailable(
   )
 }
 
-export function modelingStdLibCommandArgs<CommandArgs extends object>(
+export function modelingStdLibCommandArgs<
+  CommandArgs extends object,
+  C = ModelingMachineContext,
+>(
   commandName: keyof typeof modelingCommandStdLibDriftConfig,
-  options: Pick<StdLibCommandArgsOptions, 'overrides'> = {}
+  options: Pick<StdLibCommandArgsOptions<C>, 'overrides'> = {}
 ) {
   const driftConfig = modelingCommandStdLibDriftConfig[
     commandName
   ] as StdLibCommandDriftConfig
 
-  return stdLibCommandArgs<CommandArgs>(driftConfig.stdLibName, {
+  return stdLibCommandArgs<CommandArgs, C>(driftConfig.stdLibName, {
     additionalStdLibNames: driftConfig.additionalStdLibNames,
     omitted: driftConfig.omittedStdLibArgs,
     includeDeprecated: driftConfig.deprecatedStdLibArgs,

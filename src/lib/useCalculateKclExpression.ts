@@ -5,7 +5,7 @@ import { findAllPreviousVariables } from '@src/lang/queryAst'
 import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
 import type { Expr, Program, SourceRange, VariableMap } from '@src/lang/wasm'
 import { getCalculatedKclExpressionValue } from '@src/lib/kclHelpers'
-import type RustContext from '@src/lib/rustContext'
+import type { KclExpressionRuntime } from '@src/lib/kclHelpers'
 import { getInVariableCase } from '@src/lib/utils'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -33,7 +33,7 @@ export function useCalculateKclExpression({
   initialVariableName?: string
   sourceRange?: SourceRange
   selectionRanges: Selections
-  rustContext: RustContext
+  rustContext: KclExpressionRuntime
   code: string
   ast: Node<Program>
   variables: VariableMap
@@ -58,12 +58,15 @@ export function useCalculateKclExpression({
   // so all variables are available
   const selectionRange: SourceRange | undefined =
     selectionRanges.graphSelections[0]?.codeRef?.range
-  // If there is no selection, use the end of the code
-  // If we don't memoize this, we risk an infinite set/read state loop
-  const endingSourceRange = useMemo((): SourceRange => {
-    const r = sourceRange || selectionRange || [code.length, code.length, 0]
-    return r.length === 3 ? r : [r[0] ?? 0, r[1] ?? 0, 0]
-  }, [code, selectionRange, sourceRange])
+  const range = sourceRange ?? selectionRange
+  const rangeStart = range?.[0] ?? code.length
+  const rangeEnd = range?.[1] ?? code.length
+  const rangeModule = range?.[2] ?? 0
+  // JSON-backed forms recreate arrays on each edit; scope depends on coordinates, not array identity.
+  const endingSourceRange = useMemo<SourceRange>(
+    () => [rangeStart, rangeEnd, rangeModule],
+    [rangeStart, rangeEnd, rangeModule]
+  )
   const inputRef = useRef<HTMLInputElement>(null)
   const setInputRef = useCallback((element: HTMLInputElement | null) => {
     inputRef.current = element

@@ -1,3 +1,4 @@
+import { isKclVersionAvailable } from '@src/lib/kclVersionRange'
 import type {
   Actor,
   AnyStateMachine,
@@ -173,6 +174,15 @@ function buildCommandArguments<
   for (const arg in args) {
     const argConfig = args[arg] as CommandArgumentConfig<S[typeof arg], T>
     if (argConfig.available?.(state.context) === false) continue
+    if (
+      argConfig.availableInKclVersion &&
+      !isKclVersionAvailable(
+        state.context.kclManager.kclProgramVersionSignal.peek(),
+        argConfig.availableInKclVersion,
+        state.context.wasmInstance
+      )
+    )
+      continue
     const newArg = buildCommandArgument(
       argConfig,
       state.context,
