@@ -551,10 +551,42 @@ describe('ConnectionManager', () => {
         height: 512,
       })
 
-      expect(sendSceneCommand).toHaveBeenCalledTimes(geometryOnly ? 0 : 5)
+      expect(sendSceneCommand).toHaveBeenCalledTimes(geometryOnly ? 0 : 6)
       expect(send).toHaveBeenCalledTimes(geometryOnly ? 0 : 1)
     }
   })
+
+  it.each([true, false])(
+    'sets scale-grid visibility to %s without changing highlighted edges',
+    async (visible) => {
+      const manager = createConnectionManager()
+      addConnectedState(manager)
+      manager.connection!.deferredConnection = {
+        promise: Promise.resolve(),
+      } as Connection['deferredConnection']
+      const send = vi.spyOn(manager, 'sendSceneCommand').mockResolvedValue(null)
+      await manager.setHighlightEdges(true)
+      await manager.setShowScaleGrid(visible)
+      const commands = send.mock.calls.flatMap(([request]) =>
+        request.type === 'modeling_cmd_req' ? [request.cmd] : []
+      )
+      expect(
+        commands.filter((cmd) => cmd.type === 'edge_lines_visible')
+      ).toEqual([{ type: 'edge_lines_visible', hidden: false }])
+      expect(commands.filter((cmd) => cmd.type === 'object_visible')).toEqual([
+        {
+          type: 'object_visible',
+          object_id: 'cfa78409-653d-4c26-96f1-7c45fb784840',
+          hidden: !visible,
+        },
+        {
+          type: 'object_visible',
+          object_id: '10782f33-f588-4668-8bcd-040502d26590',
+          hidden: !visible,
+        },
+      ])
+    }
+  )
 
   it('awaits a scene batch and delivers subscriptions once in request order before completion', async () => {
     vi.useFakeTimers()

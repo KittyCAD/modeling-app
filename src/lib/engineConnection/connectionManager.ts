@@ -900,23 +900,31 @@ export class ConnectionManager extends EventTarget {
   async setShowScaleGrid(shouldShowGrid: boolean) {
     if (this.geometryOnly) return
 
-    const cmd = {
-      type: 'edge_lines_visible',
-      hidden: !shouldShowGrid,
-    } as const
+    // Engine-owned scale-grid objects, shared with rust/kcl-lib/src/engine/mod.rs.
+    const commands = [
+      'cfa78409-653d-4c26-96f1-7c45fb784840',
+      '10782f33-f588-4668-8bcd-040502d26590',
+    ].map(
+      (object_id) =>
+        ({
+          type: 'object_visible',
+          object_id,
+          hidden: !shouldShowGrid,
+        }) as const
+    )
     const debugLog = (event: string) =>
       EngineDebugger.addLog({
         label: 'connectionManager',
-        message: `setHighlightEdges - set_highlight_edges - ${event}`,
+        message: `setShowScaleGrid - object_visible - ${event}`,
         metadata: {
-          cmd,
+          commands,
         },
       })
 
     if (this.connection?.websocket?.readyState !== WebSocket.OPEN) {
       EngineDebugger.addLog({
         label: 'connectionManager',
-        message: 'setHighlightEdges, websocket is not ready',
+        message: 'setShowScaleGrid, websocket is not ready',
         metadata: {
           readyState: this.connection?.websocket?.readyState,
         },
@@ -927,11 +935,13 @@ export class ConnectionManager extends EventTarget {
     await this.connection.deferredConnection?.promise
 
     debugLog('start')
-    await this.sendSceneCommand({
-      cmd_id: uuidv4(),
-      type: 'modeling_cmd_req',
-      cmd,
-    })
+    for (const cmd of commands) {
+      await this.sendSceneCommand({
+        cmd_id: uuidv4(),
+        type: 'modeling_cmd_req',
+        cmd,
+      })
+    }
     debugLog('done')
   }
 
