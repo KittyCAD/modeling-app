@@ -6,6 +6,7 @@ import {
 import type { Command } from '@src/lib/commandTypes'
 import type { Project } from '@src/lib/project'
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
+import { Setting } from '@src/lib/settings/Setting'
 import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
@@ -28,6 +29,7 @@ import {
   setThemeClass,
   Themes,
 } from '@src/lib/theme'
+import { hasProperty } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
@@ -247,7 +249,7 @@ export const settingsMachine = setup({
     }),
   },
   actions: {
-    toastSuccess: ({ event }) => {
+    toastSuccess: ({ context, event }) => {
       if (!('data' in event)) {
         return
       }
@@ -267,7 +269,7 @@ export const settingsMachine = setup({
         return
       }
       const truncatedNewValue = event.data.value?.toString().slice(0, 28)
-      const message =
+      let message =
         `Set ${decamelize(eventParts[1], { separator: ' ' })}` +
         (truncatedNewValue
           ? ` to "${truncatedNewValue}${
@@ -278,6 +280,13 @@ export const settingsMachine = setup({
                 : ' as a user default'
             }`
           : '')
+      const category: unknown = context[eventParts[0]]
+      const setting = hasProperty(category, eventParts[1])
+        ? category[eventParts[1]]
+        : undefined
+      if (setting instanceof Setting && setting.restartRequired) {
+        message = 'Reload the app to apply this change'
+      }
       toast.success(`${message}.`, {
         duration: message.split(' ').length * 100 + 1500,
         id: `${event.type}.success`,
