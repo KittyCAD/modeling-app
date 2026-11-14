@@ -134,3 +134,28 @@ See [the command/dialog contract](../kcl/README.md#modeling-tools).
 Keep the eventual SDK adapter small: use public connection, command, sizing,
 presentation, and disposal behavior. Do not depend on private `rtc` fields, a
 `.start` element, or worker asset URLs inferred from `location.origin`.
+
+
+## Rendering API limitation: arbitrary entity styling
+
+The current Zoo streaming renderer protocol supports selection and a shared hover
+highlight, but does not expose arbitrary independently owned entity-styling groups
+with configurable color or opacity. `select_entity` takes entity references;
+`highlight_set_entities` takes IDs and replaces the shared hover highlight.
+Reusing hover would conflict with normal pointer interaction. The current scene
+adapter therefore presents correspondence with the same appearance as selection,
+even though their application state is separate.
+
+A robust shared Rendering API should allow arbitrarily many independently
+replaceable/clearable styling groups, each with entity targets and styling
+properties such as color and opacity, plus a defined way to resolve overlapping
+styles. Group ownership should be opaque to the renderer. The renderer should
+not know about correspondence, source editor views, or interaction modes.
+
+Application adapters can use styling groups for selection, hover, correspondence,
+validation results, or other overlays. The application chooses precedence (for
+example, selection over a faint correspondence tint) and assigns any stable
+source-view OKLCH hues, converting them to renderer RGB colors. The local
+renderer can implement this capability in app-owned code; Zoo streaming needs
+matching protocol/engine support. Do not simulate independent styles by changing
+model materials or taking over the hover channel.
