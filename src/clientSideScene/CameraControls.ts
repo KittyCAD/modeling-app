@@ -715,18 +715,18 @@ export class CameraControls {
           )
           this.update(true)
         } else {
-          this.addPendingMove(point, interaction, deltaMove)
+          this.addPendingDragMove(point, interaction, deltaMove)
           this.update()
         }
       } else {
         // clientToEngine: the client drives the engine's camera, in sketch
         // mode or briefly while the gizmo turns it.
-        this.addPendingMove(point, interaction, deltaMove)
+        this.addPendingDragMove(point, interaction, deltaMove)
       }
     }
   }
 
-  private addPendingMove(
+  private addPendingDragMove(
     point: ScreenPoint,
     interaction: CameraDragInteractionType,
     deltaMove: Vector2
