@@ -6,6 +6,7 @@ import Tooltip, { type TooltipProps } from '@src/components/Tooltip'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: status-bar links receive router location (useLocation).
 import { useLocation } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
+import type { ReactNode } from 'react'
 
 export function StatusBar({
   globalItems,
@@ -17,9 +18,9 @@ export function StatusBar({
   activeFileRoutePath?: string
 }) {
   return (
-    <footer
+    <StatusBarFrame
       id="statusbar"
-      className="relative z-10 box-content h-8 shrink-0 flex justify-between items-stretch bg-chalkboard-20 dark:bg-chalkboard-90 text-chalkboard-80 dark:text-chalkboard-30 border-t border-t-chalkboard-30 dark:border-t-chalkboard-80"
+      className="box-content h-8 bg-chalkboard-20 dark:bg-chalkboard-90 text-chalkboard-80 dark:text-chalkboard-30 border-t-chalkboard-30 dark:border-t-chalkboard-80"
     >
       <menu id="statusbar-globals" className="flex items-stretch">
         {globalItems.map((item, index, arr) => (
@@ -49,6 +50,29 @@ export function StatusBar({
           </Fragment>
         ))}
       </menu>
+    </StatusBarFrame>
+  )
+}
+
+/** Shared status-bar chrome; each owner supplies its own identity and scoped items. */
+export function StatusBarFrame({
+  children,
+  id,
+  label,
+  className = 'b-3 bg-2 text-2',
+}: {
+  children: ReactNode
+  id?: string
+  label?: string
+  className?: string
+}) {
+  return (
+    <footer
+      id={id}
+      aria-label={label}
+      className={`relative z-10 flex min-h-8 shrink-0 items-stretch justify-between border-t ${className}`}
+    >
+      {children}
     </footer>
   )
 }
