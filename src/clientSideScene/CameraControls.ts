@@ -2317,8 +2317,6 @@ function orbitLocalCamera(
 
 /** The engine's trackball radius, in halves of the viewport's shorter side. */
 const TRACKBALL_SIZE = 0.8
-/** The engine turns its trackball this much faster than the cursor moves. */
-const TRACKBALL_SPEED = 1.5
 
 /**
  * Orbits like the engine's trackball: the drag from `from` to `to` turns a
@@ -2353,10 +2351,10 @@ function trackballLocalCamera(
   const p2 = onTrackball(to)
   const axis = new Vector3().crossVectors(p2, p1)
   if (axis.lengthSq() === 0) return
-  const angle =
-    2 *
-    Math.asin(Math.min(p1.distanceTo(p2) / (2 * TRACKBALL_SIZE), 1)) *
-    TRACKBALL_SPEED
+  let angle =
+    2 * Math.asin(Math.min(p1.distanceTo(p2) / (2 * TRACKBALL_SIZE), 1))
+  // 1.5 speed factor adjustment
+  angle *= 1.5
 
   const distance = camera.position.distanceTo(target)
   const rotation = camera.quaternion
