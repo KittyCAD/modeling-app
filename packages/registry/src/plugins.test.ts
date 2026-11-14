@@ -1,4 +1,4 @@
-import { extension } from './algebra'
+import { factory } from './algebra'
 import fc from 'fast-check'
 import { expect, it } from 'vitest'
 import {
@@ -7,7 +7,7 @@ import {
   Facet,
   plugins,
   Registry,
-  type Extension,
+  type Factory,
 } from './next'
 
 const info = {
@@ -31,7 +31,7 @@ it('keeps controller and metadata installed through generated toggle histories',
         )
         let acquired = 0
         let released = 0
-        const resource: Extension = extension({
+        const resource: Factory = factory({
           create: () => {
             acquired++
             return {
@@ -89,7 +89,7 @@ it('publishes disabled content before awaiting its resource cleanup', async () =
   let finish: () => void = () => {
     throw new Error('Cleanup has not begun')
   }
-  const resource: Extension = extension({
+  const resource: Factory = factory({
     create: () => ({
       items: [],
       dispose: () =>
@@ -124,7 +124,7 @@ it('retains the committed disabled state when cleanup rejects', async () => {
   const registry = new Registry()
   const failure = new Error('Cleanup failed')
   let releases = 0
-  const resource: Extension = extension({
+  const resource: Factory = factory({
     create: () => ({
       items: [],
       dispose: () => {
@@ -151,7 +151,7 @@ it('retains the committed disabled state when cleanup rejects', async () => {
 it('keeps a disabled plugin disabled when enabling its resources fails', async () => {
   const registry = new Registry()
   const failure = new Error('Acquisition failed')
-  const resource: Extension = extension({
+  const resource: Factory = factory({
     create: () => {
       throw failure
     },
@@ -183,7 +183,7 @@ it('exposes active state as a readonly live signal', async () => {
 it('selects the first plugin with a repeated ID before acquiring the discarded definition', async () => {
   const registry = new Registry()
   const commands = new Facet('commands', (values: readonly string[]) => values)
-  const discarded: Extension = extension({
+  const discarded: Factory = factory({
     create: () => {
       throw new Error('Discarded plugin must not acquire')
     },

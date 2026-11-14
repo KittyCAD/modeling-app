@@ -2,7 +2,7 @@
 
 The new implementation is available at `@kittycad/registry/next`. The default
 `@kittycad/registry` entrypoint and application imports continue to use the existing
-implementation. `src/examples/extension-workspace.ts` demonstrates typed Extension
+implementation. `src/examples/extension-workspace.ts` demonstrates typed Factory
 dependencies alongside reactive composition and replaceable children.
 
 | Concept | Essence | Responsibility |
@@ -11,10 +11,10 @@ dependencies alongside reactive composition and replaceable children.
 | Facet | ordered `readonly Input[] → Output` | pure composition |
 | Service | Facet from providers to missing/ready/conflict | singleton capability |
 | Contract | named product of Facets | shared vocabulary |
-| Extension<T> | `{ key?, dependencies?, create }` | owned lifetime, typed exports, and replaceable children |
+| Factory<T> | `{ key?, dependencies?, create }` | owned lifetime, typed exports, and replaceable children |
 | Binding | typed registration with ordering options | contribute to a Facet |
-| Item | Binding, group, or Extension | graph composition |
-| slot | helper acquiring supplied children | resource-free Extension |
+| Extension | Binding, Factory, or group of Extensions | graph composition |
+| slot | helper acquiring supplied children | resource-free Factory |
 
 ## Composition and identity
 
@@ -22,9 +22,9 @@ A Facet's empty output is `combine([])`. Every combiner must handle that case;
 associativity and commutativity are not required. `Source<T> = () => T` accepts
 constants and live signal reads without guessing whether a value is a signal.
 
-Extensions use explicit `key` identity when supplied, otherwise object identity.
+Factories use explicit `key` identity when supplied, otherwise object identity.
 The first selected definition wins, including its dependencies. Rebuilding an
-Extension with the same key retains its acquired instance and current children.
+Factory with the same key retains its acquired instance and current children.
 Its captured dependency instances must remain unchanged; changing dependencies
 requires removing and reacquiring the owner. Removing its last reachable occurrence
 ends that lifetime; mounting it again reacquires resources.
@@ -48,24 +48,24 @@ into plans for subsequently acquired children. A losing definition is discarded
 before its dependencies are expanded.
 
 Each planned entry has an `ItemPath`: a root index followed by typed
-`['items', index]` or `['dependencies', name]` steps. Item indices are nonnegative
+`['items', index]` or `['dependencies', name]` steps. Extension indices are nonnegative
 integers; dependency names are the keys of the declared dependency map. `formatPath` renders diagnostics. Paths identify occurrences, not stable
 identities. Cycle errors retain structured paths.
 
 `Registry` in `src/nextRegistry.ts` acquires synchronously. Returned children are
 planned in turn, with declared definitions selected before acquisition begins.
-`extension({ dependencies, create })` infers constructor inputs from a named map
-of Extensions. Each dependency is acquired once, before its consumers, and its
+`factory({ dependencies, create })` infers constructor inputs from a named map
+of Factories. Each dependency is acquired once, before its consumers, and its
 exports are injected directly. Exports are private construction inputs until the
 complete graph commits; they do not require Service tokens or early publication.
 
 ```ts
-import { extension } from '@kittycad/registry/next'
+import { factory } from '@kittycad/registry/next'
 
-const files = extension({
+const files = factory({
   create: () => ({ exports: { read: (path: string) => path.length } }),
 })
-const editor = extension({
+const editor = factory({
   dependencies: { storage: files },
   create({ storage }) {
     const size = storage.read('document.kcl')
@@ -78,7 +78,7 @@ The optional second constructor argument supplies only `origin`, `observe`, and
 `replace`; constructor capabilities come from the declared dependency map.
 Registry-wide Facet and Service reads must still wait until acquisition finishes.
 Services select providers through composition; dependency injection names a concrete
-Extension. A dependency discarded by keyed selection cannot supply another
+Factory. A dependency discarded by keyed selection cannot supply another
 definition's exports. Sources and combiners run under mutation guards.
 
 Every `Facet<I, O>` owns typed per-registry storage. The `contribute` callback
@@ -90,7 +90,7 @@ all Facet changes and diagnostics, so subscribers cannot see a partial graph.
 ## Runtime API and cleanup
 
 - `configure(items)` replaces the roots and awaits removed resources.
-- `replace(extension, items)` changes a mounted owner's children while retaining the
+- `replace(factory, items)` changes a mounted owner's children while retaining the
   owner's acquired resources and declared dependencies. It is the reconfiguration
   operation; it does not reacquire the owner.
 - `observe(facet)` returns a live readonly signal; `get(facet)` reads a snapshot.
@@ -146,7 +146,7 @@ by the service. Directly freezing the facade is unsupported; it is already guard
 against property mutation.
 
 `createPlugin({ id, title, description, items, enabledByDefault? })` is an ordinary
-keyed Extension. `plugins` collects its metadata and controller service token. The
+keyed Factory. `plugins` collects its metadata and controller service token. The
 controller exposes `active`, `enable`, `disable`, and `toggle`. Metadata and the
 controller remain installed while content is disabled. `active` follows committed
 content, including when removal commits but cleanup rejects.
@@ -163,13 +163,13 @@ public entrypoint as the package examples.
 
 ## Package layout
 
-- `src/algebra.ts`: Facets, Services, Bindings, Extensions, and authoring helpers.
+- `src/algebra.ts`: Facets, Services, Bindings, Factories, and authoring helpers.
 - `src/planner.ts` and `src/path.ts`: declared dependencies and structured paths.
 - `src/nextRegistry.ts`: acquisition, publication, replacement, diagnostics, and cleanup.
 - `src/plugins.ts`: metadata and toggle controllers composed from the primitives.
 - `src/examples/extension-workspace.ts`: a document model shared by a live title,
   replaceable sidebar panels, and an independently toggled outline plugin.
 
-Extensions use synchronous `create` callbacks and awaitable cleanup. Declarative
-groups use ordinary Item arrays; they should not acquire an extra lifetime merely
+Factories use synchronous `create` callbacks and awaitable cleanup. Declarative
+groups use ordinary Extension arrays; they should not acquire an extra lifetime merely
 to group contributions. The application migration is a separate change.

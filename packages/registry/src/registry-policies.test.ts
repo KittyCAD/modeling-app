@@ -1,11 +1,11 @@
-import { extension } from './algebra'
+import { factory } from './algebra'
 import { signal } from '@preact/signals-core'
 import { expect, it } from 'vitest'
 import {
   contribute,
   Facet,
   provide,
-  type Extension,
+  type Factory,
   service,
   slot,
 } from './algebra'
@@ -13,14 +13,14 @@ import { Registry } from './next'
 
 it('ignores dependencies of a discarded keyed definition', async () => {
   const registry = new Registry()
-  const first: Extension = extension({
+  const first: Factory = factory({
     key: 'owner',
     create: () => ({ items: [] }),
   })
-  const discarded: Extension = extension({
+  const discarded: Factory = factory({
     key: 'owner',
     dependencies: {
-      dependency0: extension({
+      dependency0: factory({
         create: () => {
           throw new Error('Discarded dependency must not acquire')
         },
@@ -31,7 +31,7 @@ it('ignores dependencies of a discarded keyed definition', async () => {
     },
   })
   await registry.configure([first, discarded])
-  expect(registry.inspect().extensions).toBe(1)
+  expect(registry.inspect().factories).toBe(1)
   await registry.dispose()
 })
 
@@ -78,17 +78,17 @@ it('shows only selected contributions and updates inspection after replacement',
     )
   ).toBe(true)
   expect(reads).toBe(0)
-  expect(registry.inspect()).toMatchObject({ extensions: 1, facets: 1 })
+  expect(registry.inspect()).toMatchObject({ factories: 1, facets: 1 })
   expect(registry.get(facet)).toEqual([2, 3])
   await registry.replace(owner, [])
   expect(debug.value).toEqual([])
   expect(registry.inspect()).toMatchObject({
-    extensions: 1,
+    factories: 1,
     bindings: 0,
     facets: 0,
   })
   await registry.dispose()
-  expect(registry.inspect().extensions).toBe(0)
+  expect(registry.inspect().factories).toBe(0)
 })
 
 it('keeps disposal terminal and idempotent even when a finalizer fails', async () => {
@@ -96,7 +96,7 @@ it('keeps disposal terminal and idempotent even when a finalizer fails', async (
   const facet = new Facet('values', (values: readonly number[]) => values)
   const cleanup = new Error('cleanup failed')
   let disposals = 0
-  const owner: Extension = extension({
+  const owner: Factory = factory({
     create: () => ({
       items: [contribute(facet, () => 1)],
       dispose: () => {
@@ -165,10 +165,10 @@ it('keeps the declared keyed definition when acquisition discovers a conflicting
   let legitimateDependencies = 0
   let discardedAcquisitions = 0
   let discardedDependencies = 0
-  const declared: Extension = extension({
+  const declared: Factory = factory({
     key: 'shared',
     dependencies: {
-      dependency0: extension({
+      dependency0: factory({
         create: () => {
           legitimateDependencies++
           return { items: [contribute(facet, () => 'dependency')] }
@@ -180,10 +180,10 @@ it('keeps the declared keyed definition when acquisition discovers a conflicting
       return { items: [contribute(facet, () => 'declared')] }
     },
   })
-  const discovered: Extension = extension({
+  const discovered: Factory = factory({
     key: 'shared',
     dependencies: {
-      dependency0: extension({
+      dependency0: factory({
         create: () => {
           discardedDependencies++
           throw new Error(
@@ -199,7 +199,7 @@ it('keeps the declared keyed definition when acquisition discovers a conflicting
       )
     },
   })
-  const outer: Extension = extension({
+  const outer: Factory = factory({
     create: () => ({ items: [discovered] }),
   })
 
@@ -217,10 +217,10 @@ it('acquires a declared definition once when an earlier owner returns that exact
   const facet = new Facet('values', (values: readonly string[]) => values)
   let acquisitions = 0
   let dependencies = 0
-  const declared: Extension = extension({
+  const declared: Factory = factory({
     key: 'shared',
     dependencies: {
-      dependency0: extension({
+      dependency0: factory({
         create: () => {
           dependencies++
           return { items: [] }
@@ -232,7 +232,7 @@ it('acquires a declared definition once when an earlier owner returns that exact
       return { items: [contribute(facet, () => 'declared')] }
     },
   })
-  const outer: Extension = extension({ create: () => ({ items: [declared] }) })
+  const outer: Factory = factory({ create: () => ({ items: [declared] }) })
 
   await registry.configure([outer, declared])
   expect(registry.get(facet)).toEqual(['declared'])

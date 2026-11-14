@@ -1,4 +1,4 @@
-import { extension } from './algebra'
+import { factory } from './algebra'
 import { signal } from '@preact/signals-core'
 import { expect, it } from 'vitest'
 import {
@@ -6,7 +6,7 @@ import {
   createScope,
   Facet,
   provide,
-  type Extension,
+  type Factory,
   service,
   slot,
 } from './algebra'
@@ -35,7 +35,7 @@ it('waits for children before releasing their owner and rejects overlapping muta
   let finish: () => void = () => {
     throw new Error('Cleanup was not started')
   }
-  const child: Extension = extension({
+  const child: Factory = factory({
     create: () => ({
       items: [],
       dispose: () => {
@@ -49,7 +49,7 @@ it('waits for children before releasing their owner and rejects overlapping muta
       },
     }),
   })
-  const owner: Extension = extension({
+  const owner: Factory = factory({
     create: () => ({
       items: [child],
       dispose: () => {
@@ -73,7 +73,7 @@ it('releases every removed resource after cleanup failures and keeps the committ
   const facet = new Facet('values', (values: readonly number[]) => values)
   const failure = new Error('cleanup failed')
   const released: string[] = []
-  const child: Extension = extension({
+  const child: Factory = factory({
     create: () => ({
       items: [],
       dispose: () => {
@@ -82,7 +82,7 @@ it('releases every removed resource after cleanup failures and keeps the committ
       },
     }),
   })
-  const owner: Extension = extension({
+  const owner: Factory = factory({
     create: () => ({
       items: [child],
       dispose: () => {
@@ -108,7 +108,7 @@ it('preserves acquisition and rollback errors while releasing all newly acquired
   const acquisitionFailure = new Error('acquisition failed')
   const cleanupFailure = new Error('cleanup failed')
   const released: string[] = []
-  const good: Extension = extension({
+  const good: Factory = factory({
     create: () => ({
       items: [],
       dispose: () => {
@@ -116,7 +116,7 @@ it('preserves acquisition and rollback errors while releasing all newly acquired
       },
     }),
   })
-  const badCleanup: Extension = extension({
+  const badCleanup: Factory = factory({
     create: () => ({
       items: [],
       dispose: async () => {
@@ -125,7 +125,7 @@ it('preserves acquisition and rollback errors while releasing all newly acquired
       },
     }),
   })
-  const badAcquire: Extension = extension({
+  const badAcquire: Factory = factory({
     create: () => {
       throw acquisitionFailure
     },
@@ -144,8 +144,8 @@ it('rolls back dynamically discovered cycles and performs no acquisition for dec
   const reconciler = new Registry()
   let acquired = 0
   let disposed = 0
-  const dependencies: Record<string, Extension> = {}
-  const declared: Extension = extension({
+  const dependencies: Record<string, Factory> = {}
+  const declared: Factory = factory({
     dependencies,
     create: () => {
       acquired++
@@ -158,7 +158,7 @@ it('rolls back dynamically discovered cycles and performs no acquisition for dec
   )
   expect(acquired).toBe(0)
 
-  const dynamic: Extension = extension({
+  const dynamic: Factory = factory({
     create: () => {
       acquired++
       return {
@@ -184,7 +184,7 @@ it('rolls back binding installation failures and forbids eager reads during acqu
   const current = signal(1)
   await reconciler.configure([contribute(facet, () => current.value)])
   let disposed = 0
-  const owner: Extension = extension({
+  const owner: Factory = factory({
     create: () => ({
       items: [
         {
@@ -202,7 +202,7 @@ it('rolls back binding installation failures and forbids eager reads during acqu
     'installation failed'
   )
   expect(disposed).toBe(1)
-  const eager: Extension = extension({
+  const eager: Factory = factory({
     create: (_dependencies, scope) => {
       void scope.observe(facet).value
       return { items: [] }
@@ -220,7 +220,7 @@ it('rolls back binding installation failures and forbids eager reads during acqu
 it('registers service provenance under its acquiring owner', async () => {
   const reconciler = new Registry()
   const token = service<{ value: number }>('value')
-  const owner: Extension = extension({
+  const owner: Factory = factory({
     create: (_dependencies, scope) => ({
       items: [provide(token, { value: 1 }), provide(token, { value: 2 })],
       dispose: () => {
@@ -243,7 +243,7 @@ it('registers service provenance under its acquiring owner', async () => {
 it('rolls back a returned instance even when reading its children fails', async () => {
   const reconciler = new Registry()
   let disposed = 0
-  const owner: Extension = extension({
+  const owner: Factory = factory({
     create: () => ({
       get items(): readonly [] {
         throw new Error('children failed')
@@ -301,7 +301,7 @@ it('does not reuse abandoned cell drafts in a later successful transaction', asy
   await expect(
     reconciler.configure([
       contribute(facet, () => 1),
-      extension({
+      factory({
         create: () => {
           throw failure
         },
@@ -326,7 +326,7 @@ it.each([false, true])(
     const publication = new Error('publication failed')
     const cleanup = new Error('cleanup failed')
     let disposals = 0
-    const owner: Extension = extension({
+    const owner: Factory = factory({
       create: () => ({
         items: [contribute(facet, () => 1)],
         dispose: () => {
@@ -362,7 +362,7 @@ it('keeps mutations blocked until failed acquisition finishes its asynchronous r
   let finish: () => void = () => {
     throw new Error('Rollback has not started')
   }
-  const acquired: Extension = extension({
+  const acquired: Factory = factory({
     create: () => ({
       items: [],
       dispose: () =>
@@ -372,7 +372,7 @@ it('keeps mutations blocked until failed acquisition finishes its asynchronous r
     }),
   })
   const failure = new Error('acquisition failed')
-  const broken: Extension = extension({
+  const broken: Factory = factory({
     create: () => {
       throw failure
     },

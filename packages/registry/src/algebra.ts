@@ -7,7 +7,7 @@ export type Signal<T> = ReadonlySignal<T>
 /** Explicit reads admit constants and signals without inspecting value shapes. */
 export type Source<T> = () => T
 
-/** Stable Extension identities and facet-scoped contribution identities. */
+/** Stable Factory identities and facet-scoped contribution identities. */
 export type Key = object | string | symbol
 export type Precedence = 'highest' | 'high' | 'default' | 'low' | 'lowest'
 export const precedenceRank: Record<Precedence, number> = {
@@ -254,24 +254,24 @@ export function provide<T extends object>(
   }
 }
 
-/** Contributions, groups, and resource-owning Extensions form the graph. */
-export type Item = Binding | readonly Item[] | Extension
+/** Contributions, groups, and resource-owning Factories form the graph. */
+export type Extension = Binding | readonly Extension[] | Factory
 
 type Cleanup = () => void | PromiseLike<void>
 
 /** Resources and exports stay with their owner while its child items can change. */
 export interface Instance<Exports = unknown> {
   readonly exports: Exports
-  readonly items?: readonly Item[]
+  readonly items?: readonly Extension[]
   /** Run after publication; returned cleanup runs before `dispose` on removal. */
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type -- Startup is synchronous and may return an awaitable cleanup callback.
   readonly start?: () => void | Cleanup
   readonly dispose?: Cleanup
 }
 
-type Dependencies = Readonly<Record<string, Extension>>
+type Dependencies = Readonly<Record<string, Factory>>
 type Inputs<D extends Dependencies> = {
-  readonly [K in keyof D]: D[K] extends Extension<infer E> ? E : never
+  readonly [K in keyof D]: D[K] extends Factory<infer E> ? E : never
 }
 type Definition<D extends Dependencies, R> = {
   readonly key?: Key
@@ -281,7 +281,7 @@ type Definition<D extends Dependencies, R> = {
 type EmptyInstance = Omit<Instance<undefined>, 'exports'>
 
 /** One acquired lifetime and its public exports, shared by every declared dependent. */
-export interface Extension<Exports = unknown> {
+export interface Factory<Exports = unknown> {
   readonly key?: Key
   readonly dependencies?: Dependencies
   create(
@@ -290,16 +290,16 @@ export interface Extension<Exports = unknown> {
   ): Instance<Exports>
 }
 
-export function extension<
+export function factory<
   const D extends Dependencies = Record<never, never>,
   E = unknown,
->(definition: Definition<D, Instance<E>>): Extension<E>
-export function extension<const D extends Dependencies = Record<never, never>>(
+>(definition: Definition<D, Instance<E>>): Factory<E>
+export function factory<const D extends Dependencies = Record<never, never>>(
   definition: Definition<D, EmptyInstance>
-): Extension<undefined>
-export function extension<const D extends Dependencies>(
+): Factory<undefined>
+export function factory<const D extends Dependencies>(
   definition: Definition<D, EmptyInstance & { readonly exports?: unknown }>
-): Extension {
+): Factory {
   return {
     ...definition,
     create: (dependencies, scope) => {
@@ -326,18 +326,18 @@ export function extension<const D extends Dependencies>(
 
 /** A slot owns replaceable children and exports no capability. */
 export function slot(
-  items: readonly Item[] = [],
+  items: readonly Extension[] = [],
   key?: Key
-): Extension<undefined> {
+): Factory<undefined> {
   const initial = Object.freeze([...items])
-  return extension({ key, create: () => ({ items: initial }) })
+  return factory({ key, create: () => ({ items: initial }) })
 }
 
-/** Interpreter operations, independent of any particular extension's ownership. */
+/** Interpreter operations, independent of any particular factory's ownership. */
 export interface ScopeHost {
   observe<I, O>(facet: Facet<I, O>): Signal<O>
   /** Replace children only; release owner resources after its children on unmount. */
-  replace(extension: Extension, items: readonly Item[]): Promise<void>
+  replace(factory: Factory, items: readonly Extension[]): Promise<void>
 }
 
 /** Owner controls and observations; constructor capabilities come from declared dependencies. */
@@ -349,7 +349,7 @@ export function createScope(origin: Origin, host: ScopeHost): Scope {
   return {
     origin: Object.freeze({ ...origin }),
     observe: (facet) => host.observe(facet),
-    replace: (extension, items) => host.replace(extension, items),
+    replace: (factory, items) => host.replace(factory, items),
   }
 }
 
@@ -358,7 +358,7 @@ export function contract<const T extends Contract>(tokens: T): Readonly<T> {
   return Object.freeze({ ...tokens })
 }
 
-/** Binding keys belong to a Facet; Extension keys identify mounted owners. */
-export function itemKey(item: Item): Key {
+/** Binding keys belong to a Facet; Factory keys identify mounted owners. */
+export function itemKey(item: Extension): Key {
   return 'create' in item ? (item.key ?? item) : item
 }

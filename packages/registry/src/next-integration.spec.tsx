@@ -1,4 +1,4 @@
-import { extension } from './algebra'
+import { factory } from './algebra'
 import { signal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import { act, fireEvent, render, screen } from '@testing-library/react'
@@ -65,7 +65,7 @@ it('keeps document state live while a plugin is disabled and enabled through the
   )
   const panels = new Facet('panels', (values: readonly string[]) => values)
   await registry.configure([
-    extension({
+    factory({
       key: 'document-owner',
       create: () => {
         const text = signal('original')

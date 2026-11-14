@@ -1,8 +1,8 @@
-import { extension } from './algebra'
+import { factory } from './algebra'
 import { computed, signal } from '@preact/signals-core'
 import fc from 'fast-check'
 import { expect, it } from 'vitest'
-import { contribute, Facet, provide, type Extension, service } from './algebra'
+import { contribute, Facet, provide, type Factory, service } from './algebra'
 import { Registry } from './nextRegistry'
 
 const runs = { numRuns: 150 }
@@ -25,7 +25,7 @@ it('preserves owners and surviving children through generated replacement histor
         const released: (number | string)[] = []
         let owners = 0
         let dependencies = 0
-        const dependency: Extension = extension({
+        const dependency: Factory = factory({
           create: () => {
             dependencies++
             return {
@@ -37,8 +37,8 @@ it('preserves owners and surviving children through generated replacement histor
             }
           },
         })
-        const children: Extension[] = acquisitions.map((_, id) =>
-          extension({
+        const children: Factory[] = acquisitions.map((_, id) =>
+          factory({
             create: () => {
               acquisitions[id]++
               const resource = { id }
@@ -53,7 +53,7 @@ it('preserves owners and surviving children through generated replacement histor
             },
           })
         )
-        const owner: Extension = extension({
+        const owner: Factory = factory({
           dependencies: { dependency0: dependency },
           create: () => {
             owners++
@@ -129,7 +129,7 @@ it('rolls back failed acquisition without publishing bindings or releasing old o
         let oldDisposals = 0
         let ownerDisposals = 0
         const original = { value: initial }
-        const old: Extension = extension({
+        const old: Factory = factory({
           create: () => ({
             items: [
               contribute(facet, () => value.value),
@@ -140,7 +140,7 @@ it('rolls back failed acquisition without publishing bindings or releasing old o
             },
           }),
         })
-        const owner: Extension = extension({
+        const owner: Factory = factory({
           create: () => {
             owners++
             return {
@@ -161,7 +161,7 @@ it('rolls back failed acquisition without publishing bindings or releasing old o
         )
         const failure = new Error('acquisition failed')
         let attempted = 0
-        let next: Extension = extension({
+        let next: Factory = factory({
           create: () => {
             attempted++
             throw failure
@@ -170,7 +170,7 @@ it('rolls back failed acquisition without publishing bindings or releasing old o
         for (let index = payloads.length - 1; index >= 0; index--) {
           const child = next
           const id = index
-          next = extension({
+          next = factory({
             create: () => {
               acquired.push(id)
               return {
@@ -248,7 +248,7 @@ it('commits mixed Facet types together, isolates registries, and discards failed
           strings: readonly string[]
         } = { numbers: [], strings: [] }
         const failure = new Error('discard this draft')
-        const broken: Extension = extension({
+        const broken: Factory = factory({
           create: () => {
             throw failure
           },
