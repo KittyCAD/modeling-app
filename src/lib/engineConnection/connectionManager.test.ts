@@ -196,6 +196,71 @@ function pendingWasmCommand(manager: ConnectionManager, requestId: string) {
 }
 
 describe('ConnectionManager', () => {
+  it('does not open a transport when its owner cancels during creation', async () => {
+    const manager = createConnectionManager()
+    const connect = vi
+      .spyOn(Connection.prototype, 'connect')
+      .mockResolvedValue(undefined)
+    await expect(
+      manager.start({
+        width: 512,
+        height: 512,
+        token: 'token',
+        geometryOnly: true,
+        setStreamIsReady: vi.fn(),
+        onConnectionCreated: () =>
+          manager.tearDown({
+            route: 'service-disposed',
+            initiatedBy: 'client',
+          }),
+      })
+    ).rejects.toThrow('closed while starting')
+    expect(connect).not.toHaveBeenCalled()
+    expect(manager.connection).toBeUndefined()
+  })
+
+  it.each(['closed', 'replaced'] as const)(
+    'does not finish starting a connection that was %s while connecting',
+    async (action) => {
+      vi.stubGlobal('WebSocket', ReconnectTestWebSocket)
+      const manager = createConnectionManager()
+      const pending = Promise.withResolvers<undefined>()
+      const connect = vi
+        .spyOn(Connection.prototype, 'connect')
+        .mockImplementation(() => pending.promise)
+      try {
+        const opening = manager.start({
+          width: 512,
+          height: 512,
+          token: 'token',
+          geometryOnly: true,
+          setStreamIsReady: vi.fn(),
+        })
+        manager.tearDown({
+          route: 'connection-attempt-failed',
+          initiatedBy: 'client',
+        })
+        if (action === 'replaced')
+          await manager.start({
+            width: 512,
+            height: 512,
+            token: 'token',
+            geometryOnly: true,
+            setStreamIsReady: vi.fn(),
+            callbackOnUnitTestingConnection: vi.fn(),
+          })
+        const replacement = manager.connection
+        pending.resolve(undefined)
+        await expect(opening).rejects.toThrow('closed while starting')
+        expect(manager.connection).toBe(replacement)
+        expect(manager.started).toBe(action === 'replaced')
+      } finally {
+        connect.mockRestore()
+        manager.tearDown({ route: 'service-disposed', initiatedBy: 'client' })
+      }
+    }
+  )
+
   it('identifies actual connection replacement without treating scene resets as a new session', async () => {
     const manager = createConnectionManager()
     const createTransport = () =>

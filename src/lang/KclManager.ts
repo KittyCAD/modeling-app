@@ -1,3 +1,11 @@
+import {
+  SceneExecutionEvents as KclManagerEvents,
+  type SceneExecutionDoneDetail as KclExecutionDoneDetail,
+} from '@src/lib/scene/execution'
+export {
+  SceneExecutionEvents as KclManagerEvents,
+  type SceneExecutionDoneDetail as KclExecutionDoneDetail,
+} from '@src/lib/scene/execution'
 import { buildMinimalDocumentChange } from '@src/lib/minimalDocumentChange'
 import type { EntityType } from '@kittycad/lib'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
@@ -288,17 +296,6 @@ type ExecutionCompletionStatus = 'completed' | 'cancelled' | 'cleanup'
 type ExecutionCompletionResult = {
   generation: number
   status: ExecutionCompletionStatus
-}
-
-export enum KclManagerEvents {
-  LongExecution = 'long-execution',
-  ExecutionDone = 'execution-done',
-}
-
-export interface KclExecutionDoneDetail {
-  successful: boolean
-  isInterrupted: boolean
-  hasErrors: boolean
 }
 
 declare global {
