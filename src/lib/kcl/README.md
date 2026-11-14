@@ -82,6 +82,13 @@ command dialog gives its arguments a separate picking session; cancelling leaves
 the underlying view selection intact. Re-execution invalidates old geometry picks.
 See [the selection contract](../scene/README.md#view-selection-and-dialog-picking).
 
+## View status
+
+`modelingStatusItemsValueSpec` contributes items to the owning view's footer.
+Items receive its `ModelingViewContext`, including selection and execution state.
+The default screenshot, measurement, analysis, selection, and units controls reuse
+their legacy views through adapters. App-wide status stays in the project footer.
+
 ## Code map
 
 - [`registry/index.ts`](registry/index.ts): contributes KCL editing and Modeling.

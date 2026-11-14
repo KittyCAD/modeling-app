@@ -1,5 +1,9 @@
 import { kclExecutionSettingsService } from '@src/lib/kcl/scene/executionSettingsContract'
 import { kclExecutionSettingsRegistryItem } from '@src/lib/kcl/scene/executionSettingsRegistry'
+import { modelingStatusItemsValueSpec } from '@src/lib/kcl/registry/contract'
+import { defaultModelingStatusItems } from '@src/lib/kcl/statusItems'
+import { createMeasurementToolService } from '@src/registry/extensions/engineScene/measurementToolService'
+import { createPhysicalAnalysisService } from '@src/registry/extensions/engineScene/physicalAnalysis/physicalAnalysisService'
 import { kcl } from '@kittycad/codemirror-lang-kcl'
 import {
   defineRegistryItem,
@@ -30,6 +34,7 @@ import { projectSourcesService } from '@src/lib/projectSession/next/contract'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
 import { isErr } from '@src/lib/trap'
 import { authService } from '@src/registry/contracts/auth'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { settingsService } from '@src/registry/contracts/settings'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 
@@ -114,6 +119,9 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
     id: 'kcl',
     uses: [projectSourcesExtension],
     provides: [
+      ...defaultModelingStatusItems.map((item) =>
+        provide(modelingStatusItemsValueSpec, item)
+      ),
       provide(executorCapabilityValueSpec, execution.capability),
       provide(
         editorViewsValueSpec,
@@ -122,7 +130,21 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
           const executor = executors.createExecutor(editor)
           if (isErr(executor)) return executor
           onDispose(() => executors.closeExecutor(executor.id))
-          return { executor, session: execution.getSession(executor) }
+          const measurement = createMeasurementToolService()
+          const physicalAnalysis = createPhysicalAnalysisService()
+          onDispose(() => {
+            measurement.close()
+            physicalAnalysis.close()
+          })
+          return {
+            executor,
+            session: execution.getSession(executor),
+            wasm: getWasm(),
+            fileOperations: services.optional(fileOperationsService),
+            measurement,
+            physicalAnalysis,
+            statusItems: valueSpecs.signal(modelingStatusItemsValueSpec),
+          }
         })({
           id: 'kcl.modeling',
           label: 'Modeling',

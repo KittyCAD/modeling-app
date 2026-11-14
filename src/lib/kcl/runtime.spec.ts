@@ -275,6 +275,26 @@ it('does not start execution after a scene closes during a native rebuild', asyn
   expect(calls).toEqual(['execute', 'rebuild'])
 })
 
+it('publishes file units and execution timing independently for each scene', async () => {
+  const first = await runtime(),
+    second = await runtime()
+  await first.execute(
+    snapshot('@settings(kclVersion = 3.0, defaultLengthUnit = in)\nanswer = 42')
+  )
+  await second.execute(
+    snapshot('@settings(kclVersion = 3.0, defaultLengthUnit = mm)\nanswer = 5')
+  )
+  expect(first.fileSettings.peek().defaultLengthUnit).toBe('in')
+  expect(second.fileSettings.peek().defaultLengthUnit).toBe('mm')
+  expect(first.ast.peek()).not.toBeNull()
+  expect(first.executionElapsedMs.peek()).toBeGreaterThanOrEqual(0)
+  expect(first.executing.peek()).toBe(false)
+  await first.execute(snapshot('@settings(kclVersion = 3.0)\nanswer = 43'))
+  expect(first.fileSettings.peek().defaultLengthUnit).toBe('mm')
+  expect(first.executionRevision.peek()).toBe(2)
+  expect(second.executionRevision.peek()).toBe(1)
+})
+
 it.each(['execute', 'drain'] as const)(
   'preserves a rejected Error from %s, releases tracking, and accepts the next run',
   async (stage) => {
