@@ -1,3 +1,4 @@
+import type { SelectionSource } from '@src/lib/kcl/selection'
 import { createMoveToolInteraction } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import type { SourceDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
@@ -52,6 +53,8 @@ export async function createSketchSession(
     xz: true,
     yz: true,
   })
+  const selectionSource = signal<SelectionSource | undefined>(undefined)
+  const selectionSessionId = Symbol('sketch selection')
   let runtime: SketchRuntime | undefined
   let surface: ReturnType<typeof createSketchSurface> | undefined
   let move: ReturnType<typeof createMoveToolInteraction> | undefined
@@ -215,6 +218,7 @@ export async function createSketchSession(
       await entering
       await circle?.dispose()
       await deactivateMove()
+      selectionSource.value = undefined
       surface?.dispose()
       try {
         await runtime?.close(sketchId)
@@ -297,6 +301,29 @@ export async function createSketchSession(
         target.plane,
         sketchId
       )
+      const ownedSurface = surface
+      const ownedSketchId = sketchId
+      selectionSource.value = {
+        items: computed(() =>
+          ownedSurface.selected.value.map((id) => ({
+            kind: 'sketch' as const,
+            sessionId: selectionSessionId,
+            sketchId: ownedSketchId,
+            id,
+          }))
+        ),
+        canClear: computed(
+          () =>
+            !closed &&
+            phase.value === 'editing' &&
+            !!ownedSurface.selected.value.length
+        ),
+        clear: () => {
+          if (!closed && phase.peek() === 'editing')
+            ownedSurface.select([], true)
+        },
+      }
+
       cameraEntered = true
       await enterSketchModeAndSyncCamera(
         scene.commands,
@@ -315,6 +342,7 @@ export async function createSketchSession(
       error.value = isErr(cause)
         ? cause
         : new Error('Unable to enter sketch', { cause })
+      selectionSource.value = undefined
       surface?.dispose()
       surface = undefined
       if (cameraEntered) {
@@ -419,6 +447,7 @@ export async function createSketchSession(
   )
   return {
     id: 'kcl.sketch',
+    selection: selectionSource,
     toolbar,
     prompt,
     defaultPlanes,

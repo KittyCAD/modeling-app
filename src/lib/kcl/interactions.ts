@@ -1,3 +1,4 @@
+import type { SelectionSource } from '@src/lib/kcl/selection'
 import { signal, type ReadonlySignal } from '@preact/signals-core'
 import type { ModelingViewContext } from '@src/lib/kcl/registry/contract'
 import type { ToolbarViewItem } from '@src/components/Toolbar/ToolbarView'
@@ -7,6 +8,7 @@ import { isErr, reportRejection } from '@src/lib/trap'
 /** A sustained interaction owns tools and scene input inside one Modeling presentation. */
 export interface ModelingInteractionSession {
   id: string
+  selection?: ReadonlySignal<SelectionSource | undefined>
   toolbar: ReadonlySignal<readonly ToolbarViewItem[]>
   prompt: ReadonlySignal<string>
   defaultPlanes: ReadonlySignal<PlaneVisibilityMap>

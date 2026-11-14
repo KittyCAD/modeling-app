@@ -1,3 +1,4 @@
+import type { SelectionSource } from '@src/lib/kcl/selection'
 import type { ToolbarGroupDefinition } from '@src/components/Toolbar/groups'
 import type {
   createModelingInteractions,
@@ -18,6 +19,7 @@ import type { createPhysicalAnalysisService } from '@src/registry/extensions/eng
 
 /** Contributions receive their owning view explicitly; focus never changes their target. */
 export interface ModelingViewContext {
+  selection: SelectionSource
   interactions: ReturnType<typeof createModelingInteractions>
   settings: SettingsRegistryService
   tools: ReturnType<typeof createModelingTools>

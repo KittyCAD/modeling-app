@@ -126,3 +126,14 @@ Contribute categories through `modelingToolGroupsValueSpec` and give tools a
 semantics; the toolbar chooses inline, split-button, or submenu presentation from
 container width. Command and sketch behavior do not belong to that layout state.
 The responsive presentation can be adopted independently of adding another tool.
+
+### Consuming active selection
+
+Tools and status contributions use `context.selection.items`, `canClear`, and
+`clear()` for the current interaction's selection. Model references retain their
+scene/execution identity; sketch references retain their session/sketch identity.
+Consumers requiring a particular geometry domain narrow the item's `kind`.
+The facade delegates to the owner; it does not copy selection into a global store.
+`context.session.resource.value?.selection.selected` remains the underlying view
+selection, suitable for seeding a new dialog. Clearing active dialog or sketch
+selection does not clear that underlying selection.

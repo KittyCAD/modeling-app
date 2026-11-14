@@ -1,3 +1,4 @@
+import { createActiveSelection } from '@src/lib/kcl/selection'
 import { defaultModelingToolGroups } from '@src/lib/kcl/toolGroups'
 import { createModelingInteractions } from '@src/lib/kcl/interactions'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -86,6 +87,7 @@ export function modelingTestContext() {
   }
   const settings = createSettings()
   const context: ModelingViewContext = {
+    selection: createActiveSelection(() => context),
     interactions: createModelingInteractions(() => context, signal([])),
     tools: createModelingTools(() => context, signal(defaultModelingTools)),
     settings: {

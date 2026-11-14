@@ -1,3 +1,4 @@
+import { createActiveSelection } from '@src/lib/kcl/selection'
 import { defaultModelingToolGroups } from '@src/lib/kcl/toolGroups'
 import { sketchToolsValueSpec } from '@src/lib/kcl/sketch/contract'
 import { circleSketchTool } from '@src/lib/kcl/sketch/tools'
@@ -154,6 +155,7 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
             physicalAnalysis.close()
           })
           const context: ModelingViewContext = {
+            selection: createActiveSelection(() => context),
             interactions: createModelingInteractions(
               () => context,
               valueSpecs.signal(modelingInteractionsValueSpec)
