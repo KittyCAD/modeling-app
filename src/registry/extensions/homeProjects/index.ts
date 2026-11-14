@@ -1,3 +1,4 @@
+import env from '@src/env'
 import { withHomeProjectActionStatus } from '@src/lib/homeProjectActions'
 import { selectCommand } from '@src/lib/commandUtils'
 import { projectSession } from '@src/registry/contracts/projectSession'
@@ -172,7 +173,9 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
   const getConfiguredProjectLibraries = () => {
     const currentSettings = settings.value?.current.value
     return currentSettings
-      ? projectLibrariesFromSettings(currentSettings.app.libraries.current)
+      ? projectLibrariesFromSettings(currentSettings.app.libraries.current, {
+          includeCloud: env().VITE_ZOO_API_TOKEN !== 'localhost',
+        })
       : []
   }
 

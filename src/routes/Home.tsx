@@ -1,3 +1,4 @@
+import env from '@src/env'
 import { PROJECT_SHELL_FEATURE } from '@src/lib/projectSession/next/feature'
 import { selectCommand } from '@src/lib/commandUtils'
 import { canReadWriteDirectory } from '@src/lib/desktop'
@@ -351,7 +352,8 @@ const Home = () => {
     projectLibraryTypesValueSpec
   ).value
   const projectLibraries = projectLibrariesFromSettings(
-    settingsValues.app.libraries.current
+    settingsValues.app.libraries.current,
+    { includeCloud: env().VITE_ZOO_API_TOKEN !== 'localhost' }
   ).map((library) => ({
     ...library,
     icon: projectLibraryTypes.get(library.type)?.icon ?? library.icon,

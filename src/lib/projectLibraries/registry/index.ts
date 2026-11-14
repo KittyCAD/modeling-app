@@ -1,3 +1,4 @@
+import env from '@src/env'
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
@@ -472,7 +473,12 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
         const typeById = libraryTypes.value
         const invalidation = readProjectLibraryRealizationsInvalidation()
         const libraries = currentSettings
-          ? projectLibrariesFromSettings(currentSettings.app.libraries.current)
+          ? projectLibrariesFromSettings(
+              currentSettings.app.libraries.current,
+              {
+                includeCloud: env().VITE_ZOO_API_TOKEN !== 'localhost',
+              }
+            )
           : []
         const activeLibraryIds = new Set(libraries.map((library) => library.id))
         currentLibraryIds = libraries.map((library) => library.id)

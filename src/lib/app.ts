@@ -1,3 +1,4 @@
+import env from '@src/env'
 import type { SnapshotFrom } from 'xstate'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import {
@@ -489,7 +490,8 @@ export class App implements AppSubsystems {
       this.settings.actor.getSnapshot().context
     )
     const libraries = projectLibrariesFromSettings(
-      settings.app.libraries.current
+      settings.app.libraries.current,
+      { includeCloud: env().VITE_ZOO_API_TOKEN !== 'localhost' }
     )
     const targets = libraries.flatMap((library) => {
       const createProject = getProjectLibraryCreateProjectOperation(
@@ -532,7 +534,8 @@ export class App implements AppSubsystems {
               this.currentProjectLibraryIdSignal.value,
             getProjectLibraries: () =>
               projectLibrariesFromSettings(
-                this.settings.actor.getSnapshot().context.app.libraries.current
+                this.settings.actor.getSnapshot().context.app.libraries.current,
+                { includeCloud: env().VITE_ZOO_API_TOKEN !== 'localhost' }
               ),
             getCreateProjectLibraryTargets: this.getCreateProjectLibraryTargets,
             getHomeProjectActions: () =>

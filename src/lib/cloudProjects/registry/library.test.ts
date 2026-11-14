@@ -30,7 +30,8 @@ describe('cloud project library availability', () => {
       vi.stubEnv('VITE_ZOO_API_TOKEN', token)
       expect(
         projectLibrariesFromSettings(
-          getDefaultProjectLibrarySettings('/projects')
+          getDefaultProjectLibrarySettings('/projects'),
+          { includeCloud: cloudAvailable }
         ).some((library) => library.type === CLOUD_PROJECT_LIBRARY_TYPE)
       ).toBe(cloudAvailable)
       registry = new Registry()
