@@ -7,9 +7,9 @@ import {
 import type { HomeProjectActionsService } from '@src/registry/contracts/homeProjects'
 import { HomeHeader } from '@src/routes/HomeHeader'
 import { ProjectLibraryPreviewRow } from '@src/routes/HomeProjectCards'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const cloudLibrary = {
   id: 'cloud-personal',
@@ -90,6 +90,41 @@ function renderProjectLibraryPreviewRow(library: ProjectLibrary) {
 }
 
 describe('HomeHeader', () => {
+  afterEach(() => vi.useRealTimers())
+
+  it('allows another refresh after five seconds without showing it as busy during cooldown', async () => {
+    vi.useFakeTimers()
+    const onRefresh = vi.fn()
+    renderHomeHeader({
+      showFreeCloudProjectTrainingDisclosure: false,
+      onRefresh,
+    })
+    const button = screen.getByRole('button', { name: 'Refresh projects' })
+    fireEvent.click(button)
+    expect(button).toBeDisabled()
+    expect(button).toHaveAttribute('aria-busy', 'false')
+    await act(() => vi.advanceTimersByTime(4_999))
+    fireEvent.click(button)
+    expect(onRefresh).toHaveBeenCalledOnce()
+    await act(() => vi.advanceTimersByTime(1))
+    expect(button).toBeEnabled()
+    fireEvent.click(button)
+    expect(onRefresh).toHaveBeenCalledTimes(2)
+  })
+
+  it('keeps refresh disabled after the cooldown while a request is still running', async () => {
+    vi.useFakeTimers()
+    renderHomeHeader({
+      showFreeCloudProjectTrainingDisclosure: false,
+      onRefresh: vi.fn(),
+      isRefreshing: true,
+    })
+    await act(() => vi.advanceTimersByTime(5_000))
+    expect(
+      screen.getByRole('button', { name: 'Refresh projects' })
+    ).toBeDisabled()
+  })
+
   it.each([false, true])(
     'shows the refresh button with loading=%s',
     (isRefreshing) => {
