@@ -63,6 +63,8 @@ export interface Executor {
   readonly id: symbol
   readonly editor: Editor
   readonly output: ReadonlySignal<ExecutorOutput>
+  /** Retry current source and dependencies in this executor only. */
+  refresh: () => void
 }
 
 /** Computation is acquired explicitly by mode contexts or other consumers, independently of focus. */

@@ -23,6 +23,7 @@ interface ExecutionInput {
   src: string
   contents: string
   capabilities: readonly ExecutorCapability[]
+  refresh: number
 }
 
 /** Owns a scoped watcher and interrupts the previous computation before starting another. */
@@ -31,10 +32,13 @@ export function createExecutor(
   contributions: ReadonlySignal<readonly ExecutorCapability[]>,
   onEditorDestroyed: () => void
 ): { executor: Executor; dispose: () => void } {
+  const refresh = signal(0)
+  let disposed = false
   const snapshot = (): ExecutionInput => {
     const context = editorMatchContext(editor)
     return {
       ...context,
+      refresh: refresh.value,
       capabilities: contributions.value.filter((capability) =>
         matchesEditor(capability.matches, context)
       ),
@@ -107,6 +111,9 @@ export function createExecutor(
     editor,
     output,
     scope,
+    refresh: () => {
+      if (!disposed && !editor.signal.aborted) refresh.value++
+    },
   }
   let currentRun: Fiber.RuntimeFiber<void, never> | undefined
   let previous: ExecutionInput | undefined
@@ -148,6 +155,7 @@ export function createExecutor(
   return {
     executor,
     dispose: () => {
+      disposed = true
       if (currentRun) Effect.runSync(Fiber.interruptFork(currentRun))
       Effect.runFork(Scope.close(scope, Exit.void))
       output.value = { ...output.peek(), running: false }
@@ -157,6 +165,7 @@ export function createExecutor(
 
 function sameInput(previous: ExecutionInput, next: ExecutionInput) {
   return (
+    previous.refresh === next.refresh &&
     previous.src === next.src &&
     previous.contents === next.contents &&
     previous.capabilities.length === next.capabilities.length &&
