@@ -1,3 +1,4 @@
+import { updateSketchSelection } from '@src/machines/sketchSolve/sketchSolveSelection'
 import {
   buildSegmentCtorFromObject,
   updateSegmentGroup,
@@ -350,25 +351,6 @@ export function cleanupSketchSolveGroup(sceneInfra: SceneInfra) {
   disposeGroupChildren(sketchSegments)
 }
 
-function getSelectionCoordinatesForIds(
-  selectedIds: readonly SketchSolveSelectionId[],
-  selectionCoordinates: SelectionCoordinates
-): SelectionCoordinates {
-  const nextSelectionCoordinates: SelectionCoordinates = {}
-  for (const selectedId of selectedIds) {
-    if (typeof selectedId !== 'number') {
-      continue
-    }
-
-    const clickPoint = selectionCoordinates[selectedId]
-    if (clickPoint) {
-      nextSelectionCoordinates[selectedId] = clickPoint
-    }
-  }
-
-  return nextSelectionCoordinates
-}
-
 export function updateSelectedIds({ event, context }: SolveAssignArgs) {
   assertEvent(event, 'update selected ids')
 
@@ -385,34 +367,14 @@ export function updateSelectedIds({ event, context }: SolveAssignArgs) {
       ...context.selectionCoordinates,
       ...(event.data.selectionCoordinates ?? {}),
     }
-    let nextSelectedIds: SketchSolveSelectionId[]
-
-    // If empty array is provided, clear the selection
-    if (event.data.selectedIds.length === 0) {
-      nextSelectedIds = []
-    } else if (event.data.replaceExistingSelection) {
-      nextSelectedIds = event.data.selectedIds
-    } else {
-      const first = event.data.selectedIds[0]
-      if (
-        event.data.selectedIds.length === 1 &&
-        first !== undefined &&
-        context.selectedIds.includes(first)
-      ) {
-        // If only one ID is selected and it's already in the selection, remove only it from the selection
-        nextSelectedIds = context.selectedIds.filter((id) => id !== first)
-      } else {
-        // Merge new IDs with existing selection
-        nextSelectedIds = Array.from(
-          new Set([...context.selectedIds, ...event.data.selectedIds])
-        )
-      }
-    }
-
-    updates.selectedIds = nextSelectedIds
-    updates.selectionCoordinates = getSelectionCoordinatesForIds(
-      nextSelectedIds,
-      selectionCoordinates
+    Object.assign(
+      updates,
+      updateSketchSelection(
+        context.selectedIds,
+        event.data.selectedIds,
+        selectionCoordinates,
+        event.data.replaceExistingSelection
+      )
     )
   }
 

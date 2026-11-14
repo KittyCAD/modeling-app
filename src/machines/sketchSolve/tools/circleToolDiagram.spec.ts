@@ -1,263 +1,168 @@
-import type {
-  SceneGraphDelta,
-  SourceDelta,
-} from '@rust/kcl-lib/bindings/FrontendApi'
+import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { afterEach, beforeAll, expect, it, vi } from 'vitest'
+import { createActor, setup, waitFor } from 'xstate'
+import { Vector2, Vector3 } from 'three'
+import { machine } from '@src/machines/sketchSolve/tools/circleToolDiagram'
 import {
-  machine,
-  showingRadiusPreview,
-} from '@src/machines/sketchSolve/tools/circleToolDiagram'
-import {
-  createCircleApiObject,
-  createMockKclManager,
-  createMockRustContext,
   createMockSceneInfra,
+  createMockRustContext,
+  createMockKclManager,
+  createCircleApiObject,
   createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
-import type { createDraftCircle } from '@src/machines/sketchSolve/tools/circleToolImpl'
-import { describe, expect, it } from 'vitest'
-import { createActor, fromPromise, waitFor } from 'xstate'
+import type {
+  SketchSolveMachineEvent,
+  ToolInput,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
+import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 
-function createTestMachine(mockActors?: {
-  createDraftCircle?: () => ReturnType<typeof createDraftCircle>
-  commitCircle?: (
-    input: unknown
-  ) => Promise<
-    | { kclSource: SourceDelta; sceneGraphDelta: SceneGraphDelta }
-    | { error: string }
-  >
-}) {
-  const sceneInfra = createMockSceneInfra()
-  const rustContext = createMockRustContext()
-  const kclManager = createMockKclManager()
-
-  const testMachine = machine.provide({
-    actors: {
-      createDraftCircle: fromPromise(
-        mockActors?.createDraftCircle ??
-          (async () => ({
-            kclSource: { text: 'draft circle' },
-            sceneGraphDelta: createSceneGraphDelta([], []),
-            draft: { circleId: 3, segmentIds: [1, 2, 3], constraintIds: [] },
-          }))
-      ),
-      commitCircle: fromPromise(
-        mockActors?.commitCircle ||
-          (async () => ({
-            kclSource: { text: 'test' },
-            sceneGraphDelta: createSceneGraphDelta([], []),
-          }))
-      ),
-    },
-  })
-
-  return {
-    machine: testMachine,
-    sceneInfra,
-    rustContext,
-    kclManager,
-  }
-}
-
-function startCircleTool() {
-  const fixture = createTestMachine()
-  const actor = createActor(fixture.machine, {
-    input: {
-      sceneInfra: fixture.sceneInfra,
-      rustContext: fixture.rustContext,
-      kclManager: fixture.kclManager,
-      sketchId: 0,
-    },
-  }).start()
-  return { actor, sceneInfra: fixture.sceneInfra }
-}
-
-describe('circleTool - XState', () => {
-  describe('when initialized', () => {
-    it('should have default context values', () => {
-      const { actor } = startCircleTool()
-
-      const context = actor.getSnapshot().context
-      expect(context.centerPointId).toBeUndefined()
-      expect(context.centerPoint).toBeUndefined()
-      expect(context.circleId).toBeUndefined()
-      expect(context.sketchId).toBe(0)
-      actor.stop()
-    })
-
-    it('should call setCallbacks on entry to ready for center click', async () => {
-      const { actor, sceneInfra } = startCircleTool()
-
-      await new Promise((resolve) => setTimeout(resolve, 0))
-      expect(sceneInfra.setCallbacks).toHaveBeenCalled()
-      actor.stop()
-    })
-  })
-
-  describe('escape key handling', () => {
-    it('should transition to unequipping when escape is pressed in ready for center click', async () => {
-      const { actor } = startCircleTool()
-
-      actor.send({ type: 'escape' })
-
-      await waitFor(actor, (state) => state.matches('unequipping'))
-      actor.stop()
-    })
-  })
-
-  describe('unequip handling', () => {
-    it('should transition to unequipping when unequip event is sent', async () => {
-      const { actor } = startCircleTool()
-
-      actor.send({ type: 'unequip' })
-
-      await waitFor(actor, (state) => state.matches('unequipping'))
-      actor.stop()
-    })
-  })
-
-  describe('two-click workflow', () => {
-    it('creates a draft after the center click before showing the radius preview', async () => {
-      const { actor } = startCircleTool()
-
-      actor.send({ type: 'add point', data: [10, 20], clickNumber: 1 })
-
-      await waitFor(actor, (state) => state.matches(showingRadiusPreview))
-      const snapshot = actor.getSnapshot()
-      expect(snapshot.value).toBe('Showing radius preview')
-      expect(snapshot.context.centerPoint).toEqual([10, 20])
-      actor.stop()
-    })
-
-    it('should transition to Creating circle on second click', async () => {
-      const { actor } = startCircleTool()
-
-      actor.send({ type: 'add point', data: [10, 20], clickNumber: 1 })
-      await waitFor(actor, (state) => state.matches(showingRadiusPreview))
-
-      actor.send({ type: 'add point', data: [30, 40], clickNumber: 2 })
-
-      await waitFor(actor, (state) => state.matches('Creating circle'))
-      actor.stop()
-    })
-
-    it('should return to ready for center click after creating the circle', async () => {
-      const centerPoint = createPointApiObject({ id: 1, x: 10, y: 20 })
-      const startPoint = createPointApiObject({ id: 2, x: 30, y: 40 })
-      const circleObj = createCircleApiObject({ id: 3, start: 2 })
-
-      const { machine, sceneInfra, rustContext, kclManager } =
-        createTestMachine({
-          commitCircle: async () => ({
-            kclSource: { text: 'test' },
-            sceneGraphDelta: createSceneGraphDelta(
-              [centerPoint, startPoint, circleObj],
-              [1, 2, 3]
-            ),
-          }),
-        })
-
-      const actor = createActor(machine, {
-        input: {
-          sceneInfra,
-          rustContext,
-          kclManager,
-          sketchId: 0,
-        },
-      }).start()
-
-      actor.send({ type: 'add point', data: [10, 20], clickNumber: 1 })
-      await waitFor(actor, (state) => state.matches(showingRadiusPreview))
-
-      actor.send({ type: 'add point', data: [30, 40], clickNumber: 2 })
-      await waitFor(actor, (state) => state.matches('Creating circle'))
-      await waitFor(actor, (state) => state.matches('ready for center click'))
-
-      const context = actor.getSnapshot().context
-      expect(context.centerPoint).toBeUndefined()
-      expect(context.circleId).toBeUndefined()
-
-      actor.stop()
-    })
-  })
-
-  it.each(['escape', 'unequip'] as const)(
-    'finishes draft creation before cancelling with %s',
-    async (type) => {
-      const pending =
-        Promise.withResolvers<Awaited<ReturnType<typeof createDraftCircle>>>()
-      const { machine, sceneInfra, rustContext, kclManager } =
-        createTestMachine({ createDraftCircle: () => pending.promise })
-      const actor = createActor(machine, {
-        input: { sceneInfra, rustContext, kclManager, sketchId: 0 },
-      }).start()
-      actor.send({ type: 'add point', data: [10, 20], clickNumber: 1 })
-      actor.send({ type })
-      expect(actor.getSnapshot().value).toBe('Creating draft circle')
-      expect(actor.getSnapshot().status).toBe('active')
-      pending.resolve({
-        kclSource: { text: 'draft circle' },
-        sceneGraphDelta: createSceneGraphDelta([], []),
-        draft: { circleId: 3, segmentIds: [1, 2, 3], constraintIds: [] },
-      })
-      await waitFor(actor, (state) => state.status === 'done')
-      expect(actor.getSnapshot().context.preview?.circleId).toBe(3)
-      actor.stop()
-    }
+let wasm: ModuleType
+beforeAll(async () => {
+  wasm = await loadAndInitialiseWasmInstance(
+    'rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm'
   )
-
-  it('waits for a pending radius update before finishing cancellation', async () => {
-    const { machine, sceneInfra, rustContext, kclManager } = createTestMachine()
-    const actor = createActor(machine, {
-      input: { sceneInfra, rustContext, kclManager, sketchId: 0 },
-    }).start()
-    actor.send({ type: 'add point', data: [10, 20], clickNumber: 1 })
-    await waitFor(actor, (state) => state.matches(showingRadiusPreview))
-    const pending = Promise.withResolvers<undefined>()
-    actor.getSnapshot().context.preview!.pending = pending.promise
-    actor.send({ type: 'escape' })
-    expect(actor.getSnapshot().status).toBe('active')
-    expect(actor.getSnapshot().value).toBe('unequipping')
-    pending.resolve(undefined)
-    await waitFor(actor, (state) => state.status === 'done')
-    actor.stop()
+})
+const cleanup: (() => void)[] = []
+afterEach(() => {
+  for (const dispose of cleanup.splice(0)) dispose()
+  vi.restoreAllMocks()
+})
+function fixture() {
+  const sceneInfra = createMockSceneInfra(),
+    rustContext = createMockRustContext(),
+    kclManager = createMockKclManager()
+  sceneInfra.resetMouseListeners = vi.fn()
+  vi.spyOn(
+    segmentUtilsMap.ArcSegment,
+    'removePreviewCircle'
+  ).mockImplementation(() => {})
+  const delta = createSceneGraphDelta(
+    [
+      createPointApiObject({ id: 1 }),
+      createPointApiObject({ id: 2, x: 10 }),
+      createCircleApiObject({ id: 3, center: 1, start: 2 }),
+    ],
+    [1, 2, 3]
+  )
+  const add = vi.spyOn(rustContext, 'addSegment').mockResolvedValue({
+    kclSource: { text: 'draft' },
+    sceneGraphDelta: delta,
   })
-
-  it('finishes a pending circle commit before unequipping', async () => {
-    const commit = Promise.withResolvers<{
-      kclSource: SourceDelta
-      sceneGraphDelta: SceneGraphDelta
-    }>()
-    const { machine, sceneInfra, rustContext, kclManager } = createTestMachine({
-      commitCircle: () => commit.promise,
-    })
-    const actor = createActor(machine, {
-      input: { sceneInfra, rustContext, kclManager, sketchId: 0 },
-    }).start()
-    actor.send({ type: 'add point', data: [10, 20], clickNumber: 1 })
-    await waitFor(actor, (state) => state.matches(showingRadiusPreview))
-    actor.send({ type: 'add point', data: [30, 40], clickNumber: 2 })
-    actor.send({ type: 'unequip' })
-    expect(actor.getSnapshot().value).toBe('Creating circle')
-    commit.resolve({
-      kclSource: { text: 'circle' },
-      sceneGraphDelta: createSceneGraphDelta([], []),
-    })
-    await waitFor(actor, (state) => state.status === 'done')
-    actor.stop()
+  const edit = vi.spyOn(rustContext, 'editSegments').mockResolvedValue({
+    kclSource: { text: 'committed' },
+    sceneGraphDelta: delta,
+    checkpointId: 42,
   })
-
-  describe('escape during workflow', () => {
-    it('should transition to unequipping when escape is pressed in Showing radius preview', async () => {
-      const { actor } = startCircleTool()
-
-      actor.send({ type: 'add point', data: [10, 20], clickNumber: 1 })
-      await waitFor(actor, (state) => state.matches(showingRadiusPreview))
-
-      actor.send({ type: 'escape' })
-
-      await waitFor(actor, (state) => state.matches('unequipping'))
-      actor.stop()
-    })
+  const remove = vi.spyOn(rustContext, 'deleteObjects').mockResolvedValue({
+    kclSource: { text: 'removed' },
+    sceneGraphDelta: createSceneGraphDelta([]),
   })
+  const attach = vi.spyOn(sceneInfra, 'setCallbacks')
+  const received = vi.fn<(event: SketchSolveMachineEvent) => void>()
+  const parent = setup({
+    actors: { circle: machine },
+    types: {
+      context: {} as { sketchExecOutcome: undefined; tool: ToolInput },
+      input: {} as ToolInput,
+      events: {} as SketchSolveMachineEvent,
+    },
+  }).createMachine({
+    context: ({ input }) => ({ sketchExecOutcome: undefined, tool: input }),
+    invoke: {
+      id: 'circle',
+      src: 'circle',
+      input: ({ context }) => context.tool,
+    },
+    on: { '*': { actions: ({ event }) => received(event) } },
+  })
+  const actor = createActor(parent, {
+    input: { sceneInfra, rustContext, kclManager, sketchId: 0 },
+  }).start()
+  cleanup.push(() => actor.stop())
+  const child = actor.getSnapshot().children.circle
+  if (!child) throw new Error('Circle was not invoked')
+  const callbacks = attach.mock.calls.at(-1)?.[0]
+  if (!callbacks?.onClick) throw new Error('Circle did not attach input')
+  const click = async (x: number, y: number) =>
+    callbacks.onClick?.({
+      wasmInstance: wasm,
+      mouseEvent: new MouseEvent('click', { button: 0, shiftKey: true }),
+      intersectionPoint: {
+        twoD: new Vector2(x, y),
+        threeD: new Vector3(x, y, 0),
+      },
+      intersects: [],
+    })
+  return { child, add, edit, remove, received, click, callbacks, sceneInfra }
+}
+it('adapts scene clicks into a committed result and checkpoint for the legacy parent', async () => {
+  const { child, add, remove, received, click } = fixture()
+  await click(10, 20)
+  await click(30, 20)
+  expect(add).toHaveBeenCalledOnce()
+  expect(received).toHaveBeenCalledWith(
+    expect.objectContaining({
+      type: 'update sketch outcome',
+      data: expect.objectContaining({
+        sourceDelta: { text: 'committed' },
+        checkpointId: 42,
+      }),
+    })
+  )
+  child.send({ type: 'unequip' })
+  await waitFor(child, (state) => state.status === 'done')
+  expect(remove).not.toHaveBeenCalled()
+})
+it('removes an unfinished draft before acknowledging Escape to the legacy invoker', async () => {
+  const { child, remove, received, click } = fixture()
+  await click(10, 20)
+  child.send({ type: 'escape' })
+  await waitFor(child, (state) => state.status === 'done')
+  expect(remove).toHaveBeenCalledWith(0, 0, [], [1, 2, 3], expect.anything())
+  expect(received).toHaveBeenCalledWith({ type: 'clear draft entities' })
+  expect(received).toHaveBeenCalledWith(
+    expect.objectContaining({
+      type: 'update sketch outcome',
+      data: expect.objectContaining({
+        sourceDelta: { text: 'removed' },
+        writeToDisk: false,
+      }),
+    })
+  )
+})
+
+it('shares radius-preview rendering and unpublished native preview outcomes with the legacy parent', async () => {
+  const { child, callbacks, received, click, sceneInfra } = fixture()
+  const visual = vi
+    .spyOn(segmentUtilsMap.ArcSegment, 'updatePreviewCircle')
+    .mockImplementation(() => {})
+  await click(10, 20)
+  await callbacks.onMove?.({
+    mouseEvent: new MouseEvent('mousemove', { shiftKey: true }),
+    intersectionPoint: {
+      twoD: new Vector2(13, 24),
+      threeD: new Vector3(13, 24, 0),
+    },
+    intersects: [],
+  })
+  expect(visual).toHaveBeenCalledWith({
+    sceneInfra,
+    center: [10, 20],
+    radius: 5,
+  })
+  await vi.waitFor(() =>
+    expect(received).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'update sketch outcome',
+        data: expect.objectContaining({
+          sourceDelta: { text: 'committed' },
+          writeToDisk: false,
+        }),
+      })
+    )
+  )
+  child.send({ type: 'unequip' })
+  await waitFor(child, (state) => state.status === 'done')
 })

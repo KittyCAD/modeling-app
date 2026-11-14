@@ -140,18 +140,44 @@ export function getBestSnappingCandidate({
   ) => Iterable<number> | undefined
   isCandidateAllowed?: (args: CandidateFilterArgs) => boolean
 }): SnappingCandidate | null {
-  if (!allowSnapping(mouseEvent)) {
-    return null
-  }
+  if (!allowSnapping(mouseEvent)) return null
+  return getBestSceneSnappingCandidate({
+    sceneInfra,
+    sketchId,
+    mousePosition,
+    mouseEvent,
+    excludedPointIds,
+    getExcludedPointIds,
+    isCandidateAllowed,
+    objects:
+      self._parent?.getSnapshot?.().context?.sketchExecOutcome?.sceneGraphDelta
+        ?.new_graph?.objects,
+    gridSnapOptions: getGridSnapOptions(self, sceneInfra),
+  })
+}
 
-  const snapshot = self._parent?.getSnapshot?.()
-  const gridSnapOptions = getGridSnapOptions(self, sceneInfra)
-  const objects =
-    snapshot?.context?.sketchExecOutcome?.sceneGraphDelta?.new_graph?.objects
-  if (!objects && !gridSnapOptions) {
-    return null
-  }
-
+export function getBestSceneSnappingCandidate({
+  sceneInfra,
+  sketchId,
+  mousePosition,
+  mouseEvent,
+  objects,
+  gridSnapOptions,
+  excludedPointIds = [],
+  getExcludedPointIds,
+  isCandidateAllowed,
+}: {
+  sceneInfra: SceneInfra
+  sketchId: number
+  mousePosition: Coords2d
+  mouseEvent: MouseEvent
+  objects?: ApiObject[]
+  gridSnapOptions?: GridSnapOptions
+  excludedPointIds?: Iterable<number>
+  getExcludedPointIds?: (objects: ApiObject[]) => Iterable<number> | undefined
+  isCandidateAllowed?: (args: CandidateFilterArgs) => boolean
+}): SnappingCandidate | null {
+  if (!allowSnapping(mouseEvent) || (!objects && !gridSnapOptions)) return null
   const currentSketchObjects = objects
     ? getCurrentSketchObjectsById(objects, sketchId)
     : []
