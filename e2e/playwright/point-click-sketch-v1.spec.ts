@@ -1488,11 +1488,6 @@ extrude001 = extrude(sketch001, length = 30)
 
       // Adjusted coordinates to center screen for clicking on cap
       const testPoint = { x: 500, y: 200 }
-      const [clickOnCap] = await scene.makeSelectionHelpers({
-        kind: 'face',
-        index: 0,
-        stream: { x: testPoint.x, y: testPoint.y, format: 'pixels' },
-      })
       await test.step('Add GDT Flatness to the scene', async () => {
         await test.step('Open GDT Flatness command from toolbar', async () => {
           await toolbar.selectGdtFlatness()
@@ -1502,6 +1497,11 @@ extrude001 = extrude(sketch001, length = 30)
         await test.step('Select face and configure basic parameters', async () => {
           await test.step('Select face', async () => {
             await modelingDialog.selection('Faces').click()
+            const [clickOnCap] = await scene.makeSelectionHelpers({
+              kind: 'face',
+              index: 0,
+              stream: { x: testPoint.x, y: testPoint.y, format: 'pixels' },
+            })
             await clickOnCap()
             await toolbar.expectSelection('1 face')
           })
