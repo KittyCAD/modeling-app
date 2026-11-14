@@ -67,6 +67,14 @@ const getDrawToolStrokeStyle = (
 const getDrawToolColorClassName = (tool: ZoodleDrawToolDefinition) =>
   tool.colorClassName || ''
 
+const getBrushCursor = (diameter: number) => {
+  const size = diameter + 4
+  const center = size / 2
+  const circle = `cx="${center}" cy="${center}" r="${diameter / 2}" fill="none"`
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><circle ${circle} stroke="black" stroke-width="3"/><circle ${circle} stroke="white" stroke-width="1"/></svg>`
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}") ${center} ${center}, crosshair`
+}
+
 const toolButtonClassName = (tool: ZoodleToolDefinition, isActive: boolean) =>
   `m-0 flex h-7 items-center justify-center rounded-sm border p-0 text-xs ${
     tool.type === 'erase' ? 'w-auto px-2' : 'w-7'
@@ -206,6 +214,9 @@ export const ViewportAnnotationOverlay = (
   const activeToolKey = props.zoodle.activeToolKey.value
   const activeTool = props.zoodle.toolDefinitions[activeToolKey]
   const brushSize = props.zoodle.brushSize.value
+  const lineWidthMultiplier =
+    'lineWidthMultiplier' in activeTool ? activeTool.lineWidthMultiplier : 1
+  const strokeWidth = brushSize * lineWidthMultiplier
   const [imageSize, setImageSize] = useState<{
     width: number
     height: number
@@ -261,9 +272,7 @@ export const ViewportAnnotationOverlay = (
       activeTool.type === 'draw'
         ? getDrawToolStrokeStyle(activeTool, canvas)
         : '#000000'
-    const lineWidthMultiplier =
-      'lineWidthMultiplier' in activeTool ? activeTool.lineWidthMultiplier : 1
-    ctx.lineWidth = brushSize * pixelRatio * lineWidthMultiplier
+    ctx.lineWidth = strokeWidth * pixelRatio
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
     ctx.beginPath()
@@ -369,9 +378,8 @@ export const ViewportAnnotationOverlay = (
       <canvas
         ref={canvasRef}
         data-testid="viewport-annotation-canvas"
-        className={`absolute inset-0 h-full w-full touch-none ${
-          activeTool.type === 'erase' ? 'cursor-cell' : 'cursor-crosshair'
-        } ${activeDrawToolClassName}`}
+        className={`absolute inset-0 h-full w-full touch-none ${activeDrawToolClassName}`}
+        style={{ cursor: getBrushCursor(strokeWidth) }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
