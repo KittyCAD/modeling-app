@@ -29,8 +29,9 @@ await registry.dispose()
 | **Extension** | The composable union: a Binding, a Factory, or an array of Extensions. Arrays group declarations without creating another instance to manage. |
 
 Each Registry shares a Factory's instance with all Factories that depend on it.
-When a feature is removed, instances still needed by other installed features stay
-alive. Instances no longer needed run their cleanup to release resources.
+Removing an Extension cleans up Factory instances that are no longer reachable.
+A shared dependency remains alive until its last dependent is removed, unless it
+is also configured directly.
 
 ## Building an application
 
