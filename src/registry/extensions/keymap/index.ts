@@ -48,10 +48,10 @@ import {
   writeUserKeymapFile,
 } from '@src/registry/extensions/keymap/persistence'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   contribute,
   provide,
-  type Extension,
+  type Factory,
 } from 'plankton'
 import { createElement } from 'react'
 
@@ -61,7 +61,7 @@ type BuiltInKeymapCommand = {
   scopes: CommandScopes
   run: (item: KeymapItem) => unknown
 }
-const keymapExtension: Extension = defineExtension({
+const keymapExtension: Factory = defineFactory({
   dependencies: {
     fileOperations: fileOperationsObservations,
     keymap: keymapObservations,

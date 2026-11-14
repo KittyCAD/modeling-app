@@ -1,7 +1,7 @@
 import { signal } from '@preact/signals-core'
 import {
   contribute,
-  extension,
+  factory,
   Facet,
   provide,
   Registry,
@@ -17,7 +17,7 @@ it('injects live contract observations while their providers appear and disappea
   const contract = inputs({ counter: observeService(counter) })
   let optional = (): number | undefined => undefined
   let required = () => 0
-  const consumer = extension({
+  const consumer = factory({
     dependencies: { contract },
     create({ contract: { counter } }) {
       expectTypeOf(counter.required).returns.toEqualTypeOf<{ count: number }>()
@@ -46,7 +46,7 @@ it('keeps all conflicting provider identities in the injected service diagnostic
   const registry = new Registry()
   const storage = service<{ path: string }>('storage')
   let read = () => ''
-  const consumer = extension({
+  const consumer = factory({
     dependencies: { storage: observeService(storage) },
     create({ storage }) {
       read = () => storage.required().path
@@ -54,7 +54,7 @@ it('keeps all conflicting provider identities in the injected service diagnostic
     },
   })
   const provider = (id: string) =>
-    extension({
+    factory({
       key: id,
       create: () => ({ items: [provide(storage, { path: id })] }),
     })
@@ -85,7 +85,7 @@ it('keeps injected Facet signals reactive after acquisition and reconfiguration'
   )
   const value = signal(2)
   let read = () => -1
-  const consumer = extension({
+  const consumer = factory({
     dependencies: { sum: observe(sum) },
     create({ sum }) {
       expectTypeOf(() => sum.value).returns.toEqualTypeOf<number>()
@@ -112,7 +112,7 @@ it('does not allow a live composition read to expose a partially acquired graph'
     'value',
     (values: readonly number[]) => values[0] ?? 0
   )
-  const consumer = extension({
+  const consumer = factory({
     dependencies: { value: observe(value) },
     create: ({ value }) => ({ exports: value.value }),
   })
@@ -134,7 +134,7 @@ it.each(['required', 'optional'] as const)(
     const token = service<{ count: number }>('counter')
     const counter = observeService(token)
     let read = () => -1
-    const retained = extension({
+    const retained = factory({
       dependencies: { counter },
       create({ counter }) {
         read = () =>
@@ -144,7 +144,7 @@ it.each(['required', 'optional'] as const)(
         return {}
       },
     })
-    const next = extension({
+    const next = factory({
       dependencies: { counter },
       create({ counter }) {
         return {

@@ -3,8 +3,8 @@ import { createLspService } from '@src/lang/lsp/service'
 import { observations as authObservations } from '@src/registry/contracts/auth'
 import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
 import { observations as userFeaturesObservations } from '@src/registry/contracts/userFeatures'
-import { extension as defineExtension, provide, type Extension } from 'plankton'
-export const lspExtension: Extension = defineExtension({
+import { factory as defineFactory, provide, type Factory } from 'plankton'
+export const lspExtension: Factory = defineFactory({
   dependencies: {
     fileOperations: fileOperationsObservations,
     auth: authObservations,

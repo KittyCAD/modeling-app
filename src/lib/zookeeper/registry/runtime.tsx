@@ -39,11 +39,7 @@ import {
   observations as settingsObservations,
   type SettingsRegistryService,
 } from '@src/registry/contracts/settings'
-import {
-  extension as defineExtension,
-  contribute,
-  type Extension,
-} from 'plankton'
+import { factory as defineFactory, contribute, type Factory } from 'plankton'
 import { lazy, Suspense } from 'react'
 import { observations as billingObservations } from '@src/lib/billing/registry/contract'
 
@@ -391,7 +387,7 @@ export function ZookeeperPaneOutlet({
     </Suspense>
   )
 }
-export const zookeeperRuntimeRegistryItem: Extension = defineExtension({
+export const zookeeperRuntimeRegistryItem: Factory = defineFactory({
   dependencies: {
     layout: layoutObservations,
     auth: authObservations,

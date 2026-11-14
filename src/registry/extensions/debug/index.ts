@@ -5,7 +5,7 @@ import { observations as rustContextObservations } from '@src/lib/rustContext/re
 import { reportRejection } from '@src/lib/trap'
 import { engineStreamZoomToFit } from '@src/lib/utils'
 
-import { extension as defineExtension, type Extension } from 'plankton'
+import { factory as defineFactory, type Factory } from 'plankton'
 import { observations as engineConnectionObservations } from '@src/lib/engineConnection/registry/contract'
 
 declare global {
@@ -69,7 +69,7 @@ function exposeGlobals(target: Window, properties: PropertyDescriptorMap) {
     if (currentState.entries.length === 0) installations.delete(target)
   }
 }
-export default defineExtension({
+export default defineFactory({
   dependencies: {
     engineConnection: engineConnectionObservations,
     rustContext: rustContextObservations,
@@ -167,4 +167,4 @@ export default defineExtension({
       },
     }
   },
-}) satisfies Extension
+}) satisfies Factory

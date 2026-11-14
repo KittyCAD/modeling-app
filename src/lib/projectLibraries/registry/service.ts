@@ -5,10 +5,10 @@ import { projectLibrariesService } from '@src/registry/contracts/projectLibrarie
 import { observations as projectSessionObservations } from '@src/registry/contracts/projectSession'
 import { observations as routerObservations } from '@src/registry/contracts/router'
 import { observations as settingsObservations } from '@src/registry/contracts/settings'
-import { extension as defineExtension, provide, type Extension } from 'plankton'
+import { factory as defineFactory, provide, type Factory } from 'plankton'
 
 /** Resolve dependencies when used so library discovery does not eagerly open a session. */
-export default defineExtension({
+export default defineFactory({
   dependencies: {
     projectSession: projectSessionObservations,
     settings: settingsObservations,
@@ -46,4 +46,4 @@ export default defineExtension({
       ),
     ],
   }),
-}) satisfies Extension
+}) satisfies Factory

@@ -9,9 +9,9 @@ import {
 } from '@src/lib/billing/registry/contract'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { useSelector } from '@xstate/react'
-import { extension as defineExtension, provide, type Extension } from 'plankton'
+import { factory as defineFactory, provide, type Factory } from 'plankton'
 import { createActor } from 'xstate'
-export const billingExtension = defineExtension({
+export const billingExtension = defineFactory({
   key: 'billing-extension',
   create: () => {
     const actor = createActor(billingMachine, {
@@ -43,5 +43,5 @@ export const billingExtension = defineExtension({
       },
     }
   },
-}) satisfies Extension
+}) satisfies Factory
 export default [billingExtension]

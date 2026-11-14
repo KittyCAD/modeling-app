@@ -4,10 +4,10 @@ import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   provide,
   Registry,
-  type Extension,
+  type Factory,
 } from 'plankton'
 import { afterEach, expect, it, vi } from 'vitest'
 import debug from '.'
@@ -27,14 +27,14 @@ async function createRegistry() {
   registries.push(registry)
   await registry.configure([
     debug,
-    defineExtension({
+    defineFactory({
       create: () => ({
         items: [
           provide(engineConnectionService, { manager }),
           provide(rustContextService, { context }),
         ],
       }),
-    }) satisfies Extension,
+    }) satisfies Factory,
   ])
   registry.inspect()
   return { registry, manager, context, sendSceneCommand }

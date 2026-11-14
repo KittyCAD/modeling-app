@@ -4,8 +4,8 @@ import { observations as cloudProjectsObservations } from '@src/lib/cloudProject
 import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
 import { observations as projectSessionObservations } from '@src/registry/contracts/projectSession'
 import { observations as routerObservations } from '@src/registry/contracts/router'
-import { extension as defineExtension, type Extension } from 'plankton'
-export const cloudProjectPollingExtension: Extension = defineExtension({
+import { factory as defineFactory, type Factory } from 'plankton'
+export const cloudProjectPollingExtension: Factory = defineFactory({
   dependencies: {
     cloudProjects: cloudProjectsObservations,
     projectSession: projectSessionObservations,

@@ -12,7 +12,7 @@ import { requireSuccess } from '@src/lib/editors/testViews'
 import { defineEditorView } from '@src/lib/editors/views'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   contribute,
   slot as createSlot,
   type InputOf,
@@ -174,7 +174,7 @@ it('releases Code contribution resources on withdrawal and reacquires them per s
   registry = new Registry()
   await registry.configure([
     editorsExtension,
-    defineExtension({
+    defineFactory({
       ...slot,
       create: () => ({
         items: [contribution],

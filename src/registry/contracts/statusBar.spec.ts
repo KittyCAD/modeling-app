@@ -6,10 +6,10 @@ import {
   statusBarLocalItemsFacet,
 } from '@src/registry/contracts/statusBar'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   contribute,
   Registry,
-  type Extension,
+  type Factory,
 } from 'plankton'
 import { describe, expect, it } from 'vitest'
 
@@ -24,7 +24,7 @@ describe('status bar registry contract', () => {
   it('sorts nullable global items after static items, then by order', async () => {
     const registry = new Registry()
     await registry.configure([
-      defineExtension({
+      defineFactory({
         create: () => ({
           items: [
             contribute(statusBarGlobalItemsFacet, () =>
@@ -41,7 +41,7 @@ describe('status bar registry contract', () => {
             ),
           ],
         }),
-      }) satisfies Extension,
+      }) satisfies Factory,
     ])
 
     expect(
@@ -51,7 +51,7 @@ describe('status bar registry contract', () => {
   it('sorts nullable local items before static items, then by order', async () => {
     const registry = new Registry()
     await registry.configure([
-      defineExtension({
+      defineFactory({
         create: () => ({
           items: [
             contribute(statusBarLocalItemsFacet, () =>
@@ -68,7 +68,7 @@ describe('status bar registry contract', () => {
             ),
           ],
         }),
-      }) satisfies Extension,
+      }) satisfies Factory,
     ])
 
     expect(
@@ -78,7 +78,7 @@ describe('status bar registry contract', () => {
   it('omits empty nullable contributions', async () => {
     const registry = new Registry()
     await registry.configure([
-      defineExtension({
+      defineFactory({
         create: () => ({
           items: [
             contribute(statusBarLocalItemsFacet, () =>
@@ -89,7 +89,7 @@ describe('status bar registry contract', () => {
             ),
           ],
         }),
-      }) satisfies Extension,
+      }) satisfies Factory,
     ])
 
     expect(

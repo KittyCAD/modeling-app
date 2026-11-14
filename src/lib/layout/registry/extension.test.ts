@@ -28,7 +28,7 @@ import { settingsService } from '@src/registry/contracts/settings'
 import type { UserFeaturesRegistryService } from '@src/registry/contracts/userFeatures'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   contribute,
   type InputOf,
   provide,
@@ -104,7 +104,7 @@ function createRuntimeService(runtimeInfo = playwrightRuntime) {
 }
 function layoutForRuntime(runtimeInfo = playwrightRuntime) {
   return createLayoutExtension(
-    defineExtension({
+    defineFactory({
       create: () => ({ exports: createRuntimeService(runtimeInfo) }),
     })
   )

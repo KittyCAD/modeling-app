@@ -58,11 +58,11 @@ import {
 } from '@src/registry/contracts/settings'
 import { observations as wasmObservations } from '@src/registry/contracts/wasm'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   contribute,
   type InputOf,
   provide,
-  type Extension,
+  type Factory,
 } from 'plankton'
 function areProjectLibrariesEqual(
   left: readonly ProjectLibrary[],
@@ -332,7 +332,7 @@ function watchConfiguredProjectLibraries({
  * directory library. This layer owns local realization discovery and library
  * membership only; cloud identity and duplicate policy are handled by cloudSync.
  */
-const configuredProjectLibraryRealizations: Extension = defineExtension({
+const configuredProjectLibraryRealizations: Factory = defineFactory({
   dependencies: {
     settings: settingsObservations,
     projectLibraries: projectLibrariesObservations,
@@ -619,7 +619,7 @@ function reportDirectoryProjectStatFailures({
     },
   })
 }
-const directoryProjectLibraryType: Extension = defineExtension({
+const directoryProjectLibraryType: Factory = defineFactory({
   dependencies: {
     fileOperations: fileOperationsObservations,
     wasm: wasmObservations,

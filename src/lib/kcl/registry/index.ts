@@ -6,14 +6,14 @@ import {
 } from '@src/lib/editors/registry/contract'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   contribute,
   type InputOf,
-  type Extension,
+  type Factory,
 } from 'plankton'
 
 /** KCL editing behavior, independent of execution or preview services. */
-const extension: Extension = defineExtension({
+const extension: Factory = defineFactory({
   key: 'kcl',
   create: () => {
     const _editorLanguagesContribution: InputOf<typeof editorLanguagesFacet> = {

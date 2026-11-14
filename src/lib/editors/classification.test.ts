@@ -18,7 +18,7 @@ import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import kclExtension from '@src/lib/kcl/registry'
 import markdownExtension from '@src/lib/markdown/registry'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   contribute,
   slot as createSlot,
   type InputOf,
@@ -116,7 +116,7 @@ it('reclassifies from live source/content contributions and makes media metadata
     })
   await registry.configure([
     editorsExtension,
-    defineExtension({
+    defineFactory({
       ...descriptors,
       create: () => ({
         items: [csv, tagged],

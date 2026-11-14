@@ -4,11 +4,11 @@ import { reportRejection } from '@src/lib/trap'
 import type { UserFeaturesService } from '@src/machines/userFeaturesMachine'
 import { observations as userFeaturesObservations } from '@src/registry/contracts/userFeatures'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   contribute,
   Facet,
-  type Item,
   type Extension,
+  type Factory,
   slot,
 } from 'plankton'
 
@@ -22,13 +22,13 @@ export function hasProjectShellFeature(
 }
 
 /** Install an Extension only while the default-off project-shell flag is granted. */
-export function withProjectShellFeature(item: Item, id: string): Extension {
+export function withProjectShellFeature(item: Extension, id: string): Factory {
   const content = slot([])
   const installed = new Facet(
     `${id}.installed`,
     (values: readonly boolean[]) => values.length > 0
   )
-  return defineExtension({
+  return defineFactory({
     dependencies: { userFeatures: userFeaturesObservations },
     key: `${id}.feature-gate`,
     create: ({ userFeatures: userFeaturesInputs }, scope) => {

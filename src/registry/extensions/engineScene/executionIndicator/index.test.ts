@@ -7,10 +7,10 @@ import type {
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { statusBarLocalItemsFacet } from '@src/registry/contracts/statusBar'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   provide,
   Registry,
-  type Extension,
+  type Factory,
 } from 'plankton'
 import { describe, expect, it, vi } from 'vitest'
 import executionIndicator from '.'
@@ -90,7 +90,7 @@ describe('executionIndicator', () => {
     const current = signal<ExecutingEditor | undefined>(oldEditor)
     const registry = new Registry()
     await registry.configure([
-      defineExtension({
+      defineFactory({
         create: () => ({
           items: [
             provide(projectSession, {
@@ -99,7 +99,7 @@ describe('executionIndicator', () => {
             }),
           ],
         }),
-      }) satisfies Extension,
+      }) satisfies Factory,
       executionIndicator,
     ])
     try {

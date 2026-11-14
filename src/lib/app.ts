@@ -85,9 +85,9 @@ import {
   coreRegistryItems,
 } from '@src/registry/registry'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   slot as createSlot,
-  type Item,
+  type Extension,
   plugins,
   provide,
   Registry,
@@ -97,7 +97,7 @@ import type { SnapshotFrom } from 'xstate'
 const appCommandsSlot = createSlot([], Symbol())
 const appViewportScreenshotSlot = createSlot([], Symbol())
 type AppRegistryOptions = {
-  registryOverrides?: readonly Item[]
+  registryOverrides?: readonly Extension[]
 }
 function zookeeperReplayChangesProjectFileSet(
   replayFiles: readonly PreparedZookeeperPatchFileReplay[]
@@ -254,13 +254,13 @@ export class App implements AppSubsystems {
     const appRegistry = new Registry()
     const registryReady = appRegistry.configure([
       createSlot([...registryOverrides], appRegistryOverridesSlot.key),
-      defineExtension({
+      defineFactory({
         ...appCommandsSlot,
         create: () => ({
           items: [],
         }),
       }),
-      defineExtension({
+      defineFactory({
         ...appViewportScreenshotSlot,
         create: () => ({
           items: [],

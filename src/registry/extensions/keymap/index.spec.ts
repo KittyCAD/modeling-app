@@ -37,7 +37,7 @@ import {
 } from '@src/registry/contracts/keymap'
 import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   contribute,
   slot as createSlot,
   type InputOf,
@@ -1073,7 +1073,7 @@ describe('keymap extension', () => {
     const registry = new Registry()
     await registry.configure([
       keymapExtension,
-      defineExtension({
+      defineFactory({
         ...keymapSlot,
         create: () => ({
           items: [
@@ -1126,7 +1126,7 @@ async function createRegistryWithKeymapItems(
       ? [createTestCommandSystemItem(commands, options.send ?? vi.fn())]
       : []),
     ...(options.extraItems ?? []),
-    defineExtension({
+    defineFactory({
       ...keymapSlot,
       create: () => ({
         items: [[...items.map(provideKeymapItem)]],

@@ -1,7 +1,7 @@
 import { MachineManager } from '@src/lib/MachineManager'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
-import { extension as defineExtension, provide, type Extension } from 'plankton'
-export const machineManagerExtension = defineExtension({
+import { factory as defineFactory, provide, type Factory } from 'plankton'
+export const machineManagerExtension = defineFactory({
   key: 'machine-manager-extension',
   create: () => {
     const machineManager =
@@ -18,5 +18,5 @@ export const machineManagerExtension = defineExtension({
       items: [provide(machineManagerService, service)],
     }
   },
-}) satisfies Extension
+}) satisfies Factory
 export default [machineManagerExtension]
