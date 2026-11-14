@@ -1,9 +1,28 @@
 ---
 source: kcl-lib/src/frontend/trim/tests.rs
-expression: "result_normalized"
+expression: result_normalized
 ---
 sketch(on = YZ) {
-  arc1 = arc(start = [var -0.41mm, var -0.17mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  line1 = line(start = [var -5mm, var -2mm], end = [var -0.41mm, var -0.17mm])
+  arc1 = arc(
+    start = [
+      var -0.41184169188083875mm,
+      var -0.17000743339042704mm
+    ],
+    end = [
+      var 0.001438871700258962mm,
+      var -4.999760188039493mm
+    ],
+    center = [
+      var 30.00001982465454mm,
+      var -0.00023165772962027324mm
+    ],
+  )
+  line1 = line(
+    start = [var -5mm, var -2mm],
+    end = [
+      var -0.41184169187899705mm,
+      var -0.17000743339041963mm
+    ],
+  )
   coincident([arc1.start, line1.end])
 }

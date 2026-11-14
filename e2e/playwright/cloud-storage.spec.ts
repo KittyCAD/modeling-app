@@ -411,6 +411,7 @@ test(
       return root
     })
     await page.goto(`/file/${encodeURIComponent(`${root}/main.kcl`)}`)
+    await waitForAppLoad(page)
     await page.locator('.cm-content').first().waitFor({ state: 'visible' })
     await openLayoutPanes(page, DefaultLayoutPaneID.Files)
     const note = page.getByRole('treeitem', { name: 'note.md', exact: true })

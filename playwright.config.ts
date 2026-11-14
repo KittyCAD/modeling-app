@@ -1,4 +1,3 @@
-import os from 'os'
 import { defineConfig, devices } from '@playwright/test'
 import type { ReporterDescription } from '@playwright/test'
 
@@ -15,7 +14,7 @@ if (process.env.E2E_WORKERS) {
 } else if (!process.env.CI) {
   workers = 1 // Local: keep things simple and deterministic by default
 } else {
-  workers = '75%' // CI: use all available CPU cores with some headroom
+  workers = '50%' // CI: leave memory for Vite and browser Wasm runtimes
 }
 
 /**
