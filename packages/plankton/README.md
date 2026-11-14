@@ -6,6 +6,8 @@ resources created by features, and lets parts of the application be replaced at
 runtime. The application uses this package throughout its extensions, plugins,
 views, and editor integrations.
 
+For design guidance and checks, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ```ts
 import { Registry, Facet, contribute, slot } from 'plankton'
 
