@@ -104,8 +104,18 @@ all Facet changes and diagnostics, so subscribers cannot see a partial graph.
   Disposal is terminal and idempotent, even when cleanup fails. `configure([])`
   instead empties a registry that may subsequently be configured again.
 
+An Instance may return `start: () => void | Cleanup`. After atomic publication and
+removed-instance cleanup, the registry starts each new instance once, in acquisition
+order. `configure` and `replace` resolve after startup finishes. `start` can read
+live observations and return an awaitable cleanup; that cleanup runs before the
+instance's `dispose`. Retained owners keep their existing effects through child
+replacement. Consumer-owned `computed` projections can be constructed lazily in
+`create` and first observed by an `effect` in `start`, without manual microtasks.
+Startup failures leave the committed graph in place; remaining instances still
+start, and publication, cleanup, and startup failures are reported together.
+
 Failed acquisition releases newly returned instances and leaves the previous
-graph published and reactive. Code allocating resources before throwing without
+graph published and reactive. Rolled-back instances never start. Code allocating resources before throwing without
 returning an Instance must release those resources itself. Binding installation
 must only register contributions. Rollback does not reverse arbitrary external side
 effects or mutations made through an injected dependency.
