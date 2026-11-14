@@ -68,11 +68,13 @@ export interface Executor {
 /** Computation is acquired explicitly by mode contexts or other consumers, independently of focus. */
 export interface ExecutorsService {
   executors: ReadonlySignal<readonly Executor[]>
-  createExecutor: (editor: Editor) => Executor
-  acquireExecutor: (editor: Editor) => {
-    executor: Executor
-    release: () => void
-  }
+  createExecutor: (editor: Editor) => Executor | Error
+  acquireExecutor: (editor: Editor) =>
+    | {
+        executor: Executor
+        release: () => void
+      }
+    | Error
   closeExecutor: (id: symbol) => void
 }
 
