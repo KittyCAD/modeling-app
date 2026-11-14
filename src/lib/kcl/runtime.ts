@@ -65,7 +65,7 @@ export async function createKclRuntime(
   let elapsedTimer: ReturnType<typeof setInterval> | undefined
   const failed = signal(false)
   const events = new EventTarget()
-  const native = new wasm.Context(engine, {
+  const fileSystem = {
     async readFile(path: string) {
       const contents = files.get(fsZds.join(path))
       if (!contents)
@@ -78,7 +78,9 @@ export async function createKclRuntime(
     async getAllFiles() {
       return JSON.stringify([...files.keys()])
     },
-  })
+  }
+  const native = new wasm.Context(engine, fileSystem)
+  let analysis: InstanceType<ModuleType['Context']> | undefined
   const settings = () => JSON.stringify(getSettings())
   let rebuiltRevision = getRebuildRevision()
   // A rejected operation must not poison later runs. Only the caller receives
@@ -209,6 +211,35 @@ export async function createKclRuntime(
     events,
     execute,
 
+    evaluateExpression: (ast: Node<Program>) =>
+      enqueue(async () => {
+        try {
+          return execStateFromRust(
+            await native.evaluateExpression(JSON.stringify(ast), settings())
+          )
+        } catch (cause) {
+          return Promise.reject(
+            isErr(cause) ? cause : errFromErrWithOutputs(cause)
+          )
+        }
+      }),
+    validate: (ast: Node<Program>, src: string) =>
+      enqueue(async (): Promise<Error | undefined> => {
+        try {
+          analysis ??= new wasm.Context(engine, fileSystem)
+          await analysis.executeMock(
+            JSON.stringify(ast),
+            src,
+            settings(),
+            false
+          )
+        } catch (cause) {
+          return isErr(cause) ? cause : errFromErrWithOutputs(cause)
+        }
+      }),
+    waitForAllEngineModelingCommands: async () => {
+      await engine.waitForAllModelingCommands()
+    },
     exportModel: (
       format: Parameters<LocalRendererHost['exportModel']>[0]
     ): ReturnType<LocalRendererHost['exportModel']> =>
@@ -219,6 +250,7 @@ export async function createKclRuntime(
       clearInterval(elapsedTimer)
       await queue
       native.free()
+      analysis?.free()
     },
   }
 }

@@ -84,6 +84,20 @@ Items receive its `ModelingViewContext`, including selection and execution state
 The default screenshot, measurement, analysis, selection, and units controls reuse
 their legacy views through adapters. App-wide status stays in the project footer.
 
+## Modeling tools
+
+Extensions contribute definitions through `modelingToolsValueSpec`. The view's
+tool host opens them by ID, using the shared toolbar and argument-dialog views.
+Extrude and Loft are the initial examples; their schemas and codemods also serve
+the legacy route.
+
+The dialog owns its argument document and temporary picks. Submission checks the
+captured source and execution, then applies one undoable document transaction.
+The executor refreshes the resulting model through the normal path.
+
+See the [contributor guide](CONTRIBUTING.md) for tool recipes, extension contracts,
+and the current capability matrix.
+
 ## Code map
 
 - [`registry/index.ts`](registry/index.ts): contributes KCL editing and Modeling.

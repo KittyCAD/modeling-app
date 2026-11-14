@@ -295,6 +295,60 @@ it('publishes file units and execution timing independently for each scene', asy
   expect(second.executionRevision.peek()).toBe(1)
 })
 
+it('evaluates arguments with current model memory and validates without replacing the visible execution', async () => {
+  const model = await runtime()
+  await model.execute(snapshot('@settings(kclVersion = 3.0)\nheight = 12mm'))
+  const state = model.state.peek()
+  const expression = (await import('@src/lang/wasm')).assertParse(
+    'result = height * 2',
+    wasm
+  )
+  const result = await model.evaluateExpression(expression)
+  expect(result.variables.result).toMatchObject({ type: 'Number', value: 24 })
+  const proposed = (await import('@src/lang/wasm')).assertParse(
+    '@settings(kclVersion = 3.0)\nheight = 100mm',
+    wasm
+  )
+  expect(await model.validate(proposed, '/model/main.kcl')).toBeUndefined()
+  expect(model.state.peek()).toBe(state)
+  expect(model.executionRevision.peek()).toBe(1)
+  expect(
+    (await model.evaluateExpression(expression)).variables.result
+  ).toMatchObject({ value: 24 })
+})
+
+it('waits for a pending mock review before freeing either native context', async () => {
+  const reviewing = Promise.withResolvers<undefined>()
+  const events: string[] = []
+  class Context extends wasm.Context {
+    async executeMock(
+      ...args: Parameters<InstanceType<ModuleType['Context']>['executeMock']>
+    ) {
+      events.push('review')
+      await reviewing.promise
+      return super.executeMock(...args)
+    }
+    free() {
+      events.push('free')
+      super.free()
+    }
+  }
+  const model = await runtime({ ...wasm, Context })
+  await model.execute(snapshot('@settings(kclVersion = 3.0)\nanswer = 42'))
+  const ast = (await import('@src/lang/wasm')).assertParse(
+    '@settings(kclVersion = 3.0)\nanswer = 43',
+    wasm
+  )
+  const review = model.validate(ast, '/model/main.kcl')
+  await vi.waitFor(() => expect(events).toEqual(['review']))
+  const closing = model.dispose()
+  expect(events).not.toContain('free')
+  reviewing.resolve(undefined)
+  expect(await review).toBeUndefined()
+  await closing
+  expect(events).toEqual(['review', 'free', 'free'])
+})
+
 it.each(['execute', 'drain'] as const)(
   'preserves a rejected Error from %s, releases tracking, and accepts the next run',
   async (stage) => {

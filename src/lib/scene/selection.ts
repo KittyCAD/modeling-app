@@ -27,7 +27,11 @@ export interface PickingArgument {
   readonly multiple: boolean
   readonly value: ReadonlySignal<readonly SceneSelection[]>
   accepts: (reference: EntityReference) => boolean
-  setValue: (value: readonly SceneSelection[]) => void
+  /** User edits carry intent; seeding and execution invalidation do not. */
+  setValue: (
+    value: readonly SceneSelection[],
+    intent?: { additive: boolean }
+  ) => void
 }
 export interface DialogPickingSession {
   readonly model: ReadonlySignal<SelectionModel | null>
@@ -146,7 +150,7 @@ export function createSceneSelection(
           : [...previous, target]
         : [target]
     error.value = undefined
-    if (argument) argument.setValue(next)
+    if (argument) argument.setValue(next, { additive })
     else selected.value = next
   }
   const invalidate = () => {

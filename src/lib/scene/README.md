@@ -94,7 +94,11 @@ Each argument has `id`, `filter`, `multiple`, `value`, `setValue`, and `accepts`
 Only the explicit seed argument receives compatible copies of the initial view
 selection. The session stores no second copy of argument values or restoration
 snapshot. Its active argument supplies the highlights; with no active argument,
-selection clicks and hover are disabled. Camera navigation remains available.
+selection clicks and hover are disabled unless a host supplies a fallback
+accessor. The new command dialogs supply one: compatible empty arguments receive
+picks first, followed by temporary dialog-only selection. Focused arguments still
+take precedence, and temporary picks are never submitted. Camera navigation remains
+available.
 Closing the session reveals the unchanged underlying selection.
 
 Execution invalidates the model target, clears view selection and registered
@@ -103,8 +107,10 @@ binds a fresh result; the caller then activates an argument and picks again.
 `validate(values)` on the dialog session rejects stale or closed targets, even
 for an empty argument. Command adapters must validate at preparation and commit,
 alongside their existing source/execution checks. Raw engine references do not
-prove model ownership. Legacy command-selection conversion remains with the
-subsequent command integration; it must reuse existing resolution routines.
+prove model ownership. The Extrude/Loft command adapter uses the existing source
+reference and region resolution routines, scoped to the dialog target and guarded
+at preparation and commit. Its argument document includes entity references but cannot supply geometry
+ownership tokens. A picking adapter holds only the current execution receipts.
 
 Tests cover selection histories against an independent model, separate views,
 argument ownership/cancellation, stale asynchronous replies, execution changes,
@@ -119,6 +125,11 @@ The project-shell KCL consumer now owns its ConnectionManager, native context,
 source snapshots, and camera. It connects through this boundary and supplies an
 explicit host to the local renderer. See [KCL Modeling](../kcl/README.md) for
 ownership, renderer choice, tests, and the remaining packaged/web smoke checks.
+
+The Extrude/Loft creation proofs from `codex/stdlib-extrude-proof` and
+`codex/editor-dialogs` are now ported onto dialog-owned picking and the native
+scene host. They share argument definitions and codemods with the legacy route.
+See [the command/dialog contract](../kcl/README.md#modeling-tools).
 
 Keep the eventual SDK adapter small: use public connection, command, sizing,
 presentation, and disposal behavior. Do not depend on private `rtc` fields, a

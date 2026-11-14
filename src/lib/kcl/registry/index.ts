@@ -1,4 +1,12 @@
-import { modelingStatusItemsValueSpec } from '@src/lib/kcl/registry/contract'
+import { userFeaturesService } from '@src/registry/contracts/userFeatures'
+import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
+import { createModelingTools } from '@src/lib/kcl/modelingTools'
+import { defaultModelingTools } from '@src/lib/kcl/toolDefinitions'
+import type { ModelingViewContext } from '@src/lib/kcl/registry/contract'
+import {
+  modelingStatusItemsValueSpec,
+  modelingToolsValueSpec,
+} from '@src/lib/kcl/registry/contract'
 import { defaultModelingStatusItems } from '@src/lib/kcl/statusItems'
 import { createMeasurementToolService } from '@src/registry/extensions/engineScene/measurementToolService'
 import { createPhysicalAnalysisService } from '@src/registry/extensions/engineScene/physicalAnalysis/physicalAnalysisService'
@@ -110,6 +118,9 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
     id: 'kcl',
     uses: [projectSourcesExtension],
     provides: [
+      ...defaultModelingTools.map((tool) =>
+        provide(modelingToolsValueSpec, tool)
+      ),
       ...defaultModelingStatusItems.map((item) =>
         provide(modelingStatusItemsValueSpec, item)
       ),
@@ -127,7 +138,16 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
             measurement.close()
             physicalAnalysis.close()
           })
-          return {
+          const context: ModelingViewContext = {
+            tools: createModelingTools(
+              () => context,
+              valueSpecs.signal(modelingToolsValueSpec),
+              () =>
+                services
+                  .optional(userFeaturesService)
+                  ?.has(EXPERIMENTAL_POINT_AND_CLICK_FLAG, false) ?? false
+            ),
+            settings: services.get(settingsService),
             executor,
             session: execution.getSession(executor),
             wasm: getWasm(),
@@ -136,6 +156,8 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
             physicalAnalysis,
             statusItems: valueSpecs.signal(modelingStatusItemsValueSpec),
           }
+          onDispose(context.tools.dispose)
+          return context
         })({
           id: 'kcl.modeling',
           label: 'Modeling',

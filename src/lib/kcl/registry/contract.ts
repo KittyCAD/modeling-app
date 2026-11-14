@@ -1,3 +1,6 @@
+import type { createModelingTools } from '@src/lib/kcl/modelingTools'
+import type { ModelingToolDefinition } from '@src/lib/kcl/modelingTools'
+import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { appendValueSpec, defineContract } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { ComponentType } from 'react'
@@ -10,6 +13,8 @@ import type { createPhysicalAnalysisService } from '@src/registry/extensions/eng
 
 /** Contributions receive their owning view explicitly; focus never changes their target. */
 export interface ModelingViewContext {
+  settings: SettingsRegistryService
+  tools: ReturnType<typeof createModelingTools>
   executor: Executor
   session: KclSession
   wasm: Promise<ModuleType>
@@ -25,8 +30,12 @@ export interface ModelingStatusItem {
   Component: ComponentType<{ context: ModelingViewContext }>
 }
 export const modelingViewContract = defineContract({
+  modelingToolsValueSpec: appendValueSpec<ModelingToolDefinition>(
+    'modeling-view.tools'
+  ),
   modelingStatusItemsValueSpec: appendValueSpec<ModelingStatusItem>(
     'modeling-view.status-items'
   ),
 })
-export const { modelingStatusItemsValueSpec } = modelingViewContract
+export const { modelingStatusItemsValueSpec, modelingToolsValueSpec } =
+  modelingViewContract

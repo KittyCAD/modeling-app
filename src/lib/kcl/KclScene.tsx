@@ -1,4 +1,5 @@
 import { KclConnectionStatus } from '@src/lib/kcl/KclConnectionStatus'
+import { ModelingToolbar } from '@src/lib/kcl/ModelingToolbar'
 import { ModelingStatusBar } from '@src/lib/kcl/ModelingStatusBar'
 import type { ModelingViewContext } from '@src/lib/kcl/registry/contract'
 import { useSignals } from '@preact/signals-react/runtime'
@@ -41,6 +42,7 @@ export function KclScene({ context }: { context: ModelingViewContext }) {
             defaultPlaneVisibility={hiddenPlanes}
           />
         )}
+        <ModelingToolbar context={context} />
         <KclConnectionStatus session={session} />
         {state.type === 'ready' && error ? (
           <p

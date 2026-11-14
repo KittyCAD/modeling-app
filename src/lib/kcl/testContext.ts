@@ -1,3 +1,9 @@
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Program } from '@src/lang/wasm'
+import { createModelingTools } from '@src/lib/kcl/modelingTools'
+import { defaultModelingTools } from '@src/lib/kcl/toolDefinitions'
+import { createSettings } from '@src/lib/settings/initialSettings'
+import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { signal } from '@preact/signals-core'
 import { emptyExecState } from '@src/lang/wasm'
 import { createEditorDocument } from '@src/lib/editors/document'
@@ -17,6 +23,9 @@ export function modelingTestContext() {
   )
   const editor = {
     ...document.document,
+    get state() {
+      return document.document.state
+    },
     src: signal('/main.kcl'),
     readOnly: signal(false),
   }
@@ -41,10 +50,18 @@ export function modelingTestContext() {
     },
     runtime: {
       state: signal(emptyExecState()),
-      ast: signal(null),
+      ast: signal<Node<Program> | null>(null),
       fileSettings: signal({}),
       executionRevision: signal(1),
       executionElapsedMs: signal(25),
+      evaluateExpression: vi.fn(async (_ast: Node<Program>) =>
+        emptyExecState()
+      ),
+      validate: vi.fn(
+        async (_ast: Node<Program>, _src: string): Promise<Error | undefined> =>
+          undefined
+      ),
+      waitForAllEngineModelingCommands: async () => {},
       executing: signal(false),
       failed: signal(false),
     },
@@ -65,7 +82,13 @@ export function modelingTestContext() {
       return () => resource.element.remove()
     },
   }
+  const settings = createSettings()
   const context: ModelingViewContext = {
+    tools: createModelingTools(() => context, signal(defaultModelingTools)),
+    settings: {
+      current: signal(settings),
+      useSettings: () => settings,
+    } as SettingsRegistryService,
     executor: {
       editor,
       output: signal(
@@ -88,6 +111,7 @@ export function modelingTestContext() {
     resource,
     editor,
     dispose: () => {
+      context.tools.dispose()
       selection.dispose()
       document.dispose()
     },
