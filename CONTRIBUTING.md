@@ -82,6 +82,27 @@ This section and the following ones should only be relevant to Zoo employees, as
 
 The Copilot LSP plugin in the editor requires a Zoo API token to run. In production, we authenticate this with a token via cookie in the browser and device auth token in the desktop environment, but this token is inaccessible in the dev browser version because the cookie is considered "cross-site" (from `localhost` to `zoo.dev`). There is an optional environment variable called `VITE_ZOO_API_TOKEN` that you can populate with a dev token in a `.env.development.local` file to not check it into Git, which will use that token instead of other methods for the LSP service.
 
+For local engine development without a Zoo account, use these overrides in
+`.env.development.local`:
+
+```sh
+VITE_ZOO_API_TOKEN=localhost
+VITE_KITTYCAD_WEBSOCKET_URL=ws://127.0.0.1:8080/ws/modeling/commands
+```
+
+This uses local project storage (OPFS in the browser, directories on desktop)
+and skips account authentication and account feature flags. Cloud projects
+require a real API token.
+
+Run the localhost regression workflow with:
+
+```sh
+TARGET=web npx playwright test --config=playwright.localhost.config.ts
+```
+
+This starts a separate dev server with the localhost overrides and mocks the
+engine connection and hosted API responses.
+
 ### Developing live with the browser
 
 If you're not a Zoo employee, modeling commands are **billable** when running in
