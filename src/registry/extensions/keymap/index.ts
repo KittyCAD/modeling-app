@@ -49,6 +49,7 @@ import {
   resolveKeymapItems,
 } from '@src/registry/contracts/keymap'
 import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
+import { zoodleService } from '@src/registry/contracts/zoodle'
 import { defaultKeymapItem } from '@src/registry/extensions/keymap/defaultKeymap'
 import {
   readUserKeymapFile,
@@ -257,13 +258,28 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       return false
     }
 
+    const target = event.composedPath()[0] ?? event.target
     if (source === 'global') {
       // A focused editable can be removed without another focusin event. Use
       // the event target to reconcile focus before checking availability.
-      syncFocusScopeFromEventTarget(event.composedPath()[0] ?? event.target)
+      syncFocusScopeFromEventTarget(target)
     }
 
     const chord = keyboardEventToKeymapChord(event)
+    if (
+      (chord === 'mod+z' || chord === 'mod+shift+z' || chord === 'mod+y') &&
+      !isEventFromFormControl(target) &&
+      (!isEventFromContentEditableTarget(target) ||
+        isEventFromCodeEditor(target)) &&
+      ctx.services.optional(zoodleService)
+    ) {
+      event.preventDefault()
+      event.stopPropagation()
+      event.stopImmediatePropagation()
+      clearPendingKeystrokes()
+      return true
+    }
+
     const pendingKeystrokes = pendingKeystrokesBySource[source]
     if (
       !chord ||

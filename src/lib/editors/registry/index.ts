@@ -41,6 +41,7 @@ import {
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { isErr } from '@src/lib/trap'
 import { keymapEventOwnersValueSpec } from '@src/registry/contracts/keymap'
+import { zoodleService } from '@src/registry/contracts/zoodle'
 
 /** All resources for an editor share one owner, including while contributed code initializes it. */
 interface EditorRecord {
@@ -224,7 +225,10 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
       closeEditor(id)
     },
   }
-  const history = createEditorHistory(presentations)
+  const history = createEditorHistory(
+    presentations,
+    () => services.optional(zoodleService) !== undefined
+  )
   return {
     id: 'editors',
     provides: [

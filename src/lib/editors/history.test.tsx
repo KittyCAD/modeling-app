@@ -11,6 +11,11 @@ import {
 import { EditorView } from '@src/lib/editors/EditorView'
 import { defineEditorView } from '@src/lib/editors/views'
 import type { WebContentSendPayload } from '@src/menu/channels'
+import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engineScene'
+import {
+  activateZoodleRuntimeExtension,
+  deactivateZoodleRuntimeExtension,
+} from '@src/registry/extensions/engineScene/zoodleRuntimeExtension'
 
 const originalElectron = window.electron
 let registry: Registry
@@ -27,6 +32,7 @@ beforeEach(() => {
   registry = new Registry()
   registry.configure([
     editorsExtension,
+    engineSceneRuntimeExtensionsSlot.of(),
     defineRegistryItem({
       provides: [
         provide(
@@ -79,6 +85,26 @@ function menu(menuLabel: 'Edit.Undo' | 'Edit.Redo') {
     for (const listener of menuListeners) listener({ menuLabel })
   })
 }
+it('blocks native project history while Zoodle is open and restores it on close', () => {
+  const { second } = open()
+  const zoodleSession = {
+    imageDataUrl: 'data:image/png;base64,aGVsbG8=',
+    onCancel: vi.fn(),
+    onSend: vi.fn(),
+  }
+  activateZoodleRuntimeExtension(registry, zoodleSession)
+  menu('Edit.Undo')
+  expect(second.contents.peek()).toBe('second changed')
+  deactivateZoodleRuntimeExtension(registry)
+  menu('Edit.Undo')
+  expect(second.contents.peek()).toBe('second')
+  activateZoodleRuntimeExtension(registry, zoodleSession)
+  menu('Edit.Redo')
+  expect(second.contents.peek()).toBe('second')
+  deactivateZoodleRuntimeExtension(registry)
+  menu('Edit.Redo')
+  expect(second.contents.peek()).toBe('second changed')
+})
 it.each(['keyboard', 'menu'] as const)(
   'undoes and redoes only the focused Modeling document through %s',
   (source) => {

@@ -4,7 +4,8 @@ import type { EditorViewInstance } from '@src/lib/editors/registry/contract'
 
 /** All modes edit one document history; text controls retain their own native editing history. */
 export function createEditorHistory(
-  views: ReadonlySignal<readonly EditorViewInstance[]>
+  views: ReadonlySignal<readonly EditorViewInstance[]>,
+  isHistoryBlocked: () => boolean
 ) {
   const isLocalText = (
     instance: EditorViewInstance,
@@ -44,6 +45,7 @@ export function createEditorHistory(
     action: 'undo' | 'redo',
     target: EventTarget | null
   ) => {
+    if (isHistoryBlocked()) return
     const changed = instance.editor[action]()
     const code = instance.codeView.peek()
     if (changed && target instanceof Node && code?.dom.contains(target))

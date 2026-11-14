@@ -27,6 +27,7 @@ export function modelingMenuCallbackMostActions({
   settingsActor,
   projectOperations,
   projectSession,
+  isHistoryBlocked,
 }: {
   settings: SettingsType
   navigate: NavigateFunction
@@ -38,6 +39,7 @@ export function modelingMenuCallbackMostActions({
   settingsActor: SettingsActorType
   projectOperations: ProjectOperationsService
   projectSession: ProjectSessionService
+  isHistoryBlocked: () => boolean
 }) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -158,13 +160,13 @@ export function modelingMenuCallbackMostActions({
         document.execCommand('undo')
         // Cleaner, but can't import 'electron' to this file:
         // webContents.getFocusedWebContents()?.undo()
-      } else {
+      } else if (!isHistoryBlocked()) {
         kclManager.undo()
       }
     } else if (data.menuLabel === 'Edit.Redo') {
       if (activeFocusIsInput()) {
         document.execCommand('redo')
-      } else {
+      } else if (!isHistoryBlocked()) {
         kclManager.redo()
       }
     } else if (data.menuLabel === 'View.Orthographic view') {

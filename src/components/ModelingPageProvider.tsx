@@ -23,6 +23,7 @@ import { markOnce } from '@src/lib/performance'
 import { isArray } from '@src/lib/utils'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 import { FILE_AND_CODE_EDITOR_COMMAND_SCOPES } from '@src/registry/contracts/commands'
+import { zoodleService } from '@src/registry/contracts/zoodle'
 
 function isNumberArray(value: unknown): value is number[] {
   return isArray(value) && value.every((item) => typeof item === 'number')
@@ -69,6 +70,7 @@ export const ModelingPageProvider = ({
     project,
     projectOperations,
     projectSession,
+    registry,
   } = useApp()
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
@@ -219,6 +221,7 @@ export const ModelingPageProvider = ({
     settingsActor,
     projectOperations,
     projectSession,
+    isHistoryBlocked: () => registry.optional(zoodleService) !== undefined,
   })
   useMenuListener(cb)
 

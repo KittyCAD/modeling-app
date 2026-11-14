@@ -24,6 +24,7 @@ import {
   MODELING_DIALOG_FOCUSED_COMMAND_SCOPE,
   SETTINGS_COMMAND_SCOPE,
 } from '@src/registry/contracts/commands'
+import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engineScene'
 import {
   type FileOperationsRegistryService,
   fileOperationsService,
@@ -43,6 +44,10 @@ import {
   provideKeymapItem,
 } from '@src/registry/contracts/keymap'
 import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
+import {
+  activateZoodleRuntimeExtension,
+  deactivateZoodleRuntimeExtension,
+} from '@src/registry/extensions/engineScene/zoodleRuntimeExtension'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import keymapExtension from '.'
 
@@ -86,7 +91,10 @@ describe('keymap extension', () => {
           when: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
         },
       ],
-      { send, extraItems: [editorsExtension] }
+      {
+        send,
+        extraItems: [editorsExtension, engineSceneRuntimeExtensionsSlot.of()],
+      }
     )
     const editors = registry.get(editorsService)
     const first = requireSuccess(editors.openEditor('first.txt', 'original'))
@@ -114,10 +122,40 @@ describe('keymap extension', () => {
             cancelable: true,
           })
         )
+      const zoodleSession = {
+        imageDataUrl: 'data:image/png;base64,aGVsbG8=',
+        onCancel: vi.fn(),
+        onSend: vi.fn(),
+      }
+      activateZoodleRuntimeExtension(registry, zoodleSession)
+      press('z')
+      expect(first.state.doc.toString()).toBe('edited')
+      expect(send).not.toHaveBeenCalled()
+      const textUndo = createKeyboardEventWithTarget(
+        'z',
+        document.createElement('textarea'),
+        { ctrlKey: true, metaKey: true, cancelable: true }
+      )
+      expect(
+        registry
+          .get(keymapService)
+          .handleKeyDown(textUndo, { source: 'global' })
+      ).toBe(false)
+      expect(textUndo.defaultPrevented).toBe(false)
+      press('k')
+      expect(send).toHaveBeenCalledOnce()
+      send.mockClear()
+      deactivateZoodleRuntimeExtension(registry)
+
       press('z')
       expect(
         codeSurface(registry.get(editorsService), first).state.doc.toString()
       ).toBe('original')
+      activateZoodleRuntimeExtension(registry, zoodleSession)
+      press('Z', true)
+      press('y')
+      expect(first.state.doc.toString()).toBe('original')
+      deactivateZoodleRuntimeExtension(registry)
       press('Z', true)
       expect(
         codeSurface(registry.get(editorsService), first).state.doc.toString()
