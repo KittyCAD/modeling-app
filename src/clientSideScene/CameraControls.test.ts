@@ -1267,3 +1267,27 @@ async function expectViewRestored(
   expect(restored.eye_offset).toBeCloseTo(view.eye_offset)
   expect({ ...restored, eye_offset: view.eye_offset }).toEqual(view)
 }
+
+it('releases camera input and engine subscriptions when a scene closes', () => {
+  const canvas = makeCanvas(640, 360)
+  const manager = makeConnectionManager({ width: 640, height: 360 })
+  const releases: Array<ReturnType<typeof vi.fn>> = []
+  const subscribe = () => {
+    const release = vi.fn()
+    releases.push(release)
+    return release
+  }
+  vi.spyOn(manager, 'subscribeTo').mockImplementation(subscribe)
+  vi.spyOn(manager, 'subscribeToUnreliable').mockImplementation(subscribe)
+  const controls = new CameraControls(canvas, manager, unusedSettings)
+  controls.localCameraMode = true
+  vi.spyOn(controls, 'getInteractionType').mockReturnValue('zoom')
+  canvas.dispatchEvent(new WheelEvent('wheel', { deltaY: 100 }))
+  const previous = controls.camera.position.clone()
+  controls.dispose()
+  controls.dispose()
+  canvas.dispatchEvent(new WheelEvent('wheel', { deltaY: 100 }))
+  expect(controls.camera.position.equals(previous)).toBe(true)
+  expect(releases).toHaveLength(5)
+  for (const release of releases) expect(release).toHaveBeenCalledOnce()
+})

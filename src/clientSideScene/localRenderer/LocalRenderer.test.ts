@@ -1,6 +1,7 @@
 import type { EntityType } from '@kittycad/lib'
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
+import { legacyLocalRendererHost } from '@src/clientSideScene/localRenderer/legacyHost'
 import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import { Signal } from '@src/lib/signal'
@@ -142,7 +143,7 @@ function fixture(
   const onModelLoadSettled = vi.fn()
   const renderer = new LocalRenderer(
     document.createElement('div'),
-    manager as unknown as KclManager,
+    legacyLocalRendererHost(manager as unknown as KclManager),
     {
       theme: Themes.Light,
       enableSSAO: false,
