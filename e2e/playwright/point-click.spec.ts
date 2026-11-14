@@ -616,7 +616,7 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.advanced.click()
         await expect(modelingDialog.input('v degree')).toBeVisible()
-        await modelingDialog.input('v degree').fill('3')
+        await modelingDialog.fillInput('v degree', '3')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
