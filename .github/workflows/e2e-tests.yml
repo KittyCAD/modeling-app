@@ -76,11 +76,76 @@ jobs:
     secrets:
       TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
 
+  build-web:
+    name: Build web E2E app
+    needs: [build-wasm]
+    if: ${{ !cancelled() && needs.build-wasm.result == 'success' && !inputs.grep }}
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
+    steps:
+      - uses: actions/create-github-app-token@v3
+        id: app-token
+        with:
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - uses: actions/checkout@v7.0.1
+        with:
+          repository: kittycad/modeling-app # required for 'workflow_call'
+          token: ${{ steps.app-token.outputs.token }}
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-wasm
+          path: prepared-wasm
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-ts-rs-bindings
+          path: prepared-ts-rs-bindings
+
+      - name: Copy prepared Wasm
+        run: |
+          ls -R prepared-wasm
+          cp prepared-wasm/kcl_wasm_lib_bg.wasm public
+          mkdir rust/kcl-wasm-lib/pkg
+          cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
+
+      # build:wasm generates these ignored ts-rs files in rust/kcl-lib/bindings.
+      # Restore them here because StdLibCommands is imported as a runtime value.
+      - name: Copy prepared ts-rs bindings
+        run: |
+          ls -R prepared-ts-rs-bindings
+          mkdir rust/kcl-lib/bindings
+          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
+
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web app
+        run: npm run build:e2e:web
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: prepared-web-app
+          path: build/
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: true
+
   snapshots:
     name: e2e:snapshots
-    needs: [build-wasm]
+    needs: [build-web]
     if: github.repository == 'kittycad/modeling-app'
     runs-on: namespace-profile-macos-8-cores
+
+    env:
+      E2E_USE_PREBUILT_APP: '1'
 
     steps:
       - uses: actions/create-github-app-token@v3
@@ -104,6 +169,11 @@ jobs:
         with:
           name: prepared-ts-rs-bindings
           path: prepared-ts-rs-bindings
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-web-app
+          path: build
 
       - name: Copy prepared Wasm
         run: |
@@ -223,11 +293,12 @@ jobs:
 
   web:
     name: e2e:web (${{ matrix.config.label }}, shard ${{ matrix.shardIndex }})
-    needs: [build-wasm]
-    if: ${{ !cancelled() && needs.build-wasm.result == 'success' && !inputs.grep }}
+    needs: [build-web]
+    if: ${{ !cancelled() && needs.build-web.result == 'success' && !inputs.grep }}
     runs-on: ${{ matrix.config.os }}
     continue-on-error: ${{ matrix.config.optional == true && github.repository != 'kittycad/modeling-app' }}
     env:
+      E2E_USE_PREBUILT_APP: '1'
       OS_NAME: ${{ contains(matrix.config.os, 'ubuntu') && 'ubuntu' || (contains(matrix.config.os, 'windows') && 'windows' || 'macos') }}
     strategy:
       fail-fast: false
@@ -271,6 +342,11 @@ jobs:
         with:
           name: prepared-ts-rs-bindings
           path: prepared-ts-rs-bindings
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-web-app
+          path: build
 
       - name: Copy prepared Wasm
         run: |
@@ -570,6 +646,9 @@ jobs:
     if: ${{ inputs.grep }}
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
 
+    env:
+      E2E_USE_PREBUILT_APP: '1'
+
     steps:
       - uses: actions/create-github-app-token@v3
         id: app-token
@@ -609,6 +688,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Build web app
+        run: npm run build:e2e:web
 
       - name: Download browser cache
         uses: actions/cache@v6.1.0

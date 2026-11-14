@@ -1,4 +1,3 @@
-import os from 'os'
 import { defineConfig, devices } from '@playwright/test'
 import type { ReporterDescription } from '@playwright/test'
 
@@ -108,7 +107,12 @@ export default defineConfig({
     ? {}
     : {
         webServer: {
-          command: 'npm start',
+          command:
+            process.env.E2E_USE_PREBUILT_APP === '1'
+              ? 'npm run start:prod -- --strictPort'
+              : 'npm start',
+          env: { BROWSER: 'none' },
+          url: 'http://localhost:3000',
           reuseExistingServer: !process.env.CI,
         },
       }),
