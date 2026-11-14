@@ -55,7 +55,9 @@ it('interrupts a run when its contents stop matching and rematches on same-type 
   const editor = requireSuccess(
     editors.openEditor('/project/settings.toml', 'disabled')
   )
-  const executor = registry.get(executorsService).createExecutor(editor)
+  const executor = requireSuccess(
+    registry.get(executorsService).createExecutor(editor)
+  )
   expect(executor.output.value.running).toBe(false)
   editor.dispatch({
     changes: { from: 0, to: editor.state.doc.length, insert: 'enabled' },
@@ -101,7 +103,9 @@ it('rematches an unnamed editor when its language is chosen and cleared', async 
   ])
   const editors = registry.get(editorsService)
   const editor = requireSuccess(editors.createEditor('draft'))
-  const executor = registry.get(executorsService).createExecutor(editor)
+  const executor = requireSuccess(
+    registry.get(executorsService).createExecutor(editor)
+  )
   expect(executor.output.value.get(capability)).toBeUndefined()
   editors.setLanguage(editor.id, 'markdown')
   await vi.waitFor(() =>

@@ -5,6 +5,9 @@ an immutable input snapshot; newer input interrupts older work. Results coalesce
 without one capability's failure hiding the others. Typed `output.get(capability)`
 lookups preserve the data type declared by that capability.
 
+Creating or acquiring an executor for a closed editor returns an `Error` without
+retaining resources. `executionContext` passes that error to the mode binding.
+
 An executor is independent of editor focus and React mounts. Consumers may create
 one explicitly, or use `executionContext(capability, getExecutors)` as a typed
 provider for `defineEditorView`. The provider returns an executor and a `result`

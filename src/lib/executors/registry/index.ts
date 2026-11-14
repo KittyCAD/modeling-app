@@ -1,3 +1,4 @@
+import { isErr } from '@src/lib/trap'
 import { defineRegistryItemFactory, provideService } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import { createExecutor } from '@src/lib/executors/executor'
@@ -22,7 +23,9 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
     acquireExecutor: (editor) => {
       let lease = leases.get(editor)
       if (!lease) {
-        lease = { executor: service.createExecutor(editor), count: 0 }
+        const executor = service.createExecutor(editor)
+        if (isErr(executor)) return executor
+        lease = { executor, count: 0 }
         leases.set(editor, lease)
       }
       lease.count++
@@ -41,8 +44,7 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
       }
     },
     createExecutor: (editor) => {
-      // eslint-disable-next-line suggest-no-throw/suggest-no-throw -- An executor cannot acquire an already closed document.
-      if (editor.signal.aborted) throw new Error('The editor is closed')
+      if (editor.signal.aborted) return new Error('The editor is closed')
       const { executor, dispose } = createExecutor(editor, capabilities, () => {
         service.closeExecutor(executor.id)
       })
