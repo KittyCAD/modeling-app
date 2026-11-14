@@ -1,16 +1,17 @@
-import {
-  Registry,
-  defineRegistryItem,
-  provideService,
-} from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import type { ZDSProject } from '@src/lib/projectSession'
 import type {
-  ProjectSessionService,
   ExecutingEditor,
+  ProjectSessionService,
 } from '@src/registry/contracts/projectSession'
 import { projectSession } from '@src/registry/contracts/projectSession'
-import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
+import { statusBarLocalItemsFacet } from '@src/registry/contracts/statusBar'
+import {
+  factory as defineFactory,
+  provide,
+  Registry,
+  type Factory,
+} from 'plankton'
 import { describe, expect, it, vi } from 'vitest'
 import executionIndicator from '.'
 import { EXECUTION_INDICATOR_STATUS_BAR_ITEM_ID } from './constants'
@@ -65,91 +66,83 @@ function createProjectSession(
 }
 
 describe('executionIndicator', () => {
-  it('contributes the execution status item while the engine is executing', () => {
+  it('contributes the execution status item while the engine is executing', async () => {
     const isExecuting = signal(false)
     const registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-project-session',
-        providesServices: [
-          provideService(projectSession, createProjectSession(isExecuting)),
-        ],
-      }),
+    await registry.configure([
+      [provide(projectSession, createProjectSession(isExecuting))],
       executionIndicator,
     ])
 
-    expect(registry.get(statusBarLocalItemsValueSpec)).toEqual([])
+    expect(registry.get(statusBarLocalItemsFacet)).toEqual([])
 
     isExecuting.value = true
 
     expect(
-      registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
+      registry.get(statusBarLocalItemsFacet).map((item) => item.id)
     ).toEqual([EXECUTION_INDICATOR_STATUS_BAR_ITEM_ID])
   })
-
-  it('releases the old editor status when switching or closing editors', () => {
+  it('releases the old editor status when switching or closing editors', async () => {
     const oldExecuting = signal(true)
     const oldEditor = createProjectSession(oldExecuting).executingEditor.value
     const nextEditor = createProjectSession(signal(false), signal(12))
       .executingEditor.value
     const current = signal<ExecutingEditor | undefined>(oldEditor)
     const registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        providesServices: [
-          provideService(projectSession, {
-            ...createProjectSession(),
-            executingEditor: current,
-          }),
-        ],
-      }),
+    await registry.configure([
+      defineFactory({
+        create: () => ({
+          items: [
+            provide(projectSession, {
+              ...createProjectSession(),
+              executingEditor: current,
+            }),
+          ],
+        }),
+      }) satisfies Factory,
       executionIndicator,
     ])
     try {
-      expect(registry.get(statusBarLocalItemsValueSpec)).toMatchObject([
+      expect(registry.get(statusBarLocalItemsFacet)).toMatchObject([
         { icon: 'loading' },
       ])
       current.value = nextEditor
-      expect(registry.get(statusBarLocalItemsValueSpec)).toMatchObject([
+      expect(registry.get(statusBarLocalItemsFacet)).toMatchObject([
         { icon: 'checkmark' },
       ])
       oldExecuting.value = false
       oldExecuting.value = true
-      expect(registry.get(statusBarLocalItemsValueSpec)).toMatchObject([
+      expect(registry.get(statusBarLocalItemsFacet)).toMatchObject([
         { icon: 'checkmark' },
       ])
       current.value = undefined
-      expect(registry.get(statusBarLocalItemsValueSpec)).toEqual([])
+      expect(registry.get(statusBarLocalItemsFacet)).toEqual([])
     } finally {
-      registry[Symbol.dispose]()
+      await registry.dispose()
     }
   })
-
-  it('keeps a checkmark after execution finishes and restores the spinner on the next run', () => {
+  it('keeps a checkmark after execution finishes and restores the spinner on the next run', async () => {
     const isExecuting = signal(true)
     const executionElapsedMs = signal<number | null>(0)
     const registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-project-session',
-        providesServices: [
-          provideService(
-            projectSession,
-            createProjectSession(isExecuting, executionElapsedMs)
-          ),
-        ],
-      }),
+    await registry.configure([
+      [
+        provide(
+          projectSession,
+          createProjectSession(isExecuting, executionElapsedMs)
+        ),
+      ],
       executionIndicator,
     ])
 
     expect(
-      registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
+      registry.get(statusBarLocalItemsFacet).map((item) => item.id)
     ).toEqual([EXECUTION_INDICATOR_STATUS_BAR_ITEM_ID])
 
     executionElapsedMs.value = 1234
     isExecuting.value = false
 
-    expect(registry.get(statusBarLocalItemsValueSpec)).toMatchObject([
+    expect(registry.get(statusBarLocalItemsFacet)).toMatchObject([
       {
         id: EXECUTION_INDICATOR_STATUS_BAR_ITEM_ID,
         icon: 'checkmark',
@@ -160,27 +153,18 @@ describe('executionIndicator', () => {
     isExecuting.value = true
     executionElapsedMs.value = 0
 
-    expect(registry.get(statusBarLocalItemsValueSpec)).toMatchObject([
+    expect(registry.get(statusBarLocalItemsFacet)).toMatchObject([
       { icon: 'loading', label: 'Engine executing' },
     ])
   })
-
-  it('shows a completed execution even when it took zero milliseconds', () => {
+  it('shows a completed execution even when it took zero milliseconds', async () => {
     const registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-project-session',
-        providesServices: [
-          provideService(
-            projectSession,
-            createProjectSession(signal(false), signal(0))
-          ),
-        ],
-      }),
+    await registry.configure([
+      [provide(projectSession, createProjectSession(signal(false), signal(0)))],
       executionIndicator,
     ])
 
-    expect(registry.get(statusBarLocalItemsValueSpec)).toMatchObject([
+    expect(registry.get(statusBarLocalItemsFacet)).toMatchObject([
       { icon: 'checkmark' },
     ])
   })

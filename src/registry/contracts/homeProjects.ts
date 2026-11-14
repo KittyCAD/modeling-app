@@ -1,9 +1,6 @@
+import { inputs, observeService, observe } from '@src/registry/inputs'
 import type { ReadonlySignal } from '@preact/signals-core'
-import {
-  defineContract,
-  defineService,
-  defineValueSpec,
-} from '@kittycad/registry'
+import { contract, service, Facet } from 'plankton'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import { uniqueStrings } from '@src/lib/stringUtils'
 import { isArray } from '@src/lib/utils'
@@ -17,16 +14,13 @@ type CloudProjectDuplicateRisk =
   | 'sync-excluded'
   | 'no-sync-base'
   | 'unknown'
-
 export type HomeProjectSource = 'local' | 'remote'
-
 export type HomeProjectStatus =
   | 'local'
   | 'cloud-only'
   | 'syncing'
   | 'synced'
   | 'conflicted'
-
 export type HomeProjectThumbnail =
   | {
       type: 'local'
@@ -36,13 +30,11 @@ export type HomeProjectThumbnail =
       type: 'remote'
       url: string
     }
-
 export type HomeProjectSyncFailure = {
   message: string
   at?: string
   kind?: string
 }
-
 export interface HomeProjectDuplicateRealization {
   remoteProjectId: string
   canonicalProjectPath?: string
@@ -94,7 +86,6 @@ export interface HomeProjectEntry {
   /** Other local folders discovered with this project's project.toml ID. */
   duplicateProjectIdPaths?: readonly string[]
 }
-
 export type HomeProjectEntryContribution = Omit<
   HomeProjectEntry,
   'id' | 'libraryIds'
@@ -103,25 +94,20 @@ export type HomeProjectEntryContribution = Omit<
   libraryId?: string
   libraryIds?: readonly string[]
 }
-
 export type HomeProjectEntryContributionGroup =
   | HomeProjectEntryContribution
   | readonly HomeProjectEntryContribution[]
-
 export type HomeProjectOpenResult = {
   defaultFile: string
   localProjectPath?: string
 }
-
 export type HomeProjectRenameOptions = {
   notify?: boolean
 }
-
 export interface HomeProjectCloneToLibraryTarget {
   library: ProjectLibrary
   sourceLibrary: ProjectLibrary
 }
-
 export type HomeProjectAction =
   | 'Opening'
   | 'Renaming'
@@ -129,7 +115,6 @@ export type HomeProjectAction =
   | 'Duplicating'
   | 'Cloning'
   | 'Separating'
-
 export interface HomeProjectActionsService {
   readonly pendingActions: ReadonlySignal<
     ReadonlyMap<string, HomeProjectAction>
@@ -159,7 +144,9 @@ export interface HomeProjectActionsService {
   cloneToLibrary: (
     project: HomeProjectEntry,
     targetLibraryId: string,
-    options?: { title?: string }
+    options?: {
+      title?: string
+    }
   ) => Promise<HomeProjectOpenResult | undefined>
   deleteDuplicateRealizations: (
     project: HomeProjectEntry,
@@ -170,7 +157,6 @@ export interface HomeProjectActionsService {
     keepProjectPath?: string
   ) => Promise<void>
 }
-
 function contributionStableId(entry: HomeProjectEntryContribution) {
   if (entry.source === 'remote' && entry.remoteProjectId) {
     return `remote:${entry.remoteProjectId}`
@@ -183,11 +169,9 @@ function contributionStableId(entry: HomeProjectEntryContribution) {
   }
   return `${entry.source}:${entry.id ?? entry.name}`
 }
-
 function contributionLibraryIds(entry: HomeProjectEntryContribution) {
   return uniqueStrings([entry.libraryId, ...(entry.libraryIds ?? [])])
 }
-
 function entryFromContribution(
   contribution: HomeProjectEntryContribution
 ): HomeProjectEntry {
@@ -196,7 +180,6 @@ function entryFromContribution(
     libraryIds: _libraryIds,
     ...entry
   } = contribution
-
   return {
     ...entry,
     id: contribution.id ?? contributionStableId(contribution),
@@ -218,40 +201,35 @@ export function combineHomeProjectEntryContributions(
     )
     .map(entryFromContribution)
 }
-
-export const homeProjectsContract = defineContract({
-  homeProjectActionsService: defineService<HomeProjectActionsService>(
+export const homeProjectsContract = contract({
+  homeProjectActionsService: service<HomeProjectActionsService>(
     'home-project-actions'
   ),
-  homeProjectSettledLibraryIdsValueSpec: defineValueSpec<
+  homeProjectSettledLibraryIdsFacet: new Facet<
     readonly string[],
     readonly string[]
-  >({
-    name: 'home-project-settled-library-ids',
-    defaultValue: [],
-    combine: (contributions) => uniqueStrings(contributions.flat()),
-  }),
-  homeProjectLoadingLibraryIdsValueSpec: defineValueSpec<
+  >('home-project-settled-library-ids', (contributions) =>
+    uniqueStrings(contributions.flat())
+  ),
+  homeProjectLoadingLibraryIdsFacet: new Facet<
     readonly string[],
     readonly string[]
-  >({
-    name: 'home-project-loading-library-ids',
-    defaultValue: [],
-    combine: (contributions) => uniqueStrings(contributions.flat()),
-  }),
-  homeProjectEntriesValueSpec: defineValueSpec<
+  >('home-project-loading-library-ids', (contributions) =>
+    uniqueStrings(contributions.flat())
+  ),
+  homeProjectEntriesFacet: new Facet<
     HomeProjectEntryContributionGroup,
     HomeProjectEntry[]
-  >({
-    name: 'home-project-entries',
-    defaultValue: [],
-    combine: combineHomeProjectEntryContributions,
-  }),
+  >('home-project-entries', combineHomeProjectEntryContributions),
 })
-
 export const {
   homeProjectActionsService,
-  homeProjectEntriesValueSpec,
-  homeProjectLoadingLibraryIdsValueSpec,
-  homeProjectSettledLibraryIdsValueSpec,
+  homeProjectEntriesFacet,
+  homeProjectLoadingLibraryIdsFacet,
+  homeProjectSettledLibraryIdsFacet,
 } = homeProjectsContract
+
+export const observations = inputs({
+  homeProjectEntriesFacet: observe(homeProjectEntriesFacet),
+  homeProjectActionsService: observeService(homeProjectActionsService),
+})

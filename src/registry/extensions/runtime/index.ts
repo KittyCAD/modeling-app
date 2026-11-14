@@ -1,8 +1,3 @@
-import {
-  defineRegistryItem,
-  defineRegistryItemFactory,
-  provideService,
-} from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import env, {
   getEnvironmentNameFromEnv,
@@ -16,6 +11,7 @@ import {
   type RuntimeTarget,
   runtimeService,
 } from '@src/registry/contracts/runtime'
+import { factory as defineFactory, provide, type Factory } from 'plankton'
 
 function readIsPlaywright(hasWindow: boolean) {
   const electronRuntimePlaywright =
@@ -51,31 +47,29 @@ function readRuntimeInfo(): RuntimeInfo {
     appUrl: environment.VITE_ZOO_SITE_APP_URL,
   }
 }
+export const runtimeExtension = defineFactory({
+  key: 'runtime-extension',
+  create: () => {
+    const current = signal(readRuntimeInfo())
+    const refresh = () => {
+      current.value = readRuntimeInfo()
+      return current.value
+    }
+    const stopEnvironmentSync = onEnvironmentDomainChange(refresh)
 
-export const runtimeExtension = defineRegistryItemFactory(() => {
-  const current = signal(readRuntimeInfo())
-  const refresh = () => {
-    current.value = readRuntimeInfo()
-    return current.value
-  }
-  const stopEnvironmentSync = onEnvironmentDomainChange(refresh)
+    const serviceImpl: RuntimeRegistryService = {
+      current,
+      get: () => current.value,
+      refresh,
+    }
 
-  const serviceImpl: RuntimeRegistryService = {
-    current,
-    get: () => current.value,
-    refresh,
-  }
-
-  return {
-    id: 'runtime-extension',
-    providesServices: [provideService(runtimeService, serviceImpl)],
-    dispose: () => {
-      stopEnvironmentSync()
-    },
-  }
-}, 'runtime-extension')
-
-export default defineRegistryItem({
-  id: 'runtime',
-  uses: [runtimeExtension],
-})
+    return {
+      exports: serviceImpl,
+      items: [provide(runtimeService, serviceImpl)],
+      dispose: () => {
+        stopEnvironmentSync()
+      },
+    }
+  },
+}) satisfies Factory
+export default [runtimeExtension]

@@ -11,8 +11,7 @@ import { Outlet } from 'react-router-dom'
 // This is a great place to add polling code.
 function RootLayout() {
   const app = useApp()
-  const router = app.registry.get(routerService)
-
+  const router = app.registry.required(routerService)
   return (
     <>
       <RouterServiceSync router={router} />

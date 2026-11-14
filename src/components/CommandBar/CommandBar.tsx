@@ -1,11 +1,7 @@
 import { Dialog, Popover } from '@headlessui/react'
-import { useEffect, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
-// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: command-bar lifecycle follows pathname (useLocation).
-import { useLocation } from 'react-router-dom'
-
 import CommandBarArgument from '@src/components/CommandBar/CommandBarArgument'
 import CommandBarReview from '@src/components/CommandBar/CommandBarReview'
+import { isCommandVisibleInSearch } from '@src/components/CommandBar/commandSearchVisibility'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import CommandComboBox from '@src/components/CommandComboBox'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -18,12 +14,15 @@ import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { interactions } from '@src/lib/interactionPerformance/definitions'
 import {
   commandScopeService,
-  commandScopesValueSpec,
+  commandScopesFacet,
   getCommandPaletteScopes,
   getEffectiveCommandScopeSet,
   isCommandSearchable,
 } from '@src/registry/contracts/commands'
-import { isCommandVisibleInSearch } from '@src/components/CommandBar/commandSearchVisibility'
+import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: command-bar lifecycle follows pathname (useLocation).
+import { useLocation } from 'react-router-dom'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
@@ -53,7 +52,7 @@ export const CommandBar = () => {
   }
   const effectiveCommandScopes = getEffectiveCommandScopeSet(
     commandPaletteScopes,
-    registry.signal(commandScopesValueSpec).value
+    registry.observe(commandScopesFacet).value
   )
   const {
     context: {

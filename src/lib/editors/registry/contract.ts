@@ -1,20 +1,17 @@
+import { inputs, observe } from '@src/registry/inputs'
+import type {
+  EditorState,
+  Extension,
+  Transaction,
+  TransactionSpec,
+} from '@codemirror/state'
+import type { EditorView } from '@codemirror/view'
+import type { ReadonlySignal } from '@preact/signals-core'
 import type {
   EditorMatcher,
   EditorSourceContext,
 } from '@src/lib/editors/matching'
-import type {
-  EditorState,
-  Transaction,
-  TransactionSpec,
-  Extension,
-} from '@codemirror/state'
-import type { EditorView } from '@codemirror/view'
-import {
-  defineContract,
-  defineService,
-  appendValueSpec,
-} from '@kittycad/registry'
-import type { ReadonlySignal } from '@preact/signals-core'
+import { contract, Facet, service } from 'plankton'
 import type { ComponentType } from 'react'
 
 /** One live working document, independent of the views displaying it. */
@@ -101,9 +98,17 @@ export interface EditorViewContribution extends EditorViewMetadata {
 
 /** Binding is deferred during CodeMirror updates; failed providers carry no renderable component. */
 export type EditorViewBinding =
-  | { type: 'unbound' }
-  | { type: 'ready'; Component: ComponentType<EditorSurfaceProps> }
-  | { type: 'error'; error: Error }
+  | {
+      type: 'unbound'
+    }
+  | {
+      type: 'ready'
+      Component: ComponentType<EditorSurfaceProps>
+    }
+  | {
+      type: 'error'
+      error: Error
+    }
 
 /** An explicit choice wins while it matches; otherwise the highest-priority view is used. */
 export interface EditorViewState {
@@ -131,7 +136,9 @@ export interface CodeEditorExtension {
 export interface EditorTabIndicator {
   id: string
   order?: number
-  component: ComponentType<{ editor: Editor }>
+  component: ComponentType<{
+    editor: Editor
+  }>
 }
 
 /** Owns open editors independently of executors and mounted editor panes. */
@@ -154,29 +161,41 @@ export interface EditorsService {
   setView: (id: symbol, viewId: string) => Error | undefined
   closeEditor: (id: symbol) => Error | undefined
 }
-
-export const editorsContract = defineContract({
-  editorLanguagesValueSpec:
-    appendValueSpec<EditorLanguage>('editors.languages'),
-  editorViewsValueSpec:
-    appendValueSpec<EditorViewContribution>('editors.views'),
-  editorTabIndicatorsValueSpec: appendValueSpec<EditorTabIndicator>(
-    'editors.tabIndicators'
+export const editorsContract = contract({
+  editorLanguagesFacet: new Facet<EditorLanguage, readonly EditorLanguage[]>(
+    'editors.languages',
+    (inputs) => inputs
   ),
-  editorsService: defineService<EditorsService>('editors.service'),
-  codeEditorsExtensionValueSpec: appendValueSpec<CodeEditorExtension>(
-    'editors.codeExtensions'
-  ),
-  editorCapabilityValueSpec: appendValueSpec<EditorCapability>(
-    'editors.capabilities'
-  ),
+  editorViewsFacet: new Facet<
+    EditorViewContribution,
+    readonly EditorViewContribution[]
+  >('editors.views', (inputs) => inputs),
+  editorTabIndicatorsFacet: new Facet<
+    EditorTabIndicator,
+    readonly EditorTabIndicator[]
+  >('editors.tabIndicators', (inputs) => inputs),
+  editorsService: service<EditorsService>('editors.service'),
+  codeEditorsExtensionFacet: new Facet<
+    CodeEditorExtension,
+    readonly CodeEditorExtension[]
+  >('editors.codeExtensions', (inputs) => inputs),
+  editorCapabilityFacet: new Facet<
+    EditorCapability,
+    readonly EditorCapability[]
+  >('editors.capabilities', (inputs) => inputs),
 })
-
 export const {
   editorsService,
-  editorLanguagesValueSpec,
-  editorCapabilityValueSpec,
-  editorTabIndicatorsValueSpec,
-  editorViewsValueSpec,
-  codeEditorsExtensionValueSpec,
+  editorLanguagesFacet,
+  editorCapabilityFacet,
+  editorTabIndicatorsFacet,
+  editorViewsFacet,
+  codeEditorsExtensionFacet,
 } = editorsContract
+
+export const observations = inputs({
+  editorCapabilityFacet: observe(editorCapabilityFacet),
+  editorViewsFacet: observe(editorViewsFacet),
+  codeEditorsExtensionFacet: observe(codeEditorsExtensionFacet),
+  editorLanguagesFacet: observe(editorLanguagesFacet),
+})

@@ -1,9 +1,4 @@
 import type { Feature } from '@kittycad/lib'
-import type {
-  PluginRecord,
-  Registry,
-  SlotToggleController,
-} from '@kittycad/registry'
 import { Toggle } from '@src/components/Toggle/Toggle'
 import { useApp } from '@src/lib/boot'
 import type { Setting } from '@src/lib/settings/Setting'
@@ -12,8 +7,9 @@ import { shouldHideSetting } from '@src/lib/settings/settingsUtils'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import {
   type ZdsPluginActivationSetting,
-  zdsPluginActivationSettingsValueSpec,
+  zdsPluginActivationSettingsFacet,
 } from '@src/registry/createZdsPlugin'
+import type { PluginController, PluginRecord, Registry } from 'plankton'
 import type { ForwardedRef } from 'react'
 import { forwardRef } from 'react'
 
@@ -30,7 +26,7 @@ export const PluginsList = forwardRef(
     const hasFeature = (feature: Feature) =>
       userFeaturesContextHas(userFeaturesContext, feature, false)
     const activationSettings = props.registry.get(
-      zdsPluginActivationSettingsValueSpec
+      zdsPluginActivationSettingsFacet
     )
 
     // A plugin's activation toggle is a settings entry, so it obeys the same
@@ -70,9 +66,9 @@ export const PluginsList = forwardRef(
             <PluginItem
               key={plugin.id}
               plugin={plugin}
-              resolvedService={props.registry.get(plugin.service)}
+              resolvedService={props.registry.required(plugin.service)}
               activationSetting={props.registry
-                .get(zdsPluginActivationSettingsValueSpec)
+                .get(zdsPluginActivationSettingsFacet)
                 .find((setting) => setting.pluginId === plugin.id)}
             />
           ))}
@@ -88,7 +84,7 @@ function PluginItem({
   activationSetting,
 }: {
   plugin: PluginRecord
-  resolvedService: SlotToggleController
+  resolvedService: PluginController
   activationSetting?: ZdsPluginActivationSetting
 }) {
   const app = useApp()

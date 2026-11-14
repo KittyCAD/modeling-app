@@ -11,7 +11,6 @@ type PublishDialogTestProps = {
   ) => Promise<boolean | PublishedProject>
   willCloneProjectToCloud: boolean
 }
-
 const mockState = vi.hoisted(() => ({
   useProjectStatus: vi.fn(),
   publishCurrentProject: vi.fn(),
@@ -19,21 +18,17 @@ const mockState = vi.hoisted(() => ({
   writeProjectTitleToProjectToml: vi.fn(),
   publishDialogProps: null as PublishDialogTestProps | null,
 }))
-
 vi.mock('@src/hooks/useProjectStatus', () => ({
   useProjectStatus: mockState.useProjectStatus,
 }))
-
 vi.mock('@src/lib/publishing/publication', () => ({
   publishCurrentProject: mockState.publishCurrentProject,
   getCurrentProjectPublicationDetails:
     mockState.getCurrentProjectPublicationDetails,
 }))
-
 vi.mock('@src/lib/desktop', () => ({
   writeProjectTitleToProjectToml: mockState.writeProjectTitleToProjectToml,
 }))
-
 vi.mock('@src/components/PublishDialog', () => ({
   PublishDialog: (props: PublishDialogTestProps) => {
     mockState.publishDialogProps = props
@@ -44,7 +39,6 @@ vi.mock('@src/components/PublishDialog', () => ({
 import { PublishButton } from '@src/components/PublishButton'
 import type { App } from '@src/lib/app'
 import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
-
 import type { Project } from '@src/lib/project'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
@@ -52,12 +46,12 @@ import {
 } from '@src/lib/projectLibraries'
 import type {
   HomeProjectActionsService,
-  HomeProjectEntry,
   HomeProjectCloneToLibraryTarget,
+  HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
 import {
   homeProjectActionsService,
-  homeProjectEntriesValueSpec,
+  homeProjectEntriesFacet,
 } from '@src/registry/contracts/homeProjects'
 import { MemoryRouter } from 'react-router-dom'
 
@@ -66,51 +60,49 @@ const defaultProject = {
   path: '/projects/example',
   libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
 } as Project
-
 const localProject = {
   path: '/projects/example',
   libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
 } as Project
-
 const homeProject = {
   localProjectPath: localProject.path,
   name: 'example',
   title: 'Old Example',
 } as HomeProjectEntry
-
 const cloudLibraryTarget = {
   library: {
     id: 'personal-cloud',
     type: CLOUD_PROJECT_LIBRARY_TYPE,
   },
 } as HomeProjectCloneToLibraryTarget
-
 const publishSubmission = {
   title: 'Example',
   description: 'Example project',
   categoryIds: ['robotics'],
 }
-
 const fileOperations = {
   readFile: vi
     .fn()
     .mockResolvedValue(new TextEncoder().encode('cloned snapshot')),
 }
-
 function createApp({
   project = defaultProject,
   homeProjectActions,
   writeToFile = vi.fn().mockResolvedValue(undefined),
   closeProject = vi.fn(),
   settingsSend = vi.fn(),
-  codeState = { value: '' },
+  codeState = {
+    value: '',
+  },
 }: {
   project?: Project
   homeProjectActions?: HomeProjectActionsService
   writeToFile?: ReturnType<typeof vi.fn>
   closeProject?: ReturnType<typeof vi.fn>
   settingsSend?: ReturnType<typeof vi.fn>
-  codeState?: { value: string }
+  codeState?: {
+    value: string
+  }
 } = {}) {
   return {
     fileOperations,
@@ -125,13 +117,21 @@ function createApp({
       useHas: () => false,
     },
     auth: {
-      useAuthState: () => ({ matches: () => false }),
+      useAuthState: () => ({
+        matches: () => false,
+      }),
       useToken: () => 'token-123',
-      useUser: () => ({ username: 'zoonaut' }),
+      useUser: () => ({
+        username: 'zoonaut',
+      }),
     },
     singletons: {
       kclManager: {
-        astSignal: { value: { body: [] } },
+        astSignal: {
+          value: {
+            body: [],
+          },
+        },
         isAstBodyEmpty: () => false,
         hasErrors: () => false,
         wasmInstancePromise: Promise.resolve({}),
@@ -149,7 +149,7 @@ function createApp({
       },
     },
     registry: {
-      optional: (service: unknown) => {
+      required: (service: unknown) => {
         if (service === homeProjectActionsService) {
           return homeProjectActions
         }
@@ -163,8 +163,19 @@ function createApp({
         }
         return undefined
       },
+      optional: (service: unknown) => {
+        if (service === homeProjectActionsService) return homeProjectActions
+        if (service === cloudStorageService)
+          return {
+            publishCurrentProject: mockState.publishCurrentProject,
+            getCurrentProjectPublicationDetails:
+              mockState.getCurrentProjectPublicationDetails,
+            idFor: () => 'remote-123',
+          }
+        return undefined
+      },
       get: (valueSpec: unknown) => {
-        if (valueSpec === homeProjectEntriesValueSpec) return [homeProject]
+        if (valueSpec === homeProjectEntriesFacet) return [homeProject]
         if (valueSpec === cloudStorageService)
           return {
             publishCurrentProject: mockState.publishCurrentProject,
@@ -177,7 +188,6 @@ function createApp({
     },
   } as unknown as App
 }
-
 function renderPublishButton(app = createApp()) {
   return render(
     <MemoryRouter>
@@ -185,18 +195,15 @@ function renderPublishButton(app = createApp()) {
     </MemoryRouter>
   )
 }
-
 async function openPublishDialog(app: App) {
   renderPublishButton(app)
   fireEvent.click(screen.getByTestId('publish-button'))
   await waitFor(() => expect(mockState.publishDialogProps).not.toBeNull())
-
   if (!mockState.publishDialogProps) {
     expect.fail('Publish dialog props were not captured.')
   }
   return mockState.publishDialogProps
 }
-
 describe('PublishButton', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -207,7 +214,6 @@ describe('PublishButton', () => {
     mockState.getCurrentProjectPublicationDetails.mockResolvedValue(null)
     mockState.publishDialogProps = null
   })
-
   test.each([
     ['pending_review', 'Pending Review', 'eyeOpen'],
     ['published', 'Published', 'checkmark'],
@@ -215,10 +221,10 @@ describe('PublishButton', () => {
   ] as const)(
     'replaces Publish with the neutral %s status',
     (publicationStatus, label, icon) => {
-      mockState.useProjectStatus.mockReturnValue({ publicationStatus })
-
+      mockState.useProjectStatus.mockReturnValue({
+        publicationStatus,
+      })
       renderPublishButton()
-
       const publishButton = screen.getByTestId('publish-button')
       expect(publishButton).toHaveAccessibleName(label)
       expect(screen.getByTestId('publish-button-icon')).toHaveAttribute(
@@ -235,15 +241,12 @@ describe('PublishButton', () => {
       )
     }
   )
-
   test('highlights changes requested without putting feedback in the button', () => {
     mockState.useProjectStatus.mockReturnValue({
       publicationStatus: 'changes_requested',
       feedback: 'Add another view.',
     })
-
     renderPublishButton()
-
     const publishButton = screen.getByTestId('publish-button')
     expect(publishButton).toHaveAccessibleName('Changes requested')
     expect(publishButton).toHaveClass('bg-warn-10/60')
@@ -254,12 +257,11 @@ describe('PublishButton', () => {
     )
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
   })
-
   test('uses the default Publish action for non-publication statuses', () => {
-    mockState.useProjectStatus.mockReturnValue({ publicationStatus: 'draft' })
-
+    mockState.useProjectStatus.mockReturnValue({
+      publicationStatus: 'draft',
+    })
     renderPublishButton()
-
     const publishButton = screen.getByTestId('publish-button')
     expect(publishButton).toHaveAccessibleName('Publish')
     expect(screen.getByTestId('publish-button-icon')).toHaveAttribute(
@@ -267,7 +269,6 @@ describe('PublishButton', () => {
       'share'
     )
   })
-
   test('publishes the cloud clone contents while preserving later source edits', async () => {
     const cloneToLibrary = vi.fn().mockResolvedValue({
       defaultFile: '/cloud/example/main.kcl',
@@ -282,7 +283,9 @@ describe('PublishButton', () => {
       getCloneToLibraryTargets: vi.fn().mockReturnValue([cloudLibraryTarget]),
       cloneToLibrary,
     } as unknown as HomeProjectActionsService
-    const codeState = { value: '' }
+    const codeState = {
+      value: '',
+    }
     const app = createApp({
       codeState,
       project: localProject,
@@ -320,7 +323,6 @@ describe('PublishButton', () => {
       })
     )
   })
-
   test('does not publish when the cloud transfer fails', async () => {
     const cloneToLibrary = vi.fn().mockRejectedValue(new Error('Upload failed'))
     const homeProjectActions = {
@@ -328,7 +330,10 @@ describe('PublishButton', () => {
       cloneToLibrary,
     } as unknown as HomeProjectActionsService
     const dialogProps = await openPublishDialog(
-      createApp({ project: localProject, homeProjectActions })
+      createApp({
+        project: localProject,
+        homeProjectActions,
+      })
     )
     await act(async () => {
       await expect(dialogProps.onSubmit(publishSubmission)).resolves.toBe(false)

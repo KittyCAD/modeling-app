@@ -1,12 +1,11 @@
 import { useSignals } from '@preact/signals-react/runtime'
-import { waitFor } from 'xstate'
-
 import { ActionButton } from '@src/components/ActionButton'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { PATHS } from '@src/lib/paths'
 import type { Setting } from '@src/lib/settings/Setting'
 import { reportRejection } from '@src/lib/trap'
 import { routerService } from '@src/registry/contracts/router'
+import { waitFor } from 'xstate'
 
 /** Offers a restart while a setting's saved value is not yet in effect. */
 export function SettingRestartButton({
@@ -31,7 +30,7 @@ export function SettingRestartButton({
       Element="button"
       className="mt-2"
       onClick={() => {
-        const router = registry.get(routerService)
+        const router = registry.required(routerService)
         // Reloading before the change is saved would start with the old value.
         waitFor(settings.actor, (state) => state.matches('idle'))
           // The settings dialog is a route, so leave it or the reload reopens it.

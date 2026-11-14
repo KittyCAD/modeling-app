@@ -1,23 +1,19 @@
 import {
-  defineRegistryItem,
-  defineRegistryItemFactory,
-  provideService,
-} from '@kittycad/registry'
-import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
-import {
   createMountedFileOperations,
   type FileOperationsMount,
 } from '@src/lib/fileSystem/mounts'
-import { createProjectOperations } from '@src/lib/projectSession/projectOperations'
-import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import fsZds from '@src/lib/fs-zds'
+import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import { createProjectOperations } from '@src/lib/projectSession/projectOperations'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
+  observations as fileOperationsObservations,
   fileOperationsService,
   projectOperationsService,
-  fileOperationsMountsValueSpec,
 } from '@src/registry/contracts/fileOperations'
-import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import { observations as wasmObservations } from '@src/registry/contracts/wasm'
+import { factory as defineFactory, provide } from 'plankton'
 
 /** Coordinates file operations over contributed backings without owning their lifetimes. */
 export function createFileOperationsServices(
@@ -42,28 +38,33 @@ export function createFileOperationsServices(
     dispose: scheduler.dispose,
   }
 }
-
 export const createFileOperationsExtension = (backing: IZooDesignStudioFS) =>
-  defineRegistryItemFactory((ctx) => {
-    const services = createFileOperationsServices(
-      backing,
-      () =>
-        ctx.valueSpecs.get(wasmPromiseValueSpec) ??
-        Promise.reject(new Error('Missing WASM promise.')),
-      () => ctx.valueSpecs.get(fileOperationsMountsValueSpec)
-    )
-    return {
-      id: 'file-operations-extension',
-      providesServices: [
-        provideService(projectOperationsService, services.projects),
-        provideService(fileOperationsService, services.operations),
-      ],
-      dispose: services.dispose,
-    }
-  }, 'file-operations-extension')
-
+  defineFactory({
+    dependencies: {
+      wasm: wasmObservations,
+      fileOperations: fileOperationsObservations,
+    },
+    key: 'file-operations-extension',
+    create: ({ wasm: wasmInputs, fileOperations: fileOperationsInputs }) => {
+      const services = createFileOperationsServices(
+        backing,
+        () =>
+          wasmInputs.wasmPromiseFacet.value ??
+          Promise.reject(new Error('Missing WASM promise.')),
+        () => fileOperationsInputs.fileOperationsMountsFacet.value
+      )
+      return {
+        exports: {
+          operations: services.operations,
+          projects: services.projects,
+        },
+        items: [
+          provide(projectOperationsService, services.projects),
+          provide(fileOperationsService, services.operations),
+        ],
+        dispose: services.dispose,
+      }
+    },
+  })
 export const fileOperationsExtension = createFileOperationsExtension(fsZds)
-export default defineRegistryItem({
-  id: 'file-operations',
-  uses: [fileOperationsExtension],
-})
+export default [fileOperationsExtension]

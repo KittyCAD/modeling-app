@@ -11,7 +11,7 @@ import {
   slot,
 } from './algebra'
 import { DependencyCycleError } from './planner'
-import { Registry } from './nextRegistry'
+import { Registry } from './registry'
 
 it('keeps returned service observations live across provider replacement', async () => {
   const reconciler = new Registry()

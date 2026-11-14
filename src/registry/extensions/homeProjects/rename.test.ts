@@ -1,9 +1,3 @@
-import {
-  defineRegistryItem,
-  provide,
-  provideService,
-  Registry,
-} from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import {
   DEFAULT_PROJECT_LIBRARY_ID,
@@ -11,23 +5,22 @@ import {
 } from '@src/lib/projectLibraries'
 import type { ZDSProject } from '@src/lib/projectSession'
 import {
-  homeProjectActionsService,
   type HomeProjectEntry,
+  homeProjectActionsService,
 } from '@src/registry/contracts/homeProjects'
-import { projectLibraryTypesValueSpec } from '@src/registry/contracts/projectLibraries'
+import { projectLibraryTypesFacet } from '@src/registry/contracts/projectLibraries'
 import {
-  projectSession,
   type ProjectSessionService,
+  projectSession,
 } from '@src/registry/contracts/projectSession'
 import {
-  settingsService,
   type SettingsRegistryService,
+  settingsService,
 } from '@src/registry/contracts/settings'
 import homeProjectsExtension from '@src/registry/extensions/homeProjects'
+import { contribute, type InputOf, provide, Registry } from 'plankton'
 import { describe, expect, it, vi } from 'vitest'
-
 vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
-
 describe('renaming the open project', () => {
   it.each([false, true])(
     'refreshes metadata after persistence without refreshing a replacement session (switched: %s)',
@@ -42,54 +35,66 @@ describe('renaming the open project', () => {
         localProjectPath: '/projects/original',
         readWriteAccess: true,
       }
-      const current = signal({ path: project.localProjectPath } as ZDSProject)
+      const current = signal({
+        path: project.localProjectPath,
+      } as ZDSProject)
       const refreshProject = vi.fn(async () => undefined)
       const gate = Promise.withResolvers<undefined>()
       const rename = vi.fn(async () => {
         await gate.promise
       })
       const registry = new Registry()
-      registry.configure([
+      const _projectLibraryTypesContribution: InputOf<
+        typeof projectLibraryTypesFacet
+      > = {
+        type: 'directory',
+        title: 'Directory',
+        operations: {
+          renameProject: {
+            run: rename,
+          },
+        },
+      } satisfies InputOf<typeof projectLibraryTypesFacet>
+      await registry.configure([
         homeProjectsExtension,
-        defineRegistryItem({
-          provides: [
-            provide(projectLibraryTypesValueSpec, {
-              type: 'directory',
-              title: 'Directory',
-              operations: { renameProject: { run: rename } },
-            }),
-          ],
-          providesServices: [
-            provideService(settingsService, {
-              current: signal({
-                app: {
-                  libraries: {
-                    current: getDefaultProjectLibrarySettings('/projects'),
-                  },
+        [
+          contribute(
+            projectLibraryTypesFacet,
+            () => _projectLibraryTypesContribution
+          ),
+          provide(settingsService, {
+            current: signal({
+              app: {
+                libraries: {
+                  current: getDefaultProjectLibrarySettings('/projects'),
                 },
-              }),
-            } as unknown as SettingsRegistryService),
-            provideService(projectSession, {
-              project: current,
-              refreshProject,
-            } as unknown as ProjectSessionService),
-          ],
-        }),
+              },
+            }),
+          } as unknown as SettingsRegistryService),
+          provide(projectSession, {
+            project: current,
+            refreshProject,
+          } as unknown as ProjectSessionService),
+        ],
       ])
       try {
         const renamed = registry
-          .get(homeProjectActionsService)
-          .rename(project, 'New title', { notify: false })
+          .required(homeProjectActionsService)
+          .rename(project, 'New title', {
+            notify: false,
+          })
         expect(rename).toHaveBeenCalledOnce()
         expect(refreshProject).not.toHaveBeenCalled()
         if (switched)
-          current.value = { path: '/projects/replacement' } as ZDSProject
+          current.value = {
+            path: '/projects/replacement',
+          } as ZDSProject
         gate.resolve(undefined)
         await renamed
         expect(refreshProject).toHaveBeenCalledTimes(switched ? 0 : 1)
       } finally {
         gate.resolve(undefined)
-        registry[Symbol.dispose]()
+        await registry.dispose()
       }
     }
   )

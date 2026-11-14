@@ -1,9 +1,3 @@
-import {
-  defineRegistryItem,
-  pluginsValueSpec,
-  provideService,
-  Registry,
-} from '@kittycad/registry'
 import { type Signal, signal } from '@preact/signals-core'
 import {
   DefaultLayoutPaneID,
@@ -17,10 +11,11 @@ import {
 } from '@src/lib/layout/types'
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import {
-  layoutAreaLibraryValueSpec,
+  layoutAreaLibraryFacet,
   layoutService,
 } from '@src/registry/contracts/layout'
-import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
+import { statusBarLocalItemsFacet } from '@src/registry/contracts/statusBar'
+import { plugins, provide, Registry } from 'plankton'
 import { describe, expect, it, vi } from 'vitest'
 
 vi.mock(
@@ -67,11 +62,7 @@ function createTestLayoutServiceRegistryItem(layoutSignal: Signal<Layout>) {
     togglePane: () => zookeeperPaneLayout(),
     openPane: () => zookeeperPaneLayout(),
   }
-
-  return defineRegistryItem({
-    id: 'test.layout-service',
-    providesServices: [provideService(layoutService, testLayoutService)],
-  })
+  return [provide(layoutService, testLayoutService)]
 }
 
 describe('zookeeper plugin', () => {
@@ -79,18 +70,17 @@ describe('zookeeper plugin', () => {
     const { default: zookeeper } = await import('.')
     const layoutSignal = signal(zookeeperPaneLayout())
     const registry = new Registry()
-
-    registry.configure([
+    await registry.configure([
       zookeeper,
       createTestLayoutServiceRegistryItem(layoutSignal),
     ])
 
     const plugin = registry
-      .get(pluginsValueSpec)
+      .get(plugins)
       .find((candidate) => candidate.id === 'zookeeper')
 
     expect(plugin).toBeDefined()
-    const zookeeperArea = registry.get(layoutAreaLibraryValueSpec)[
+    const zookeeperArea = registry.get(layoutAreaLibraryFacet)[
       AreaType.Zookeeper
     ]
     expect(zookeeperArea).toMatchObject({
@@ -98,30 +88,29 @@ describe('zookeeper plugin', () => {
     })
     zookeeperPromptRunningSignal.value = true
     expect(
-      registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]?.icon
+      registry.get(layoutAreaLibraryFacet)[AreaType.Zookeeper]?.icon
     ).toBeUndefined()
     expect(
-      registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
+      registry.get(statusBarLocalItemsFacet).map((item) => item.id)
     ).toContain('zookeeper-credits')
 
     layoutSignal.value = zookeeperPaneLayout([])
-
+    expect(registry.get(layoutAreaLibraryFacet)[AreaType.Zookeeper]?.icon).toBe(
+      'loading'
+    )
     expect(
-      registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]?.icon
-    ).toBe('loading')
-    expect(
-      registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
+      registry.get(statusBarLocalItemsFacet).map((item) => item.id)
     ).not.toContain('zookeeper-credits')
 
     layoutSignal.value = zookeeperPaneLayout()
     expect(
-      registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]?.icon
+      registry.get(layoutAreaLibraryFacet)[AreaType.Zookeeper]?.icon
     ).toBeUndefined()
 
     layoutSignal.value = zookeeperPaneLayout([])
     zookeeperPromptRunningSignal.value = false
     expect(
-      registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]?.icon
+      registry.get(layoutAreaLibraryFacet)[AreaType.Zookeeper]?.icon
     ).toBeUndefined()
   })
 
@@ -129,34 +118,29 @@ describe('zookeeper plugin', () => {
     const { default: zookeeper } = await import('.')
     const layoutSignal = signal(zookeeperPaneLayout())
     const registry = new Registry()
-
-    registry.configure([
+    await registry.configure([
       zookeeper,
       createTestLayoutServiceRegistryItem(layoutSignal),
     ])
 
     const plugin = registry
-      .get(pluginsValueSpec)
+      .get(plugins)
       .find((candidate) => candidate.id === 'zookeeper')
 
     expect(plugin).toBeDefined()
     if (!plugin) {
       throw new Error('Expected zookeeper plugin')
     }
-
-    await registry.get(plugin.service).disable()
-
-    expect(registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]).toBe(
+    await registry.required(plugin.service).disable()
+    expect(registry.get(layoutAreaLibraryFacet)[AreaType.Zookeeper]).toBe(
       undefined
     )
     expect(
-      registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
+      registry.get(statusBarLocalItemsFacet).map((item) => item.id)
     ).not.toContain('zookeeper-credits')
-
-    await registry.get(plugin.service).enable()
-
+    await registry.required(plugin.service).enable()
     expect(
-      registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]
+      registry.get(layoutAreaLibraryFacet)[AreaType.Zookeeper]
     ).toBeDefined()
   })
 })

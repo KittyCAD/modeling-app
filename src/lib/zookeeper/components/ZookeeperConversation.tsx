@@ -14,7 +14,7 @@ import { isImageMimetype } from '@src/lib/mimeTypes'
 import { fileNameHasExtension, getEXTWithPeriod } from '@src/lib/paths'
 import { dataUrlToFile } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { err } from '@src/lib/trap'
+import { err, reportRejection } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
 import { ZookeeperAttachment } from '@src/lib/zookeeper/components/ZookeeperAttachment'
 import { ZookeeperAttachmentPreview } from '@src/lib/zookeeper/components/ZookeeperAttachmentPreview'
@@ -329,11 +329,17 @@ export const ZookeeperConversationInput = (
   >([])
   const [isDraggingOver, setIsDraggingOver] = useState(false)
   const [isZoodleActive, setIsZoodleActive] = useState(false)
+  const zoodleUpdates = useRef(Promise.resolve())
+  const queueZoodleUpdate = useCallback((update: () => Promise<void>) => {
+    zoodleUpdates.current = zoodleUpdates.current
+      .then(update)
+      .catch(reportRejection)
+  }, [])
 
   const stopZoodleRuntimeExtension = useCallback(() => {
     setIsZoodleActive(false)
-    deactivateZoodleRuntimeExtension(registry)
-  }, [registry])
+    queueZoodleUpdate(() => deactivateZoodleRuntimeExtension(registry))
+  }, [queueZoodleUpdate, registry])
 
   useEffect(() => {
     return () => {
@@ -450,7 +456,7 @@ export const ZookeeperConversationInput = (
   const onCaptureScreenshot = () => {
     if (props.disabled) return
     try {
-      const dataUrl = registry.get(viewportScreenshotService).capture()
+      const dataUrl = registry.required(viewportScreenshotService).capture()
       if (!dataUrl) return
       appendDataUrlAttachment(
         dataUrl,
@@ -469,20 +475,25 @@ export const ZookeeperConversationInput = (
 
     if (props.disabled) return
     try {
-      const dataUrl = registry.get(viewportScreenshotService).capture()
+      const dataUrl = registry.required(viewportScreenshotService).capture()
       if (!dataUrl) return
       setIsZoodleActive(true)
-      activateZoodleRuntimeExtension(registry, {
-        imageDataUrl: dataUrl,
-        onCancel: stopZoodleRuntimeExtension,
-        onSend: (annotatedDataUrl) => {
-          appendDataUrlAttachment(
-            annotatedDataUrl,
-            `annotated-viewport-screenshot-${crypto.randomUUID()}.png`
-          )
-          stopZoodleRuntimeExtension()
-        },
-      })
+      queueZoodleUpdate(() =>
+        activateZoodleRuntimeExtension(registry, {
+          imageDataUrl: dataUrl,
+          onCancel: stopZoodleRuntimeExtension,
+          onSend: (annotatedDataUrl) => {
+            appendDataUrlAttachment(
+              annotatedDataUrl,
+              `annotated-viewport-screenshot-${crypto.randomUUID()}.png`
+            )
+            stopZoodleRuntimeExtension()
+          },
+        }).catch((reason) => {
+          setIsZoodleActive(false)
+          reportRejection(reason)
+        })
+      )
     } catch (e) {
       setIsZoodleActive(false)
       console.error('Failed to capture viewport screenshot for annotation', e)

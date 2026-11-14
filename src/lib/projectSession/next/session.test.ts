@@ -35,7 +35,7 @@ function setup() {
     ),
     writeFile: vi.fn(async (_path: string, _contents: FileContents) => {}),
   }
-  const service = createProjectSessionService(() => storage)
+  const service = createProjectSessionService(storage)
   return { storage, service }
 }
 

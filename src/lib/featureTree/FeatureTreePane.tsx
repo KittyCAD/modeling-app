@@ -1,7 +1,5 @@
-import type { EditorSelection } from '@codemirror/state'
-import { getFileRoute } from '@src/lib/paths'
-import { selectCommand } from '@src/lib/commandUtils'
 import type { Diagnostic } from '@codemirror/lint'
+import type { EditorSelection } from '@codemirror/state'
 import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
 import { type ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
@@ -26,6 +24,7 @@ import {
   type SourceRange,
 } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { selectCommand } from '@src/lib/commandUtils'
 import { LEGACY_SKETCH_MODE_REMOVED_MESSAGE } from '@src/lib/constants'
 import {
   buildOperationTree,
@@ -46,6 +45,7 @@ import {
   onUnhide,
   stdLibMap,
 } from '@src/lib/operations'
+import { getFileRoute } from '@src/lib/paths'
 import { defaultPlaneNameToKcl } from '@src/lib/planes'
 import { err, isErr, reportRejection } from '@src/lib/trap'
 import { isArray, isOverlap, stripQuotes, uuidv4 } from '@src/lib/utils'
@@ -59,7 +59,6 @@ import { Disclosure } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { FeatureTreeMenu } from '@src/lib/featureTree/FeatureTreeMenu'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import Tooltip from '@src/components/Tooltip'
@@ -80,6 +79,7 @@ import {
   sendDeleteCommand,
   sendSelectionEvent,
 } from '@src/lib/featureTree'
+import { FeatureTreeMenu } from '@src/lib/featureTree/FeatureTreeMenu'
 import {
   type AreaTypeComponentProps,
   DefaultLayoutPaneID,
@@ -89,7 +89,7 @@ import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
-  keymapScopesValueSpec,
+  keymapScopesFacet,
   keymapService,
 } from '@src/registry/contracts/keymap'
 import { projectSession } from '@src/registry/contracts/projectSession'
@@ -98,10 +98,18 @@ import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { useNavigate } from 'react-router-dom'
 
 type Singletons = ReturnType<typeof useSingletons>
-
-type ModuleInstanceOperation = Extract<Operation, { type: 'ModuleInstance' }>
-type StdLibCallOperation = Extract<Operation, { type: 'StdLibCall' }>
-
+type ModuleInstanceOperation = Extract<
+  Operation,
+  {
+    type: 'ModuleInstance'
+  }
+>
+type StdLibCallOperation = Extract<
+  Operation,
+  {
+    type: 'StdLibCall'
+  }
+>
 type SystemDeps = Pick<Singletons, 'kclManager'> & {
   commandBarActor: CommandBarActorType
   sceneInfra: SceneInfra
@@ -190,14 +198,14 @@ export const FeatureTreePaneContents = memo(() => {
           keymap.keymap.value,
           APP_COMMAND_IDS.editor.render,
           keymap.getCurrentScopes(),
-          app.registry.signal(keymapScopesValueSpec).value
+          app.registry.observe(keymapScopesFacet).value
         )?.keystrokes
       : [UNRENDERED_EXECUTE_HOTKEY],
     platform
   )
   const { kclManager } = useSingletons()
   const executionService =
-    app.registry.signal(projectSession).value?.executingEditor.value
+    app.registry.optional(projectSession)?.executingEditor.value
   const { engineCommandManager, rustContext } = kclManager
   const {
     send: modelingSend,
@@ -705,7 +713,10 @@ type OpValueProps = {
   name: string
   type?: Operation['type']
   variableName?: string
-  valueDetail?: { calculated: OpKclValue; display: string }
+  valueDetail?: {
+    calculated: OpKclValue
+    display: string
+  }
   /** A named view is described by the name it declares, not by its variable. */
   isNamedView?: boolean
 }
@@ -788,7 +799,10 @@ export function namedViewTooltipText({
   variableName,
 }: {
   name: string
-  valueDetail: { calculated: OpKclValue; display: string }
+  valueDetail: {
+    calculated: OpKclValue
+    display: string
+  }
   variableName?: string
 }): string {
   const viewName = getOperationCalculatedDisplay(valueDetail.calculated)
@@ -1137,7 +1151,7 @@ const OperationItem = ({
         const message = err(e) ? e.message : JSON.stringify(e)
         toast.error(message, {
           duration:
-            message === LEGACY_SKETCH_MODE_REMOVED_MESSAGE ? 5_000 : undefined,
+            message === LEGACY_SKETCH_MODE_REMOVED_MESSAGE ? 5000 : undefined,
         })
       })
     }
@@ -1727,7 +1741,12 @@ const DefaultPlanes = ({
 export function getFeatureTreeValueDetail(
   operation: Operation,
   code: string
-): { calculated: OpKclValue; display: string } | undefined {
+):
+  | {
+      calculated: OpKclValue
+      display: string
+    }
+  | undefined {
   if (operation.type === 'VariableDeclaration') {
     return {
       display: code.slice(

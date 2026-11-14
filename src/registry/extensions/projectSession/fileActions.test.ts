@@ -6,16 +6,16 @@ import { createProjectForTest } from '@src/lib/projectTestUtils'
 import { posix } from '@chainner/node-path'
 import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import {
-  projectStorageProvidersValueSpec,
+  projectStorageProvidersFacet,
   type ProjectStorage,
 } from '@src/lib/projectSession/storage'
 import {
-  defineRegistryItem,
-  provide,
-  provideService,
+  factory as defineFactory,
   Registry,
-  Slot,
-} from '@kittycad/registry'
+  slot as createSlot,
+  contribute,
+  provide,
+} from 'plankton'
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
 import { getProjectInfo } from '@src/lib/desktop'
@@ -32,13 +32,14 @@ import {
 } from '@src/registry/contracts/fileOperations'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { routerService } from '@src/registry/contracts/router'
-import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
 import { cloudProjectSessionExtension } from '@src/lib/cloudProjects/registry/session'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
 import { createRouterRegistryService } from '@src/registry/extensions/router'
 import { afterEach, assert, describe, expect, it, vi } from 'vitest'
-
-vi.mock('@src/lib/fs-zds', () => ({ default: posix }))
+vi.mock('@src/lib/fs-zds', () => ({
+  default: posix,
+}))
 vi.mock('@src/lib/desktop', () => ({
   getProjectInfo: vi.fn(),
   writeProjectThumbnailFile: vi.fn(async () => {}),
@@ -47,7 +48,6 @@ vi.mock('@src/lib/activeTextFile', () => ({
   flushActiveTextFileWrite: vi.fn(async () => {}),
   adoptStorageTextSnapshot: vi.fn(),
 }))
-
 const metadata = (title = 'Project'): Project =>
   createProjectForTest('/project', {
     name: 'project',
@@ -56,8 +56,8 @@ const metadata = (title = 'Project'): Project =>
     kcl_file_count: 1,
   })
 const registries: Registry[] = []
-afterEach(() => {
-  for (const registry of registries.splice(0)) registry[Symbol.dispose]()
+afterEach(async () => {
+  for (const registry of registries.splice(0)) await registry.dispose()
   vi.resetAllMocks()
 })
 function createProject(path = '/project/parts/main.kcl') {
@@ -76,9 +76,14 @@ function createProject(path = '/project/parts/main.kcl') {
     executingPathSignal: signal(filePath),
     executingEditor: signal(editor),
   } as unknown as ZDSProject
-  return { project, filePath, flush, resetForFileSwitch }
+  return {
+    project,
+    filePath,
+    flush,
+    resetForFileSwitch,
+  }
 }
-function setup(
+async function setup(
   cloud?: CloudStorageService,
   storage?: ProjectStorage,
   operations?: FileOperationsRegistryService
@@ -104,36 +109,37 @@ function setup(
   const navigate = vi.fn(async (_path?: unknown, _options?: unknown) => {})
   router.setNavigate(navigate)
   const registry = new Registry()
-  const lateCloud = new Slot()
-  registry.configure([
+  const lateCloud = createSlot([], Symbol())
+  await registry.configure([
     projectSessionRegistryItem,
     cloudProjectSessionExtension,
-    lateCloud.of(),
-    defineRegistryItem({
-      provides: [
-        provide(wasmPromiseValueSpec, Promise.resolve({} as ModuleType)),
-        ...(storage
-          ? [provide(projectStorageProvidersValueSpec, () => storage)]
-          : []),
-      ],
-      providesServices: [
-        provideService(
-          fileOperationsService,
-          operations ??
-            ({
-              exists,
-              rename,
-              readFile,
-              writeFile,
-            } as unknown as FileOperationsRegistryService)
-        ),
-        provideService(routerService, router),
-        ...(cloud ? [provideService(cloudStorageService, cloud)] : []),
-      ],
+    defineFactory({
+      ...lateCloud,
+      create: () => ({
+        items: [],
+      }),
     }),
+    [
+      contribute(wasmPromiseFacet, () => Promise.resolve({} as ModuleType)),
+      ...(storage
+        ? [contribute(projectStorageProvidersFacet, () => () => storage)]
+        : []),
+      provide(
+        fileOperationsService,
+        operations ??
+          ({
+            exists,
+            rename,
+            readFile,
+            writeFile,
+          } as unknown as FileOperationsRegistryService)
+      ),
+      provide(routerService, router),
+      ...(cloud ? [provide(cloudStorageService, cloud)] : []),
+    ],
   ])
   registries.push(registry)
-  const session = registry.get(projectSession)
+  const session = registry.required(projectSession)
   const current = createProject()
   session.setProject(current.project)
   return {
@@ -149,7 +155,6 @@ function setup(
     ...current,
   }
 }
-
 describe('direct project session file actions', () => {
   it.each([false, true])(
     'retries cloud storage before flushing the live editor on reconnect (switch project: %s)',
@@ -157,7 +162,9 @@ describe('direct project session file actions', () => {
       vi.useFakeTimers()
       const gate = Promise.withResolvers<undefined>()
       const retry = vi.fn(() => gate.promise)
-      const s = setup({ retry } as unknown as CloudStorageService)
+      const s = await setup({
+        retry,
+      } as unknown as CloudStorageService)
       s.project.projectIORefSignal.value = {
         ...metadata(),
         cloudProjectId: 'remote',
@@ -176,20 +183,24 @@ describe('direct project session file actions', () => {
       }
     }
   )
-
   it('subscribes when cloud storage becomes available and applies its authoritative snapshot', async () => {
-    const s = setup()
+    const s = await setup()
     const adopt = vi.fn()
     Object.assign(s.project.executingEditor.peek()!, {
       adoptStorageSnapshot: adopt,
     })
     const reload = vi.fn(async () => {})
-    Object.assign(s.project, { reloadFilesFromStorage: reload })
+    Object.assign(s.project, {
+      reloadFilesFromStorage: reload,
+    })
     await Promise.resolve()
     let listener:
       | ((
           root: string,
-          files: { relativePath: string; data: Uint8Array }[]
+          files: {
+            relativePath: string
+            data: Uint8Array
+          }[]
         ) => void)
       | undefined
     const stop = vi.fn()
@@ -197,15 +208,12 @@ describe('direct project session file actions', () => {
       listener = next
       return stop
     })
-    s.registry.reconfigure(s.lateCloud, [
-      defineRegistryItem({
-        id: 'late-cloud-storage',
-        providesServices: [
-          provideService(cloudStorageService, {
-            subscribeReconciled,
-          } as unknown as CloudStorageService),
-        ],
-      }),
+    await s.registry.replace(s.lateCloud, [
+      [
+        provide(cloudStorageService, {
+          subscribeReconciled,
+        } as unknown as CloudStorageService),
+      ],
     ])
     await vi.waitFor(() => expect(subscribeReconciled).toHaveBeenCalledOnce())
     listener!('/another-project', [])
@@ -218,21 +226,23 @@ describe('direct project session file actions', () => {
     ])
     expect(adopt).toHaveBeenCalledWith('/project', 'cloud truth')
     await vi.waitFor(() => expect(reload).toHaveBeenCalledOnce())
-    s.registry[Symbol.dispose]()
+    await s.registry.dispose()
     registries.splice(registries.indexOf(s.registry), 1)
     expect(stop).toHaveBeenCalledOnce()
   })
-
   it.each(['tree refresh', 'new snapshot', 'project switch'] as const)(
     'keeps a cloud rebuild current across %s only when its snapshot still owns the project',
     async (operation) => {
       let reconcile:
         | ((
             root: string,
-            files: { relativePath: string; data: Uint8Array }[]
+            files: {
+              relativePath: string
+              data: Uint8Array
+            }[]
           ) => void)
         | undefined
-      const s = setup({
+      const s = await setup({
         subscribeReconciled: (listener: NonNullable<typeof reconcile>) => {
           reconcile = listener
           return () => {}
@@ -243,7 +253,9 @@ describe('direct project session file actions', () => {
       })
       const pending = Promise.withResolvers<undefined>()
       const reload = vi.fn(async (_isCurrent: () => boolean) => pending.promise)
-      Object.assign(s.project, { reloadFilesFromStorage: reload })
+      Object.assign(s.project, {
+        reloadFilesFromStorage: reload,
+      })
       await vi.waitFor(() => expect(reconcile).toBeDefined())
       const files = [
         {
@@ -269,11 +281,10 @@ describe('direct project session file actions', () => {
       }
     }
   )
-
   it('stages cloud thumbnails and forwards editor activity without file writes', async () => {
     const stageThumbnail = vi.fn(async () => {})
     const editorChanged = vi.fn()
-    const s = setup({
+    const s = await setup({
       root: '/cloud',
       stageThumbnail,
       editorChanged,
@@ -290,9 +301,8 @@ describe('direct project session file actions', () => {
       '/cloud/project/main.kcl'
     )
   })
-
   it('preserves cloud identity and library ownership when refreshing the tree', async () => {
-    const s = setup({
+    const s = await setup({
       root: '/',
       idFor: () => 'project',
       saves: signal(new Map()),
@@ -309,7 +319,9 @@ describe('direct project session file actions', () => {
       expect.anything(),
       '/project',
       expect.anything(),
-      { createMissingEntrypoint: false }
+      {
+        createMissingEntrypoint: false,
+      }
     )
     expect(s.project.projectIORefSignal.value).toMatchObject({
       title: 'Fresh',
@@ -318,9 +330,8 @@ describe('direct project session file actions', () => {
       libraryType: 'cloud',
     })
   })
-
   it('discards a tree read completed after the project changed', async () => {
-    const s = setup()
+    const s = await setup()
     const gate = Promise.withResolvers<Project>()
     vi.mocked(getProjectInfo).mockReturnValueOnce(gate.promise)
     const refresh = s.session.refreshProject()
@@ -331,9 +342,8 @@ describe('direct project session file actions', () => {
     expect(next.project.projectIORefSignal.value.title).toBe('Project')
     expect(s.project.projectIORefSignal.value.title).toBe('Project')
   })
-
   it('keeps the newest tree when concurrent reads finish out of order', async () => {
-    const s = setup()
+    const s = await setup()
     const gate = Promise.withResolvers<Project>()
     vi.mocked(getProjectInfo)
       .mockReturnValueOnce(gate.promise)
@@ -345,9 +355,8 @@ describe('direct project session file actions', () => {
     await previous
     expect(s.project.projectIORefSignal.value.title).toBe('Latest')
   })
-
   it('resolves navigation after the router loader finishes and preserves unrelated query parameters', async () => {
-    const s = setup()
+    const s = await setup()
     const gate = Promise.withResolvers<undefined>()
     s.navigate.mockImplementationOnce(async () => {
       await gate.promise
@@ -377,9 +386,8 @@ describe('direct project session file actions', () => {
     await opening
     expect(complete).toHaveBeenCalledOnce()
   })
-
   it('flushes an affected editor before renaming a folder and updates its owned path', async () => {
-    const s = setup()
+    const s = await setup()
     const gate = Promise.withResolvers<boolean>()
     s.flush.mockReturnValueOnce(gate.promise)
     const renaming = s.session.rename('/project/parts', '/project/renamed')
@@ -389,16 +397,14 @@ describe('direct project session file actions', () => {
     expect(s.rename).toHaveBeenCalledWith('/project/parts', '/project/renamed')
     expect(s.filePath.value).toBe('/project/renamed/main.kcl')
   })
-
   it('rebinds both the editor and navigation path after moving an open file', async () => {
-    const s = setup()
+    const s = await setup()
     await s.session.rename('/project/parts/main.kcl', '/project/moved.kcl')
     expect(s.project.executingEditor.peek()!.path).toBe('/project/moved.kcl')
     expect(s.filePath.value).toBe('/project/moved.kcl')
   })
-
   it('does not rebind an active file when an unrelated sibling prefix is renamed', async () => {
-    const s = setup()
+    const s = await setup()
     s.filePath.value = '/project/parts-extra/main.kcl'
     s.project.executingEditor.peek()!.path = s.filePath.value
     await s.session.rename('/project/parts', '/project/components')
@@ -406,7 +412,6 @@ describe('direct project session file actions', () => {
     expect(s.project.executingEditor.peek()!.path).toBe(s.filePath.value)
     expect(s.flush).not.toHaveBeenCalled()
   })
-
   it.each([
     [
       '/project/main.kcl',
@@ -416,7 +421,7 @@ describe('direct project session file actions', () => {
   ])(
     'updates entrypoint metadata when moving %s',
     async (source, destination, relative) => {
-      const s = setup()
+      const s = await setup()
       await s.session.rename(source, destination)
       expect(s.writeFile).toHaveBeenCalledWith(
         '/project/project.toml',
@@ -424,7 +429,6 @@ describe('direct project session file actions', () => {
       )
     }
   )
-
   it('keeps the old path while a cloud move takes seven seconds, then rebinds before persistence', async () => {
     vi.useFakeTimers()
     const gate = Promise.withResolvers<undefined>()
@@ -437,11 +441,16 @@ describe('direct project session file actions', () => {
         _path: string,
         run: (operations: FileOperationsRegistryService) => Promise<void>
       ) => {
-        await run({ rename } as unknown as FileOperationsRegistryService)
+        await run({
+          rename,
+        } as unknown as FileOperationsRegistryService)
         await persisted.promise
       }
     )
-    const s = setup({ root: '/cloud', batch } as unknown as CloudStorageService)
+    const s = await setup({
+      root: '/cloud',
+      batch,
+    } as unknown as CloudStorageService)
     s.filePath.value = '/cloud/project/parts/main.kcl'
     s.project.executingEditor.peek()!.path = s.filePath.value
     const moving = s.session.rename(
@@ -463,9 +472,8 @@ describe('direct project session file actions', () => {
     await moving
     vi.useRealTimers()
   })
-
   it('cancels a rename when pending edits cannot be saved', async () => {
-    const s = setup()
+    const s = await setup()
     s.flush.mockResolvedValueOnce(false)
     await expect(
       s.session.rename('/project/parts', '/project/new')
@@ -473,14 +481,15 @@ describe('direct project session file actions', () => {
     expect(s.rename).not.toHaveBeenCalled()
     expect(s.filePath.value).toBe('/project/parts/main.kcl')
   })
-
   it('refuses a destination collision', async () => {
-    const s = setup()
+    const s = await setup()
     s.rename.mockRejectedValueOnce(
       new FileAlreadyExists({
         operation: 'rename',
         path: '/project/parts',
-        cause: { code: 'EEXIST' },
+        cause: {
+          code: 'EEXIST',
+        },
         message: 'Name already exists.',
       })
     )
@@ -489,7 +498,6 @@ describe('direct project session file actions', () => {
     ).rejects.toThrow('already exists')
     expect(s.filePath.value).toBe('/project/parts/main.kcl')
   })
-
   it('rebinds the live editor after a case-only rename on a case-insensitive backing', async () => {
     const memory = createMemoryFileSystem({
       ...noopfs.impl,
@@ -500,13 +508,15 @@ describe('direct project session file actions', () => {
           .normalize('NFD')
           .toLowerCase(),
     })
-    await memory.mkdir('/project/parts', { recursive: true })
+    await memory.mkdir('/project/parts', {
+      recursive: true,
+    })
     await memory.writeFile('/project/parts/main.kcl', new Uint8Array([42]))
     const scheduler = createFileOperationsScheduler({
       ...memory,
       resolve: (...parts) => posix.resolve(...parts),
     })
-    const s = setup()
+    const s = await setup()
     s.exists.mockResolvedValue(true)
     s.rename.mockImplementation((...args) =>
       scheduler.operations.rename(...args)
@@ -527,9 +537,8 @@ describe('direct project session file actions', () => {
       await scheduler.dispose()
     }
   })
-
   it('does not update a replaced project after a captured rename completes', async () => {
-    const s = setup()
+    const s = await setup()
     const gate = Promise.withResolvers<undefined>()
     s.rename.mockImplementationOnce(async () => {
       await gate.promise
@@ -555,7 +564,10 @@ describe('direct project session file actions', () => {
         return Promise.reject(error)
       }
     )
-    const s = setup({ root: '/cloud', batch } as unknown as CloudStorageService)
+    const s = await setup({
+      root: '/cloud',
+      batch,
+    } as unknown as CloudStorageService)
     s.filePath.value = '/cloud/project/parts/main.kcl'
     s.project.executingEditor.peek()!.path = s.filePath.value
     await expect(
@@ -565,11 +577,12 @@ describe('direct project session file actions', () => {
     expect(s.rename).not.toHaveBeenCalled()
   })
 })
-
 function storageForTest(): ProjectStorage {
   return {
     root: '/project',
-    writeAvailability: signal({ writable: true }),
+    writeAvailability: signal({
+      writable: true,
+    }),
     externalChanges: 'snapshot',
     removeWithHistory: vi.fn(async () => ({
       undo: vi.fn(async () => {}),
@@ -577,15 +590,18 @@ function storageForTest(): ProjectStorage {
     })),
     createMissingEntrypoint: false,
     watch: vi.fn(() => vi.fn()),
-    batch: vi.fn(async (_path, run) => run({ ...testFileOperations })),
+    batch: vi.fn(async (_path, run) =>
+      run({
+        ...testFileOperations,
+      })
+    ),
     refresh: vi.fn(async () => undefined),
     retry: vi.fn(async () => {}),
     editorChanged: vi.fn(),
     writeThumbnail: vi.fn(async () => {}),
   }
 }
-
-it('releases captured watchers when a watch is replaced, removed, or the session is disposed', () => {
+it('releases captured watchers when a watch is replaced, removed, or the session is disposed', async () => {
   const storage = storageForTest()
   const first = vi.fn()
   const second = vi.fn()
@@ -594,7 +610,7 @@ it('releases captured watchers when a watch is replaced, removed, or the session
     .mockReturnValueOnce(first)
     .mockReturnValueOnce(second)
     .mockReturnValueOnce(third)
-  const s = setup(undefined, storage)
+  const s = await setup(undefined, storage)
   const io = s.session.textFileIO
   io.watch('/project/main.kcl', 'editor', vi.fn())
   io.watch('/project/main.kcl', 'editor', vi.fn())
@@ -603,36 +619,41 @@ it('releases captured watchers when a watch is replaced, removed, or the session
   io.unwatch('/project/main.kcl', 'editor')
   expect(second).toHaveBeenCalledOnce()
   io.watch('/project/other.kcl', 'editor', vi.fn())
-  s.registry[Symbol.dispose]()
+  await s.registry.dispose()
   registries.splice(registries.indexOf(s.registry), 1)
   expect(third).toHaveBeenCalledOnce()
 })
-
 it('uses the provider entrypoint policy when refreshing a project', async () => {
-  const s = setup(undefined, storageForTest())
+  const s = await setup(undefined, storageForTest())
   vi.mocked(getProjectInfo).mockResolvedValueOnce(metadata('Snapshot'))
   await s.session.refreshProject()
   expect(getProjectInfo).toHaveBeenCalledWith(
     expect.anything(),
     '/project',
     expect.anything(),
-    { createMissingEntrypoint: false }
+    {
+      createMissingEntrypoint: false,
+    }
   )
   expect(s.session.project.peek()?.projectIORefSignal.peek().title).toBe(
     'Snapshot'
   )
 })
-
 describe('project deletion through storage capabilities', () => {
   it('deletes and restores real memory-backed files without a cloud service', async () => {
-    const memory = createMemoryFileSystem({ ...noopfs.impl, ...posix })
-    await memory.mkdir('/project/parts', { recursive: true })
+    const memory = createMemoryFileSystem({
+      ...noopfs.impl,
+      ...posix,
+    })
+    await memory.mkdir('/project/parts', {
+      recursive: true,
+    })
     await memory.writeFile(
       '/project/parts/main.kcl',
       new TextEncoder().encode('original contents')
     )
     const scheduler = createFileOperationsScheduler(memory)
-    const s = setup(undefined, undefined, scheduler.operations)
+    const s = await setup(undefined, undefined, scheduler.operations)
     try {
       const deletion = await s.session.deleteEntry('/project/parts')
       assert(deletion && !(deletion instanceof Error))
@@ -653,11 +674,10 @@ describe('project deletion through storage capabilities', () => {
       await scheduler.dispose()
     }
   })
-
   it('waits for a seven-second editor save before deleting through its backing', async () => {
     vi.useFakeTimers()
     const storage = storageForTest()
-    const s = setup(undefined, storage)
+    const s = await setup(undefined, storage)
     const saving = Promise.withResolvers<boolean>()
     s.flush.mockReturnValue(saving.promise)
     try {
@@ -672,23 +692,21 @@ describe('project deletion through storage capabilities', () => {
       vi.useRealTimers()
     }
   })
-
   it('keeps the file when unsaved edits cannot be persisted', async () => {
     const storage = storageForTest()
-    const s = setup(undefined, storage)
+    const s = await setup(undefined, storage)
     s.flush.mockResolvedValue(false)
     await expect(
       s.session.deleteEntry('/project/parts')
     ).resolves.toBeInstanceOf(Error)
     expect(storage.removeWithHistory).not.toHaveBeenCalled()
   })
-
   it.each(['save', 'deletion'] as const)(
     'does not attach history to a replacement project after a slow %s',
     async (phase) => {
       vi.useFakeTimers()
       const storage = storageForTest()
-      const s = setup(undefined, storage)
+      const s = await setup(undefined, storage)
       const pending = Promise.withResolvers<undefined>()
       if (phase === 'save')
         s.flush.mockImplementation(async () => {
@@ -698,7 +716,10 @@ describe('project deletion through storage capabilities', () => {
       else
         vi.mocked(storage.removeWithHistory).mockImplementation(async () => {
           await pending.promise
-          return { undo: vi.fn(async () => {}), redo: vi.fn(async () => {}) }
+          return {
+            undo: vi.fn(async () => {}),
+            redo: vi.fn(async () => {}),
+          }
         })
       try {
         const deleting = s.session.deleteEntry('/project/parts')
@@ -713,10 +734,9 @@ describe('project deletion through storage capabilities', () => {
       }
     }
   )
-
   it('rejects a path in a neighboring project before flushing or deleting', async () => {
     const storage = storageForTest()
-    const s = setup(undefined, storage)
+    const s = await setup(undefined, storage)
     await expect(
       s.session.deleteEntry('/project-other/main.kcl')
     ).resolves.toBeInstanceOf(Error)

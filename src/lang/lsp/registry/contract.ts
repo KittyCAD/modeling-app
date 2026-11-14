@@ -1,6 +1,7 @@
-import { defineContract, defineService } from '@kittycad/registry'
+import { inputs, observeService } from '@src/registry/inputs'
 import type { KclLspEditor } from '@src/lang/lsp/types'
 import type { FileEntry } from '@src/lib/project'
+import { contract, service } from 'plankton'
 
 export type LspService = {
   attachKclManager: (kclManager: KclLspEditor) => () => void
@@ -10,7 +11,10 @@ export type LspService = {
     redirect: boolean
   ) => void
   onProjectOpen: (
-    project: { name: string | null; path: string | null } | null,
+    project: {
+      name: string | null
+      path: string | null
+    } | null,
     file: FileEntry | null
   ) => void
   onFileOpen: (filePath: string | null, projectPath: string | null) => void
@@ -23,9 +27,12 @@ export type LspService = {
   ) => void
   onFileDelete: (file: FileEntry, projectPath: string | null) => void
 }
-
-export const lspContract = defineContract({
-  lspService: defineService<LspService>('lsp.service'),
+export const lspContract = contract({
+  lspService: service<LspService>('lsp.service'),
 })
 
 export const { lspService } = lspContract
+
+export const observations = inputs({
+  lspService: observeService(lspService),
+})

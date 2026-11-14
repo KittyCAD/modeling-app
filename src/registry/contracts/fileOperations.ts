@@ -1,11 +1,5 @@
-import type { FileOperationsMount } from '@src/lib/fileSystem/mounts'
+import { inputs, observeService, observe } from '@src/registry/inputs'
 import type { MemoryFileDeletion } from '@src/lib/fileSystem/deletionHistory'
-import {
-  appendValueSpec,
-  defineContract,
-  defineService,
-} from '@kittycad/registry'
-import type { ProjectOperationsService } from '@src/lib/projectSession/projectOperations'
 import type { FileNameParts } from '@src/lib/fileSystem/fileNames'
 import type {
   CopyOptions,
@@ -13,6 +7,9 @@ import type {
   FileStat,
   StatOptions,
 } from '@src/lib/fileSystem/fileOperations'
+import type { FileOperationsMount } from '@src/lib/fileSystem/mounts'
+import type { ProjectOperationsService } from '@src/lib/projectSession/projectOperations'
+import { contract, Facet, service } from 'plankton'
 
 /** Promise facade for coordinated project-directory and file operations. */
 export interface FileOperationsRegistryService {
@@ -66,20 +63,24 @@ export interface FileOperationsRegistryService {
   /** Rename without replacing a distinct entry; filesystem spelling aliases are allowed. */
   readonly rename: (source: string, destination: string) => Promise<void>
 }
-
-export const fileOperationsContract = defineContract({
-  projectOperationsService: defineService<ProjectOperationsService>(
+export const fileOperationsContract = contract({
+  projectOperationsService: service<ProjectOperationsService>(
     'fileOperations.projects'
   ),
-  fileOperationsService: defineService<FileOperationsRegistryService>(
+  fileOperationsService: service<FileOperationsRegistryService>(
     'fileOperations.service'
   ),
 })
-
 export const { fileOperationsService, projectOperationsService } =
   fileOperationsContract
-
 export type { ProjectOperationsService } from '@src/lib/projectSession/projectOperations'
+export const fileOperationsMountsFacet = new Facet<
+  FileOperationsMount,
+  readonly FileOperationsMount[]
+>('fileOperations.mounts', (inputs) => inputs)
 
-export const fileOperationsMountsValueSpec =
-  appendValueSpec<FileOperationsMount>('fileOperations.mounts')
+export const observations = inputs({
+  fileOperationsService: observeService(fileOperationsService),
+  projectOperationsService: observeService(projectOperationsService),
+  fileOperationsMountsFacet: observe(fileOperationsMountsFacet),
+})

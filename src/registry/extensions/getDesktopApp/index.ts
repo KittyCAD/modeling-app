@@ -1,36 +1,37 @@
-import { defineRegistryItem, provide } from '@kittycad/registry'
 import { isDesktop } from '@src/lib/isDesktop'
-import { homeSidebarItemsValueSpec } from '@src/registry/contracts/homeSidebar'
-import { projectExplorerProjectMenuItemsValueSpec } from '@src/registry/contracts/projectExplorer'
+import { homeSidebarItemsFacet } from '@src/registry/contracts/homeSidebar'
+import { projectExplorerProjectMenuItemsFacet } from '@src/registry/contracts/projectExplorer'
+import { contribute, type InputOf } from 'plankton'
 import { HomeGetDesktopApp, ProjectMenuGetDesktopApp } from './GetDesktopApp'
 
 const isWeb = () => !isDesktop()
-
-const getDesktopAppExtension = defineRegistryItem({
-  id: 'get-desktop-app',
-  provides: [
-    provide(
-      homeSidebarItemsValueSpec,
-      {
+const getDesktopAppExtension = [
+  contribute(
+    homeSidebarItemsFacet,
+    () =>
+      ({
         id: 'get-desktop-app.home-sidebar',
         order: 100,
         isVisible: isWeb,
         Component: HomeGetDesktopApp,
-      },
-      { key: 'get-desktop-app.home-sidebar' }
-    ),
-    provide(
-      projectExplorerProjectMenuItemsValueSpec,
-      {
+      }) satisfies InputOf<typeof homeSidebarItemsFacet>,
+    {
+      key: 'get-desktop-app.home-sidebar',
+    }
+  ),
+  contribute(
+    projectExplorerProjectMenuItemsFacet,
+    () =>
+      ({
         id: 'get-desktop-app.project-menu',
         order: 20,
-        placement: 'footer',
+        placement: 'footer' as const,
         isVisible: isWeb,
         Component: ProjectMenuGetDesktopApp,
-      },
-      { key: 'get-desktop-app.project-menu' }
-    ),
-  ],
-})
-
+      }) satisfies InputOf<typeof projectExplorerProjectMenuItemsFacet>,
+    {
+      key: 'get-desktop-app.project-menu',
+    }
+  ),
+]
 export default getDesktopAppExtension

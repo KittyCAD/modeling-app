@@ -1,10 +1,5 @@
-import { selectCommand } from '@src/lib/commandUtils'
-import {
-  defineRegistryItem,
-  defineRegistryItemFactory,
-  provide,
-} from '@kittycad/registry'
 import { computed, signal } from '@preact/signals-core'
+import { selectCommand } from '@src/lib/commandUtils'
 import {
   isExtensionARelevantExtension,
   toProjectRelativePath,
@@ -14,28 +9,65 @@ import {
   revealInFileExplorer,
 } from '@src/lib/revealInFileExplorer'
 import { reportRejection } from '@src/lib/trap'
-import { commandSystemService } from '@src/registry/contracts/commands'
+import { observations as commandsObservations } from '@src/registry/contracts/commands'
 import {
   type ProjectExplorerRowContextMenuItem,
   type ProjectExplorerRowContextMenuItemContext,
-  projectExplorerProjectMenuItemsValueSpec,
-  projectExplorerRowContextMenuItemsValueSpec,
+  projectExplorerProjectMenuItemsFacet,
+  projectExplorerRowContextMenuItemsFacet,
 } from '@src/registry/contracts/projectExplorer'
-import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
-
-const importInCurrentFileExtension = defineRegistryItemFactory((ctx) => {
-  const importExtensions = signal<string[]>([])
-  let disposed = false
-  let wasmRevision = 0
-  let stopWasmSubscription: (() => void) | undefined
-
-  // Resolve dependencies after the registry graph has been constructed.
-  void Promise.resolve()
-    .then(() => {
-      if (disposed) return
-      stopWasmSubscription = ctx.valueSpecs
-        .signal(wasmPromiseValueSpec)
-        .subscribe((wasmPromise) => {
+import { observations as wasmObservations } from '@src/registry/contracts/wasm'
+import {
+  factory as defineFactory,
+  contribute,
+  type InputOf,
+  type Factory,
+} from 'plankton'
+const importInCurrentFileExtension: Factory = defineFactory({
+  dependencies: { wasm: wasmObservations, commands: commandsObservations },
+  key: 'project-explorer.import-in-current-file',
+  create: ({ wasm: wasmInputs, commands: commandsInputs }) => {
+    const importExtensions = signal<string[]>([])
+    let disposed = false
+    let wasmRevision = 0
+    const importItem = computed<ProjectExplorerRowContextMenuItem>(() => {
+      const extensions = importExtensions.value
+      const isVisible = ({
+        row,
+        project,
+        file,
+        readOnly,
+      }: ProjectExplorerRowContextMenuItemContext) =>
+        readOnly === false &&
+        !!project &&
+        !!file &&
+        !row.isFolder &&
+        !row.isFake &&
+        row.path !== file.path &&
+        isExtensionARelevantExtension(row.path, extensions)
+      return {
+        id: 'import-in-current-file',
+        label: 'Import in current file',
+        dataTestId: 'context-menu-import-in-current-file',
+        isVisible,
+        onSelect: (context) => {
+          if (!context.project || !isVisible(context)) return
+          selectCommand(commandsInputs.commandSystemService.required(), {
+            name: 'Import',
+            groupId: 'code',
+            argDefaultValues: {
+              path: toProjectRelativePath(
+                context.project.path,
+                context.row.path
+              ),
+            },
+          })
+        },
+      }
+    })
+    return {
+      start: () => {
+        const stop = wasmInputs.wasmPromiseFacet.subscribe((wasmPromise) => {
           const revision = ++wasmRevision
           importExtensions.value = []
           void wasmPromise
@@ -51,87 +83,59 @@ const importInCurrentFileExtension = defineRegistryItemFactory((ctx) => {
               if (!disposed && revision === wasmRevision) reportRejection(error)
             })
         })
-    })
-    .catch(reportRejection)
-
-  const importItem = computed<ProjectExplorerRowContextMenuItem>(() => {
-    const extensions = importExtensions.value
-    const isVisible = ({
-      row,
-      project,
-      file,
-      readOnly,
-    }: ProjectExplorerRowContextMenuItemContext) =>
-      readOnly === false &&
-      !!project &&
-      !!file &&
-      !row.isFolder &&
-      !row.isFake &&
-      row.path !== file.path &&
-      isExtensionARelevantExtension(row.path, extensions)
-
-    return {
-      id: 'import-in-current-file',
-      label: 'Import in current file',
-      dataTestId: 'context-menu-import-in-current-file',
-      isVisible,
-      onSelect: (context) => {
-        if (!context.project || !isVisible(context)) return
-        selectCommand(ctx.services.get(commandSystemService), {
-          name: 'Import',
-          groupId: 'code',
-          argDefaultValues: {
-            path: toProjectRelativePath(context.project.path, context.row.path),
-          },
-        })
+        return () => {
+          disposed = true
+          stop()
+        }
       },
+      items: [
+        contribute(
+          projectExplorerRowContextMenuItemsFacet,
+          () => importItem.value,
+          {
+            key: 'import-in-current-file',
+          }
+        ),
+      ],
     }
-  })
-
-  return {
-    id: 'project-explorer.import-in-current-file',
-    provides: [
-      provide(projectExplorerRowContextMenuItemsValueSpec, importItem, {
-        key: 'import-in-current-file',
-      }),
-    ],
-    dispose: () => {
-      disposed = true
-      stopWasmSubscription?.()
-    },
-  }
-}, 'project-explorer.import-in-current-file')
-
-const projectExplorerExtension = defineRegistryItem({
-  id: 'project-explorer',
-  uses: [importInCurrentFileExtension],
-  provides: [
-    provide(
-      projectExplorerProjectMenuItemsValueSpec,
-      {
-        id: 'reveal-in-file-explorer.project-menu',
-        order: 100,
-        label: 'Reveal in file explorer',
-        dataTestId: 'project-sidebar-reveal-in-file-explorer',
-        isVisible: ({ projectPath }) =>
-          Boolean(projectPath) && canRevealInFileExplorer(),
-        onSelect: ({ projectPath }) => revealInFileExplorer(projectPath),
-      },
-      { key: 'reveal-in-file-explorer.project-menu' }
-    ),
-    provide(
-      projectExplorerRowContextMenuItemsValueSpec,
-      {
-        id: 'reveal-in-file-explorer.row-context-menu',
-        order: 100,
-        label: 'Reveal in file explorer',
-        dataTestId: 'context-menu-reveal-in-file-explorer',
-        isVisible: ({ row }) => !row.isFake && canRevealInFileExplorer(),
-        onSelect: ({ row }) => revealInFileExplorer(row.path),
-      },
-      { key: 'reveal-in-file-explorer.row-context-menu' }
-    ),
-  ],
+  },
 })
-
+const _projectExplorerProjectMenuItemsContribution: InputOf<
+  typeof projectExplorerProjectMenuItemsFacet
+> = {
+  id: 'reveal-in-file-explorer.project-menu',
+  order: 100,
+  label: 'Reveal in file explorer',
+  dataTestId: 'project-sidebar-reveal-in-file-explorer',
+  isVisible: ({ projectPath }) =>
+    Boolean(projectPath) && canRevealInFileExplorer(),
+  onSelect: ({ projectPath }) => revealInFileExplorer(projectPath),
+} satisfies InputOf<typeof projectExplorerProjectMenuItemsFacet>
+const _projectExplorerRowContextMenuItemsContribution: InputOf<
+  typeof projectExplorerRowContextMenuItemsFacet
+> = {
+  id: 'reveal-in-file-explorer.row-context-menu',
+  order: 100,
+  label: 'Reveal in file explorer',
+  dataTestId: 'context-menu-reveal-in-file-explorer',
+  isVisible: ({ row }) => !row.isFake && canRevealInFileExplorer(),
+  onSelect: ({ row }) => revealInFileExplorer(row.path),
+} satisfies InputOf<typeof projectExplorerRowContextMenuItemsFacet>
+const projectExplorerExtension = [
+  importInCurrentFileExtension,
+  contribute(
+    projectExplorerProjectMenuItemsFacet,
+    () => _projectExplorerProjectMenuItemsContribution,
+    {
+      key: 'reveal-in-file-explorer.project-menu',
+    }
+  ),
+  contribute(
+    projectExplorerRowContextMenuItemsFacet,
+    () => _projectExplorerRowContextMenuItemsContribution,
+    {
+      key: 'reveal-in-file-explorer.row-context-menu',
+    }
+  ),
+]
 export default projectExplorerExtension

@@ -8,7 +8,7 @@ import {
   plugins,
   Registry,
   type Factory,
-} from './next'
+} from './index'
 
 const info = {
   id: 'tools',

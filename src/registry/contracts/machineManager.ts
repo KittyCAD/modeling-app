@@ -1,13 +1,11 @@
-import { defineContract, defineService } from '@kittycad/registry'
 import type { MachineManager } from '@src/lib/MachineManager'
-
+import { contract, service } from 'plankton'
 export type MachineManagerRegistryService = {
   readonly manager: MachineManager
 }
-
-export const machineManagerContract = defineContract({
+export const machineManagerContract = contract({
   machineManagerService:
-    defineService<MachineManagerRegistryService>('machine-manager'),
+    service<MachineManagerRegistryService>('machine-manager'),
 })
 
 export const { machineManagerService } = machineManagerContract

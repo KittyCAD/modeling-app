@@ -1,13 +1,13 @@
+import { inputs, observeService } from '@src/registry/inputs'
+import type { ReadonlySignal, Signal } from '@preact/signals-core'
+import type { Project } from '@src/lib/project'
+import type { ZDSProject } from '@src/lib/projectSession'
 import type {
   ProjectDeletion,
   ProjectStorage,
 } from '@src/lib/projectSession/storage'
-import { defineContract, defineService } from '@kittycad/registry'
-import type { ReadonlySignal, Signal } from '@preact/signals-core'
-import type { Project } from '@src/lib/project'
-import type { ZDSProject } from '@src/lib/projectSession'
 import type { TextFileIO } from '@src/lib/projectSession/textFileIO'
-
+import { contract, service } from 'plankton'
 export interface ExecutingEditorUpdateOptions {
   shouldExecute?: boolean
   shouldResetCamera?: boolean
@@ -46,7 +46,10 @@ export interface ProjectSessionService {
   /** Adopt an authoritative storage snapshot without applying it to a replacement session. */
   applyStorageSnapshot: (
     root: string,
-    files: readonly { relativePath: string; data: Uint8Array }[]
+    files: readonly {
+      relativePath: string
+      data: Uint8Array
+    }[]
   ) => Promise<void> | undefined
   /** Keep derived thumbnail persistence behind continued editor activity. */
   editorChanged: (path: string) => void
@@ -76,9 +79,11 @@ export interface ProjectSessionService {
   getCurrentProjectLibraryId: () => string | undefined
   setCurrentProjectLibraryId: (libraryId: string | undefined) => void
 }
-
-export const projectSessionContract = defineContract({
-  projectSession: defineService<ProjectSessionService>('project-session'),
+export const projectSessionContract = contract({
+  projectSession: service<ProjectSessionService>('project-session'),
 })
-
 export const { projectSession } = projectSessionContract
+
+export const observations = inputs({
+  projectSession: observeService(projectSession),
+})

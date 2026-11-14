@@ -2,7 +2,7 @@ import { factory } from './algebra'
 import fc from 'fast-check'
 import { expect, it } from 'vitest'
 import { contribute, Facet, type Precedence, type Factory } from './algebra'
-import { Registry } from './next'
+import { Registry } from './index'
 
 const priorities = ['highest', 'high', 'default', 'low', 'lowest'] as const
 const runs = { numRuns: 150 }

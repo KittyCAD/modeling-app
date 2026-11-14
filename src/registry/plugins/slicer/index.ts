@@ -1,28 +1,27 @@
-import { selectCommand } from '@src/lib/commandUtils'
-import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useAppState } from '@src/AppState'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import type { KclManager } from '@src/lang/KclManager'
 import type { Command } from '@src/lib/commandTypes'
+import { selectCommand } from '@src/lib/commandUtils'
 import { EngineConnectionStateType } from '@src/lib/engineConnection/utils'
 import { isDesktop } from '@src/lib/isDesktop'
 import { DefaultLayoutToolbarID } from '@src/lib/layout/configs/default'
 import {
-  layoutActionLibraryValueSpec,
-  layoutContributionsValueSpec,
+  layoutActionLibraryFacet,
+  layoutContributionsFacet,
 } from '@src/lib/layout/registry/contract'
 import {
-  commandSystemService,
+  observations as commandsObservations,
   MODE_MODELING_COMMAND_SCOPE,
   provideCommand,
 } from '@src/registry/contracts/commands'
 import {
+  observations as fileOperationsObservations,
   type FileOperationsRegistryService,
-  fileOperationsService,
 } from '@src/registry/contracts/fileOperations'
-import { projectSession } from '@src/registry/contracts/projectSession'
+import { observations as projectSessionObservations } from '@src/registry/contracts/projectSession'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import {
   EXPORT_TO_SLICER_ACTION_TYPE,
@@ -37,11 +36,15 @@ import {
   SLICER_COMMAND_OPTIONS,
   type SlicerId,
 } from '@src/registry/plugins/slicer/slicerDefinitions'
-
+import {
+  factory as defineFactory,
+  contribute,
+  type InputOf,
+  type Factory,
+} from 'plankton'
 type ExportToSlicerCommandArgs = {
   slicer: SlicerId
 }
-
 function createUseExportToSlicerDisabled({
   getKclManager,
 }: {
@@ -59,22 +62,18 @@ function createUseExportToSlicerDisabled({
       kclManager.isExecutingSignal.value ||
       immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
       !isStreamReady
-
     return engineIsBusyOrUnavailable
       ? 'Need engine connection to export'
       : undefined
   }
 }
-
 function getSubmittedSlicerId(data: unknown): SlicerId | undefined {
   if (!data || typeof data !== 'object' || !('slicer' in data)) {
     return undefined
   }
-
   const slicer = (data as Partial<ExportToSlicerCommandArgs>).slicer
   return getSlicerExportDefinition(slicer) ? slicer : undefined
 }
-
 function createExportToSlicerCommand({
   getKclManager,
   getFileOperations,
@@ -107,12 +106,10 @@ function createExportToSlicerCommand({
       if (!definition) {
         return new Error('Select a slicer to export to.')
       }
-
       const kclManager = getKclManager()
       if (!kclManager) {
         return new Error('No active modeling context')
       }
-
       return exportCurrentPartToSlicer(definition, {
         kclManager,
         fileOperations: getFileOperations(),
@@ -120,54 +117,76 @@ function createExportToSlicerCommand({
     },
   }
 }
-
-const exportToSlicerSidebarItem = defineRegistryItemFactory((ctx) => {
-  const getCommandSystem = () => ctx.services.get(commandSystemService)
-  const getKclManager = () =>
-    ctx.services.optional(projectSession)?.project.value?.executingEditor
-      .value ?? undefined
-  const exportToSlicerCommand = createExportToSlicerCommand({
-    getKclManager,
-    getFileOperations: () => ctx.services.get(fileOperationsService),
-  })
-  const useExportToSlicerDisabled = createUseExportToSlicerDisabled({
-    getKclManager,
-  })
-
-  return {
-    id: 'slicer.left-toolbar.item',
-    provides: [
-      provideCommand(exportToSlicerCommand),
-      provide(layoutActionLibraryValueSpec, {
-        [EXPORT_TO_SLICER_ACTION_TYPE]: {
-          useHidden: () => !isDesktop(),
-          useDisabled: useExportToSlicerDisabled,
-          execute: () => {
-            selectCommand(getCommandSystem(), {
-              name: EXPORT_TO_SLICER_COMMAND_NAME,
-              groupId: EXPORT_TO_SLICER_COMMAND_GROUP_ID,
-            })
-          },
+const exportToSlicerSidebarItem: Factory = defineFactory({
+  dependencies: {
+    commands: commandsObservations,
+    projectSession: projectSessionObservations,
+    fileOperations: fileOperationsObservations,
+  },
+  key: 'slicer.left-toolbar.item',
+  create: ({
+    commands: commandsInputs,
+    projectSession: projectSessionInputs,
+    fileOperations: fileOperationsInputs,
+  }) => {
+    const getCommandSystem = () =>
+      commandsInputs.commandSystemService.required()
+    const getKclManager = () =>
+      projectSessionInputs.projectSession.current.value?.project.value
+        ?.executingEditor.value ?? undefined
+    const exportToSlicerCommand = createExportToSlicerCommand({
+      getKclManager,
+      getFileOperations: () =>
+        fileOperationsInputs.fileOperationsService.required(),
+    })
+    const useExportToSlicerDisabled = createUseExportToSlicerDisabled({
+      getKclManager,
+    })
+    const _layoutActionLibraryContribution: InputOf<
+      typeof layoutActionLibraryFacet
+    > = {
+      [EXPORT_TO_SLICER_ACTION_TYPE]: {
+        useHidden: () => !isDesktop(),
+        useDisabled: useExportToSlicerDisabled,
+        execute: () => {
+          selectCommand(getCommandSystem(), {
+            name: EXPORT_TO_SLICER_COMMAND_NAME,
+            groupId: EXPORT_TO_SLICER_COMMAND_GROUP_ID,
+          })
         },
-      }),
-      provide(layoutContributionsValueSpec, {
-        id: 'slicer.left-toolbar.action',
-        kind: 'action',
-        action: {
-          id: 'export-to-slicer',
-          label: EXPORT_TO_SLICER_COMMAND_NAME,
-          icon: 'printer3d',
-          actionType: EXPORT_TO_SLICER_ACTION_TYPE,
-        },
-        placement: {
-          targetPaneId: DefaultLayoutToolbarID.Left,
-          position: 'end',
-        },
-      }),
-    ],
-  }
-}, 'slicer.left-toolbar.item')
-
+      },
+    } satisfies InputOf<typeof layoutActionLibraryFacet>
+    const _layoutContributionsContribution: InputOf<
+      typeof layoutContributionsFacet
+    > = {
+      id: 'slicer.left-toolbar.action',
+      kind: 'action',
+      action: {
+        id: 'export-to-slicer',
+        label: EXPORT_TO_SLICER_COMMAND_NAME,
+        icon: 'printer3d',
+        actionType: EXPORT_TO_SLICER_ACTION_TYPE,
+      },
+      placement: {
+        targetPaneId: DefaultLayoutToolbarID.Left,
+        position: 'end',
+      },
+    } satisfies InputOf<typeof layoutContributionsFacet>
+    return {
+      items: [
+        provideCommand(exportToSlicerCommand),
+        contribute(
+          layoutActionLibraryFacet,
+          () => _layoutActionLibraryContribution
+        ),
+        contribute(
+          layoutContributionsFacet,
+          () => _layoutContributionsContribution
+        ),
+      ],
+    }
+  },
+})
 const slicer = createZdsPlugin({
   id: SLICER_PLUGIN_ID,
   title: 'Slicer export',
@@ -176,6 +195,5 @@ const slicer = createZdsPlugin({
   items: [exportToSlicerSidebarItem],
   defaultSetting: 'off',
 })
-
 export const order = 30
 export default slicer

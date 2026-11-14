@@ -1,18 +1,13 @@
+import { inputs, observeService, observe } from '@src/registry/inputs'
 import type { Feature } from '@kittycad/lib'
-import {
-  defineContract,
-  defineService,
-  defineValueSpec,
-  mergeObjectsValueSpec,
-} from '@kittycad/registry'
 import type {
   ActionLibrary,
   AreaLibrary,
-  LayoutContribution,
   Layout,
+  LayoutContribution,
   LayoutService,
 } from '@src/lib/layout/types'
-
+import { contract, Facet, service } from 'plankton'
 /**
  * An idempotent layout transformation controlled by a user feature.
  *
@@ -25,57 +20,52 @@ export type UserFeatureLayoutTransformation = {
   defaultValue?: boolean
   transform: (layout: Layout, enabled: boolean) => Layout
 }
-
-export const layoutContract = defineContract({
-  layoutService: defineService<LayoutService>('layout.service'),
-  layoutAreaLibraryValueSpec: mergeObjectsValueSpec<AreaLibrary>(
+export const layoutContract = contract({
+  layoutService: service<LayoutService>('layout.service'),
+  layoutAreaLibraryFacet: new Facet<Partial<AreaLibrary>, AreaLibrary>(
     'layout.areaLibrary',
-    {}
+    (inputs) => Object.assign({}, ...inputs)
   ),
-  layoutActionLibraryValueSpec: mergeObjectsValueSpec<ActionLibrary>(
+  layoutActionLibraryFacet: new Facet<Partial<ActionLibrary>, ActionLibrary>(
     'layout.actionLibrary',
-    {}
+    (inputs) => Object.assign({}, ...inputs)
   ),
-  layoutContributionsValueSpec: defineValueSpec<
+  layoutContributionsFacet: new Facet<
     LayoutContribution,
     readonly LayoutContribution[]
-  >({
-    name: 'layout.contributions',
-    defaultValue: [],
-    combine: (inputs) => {
-      const seen = new Set<string>()
-      return inputs.filter((contribution) => {
-        if (seen.has(contribution.id)) {
-          return false
-        }
-        seen.add(contribution.id)
-        return true
-      })
-    },
+  >('layout.contributions', (inputs) => {
+    const seen = new Set<string>()
+    return inputs.filter((contribution) => {
+      if (seen.has(contribution.id)) return false
+      seen.add(contribution.id)
+      return true
+    })
   }),
-  layoutUserFeatureTransformationsValueSpec: defineValueSpec<
+  layoutUserFeatureTransformationsFacet: new Facet<
     UserFeatureLayoutTransformation,
     readonly UserFeatureLayoutTransformation[]
-  >({
-    name: 'layout.userFeatureTransformations',
-    defaultValue: [],
-    combine: (inputs) => {
-      const seen = new Set<string>()
-      return inputs.filter((transformation) => {
-        if (seen.has(transformation.id)) {
-          return false
-        }
-        seen.add(transformation.id)
-        return true
-      })
-    },
+  >('layout.userFeatureTransformations', (inputs) => {
+    const seen = new Set<string>()
+    return inputs.filter((transformation) => {
+      if (seen.has(transformation.id)) return false
+      seen.add(transformation.id)
+      return true
+    })
   }),
 })
 
 export const {
   layoutService,
-  layoutAreaLibraryValueSpec,
-  layoutActionLibraryValueSpec,
-  layoutContributionsValueSpec,
-  layoutUserFeatureTransformationsValueSpec,
+  layoutAreaLibraryFacet,
+  layoutActionLibraryFacet,
+  layoutContributionsFacet,
+  layoutUserFeatureTransformationsFacet,
 } = layoutContract
+
+export const observations = inputs({
+  layoutContributionsFacet: observe(layoutContributionsFacet),
+  layoutUserFeatureTransformationsFacet: observe(
+    layoutUserFeatureTransformationsFacet
+  ),
+  layoutService: observeService(layoutService),
+})

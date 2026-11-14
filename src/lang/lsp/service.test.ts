@@ -178,8 +178,8 @@ function attachService(options?: {
     options?.features ?? createUserFeatures(UserFeaturesState.Ready)
   const manager = options?.manager ?? createManager()
   const lsp = createLspService({
-    getAuth: () => auth.service,
-    getUserFeatures: () => features.service,
+    auth: auth.service,
+    userFeatures: features.service,
   })
   lsp.service.attachKclManager(manager)
   if (options?.openProject !== false) {

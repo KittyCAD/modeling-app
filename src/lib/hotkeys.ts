@@ -1,11 +1,11 @@
-import { type Platform, isArray } from '@src/lib/utils'
+import { isArray, type Platform } from '@src/lib/utils'
 import {
   keymapChordDisplay,
   keymapKeystrokesDisplay,
 } from '@src/registry/contracts/keymap'
 
 /**
- * @deprecated Prefer registering shortcuts through `keymapValueSpec`.
+ * @deprecated Prefer registering shortcuts through `keymapFacet`.
  */
 export const SNAP_TO_GRID_HOTKEY = 'mod+g'
 

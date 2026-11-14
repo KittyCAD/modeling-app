@@ -1,5 +1,5 @@
-import { defineContract, defineValueSpec } from '@kittycad/registry'
 import type { FileEntry, Project } from '@src/lib/project'
+import { contract, Facet } from 'plankton'
 import type { ComponentType, ReactNode } from 'react'
 
 export interface ProjectExplorerRowContextMenuRow {
@@ -132,36 +132,29 @@ const byOrder = (
     | ProjectExplorerProjectMenuItem
     | ProjectExplorerProjectBreadcrumbBadge
 ) => (a.order || 0) - (b.order || 0)
-
-export const projectExplorerContract = defineContract({
-  projectExplorerProjectMenuItemsValueSpec: defineValueSpec<
+export const projectExplorerContract = contract({
+  projectExplorerProjectMenuItemsFacet: new Facet<
     ProjectExplorerProjectMenuItem,
     ProjectExplorerProjectMenuItem[]
-  >({
-    name: 'project-explorer-project-menu-items',
-    defaultValue: [],
-    combine: (items) => items.toSorted(byOrder),
-  }),
-  projectExplorerProjectBreadcrumbBadgesValueSpec: defineValueSpec<
+  >('project-explorer-project-menu-items', (inputs) =>
+    inputs.toSorted(byOrder)
+  ),
+  projectExplorerProjectBreadcrumbBadgesFacet: new Facet<
     ProjectExplorerProjectBreadcrumbBadge,
     ProjectExplorerProjectBreadcrumbBadge[]
-  >({
-    name: 'project-explorer-project-breadcrumb-badges',
-    defaultValue: [],
-    combine: (items) => items.toSorted(byOrder),
-  }),
-  projectExplorerRowContextMenuItemsValueSpec: defineValueSpec<
+  >('project-explorer-project-breadcrumb-badges', (inputs) =>
+    inputs.toSorted(byOrder)
+  ),
+  projectExplorerRowContextMenuItemsFacet: new Facet<
     ProjectExplorerRowContextMenuItem,
     ProjectExplorerRowContextMenuItem[]
-  >({
-    name: 'project-explorer-row-context-menu-items',
-    defaultValue: [],
-    combine: (items) => items.toSorted(byOrder),
-  }),
+  >('project-explorer-row-context-menu-items', (inputs) =>
+    inputs.toSorted(byOrder)
+  ),
 })
 
 export const {
-  projectExplorerProjectBreadcrumbBadgesValueSpec,
-  projectExplorerProjectMenuItemsValueSpec,
-  projectExplorerRowContextMenuItemsValueSpec,
+  projectExplorerProjectBreadcrumbBadgesFacet,
+  projectExplorerProjectMenuItemsFacet,
+  projectExplorerRowContextMenuItemsFacet,
 } = projectExplorerContract

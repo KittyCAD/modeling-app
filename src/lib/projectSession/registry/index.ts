@@ -1,21 +1,29 @@
-import { defineRegistryItemFactory, provideService } from '@kittycad/registry'
-import { createProjectSessionService } from '@src/lib/projectSession/next/session'
-import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
+import { createProjectSessionService } from '@src/lib/projectSession/next/session'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import { fileOperationsExtension } from '@src/registry/extensions/fileOperations'
+import { factory as defineFactory, provide, type Factory } from 'plankton'
 
 const id = 'project-session-next-extension'
+export const createProjectSessionExtension = (
+  files: Factory<{
+    operations: FileOperationsRegistryService
+  }> = fileOperationsExtension
+) =>
+  withProjectShellFeature(
+    defineFactory({
+      dependencies: { files },
+      key: id,
+      create: ({ files }) => {
+        const service = createProjectSessionService(files.operations)
+        return {
+          items: [provide(projectSessionService, service)],
+          dispose: service.closeProject,
+        }
+      },
+    }),
+    id
+  )
 
-export default withProjectShellFeature(
-  defineRegistryItemFactory((ctx) => {
-    const service = createProjectSessionService(() =>
-      ctx.services.get(fileOperationsService)
-    )
-    return {
-      id,
-      providesServices: [provideService(projectSessionService, service)],
-      dispose: service.closeProject,
-    }
-  }, id),
-  id
-)
+export default createProjectSessionExtension()
