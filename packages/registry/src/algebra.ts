@@ -263,6 +263,9 @@ type Cleanup = () => void | PromiseLike<void>
 export interface Instance<Exports = unknown> {
   readonly exports: Exports
   readonly items?: readonly Item[]
+  /** Run after publication; returned cleanup runs before `dispose` on removal. */
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type -- Startup is synchronous and may return an awaitable cleanup callback.
+  readonly start?: () => void | Cleanup
   readonly dispose?: Cleanup
 }
 
@@ -309,6 +312,9 @@ export function extension<const D extends Dependencies>(
         },
         get items() {
           return instance.items
+        },
+        get start() {
+          return instance.start?.bind(instance)
         },
         get dispose() {
           return instance.dispose?.bind(instance)
