@@ -589,7 +589,7 @@ jobs:
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
 
       - name: Install Rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        uses: actions-rust-lang/setup-rust-toolchain@v2.0.1
         with:
           cache: false
           rustflags: '' # use .cargo/config.toml
