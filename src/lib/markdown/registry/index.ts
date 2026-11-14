@@ -5,42 +5,28 @@ import {
   editorLanguagesFacet,
 } from '@src/lib/editors/registry/contract'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
-import {
-  factory as defineFactory,
-  contribute,
-  type InputOf,
-  type Factory,
-} from 'plankton'
+import { contribute, type Extension, type InputOf } from 'plankton'
+
+const language = {
+  id: 'markdown',
+  matches: '.md',
+  mediaType: 'text/markdown',
+} satisfies InputOf<typeof editorLanguagesFacet>
+
+const editorExtensions = {
+  id: 'editors.markdown',
+  matches: ({ languageId }) => languageId === 'markdown',
+  extensions: [
+    markdown(),
+    editorMarkdownHighlight.light,
+    editorMarkdownHighlight.dark,
+  ],
+} satisfies InputOf<typeof codeEditorsExtensionFacet>
 
 /** Markdown editing behavior, independent of execution or preview services. */
-const extension: Factory = defineFactory({
-  key: 'markdown',
-  create: () => {
-    const _editorLanguagesContribution: InputOf<typeof editorLanguagesFacet> = {
-      id: 'markdown',
-      matches: '.md',
-      mediaType: 'text/markdown',
-    } satisfies InputOf<typeof editorLanguagesFacet>
-    const _codeEditorsExtensionContribution: InputOf<
-      typeof codeEditorsExtensionFacet
-    > = {
-      id: 'editors.markdown',
-      matches: ({ languageId }) => languageId === 'markdown',
-      extensions: [
-        markdown(),
-        editorMarkdownHighlight.light,
-        editorMarkdownHighlight.dark,
-      ],
-    } satisfies InputOf<typeof codeEditorsExtensionFacet>
-    return {
-      items: [
-        contribute(editorLanguagesFacet, () => _editorLanguagesContribution),
-        contribute(
-          codeEditorsExtensionFacet,
-          () => _codeEditorsExtensionContribution
-        ),
-      ],
-    }
-  },
-})
+const extension = [
+  contribute(editorLanguagesFacet, () => language),
+  contribute(codeEditorsExtensionFacet, () => editorExtensions),
+] satisfies readonly Extension[]
+
 export default withProjectShellFeature(extension, 'markdown')
