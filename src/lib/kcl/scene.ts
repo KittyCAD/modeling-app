@@ -1,3 +1,7 @@
+import {
+  createEntityStyling,
+  type EntityStyling,
+} from '@src/lib/scene/entityStyling'
 import { captureViewportScreenshot } from '@src/lib/screenshot'
 import { createKclSceneSelection } from '@src/lib/kcl/sceneSelection'
 import type { SceneSelectionController } from '@src/lib/scene/selection'
@@ -36,6 +40,7 @@ import type { SettingsRegistryService } from '@src/registry/contracts/settings'
  * presentation is fixed at creation; a local presentation also supplies a GLB host.
  */
 export interface KclSceneResource {
+  readonly entityStyling: EntityStyling | undefined
   readonly sceneInfra: SceneInfra
   readonly element: HTMLElement
   readonly runtime: KclRuntime
@@ -84,6 +89,7 @@ export async function openKclScene({
   signal: AbortSignal
   onDisconnect: (error: Error) => void
 }): Promise<KclSceneResource | Error> {
+  const styling = createEntityStyling()
   const manager = new ConnectionManager({ settingsActor: settings.actor })
   let connection: SceneConnection | undefined
   let runtime: KclRuntime | undefined
@@ -91,6 +97,7 @@ export async function openKclScene({
   let viewport: SceneViewport | undefined
   let connectionWatch: ReturnType<typeof watchConnection> | undefined
   let picking: ReturnType<typeof createKclSceneSelection> | undefined
+  let stopStyling: (() => void) | undefined
   let stopUnits: (() => void) | undefined
   let disposed = false
   const element = createSceneElement()
@@ -104,7 +111,9 @@ export async function openKclScene({
     } finally {
       connectionWatch?.dispose()
       stopUnits?.()
+      stopStyling?.()
       picking?.dispose()
+      styling.dispose()
       viewport?.dispose()
       infra?.localRenderer?.dispose()
       if (infra) infra.localRenderer = null
@@ -157,8 +166,16 @@ export async function openKclScene({
         model.fileSettings.value.defaultLengthUnit ??
         preferences.defaultUnit.value
     })
-    const selectionBinding = createKclSceneSelection(manager, sceneInfra, model)
+    const selectionBinding = createKclSceneSelection(
+      manager,
+      sceneInfra,
+      model,
+      presentation
+    )
     picking = selectionBinding
+    stopStyling = selectionBinding.selection.model.subscribe(() =>
+      styling.reset()
+    )
     const view = createSceneViewport(
       {
         element,
@@ -168,6 +185,7 @@ export async function openKclScene({
         model,
         settings,
         selection: selectionBinding.selection,
+        entityStyles: styling.service.groups,
       },
       presentation,
       preferences,
@@ -186,6 +204,7 @@ export async function openKclScene({
       presentation,
       localHost: view.localHost,
       selection: selectionBinding.selection,
+      entityStyling: presentation === 'local' ? styling.service : undefined,
       commands: {
         sendSceneCommand: connected.send,
         geometryOnly: manager.geometryOnly,

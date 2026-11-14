@@ -171,11 +171,14 @@ explicit link and exact bytes from the target execution's source snapshot;
 module IDs are resolved through that execution's filenames, never compared
 across executions. Editing source or re-executing clears stale projections.
 
-The bridge decorates code without moving cursors or scrolling. Geometry
-correspondence uses the existing selection presentation adapter, while ordinary
-view selection and dialog arguments remain unchanged. During picking, dialog
-highlights take priority over correspondence highlights. The renderer currently
-uses the same geometry highlight appearance for both; their state is separate.
+The bridge decorates code without moving cursors or scrolling. In local rendering, geometry correspondence uses generic entity-styling groups
+while ordinary view selection and dialog arguments remain unchanged. Streamed
+rendering retains the existing selection presentation fallback. During picking, dialog
+highlights take priority over correspondence highlights. Local correspondence uses stable per-source-view OKLCH hues converted to sRGB,
+9% interior opacity, 40% outline opacity, and a one-pixel outline. Selection and
+hover have higher application-assigned priority. The renderer receives only
+opaque styling groups; it does not know about correspondence or view identities.
+Streaming still uses the selection appearance.
 
 Intentional Code selection (`select` transactions) can offer a direct,
 unambiguous candidate to an active picking argument. Programmatic selection,
@@ -235,3 +238,11 @@ geometry-producing expression in Code, then return to Modeling to see projected
 highlights without changing ordinary selection. Independent buffers containing
 the same text do not auto-link. Switching a single view between modes is not a
 parallel-view test. Native sketch/solver-region correspondence remains a TODO.
+
+
+Correspondence groups retain source-view identity through the bridge until the
+view adapter acquires opaque renderer group handles. Opening a picking dialog
+suppresses those groups; closing it restores the same source hues. Unlinking a
+source, leaving its mode, re-executing, or closing a view releases/invalidates
+its groups. The per-view hue uses a WeakMap keyed by the view instance, so
+remounting Code preserves its hue without retaining closed views.

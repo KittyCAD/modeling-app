@@ -13,7 +13,7 @@ import { uuidv4 } from '@src/lib/utils'
 import styles from './selectionAdapter.module.css'
 
 // TODO(Rendering API): Zoo streaming lacks arbitrary independently owned entity-styling groups
-// with configurable color/opacity and overlap precedence. The app should use that generic
+// with configurable color/opacity and overlap precedence (implemented locally). The app uses that generic
 // capability for selection, hover, or correspondence; the renderer need not know those semantics.
 // Do not repurpose hover or recolor model materials to simulate independent styling groups.
 /** Project selection state onto the existing engine protocol; local rendering intercepts the same commands. */

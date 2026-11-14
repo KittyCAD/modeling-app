@@ -151,3 +151,20 @@ The legacy `/file/:id` selection/navigation behavior remains unchanged. In the
 new project shell, correspondence highlighting does not move a cursor, scroll a
 pane, or alter the receiving view's selection. Linked Code picking can update
 an argument only while its target session is accepting picks.
+
+
+## Wave 6: Local entity styling
+
+Stack locally after `codex/review-editor-selection-bridges`:
+
+1. `codex/local-entity-styling`: scene-owned generic styling leases and a shared
+   local compositor, with the existing selection/hover presentation as an adapter.
+   Includes explicit straight-alpha conversion so configured opacity matches
+   compositing, and preserves borrowed geometry during target/group cleanup.
+2. `codex/local-correspondence-styling`: source-view grouping, stable per-view hues,
+   and faint local correspondence. Streaming retains its existing fallback and
+   exposes the arbitrary-styling capability as unsupported.
+
+The isolated browser GPU smoke checks verify actual pixel colors, group clearing,
+selection precedence, and reset. The renderer still needs protocol support before
+this styling is available in Zoo streaming.

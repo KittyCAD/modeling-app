@@ -406,3 +406,26 @@ it('does not resend scene highlights when a bridge projects the same corresponde
     selection.dispose()
   }
 })
+
+it('keeps separate-renderer correspondence out of engine selection while allowing explicit promotion', async () => {
+  const present = vi.fn<SelectionAdapter['present']>(async () => {})
+  const selection = createSceneSelection(
+    { pick: async () => undefined, present },
+    ['region'],
+    'separate'
+  )
+  try {
+    const current = model()
+    selection.setModel(current)
+    selection.setCorrespondence([{ model: current, reference: region('hint') }])
+    await vi.waitFor(() => expect(present).toHaveBeenCalled())
+    expect(present.mock.calls.every((call) => call[0].length === 0)).toBe(true)
+    expect(selection.selected.peek()).toEqual([])
+    expect(selection.promoteCorrespondence()).toBeUndefined()
+    await vi.waitFor(() =>
+      expect(present.mock.lastCall?.[0]).toEqual([region('hint')])
+    )
+  } finally {
+    selection.dispose()
+  }
+})

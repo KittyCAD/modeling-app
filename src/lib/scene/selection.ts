@@ -61,7 +61,8 @@ interface DialogState {
 /** One Modeling view owns ordinary selection; a dialog temporarily owns picking and displayed highlights. */
 export function createSceneSelection(
   adapter: SelectionAdapter,
-  defaultFilter: readonly EntityType[]
+  defaultFilter: readonly EntityType[],
+  correspondencePresentation: 'selection' | 'separate' = 'selection'
 ) {
   const model = signal<SelectionModel | null>(null)
   const selected = signal<readonly SceneSelection[]>([])
@@ -98,16 +99,17 @@ export function createSceneSelection(
   )
   const stop = effect(() => {
     const currentModel = model.value
-    const values = dialog.value
-      ? displayed.value
-      : [...displayed.value, ...correspondence.value].filter(
-          (value, index, values) =>
-            values.findIndex(
-              (item) =>
-                entityReferenceKey(item.reference) ===
-                entityReferenceKey(value.reference)
-            ) === index
-        )
+    const values =
+      dialog.value || correspondencePresentation === 'separate'
+        ? displayed.value
+        : [...displayed.value, ...correspondence.value].filter(
+            (value, index, values) =>
+              values.findIndex(
+                (item) =>
+                  entityReferenceKey(item.reference) ===
+                  entityReferenceKey(value.reference)
+              ) === index
+          )
     const currentFilter = filter.value
     const ticket = ++projection
     if (!currentModel) return

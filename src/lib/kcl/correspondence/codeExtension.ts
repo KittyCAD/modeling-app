@@ -1,3 +1,4 @@
+import { correspondenceStyle } from '@src/lib/kcl/correspondence/appearance'
 import type { ReadonlySignal } from '@preact/signals-core'
 import { StateEffect, StateField } from '@codemirror/state'
 import {
@@ -68,6 +69,7 @@ export function correspondenceCodeExtension(
         constructor() {
           const handle = bridge.registerCode({
             id: host.instance.id,
+            style: correspondenceStyle(host.instance),
             editor: host.editor,
             enabled,
             decorate: (ranges) => {

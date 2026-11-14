@@ -138,15 +138,28 @@ presentation, and disposal behavior. Do not depend on private `rtc` fields, a
 
 ## Rendering API limitation: arbitrary entity styling
 
-The current Zoo streaming renderer protocol supports selection and a shared hover
-highlight, but does not expose arbitrary independently owned entity-styling groups
-with configurable color or opacity. `select_entity` takes entity references;
-`highlight_set_entities` takes IDs and replaces the shared hover highlight.
-Reusing hover would conflict with normal pointer interaction. The current scene
-adapter therefore presents correspondence with the same appearance as selection,
-even though their application state is separate.
+The local renderer implements independently owned entity-styling groups through
+`EntityStyling`. Each group supplies entity references, sRGB color, fill opacity,
+outline opacity, line width, and priority. Higher priority wins when groups share
+a rendered target; equal priority uses group creation order (later wins).
+Replacing targets or appearance does not change that order. Clearing/disposal
+reveals any lower-priority group. A scene reset expires old group handles.
 
-A robust shared Rendering API should allow arbitrarily many independently
+The local renderer's generic compositor owns masks/materials and borrows mesh
+geometry. The selection/hover adapter supplies their existing palette and higher
+priorities; the compositor knows neither those meanings nor editor-view IDs.
+Straight-alpha color conversion makes configured opacity match display blending.
+Target resolution covers rendered ID-backed entities and graph-backed bodies;
+an unresolved topological edge/vertex reference is not coerced into adjacent faces.
+
+Zoo streaming still does not expose these arbitrary styling groups with color
+and opacity controls. `select_entity` takes entity references;
+`highlight_set_entities` takes IDs and replaces the shared hover highlight.
+Reusing hover would conflict with normal pointer interaction. Streamed scenes
+therefore expose no `entityStyling` capability, and their existing correspondence
+fallback keeps the selection appearance while maintaining separate app state.
+
+The shared Rendering API supports arbitrarily many independently
 replaceable/clearable styling groups, each with entity targets and styling
 properties such as color and opacity, plus a defined way to resolve overlapping
 styles. Group ownership should be opaque to the renderer. The renderer should
@@ -156,6 +169,18 @@ Application adapters can use styling groups for selection, hover, correspondence
 validation results, or other overlays. The application chooses precedence (for
 example, selection over a faint correspondence tint) and assigns any stable
 source-view OKLCH hues, converting them to renderer RGB colors. The local
-renderer can implement this capability in app-owned code; Zoo streaming needs
+renderer implements this capability in app-owned code; Zoo streaming needs
 matching protocol/engine support. Do not simulate independent styles by changing
 model materials or taking over the hover channel.
+
+
+### Acquiring an entity-styling group
+
+A local scene exposes `entityStyling`; streamed scenes currently expose
+`undefined`. Call `createGroup(style)` and retain the returned handle with the
+contributing interaction/view. `set(entities)` replaces only that group's targets;
+`clear()` retains its creation order, and `dispose()` releases it. Both creation
+and updates can return an Error. A new model invalidates old handles, so acquire
+a new group against the current model rather than replaying stale references.
+The API never sends selection commands, changes model materials, or owns mesh
+geometry.

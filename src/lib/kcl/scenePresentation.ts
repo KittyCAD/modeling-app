@@ -33,6 +33,7 @@ interface PresentationContext {
   connection: SceneConnection
   manager: ConnectionManager
   sceneInfra: SceneInfra
+  entityStyles: LocalRendererHost['entityStyles']
   selection: SceneSelectionController
   model: KclRuntime
   settings: SettingsRegistryService
@@ -58,11 +59,13 @@ function createLocalPresentation({
   model,
   settings,
   selection,
+  entityStyles,
 }: PresentationContext): PresentationAdapter {
   sceneInfra.camControls.localCameraMode = true
   sceneInfra.camControls.resetLocalCameraToDefaultView()
   return {
     localHost: {
+      entityStyles,
       executionEvents: model.events,
       executing: model.executing,
       sceneGeneration: computed(() => model.state.value.engineSceneGeneration),

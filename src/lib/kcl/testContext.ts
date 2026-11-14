@@ -1,3 +1,5 @@
+import type { ScenePresentation } from '@src/lib/scene/connection'
+import { createEntityStyling } from '@src/lib/scene/entityStyling'
 import { createActiveSelection } from '@src/lib/kcl/selection'
 import type { KclSourceSnapshot } from '@src/lib/kcl/sources'
 import { defaultModelingToolGroups } from '@src/lib/kcl/toolGroups'
@@ -21,7 +23,9 @@ import { createMeasurementToolService } from '@src/registry/extensions/engineSce
 import { createPhysicalAnalysisService } from '@src/registry/extensions/engineScene/physicalAnalysis/physicalAnalysisService'
 import { vi } from 'vitest'
 
-export function modelingTestContext() {
+export function modelingTestContext(
+  presentation: ScenePresentation = 'streamed'
+) {
   const document = createEditorDocument(
     '@settings(kclVersion = 3.0)\nanswer = 42'
   )
@@ -42,10 +46,14 @@ export function modelingTestContext() {
       }),
       present: async () => {},
     },
-    ['region']
+    ['region'],
+    presentation === 'local' ? 'separate' : 'selection'
   )
   selection.setModel({ sceneId: Symbol(), executionId: Symbol() })
+  const styling = createEntityStyling()
   const resource = {
+    presentation,
+    entityStyling: styling.service,
     element: globalThis.document.createElement('div'),
     selection,
     preferences: {
@@ -124,6 +132,7 @@ export function modelingTestContext() {
       context.interactions.dispose()
       context.tools.dispose()
       selection.dispose()
+      styling.dispose()
       document.dispose()
     },
   }
