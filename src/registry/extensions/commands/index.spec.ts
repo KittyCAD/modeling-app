@@ -26,7 +26,7 @@ import { projectSession } from '@src/registry/contracts/projectSession'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
-import { extension as defineExtension, provide, Registry, slot } from 'plankton'
+import { factory as defineFactory, provide, Registry, slot } from 'plankton'
 import { describe, expect, it, vi } from 'vitest'
 import { createCommandsExtension, toolbarCommandsItem } from '.'
 import { APP_COMMAND_IDS, createAppCommands } from './appCommands'
@@ -34,7 +34,7 @@ import { createToolbarCommands, TOOLBAR_COMMAND_IDS } from './toolbarCommands'
 
 function commandsForTest(manager = new MachineManager()) {
   return createCommandsExtension(
-    defineExtension({
+    defineFactory({
       create: () => ({ exports: { manager } }),
     })
   )
@@ -113,7 +113,7 @@ describe('commands extension', () => {
     await registry.configure([
       [provideWasmPromise(() => Promise.resolve({} as ModuleType))],
       commandsForTest(),
-      defineExtension({
+      defineFactory({
         ...commandsSlot,
         create: () => ({
           items: [commandItem],
@@ -143,7 +143,7 @@ describe('commands extension', () => {
     await registry.configure([
       [provideWasmPromise(() => Promise.resolve({} as ModuleType))],
       commandsForTest(),
-      defineExtension({
+      defineFactory({
         ...commandsSlot,
         create: () => ({
           items: [],

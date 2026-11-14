@@ -7,14 +7,10 @@ import { isOffline } from '@src/lib/networkStatus'
 import { projectStorageProvidersFacet } from '@src/lib/projectSession/storage'
 import { reportRejection } from '@src/lib/trap'
 import { observations as projectSessionObservations } from '@src/registry/contracts/projectSession'
-import {
-  extension as defineExtension,
-  contribute,
-  type Extension,
-} from 'plankton'
+import { factory as defineFactory, contribute, type Factory } from 'plankton'
 
 /** Binds cloud storage to sessions; the session retains ownership of editors and Rust. */
-export const cloudProjectSessionExtension: Extension = defineExtension({
+export const cloudProjectSessionExtension: Factory = defineFactory({
   dependencies: {
     cloudProjects: cloudProjectsObservations,
     projectSession: projectSessionObservations,

@@ -18,7 +18,7 @@ import { defineEditorView } from '@src/lib/editors/views'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { act, cleanup, render, screen } from '@testing-library/react'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   contribute,
   slot as createSlot,
   Registry,
@@ -64,7 +64,7 @@ it('retains typed mode context across switches and remounts, and releases it whe
   registry = new Registry()
   await registry.configure([
     editorsExtension,
-    defineExtension({
+    defineFactory({
       ...slot,
       create: () => ({
         items: [contribution],
@@ -170,7 +170,7 @@ it('keeps source/content matching and explicit mode choices independent for dupl
   registry = new Registry()
   await registry.configure([
     editorsExtension,
-    defineExtension({
+    defineFactory({
       ...extraViews,
       create: () => ({
         items: [],

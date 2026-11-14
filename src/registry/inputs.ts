@@ -1,7 +1,7 @@
 import { computed } from '@preact/signals-core'
 import {
-  extension,
-  type Extension,
+  factory,
+  type Factory,
   type Facet,
   type Service,
   ServiceResolutionError,
@@ -9,14 +9,14 @@ import {
 
 /** Declare a live composition input without reading it during acquisition. */
 export function observe<I, O>(facet: Facet<I, O>) {
-  return extension({
+  return factory({
     create: (_dependencies, owner) => ({ exports: owner.observe(facet) }),
   })
 }
 
 /** A provider may change or disappear while its observing consumer remains mounted. */
 export function observeService<T extends object>(token: Service<T>) {
-  return extension({
+  return factory({
     dependencies: { resolution: observe(token) },
     create: ({ resolution }) => {
       const selectedValue = computed(() => {
@@ -51,8 +51,8 @@ export function observeService<T extends object>(token: Service<T>) {
 }
 
 /** Group the declared observations of one application contract. */
-export function inputs<const D extends Readonly<Record<string, Extension>>>(
+export function inputs<const D extends Readonly<Record<string, Factory>>>(
   dependencies: D
 ) {
-  return extension({ dependencies, create: (exports) => ({ exports }) })
+  return factory({ dependencies, create: (exports) => ({ exports }) })
 }

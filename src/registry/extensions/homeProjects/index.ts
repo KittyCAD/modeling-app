@@ -2,7 +2,7 @@ import { withHomeProjectActionStatus } from '@src/lib/homeProjectActions'
 import { selectCommand } from '@src/lib/commandUtils'
 import { observations as projectSessionObservations } from '@src/registry/contracts/projectSession'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   provide,
   contribute,
   type InputOf,
@@ -93,7 +93,7 @@ export function deriveHomeProjectEntryContributions({
     deleteRemoteOnDelete: false,
   }))
 }
-const homeProjectActions = defineExtension({
+const homeProjectActions = defineFactory({
   dependencies: {
     settings: settingsObservations,
     projectLibraries: projectLibrariesObservations,
@@ -425,7 +425,7 @@ const homeProjectActions = defineExtension({
  * local realizations, and cloudSync publishes explicit relationships through
  * its singleton service. Home derives view models from those domain models.
  */
-const homeProjectEntryViewModels = defineExtension({
+const homeProjectEntryViewModels = defineFactory({
   dependencies: {
     projectLibraries: projectLibrariesObservations,
   },
@@ -446,7 +446,7 @@ const homeProjectEntryViewModels = defineExtension({
     }
   },
 })
-const cloneProjectToLibraryProjectMenuItem = defineExtension({
+const cloneProjectToLibraryProjectMenuItem = defineFactory({
   dependencies: {
     homeProjects: homeProjectsObservations,
     commands: commandsObservations,

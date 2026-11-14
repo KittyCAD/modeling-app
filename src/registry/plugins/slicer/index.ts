@@ -37,10 +37,10 @@ import {
   type SlicerId,
 } from '@src/registry/plugins/slicer/slicerDefinitions'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   contribute,
   type InputOf,
-  type Extension,
+  type Factory,
 } from 'plankton'
 type ExportToSlicerCommandArgs = {
   slicer: SlicerId
@@ -117,7 +117,7 @@ function createExportToSlicerCommand({
     },
   }
 }
-const exportToSlicerSidebarItem: Extension = defineExtension({
+const exportToSlicerSidebarItem: Factory = defineFactory({
   dependencies: {
     commands: commandsObservations,
     projectSession: projectSessionObservations,

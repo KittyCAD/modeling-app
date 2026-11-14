@@ -4,7 +4,7 @@ import {
   type RouterRuntimeValues,
   routerService,
 } from '@src/registry/contracts/router'
-import { extension as defineExtension, provide, type Extension } from 'plankton'
+import { factory as defineFactory, provide, type Factory } from 'plankton'
 import {
   createPath,
   type Location,
@@ -155,7 +155,7 @@ export const createRouterRegistryService = (): RouterRegistryService => {
 
   return serviceImpl
 }
-export const routerExtension = defineExtension({
+export const routerExtension = defineFactory({
   key: 'router-extension',
   create: () => {
     const serviceImpl = createRouterRegistryService()
@@ -165,5 +165,5 @@ export const routerExtension = defineExtension({
       dispose: serviceImpl.reset,
     }
   },
-}) satisfies Extension
+}) satisfies Factory
 export default [routerExtension]

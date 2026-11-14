@@ -4,8 +4,8 @@ import { observations as fileOperationsObservations } from '@src/registry/contra
 import { observations as projectLibrariesObservations } from '@src/registry/contracts/projectLibraries'
 import { observations as projectSessionObservations } from '@src/registry/contracts/projectSession'
 import { observations as routerObservations } from '@src/registry/contracts/router'
-import { extension as defineExtension, type Extension } from 'plankton'
-export default defineExtension({
+import { factory as defineFactory, type Factory } from 'plankton'
+export default defineFactory({
   dependencies: {
     projectSession: projectSessionObservations,
     fileOperations: fileOperationsObservations,
@@ -55,4 +55,4 @@ export default defineExtension({
         }),
     }
   },
-}) satisfies Extension
+}) satisfies Factory

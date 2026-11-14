@@ -12,10 +12,10 @@ import {
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import projectExplorerExtension from '@src/registry/extensions/projectExplorer'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   provide,
   Registry,
-  type Extension,
+  type Factory,
 } from 'plankton'
 import {
   afterEach,
@@ -82,7 +82,7 @@ describe('project explorer extension', () => {
     const wasmPromise = signal(promise)
     await registry.configure([
       projectExplorerExtension,
-      defineExtension({
+      defineFactory({
         create: () => ({
           items: [
             provideWasmPromise(() => wasmPromise.value),
@@ -97,7 +97,7 @@ describe('project explorer extension', () => {
             }),
           ],
         }),
-      }) satisfies Extension,
+      }) satisfies Factory,
     ])
     return wasmPromise
   }

@@ -20,10 +20,10 @@ import { observations as userFeaturesObservations } from '@src/registry/contract
 import { observations as wasmObservations } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   contribute,
   provide,
-  type Extension,
+  type Factory,
 } from 'plankton'
 import { createActor } from 'xstate'
 import { createAppCommands } from './appCommands'
@@ -36,9 +36,9 @@ type FindAndSelectCommandEvent = Extract<
   }
 >
 export const createCommandsExtension = (
-  machines: Extension<{ manager: MachineManager }> = machineManagerExtension
+  machines: Factory<{ manager: MachineManager }> = machineManagerExtension
 ) =>
-  defineExtension({
+  defineFactory({
     dependencies: {
       commands: commandsObservations,
       machines,
@@ -188,9 +188,9 @@ export const createCommandsExtension = (
         },
       }
     },
-  }) satisfies Extension
+  }) satisfies Factory
 export const commandsExtension = createCommandsExtension()
-export const toolbarCommandsItem = defineExtension({
+export const toolbarCommandsItem = defineFactory({
   dependencies: {
     projectSession: projectSessionObservations,
     userFeatures: userFeaturesObservations,
@@ -222,6 +222,6 @@ export const toolbarCommandsItem = defineExtension({
       ],
     }
   },
-}) satisfies Extension
+}) satisfies Factory
 const commandsRegistryItem = [commandsExtension, toolbarCommandsItem]
 export default commandsRegistryItem

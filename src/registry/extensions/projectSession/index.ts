@@ -30,7 +30,7 @@ import {
   adoptStorageTextSnapshot,
 } from '@src/lib/activeTextFile'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   contribute,
   provide,
   type InputOf,
@@ -64,7 +64,7 @@ const FileSaveStatus = lazy(async () => {
     default: FileSaveStatus,
   }
 })
-export const projectSessionExtension = defineExtension({
+export const projectSessionExtension = defineFactory({
   dependencies: {
     projectStorage: projectStorageObservations,
     fileOperations: fileOperationsObservations,

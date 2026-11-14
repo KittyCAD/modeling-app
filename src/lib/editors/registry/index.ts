@@ -35,11 +35,11 @@ import {
 import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
 import { keymapEventOwnersFacet } from '@src/registry/contracts/keymap'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   contribute,
   type InputOf,
   provide,
-  type Extension,
+  type Factory,
 } from 'plankton'
 import { createElement } from 'react'
 
@@ -52,7 +52,7 @@ interface EditorRecord {
 }
 
 /** The service owns buffers; capability and mode lifecycles are scoped to each record. */
-const extension: Extension = defineExtension({
+const extension: Factory = defineFactory({
   dependencies: {
     editors: editorsObservations,
     nextProjectSession: nextProjectSessionObservations,

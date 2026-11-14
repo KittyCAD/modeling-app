@@ -21,15 +21,15 @@ import type { RuntimeRegistryService } from '@src/registry/contracts/runtime'
 import { runtimeExtension } from '@src/registry/extensions/runtime'
 import { observations as settingsObservations } from '@src/registry/contracts/settings'
 import { observations as userFeaturesObservations } from '@src/registry/contracts/userFeatures'
-import { extension as defineExtension, provide, type Extension } from 'plankton'
+import { factory as defineFactory, provide, type Factory } from 'plankton'
 import type { SnapshotFrom } from 'xstate'
 
 const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
 const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
 export const createLayoutExtension = (
-  runtime: Extension<RuntimeRegistryService> = runtimeExtension
+  runtime: Factory<RuntimeRegistryService> = runtimeExtension
 ) =>
-  defineExtension({
+  defineFactory({
     dependencies: {
       runtime,
       settings: settingsObservations,
@@ -277,6 +277,6 @@ export const createLayoutExtension = (
         },
       }
     },
-  }) satisfies Extension
+  }) satisfies Factory
 export const layoutExtension = createLayoutExtension()
 export default [layoutExtension]

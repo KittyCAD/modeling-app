@@ -10,7 +10,7 @@ import {
   type ProjectStorage,
 } from '@src/lib/projectSession/storage'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   Registry,
   slot as createSlot,
   contribute,
@@ -113,7 +113,7 @@ async function setup(
   await registry.configure([
     projectSessionRegistryItem,
     cloudProjectSessionExtension,
-    defineExtension({
+    defineFactory({
       ...lateCloud,
       create: () => ({
         items: [],

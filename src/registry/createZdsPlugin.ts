@@ -10,7 +10,7 @@ import {
   createPlugin,
   Facet,
   type InputOf,
-  type Item,
+  type Extension,
 } from 'plankton'
 
 type ZdsPluginDefault = 'core' | 'off'
@@ -83,7 +83,7 @@ type ZdsPluginSpec = {
   id: string
   title: string
   description: string
-  items: readonly Item[]
+  items: readonly Extension[]
   defaultSetting?: ZdsPluginDefault
   activationSetting?: ZdsPluginActivationSettingSpec
 }
@@ -99,7 +99,7 @@ type ZdsPluginSpec = {
 export function createZdsPlugin({
   defaultSetting = 'core',
   ...spec
-}: ZdsPluginSpec): readonly Item[] {
+}: ZdsPluginSpec): readonly Extension[] {
   const enabledByDefault = defaultSetting === 'core'
   const activationSetting: ZdsPluginActivationSettingSpec =
     spec.activationSetting ?? {

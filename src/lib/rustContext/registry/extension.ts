@@ -7,8 +7,8 @@ import {
 import { observations as projectSessionObservations } from '@src/registry/contracts/projectSession'
 import { observations as settingsObservations } from '@src/registry/contracts/settings'
 import { observations as wasmObservations } from '@src/registry/contracts/wasm'
-import { extension as defineExtension, provide, type Extension } from 'plankton'
-export const rustContextExtension: Extension = defineExtension({
+import { factory as defineFactory, provide, type Factory } from 'plankton'
+export const rustContextExtension: Factory = defineFactory({
   dependencies: {
     wasm: wasmObservations,
     engineConnection: engineConnectionObservations,

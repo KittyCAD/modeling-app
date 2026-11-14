@@ -4,8 +4,8 @@ import {
   engineConnectionService,
 } from '@src/lib/engineConnection/registry/contract'
 import { observations as settingsObservations } from '@src/registry/contracts/settings'
-import { extension as defineExtension, provide, type Extension } from 'plankton'
-export const engineConnectionExtension = defineExtension({
+import { factory as defineFactory, provide, type Factory } from 'plankton'
+export const engineConnectionExtension = defineFactory({
   dependencies: { settings: settingsObservations },
   key: 'engine-connection-extension',
   create: ({ settings: settingsInputs }) => {
@@ -39,5 +39,5 @@ export const engineConnectionExtension = defineExtension({
       },
     }
   },
-}) satisfies Extension
+}) satisfies Factory
 export default [engineConnectionExtension]

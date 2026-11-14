@@ -15,10 +15,10 @@ import {
 import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
 import { useSelector } from '@xstate/react'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   contribute,
   provide,
-  type Extension,
+  type Factory,
 } from 'plankton'
 import { createActor } from 'xstate'
 
@@ -29,7 +29,7 @@ const expireAuthSession: AuthSessionExpiredListener = ({ auth }) => {
 
   auth.send({ type: 'Session expired' })
 }
-export const authExtension = defineExtension({
+export const authExtension = defineFactory({
   dependencies: {
     fileOperations: fileOperationsObservations,
     auth: authObservations,
@@ -97,5 +97,5 @@ export const authExtension = defineExtension({
       },
     }
   },
-}) satisfies Extension
+}) satisfies Factory
 export default [authExtension]

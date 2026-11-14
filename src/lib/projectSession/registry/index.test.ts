@@ -8,7 +8,7 @@ import {
   userFeaturesService,
 } from '@src/registry/contracts/userFeatures'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
-import { type Item, provide, Registry } from 'plankton'
+import { type Extension, provide, Registry } from 'plankton'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const enabled = signal(true)
@@ -19,7 +19,7 @@ const featureFlags = [
       flag === PROJECT_SHELL_FEATURE ? enabled.value : fallback,
   } as UserFeaturesRegistryService),
 ]
-async function configure(registry: Registry, items: Item[]) {
+async function configure(registry: Registry, items: Extension[]) {
   await registry.configure([featureFlags, ...items])
   registry.required(userFeaturesService)
   await Promise.resolve()

@@ -20,14 +20,14 @@ import { statusBarGlobalItemsFacet } from '@src/registry/contracts/statusBar'
 import { observations as wasmObservations } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   contribute,
   type InputOf,
   provide,
-  type Extension,
+  type Factory,
 } from 'plankton'
 import { createActor } from 'xstate'
-export const settingsExtension = defineExtension({
+export const settingsExtension = defineFactory({
   dependencies: {
     wasm: wasmObservations,
     commands: commandsObservations,
@@ -110,7 +110,7 @@ export const settingsExtension = defineExtension({
       },
     }
   },
-}) satisfies Extension
+}) satisfies Factory
 const settingsRegistryItem = [
   contribute(
     statusBarGlobalItemsFacet,

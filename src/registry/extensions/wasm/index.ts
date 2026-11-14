@@ -1,8 +1,8 @@
 import { initialiseWasm } from '@src/lang/wasmUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
-import { extension as defineExtension, type Extension } from 'plankton'
-export const wasmExtension = defineExtension({
+import { factory as defineFactory, type Factory } from 'plankton'
+export const wasmExtension = defineFactory({
   key: 'wasm-extension',
   create: () => {
     let wasmPromise: Promise<ModuleType> | undefined
@@ -16,5 +16,5 @@ export const wasmExtension = defineExtension({
       ],
     }
   },
-}) satisfies Extension
+}) satisfies Factory
 export default [wasmExtension]

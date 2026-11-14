@@ -34,14 +34,14 @@ import {
 import { observations as routerObservations } from '@src/registry/contracts/router'
 import { observations as wasmObservations } from '@src/registry/contracts/wasm'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   contribute,
   type InputOf,
-  type Extension,
+  type Factory,
 } from 'plankton'
 
 /** Cloud library entries come from the server; configured legacy disk paths are never opened. */
-export default defineExtension({
+export default defineFactory({
   dependencies: {
     cloudProjects: cloudProjectsObservations,
     fileOperations: fileOperationsObservations,
@@ -348,4 +348,4 @@ export default defineExtension({
       },
     }
   },
-}) satisfies Extension
+}) satisfies Factory

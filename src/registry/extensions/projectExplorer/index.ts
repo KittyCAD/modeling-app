@@ -18,12 +18,12 @@ import {
 } from '@src/registry/contracts/projectExplorer'
 import { observations as wasmObservations } from '@src/registry/contracts/wasm'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   contribute,
   type InputOf,
-  type Extension,
+  type Factory,
 } from 'plankton'
-const importInCurrentFileExtension: Extension = defineExtension({
+const importInCurrentFileExtension: Factory = defineFactory({
   dependencies: { wasm: wasmObservations, commands: commandsObservations },
   key: 'project-explorer.import-in-current-file',
   create: ({ wasm: wasmInputs, commands: commandsInputs }) => {

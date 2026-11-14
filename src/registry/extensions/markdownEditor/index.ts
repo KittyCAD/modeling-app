@@ -16,7 +16,7 @@ import {
   type MarkdownEditorService,
   markdownEditorService,
 } from '@src/registry/contracts/markdownEditor'
-import { extension as defineExtension, provide, type Extension } from 'plankton'
+import { factory as defineFactory, provide, type Factory } from 'plankton'
 
 const MARKDOWN_EDITOR_COMMAND_GROUP_ID = 'markdownEditor'
 const MARKDOWN_EDITOR_KEYMAP_SOURCE = 'Markdown editor'
@@ -181,7 +181,7 @@ const markdownEditorCommands: readonly Command[] = Object.values(
     onSubmit: () => false,
   }
 })
-const markdownEditorExtension = defineExtension({
+const markdownEditorExtension = defineFactory({
   key: 'markdown-editor-extension',
   create: () => {
     let nextRegistrationId = 0
@@ -238,5 +238,5 @@ const markdownEditorExtension = defineExtension({
       ],
     }
   },
-}) satisfies Extension
+}) satisfies Factory
 export default markdownEditorExtension

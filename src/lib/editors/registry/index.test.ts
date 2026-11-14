@@ -7,7 +7,7 @@ import {
 import { language } from '@codemirror/language'
 import { EditorState } from '@codemirror/state'
 import {
-  extension as defineExtension,
+  factory as defineFactory,
   Registry,
   provide,
   contribute,
@@ -448,7 +448,7 @@ describe('editors extension', () => {
     await registry.configure([
       editorsExtension,
       markdownExtension,
-      defineExtension({
+      defineFactory({
         ...slot,
         create: () => ({
           items: [],
@@ -596,7 +596,7 @@ describe('editors extension', () => {
     await registry.configure([
       editorsExtension,
       markdownExtension,
-      defineExtension({
+      defineFactory({
         ...slot,
         create: () => ({
           items: [],

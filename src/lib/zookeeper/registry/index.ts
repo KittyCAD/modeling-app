@@ -8,11 +8,7 @@ import {
   statusBarLocalItemsFacet,
 } from '@src/registry/contracts/statusBar'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
-import {
-  extension as defineExtension,
-  contribute,
-  type Extension,
-} from 'plankton'
+import { factory as defineFactory, contribute, type Factory } from 'plankton'
 import { createElement, lazy, Suspense } from 'react'
 import { observations as layoutObservations } from '@src/lib/layout/registry/contract'
 
@@ -29,7 +25,7 @@ const ZookeeperCreditsStatusBarItem = () =>
     { fallback: null },
     createElement(ZookeeperCreditsMenu)
   )
-const zookeeperCreditsStatusBarItem = defineExtension({
+const zookeeperCreditsStatusBarItem = defineFactory({
   dependencies: { layout: layoutObservations },
   key: 'zookeeper.credits-status-bar-item',
   create: ({ layout: layoutInputs }) => {
@@ -55,7 +51,7 @@ const zookeeperCreditsStatusBarItem = defineExtension({
       items: [contribute(statusBarLocalItemsFacet, () => item.value)],
     }
   },
-}) satisfies Extension
+}) satisfies Factory
 const zookeeper = createZdsPlugin({
   id: 'zookeeper',
   title: 'Zookeeper',

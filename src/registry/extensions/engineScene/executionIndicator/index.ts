@@ -4,16 +4,12 @@ import {
   nullableStatusBarItem,
   statusBarLocalItemsFacet,
 } from '@src/registry/contracts/statusBar'
-import {
-  extension as defineExtension,
-  contribute,
-  type Extension,
-} from 'plankton'
+import { factory as defineFactory, contribute, type Factory } from 'plankton'
 import { createElement } from 'react'
 import { EXECUTION_INDICATOR_STATUS_BAR_ITEM_ID } from './constants'
 import { EngineExecutionStatusTooltip } from './EngineExecutionStatusTooltip'
 
-const executionIndicator = defineExtension({
+const executionIndicator = defineFactory({
   dependencies: { projectSession: projectSessionObservations },
   key: 'execution-indicator.status-bar-item',
   create: ({ projectSession: projectSessionInputs }) => {
@@ -62,5 +58,5 @@ const executionIndicator = defineExtension({
       items: [contribute(statusBarLocalItemsFacet, () => statusBarItem.value)],
     }
   },
-}) satisfies Extension
+}) satisfies Factory
 export default executionIndicator

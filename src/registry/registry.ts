@@ -1,7 +1,7 @@
-import { type Item, slot } from 'plankton'
+import { type Extension, slot } from 'plankton'
 
 type RegistryItemModule = {
-  default?: Item
+  default?: Extension
   order?: number
 }
 
@@ -25,7 +25,7 @@ const bundledRegistryItemKindOrder = (path: string) =>
 //
 // Extensions are always-on app infrastructure. Plugins are user-visible,
 // runtime-toggleable bundles that may depend on extension contracts.
-export const coreRegistryItems: Item[] = Object.entries(
+export const coreRegistryItems: Extension[] = Object.entries(
   bundledRegistryItemModules
 )
   .map(([path, mod]) => ({
@@ -41,4 +41,4 @@ export const coreRegistryItems: Item[] = Object.entries(
       a.order - b.order ||
       a.path.localeCompare(b.path)
   )
-  .map((entry) => entry.item as Item)
+  .map((entry) => entry.item as Extension)
