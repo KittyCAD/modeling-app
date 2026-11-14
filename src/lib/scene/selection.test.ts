@@ -302,3 +302,107 @@ it('changes only its own view filter and clears its selections, while a dialog r
     second.selection.dispose()
   }
 })
+
+it('projects correspondence without changing selection, defers it during dialog picking, and invalidates it with the model', async () => {
+  const { selection, adapter, pick } = setup()
+  try {
+    await pick(1)
+    const model = selection.model.peek()!
+    selection.setCorrespondence([{ model, reference: region('2') }])
+    await vi.waitFor(() =>
+      expect(adapter.present.mock.lastCall?.[0]).toEqual([
+        region('1'),
+        region('2'),
+      ])
+    )
+    expect(selection.selected.peek().map((item) => item.reference)).toEqual([
+      region('1'),
+    ])
+    const argument = profiles()
+    const dialog = requireValue(
+      selection.beginPicking({ arguments: [argument] })
+    )
+    dialog.activate('profiles')
+    selection.offer([{ model, reference: region('3') }])
+    await vi.waitFor(() =>
+      expect(adapter.present.mock.lastCall?.[0]).toEqual([region('3')])
+    )
+    expect(selection.promoteCorrespondence()).toBeInstanceOf(Error)
+    dialog.close()
+    await vi.waitFor(() =>
+      expect(adapter.present.mock.lastCall?.[0]).toEqual([
+        region('1'),
+        region('2'),
+      ])
+    )
+    expect(selection.promoteCorrespondence()).toBeUndefined()
+    expect(selection.selected.peek().map((item) => item.reference)).toEqual([
+      region('2'),
+    ])
+    selection.setModel({ sceneId: model.sceneId, executionId: Symbol() })
+    expect(selection.correspondence.peek()).toEqual([])
+    expect(
+      selection.setCorrespondence([{ model, reference: region('2') }])
+    ).toBeInstanceOf(Error)
+  } finally {
+    selection.dispose()
+  }
+})
+
+it('rejects stale or incompatible linked picks as a whole without partially changing an argument', () => {
+  const { selection } = setup()
+  try {
+    const argument = profiles()
+    const dialog = requireValue(
+      selection.beginPicking({ arguments: [argument] })
+    )
+    dialog.activate('profiles')
+    const model = selection.model.peek()!
+    selection.offer([{ model, reference: region('1') }])
+    expect(
+      selection.offer([
+        { model, reference: region('2') },
+        { model, reference: { type: 'face', face_id: 'face' } },
+      ])
+    ).toBeInstanceOf(Error)
+    expect(argument.value.peek().map((item) => item.reference)).toEqual([
+      region('1'),
+    ])
+    expect(
+      selection.offer([
+        { model: { ...model, executionId: Symbol() }, reference: region('3') },
+      ])
+    ).toBeInstanceOf(Error)
+    expect(argument.value.peek().map((item) => item.reference)).toEqual([
+      region('1'),
+    ])
+    dialog.close()
+    expect(selection.offer([{ model, reference: region('2') }])).toBeInstanceOf(
+      Error
+    )
+  } finally {
+    selection.dispose()
+  }
+})
+
+it('does not resend scene highlights when a bridge projects the same correspondence again', async () => {
+  const { selection, adapter, pick } = setup()
+  try {
+    await pick(1)
+    const model = selection.model.peek()!
+    selection.setCorrespondence([{ model, reference: region('2') }])
+    await vi.waitFor(() =>
+      expect(adapter.present.mock.lastCall?.[0]).toEqual([
+        region('1'),
+        region('2'),
+      ])
+    )
+    const count = adapter.present.mock.calls.length
+    selection.setCorrespondence([{ model, reference: region('2') }])
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(adapter.present.mock.calls).toHaveLength(count)
+  } finally {
+    selection.dispose()
+  }
+})

@@ -1,3 +1,4 @@
+import type { CorrespondenceBridge } from '@src/lib/kcl/correspondence/bridge'
 import type { SelectionSource } from '@src/lib/kcl/selection'
 import type { ToolbarGroupDefinition } from '@src/components/Toolbar/groups'
 import type {
@@ -7,7 +8,11 @@ import type {
 import type { createModelingTools } from '@src/lib/kcl/modelingTools'
 import type { ModelingToolDefinition } from '@src/lib/kcl/modelingTools'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
-import { appendValueSpec, defineContract } from '@kittycad/registry'
+import {
+  appendValueSpec,
+  defineContract,
+  defineService,
+} from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { ComponentType } from 'react'
 import type { Executor } from '@src/lib/executors/registry/contract'
@@ -39,6 +44,9 @@ export interface ModelingStatusItem {
   Component: ComponentType<{ context: ModelingViewContext }>
 }
 export const modelingViewContract = defineContract({
+  correspondenceBridgeService: defineService<CorrespondenceBridge>(
+    'modeling-view.correspondence'
+  ),
   modelingToolGroupsValueSpec: appendValueSpec<ToolbarGroupDefinition>(
     'modeling-view.tool-groups'
   ),
@@ -53,6 +61,7 @@ export const modelingViewContract = defineContract({
   ),
 })
 export const {
+  correspondenceBridgeService,
   modelingToolGroupsValueSpec,
   modelingStatusItemsValueSpec,
   modelingToolsValueSpec,

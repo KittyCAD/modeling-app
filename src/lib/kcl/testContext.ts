@@ -1,4 +1,5 @@
 import { createActiveSelection } from '@src/lib/kcl/selection'
+import type { KclSourceSnapshot } from '@src/lib/kcl/sources'
 import { defaultModelingToolGroups } from '@src/lib/kcl/toolGroups'
 import { createModelingInteractions } from '@src/lib/kcl/interactions'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -25,6 +26,8 @@ export function modelingTestContext() {
     '@settings(kclVersion = 3.0)\nanswer = 42'
   )
   const editor = {
+    id: Symbol('test editor'),
+    classification: signal({ languageId: 'kcl' }),
     ...document.document,
     get state() {
       return document.document.state
@@ -52,6 +55,7 @@ export function modelingTestContext() {
       defaultUnit: signal('mm'),
     },
     runtime: {
+      sources: signal<KclSourceSnapshot | undefined>(undefined),
       state: signal(emptyExecState()),
       ast: signal<Node<Program> | null>(null),
       fileSettings: signal({}),

@@ -58,6 +58,7 @@ export async function createKclRuntime(
   let entrypoint: string | undefined
   let disposed = false
   let queue: Promise<unknown> = Promise.resolve()
+  const sources = signal<KclSourceSnapshot | undefined>(undefined)
   const state = signal<ExecState>(emptyExecState())
   const executing = signal(false)
   const program = signal<Node<Program> | null>(null)
@@ -117,6 +118,7 @@ export async function createKclRuntime(
   }
   const executionProgram = (snapshot: KclSourceSnapshot) =>
     Effect.gen(function* () {
+      sources.value = undefined
       const path = fsZds.join(snapshot.src)
       entrypoint = path
       files = new Map(
@@ -169,6 +171,12 @@ export async function createKclRuntime(
         fileSettings.value = isErr(annotation) ? {} : annotation
         failed.value = false
       })
+      sources.value = {
+        src: snapshot.src,
+        files: new Map(
+          [...files].map(([path, bytes]) => [path, bytes.slice()])
+        ),
+      }
       return result
     }).pipe(
       // Native error output can contain newly created planes/artifacts. Preserve
@@ -269,6 +277,7 @@ export async function createKclRuntime(
     state,
     ast: program,
     fileSettings,
+    sources,
     executionRevision,
     executionElapsedMs,
     executing,
@@ -324,6 +333,7 @@ export async function createKclRuntime(
         await sketch?.invalidate()
       } finally {
         disposed = true
+        sources.value = undefined
         clearInterval(elapsedTimer)
         await queue
         native.free()

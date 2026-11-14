@@ -65,6 +65,7 @@ export function createSceneSelection(
 ) {
   const model = signal<SelectionModel | null>(null)
   const selected = signal<readonly SceneSelection[]>([])
+  const correspondence = signal<readonly SceneSelection[]>([])
   const viewFilter = signal<readonly EntityType[]>([...defaultFilter])
   const error = signal<Error | undefined>(undefined)
   const dialog = signal<DialogState | undefined>(undefined)
@@ -97,7 +98,16 @@ export function createSceneSelection(
   )
   const stop = effect(() => {
     const currentModel = model.value
-    const values = displayed.value
+    const values = dialog.value
+      ? displayed.value
+      : [...displayed.value, ...correspondence.value].filter(
+          (value, index, values) =>
+            values.findIndex(
+              (item) =>
+                entityReferenceKey(item.reference) ===
+                entityReferenceKey(value.reference)
+            ) === index
+        )
     const currentFilter = filter.value
     const ticket = ++projection
     if (!currentModel) return
@@ -158,6 +168,7 @@ export function createSceneSelection(
     batch(() => {
       model.value = null
       selected.value = []
+      correspondence.value = []
       error.value = undefined
       const session = dialog.peek()
       if (session) {
@@ -171,6 +182,74 @@ export function createSceneSelection(
     model: model as ReadonlySignal<SelectionModel | null>,
     selected: selected as ReadonlySignal<readonly SceneSelection[]>,
     displayed,
+    correspondence: correspondence as ReadonlySignal<readonly SceneSelection[]>,
+    pickingArgument: computed(() => dialog.value?.active.value),
+    /** Correspondence is presentation only; commands continue reading their own selection owner. */
+    setCorrespondence: (values: readonly SceneSelection[]) => {
+      if (disposed || values.some((value) => value.model !== model.peek()))
+        return new Error('The correspondence model changed.')
+      const previous = correspondence.peek()
+      if (
+        previous.length === values.length &&
+        previous.every(
+          (item, index) =>
+            item.model === values[index].model &&
+            entityReferenceKey(item.reference) ===
+              entityReferenceKey(values[index].reference)
+        )
+      )
+        return undefined
+      correspondence.value = values.map((value) => ({
+        ...value,
+        reference: structuredClone(value.reference),
+      }))
+      return undefined
+    },
+    /** Programmatic promotion is deliberately unused by UI; navigation remains a separate capability. */
+    // TODO: Keep promotion unbound from UI while its interaction semantics are evaluated.
+    promoteCorrespondence: () => {
+      if (disposed || dialog.peek() || !model.peek())
+        return new Error(
+          'A picking session owns selection, or the model is unavailable.'
+        )
+      changeOwner()
+      selected.value = [...correspondence.peek()]
+      return undefined
+    },
+    /** Linked modalities offer complete, validated picks to the active argument without mutating view selection. */
+    offer: (values: readonly SceneSelection[], additive = false) => {
+      const argument = dialog.peek()?.active.peek()
+      if (
+        !argument ||
+        !pickingEnabled.peek() ||
+        dialog.peek()?.target.peek() !== model.peek()
+      )
+        return new Error('No current argument is accepting picks.')
+      if (
+        !values.length ||
+        values.some(
+          (value) =>
+            value.model !== model.peek() || !argument.accepts(value.reference)
+        )
+      )
+        return new Error('The offered geometry is stale or incompatible.')
+      const next = additive
+        ? [...argument.value.peek(), ...values]
+        : [...values]
+      const unique = next.filter(
+        (value, index) =>
+          next.findIndex(
+            (item) =>
+              entityReferenceKey(item.reference) ===
+              entityReferenceKey(value.reference)
+          ) === index
+      )
+      if (!argument.multiple && unique.length !== 1)
+        return new Error('This argument accepts one entity.')
+      changeOwner()
+      argument.setValue(unique, { additive })
+      return undefined
+    },
     filter,
     pickingEnabled,
     error,

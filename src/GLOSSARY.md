@@ -237,3 +237,15 @@ Temporary ownership of geometry picking by an open command dialog. Picks populat
 ## Model target
 
 The particular model view and completed execution bound to a command. A new execution invalidates that target and requires binding and picking again.
+
+## Active selection
+
+The selection belonging to the interaction currently accepting input in a Modeling view. It may belong to the view, an open dialog, or an active sketch; selections in other scopes remain independent.
+
+## Geometry/source correspondence
+
+A relationship between geometry and the source that defines it, generates it, contributes to it, or imports it. Correspondence can be many-to-many and does not itself select geometry or text.
+
+## Correspondence highlighting
+
+A visual indication of geometry/source correspondence that leaves the receiving view's selection and navigation unchanged.

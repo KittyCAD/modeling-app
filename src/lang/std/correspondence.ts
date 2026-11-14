@@ -24,6 +24,7 @@ export interface ArtifactCorrespondence {
   readonly sourceArtifactId: string
   readonly range: SourceRange
   readonly relation: CorrespondenceRelation
+  readonly queryRange?: SourceRange
 }
 export interface CorrespondencePolicy {
   readonly relations: readonly CorrespondenceRelation[]
@@ -161,9 +162,9 @@ export function createArtifactCorrespondence(graph: ArtifactGraph) {
       )
       if (!entity) continue
       result.push(
-        ...forEntity(entity, policy).filter((item) =>
-          rangesOverlap(range, item.range)
-        )
+        ...forEntity(entity, policy)
+          .filter((item) => rangesOverlap(range, item.range))
+          .map((item) => ({ ...item, queryRange: range }))
       )
     }
     return result
@@ -195,13 +196,16 @@ export function resolvePickingCandidates(
         accepts(item.entity)
     )
     // A cursor inside a nested expression chooses the narrowest direct source span, never a containing operation.
+    const cursorQuery = direct.every(
+      (item) => item.queryRange && item.queryRange[0] === item.queryRange[1]
+    )
     const width = Math.min(
       ...direct.map((item) => item.range[1] - item.range[0])
     )
     const candidates = new Map<string, EntityReference>()
     for (const item of direct) {
       const key = entityReferenceKey(item.entity)
-      if (key && item.range[1] - item.range[0] === width)
+      if (key && (!cursorQuery || item.range[1] - item.range[0] === width))
         candidates.set(key, item.entity)
     }
     if (candidates.size !== 1)

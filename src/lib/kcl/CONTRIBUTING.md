@@ -154,3 +154,39 @@ The `/file/:id` consumer still uses the extracted `legacyCorrespondence` policy,
 with its previous traversal and ordering. Region solver IDs, pattern copies, and
 KCL import-site provenance require further artifact support; they are explicit
 TODOs rather than guessed correspondences. Module IDs are local to an execution.
+
+### Connecting Code and Modeling views
+
+The KCL extension registers `correspondenceCodeExtension` on each Code surface
+and a Modeling endpoint for each view instance. `correspondenceBridgeService`
+connects them. Views of the same backing editor link automatically; other links
+are explicit `link(codeViewId, modelingViewId)` calls with returned cleanup.
+Links support multiple endpoints in either direction. Imported files require an
+explicit link and exact bytes from the target execution's source snapshot;
+module IDs are resolved through that execution's filenames, never compared
+across executions. Editing source or re-executing clears stale projections.
+
+The bridge decorates code without moving cursors or scrolling. Geometry
+correspondence uses the existing selection presentation adapter, while ordinary
+view selection and dialog arguments remain unchanged. During picking, dialog
+highlights take priority over correspondence highlights. The renderer currently
+uses the same geometry highlight appearance for both; their state is separate.
+
+Intentional Code selection (`select` transactions) can offer a direct,
+unambiguous candidate to an active picking argument. Programmatic selection,
+source edits, and decoration updates do not offer picks. A single linked
+Modeling view is the default destination. With several links, the caller must
+use `setPickingTarget(codeViewId, modelingViewId)`; global focus and the order
+of open dialogs never choose a destination. Unsupported/ambiguous mappings
+remain explanatory highlights and expose an error through the bridge service.
+
+`SceneSelectionController.promoteCorrespondence()` is a documented programmatic
+operation, tested but deliberately unused by UI. It refuses promotion while a
+dialog owns picking. Navigation is separate and no automatic navigation is
+installed.
+
+TODO extension points are marked beside the bridge: feature-tree candidate
+submission, link/destination controls, and native sketch correspondence. Sketch
+selection already participates in `context.selection`, but solver source deltas
+need an execution-qualified correspondence endpoint before they can safely
+participate in the Code bridge. Do not interpret solver IDs as engine artifacts.

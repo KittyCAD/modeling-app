@@ -133,3 +133,11 @@ it('never matches offsets in another module and relation policies only remove ex
     })
   )
 })
+
+it('does not discard wider direct targets to make a broad source selection appear unambiguous', () => {
+  const query = createArtifactCorrespondence(graph())
+  const candidates = query.forCode([0, 60, 0])
+  expect(
+    resolvePickingCandidates([candidates], () => true, true)
+  ).toBeInstanceOf(Error)
+})

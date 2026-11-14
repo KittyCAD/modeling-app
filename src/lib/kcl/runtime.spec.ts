@@ -103,6 +103,11 @@ it('executes current KCL and resolves imports from the captured project bytes', 
   expect(result.variables.answer).toMatchObject({ type: 'Number', value: 42 })
   expect(model.state.peek()).toBe(result)
   expect(model.failed.peek()).toBe(false)
+  expect(
+    new TextDecoder().decode(
+      model.sources.peek()?.files.get('/model/dimensions.kcl')
+    )
+  ).toContain('export width = 21')
   const updated = await model.execute(
     snapshot(
       '@settings(kclVersion = 3.0)\nimport width from "dimensions.kcl"\nanswer = width * 2',
@@ -113,6 +118,11 @@ it('executes current KCL and resolves imports from the captured project bytes', 
     )
   )
   expect(updated.variables.answer).toMatchObject({ value: 44 })
+  expect(
+    new TextDecoder().decode(
+      model.sources.peek()?.files.get('/model/dimensions.kcl')
+    )
+  ).toContain('export width = 22')
 })
 it('keeps models independent and recovers after invalid source', async () => {
   const first = await runtime()
@@ -127,6 +137,7 @@ it('keeps models independent and recovers after invalid source', async () => {
     Error
   )
   expect(first.failed.peek()).toBe(true)
+  expect(first.sources.peek()).toBeUndefined()
   expect(first.executing.peek()).toBe(false)
   expect(done.mock.calls[0][0].detail).toMatchObject({
     successful: false,

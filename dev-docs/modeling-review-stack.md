@@ -124,3 +124,23 @@ The broader final lint sweep still reports six pre-existing unnecessary type
 assertions in `src/lib/selections.spec.ts`. That file is byte-for-byte identical
 to the preserved source-on-main version. They were left for a separate type-only
 cleanup rather than mixed into extraction or behavior changes.
+
+## Wave 5: Selection consumers and source correspondence
+
+Stack locally after `codex/review-compact-status-bars`:
+
+1. `codex/review-active-selection`: mode-independent active selection reads and
+   clearing, with model/dialog/sketch adapters and an updated selection status item.
+2. `codex/review-artifact-correspondence`: unchanged legacy mapping extraction,
+   explicit provenance policies, and conservative direct picking resolution.
+3. `codex/review-code-modeling-bridge`: N-to-N view links, code decorations,
+   geometry highlight projection, imported-source snapshot checks, and scoped
+   command picking from intentional Code selections. Includes glossary and guide
+   updates. Feature-tree wiring, a link/destination chooser, and native sketch
+   correspondence are documented TODOs; selection promotion is available but
+   unused by UI.
+
+The legacy `/file/:id` selection/navigation behavior remains unchanged. In the
+new project shell, correspondence highlighting does not move a cursor, scroll a
+pane, or alter the receiving view's selection. Linked Code picking can update
+an argument only while its target session is accepting picks.

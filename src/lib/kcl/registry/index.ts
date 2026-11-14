@@ -1,3 +1,6 @@
+import { createCorrespondenceBridge } from '@src/lib/kcl/correspondence/bridge'
+import { correspondenceCodeExtension } from '@src/lib/kcl/correspondence/codeExtension'
+import { correspondenceBridgeService } from '@src/lib/kcl/registry/contract'
 import { createActiveSelection } from '@src/lib/kcl/selection'
 import { defaultModelingToolGroups } from '@src/lib/kcl/toolGroups'
 import { sketchToolsValueSpec } from '@src/lib/kcl/sketch/contract'
@@ -19,7 +22,11 @@ import { defaultModelingStatusItems } from '@src/lib/kcl/statusItems'
 import { createMeasurementToolService } from '@src/registry/extensions/engineScene/measurementToolService'
 import { createPhysicalAnalysisService } from '@src/registry/extensions/engineScene/physicalAnalysis/physicalAnalysisService'
 import { kcl } from '@kittycad/codemirror-lang-kcl'
-import { defineRegistryItemFactory, provide } from '@kittycad/registry'
+import {
+  defineRegistryItemFactory,
+  provide,
+  provideService,
+} from '@kittycad/registry'
 import { computed, effect } from '@preact/signals-core'
 import { editorKclHighlight } from '@src/editor/plugins/theme'
 import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
@@ -27,6 +34,7 @@ import { initialiseWasm, relevantFileExtensions } from '@src/lang/wasmUtils'
 import {
   codeEditorsExtensionValueSpec,
   editorLanguagesValueSpec,
+  editorsService,
   editorViewsValueSpec,
 } from '@src/lib/editors/registry/contract'
 import { defineEditorView } from '@src/lib/editors/views'
@@ -55,6 +63,7 @@ import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
  * text/history while each owns its connection, native model, and camera.
  */
 const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
+  const correspondence = createCorrespondenceBridge()
   let fallbackWasm: ReturnType<typeof initialiseWasm> | undefined
   const getWasm = () =>
     valueSpecs.get(wasmPromiseValueSpec) ?? (fallbackWasm ??= initialiseWasm())
@@ -125,6 +134,10 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
   return {
     id: 'kcl',
     uses: [projectSourcesExtension],
+    dispose: correspondence.dispose,
+    providesServices: [
+      provideService(correspondenceBridgeService, correspondence),
+    ],
     provides: [
       ...defaultModelingToolGroups.map((group) =>
         provide(modelingToolGroupsValueSpec, group)
@@ -143,7 +156,7 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
       provide(executorCapabilityValueSpec, execution.capability),
       provide(
         editorViewsValueSpec,
-        defineEditorView(({ editor, onDispose }) => {
+        defineEditorView(({ editor, instance, onDispose }) => {
           const executors = services.get(executorsService)
           const executor = executors.createExecutor(editor)
           if (isErr(executor)) return executor
@@ -178,6 +191,17 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
             toolGroups: valueSpecs.signal(modelingToolGroupsValueSpec),
             statusItems: valueSpecs.signal(modelingStatusItemsValueSpec),
           }
+          onDispose(
+            correspondence.registerModel({
+              id: instance.id,
+              context,
+              enabled: computed(
+                () =>
+                  services.get(editorsService).viewState(instance).value
+                    .selected?.id === 'kcl.modeling'
+              ),
+            })
+          )
           const stopRecovery = effect(() => {
             const state = context.session.state.value
             if (state.type === 'connecting' || state.type === 'error') {
@@ -204,6 +228,20 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
         matches: '.kcl',
       }),
 
+      provide(codeEditorsExtensionValueSpec, {
+        id: 'editors.kcl-correspondence',
+        matches: ({ languageId }) => languageId === 'kcl',
+        extensions: (host) =>
+          correspondenceCodeExtension(
+            host,
+            correspondence,
+            computed(
+              () =>
+                services.get(editorsService).viewState(host.instance).value
+                  .selected?.id === 'editors.code'
+            )
+          ),
+      }),
       provide(codeEditorsExtensionValueSpec, {
         id: 'editors.kcl',
         matches: ({ languageId }) => languageId === 'kcl',
