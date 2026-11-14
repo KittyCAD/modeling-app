@@ -2363,7 +2363,8 @@ function trackballLocalCamera(
     .multiply(new Quaternion().setFromAxisAngle(axis.normalize(), angle))
     .normalize()
   camera.position.set(0, 0, distance).applyQuaternion(rotation).add(target)
-  // The local renderer copies up as well as position, and this may roll it.
+  // The local renderer orients its camera from up, position and target, so
+  // up must carry any roll the trackball adds.
   camera.up.set(0, 1, 0).applyQuaternion(rotation)
 }
 
