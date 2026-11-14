@@ -8,12 +8,12 @@ import { PATHS, webSafeJoin } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import {
+  observations as commandsObservations,
   COMMAND_PALETTE_OPEN_COMMAND_SCOPE,
   type CommandScopeService,
   commandKey,
   commandScopeService,
   commandScopesFacet,
-  commandSystemService,
   DEFAULT_COMMAND_SCOPES,
   EDITABLE_FOCUSED_COMMAND_SCOPE,
   GLOBAL_COMMAND_SCOPES,
@@ -22,8 +22,9 @@ import {
   MODELING_DIALOG_FOCUSED_COMMAND_SCOPE,
   SETTINGS_COMMAND_SCOPE,
 } from '@src/registry/contracts/commands'
-import { fileOperationsService } from '@src/registry/contracts/fileOperations'
+import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
 import {
+  observations as keymapObservations,
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   createEmptyPersistedKeymap,
@@ -34,8 +35,6 @@ import {
   type KeymapItem,
   type KeymapService,
   type KeymapSource,
-  keymapEventOwnersFacet,
-  keymapFacet,
   keymapService,
   matchKeymapKeystrokes,
   normalizeEventKey,
@@ -63,11 +62,21 @@ type BuiltInKeymapCommand = {
   run: (item: KeymapItem) => unknown
 }
 const keymapExtension: Extension = defineExtension({
+  dependencies: {
+    fileOperations: fileOperationsObservations,
+    keymap: keymapObservations,
+    commands: commandsObservations,
+  },
   key: 'keymap-extension',
-  create: (_dependencies, ctx) => {
-    const fileOperations = () => ctx.required(fileOperationsService)
-    const contributedKeymapSignal = ctx.observe(keymapFacet)
-    const commandScopesSignal = ctx.observe(commandScopesFacet)
+  create: ({
+    fileOperations: fileOperationsInputs,
+    keymap: keymapInputs,
+    commands: commandsInputs,
+  }) => {
+    const fileOperations = () =>
+      fileOperationsInputs.fileOperationsService.required()
+    const contributedKeymapSignal = keymapInputs.keymapFacet
+    const commandScopesSignal = commandsInputs.commandScopesFacet
     const persistedKeymap = signal(createEmptyPersistedKeymap())
     const keymapSignal = computed(() =>
       createKeymapTree(
@@ -88,7 +97,7 @@ const keymapExtension: Extension = defineExtension({
         {
           scopes: GLOBAL_COMMAND_SCOPES,
           run: () =>
-            ctx.optional(commandSystemService)?.send({
+            commandsInputs.commandSystemService.current.value?.send({
               type: 'Open',
             }),
         },
@@ -98,7 +107,7 @@ const keymapExtension: Extension = defineExtension({
         {
           scopes: [COMMAND_PALETTE_OPEN_COMMAND_SCOPE],
           run: () =>
-            ctx.optional(commandSystemService)?.send({
+            commandsInputs.commandSystemService.current.value?.send({
               type: 'Close',
             }),
         },
@@ -266,9 +275,11 @@ const keymapExtension: Extension = defineExtension({
       }
       const owner =
         source === 'global'
-          ? ctx.get(keymapEventOwnersFacet).find((owner) => owner.owns(event))
+          ? keymapInputs.keymapEventOwnersFacet.value.find((owner) =>
+              owner.owns(event)
+            )
           : undefined
-      const commandSystem = ctx.optional(commandSystemService)
+      const commandSystem = commandsInputs.commandSystemService.current.value
       const registeredCommands =
         commandSystem?.actor.getSnapshot().context.commands ?? []
       const commandsByKey = new Map<string, Command>()
@@ -417,7 +428,7 @@ const keymapExtension: Extension = defineExtension({
       item: KeymapItem,
       commandsByKey: ReadonlyMap<string, Command>
     ) {
-      const commandSystem = ctx.optional(commandSystemService)
+      const commandSystem = commandsInputs.commandSystemService.current.value
       const command = commandsByKey.get(item.command)
       if (!command || !commandSystem) {
         return

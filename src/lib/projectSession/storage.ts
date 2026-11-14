@@ -1,3 +1,4 @@
+import { inputs, observe } from '@src/registry/inputs'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { TextFileIO } from '@src/lib/projectSession/textFileIO'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
@@ -56,3 +57,7 @@ export const projectStorageProvidersFacet = new Facet<
   (path: string) => ProjectStorage | undefined,
   readonly ((path: string) => ProjectStorage | undefined)[]
 >('project-session.storage-providers', (inputs) => inputs)
+
+export const observations = inputs({
+  projectStorageProvidersFacet: observe(projectStorageProvidersFacet),
+})

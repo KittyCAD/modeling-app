@@ -1,3 +1,4 @@
+import { inputs, observeService, observe } from '@src/registry/inputs'
 import type { ReadonlySignal } from '@preact/signals-core'
 import {
   type ExtensionSettingsContribution,
@@ -34,3 +35,8 @@ export const settingsContract = contract({
 })
 
 export const { settingsService, settingsFacet } = settingsContract
+
+export const observations = inputs({
+  settingsService: observeService(settingsService),
+  settingsFacet: observe(settingsFacet),
+})

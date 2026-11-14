@@ -1,17 +1,34 @@
 import { computed, effect } from '@preact/signals-core'
 import { watchProjectStorage } from '@src/lib/projectSession/watchStorage'
-import { fileOperationsService } from '@src/registry/contracts/fileOperations'
-import { projectLibrariesService } from '@src/registry/contracts/projectLibraries'
-import { projectSession } from '@src/registry/contracts/projectSession'
-import { routerService } from '@src/registry/contracts/router'
+import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
+import { observations as projectLibrariesObservations } from '@src/registry/contracts/projectLibraries'
+import { observations as projectSessionObservations } from '@src/registry/contracts/projectSession'
+import { observations as routerObservations } from '@src/registry/contracts/router'
 import { extension as defineExtension, type Extension } from 'plankton'
 export default defineExtension({
+  dependencies: {
+    projectSession: projectSessionObservations,
+    fileOperations: fileOperationsObservations,
+    projectLibraries: projectLibrariesObservations,
+    router: routerObservations,
+  },
   key: 'project-session.storage-watcher',
-  create: (_dependencies, ctx) => {
-    const sessions = computed(() => ctx.optional(projectSession))
-    const files = computed(() => ctx.optional(fileOperationsService))
-    const libraries = computed(() => ctx.optional(projectLibrariesService))
-    const routers = computed(() => ctx.optional(routerService))
+  create: ({
+    projectSession: projectSessionInputs,
+    fileOperations: fileOperationsInputs,
+    projectLibraries: projectLibrariesInputs,
+    router: routerInputs,
+  }) => {
+    const sessions = computed(
+      () => projectSessionInputs.projectSession.current.value
+    )
+    const files = computed(
+      () => fileOperationsInputs.fileOperationsService.current.value
+    )
+    const libraries = computed(
+      () => projectLibrariesInputs.projectLibrariesService.current.value
+    )
+    const routers = computed(() => routerInputs.routerService.current.value)
     const currentProject = computed(() => sessions.value?.project.value)
     const currentPath = computed(() => currentProject.value?.path)
     let disposed = false

@@ -1,3 +1,4 @@
+import { inputs, observeService } from '@src/registry/inputs'
 import type { ReadonlySignal } from '@preact/signals-core'
 import { contract, service } from 'plankton'
 import type { Location, NavigateFunction } from 'react-router-dom'
@@ -29,3 +30,7 @@ export const routerContract = contract({
 })
 
 export const { routerService } = routerContract
+
+export const observations = inputs({
+  routerService: observeService(routerService),
+})

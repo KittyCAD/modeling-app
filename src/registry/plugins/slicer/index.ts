@@ -13,15 +13,15 @@ import {
   layoutContributionsFacet,
 } from '@src/lib/layout/registry/contract'
 import {
-  commandSystemService,
+  observations as commandsObservations,
   MODE_MODELING_COMMAND_SCOPE,
   provideCommand,
 } from '@src/registry/contracts/commands'
 import {
+  observations as fileOperationsObservations,
   type FileOperationsRegistryService,
-  fileOperationsService,
 } from '@src/registry/contracts/fileOperations'
-import { projectSession } from '@src/registry/contracts/projectSession'
+import { observations as projectSessionObservations } from '@src/registry/contracts/projectSession'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import {
   EXPORT_TO_SLICER_ACTION_TYPE,
@@ -118,15 +118,26 @@ function createExportToSlicerCommand({
   }
 }
 const exportToSlicerSidebarItem: Extension = defineExtension({
+  dependencies: {
+    commands: commandsObservations,
+    projectSession: projectSessionObservations,
+    fileOperations: fileOperationsObservations,
+  },
   key: 'slicer.left-toolbar.item',
-  create: (_dependencies, ctx) => {
-    const getCommandSystem = () => ctx.required(commandSystemService)
+  create: ({
+    commands: commandsInputs,
+    projectSession: projectSessionInputs,
+    fileOperations: fileOperationsInputs,
+  }) => {
+    const getCommandSystem = () =>
+      commandsInputs.commandSystemService.required()
     const getKclManager = () =>
-      ctx.optional(projectSession)?.project.value?.executingEditor.value ??
-      undefined
+      projectSessionInputs.projectSession.current.value?.project.value
+        ?.executingEditor.value ?? undefined
     const exportToSlicerCommand = createExportToSlicerCommand({
       getKclManager,
-      getFileOperations: () => ctx.required(fileOperationsService),
+      getFileOperations: () =>
+        fileOperationsInputs.fileOperationsService.required(),
     })
     const useExportToSlicerDisabled = createUseExportToSlicerDisabled({
       getKclManager,

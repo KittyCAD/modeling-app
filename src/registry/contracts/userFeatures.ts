@@ -1,3 +1,4 @@
+import { inputs, observeService } from '@src/registry/inputs'
 import type { Feature } from '@kittycad/lib'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type {
@@ -24,3 +25,7 @@ export const userFeaturesContract = contract({
 })
 
 export const { userFeaturesService } = userFeaturesContract
+
+export const observations = inputs({
+  userFeaturesService: observeService(userFeaturesService),
+})

@@ -34,13 +34,14 @@ import { DirectoryProjectLibrarySettingsDetails } from '@src/lib/projectLibrarie
 import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/settings/setting'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import { fileOperationsService } from '@src/registry/contracts/fileOperations'
+import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectEntry,
   homeProjectLoadingLibraryIdsFacet,
   homeProjectSettledLibraryIdsFacet,
 } from '@src/registry/contracts/homeProjects'
 import {
+  observations as projectLibrariesObservations,
   type ProjectLibraryOperation,
   type ProjectLibraryRealizationContribution,
   type ProjectLibraryRealizationsService,
@@ -52,10 +53,10 @@ import {
   projectLibraryTypesFacet,
 } from '@src/registry/contracts/projectLibraries'
 import {
+  observations as settingsObservations,
   settingsFacet,
-  settingsService,
 } from '@src/registry/contracts/settings'
-import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
+import { observations as wasmObservations } from '@src/registry/contracts/wasm'
 import {
   extension as defineExtension,
   contribute,
@@ -331,10 +332,19 @@ function watchConfiguredProjectLibraries({
  * membership only; cloud identity and duplicate policy are handled by cloudSync.
  */
 const configuredProjectLibraryRealizations: Extension = defineExtension({
+  dependencies: {
+    settings: settingsObservations,
+    projectLibraries: projectLibrariesObservations,
+  },
   key: 'project-libraries.configured-realizations',
-  create: (_dependencies, ctx) => {
-    const settings = computed(() => ctx.optional(settingsService))
-    const libraryTypes = ctx.observe(projectLibraryTypesFacet)
+  create: ({
+    settings: settingsInputs,
+    projectLibraries: projectLibrariesInputs,
+  }) => {
+    const settings = computed(
+      () => settingsInputs.settingsService.current.value
+    )
+    const libraryTypes = projectLibrariesInputs.projectLibraryTypesFacet
     const realizations = signal<ProjectLibraryRealizationContribution[]>([])
     const warnedMissingTypeLibraryIds = new Set<string>()
     const scanStates = new Map<string, ConfiguredProjectLibraryScanState>()
@@ -613,11 +623,16 @@ function reportDirectoryProjectStatFailures({
   })
 }
 const directoryProjectLibraryType: Extension = defineExtension({
+  dependencies: {
+    fileOperations: fileOperationsObservations,
+    wasm: wasmObservations,
+  },
   key: 'project-libraries.directory-library-type',
-  create: (_dependencies, ctx) => {
-    const fileOperations = () => ctx.required(fileOperationsService)
+  create: ({ fileOperations: fileOperationsInputs, wasm: wasmInputs }) => {
+    const fileOperations = () =>
+      fileOperationsInputs.fileOperationsService.required()
     const getWasmPromise = () =>
-      ctx.get(wasmPromiseFacet) ??
+      wasmInputs.wasmPromiseFacet.value ??
       new ExpectedFileOperationError('Missing WASM promise registry value.')
     /**
      * Directory operations know the configured library they changed, so they

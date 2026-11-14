@@ -2,7 +2,7 @@ import { computed } from '@preact/signals-core'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { getOpenPanes } from '@src/lib/layout/utils'
 import { zookeeperRuntimeRegistryItem } from '@src/lib/zookeeper/registry/runtime'
-import { layoutService } from '@src/registry/contracts/layout'
+
 import {
   nullableStatusBarItem,
   statusBarLocalItemsFacet,
@@ -14,6 +14,7 @@ import {
   type Extension,
 } from 'plankton'
 import { createElement, lazy, Suspense } from 'react'
+import { observations as layoutObservations } from '@src/lib/layout/registry/contract'
 
 const ZookeeperCreditsMenu = lazy(async () => {
   const { ZookeeperCreditsMenu } = await import(
@@ -29,9 +30,10 @@ const ZookeeperCreditsStatusBarItem = () =>
     createElement(ZookeeperCreditsMenu)
   )
 const zookeeperCreditsStatusBarItem = defineExtension({
+  dependencies: { layout: layoutObservations },
   key: 'zookeeper.credits-status-bar-item',
-  create: (_dependencies, ctx) => {
-    const layout = computed(() => ctx.optional(layoutService))
+  create: ({ layout: layoutInputs }) => {
+    const layout = computed(() => layoutInputs.layoutService.current.value)
     const item = computed(() => {
       const layoutSystem = layout.value
 

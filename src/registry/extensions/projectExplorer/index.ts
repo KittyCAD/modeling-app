@@ -9,14 +9,14 @@ import {
   revealInFileExplorer,
 } from '@src/lib/revealInFileExplorer'
 import { reportRejection } from '@src/lib/trap'
-import { commandSystemService } from '@src/registry/contracts/commands'
+import { observations as commandsObservations } from '@src/registry/contracts/commands'
 import {
   type ProjectExplorerRowContextMenuItem,
   type ProjectExplorerRowContextMenuItemContext,
   projectExplorerProjectMenuItemsFacet,
   projectExplorerRowContextMenuItemsFacet,
 } from '@src/registry/contracts/projectExplorer'
-import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
+import { observations as wasmObservations } from '@src/registry/contracts/wasm'
 import {
   extension as defineExtension,
   contribute,
@@ -24,8 +24,9 @@ import {
   type Extension,
 } from 'plankton'
 const importInCurrentFileExtension: Extension = defineExtension({
+  dependencies: { wasm: wasmObservations, commands: commandsObservations },
   key: 'project-explorer.import-in-current-file',
-  create: (_dependencies, ctx) => {
+  create: ({ wasm: wasmInputs, commands: commandsInputs }) => {
     const importExtensions = signal<string[]>([])
     let disposed = false
     let wasmRevision = 0
@@ -35,9 +36,8 @@ const importInCurrentFileExtension: Extension = defineExtension({
     void Promise.resolve()
       .then(() => {
         if (disposed) return
-        stopWasmSubscription = ctx
-          .observe(wasmPromiseFacet)
-          .subscribe((wasmPromise) => {
+        stopWasmSubscription = wasmInputs.wasmPromiseFacet.subscribe(
+          (wasmPromise) => {
             const revision = ++wasmRevision
             importExtensions.value = []
             void wasmPromise
@@ -53,7 +53,8 @@ const importInCurrentFileExtension: Extension = defineExtension({
                 if (!disposed && revision === wasmRevision)
                   reportRejection(error)
               })
-          })
+          }
+        )
       })
       .catch(reportRejection)
     const importItem = computed<ProjectExplorerRowContextMenuItem>(() => {
@@ -78,7 +79,7 @@ const importInCurrentFileExtension: Extension = defineExtension({
         isVisible,
         onSelect: (context) => {
           if (!context.project || !isVisible(context)) return
-          selectCommand(ctx.required(commandSystemService), {
+          selectCommand(commandsInputs.commandSystemService.required(), {
             name: 'Import',
             groupId: 'code',
             argDefaultValues: {

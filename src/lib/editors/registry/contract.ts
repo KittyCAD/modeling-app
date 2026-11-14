@@ -1,3 +1,4 @@
+import { inputs, observe } from '@src/registry/inputs'
 import type {
   EditorState,
   Extension,
@@ -191,3 +192,10 @@ export const {
   editorViewsFacet,
   codeEditorsExtensionFacet,
 } = editorsContract
+
+export const observations = inputs({
+  editorCapabilityFacet: observe(editorCapabilityFacet),
+  editorViewsFacet: observe(editorViewsFacet),
+  codeEditorsExtensionFacet: observe(codeEditorsExtensionFacet),
+  editorLanguagesFacet: observe(editorLanguagesFacet),
+})

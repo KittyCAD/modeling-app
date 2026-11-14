@@ -1,3 +1,4 @@
+import { inputs, observeService, observe } from '@src/registry/inputs'
 import type { MemoryFileDeletion } from '@src/lib/fileSystem/deletionHistory'
 import type { FileNameParts } from '@src/lib/fileSystem/fileNames'
 import type {
@@ -77,3 +78,9 @@ export const fileOperationsMountsFacet = new Facet<
   FileOperationsMount,
   readonly FileOperationsMount[]
 >('fileOperations.mounts', (inputs) => inputs)
+
+export const observations = inputs({
+  fileOperationsService: observeService(fileOperationsService),
+  projectOperationsService: observeService(projectOperationsService),
+  fileOperationsMountsFacet: observe(fileOperationsMountsFacet),
+})

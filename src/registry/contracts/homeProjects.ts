@@ -1,33 +1,50 @@
-import type { ReadonlySignal } from '@preact/signals-core';
-import { contract, service, Facet } from "plankton";
-import type { ProjectLibrary } from '@src/lib/projectLibraries';
-import { uniqueStrings } from '@src/lib/stringUtils';
-import { isArray } from '@src/lib/utils';
-type CloudProjectDuplicateRisk = 'exact' | 'divergent' | 'pending' | 'conflicted' | 'unreadable' | 'tombstoned' | 'sync-excluded' | 'no-sync-base' | 'unknown';
-export type HomeProjectSource = 'local' | 'remote';
-export type HomeProjectStatus = 'local' | 'cloud-only' | 'syncing' | 'synced' | 'conflicted';
-export type HomeProjectThumbnail = {
-  type: 'local';
-  path: string;
-} | {
-  type: 'remote';
-  url: string;
-};
+import { inputs, observeService, observe } from '@src/registry/inputs'
+import type { ReadonlySignal } from '@preact/signals-core'
+import { contract, service, Facet } from 'plankton'
+import type { ProjectLibrary } from '@src/lib/projectLibraries'
+import { uniqueStrings } from '@src/lib/stringUtils'
+import { isArray } from '@src/lib/utils'
+type CloudProjectDuplicateRisk =
+  | 'exact'
+  | 'divergent'
+  | 'pending'
+  | 'conflicted'
+  | 'unreadable'
+  | 'tombstoned'
+  | 'sync-excluded'
+  | 'no-sync-base'
+  | 'unknown'
+export type HomeProjectSource = 'local' | 'remote'
+export type HomeProjectStatus =
+  | 'local'
+  | 'cloud-only'
+  | 'syncing'
+  | 'synced'
+  | 'conflicted'
+export type HomeProjectThumbnail =
+  | {
+      type: 'local'
+      path: string
+    }
+  | {
+      type: 'remote'
+      url: string
+    }
 export type HomeProjectSyncFailure = {
-  message: string;
-  at?: string;
-  kind?: string;
-};
+  message: string
+  at?: string
+  kind?: string
+}
 export interface HomeProjectDuplicateRealization {
-  remoteProjectId: string;
-  canonicalProjectPath?: string;
-  localProjectPath: string;
-  localProjectName?: string;
-  title?: string;
-  libraryIds: readonly string[];
-  libraryTitles: readonly string[];
-  duplicateRisk: CloudProjectDuplicateRisk;
-  autoCleanupEligible: boolean;
+  remoteProjectId: string
+  canonicalProjectPath?: string
+  localProjectPath: string
+  localProjectName?: string
+  title?: string
+  libraryIds: readonly string[]
+  libraryTitles: readonly string[]
+  duplicateRisk: CloudProjectDuplicateRisk
+  autoCleanupEligible: boolean
 }
 
 /**
@@ -37,104 +54,137 @@ export interface HomeProjectDuplicateRealization {
  * or manufacture a combined local/remote source.
  */
 export interface HomeProjectEntry {
-  id: string;
-  source: HomeProjectSource;
-  status: HomeProjectStatus;
-  libraryIds?: readonly string[];
-  name: string;
-  title?: string;
+  id: string
+  source: HomeProjectSource
+  status: HomeProjectStatus
+  libraryIds?: readonly string[]
+  name: string
+  title?: string
   /** Storage address supplied by the provider, including projects not yet opened. */
-  projectPath?: string;
+  projectPath?: string
   /** Watch a provider's thumbnail while the card is visible. */
-  watchThumbnail?: () => () => void;
-  localProjectPath?: string;
-  localProjectName?: string;
-  remoteProjectId?: string;
+  watchThumbnail?: () => () => void
+  localProjectPath?: string
+  localProjectName?: string
+  remoteProjectId?: string
   /**
    * Delete confirmation wording is derived from explicit action semantics rather
    * than from library identity. A local cloud relationship may either delete only
    * its local realization or delete the backing remote project as well.
    */
-  deleteRemoteOnDelete?: boolean;
-  modified?: number;
-  defaultFile?: string;
-  kclFileCount?: number;
-  directoryCount?: number;
-  readWriteAccess: boolean;
-  thumbnail?: HomeProjectThumbnail;
-  conflict?: unknown;
-  syncFailure?: HomeProjectSyncFailure;
-  cloudRelationshipId?: string;
-  duplicateRealizations?: readonly HomeProjectDuplicateRealization[];
+  deleteRemoteOnDelete?: boolean
+  modified?: number
+  defaultFile?: string
+  kclFileCount?: number
+  directoryCount?: number
+  readWriteAccess: boolean
+  thumbnail?: HomeProjectThumbnail
+  conflict?: unknown
+  syncFailure?: HomeProjectSyncFailure
+  cloudRelationshipId?: string
+  duplicateRealizations?: readonly HomeProjectDuplicateRealization[]
   /** Other local folders discovered with this project's project.toml ID. */
-  duplicateProjectIdPaths?: readonly string[];
+  duplicateProjectIdPaths?: readonly string[]
 }
-export type HomeProjectEntryContribution = Omit<HomeProjectEntry, 'id' | 'libraryIds'> & {
-  id?: string;
-  libraryId?: string;
-  libraryIds?: readonly string[];
-};
-export type HomeProjectEntryContributionGroup = HomeProjectEntryContribution | readonly HomeProjectEntryContribution[];
+export type HomeProjectEntryContribution = Omit<
+  HomeProjectEntry,
+  'id' | 'libraryIds'
+> & {
+  id?: string
+  libraryId?: string
+  libraryIds?: readonly string[]
+}
+export type HomeProjectEntryContributionGroup =
+  | HomeProjectEntryContribution
+  | readonly HomeProjectEntryContribution[]
 export type HomeProjectOpenResult = {
-  defaultFile: string;
-  localProjectPath?: string;
-};
-export type HomeProjectRenameOptions = {
-  notify?: boolean;
-};
-export interface HomeProjectCloneToLibraryTarget {
-  library: ProjectLibrary;
-  sourceLibrary: ProjectLibrary;
+  defaultFile: string
+  localProjectPath?: string
 }
-export type HomeProjectAction = 'Opening' | 'Renaming' | 'Deleting' | 'Duplicating' | 'Cloning' | 'Separating';
+export type HomeProjectRenameOptions = {
+  notify?: boolean
+}
+export interface HomeProjectCloneToLibraryTarget {
+  library: ProjectLibrary
+  sourceLibrary: ProjectLibrary
+}
+export type HomeProjectAction =
+  | 'Opening'
+  | 'Renaming'
+  | 'Deleting'
+  | 'Duplicating'
+  | 'Cloning'
+  | 'Separating'
 export interface HomeProjectActionsService {
-  readonly pendingActions: ReadonlySignal<ReadonlyMap<string, HomeProjectAction>>;
+  readonly pendingActions: ReadonlySignal<
+    ReadonlyMap<string, HomeProjectAction>
+  >
   /** Keep a remote thumbnail current only while its card is in view. */
-  watchRemoteThumbnail: (remoteProjectId: string) => (() => void) | undefined;
-  canOpen: (project: HomeProjectEntry) => boolean;
-  canDuplicate: (project: HomeProjectEntry) => boolean;
-  canRename: (project: HomeProjectEntry) => boolean;
-  canDelete: (project: HomeProjectEntry) => boolean;
-  canCloneToLibrary: (project: HomeProjectEntry) => boolean;
-  canReviewDuplicateRealizations: (project: HomeProjectEntry) => boolean;
-  canSeparateProjectCopies: (project: HomeProjectEntry) => boolean;
-  open: (project: HomeProjectEntry) => Promise<HomeProjectOpenResult | undefined>;
-  duplicate: (project: HomeProjectEntry) => Promise<void>;
-  rename: (project: HomeProjectEntry, requestedName: string, options?: HomeProjectRenameOptions) => Promise<void>;
-  delete: (project: HomeProjectEntry) => Promise<void>;
-  getCloneToLibraryTargets: (project: HomeProjectEntry) => readonly HomeProjectCloneToLibraryTarget[];
-  cloneToLibrary: (project: HomeProjectEntry, targetLibraryId: string, options?: {
-    title?: string;
-  }) => Promise<HomeProjectOpenResult | undefined>;
-  deleteDuplicateRealizations: (project: HomeProjectEntry, duplicateProjectPaths: readonly string[]) => Promise<void>;
-  separateProjectCopies: (project: HomeProjectEntry, keepProjectPath?: string) => Promise<void>;
+  watchRemoteThumbnail: (remoteProjectId: string) => (() => void) | undefined
+  canOpen: (project: HomeProjectEntry) => boolean
+  canDuplicate: (project: HomeProjectEntry) => boolean
+  canRename: (project: HomeProjectEntry) => boolean
+  canDelete: (project: HomeProjectEntry) => boolean
+  canCloneToLibrary: (project: HomeProjectEntry) => boolean
+  canReviewDuplicateRealizations: (project: HomeProjectEntry) => boolean
+  canSeparateProjectCopies: (project: HomeProjectEntry) => boolean
+  open: (
+    project: HomeProjectEntry
+  ) => Promise<HomeProjectOpenResult | undefined>
+  duplicate: (project: HomeProjectEntry) => Promise<void>
+  rename: (
+    project: HomeProjectEntry,
+    requestedName: string,
+    options?: HomeProjectRenameOptions
+  ) => Promise<void>
+  delete: (project: HomeProjectEntry) => Promise<void>
+  getCloneToLibraryTargets: (
+    project: HomeProjectEntry
+  ) => readonly HomeProjectCloneToLibraryTarget[]
+  cloneToLibrary: (
+    project: HomeProjectEntry,
+    targetLibraryId: string,
+    options?: {
+      title?: string
+    }
+  ) => Promise<HomeProjectOpenResult | undefined>
+  deleteDuplicateRealizations: (
+    project: HomeProjectEntry,
+    duplicateProjectPaths: readonly string[]
+  ) => Promise<void>
+  separateProjectCopies: (
+    project: HomeProjectEntry,
+    keepProjectPath?: string
+  ) => Promise<void>
 }
 function contributionStableId(entry: HomeProjectEntryContribution) {
   if (entry.source === 'remote' && entry.remoteProjectId) {
-    return `remote:${entry.remoteProjectId}`;
+    return `remote:${entry.remoteProjectId}`
   }
   if (entry.localProjectPath) {
-    return `local:${entry.localProjectPath}`;
+    return `local:${entry.localProjectPath}`
   }
   if (entry.remoteProjectId) {
-    return `remote:${entry.remoteProjectId}`;
+    return `remote:${entry.remoteProjectId}`
   }
-  return `${entry.source}:${entry.id ?? entry.name}`;
+  return `${entry.source}:${entry.id ?? entry.name}`
 }
 function contributionLibraryIds(entry: HomeProjectEntryContribution) {
-  return uniqueStrings([entry.libraryId, ...(entry.libraryIds ?? [])]);
+  return uniqueStrings([entry.libraryId, ...(entry.libraryIds ?? [])])
 }
-function entryFromContribution(contribution: HomeProjectEntryContribution): HomeProjectEntry {
+function entryFromContribution(
+  contribution: HomeProjectEntryContribution
+): HomeProjectEntry {
   const {
     libraryId: _libraryId,
     libraryIds: _libraryIds,
     ...entry
-  } = contribution;
+  } = contribution
   return {
     ...entry,
     id: contribution.id ?? contributionStableId(contribution),
-    libraryIds: contributionLibraryIds(contribution)
-  };
+    libraryIds: contributionLibraryIds(contribution),
+  }
 }
 
 /**
@@ -142,18 +192,44 @@ function entryFromContribution(contribution: HomeProjectEntryContribution): Home
  * cloudSync relationships, and local realization path membership lives in
  * projectLibraries.
  */
-export function combineHomeProjectEntryContributions(contributionGroups: readonly HomeProjectEntryContributionGroup[]) {
-  return contributionGroups.flatMap(contribution => isArray(contribution) ? contribution : [contribution]).map(entryFromContribution);
+export function combineHomeProjectEntryContributions(
+  contributionGroups: readonly HomeProjectEntryContributionGroup[]
+) {
+  return contributionGroups
+    .flatMap((contribution) =>
+      isArray(contribution) ? contribution : [contribution]
+    )
+    .map(entryFromContribution)
 }
 export const homeProjectsContract = contract({
-  homeProjectActionsService: service<HomeProjectActionsService>('home-project-actions'),
-  homeProjectSettledLibraryIdsFacet: new Facet<readonly string[], readonly string[]>('home-project-settled-library-ids', contributions => uniqueStrings(contributions.flat())),
-  homeProjectLoadingLibraryIdsFacet: new Facet<readonly string[], readonly string[]>('home-project-loading-library-ids', contributions => uniqueStrings(contributions.flat())),
-  homeProjectEntriesFacet: new Facet<HomeProjectEntryContributionGroup, HomeProjectEntry[]>('home-project-entries', combineHomeProjectEntryContributions)
-});
+  homeProjectActionsService: service<HomeProjectActionsService>(
+    'home-project-actions'
+  ),
+  homeProjectSettledLibraryIdsFacet: new Facet<
+    readonly string[],
+    readonly string[]
+  >('home-project-settled-library-ids', (contributions) =>
+    uniqueStrings(contributions.flat())
+  ),
+  homeProjectLoadingLibraryIdsFacet: new Facet<
+    readonly string[],
+    readonly string[]
+  >('home-project-loading-library-ids', (contributions) =>
+    uniqueStrings(contributions.flat())
+  ),
+  homeProjectEntriesFacet: new Facet<
+    HomeProjectEntryContributionGroup,
+    HomeProjectEntry[]
+  >('home-project-entries', combineHomeProjectEntryContributions),
+})
 export const {
   homeProjectActionsService,
   homeProjectEntriesFacet,
   homeProjectLoadingLibraryIdsFacet,
-  homeProjectSettledLibraryIdsFacet
-} = homeProjectsContract;
+  homeProjectSettledLibraryIdsFacet,
+} = homeProjectsContract
+
+export const observations = inputs({
+  homeProjectEntriesFacet: observe(homeProjectEntriesFacet),
+  homeProjectActionsService: observeService(homeProjectActionsService),
+})

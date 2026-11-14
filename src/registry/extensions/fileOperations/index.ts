@@ -8,11 +8,11 @@ import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import { createProjectOperations } from '@src/lib/projectSession/projectOperations'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
-  fileOperationsMountsFacet,
+  observations as fileOperationsObservations,
   fileOperationsService,
   projectOperationsService,
 } from '@src/registry/contracts/fileOperations'
-import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
+import { observations as wasmObservations } from '@src/registry/contracts/wasm'
 import { extension as defineExtension, provide, type Extension } from 'plankton'
 
 /** Coordinates file operations over contributed backings without owning their lifetimes. */
@@ -42,14 +42,18 @@ export const createFileOperationsExtension = (
   backing: IZooDesignStudioFS
 ): Extension =>
   defineExtension({
+    dependencies: {
+      wasm: wasmObservations,
+      fileOperations: fileOperationsObservations,
+    },
     key: 'file-operations-extension',
-    create: (_dependencies, ctx) => {
+    create: ({ wasm: wasmInputs, fileOperations: fileOperationsInputs }) => {
       const services = createFileOperationsServices(
         backing,
         () =>
-          ctx.get(wasmPromiseFacet) ??
+          wasmInputs.wasmPromiseFacet.value ??
           Promise.reject(new Error('Missing WASM promise.')),
-        () => ctx.get(fileOperationsMountsFacet)
+        () => fileOperationsInputs.fileOperationsMountsFacet.value
       )
       return {
         items: [

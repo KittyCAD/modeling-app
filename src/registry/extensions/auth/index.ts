@@ -6,12 +6,13 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { authMachine } from '@src/machines/authMachine'
 import {
+  observations as authObservations,
   type AuthRegistryService,
   type AuthSessionExpiredListener,
   authService,
   authSessionExpiredListenersFacet,
 } from '@src/registry/contracts/auth'
-import { fileOperationsService } from '@src/registry/contracts/fileOperations'
+import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
 import { useSelector } from '@xstate/react'
 import {
   extension as defineExtension,
@@ -29,11 +30,15 @@ const expireAuthSession: AuthSessionExpiredListener = ({ auth }) => {
   auth.send({ type: 'Session expired' })
 }
 export const authExtension = defineExtension({
+  dependencies: {
+    fileOperations: fileOperationsObservations,
+    auth: authObservations,
+  },
   key: 'auth-extension',
-  create: (_dependencies, ctx) => {
+  create: ({ fileOperations: fileOperationsInputs, auth: authInputs }) => {
     // Defer service resolution until registry graph construction has completed.
     const fileOperations = Promise.resolve().then(() =>
-      ctx.required(fileOperationsService)
+      fileOperationsInputs.fileOperationsService.required()
     )
     const authActor = createActor(authMachine, {
       input: { fileOperations },
@@ -67,7 +72,7 @@ export const authExtension = defineExtension({
           return
         }
         lastHandledSessionExpiredNotice = notice
-        const listeners = ctx.observe(authSessionExpiredListenersFacet).value
+        const listeners = authInputs.authSessionExpiredListenersFacet.value
         for (const listener of listeners) {
           try {
             listener({ auth: serviceImpl, notice })

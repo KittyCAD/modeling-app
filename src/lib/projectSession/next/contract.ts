@@ -1,3 +1,4 @@
+import { inputs, observeService } from '@src/registry/inputs'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { FileEntry } from '@src/lib/project'
 import type { Project } from '@src/lib/projectSession/next/types'
@@ -40,3 +41,7 @@ export const projectSessionContract = contract({
   projectSessionService: service<ProjectSessionService>('project-session-next'),
 })
 export const { projectSessionService } = projectSessionContract
+
+export const observations = inputs({
+  projectSessionService: observeService(projectSessionService),
+})

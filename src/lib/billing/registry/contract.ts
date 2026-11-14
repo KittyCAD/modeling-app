@@ -1,3 +1,4 @@
+import { inputs, observeService } from '@src/registry/inputs'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type {
   BillingActor,
@@ -19,3 +20,7 @@ export const billingContract = contract({
 })
 
 export const { billingService } = billingContract
+
+export const observations = inputs({
+  billingService: observeService(billingService),
+})

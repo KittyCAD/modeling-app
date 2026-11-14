@@ -1,6 +1,6 @@
 import { computed, effect, signal } from '@preact/signals-core'
 import { newKclFile } from '@src/lang/project'
-import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
+import { observations as cloudProjectsObservations } from '@src/lib/cloudProjects/registry/contract'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
@@ -19,8 +19,8 @@ import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/
 import { pollProjectList } from '@src/lib/projectListPolling'
 import { collectProjectFilesForUpload } from '@src/lib/projectSession/projectFiles'
 import { isErr, reportRejection } from '@src/lib/trap'
-import { authService } from '@src/registry/contracts/auth'
-import { fileOperationsService } from '@src/registry/contracts/fileOperations'
+import { observations as authObservations } from '@src/registry/contracts/auth'
+import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectEntryContribution,
   homeProjectEntriesFacet,
@@ -31,8 +31,8 @@ import {
   projectLibrarySettingDefaultPoliciesFacet,
   projectLibraryTypesFacet,
 } from '@src/registry/contracts/projectLibraries'
-import { routerService } from '@src/registry/contracts/router'
-import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
+import { observations as routerObservations } from '@src/registry/contracts/router'
+import { observations as wasmObservations } from '@src/registry/contracts/wasm'
 import {
   extension as defineExtension,
   contribute,
@@ -42,15 +42,29 @@ import {
 
 /** Cloud library entries come from the server; configured legacy disk paths are never opened. */
 export default defineExtension({
+  dependencies: {
+    cloudProjects: cloudProjectsObservations,
+    fileOperations: fileOperationsObservations,
+    wasm: wasmObservations,
+    auth: authObservations,
+    router: routerObservations,
+  },
   key: 'cloud-projects-library',
-  create: (_dependencies, ctx) => {
-    const cloud = () => ctx.required(cloudStorageService)
-    const operations = () => ctx.required(fileOperationsService)
+  create: ({
+    cloudProjects: cloudProjectsInputs,
+    fileOperations: fileOperationsInputs,
+    wasm: wasmInputs,
+    auth: authInputs,
+    router: routerInputs,
+  }) => {
+    const cloud = () => cloudProjectsInputs.cloudStorageService.required()
+    const operations = () =>
+      fileOperationsInputs.fileOperationsService.required()
     const wasm = () =>
-      ctx.get(wasmPromiseFacet) ??
+      wasmInputs.wasmPromiseFacet.value ??
       Promise.reject(new Error('Missing WASM promise.'))
-    const auth = computed(() => ctx.optional(authService))
-    const router = computed(() => ctx.optional(routerService))
+    const auth = computed(() => authInputs.authService.current.value)
+    const router = computed(() => routerInputs.routerService.current.value)
     const settledAccount = signal<
       | {
           id: string | undefined
