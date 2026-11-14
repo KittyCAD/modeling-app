@@ -53,6 +53,11 @@ pub(crate) const POINT_POINT_2D_COINCIDENT_CHEBYSHEV_TOLERANCE_MM: f64 = 1e-8;
 pub(crate) const POINT_POINT_2D_COINCIDENT_EUCLIDEAN_TOLERANCE_MM: f64 =
     POINT_POINT_2D_COINCIDENT_CHEBYSHEV_TOLERANCE_MM * std::f64::consts::SQRT_2;
 
+/// This is the tolerance that the internal toolpaths repo used
+/// to have hardcoded. We've lifted this constant up into KCL, and KCL
+/// should send it to the engine if KCL version <= 2.0.
+pub(crate) const OLD_TOOLPATHS_TOLERANCE_KCL_2_AND_EARLIER: f64 = 0.0001;
+
 const CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN: usize = 24;
 
 fn build_open_uniform_knot_vector(control_count: usize, degree: usize) -> Vec<f64> {
