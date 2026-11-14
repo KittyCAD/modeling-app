@@ -1,9 +1,11 @@
+import { createSettings } from '@src/lib/settings/initialSettings'
+import { Themes } from '@src/lib/theme'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import engineConnectionRegistryItem from '@src/lib/engineConnection/registry'
+import { createEngineConnectionExtension } from '@src/lib/engineConnection/registry/extension'
 import { engineConnectionService } from '@src/lib/engineConnection/registry/contract'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { settingsService } from '@src/registry/contracts/settings'
-import { provide, Registry } from 'plankton'
+import { factory, provide, Registry } from 'plankton'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 describe('engine connection extension', () => {
@@ -12,18 +14,28 @@ describe('engine connection extension', () => {
     await registry?.dispose()
     registry = undefined
   })
-  it('provides a ConnectionManager instance through the registry', async () => {
+  it('keeps its injected settings while the globally selected provider changes', async () => {
+    const preferences = createSettings()
+    preferences.app.theme.user = Themes.Dark
     const settings = {
-      actor: {},
+      actor: { getSnapshot: () => ({ context: preferences }) },
     } as SettingsRegistryService
-
+    const injected = createEngineConnectionExtension(
+      factory({ create: () => ({ exports: settings }) })
+    )
     registry = new Registry()
     await registry.configure([
-      [provide(settingsService, settings)],
-      engineConnectionRegistryItem,
+      provide(settingsService, { actor: {} } as SettingsRegistryService),
+      injected,
     ])
-    const service = registry.required(engineConnectionService)
-    expect(service.manager).toBeInstanceOf(ConnectionManager)
+    const manager = registry.required(engineConnectionService).manager
+    expect(manager).toBeInstanceOf(ConnectionManager)
+    expect(manager.settings.theme).toBe('dark')
+    await registry.configure([injected])
+    expect(registry.optional(settingsService)).toBeUndefined()
+    preferences.app.theme.user = Themes.Light
+    expect(registry.required(engineConnectionService).manager).toBe(manager)
+    expect(manager.settings.theme).toBe('light')
   })
   it('tears down the ConnectionManager when disposed', async () => {
     const settings = {
@@ -33,7 +45,9 @@ describe('engine connection extension', () => {
     registry = new Registry()
     await registry.configure([
       [provide(settingsService, settings)],
-      engineConnectionRegistryItem,
+      createEngineConnectionExtension(
+        factory({ create: () => ({ exports: settings }) })
+      ),
     ])
     const manager = registry.required(engineConnectionService).manager
     const tearDown = vi.spyOn(manager, 'tearDown')

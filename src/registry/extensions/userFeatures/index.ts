@@ -40,6 +40,7 @@ export const userFeaturesExtension = defineFactory({
     }
 
     return {
+      exports: serviceImpl,
       items: [provide(userFeaturesService, serviceImpl)],
       dispose: () => {
         subscription.unsubscribe()

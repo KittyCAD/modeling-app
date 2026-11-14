@@ -3,41 +3,45 @@ import {
   type EngineConnectionService,
   engineConnectionService,
 } from '@src/lib/engineConnection/registry/contract'
-import { observations as settingsObservations } from '@src/registry/contracts/settings'
+import type { SettingsRegistryService } from '@src/registry/contracts/settings'
+import { settingsExtension } from '@src/registry/extensions/settings'
 import { factory as defineFactory, provide, type Factory } from 'plankton'
-export const engineConnectionExtension = defineFactory({
-  dependencies: { settings: settingsObservations },
-  key: 'engine-connection-extension',
-  create: ({ settings: settingsInputs }) => {
-    let service: EngineConnectionService | undefined
+export const createEngineConnectionExtension = (
+  settings: Factory<SettingsRegistryService> = settingsExtension
+) =>
+  defineFactory({
+    dependencies: { settings },
+    key: 'engine-connection-extension',
+    create: ({ settings }) => {
+      let service: EngineConnectionService | undefined
 
-    const ensureService = () => {
-      if (service) {
+      const ensureService = () => {
+        if (service) {
+          return service
+        }
+        const manager = new ConnectionManager({
+          settingsActor: settings.actor,
+        })
+        service = { manager }
         return service
       }
-      const settings = settingsInputs.settingsService.required()
-      const manager = new ConnectionManager({
-        settingsActor: settings.actor,
-      })
-      service = { manager }
-      return service
-    }
 
-    return {
-      items: [
-        provide(engineConnectionService, {
-          get manager() {
-            return ensureService().manager
-          },
-        }),
-      ],
-      dispose: () => {
-        service?.manager.tearDown({
-          route: 'service-disposed',
-          initiatedBy: 'client',
-        })
-      },
-    }
-  },
-}) satisfies Factory
+      const serviceImpl: EngineConnectionService = {
+        get manager() {
+          return ensureService().manager
+        },
+      }
+      return {
+        exports: serviceImpl,
+        items: [provide(engineConnectionService, serviceImpl)],
+        dispose: () => {
+          service?.manager.tearDown({
+            route: 'service-disposed',
+            initiatedBy: 'client',
+          })
+        },
+      }
+    },
+  }) satisfies Factory
+export const engineConnectionExtension = createEngineConnectionExtension()
 export default [engineConnectionExtension]

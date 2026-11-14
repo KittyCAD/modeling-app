@@ -19,30 +19,34 @@ import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import type { RuntimeRegistryService } from '@src/registry/contracts/runtime'
 import { runtimeExtension } from '@src/registry/extensions/runtime'
-import { observations as settingsObservations } from '@src/registry/contracts/settings'
-import { observations as userFeaturesObservations } from '@src/registry/contracts/userFeatures'
+import type { SettingsRegistryService } from '@src/registry/contracts/settings'
+import { settingsExtension } from '@src/registry/extensions/settings'
+import type { UserFeaturesRegistryService } from '@src/registry/contracts/userFeatures'
+import { userFeaturesExtension } from '@src/registry/extensions/userFeatures'
 import { factory as defineFactory, provide, type Factory } from 'plankton'
 import type { SnapshotFrom } from 'xstate'
 
 const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
 const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
 export const createLayoutExtension = (
-  runtime: Factory<RuntimeRegistryService> = runtimeExtension
+  runtime: Factory<RuntimeRegistryService> = runtimeExtension,
+  {
+    settings = settingsExtension,
+    userFeatures = userFeaturesExtension,
+  }: {
+    settings?: Factory<SettingsRegistryService>
+    userFeatures?: Factory<UserFeaturesRegistryService>
+  } = {}
 ) =>
   defineFactory({
     dependencies: {
       runtime,
-      settings: settingsObservations,
-      userFeatures: userFeaturesObservations,
+      settings,
+      userFeatures,
       layout: layoutObservations,
     },
     key: 'layout-extension',
-    create: ({
-      runtime,
-      settings: settingsInputs,
-      userFeatures: userFeaturesInputs,
-      layout: layoutInputs,
-    }) => {
+    create: ({ runtime, settings, userFeatures, layout: layoutInputs }) => {
       let layout: LayoutService | undefined
       let disposeLayout: (() => void) | undefined
 
@@ -50,8 +54,6 @@ export const createLayoutExtension = (
         if (layout) {
           return layout
         }
-        const settings = settingsInputs.settingsService.required()
-        const userFeatures = userFeaturesInputs.userFeaturesService.required()
         const settingsActor = settings.actor
         const usePlaywrightLayout = runtime.get().isPlaywright
         const layoutConfigName = usePlaywrightLayout

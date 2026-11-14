@@ -1,8 +1,18 @@
 import { statusBarGlobalItemsFacet } from '@src/registry/contracts/statusBar'
-import { Registry } from 'plankton'
+import { factory, Registry } from 'plankton'
 import type { Location } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
-import settingsRegistryItem from '.'
+import settingsRegistryItem, { createSettingsExtension } from '.'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
+import {
+  type CommandSystemService,
+  commandSystemService,
+} from '@src/registry/contracts/commands'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
+import { settingsService } from '@src/registry/contracts/settings'
+import { provideWasmPromise } from '@src/registry/contracts/wasm'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { vi } from 'vitest'
 
 describe('settings extension', () => {
   it('contributes the settings status bar item', async () => {
@@ -48,5 +58,32 @@ describe('settings extension', () => {
       })
     ).toBe(`${filePath}/settings?tab=project`)
     await registry.dispose()
+  })
+  it('constructs its actor from injected commands and files without global service providers', async () => {
+    const registry = new Registry()
+    const commands = {
+      actor: { send: vi.fn() },
+    } as unknown as CommandSystemService
+    const owner = createSettingsExtension({
+      commands: factory({ create: () => ({ exports: commands }) }),
+      files: factory({
+        create: () => ({ exports: { operations: testFileOperations } }),
+      }),
+    })
+    try {
+      await registry.configure([
+        owner,
+        provideWasmPromise(() => new Promise<ModuleType>(() => {})),
+      ])
+      const context = registry
+        .required(settingsService)
+        .actor.getSnapshot().context
+      expect(context.commandBarActor).toBe(commands.actor)
+      expect(context.fileOperations).toBe(testFileOperations)
+      expect(registry.optional(commandSystemService)).toBeUndefined()
+      expect(registry.optional(fileOperationsService)).toBeUndefined()
+    } finally {
+      await registry.dispose()
+    }
   })
 })
