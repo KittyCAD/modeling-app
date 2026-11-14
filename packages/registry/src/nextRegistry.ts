@@ -56,6 +56,7 @@ interface Mounted {
   readonly exports: unknown
   readonly children: readonly Item[]
   readonly origin: Origin
+  stop?: Instance['dispose']
 }
 
 /** Synchronous acquisition, atomic publication, and awaitable resource release. */
@@ -300,9 +301,9 @@ export class Registry implements ScopeHost {
         // Failed child expansion may leave a cycle. Rollback still releases every
         // returned instance once, before another reconciliation can begin.
         return await release(
-          disposalOrder(next, false)
-            .filter((mounted) => created.has(mounted.instance))
-            .map(({ instance }) => instance),
+          disposalOrder(next, false).filter((mounted) =>
+            created.has(mounted.instance)
+          ),
           {
             error,
             message: 'Acquisition and rollback failed',
@@ -311,9 +312,9 @@ export class Registry implements ScopeHost {
       }
       this.phase = 'settling'
 
-      const removed = this.disposal
-        .filter((mounted) => !next.has(itemKey(mounted.definition)))
-        .map(({ instance }) => instance)
+      const removed = this.disposal.filter(
+        (mounted) => !next.has(itemKey(mounted.definition))
+      )
       // Publish only after every acquisition succeeds. Cleanup failures occur after
       // commit and cannot roll back resources that have already been released.
       this.roots = roots
@@ -333,7 +334,28 @@ export class Registry implements ScopeHost {
       } catch (error) {
         failure = { error, message: 'Publication and cleanup failed' }
       }
-      await release(removed, failure)
+      const failures: unknown[] = []
+      try {
+        await release(removed, failure)
+      } catch (error) {
+        failures.push(error)
+      }
+      // Retired effects finish before new ones start, so an old cleanup cannot
+      // overwrite a new owner's changes to shared resources such as the DOM.
+      for (const mounted of next.values()) {
+        if (!created.has(mounted.instance)) continue
+        try {
+          mounted.stop = mounted.instance.start?.() || undefined
+        } catch (error) {
+          failures.push(error)
+        }
+      }
+      if (failures.length === 1) throw failures[0]
+      if (failures.length)
+        throw new AggregateError(
+          failures,
+          'Publication, startup, or cleanup failed'
+        )
     } finally {
       this.phase = 'idle'
     }
@@ -394,15 +416,18 @@ function disposalOrder(
  * acquisition or publication failure alongside any cleanup failures.
  */
 async function release(
-  instances: readonly Instance[],
+  instances: readonly Mounted[],
   primary?: { error: unknown; message: string }
 ): Promise<void> {
   const failures: unknown[] = []
-  for (const instance of instances) {
-    try {
-      await instance.dispose?.()
-    } catch (error) {
-      failures.push(error)
+  for (const { instance, stop } of instances) {
+    for (const cleanup of [stop, () => instance.dispose?.()]) {
+      if (!cleanup) continue
+      try {
+        await cleanup()
+      } catch (error) {
+        failures.push(error)
+      }
     }
   }
   const cleanup = failures.length
