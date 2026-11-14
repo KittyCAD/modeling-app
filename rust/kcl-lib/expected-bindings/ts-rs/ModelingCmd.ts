@@ -2043,6 +2043,10 @@ include_uuids: boolean,
  */
 extras: Array<GltfExportExtra>, 
 /**
+ * Tessellation to use when this export needs to generate a display mesh.
+ */
+tessellation?: GltfTessellationOptions, 
+/**
  * Named views in the scene.
  */
 views: { [key in string]: NamedView }, };
@@ -2061,6 +2065,15 @@ export type GltfPresentation = "compact" | "pretty";
  * Describes the storage format of a glTF 2.0 scene.
  */
 export type GltfStorage = "binary" | "standard" | "embedded";
+
+/**
+ * Controls mesh generation for a single glTF export.
+ */
+export type GltfTessellationOptions = { 
+/**
+ * Use accurate tessellation (default). Set to false for standard display tessellation.
+ */
+accurate: boolean, };
 
 /**
  * Stop dragging the mouse.
