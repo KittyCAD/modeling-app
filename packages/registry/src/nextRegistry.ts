@@ -130,9 +130,7 @@ export class Registry implements ScopeHost {
       return Promise.reject(
         new Error('A reconciliation is already in progress')
       )
-    this.shutdown = this.reconcile([]).finally(() => {
-      this.phase = 'disposed'
-    })
+    this.shutdown = this.reconcile([])
     return this.shutdown
   }
 
@@ -357,7 +355,8 @@ export class Registry implements ScopeHost {
           'Publication, startup, or cleanup failed'
         )
     } finally {
-      this.phase = 'idle'
+      // Finish accepted disposal before queued configure calls can observe an idle registry.
+      this.phase = this.shutdown ? 'disposed' : 'idle'
     }
   }
 }
