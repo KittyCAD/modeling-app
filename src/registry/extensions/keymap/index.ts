@@ -527,16 +527,14 @@ const keymapExtension: Factory = defineFactory({
         ),
         contribute(
           statusBarLocalItemsFacet,
-          () =>
-            computed((): StatusBarItemType | null =>
-              partialMatch.value
-                ? {
-                    id: 'keymap.partial-match',
-                    component: PartialMatchStatusBarItem,
-                    order: -100,
-                  }
-                : null
-            ).value,
+          (): StatusBarItemType | null =>
+            partialMatch.value
+              ? {
+                  id: 'keymap.partial-match',
+                  component: PartialMatchStatusBarItem,
+                  order: -100,
+                }
+              : null,
           {
             key: 'keymap.partial-match',
           }

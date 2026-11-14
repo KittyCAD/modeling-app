@@ -300,15 +300,14 @@ export default defineFactory({
       items: [
         contribute(
           homeProjectSettledLibraryIdsFacet,
-          () =>
-            computed(() => {
-              const account = settledAccount.value
-              return auth.value?.isLoggedIn.value &&
-                account &&
-                account.id === auth.value.user.value?.id
-                ? [PERSONAL_CLOUD_PROJECT_LIBRARY_ID]
-                : []
-            }).value,
+          () => {
+            const account = settledAccount.value
+            return auth.value?.isLoggedIn.value &&
+              account &&
+              account.id === auth.value.user.value?.id
+              ? [PERSONAL_CLOUD_PROJECT_LIBRARY_ID]
+              : []
+          },
           {
             key: 'cloud-projects.settled',
           }
@@ -316,11 +315,9 @@ export default defineFactory({
         contribute(
           homeProjectLoadingLibraryIdsFacet,
           () =>
-            computed(() =>
-              auth.value?.isLoggedIn.value && cloud().projectsLoading.value
-                ? [PERSONAL_CLOUD_PROJECT_LIBRARY_ID]
-                : []
-            ).value,
+            auth.value?.isLoggedIn.value && cloud().projectsLoading.value
+              ? [PERSONAL_CLOUD_PROJECT_LIBRARY_ID]
+              : [],
           {
             key: 'cloud-projects.loading',
           }
