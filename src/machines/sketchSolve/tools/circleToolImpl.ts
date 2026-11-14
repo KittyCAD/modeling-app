@@ -9,7 +9,6 @@ import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { roundOff } from '@src/lib/utils'
 import {
   isCircleSegment,
   isPointSegment,
@@ -29,6 +28,7 @@ import {
   sendHoveredSnappingCandidate,
   updateToolSnappingPreview,
 } from '@src/machines/sketchSolve/tools/toolSnappingUtils'
+import { resolveSketchPoint } from '@src/machines/sketchSolve/tools/sketchCoordinates'
 import { type ActionArgs, type AssignArgs, type ProvidedActor } from 'xstate'
 
 export const TOOL_ID = 'Circle tool'
@@ -143,7 +143,7 @@ export function showRadiusPreviewListener({ self, context }: ToolActionArgs) {
         mouseEvent: args.mouseEvent,
         excludedPointIds: new Set(preview.segmentIds),
       })
-      const [x, y] = snappingCandidate?.position ?? mousePosition
+      const [x, y] = resolveSketchPoint(mousePosition, snappingCandidate)
       const dx = x - context.centerPoint[0]
       const dy = y - context.centerPoint[1]
       const radius = Math.sqrt(dx * dx + dy * dy)
@@ -178,7 +178,7 @@ export function showRadiusPreviewListener({ self, context }: ToolActionArgs) {
         mouseEvent: args.mouseEvent,
         excludedPointIds: new Set(preview.segmentIds),
       })
-      const [x, y] = snappingCandidate?.position ?? mousePosition
+      const [x, y] = resolveSketchPoint(mousePosition, snappingCandidate)
 
       // Finish the in-flight preview before committing the exact clicked radius.
       preview.active = false
@@ -211,7 +211,7 @@ export function addPointListener({ self, context }: ToolActionArgs) {
           mousePosition,
           mouseEvent: args.mouseEvent,
         })
-        const [x, y] = snappingCandidate?.position ?? mousePosition
+        const [x, y] = resolveSketchPoint(mousePosition, snappingCandidate)
         self.send({
           type: 'add point',
           data: [x, y],
@@ -348,12 +348,12 @@ function circleSegment(input: CircleGeometryInput): SegmentCtor {
   return {
     type: 'Circle',
     center: {
-      x: { type: 'Var', value: roundOff(input.centerPoint[0]), units },
-      y: { type: 'Var', value: roundOff(input.centerPoint[1]), units },
+      x: { type: 'Var', value: input.centerPoint[0], units },
+      y: { type: 'Var', value: input.centerPoint[1], units },
     },
     start: {
-      x: { type: 'Var', value: roundOff(input.startPoint[0]), units },
-      y: { type: 'Var', value: roundOff(input.startPoint[1]), units },
+      x: { type: 'Var', value: input.startPoint[0], units },
+      y: { type: 'Var', value: input.startPoint[1], units },
     },
   }
 }

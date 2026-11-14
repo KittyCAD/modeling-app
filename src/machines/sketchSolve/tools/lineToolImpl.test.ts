@@ -20,7 +20,7 @@ vi.mock('@src/machines/sketchSolve/tools/toolSnappingUtils', () => ({
   getBestSnappingCandidate: vi.fn(() => ({
     target: { type: 'grid' },
     distance: 0,
-    position: [20.25, 30.5],
+    position: [20.125, 30.375],
   })),
   sendHoveredSnappingCandidate: vi.fn(),
   updateToolSnappingPreview: vi.fn(),
@@ -84,8 +84,8 @@ describe('animateDraftSegmentListener', () => {
           ctor: {
             type: 'Point',
             position: {
-              x: { type: 'Var', value: 20.25, units: 'Mm' },
-              y: { type: 'Var', value: 30.5, units: 'Mm' },
+              x: { type: 'Var', value: 20.125, units: 'Mm' },
+              y: { type: 'Var', value: 30.375, units: 'Mm' },
             },
           },
         },

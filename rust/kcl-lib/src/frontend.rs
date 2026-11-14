@@ -7581,7 +7581,7 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
     }
 
     #[tokio::test]
-    async fn test_grid_precision_survives_create_and_reload() {
+    async fn test_grid_precision_survives_create_edit_and_reload() {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let constructors: [fn(Number) -> Expr; 2] = [Expr::Var, Expr::Number];
         for make_expr in constructors {
@@ -7641,6 +7641,25 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
                 let position = point_position(&frontend.scene_graph, point_id);
                 assert_eq!(position.x.value, step);
                 assert_eq!(position.y.value, -step);
+                let (source, _) = frontend
+                    .edit_segments(
+                        &mock_ctx,
+                        Version(0),
+                        sketch_id,
+                        vec![ExistingSegmentCtor {
+                            id: point_id,
+                            ctor: SegmentCtor::Point(PointCtor {
+                                position: point(-step, step),
+                            }),
+                        }],
+                    )
+                    .await
+                    .unwrap();
+                let saved = Program::parse(&source.text).unwrap().0.unwrap();
+                seed_frontend_with_mock(&mut frontend, &mock_ctx, &saved).await;
+                let position = point_position(&frontend.scene_graph, point_id);
+                assert_eq!(position.x.value, -step);
+                assert_eq!(position.y.value, step);
                 let untouched = point_position(&frontend.scene_graph, other_id);
                 assert_eq!(untouched.x.value, 1.0 + step);
                 assert_eq!(untouched.y.value, 2.0 + step);

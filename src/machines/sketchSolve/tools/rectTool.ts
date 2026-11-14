@@ -39,6 +39,7 @@ import {
   sendHoveredSnappingCandidate,
   updateToolSnappingPreview,
 } from '@src/machines/sketchSolve/tools/toolSnappingUtils'
+import { resolveSketchPoint } from '@src/machines/sketchSolve/tools/sketchCoordinates'
 
 export const RECTANGLE_TOOL_ID = 'Rectangle tool'
 export const ADDING_FIRST_POINT = `xstate.done.actor.0.${RECTANGLE_TOOL_ID}.adding first point`
@@ -188,7 +189,7 @@ export const machine = setup({
             mousePosition,
             mouseEvent: args.mouseEvent,
           })
-          const [x, y] = snappingCandidate?.position ?? mousePosition
+          const [x, y] = resolveSketchPoint(mousePosition, snappingCandidate)
           self.send({
             type: 'add point',
             data: [x, y],
@@ -228,7 +229,10 @@ export const machine = setup({
             sceneInfra: context.sceneInfra,
             target: snappingCandidate,
           })
-          const candidatePoint = snappingCandidate?.position ?? [twoD.x, twoD.y]
+          const candidatePoint = resolveSketchPoint(
+            [twoD.x, twoD.y],
+            snappingCandidate
+          )
 
           if (!isEditInProgress) {
             try {
@@ -345,7 +349,7 @@ export const machine = setup({
                 context.draft
               ),
           })
-          const [x, y] = snappingCandidate?.position ?? mousePosition
+          const [x, y] = resolveSketchPoint(mousePosition, snappingCandidate)
           const nextPoint: Coords2d = [x, y]
 
           if (context.rectOriginMode === 'angled') {
@@ -406,7 +410,10 @@ export const machine = setup({
             sceneInfra: context.sceneInfra,
             target: snappingCandidate,
           })
-          const candidatePoint = snappingCandidate?.position ?? [twoD.x, twoD.y]
+          const candidatePoint = resolveSketchPoint(
+            [twoD.x, twoD.y],
+            snappingCandidate
+          )
 
           if (!isEditInProgress) {
             try {
@@ -467,7 +474,7 @@ export const machine = setup({
                 context.draft
               ),
           })
-          const [x, y] = snappingCandidate?.position ?? mousePosition
+          const [x, y] = resolveSketchPoint(mousePosition, snappingCandidate)
           const nextPoint: Coords2d = [x, y]
           if (
             context.secondPoint &&

@@ -172,6 +172,35 @@ describe('pointTool', () => {
     }
   )
 
+  it.each([0.125, 2.3333 / 17])(
+    'commits grid precision %s without a constraint',
+    async (x) => {
+      vi.mocked(getBestSnappingCandidate).mockReturnValue({
+        position: [x, -x],
+        target: { type: 'grid' },
+        distance: 0,
+      })
+      const { actor, rustContext, setCallbacksMock } = createTestActor()
+      const addSegment = vi.spyOn(rustContext, 'addSegment').mockResolvedValue({
+        kclSource: { text: 'point' },
+        sceneGraphDelta: createSceneGraphDelta([
+          createPointApiObject({ id: 1 }),
+        ]),
+      })
+      const addConstraint = vi.spyOn(rustContext, 'addConstraint')
+      setCallbacksMock.mock.calls.at(-1)?.[0].onClick({
+        mouseEvent: { which: 1 },
+        intersectionPoint: { twoD: { x: 1, y: 2 } },
+      })
+      await vi.waitFor(() => expect(addSegment).toHaveBeenCalledOnce())
+      expect(addSegment.mock.calls[0][2]).toMatchObject({
+        position: { x: { value: x }, y: { value: -x } },
+      })
+      expect(addConstraint).not.toHaveBeenCalled()
+      actor.stop()
+    }
+  )
+
   it('updates hover snapping preview using the snapping candidate', () => {
     const candidate = {
       position: [10, 20] as [number, number],

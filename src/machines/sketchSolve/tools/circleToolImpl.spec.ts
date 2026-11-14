@@ -5,6 +5,7 @@ import type {
 import {
   createDraftCircle,
   commitCircle,
+  updateDraftCircle,
   sendResultToParent,
   showRadiusPreviewListener,
   removePointListener,
@@ -34,6 +35,65 @@ type CreatingCircleEvent = {
 
 describe('circleToolImpl', () => {
   describe('draft creation and commit', () => {
+    it('preserves fractional coordinates through draft updates and commit', async () => {
+      const rustContext = createMockRustContext()
+      const kclManager = createMockKclManager()
+      const sceneGraphDelta = createSceneGraphDelta(
+        [createCircleApiObject({ id: 3, start: 2 })],
+        [3]
+      )
+      const result = { kclSource: { text: 'circle' }, sceneGraphDelta }
+      const add = vi.spyOn(rustContext, 'addSegment').mockResolvedValue(result)
+      const edit = vi
+        .spyOn(rustContext, 'editSegments')
+        .mockResolvedValue(result)
+      const input = {
+        centerPoint: [0.125, -0.375] as [number, number],
+        startPoint: [1 / 3, 0.000001] as [number, number],
+        circleId: 3,
+        rustContext,
+        kclManager,
+        sketchId: 7,
+      }
+
+      await createDraftCircle({
+        input: {
+          centerPoint: input.centerPoint,
+          rustContext,
+          kclManager,
+          sketchId: 7,
+        },
+      })
+      expect(add.mock.calls[0][2]).toMatchObject({
+        center: {
+          x: { value: 0.125 },
+          y: { value: -0.375 },
+        },
+      })
+
+      await updateDraftCircle(input)
+      await commitCircle({ input })
+      for (const call of edit.mock.calls) {
+        expect(call[2]).toEqual([
+          {
+            id: 3,
+            ctor: {
+              type: 'Circle',
+              center: {
+                x: { type: 'Var', value: 0.125, units: 'Mm' },
+                y: { type: 'Var', value: -0.375, units: 'Mm' },
+              },
+              start: {
+                x: { type: 'Var', value: 1 / 3, units: 'Mm' },
+                y: { type: 'Var', value: 0.000001, units: 'Mm' },
+              },
+            },
+          },
+        ])
+      }
+      expect(edit).toHaveBeenCalledTimes(2)
+    })
+
     it('creates a circle segment using the circle label', async () => {
       const rustContext = createMockRustContext()
       const spiedFn = vi.spyOn(rustContext, 'addSegment')
