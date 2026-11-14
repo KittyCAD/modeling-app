@@ -320,7 +320,7 @@ profileRegion = region(segments = [profileSketch.circle1])`
       if (err(newCode)) throw newCode
       const axisArgument = command === 'extrude' ? 'direction' : 'axis'
       expect(newCode.replace(/\s+/g, '')).toContain(
-        `${axisArgument}={sideFaces=[baseRegion.tags.bottom,baseRegion.tags.left],endFaces=[baseStart,baseEnd],index=0}`
+        `${axisArgument}={sideFaces=[body.sketch.tags.bottom,body.sketch.tags.left],endFaces=[body.faces.baseStart,body.faces.baseEnd],index=0}`
       )
       expect(newCode).toContain(`${command}(\n  profileRegion,`)
       await runNewAstAndCountSweeps(
@@ -395,7 +395,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
     })
     expect(code).toContain('extrude(region001,length=5mm,tagEnd=$capEnd001)')
     expect(code).toContain(
-      'axisResult={sideFaces=[region001.tags.line1,capEnd001]}'
+      'axisResult={sideFaces=[extrude001.sketch.tags.line1,extrude001.faces.capEnd001]}'
     )
   })
 
@@ -411,7 +411,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
       codeRef: sketchSegment.codeRef,
     })
     expect(code).toContain(
-      'axisResult={sideFaces=[region001.tags.line1,capEnd001],endFaces=[capStart001],index=0}'
+      'axisResult={sideFaces=[extrude001.sketch.tags.line1,extrude001.faces.capEnd001],endFaces=[extrude001.faces.capStart001],index=0}'
     )
     expect(code).toContain('tagStart=$capStart001')
   })
@@ -874,14 +874,17 @@ extrude001 = extrude(region001, length = 100, tagEnd = $capEnd001)`
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(`helix001 = helix(
+      if (err(newCode)) throw newCode
+      expect(newCode.replace(/\s+/g, '')).toContain(
+        `helix001 = helix(
   axis = {
-    sideFaces = [region001.tags.line1, capEnd001]
+    sideFaces = [extrude001.sketch.tags.line1, extrude001.faces.capEnd001]
   },
   revolutions = 20,
   angleStart = 0,
   radius = 1,
-)`)
+)`.replace(/\s+/g, '')
+      )
     })
 
     const cylinderExtrude = `sketch001 = startSketchOn(XY)

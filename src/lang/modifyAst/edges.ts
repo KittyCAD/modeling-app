@@ -728,6 +728,103 @@ export function entityReferenceToEdgeRefPayload(
   return payload
 }
 
+/** Resolve the body owning the selected edge, not the operation's target body. */
+function getEdgeSelectionBody(
+  selection: Selection,
+  payload: FilletEdgeRefPayload,
+  artifactGraph: ArtifactGraph
+): Selection | null {
+  const topology = getEngineTopologyFallbackNormalized(selection)
+  if (topology) {
+    const body = getBodySelectionFromPrimitiveParentEntityId(
+      topology.parentId,
+      artifactGraph,
+      {
+        bodyArtifactTypes: ['sweep', 'compositeSolid', 'pattern'],
+        lookUpPatternCopies: true,
+        codeRefLookup: 'first',
+      }
+    )
+    if (body) return body
+  }
+  for (const id of payload.side_faces) {
+    const face = artifactGraph.get(id)
+    if (face?.type !== 'wall' && face?.type !== 'cap') continue
+    const sweep = artifactGraph.get(face.sweepId)
+    if (sweep?.type !== 'sweep') continue
+    const body = getMergedSweepBodyArtifact(sweep, artifactGraph, false)
+    if (!err(body)) return { artifact: body, codeRef: body.codeRef }
+  }
+  return null
+}
+
+export function getEdgeSelectionBodyExpression(
+  selection: Selection,
+  payload: FilletEdgeRefPayload,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+): Expr | null | Error {
+  const body = getEdgeSelectionBody(selection, payload, artifactGraph)
+  if (!body) return null
+  const vars = getVariableExprsFromSelection(
+    { graphSelections: [body], otherSelections: [] },
+    artifactGraph,
+    ast,
+    wasmInstance
+  )
+  if (err(vars)) return vars
+  return vars.exprs[0] ?? null
+}
+
+/** Build a reference with the selected edge's body scope for any consumer. */
+export function createEdgeRefFromSelection(
+  selection: Selection,
+  payload: FilletEdgeRefPayload,
+  wasmInstance: ModuleType,
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph,
+  originalEdgeSelection?: ResolvedGraphSelection,
+  owningBodyExpr?: Expr | null
+): { expr: Expr; modifiedAst: Node<Program> } | Error {
+  const bodyExpr =
+    owningBodyExpr === undefined
+      ? getEdgeSelectionBodyExpression(
+          selection,
+          payload,
+          artifactGraph,
+          ast,
+          wasmInstance
+        )
+      : owningBodyExpr
+  if (err(bodyExpr)) return bodyExpr
+  const body = getEdgeSelectionBody(selection, payload, artifactGraph)?.artifact
+  // A body's sketch only exposes its own profile's tags. Keep source-region
+  // references for faces from other contributing features instead of inventing
+  // properties on the body's sketch.
+  const scopeSketchTags =
+    body?.type === 'sweep' &&
+    payload.side_faces.every((id) => {
+      const face = artifactGraph.get(id)
+      return (
+        (face?.type === 'wall' || face?.type === 'cap') &&
+        face.sweepId === body.id
+      )
+    })
+  return createEdgeRefObjectExpression(
+    payload,
+    wasmInstance,
+    ast,
+    artifactGraph,
+    originalEdgeSelection,
+    selection.codeRef,
+    bodyExpr && scopeSketchTags
+      ? createMemberExpression(structuredClone(bodyExpr), 'sketch')
+      : undefined,
+    bodyExpr
+  )
+}
+
 /**
  * Creates KCL object expression for an edgeRef payload.
  * Resolves face UUIDs to tags by looking up artifacts and getting/creating tags.
@@ -1038,7 +1135,9 @@ export function createEdgeRefObjectExpression(
       const endFaceTagExpr = tagResult.exprs[0]
       if (!endFaceTagExpr) continue
 
-      endFaceExprs.push(structuredClone(endFaceTagExpr))
+      endFaceExprs.push(
+        applyTagsBaseExprIfNeeded(endFaceTagExpr, endFaceArtifact)
+      )
       currentAst = tagResult.modifiedAst
     }
   }
@@ -2808,7 +2907,8 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
         for (const v2Sel of v2ForBody) {
           if (v2Sel.entityRef?.type === 'edge') {
             const payload = entityReferenceToEdgeRefPayload(v2Sel.entityRef)
-            const result = createEdgeRefObjectExpression(
+            const result = createEdgeRefFromSelection(
+              v2Sel,
               payload,
               wasmInstance,
               modifiedAst,
@@ -2836,7 +2936,8 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
           }
 
           const payload = entityReferenceToEdgeRefPayload(entityRef)
-          const result = createEdgeRefObjectExpression(
+          const result = createEdgeRefFromSelection(
+            v2Sel,
             payload,
             wasmInstance,
             modifiedAst,
