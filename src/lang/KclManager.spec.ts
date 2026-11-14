@@ -222,6 +222,7 @@ function enableSketchSolveEditorExecution(kclManager: KclManager) {
     matches: (value: unknown) => value === 'sketchSolveMode',
   } as unknown as NonNullable<KclManager['modelingState']>
   kclManager.engineCommandManager.connection = {
+    disconnectAll: () => {},
     connected: true,
   } as unknown as typeof kclManager.engineCommandManager.connection
 }
