@@ -42,6 +42,7 @@ it.each([false, true])(
     vi.mocked(openKclScene).mockImplementation(
       async ({ preferences, presentation }) => {
         const resource = createTestKclScene(presentation, { preferences })
+
         resources.push(resource)
         return resource
       }
