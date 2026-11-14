@@ -67,6 +67,18 @@ export default defineConfig(({ command, mode }) => {
     build: {
       outDir: 'build',
       target: 'es2022',
+      rollupOptions:
+        process.env.E2E_USE_PREBUILT_APP === '1'
+          ? {
+              preserveEntrySignatures: 'strict',
+              input: {
+                app: 'index.html',
+                'playwright-test-utils':
+                  'e2e/playwright/lib/browserTestUtils.ts',
+              },
+              output: { entryFileNames: 'assets/[name].js' },
+            }
+          : undefined,
     },
     // Three 0.184 uses class static blocks that esbuild can minify into
     // anonymous class expressions which crash during startup.

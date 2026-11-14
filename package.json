@@ -98,7 +98,7 @@
     "start:prod": "vite preview --port=3000",
     "serve": "vite serve --port=3000",
     "build": "npm run install:rust && . ./scripts/load-rust-env.sh && npm run install:wasm-pack:sh && npm run build:wasm && vite build",
-    "build:e2e:web": "cross-env NODE_ENV=development vite build --mode=development",
+    "build:e2e:web": "cross-env NODE_ENV=development E2E_USE_PREBUILT_APP=1 vite build --mode=development",
     "build:wasm": "./scripts/build-wasm.sh",
     "build:wasm:windows": "powershell -ExecutionPolicy Bypass -File ./scripts/build-wasm.ps1",
     "build:wasm:dev": "./scripts/build-wasm-dev.sh",
