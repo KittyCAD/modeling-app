@@ -113,3 +113,67 @@ They do not become KCL refresh inputs merely because they are settings.
 
 The SDK integration direction and adapter constraints are documented in
 [ADR 0001](../../../dev-docs/adr/0001-app-owned-scene-host.md).
+
+## View selection and dialog picking
+
+`createSceneSelection` owns ordinary selection for one Modeling view. Its model
+identity includes both a scene and a fresh execution identity; every native run,
+including a cache hit or a settings refresh, invalidates previous references.
+Closing the scene cancels pending picking and highlighting work. Two views of
+one buffer have independent selections.
+
+`sceneSelectionAdapter` uses the point-query helper extracted from the legacy
+selection module. ConnectionManager sends it to the stream engine or routes it
+to the existing LocalRenderer GPU picker. Highlight projection uses the existing
+selection/filter commands, including the local renderer's selection sync. The
+adapter adds no raycaster or transport. Nonempty highlights use one replacement
+command, with no intermediate clear; filters are sent only when they change or
+a new execution becomes current. Entity reference identity is extracted
+from queryAst and re-exported there for existing consumers.
+
+Click selects one entity, Shift-click toggles membership, and a background click
+clears selection (Shift-background leaves it alone). Camera drags do not select.
+Clear selection and Escape clear ordinary view selection. Hover uses the
+SceneInfra input canvas instead of looking up another view's video element.
+
+A dialog supplies argument accessors pointing at its own values:
+
+```ts
+const picking = scene.selection.beginPicking({
+  arguments: [profilesArgument],
+  seed: 'profiles',
+})
+if (picking instanceof Error) return picking
+picking.activate('profiles')
+```
+
+Each argument has `id`, `filter`, `multiple`, `value`, `setValue`, and `accepts`.
+Only the explicit seed argument receives compatible copies of the initial view
+selection. The session stores no second copy of argument values or restoration
+snapshot. Its active argument supplies the highlights; with no active argument,
+selection clicks and hover are disabled. Camera navigation remains available.
+Closing the session reveals the unchanged underlying selection.
+
+Execution invalidates the model target, clears view selection and registered
+argument values, and suspends dialog picking. `bindCurrentModel()` explicitly
+binds a fresh result; the caller then activates an argument and picks again.
+`validate(values)` on the dialog session rejects stale or closed targets, even
+for an empty argument. Command adapters must validate at preparation and commit,
+alongside their existing source/execution checks. Raw engine references do not
+prove model ownership. Legacy command-selection conversion remains with the
+subsequent command integration; it must reuse existing resolution routines.
+
+Tests cover selection histories against an independent model, separate views,
+argument ownership/cancellation, stale asynchronous replies, execution changes,
+input cleanup, coordinate mapping, and the existing local GPU route. Before
+publishing, smoke test stream/local profile picking and highlighting, Shift-click,
+background clearing, orbit/pan/zoom, remounts, two views, and re-execution. Live
+engine, packaged desktop, and GPU output still need that smoke test.
+
+## KCL consumer
+
+The project-shell KCL consumer now owns its ConnectionManager, native context,
+source snapshots, and camera. It connects through this boundary and supplies an
+explicit host to the local renderer. See [KCL Modeling](../README.md) for
+ownership, renderer choice, tests, and the remaining packaged/web smoke checks.
+

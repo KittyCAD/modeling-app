@@ -1,4 +1,7 @@
 import type { KITTYCAD_GLTF } from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
+import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { sceneSelectionAdapter } from '@src/lib/scene/selectionAdapter'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { EntityType } from '@kittycad/lib'
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
@@ -117,6 +120,7 @@ function fixture(
     0.1,
     10000
   ),
+  selectedIds?: string[],
   claimInitialCameraFrame?: () => boolean
 ) {
   const manager = Object.assign(new EventTarget(), {
@@ -129,7 +133,23 @@ function fixture(
       return this.isExecutingSignal.value
     },
     systemDeps: { settings: {} },
-    engineCommandManager: { sendSceneCommand: vi.fn() },
+    engineCommandManager: {
+      sendSceneCommand: vi.fn().mockResolvedValue(
+        selectedIds
+          ? {
+              resp: {
+                type: 'modeling',
+                data: {
+                  modeling_response: {
+                    type: 'select_get',
+                    data: { entity_ids: selectedIds },
+                  },
+                },
+              },
+            }
+          : undefined
+      ),
+    },
     rustContext: {
       defaultPlanes: { xy: 'plane-xy', yz: 'plane-yz', xz: 'plane-xz' },
       export: vi
@@ -290,6 +310,58 @@ describe('local GLB loading', () => {
     }
   }
 
+  it('projects an existing selection when its local renderer is remounted', async () => {
+    const f = fixture(new PerspectiveCamera(), ['plane-xy'])
+    try {
+      f.gpu.planeRenderer.updateDefaultPlanes(
+        f.manager.rustContext.defaultPlanes
+      )
+      f.renderer.setDefaultPlaneVisibility({ xy: true, yz: false, xz: false })
+      const target = f.gpu.planeRenderer.planes.get('plane-xy')?.mesh
+      expect(target).toBeDefined()
+      await vi.waitFor(() =>
+        expect(
+          f.gpu.selectionHighlightRenderer.setSelection
+        ).toHaveBeenLastCalledWith([target])
+      )
+    } finally {
+      f.renderer.dispose()
+    }
+  })
+
+  it('lets the new picking adapter use the existing local GPU handler through ConnectionManager', async () => {
+    const f = planeFixture()
+    const commands = new ConnectionManager({
+      settingsActor: {} as SettingsActorType,
+    })
+    commands.streamDimensions = { width: 800, height: 600 }
+    const release = commands.setLocalSelectionCommandHandler(
+      f.state.handleLocalSelectionCommand
+    )
+    const canvas = document.createElement('canvas')
+    vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue(
+      new DOMRect(100, 50, 400, 300)
+    )
+    try {
+      const adapter = sceneSelectionAdapter(commands, canvas)
+      expect(await adapter.pick({ clientX: 200, clientY: 125 })).toEqual({
+        reference: { type: 'plane', plane_id: 'plane-xy' },
+      })
+      expect(f.picker.pick).toHaveBeenCalledWith(
+        expect.objectContaining({
+          x: 200,
+          y: 150,
+          streamWidth: 800,
+          streamHeight: 600,
+        })
+      )
+      expect(commands.connection).toBeUndefined()
+    } finally {
+      release()
+      f.renderer.dispose()
+    }
+  })
+
   it.each(['plane-xy', 'offset'])(
     'maps %s hits and selection to the same hover/click/highlight path',
     async (id) => {
@@ -398,6 +470,8 @@ describe('local GLB loading', () => {
     'hovers the face without the engine but clicks select its body with the %s filter',
     async (type) => {
       const f = selectionFixture()
+      await Promise.resolve()
+      f.manager.engineCommandManager.sendSceneCommand.mockClear()
       f.manager.selectionFilter.value = [type]
       expect((await f.pick())?.unreliableModelingResponse?.data.entity_id).toBe(
         'face'
@@ -498,7 +572,7 @@ describe('local GLB loading', () => {
       .mockReturnValueOnce(true)
       .mockReturnValue(false)
     const camera = new PerspectiveCamera(45, 1, 0.1, 10000)
-    const first = fixture(camera, claimInitialCameraFrame)
+    const first = fixture(camera, undefined, claimInitialCameraFrame)
     first.done()
     await vi.waitFor(() =>
       expect(first.renderer.isLoadedSceneCurrent()).toBe(true)
@@ -506,7 +580,7 @@ describe('local GLB loading', () => {
     expect(resetCameraPosition).toHaveBeenCalledOnce()
     first.renderer.dispose()
 
-    const reattached = fixture(camera, claimInitialCameraFrame)
+    const reattached = fixture(camera, undefined, claimInitialCameraFrame)
     camera.position.set(10, 20, 30)
     reattached.done()
     await vi.waitFor(() =>

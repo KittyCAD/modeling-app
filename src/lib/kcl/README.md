@@ -154,6 +154,14 @@ adapters. Zoo-web-view remains the intended presentation integration; the
 [scene-host ADR](../../dev-docs/adr/0001-app-owned-scene-host.md) records that
 boundary and its ownership decisions.
 
+## Selection
+
+Each view owns geometry selection through `resource.selection`, scoped to its
+current execution. Both renderers use the existing picking adapters. Opening a
+command dialog gives its arguments a separate picking session; cancelling leaves
+the underlying view selection intact. Re-execution invalidates old geometry picks.
+See [the selection contract](../scene/README.md#view-selection-and-dialog-picking).
+
 ## Code map
 
 - `execution/`: source capture, native execution, and native input metadata.
