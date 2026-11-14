@@ -15,6 +15,7 @@ import { executorsService } from '@src/lib/executors/registry/contract'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import kclExtension from '@src/lib/kcl/registry'
 import type { KclSceneResource } from '@src/lib/kcl/scene'
+import { modelingTestContext } from '@src/lib/kcl/testContext'
 import { openKclScene } from '@src/lib/kcl/scene'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -45,17 +46,24 @@ it.each([false, true])(
     const resources: KclSceneResource[] = []
     vi.mocked(openKclScene).mockImplementation(
       async ({ preferences, presentation }) => {
+        const fixture = modelingTestContext()
         const resource = {
+          ...fixture.resource,
           element: document.createElement('div'),
           preferences,
           presentation,
           localHost: undefined,
-          runtime: { execute: vi.fn(async () => emptyExecState()) },
+          runtime: {
+            ...fixture.resource.runtime,
+            execute: vi.fn(async () => emptyExecState()),
+          },
           resize: vi.fn(async () => {}),
           resume: vi.fn(),
           applySettings: vi.fn(async () => {}),
           frameModel: vi.fn(async () => {}),
-          dispose: vi.fn(async () => {}),
+          dispose: vi.fn(async () => {
+            fixture.dispose()
+          }),
         } as unknown as KclSceneResource
         resources.push(resource)
         return resource

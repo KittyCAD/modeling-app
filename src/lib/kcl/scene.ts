@@ -1,3 +1,4 @@
+import { captureViewportScreenshot } from '@src/lib/screenshot'
 import { createKclSceneSelection } from '@src/lib/kcl/sceneSelection'
 import type { SceneSelectionController } from '@src/lib/scene/selection'
 import { effect } from '@preact/signals-core'
@@ -40,6 +41,11 @@ export interface KclSceneResource {
   readonly presentation: ScenePresentation
   readonly localHost: LocalRendererHost | undefined
   readonly selection: SceneSelectionController
+  readonly commands: Pick<
+    ConnectionManager,
+    'sendSceneCommand' | 'pendingCommands'
+  >
+  captureScreenshot: () => string
   readonly preferences: ScenePresentationPreferences
   resize: (size: { width: number; height: number }) => Promise<void>
   /** Apply the legacy initial-camera reset; `KclSession` requests it once per streamed connection. */
@@ -172,6 +178,20 @@ export async function openKclScene({
       presentation,
       localHost: view.localHost,
       selection: selectionBinding.selection,
+      commands: {
+        sendSceneCommand: connected.send,
+        get pendingCommands() {
+          return manager.pendingCommands
+        },
+      },
+      captureScreenshot: () =>
+        disposed
+          ? ''
+          : captureViewportScreenshot({
+              canvas: sceneInfra.renderer.domElement,
+              video: view.video,
+              localRenderer: sceneInfra.localRenderer,
+            }),
       preferences,
       resize: view.resize,
       applySettings: view.applySettings,
