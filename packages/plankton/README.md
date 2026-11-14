@@ -1,9 +1,10 @@
 # Plankton
 
-Plankton composes application capabilities and contributions into a reactive graph.
-A Registry owns resource lifetimes and lets callers replace parts of the graph
-without restarting the owners that survive. The application uses this package
-throughout its extensions, plugins, views, and editor integrations.
+Plankton lets independent features contribute commands, panels, configuration, and
+services to one application. A Registry assembles those contributions, manages
+resources created by features, and lets parts of the application be replaced at
+runtime. The application uses this package throughout its extensions, plugins,
+views, and editor integrations.
 
 ```ts
 import { Registry, Facet, contribute, slot } from 'plankton'
@@ -17,16 +18,61 @@ registry.get(panels) // ['search']
 await registry.dispose()
 ```
 
-| Concept | Essence | Responsibility |
+## Primitives
+
+| Primitive | Role |
+| --- | --- |
+| **Signal<T>** | A readonly view of a changing value. Computations and effects that read it can react to updates. |
+| **Facet<I, O>** | Combines ordered contributions of `I` into one `O`. Its combiner also defines the result when there are no contributions. |
+| **Binding** | Contributes to a Facet through a function that returns a constant or reads changing values. Optional keys and precedence control which contributions are included and in what order. |
+| **Factory<T>** | An object with `dependencies` and `create`. Its instance exports `T`, may install child Extensions, and can return startup and cleanup callbacks. |
+| **Extension** | The composable union: a Binding, a Factory, or an array of Extensions. Arrays group declarations without creating another instance to manage. |
+
+Each Registry shares a Factory's instance with all Factories that depend on it.
+When a feature is removed, instances still needed by other installed features stay
+alive. Instances no longer needed run their cleanup to release resources.
+
+## Building an application
+
+Pass Extensions to `registry.configure(...)`. The Registry calls each Factory's
+`create` after creating its declared dependencies, and passes their exported
+objects directly to it. For example, a files Factory can hand its file operations
+to an editor Factory during `create`. Creating these instances is called
+**acquisition** below.
+
+The Registry finishes creating the instances before making the new contributions
+visible together. A reader sees commands and panels from the same configuration,
+without a mixture of old and new contributions. This all-at-once switch is
+**atomic publication**; the currently visible configuration is the **published
+graph**. If creation fails, the Registry cleans up the new instances and keeps
+the previous configuration available.
+
+For inputs that should follow later changes, `registry.observe(facet)` returns a
+Signal called an **observation**. It updates when contributions change or their
+source functions read Signals that change. These observations cannot be read
+inside `create`, while the new configuration is still being assembled. Return a
+`start` callback to begin work that reads them after publication and cleanup of
+removed instances. `start` can return a cleanup function to stop that work when
+its instance is removed.
+
+## Constructions built from the primitives
+
+| Construction | How it is composed | What it enables |
 | --- | --- | --- |
-| Signal | live observation of `T` | dependency tracking |
-| Facet | ordered `readonly Input[] → Output` | pure composition |
-| Service | Facet from providers to missing/ready/conflict | singleton capability |
-| Contract | named product of Facets | shared vocabulary |
-| Factory<T> | `{ key?, dependencies?, create }` | owned lifetime, typed exports, and replaceable children |
-| Binding | typed registration with ordering options | contribute to a Facet |
-| Extension | Binding, Factory, or group of Extensions | graph composition |
-| slot | helper acquiring supplied children | resource-free Factory |
+| **Service<T>** | A specialized Facet that selects zero or one provider and reports conflicting providers. | Share an implementation of a capability, with diagnostics when multiple features try to provide it. |
+| **Contract** | An object of named Facets and Services. | Producers and consumers import the same tokens to agree on configuration and capabilities. |
+| **Slot** | A Factory with replaceable children and no other resources of its own. | Replace a group of Extensions at runtime. |
+| **Plugin** | A Factory combining metadata, a controller Service, and a Slot containing its feature's Extensions. | Enable or disable the content while keeping the plugin's description and controls available. |
+| **Feature gate** | A Factory watches a condition and updates a Slot's children. | Install or remove a feature when a flag or permission changes. |
+| **App subsystem** | Factories share resources through declared dependencies and contribute Services, configuration, and commands. | Keep shared resources alive until their last dependent Factory is removed. |
+| **Editor integration** | Bindings register languages, commands, and views; Factories manage editor resources and session state. | Add editing behavior while keeping document and resource management explicit. |
+
+For example, an editor plugin can group static language registrations with a
+Factory that creates a document model. Other Factories can depend on that model's
+exports and contribute panels or commands that use it. Disabling the plugin removes
+its content from the Slot and cleans up instances that are no longer needed; its
+controller remains available to enable the feature again. A model still needed by
+a Factory outside the plugin stays alive through that dependency.
 
 ## Composition and identity
 
@@ -35,7 +81,7 @@ associativity and commutativity are not required. `Source<T> = () => T` accepts
 constants and live signal reads without guessing whether a value is a signal.
 
 Factories use explicit `key` identity when supplied, otherwise object identity.
-The first selected definition wins, including its dependencies. Rebuilding an
+The first selected definition wins, including its dependencies. Rebuilding a
 Factory with the same key retains its acquired instance and current children.
 Its captured dependency instances must remain unchanged; changing dependencies
 requires removing and reacquiring the owner. Removing its last reachable occurrence
