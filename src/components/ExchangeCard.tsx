@@ -12,6 +12,10 @@ import { isImageMimetype } from '@src/lib/mimeTypes'
 import { ZookeeperAttachment } from '@src/lib/zookeeper/components/ZookeeperAttachment'
 import { ZookeeperAttachmentPreview } from '@src/lib/zookeeper/components/ZookeeperAttachmentPreview'
 import {
+  legacyAttachmentWarningText,
+  parseZookeeperActivity,
+} from '@src/lib/zookeeper/activityMessages'
+import {
   type Exchange,
   getZookeeperAttachmentKey,
   isMlCopilotUserRequest,
@@ -20,8 +24,10 @@ import {
 import ms from 'ms'
 import {
   type ComponentProps,
+  type ReactElement,
   type ReactNode,
   useEffect,
+  isValidElement,
   useMemo,
   useState,
 } from 'react'
@@ -47,9 +53,11 @@ type MlCopilotServerMessageEndOfStream = Extract<
 
 const TRANSIENT_RETRY_STATUS_TEXT =
   'Temporary connection issue. Retrying automatically…'
+const MANUAL_EDITS_INFO_TEXT =
+  'Manual edits detected since the last Zookeeper state.'
 
 const NON_TERMINAL_INFO_TEXTS = [
-  'Manual edits detected since the last Zookeeper state.',
+  MANUAL_EDITS_INFO_TEXT,
   TRANSIENT_RETRY_STATUS_TEXT,
 ]
 
@@ -72,6 +80,9 @@ const isTransientRetryInfoResponse = (
 ): boolean =>
   'info' in response &&
   response.info.text.startsWith(TRANSIENT_RETRY_STATUS_TEXT)
+
+const isManualEditsInfoResponse = (response: MlCopilotServerMessage): boolean =>
+  'info' in response && response.info.text.startsWith(MANUAL_EDITS_INFO_TEXT)
 
 const isExchangeComplete = (responses?: MlCopilotServerMessage[]): boolean =>
   responses?.some(
@@ -156,70 +167,29 @@ export const ExchangeCardStatus = (props: {
   attachmentFetches?: Record<string, ZookeeperAttachmentFetchState>
   onFetchAttachment?: (attachmentRef: AttachmentRef) => void
   onlyShowImmediateThought: boolean
-  startedAt: Date
-  updatedAt?: Date
   maybeError?: MlCopilotServerMessageError
+  activityNotice?: ReactElement
 }) => {
-  const [triggerRender, setTriggerRender] = useState<number>(0)
+  // Error and info also signal the end of a stream when no end_of_stream arrives.
+  const isEndOfStream = isExchangeComplete(props.responses)
   const thinker = (
     <Thinking
       thoughts={props.responses}
-      isDone={props.responses?.some((m) => 'delta' in m) || false}
+      isDone={isEndOfStream}
       attachmentFetches={props.attachmentFetches}
       onFetchAttachment={props.onFetchAttachment}
       onlyShowImmediateThought={props.onlyShowImmediateThought}
+      activityNotice={props.activityNotice}
     />
   )
 
-  // Error and info also signals the end of a stream, because we'll never
-  // see an end_of_stream from them.
-  const isEndOfStream = isExchangeComplete(props.responses)
-
-  useEffect(() => {
-    const i = setInterval(() => {
-      setTriggerRender(triggerRender + 1)
-    }, 500)
-
-    if (isEndOfStream) {
-      clearInterval(i)
-    }
-
-    return () => {
-      clearInterval(i)
-    }
-  }, [triggerRender, isEndOfStream])
-
-  let timeReasonedFor = 0
-  if (isEndOfStream) {
-    const endOfStreamResponse = getEndOfStreamResponse(props.responses)
-    if (endOfStreamResponse !== undefined) {
-      timeReasonedFor =
-        new Date(
-          endOfStreamResponse.end_of_stream.completed_at ?? 0
-        ).getTime() -
-        new Date(endOfStreamResponse.end_of_stream.started_at ?? 0).getTime()
-    }
-  } else {
-    timeReasonedFor =
-      (props.updatedAt ?? new Date()).getTime() - props.startedAt.getTime()
-  }
-
   return props.onlyShowImmediateThought ? (
-    <div className="text-sm text-chalkboard-70">
+    <div className="text-xs text-chalkboard-70">
       {isEndOfStream && <MaybeError />}
       {!isEndOfStream && thinker}
     </div>
   ) : (
-    <div className="relative">
-      {thinker}
-      {props.updatedAt && (
-        <div className="text-chalkboard-70 p-2 pb-0">
-          {timeReasonedFor ? (
-            <>Reasoned for {ms(timeReasonedFor, { long: true })}</>
-          ) : null}
-        </div>
-      )}
-    </div>
+    <div className="relative">{thinker}</div>
   )
 }
 
@@ -254,7 +224,8 @@ const MAX_VISIBLE_ATTACHMENTS = 2
 const hasVisibleChildren = (children: ReactNode) => {
   return (
     (children instanceof Array && children.length > 0) ||
-    (typeof children === 'string' && children !== '')
+    (typeof children === 'string' && children !== '') ||
+    isValidElement(children)
   )
 }
 
@@ -397,6 +368,7 @@ type ResponsesCardProp = {
   onClickClearChat: () => void
   attachmentFetches?: Record<string, ZookeeperAttachmentFetchState>
   onFetchAttachment?: (attachmentRef: AttachmentRef) => void
+  showThinkingPlaceholder?: boolean
 }
 
 const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
@@ -467,11 +439,15 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
   ].filter((x: ReactNode) => x !== null)
 
   const shouldShowResponseBubble =
-    hasVisibleChildren(children) || (props.isLastResponse && !isComplete)
+    hasVisibleChildren(children) ||
+    (props.isLastResponse &&
+      !isComplete &&
+      props.showThinkingPlaceholder !== false)
 
   return hasTransientRetry ||
     infoItemsFilteredNulls.length > 0 ||
-    shouldShowResponseBubble ? (
+    shouldShowResponseBubble ||
+    (props.isLastResponse && props.showThinkingPlaceholder === false) ? (
     <>
       {hasTransientRetry && (
         <p
@@ -517,14 +493,14 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   let [startedAt] = useState<Date>(props.startedAt ?? new Date())
   const [updatedAt, setUpdatedAt] = useState<Date | undefined>(undefined)
 
-  const [showFullReasoning, setShowFullReasoning] = useState<boolean>(true)
+  const [showActivity, setShowActivity] = useState(false)
 
   const cssCard = `flex flex-col px-4 py-2 gap-2 justify-between
     overflow-hidden text-sm
   `
 
-  const onSeeReasoning = () => {
-    setShowFullReasoning(!showFullReasoning)
+  const onToggleActivity = () => {
+    setShowActivity((expanded) => !expanded)
   }
 
   useEffect(() => {
@@ -534,10 +510,8 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   const isEndOfStream = isExchangeComplete(props.responses)
 
   useEffect(() => {
+    if (isEndOfStream) return
     const id = setInterval(() => {
-      if (isEndOfStream) {
-        clearInterval(id)
-      }
       setUpdatedAt(new Date())
     }, 1000)
     return () => {
@@ -552,20 +526,62 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
     }
   }
 
+  const endOfStreamResponse = getEndOfStreamResponse(props.responses)
+  const completedAt = endOfStreamResponse?.end_of_stream.completed_at
+  const elapsedMs = Math.max(
+    0,
+    (completedAt
+      ? new Date(completedAt)
+      : (updatedAt ?? new Date())
+    ).getTime() - startedAt.getTime()
+  )
+  const elapsedSeconds = Math.floor(elapsedMs / 1000)
+  const elapsedLabel = `${elapsedSeconds >= 60 ? `${Math.floor(elapsedSeconds / 60)}m ` : ''}${elapsedSeconds % 60}s`
+
   useEffect(() => {
     if (isEndOfStream) {
-      setShowFullReasoning(false)
+      setShowActivity(false)
     }
   }, [isEndOfStream])
 
-  const maybeError = props.responses.filter((r) => 'error' in r)[0]
-
-  const hasReasoningContent = props.responses.some(
-    (response) =>
-      'reasoning' in response ||
-      ('files' in response &&
-        response.files.files.some((file) => !isExportDownloadFile(file)))
-  )
+  const manualEditsDetected = props.responses.some(isManualEditsInfoResponse)
+  const hasRecordedActivity =
+    manualEditsDetected ||
+    props.responses.some(
+      (response) =>
+        'reasoning' in response ||
+        ('files' in response &&
+          response.files.files.some((file) => !isExportDownloadFile(file)))
+    )
+  const hasActivity =
+    hasRecordedActivity || (!isEndOfStream && props.isLastResponse)
+  let latestCommentary: string | undefined
+  let latestToolLabel: string | undefined
+  for (let index = props.responses.length - 1; index >= 0; index--) {
+    const activity = parseZookeeperActivity(props.responses[index])
+    if (activity?.kind === 'commentary' && activity.text.trim() !== '') {
+      latestCommentary = activity.text
+      break
+    }
+    if (activity?.kind === 'tool' && latestToolLabel === undefined) {
+      latestToolLabel = activity.label || activity.name.replaceAll('_', ' ')
+    }
+  }
+  let latestWarning: string | undefined
+  for (let index = props.responses.length - 1; index >= 0; index--) {
+    const response = props.responses[index]
+    const activity = parseZookeeperActivity(response)
+    latestWarning =
+      activity?.kind === 'warning'
+        ? activity.text
+        : legacyAttachmentWarningText(response)
+    if (latestWarning !== undefined) break
+  }
+  const progressStatus = latestCommentary ?? 'Working…'
+  const durationText = `${isEndOfStream ? 'Worked' : 'Working'} for ${elapsedLabel}`
+  const activityCardClass = `rounded-md border border-chalkboard-30 p-3 text-xs text-chalkboard-70 dark:border-chalkboard-70 dark:text-chalkboard-30 ${
+    isEndOfStream ? '' : 'zk-activity-card-running'
+  }`
 
   return (
     <div className={cssCard}>
@@ -580,46 +596,94 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
           onFetchAttachment={props.onFetchAttachment}
         />
       )}
-      {showFullReasoning && hasReasoningContent && (
-        <div>
-          <ExchangeCardStatus
-            responses={props.responses}
-            attachmentFetches={props.attachmentFetches}
-            onFetchAttachment={props.onFetchAttachment}
-            onlyShowImmediateThought={false}
-            startedAt={startedAt}
-            updatedAt={updatedAt}
-          />
-        </div>
-      )}
-      {hasReasoningContent && (
-        <div
-          tabIndex={0}
-          role="button"
-          className="pl-8 flex flex-row items-center cursor-pointer justify-start gap-2"
-          onClick={() => onSeeReasoning()}
-        >
-          <div>
-            <button className="flex justify-center items-center flex-none pt-1 pb-1">
-              {showFullReasoning ? (
+      {hasActivity && (
+        <div className="mt-2">
+          {!showActivity ? (
+            <button
+              type="button"
+              className={`${activityCardClass} w-full cursor-pointer bg-transparent text-left hover:bg-transparent`}
+              data-testid="zookeeper-activity-card"
+              aria-expanded={false}
+              onClick={onToggleActivity}
+            >
+              {!isEndOfStream && (
                 <>
-                  Collapse <CustomIcon name="collapse" className="w-5 h-5" />
+                  <span className="line-clamp-2 text-center font-medium">
+                    {progressStatus}
+                  </span>
+                  {latestToolLabel && (
+                    <span
+                      className="mt-1 block truncate text-center text-[11px] text-chalkboard-60 dark:text-chalkboard-40"
+                      title={latestToolLabel}
+                    >
+                      {latestToolLabel}
+                    </span>
+                  )}
+                  <span
+                    aria-hidden="true"
+                    className="mt-2 block h-1 w-full animate-shimmer rounded-full bg-chalkboard-40 dark:bg-chalkboard-30"
+                  />
                 </>
-              ) : (
-                <>See reasoning</>
               )}
+              {latestWarning && (
+                <span className="mt-2 flex items-start gap-2 rounded bg-chalkboard-20 px-2 py-1.5 text-chalkboard-70 dark:bg-chalkboard-80 dark:text-chalkboard-30">
+                  <CustomIcon
+                    name="triangleExclamation"
+                    className="mt-0.5 h-4 w-4 shrink-0"
+                  />
+                  <span>{latestWarning}</span>
+                </span>
+              )}
+              <span className="mt-2 flex items-center justify-between gap-2">
+                <span>{durationText}</span>
+                <span className="hover:underline">View activity</span>
+              </span>
             </button>
-          </div>
-          {props.isLastResponse && (
-            <ExchangeCardStatus
-              maybeError={maybeError}
-              responses={props.responses}
-              attachmentFetches={props.attachmentFetches}
-              onFetchAttachment={props.onFetchAttachment}
-              onlyShowImmediateThought={true}
-              startedAt={startedAt}
-              updatedAt={updatedAt}
-            />
+          ) : (
+            <div
+              className={activityCardClass}
+              data-testid="zookeeper-activity-card"
+            >
+              {hasRecordedActivity ? (
+                <ExchangeCardStatus
+                  responses={props.responses}
+                  attachmentFetches={props.attachmentFetches}
+                  onFetchAttachment={props.onFetchAttachment}
+                  onlyShowImmediateThought={false}
+                  activityNotice={
+                    manualEditsDetected ? (
+                      <div
+                        key="manual-edit-notice"
+                        data-testid="zookeeper-manual-edit-notice"
+                        className="my-2 flex items-start gap-2 rounded bg-chalkboard-20 px-2 py-1.5 text-chalkboard-70 dark:bg-chalkboard-80 dark:text-chalkboard-30"
+                      >
+                        <span
+                          aria-hidden="true"
+                          className="mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border border-current text-[10px] leading-none"
+                        >
+                          i
+                        </span>
+                        <span>
+                          Project files changed since Zookeeper last ran. Using
+                          the current files.
+                        </span>
+                      </div>
+                    ) : undefined
+                  }
+                />
+              ) : (
+                <PlaceholderLine />
+              )}
+              <button
+                type="button"
+                className="mt-2 flex w-full cursor-pointer items-center justify-between gap-2 border-none bg-transparent p-0 text-left hover:bg-transparent"
+                aria-expanded={true}
+                onClick={onToggleActivity}
+              >
+                <span>{durationText}</span>
+                <span className="hover:underline">Hide activity</span>
+              </button>
+            </div>
           )}
         </div>
       )}
@@ -630,6 +694,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
         onClickClearChat={props.onClickClearChat}
         attachmentFetches={props.attachmentFetches}
         onFetchAttachment={props.onFetchAttachment}
+        showThinkingPlaceholder={!hasActivity}
       />
     </div>
   )

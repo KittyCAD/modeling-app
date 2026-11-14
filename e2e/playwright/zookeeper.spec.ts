@@ -96,7 +96,7 @@ test.describe(
         await expect(page.getByTestId('ml-request-chat-bubble')).toContainText(
           prompt
         )
-        await expect(copilot.placeHolderResponse).toBeVisible()
+        await expect(copilot.activityCard).toContainText('Working for')
 
         const zookeeperPaneButton = page.getByTestId(
           `${DefaultLayoutPaneID.Zookeeper}-pane-button`
@@ -122,7 +122,7 @@ test.describe(
 
         await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
         await expect(copilot.conversationInput).toBeVisible()
-        await expect(copilot.placeHolderResponse).not.toBeVisible({
+        await expect(copilot.activityCard).toContainText('Worked for', {
           timeout: 30_000,
         })
         expect(zookeeperConnectionCount).toBe(1)
@@ -164,7 +164,7 @@ test.describe(
           )
           holdResponses = true
           await copilot.submitButton.click()
-          await expect(copilot.placeHolderResponse).toBeVisible()
+          await expect(copilot.activityCard).toContainText('Working for')
         })
 
         await test.step('Keep the current chat when clearing is dismissed', async () => {
@@ -183,7 +183,7 @@ test.describe(
             1
           )
           await expect(copilot.clearChatButton).toBeVisible()
-          await expect(copilot.placeHolderResponse).toBeVisible()
+          await expect(copilot.activityCard).toContainText('Working for')
           expect(zookeeperConnectionCount).toBe(originalConnectionCount)
         })
 
@@ -200,6 +200,7 @@ test.describe(
           await expect(page.getByTestId('ml-response-chat-bubble')).toHaveCount(
             0
           )
+          await expect(copilot.activityCard).toHaveCount(0)
           await expect(copilot.clearChatButton).not.toBeVisible()
         })
       }
