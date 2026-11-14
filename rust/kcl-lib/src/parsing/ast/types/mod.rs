@@ -20,6 +20,7 @@ use parse_display::FromStr;
 pub use path::NodePath;
 pub use path::NodePathExt;
 pub use path::Step;
+pub(crate) use path::fill_function_node_paths;
 pub(crate) use path::fill_node_paths;
 use serde::Deserialize;
 use serde::Serialize;

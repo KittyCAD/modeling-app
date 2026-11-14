@@ -7,6 +7,7 @@
 
 use std::collections::HashSet;
 
+use serde::Deserialize;
 use serde::Serialize;
 
 use crate::execution::ArtifactId;
@@ -19,7 +20,7 @@ use crate::std::args::TyF64;
 ///
 /// Rust mirror of the KCL enum `std::view::Orientation`. Serialized variant
 /// names match the KCL spellings exactly.
-#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 pub enum Orientation {
     Front,
@@ -84,7 +85,7 @@ impl Orientation {
 ///
 /// Rust mirror of the KCL enum `std::view::Visibility`. Serialized variant
 /// names match the KCL spellings exactly.
-#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 pub enum Visibility {
     Show,
@@ -122,7 +123,7 @@ impl Visibility {
 ///
 /// Rust mirror of the KCL enum `std::view::Projection`. Serialized variant
 /// names match the KCL spellings exactly.
-#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 pub enum Projection {
     Orthographic,
@@ -158,7 +159,7 @@ impl Projection {
 
 /// Where the camera looks from: one variant per constructor function, so a
 /// value can never carry both a curated orientation and a custom direction.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 // Values of this enum are only reached through `Box<CameraView>`, so the size
@@ -280,7 +281,7 @@ fn cross(a: &Point3d, b: &Point3d) -> Point3d {
 /// More than one consumer reads these values and some of them become engine
 /// commands, which are in millimeters, so one canonical unit removes the
 /// conversion convention those consumers would otherwise have to share.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct CameraView {
@@ -292,7 +293,7 @@ pub struct CameraView {
     /// means: fit the model at activation.
     distance: Option<TyF64>,
     projection: Projection,
-    #[serde(skip)]
+    #[ts(skip)]
     meta: Vec<Metadata>,
 }
 
@@ -468,7 +469,7 @@ pub(crate) enum NamedViewError {
 ///
 /// Fields stay private for the reason [`CameraView`]'s do: a value is only
 /// produced by `view::named`, which checks the name before building one.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct NamedViewValue {
@@ -485,7 +486,7 @@ pub struct NamedViewValue {
     /// empty list excepts nothing, so everything is visible under `Show` and
     /// nothing is visible under `Hide`.
     except_ids: Vec<ArtifactId>,
-    #[serde(skip)]
+    #[ts(skip)]
     meta: Vec<Metadata>,
 }
 
