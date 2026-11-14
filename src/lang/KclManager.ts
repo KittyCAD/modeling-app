@@ -1439,6 +1439,7 @@ export class KclManager extends File {
   })
 
   private editorOwnershipVersion = 0
+  private cancelThumbnailCapture: (() => void) | undefined
   private scenePreferencesChangedDuringExecution = false
   private scheduleEditorExecution(request: EditorExecutionRequest) {
     if (this.closed) return
@@ -2090,6 +2091,8 @@ export class KclManager extends File {
     providedEditor.endLiveOperationUpdates()
     providedEditor.isExecuting = false
     providedEditor.editorOwnershipVersion += 1
+    providedEditor.cancelThumbnailCapture?.()
+    providedEditor.cancelThumbnailCapture = undefined
     providedEditor.path = file.path
     providedEditor.id = file.id
     providedEditor.codeSignal.value = initialCode
@@ -2210,6 +2213,8 @@ export class KclManager extends File {
     if (this.closed) return
     this.closed = true
     this.editorOwnershipVersion += 1
+    this.cancelThumbnailCapture?.()
+    this.cancelThumbnailCapture = undefined
     this.notifyExecutionCompletion('cleanup')
     this.clearNamedViews()
     this.stopNamedViewInvalidation?.()
@@ -2467,6 +2472,7 @@ export class KclManager extends File {
     const path = this.path
     let completion: ExecutionCompletionStatus = 'cleanup'
     let completedExecution: KclExecutionDoneDetail | undefined
+    let thumbnailDirectory: string | undefined
     this.scenePreferencesChangedDuringExecution = false
 
     try {
@@ -2624,16 +2630,12 @@ export class KclManager extends File {
         project &&
         isCurrentEntrypoint()
       ) {
-        this.captureProjectThumbnail = (renderedCanvas) =>
-          createProjectThumbnail({
-            fileOperations: this.systemDeps.fileOperations,
-            projectDirectoryWithoutEndingSlash: project.path,
-            writeThumbnail: this.systemDeps.projectSession?.writeThumbnail,
-            isCurrent: isCurrentEntrypoint,
-            renderedCanvas,
-          })
+        this.captureProjectThumbnail = (renderedCanvas) => {
+          if (isCurrentEntrypoint())
+            this.requestProjectThumbnail(project.path, renderedCanvas)
+        }
         if (!this.engineCommandManager.geometryOnly)
-          this.captureProjectThumbnail()
+          thumbnailDirectory = project.path
       }
 
       completedExecution = {
@@ -2707,6 +2709,47 @@ export class KclManager extends File {
         }
       }
     }
+    if (
+      thumbnailDirectory &&
+      this.path === path &&
+      this.engineCommandManager.connection === connection
+    ) {
+      this.captureProjectThumbnail?.()
+    }
+  }
+
+  /** The editor owns pending frame capture across execution, close and file switches. */
+  requestProjectThumbnail(
+    directory: string,
+    renderedCanvas?: HTMLCanvasElement
+  ) {
+    const projectPath = this.systemDeps.projectPath.peek()
+    if (!directory || directory !== projectPath) return
+    this.cancelThumbnailCapture?.()
+    const path = this.path
+    const code = this.code
+    const session = this.engineCommandManager.engineSessionId
+    const generation = this._engineSceneGeneration.value
+    const localRenderer = this.sceneInfra.localRenderer
+    this.cancelThumbnailCapture = createProjectThumbnail({
+      fileOperations: this.systemDeps.fileOperations,
+      projectDirectoryWithoutEndingSlash: directory,
+      writeThumbnail: this.systemDeps.projectSession?.writeThumbnail,
+      renderedCanvas,
+      isCurrent: () =>
+        !this.closed &&
+        !this.isExecuting &&
+        this.sceneSettingsActive.peek() &&
+        this.path === path &&
+        this.code === code &&
+        this.systemDeps.project.peek()?.default_file === path &&
+        this.systemDeps.projectPath.peek() === projectPath &&
+        this.engineCommandManager.engineSessionId === session &&
+        this._engineSceneGeneration.value === generation &&
+        (!renderedCanvas ||
+          (this.sceneInfra.localRenderer === localRenderer &&
+            localRenderer?.isLoadedSceneCurrent() === true)),
+    })
   }
 
   /**
@@ -3166,6 +3209,10 @@ export class KclManager extends File {
   /** Transfer shared scene settings ownership as a project switches editors. */
   public setSceneSettingsActive(active: boolean) {
     if (active) this.startWatchingSettings()
+    else {
+      this.cancelThumbnailCapture?.()
+      this.cancelThumbnailCapture = undefined
+    }
     this.sceneSettingsActive.value = active
   }
 

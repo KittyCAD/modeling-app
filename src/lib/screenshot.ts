@@ -189,6 +189,16 @@ export function dataUrlToFile(dataUrl: string, fileName: string): File | Error {
   return new File([buf], fileName, { type: mime })
 }
 
+interface ThumbnailTaskState {
+  cancel: (() => void) | undefined
+  writes: Promise<void>
+}
+
+const thumbnailTasks = new WeakMap<
+  FileOperationsRegistryService,
+  ThumbnailTaskState
+>()
+
 export function createProjectThumbnail({
   fileOperations,
   projectDirectoryWithoutEndingSlash,
@@ -199,42 +209,111 @@ export function createProjectThumbnail({
 }: {
   fileOperations: FileOperationsRegistryService
   projectDirectoryWithoutEndingSlash: string
-  /**
-   * A canvas the local renderer drew in this same task, used instead of the
-   * video stream. WebGPU and WebGL canvases read back blank afterwards, so it
-   * is copied before this returns.
-   */
+  /** Copy a locally rendered canvas in the same task, before its GPU buffer clears. */
   renderedCanvas?: HTMLCanvasElement
   isCurrent: () => boolean
   writeThumbnail?: (path: string, bytes: Uint8Array) => Promise<void>
 }) {
-  if (!isCurrent()) return
-  const save = (screenshot: Promise<Blob | null>) => {
+  const state: ThumbnailTaskState = thumbnailTasks.get(fileOperations) ?? {
+    cancel: undefined,
+    writes: Promise.resolve(),
+  }
+  thumbnailTasks.set(fileOperations, state)
+  state.cancel?.()
+  if (!projectDirectoryWithoutEndingSlash || !isCurrent()) return
+
+  let cancelled = false
+  let cleanupStream: (() => void) | undefined
+  const cancel = () => {
+    cancelled = true
+    cleanupStream?.()
+    window.removeEventListener('pagehide', cancel)
+    if (state.cancel === cancel) state.cancel = undefined
+  }
+  const save = (
+    screenshot: Promise<Blob | null>,
+    ownsCapture: () => boolean
+  ) => {
     screenshot
       .then(async (thumbnail) => {
-        if (!thumbnail || !isCurrent()) return
+        if (!thumbnail || !ownsCapture()) return
         const bytes = new Uint8Array(await thumbnail.arrayBuffer())
-        if (!isCurrent()) return
-        await writeThumbnail(projectDirectoryWithoutEndingSlash, bytes)
+        // File writes cannot be cancelled once started. Serialize them so an
+        // older write cannot finish after a newer project's current capture.
+        state.writes = state.writes
+          .catch(() => {})
+          .then(async () => {
+            if (!ownsCapture()) return
+            await writeThumbnail(projectDirectoryWithoutEndingSlash, bytes)
+          })
+        await state.writes
       })
-      .catch((e) => {
+      .catch((error) => {
         console.error(
           `Failed to generate thumbnail for ${projectDirectoryWithoutEndingSlash}`
         )
-        console.error(e)
+        console.error(error)
       })
+      .finally(cancel)
   }
+  state.cancel = cancel
+  window.addEventListener('pagehide', cancel, { once: true })
+
   if (renderedCanvas) {
-    if (projectDirectoryWithoutEndingSlash) {
-      save(encodeVisibleFrame(renderedCanvas, renderedCanvas))
+    const ownsCapture = () =>
+      !cancelled && isCurrent() && renderedCanvas.isConnected
+    if (ownsCapture()) {
+      save(encodeVisibleFrame(renderedCanvas, renderedCanvas), ownsCapture)
+    } else {
+      cancel()
     }
+    return cancel
+  }
+
+  const video = document.getElementById('video-stream')
+  const canvas = document.querySelector('[data-engine]')
+  if (
+    !(video instanceof HTMLVideoElement) ||
+    !(canvas instanceof HTMLCanvasElement) ||
+    video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA ||
+    video.paused ||
+    video.ended
+  ) {
+    cancel()
     return
   }
-  setTimeout(() => {
-    if (!projectDirectoryWithoutEndingSlash || !isCurrent()) {
+  const source = video.srcObject
+  const currentSrc = video.currentSrc
+  let frame: number | undefined
+  cleanupStream = () => {
+    if (frame !== undefined) video.cancelVideoFrameCallback(frame)
+    for (const event of ['pause', 'ended', 'emptied'])
+      video.removeEventListener(event, cancel)
+  }
+  const ownsCapture = () =>
+    !cancelled &&
+    isCurrent() &&
+    video.isConnected &&
+    canvas.isConnected &&
+    document.getElementById('video-stream') === video &&
+    document.querySelector('[data-engine]') === canvas &&
+    video.srcObject === source &&
+    video.currentSrc === currentSrc &&
+    video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
+    !video.paused &&
+    !video.ended
+
+  for (const event of ['pause', 'ended', 'emptied'])
+    video.addEventListener(event, cancel, { once: true })
+  // Require a newly presented frame after execution, not a guessed camera
+  // duration or an already decoded old model. This is not a command/frame ACK.
+  frame = video.requestVideoFrameCallback(() => {
+    frame = undefined
+    if (!ownsCapture()) {
+      cancel()
       return
     }
-    // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
-    save(takeScreenshotOfVideoStreamCanvas())
-  }, 500)
+    save(takeScreenshotOfVideoStreamCanvas(), ownsCapture)
+  })
+  return cancel
 }
