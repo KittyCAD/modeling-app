@@ -25,6 +25,7 @@ import { createRegionMeshes } from '@src/clientSideScene/localRenderer/sketchReg
 import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import { IntegerIdPicker } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
+import { PickBufferDebugView } from '@src/clientSideScene/localRenderer/pickBufferDebug'
 import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
 import { SelectionHighlightRenderer } from '@src/clientSideScene/localRenderer/SelectionHighlightRenderer'
 import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
@@ -193,6 +194,9 @@ export class LocalRenderer {
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
   private baseRenderDirty = true
   private disposed = false
+  private pickBufferDebugView: PickBufferDebugView | null = null
+  private pickBufferDebugGeneration = 0
+  private pickBufferDebugRefreshing = false
   // What the engine last said is selected, kept so that the highlight can be
   // redrawn when the meshes are rebuilt.
   private selectedEntityIds: string[] = []
@@ -660,6 +664,7 @@ export class LocalRenderer {
     }
 
     this.disposed = true
+    this.closePickBufferDebug()
     for (const dispose of this.disposers.splice(0)) {
       dispose()
     }
@@ -915,6 +920,65 @@ export class LocalRenderer {
     selectionHighlightRenderer.render(previewCamera)
   }
 
+  showPickBufferDebug(): Error | undefined {
+    if (this.pickBufferDebugView) {
+      this.refreshPickBufferDebug()
+      return
+    }
+    if (
+      this.disposed ||
+      !this.gpu ||
+      !this.previewCamera ||
+      !this.currentModel ||
+      !this.isLoadedSceneCurrent() ||
+      this.kclManager.isExecuting
+    ) {
+      return new Error('No current local picking buffer is available.')
+    }
+    const view = PickBufferDebugView.create(this.container)
+    if (view instanceof Error) return view
+    this.pickBufferDebugView = view
+    this.refreshPickBufferDebug()
+  }
+
+  closePickBufferDebug() {
+    this.pickBufferDebugGeneration++
+    this.pickBufferDebugView?.dispose()
+    this.pickBufferDebugView = null
+  }
+
+  private refreshPickBufferDebug() {
+    if (!this.pickBufferDebugView) return
+    this.pickBufferDebugGeneration++
+    if (this.pickBufferDebugRefreshing) return
+    this.pickBufferDebugRefreshing = true
+    void this.readPickBufferDebug().catch(reportRejection)
+  }
+
+  private async readPickBufferDebug() {
+    try {
+      while (this.pickBufferDebugView && !this.disposed) {
+        const generation = this.pickBufferDebugGeneration
+        const camera = this.previewCamera
+        const picker = this.gpu?.integerIdPicker
+        const snapshot =
+          camera &&
+          picker &&
+          this.currentModel &&
+          this.isLoadedSceneCurrent() &&
+          !this.kclManager.isExecuting
+            ? await picker.captureDebugBuffer(camera)
+            : null
+        if (generation !== this.pickBufferDebugGeneration) continue
+        if (snapshot) this.pickBufferDebugView?.update(snapshot)
+        else this.pickBufferDebugView?.clear()
+        break
+      }
+    } finally {
+      this.pickBufferDebugRefreshing = false
+    }
+  }
+
   /** Debug/E2E snapshot in CSS viewport pixels, using the same camera and picker as clicks. */
   async getProjectedEntities() {
     const camera = this.previewCamera
@@ -1014,6 +1078,7 @@ export class LocalRenderer {
       }
 
       this.renderPreview()
+      this.refreshPickBufferDebug()
     })
   }
 
