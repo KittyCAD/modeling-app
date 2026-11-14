@@ -1,3 +1,8 @@
+import {
+  createEntityStyling,
+  type EntityStyleGroup,
+} from '@src/lib/scene/entityStyling'
+import type { ReadonlySignal } from '@preact/signals-core'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { sceneSelectionAdapter } from '@src/lib/scene/selectionAdapter'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
@@ -96,6 +101,7 @@ function fakeGpu() {
       setTargets: vi.fn(),
       setHover: vi.fn(),
       setSelection: vi.fn(),
+      setEntityStyles: vi.fn(),
       setBackgroundColor: vi.fn(),
       clearModel: vi.fn(),
       dispose: vi.fn(),
@@ -111,12 +117,13 @@ function fixture(
     0.1,
     10000
   ),
-  selectedIds?: string[]
+  selectedIds?: string[],
+  entityStyles?: ReadonlySignal<readonly EntityStyleGroup[]>
 ) {
   const manager = Object.assign(new EventTarget(), {
     artifactGraph: new Map([['triangle', { type: 'sweep' }]]),
     engineSceneGenerationSignal: signal(0),
-    execState: { engineSceneGeneration: null },
+    execState: { engineSceneGeneration: null as number | null },
     isExecutingSignal: signal(false),
     selectionFilter: signal<EntityType[]>([...defaultSelectionFilter]),
     get isExecuting() {
@@ -163,7 +170,10 @@ function fixture(
   const onModelLoadSettled = vi.fn()
   const renderer = new LocalRenderer(
     document.createElement('div'),
-    legacyLocalRendererHost(manager as unknown as KclManager),
+    {
+      ...legacyLocalRendererHost(manager as unknown as KclManager),
+      entityStyles,
+    },
     {
       theme: Themes.Light,
       enableSSAO: false,
@@ -201,6 +211,46 @@ describe('local GLB loading', () => {
     vi.mocked(resetCameraPosition).mockClear()
   })
   afterEach(() => vi.restoreAllMocks())
+
+  it('projects scene-owned styling groups onto loaded local meshes and removes them on execution', () => {
+    const owner = createEntityStyling()
+    const f = fixture(undefined, undefined, owner.service.groups)
+    try {
+      const model = new Group(),
+        face = new Mesh()
+      face.userData.faceUuid = 'face'
+      model.add(face)
+      f.state.currentModel = model
+      f.state.loadedSceneGeneration = 0
+      f.manager.execState.engineSceneGeneration = 0
+      f.state.rebuildSelectionTargets()
+      const handle = owner.service.createGroup({
+        color: [0.1, 0.5, 0.8],
+        fillOpacity: 0.05,
+        outlineOpacity: 0.3,
+        priority: 10,
+        lineWidth: 1,
+      })
+      if (handle instanceof Error) throw handle
+      handle.set([{ type: 'face', face_id: 'face' }])
+      expect(
+        f.gpu.selectionHighlightRenderer.setEntityStyles
+      ).toHaveBeenLastCalledWith([
+        { group: owner.service.groups.peek()[0], targets: [face] },
+      ])
+      f.manager.isExecutingSignal.value = true
+      expect(
+        f.gpu.selectionHighlightRenderer.setEntityStyles
+      ).toHaveBeenLastCalledWith([])
+      owner.reset()
+      expect(handle.set([{ type: 'face', face_id: 'face' }])).toBeInstanceOf(
+        Error
+      )
+    } finally {
+      f.renderer.dispose()
+      owner.dispose()
+    }
+  })
 
   function planeFixture(id = 'plane-xy') {
     const f = fixture()

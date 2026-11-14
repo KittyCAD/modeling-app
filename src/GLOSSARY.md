@@ -253,3 +253,7 @@ A visual indication of geometry/source correspondence that leaves the receiving 
 ## Selection bridge
 
 A connection between editor views through which an adapter can explain selections or offer compatible command input. Each view retains its own selection; the adapter determines the meaning of the relationship between them.
+
+## Entity styling group
+
+An independently owned collection of visual overrides for entities. Groups specify appearance and overlap priority without assigning a meaning such as selection, hover, or correspondence.
