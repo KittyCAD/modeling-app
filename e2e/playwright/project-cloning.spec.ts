@@ -167,6 +167,7 @@ async function prepare(
     destinationDirectory: localDestination.path,
     renameCloneRoundTrip: async () => {
       await navigate('/home')
+      await waitForAppLoad(page)
       await expect(page.getByTestId('home-header')).toBeVisible()
       const library = page.getByRole('link', {
         name: `Open ${destinationLibrary.title} library`,

@@ -19,7 +19,6 @@ import {
   NEW_EDITOR_COMMAND,
 } from '@src/lib/editors/commands'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
-import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
@@ -42,6 +41,7 @@ import {
   it,
   vi,
 } from 'vitest'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 
 describe('editors extension', () => {
   let registry: Registry

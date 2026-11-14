@@ -1,10 +1,10 @@
 import { getContainedRelativePath } from '@src/lib/fileSystem/pathContainment'
-import { PATHS } from '@src/lib/routePaths'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { APP_NAME, ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import { getEXTNoPeriod } from '@src/lib/fileExtensions'
 import fsZds from '@src/lib/fs-zds'
 import { webSafeJoin } from '@src/lib/pathUtils'
+import { PATHS } from '@src/lib/routePaths'
 import {
   getDefaultDirectoryProjectLibraryPath,
   isProjectLibrarySettings,
