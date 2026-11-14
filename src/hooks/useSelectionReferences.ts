@@ -1,3 +1,5 @@
+import type { ArtifactGraph } from '@src/lang/wasm'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { use, useEffect, useState } from 'react'
 import type { KclManager } from '@src/lang/KclManager'
 import {
@@ -9,17 +11,23 @@ import {
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
-type SelectionReferenceState =
+export type SelectionReferenceState =
   | { status: 'idle' | 'loading'; references: SelectionReference[] }
   | { status: 'ready'; references: SelectionReference[] }
   | { status: 'error'; references: SelectionReference[]; message: string }
+
+/** Reference lookup borrows the AST, artifacts, and commands from the owning execution. */
+export interface SelectionReferenceHost extends Pick<KclManager, 'ast'> {
+  artifactGraph: ArtifactGraph
+  engineCommandManager: Pick<ConnectionManager, 'sendSceneCommand'>
+}
 
 export function useSelectionReferences({
   kclManager,
   wasmPromise,
   selectionRanges,
 }: {
-  kclManager: KclManager
+  kclManager: SelectionReferenceHost | undefined
   wasmPromise: Promise<ModuleType>
   selectionRanges: Selections
 }) {
@@ -30,6 +38,10 @@ export function useSelectionReferences({
   })
 
   useEffect(() => {
+    if (!kclManager) {
+      setState({ status: 'idle', references: [] })
+      return
+    }
     let cancelled = false
     setState({ status: 'loading', references: [] })
 

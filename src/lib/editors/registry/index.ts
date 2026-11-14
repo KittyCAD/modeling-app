@@ -323,3 +323,5 @@ const extension = defineRegistryItemFactory(({ valueSpecs, services }) => {
 }, 'editors')
 
 export default withProjectShellFeature(extension, 'editors')
+
+export { extension as editorsExtension }

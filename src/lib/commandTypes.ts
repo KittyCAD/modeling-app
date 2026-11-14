@@ -1,3 +1,4 @@
+import type { KclVersionRange } from '@src/lib/kclVersionRange'
 import type { EntityType } from '@kittycad/lib'
 import type { ReactNode } from 'react'
 import type {
@@ -195,6 +196,8 @@ export type CommandArgumentConfig<
 > = {
   /** Whether to offer this argument in the current machine context. */
   available?: (context: C) => boolean
+  /** Language-version availability is shared metadata, independent of the command host. */
+  availableInKclVersion?: KclVersionRange
   displayName?: string
   description?: string
   /** Reference documentation shown on demand, separate from command-bar hints. */
@@ -267,7 +270,7 @@ export type CommandArgumentConfig<
       variableName?:
         | string
         | ((
-            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            commandBarContext: { argumentsToSubmit: Record<string, unknown> },
             machineContext?: C
           ) => string)
       defaultValue?:
@@ -453,7 +456,7 @@ export type CommandArgument<
       variableName?:
         | string
         | ((
-            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            commandBarContext: { argumentsToSubmit: Record<string, unknown> },
             machineContext?: ContextFrom<T>
           ) => string)
       defaultValue?:
