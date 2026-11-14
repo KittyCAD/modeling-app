@@ -69,10 +69,7 @@ export function ModelingStatusBar({
         physicalAnalysis: context.physicalAnalysis,
       }}
     >
-      <StatusBarFrame
-        label="Modeling view status"
-        className="flex-wrap b-3 bg-2 text-2"
-      >
+      <StatusBarFrame label="Modeling view status" className="b-3 bg-2 text-2">
         {(['start', 'end'] as const).map((side) => (
           <div
             key={side}

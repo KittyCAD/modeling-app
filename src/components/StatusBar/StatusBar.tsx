@@ -1,3 +1,4 @@
+import styles from './StatusBar.module.css'
 import { Popover } from '@headlessui/react'
 import { ActionButton } from '@src/components/ActionButton'
 import { ActionIcon } from '@src/components/ActionIcon'
@@ -20,9 +21,13 @@ export function StatusBar({
   return (
     <StatusBarFrame
       id="statusbar"
-      className="box-content h-8 bg-chalkboard-20 dark:bg-chalkboard-90 text-chalkboard-80 dark:text-chalkboard-30 border-t-chalkboard-30 dark:border-t-chalkboard-80"
+      className="box-content bg-chalkboard-20 dark:bg-chalkboard-90 text-chalkboard-80 dark:text-chalkboard-30 border-t-chalkboard-30 dark:border-t-chalkboard-80"
     >
-      <menu id="statusbar-globals" className="flex items-stretch">
+      <menu
+        id="statusbar-globals"
+        data-status-side="start"
+        className="flex items-stretch"
+      >
         {globalItems.map((item, index, arr) => (
           <Fragment key={item.id}>
             <StatusBarItem
@@ -31,12 +36,19 @@ export function StatusBar({
               activeFileRoutePath={activeFileRoutePath}
             />
             {index < arr.length - 1 && (
-              <div className="w-[1px] self-stretch bg-chalkboard-30 dark:bg-chalkboard-80" />
+              <div
+                data-status-separator
+                className="w-[1px] self-stretch bg-chalkboard-30 dark:bg-chalkboard-80"
+              />
             )}
           </Fragment>
         ))}
       </menu>
-      <menu id="statusbar-locals" className="flex items-stretch">
+      <menu
+        id="statusbar-locals"
+        data-status-side="end"
+        className="flex items-stretch"
+      >
         {localItems.map((item, index, arr) => (
           <Fragment key={item.id}>
             <StatusBarItem
@@ -45,7 +57,10 @@ export function StatusBar({
               activeFileRoutePath={activeFileRoutePath}
             />
             {index < arr.length - 1 && (
-              <div className="w-[1px] self-stretch bg-chalkboard-30 dark:bg-chalkboard-80" />
+              <div
+                data-status-separator
+                className="w-[1px] self-stretch bg-chalkboard-30 dark:bg-chalkboard-80"
+              />
             )}
           </Fragment>
         ))}
@@ -70,9 +85,9 @@ export function StatusBarFrame({
     <footer
       id={id}
       aria-label={label}
-      className={`relative z-10 flex min-h-8 shrink-0 items-stretch justify-between border-t ${className}`}
+      className={`${styles.frame} relative z-10 min-h-8 shrink-0 border-t ${className}`}
     >
-      {children}
+      <div className={styles.layout}>{children}</div>
     </footer>
   )
 }
@@ -155,7 +170,9 @@ function StatusBarItem(
               />
             )}
           </Popover.Button>
-          <Popover.Panel>{props.popoverContent}</Popover.Panel>
+          <Popover.Panel data-status-popover>
+            {props.popoverContent}
+          </Popover.Panel>
         </Popover>
       )
     case 'text':
