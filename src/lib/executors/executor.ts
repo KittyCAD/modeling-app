@@ -23,6 +23,7 @@ interface ExecutionInput {
   src: string
   contents: string
   capabilities: readonly ExecutorCapability[]
+  revisions: readonly unknown[]
   refresh: number
 }
 
@@ -36,12 +37,14 @@ export function createExecutor(
   let disposed = false
   const snapshot = (): ExecutionInput => {
     const context = editorMatchContext(editor)
+    const capabilities = contributions.value.filter((capability) =>
+      matchesEditor(capability.matches, context)
+    )
     return {
       ...context,
       refresh: refresh.value,
-      capabilities: contributions.value.filter((capability) =>
-        matchesEditor(capability.matches, context)
-      ),
+      capabilities,
+      revisions: capabilities.map((capability) => capability.revision?.value),
     }
   }
   const pending = (input: ExecutionInput): ExecutorOutput =>
@@ -170,7 +173,9 @@ function sameInput(previous: ExecutionInput, next: ExecutionInput) {
     previous.contents === next.contents &&
     previous.capabilities.length === next.capabilities.length &&
     previous.capabilities.every(
-      (capability, index) => capability === next.capabilities[index]
+      (capability, index) =>
+        capability === next.capabilities[index] &&
+        Object.is(previous.revisions[index], next.revisions[index])
     )
   )
 }

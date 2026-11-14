@@ -3,7 +3,9 @@
 Executors watch a bound editor and run every matching capability. Each run uses
 an immutable input snapshot; newer input interrupts older work. Results coalesce
 without one capability's failure hiding the others. Typed `output.get(capability)`
-lookups preserve the data type declared by that capability.
+lookups preserve the data type declared by that capability. A capability may supply
+a reactive `revision` for additional inputs, such as imported buffers; a changed
+revision interrupts the previous run even when the bound editor is unchanged.
 
 Creating or acquiring an executor for a closed editor returns an `Error` without
 retaining resources. `executionContext` passes that error to the mode binding.
