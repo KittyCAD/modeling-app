@@ -1,5 +1,5 @@
-import type { EntityType } from '@kittycad/lib'
-import { computed, signal } from '@preact/signals-core'
+import type { SceneSelectionController } from '@src/lib/scene/selection'
+import { computed } from '@preact/signals-core'
 import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
@@ -34,6 +34,7 @@ interface PresentationContext {
   connection: SceneConnection
   manager: ConnectionManager
   sceneInfra: SceneInfra
+  selection: SceneSelectionController
   model: KclRuntime
   settings: SettingsRegistryService
 }
@@ -57,6 +58,7 @@ function createLocalPresentation({
   sceneInfra,
   model,
   settings,
+  selection,
 }: PresentationContext): PresentationAdapter {
   sceneInfra.camControls.localCameraMode = true
   sceneInfra.camControls.resetLocalCameraToDefaultView()
@@ -66,7 +68,7 @@ function createLocalPresentation({
       executing: model.executing,
       sceneGeneration: computed(() => model.state.value.engineSceneGeneration),
       currentSceneGeneration: () => model.state.peek().engineSceneGeneration,
-      selectionFilter: signal<EntityType[]>(['face', 'edge', 'solid3d']),
+      selectionFilter: computed(() => [...selection.filter.value]),
       commands: manager,
       sceneInfra,
       settingsActor: settings.actor,

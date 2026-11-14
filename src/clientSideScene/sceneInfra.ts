@@ -367,7 +367,8 @@ export class SceneInfra {
       this.renderer.domElement,
       engineCommandManager,
       getSettings,
-      () => this.localRenderer
+      () => this.localRenderer,
+      () => this.renderer.domElement
     )
     this.camControls.cameraChange.add(this.onCameraChange)
     this.camControls.camera.layers.enable(SKETCH_LAYER)
