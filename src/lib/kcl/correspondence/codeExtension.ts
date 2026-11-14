@@ -8,7 +8,11 @@ import {
   type ViewUpdate,
 } from '@codemirror/view'
 import type { CodeEditorHost } from '@src/lib/editors/registry/contract'
-import type { CorrespondenceBridge } from '@src/lib/kcl/correspondence/bridge'
+import type {
+  KclCorrespondenceEndpoints,
+  CodeCorrespondenceHandle,
+} from '@src/lib/kcl/correspondence/contract'
+import { reportRejection } from '@src/lib/trap'
 import type { SourceRange } from '@src/lang/wasm'
 
 const setCorrespondence = StateEffect.define<readonly SourceRange[]>()
@@ -46,7 +50,7 @@ const correspondence = StateField.define<DecorationSet>({
 /** Decorations never replace text selection, scroll a pane, or generate new picking intent. */
 export function correspondenceCodeExtension(
   host: CodeEditorHost,
-  bridge: CorrespondenceBridge,
+  bridge: KclCorrespondenceEndpoints,
   enabled?: ReadonlySignal<boolean>
 ) {
   return [
@@ -59,10 +63,10 @@ export function correspondenceCodeExtension(
     }),
     ViewPlugin.fromClass(
       class {
-        unregister: () => void
+        handle: CodeCorrespondenceHandle | undefined
         destroyed = false
         constructor() {
-          this.unregister = bridge.registerCode({
+          const handle = bridge.registerCode({
             id: host.instance.id,
             editor: host.editor,
             enabled,
@@ -74,17 +78,18 @@ export function correspondenceCodeExtension(
                 host.view.dispatch({ effects: setCorrespondence.of(ranges) })
             },
           })
+          if (handle instanceof Error) reportRejection(handle)
+          else this.handle = handle
         }
         update(update: ViewUpdate) {
-          if (update.docChanged) bridge.invalidateCode(host.instance.id)
+          if (update.docChanged) this.handle?.invalidate()
           if (
             update.selectionSet &&
             update.transactions.some((transaction) =>
               transaction.isUserEvent('select')
             )
           )
-            bridge.selectCode(
-              host.instance.id,
+            this.handle?.select(
               update.state.selection.ranges.map((range) => [
                 range.from,
                 range.to,
@@ -94,7 +99,7 @@ export function correspondenceCodeExtension(
         }
         destroy() {
           this.destroyed = true
-          this.unregister()
+          this.handle?.dispose()
         }
       }
     ),

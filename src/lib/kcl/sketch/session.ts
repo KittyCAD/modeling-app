@@ -274,8 +274,10 @@ export async function createSketchSession(
       await planes(false)
       picking?.activate(null)
       runtime = await scene.runtime.openSketch(async () => {
-        context.interactions.error.value = new Error(
-          'Source or execution settings changed. Sketch editing ended.'
+        context.interactions.reportError(
+          new Error(
+            'Source or execution settings changed. Sketch editing ended.'
+          )
         )
         await exit()
       })

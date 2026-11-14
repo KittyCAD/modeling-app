@@ -1,7 +1,7 @@
 import { KclConnectionStatus } from '@src/lib/kcl/KclConnectionStatus'
 import { ModelingToolbar } from '@src/lib/kcl/ModelingToolbar'
 import { ModelingStatusBar } from '@src/lib/kcl/ModelingStatusBar'
-import type { ModelingViewContext } from '@src/lib/kcl/registry/contract'
+import type { ModelingViewRuntime as ModelingViewContext } from '@src/lib/kcl/registry/contract'
 import { useSignals } from '@preact/signals-react/runtime'
 import { LocalWebGPUSceneView } from '@src/clientSideScene/localRenderer/LocalWebGPUScene'
 import { useEffect, useRef } from 'react'

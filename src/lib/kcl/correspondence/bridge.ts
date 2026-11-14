@@ -1,43 +1,35 @@
 import type { EntityReference } from '@kittycad/lib'
+import { computed, effect, signal, type Signal } from '@preact/signals-core'
+import type {
+  EditorSelectionLinks,
+  EditorSelectionEndpoints,
+} from '@src/lib/editors/selectionBridges/contract'
 import {
-  computed,
-  effect,
-  signal,
-  type ReadonlySignal,
-  type Signal,
-} from '@preact/signals-core'
-import type { Editor } from '@src/lib/editors/registry/contract'
+  kclSelectionBridge,
+  type CodeCorrespondenceEndpoint,
+  type ModelingCorrespondenceEndpoint,
+  type KclCorrespondenceEndpoints,
+  type KclCorrespondenceStatus,
+} from '@src/lib/kcl/correspondence/contract'
 import type { SourceRange } from '@src/lang/wasm'
 import {
   createArtifactCorrespondence,
   resolvePickingCandidates,
 } from '@src/lang/std/correspondence'
-import type { ModelingViewContext } from '@src/lib/kcl/registry/contract'
 import { entityReferenceKey } from '@src/lib/scene/entityReference'
 import fsZds from '@src/lib/fs-zds'
 
-export interface CodeCorrespondenceEndpoint {
-  readonly id: symbol
-  readonly editor: Editor
-  readonly enabled?: ReadonlySignal<boolean>
-  /** Decorations are delivered separately from the CodeMirror selection and never cause navigation. */
-  decorate: (ranges: readonly SourceRange[]) => void
-}
-export interface ModelingCorrespondenceEndpoint {
-  readonly id: symbol
-  readonly context: ModelingViewContext
-  readonly enabled?: ReadonlySignal<boolean>
-}
 interface CodeRegistration extends CodeCorrespondenceEndpoint {
   ranges: Signal<readonly SourceRange[]>
 }
 
 /** Explicit links connect view instances, with same-buffer links as the initial policy. No global active-editor lookup. */
-export function createCorrespondenceBridge() {
+export function createCorrespondenceBridge(routing: {
+  links: EditorSelectionLinks
+  registrations: EditorSelectionEndpoints
+}) {
   const codes = signal<readonly CodeRegistration[]>([])
   const models = signal<readonly ModelingCorrespondenceEndpoint[]>([])
-  const links = signal<readonly { code: symbol; model: symbol }[]>([])
-  const targets = new Map<symbol, symbol>()
   const error = signal<Error | undefined>(undefined)
   let disposed = false
   let generation = 0
@@ -45,38 +37,20 @@ export function createCorrespondenceBridge() {
     code: CodeRegistration,
     model: ModelingCorrespondenceEndpoint
   ) =>
-    code.enabled?.value !== false &&
-    model.enabled?.value !== false &&
-    (code.editor.id === model.context.executor.editor.id ||
-      links.value.some(
-        (link) => link.code === code.id && link.model === model.id
-      ))
-  const execution = (endpoint: ModelingCorrespondenceEndpoint) => {
-    if (endpoint.enabled?.value === false) return undefined
-    const { executor, session } = endpoint.context
-    const scene = session.resource.value
-    const output = executor.output.value
-    const model = scene?.selection.model.value
-    if (
-      !scene ||
-      !model ||
-      output.running ||
-      output.errors['kcl.execution'] ||
-      scene.runtime.executing.value ||
-      scene.runtime.failed.value ||
-      executor.editor.contents.value !== output.contents ||
-      (executor.editor.src.value ?? '') !== output.src
+    routing.links.connections.value.some(
+      (link) =>
+        link.bridgeId === kclSelectionBridge.id &&
+        link.source.viewId === code.id &&
+        link.target.viewId === model.id
     )
-      return undefined
-    const state = scene.runtime.state.value
-    return {
-      scene,
-      model,
-      state,
-      output,
-      sources: scene.runtime.sources?.value,
-      query: createArtifactCorrespondence(state.artifactGraph),
-    }
+  const execution = (endpoint: ModelingCorrespondenceEndpoint) => {
+    const run = endpoint.execution.value
+    return (
+      run && {
+        ...run,
+        query: createArtifactCorrespondence(run.state.artifactGraph),
+      }
+    )
   }
   const sourceModule = (
     code: CodeRegistration,
@@ -121,7 +95,7 @@ export function createCorrespondenceBridge() {
         const module = sourceModule(code, run)
         if (module === undefined) continue
         const ranges = codeRanges.get(code.id) ?? []
-        for (const item of model.context.selection.items.value) {
+        for (const item of model.selection.items.value) {
           if (item.kind === 'model' && item.value.model === run.model)
             ranges.push(
               ...run.query
@@ -133,7 +107,7 @@ export function createCorrespondenceBridge() {
         }
         codeRanges.set(code.id, ranges)
         // Native sketch interaction owns its surface and must not receive engine selection projections.
-        if (model.context.interactions.active.value) continue
+        if (model.interacting.value) continue
         for (const range of code.ranges.value)
           for (const item of run.query.forCode([range[0], range[1], module])) {
             const key = entityReferenceKey(item.entity)
@@ -154,112 +128,97 @@ export function createCorrespondenceBridge() {
         code.decorate(projection.codeRanges.get(code.id) ?? [])
       for (const model of projection.models) {
         const geometry = projection.geometry.get(model.id)
-        const selection = model.context.session.resource.peek()?.selection
-        if (geometry && selection?.model.peek() === geometry.run.model)
-          selection.setCorrespondence(
-            geometry.entities.map((reference) => ({
-              model: geometry.run.model,
-              reference,
-            }))
-          )
-        else selection?.setCorrespondence([])
+        model.project(geometry?.run, geometry?.entities ?? [])
       }
     })
   })
-  const unlink = (id: symbol) => {
-    links.value = links
-      .peek()
-      .filter((link) => link.code !== id && link.model !== id)
-    targets.delete(id)
-    for (const [code, model] of targets) if (model === id) targets.delete(code)
-  }
-  return {
-    error: error as ReadonlySignal<Error | undefined>,
-    registerCode: (endpoint: CodeCorrespondenceEndpoint) => {
-      const registration = {
-        ...endpoint,
-        ranges: signal<readonly SourceRange[]>([]),
-      }
-      codes.value = [...codes.peek(), registration]
-      return () => {
-        codes.value = codes.peek().filter((item) => item !== registration)
-        unlink(endpoint.id)
+  const cleanups = new Set<() => void>()
+  const registrations: KclCorrespondenceEndpoints = {
+    registerCode: (endpoint) => {
+      if (disposed) return new Error('The correspondence owner closed.')
+      const unregister = routing.registrations.register({
+        viewId: endpoint.id,
+        editorId: endpoint.editor.id,
+        kind: kclSelectionBridge.sourceKind,
+        enabled: endpoint.enabled,
+      })
+      if (unregister instanceof Error) return unregister
+      const code = { ...endpoint, ranges: signal<readonly SourceRange[]>([]) }
+      codes.value = [...codes.peek(), code]
+      let closed = false
+      const dispose = () => {
+        if (closed) return
+        closed = true
+        codes.value = codes.peek().filter((item) => item !== code)
+        unregister()
         endpoint.decorate([])
+        cleanups.delete(dispose)
+      }
+      cleanups.add(dispose)
+      return {
+        select: (ranges) => {
+          if (!closed) selectCode(code, ranges)
+        },
+        invalidate: () => {
+          if (!closed) code.ranges.value = []
+        },
+        dispose,
       }
     },
-    registerModel: (endpoint: ModelingCorrespondenceEndpoint) => {
+    registerModel: (endpoint) => {
+      if (disposed) return new Error('The correspondence owner closed.')
+      const unregister = routing.registrations.register({
+        viewId: endpoint.id,
+        editorId: endpoint.editorId,
+        kind: kclSelectionBridge.targetKind,
+        enabled: endpoint.enabled,
+      })
+      if (unregister instanceof Error) return unregister
       models.value = [...models.peek(), endpoint]
-      return () => {
-        endpoint.context.session.resource
-          .peek()
-          ?.selection.setCorrespondence([])
+      let closed = false
+      const dispose = () => {
+        if (closed) return
+        closed = true
+        endpoint.project(undefined, [])
         models.value = models.peek().filter((item) => item !== endpoint)
-        unlink(endpoint.id)
+        unregister()
+        cleanups.delete(dispose)
       }
+      cleanups.add(dispose)
+      return dispose
     },
-    link: (code: symbol, model: symbol) => {
-      if (
-        !codes.peek().some((item) => item.id === code) ||
-        !models.peek().some((item) => item.id === model)
-      )
-        return new Error('Both linked views must be registered.')
-      const edge = { code, model }
-      links.value = [...links.peek(), edge]
-      return () => {
-        links.value = links.peek().filter((item) => item !== edge)
-      }
-    },
-    setPickingTarget: (code: symbol, model: symbol | undefined) => {
-      const source = codes.peek().find((item) => item.id === code)
-      const target = models.peek().find((item) => item.id === model)
-      if (model === undefined) {
-        targets.delete(code)
-        return undefined
-      }
-      if (!source || !target || !linked(source, target))
-        return new Error('The picking target must be a linked Modeling view.')
-      targets.set(code, model)
-      return undefined
-    },
-    /** Only intentional Code selections enter this path. Decoration updates cannot echo into picking. */
-    selectCode: (id: symbol, ranges: readonly SourceRange[]) => {
-      if (disposed) return
-      const code = codes.peek().find((item) => item.id === id)
-      if (!code) return
-      code.ranges.value = ranges
-      error.value = undefined
-      const eligible = models.peek().filter((model) => linked(code, model))
-      const explicit = targets.get(id)
-      // One linked view is an unambiguous destination; multiple links require an explicit target, regardless of focus.
-      const destination = explicit
-        ? eligible.find((item) => item.id === explicit)
-        : eligible.length === 1
-          ? eligible[0]
-          : undefined
-      if (!destination) return
-      const run = execution(destination)
-      const argument = run?.scene.selection.pickingArgument.peek()
-      if (!run || !argument || !run.scene.selection.pickingEnabled.peek())
-        return
-      const module = sourceModule(code, run)
-      if (module === undefined) return
-      const candidates = resolvePickingCandidates(
-        ranges.map((range) => run.query.forCode([range[0], range[1], module])),
-        argument.accepts,
-        argument.multiple
-      )
-      if (candidates instanceof Error) {
-        error.value = candidates
-        return
-      }
-      error.value = run.scene.selection.offer(
-        candidates.map((reference) => ({ reference, model: run.model }))
-      )
-    },
-    invalidateCode: (id: symbol) => {
-      const code = codes.peek().find((item) => item.id === id)
-      if (code) code.ranges.value = []
-    },
+  }
+  /** Only intentional Code selections enter this path. Decoration updates cannot echo into picking. */
+  const selectCode = (
+    code: CodeRegistration,
+    ranges: readonly SourceRange[]
+  ) => {
+    if (disposed) return
+    code.ranges.value = ranges
+    error.value = undefined
+    const targetId = routing.links.pickingTarget(kclSelectionBridge.id, code.id)
+    const destination = models.peek().find((item) => item.id === targetId)
+    if (!destination) return
+    const run = execution(destination)
+    const argument = destination.pickingArgument.peek()
+    if (!run || !argument) return
+    const module = sourceModule(code, run)
+    if (module === undefined) return
+    const candidates = resolvePickingCandidates(
+      ranges.map((range) => run.query.forCode([range[0], range[1], module])),
+      argument.accepts,
+      argument.multiple
+    )
+    if (candidates instanceof Error) {
+      error.value = candidates
+      return
+    }
+    error.value = destination.offer(run, candidates)
+  }
+  const service: KclCorrespondenceStatus = { error }
+  return {
+    service,
+    registrations,
     // TODO: Add opt-in navigation independently of correspondence highlighting and selection promotion.
     // TODO: A feature-tree endpoint should offer direct entity candidates to the same execution-bound picking session.
     // TODO: Add a view-link/picking-destination UI; never resolve multiple destinations through global focus or open-dialog order.
@@ -268,14 +227,9 @@ export function createCorrespondenceBridge() {
       disposed = true
       generation++
       stop()
-      for (const code of codes.peek()) code.decorate([])
-      for (const model of models.peek())
-        model.context.session.resource.peek()?.selection.setCorrespondence([])
+      for (const cleanup of [...cleanups]) cleanup()
       codes.value = []
       models.value = []
-      links.value = []
-      targets.clear()
     },
   }
 }
-export type CorrespondenceBridge = ReturnType<typeof createCorrespondenceBridge>

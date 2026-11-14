@@ -3,7 +3,7 @@ import { StateEffect, Transaction } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { signal } from '@preact/signals-core'
 import { correspondenceCodeExtension } from '@src/lib/kcl/correspondence/codeExtension'
-import { createCorrespondenceBridge } from '@src/lib/kcl/correspondence/bridge'
+import { testCorrespondenceBridge as createCorrespondenceBridge } from '@src/lib/kcl/correspondence/testBridge'
 import { modelingTestContext } from '@src/lib/kcl/testContext'
 import { createExecutorOutput } from '@src/lib/executors/output'
 import type { SceneSelection } from '@src/lib/scene/selection'
@@ -48,7 +48,7 @@ it('decorates code without moving its cursor or echoing a pick, but accepts inte
     effects: StateEffect.appendConfig.of(
       correspondenceCodeExtension(
         { instance, editor: model.editor, view, onDispose: () => {} },
-        bridge
+        bridge.registrations
       )
     ),
   })

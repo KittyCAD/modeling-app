@@ -1,6 +1,5 @@
-import { createCorrespondenceBridge } from '@src/lib/kcl/correspondence/bridge'
-import { correspondenceCodeExtension } from '@src/lib/kcl/correspondence/codeExtension'
-import { correspondenceBridgeService } from '@src/lib/kcl/registry/contract'
+import { kclCorrespondenceEndpointsService } from '@src/lib/kcl/correspondence/contract'
+import { modelingCorrespondenceEndpoint } from '@src/lib/kcl/correspondence/modelEndpoint'
 import { createActiveSelection } from '@src/lib/kcl/selection'
 import { defaultModelingToolGroups } from '@src/lib/kcl/toolGroups'
 import { sketchToolsValueSpec } from '@src/lib/kcl/sketch/contract'
@@ -12,7 +11,7 @@ import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { createModelingTools } from '@src/lib/kcl/modelingTools'
 import { defaultModelingTools } from '@src/lib/kcl/toolDefinitions'
-import type { ModelingViewContext } from '@src/lib/kcl/registry/contract'
+import type { ModelingViewRuntime as ModelingViewContext } from '@src/lib/kcl/registry/contract'
 import {
   modelingToolGroupsValueSpec,
   modelingStatusItemsValueSpec,
@@ -22,11 +21,7 @@ import { defaultModelingStatusItems } from '@src/lib/kcl/statusItems'
 import { createMeasurementToolService } from '@src/registry/extensions/engineScene/measurementToolService'
 import { createPhysicalAnalysisService } from '@src/registry/extensions/engineScene/physicalAnalysis/physicalAnalysisService'
 import { kcl } from '@kittycad/codemirror-lang-kcl'
-import {
-  defineRegistryItemFactory,
-  provide,
-  provideService,
-} from '@kittycad/registry'
+import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import { computed, effect } from '@preact/signals-core'
 import { editorKclHighlight } from '@src/editor/plugins/theme'
 import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
@@ -63,7 +58,6 @@ import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
  * text/history while each owns its connection, native model, and camera.
  */
 const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
-  const correspondence = createCorrespondenceBridge()
   let fallbackWasm: ReturnType<typeof initialiseWasm> | undefined
   const getWasm = () =>
     valueSpecs.get(wasmPromiseValueSpec) ?? (fallbackWasm ??= initialiseWasm())
@@ -134,10 +128,6 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
   return {
     id: 'kcl',
     uses: [projectSourcesExtension],
-    dispose: correspondence.dispose,
-    providesServices: [
-      provideService(correspondenceBridgeService, correspondence),
-    ],
     provides: [
       ...defaultModelingToolGroups.map((group) =>
         provide(modelingToolGroupsValueSpec, group)
@@ -192,14 +182,24 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
             statusItems: valueSpecs.signal(modelingStatusItemsValueSpec),
           }
           onDispose(
-            correspondence.registerModel({
-              id: instance.id,
-              context,
-              enabled: computed(
-                () =>
-                  services.get(editorsService).viewState(instance).value
-                    .selected?.id === 'kcl.modeling'
-              ),
+            effect(() => {
+              const correspondence = services.signal(
+                kclCorrespondenceEndpointsService
+              ).value
+              if (!correspondence) return
+              const unregister = correspondence.registerModel(
+                modelingCorrespondenceEndpoint(
+                  instance.id,
+                  context,
+                  computed(
+                    () =>
+                      services.get(editorsService).viewState(instance).value
+                        .selected?.id === 'kcl.modeling'
+                  )
+                )
+              )
+              if (isErr(unregister)) reportRejection(unregister)
+              else return unregister
             })
           )
           const stopRecovery = effect(() => {
@@ -228,20 +228,6 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
         matches: '.kcl',
       }),
 
-      provide(codeEditorsExtensionValueSpec, {
-        id: 'editors.kcl-correspondence',
-        matches: ({ languageId }) => languageId === 'kcl',
-        extensions: (host) =>
-          correspondenceCodeExtension(
-            host,
-            correspondence,
-            computed(
-              () =>
-                services.get(editorsService).viewState(host.instance).value
-                  .selected?.id === 'editors.code'
-            )
-          ),
-      }),
       provide(codeEditorsExtensionValueSpec, {
         id: 'editors.kcl',
         matches: ({ languageId }) => languageId === 'kcl',

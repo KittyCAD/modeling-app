@@ -1,18 +1,16 @@
-import type { CorrespondenceBridge } from '@src/lib/kcl/correspondence/bridge'
+import type { Signal } from '@preact/signals-core'
+import type { KclSceneResource } from '@src/lib/kcl/scene'
 import type { SelectionSource } from '@src/lib/kcl/selection'
 import type { ToolbarGroupDefinition } from '@src/components/Toolbar/groups'
 import type {
   createModelingInteractions,
   ModelingInteractionDefinition,
+  ModelingInteractionSession,
 } from '@src/lib/kcl/interactions'
 import type { createModelingTools } from '@src/lib/kcl/modelingTools'
 import type { ModelingToolDefinition } from '@src/lib/kcl/modelingTools'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
-import {
-  appendValueSpec,
-  defineContract,
-  defineService,
-} from '@kittycad/registry'
+import { appendValueSpec, defineContract } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { ComponentType } from 'react'
 import type { Executor } from '@src/lib/executors/registry/contract'
@@ -22,20 +20,102 @@ import type { FileOperationsRegistryService } from '@src/registry/contracts/file
 import type { createMeasurementToolService } from '@src/registry/extensions/engineScene/measurementToolService'
 import type { createPhysicalAnalysisService } from '@src/registry/extensions/engineScene/physicalAnalysis/physicalAnalysisService'
 
+type Observed<T> = {
+  readonly [K in keyof T]: T[K] extends Signal<infer V>
+    ? ReadonlySignal<V>
+    : T[K]
+}
+
+/** Contributions borrow native operations and selection capabilities, without owning scene or runtime disposal. */
+export type ModelingSceneAccess = Pick<
+  KclSceneResource,
+  | 'sceneInfra'
+  | 'element'
+  | 'presentation'
+  | 'localHost'
+  | 'commands'
+  | 'captureScreenshot'
+  | 'preferences'
+  | 'isConnected'
+> & {
+  readonly runtime: Observed<
+    Pick<
+      KclSceneResource['runtime'],
+      | 'state'
+      | 'ast'
+      | 'fileSettings'
+      | 'sources'
+      | 'executionRevision'
+      | 'executionElapsedMs'
+      | 'executing'
+      | 'failed'
+      | 'openSketch'
+      | 'evaluateExpression'
+      | 'validate'
+      | 'waitForAllEngineModelingCommands'
+      | 'exportModel'
+    >
+  >
+  readonly selection: Pick<
+    KclSceneResource['selection'],
+    | 'model'
+    | 'selected'
+    | 'displayed'
+    | 'filter'
+    | 'pickingEnabled'
+    | 'error'
+    | 'dialogOpen'
+    | 'beginPicking'
+    | 'clear'
+    | 'setFilter'
+    | 'validate'
+  >
+}
+type InteractionControls = Observed<
+  Pick<
+    ReturnType<typeof createModelingInteractions>,
+    'definitions' | 'busy' | 'error' | 'enter' | 'close' | 'reportError'
+  >
+> & {
+  readonly active: ReadonlySignal<
+    Omit<ModelingInteractionSession, 'dispose'> | undefined
+  >
+}
+type ToolControls = Observed<
+  Pick<
+    ReturnType<typeof createModelingTools>,
+    'definitions' | 'active' | 'error' | 'opening' | 'open' | 'close'
+  >
+>
+
 /** Contributions receive their owning view explicitly; focus never changes their target. */
 export interface ModelingViewContext {
   selection: SelectionSource
-  interactions: ReturnType<typeof createModelingInteractions>
+  readonly interactions: InteractionControls
   settings: SettingsRegistryService
-  tools: ReturnType<typeof createModelingTools>
-  executor: Executor
-  session: KclSession
+  readonly tools: ToolControls
+  readonly executor: Pick<Executor, 'editor' | 'output' | 'refresh'>
+  readonly session: {
+    readonly resource: ReadonlySignal<ModelingSceneAccess | undefined>
+    readonly state: ReadonlySignal<KclSession['state']['value']>
+  }
   wasm: Promise<ModuleType>
   fileOperations: FileOperationsRegistryService | undefined
   measurement: ReturnType<typeof createMeasurementToolService>
   physicalAnalysis: ReturnType<typeof createPhysicalAnalysisService>
   toolGroups: ReadonlySignal<readonly ToolbarGroupDefinition[]>
   statusItems: ReadonlySignal<readonly ModelingStatusItem[]>
+}
+/** Host-only lifetime controls are retained by the view factory and its rendering surface. */
+export interface ModelingViewRuntime
+  extends Omit<
+    ModelingViewContext,
+    'interactions' | 'tools' | 'executor' | 'session'
+  > {
+  interactions: ReturnType<typeof createModelingInteractions>
+  tools: ReturnType<typeof createModelingTools>
+  executor: Executor
+  session: KclSession
 }
 export interface ModelingStatusItem {
   id: string
@@ -44,9 +124,6 @@ export interface ModelingStatusItem {
   Component: ComponentType<{ context: ModelingViewContext }>
 }
 export const modelingViewContract = defineContract({
-  correspondenceBridgeService: defineService<CorrespondenceBridge>(
-    'modeling-view.correspondence'
-  ),
   modelingToolGroupsValueSpec: appendValueSpec<ToolbarGroupDefinition>(
     'modeling-view.tool-groups'
   ),
@@ -61,7 +138,6 @@ export const modelingViewContract = defineContract({
   ),
 })
 export const {
-  correspondenceBridgeService,
   modelingToolGroupsValueSpec,
   modelingStatusItemsValueSpec,
   modelingToolsValueSpec,

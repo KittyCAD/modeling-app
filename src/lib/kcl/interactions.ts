@@ -84,6 +84,9 @@ export function createModelingInteractions(
     busy,
     error,
     definitions,
+    reportError: (failure: Error) => {
+      error.value = failure
+    },
     close,
     enter: async (id: string) => {
       if (disposed) return

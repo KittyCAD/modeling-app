@@ -1,7 +1,7 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { ExecState, Program } from '@src/lang/wasm'
 import type { ModelingViewContext } from '@src/lib/kcl/registry/contract'
-import type { KclSceneResource } from '@src/lib/kcl/scene'
+import type { ModelingSceneAccess as KclSceneResource } from '@src/lib/kcl/registry/contract'
 import type { SelectionModel } from '@src/lib/scene/selection'
 
 /** A tool borrows one view's successful execution. Every source edit or re-execution expires it. */

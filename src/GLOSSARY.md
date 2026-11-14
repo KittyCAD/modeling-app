@@ -249,3 +249,7 @@ A relationship between geometry and the source that defines it, generates it, co
 ## Correspondence highlighting
 
 A visual indication of geometry/source correspondence that leaves the receiving view's selection and navigation unchanged.
+
+## Selection bridge
+
+A connection between editor views through which an adapter can explain selections or offer compatible command input. Each view retains its own selection; the adapter determines the meaning of the relationship between them.

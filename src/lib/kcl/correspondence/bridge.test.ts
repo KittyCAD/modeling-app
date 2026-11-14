@@ -3,7 +3,7 @@ import { signal } from '@preact/signals-core'
 import type { Artifact } from '@src/lang/wasm'
 import { modelingTestContext } from '@src/lib/kcl/testContext'
 import { createExecutorOutput } from '@src/lib/executors/output'
-import { createCorrespondenceBridge } from '@src/lib/kcl/correspondence/bridge'
+import { testCorrespondenceBridge as createCorrespondenceBridge } from '@src/lib/kcl/correspondence/testBridge'
 import type { SceneSelection } from '@src/lib/scene/selection'
 
 function fixture() {

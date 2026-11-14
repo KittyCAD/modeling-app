@@ -1,9 +1,11 @@
+import correspondenceExtension from '@src/lib/kclCorrespondence/registry'
 import '@src/lib/projectSession/next/testFeature'
 import {
   defineRegistryItem,
   provide,
   provideService,
   Registry,
+  Slot,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import { emptyExecState } from '@src/lang/wasm'
@@ -73,10 +75,12 @@ it.each([false, true])(
     settings.modeling.highlightEdges.user = false
     settings.modeling.useLocalRenderer.user = local
     const registry = new Registry()
+    const correspondence = new Slot()
     registry.configure([
       editorsExtension,
       executorsExtension,
       kclExtension,
+      correspondence.of(correspondenceExtension),
       defineRegistryItem({
         providesServices: [
           provideService(settingsService, {
@@ -134,6 +138,24 @@ it.each([false, true])(
           (resource) =>
             vi.mocked(resource.runtime.execute).mock.calls[0][0].src ===
             'main.kcl'
+        )
+      ).toBe(true)
+      const executorIds = registry
+        .get(executorsService)
+        .executors.peek()
+        .map((executor) => executor.id)
+      await act(async () => {
+        registry.reconfigure(correspondence, [])
+      })
+      expect(
+        registry
+          .get(executorsService)
+          .executors.peek()
+          .map((executor) => executor.id)
+      ).toEqual(executorIds)
+      expect(
+        resources.every(
+          (resource) => !vi.mocked(resource.dispose).mock.calls.length
         )
       ).toBe(true)
       const changes = [

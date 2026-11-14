@@ -29,6 +29,9 @@ export interface ArtifactCorrespondence {
 export interface CorrespondencePolicy {
   readonly relations: readonly CorrespondenceRelation[]
 }
+// TODO: Consider a registry value spec for correspondence policies. For example, a learning-oriented
+// Code view could request full provenance while a feature inspector requests only the generating operation.
+// Keep policy data separate from execution-scoped graph queries and command-input acceptance rules.
 export const explanationPolicy: CorrespondencePolicy = {
   relations: ['defined-by', 'generated-by', 'derived-from', 'imported-through'],
 }

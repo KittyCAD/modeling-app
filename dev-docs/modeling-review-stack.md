@@ -140,6 +140,13 @@ Stack locally after `codex/review-compact-status-bars`:
    correspondence are documented TODOs; selection promotion is available but
    unused by UI.
 
+4. `codex/review-editor-selection-bridges`: generic registry-composed endpoint
+   links and picking destinations, an independently composed KCL correspondence
+   adapter, scoped provider handles, and narrower contribution-facing lifecycle
+   authority. This completes the four-branch fifth wave. Also records the current
+   streaming-renderer limitation for a future shared Rendering API with distinct
+   arbitrary entity-styling groups, colors, and opacity.
+
 The legacy `/file/:id` selection/navigation behavior remains unchanged. In the
 new project shell, correspondence highlighting does not move a cursor, scroll a
 pane, or alter the receiving view's selection. Linked Code picking can update

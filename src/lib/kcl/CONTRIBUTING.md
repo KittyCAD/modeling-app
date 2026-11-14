@@ -157,10 +157,15 @@ TODOs rather than guessed correspondences. Module IDs are local to an execution.
 
 ### Connecting Code and Modeling views
 
-The KCL extension registers `correspondenceCodeExtension` on each Code surface
-and a Modeling endpoint for each view instance. `correspondenceBridgeService`
-connects them. Views of the same backing editor link automatically; other links
-are explicit `link(codeViewId, modelingViewId)` calls with returned cleanup.
+The independently discovered `kclCorrespondence` registry item installs the
+`kcl.correspondence` factory, which registers
+`correspondenceCodeExtension` on each Code surface. The KCL view factory registers
+a Modeling adapter while `kclCorrespondenceEndpointsService` is available.
+Withdrawing correspondence removes its adapters without closing Modeling views
+or their executors. Generic
+`editorSelectionLinksService` connects their view instances under the
+`kcl.correspondence` bridge definition. Views of the same backing editor link automatically; other links
+are explicit `link('kcl.correspondence', codeViewId, modelingViewId)` calls with returned cleanup.
 Links support multiple endpoints in either direction. Imported files require an
 explicit link and exact bytes from the target execution's source snapshot;
 module IDs are resolved through that execution's filenames, never compared
@@ -176,9 +181,9 @@ Intentional Code selection (`select` transactions) can offer a direct,
 unambiguous candidate to an active picking argument. Programmatic selection,
 source edits, and decoration updates do not offer picks. A single linked
 Modeling view is the default destination. With several links, the caller must
-use `setPickingTarget(codeViewId, modelingViewId)`; global focus and the order
+use `setPickingTarget('kcl.correspondence', codeViewId, modelingViewId)`; global focus and the order
 of open dialogs never choose a destination. Unsupported/ambiguous mappings
-remain explanatory highlights and expose an error through the bridge service.
+remain explanatory highlights and expose an error through `kclCorrespondenceStatusService`.
 
 `SceneSelectionController.promoteCorrespondence()` is a documented programmatic
 operation, tested but deliberately unused by UI. It refuses promotion while a
@@ -190,3 +195,43 @@ submission, link/destination controls, and native sketch correspondence. Sketch
 selection already participates in `context.selection`, but solver source deltas
 need an execution-qualified correspondence endpoint before they can safely
 participate in the Code bridge. Do not interpret solver IDs as engine artifacts.
+
+
+### Bridge ownership and extensibility
+
+`editors.selection-bridges` is domain-independent. Adapters contribute endpoint
+kind pairs through `editorSelectionBridgeDefinitions`; it owns connections and
+picking destinations, not selection payloads or mapping semantics. KCL drawing
+mode can contribute another pair with its own adapter, as can a non-KCL editor.
+`editorSelectionEndpointsService` grants registration only;
+`editorSelectionLinksService` grants connection controls only. Neither exposes
+owner disposal. Register cleanup with the view's lifetime host.
+
+KCL Code providers receive an endpoint-scoped handle (`select`, `invalidate`,
+`dispose`), so they cannot submit intent on behalf of another endpoint. Modeling
+providers lend the bridge execution snapshots, selection reads, and validated
+projection/picking callbacks; the bridge receives no native scene or executor
+lifecycle controls. The host retains the full `ModelingViewRuntime`, while
+contributions receive `ModelingViewContext` with read-only controller state and
+borrowed native operations. Disposal, model-identity mutation, and correspondence
+projection are excluded from the contribution-facing types. Native operations
+are still explicit capabilities; these types are ownership boundaries, not a
+security sandbox.
+
+Policy registry contributions remain a future extension idea, marked beside
+`explanationPolicy`: a learning-oriented Code view could request full provenance
+while a feature inspector requests only the generating operation.
+
+The current streaming-renderer limitation and shared Rendering API requirements
+are recorded in [the scene guide](../scene/README.md#rendering-api-limitation-arbitrary-entity-styling).
+
+### Correspondence smoke test
+
+In the new project shell, open a saved KCL file with an extruded solid. Keep its
+first view in Modeling. Use Open editor for the same file again (reusing the
+buffer), and set the second view to Code. Select an extruded wall in Modeling,
+then switch tabs to see source decorations without cursor movement. Select a
+geometry-producing expression in Code, then return to Modeling to see projected
+highlights without changing ordinary selection. Independent buffers containing
+the same text do not auto-link. Switching a single view between modes is not a
+parallel-view test. Native sketch/solver-region correspondence remains a TODO.
