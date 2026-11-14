@@ -232,22 +232,29 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shardIndex: [1, 2]
-        shardTotal: [2]
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
         config:
           - os: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
-            label: ubuntu
-            test_script: test:e2e:web
+            label: chrome
+            test_command: npm run test:e2e:web
             playwright_cache_path: ~/.cache/ms-playwright
-          - os: namespace-profile-macos-8-cores
-            label: macos
-            test_script: test:e2e:web:webkit
-            playwright_cache_path: ~/Library/Caches/ms-playwright
-            optional: true # WebKit coverage is non-blocking for external callers
-          - os: namespace-profile-windows-8-cores
-            label: windows
-            test_script: test:e2e:web
-            playwright_cache_path: ~/AppData/Local/ms-playwright
+        include:
+          - shardIndex: 1
+            shardTotal: 1
+            config:
+              os: namespace-profile-ubuntu-8-cores
+              label: firefox
+              test_command: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:web:firefox
+              playwright_cache_path: ~/.cache/ms-playwright
+          - shardIndex: 1
+            shardTotal: 1
+            config:
+              os: namespace-profile-macos-8-cores
+              label: webkit
+              test_command: npm run test:e2e:web:webkit
+              playwright_cache_path: ~/Library/Caches/ms-playwright
+              optional: true # WebKit coverage is non-blocking for external callers
 
     steps:
       - uses: actions/create-github-app-token@v3
@@ -311,7 +318,7 @@ jobs:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
           OS_NAME: ${{ env.OS_NAME }}
 
-      - run: npm run ${{ matrix.config.test_script }} -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+      - run: ${{ matrix.config.test_command }} -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
@@ -355,8 +362,8 @@ jobs:
       matrix:
         os:
           - namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
-        shardIndex: [1, 2, 3, 4, 5, 6, 7, 8]
-        shardTotal: [8]
+        shardIndex: [1, 2, 3, 4, 5, 6, 7]
+        shardTotal: [7]
         playwright_cache_path:
           - ~/.cache/ms-playwright
         include:
