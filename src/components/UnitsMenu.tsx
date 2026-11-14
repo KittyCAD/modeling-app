@@ -1,14 +1,11 @@
-import { Popover } from '@headlessui/react'
+import { UnitsMenuView } from '@src/components/UnitsMenuView'
 import { use, useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
-import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
-import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { changeDefaultUnits } from '@src/lang/wasm'
 import { useSingletons } from '@src/lib/boot'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
-import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { OrthographicCamera } from 'three'
 
@@ -76,70 +73,23 @@ export function UnitsMenu() {
   ])
 
   return (
-    <Popover className="relative pointer-events-auto flex">
-      {(popover) => (
-        <>
-          <Popover.Button
-            data-testid="units-menu"
-            className={`${defaultStatusBarItemClassNames} gap-2 m-0`}
-          >
-            <div
-              className="w-4 h-[1px] bg-5 relative"
-              style={{ width: inSketchMode ? `${rulerWidth}px` : '' }}
-            >
-              <div className="absolute w-[1px] h-[1em] bg-5 left-0 top-1/2 -translate-y-1/2"></div>
-              <div className="absolute w-[1px] h-[1em] bg-5 right-0 top-1/2 -translate-y-1/2"></div>
-            </div>
-            <Tooltip hoverOnly={true} position="top-right">
-              Default units for current file
-            </Tooltip>
-            {inSketchMode
-              ? `${rulerLabelValue > 10000 || rulerLabelValue < 0.0001 ? rulerLabelValue.toExponential() : rulerLabelValue.toString()}${currentUnit}`
-              : currentUnit}
-          </Popover.Button>
-          <Popover.Panel
-            className={`z-10 absolute bottom-full right-0 mb-1 p-1 w-52 bg-chalkboard-10 dark:bg-chalkboard-90
-          border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
-          shadow-lg`}
-          >
-            <ul className="flex flex-col items-stretch content-stretch p-0.5">
-              {baseUnitsUnion.map((unit) => (
-                <li key={unit} className="contents">
-                  <button
-                    className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
-                    onClick={() => {
-                      const newCode = changeDefaultUnits(
-                        kclManager.code,
-                        unit,
-                        wasmInstance
-                      )
-                      if (err(newCode)) {
-                        toast.error(
-                          `Failed to set per-file units: ${newCode.message}`
-                        )
-                      } else {
-                        kclManager.updateCodeEditor(newCode, {
-                          shouldExecute: true,
-                          shouldResetCamera: true,
-                        })
-                        toast.success(`Updated per-file units to ${unit}.`)
-                      }
-                      popover.close()
-                    }}
-                  >
-                    <span className="flex-1">{baseUnitLabels[unit]}</span>
-                    {unit ===
-                      (fileSettings.defaultLengthUnit ??
-                        DEFAULT_DEFAULT_LENGTH_UNIT) && (
-                      <span className="text-chalkboard-60">current</span>
-                    )}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </Popover.Panel>
-        </>
-      )}
-    </Popover>
+    <UnitsMenuView
+      currentUnit={currentUnit}
+      inSketchMode={inSketchMode}
+      rulerWidth={rulerWidth}
+      rulerLabelValue={rulerLabelValue}
+      onUnitChange={(unit) => {
+        const newCode = changeDefaultUnits(kclManager.code, unit, wasmInstance)
+        if (err(newCode)) {
+          toast.error(`Failed to set per-file units: ${newCode.message}`)
+        } else {
+          kclManager.updateCodeEditor(newCode, {
+            shouldExecute: true,
+            shouldResetCamera: true,
+          })
+          toast.success(`Updated per-file units to ${unit}.`)
+        }
+      }}
+    />
   )
 }
