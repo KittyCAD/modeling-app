@@ -1231,6 +1231,10 @@ describe('project system', () => {
         kclManager.engineCommandManager,
         'sendSceneCommand'
       ).mockResolvedValue({} as never)
+      vi.spyOn(
+        kclManager.engineCommandManager,
+        'setViewportRendering'
+      ).mockImplementation(() => {})
       kclManager.engineCommandManager.connection = {
         connected: true,
         disconnectAll: () => {},
