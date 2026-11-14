@@ -709,9 +709,9 @@ it('drags a multi-selection together without publishing preview source', async (
   )
 })
 
-it.each(['cancel', 'escape', 'external edit'] as const)(
+it.each(['release', 'cancel', 'escape', 'external edit'] as const)(
   'settles a pending drag preview safely on %s',
-  async (action: 'release' | 'cancel' | 'escape' | 'external edit') => {
+  async (action) => {
     const view = await movingFixture(
       '@settings(kclVersion = 3.0)\nprofile = sketch(on = XY) {\n l = line(start = [var 10mm, var 10mm], end = [var 40mm, var 10mm])\n}'
     )
@@ -760,6 +760,29 @@ it.each(['cancel', 'escape', 'external edit'] as const)(
     }
   }
 )
+it('keeps valid source after a rejected preview solve and can drag again', async () => {
+  const view = await movingFixture(
+    '@settings(kclVersion = 3.0)\nprofile = sketch(on = XY) {\n l = line(start = [var 10mm, var 10mm], end = [var 40mm, var 10mm])\n}'
+  )
+  const before = view.editor.contents.peek()
+  const log = vi.spyOn(console, 'error').mockImplementation(() => {})
+  try {
+    view.edit.mockRejectedValueOnce(new Error('Preview solve rejected'))
+    await view.start([10, 10])
+    await view.preview([15, 20])
+    await view.finish([15, 20])
+    expect(view.editor.contents.peek()).toBe(before)
+    expect(view.context.interactions.active.peek()?.error.peek()?.message).toBe(
+      'Preview solve rejected'
+    )
+    await view.start([10, 10])
+    await view.preview([15, 20])
+    await view.finish([15, 20])
+    expect(view.editor.contents.peek()).not.toBe(before)
+  } finally {
+    log.mockRestore()
+  }
+})
 it('does not drag a point constrained to the sketch origin', async () => {
   const view = await movingFixture(
     '@settings(kclVersion = 3.0)\nprofile = sketch(on = XY) {\n l = line(start = [var 0mm, var 0mm], end = [var 40mm, var 0mm])\n coincident([l.start, ORIGIN])\n}'

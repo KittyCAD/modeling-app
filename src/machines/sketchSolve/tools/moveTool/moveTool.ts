@@ -1725,6 +1725,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
 export function createMoveToolInteraction(host: MoveToolHost) {
   let closed = false
   let finishing = Promise.resolve()
+  let releasing = false
+  let previewFailed = false
   const createGetSet = <T>(initial: T): [() => T, (a: T) => void] => {
     let value: T = initial
     return [
@@ -1738,7 +1740,9 @@ export function createMoveToolInteraction(host: MoveToolHost) {
   const [getIsSolveInProgress, setIsSolveInProgress] = createGetSet(false)
   const [readIsDragActive, setIsDragActive] = createGetSet(false)
   const getIsDragActive = () =>
-    !closed && host.isCurrent() && readIsDragActive()
+    (!closed || releasing) &&
+    (host.isCurrent() || releasing) &&
+    readIsDragActive()
   const [getLastSuccessfulDragFromPoint, setLastSuccessfulDragFromPoint] =
     createGetSet<Vector2>(new Vector2())
   const [getDraggedEntityId, setDraggedEntityId] = createGetSet<number | null>(
@@ -1981,6 +1985,21 @@ export function createMoveToolInteraction(host: MoveToolHost) {
 
           clearDragSnappingState()
           sendHoveredState(null)
+          if (previewFailed && !getLastGoodPreview()) {
+            const checkpoint = getPreDragCheckpointId()
+            const restored =
+              checkpoint === null
+                ? getDragStartOutcome()
+                : await host.mutations.restoreSketchCheckpoint(checkpoint)
+            if (restored)
+              host.outcome({
+                sourceDelta: restored.kclSource,
+                sceneGraphDelta: restored.sceneGraphDelta,
+                commit: false,
+              })
+            return
+          }
+
           const snapshot = host.getState()
           const currentSceneGraphDelta =
             snapshot.sketchExecOutcome?.sceneGraphDelta
@@ -2478,10 +2497,13 @@ export function createMoveToolInteraction(host: MoveToolHost) {
       onUpdateDragSnapping: updateDragSnappingState,
       onPreviewSolveStarted: markPreviewSolveStarted,
       onPreviewSolveSettled: markPreviewSolveSettled,
-      onError: host.onError,
+      onError: (cause) => {
+        previewFailed = true
+        host.onError(cause)
+      },
     }),
     onMouseDownSelection: () => {
-      if (closed || !host.isCurrent()) return false
+      if (closed || releasing || !host.isCurrent()) return false
       setDraggedEntityId(null)
       const snapshot = host.getState()
       const planeIntersectPoint = host.sceneInfra.getPlaneIntersectPoint()
@@ -2746,27 +2768,40 @@ export function createMoveToolInteraction(host: MoveToolHost) {
   }
   const dragEnd = callbacks.onDragEnd
   callbacks.onDragEnd = (args) => {
+    if (releasing) return finishing
     if (closed || !host.isCurrent()) return
-    finishing = Promise.resolve(dragEnd?.(args))
+    releasing = true
+    // Let the current preview publish its valid candidate before invalidating the drag session on release.
+    finishing = (async () => {
+      try {
+        await getInFlightPreviewSolve()?.promise
+        await dragEnd?.(args)
+      } finally {
+        releasing = false
+      }
+    })()
     return finishing
   }
   const drag = callbacks.onDrag
   callbacks.onDrag = (args) => {
-    if (!closed) return drag?.(args)
+    if (!closed && !releasing) return drag?.(args)
   }
   const dragStart = callbacks.onDragStart
   callbacks.onDragStart = (args) => {
-    if (!closed) return dragStart?.(args)
+    if (!closed && !releasing) {
+      previewFailed = false
+      return dragStart?.(args)
+    }
   }
   host.sceneInfra.setCallbacks(callbacks)
   let disposing: Promise<void> | undefined
   return {
-    isDragging: () => readIsDragActive(),
+    isDragging: () => readIsDragActive() || releasing,
     dispose: () => {
       if (disposing) return disposing
-      const abandoned = readIsDragActive()
+      const abandoned = readIsDragActive() && !releasing
       closed = true
-      invalidateDragSession()
+      if (!releasing) invalidateDragSession()
       host.sceneInfra.resetMouseListeners()
       removeSelectionBox(selectionBoxState)
       clearDragSnappingState()

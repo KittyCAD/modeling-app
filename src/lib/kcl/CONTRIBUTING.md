@@ -116,5 +116,5 @@ Escape, tool switching, source edits, and scene teardown while native work is
 pending. Preserve legacy behavior in extraction PRs; isolate deliberate fixes
 with focused regression tests.
 
-Pending-preview release and first-preview failure follow the existing legacy
-flow in this consumer PR. The following gesture-fix PR isolates their corrections.
+Gesture settlement waits for the pending valid preview before committing. A first
+preview failure restores the baseline without publishing a formatting-only edit.
