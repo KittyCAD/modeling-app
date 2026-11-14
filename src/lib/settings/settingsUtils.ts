@@ -1,3 +1,4 @@
+import env from '@src/env'
 import type { Feature } from '@kittycad/lib'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
@@ -13,6 +14,7 @@ import {
 } from '@src/lib/cameraControls'
 import {
   getInitialDefaultDir,
+  mkdirOrNOOP,
   overwriteProjectTomlWithNewSettings,
   readAppSettingsFile,
   readProjectSettingsFile,
@@ -1033,6 +1035,8 @@ export async function loadAndValidateSettings(
     extensionSettings
   )
   const initialDefaultDir = await getInitialDefaultDir()
+  if (env().VITE_ZOO_API_TOKEN === 'localhost')
+    await mkdirOrNOOP(fileOperations, initialDefaultDir)
   const legacyProjectDirectory =
     typeof appSettings.app?.projectDirectory === 'string'
       ? appSettings.app.projectDirectory

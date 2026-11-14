@@ -217,6 +217,7 @@ export const userFeaturesMachine = setup({
       FetchUserFeaturesResult,
       FetchUserFeaturesInput
     >(async ({ input }) => {
+      if (input.token === 'localhost') return { featureIds: new Set<Feature>() }
       const client = createKCClient(input.token)
       const result = await kcCall(() => users.user_features_get({ client }))
       if (isErr(result)) {

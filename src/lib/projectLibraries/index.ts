@@ -1,3 +1,4 @@
+import env from '@src/env'
 import { PROJECT_FOLDER } from '@src/lib/constants'
 import { hashString } from '@src/lib/stringUtils'
 import { isArray } from '@src/lib/utils'
@@ -456,11 +457,16 @@ export function projectLibrariesFromSettings(
 ): ProjectLibrary[] {
   const defaultProjectDirectory =
     getDefaultDirectoryProjectLibraryPath(libraries)
-  const configured = libraries.some(
-    (library) => library.type === CLOUD_PROJECT_LIBRARY_TYPE
-  )
-    ? libraries
-    : [...libraries, getDefaultCloudProjectLibrarySetting()]
+  let configured = libraries
+  if (env().VITE_ZOO_API_TOKEN === 'localhost') {
+    configured = libraries.filter(
+      (library) => library.type !== CLOUD_PROJECT_LIBRARY_TYPE
+    )
+  } else if (
+    !libraries.some((library) => library.type === CLOUD_PROJECT_LIBRARY_TYPE)
+  ) {
+    configured = [...libraries, getDefaultCloudProjectLibrarySetting()]
+  }
   return configured.map((library, index) =>
     projectLibraryFromSetting(library, index, {
       defaultProjectDirectory,

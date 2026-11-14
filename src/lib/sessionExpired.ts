@@ -1,3 +1,4 @@
+import env from '@src/env'
 import { signal } from '@preact/signals-core'
 
 export type SessionExpiredSource =
@@ -16,6 +17,7 @@ export const sessionExpiredNotice = signal<SessionExpiredNotice | undefined>(
 )
 
 export function notifySessionExpired(source: SessionExpiredSource = 'unknown') {
+  if (env().VITE_ZOO_API_TOKEN === 'localhost') return
   const notice: SessionExpiredNotice = {
     source,
     detectedAt: Date.now(),

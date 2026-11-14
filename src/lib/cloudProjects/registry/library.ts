@@ -1,3 +1,4 @@
+import env from '@src/env'
 import fsZds from '@src/lib/fs-zds'
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 
@@ -51,6 +52,8 @@ import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/
 
 /** Cloud library entries come from the server; configured legacy disk paths are never opened. */
 export default defineRegistryItemFactory((ctx) => {
+  if (env().VITE_ZOO_API_TOKEN === 'localhost')
+    return { id: 'cloud-projects-library' }
   const cloud = () => ctx.services.get(cloudStorageService)
   const operations = () => ctx.services.get(fileOperationsService)
   const wasm = () =>
