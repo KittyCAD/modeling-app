@@ -1,7 +1,7 @@
 import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
 import { createCloudProjectsServices } from '@src/lib/cloudProjects/service'
 import fsZds from '@src/lib/fs-zds'
-import { authService } from '@src/registry/contracts/auth'
+import { observations as authObservations } from '@src/registry/contracts/auth'
 import { fileOperationsMountsFacet } from '@src/registry/contracts/fileOperations'
 import {
   extension as defineExtension,
@@ -10,14 +10,15 @@ import {
   type Extension,
 } from 'plankton'
 export const cloudProjectsExtension: Extension = defineExtension({
+  dependencies: { auth: authObservations },
   key: 'cloud-projects-storage',
-  create: (_dependencies, ctx) => {
+  create: ({ auth: authInputs }) => {
     const services = createCloudProjectsServices(fsZds, () => ({
       enabled: true,
-      token: ctx.optional(authService)?.token.peek(),
+      token: authInputs.authService.current.value?.token.peek(),
       accountId:
-        ctx.optional(authService)?.user.peek()?.id ||
-        ctx.optional(authService)?.token.peek(),
+        authInputs.authService.current.value?.user.peek()?.id ||
+        authInputs.authService.current.value?.token.peek(),
     }))
     return {
       items: [

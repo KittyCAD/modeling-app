@@ -1,3 +1,4 @@
+import { inputs, observeService } from '@src/registry/inputs'
 import { contract, service } from 'plankton'
 export interface ViewportScreenshotService {
   /** A PNG data URL of the modeling viewport, or '' when it is not ready. */
@@ -9,3 +10,7 @@ export const viewportScreenshotContract = contract({
   ),
 })
 export const { viewportScreenshotService } = viewportScreenshotContract
+
+export const observations = inputs({
+  viewportScreenshotService: observeService(viewportScreenshotService),
+})

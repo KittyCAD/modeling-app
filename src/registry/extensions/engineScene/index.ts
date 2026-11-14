@@ -12,18 +12,18 @@ import {
   engineSceneStreamClassNamesFacet,
   engineSceneViewExtensionsFacet,
 } from '@src/registry/contracts/engineScene'
-import { fileOperationsService } from '@src/registry/contracts/fileOperations'
+import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
 import {
   type KeymapItem,
   provideKeymapItem,
 } from '@src/registry/contracts/keymap'
-import { projectSession } from '@src/registry/contracts/projectSession'
+import { observations as projectSessionObservations } from '@src/registry/contracts/projectSession'
 import {
   nullableStatusBarItem,
   statusBarGlobalItemsFacet,
   statusBarLocalItemsFacet,
 } from '@src/registry/contracts/statusBar'
-import { viewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
+import { observations as viewportScreenshotObservations } from '@src/registry/contracts/viewportScreenshot'
 import {
   extension as defineExtension,
   contribute,
@@ -272,9 +272,20 @@ const EngineSceneScreenshotStatusBarItem = () =>
  * the scene and the default view chrome rendered around the engine stream.
  */
 const engineSceneExtension = defineExtension({
+  dependencies: {
+    projectSession: projectSessionObservations,
+    fileOperations: fileOperationsObservations,
+    viewportScreenshot: viewportScreenshotObservations,
+  },
   key: 'engine-scene-extension',
-  create: (_dependencies, ctx) => {
-    const session = computed(() => ctx.optional(projectSession))
+  create: ({
+    projectSession: projectSessionInputs,
+    fileOperations: fileOperationsInputs,
+    viewportScreenshot: viewportScreenshotInputs,
+  }) => {
+    const session = computed(
+      () => projectSessionInputs.projectSession.current.value
+    )
     const executionService = computed(
       () => session.value?.executingEditor.value
     )
@@ -373,8 +384,8 @@ const engineSceneExtension = defineExtension({
         provideCommand(
           captureScreenshotCommand(() =>
             saveViewportScreenshot(
-              ctx.required(fileOperationsService),
-              ctx.required(viewportScreenshotService)
+              fileOperationsInputs.fileOperationsService.required(),
+              viewportScreenshotInputs.viewportScreenshotService.required()
             )
           )
         ),

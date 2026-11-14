@@ -10,7 +10,7 @@ import {
   layoutService,
   layoutUserFeatureTransformationsFacet,
 } from '@src/lib/layout/registry/contract'
-import layoutRegistryItem from '@src/lib/layout/registry/extension'
+import { createLayoutExtension } from '@src/lib/layout/registry/extension'
 import type { Layout } from '@src/lib/layout/types'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
 import {
@@ -27,7 +27,13 @@ import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { settingsService } from '@src/registry/contracts/settings'
 import type { UserFeaturesRegistryService } from '@src/registry/contracts/userFeatures'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
-import { contribute, type InputOf, provide, Registry } from 'plankton'
+import {
+  extension as defineExtension,
+  contribute,
+  type InputOf,
+  provide,
+  Registry,
+} from 'plankton'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const playwrightRuntime: RuntimeInfo = {
@@ -95,6 +101,13 @@ function createRuntimeService(runtimeInfo = playwrightRuntime) {
     get: () => current.value,
     refresh: () => current.value,
   }
+}
+function layoutForRuntime(runtimeInfo = playwrightRuntime) {
+  return createLayoutExtension(
+    defineExtension({
+      create: () => ({ exports: createRuntimeService(runtimeInfo) }),
+    })
+  )
 }
 function createUserFeaturesService(
   featureIds: readonly Feature[] = []
@@ -192,11 +205,10 @@ describe('layout extension', () => {
     registry = new Registry()
     await registry.configure([
       [
-        provide(runtimeService, createRuntimeService()),
         provide(settingsService, service),
         provide(userFeaturesService, createUserFeaturesService()),
       ],
-      layoutRegistryItem,
+      layoutForRuntime(),
     ])
     const layout = registry.required(layoutService)
     const toolbar = () =>
@@ -302,7 +314,6 @@ describe('layout extension', () => {
     registry = new Registry()
     await registry.configure([
       [
-        provide(runtimeService, createRuntimeService()),
         provide(
           settingsService,
           createSettingsService({
@@ -311,7 +322,7 @@ describe('layout extension', () => {
         ),
         provide(userFeaturesService, createUserFeaturesService()),
       ],
-      layoutRegistryItem,
+      layoutForRuntime(),
     ])
     const layout = registry.required(layoutService)
     const initial = structuredClone(layout.get())
@@ -350,10 +361,9 @@ describe('layout extension', () => {
   it('provides the app layout service from runtime, settings, and feature services', async () => {
     registry = new Registry()
     await registry.configure([
-      [provide(runtimeService, createRuntimeService())],
       [provide(settingsService, createSettingsService())],
       [provide(userFeaturesService, createUserFeaturesService())],
-      layoutRegistryItem,
+      layoutForRuntime(),
     ])
     const layout = registry.required(layoutService)
     expect(layout.get()).toEqual(playwrightLayoutConfig)
@@ -374,7 +384,6 @@ describe('layout extension', () => {
     const testUserFeaturesService = createUserFeaturesService()
     registry = new Registry()
     await registry.configure([
-      [provide(runtimeService, createRuntimeService(webRuntime))],
       [provide(settingsService, testSettingsService)],
       [provide(userFeaturesService, testUserFeaturesService)],
       [
@@ -388,7 +397,7 @@ describe('layout extension', () => {
             }) satisfies InputOf<typeof layoutUserFeatureTransformationsFacet>
         ),
       ],
-      layoutRegistryItem,
+      layoutForRuntime(webRuntime),
     ])
     const layout = registry.required(layoutService)
     testSettingsService.resolve()
@@ -397,5 +406,18 @@ describe('layout extension', () => {
     expect(hasFeatureControlledPane(layout.get())).toBe(true)
     testUserFeaturesService.setFeatureIds([])
     expect(hasFeatureControlledPane(layout.get())).toBe(false)
+  })
+  it('uses its injected runtime when another runtime is published', async () => {
+    registry = new Registry()
+    await registry.configure([
+      provide(runtimeService, createRuntimeService(webRuntime)),
+      provide(settingsService, createSettingsService()),
+      provide(userFeaturesService, createUserFeaturesService()),
+      layoutForRuntime(playwrightRuntime),
+    ])
+    expect(registry.required(layoutService).get()).toEqual(
+      playwrightLayoutConfig
+    )
+    expect(registry.required(runtimeService).get().isPlaywright).toBe(false)
   })
 })

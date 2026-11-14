@@ -1,3 +1,4 @@
+import { inputs, observe } from '@src/registry/inputs'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { contract, contribute, Facet, type Source } from 'plankton'
 export const wasmContract = contract({
@@ -13,3 +14,7 @@ export function provideWasmPromise(wasmPromise: Source<Promise<ModuleType>>) {
     key: 'wasm-promise',
   })
 }
+
+export const observations = inputs({
+  wasmPromiseFacet: observe(wasmPromiseFacet),
+})

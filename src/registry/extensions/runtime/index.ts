@@ -64,6 +64,7 @@ export const runtimeExtension = defineExtension({
     }
 
     return {
+      exports: serviceImpl,
       items: [provide(runtimeService, serviceImpl)],
       dispose: () => {
         stopEnvironmentSync()

@@ -12,8 +12,10 @@ export const machineManagerExtension = defineExtension({
           })
         : new MachineManager()
 
+    const service = { manager: machineManager }
     return {
-      items: [provide(machineManagerService, { manager: machineManager })],
+      exports: service,
+      items: [provide(machineManagerService, service)],
     }
   },
 }) satisfies Extension

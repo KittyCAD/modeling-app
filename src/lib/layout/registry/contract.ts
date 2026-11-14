@@ -1,3 +1,4 @@
+import { inputs, observeService, observe } from '@src/registry/inputs'
 import type { Feature } from '@kittycad/lib'
 import type {
   ActionLibrary,
@@ -60,3 +61,11 @@ export const {
   layoutContributionsFacet,
   layoutUserFeatureTransformationsFacet,
 } = layoutContract
+
+export const observations = inputs({
+  layoutContributionsFacet: observe(layoutContributionsFacet),
+  layoutUserFeatureTransformationsFacet: observe(
+    layoutUserFeatureTransformationsFacet
+  ),
+  layoutService: observeService(layoutService),
+})

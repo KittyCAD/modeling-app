@@ -1,11 +1,12 @@
 import { type Debugger, EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import type RustContext from '@src/lib/rustContext'
-import { rustContextService } from '@src/lib/rustContext/registry/contract'
+import { observations as rustContextObservations } from '@src/lib/rustContext/registry/contract'
 import { reportRejection } from '@src/lib/trap'
 import { engineStreamZoomToFit } from '@src/lib/utils'
-import { engineConnectionService } from '@src/registry/contracts/engineConnection'
+
 import { extension as defineExtension, type Extension } from 'plankton'
+import { observations as engineConnectionObservations } from '@src/lib/engineConnection/registry/contract'
 
 declare global {
   interface Window {
@@ -69,8 +70,15 @@ function exposeGlobals(target: Window, properties: PropertyDescriptorMap) {
   }
 }
 export default defineExtension({
+  dependencies: {
+    engineConnection: engineConnectionObservations,
+    rustContext: rustContextObservations,
+  },
   key: 'debug',
-  create: (_dependencies, ctx) => {
+  create: ({
+    engineConnection: engineConnectionInputs,
+    rustContext: rustContextInputs,
+  }) => {
     if (typeof window === 'undefined')
       return {
         items: [],
@@ -105,11 +113,12 @@ export default defineExtension({
     const restoreGlobals = exposeGlobals(target, {
       engineCommandManager: {
         configurable: true,
-        get: () => ctx.required(engineConnectionService).manager,
+        get: () =>
+          engineConnectionInputs.engineConnectionService.required().manager,
       },
       rustContext: {
         configurable: true,
-        get: () => ctx.required(rustContextService).context,
+        get: () => rustContextInputs.rustContextService.required().context,
       },
       engineDebugger: { configurable: true, value: EngineDebugger },
       enableMousePositionLogs: {
@@ -141,7 +150,8 @@ export default defineExtension({
         value: () => {
           if (disposed) return
           engineStreamZoomToFit({
-            engineCommandManager: ctx.required(engineConnectionService).manager,
+            engineCommandManager:
+              engineConnectionInputs.engineConnectionService.required().manager,
             padding: 0.2,
           }).catch(reportRejection)
         },

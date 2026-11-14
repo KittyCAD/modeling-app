@@ -8,19 +8,16 @@ import {
   type SettingsActorType,
   settingsMachine,
 } from '@src/machines/settingsMachine'
-import { commandSystemService } from '@src/registry/contracts/commands'
-import { fileOperationsService } from '@src/registry/contracts/fileOperations'
+import { observations as commandsObservations } from '@src/registry/contracts/commands'
+import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
+import { observations as projectLibrariesObservations } from '@src/registry/contracts/projectLibraries'
 import {
-  projectLibrarySettingDefaultPoliciesFacet,
-  projectLibrarySettingDefaultsFacet,
-} from '@src/registry/contracts/projectLibraries'
-import {
+  observations as settingsObservations,
   type SettingsRegistryService,
-  settingsFacet,
   settingsService,
 } from '@src/registry/contracts/settings'
 import { statusBarGlobalItemsFacet } from '@src/registry/contracts/statusBar'
-import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
+import { observations as wasmObservations } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
 import {
   extension as defineExtension,
@@ -31,8 +28,21 @@ import {
 } from 'plankton'
 import { createActor } from 'xstate'
 export const settingsExtension = defineExtension({
+  dependencies: {
+    wasm: wasmObservations,
+    commands: commandsObservations,
+    settings: settingsObservations,
+    projectLibraries: projectLibrariesObservations,
+    fileOperations: fileOperationsObservations,
+  },
   key: 'settings-extension',
-  create: (_dependencies, ctx) => {
+  create: ({
+    wasm: wasmInputs,
+    commands: commandsInputs,
+    settings: settingsInputs,
+    projectLibraries: projectLibrariesInputs,
+    fileOperations: fileOperationsInputs,
+  }) => {
     const settingsSignal = signal<SettingsType>(createSettings())
     let settingsActor: SettingsActorType | undefined
     let settingsSubscription:
@@ -41,20 +51,18 @@ export const settingsExtension = defineExtension({
         }
       | undefined
     const getWasmPromise = () =>
-      ctx.observe(wasmPromiseFacet).value ??
+      wasmInputs.wasmPromiseFacet.value ??
       Promise.reject(new Error('Missing WASM promise registry value.'))
     const ensureActor = () => {
       if (settingsActor) {
         return settingsActor
       }
-      const commands = ctx.required(commandSystemService)
-      const extensionSettings = ctx.observe(settingsFacet).value
-      const defaultProjectLibraries = ctx.observe(
-        projectLibrarySettingDefaultsFacet
-      ).value
-      const projectLibrarySettingDefaultPolicies = ctx.observe(
-        projectLibrarySettingDefaultPoliciesFacet
-      ).value
+      const commands = commandsInputs.commandSystemService.required()
+      const extensionSettings = settingsInputs.settingsFacet.value
+      const defaultProjectLibraries =
+        projectLibrariesInputs.projectLibrarySettingDefaultsFacet.value
+      const projectLibrarySettingDefaultPolicies =
+        projectLibrariesInputs.projectLibrarySettingDefaultPoliciesFacet.value
       const actor = createActor(settingsMachine, {
         input: {
           ...createSettings(extensionSettings),
@@ -62,7 +70,7 @@ export const settingsExtension = defineExtension({
           defaultProjectLibraries,
           projectLibrarySettingDefaultPolicies,
           extensionSettings,
-          fileOperations: ctx.required(fileOperationsService),
+          fileOperations: fileOperationsInputs.fileOperationsService.required(),
           wasmInstancePromise: getWasmPromise(),
         },
       }).start()

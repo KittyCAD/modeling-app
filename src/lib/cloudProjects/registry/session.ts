@@ -1,12 +1,12 @@
 import { computed, effect, signal } from '@preact/signals-core'
 import { flushActiveTextFileWrite } from '@src/lib/activeTextFile'
-import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
+import { observations as cloudProjectsObservations } from '@src/lib/cloudProjects/registry/contract'
 import { createCloudProjectStorageProvider } from '@src/lib/cloudProjects/storage'
 import fsZds from '@src/lib/fs-zds'
 import { isOffline } from '@src/lib/networkStatus'
 import { projectStorageProvidersFacet } from '@src/lib/projectSession/storage'
 import { reportRejection } from '@src/lib/trap'
-import { projectSession } from '@src/registry/contracts/projectSession'
+import { observations as projectSessionObservations } from '@src/registry/contracts/projectSession'
 import {
   extension as defineExtension,
   contribute,
@@ -15,11 +15,22 @@ import {
 
 /** Binds cloud storage to sessions; the session retains ownership of editors and Rust. */
 export const cloudProjectSessionExtension: Extension = defineExtension({
+  dependencies: {
+    cloudProjects: cloudProjectsObservations,
+    projectSession: projectSessionObservations,
+  },
   key: 'cloud-project-session',
-  create: (_dependencies, ctx) => {
+  create: ({
+    cloudProjects: cloudProjectsInputs,
+    projectSession: projectSessionInputs,
+  }) => {
     const offline = signal(isOffline())
-    const clouds = computed(() => ctx.optional(cloudStorageService))
-    const sessions = computed(() => ctx.optional(projectSession))
+    const clouds = computed(
+      () => cloudProjectsInputs.cloudStorageService.current.value
+    )
+    const sessions = computed(
+      () => projectSessionInputs.projectSession.current.value
+    )
     let provider:
       | ReturnType<typeof createCloudProjectStorageProvider>
       | undefined

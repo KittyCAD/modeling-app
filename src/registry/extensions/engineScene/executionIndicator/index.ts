@@ -1,5 +1,5 @@
 import { computed } from '@preact/signals-core'
-import { projectSession } from '@src/registry/contracts/projectSession'
+import { observations as projectSessionObservations } from '@src/registry/contracts/projectSession'
 import {
   nullableStatusBarItem,
   statusBarLocalItemsFacet,
@@ -14,9 +14,12 @@ import { EXECUTION_INDICATOR_STATUS_BAR_ITEM_ID } from './constants'
 import { EngineExecutionStatusTooltip } from './EngineExecutionStatusTooltip'
 
 const executionIndicator = defineExtension({
+  dependencies: { projectSession: projectSessionObservations },
   key: 'execution-indicator.status-bar-item',
-  create: (_dependencies, ctx) => {
-    const session = computed(() => ctx.optional(projectSession))
+  create: ({ projectSession: projectSessionInputs }) => {
+    const session = computed(
+      () => projectSessionInputs.projectSession.current.value
+    )
     const executionService = computed(
       () => session.value?.executingEditor.value
     )

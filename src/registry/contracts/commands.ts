@@ -1,3 +1,4 @@
+import { inputs, observeService, observe } from '@src/registry/inputs'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { Command } from '@src/lib/commandTypes'
 import { commandKey } from '@src/lib/commandUtils'
@@ -341,3 +342,10 @@ function compareCommandScopeDisplayOrder(a: CommandScope, b: CommandScope) {
   const nameDifference = a.displayName.localeCompare(b.displayName)
   return nameDifference !== 0 ? nameDifference : a.id.localeCompare(b.id)
 }
+
+export const observations = inputs({
+  commandsFacet: observe(commandsFacet),
+  commandScopeService: observeService(commandScopeService),
+  commandSystemService: observeService(commandSystemService),
+  commandScopesFacet: observe(commandScopesFacet),
+})

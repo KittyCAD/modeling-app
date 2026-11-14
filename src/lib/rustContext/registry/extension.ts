@@ -1,26 +1,38 @@
-import { engineConnectionService } from '@src/lib/engineConnection/registry/contract'
+import { observations as engineConnectionObservations } from '@src/lib/engineConnection/registry/contract'
 import RustContext from '@src/lib/rustContext'
 import {
   type RustContextRegistryService,
   rustContextService,
 } from '@src/lib/rustContext/registry/contract'
-import { projectSession } from '@src/registry/contracts/projectSession'
-import { settingsService } from '@src/registry/contracts/settings'
-import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
+import { observations as projectSessionObservations } from '@src/registry/contracts/projectSession'
+import { observations as settingsObservations } from '@src/registry/contracts/settings'
+import { observations as wasmObservations } from '@src/registry/contracts/wasm'
 import { extension as defineExtension, provide, type Extension } from 'plankton'
 export const rustContextExtension: Extension = defineExtension({
+  dependencies: {
+    wasm: wasmObservations,
+    engineConnection: engineConnectionObservations,
+    settings: settingsObservations,
+    projectSession: projectSessionObservations,
+  },
   key: 'rust-context-extension',
-  create: (_dependencies, ctx) => {
+  create: ({
+    wasm: wasmInputs,
+    engineConnection: engineConnectionInputs,
+    settings: settingsInputs,
+    projectSession: projectSessionInputs,
+  }) => {
     let service: RustContextRegistryService | undefined
     const ensureService = () => {
       if (service) {
         return service
       }
       const wasmPromise =
-        ctx.get(wasmPromiseFacet) ??
+        wasmInputs.wasmPromiseFacet.value ??
         Promise.reject(new Error('Missing WASM promise registry value.'))
-      const engineConnection = ctx.required(engineConnectionService)
-      const settings = ctx.required(settingsService)
+      const engineConnection =
+        engineConnectionInputs.engineConnectionService.required()
+      const settings = settingsInputs.settingsService.required()
       service = {
         context: new RustContext(
           wasmPromise,
@@ -28,8 +40,7 @@ export const rustContextExtension: Extension = defineExtension({
           settings.actor,
           0,
           async () => {
-            await ctx
-              .optional(projectSession)
+            await projectSessionInputs.projectSession.current.value
               ?.getProject()
               ?.prepareForSketchInsertion()
           }

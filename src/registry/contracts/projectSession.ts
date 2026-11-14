@@ -1,3 +1,4 @@
+import { inputs, observeService } from '@src/registry/inputs'
 import type { ReadonlySignal, Signal } from '@preact/signals-core'
 import type { Project } from '@src/lib/project'
 import type { ZDSProject } from '@src/lib/projectSession'
@@ -82,3 +83,7 @@ export const projectSessionContract = contract({
   projectSession: service<ProjectSessionService>('project-session'),
 })
 export const { projectSession } = projectSessionContract
+
+export const observations = inputs({
+  projectSession: observeService(projectSession),
+})

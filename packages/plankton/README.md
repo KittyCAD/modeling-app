@@ -53,7 +53,7 @@ application state. `InputOf`, `OutputOf`, and `CapabilityOf` derive adapter type
 
 ## Planning and acquisition
 
-![Planning visits dependencies before owners and skips repeated identities. Amber squares are Extensions; teal diamonds are Bindings. The result is storage, editor, shortcut, search, with zero create calls.](docs/planner.gif)
+![Planning visits dependencies before owners and skips repeated identities. Amber squares are Factories; teal diamonds are Bindings. The result is storage, editor, shortcut, search, with zero create calls.](docs/planner.gif)
 
 The shared `storage` dependency and repeated `editor` each appear once.
 
@@ -90,11 +90,21 @@ const editor = factory({
 })
 ```
 
-The optional second constructor argument supplies owner controls and observations.
-Registry-wide Facet and Service reads must still wait until acquisition finishes.
-Services select providers through composition; dependency injection names a concrete
+The optional second constructor argument exposes only `origin`, `observe`, and
+`replace`. Registry-wide Facet and Service observations cannot be read during
+acquisition, including observations whose values were cached earlier. Services
+select providers through composition; dependency injection names a concrete
 Factory. A dependency discarded by keyed selection cannot supply another
-definition's exports. Sources and combiners run under mutation guards.
+definition's exports.
+
+The app wires known constructor resources directly: commands depend on the machine
+manager Factory, and layout depends on the runtime Factory. Changing or
+optional Services and aggregated Facets are declared live inputs instead. Each
+contract exports an `observations` Factory; its exported signals and service
+handles are injected through the same named dependency map. These observations
+follow provider changes without creating constructor cycles or pinning whichever
+provider happens to be selected. `src/registry/inputs.ts` implements these app-local
+helpers. Factories do not receive a registry resolver.
 
 Every `Facet<I, O>` owns typed per-registry storage. The `contribute` callback
 stages `Source<I>` reads and receives a parameterless commit closure. The runtime

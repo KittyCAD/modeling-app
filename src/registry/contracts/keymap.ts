@@ -1,3 +1,4 @@
+import { inputs, observe } from '@src/registry/inputs'
 import type { ReadonlySignal } from '@preact/signals-core'
 import { isArray, type Platform } from '@src/lib/utils'
 import {
@@ -786,3 +787,8 @@ export function normalizePersistedKeymap(
     bindings: keymap.bindings.map(normalizeKeymapBindingInput),
   }
 }
+
+export const observations = inputs({
+  keymapFacet: observe(keymapFacet),
+  keymapEventOwnersFacet: observe(keymapEventOwnersFacet),
+})

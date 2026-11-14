@@ -1,3 +1,4 @@
+import { inputs, observeService } from '@src/registry/inputs'
 import type { KclLspEditor } from '@src/lang/lsp/types'
 import type { FileEntry } from '@src/lib/project'
 import { contract, service } from 'plankton'
@@ -31,3 +32,7 @@ export const lspContract = contract({
 })
 
 export const { lspService } = lspContract
+
+export const observations = inputs({
+  lspService: observeService(lspService),
+})

@@ -28,9 +28,17 @@ import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
 import { extension as defineExtension, provide, Registry, slot } from 'plankton'
 import { describe, expect, it, vi } from 'vitest'
-import { commandsExtension, toolbarCommandsItem } from '.'
+import { createCommandsExtension, toolbarCommandsItem } from '.'
 import { APP_COMMAND_IDS, createAppCommands } from './appCommands'
 import { createToolbarCommands, TOOLBAR_COMMAND_IDS } from './toolbarCommands'
+
+function commandsForTest(manager = new MachineManager()) {
+  return createCommandsExtension(
+    defineExtension({
+      create: () => ({ exports: { manager } }),
+    })
+  )
+}
 
 const appCommands = createAppCommands(() => undefined)
 const toolbarCommands = createToolbarCommands(() => undefined)
@@ -72,6 +80,25 @@ describe('commands extension', () => {
       await registry.dispose()
     }
   })
+  it('constructs its actor with the injected machine manager', async () => {
+    const registry = new Registry()
+    const injected = new MachineManager()
+    const published = new MachineManager()
+    await registry.configure([
+      provideWasmPromise(() => Promise.resolve({} as ModuleType)),
+      provide(machineManagerService, { manager: published }),
+      commandsForTest(injected),
+    ])
+    try {
+      expect(
+        registry.required(commandSystemService).actor.getSnapshot().context
+          .machineManager
+      ).toBe(injected)
+      expect(registry.required(machineManagerService).manager).toBe(published)
+    } finally {
+      await registry.dispose()
+    }
+  })
   it('syncs registry command contributions into the command system service', async () => {
     const commandsSlot = slot([], Symbol())
     const command: Command = {
@@ -85,12 +112,7 @@ describe('commands extension', () => {
     const registry = new Registry()
     await registry.configure([
       [provideWasmPromise(() => Promise.resolve({} as ModuleType))],
-      [
-        provide(machineManagerService, {
-          manager: new MachineManager(),
-        }),
-      ],
-      commandsExtension,
+      commandsForTest(),
       defineExtension({
         ...commandsSlot,
         create: () => ({
@@ -120,12 +142,7 @@ describe('commands extension', () => {
     const registry = new Registry()
     await registry.configure([
       [provideWasmPromise(() => Promise.resolve({} as ModuleType))],
-      [
-        provide(machineManagerService, {
-          manager: new MachineManager(),
-        }),
-      ],
-      commandsExtension,
+      commandsForTest(),
       defineExtension({
         ...commandsSlot,
         create: () => ({
@@ -170,11 +187,6 @@ describe('commands extension', () => {
     await registry.configure([
       [provideWasmPromise(() => Promise.resolve({} as ModuleType))],
       [
-        provide(machineManagerService, {
-          manager: new MachineManager(),
-        }),
-      ],
-      [
         provide(commandScopeService, {
           activeScopes,
           applyScope,
@@ -186,7 +198,7 @@ describe('commands extension', () => {
           }),
         }),
       ],
-      commandsExtension,
+      commandsForTest(),
       [
         provideCommand({
           scopes: GLOBAL_COMMAND_SCOPES,
@@ -449,12 +461,7 @@ describe('commands extension', () => {
     const registry = new Registry()
     await registry.configure([
       [provideWasmPromise(() => Promise.resolve({} as ModuleType))],
-      [
-        provide(machineManagerService, {
-          manager: new MachineManager(),
-        }),
-      ],
-      commandsExtension,
+      commandsForTest(),
       [provideCommand(command)],
     ])
     const commandSystem = registry.required(commandSystemService)

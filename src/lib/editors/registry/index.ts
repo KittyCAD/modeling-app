@@ -15,25 +15,24 @@ import { createEditorHistory } from '@src/lib/editors/history'
 import { createEditorCleanup } from '@src/lib/editors/lifecycle'
 import { createEditorModes } from '@src/lib/editors/modes'
 import {
+  observations as editorsObservations,
   codeEditorsExtensionFacet,
   type Editor,
   type EditorsService,
   type EditorViewInstance,
   type EditorViewState,
-  editorCapabilityFacet,
-  editorLanguagesFacet,
   editorsService,
   editorViewsFacet,
 } from '@src/lib/editors/registry/contract'
 import { defineEditorView } from '@src/lib/editors/views'
-import { projectSessionService } from '@src/lib/projectSession/next/contract'
+import { observations as nextProjectSessionObservations } from '@src/lib/projectSession/next/contract'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
 import { isErr } from '@src/lib/trap'
 import {
   GLOBAL_COMMAND_SCOPES,
   provideCommand,
 } from '@src/registry/contracts/commands'
-import { fileOperationsService } from '@src/registry/contracts/fileOperations'
+import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
 import { keymapEventOwnersFacet } from '@src/registry/contracts/keymap'
 import {
   extension as defineExtension,
@@ -54,8 +53,17 @@ interface EditorRecord {
 
 /** The service owns buffers; capability and mode lifecycles are scoped to each record. */
 const extension: Extension = defineExtension({
+  dependencies: {
+    editors: editorsObservations,
+    nextProjectSession: nextProjectSessionObservations,
+    fileOperations: fileOperationsObservations,
+  },
   key: 'editors',
-  create: (_dependencies, scope) => {
+  create: ({
+    editors: editorsInputs,
+    nextProjectSession: nextProjectSessionInputs,
+    fileOperations: fileOperationsInputs,
+  }) => {
     const editors = signal<readonly Editor[]>([])
     const records = new Map<symbol, EditorRecord>()
     const presentations = signal<readonly EditorViewInstance[]>([])
@@ -74,10 +82,10 @@ const extension: Extension = defineExtension({
         type: 'unbound',
       },
     })
-    const capabilities = scope.observe(editorCapabilityFacet)
-    const views = scope.observe(editorViewsFacet)
-    const codeExtensions = scope.observe(codeEditorsExtensionFacet)
-    const languages = scope.observe(editorLanguagesFacet)
+    const capabilities = editorsInputs.editorCapabilityFacet
+    const views = editorsInputs.editorViewsFacet
+    const codeExtensions = editorsInputs.codeEditorsExtensionFacet
+    const languages = editorsInputs.editorLanguagesFacet
     const contextBoundary = createEditorContextBoundary()
     // Internal project/service shutdown must still release resources if triggered from contributed code.
     const closeEditor = (id: symbol) => {
@@ -148,9 +156,9 @@ const extension: Extension = defineExtension({
         if (blocked) return blocked
         if (disposed) return new Error('The editors service is closed')
         // A later project selection must not adopt resources being constructed for this opening.
-        const lifetime = scope
-          .optional(projectSessionService)
-          ?.currentSession.peek()?.signal
+        const lifetime =
+          nextProjectSessionInputs.projectSessionService.current.value?.currentSession.peek()
+            ?.signal
         const resources = createEditorCleanup()
         const source = signal(src)
         const backing = createEditorDocument(contents)
@@ -305,8 +313,8 @@ const extension: Extension = defineExtension({
         provideCommand(
           createOpenEditorCommand(
             service,
-            () => scope.optional(projectSessionService),
-            () => scope.required(fileOperationsService)
+            () => nextProjectSessionInputs.projectSessionService.current.value,
+            () => fileOperationsInputs.fileOperationsService.required()
           )
         ),
         provide(editorsService, service),

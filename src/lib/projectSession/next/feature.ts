@@ -2,7 +2,7 @@ import type { Feature } from '@kittycad/lib'
 import { effect } from '@preact/signals-core'
 import { reportRejection } from '@src/lib/trap'
 import type { UserFeaturesService } from '@src/machines/userFeaturesMachine'
-import { userFeaturesService } from '@src/registry/contracts/userFeatures'
+import { observations as userFeaturesObservations } from '@src/registry/contracts/userFeatures'
 import {
   extension as defineExtension,
   contribute,
@@ -29,8 +29,9 @@ export function withProjectShellFeature(item: Item, id: string): Extension {
     (values: readonly boolean[]) => values.length > 0
   )
   return defineExtension({
+    dependencies: { userFeatures: userFeaturesObservations },
     key: `${id}.feature-gate`,
-    create: (_dependencies, scope) => {
+    create: ({ userFeatures: userFeaturesInputs }, scope) => {
       let disposed = false
       let active = false
       let stop: (() => void) | undefined
@@ -46,7 +47,7 @@ export function withProjectShellFeature(item: Item, id: string): Extension {
             // queue a revocation for a gate that is itself being unmounted.
             if (!mounted.value) return
             const enabled = hasProjectShellFeature(
-              scope.optional(userFeaturesService)
+              userFeaturesInputs.userFeaturesService.current.value
             )
             if (active === enabled) return
             active = enabled

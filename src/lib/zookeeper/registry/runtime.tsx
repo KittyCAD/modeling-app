@@ -21,27 +21,23 @@ import type {
 import { makeProjectZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import {
+  observations as authObservations,
   type AuthRegistryService,
-  authService,
 } from '@src/registry/contracts/auth'
-import { billingService } from '@src/registry/contracts/billing'
+
 import {
+  observations as fileOperationsObservations,
   type FileOperationsRegistryService,
-  fileOperationsService,
   type ProjectOperationsService,
-  projectOperationsService,
 } from '@src/registry/contracts/fileOperations'
+import { layoutAreaLibraryFacet } from '@src/registry/contracts/layout'
 import {
-  layoutAreaLibraryFacet,
-  layoutService,
-} from '@src/registry/contracts/layout'
-import {
+  observations as projectSessionObservations,
   type ProjectSessionService,
-  projectSession,
 } from '@src/registry/contracts/projectSession'
 import {
+  observations as settingsObservations,
   type SettingsRegistryService,
-  settingsService,
 } from '@src/registry/contracts/settings'
 import {
   extension as defineExtension,
@@ -49,6 +45,9 @@ import {
   type Extension,
 } from 'plankton'
 import { lazy, Suspense } from 'react'
+import { observations as billingObservations } from '@src/lib/billing/registry/contract'
+
+import { observations as layoutObservations } from '@src/lib/layout/registry/contract'
 
 const ZookeeperConversationPaneWrapper = lazy(async () => {
   const { ZookeeperConversationPaneWrapper } = await import(
@@ -393,16 +392,37 @@ export function ZookeeperPaneOutlet({
   )
 }
 export const zookeeperRuntimeRegistryItem: Extension = defineExtension({
+  dependencies: {
+    layout: layoutObservations,
+    auth: authObservations,
+    billing: billingObservations,
+    fileOperations: fileOperationsObservations,
+    projectSession: projectSessionObservations,
+    settings: settingsObservations,
+  },
   key: 'zookeeper.runtime',
-  create: (_dependencies, ctx) => {
-    const layout = computed(() => ctx.optional(layoutService))
+  create: ({
+    layout: layoutInputs,
+    auth: authInputs,
+    billing: billingInputs,
+    fileOperations: fileOperationsInputs,
+    projectSession: projectSessionInputs,
+    settings: settingsInputs,
+  }) => {
+    const layout = computed(() => layoutInputs.layoutService.current.value)
     const runtime = createZookeeperRuntime({
-      auth: computed(() => ctx.optional(authService)),
-      billing: computed(() => ctx.optional(billingService)),
-      fileOperations: computed(() => ctx.optional(fileOperationsService)),
-      projectSession: computed(() => ctx.optional(projectSession)),
-      settings: computed(() => ctx.optional(settingsService)),
-      projectOperations: computed(() => ctx.optional(projectOperationsService)),
+      auth: computed(() => authInputs.authService.current.value),
+      billing: computed(() => billingInputs.billingService.current.value),
+      fileOperations: computed(
+        () => fileOperationsInputs.fileOperationsService.current.value
+      ),
+      projectSession: computed(
+        () => projectSessionInputs.projectSession.current.value
+      ),
+      settings: computed(() => settingsInputs.settingsService.current.value),
+      projectOperations: computed(
+        () => fileOperationsInputs.projectOperationsService.current.value
+      ),
     })
     const PaneOutlet = (props: AreaTypeComponentProps) => (
       <ZookeeperPaneOutlet {...props} runtime={runtime} />

@@ -1,3 +1,4 @@
+import { inputs, observeService, observe } from '@src/registry/inputs'
 import type { RemoteProjectSummary } from '@src/lib/cloudProjects/runtime/types'
 import type { Project } from '@src/lib/project'
 import type { DuplicateProjectResult } from '@src/lib/projectDuplication'
@@ -519,3 +520,15 @@ export const {
   projectLibrarySettingDefaultPoliciesFacet,
   projectLibraryRealizationsFacet,
 } = projectLibrariesContract
+
+export const observations = inputs({
+  projectLibraryTypesFacet: observe(projectLibraryTypesFacet),
+  projectLibrariesService: observeService(projectLibrariesService),
+  projectLibraryRealizationsFacet: observe(projectLibraryRealizationsFacet),
+  projectLibrarySettingDefaultsFacet: observe(
+    projectLibrarySettingDefaultsFacet
+  ),
+  projectLibrarySettingDefaultPoliciesFacet: observe(
+    projectLibrarySettingDefaultPoliciesFacet
+  ),
+})

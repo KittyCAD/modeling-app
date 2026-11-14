@@ -337,7 +337,7 @@ async function startInterruptibleEditorExecution() {
       stopObserving()
       manager.started = false
       kclManager.close()
-      app.dispose()
+      await app.dispose()
       features.mockRestore()
     },
   }
@@ -405,7 +405,7 @@ describe('KclManager line wrapping settings', () => {
       expect(updateWrapping).not.toHaveBeenCalled()
     } finally {
       kclManager.close()
-      app.dispose()
+      await app.dispose()
     }
   })
 })
@@ -443,7 +443,7 @@ describe('KclManager default plane visibility', () => {
       expect(individual).not.toHaveBeenCalled()
     } finally {
       kclManager.close()
-      app.dispose()
+      await app.dispose()
     }
   })
 })
@@ -466,6 +466,7 @@ describe('KclManager settings ownership', () => {
 
         for (const geometryOnly of [true, false]) {
           kclManager.engineCommandManager.connection = {
+            disconnectAll: () => {},
             geometryOnly,
           } as typeof kclManager.engineCommandManager.connection
           for (const mode of ['retrocad', 'phosphor'] as const) {
@@ -478,7 +479,7 @@ describe('KclManager settings ownership', () => {
         }
       } finally {
         kclManager.engineCommandManager.connection = undefined
-        app.dispose()
+        await app.dispose()
       }
     }
   )
@@ -502,6 +503,7 @@ describe('KclManager settings ownership', () => {
       .spyOn(kclManager.rustContext, 'clearSceneAndBustCache')
       .mockResolvedValue(kclManager.execState)
     engine.connection = {
+      disconnectAll: () => {},
       connected: true,
     } as typeof engine.connection
     return {
@@ -533,7 +535,7 @@ describe('KclManager settings ownership', () => {
       settings.modeling.viewportRendering.user = 'default'
       expect(setViewportRendering).toHaveBeenCalledExactlyOnceWith('ssao')
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
 
@@ -573,7 +575,7 @@ describe('KclManager settings ownership', () => {
       expect(theme).not.toHaveBeenCalled()
       expect(grid).not.toHaveBeenCalled()
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
 
@@ -604,7 +606,7 @@ describe('KclManager settings ownership', () => {
       kclManager.setSceneSettingsActive(true)
       expect(mocks.setTheme).toHaveBeenCalledExactlyOnceWith(Themes.Dark)
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
 
@@ -638,7 +640,7 @@ describe('KclManager settings ownership', () => {
       expect(mocks.setHighlightEdges).toHaveBeenCalledTimes(1)
       expect(mocks.executeCode).toHaveBeenCalledTimes(1)
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
 
@@ -666,7 +668,7 @@ describe('KclManager settings ownership', () => {
         expect(otherExecute).toHaveBeenCalledTimes(1)
       } finally {
         other.close()
-        app.dispose()
+        await app.dispose()
       }
     }
   )
@@ -694,7 +696,7 @@ describe('KclManager settings ownership', () => {
         expect(mocks.clearScene).not.toHaveBeenCalled()
         expect(mocks.executeCode).not.toHaveBeenCalled()
       } finally {
-        app.dispose()
+        await app.dispose()
       }
     }
   )
@@ -717,7 +719,7 @@ describe('KclManager settings ownership', () => {
             : 'perspective'
         expect(projection).not.toHaveBeenCalled()
       } finally {
-        app.dispose()
+        await app.dispose()
       }
     }
   )
@@ -743,7 +745,7 @@ describe('KclManager settings ownership', () => {
         await flushPromises()
         expect(mocks.executeCode).not.toHaveBeenCalled()
       } finally {
-        app.dispose()
+        await app.dispose()
       }
     }
   )
@@ -765,7 +767,7 @@ describe('KclManager settings ownership', () => {
       await flushPromises(6)
       expect(mocks.executeCode).toHaveBeenCalledTimes(1)
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
 
@@ -795,7 +797,7 @@ describe('KclManager settings ownership', () => {
         EditorView.lineWrapping
       )
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
 })
@@ -830,7 +832,7 @@ describe('KclManager storage checks before sketch insertion', () => {
       expect(execute).not.toHaveBeenCalled()
       expect(send).not.toHaveBeenCalled()
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
 
@@ -869,7 +871,7 @@ describe('KclManager storage checks before sketch insertion', () => {
         expect(write).not.toHaveBeenCalled()
       } finally {
         gate.resolve('width = 2')
-        app.dispose()
+        await app.dispose()
         vi.useRealTimers()
       }
     }
@@ -893,7 +895,7 @@ describe('KclManager storage checks before sketch insertion', () => {
         })
       )
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
 
@@ -934,7 +936,7 @@ describe('KclManager storage checks before sketch insertion', () => {
       } finally {
         gate.resolve('width = 1')
         await insertion.catch(() => undefined)
-        app.dispose()
+        await app.dispose()
         vi.useRealTimers()
       }
     }
@@ -952,7 +954,7 @@ describe('KclManager storage checks before sketch insertion', () => {
       expect(schedule).toHaveBeenCalledWith(false)
       expect(execute).toHaveBeenCalledOnce()
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
 
@@ -1019,7 +1021,7 @@ describe('KclManager storage checks before sketch insertion', () => {
         firstSave.resolve(undefined)
         lastSave.resolve(undefined)
         await Promise.allSettled(saves)
-        app.dispose()
+        await app.dispose()
         vi.useRealTimers()
       }
     }
@@ -1060,7 +1062,7 @@ describe('KclManager storage checks before sketch insertion', () => {
       ])
     } finally {
       gate.resolve(undefined)
-      app.dispose()
+      await app.dispose()
       vi.useRealTimers()
     }
   })
@@ -1100,7 +1102,7 @@ describe('KclManager storage checks before sketch insertion', () => {
         expect(write.mock.calls.map(([, code]) => code)).toEqual(['width = 3'])
         expect(schedule).not.toHaveBeenCalled()
       } finally {
-        app.dispose()
+        await app.dispose()
         vi.useRealTimers()
       }
     }
@@ -1136,7 +1138,7 @@ describe('KclManager storage checks before sketch insertion', () => {
       ])
     } finally {
       gate.resolve(undefined)
-      app.dispose()
+      await app.dispose()
     }
   })
 
@@ -1163,7 +1165,7 @@ describe('KclManager storage checks before sketch insertion', () => {
       expect(write).toHaveBeenCalledOnce()
     } finally {
       gate.resolve(undefined)
-      app.dispose()
+      await app.dispose()
     }
   })
 
@@ -1192,7 +1194,7 @@ describe('KclManager storage checks before sketch insertion', () => {
         expect(execute).not.toHaveBeenCalled()
       } finally {
         gate.resolve('width = 2')
-        app.dispose()
+        await app.dispose()
       }
     }
   )
@@ -1220,7 +1222,7 @@ describe('KclManager deferred editor ownership', () => {
         await kclManager.flushPendingEditorExecution()
         expect(executeCode).not.toHaveBeenCalled()
       } finally {
-        app.dispose()
+        await app.dispose()
       }
     }
   )
@@ -1264,7 +1266,7 @@ describe('KclManager deferred editor ownership', () => {
         expect(kclManager.path).toBe(destination)
         expect(kclManager.code).toBe(code)
       } finally {
-        app.dispose()
+        await app.dispose()
       }
     }
   )
@@ -1318,7 +1320,7 @@ describe('KclManager delayed artifact publication', () => {
           [{ type: 'Artifact graph initialized' }],
         ])
       } finally {
-        app.dispose()
+        await app.dispose()
       }
     }
   )
@@ -1352,7 +1354,7 @@ describe('KclManager delayed artifact publication', () => {
         await vi.advanceTimersByTimeAsync(200)
         expect(publish).not.toHaveBeenCalled()
       } finally {
-        app.dispose()
+        await app.dispose()
       }
     }
   )
@@ -1383,7 +1385,7 @@ describe('KclManager delayed artifact publication', () => {
           [{ type: 'Artifact graph initialized' }],
         ])
       } finally {
-        app.dispose()
+        await app.dispose()
       }
     }
   )
@@ -1429,7 +1431,7 @@ describe('KclManager live operation updates', () => {
       expect(execute).toHaveBeenCalledOnce()
       expect(write).not.toHaveBeenCalled()
     } finally {
-      app.dispose()
+      await app.dispose()
     }
   })
 
@@ -1464,6 +1466,7 @@ describe('KclManager live operation updates', () => {
         )
         project.executingPath = editor.path
         editor.engineCommandManager.connection = {
+          disconnectAll: () => {},
           connected,
         } as typeof editor.engineCommandManager.connection
         if (dirty) setEditorBuffer(editor, 'local draft')
@@ -1503,7 +1506,7 @@ describe('KclManager live operation updates', () => {
         execution.resolve(undefined)
         getProjectInfo.mockRestore()
         read.mockRestore()
-        app.dispose()
+        await app.dispose()
       }
     }
   )
@@ -1603,7 +1606,7 @@ describe('KclManager live operation updates', () => {
         projectFsManager.dir = originalDirectory
         thumbnail.mockRestore()
         read.mockRestore()
-        app.dispose()
+        await app.dispose()
       }
     }
   )
@@ -2184,7 +2187,7 @@ describe('KclManager diagnostics', () => {
       } finally {
         pendingError.resolve(undefined)
         await oldExecution
-        app.dispose()
+        await app.dispose()
         vi.useRealTimers()
       }
     }
@@ -2205,7 +2208,7 @@ describe('KclManager diagnostics', () => {
       })
       const { app, kclManager } = createKclManagerTestHarness()
       const root = cloud
-        ? app.registry.get(cloudStorageService).pathFor('remote')
+        ? app.registry.required(cloudStorageService).pathFor('remote')
         : '/project'
       const path = `${root}/main.kcl`
       const base = '@settings(kclVersion = 3.0)\n'
@@ -2259,7 +2262,7 @@ describe('KclManager diagnostics', () => {
         expect(kclManager.hasUnsavedLocalChanges()).toBe(false)
       } finally {
         online.mockRestore()
-        app.dispose()
+        await app.dispose()
         Object.assign(fsZds, originalFs)
       }
     }
@@ -2526,7 +2529,10 @@ describe('KclManager diagnostics', () => {
       .mockResolvedValue(undefined)
 
     kclManager.engineCommandManager.started = false
-    kclManager.engineCommandManager.connection = { connected: true } as any
+    kclManager.engineCommandManager.connection = {
+      disconnectAll: () => {},
+      connected: true,
+    } as any
 
     kclManager.editorView.dispatch({
       changes: { from: 1, to: 1, insert: 'b' },
@@ -2580,7 +2586,10 @@ describe('KclManager diagnostics', () => {
       .spyOn(kclManager, 'executeCode')
       .mockResolvedValue(undefined)
 
-    kclManager.engineCommandManager.connection = { connected: true } as any
+    kclManager.engineCommandManager.connection = {
+      disconnectAll: () => {},
+      connected: true,
+    } as any
 
     kclManager.editorView.dispatch({
       changes: { from: 1, to: 1, insert: 'b' },
@@ -2602,7 +2611,10 @@ describe('KclManager diagnostics', () => {
     const execution = Promise.withResolvers<undefined>()
     vi.spyOn(kclManager, 'executeCode').mockReturnValue(execution.promise)
 
-    kclManager.engineCommandManager.connection = { connected: true } as any
+    kclManager.engineCommandManager.connection = {
+      disconnectAll: () => {},
+      connected: true,
+    } as any
 
     kclManager.editorView.dispatch({
       changes: { from: 1, to: 1, insert: 'b' },
@@ -2791,7 +2803,7 @@ describe('KclManager diagnostics', () => {
     expect(setProgram).not.toHaveBeenCalled()
     expect(send).not.toHaveBeenCalled()
     parseErrors.mockRestore()
-    app.dispose()
+    await app.dispose()
   })
 
   it('reports parsed sketch names even when a deleted sketch leaves execution errors', async () => {
@@ -2820,7 +2832,7 @@ describe('KclManager diagnostics', () => {
       type: 'sketch source changed',
       data: { sketchNames: ['other'] },
     })
-    app.dispose()
+    await app.dispose()
   })
 
   it('drops direct sketch editor executions that go stale while parsing executes', async () => {
@@ -3184,7 +3196,7 @@ describe('KclManager diagnostics', () => {
     } finally {
       gate.resolve('original')
       await kclManager.waitForFileSaves()
-      app.dispose()
+      await app.dispose()
       vi.useRealTimers()
     }
   })
@@ -3225,7 +3237,7 @@ describe('KclManager diagnostics', () => {
       } finally {
         gate.resolve(undefined)
         await kclManager.waitForFileSaves()
-        app.dispose()
+        await app.dispose()
       }
     }
   )
@@ -3273,7 +3285,7 @@ describe('KclManager diagnostics', () => {
     } finally {
       gate.resolve(undefined)
       await kclManager.waitForFileSaves()
-      app.dispose()
+      await app.dispose()
       vi.useRealTimers()
     }
   })
@@ -3323,7 +3335,7 @@ describe('KclManager diagnostics', () => {
     } finally {
       gate.resolve(undefined)
       await kclManager.waitForFileSaves()
-      app.dispose()
+      await app.dispose()
       vi.useRealTimers()
     }
   })
@@ -3366,7 +3378,7 @@ describe('KclManager diagnostics', () => {
       acknowledgement.resolve(undefined)
       readGate.resolve('original')
       await kclManager.waitForFileSaves()
-      app.dispose()
+      await app.dispose()
     }
   })
 
@@ -3397,7 +3409,7 @@ describe('KclManager diagnostics', () => {
     } finally {
       gate.resolve('original')
       await kclManager.waitForFileSaves()
-      app.dispose()
+      await app.dispose()
     }
   })
 
@@ -3591,7 +3603,7 @@ describe('KclManager diagnostics', () => {
       expect(kclManager.code).toBe('newer geometry preview')
       expect(kclManager.hasUnsavedLocalChanges()).toBe(true)
       expect(toastMocks.error).not.toHaveBeenCalled()
-      app.dispose()
+      await app.dispose()
     }
   )
 
@@ -3720,6 +3732,7 @@ describe('KclManager diagnostics', () => {
       .spyOn(kclManager, 'executeCode')
       .mockResolvedValue(undefined)
     kclManager.engineCommandManager.connection = {
+      disconnectAll: () => {},
       connected: true,
     } as typeof kclManager.engineCommandManager.connection
 
@@ -3947,7 +3960,7 @@ describe('KclManager diagnostics', () => {
     await vi.advanceTimersByTimeAsync(1_500)
     expect(write).toHaveBeenCalledExactlyOnceWith('width = 1\n')
     expect(kclManager.hasUnsavedLocalChanges()).toBe(false)
-    app.dispose()
+    await app.dispose()
   })
 
   it('drops stale ast-driven editor rewrites when the document changed while waiting', async () => {
@@ -4227,7 +4240,7 @@ describe('KclManager diagnostics', () => {
         `${contents}\n// next edit`
       )
       reopened.close()
-      app.dispose()
+      await app.dispose()
     }
   )
 
@@ -4250,7 +4263,7 @@ describe('KclManager diagnostics', () => {
       expect(localStorage.getItem(getRecoverySnapshotKey(path))).toBeNull()
       kclManager.close()
       expect(localStorage.getItem(getRecoverySnapshotKey(path))).toBeNull()
-      app.dispose()
+      await app.dispose()
     }
   )
 
@@ -4261,7 +4274,7 @@ describe('KclManager diagnostics', () => {
     { draft: 'base', cloud: 'newer cloud edit', warns: false },
   ])(
     'explains cloud replacement only when unsaved contents differ: $draft / $cloud',
-    ({ draft, cloud, warns }) => {
+    async ({ draft, cloud, warns }) => {
       const { app, kclManager } = createKclManagerTestHarness('base')
       kclManager.path = '/cloud/project/main.kcl'
       kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
@@ -4279,7 +4292,7 @@ describe('KclManager diagnostics', () => {
           { id: 'cloud-project-conflict' }
         )
       else expect(toastMocks.error).not.toHaveBeenCalled()
-      app.dispose()
+      await app.dispose()
     }
   )
 })
@@ -4368,6 +4381,6 @@ it('finishes editor execution before notifying scene renderers', async () => {
     await kclManager.executeAst({ ast: createEmptyAst() })
     expect(completionStates).toEqual([false])
   } finally {
-    app.dispose()
+    await app.dispose()
   }
 })

@@ -1,3 +1,4 @@
+import { inputs, observeService, observe } from '@src/registry/inputs'
 import type { UserResponse } from '@kittycad/lib'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { SessionExpiredNotice } from '@src/lib/sessionExpired'
@@ -48,3 +49,8 @@ export function provideAuthSessionExpiredListener(
 ) {
   return contribute(authSessionExpiredListenersFacet, () => listener, { key })
 }
+
+export const observations = inputs({
+  authService: observeService(authService),
+  authSessionExpiredListenersFacet: observe(authSessionExpiredListenersFacet),
+})
