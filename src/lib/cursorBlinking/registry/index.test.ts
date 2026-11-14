@@ -39,7 +39,6 @@ describe('global cursor blinking', () => {
     const { registry, current } = await createRegistry()
     try {
       current.value.textEditor.blinkingCursor.user = false
-      await Promise.resolve()
       const style = document.documentElement.style
       expect(style.getPropertyValue('--cursor-color')).toBe('transparent')
       current.value.textEditor.blinkingCursor.user = true
@@ -64,13 +63,12 @@ describe('global cursor blinking', () => {
     const style = document.documentElement.style
     style.setProperty('--cursor-color', 'red', 'important')
     const { registry, current } = await createRegistry()
-    await Promise.resolve()
     await registry.dispose()
     current.value.textEditor.blinkingCursor.user = false
     expect(style.getPropertyValue('--cursor-color')).toBe('red')
     expect(style.getPropertyPriority('--cursor-color')).toBe('important')
   })
-  it('does not start a deferred effect after acquisition rolls back', async () => {
+  it('does not start an effect after acquisition rolls back', async () => {
     const registry = new Registry()
     const failure = new Error('Later acquisition failed')
     await expect(

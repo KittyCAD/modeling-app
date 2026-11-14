@@ -6,40 +6,30 @@ export default defineExtension({
   dependencies: { settings: settingsObservations },
   key: 'cursor-blinking',
   create: ({ settings: settingsInputs }) => {
-    const settings = computed(
-      () => settingsInputs.settingsService.current.value
+    const blinking = computed(
+      () =>
+        settingsInputs.settingsService.current.value?.current.value.textEditor
+          .blinkingCursor.currentSignal.value
     )
-    let disposed = false
-    let stop: (() => void) | undefined
-
-    // Wait until the registry has finished constructing its service providers.
-    queueMicrotask(() => {
-      if (disposed || typeof document === 'undefined') return
-      const style = document.documentElement.style
-      const previous = style.getPropertyValue('--cursor-color')
-      const priority = style.getPropertyPriority('--cursor-color')
-      const stopEffect = effect(() => {
-        const current = settings.value?.current.value
-        if (!current) return
-        const shouldBlink =
-          current.textEditor.blinkingCursor.currentSignal.value
-        style.setProperty(
-          '--cursor-color',
-          shouldBlink ? 'auto' : 'transparent'
-        )
-      })
-      stop = () => {
-        stopEffect()
-        if (previous) style.setProperty('--cursor-color', previous, priority)
-        else style.removeProperty('--cursor-color')
-      }
-    })
-
     return {
-      items: [],
-      dispose: () => {
-        disposed = true
-        stop?.()
+      start: () => {
+        if (typeof document === 'undefined') return
+        const style = document.documentElement.style
+        const previous = style.getPropertyValue('--cursor-color')
+        const priority = style.getPropertyPriority('--cursor-color')
+        const stopEffect = effect(() => {
+          const shouldBlink = blinking.value
+          if (shouldBlink === undefined) return
+          style.setProperty(
+            '--cursor-color',
+            shouldBlink ? 'auto' : 'transparent'
+          )
+        })
+        return () => {
+          stopEffect()
+          if (previous) style.setProperty('--cursor-color', previous, priority)
+          else style.removeProperty('--cursor-color')
+        }
       },
     }
   },
