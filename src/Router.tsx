@@ -66,6 +66,12 @@ export const Router = () => {
               path: PATHS.PROJECT.concat('/:id'),
               errorElement: <ErrorPage />,
               loader: projectLoader({ app }),
+              element: (
+                <>
+                  <ProjectRoute />
+                  <CommandBar />
+                </>
+              ),
             },
             {
               id: PATHS.LOCAL,

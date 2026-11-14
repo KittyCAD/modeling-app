@@ -32,8 +32,7 @@ import { hasProjectShellFeature } from '@src/lib/projectSession/next/feature'
 import { waitForUserFeaturesSettled } from '@src/machines/userFeaturesMachine'
 import { readProject } from '@src/lib/projectSession/next/utils'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
-import { loadProjectEditor } from '@src/lib/editors/loadProjectEditor'
-import { editorsService } from '@src/lib/editors/registry/contract'
+import { openInitialProjectEditor } from '@src/lib/projectSession/next/initialEditor'
 import { isErr } from '@src/lib/trap'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
@@ -86,21 +85,62 @@ async function canOpenProjectShell(app: App, signal: AbortSignal) {
   return hasProjectShellFeature(app.userFeatures)
 }
 
-/**
- * `/project/:id` identifies a cloud project by its API ID, never a disk path or
- * an internal cloud relationship ID. Cloud opening is reserved for a follow-up;
- * this route must not fall through to filesystem discovery in the meantime.
- */
+/** Open a cloud API ID through its memory mount, never as a local directory path. */
 export const projectLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async ({ request, params }) => {
     if (!(await canOpenProjectShell(app, request.signal)))
       return redirect(PATHS.HOME)
-    if (!params.id)
-      return Promise.reject(new Error('No cloud project ID provided'))
-    return Promise.reject(
-      new Error('Cloud projects are not yet supported by this route')
+    const id = params.id
+    if (!id || id === '.' || id === '..' || /[\\/:]/.test(id))
+      return Promise.reject(new Error('Expected a cloud project API ID'))
+    const projects = app.registry.get(projectSessionService)
+    const cloud = app.registry.get(cloudStorageService)
+    const ownsServices = () =>
+      hasProjectShellFeature(app.userFeatures) &&
+      app.registry.optional(projectSessionService) === projects &&
+      app.registry.optional(cloudStorageService) === cloud
+    const auth = app.registry.optional(authService)
+    if (auth)
+      await waitFor(auth.actor, (state) => !state.matches('checkIfLoggedIn'), {
+        signal: request.signal,
+      })
+    request.signal.throwIfAborted()
+    if (!ownsServices()) return redirect(PATHS.HOME)
+    const path = await cloud.openProject(id)
+    request.signal.throwIfAborted()
+    if (!ownsServices()) return redirect(PATHS.HOME)
+    const fileOperations = app.registry.get(fileOperationsService)
+    const library = await getProjectLibraryOwnership(
+      app.settings.get().app.libraries.current,
+      path
     )
+    const project = await readProject(fileOperations, path, {
+      signal: request.signal,
+      library,
+    })
+    request.signal.throwIfAborted()
+    if (!ownsServices()) return redirect(PATHS.HOME)
+    // Retire the other route's poller before selecting this opening.
+    app.closeProject()
+    const session = projects.openProject({
+      ...project,
+      storage: { type: 'cloud', projectId: id },
+      metadata: {
+        ...project.metadata,
+        title:
+          cloud.projects.peek().find((item) => item.id === id)?.title ||
+          project.metadata.title,
+      },
+    })
+    const error = await openInitialProjectEditor(
+      app,
+      session,
+      request.signal,
+      fileOperations
+    )
+    if (isErr(error)) return Promise.reject(error)
+    return session
   }
 
 /**
@@ -141,31 +181,13 @@ export const localLoader =
     if (!ownsSession()) return redirect(PATHS.HOME)
     // Consumers retain this session instead of resolving the global selection again.
     const session = projectSessions.openProject(project)
-    const files = projectSessions.listFiles()
-    const configuredPath = project.metadata.defaultFile
-      ? fsZds.join(project.contents.path, project.metadata.defaultFile)
-      : undefined
-    const entrypoint = fsZds.join(project.contents.path, PROJECT_ENTRYPOINT)
-    const initialFile =
-      files.find((file) => file.path === configuredPath) ??
-      files.find((file) => file.path === entrypoint) ??
-      files.find((file) => fsZds.extname(file.path).toLowerCase() === '.kcl')
-    if (initialFile) {
-      const editor = await loadProjectEditor(
-        initialFile.path,
-        app.registry.get(editorsService),
-        () => projectSessions,
-        () => fileOperations,
-        { signal: request.signal, reuseExisting: true }
-      )
-      assertCurrent()
-      if (isErr(editor)) return Promise.reject(editor)
-      const editors = app.registry.get(editorsService)
-      if (!editors.views.peek().some((view) => view.editor === editor)) {
-        const view = editors.createView(editor)
-        if (isErr(view)) return Promise.reject(view)
-      }
-    }
+    const error = await openInitialProjectEditor(
+      app,
+      session,
+      request.signal,
+      fileOperations
+    )
+    if (isErr(error)) return Promise.reject(error)
     return session
   }
 
