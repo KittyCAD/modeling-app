@@ -144,9 +144,18 @@ for (const cached of [false, true]) {
       else await page.reload({ waitUntil: 'domcontentloaded' })
       await waitForAppLoad(page)
       await expect.poll(() => started).toBe(true)
-      await expect(
-        page.getByRole('status', { name: 'Loading projects', exact: true })
-      ).toBeVisible()
+      const loading = page.getByRole('status', {
+        name: 'Loading projects',
+        exact: true,
+      })
+      if (cached) {
+        await expect(loading).toHaveCount(0)
+        await expect(
+          storage.home.projectCard.filter({ hasText: 'Slow listing' })
+        ).toBeVisible()
+      } else {
+        await expect(loading).toBeVisible()
+      }
       // This exercises the runner's readiness budget, which browser time cannot advance.
       await Promise.all([
         storage.home.projectsLoaded().then(() => expect(released).toBe(true)),
@@ -209,7 +218,7 @@ test('keeps the modeling viewport stable when the save status changes @web', asy
   }
 })
 
-test('polls cloud project membership, pauses offline and stops outside the projects view @web', async ({
+test('refreshes cloud project membership only on request or entry @web', async ({
   page,
   context,
 }, testInfo) => {
@@ -228,14 +237,22 @@ test('polls cloud project membership, pauses offline and stops outside the proje
   })
   try {
     await storage.seed('Added on another device', blankCode)
-    await page.clock.runFor(2_000)
+    await page.clock.runFor(60_000)
+    await expect(card('Added on another device')).not.toBeAttached()
+    expect(requests).toBe(0)
+    const refresh = page.getByRole('button', { name: 'Refresh projects' })
+    await refresh.click()
     await expect(card('Added on another device')).toBeVisible()
     const remote = storage.remote.projects.findIndex(
       (project) => project.title === 'Original cloud project'
     )
     storage.remote.projects.splice(remote, 1)
-    await page.clock.runFor(2_000)
+    await page.clock.runFor(5_000)
+    await expect(card('Original cloud project')).toBeVisible()
+    await expect(refresh).toBeEnabled()
+    await refresh.click()
     await expect(card('Original cloud project')).not.toBeAttached()
+    await page.clock.runFor(5_000)
     await context.setOffline(true)
     await page.waitForFunction(() => !navigator.onLine)
     await expect(
@@ -246,14 +263,18 @@ test('polls cloud project membership, pauses offline and stops outside the proje
     expect(requests).toBe(beforeOffline)
     await context.setOffline(false)
     await page.clock.runFor(0)
-    await expect.poll(() => requests).toBeGreaterThan(beforeOffline)
+    expect(requests).toBe(beforeOffline)
     await page.clock.resume()
     await storage.home.openProject('Added on another device')
     await expectEditor(page, blankCode)
     const afterLeaving = requests
+    await storage.seed('Added while modeling', blankCode)
     await pauseAppClock(page)
     await page.clock.runFor(7_000)
     expect(requests).toBe(afterLeaving)
+    await page.clock.resume()
+    await storage.goHome()
+    await expect(card('Added while modeling')).toBeVisible()
   } finally {
     await context.setOffline(false)
     await page.clock.resume()
@@ -461,7 +482,7 @@ for (const kind of ['local', 'cloud'] as const) {
         page,
         context,
       }, testInfo) => {
-        if (kind === 'cloud') await page.clock.install()
+        await page.clock.install()
         const storage = await prepareStorage(kind, page, context, testInfo)
         await storage.seed('Original project', blankCode)
         await storage.refresh()
@@ -472,7 +493,7 @@ for (const kind of ['local', 'cloud'] as const) {
         let started = false
         const listRoute = /\/user\/projects(?:\?.*)?$/
         const button = page.getByRole('button', { name: 'Refresh projects' })
-        if (kind === 'cloud') await pauseAppClock(page)
+        await pauseAppClock(page)
         await expect(button).toBeEnabled()
         if (kind === 'cloud') {
           await context.route(listRoute, async (route) => {
@@ -495,14 +516,17 @@ for (const kind of ['local', 'cloud'] as const) {
             await page.clock.resume()
           }
           await expect(card('Added project')).toBeVisible()
+          if (kind === 'local') {
+            await expect(button).toHaveAttribute('aria-busy', 'false')
+            await expect(button).toBeDisabled()
+            await page.clock.runFor(5_000)
+          }
           await expect(button).toBeEnabled()
           await expect(card('Original project')).toBeVisible()
         } finally {
           gate.resolve(undefined)
-          if (kind === 'cloud') {
-            await context.unroute(listRoute)
-            await page.clock.resume()
-          }
+          if (kind === 'cloud') await context.unroute(listRoute)
+          await page.clock.resume()
         }
       })
 

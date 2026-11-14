@@ -48,7 +48,7 @@ async function clickProjectCardContextMenuItem(
 }
 
 test(
-  'projects reload if a new one is created, deleted, or renamed externally',
+  'refreshes external project changes when requested',
   { tag: ['@desktop', '@macos', '@windows', '@localRenderer'] },
   async ({ context, page, fs, folderSetupFn }, testInfo) => {
     const appLogo = page.getByTestId('app-logo')
@@ -72,13 +72,21 @@ test(
     const projectLinks = page.getByTestId('project-link')
     await projectLinks.first().waitFor()
     await expect(projectLinks).toContainText(externalCreatedProjectName)
+    const refresh = page.getByRole('button', { name: 'Refresh projects' })
+    await expect(refresh).toHaveAttribute('aria-busy', 'false')
+    await page.clock.install()
 
     await fs.rename(
       path.join(targetDir, externalCreatedProjectName),
       path.join(targetDir, externalCreatedProjectName + '1')
     )
 
+    await page.clock.runFor(7_000)
+    await expect(page.getByTestId('project-title')).toHaveText(
+      externalCreatedProjectName
+    )
     externalCreatedProjectName += '1'
+    await refresh.click()
     await expect(projectLinks).toContainText(externalCreatedProjectName)
 
     await fs.rm(path.join(targetDir, externalCreatedProjectName), {
@@ -86,7 +94,12 @@ test(
       force: true,
     })
 
+    await page.clock.runFor(5_000)
+    await expect(projectLinks).toContainText(externalCreatedProjectName)
+    await expect(refresh).toBeEnabled()
+    await refresh.click()
     await expect(projectLinks).toHaveCount(0)
+    await page.clock.resume()
   }
 )
 
