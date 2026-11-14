@@ -288,6 +288,8 @@ export class LocalRenderer {
       host.sceneInfra.baseUnitChange.add(this.syncPlaneScale),
       () => dprDetector.dispose()
     )
+    // Remounting the renderer must project the selection already held by its scene.
+    void this.syncSelectionFromEngine().catch(reportRejection)
     void this.initialize().catch(this.handleInitializationError)
   }
 

@@ -159,6 +159,10 @@ export class CameraControls {
   wasDragging: boolean
   private orbitDragUpInverted = false
   hoverPickingDisabled = false
+  private readonly getHoverElement: () => Pick<
+    HTMLElement,
+    'getBoundingClientRect'
+  > | null
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
   worldDownPosition: Vector3
@@ -324,6 +328,7 @@ export class CameraControls {
 
   private queueHoverCommand(cmd: EngineCommand) {
     this.queueEngineInteraction(this.hoverFrame, () => {
+      if (this.hoverPickingDisabled) return
       this.engineCommandManager.sendSceneCommand(cmd).catch(reportRejection)
     })
   }
@@ -405,11 +410,16 @@ export class CameraControls {
     domElement: HTMLCanvasElement,
     engineCommandManager: ConnectionManager,
     getSettings: typeof this.getSettings,
-    getLocalScene: typeof this.getLocalScene = () => null
+    getLocalScene: typeof this.getLocalScene = () => null,
+    getHoverElement: () => Pick<
+      HTMLElement,
+      'getBoundingClientRect'
+    > | null = () => document.getElementById('video-stream')
   ) {
     this.engineCommandManager = engineCommandManager
     this.getSettings = getSettings
     this.getLocalScene = getLocalScene
+    this.getHoverElement = getHoverElement
     this.camera = new PerspectiveCamera()
     this.camera.up.set(0, 0, 1)
     this.camera.far = 20000
@@ -666,14 +676,13 @@ export class CameraControls {
 
       // Clear any previous drag state
       this.wasDragging = false
-      if (this.syncDirection === 'engineToClient') {
+      if (
+        this.syncDirection === 'engineToClient' &&
+        !this.hoverPickingDisabled
+      ) {
         const newCmdId = uuidv4()
 
-        // You can use raw JS to fetch the element from the DOM. We do not need to proxy a ref of a ref element on the DOM element
-        // There will be only one of these in the page.
-        const videoElement = <HTMLVideoElement>(
-          document.getElementById('video-stream')
-        )
+        const videoElement = this.getHoverElement()
         // Nonsense to do anything until the video stream is established.
         if (!videoElement) return
 
