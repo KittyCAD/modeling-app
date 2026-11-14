@@ -40,6 +40,40 @@ describe('userFeaturesMachine', () => {
     mockState.reportClientError.mockClear()
   })
 
+  it.each([
+    { token: 'localhost', requests: 0, features: [] },
+    {
+      token: 'real-api-token',
+      requests: 1,
+      features: ['sketch_experimental_features'],
+    },
+  ])(
+    'loads features for $token without treating it as another auth mode',
+    async ({ token, requests, features }) => {
+      const fetch = vi
+        .spyOn(globalThis, 'fetch')
+        .mockResolvedValue(
+          Response.json({ features: [{ id: 'sketch_experimental_features' }] })
+        )
+      const actor = createActor(userFeaturesMachine).start()
+      try {
+        actor.send({ type: UserFeaturesTransition.Load, token })
+        await waitFor(
+          actor,
+          (state) =>
+            state.matches(UserFeaturesState.Ready) ||
+            state.matches(UserFeaturesState.Failed)
+        )
+        expect(actor.getSnapshot().matches(UserFeaturesState.Ready)).toBe(true)
+        expect(fetch).toHaveBeenCalledTimes(requests)
+        expect([...actor.getSnapshot().context.featureIds]).toEqual(features)
+      } finally {
+        actor.stop()
+        fetch.mockRestore()
+      }
+    }
+  )
+
   it('loads feature ids once for a token and answers membership from context', async () => {
     const fetchFeatures = vi.fn(async () => ({
       featureIds: new Set<Feature>(['sketch_experimental_features']),
