@@ -43,6 +43,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
     if (isExecuting) {
       setIsAwaitingModel(true)
       setPendingCommandCount(getPendingCommandCount(kclManager))
+      // zds-performance-exception: background-polling -- Refresh the pending-command count while execution is active; engine commands and completed models are never held for this timer.
       const intervalId = window.setInterval(
         () => setPendingCommandCount(getPendingCommandCount(kclManager)),
         PENDING_COMMAND_POLL_MS
@@ -121,7 +122,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
     <>
       <div
         ref={containerRef}
-        className="pointer-events-none absolute inset-0 h-full w-full transition-opacity duration-200 opacity-0"
+        className="pointer-events-none absolute inset-0 h-full w-full transition-opacity duration-100 opacity-0"
       />
       {isLoadingModel && (
         <output

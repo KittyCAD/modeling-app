@@ -581,6 +581,7 @@ function saveLayoutInner({ layout, layoutName = 'default' }: ISaveLayout) {
     value: createLayoutWithMetadata(layout),
   })
 }
+// zds-performance-exception: storage-batching -- Persist the latest pane layout without repeatedly serializing storage during dragging; the visible layout updates immediately.
 export const saveLayout = throttle(saveLayoutInner, LAYOUT_SAVE_THROTTLE)
 
 /**

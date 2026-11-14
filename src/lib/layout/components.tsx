@@ -539,6 +539,7 @@ function PaneButton({
       >
         <CustomIcon
           name={icon}
+          // zds-performance-exception: activity-indicator -- Animate only a loading pane icon while its owner is busy; pane mounting and completed content remain immediate.
           className={`w-5 h-5 ${icon === 'loading' ? 'animate-spin' : ''}`}
           aria-hidden
         />

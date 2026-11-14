@@ -42,6 +42,7 @@ export function createProjectPoller({
     if (timer !== undefined && due <= Date.now() + milliseconds) return
     clear()
     due = Date.now() + milliseconds
+    // zds-performance-exception: background-polling -- Schedule the next cloud revision probe without overlapping requests or bypassing provider retry deadlines.
     timer = setTimeout(() => {
       clear()
       void run()
@@ -82,6 +83,7 @@ export function createProjectPoller({
         // snapshot must not add another full interval to every update.
         // Failed probes still wait their complete retry delay after failure.
         const elapsed = failed ? 0 : Date.now() - startedAt
+        // zds-performance-exception: background-polling -- Calculate the next background revision check from its start time, preserving outage backoff and Retry-After.
         schedule(Math.max(0, retryAfter, delay() - elapsed))
       }
     }
@@ -100,6 +102,7 @@ export function createProjectPoller({
     activity() {
       step = 0
       generation += 1
+      // zds-performance-exception: background-polling -- Bring the next revision check forward after activity while retaining provider retry deadlines.
       if (!inFlight) schedule(delay())
     },
     checkNow() {

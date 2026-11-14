@@ -102,6 +102,7 @@ export function HomeHeader({
               iconStart={{
                 icon: 'arrowRotateRight',
                 bgClassName: 'bg-transparent',
+                // zds-performance-exception: activity-indicator -- Spin only while a requested project refresh is running; available project results remain visible.
                 iconClassName: isRefreshing ? 'animate-spin' : '',
               }}
             >

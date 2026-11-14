@@ -465,6 +465,7 @@ export function createCloudProjectRuntime(
     const thumbnail = pendingThumbnails.get(id)
     if (!thumbnail) return
     clearTimeout(thumbnail.timer)
+    // zds-performance-exception: storage-batching -- Flush a staged thumbnail after editor inactivity; explicit saves still include it immediately.
     thumbnail.timer = setTimeout(() => {
       thumbnail.timer = undefined
       // Failure stays visible in saves and retains the bytes for explicit retry.
@@ -874,6 +875,7 @@ export function createCloudProjectRuntime(
       const startingRevision = project.remote.revision
       const changeCounter = projectChangeCounters.get(id)
       const controller = new AbortController()
+      // zds-performance-exception: network-deadline -- Abort a stalled cloud metadata request after sixty seconds; successful requests complete immediately.
       const timeout = setTimeout(() => controller.abort(), 60_000)
       const current = () =>
         config().accountId === requestConfig.accountId && opened.has(id)

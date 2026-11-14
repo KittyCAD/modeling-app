@@ -171,6 +171,7 @@ export class ZooFeatureTree extends LitElement {
       orphanedFocus &&
       !!this.focusOwner &&
       this.contains(this.focusOwner) &&
+      // eslint-disable-next-line no-restricted-syntax -- This standalone package cannot import app-specific Array utilities.
       Array.isArray(records) &&
       records.some((record) =>
         [...record.removedNodes].some(
