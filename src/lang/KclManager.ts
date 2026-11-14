@@ -1,4 +1,8 @@
 import {
+  createSceneExecutionSettings,
+  observeSceneExecutionSettings,
+} from '@src/lib/scene/settings'
+import {
   SceneExecutionEvents as KclManagerEvents,
   type SceneExecutionDoneDetail as KclExecutionDoneDetail,
 } from '@src/lib/scene/execution'
@@ -3218,89 +3222,25 @@ export class KclManager extends File {
       })
     )
 
-    const showScaleGrid = computed(
-      () => settings.value.modeling.showScaleGrid.currentSignal.value
-    )
-    // Inactive editors keep their render baseline current without issuing
-    // engine commands. Opening an editor alone does not request a rerender.
-    let previous = {
-      showScaleGrid: showScaleGrid.peek(),
-      fixedSizeGrid: fixedSizeGrid.peek(),
-      highlightEdges: highlightEdges.peek(),
-      backfaceColor: backfaceColor.peek(),
-    }
-    let pendingCacheClear: Promise<boolean> | undefined
     disposers.push(
-      effect(() => {
-        const active = this.sceneSettingsActive.value
-        const current = {
-          showScaleGrid: showScaleGrid.value,
-          fixedSizeGrid: fixedSizeGrid.value,
-          highlightEdges: highlightEdges.value,
-          backfaceColor: backfaceColor.value,
-        }
-        // The local renderer draws back faces itself, so the engine scene can stay.
-        const backfaceChanged =
-          current.backfaceColor !== previous.backfaceColor &&
-          !this.engineCommandManager.geometryOnly
-        const engineSettingsChanged =
-          current.showScaleGrid !== previous.showScaleGrid ||
-          current.fixedSizeGrid !== previous.fixedSizeGrid ||
-          current.highlightEdges !== previous.highlightEdges
-        previous = current
-        let cancelled = false
-        untracked(() => {
-          if (!active || !this.engineCommandManager.connection) return
+      observeSceneExecutionSettings({
+        settings: createSceneExecutionSettings(() => settings.value),
+        active: () => this.sceneSettingsActive.value,
+        connected: () => !!this.engineCommandManager.connection,
+        geometryOnly: () => this.engineCommandManager.geometryOnly,
+        capture: () => {
           const path = this.path
           const projectPath = this.systemDeps.projectPath.peek()
-          const isCurrent = () =>
-            !cancelled &&
-            this.sceneSettingsActive.peek() &&
-            this.path === path &&
-            this.systemDeps.projectPath.peek() === projectPath
-          const executeIfCurrent = () => {
-            if (isCurrent()) return this.executeCode()
+          return {
+            isCurrent: () =>
+              this.sceneSettingsActive.peek() &&
+              this.path === path &&
+              this.systemDeps.projectPath.peek() === projectPath,
+            execute: () => this.executeCode(),
+            rebuild: (configuration) =>
+              this.rustContext.clearSceneAndBustCache(configuration, path),
           }
-          if (backfaceChanged) {
-            const clearCache = () => {
-              if (!isCurrent()) return Promise.resolve(false)
-              return this.rustContext
-                .clearSceneAndBustCache(jsAppSettings(settings.peek()), path)
-                .then(() => true)
-                .catch((error) => {
-                  reportRejection(error)
-                  return false
-                })
-            }
-            // Serialize cache clears, and let later engine-setting updates
-            // wait for the pending clear before rendering the latest values.
-            const pending = pendingCacheClear
-              ? pendingCacheClear.then(clearCache)
-              : clearCache()
-            pendingCacheClear = pending
-            pending
-              .then((success) => {
-                if (pendingCacheClear === pending) pendingCacheClear = undefined
-                // Closing, switching editors/projects, or a newer settings
-                // update invalidates the continuation's ownership of the scene.
-                if (success) return executeIfCurrent()
-              })
-              .catch(reportRejection)
-          } else if (engineSettingsChanged) {
-            if (pendingCacheClear) {
-              pendingCacheClear
-                .then((success) => {
-                  if (success) return executeIfCurrent()
-                })
-                .catch(reportRejection)
-            } else {
-              this.executeCode().catch(reportRejection)
-            }
-          }
-        })
-        return () => {
-          cancelled = true
-        }
+        },
       })
     )
     return () => {
