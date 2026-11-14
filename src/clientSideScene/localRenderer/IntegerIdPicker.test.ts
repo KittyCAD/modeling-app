@@ -87,5 +87,4 @@ describe('IntegerIdPicker', () => {
     geometry.dispose()
     material.dispose()
   })
-
 })
