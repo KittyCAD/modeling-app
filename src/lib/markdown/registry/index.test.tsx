@@ -102,9 +102,9 @@ describe('Markdown extension', () => {
       codeSurface(registry.get(editorsService), editor).state.facet(language)
         ?.name
     ).toBe('markdown')
-    const executor = registry
-      .get(executorsService)
-      .acquireExecutor(editor).executor
+    const executor = requireSuccess(
+      registry.get(executorsService).acquireExecutor(editor)
+    ).executor
     render(<MarkdownPreview executor={executor} />)
     expect(await screen.findByRole('heading', { name: 'Hello' })).toBeVisible()
     const link = screen.getByRole('link', { name: 'Zoo' })
@@ -139,9 +139,9 @@ describe('Markdown extension', () => {
           '# Preview\n\n<script>alert(1)</script>\n\n[Unsafe](javascript:alert%281%29)\n\n<img src=x onerror=alert(1)>'
         )
     )
-    const executor = registry
-      .get(executorsService)
-      .acquireExecutor(editor).executor
+    const executor = requireSuccess(
+      registry.get(executorsService).acquireExecutor(editor)
+    ).executor
     const { container } = render(<MarkdownPreview executor={executor} />)
     await screen.findByRole('heading', { name: 'Preview' })
     expect(
@@ -160,9 +160,9 @@ describe('Markdown extension', () => {
     expect(
       codeSurface(registry.get(editorsService), editor).state.facet(language)
     ).toBeNull()
-    const executor = registry
-      .get(executorsService)
-      .acquireExecutor(editor).executor
+    const executor = requireSuccess(
+      registry.get(executorsService).acquireExecutor(editor)
+    ).executor
     await vi.waitFor(() => expect(executor.output.value.running).toBe(false))
     expect(executor.output.value.data).toEqual({})
   })
@@ -182,7 +182,9 @@ describe('Markdown extension', () => {
       <StrictMode>
         <MarkdownPreview
           executor={{
-            ...registry.get(executorsService).acquireExecutor(editor).executor,
+            ...requireSuccess(
+              registry.get(executorsService).acquireExecutor(editor)
+            ).executor,
             output,
           }}
         />

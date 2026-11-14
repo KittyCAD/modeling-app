@@ -1,3 +1,5 @@
+import { requireSuccess } from '@src/lib/editors/testViews'
+import { executionContext } from '@src/lib/executors/context'
 import '@src/lib/projectSession/next/testFeature'
 import { EditorSelection } from '@codemirror/state'
 import { createEditorDocument } from '@src/lib/editors/document'
@@ -77,12 +79,49 @@ describe('executors extension', () => {
     })
   }
 
+  it.each(['createExecutor', 'acquireExecutor'] as const)(
+    'returns an error from %s for a closed editor without retaining an executor',
+    (method) => {
+      const editor = openEditor()
+      const service = registry.get(executorsService)
+      editor.close()
+
+      expect(service[method](editor)).toEqual(new Error('The editor is closed'))
+      expect(service.executors.peek()).toEqual([])
+    }
+  )
+
+  it('returns an acquisition error from a mode context without registering cleanup', () => {
+    const editor = openEditor()
+    const onDispose = vi.fn()
+    const context = executionContext(
+      { id: 'test', matches: '*', execute: () => ({}) },
+      () => registry.get(executorsService)
+    )
+    editor.close()
+
+    expect(
+      context({
+        editor,
+        instance: {
+          id: Symbol('view'),
+          editor,
+          element: signal(undefined),
+          codeView: signal(undefined),
+        },
+        onDispose,
+      })
+    ).toEqual(new Error('The editor is closed'))
+    expect(onDispose).not.toHaveBeenCalled()
+    expect(registry.get(executorsService).executors.peek()).toEqual([])
+  })
+
   it('creates executors explicitly without an editors service, including multiple for one editor', async () => {
     const editor = openEditor()
     const service = registry.get(executorsService)
     expect(service.executors.value).toEqual([])
-    const first = service.createExecutor(editor)
-    const second = service.createExecutor(editor)
+    const first = requireSuccess(service.createExecutor(editor))
+    const second = requireSuccess(service.createExecutor(editor))
     expect(first.id).not.toBe(second.id)
     expect(first.editor).toBe(editor)
     await settled(first)
@@ -117,9 +156,9 @@ describe('executors extension', () => {
       },
       { id: 'kcl', matches: '.kcl', execute: ignored }
     )
-    const executor = registry
-      .get(executorsService)
-      .createExecutor(openEditor('notes.MD'))
+    const executor = requireSuccess(
+      registry.get(executorsService).createExecutor(openEditor('notes.MD'))
+    )
     expect(executor.output.value.running).toBe(true)
     await settled(executor)
     expect(executor.output.value.data).toEqual({
@@ -142,7 +181,9 @@ describe('executors extension', () => {
       execute: async (contents) => ({ count: contents.length }),
     })
     contribute(first)
-    const executor = registry.get(executorsService).createExecutor(openEditor())
+    const executor = requireSuccess(
+      registry.get(executorsService).createExecutor(openEditor())
+    )
     expect(executor.output.value.get(first)).toBeUndefined()
     await settled(executor)
     const original = executor.output.value
@@ -177,7 +218,9 @@ describe('executors extension', () => {
       },
       { id: 'success', matches: '*', execute: () => ({ answer: 42 }) }
     )
-    const executor = registry.get(executorsService).createExecutor(openEditor())
+    const executor = requireSuccess(
+      registry.get(executorsService).createExecutor(openEditor())
+    )
     await settled(executor)
     expect(executor.output.value.data).toEqual({ success: { answer: 42 } })
     expect(executor.output.value.errors).toEqual({
@@ -191,7 +234,9 @@ describe('executors extension', () => {
     const execute = vi.fn((contents: string) => ({ contents }))
     contribute({ id: 'echo', matches: '*', execute })
     const editor = openEditor()
-    const executor = registry.get(executorsService).createExecutor(editor)
+    const executor = requireSuccess(
+      registry.get(executorsService).createExecutor(editor)
+    )
     await settled(executor)
     editor.dispatch({ selection: EditorSelection.cursor(1) })
     expect(execute).toHaveBeenCalledTimes(1)
@@ -213,7 +258,9 @@ describe('executors extension', () => {
     )
     contribute({ id: 'echo', matches: '*', execute })
     const editor = openEditor()
-    const executor = registry.get(executorsService).createExecutor(editor)
+    const executor = requireSuccess(
+      registry.get(executorsService).createExecutor(editor)
+    )
     await vi.waitFor(() => expect(execute).toHaveBeenCalledOnce())
     edit(editor, 'latest')
     await settled(executor)
@@ -239,7 +286,9 @@ describe('executors extension', () => {
       { id: 'kcl', matches: '.kcl', execute: kcl }
     )
     const editor = openEditor()
-    const executor = registry.get(executorsService).createExecutor(editor)
+    const executor = requireSuccess(
+      registry.get(executorsService).createExecutor(editor)
+    )
     await vi.waitFor(() => expect(markdown).toHaveBeenCalledOnce())
     const oldContext = markdown.mock.calls[0][1]
     expect(oldContext.editor).toBe(editor)
@@ -276,7 +325,9 @@ describe('executors extension', () => {
       { id: 'slow', matches: '*', execute: () => slow.promise },
       { id: 'fast', matches: '*', execute: () => ({ ready: true }) }
     )
-    const executor = registry.get(executorsService).createExecutor(openEditor())
+    const executor = requireSuccess(
+      registry.get(executorsService).createExecutor(openEditor())
+    )
     await vi.waitFor(() =>
       expect(executor.output.value.data.fast).toEqual({ ready: true })
     )
@@ -302,8 +353,8 @@ describe('executors extension', () => {
     const first = openEditor('shared.md', 'first')
     const second = openEditor('shared.md', 'second')
     const service = registry.get(executorsService)
-    const firstExecutor = service.createExecutor(first)
-    const secondExecutor = service.createExecutor(second)
+    const firstExecutor = requireSuccess(service.createExecutor(first))
+    const secondExecutor = requireSuccess(service.createExecutor(second))
     await settled(firstExecutor)
     await settled(secondExecutor)
     edit(first, 'changed')
@@ -320,7 +371,9 @@ describe('executors extension', () => {
     const pending = deferred<Record<string, unknown>>()
     const execute = vi.fn(() => pending.promise)
     contribute({ id: 'removed', matches: '*', execute })
-    const executor = registry.get(executorsService).createExecutor(openEditor())
+    const executor = requireSuccess(
+      registry.get(executorsService).createExecutor(openEditor())
+    )
     await vi.waitFor(() => expect(execute).toHaveBeenCalledOnce())
     contribute()
     const empty = executor.output.value
@@ -339,7 +392,9 @@ describe('executors extension', () => {
       execute,
     }
     contribute(capability)
-    const executor = registry.get(executorsService).createExecutor(openEditor())
+    const executor = requireSuccess(
+      registry.get(executorsService).createExecutor(openEditor())
+    )
     await settled(executor)
     contribute(capability, {
       id: 'kcl',
@@ -368,7 +423,7 @@ describe('executors extension', () => {
       contribute({ id: 'pending', matches: '*', execute })
       const editor = openEditor()
       const service = registry.get(executorsService)
-      const executor = service.createExecutor(editor)
+      const executor = requireSuccess(service.createExecutor(editor))
       await vi.waitFor(() => expect(execute).toHaveBeenCalledOnce())
       if (action === 'close') service.closeExecutor(executor.id)
       if (action === 'destroy editor') editor.close()

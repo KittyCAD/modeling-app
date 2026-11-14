@@ -1,3 +1,4 @@
+import { isErr } from '@src/lib/trap'
 import { computed } from '@preact/signals-core'
 import type { EditorViewHost } from '@src/lib/editors/registry/contract'
 import type {
@@ -12,6 +13,7 @@ export function executionContext<C extends ExecutorCapability>(
 ) {
   return ({ editor, onDispose }: EditorViewHost) => {
     const lease = getExecutors().acquireExecutor(editor)
+    if (isErr(lease)) return lease
     onDispose(lease.release)
     const result = computed(() => {
       const output = lease.executor.output.value
