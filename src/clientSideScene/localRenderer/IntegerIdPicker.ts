@@ -17,7 +17,11 @@ import {
   EdgeTargetType,
   SELECTION_INDEX_ATTRIBUTE,
 } from '@src/clientSideScene/localRenderer/EdgeRenderer'
-import { LOCAL_EDGE_PICK_RADIUS_PX } from '@src/clientSideScene/localRenderer/config'
+import { EdgeGrowthPass } from '@src/clientSideScene/localRenderer/EdgeGrowthPass'
+import {
+  selectionTargetId,
+  selectionTypeTag,
+} from '@src/clientSideScene/localRenderer/selectionId'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
 import {
   attribute,
@@ -65,6 +69,9 @@ export class IntegerIdPicker {
   private readonly sourceByProxy = new Map<Mesh, Mesh>()
   private targetById: Array<Mesh | null> = [null]
   private renderTarget: RenderTarget | null = null
+
+  private growthPass: EdgeGrowthPass | null = null
+
   private edgeObject: LineSegments2 | null = null
   private edgesVisible = true
   private dirty = true
@@ -156,13 +163,21 @@ export class IntegerIdPicker {
       addMesh(target, this.targetById.push(target) - 1)
     }
     if (edges) {
-      this.edgeObject = this.addLines(edges, VISIBLE_EDGE_LINE_WIDTH_PX)
+      this.edgeObject = this.addLines(
+        edges,
+        VISIBLE_EDGE_LINE_WIDTH_PX,
+        EdgeTargetType.BodyEdge
+      )
       if (this.edgeObject) {
         this.edgeObject.visible = this.edgesVisible
       }
     }
     if (sketchLines) {
-      this.addLines(sketchLines, SELECTION_LINE_WIDTH_PX)
+      this.addLines(
+        sketchLines,
+        SELECTION_LINE_WIDTH_PX,
+        EdgeTargetType.SketchLine
+      )
     }
   }
 
@@ -171,7 +186,8 @@ export class IntegerIdPicker {
   // geometry destroys the GPU buffers of all its attributes.
   private addLines(
     { source, targets }: LineTargets,
-    linewidth = SELECTION_LINE_WIDTH_PX
+    linewidth: number,
+    targetType: EdgeTargetType
   ) {
     // The source numbers its targets from 1, in this order.
     const idBeforeFirstTarget = this.targetById.length - 1
@@ -207,7 +223,9 @@ export class IntegerIdPicker {
     const selectionId = select(
       selectionIndex.equal(uint(0)),
       uint(NO_TARGET_ID),
-      uniform(idBeforeFirstTarget, 'uint').add(selectionIndex)
+      uniform(idBeforeFirstTarget, 'uint')
+        .add(selectionIndex)
+        .bitOr(uint(selectionTypeTag(targetType)))
     )
     material.outputNode = this.idOutput(varying(selectionId))
     const object = new LineSegments2(source.geometry, material)
@@ -271,19 +289,6 @@ export class IntegerIdPicker {
       target.height
     )
 
-    const bounds = this.renderer.domElement.getBoundingClientRect()
-    const pixelWidth = Math.max(bounds.width, 1) / target.width
-    const pixelHeight = Math.max(bounds.height, 1) / target.height
-    // Read only the pixels that could contain an edge within the CSS-pixel
-    // picking radius; the center pixel still supplies the face fallback.
-    const radiusX = Math.ceil(LOCAL_EDGE_PICK_RADIUS_PX / pixelWidth)
-    const radiusY = Math.ceil(LOCAL_EDGE_PICK_RADIUS_PX / pixelHeight)
-    const left = Math.max(0, readbackPixelX - radiusX)
-    const top = Math.max(0, readbackPixelY - radiusY)
-    const right = Math.min(target.width - 1, readbackPixelX + radiusX)
-    const bottom = Math.min(target.height - 1, readbackPixelY + radiusY)
-    const width = right - left + 1
-    const height = bottom - top + 1
     const version = this.version
     const targetById = this.targetById
 
@@ -292,52 +297,17 @@ export class IntegerIdPicker {
     }
 
     const pixels = await this.renderer.readRenderTargetPixelsAsync(
-      target,
-      left,
-      // WebGL counts rows from the bottom.
-      this.packsIdsIntoColor ? target.height - 1 - bottom : top,
-      width,
-      height
+      this.growthPass?.target ?? target,
+      readbackPixelX,
+      this.packsIdsIntoColor
+        ? target.height - 1 - readbackPixelY
+        : readbackPixelY,
+      1,
+      1
     )
-
-    // WebGL returns bottom-up RGBA bytes; WebGPU returns top-down integer IDs.
-    // Translate both layouts back to the same top-left pixel coordinates.
-    const idAt = (pixelX: number, pixelY: number) => {
-      // y * width + x index math and * 4 for WebGL color layout
-      const index = this.packsIdsIntoColor
-        ? ((bottom - pixelY) * width + pixelX - left) * 4
-        : (pixelY - top) * width + pixelX - left
-      return decodeSelectionId(pixels, index, this.packsIdsIntoColor)
-    }
-
-    const centerId = idAt(readbackPixelX, readbackPixelY)
-    let selectionId = centerId
-
-    // If the center isn't on an edge or sketch, check if an edge is nearby
-    const centerType = targetById[centerId]?.userData.type
-    if (
-      centerType !== EdgeTargetType.BodyEdge &&
-      centerType !== EdgeTargetType.SketchLine
-    ) {
-      // look for nearby edges and prioritize selecting them
-      let nearestDistance =
-        LOCAL_EDGE_PICK_RADIUS_PX * LOCAL_EDGE_PICK_RADIUS_PX
-      for (let pixelY = top; pixelY <= bottom; pixelY++) {
-        for (let pixelX = left; pixelX <= right; pixelX++) {
-          const id = idAt(pixelX, pixelY)
-          if (targetById[id]?.userData.type !== EdgeTargetType.BodyEdge) {
-            continue
-          }
-          const distance =
-            ((pixelX - readbackPixelX) * pixelWidth) ** 2 +
-            ((pixelY - readbackPixelY) * pixelHeight) ** 2
-          if (distance < nearestDistance) {
-            nearestDistance = distance
-            selectionId = id
-          }
-        }
-      }
-    }
+    const selectionId = selectionTargetId(
+      decodeSelectionId(pixels, 0, this.packsIdsIntoColor)
+    )
     const stale = version !== this.version
 
     return {
@@ -361,6 +331,8 @@ export class IntegerIdPicker {
   dispose() {
     this.clearModel()
     this.renderTarget?.dispose()
+    this.growthPass?.dispose()
+    this.growthPass = null
     this.renderTarget = null
   }
 
@@ -381,12 +353,21 @@ export class IntegerIdPicker {
         samples: 0,
       })
       this.renderTarget.texture.name = 'local-renderer-selection-ids'
+      this.growthPass = new EdgeGrowthPass(
+        this.renderer,
+        this.renderTarget,
+        width,
+        height,
+        this.packsIdsIntoColor,
+        (id) => this.idOutput(id)
+      )
       this.invalidate()
     } else if (
       this.renderTarget.width !== width ||
       this.renderTarget.height !== height
     ) {
       this.renderTarget.setSize(width, height)
+      this.growthPass?.resize(width, height)
       this.invalidate()
     }
 
@@ -410,6 +391,10 @@ export class IntegerIdPicker {
     this.renderer.autoClear = true
     this.renderer.setRenderTarget(target)
     this.renderer.render(this.scene, camera)
+    if (this.growthPass) {
+      const bounds = this.renderer.domElement.getBoundingClientRect()
+      this.growthPass.render(bounds.width, bounds.height)
+    }
     this.renderer.setRenderTarget(previousTarget)
     this.renderer.autoClear = previousAutoClear
     this.dirty = false
