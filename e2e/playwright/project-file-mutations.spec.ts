@@ -1,7 +1,7 @@
 import { expect, test as browserTest } from '@e2e/playwright/base-test'
 import { test as appTest } from '@e2e/playwright/zoo-test'
 import { prepareStorage } from '@e2e/playwright/lib/projectStorageFixture'
-import { getUtils } from '@e2e/playwright/test-utils'
+import { getUtils, waitForAppLoad } from '@e2e/playwright/test-utils'
 
 const web = process.env.TARGET === 'web'
 const test = web ? browserTest : appTest
@@ -20,6 +20,7 @@ for (const backing of storageKinds) {
         'parts/component.kcl': code,
         'parts-extra/live.kcl': code,
       })
+      await waitForAppLoad(page)
       await page.locator('.cm-content').first().waitFor({ state: 'visible' })
       const u = await getUtils(page)
       await u.openFilePanel()
@@ -83,6 +84,7 @@ for (const backing of storageKinds) {
           .poll(() => read('components/live.kcl'))
           .toContain('saved after moving')
         await page.reload()
+        await waitForAppLoad(page)
         await editor.waitFor({ state: 'visible' })
         await expect(editor).toContainText('saved after moving')
       })
@@ -97,6 +99,7 @@ for (const backing of storageKinds) {
             )
             .toContain('empty-folder')
         await page.reload()
+        await waitForAppLoad(page)
         await row('empty-folder').waitFor({ state: 'visible' })
       })
       await test.step('moving the entrypoint updates its durable metadata', async () => {
@@ -114,6 +117,7 @@ for (const backing of storageKinds) {
           .poll(() => read('project.toml'))
           .toContain('default_file = "components/main.kcl"')
         await page.reload()
+        await waitForAppLoad(page)
         await expect(page).toHaveURL(movedEntrypoint)
         await page.locator('.cm-content').first().waitFor({ state: 'visible' })
         await expect(page.locator('.cm-content').first()).toContainText(
