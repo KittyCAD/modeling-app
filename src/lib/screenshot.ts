@@ -125,23 +125,23 @@ async function takeScreenshotOfVideoStreamCanvas(): Promise<Blob | null> {
  * Draws the visible part of the 3D scene: from the local renderer if there is
  * one, else from the video.
  */
+interface ViewportScreenshotSource {
+  canvas?: HTMLCanvasElement
+  video?: HTMLVideoElement
+  localRenderer?: LocalRenderer | null
+  gizmoCanvas?: HTMLCanvasElement | null
+}
+
 const drawVisibleScene = (
   targetCanvas: HTMLCanvasElement,
-  localRenderer?: LocalRenderer | null
+  source: ViewportScreenshotSource
 ) => {
-  if (localRenderer) {
-    return localRenderer.readFrame((renderedCanvas) =>
-      drawVisibleVideoStream(renderedCanvas, renderedCanvas, targetCanvas)
+  if (source.localRenderer)
+    return source.localRenderer.readFrame((canvas) =>
+      drawVisibleVideoStream(canvas, canvas, targetCanvas)
     )
-  }
-  const canvas = document.querySelector('[data-engine]')
-  const video = document.getElementById('video-stream')
-  if (
-    canvas instanceof HTMLCanvasElement &&
-    video instanceof HTMLVideoElement
-  ) {
-    return drawVisibleVideoStream(video, canvas, targetCanvas)
-  }
+  if (source.canvas && source.video)
+    return drawVisibleVideoStream(source.video, source.canvas, targetCanvas)
   return null
 }
 
@@ -152,17 +152,30 @@ const drawVisibleScene = (
 export function takeViewportScreenshot(
   localRenderer?: LocalRenderer | null
 ): string {
+  const canvas = document.querySelector('[data-engine]')
+  const video = document.getElementById('video-stream')
+  const gizmo = document
+    .querySelector('[aria-label="View orientation gizmo"]')
+    ?.querySelector('canvas')
+  return captureViewportScreenshot({
+    canvas: canvas instanceof HTMLCanvasElement ? canvas : undefined,
+    video: video instanceof HTMLVideoElement ? video : undefined,
+    localRenderer,
+    gizmoCanvas: gizmo,
+  })
+}
+
+/** Captures a supplied view without consulting another editor's DOM or scene. */
+export function captureViewportScreenshot(
+  source: ViewportScreenshotSource
+): string {
   const compositeCanvas = document.createElement('canvas')
-  const crop = drawVisibleScene(compositeCanvas, localRenderer)
+  const crop = drawVisibleScene(compositeCanvas, source)
   const ctx = compositeCanvas.getContext('2d')
   if (!crop) return ''
   if (!ctx) return ''
 
-  // Draw the gizmo overlay if present
-  const gizmoWrapper = document.querySelector(
-    '[aria-label="View orientation gizmo"]'
-  )
-  const gizmoCanvas = gizmoWrapper?.querySelector('canvas')
+  const gizmoCanvas = source.gizmoCanvas
   if (gizmoCanvas instanceof HTMLCanvasElement) {
     const gizmoRect = gizmoCanvas.getBoundingClientRect()
     const scaleX = compositeCanvas.width / crop.visibleRect.width
