@@ -19,55 +19,40 @@ export default defineExtension({
     projectLibraries: projectLibrariesInputs,
     router: routerInputs,
   }) => {
-    const sessions = computed(
-      () => projectSessionInputs.projectSession.current.value
-    )
-    const files = computed(
-      () => fileOperationsInputs.fileOperationsService.current.value
-    )
-    const libraries = computed(
-      () => projectLibrariesInputs.projectLibrariesService.current.value
-    )
-    const routers = computed(() => routerInputs.routerService.current.value)
+    const sessions = projectSessionInputs.projectSession.current
+    const files = fileOperationsInputs.fileOperationsService.current
+    const libraries = projectLibrariesInputs.projectLibrariesService.current
+    const routers = routerInputs.routerService.current
     const currentProject = computed(() => sessions.value?.project.value)
     const currentPath = computed(() => currentProject.value?.path)
-    let disposed = false
-    let stop: (() => void) | undefined
-    queueMicrotask(() => {
-      if (disposed) return
-      stop = effect(() => {
-        const session = sessions.value
-        const project = currentProject.value
-        const path = currentPath.value
-        const fileOperations = files.value
-        const projectLibraries = libraries.value
-        const router = routers.value
-        if (
-          !session ||
-          !project ||
-          !path ||
-          !fileOperations ||
-          !projectLibraries ||
-          !router
-        )
-          return
-        return watchProjectStorage({
-          path,
-          storage: session.storageFor(path),
-          isCurrent: () => session.project.peek() === project,
-          fileOperations,
-          projectLibraries,
-          session,
-          router,
-        })
-      })
-    })
     return {
-      items: [],
-      dispose: () => {
-        disposed = true
-        stop?.()
-      },
+      start: () =>
+        effect(() => {
+          const session = sessions.value
+          const project = currentProject.value
+          const path = currentPath.value
+          const fileOperations = files.value
+          const projectLibraries = libraries.value
+          const router = routers.value
+          if (
+            !session ||
+            !project ||
+            !path ||
+            !fileOperations ||
+            !projectLibraries ||
+            !router
+          )
+            return
+          return watchProjectStorage({
+            path,
+            storage: session.storageFor(path),
+            isCurrent: () => session.project.peek() === project,
+            fileOperations,
+            projectLibraries,
+            session,
+            router,
+          })
+        }),
     }
   },
 }) satisfies Extension

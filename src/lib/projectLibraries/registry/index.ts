@@ -341,8 +341,8 @@ const configuredProjectLibraryRealizations: Extension = defineExtension({
     settings: settingsInputs,
     projectLibraries: projectLibrariesInputs,
   }) => {
-    const settings = computed(
-      () => settingsInputs.settingsService.current.value
+    const currentSettings = computed(
+      () => settingsInputs.settingsService.current.value?.current.value
     )
     const libraryTypes = projectLibrariesInputs.projectLibraryTypesFacet
     const realizations = signal<ProjectLibraryRealizationContribution[]>([])
@@ -350,9 +350,6 @@ const configuredProjectLibraryRealizations: Extension = defineExtension({
     const scanStates = new Map<string, ConfiguredProjectLibraryScanState>()
     const loadingLibraryIds = signal<readonly string[]>([])
     const settledLibraryIds = signal<readonly string[]>([])
-    let disposeConfiguredProjectLibraryRealizationsEffect:
-      | (() => void)
-      | undefined
     let disposed = false
     let currentLibraryIds: readonly string[] = []
     const updateRealizations = () => {
@@ -439,32 +436,30 @@ const configuredProjectLibraryRealizations: Extension = defineExtension({
         updateRealizations()
       })
     }
-    queueMicrotask(() => {
-      if (disposed) {
-        return
-      }
-      disposeConfiguredProjectLibraryRealizationsEffect = effect(() => {
-        const currentSettings = settings.value?.current.value
-        const typeById = libraryTypes.value
-        const invalidation = readProjectLibraryRealizationsInvalidation()
-        const libraries = currentSettings
-          ? projectLibrariesFromSettings(currentSettings.app.libraries.current)
-          : []
-        const activeLibraryIds = new Set(libraries.map((library) => library.id))
-        currentLibraryIds = libraries.map((library) => library.id)
-        for (const [libraryId, state] of scanStates) {
-          if (!activeLibraryIds.has(libraryId)) {
-            state.abortController?.abort()
-            scanStates.delete(libraryId)
-          }
-        }
-        libraries.forEach((library) => {
-          scanLibrary(library, typeById.get(library.type), invalidation)
-        })
-        updateRealizations()
-      })
-    })
     return {
+      start: () =>
+        effect(() => {
+          const settings = currentSettings.value
+          const typeById = libraryTypes.value
+          const invalidation = readProjectLibraryRealizationsInvalidation()
+          const libraries = settings
+            ? projectLibrariesFromSettings(settings.app.libraries.current)
+            : []
+          const activeLibraryIds = new Set(
+            libraries.map((library) => library.id)
+          )
+          currentLibraryIds = libraries.map((library) => library.id)
+          for (const [libraryId, state] of scanStates) {
+            if (!activeLibraryIds.has(libraryId)) {
+              state.abortController?.abort()
+              scanStates.delete(libraryId)
+            }
+          }
+          libraries.forEach((library) => {
+            scanLibrary(library, typeById.get(library.type), invalidation)
+          })
+          updateRealizations()
+        }),
       items: [
         contribute(
           homeProjectSettledLibraryIdsFacet,
@@ -489,7 +484,6 @@ const configuredProjectLibraryRealizations: Extension = defineExtension({
         for (const state of scanStates.values()) {
           state.abortController?.abort()
         }
-        disposeConfiguredProjectLibraryRealizationsEffect?.()
       },
     }
   },

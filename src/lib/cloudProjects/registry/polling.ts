@@ -19,49 +19,41 @@ export const cloudProjectPollingExtension: Extension = defineExtension({
     fileOperations: fileOperationsInputs,
     router: routerInputs,
   }) => {
-    const clouds = computed(
-      () => cloudProjectsInputs.cloudStorageService.current.value
-    )
-    const sessions = computed(
-      () => projectSessionInputs.projectSession.current.value
-    )
-    const files = computed(
-      () => fileOperationsInputs.fileOperationsService.current.value
-    )
-    const routers = computed(() => routerInputs.routerService.current.value)
+    const clouds = cloudProjectsInputs.cloudStorageService.current
+    const sessions = projectSessionInputs.projectSession.current
+    const files = fileOperationsInputs.fileOperationsService.current
+    const routers = routerInputs.routerService.current
     const currentProject = computed(() => sessions.value?.project.value)
     const currentId = computed(
       () => currentProject.value?.projectIORefSignal.value.cloudProjectId
     )
-    let disposed = false
-    let stop: (() => void) | undefined
-    queueMicrotask(() => {
-      if (disposed) return
-      stop = effect(() => {
-        const cloud = clouds.value
-        const session = sessions.value
-        const project = currentProject.value
-        const id = currentId.value
-        const fileOperations = files.value
-        const router = routers.value
-        if (!cloud || !session || !project || !id || !fileOperations || !router)
-          return
-        return watchCloudProject({
-          cloud,
-          session,
-          project,
-          id,
-          fileOperations,
-          router,
-        })
-      })
-    })
     return {
-      items: [],
-      dispose: () => {
-        disposed = true
-        stop?.()
-      },
+      start: () =>
+        effect(() => {
+          const cloud = clouds.value
+          const session = sessions.value
+          const project = currentProject.value
+          const id = currentId.value
+          const fileOperations = files.value
+          const router = routers.value
+          if (
+            !cloud ||
+            !session ||
+            !project ||
+            !id ||
+            !fileOperations ||
+            !router
+          )
+            return
+          return watchCloudProject({
+            cloud,
+            session,
+            project,
+            id,
+            fileOperations,
+            router,
+          })
+        }),
     }
   },
 })

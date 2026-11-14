@@ -63,8 +63,8 @@ export default defineExtension({
     const wasm = () =>
       wasmInputs.wasmPromiseFacet.value ??
       Promise.reject(new Error('Missing WASM promise.'))
-    const auth = computed(() => authInputs.authService.current.value)
-    const router = computed(() => routerInputs.routerService.current.value)
+    const auth = authInputs.authService.current
+    const router = routerInputs.routerService.current
     const settledAccount = signal<
       | {
           id: string | undefined
@@ -72,40 +72,6 @@ export default defineExtension({
       | undefined
     >(undefined)
     let disposed = false
-    let stop = () => {}
-    queueMicrotask(() => {
-      if (disposed) return
-      stop = effect(() => {
-        const loggedIn = auth.value?.isLoggedIn.value
-        const token = auth.value?.token.value
-        const location = router.value?.location.value
-        void token
-        if (
-          !loggedIn ||
-          !(
-            location?.pathname === PATHS.HOME ||
-            location?.pathname ===
-              `${PATHS.LIBRARY}/${PERSONAL_CLOUD_PROJECT_LIBRARY_ID}`
-          )
-        )
-          return
-        const accountId = auth.value?.user.value?.id
-        return pollProjectList(async () => {
-          // Manual refresh uses the same backend. Never overlap its pending request.
-          if (cloud().projectsLoading.peek()) return false
-          const previous = JSON.stringify(cloud().projects.peek())
-          try {
-            const projects = await cloud().listProjects()
-            return previous !== JSON.stringify(projects)
-          } finally {
-            if (!disposed && auth.peek()?.user.peek()?.id === accountId)
-              settledAccount.value = {
-                id: accountId,
-              }
-          }
-        }, reportRejection)
-      })
-    })
     const entries = computed<readonly HomeProjectEntryContribution[]>(() => {
       if (!auth.value?.isLoggedIn.value) return []
       const thumbnails = cloud().thumbnails.value
@@ -305,6 +271,37 @@ export default defineExtension({
       },
     } satisfies InputOf<typeof projectLibraryTypesFacet>
     return {
+      start: () =>
+        effect(() => {
+          const loggedIn = auth.value?.isLoggedIn.value
+          const token = auth.value?.token.value
+          const location = router.value?.location.value
+          void token
+          if (
+            !loggedIn ||
+            !(
+              location?.pathname === PATHS.HOME ||
+              location?.pathname ===
+                `${PATHS.LIBRARY}/${PERSONAL_CLOUD_PROJECT_LIBRARY_ID}`
+            )
+          )
+            return
+          const accountId = auth.value?.user.value?.id
+          return pollProjectList(async () => {
+            // Manual refresh uses the same backend. Never overlap its pending request.
+            if (cloud().projectsLoading.peek()) return false
+            const previous = JSON.stringify(cloud().projects.peek())
+            try {
+              const projects = await cloud().listProjects()
+              return previous !== JSON.stringify(projects)
+            } finally {
+              if (!disposed && auth.peek()?.user.peek()?.id === accountId)
+                settledAccount.value = {
+                  id: accountId,
+                }
+            }
+          }, reportRejection)
+        }),
       items: [
         contribute(
           homeProjectSettledLibraryIdsFacet,
@@ -347,7 +344,6 @@ export default defineExtension({
       ],
       dispose: () => {
         disposed = true
-        stop()
         window.removeEventListener('beforeunload', beforeUnload)
       },
     }

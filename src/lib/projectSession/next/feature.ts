@@ -34,15 +34,12 @@ export function withProjectShellFeature(item: Item, id: string): Extension {
     create: ({ userFeatures: userFeaturesInputs }, scope) => {
       let disposed = false
       let active = false
-      let stop: (() => void) | undefined
       let updates = Promise.resolve()
       const mounted = scope.observe(installed)
-      // `effect` reads services immediately. Defer it until acquisition finishes;
-      // queue replacements so a new grant waits for earlier revocation cleanup.
-      void Promise.resolve()
-        .then(() => {
-          if (disposed) return
-          stop = effect(() => {
+      return {
+        // Replacements wait for earlier revocation cleanup and this reconciliation.
+        start: () =>
+          effect(() => {
             // Publication removes this marker before child cleanup runs. Do not
             // queue a revocation for a gate that is itself being unmounted.
             if (!mounted.value) return
@@ -58,14 +55,10 @@ export function withProjectShellFeature(item: Item, id: string): Extension {
                   : scope.replace(content, enabled ? [item] : [])
               )
               .catch(reportRejection)
-          })
-        })
-        .catch(reportRejection)
-      return {
+          }),
         items: [contribute(installed, () => true), content],
         dispose: () => {
           disposed = true
-          stop?.()
         },
       }
     },

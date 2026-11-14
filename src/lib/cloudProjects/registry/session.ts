@@ -1,4 +1,4 @@
-import { computed, effect, signal } from '@preact/signals-core'
+import { effect, signal } from '@preact/signals-core'
 import { flushActiveTextFileWrite } from '@src/lib/activeTextFile'
 import { observations as cloudProjectsObservations } from '@src/lib/cloudProjects/registry/contract'
 import { createCloudProjectStorageProvider } from '@src/lib/cloudProjects/storage'
@@ -25,12 +25,8 @@ export const cloudProjectSessionExtension: Extension = defineExtension({
     projectSession: projectSessionInputs,
   }) => {
     const offline = signal(isOffline())
-    const clouds = computed(
-      () => cloudProjectsInputs.cloudStorageService.current.value
-    )
-    const sessions = computed(
-      () => projectSessionInputs.projectSession.current.value
-    )
+    const clouds = cloudProjectsInputs.cloudStorageService.current
+    const sessions = projectSessionInputs.projectSession.current
     let provider:
       | ReturnType<typeof createCloudProjectStorageProvider>
       | undefined
@@ -76,23 +72,21 @@ export const cloudProjectSessionExtension: Extension = defineExtension({
     }
     window.addEventListener('online', online)
     window.addEventListener('offline', disconnected)
-    let stop: (() => void) | undefined
-    queueMicrotask(() => {
-      if (disposed) return
-      stop = effect(() => {
-        const cloud = clouds.value
-        const session = sessions.value
-        if (!cloud || !session) return
-        return cloud.subscribeReconciled?.((root, files) => {
-          void session.applyStorageSnapshot(root, files)?.catch(reportRejection)
-        })
-      })
-    })
     return {
+      start: () =>
+        effect(() => {
+          const cloud = clouds.value
+          const session = sessions.value
+          if (!cloud || !session) return
+          return cloud.subscribeReconciled?.((root, files) => {
+            void session
+              .applyStorageSnapshot(root, files)
+              ?.catch(reportRejection)
+          })
+        }),
       items: [contribute(projectStorageProvidersFacet, () => resolve)],
       dispose: () => {
         disposed = true
-        stop?.()
         window.removeEventListener('online', online)
         window.removeEventListener('offline', disconnected)
       },
