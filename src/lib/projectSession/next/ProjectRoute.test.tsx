@@ -1,7 +1,7 @@
 import '@src/lib/projectSession/next/testFeature'
 import { codeSurface } from '@src/lib/editors/testViews'
 import { signal } from '@preact/signals-core'
-import { Registry, provide } from 'plankton'
+import { factory, Registry, provide } from 'plankton'
 import { OPEN_EDITOR_COMMAND } from '@src/lib/editors/commands'
 import editorsExtension from '@src/lib/editors/registry'
 import markdownExtension from '@src/lib/markdown/registry'
@@ -9,7 +9,7 @@ import { editorsService } from '@src/lib/editors/registry/contract'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { commandsFacet } from '@src/registry/contracts/commands'
-import projectSessionNextExtension from '@src/lib/projectSession/registry'
+import { createProjectSessionExtension } from '@src/lib/projectSession/registry'
 import type { Project } from '@src/lib/projectSession/next/types'
 import type { OpenProjectSession } from '@src/lib/projectSession/next/contract'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
@@ -83,13 +83,17 @@ describe('project screen', () => {
     await services.configure([
       editorsExtension,
       markdownExtension,
-      projectSessionNextExtension,
-      [
-        provide(fileOperationsService, {
-          ...testFileOperations,
-          readFile,
-        }),
-      ],
+      createProjectSessionExtension(
+        factory({
+          create: () => {
+            const operations = { ...testFileOperations, readFile }
+            return {
+              exports: { operations },
+              items: [provide(fileOperationsService, operations)],
+            }
+          },
+        })
+      ),
     ])
     registry.get.mockImplementation((facet) => services.get(facet))
     registry.required.mockImplementation((service) =>

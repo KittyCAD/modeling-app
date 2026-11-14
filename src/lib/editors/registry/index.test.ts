@@ -23,7 +23,7 @@ import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { commandsFacet } from '@src/registry/contracts/commands'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
-import projectSessionNextExtension from '@src/lib/projectSession/registry'
+import { createProjectSessionExtension } from '@src/lib/projectSession/registry'
 import {
   editorCapabilityFacet,
   codeEditorsExtensionFacet,
@@ -61,13 +61,17 @@ describe('editors extension', () => {
       editorsExtension,
       kclExtension,
       markdownExtension,
-      projectSessionNextExtension,
-      [
-        provide(fileOperationsService, {
-          ...testFileOperations,
-          readFile,
-        }),
-      ],
+      createProjectSessionExtension(
+        defineFactory({
+          create: () => {
+            const operations = { ...testFileOperations, readFile }
+            return {
+              exports: { operations },
+              items: [provide(fileOperationsService, operations)],
+            }
+          },
+        })
+      ),
     ])
   })
   afterEach(async () => {

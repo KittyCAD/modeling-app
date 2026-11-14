@@ -13,7 +13,7 @@ import {
   projectOperationsService,
 } from '@src/registry/contracts/fileOperations'
 import { observations as wasmObservations } from '@src/registry/contracts/wasm'
-import { factory as defineFactory, provide, type Factory } from 'plankton'
+import { factory as defineFactory, provide } from 'plankton'
 
 /** Coordinates file operations over contributed backings without owning their lifetimes. */
 export function createFileOperationsServices(
@@ -38,9 +38,7 @@ export function createFileOperationsServices(
     dispose: scheduler.dispose,
   }
 }
-export const createFileOperationsExtension = (
-  backing: IZooDesignStudioFS
-): Factory =>
+export const createFileOperationsExtension = (backing: IZooDesignStudioFS) =>
   defineFactory({
     dependencies: {
       wasm: wasmObservations,
@@ -56,6 +54,10 @@ export const createFileOperationsExtension = (
         () => fileOperationsInputs.fileOperationsMountsFacet.value
       )
       return {
+        exports: {
+          operations: services.operations,
+          projects: services.projects,
+        },
         items: [
           provide(projectOperationsService, services.projects),
           provide(fileOperationsService, services.operations),
