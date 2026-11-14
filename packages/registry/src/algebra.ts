@@ -229,6 +229,9 @@ export interface Binding extends ContributionOptions {
   readonly install: (sink: Sink) => void
 }
 
+// `contribute(facet, () => handler)` contributes the handler itself. Accepting
+// both plain values and sources would make a function argument ambiguous:
+// it could be the value to contribute or the source to call.
 export function contribute<I>(
   facet: Facet<I, unknown>,
   source: Source<NoInfer<I>>,
