@@ -6,8 +6,15 @@ import {
   authService,
   provideAuthSessionExpiredListener,
 } from '@src/registry/contracts/auth'
-import authRegistryItem from '@src/registry/extensions/auth'
-import { Registry } from 'plankton'
+import authRegistryItem, {
+  createAuthExtension,
+} from '@src/registry/extensions/auth'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
+import {
+  type FileOperationsRegistryService,
+  fileOperationsService,
+} from '@src/registry/contracts/fileOperations'
+import { factory, provide, Registry } from 'plankton'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 describe('auth extension', () => {
@@ -56,5 +63,26 @@ describe('auth extension', () => {
     notifySessionExpired('fetch')
 
     expect(listener).toHaveBeenCalledTimes(1)
+  })
+  it('makes the acquired auth export available during construction with its injected file operations', async () => {
+    registry = new Registry()
+    let captured: Promise<FileOperationsRegistryService> | undefined
+    const auth = createAuthExtension(
+      factory({
+        create: () => ({ exports: { operations: testFileOperations } }),
+      })
+    )
+    const consumer = factory({
+      dependencies: { auth },
+      create: ({ auth }) => {
+        captured = auth.actor.getSnapshot().context.fileOperations
+        return {}
+      },
+    })
+    await registry.configure([
+      consumer,
+      provide(fileOperationsService, { ...testFileOperations }),
+    ])
+    await expect(captured).resolves.toBe(testFileOperations)
   })
 })

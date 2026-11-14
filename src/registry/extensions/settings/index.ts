@@ -8,8 +8,10 @@ import {
   type SettingsActorType,
   settingsMachine,
 } from '@src/machines/settingsMachine'
-import { observations as commandsObservations } from '@src/registry/contracts/commands'
-import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
+import type { CommandSystemService } from '@src/registry/contracts/commands'
+import { commandsExtension } from '@src/registry/extensions/commands'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import { fileOperationsExtension } from '@src/registry/extensions/fileOperations'
 import { observations as projectLibrariesObservations } from '@src/registry/contracts/projectLibraries'
 import {
   observations as settingsObservations,
@@ -27,90 +29,98 @@ import {
   type Factory,
 } from 'plankton'
 import { createActor } from 'xstate'
-export const settingsExtension = defineFactory({
-  dependencies: {
-    wasm: wasmObservations,
-    commands: commandsObservations,
-    settings: settingsObservations,
-    projectLibraries: projectLibrariesObservations,
-    fileOperations: fileOperationsObservations,
-  },
-  key: 'settings-extension',
-  create: ({
-    wasm: wasmInputs,
-    commands: commandsInputs,
-    settings: settingsInputs,
-    projectLibraries: projectLibrariesInputs,
-    fileOperations: fileOperationsInputs,
-  }) => {
-    const settingsSignal = signal<SettingsType>(createSettings())
-    let settingsActor: SettingsActorType | undefined
-    let settingsSubscription:
-      | {
-          unsubscribe: () => void
+export const createSettingsExtension = ({
+  commands = commandsExtension,
+  files = fileOperationsExtension,
+}: {
+  commands?: Factory<CommandSystemService>
+  files?: Factory<{ operations: FileOperationsRegistryService }>
+} = {}) =>
+  defineFactory({
+    dependencies: {
+      wasm: wasmObservations,
+      commands,
+      settings: settingsObservations,
+      projectLibraries: projectLibrariesObservations,
+      files,
+    },
+    key: 'settings-extension',
+    create: ({
+      wasm: wasmInputs,
+      commands,
+      settings: settingsInputs,
+      projectLibraries: projectLibrariesInputs,
+      files,
+    }) => {
+      const settingsSignal = signal<SettingsType>(createSettings())
+      let settingsActor: SettingsActorType | undefined
+      let settingsSubscription:
+        | {
+            unsubscribe: () => void
+          }
+        | undefined
+      const getWasmPromise = () =>
+        wasmInputs.wasmPromiseFacet.value ??
+        Promise.reject(new Error('Missing WASM promise registry value.'))
+      const ensureActor = () => {
+        if (settingsActor) {
+          return settingsActor
         }
-      | undefined
-    const getWasmPromise = () =>
-      wasmInputs.wasmPromiseFacet.value ??
-      Promise.reject(new Error('Missing WASM promise registry value.'))
-    const ensureActor = () => {
-      if (settingsActor) {
+        const extensionSettings = settingsInputs.settingsFacet.value
+        const defaultProjectLibraries =
+          projectLibrariesInputs.projectLibrarySettingDefaultsFacet.value
+        const projectLibrarySettingDefaultPolicies =
+          projectLibrariesInputs.projectLibrarySettingDefaultPoliciesFacet.value
+        const actor = createActor(settingsMachine, {
+          input: {
+            ...createSettings(extensionSettings),
+            commandBarActor: commands.actor,
+            defaultProjectLibraries,
+            projectLibrarySettingDefaultPolicies,
+            extensionSettings,
+            fileOperations: files.operations,
+            wasmInstancePromise: getWasmPromise(),
+          },
+        }).start()
+        settingsSignal.value = getOnlySettingsFromContext(
+          actor.getSnapshot().context
+        )
+        settingsSubscription = actor.subscribe((snapshot) => {
+          settingsSignal.value = getOnlySettingsFromContext(snapshot.context)
+        })
+        settingsActor = actor
         return settingsActor
       }
-      const commands = commandsInputs.commandSystemService.required()
-      const extensionSettings = settingsInputs.settingsFacet.value
-      const defaultProjectLibraries =
-        projectLibrariesInputs.projectLibrarySettingDefaultsFacet.value
-      const projectLibrarySettingDefaultPolicies =
-        projectLibrariesInputs.projectLibrarySettingDefaultPoliciesFacet.value
-      const actor = createActor(settingsMachine, {
-        input: {
-          ...createSettings(extensionSettings),
-          commandBarActor: commands.actor,
-          defaultProjectLibraries,
-          projectLibrarySettingDefaultPolicies,
-          extensionSettings,
-          fileOperations: fileOperationsInputs.fileOperationsService.required(),
-          wasmInstancePromise: getWasmPromise(),
+      const serviceImpl: SettingsRegistryService = {
+        get actor() {
+          return ensureActor()
         },
-      }).start()
-      settingsSignal.value = getOnlySettingsFromContext(
-        actor.getSnapshot().context
-      )
-      settingsSubscription = actor.subscribe((snapshot) => {
-        settingsSignal.value = getOnlySettingsFromContext(snapshot.context)
-      })
-      settingsActor = actor
-      return settingsActor
-    }
-    const serviceImpl: SettingsRegistryService = {
-      get actor() {
-        return ensureActor()
-      },
-      get current() {
-        ensureActor()
-        return settingsSignal
-      },
-      get: () => {
-        ensureActor()
-        return settingsSignal.value
-      },
-      send: (...args: Parameters<SettingsActorType['send']>) =>
-        ensureActor().send(...args),
-      useSettings: () =>
-        useSelector(ensureActor(), (state) => {
-          return getOnlySettingsFromContext(state.context)
-        }),
-    }
-    return {
-      items: [provide(settingsService, serviceImpl)],
-      dispose: () => {
-        settingsSubscription?.unsubscribe()
-        settingsActor?.stop()
-      },
-    }
-  },
-}) satisfies Factory
+        get current() {
+          ensureActor()
+          return settingsSignal
+        },
+        get: () => {
+          ensureActor()
+          return settingsSignal.value
+        },
+        send: (...args: Parameters<SettingsActorType['send']>) =>
+          ensureActor().send(...args),
+        useSettings: () =>
+          useSelector(ensureActor(), (state) => {
+            return getOnlySettingsFromContext(state.context)
+          }),
+      }
+      return {
+        exports: serviceImpl,
+        items: [provide(settingsService, serviceImpl)],
+        dispose: () => {
+          settingsSubscription?.unsubscribe()
+          settingsActor?.stop()
+        },
+      }
+    },
+  }) satisfies Factory
+export const settingsExtension = createSettingsExtension()
 const settingsRegistryItem = [
   contribute(
     statusBarGlobalItemsFacet,
