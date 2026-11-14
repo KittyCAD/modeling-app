@@ -24,3 +24,8 @@ this execution context. Editing its Code view updates a Modeling view immediatel
 saving only updates persistence and dirty state, not the execution input. Closing
 one tab leaves the document and its remaining contexts alive. Closing the last
 view disposes the document and interrupts its executors.
+
+`Executor.refresh()` retries the current editor and capability inputs for that
+executor without editing the document or rerunning sibling executors. Scene
+recovery uses it after acquiring a fresh connection, so normal source loading and
+error publication handle the retry. Calls after disposal are ignored.
