@@ -174,7 +174,7 @@ type NormalizableVertexReference = Partial<
 
 async function getParentEntityIdForEntity(
   entityId: string,
-  engineCommandManager: ConnectionManager
+  engineCommandManager: Pick<ConnectionManager, 'sendSceneCommand'>
 ): Promise<string | undefined> {
   const parentResponse = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
@@ -196,7 +196,7 @@ async function getParentEntityIdForEntity(
  */
 async function resolveSweepParentEntityIdForEdge(
   entityId: string,
-  engineCommandManager: ConnectionManager,
+  engineCommandManager: Pick<ConnectionManager, 'sendSceneCommand'>,
   artifactGraph: ArtifactGraph
 ): Promise<string | undefined> {
   if (!entityId) return undefined
@@ -269,7 +269,7 @@ async function resolveSweepParentEntityIdForEdge(
 
 async function getResolvableIntersectionInfoForRegion(
   regionId: ArtifactId,
-  engineCommandManager: ConnectionManager
+  engineCommandManager: Pick<ConnectionManager, 'sendSceneCommand'>
 ): Promise<RegionGetResolvableIntersectionInfo | null> {
   const response = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
@@ -289,7 +289,7 @@ async function getResolvableIntersectionInfoForRegion(
 
 async function getRegionQueryPointForRegion(
   regionId: ArtifactId,
-  engineCommandManager: ConnectionManager
+  engineCommandManager: Pick<ConnectionManager, 'sendSceneCommand'>
 ): Promise<Point2d | null> {
   const response = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
@@ -324,7 +324,7 @@ function getSketchIdForRegionInfo(
 async function getSketchIdForEngineRegionEntity(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
-  engineCommandManager: ConnectionManager
+  engineCommandManager: Pick<ConnectionManager, 'sendSceneCommand'>
 ): Promise<ArtifactId | null> {
   const parentEntityId = await getParentEntityIdForEntity(
     regionEntityId,
@@ -343,7 +343,7 @@ export async function getEngineRegionSelectionFromPoint(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
-  engineCommandManager: ConnectionManager,
+  engineCommandManager: Pick<ConnectionManager, 'sendSceneCommand'>,
   wasmInstance: ModuleType
 ): Promise<EngineRegionSelection | null> {
   const queryPointMm = await getRegionQueryPointForRegion(
@@ -380,7 +380,7 @@ export async function getEngineRegionSelectionFromPoint(
 async function getEngineRegionSelectionFromSegments(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
-  engineCommandManager: ConnectionManager
+  engineCommandManager: Pick<ConnectionManager, 'sendSceneCommand'>
 ): Promise<EngineRegionSelection | null> {
   const regionInfo = await getResolvableIntersectionInfoForRegion(
     regionEntityId,
@@ -402,7 +402,7 @@ async function getEngineRegionSelectionFromSegments(
 /** Engine `entity_get_primitive_index` + parent id; used when the artifact graph cannot resolve edge code refs (e.g. shell inner edges). */
 export async function getPrimitiveSelectionForEntity(
   entityId: string,
-  engineCommandManager: ConnectionManager,
+  engineCommandManager: Pick<ConnectionManager, 'sendSceneCommand'>,
   artifactGraph: ArtifactGraph
 ): Promise<EnginePrimitiveSelection | null> {
   const websocketResponse = await engineCommandManager.sendSceneCommand({
@@ -521,9 +521,9 @@ function recastExpr(expr: Expr, wasmInstance: ModuleType) {
 type SelectionExpressionBuilderContext = {
   primitiveSelection: ReferenceablePrimitiveSelection
   artifactGraph: ArtifactGraph
-  kclManager: KclManager
+  kclManager: Pick<KclManager, 'ast'>
   wasmInstance: ModuleType
-  engineCommandManager: ConnectionManager
+  engineCommandManager: Pick<ConnectionManager, 'sendSceneCommand'>
 }
 
 type SelectionExpressionValidationContext =
@@ -1056,7 +1056,7 @@ function createExpressionReferences({
   label: string
   selection: Selection
   artifactGraph: ArtifactGraph
-  kclManager: KclManager
+  kclManager: Pick<KclManager, 'ast'>
   wasmInstance: ModuleType
   options?: Parameters<typeof getVariableExprsFromSelection>[5]
 }): SelectionReference[] {
@@ -1147,8 +1147,8 @@ export async function getSelectionReferences({
   defaultPlaneSelections: DefaultPlaneSelection[]
   enginePrimitives: EnginePrimitiveSelection[]
   artifactGraph: ArtifactGraph
-  engineCommandManager: ConnectionManager
-  kclManager: KclManager
+  engineCommandManager: Pick<ConnectionManager, 'sendSceneCommand'>
+  kclManager: Pick<KclManager, 'ast'>
   wasmInstance: ModuleType
 }): Promise<SelectionReference[]> {
   const references: SelectionReference[] = defaultPlaneSelections.map(

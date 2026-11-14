@@ -353,3 +353,5 @@ const extension: Factory = defineFactory({
   },
 })
 export default withProjectShellFeature(extension, 'editors')
+
+export { extension as editorsExtension }
