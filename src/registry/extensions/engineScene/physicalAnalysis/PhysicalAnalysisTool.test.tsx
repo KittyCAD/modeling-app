@@ -222,7 +222,7 @@ describe('physical analysis tool', () => {
 
   it('clears stale values and shows analyzing when a unit changes', async () => {
     const first = setupDeferredModelingContext('mm')
-    render(<PhysicalAnalysisTool />)
+    const { rerender } = render(<PhysicalAnalysisTool />)
 
     expect(screen.getByText('Analyzing...')).toBeInTheDocument()
     first.release()
@@ -233,6 +233,7 @@ describe('physical analysis tool', () => {
 
     // Swap the volume unit; the old numbers no longer match the controls.
     const second = setupDeferredModelingContext('mm')
+    rerender(<PhysicalAnalysisTool />)
     fireEvent.change(screen.getByTestId('physical-analysis-volume-unit'), {
       target: { value: 'l' },
     })
