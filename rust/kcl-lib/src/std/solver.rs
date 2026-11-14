@@ -634,9 +634,18 @@ mod tests {
         sketch.paths.into_iter().next().unwrap()
     }
 
+    /// The test arc goes from [5, 0] to [-5, 0] around [0, 0]: half a turn of
+    /// radius 5 in either direction, so its length is 5 * pi, not the chord 10.
+    fn assert_half_turn_of_radius_5(path: &Path) {
+        let length = path.length().expect("an arc has a length");
+        assert!((length.n - 5.0 * std::f64::consts::PI).abs() < 1e-9, "got {}", length.n);
+        assert_eq!(length.ty, NumericType::length(UnitLength::Millimeters));
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn arc_lowering_sweeps_counterclockwise_by_default() {
         let path = lower_arc_to_path(ArcDirection::Ccw).await;
+        assert_half_turn_of_radius_5(&path);
         let Path::Arc { base, ccw, .. } = path else {
             panic!("expected an arc path, got {path:?}");
         };
@@ -648,6 +657,7 @@ mod tests {
     #[tokio::test(flavor = "multi_thread")]
     async fn arc_lowering_sweeps_clockwise_when_direction_is_cw() {
         let path = lower_arc_to_path(ArcDirection::Cw).await;
+        assert_half_turn_of_radius_5(&path);
         let Path::Arc { base, ccw, .. } = path else {
             panic!("expected an arc path, got {path:?}");
         };
