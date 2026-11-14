@@ -1,4 +1,4 @@
-import { extension } from './algebra'
+import { factory } from './algebra'
 import { computed, signal } from '@preact/signals-core'
 import fc from 'fast-check'
 import { expect, it } from 'vitest'
@@ -7,13 +7,13 @@ import {
   contribute,
   createScope,
   Facet,
-  type Item,
+  type Extension,
   optional,
   provide,
   required,
   ServiceResolutionError,
   type Source,
-  type Extension,
+  type Factory,
   service,
   slot,
 } from './algebra'
@@ -225,7 +225,7 @@ it('acquires slot snapshots with child order, identity, and duplicates intact', 
         contribute(facet, () => value)
       )
       const expected = indices.map((index) => pool[index])
-      const input: Item[] = [...expected]
+      const input: Extension[] = [...expected]
       const subtree = slot(input)
       input.reverse()
       input.length = 0
@@ -253,7 +253,7 @@ it('acquires slot snapshots with child order, identity, and duplicates intact', 
   )
 })
 
-it('slot acquisition neither acquires nested extensions nor reads contributions', () => {
+it('slot acquisition neither acquires nested factories nor reads contributions', () => {
   fc.assert(
     fc.property(fc.array(fc.boolean()), (choices) => {
       let acquisitions = 0
@@ -263,7 +263,7 @@ it('slot acquisition neither acquires nested extensions nor reads contributions'
         reads++
         return 1
       })
-      const child: Extension = extension({
+      const child: Factory = factory({
         create: () => {
           acquisitions++
           return { items: [binding] }
@@ -298,7 +298,7 @@ it('forwards replacement of any subtree without reacquiring or disposing its own
       let disposals = 0
       const facet = new Facet('values', (inputs: readonly number[]) => inputs)
       const initial = contribute(facet, () => -1)
-      const owner: Extension = extension({
+      const owner: Factory = factory({
         create: () => {
           acquisitions++
           return {
@@ -310,7 +310,7 @@ it('forwards replacement of any subtree without reacquiring or disposing its own
         },
       })
       const replacement = values.map((value) => contribute(facet, () => value))
-      const requests: { subtree: Extension; items: readonly Item[] }[] = []
+      const requests: { subtree: Factory; items: readonly Extension[] }[] = []
       const scope = createScope(
         { id: 'owner', path: 'root/owner' },
         {

@@ -6,7 +6,7 @@ import {
   type Contract,
   contract,
   contribute,
-  extension,
+  factory,
   Facet,
   type InputOf,
   type OutputOf,
@@ -15,7 +15,7 @@ import {
   ServiceResolutionError,
   type Signal,
   type Source,
-  type Extension,
+  type Factory,
   service,
   slot,
 } from './next'
@@ -130,16 +130,16 @@ it('derives adapter types from tokens and rejects callable extensions', () => {
   assertType<OutputOf<typeof _count>>(42)
   // @ts-expect-error Capability types retain required methods.
   assertType<CapabilityOf<typeof _save>>({ load: () => {} })
-  // @ts-expect-error Extensions are objects with a create operation.
-  assertType<Extension>(() => ({ items: [] }))
+  // @ts-expect-error Factories are objects with a create operation.
+  assertType<Factory>(() => ({ items: [] }))
 })
 
 it('injects each named dependency before the consumer constructor runs', async () => {
   const registry = new Registry()
   const results = new Facet('results', (values: readonly number[]) => values)
-  const first = extension({ create: () => ({ exports: { read: () => 1 } }) })
-  const second = extension({ create: () => ({ exports: { read: () => 2 } }) })
-  const consumer = extension({
+  const first = factory({ create: () => ({ exports: { read: () => 1 } }) })
+  const second = factory({ create: () => ({ exports: { read: () => 2 } }) })
+  const consumer = factory({
     dependencies: { first, second },
     create({ first, second }) {
       const result = first.read() * 10 + second.read()

@@ -7,7 +7,7 @@ import {
   type InputOf,
   provide,
   type Signal,
-  extension,
+  factory,
   service,
   slot,
 } from '../algebra'
@@ -37,7 +37,7 @@ export type DocumentModel = CapabilityOf<typeof editor.document>
 export type PanelContribution = InputOf<typeof editor.panels>
 
 /** Each registry acquires its own document; replacing panels retains this state. */
-const documentOwner = extension({
+const documentOwner = factory({
   create: () => {
     const text = signal('# Welcome\nStart writing.')
     const document: DocumentModel = {
@@ -53,7 +53,7 @@ const documentOwner = extension({
   },
 })
 
-const documentTitle = extension({
+const documentTitle = factory({
   dependencies: { state: documentOwner },
   create: ({ state: { document } }) => ({
     // `contribute` registers this read; the registry evaluates it after acquisition.
@@ -76,7 +76,7 @@ export const sidebar = slot([
   })),
 ])
 
-export const workspace = extension({
+export const workspace = factory({
   dependencies: { state: documentOwner },
   create: () => ({ items: [documentTitle, sidebar] }),
 })
@@ -87,7 +87,7 @@ export const outlinePlugin = createPlugin({
   title: 'Document outline',
   description: 'Lists level-one headings from the current document.',
   items: [
-    extension({
+    factory({
       // The title and outline share one document, despite declaring it separately.
       dependencies: { state: documentOwner },
       create: ({ state: { document } }) => ({

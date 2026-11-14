@@ -1,12 +1,12 @@
 import {
   contribute,
-  extension,
+  factory,
   Facet,
-  type Item,
+  type Extension,
   provide,
   type Service,
   type Signal,
-  type Extension,
+  type Factory,
   service,
   slot,
 } from './algebra'
@@ -39,9 +39,9 @@ export function createPlugin({
   enabledByDefault = true,
   ...info
 }: PluginInfo & {
-  readonly items: readonly Item[]
+  readonly items: readonly Extension[]
   readonly enabledByDefault?: boolean
-}): Extension {
+}): Factory {
   const enabled = new Facet(
     'plugin.active',
     (values: readonly boolean[]) => values.length > 0
@@ -49,7 +49,7 @@ export function createPlugin({
   const content = Object.freeze([contribute(enabled, () => true), ...items])
   const body = slot(enabledByDefault ? content : [])
   const controller = service<PluginController>(`${info.id}.controller`)
-  return extension({
+  return factory({
     key: info.id,
     create: (_dependencies, scope) => ({
       items: [

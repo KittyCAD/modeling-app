@@ -1,10 +1,10 @@
-import type { Binding, Item, Key, Extension } from './algebra'
+import type { Binding, Extension, Key, Factory } from './algebra'
 import { itemKey } from './algebra'
 import { formatPath, type ItemPath } from './path'
 
 /** A unique executable item and the path where planning first encountered it. */
 interface PlannedItem {
-  readonly item: Binding | Extension
+  readonly item: Binding | Factory
   readonly path: ItemPath
 }
 
@@ -18,14 +18,14 @@ export class DependencyCycleError extends Error {
 
 /** Expand declared dependencies, without installing bindings or acquiring children. */
 export function plan(
-  items: readonly Item[],
-  selected: ReadonlyMap<Key, Item> = new Map()
+  items: readonly Extension[],
+  selected: ReadonlyMap<Key, Extension> = new Map()
 ): readonly PlannedItem[] {
   const result: PlannedItem[] = []
   const completed = new Set<Key>()
   const active = new Map<Key, ItemPath>()
 
-  const visit = (item: Item, path: ItemPath): void => {
+  const visit = (item: Extension, path: ItemPath): void => {
     const key = itemKey(item)
     const winner = selected.get(key)
     if (winner !== undefined && winner !== item) return

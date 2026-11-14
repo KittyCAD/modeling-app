@@ -3,9 +3,9 @@ import fc from 'fast-check'
 import { expect, expectTypeOf, it } from 'vitest'
 import {
   contribute,
+  type Factory,
   type Extension,
-  type Item,
-  extension,
+  factory,
   Facet,
 } from './algebra'
 import { Registry } from './nextRegistry'
@@ -31,13 +31,13 @@ function reachable(
   return result
 }
 
-it('injects the declared extension exports with their inferred types', async () => {
+it('injects the declared factory exports with their inferred types', async () => {
   const registry = new Registry()
   const lengths = new Facet('lengths', (values: readonly number[]) => values)
-  const files = extension({
+  const files = factory({
     create: () => ({ exports: { read: (path: string) => path.length } }),
   })
-  const editor = extension({
+  const editor = factory({
     dependencies: { storage: files },
     create({ storage }) {
       expectTypeOf(storage.read).toEqualTypeOf<(path: string) => number>()
@@ -77,10 +77,10 @@ it('shares dependency instances and keeps them alive until their last reachable 
           edges.push(row.map((id) => id % edges.length))
         const creates = edges.map(() => 0)
         const disposals = edges.map(() => 0)
-        const nodes: Extension<Resource>[] = []
+        const nodes: Factory<Resource>[] = []
         for (const [id, dependencies] of edges.entries()) {
           nodes.push(
-            extension({
+            factory({
               key: `resource-${id}`,
               dependencies: Object.fromEntries(
                 dependencies.map((dependency, index) => [
@@ -181,7 +181,7 @@ it('rolls back newly acquired dependency exports without publishing them or rele
             registry.get(resources).map((resource) => resource.id)
           )
         })
-        const stable = extension({
+        const stable = factory({
           key: 'stable',
           create() {
             const resource: Resource = {
@@ -200,7 +200,7 @@ it('rolls back newly acquired dependency exports without publishing them or rele
           },
         })
         let capturedStable: Resource | undefined
-        const current = extension({
+        const current = factory({
           dependencies: { stable },
           create({ stable }) {
             capturedStable = stable
@@ -222,16 +222,16 @@ it('rolls back newly acquired dependency exports without publishing them or rele
         })
         let fail = true
         const failure = new Error('Cannot construct the final child')
-        const finalChild = extension({
+        const finalChild = factory({
           create() {
             if (fail) throw failure
             return { exports: {} }
           },
         })
-        let dependency: Extension<Resource> = stable
+        let dependency: Factory<Resource> = stable
         for (const [id, value] of values.entries()) {
           const previous = dependency
-          dependency = extension({
+          dependency = factory({
             key: `candidate-${id}`,
             dependencies: { previous, stable },
             create({ previous, stable }) {
@@ -258,7 +258,7 @@ it('rolls back newly acquired dependency exports without publishing them or rele
             },
           })
         }
-        const candidate = extension({
+        const candidate = factory({
           dependencies: { dependency },
           create({ dependency }) {
             expect(dependency.alive).toBe(true)
@@ -302,7 +302,7 @@ it.each([false, true])(
   async (reorder) => {
     const registry = new Registry()
     const released: string[] = []
-    const child = extension({
+    const child = factory({
       create: () => ({
         exports: { alive: true },
         dispose: () => {
@@ -310,7 +310,7 @@ it.each([false, true])(
         },
       }),
     })
-    const dependent = extension({
+    const dependent = factory({
       dependencies: { child },
       create: () => ({
         exports: {},
@@ -319,7 +319,7 @@ it.each([false, true])(
         },
       }),
     })
-    const owner = extension({
+    const owner = factory({
       create: () => ({
         exports: {},
         items: [child],
@@ -338,16 +338,16 @@ it.each([false, true])(
 
 it('rejects a keyed dependency alias instead of injecting another definition’s incompatible exports', async () => {
   const registry = new Registry()
-  const files = extension({
+  const files = factory({
     key: 'storage',
     create: () => ({ exports: { read: () => 'contents' } }),
   })
-  const unrelated = extension({
+  const unrelated = factory({
     key: 'storage',
     create: () => ({ exports: { send: () => undefined } }),
   })
   let acquired = false
-  const editor = extension({
+  const editor = factory({
     dependencies: { files },
     create({ files }) {
       acquired = true
@@ -373,7 +373,7 @@ it('rejects changed dependencies under a retained owner and rolls back their acq
         (inputs: readonly number[]) => inputs
       )
       const released: string[] = []
-      const original = extension({
+      const original = factory({
         create: () => ({
           exports: value,
           dispose: () => {
@@ -381,7 +381,7 @@ it('rejects changed dependencies under a retained owner and rolls back their acq
           },
         }),
       })
-      const replacement = extension({
+      const replacement = factory({
         create: () => ({
           exports: value + 1,
           dispose: () => {
@@ -389,8 +389,8 @@ it('rejects changed dependencies under a retained owner and rolls back their acq
           },
         }),
       })
-      const consumer = (dependency: Extension<number>) =>
-        extension({
+      const consumer = (dependency: Factory<number>) =>
+        factory({
           key: 'consumer',
           dependencies: { dependency },
           create: ({ dependency: current }) => ({
@@ -418,10 +418,10 @@ it('rejects changed dependencies under a retained owner and rolls back their acq
 
 it('releases returned resources when a child group is recursive', async () => {
   const registry = new Registry()
-  const recursive: Item[] = []
+  const recursive: Extension[] = []
   recursive.push(recursive)
   let disposed = false
-  const owner = extension({
+  const owner = factory({
     create: () => ({
       items: recursive,
       dispose: () => {
@@ -440,7 +440,7 @@ it('captures exports once so every alias and consumer receives the same value', 
   const registry = new Registry()
   const captured: object[] = []
   let reads = 0
-  const dependency = extension({
+  const dependency = factory({
     create: () => ({
       get exports() {
         return { generation: ++reads }
@@ -448,7 +448,7 @@ it('captures exports once so every alias and consumer receives the same value', 
     }),
   })
   const consumer = () =>
-    extension({
+    factory({
       dependencies: { first: dependency, second: dependency },
       create: ({ first, second }) => {
         captured.push(first, second)
@@ -468,7 +468,7 @@ it('captures exports once so every alias and consumer receives the same value', 
 it('releases acquired resources when capturing exports throws', async () => {
   const registry = new Registry()
   let disposed = false
-  const owner = extension({
+  const owner = factory({
     create: () => ({
       get exports(): never {
         throw new Error('exports failed')
@@ -496,7 +496,7 @@ it.each(['value', 'peek'] as const)(
     try {
       await registry.configure([original])
       expect(observation.value).toBe(7)
-      const consumer = extension({
+      const consumer = factory({
         create: () => ({
           exports: mode === 'value' ? observation.value : observation.peek(),
         }),

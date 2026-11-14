@@ -4,7 +4,7 @@ Reactive registry framework for Zoo Design Studio.
 
 The new runtime is available separately at `@kittycad/registry/next`; the default
 entrypoint below remains unchanged. See the [algebra and next runtime guide](./ALGEBRA.md)
-for Facets, typed Extension dependencies, transactional reconfiguration, diagnostics,
+for Facets, typed Factory dependencies, transactional reconfiguration, diagnostics,
 and plugins.
 
 ```ts

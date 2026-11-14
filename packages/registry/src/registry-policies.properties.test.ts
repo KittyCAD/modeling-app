@@ -1,7 +1,7 @@
-import { extension } from './algebra'
+import { factory } from './algebra'
 import fc from 'fast-check'
 import { expect, it } from 'vitest'
-import { contribute, Facet, type Precedence, type Extension } from './algebra'
+import { contribute, Facet, type Precedence, type Factory } from './algebra'
 import { Registry } from './next'
 
 const priorities = ['highest', 'high', 'default', 'low', 'lowest'] as const
@@ -96,8 +96,8 @@ it('retains keyed resources across rebuilt definitions and reacquires only after
             if (!previous.has(id)) expectedAcquired[id]++
           for (const id of previous)
             if (!selected.has(id)) expectedReleased[id]++
-          const definitions: Extension[] = selection.map((id) =>
-            extension({
+          const definitions: Factory[] = selection.map((id) =>
+            factory({
               key: `resource-${id}`,
               create: () => {
                 const resource = { id, generation: ++acquired[id] }
