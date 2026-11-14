@@ -21,6 +21,8 @@ export interface ExecutorCapability<
   /** Unique contribution ID, used to name its data or error in the output. */
   id: string
   matches: EditorMatcher
+  /** Additional inputs whose changes require a new source execution, such as imported buffers. */
+  revision?: ReadonlySignal<unknown>
   execute: (
     contents: string,
     context: ExecutorRunContext
