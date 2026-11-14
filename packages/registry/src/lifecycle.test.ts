@@ -270,3 +270,21 @@ it('starts shared dependencies once before their consumers and binds lifecycle m
     'dependency stopped',
   ])
 })
+
+it('keeps disposal terminal when a configuration is queued behind its final cleanup', async () => {
+  const registry = new Registry()
+  let created = false
+  const late = factory({
+    create: () => {
+      created = true
+      return {}
+    },
+  })
+  const shutdown = registry.dispose()
+  const configuration = Promise.resolve().then(() => registry.configure([late]))
+  await shutdown
+  await expect(configuration).rejects.toThrow('disposed')
+  expect(created).toBe(false)
+  await expect(registry.configure([])).rejects.toThrow('disposed')
+  expect(registry.dispose()).toBe(shutdown)
+})

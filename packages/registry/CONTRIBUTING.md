@@ -33,7 +33,7 @@ Rust/Wasm artifacts. Run the commands below from the repository root.
 | Ownership | Share Factory instances within each Registry and keep them alive while reachable from configured roots through dependencies or children. Replacing children preserves their owner's instance and dependencies. A retained consumer cannot silently receive a different dependency instance. |
 | Publication | Create instances synchronously, then expose the new contributions together. Failed creation cleans up returned instances and leaves the previous configuration visible. |
 | Startup | Read injected exports during `create`; defer registry observations to after publication. Run new instances' `start` callbacks after removed-instance cleanup. Rolled-back instances never start; retained instances do not restart. |
-| Cleanup | Await startup cleanup before `dispose`, children before owners, and consumers before dependencies. Continue after failures and report them together. Failures after publication leave the new configuration in place. |
+| Cleanup | Await startup cleanup before `dispose`, children before owners, and consumers before dependencies. Continue after failures and report them together. Failures after publication leave the new configuration in place. Registry disposal is terminal and idempotent. |
 | Isolation | Keep Facet storage separate for each Registry and preserve each Facet's input type. Reject overlapping reconciliations until startup and cleanup finish. |
 
 If `create` allocates resources and throws before returning an instance, it must
