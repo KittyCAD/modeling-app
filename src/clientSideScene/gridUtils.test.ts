@@ -2,6 +2,7 @@ import {
   getGridScaleFactor,
   snapPointToGrid,
 } from '@src/clientSideScene/gridUtils'
+import fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
 
 describe('gridUtils', () => {
@@ -90,23 +91,90 @@ describe('grid coordinate precision', () => {
     fixedSizeGrid: true,
   }
 
+  it('removes floating-point tails from snapped coordinates', () => {
+    expect(
+      snapPointToGrid([8.2, 4.1], {
+        ...options,
+        majorGridSpacing: 2.7,
+        minorGridsPerMajor: 2,
+      })
+    ).toEqual({ point: [8.1, 4.05], snapped: true })
+  })
+
   it('preserves repeating subdivisions and is stable when snapped again', () => {
     const major = snapPointToGrid([2.34, -2.34], options)
     expect(major).toEqual({ point: [2.3333, -2.3333], snapped: true })
 
     const first = snapPointToGrid([0.1, -0.1], options)
     expect(first.snapped).toBe(true)
-    expect(first.point[0] * 17).toBeCloseTo(2.3333, 14)
+    expect(first.point[0]).toBeCloseTo(2.3333 / 17, 14)
     expect(first.point[1]).toBe(-first.point[0])
 
     // Nearest-grid choice on either side of the midpoint to the next line.
     expect(snapPointToGrid([0.2, -0.2], options)).toEqual(first)
     const second = snapPointToGrid([0.21, -0.21], options)
-    expect(second.point[0]).toBeCloseTo(first.point[0] * 2, 14)
+    expect(second.point[0]).toBeCloseTo((2.3333 * 2) / 17, 14)
     expect(second.point[1]).toBe(-second.point[0])
     for (const snapped of [major, first, second]) {
       expect(snapPointToGrid(snapped.point, options)).toEqual(snapped)
     }
+  })
+
+  it('preserves exact fractional coordinates on either side of the origin', () => {
+    expect(
+      snapPointToGrid([1.0078125, -1.0078125], {
+        ...options,
+        majorGridSpacing: 1,
+        minorGridsPerMajor: 128,
+      })
+    ).toEqual({ point: [1.0078125, -1.0078125], snapped: true })
+  })
+
+  it('preserves binary grid fractions across subdivisions', () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: -1000, max: 1000 }),
+        fc.integer({ min: 0, max: 10 }),
+        (index, exponent) => {
+          const divisions = 2 ** exponent
+          const coordinate = index / divisions || 0
+          const snapped = snapPointToGrid([coordinate, 0], {
+            ...options,
+            majorGridSpacing: 1,
+            minorGridsPerMajor: divisions,
+          })
+          expect(snapped).toEqual({ point: [coordinate, 0], snapped: true })
+          expect(
+            snapPointToGrid(snapped.point, {
+              ...options,
+              majorGridSpacing: 1,
+              minorGridsPerMajor: divisions,
+            })
+          ).toEqual(snapped)
+        }
+      )
+    )
+  })
+
+  it('keeps extra digits when cleanup would select another grid point', () => {
+    const coordinate = 100000000000000.12
+    expect(
+      snapPointToGrid([coordinate, -coordinate], {
+        ...options,
+        majorGridSpacing: 1,
+        minorGridsPerMajor: 8,
+      })
+    ).toEqual({ point: [coordinate, -coordinate], snapped: true })
+  })
+
+  it('keeps very small grid coordinates distinct', () => {
+    expect(
+      snapPointToGrid([1e-8, -1e-8], {
+        ...options,
+        majorGridSpacing: 1e-8,
+        minorGridsPerMajor: 1,
+      })
+    ).toEqual({ point: [1e-8, -1e-8], snapped: true })
   })
 
   it.each([NaN, Infinity, 1e20])('rejects unrepresentable cursor %s', (x) => {

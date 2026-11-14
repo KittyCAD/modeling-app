@@ -387,6 +387,84 @@ describe('rectUtils.createDraftRectangle', () => {
 })
 
 describe('rectUtils.updateDraftRectangleAligned', () => {
+  it.each([
+    { center: 8.1, corner: 10.8, min: 5.4, max: 10.8 },
+    { center: -8.1, corner: -10.8, min: -10.8, max: -5.4 },
+    { center: 1.0078125, corner: 1.015625, min: 1, max: 1.015625 },
+    { center: 0.00025, corner: 0.000375, min: 0.000125, max: 0.000375 },
+  ])(
+    'cleans derived corners around $center without losing fractional coordinates',
+    async ({ center, corner, min, max }) => {
+      const rustContext = createMockRustContext()
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      const editSegmentsMock = vi.mocked(rustContext.editSegments)
+      editSegmentsMock.mockResolvedValue({
+        kclSource: { text: 'updated' },
+        sceneGraphDelta: createSceneGraphDelta([]),
+      })
+
+      await updateDraftRectangleAligned({
+        rustContext,
+        kclManager: createMockKclManager(),
+        sketchId: 9,
+        draft: {
+          lineIds: [1, 2, 3, 4],
+          segmentIds: [],
+          constraintIds: [],
+          originPointId: 15,
+          centerGeometry: {
+            diagonalLineIds: [5, 6],
+            diagonalPointIds: [11, 12, 13, 14],
+            centerPointId: 15,
+          },
+        },
+        mode: 'center',
+        startPoint: [center, center],
+        currentPoint: [corner, corner],
+      })
+
+      const edits = editSegmentsMock.mock.calls[0]?.[2]
+      const point = (x: number, y: number) => ({
+        x: { type: 'Var', value: x, units: 'Mm' },
+        y: { type: 'Var', value: y, units: 'Mm' },
+      })
+      const corners = [
+        point(min, min),
+        point(max, min),
+        point(max, max),
+        point(min, max),
+      ]
+      expect(edits).toHaveLength(7)
+      for (let i = 0; i < 4; i++) {
+        expect(edits?.[i]).toMatchObject({
+          id: i + 1,
+          ctor: { type: 'Line', start: corners[i], end: corners[(i + 1) % 4] },
+        })
+      }
+      expect(edits?.slice(4)).toEqual([
+        {
+          id: 5,
+          ctor: {
+            type: 'Line',
+            start: corners[0],
+            end: corners[2],
+            construction: true,
+          },
+        },
+        {
+          id: 6,
+          ctor: {
+            type: 'Line',
+            start: corners[1],
+            end: corners[3],
+            construction: true,
+          },
+        },
+        { id: 15, ctor: { type: 'Point', position: point(center, center) } },
+      ])
+    }
+  )
+
   it('updates center rectangle diagonals and center point alongside the outer lines', async () => {
     const rustContext = createMockRustContext()
     const kclManager = createMockKclManager()

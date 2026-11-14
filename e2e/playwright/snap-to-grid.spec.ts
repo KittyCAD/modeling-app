@@ -14,6 +14,7 @@ test.describe(
   () => {
     for (const grid of [
       { major: 1, minor: 4, snaps: 2 },
+      { major: 1, minor: 128, snaps: 1 },
       { major: 2.3333, minor: 17, snaps: 1 },
     ]) {
       test(`preserves grid precision through creation, dragging, and reload (${grid.major}/${grid.minor}/${grid.snaps})`, async ({
@@ -84,7 +85,9 @@ test.describe(
               (setting) => window.app.settings.get().modeling[setting].current,
               setting
             )
-          if (await isEnabled()) return
+          if (await isEnabled()) {
+            return
+          }
 
           await waitForSettingsIdle(page)
           const [openSketchMenu] = scene.makeMouseHelpers(0.8, 0.2, {
@@ -193,7 +196,9 @@ test.describe(
         const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
         await expect(pointHandles).toHaveCount(2)
         const pointBox = await pointHandles.first().boundingBox()
-        if (!pointBox) throw new Error('Expected a draggable line endpoint')
+        if (!pointBox) {
+          throw new Error('Expected a draggable line endpoint')
+        }
         const x = pointBox.x + pointBox.width / 2
         const y = pointBox.y + pointBox.height / 2
         const checkpointBeforeDrag = await page.evaluate(

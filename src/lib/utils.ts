@@ -376,6 +376,10 @@ export function roundOff(num: number, precision: number = 2): number {
   return Math.round(num * x) / x
 }
 
+export function roundToSignificantDigits(num: number, precision = 15): number {
+  return Number(num.toPrecision(precision))
+}
+
 export function baseUnitToMm(baseUnit: BaseUnit): number {
   switch (baseUnit) {
     case 'mm':
