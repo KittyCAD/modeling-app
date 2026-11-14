@@ -688,44 +688,49 @@ export class CameraControls {
       this.queueEngineInteraction(this.moveFrame, () => {
         this.doMove(interaction, [point.clientX, point.clientY])
       })
-      return
+    } else {
+      // The client owns the camera, either with engine synchronization
+      // for sketch mode or without it for local rendering.
+      if (this.effectiveCameraMode === 'local') {
+        if (interaction === 'rotate') {
+          orbitLocalCamera(
+            this.camera,
+            this.target,
+            deltaMove,
+            this.domElement,
+            this.orbitDragUpInverted
+          )
+          this.update(true)
+        } else if (interaction === 'rotatetrackball') {
+          // The trackball turns about the canvas center, so it needs the
+          // drag's positions on the canvas, not only how far it moved.
+          const { left, top } = this.domElement.getBoundingClientRect()
+          const canvasOrigin = new Vector2(left, top)
+          trackballLocalCamera(
+            this.camera,
+            this.target,
+            this.mouseNewPosition.clone().sub(deltaMove).sub(canvasOrigin),
+            this.mouseNewPosition.clone().sub(canvasOrigin),
+            this.domElement
+          )
+          this.update(true)
+        } else {
+          this.addPendingMove(point, interaction, deltaMove)
+          this.update()
+        }
+      } else {
+        // clientToEngine: the client drives the engine's camera, in sketch
+        // mode or briefly while the gizmo turns it.
+        this.addPendingMove(point, interaction, deltaMove)
+      }
     }
+  }
 
-    if (this.effectiveCameraMode === 'local' && interaction === 'rotate') {
-      orbitLocalCamera(
-        this.camera,
-        this.target,
-        deltaMove,
-        this.domElement,
-        this.orbitDragUpInverted
-      )
-      this.update(true)
-      return
-    }
-
-    if (
-      this.effectiveCameraMode === 'local' &&
-      interaction === 'rotatetrackball'
-    ) {
-      // The trackball turns about the canvas center, so it needs the drag's
-      // positions on the canvas, not only how far it moved.
-      const { left, top } = this.domElement.getBoundingClientRect()
-      const canvasOrigin = new Vector2(left, top)
-      trackballLocalCamera(
-        this.camera,
-        this.target,
-        this.mouseNewPosition.clone().sub(deltaMove).sub(canvasOrigin),
-        this.mouseNewPosition.clone().sub(canvasOrigin),
-        this.domElement
-      )
-      this.update(true)
-      return
-    }
-
-    // Else the client owns the camera, either with engine synchronization
-    // for sketch mode or without it for local rendering.
-    // Implement camera movement logic here based on deltaMove
-    // For example, for rotating the camera around the target:
+  private addPendingMove(
+    point: ScreenPoint,
+    interaction: CameraDragInteractionType,
+    deltaMove: Vector2
+  ) {
     if (interaction === 'rotate') {
       this.pendingRotation = this.pendingRotation
         ? this.pendingRotation
@@ -746,9 +751,6 @@ export class CameraControls {
         const newPosition = this.screenToWorld(point, this.cameraDown)
         this.pendingPan = newPosition.sub(this.worldDownPosition)
       }
-    }
-    if (this.effectiveCameraMode === 'local') {
-      this.update()
     }
   }
 
