@@ -2191,9 +2191,15 @@ pub async fn elliptic_point(exec_state: &mut ExecState, args: Args) -> Result<Kc
     let major_radius = args.get_kw_arg("majorRadius", &RuntimeType::num_any(), exec_state)?;
     let minor_radius = args.get_kw_arg("minorRadius", &RuntimeType::num_any(), exec_state)?;
 
-    let elliptic_point = inner_elliptic_point(x, y, major_radius, minor_radius, &args).await?;
+    let units = exec_state.length_unit();
+    let elliptic_point = inner_elliptic_point(x, y, major_radius, minor_radius, units, &args).await?;
 
-    args.make_kcl_val_from_point(elliptic_point, NumericType::length(exec_state.length_unit()))
+    args.make_kcl_val_from_point(elliptic_point, NumericType::length(units))
+}
+
+/// The value in `units` if it is a length, otherwise the plain number.
+fn length_or_number(value: &TyF64, units: UnitLength) -> f64 {
+    value.to_length_units(units).unwrap_or(value.n)
 }
 
 async fn inner_elliptic_point(
@@ -2201,45 +2207,40 @@ async fn inner_elliptic_point(
     y: Option<TyF64>,
     major_radius: TyF64,
     minor_radius: TyF64,
+    units: UnitLength,
     args: &Args,
 ) -> Result<[f64; 2], KclError> {
-    let major_radius = major_radius.n;
-    let minor_radius = minor_radius.n;
+    let major_radius = length_or_number(&major_radius, units);
+    let minor_radius = length_or_number(&minor_radius, units);
     if let Some(x) = x {
-        if x.n.abs() > major_radius {
+        let x = length_or_number(&x, units);
+        if x.abs() > major_radius {
             Err(KclError::Type {
                 details: KclErrorDetails::new(
                     format!(
                         "Invalid input. The x value, {}, cannot be larger than the major radius {}.",
-                        x.n, major_radius
+                        x, major_radius
                     ),
                     vec![args.source_range],
                 ),
             })
         } else {
-            Ok((
-                x.n,
-                minor_radius * (1.0 - x.n.squared() / major_radius.squared()).sqrt(),
-            )
-                .into())
+            Ok((x, minor_radius * (1.0 - x.squared() / major_radius.squared()).sqrt()).into())
         }
     } else if let Some(y) = y {
-        if y.n > minor_radius {
+        let y = length_or_number(&y, units);
+        if y > minor_radius {
             Err(KclError::Type {
                 details: KclErrorDetails::new(
                     format!(
                         "Invalid input. The y value, {}, cannot be larger than the minor radius {}.",
-                        y.n, minor_radius
+                        y, minor_radius
                     ),
                     vec![args.source_range],
                 ),
             })
         } else {
-            Ok((
-                major_radius * (1.0 - y.n.squared() / minor_radius.squared()).sqrt(),
-                y.n,
-            )
-                .into())
+            Ok((major_radius * (1.0 - y.squared() / minor_radius.squared()).sqrt(), y).into())
         }
     } else {
         Err(KclError::Type {
@@ -2388,9 +2389,10 @@ pub async fn hyperbolic_point(exec_state: &mut ExecState, args: Args) -> Result<
     let semi_major = args.get_kw_arg("semiMajor", &RuntimeType::num_any(), exec_state)?;
     let semi_minor = args.get_kw_arg("semiMinor", &RuntimeType::num_any(), exec_state)?;
 
-    let hyperbolic_point = inner_hyperbolic_point(x, y, semi_major, semi_minor, &args).await?;
+    let units = exec_state.length_unit();
+    let hyperbolic_point = inner_hyperbolic_point(x, y, semi_major, semi_minor, units, &args).await?;
 
-    args.make_kcl_val_from_point(hyperbolic_point, NumericType::length(exec_state.length_unit()))
+    args.make_kcl_val_from_point(hyperbolic_point, NumericType::length(units))
 }
 
 async fn inner_hyperbolic_point(
@@ -2398,26 +2400,29 @@ async fn inner_hyperbolic_point(
     y: Option<TyF64>,
     semi_major: TyF64,
     semi_minor: TyF64,
+    units: UnitLength,
     args: &Args,
 ) -> Result<[f64; 2], KclError> {
-    let semi_major = semi_major.n;
-    let semi_minor = semi_minor.n;
+    let semi_major = length_or_number(&semi_major, units);
+    let semi_minor = length_or_number(&semi_minor, units);
     if let Some(x) = x {
-        if x.n.abs() < semi_major {
+        let x = length_or_number(&x, units);
+        if x.abs() < semi_major {
             Err(KclError::Type {
                 details: KclErrorDetails::new(
                     format!(
                         "Invalid input. The x value, {}, cannot be less than the semi major value, {}.",
-                        x.n, semi_major
+                        x, semi_major
                     ),
                     vec![args.source_range],
                 ),
             })
         } else {
-            Ok((x.n, semi_minor * (x.n.squared() / semi_major.squared() - 1.0).sqrt()).into())
+            Ok((x, semi_minor * (x.squared() / semi_major.squared() - 1.0).sqrt()).into())
         }
     } else if let Some(y) = y {
-        Ok((semi_major * (y.n.squared() / semi_minor.squared() + 1.0).sqrt(), y.n).into())
+        let y = length_or_number(&y, units);
+        Ok((semi_major * (y.squared() / semi_minor.squared() + 1.0).sqrt(), y).into())
     } else {
         Err(KclError::Type {
             details: KclErrorDetails::new(
@@ -2560,25 +2565,29 @@ pub async fn parabolic_point(exec_state: &mut ExecState, args: Args) -> Result<K
         exec_state,
     )?;
 
-    let parabolic_point = inner_parabolic_point(x, y, &coefficients, &args).await?;
+    let units = exec_state.length_unit();
+    let parabolic_point = inner_parabolic_point(x, y, &coefficients, units, &args).await?;
 
-    args.make_kcl_val_from_point(parabolic_point, NumericType::length(exec_state.length_unit()))
+    args.make_kcl_val_from_point(parabolic_point, NumericType::length(units))
 }
 
 async fn inner_parabolic_point(
     x: Option<TyF64>,
     y: Option<TyF64>,
     coefficients: &[TyF64; 3],
+    units: UnitLength,
     args: &Args,
 ) -> Result<[f64; 2], KclError> {
     let a = coefficients[0].n;
     let b = coefficients[1].n;
     let c = coefficients[2].n;
     if let Some(x) = x {
-        Ok((x.n, a * x.n.squared() + b * x.n + c).into())
+        let x = length_or_number(&x, units);
+        Ok((x, a * x.squared() + b * x + c).into())
     } else if let Some(y) = y {
-        let det = (b.squared() - 4.0 * a * (c - y.n)).sqrt();
-        Ok(((-b + det) / (2.0 * a), y.n).into())
+        let y = length_or_number(&y, units);
+        let det = (b.squared() - 4.0 * a * (c - y)).sqrt();
+        Ok(((-b + det) / (2.0 * a), y).into())
     } else {
         Err(KclError::Type {
             details: KclErrorDetails::new(
@@ -2669,6 +2678,7 @@ pub(crate) async fn inner_parabolic(
                 Some(TyF64::count(0.5 * (from.x + end[0]))),
                 None,
                 &coefficients,
+                from.units,
                 &args,
             )
             .await?;
@@ -2681,6 +2691,7 @@ pub(crate) async fn inner_parabolic(
                 Some(TyF64::count(0.5 * (from.x + end[0]))),
                 None,
                 &coefficients,
+                from.units,
                 &args,
             )
             .await?;
@@ -3371,11 +3382,15 @@ fn region_from_point(
 #[cfg(test)]
 mod tests {
 
+    use kcl_api::UnitLength;
     use pretty_assertions::assert_eq;
 
     use crate::errors::KclError;
     use crate::errors::KclErrorDetails;
     use crate::execution::TagIdentifier;
+    use crate::execution::parse_execute;
+    use crate::execution::types::NumericType;
+    use crate::execution::types::NumericTypeExt;
     use crate::std::sketch::PlaneData;
     use crate::std::sketch::REGION_DOCS_URL;
     use crate::std::sketch::REGION_FROM_POINT_ENGINE_HELP;
@@ -3512,5 +3527,54 @@ mod tests {
         let actual = calculate_circle_center([0.0, 0.0], [5.0, 5.0], [10.0, 0.0]);
         assert_eq!(actual[0], 5.0);
         assert_eq!(actual[1], 0.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn conic_points_convert_lengths_to_the_file_units() {
+        // https://github.com/KittyCAD/modeling-app/issues/14220
+        // In an inch file, 25.4mm is 1in and 50.8mm is 2in.
+        let cases = [
+            (
+                "ellipticPoint(x = 0.5, majorRadius = 50.8mm, minorRadius = 25.4mm)",
+                [0.5, 0.9375_f64.sqrt()],
+            ),
+            (
+                "ellipticPoint(y = 25.4mm, majorRadius = 2, minorRadius = 2)",
+                [3.0_f64.sqrt(), 1.0],
+            ),
+            (
+                "hyperbolicPoint(x = 50.8mm, semiMajor = 1, semiMinor = 1)",
+                [2.0, 3.0_f64.sqrt()],
+            ),
+            (
+                "hyperbolicPoint(y = 25.4mm, semiMajor = 1, semiMinor = 1)",
+                [2.0_f64.sqrt(), 1.0],
+            ),
+            (
+                "hyperbolicPoint(x = -101.6mm, semiMajor = 50.8mm, semiMinor = 25.4mm)",
+                [-4.0, 3.0_f64.sqrt()],
+            ),
+            ("parabolicPoint(x = 25.4mm, coefficients = [1, 0, 0])", [1.0, 1.0]),
+            ("parabolicPoint(y = 25.4mm, coefficients = [1, 0, 0])", [1.0, 1.0]),
+            // Values without units written in this file keep their numbers.
+            (
+                "ellipticPoint(x = 0.5, majorRadius = 2, minorRadius = 1)",
+                [0.5, 0.9375_f64.sqrt()],
+            ),
+        ];
+        for version in ["2.0", "3.0"] {
+            for (call, expected) in cases {
+                let code = format!("@settings(kclVersion = {version}, defaultLengthUnit = in)\np = {call}");
+                let result = parse_execute(&code).await.unwrap();
+                let p = result.variable("p").as_point2d().expect("`p` should be a point");
+                for (actual, expected) in p.iter().zip(expected) {
+                    assert!(
+                        (actual.n - expected).abs() < 1e-9,
+                        "expected {expected:?}, got {p:?} for:\n{code}"
+                    );
+                    assert_eq!(actual.ty, NumericType::length(UnitLength::Inches), "{code}");
+                }
+            }
+        }
     }
 }
