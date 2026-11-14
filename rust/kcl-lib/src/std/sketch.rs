@@ -2493,12 +2493,19 @@ pub(crate) async fn inner_hyperbolic(
 
     let interior = point_to_len_unit(interior, from.units);
     let end = point_to_len_unit(end, from.units);
+    // The hyperbola's equation is in the sketch's frame, so evaluate it at the
+    // absolute end point even when `end` was given relative to the pen.
+    let end_abs = if relative {
+        [from.x + end[0], from.y + end[1]]
+    } else {
+        end
+    };
     let end_point = Point2d {
-        x: end[0],
-        y: end[1],
+        x: end_abs[0],
+        y: end_abs[1],
         units: from.units,
     };
-    let loops_back_to_start = does_segment_close_sketch(end, sketch.start.from);
+    let loops_back_to_start = does_segment_close_sketch(end_abs, sketch.start.from);
 
     let semi_major_u = semi_major.unwrap_to_length_units(from.units);
     let semi_minor_u = semi_minor.unwrap_to_length_units(from.units);
@@ -2527,7 +2534,7 @@ pub(crate) async fn inner_hyperbolic(
     let current_path = Path::Conic {
         base: BasePath {
             from: from.ignore_units(),
-            to: end,
+            to: end_abs,
             tag: tag.clone(),
             units: sketch.units,
             geo_meta: GeoMeta {
@@ -2642,7 +2649,9 @@ pub(crate) async fn inner_parabolic(
     let from = sketch.current_pen_position()?;
     let id = exec_state.next_uuid();
 
-    if (coefficients.is_some() && interior.is_some()) || (coefficients.is_none() && interior.is_none()) {
+    if (coefficients.is_some() && interior.is_some())
+        || (coefficients.is_none() && interior.is_none() && interior_absolute.is_none())
+    {
         return Err(KclError::Type {
             details: KclErrorDetails::new(
                 "Invalid combination of arguments. Either provide (a, b, c) or (interior)".to_owned(),
@@ -2664,14 +2673,12 @@ pub(crate) async fn inner_parabolic(
         }
         (Some(coefficients), _, Some(end), _, _) => {
             let end = point_to_len_unit(end, from.units);
-            let interior =
-            inner_parabolic_point(
-                Some(TyF64::count(0.5 * (from.x + end[0]))),
-                None,
-                &coefficients,
-                &args,
-            )
-            .await?;
+            // The parabola's equation is in the sketch's frame, so take the
+            // interior halfway along the absolute x range, then make it
+            // relative to the pen like `end` is.
+            let x = from.x + 0.5 * end[0];
+            let [a, b, c] = &coefficients;
+            let interior = [x - from.x, a.n * x * x + b.n * x + c.n - from.y];
             (interior, end, true)
         }
         (Some(coefficients), _, _, _, Some(end)) => {
@@ -2694,9 +2701,19 @@ pub(crate) async fn inner_parabolic(
             )}),
     };
 
+    // The parabola's equation is in the sketch's frame, so fit and evaluate it
+    // with absolute points even when they were given relative to the pen.
+    let (interior_abs, end_abs) = if relative {
+        (
+            [from.x + interior[0], from.y + interior[1]],
+            [from.x + end[0], from.y + end[1]],
+        )
+    } else {
+        (interior, end)
+    };
     let end_point = Point2d {
-        x: end[0],
-        y: end[1],
+        x: end_abs[0],
+        y: end_abs[1],
         units: from.units,
     };
 
@@ -2704,18 +2721,18 @@ pub(crate) async fn inner_parabolic(
         (a.n, b.n, c.n)
     } else {
         // Any three points is enough to uniquely define a parabola
-        let denom = (from.x - interior[0]) * (from.x - end_point.x) * (interior[0] - end_point.x);
-        let a = (end_point.x * (interior[1] - from.y)
-            + interior[0] * (from.y - end_point.y)
-            + from.x * (end_point.y - interior[1]))
+        let denom = (from.x - interior_abs[0]) * (from.x - end_point.x) * (interior_abs[0] - end_point.x);
+        let a = (end_point.x * (interior_abs[1] - from.y)
+            + interior_abs[0] * (from.y - end_point.y)
+            + from.x * (end_point.y - interior_abs[1]))
             / denom;
-        let b = (end_point.x.squared() * (from.y - interior[1])
-            + interior[0].squared() * (end_point.y - from.y)
-            + from.x.squared() * (interior[1] - end_point.y))
+        let b = (end_point.x.squared() * (from.y - interior_abs[1])
+            + interior_abs[0].squared() * (end_point.y - from.y)
+            + from.x.squared() * (interior_abs[1] - end_point.y))
             / denom;
-        let c = (interior[0] * end_point.x * (interior[0] - end_point.x) * from.y
-            + end_point.x * from.x * (end_point.x - from.x) * interior[1]
-            + from.x * interior[0] * (from.x - interior[0]) * end_point.y)
+        let c = (interior_abs[0] * end_point.x * (interior_abs[0] - end_point.x) * from.y
+            + end_point.x * from.x * (end_point.x - from.x) * interior_abs[1]
+            + from.x * interior_abs[0] * (from.x - interior_abs[0]) * end_point.y)
             / denom;
 
         (a, b, c)
@@ -2745,7 +2762,7 @@ pub(crate) async fn inner_parabolic(
     let current_path = Path::Conic {
         base: BasePath {
             from: from.ignore_units(),
-            to: end,
+            to: end_abs,
             tag: tag.clone(),
             units: sketch.units,
             geo_meta: GeoMeta {
@@ -2854,10 +2871,17 @@ pub(crate) async fn inner_conic(
 
     let end = point_to_len_unit(end, from.units);
     let interior = point_to_len_unit(interior, from.units);
+    // The conic's equation is in the sketch's frame, so evaluate it at the
+    // absolute end point even when `end` was given relative to the pen.
+    let end_abs = if relative {
+        [from.x + end[0], from.y + end[1]]
+    } else {
+        end
+    };
 
     let (start_tangent, end_tangent) = if let Some(coeffs) = coefficients {
         let (coeffs, _) = untype_array(coeffs);
-        (conic_tangent(coeffs, [from.x, from.y]), conic_tangent(coeffs, end))
+        (conic_tangent(coeffs, [from.x, from.y]), conic_tangent(coeffs, end_abs))
     } else {
         let start = if let Some(start_tangent) = start_tangent {
             point_to_len_unit(start_tangent, from.units)
@@ -2900,7 +2924,7 @@ pub(crate) async fn inner_conic(
     let current_path = Path::Conic {
         base: BasePath {
             from: from.ignore_units(),
-            to: end,
+            to: end_abs,
             tag: tag.clone(),
             units: sketch.units,
             geo_meta: GeoMeta {
@@ -3512,5 +3536,234 @@ mod tests {
         let actual = calculate_circle_center([0.0, 0.0], [5.0, 5.0], [10.0, 0.0]);
         assert_eq!(actual[0], 5.0);
         assert_eq!(actual[1], 0.0);
+    }
+}
+
+#[cfg(test)]
+mod conic_segment_tests {
+    use kittycad_modeling_cmds::ModelingCmd;
+    use kittycad_modeling_cmds::shared::PathSegment;
+
+    use crate::execution::KclValue;
+    use crate::execution::parse_execute;
+
+    /// Everything a conic-type segment produced, in mm: what the engine was
+    /// told (with the interior and end made absolute when the command was
+    /// relative), the end point KCL recorded for it, where KCL starts the
+    /// following line, and what `segEnd` reports for the segment's tag.
+    #[derive(Debug)]
+    struct ConicRecord {
+        interior: [f64; 2],
+        end: [f64; 2],
+        start_tangent: [f64; 2],
+        end_tangent: [f64; 2],
+        relative: bool,
+        stored_end: [f64; 2],
+        next_from: [f64; 2],
+        seg_end: [f64; 2],
+    }
+
+    /// Runs a profile `p` that starts at `start`, draws one conic-type segment
+    /// tagged `$c`, then a line, and records `segEnd(c)` in `e`, all in a mm
+    /// file using KCL `version`.
+    async fn conic_in_mm(version: &str, start: [f64; 2], segment: &str) -> ConicRecord {
+        let code = format!(
+            "@settings(kclVersion = {version}, defaultLengthUnit = mm, experimentalFeatures = allow)\np = startSketchOn(XY)\n  |> startProfile(at = [{}, {}])\n  |> {segment}\n  |> line(end = [1, 0])\ne = segEnd(c)\n",
+            start[0], start[1]
+        );
+        let result = parse_execute(&code)
+            .await
+            .unwrap_or_else(|e| panic!("{}\n{code}", e.message()));
+        // Only the usual warnings that the legacy sketch API is deprecated.
+        let issues: Vec<_> = result
+            .issues()
+            .iter()
+            .filter(|issue| !issue.message.contains("part of the legacy sketch API"))
+            .collect();
+        assert!(issues.is_empty(), "unexpected issues {issues:?} for:\n{code}");
+
+        let mut conic = None;
+        for command in result.root_module_artifact_commands() {
+            if let ModelingCmd::ExtendPath(extend) = &command.command
+                && let PathSegment::ConicTo {
+                    interior,
+                    end,
+                    start_tangent,
+                    end_tangent,
+                    relative,
+                } = &extend.segment
+            {
+                let offset = if *relative { start } else { [0.0, 0.0] };
+                conic = Some((
+                    [interior.x.0 + offset[0], interior.y.0 + offset[1]],
+                    [end.x.0 + offset[0], end.y.0 + offset[1]],
+                    [start_tangent.x.0, start_tangent.y.0],
+                    [end_tangent.x.0, end_tangent.y.0],
+                    *relative,
+                ));
+            }
+        }
+        let (interior, end, start_tangent, end_tangent, relative) =
+            conic.unwrap_or_else(|| panic!("expected a ConicTo command for:\n{code}"));
+
+        let KclValue::Sketch { value: sketch } = result.variable("p") else {
+            panic!("expected `p` to be a sketch");
+        };
+        let in_mm = |p: [super::TyF64; 2]| [p[0].to_mm().expect("a length"), p[1].to_mm().expect("a length")];
+        let stored_end = in_mm(sketch.paths[0].get_to());
+        let next_from = in_mm(sketch.paths[1].get_from());
+
+        let seg_end = match result.variable("e") {
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
+                let p: Vec<f64> = value
+                    .iter()
+                    .map(|v| {
+                        v.as_ty_f64()
+                            .and_then(|n| n.to_mm())
+                            .expect("segEnd component is a length")
+                    })
+                    .collect();
+                [p[0], p[1]]
+            }
+            other => panic!("expected `e` to be a point, got {other:?}"),
+        };
+
+        ConicRecord {
+            interior,
+            end,
+            start_tangent,
+            end_tangent,
+            relative,
+            stored_end,
+            next_from,
+            seg_end,
+        }
+    }
+
+    #[track_caller]
+    fn assert_point(actual: [f64; 2], expected: [f64; 2], what: &str, segment: &str) {
+        assert!(
+            (actual[0] - expected[0]).abs() < 1e-9 && (actual[1] - expected[1]).abs() < 1e-9,
+            "{what}: expected {expected:?}, got {actual:?} for:\n{segment}"
+        );
+    }
+
+    #[track_caller]
+    fn assert_direction(actual: [f64; 2], expected: [f64; 2], what: &str, segment: &str) {
+        // Tangents are directions, so compare them after normalising.
+        let norm = |p: [f64; 2]| {
+            let len = (p[0] * p[0] + p[1] * p[1]).sqrt();
+            [p[0] / len, p[1] / len]
+        };
+        assert_point(norm(actual), norm(expected), what, segment);
+    }
+
+    /// Checks that a relative and an absolute spelling of the same curve record
+    /// the same end point, start the next segment at that point, and send the
+    /// engine the same geometry, under KCL 2.0 and 3.0.
+    async fn check_relative_matches_absolute(
+        start: [f64; 2],
+        relative: &str,
+        absolute: &str,
+        interior: [f64; 2],
+        end: [f64; 2],
+        start_tangent: [f64; 2],
+        end_tangent: [f64; 2],
+    ) {
+        for (segment, expect_relative, version) in [
+            (relative, true, "2.0"),
+            (absolute, false, "2.0"),
+            (relative, true, "3.0"),
+            (absolute, false, "3.0"),
+        ] {
+            let record = conic_in_mm(version, start, segment).await;
+            assert_eq!(record.relative, expect_relative, "{segment}");
+            assert_point(record.interior, interior, "engine interior", segment);
+            assert_point(record.end, end, "engine end", segment);
+            assert_direction(record.start_tangent, start_tangent, "engine start tangent", segment);
+            assert_direction(record.end_tangent, end_tangent, "engine end tangent", segment);
+            assert_point(record.stored_end, end, "recorded end point", segment);
+            assert_point(record.next_from, end, "start of the next segment", segment);
+            assert_point(record.seg_end, end, "segEnd", segment);
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn hyperbolic_relative_end_matches_absolute_end() {
+        // x^2 / 4 - y^2 = 1 from its vertex (2, 0) through (2 sqrt 2, 1) to (4, sqrt 3).
+        let sqrt2 = 2.0_f64.sqrt();
+        let sqrt3 = 3.0_f64.sqrt();
+        check_relative_matches_absolute(
+            [2.0, 0.0],
+            "hyperbolic(semiMajor = 2, semiMinor = 1, interior = [2 * sqrt(2) - 2, 1], end = [2, sqrt(3)], tag = $c)",
+            "hyperbolic(semiMajor = 2, semiMinor = 1, interiorAbsolute = [2 * sqrt(2), 1], endAbsolute = [4, sqrt(3)], tag = $c)",
+            [2.0 * sqrt2, 1.0],
+            [4.0, sqrt3],
+            // Tangent of x^2 / a^2 - y^2 / b^2 = 1 at (x, y) is along (y a^2, x b^2).
+            [0.0, 2.0],
+            [4.0 * sqrt3, 4.0],
+        )
+        .await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn parabolic_from_coefficients_relative_end_matches_absolute_end() {
+        // y = 0.5 x^2 from (2, 2) to (5, 12.5); the interior is taken at the middle x, 3.5.
+        check_relative_matches_absolute(
+            [2.0, 2.0],
+            "parabolic(coefficients = [0.5, 0, 0], end = [3, 10.5], tag = $c)",
+            "parabolic(coefficients = [0.5, 0, 0], endAbsolute = [5, 12.5], tag = $c)",
+            [3.5, 6.125],
+            [5.0, 12.5],
+            [1.0, 2.0],
+            [1.0, 5.0],
+        )
+        .await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn parabolic_from_points_relative_end_matches_absolute_end() {
+        // y = 0.5 x^2 from (2, 2) through (3, 4.5) to (5, 12.5).
+        check_relative_matches_absolute(
+            [2.0, 2.0],
+            "parabolic(interior = [1, 2.5], end = [3, 10.5], tag = $c)",
+            "parabolic(interiorAbsolute = [3, 4.5], endAbsolute = [5, 12.5], tag = $c)",
+            [3.0, 4.5],
+            [5.0, 12.5],
+            [1.0, 2.0],
+            [1.0, 5.0],
+        )
+        .await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn conic_from_coefficients_relative_end_matches_absolute_end() {
+        // The circle x^2 + y^2 - 25 = 0 from (5, 0) through (5 / sqrt 2, 5 / sqrt 2) to (0, 5).
+        let h = 5.0 / 2.0_f64.sqrt();
+        check_relative_matches_absolute(
+            [5.0, 0.0],
+            "conic(coefficients = [1, 1, 0, 0, 0, -25], interior = [5 / sqrt(2) - 5, 5 / sqrt(2)], end = [-5, 5], tag = $c)",
+            "conic(coefficients = [1, 1, 0, 0, 0, -25], interiorAbsolute = [5 / sqrt(2), 5 / sqrt(2)], endAbsolute = [0, 5], tag = $c)",
+            [h, h],
+            [0.0, 5.0],
+            [0.0, -1.0],
+            [1.0, 0.0],
+        )
+        .await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn conic_from_tangents_relative_end_matches_absolute_end() {
+        let h = 5.0 / 2.0_f64.sqrt();
+        check_relative_matches_absolute(
+            [5.0, 0.0],
+            "conic(startTangent = [0, 1], endTangent = [-1, 0], interior = [5 / sqrt(2) - 5, 5 / sqrt(2)], end = [-5, 5], tag = $c)",
+            "conic(startTangent = [0, 1], endTangent = [-1, 0], interiorAbsolute = [5 / sqrt(2), 5 / sqrt(2)], endAbsolute = [0, 5], tag = $c)",
+            [h, h],
+            [0.0, 5.0],
+            [0.0, 1.0],
+            [-1.0, 0.0],
+        )
+        .await;
     }
 }

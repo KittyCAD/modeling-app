@@ -12,7 +12,7 @@ Add a parabolic segment to an existing sketch.
 ```kcl
 parabolic(
   @sketch: Sketch,
-  end: Point2d,
+  end?: Point2d,
   endAbsolute?: Point2d,
   coefficients?: [number; 3],
   interior?: Point2d,
@@ -32,7 +32,7 @@ first try approximating the shape with one or more constrained arcs.
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `sketch` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
-| `end` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Where should the path end? Relative to the start point. Incompatible with `interiorAbsolute` or `endAbsolute`. | Yes |
+| `end` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Where should the path end? Relative to the start point. Incompatible with `interiorAbsolute` or `endAbsolute`. | No |
 | `endAbsolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Where should this segment end? Requires `interiorAbsolute`. Incompatible with `interior` or `end`. | No |
 | `coefficients` | [[`number`](/docs/kcl-std/types/std-types-number); 3] | The coefficients [a, b, c] of the parabolic equation y = ax^2 + bx + c. Incompatible with `interior`. | No |
 | `interior` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | A point between the segment's start and end that lies on the parabola. Incompatible with `coefficients` or `interiorAbsolute` or `endAbsolute`. | No |
