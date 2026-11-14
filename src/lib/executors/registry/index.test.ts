@@ -79,6 +79,25 @@ describe('executors extension', () => {
     })
   }
 
+  it('reruns unchanged text when additional inputs change', async () => {
+    const revision = signal(1)
+    const execute = vi.fn(() => ({ imported: revision.peek() }))
+    contribute({ id: 'imports', matches: '*', revision, execute })
+    const editor = openEditor()
+    const executor = requireSuccess(
+      registry.get(executorsService).createExecutor(editor)
+    )
+    await settled(executor)
+    expect(executor.output.peek().data.imports).toEqual({ imported: 1 })
+    revision.value = 2
+    await settled(executor)
+    expect(executor.output.peek().contents).toBe('original')
+    expect(executor.output.peek().data.imports).toEqual({ imported: 2 })
+    revision.value = 2
+    await Promise.resolve()
+    expect(execute).toHaveBeenCalledTimes(2)
+  })
+
   it.each(['createExecutor', 'acquireExecutor'] as const)(
     'returns an error from %s for a closed editor without retaining an executor',
     (method) => {
