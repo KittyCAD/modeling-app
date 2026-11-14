@@ -2331,7 +2331,7 @@ function trackballLocalCamera(
   target: Vector3,
   from: Vector2,
   to: Vector2,
-  viewport: HTMLElement,
+  viewport: HTMLElement
 ) {
   const width = Math.max(viewport.clientWidth, 1)
   const height = Math.max(viewport.clientHeight, 1)
