@@ -1,6 +1,6 @@
 import fc from 'fast-check'
 import { expect, it } from 'vitest'
-import { extension, type Extension, type Item, slot } from './algebra'
+import { factory, type Factory, type Extension, slot } from './algebra'
 import { formatPath } from './path'
 import { DependencyCycleError, plan } from './planner'
 
@@ -12,7 +12,7 @@ const neverInstall = (): never => {
   throw new Error('Planning must not install bindings')
 }
 
-// Extensions depend on earlier extensions; root groups also exercise flattening.
+// Factories depend on earlier factories; root groups also exercise flattening.
 const dag = fc
   .tuple(
     fc.array(fc.array(fc.nat({ max: 20 }), { maxLength: 3 }), {
@@ -25,10 +25,10 @@ const dag = fc
     const edges = rows.map((row, index) =>
       index ? row.map((edge) => edge % index) : []
     )
-    const nodes: Extension[] = []
+    const nodes: Factory[] = []
     for (const dependencies of edges) {
       nodes.push(
-        extension({
+        factory({
           dependencies: Object.fromEntries(
             dependencies.map((edge, index) => [
               `dependency${index}`,
@@ -80,11 +80,11 @@ it('appending repeated roots cannot change the selected items or their provenanc
   )
 })
 
-it('keeps distinct extension objects even when their definitions are identical', () => {
+it('keeps distinct factory objects even when their definitions are identical', () => {
   fc.assert(
     fc.property(fc.nat({ max: 30 }), (length) => {
       const items = Array.from({ length }, () =>
-        extension({ create: neverCreate })
+        factory({ create: neverCreate })
       )
       const actual = plan(items)
       expect(actual).toHaveLength(items.length)
@@ -107,7 +107,7 @@ it('rejects exactly the reachable cyclic graphs according to dependency eliminat
         const roots = rootIndices.map((root) => root % rows.length)
         const nodes: {
           create: typeof neverCreate
-          dependencies: Record<string, Extension>
+          dependencies: Record<string, Factory>
         }[] = rows.map(() => ({
           create: neverCreate,
           dependencies: {},
@@ -155,7 +155,7 @@ it('rejects exactly the reachable cyclic graphs according to dependency eliminat
 })
 
 it('reports the active path for a named dependency cycle', () => {
-  const dependencies: Record<string, Extension> = {}
+  const dependencies: Record<string, Factory> = {}
   const owner = { create: neverCreate, dependencies }
   const dependency = { create: neverCreate, dependencies: { owner } }
   dependencies.files = dependency
@@ -178,7 +178,7 @@ it('reports the active path for a named dependency cycle', () => {
 })
 
 it('rejects recursive groups without mistaking shared groups for cycles', () => {
-  const recursive: Item[] = []
+  const recursive: Extension[] = []
   recursive.push(recursive)
   expect(() => plan([recursive])).toThrow(DependencyCycleError)
   const binding = { install: neverInstall }
@@ -189,12 +189,12 @@ it('rejects recursive groups without mistaking shared groups for cycles', () => 
 })
 
 it('does not inspect slot children or invoke even a create getter', () => {
-  const hiddenCycle: Item[] = []
+  const hiddenCycle: Extension[] = []
   hiddenCycle.push(hiddenCycle)
   const container = slot(hiddenCycle)
-  const owner: Extension = {
+  const owner: Factory = {
     dependencies: { container },
-    get create(): Extension['create'] {
+    get create(): Factory['create'] {
       throw new Error('Do not inspect acquisition')
     },
   }
@@ -207,21 +207,21 @@ it('does not inspect slot children or invoke even a create getter', () => {
 it('structured paths navigate back to their exact item using valid edge names and indices', () => {
   fc.assert(
     fc.property(dag, ({ nodes, roots }) => {
-      const items: readonly Item[] = [roots.map((root) => nodes[root])]
+      const items: readonly Extension[] = [roots.map((root) => nodes[root])]
       for (const entry of plan(items)) {
         const [root, ...steps] = entry.path
         expect(Number.isInteger(root) && root >= 0).toBe(true)
-        let item: Item = items[root]
+        let item: Extension = items[root]
         for (const [edge, position] of steps) {
           if (edge === 'dependencies') {
             if (!('create' in item) || !('dependencies' in item))
-              throw new Error('Dependency edge requires an extension')
+              throw new Error('Dependency edge requires an factory')
             expect(Object.hasOwn(item.dependencies!, position)).toBe(true)
             item = item.dependencies![position]
           } else {
             expect(Number.isInteger(position) && position >= 0).toBe(true)
             if ('create' in item || 'install' in item)
-              throw new Error('Item edge requires a group')
+              throw new Error('Extension edge requires a group')
             item = item[position]
           }
         }

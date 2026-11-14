@@ -1,7 +1,7 @@
 import { computed, effect } from '@preact/signals-core'
 import fc from 'fast-check'
 import { expect, it } from 'vitest'
-import { contribute, extension, Facet, slot } from './algebra'
+import { contribute, factory, Facet, slot } from './algebra'
 import { Registry } from './nextRegistry'
 
 it('starts observers against complete publications and preserves them through replacement', async () => {
@@ -29,7 +29,7 @@ it('starts observers against complete publications and preserves them through re
           []
         let starts = 0
         let stops = 0
-        const owner = extension({
+        const owner = factory({
           create: () => {
             const pair = computed(
               () => [firstValue.value, secondValue.value] as const
@@ -79,7 +79,7 @@ it('never starts rolled-back instances and releases all their acquired resources
       await registry.configure([published])
       const events: string[] = []
       const instances = Array.from({ length: count }, (_, id) =>
-        extension({
+        factory({
           create: () => ({
             items: [contribute(values, () => id)],
             start: () => {
@@ -95,7 +95,7 @@ it('never starts rolled-back instances and releases all their acquired resources
         })
       )
       const failure = new Error('acquisition failed')
-      const broken = extension({
+      const broken = factory({
         create: () => {
           throw failure
         },
@@ -119,7 +119,7 @@ it('awaits stopped children before disposing their owner and starting replacemen
   let finish: () => void = () => {
     throw new Error('Cleanup has not started')
   }
-  const child = extension({
+  const child = factory({
     create: () => ({
       start: () => () =>
         new Promise<void>((resolve) => {
@@ -134,7 +134,7 @@ it('awaits stopped children before disposing their owner and starting replacemen
       },
     }),
   })
-  const owner = extension({
+  const owner = factory({
     create: () => ({
       items: [child],
       start: () => () => {
@@ -145,7 +145,7 @@ it('awaits stopped children before disposing their owner and starting replacemen
       },
     }),
   })
-  const replacement = extension({
+  const replacement = factory({
     create: () => ({
       start: () => {
         events.push('started replacement')
@@ -177,7 +177,7 @@ it('preserves publication, cleanup, and startup failures while completing the co
   const disposeFailure = new Error('dispose failed')
   const startFailure = new Error('start failed')
   const events: string[] = []
-  const old = extension({
+  const old = factory({
     create: () => ({
       items: [contribute(value, () => 1)],
       start: () => () => {
@@ -196,7 +196,7 @@ it('preserves publication, cleanup, and startup failures while completing the co
     if (publishing) throw publication
   })
   publishing = true
-  const broken = extension({
+  const broken = factory({
     create: () => ({
       start: () => {
         events.push('broken start')
@@ -207,7 +207,7 @@ it('preserves publication, cleanup, and startup failures while completing the co
       },
     }),
   })
-  const healthy = extension({
+  const healthy = factory({
     create: () => ({
       items: [contribute(value, () => 2)],
       start: () => {
@@ -236,7 +236,7 @@ it('preserves publication, cleanup, and startup failures while completing the co
 it('starts shared dependencies once before their consumers and binds lifecycle methods to their instance', async () => {
   const registry = new Registry()
   const events: string[] = []
-  const dependency = extension({
+  const dependency = factory({
     create: () => ({
       exports: { ready: false },
       start() {
@@ -249,7 +249,7 @@ it('starts shared dependencies once before their consumers and binds lifecycle m
     }),
   })
   const consumer = (id: string) =>
-    extension({
+    factory({
       dependencies: { dependency },
       create: ({ dependency }) => ({
         start: () => {

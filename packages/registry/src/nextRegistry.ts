@@ -3,13 +3,13 @@ import type {
   ContributionInfo,
   Facet,
   Instance,
-  Item,
+  Extension,
   Key,
   Origin,
   ScopeHost,
   Service,
   Signal,
-  Extension,
+  Factory,
 } from './algebra'
 import {
   createScope,
@@ -23,13 +23,13 @@ import { DependencyCycleError, plan } from './planner'
 
 /** One selected graph occurrence; keys and acquisition origins survive reconfiguration. */
 interface DebugItem {
-  readonly kind: 'binding' | 'extension'
+  readonly kind: 'binding' | 'factory'
   readonly key: Key
   readonly origin: Origin
 }
 
 interface RegistryInspection {
-  readonly extensions: number
+  readonly factories: number
   readonly bindings: number
   readonly facets: number
   readonly items: readonly DebugItem[]
@@ -50,18 +50,18 @@ function originFor(key: Key, path: ItemPath): Origin {
 
 /** `replace` changes `children` while retaining `instance` and its cleanup. */
 interface Mounted {
-  readonly definition: Extension
+  readonly definition: Factory
   readonly dependencies: ReadonlyMap<string, Mounted>
   readonly instance: Instance
   readonly exports: unknown
-  readonly children: readonly Item[]
+  readonly children: readonly Extension[]
   readonly origin: Origin
   stop?: Instance['dispose']
 }
 
 /** Synchronous acquisition, atomic publication, and awaitable resource release. */
 export class Registry implements ScopeHost {
-  private roots: readonly Item[] = []
+  private roots: readonly Extension[] = []
   private mounted = new Map<Key, Mounted>()
   private disposal: readonly Mounted[] = []
   private clears = new Set<() => void>()
@@ -99,7 +99,7 @@ export class Registry implements ScopeHost {
   inspect(): RegistryInspection {
     const items = this.graph.value
     return {
-      extensions: this.mounted.size,
+      factories: this.mounted.size,
       bindings: items.filter((item) => item.kind === 'binding').length,
       facets: this.clears.size,
       items,
@@ -140,28 +140,28 @@ export class Registry implements ScopeHost {
     return this.dispose()
   }
 
-  configure(items: readonly Item[]): Promise<void> {
+  configure(items: readonly Extension[]): Promise<void> {
     this.assertMutable()
     return this.reconcile(Object.freeze([...items]))
   }
 
-  replace(extension: Extension, items: readonly Item[]): Promise<void> {
+  replace(factory: Factory, items: readonly Extension[]): Promise<void> {
     this.assertMutable()
     return this.reconcile(this.roots, {
-      extension,
+      factory,
       items: Object.freeze([...items]),
     })
   }
 
   private async reconcile(
-    roots: readonly Item[],
-    replacement?: { extension: Extension; items: readonly Item[] }
+    roots: readonly Extension[],
+    replacement?: { factory: Factory; items: readonly Extension[] }
   ): Promise<void> {
     if (this.phase === 'disposed') throw new Error('Registry is disposed')
     if (this.phase !== 'idle')
       throw new Error('A reconciliation is already in progress')
-    if (replacement && !this.mounted.has(itemKey(replacement.extension))) {
-      throw new Error('Cannot replace an unmounted Extension')
+    if (replacement && !this.mounted.has(itemKey(replacement.factory))) {
+      throw new Error('Cannot replace an unmounted Factory')
     }
     this.phase = 'acquiring'
     const next = new Map<Key, Mounted>()
@@ -174,11 +174,11 @@ export class Registry implements ScopeHost {
     const created = new Set<Instance>()
     let order: readonly Mounted[] = []
     const seen = new Set<Key>()
-    const selected = new Map<Key, Item>()
+    const selected = new Map<Key, Extension>()
     const active = new Map<Key, ItemPath>()
 
     const visit = (
-      items: readonly Item[],
+      items: readonly Extension[],
       parent?: ItemPath,
       owner?: Origin
     ): void => {
@@ -235,7 +235,7 @@ export class Registry implements ScopeHost {
           const acquired = next.get(itemKey(dependency))
           if (!acquired || acquired.definition !== dependency)
             throw new Error(
-              `Dependency ${JSON.stringify(name)} does not match the selected Extension`
+              `Dependency ${JSON.stringify(name)} does not match the selected Factory`
             )
           dependencies.set(name, acquired)
         }
@@ -250,7 +250,7 @@ export class Registry implements ScopeHost {
             ))
         )
           throw new Error(
-            `Cannot change dependencies of retained Extension ${mounted.origin.id}`
+            `Cannot change dependencies of retained Factory ${mounted.origin.id}`
           )
         if (!mounted) {
           const origin = originFor(key, path)
@@ -279,10 +279,10 @@ export class Registry implements ScopeHost {
             children: Object.freeze([...(instance.items ?? [])]),
           }
         }
-        if (replacement && itemKey(replacement.extension) === key)
+        if (replacement && itemKey(replacement.factory) === key)
           mounted = { ...mounted, children: replacement.items }
         next.set(key, mounted)
-        debugItems.push({ kind: 'extension', key, origin: mounted.origin })
+        debugItems.push({ kind: 'factory', key, origin: mounted.origin })
         visit(mounted.children, path, mounted.origin)
         active.delete(key)
       }
@@ -374,9 +374,9 @@ function disposalOrder(
     entries.add(first)
   }
   const children = (
-    items: readonly Item[],
+    items: readonly Extension[],
     owner: Key,
-    groups = new Set<Item>()
+    groups = new Set<Extension>()
   ): void => {
     for (const item of items) {
       if ('create' in item) precedes(itemKey(item), owner)
@@ -397,7 +397,7 @@ function disposalOrder(
   const visit = (key: Key): void => {
     if (complete.has(key)) return
     if (active.has(key)) {
-      if (strict) throw new Error('Cyclic Extension lifetimes')
+      if (strict) throw new Error('Cyclic Factory lifetimes')
       return
     }
     active.add(key)
@@ -431,7 +431,7 @@ async function release(
     }
   }
   const cleanup = failures.length
-    ? new AggregateError(failures, 'Extension cleanup failed')
+    ? new AggregateError(failures, 'Factory cleanup failed')
     : undefined
   if (primary) {
     if (cleanup)
