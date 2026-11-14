@@ -5,6 +5,7 @@ import type { ModelingViewContext } from '@src/lib/kcl/registry/contract'
 import { useSignals } from '@preact/signals-react/runtime'
 import { LocalWebGPUSceneView } from '@src/clientSideScene/localRenderer/LocalWebGPUScene'
 import { useEffect, useRef } from 'react'
+import { reportRejection } from '@src/lib/trap'
 
 const hiddenPlanes = { xy: false, xz: false, yz: false }
 
@@ -26,6 +27,27 @@ export function KclScene({ context }: { context: ModelingViewContext }) {
   useEffect(() => {
     if (container.current) return session.attach(container.current)
   }, [session])
+  useEffect(() => {
+    const root = container.current?.parentElement
+    if (!root) return
+    const key = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || event.defaultPrevented) return
+      const target = event.target
+      if (
+        target instanceof Element &&
+        target.closest('input,textarea,select,[contenteditable="true"]')
+      )
+        return
+      const session = context.interactions.active.peek()
+      if (session) {
+        event.preventDefault()
+        event.stopPropagation()
+        session.escape().catch(reportRejection)
+      }
+    }
+    root.addEventListener('keydown', key)
+    return () => root.removeEventListener('keydown', key)
+  }, [context])
   return (
     <div className="flex h-full min-h-0 w-full flex-col">
       <div className="relative min-h-0 flex-1 overflow-hidden">
@@ -39,7 +61,10 @@ export function KclScene({ context }: { context: ModelingViewContext }) {
             fixedSizeGrid={preferences.fixedSizeGrid}
             backfaceColor={preferences.backfaceColor}
             pickingEnabled={selection?.pickingEnabled.value ?? false}
-            defaultPlaneVisibility={hiddenPlanes}
+            defaultPlaneVisibility={
+              context.interactions.active.value?.defaultPlanes.value ??
+              hiddenPlanes
+            }
           />
         )}
         <ModelingToolbar context={context} />

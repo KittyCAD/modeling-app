@@ -95,6 +95,18 @@ The dialog owns its argument document and temporary picks. Submission checks the
 captured source and execution, then applies one undoable document transaction.
 The executor refreshes the resulting model through the normal path.
 
+## Sketch editing
+
+Start/Edit Sketch opens an interaction session inside the Modeling view. It owns
+target picking, sketch selection, tools, and native editing lifetime; leaving it
+returns to ordinary modeling. Circle and geometry dragging reuse the shared
+legacy controllers through adapters.
+
+A native lease serializes sketch mutations and publishes accepted source changes
+to the editor. External source, import, or execution-setting changes end that
+lease before the next full execution. Constraint editing and complete sketch-tool
+parity remain outside the current implementation.
+
 See the [contributor guide](CONTRIBUTING.md) for tool recipes, extension contracts,
 and the current capability matrix.
 

@@ -349,6 +349,51 @@ it('waits for a pending mock review before freeing either native context', async
   expect(events).toEqual(['review', 'free', 'free'])
 })
 
+it('keeps accepted sketch edits in the native session and ends it for external source changes', async () => {
+  const model = await runtime()
+  await model.execute(snapshot('@settings(kclVersion = 3.0)\nanswer = 42'))
+  const revision = model.executionRevision.peek()
+  let sketchId: number | undefined
+  const invalidate = vi.fn(async () => {
+    await sketch.close(sketchId)
+  })
+  const sketch = await model.openSketch(invalidate)
+  await sketch.synchronize(model.ast.peek())
+  const created = await sketch.create({ on: { default: 'xy' } })
+  sketchId = created.sketchId
+  sketch.accept(created.sourceDelta.text, created.sceneGraphDelta)
+  await model.execute(snapshot(created.sourceDelta.text))
+  expect(invalidate).not.toHaveBeenCalled()
+  expect(model.executionRevision.peek()).toBe(revision)
+  const result = await model.execute(
+    snapshot('@settings(kclVersion = 3.0)\nanswer = 84')
+  )
+  expect(invalidate).toHaveBeenCalledOnce()
+  expect(result.variables.answer).toMatchObject({ type: 'Number', value: 84 })
+})
+
+it('ends sketch ownership when an imported buffer changes', async () => {
+  const model = await runtime()
+  const code =
+    '@settings(kclVersion = 3.0)\nimport width from "dimensions.kcl"\nanswer = width'
+  await model.execute(
+    snapshot(code, {
+      '/model/dimensions.kcl': '@settings(kclVersion = 3.0)\nexport width = 21',
+    })
+  )
+  const invalidate = vi.fn(async () => {
+    await sketch.close()
+  })
+  const sketch = await model.openSketch(invalidate)
+  const result = await model.execute(
+    snapshot(code, {
+      '/model/dimensions.kcl': '@settings(kclVersion = 3.0)\nexport width = 42',
+    })
+  )
+  expect(invalidate).toHaveBeenCalledOnce()
+  expect(result.variables.answer).toMatchObject({ type: 'Number', value: 42 })
+})
+
 it.each(['execute', 'drain'] as const)(
   'preserves a rejected Error from %s, releases tracking, and accepts the next run',
   async (stage) => {

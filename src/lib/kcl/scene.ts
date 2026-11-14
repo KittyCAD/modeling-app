@@ -36,6 +36,7 @@ import type { SettingsRegistryService } from '@src/registry/contracts/settings'
  * presentation is fixed at creation; a local presentation also supplies a GLB host.
  */
 export interface KclSceneResource {
+  readonly sceneInfra: SceneInfra
   readonly element: HTMLElement
   readonly runtime: KclRuntime
   readonly presentation: ScenePresentation
@@ -43,7 +44,7 @@ export interface KclSceneResource {
   readonly selection: SceneSelectionController
   readonly commands: Pick<
     ConnectionManager,
-    'sendSceneCommand' | 'pendingCommands'
+    'sendSceneCommand' | 'pendingCommands' | 'geometryOnly'
   >
   captureScreenshot: () => string
   readonly preferences: ScenePresentationPreferences
@@ -98,18 +99,22 @@ export async function openKclScene({
   const dispose = async () => {
     if (disposed) return
     disposed = true
-    connectionWatch?.dispose()
-    stopUnits?.()
-    picking?.dispose()
-    viewport?.dispose()
-    infra?.localRenderer?.dispose()
-    if (infra) infra.localRenderer = null
-    infra?.dispose()
-    connection?.dispose()
-    if (manager.started)
-      manager.tearDown({ route: 'service-disposed', initiatedBy: 'client' })
-    element.remove()
-    await runtime?.dispose()
+    try {
+      await runtime?.endSketch()
+    } finally {
+      connectionWatch?.dispose()
+      stopUnits?.()
+      picking?.dispose()
+      viewport?.dispose()
+      infra?.localRenderer?.dispose()
+      if (infra) infra.localRenderer = null
+      infra?.dispose()
+      connection?.dispose()
+      if (manager.started)
+        manager.tearDown({ route: 'service-disposed', initiatedBy: 'client' })
+      element.remove()
+      await runtime?.dispose()
+    }
   }
   try {
     const connected = await connectScene({
@@ -145,10 +150,12 @@ export async function openKclScene({
     infra = new SceneInfra(manager, wasm, () => settings.current.peek())
     const sceneInfra = infra
     const model = runtime
-    // `SceneInfra.baseUnit` controls client-side coordinate conversion even
-    // without a local model renderer. Unit changes do not replay camera preferences.
+    // `createKclRuntime` publishes the file's unit annotation in `fileSettings`.
+    // Use it for sketch coordinates and local planes, falling back to the default preference.
     stopUnits = effect(() => {
-      sceneInfra.baseUnit = preferences.defaultUnit.value
+      sceneInfra.baseUnit =
+        model.fileSettings.value.defaultLengthUnit ??
+        preferences.defaultUnit.value
     })
     const selectionBinding = createKclSceneSelection(manager, sceneInfra, model)
     picking = selectionBinding
@@ -174,12 +181,14 @@ export async function openKclScene({
     sceneInfra.animate()
     return {
       element,
+      sceneInfra,
       runtime,
       presentation,
       localHost: view.localHost,
       selection: selectionBinding.selection,
       commands: {
         sendSceneCommand: connected.send,
+        geometryOnly: manager.geometryOnly,
         get pendingCommands() {
           return manager.pendingCommands
         },

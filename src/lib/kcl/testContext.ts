@@ -1,3 +1,4 @@
+import { createModelingInteractions } from '@src/lib/kcl/interactions'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@src/lang/wasm'
 import { createModelingTools } from '@src/lib/kcl/modelingTools'
@@ -43,7 +44,7 @@ export function modelingTestContext() {
     element: globalThis.document.createElement('div'),
     selection,
     preferences: {
-      camera: signal({}),
+      camera: signal({ cameraProjection: 'perspective' }),
       appearance: signal({}),
       localRenderer: signal({}),
       defaultUnit: signal('mm'),
@@ -84,6 +85,7 @@ export function modelingTestContext() {
   }
   const settings = createSettings()
   const context: ModelingViewContext = {
+    interactions: createModelingInteractions(() => context, signal([])),
     tools: createModelingTools(() => context, signal(defaultModelingTools)),
     settings: {
       current: signal(settings),
@@ -111,6 +113,7 @@ export function modelingTestContext() {
     resource,
     editor,
     dispose: () => {
+      context.interactions.dispose()
       context.tools.dispose()
       selection.dispose()
       document.dispose()

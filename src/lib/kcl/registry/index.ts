@@ -1,3 +1,8 @@
+import { sketchToolsValueSpec } from '@src/lib/kcl/sketch/contract'
+import { circleSketchTool } from '@src/lib/kcl/sketch/tools'
+import { createModelingInteractions } from '@src/lib/kcl/interactions'
+import { createSketchInteraction } from '@src/lib/kcl/sketch/definition'
+import { modelingInteractionsValueSpec } from '@src/lib/kcl/registry/contract'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { createModelingTools } from '@src/lib/kcl/modelingTools'
@@ -12,7 +17,7 @@ import { createMeasurementToolService } from '@src/registry/extensions/engineSce
 import { createPhysicalAnalysisService } from '@src/registry/extensions/engineScene/physicalAnalysis/physicalAnalysisService'
 import { kcl } from '@kittycad/codemirror-lang-kcl'
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
-import { computed } from '@preact/signals-core'
+import { computed, effect } from '@preact/signals-core'
 import { editorKclHighlight } from '@src/editor/plugins/theme'
 import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import { initialiseWasm, relevantFileExtensions } from '@src/lang/wasmUtils'
@@ -35,7 +40,7 @@ import { createScenePresentationPreferences } from '@src/lib/kcl/presentationPre
 import projectSourcesExtension from '@src/lib/projectSession/registry/sources'
 import { projectSourcesService } from '@src/lib/projectSession/next/contract'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
-import { isErr } from '@src/lib/trap'
+import { isErr, reportRejection } from '@src/lib/trap'
 import { authService } from '@src/registry/contracts/auth'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { settingsService } from '@src/registry/contracts/settings'
@@ -118,6 +123,11 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
     id: 'kcl',
     uses: [projectSourcesExtension],
     provides: [
+      provide(sketchToolsValueSpec, circleSketchTool),
+      provide(
+        modelingInteractionsValueSpec,
+        createSketchInteraction(valueSpecs.signal(sketchToolsValueSpec))
+      ),
       ...defaultModelingTools.map((tool) =>
         provide(modelingToolsValueSpec, tool)
       ),
@@ -139,6 +149,10 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
             physicalAnalysis.close()
           })
           const context: ModelingViewContext = {
+            interactions: createModelingInteractions(
+              () => context,
+              valueSpecs.signal(modelingInteractionsValueSpec)
+            ),
             tools: createModelingTools(
               () => context,
               valueSpecs.signal(modelingToolsValueSpec),
@@ -156,7 +170,18 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
             physicalAnalysis,
             statusItems: valueSpecs.signal(modelingStatusItemsValueSpec),
           }
+          const stopRecovery = effect(() => {
+            const state = context.session.state.value
+            if (state.type === 'connecting' || state.type === 'error') {
+              context.tools.close()
+              context.tools.error.value = undefined
+              context.interactions.close().catch(reportRejection)
+              context.interactions.error.value = undefined
+            }
+          })
+          onDispose(stopRecovery)
           onDispose(context.tools.dispose)
+          onDispose(context.interactions.dispose)
           return context
         })({
           id: 'kcl.modeling',

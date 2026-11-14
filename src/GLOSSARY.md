@@ -198,6 +198,21 @@ The current activity within a Modeling presentation, such as inspecting a model 
 
 **Related:** [Editor mode](#editor-mode) chooses a presentation of the document; a [Sketch editing session](#sketch-editing-session) is a sustained modeling interaction.
 
+## Modeling interaction context
+
+An extension-contributed activity within one Modeling editor presentation. Its
+active session owns the available tools, toolbar, scene input, and cleanup. The
+ordinary modeling context applies when no interaction session is active; entering
+sketching replaces that context without opening another editor presentation or
+creating another document executor.
+
+**Related:** [Modeling interaction state](#modeling-interaction-state) describes
+the current activity; a [Sketch editing session](#sketch-editing-session) owns a
+particular sketch's editing resources.
+
+**Search anchors:** `ModelingInteractionDefinition`, `modelingInteractionsValueSpec`,
+`SketchToolDefinition`, `sketchToolsValueSpec`.
+
 ## Sketch editing session
 
 A period of editing one selected sketch, including its sketch plane, geometry, constraints, and active sketch tools. Entering or leaving sketch editing changes the modeling interaction state while retaining the same document.

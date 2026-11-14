@@ -59,3 +59,62 @@ keyboard routing has not been installed for these tools yet.
 
 Native tests use mocked engine acknowledgements. They check ownership and native
 geometry but do not establish live stream, GPU, or packaged-desktop parity.
+
+## Port a sketch tool
+
+Start with `sketch/tools.ts`, the Circle adapter in `sketch/circle.ts`, and the
+shared controller under `machines/sketchSolve/tools/circleController.ts`.
+
+1. Contribute a stable `SketchToolDefinition` through `sketchToolsValueSpec`.
+   `create(host)` returns a prompt signal plus async `escape` and `dispose`.
+   The host belongs to one sketch editing session; acquiring a focused file or
+   a global modeling actor inside the tool would break that ownership.
+2. Extract the existing legacy interaction behind explicit geometry, input,
+   settings, mutation, preview, and result callbacks. Both consumers should use
+   the same behavior. Keep the legacy machine as a lifecycle/event adapter when
+   the existing route needs it; do not create an actor-shaped compatibility object.
+3. Use the owning runtime's serialized mutations. Render draft results through
+   `host.render`; publish committed source through `host.accept`. The session
+   checks source/view ownership and makes the editor transaction. The tool should
+   not edit the editor independently, save, or execute the visible scene.
+4. Dispose input once, drain pending native work, and remove drafts before the
+   next tool starts. A late reply must not reset the next tool's callbacks or
+   replace externally edited source. Circle and the shared move host have tests
+   for these cases.
+5. Keep gesture state in the controller. The toolbar consumes contributed actions
+   and prompt state; it should not reproduce the controller's transitions.
+
+The move interaction uses `MoveToolHost` for current geometry, selection, native
+checkpoints, and publication. Its existing algorithms still handle drag anchors,
+snapping, multi-selection, labels, and invalid-solve recovery. Additional tools
+may need additional runtime operations. Add a narrow explicit mutation adapter
+rather than importing `KclManager` or passing the entire modeling machine.
+
+For a new sustained interaction, contribute `modelingInteractionsValueSpec` with
+an entry that creates an owned `ModelingInteractionSession`. Start/Edit Sketch
+shows how to accept preselection or acquire a target afterward and release scene
+input on exit. The current contract still includes default-plane visibility;
+that is a provisional sketch-shaped part of the interface, not a requirement to
+invent another editor presentation mode.
+
+## Sketch capability matrix
+
+| Capability | Scope |
+| --- | --- |
+| Start/Edit Sketch | Default planes, planar faces, and existing local sketches; target picking is session-owned |
+| Circle | Shared thin controller, drafts, snapping, repeat, and awaited teardown |
+| Existing geometry | Shared move interaction for points, lines, circles, arcs, multi-selection, and labels |
+| Native publication | Preview state stays outside the document; accepted results produce undoable transactions |
+| Execution/source changes | End the native editing lease; stale selections/results are discarded |
+| In-sketch undo/redo | Document undo works but currently ends sketch editing |
+| Constraint editing UI | Native/runtime seams exist; the complete editor-owned UI is follow-up work |
+| Imported sketches | Open their source editor before editing; cross-file editing is not supplied |
+
+Exercise free and partially constrained geometry, arcs and tangency, support
+geometry, origin constraints, non-mm units, and failed solves. Test release,
+Escape, tool switching, source edits, and scene teardown while native work is
+pending. Preserve legacy behavior in extraction PRs; isolate deliberate fixes
+with focused regression tests.
+
+Pending-preview release and first-preview failure follow the existing legacy
+flow in this consumer PR. The following gesture-fix PR isolates their corrections.

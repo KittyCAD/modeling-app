@@ -511,6 +511,18 @@ describe('local GLB loading', () => {
     f.renderer.dispose()
   })
 
+  it('rescales default planes to ten file units when the scene changes from millimeters to inches', () => {
+    const f = planeFixture()
+    const update = vi.spyOn(f.gpu.planeRenderer, 'updateScale')
+    f.manager.sceneInfra.baseUnitMultiplier = 25.4
+    f.manager.sceneInfra.baseUnitChange.dispatch()
+    expect(update).toHaveBeenLastCalledWith(expect.any(Number), 2.54)
+    f.manager.sceneInfra.baseUnitMultiplier = 1
+    f.manager.sceneInfra.baseUnitChange.dispatch()
+    expect(update).toHaveBeenLastCalledWith(expect.any(Number), 0.1)
+    f.renderer.dispose()
+  })
+
   it('discards an export if a newer execution starts before it arrives', async () => {
     const f = fixture()
     const pending = Promise.withResolvers<ModelingAppFile[]>()

@@ -1,6 +1,7 @@
 import * as Cause from 'effect/Cause'
 import * as Effect from 'effect/Effect'
 import * as Exit from 'effect/Exit'
+import { createSketchRuntime } from '@src/lib/kcl/sketchRuntime'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@src/lang/wasm'
 import { getSettingsAnnotation } from '@src/lang/queryAst'
@@ -54,6 +55,7 @@ export async function createKclRuntime(
 ) {
   const wasm = await wasmPromise
   let files: ReadonlyMap<string, Uint8Array> = new Map()
+  let entrypoint: string | undefined
   let disposed = false
   let queue: Promise<unknown> = Promise.resolve()
   const state = signal<ExecState>(emptyExecState())
@@ -92,13 +94,49 @@ export async function createKclRuntime(
     queue = result.catch(() => undefined)
     return result
   }
+  let sketch:
+    | { configuration: string; invalidate: () => Promise<void> }
+    | undefined
+  const matchesSketch = (snapshot: KclSourceSnapshot) => {
+    if (
+      !sketch ||
+      sketch.configuration !== settings() ||
+      snapshot.files.size !== files.size
+    )
+      return false
+    for (const [path, bytes] of snapshot.files) {
+      const expected = files.get(fsZds.join(path))
+      if (
+        !expected ||
+        expected.length !== bytes.length ||
+        bytes.some((byte, index) => expected[index] !== byte)
+      )
+        return false
+    }
+    return true
+  }
   const executionProgram = (snapshot: KclSourceSnapshot) =>
     Effect.gen(function* () {
+      const path = fsZds.join(snapshot.src)
+      entrypoint = path
       files = new Map(
         [...snapshot.files].map(([path, bytes]) => [
           fsZds.join(path),
           bytes.slice(),
         ])
+      )
+      yield* fromPromise(() =>
+        native.open_project(
+          0,
+          JSON.stringify([
+            {
+              id: 0,
+              path,
+              text: new TextDecoder().decode(files.get(path)),
+            },
+          ]),
+          0
+        )
       )
       const source = files.get(fsZds.join(snapshot.src))
       if (!source)
@@ -200,7 +238,34 @@ export async function createKclRuntime(
         ? exit.value
         : Promise.reject(Cause.squash(exit.cause))
     })
+
   return {
+    openSketch: async (invalidate: () => Promise<void>) => {
+      if (sketch)
+        return Promise.reject(new Error('A sketch already owns this runtime'))
+      const owner = { configuration: settings(), invalidate }
+      sketch = owner
+      return createSketchRuntime(
+        native,
+        enqueue,
+        getSettings,
+        (text, delta) => {
+          if (sketch !== owner || disposed) return
+          const next = new Map(files)
+          if (entrypoint) next.set(entrypoint, new TextEncoder().encode(text))
+          files = next
+          const parsed = parse(text, wasm)
+          if (!isErr(parsed) && resultIsOk(parsed))
+            program.value = parsed.program
+          state.value = execStateFromRust(delta.exec_outcome)
+        },
+        async (sketchId) => {
+          if (sketch === owner) sketch = undefined
+          if (!disposed && sketchId !== undefined && entrypoint)
+            await execute({ src: entrypoint, files })
+        }
+      )
+    },
     state,
     ast: program,
     fileSettings,
@@ -209,8 +274,14 @@ export async function createKclRuntime(
     executing,
     failed,
     events,
-    execute,
-
+    execute: async (snapshot: KclSourceSnapshot) => {
+      if (sketch) {
+        if (matchesSketch(snapshot) && fsZds.join(snapshot.src) === entrypoint)
+          return state.peek()
+        await sketch.invalidate()
+      }
+      return execute(snapshot)
+    },
     evaluateExpression: (ast: Node<Program>) =>
       enqueue(async () => {
         try {
@@ -244,13 +315,20 @@ export async function createKclRuntime(
       format: Parameters<LocalRendererHost['exportModel']>[0]
     ): ReturnType<LocalRendererHost['exportModel']> =>
       enqueue(async () => native.export(JSON.stringify(format), settings())),
+    endSketch: async () => {
+      await sketch?.invalidate()
+    },
     async dispose() {
       if (disposed) return
-      disposed = true
-      clearInterval(elapsedTimer)
-      await queue
-      native.free()
-      analysis?.free()
+      try {
+        await sketch?.invalidate()
+      } finally {
+        disposed = true
+        clearInterval(elapsedTimer)
+        await queue
+        native.free()
+        analysis?.free()
+      }
     },
   }
 }

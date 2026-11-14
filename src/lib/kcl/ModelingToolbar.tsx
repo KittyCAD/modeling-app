@@ -20,12 +20,14 @@ export function ModelingToolbar({ context }: { context: ModelingViewContext }) {
   const idPrefix = useId() + '-'
   const platform = usePlatform()
   const tools = context.tools
+  const interaction = context.interactions.active.value
   const scene = context.session.resource.value
   const disabled =
     context.executor.editor.readOnly.value ||
     context.executor.output.value.running ||
     !scene?.selection.model.value ||
-    tools.opening.value
+    tools.opening.value ||
+    context.interactions.busy.value
   const items: ToolbarViewItem[] = tools.definitions.value.map((tool) => {
     const docs = modelingStdLibCommandDocsLink(tool.name)
     return {
@@ -42,20 +44,50 @@ export function ModelingToolbar({ context }: { context: ModelingViewContext }) {
       },
     }
   })
+  const entries: ToolbarViewItem[] = context.interactions.definitions.value
+    .flatMap((definition) => definition.entries)
+    .map((entry) => ({
+      id: entry.id,
+      title: entry.name,
+      icon: entry.icon,
+      status: 'available',
+      description: '',
+      links: [],
+      ...entry.presentation?.(context),
+      disabled,
+      onClick: () => {
+        context.interactions.enter(entry.id).catch(reportRejection)
+      },
+    }))
+  const shownItems = interaction
+    ? [...interaction.toolbar.value]
+    : [...entries, ...items]
+  const error =
+    interaction?.error.value ??
+    context.interactions.error.value ??
+    tools.error.value
   return (
     <>
       <div className="toolbar-container pointer-events-none absolute inset-x-0 top-0 z-[19]">
         <ToolbarView
-          items={items}
-          mode="modeling"
+          items={shownItems}
+          mode={interaction ? 'sketching' : 'modeling'}
           platform={platform}
           idPrefix={idPrefix}
         >
-          {tools.error.value && (
+          {interaction && (
+            <p
+              role="status"
+              className="pointer-events-auto mt-2 bg-2 px-3 py-1 text-xs"
+            >
+              {interaction.prompt.value}
+            </p>
+          )}
+          {error && (
             <div className="mt-2">
               <ErrorBanner
                 title="Unable to open tool"
-                message={tools.error.value.message}
+                message={error.message}
               />
             </div>
           )}

@@ -1,3 +1,7 @@
+import type {
+  createModelingInteractions,
+  ModelingInteractionDefinition,
+} from '@src/lib/kcl/interactions'
 import type { createModelingTools } from '@src/lib/kcl/modelingTools'
 import type { ModelingToolDefinition } from '@src/lib/kcl/modelingTools'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
@@ -13,6 +17,7 @@ import type { createPhysicalAnalysisService } from '@src/registry/extensions/eng
 
 /** Contributions receive their owning view explicitly; focus never changes their target. */
 export interface ModelingViewContext {
+  interactions: ReturnType<typeof createModelingInteractions>
   settings: SettingsRegistryService
   tools: ReturnType<typeof createModelingTools>
   executor: Executor
@@ -30,6 +35,9 @@ export interface ModelingStatusItem {
   Component: ComponentType<{ context: ModelingViewContext }>
 }
 export const modelingViewContract = defineContract({
+  modelingInteractionsValueSpec: appendValueSpec<ModelingInteractionDefinition>(
+    'modeling-view.interactions'
+  ),
   modelingToolsValueSpec: appendValueSpec<ModelingToolDefinition>(
     'modeling-view.tools'
   ),
@@ -37,5 +45,8 @@ export const modelingViewContract = defineContract({
     'modeling-view.status-items'
   ),
 })
-export const { modelingStatusItemsValueSpec, modelingToolsValueSpec } =
-  modelingViewContract
+export const {
+  modelingStatusItemsValueSpec,
+  modelingToolsValueSpec,
+  modelingInteractionsValueSpec,
+} = modelingViewContract
