@@ -1,9 +1,9 @@
+import * as sketchScene from '@src/clientSideScene/sketchScene'
+import { getSketchPlaneDetails } from '@src/lib/scene/sketchPlane'
 import toast from 'react-hot-toast'
 import type { Intersection, Object3D, Quaternion } from 'three'
 
 import {
-  BoxGeometry,
-  DoubleSide,
   ExtrudeGeometry,
   Group,
   LineCurve3,
@@ -11,7 +11,6 @@ import {
   MeshBasicMaterial,
   OrthographicCamera,
   PerspectiveCamera,
-  PlaneGeometry,
   Shape,
   Vector2,
   Vector3,
@@ -29,9 +28,9 @@ import type { SketchView as Sketch } from '@rust/kcl-lib/bindings/SketchView'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { VariableDeclaration } from '@rust/kcl-lib/bindings/VariableDeclaration'
 import type { VariableDeclarator } from '@rust/kcl-lib/bindings/VariableDeclarator'
-import { isModelingResponse } from '@src/lib/kcSdkGuards'
+
 import type { SafeArray } from '@src/lib/utils'
-import { getAngle, getLength, uuidv4 } from '@src/lib/utils'
+import { getAngle, getLength } from '@src/lib/utils'
 
 import {
   isQuaternionVertical,
@@ -70,22 +69,15 @@ import type {
 } from '@src/clientSideScene/sceneInfra'
 
 import { InfiniteGridRenderer } from '@src/clientSideScene/InfiniteGridRenderer'
-import {
-  getGridScaleFactor,
-  snapPointToGrid,
-} from '@src/clientSideScene/gridUtils'
+import { snapPointToGrid } from '@src/clientSideScene/gridUtils'
 import { disposeGroupChildren } from '@src/clientSideScene/sceneHelpers'
 import {
   ANGLE_SNAP_THRESHOLD_DEGREES,
   ARROWHEAD,
-  AXIS_GROUP,
   DRAFT_POINT,
   DRAFT_POINT_GROUP,
-  INTERSECTION_PLANE_LAYER,
-  RAYCASTABLE_PLANE,
   SKETCH_GROUP_SEGMENTS,
   SKETCH_LAYER,
-  SKETCH_SOLVE_GROUP,
   X_AXIS,
   Y_AXIS,
 } from '@src/clientSideScene/sceneUtils'
@@ -164,7 +156,7 @@ import {
   type updateExtraSegments as updateExtraSegmentsFn,
 } from '@src/lib/selections'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import { Themes, getResolvedTheme } from '@src/lib/theme'
+import type { Themes } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
@@ -195,19 +187,6 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 type DraftSegment = 'line' | 'tangentialArc'
 
 type Vec3Array = [number, number, number]
-
-function setAxisVisualVisibility(axis: Object3D | undefined, visible: boolean) {
-  if (
-    !(axis instanceof Mesh) ||
-    !(axis.material instanceof MeshBasicMaterial)
-  ) {
-    return
-  }
-
-  // Keep the mesh raycastable while hiding only its rendered material.
-  axis.visible = true
-  axis.material.visible = visible
-}
 
 // This singleton Class is responsible for all of the things the user sees and interacts with.
 // That mostly mean sketch elements.
@@ -416,158 +395,28 @@ export class SceneEntities {
     this.sceneInfra.overlayCallbacks(callbacks)
   }
 
-  private static createIntersectionPlane(sceneInfra: SceneInfra) {
-    const hundredM = 100_0000
-    const planeGeometry = new PlaneGeometry(hundredM, hundredM)
-    const planeMaterial = new MeshBasicMaterial({
-      color: 0xff0000,
-      side: DoubleSide,
-      transparent: true,
-      opacity: 0.5,
-    })
-    const intersectionPlane = new Mesh(planeGeometry, planeMaterial)
-    intersectionPlane.userData = { type: RAYCASTABLE_PLANE }
-    intersectionPlane.name = RAYCASTABLE_PLANE
-    intersectionPlane.layers.set(INTERSECTION_PLANE_LAYER)
-    sceneInfra.scene.add(intersectionPlane)
-    return intersectionPlane
-  }
-  private static createSketchSolveGroup(sceneInfra: SceneInfra) {
-    const group = new Group()
-    group.userData = { type: SKETCH_SOLVE_GROUP }
-    group.name = SKETCH_SOLVE_GROUP
-    group.layers.set(SKETCH_LAYER)
-    sceneInfra.scene.add(group)
-    return group
-  }
-
+  static createIntersectionPlane = sketchScene.createIntersectionPlane
+  static createSketchSolveGroup = sketchScene.createSketchSolveGroup
   createSketchAxis(
     forward: [number, number, number],
     up: [number, number, number],
-    sketchPosition?: [number, number, number]
+    position?: [number, number, number]
   ) {
     this.removeSketchGrid()
-
-    const baseXColor = 0x000055
-    const baseYColor = 0x550000
-    const axisPixelWidth = 1.6
-    const xAxisGeometry = new BoxGeometry(100000, axisPixelWidth, 0.01)
-    const yAxisGeometry = new BoxGeometry(axisPixelWidth, 100000, 0.01)
-    const xAxisMaterial = new MeshBasicMaterial({
-      color: baseXColor,
-      depthTest: false,
-    })
-    const yAxisMaterial = new MeshBasicMaterial({
-      color: baseYColor,
-      depthTest: false,
-    })
-    const xAxisMesh = new Mesh(xAxisGeometry, xAxisMaterial)
-    const yAxisMesh = new Mesh(yAxisGeometry, yAxisMaterial)
-    xAxisMesh.renderOrder = -2
-    yAxisMesh.renderOrder = -1
-
-    xAxisMesh.userData = {
-      type: X_AXIS,
-      baseColor: baseXColor,
-      isSelected: false,
-    }
-    yAxisMesh.userData = {
-      type: Y_AXIS,
-      baseColor: baseYColor,
-      isSelected: false,
-    }
-    xAxisMesh.name = X_AXIS
-    yAxisMesh.name = Y_AXIS
-
-    this.axisGroup = new Group()
-    const gridRenderer = new InfiniteGridRenderer()
-
-    const factor = this.sceneInfra.getClientSceneScaleFactor(this.axisGroup)
-    xAxisMesh?.scale.set(1, factor, 1)
-    yAxisMesh?.scale.set(factor, 1, 1)
-
-    this.axisGroup.add(xAxisMesh, yAxisMesh, gridRenderer)
-    if (this.currentSketchQuaternion) {
-      this.axisGroup.setRotationFromQuaternion(this.currentSketchQuaternion)
-    }
-
-    this.axisGroup.userData = { type: AXIS_GROUP }
-    this.axisGroup.name = AXIS_GROUP
-    this.axisGroup.layers.set(SKETCH_LAYER)
-    this.axisGroup.traverse((child) => {
-      child.layers.set(SKETCH_LAYER)
-    })
-
-    const quat = quaternionFromUpNForward(
-      new Vector3(...up),
-      new Vector3(...forward)
+    this.axisGroup = sketchScene.createSketchAxis(
+      this.sceneInfra,
+      forward,
+      up,
+      position
     )
-    this.axisGroup.setRotationFromQuaternion(quat)
-    if (sketchPosition) {
-      this.axisGroup.position.set(...sketchPosition)
-    }
-    this.sceneInfra.scene.add(this.axisGroup)
-
     this.updateSketchGrid()
   }
-
   updateSketchGrid() {
-    const gridRenderer = this.axisGroup?.children.find(
-      (child) => child instanceof InfiniteGridRenderer
+    sketchScene.updateSketchGrid(
+      this.sceneInfra,
+      this.axisGroup,
+      this.getSettings()
     )
-    const settings = this.getSettings?.()
-    const showSketchGrid = settings?.modeling.showSketchGrid.current ?? false
-    const xAxis = this.axisGroup?.getObjectByName(X_AXIS)
-    const yAxis = this.axisGroup?.getObjectByName(Y_AXIS)
-    setAxisVisualVisibility(xAxis, showSketchGrid)
-    setAxisVisualVisibility(yAxis, showSketchGrid)
-
-    if (!gridRenderer) {
-      return
-    }
-    if (!settings) {
-      gridRenderer.visible = false
-      console.error('Settings not available for grid update')
-      return
-    }
-    if (!showSketchGrid) {
-      gridRenderer.visible = false
-      return
-    }
-
-    const majorGridSpacing = settings.modeling.majorGridSpacing.current ?? 1
-    const minorGridsPerMajor = settings.modeling.minorGridsPerMajor.current ?? 4
-
-    const camera = this.sceneInfra.camControls.camera
-    const viewportSize = this.sceneInfra.renderer.getDrawingBufferSize(
-      new Vector2()
-    )
-    // Choose grid colors based on app theme: dark = existing colors, light = subtle gray
-    const isLight = getResolvedTheme(this.sceneInfra.theme) === Themes.Light
-    const majorColor: [number, number, number, number] = isLight
-      ? [0.3, 0.3, 0.3, 1.0]
-      : [0.7, 0.7, 0.7, 1.0]
-    const minorColor: [number, number, number, number] = isLight
-      ? [0.2, 0.2, 0.2, 1.0]
-      : [0.9, 0.9, 0.9, 1.0]
-
-    const pixelsPerBaseUnit = gridRenderer.getPixelsPerBaseUnit(camera, [
-      viewportSize.x,
-      viewportSize.y,
-    ])
-    const fixedSizeGrid = settings.modeling.fixedSizeGrid.current
-    const gridScaleFactor = getGridScaleFactor({
-      majorGridSpacing,
-      pixelsPerBaseUnit,
-      fixedSizeGrid,
-    })
-    gridRenderer.update(camera, pixelsPerBaseUnit, gridScaleFactor, {
-      majorGridSpacing,
-      minorGridsPerMajor,
-      majorColor,
-      minorColor,
-      fixedSizeGrid,
-    })
   }
 
   getDraftPoint() {
@@ -4068,53 +3917,7 @@ export class SceneEntities {
    * @returns A promise that resolves with the orientation details of the face.
    */
   async getFaceDetails(entityId: string): Promise<GetSketchModePlane> {
-    // TODO mode engine connection to allow batching returns and batch the following
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'enable_sketch_mode',
-        adjust_camera: false,
-        animated: false,
-        ortho: false,
-        entity_id: entityId,
-      },
-    })
-    let resp = await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: { type: 'get_sketch_mode_plane' },
-    })
-
-    if (!resp) {
-      console.warn('No response')
-      return {} as GetSketchModePlane
-    }
-
-    if (isArray(resp)) {
-      resp = resp[0]
-    }
-    const singleResp = resp
-    let faceInfo: GetSketchModePlane | undefined
-    if (isModelingResponse(singleResp)) {
-      const mr = singleResp.resp.data.modeling_response
-      if (mr?.type === 'get_sketch_mode_plane') {
-        faceInfo = mr.data
-      }
-    }
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: { type: 'sketch_mode_disable' },
-    })
-    return (
-      faceInfo ?? {
-        origin: { x: 0, y: 0, z: 0 },
-        x_axis: { x: 1, y: 0, z: 0 },
-        y_axis: { x: 0, y: 1, z: 0 },
-        z_axis: { x: 0, y: 0, z: 1 },
-      }
-    )
+    return getSketchPlaneDetails(this.engineCommandManager, entityId)
   }
 
   drawDashedLine({ from, to }: { from: Coords2d; to: Coords2d }) {

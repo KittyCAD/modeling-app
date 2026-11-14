@@ -1,3 +1,4 @@
+import { attachSketchInput } from '@src/clientSideScene/sketchInput'
 import { selectCommand } from '@src/lib/commandUtils'
 import { Popover } from '@headlessui/react'
 import {
@@ -115,11 +116,7 @@ export const ClientSideScene = ({
     container.appendChild(canvas)
     container.appendChild(sceneInfra.labelRenderer.domElement)
 
-    const onMouseMove = toSync(sceneInfra.onMouseMove, reportRejection)
-    container.addEventListener('mousemove', onMouseMove)
-    container.addEventListener('mousedown', sceneInfra.onMouseDown)
-    const onMouseUp = toSync(sceneInfra.onMouseUp, reportRejection)
-    container.addEventListener('mouseup', onMouseUp)
+    const detachInput = attachSketchInput(container, sceneInfra)
 
     // Resizing the canvas and labels writes layout. Defer those writes until
     // the next frame so they cannot trigger another resize in this delivery.
@@ -154,9 +151,7 @@ export const ClientSideScene = ({
     engineCommandManager.modelingSend = send
 
     return () => {
-      container.removeEventListener('mousemove', onMouseMove)
-      container.removeEventListener('mousedown', sceneInfra.onMouseDown)
-      container.removeEventListener('mouseup', onMouseUp)
+      detachInput()
       sceneEntitiesManager.tearDownSketch({ removeAxis: true })
       cleanupSketchSolveGroup(sceneInfra)
 

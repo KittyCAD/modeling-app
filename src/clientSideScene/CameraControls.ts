@@ -2140,7 +2140,10 @@ function _getInteractionType(
  */
 
 export async function enterSketchModeAndSyncCamera(
-  engineCommandManager: ConnectionManager,
+  engineCommandManager: Pick<
+    ConnectionManager,
+    'geometryOnly' | 'sendSceneCommand'
+  >,
   entityId: string,
   cameraControls?: CameraControls,
   onFace = false
@@ -2182,7 +2185,7 @@ export async function enterSketchModeAndSyncCamera(
 }
 
 async function sendCameraCommands(
-  engineCommandManager: ConnectionManager,
+  engineCommandManager: Pick<ConnectionManager, 'sendSceneCommand'>,
   requests: ModelingCmdReq[]
 ) {
   // The engine executes the batch in order and stops on the first failure.
@@ -2235,7 +2238,7 @@ async function sendCameraCommands(
 }
 
 async function sendCameraCommand(
-  engineCommandManager: ConnectionManager,
+  engineCommandManager: Pick<ConnectionManager, 'sendSceneCommand'>,
   command: Extract<EngineCommand, { type: 'modeling_cmd_req' }>
 ): Promise<void> {
   // Final camera changes must use the acknowledged websocket path. Interactive

@@ -321,7 +321,7 @@ function getSketchIdForRegionInfo(
   return null
 }
 
-async function getSketchIdForEngineRegionEntity(
+export async function getSketchIdForEngineRegionEntity(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
   engineCommandManager: Pick<ConnectionManager, 'sendSceneCommand'>
@@ -3258,7 +3258,7 @@ export function getSemanticSelectionType(
 export function getDefaultSketchPlaneData(
   defaultPlaneId: string,
   systemDeps: {
-    rustContext: RustContext
+    rustContext: Pick<RustContext, 'defaultPlanes'>
     sceneInfra: SceneInfra
   }
 ): Error | false | DefaultPlane {
