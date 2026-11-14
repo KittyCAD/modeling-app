@@ -249,14 +249,17 @@ describe('feature tree generated histories', () => {
               expansions.length = 0
               let expectedSelection: unknown[] = []
               let expectedExpansion: unknown[] = []
-              // Browser tests cover moving focused subtrees; happy-dom exposes
-              // intermediate detachment synchronously during these DOM moves.
+              // Browser tests cover moving focused subtrees. Exclude both focus owners:
+              // happy-dom cannot focus disabled rows or retain focus across DOM moves.
+              const focused = document.activeElement
               const canReorder =
                 target &&
                 target.id !== active &&
+                rows.get(target.id) !== focused &&
                 !nodes.some(
                   (node) =>
-                    node.id === active && ancestors(node).includes(target)
+                    (node.id === active || rows.get(node.id) === focused) &&
+                    ancestors(node).includes(target)
                 )
 
               if (step.kind === 'insert') {

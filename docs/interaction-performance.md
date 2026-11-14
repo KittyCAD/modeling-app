@@ -223,3 +223,26 @@ parallel workers, and partially observed profiles differ from the controlled
 performance suite, so they are not enforcement measurements. Discovery is off by
 default and explicitly disabled in `playwright.performance.config.ts` to avoid
 competing recording sessions.
+
+## Cache lifecycle regressions
+
+JavaScript and Wasm expose no manual execution-cache reset. Rust owns file,
+import, and engine-session cache validity.
+
+The real-engine Rust cache contracts and Playwright lifecycle tests cover file
+identity, same-file parse errors, imported files, engine reconnection, and scene
+preferences without manual resets. The new Playwright cases disable the shared
+API-route mocks. Backface pixels remain a strict regression against the deployed
+engine until [engine#5348](https://github.com/KittyCAD/engine/pull/5348) is deployed.
+
+Genuine Wasm panic recovery uses a separate compile-time-only fault build:
+
+```sh
+bash scripts/build-wasm-fault-injection.sh
+npx playwright test --config=playwright.wasm-recovery.config.ts
+```
+
+Pass the approved development API credential to the test process, not the build.
+CI runs this case once on Ubuntu. The opt-in `e2e-fault-injection` feature and all
+generated artifacts stay separate from normal builds. Normal-build tests assert
+that the panic hook does not exist.

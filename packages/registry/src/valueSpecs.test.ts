@@ -1,10 +1,57 @@
 import { computed, signal } from '@preact/signals-core'
+import { act, render, screen } from '@testing-library/react'
+import { createElement, Suspense, use } from 'react'
 import { describe, expect, it } from 'vitest'
 import { defineRegistryItem, provide } from './helpers'
 import { Registry } from './registry'
-import { appendValueSpec } from './valueSpec'
+import { Slot } from './types'
+import { appendValueSpec, firstWinsValueSpec } from './valueSpec'
 
 describe('value specs', () => {
+  it('preserves a real React-consumed promise across registry reconfiguration', async () => {
+    const promise = Promise.resolve('loaded')
+    const promiseSpec = firstWinsValueSpec<Promise<string> | undefined>(
+      'promise',
+      undefined
+    )
+    const slot = new Slot()
+    const registry = new Registry()
+    registry.configure([
+      defineRegistryItem({ provides: [provide(promiseSpec, promise)] }),
+      slot.of(),
+    ])
+    const observed: Array<Promise<string> | undefined> = []
+    const unsubscribe = registry.signal(promiseSpec).subscribe((value) => {
+      observed.push(value)
+    })
+    function Consumer() {
+      return createElement('span', null, use(promise))
+    }
+    let view: ReturnType<typeof render> | undefined
+    try {
+      await act(async () => {
+        view = render(
+          createElement(
+            Suspense,
+            { fallback: 'loading' },
+            createElement(Consumer)
+          )
+        )
+        await promise
+      })
+      expect(screen.getByText('loaded')).toBeTruthy()
+      // React itself decorates the fulfilled promise with .value. An unrelated
+      // registry update must not reinterpret that promise as a Preact signal.
+      registry.reconfigure(slot, [defineRegistryItem({ id: 'unrelated' })])
+      expect(registry.get(promiseSpec)).toBe(promise)
+      expect(observed).toEqual([promise])
+    } finally {
+      view?.unmount()
+      unsubscribe()
+      registry[Symbol.dispose]()
+    }
+  })
+
   it('orders by precedence', () => {
     const registrySignal = appendValueSpec<string>('commands')
     const container = new Registry()
