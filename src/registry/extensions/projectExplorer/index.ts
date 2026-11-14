@@ -30,33 +30,6 @@ const importInCurrentFileExtension: Factory = defineFactory({
     const importExtensions = signal<string[]>([])
     let disposed = false
     let wasmRevision = 0
-    let stopWasmSubscription: (() => void) | undefined
-
-    // Resolve dependencies after the registry graph has been constructed.
-    void Promise.resolve()
-      .then(() => {
-        if (disposed) return
-        stopWasmSubscription = wasmInputs.wasmPromiseFacet.subscribe(
-          (wasmPromise) => {
-            const revision = ++wasmRevision
-            importExtensions.value = []
-            void wasmPromise
-              ?.then((wasm) => {
-                if (!disposed && revision === wasmRevision) {
-                  importExtensions.value = [
-                    'kcl',
-                    ...wasm.import_file_extensions(),
-                  ]
-                }
-              })
-              .catch((error) => {
-                if (!disposed && revision === wasmRevision)
-                  reportRejection(error)
-              })
-          }
-        )
-      })
-      .catch(reportRejection)
     const importItem = computed<ProjectExplorerRowContextMenuItem>(() => {
       const extensions = importExtensions.value
       const isVisible = ({
@@ -93,6 +66,28 @@ const importInCurrentFileExtension: Factory = defineFactory({
       }
     })
     return {
+      start: () => {
+        const stop = wasmInputs.wasmPromiseFacet.subscribe((wasmPromise) => {
+          const revision = ++wasmRevision
+          importExtensions.value = []
+          void wasmPromise
+            ?.then((wasm) => {
+              if (!disposed && revision === wasmRevision) {
+                importExtensions.value = [
+                  'kcl',
+                  ...wasm.import_file_extensions(),
+                ]
+              }
+            })
+            .catch((error) => {
+              if (!disposed && revision === wasmRevision) reportRejection(error)
+            })
+        })
+        return () => {
+          disposed = true
+          stop()
+        }
+      },
       items: [
         contribute(
           projectExplorerRowContextMenuItemsFacet,
@@ -102,10 +97,6 @@ const importInCurrentFileExtension: Factory = defineFactory({
           }
         ),
       ],
-      dispose: () => {
-        disposed = true
-        stopWasmSubscription?.()
-      },
     }
   },
 })

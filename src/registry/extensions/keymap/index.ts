@@ -215,18 +215,22 @@ const keymapExtension: Factory = defineFactory({
         pendingAnimationFrame = undefined
       }
     }
-    const initialPersistedKeymapLoad = Promise.resolve()
-      .then(() => readUserKeymapFile(fileOperations()))
-      .then((keymap) => {
-        if (persistedKeymapRevision === 0) {
+    const initialPersistedKeymapLoad = Promise.withResolvers<undefined>()
+    let disposed = false
+    const loadPersistedKeymap = async () => {
+      try {
+        const keymap = await readUserKeymapFile(fileOperations())
+        if (!disposed && persistedKeymapRevision === 0) {
           persistedKeymap.value = keymap
         }
-      })
-      .catch((error) => {
-        if (error !== undefined) {
+      } catch (error) {
+        if (!disposed && error !== undefined) {
           reportRejection(error)
         }
-      })
+      } finally {
+        initialPersistedKeymapLoad.resolve(undefined)
+      }
+    }
     const schedulePendingKeystrokesReset = () => {
       if (pendingTimeout !== undefined) {
         window.clearTimeout(pendingTimeout)
@@ -368,7 +372,8 @@ const keymapExtension: Factory = defineFactory({
       removeScope: scopeServiceImpl.removeScope,
       getCurrentScopes: scopeServiceImpl.getCurrentScopes,
       savePersistedKeymap: async (keymap) => {
-        await initialPersistedKeymapLoad
+        await initialPersistedKeymapLoad.promise
+        if (disposed) return Promise.reject(new Error('Keymap is disposed'))
         const normalizedKeymap = normalizePersistedKeymap(keymap)
         persistedKeymapRevision += 1
         persistedKeymap.value = normalizedKeymap
@@ -482,18 +487,36 @@ const keymapExtension: Factory = defineFactory({
       }
       syncFocusScopeFromEventTarget(event.target)
     }
-    if (typeof window !== 'undefined') {
-      window.addEventListener('keydown', handleGlobalKeyDown, {
-        capture: true,
-      })
-      window.addEventListener('focusin', handleGlobalFocusIn, {
-        capture: true,
-      })
-      window.addEventListener('pointerdown', handleGlobalPointerDown, {
-        capture: true,
-      })
-    }
     return {
+      start: () => {
+        void loadPersistedKeymap()
+        if (typeof window !== 'undefined') {
+          window.addEventListener('keydown', handleGlobalKeyDown, {
+            capture: true,
+          })
+          window.addEventListener('focusin', handleGlobalFocusIn, {
+            capture: true,
+          })
+          window.addEventListener('pointerdown', handleGlobalPointerDown, {
+            capture: true,
+          })
+        }
+        return () => {
+          disposed = true
+          clearPendingKeystrokes()
+          if (typeof window !== 'undefined') {
+            window.removeEventListener('keydown', handleGlobalKeyDown, {
+              capture: true,
+            })
+            window.removeEventListener('focusin', handleGlobalFocusIn, {
+              capture: true,
+            })
+            window.removeEventListener('pointerdown', handleGlobalPointerDown, {
+              capture: true,
+            })
+          }
+        }
+      },
       items: [
         provide(commandScopeService, scopeServiceImpl),
         provide(keymapService, serviceImpl),
@@ -519,20 +542,6 @@ const keymapExtension: Factory = defineFactory({
           }
         ),
       ],
-      dispose: () => {
-        clearPendingKeystrokes()
-        if (typeof window !== 'undefined') {
-          window.removeEventListener('keydown', handleGlobalKeyDown, {
-            capture: true,
-          })
-          window.removeEventListener('focusin', handleGlobalFocusIn, {
-            capture: true,
-          })
-          window.removeEventListener('pointerdown', handleGlobalPointerDown, {
-            capture: true,
-          })
-        }
-      },
     }
   },
 })

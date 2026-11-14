@@ -59,6 +59,38 @@ describe('global cursor blinking', () => {
     }
   })
 
+  it('follows replacement settings providers while the cursor extension stays mounted', async () => {
+    const registry = new Registry()
+    const first = signal(createSettings())
+    first.value.textEditor.blinkingCursor.user = true
+    const second = signal(createSettings())
+    second.value.textEditor.blinkingCursor.user = false
+    const style = document.documentElement.style
+    try {
+      await registry.configure([cursorBlinking])
+      expect(style.getPropertyValue('--cursor-color')).toBe('')
+      await registry.configure([
+        cursorBlinking,
+        provide(settingsService, { current: first } as SettingsRegistryService),
+      ])
+      expect(style.getPropertyValue('--cursor-color')).toBe('auto')
+      await registry.configure([
+        cursorBlinking,
+        provide(settingsService, {
+          current: second,
+        } as SettingsRegistryService),
+      ])
+      expect(style.getPropertyValue('--cursor-color')).toBe('transparent')
+      first.value.textEditor.blinkingCursor.user = false
+      first.value.textEditor.blinkingCursor.user = true
+      expect(style.getPropertyValue('--cursor-color')).toBe('transparent')
+      second.value.textEditor.blinkingCursor.user = true
+      expect(style.getPropertyValue('--cursor-color')).toBe('auto')
+    } finally {
+      await registry.dispose()
+    }
+  })
+
   it('stops updates and restores the previous style when disposed', async () => {
     const style = document.documentElement.style
     style.setProperty('--cursor-color', 'red', 'important')
