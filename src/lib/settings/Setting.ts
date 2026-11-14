@@ -10,6 +10,7 @@ import type {
  * @constructor
  */
 export class Setting<T = unknown> {
+  public readonly sceneExecution: SettingProps<T>['sceneExecution']
   /**
    * The current value of the setting, prioritizing project, then user, then default
    */
@@ -42,6 +43,7 @@ export class Setting<T = unknown> {
   }
 
   constructor(props: SettingProps<T>) {
+    this.sceneExecution = props.sceneExecution
     this._default = signal(props.defaultValue)
     this.validate = props.validate
     this.isEnabled = props.isEnabled || (() => true)
