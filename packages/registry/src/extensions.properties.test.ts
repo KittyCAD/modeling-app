@@ -482,3 +482,31 @@ it('releases acquired resources when capturing exports throws', async () => {
   expect(disposed).toBe(true)
   await registry.dispose()
 })
+
+it.each(['value', 'peek'] as const)(
+  'rejects a warmed observation %s read during later acquisition',
+  async (mode) => {
+    const registry = new Registry()
+    const value = new Facet(
+      'warm',
+      (inputs: readonly number[]) => inputs[0] ?? 0
+    )
+    const original = contribute(value, () => 7)
+    const observation = registry.observe(value)
+    try {
+      await registry.configure([original])
+      expect(observation.value).toBe(7)
+      const consumer = extension({
+        create: () => ({
+          exports: mode === 'value' ? observation.value : observation.peek(),
+        }),
+      })
+      await expect(registry.configure([original, consumer])).rejects.toThrow(
+        'Defer observations'
+      )
+      expect(registry.get(value)).toBe(7)
+    } finally {
+      await registry.dispose()
+    }
+  }
+)

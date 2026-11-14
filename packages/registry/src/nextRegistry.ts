@@ -70,10 +70,15 @@ export class Registry implements ScopeHost {
   private readonly graph = signal<readonly DebugItem[]>([])
 
   observe<I, O>(facet: Facet<I, O>): Signal<O> {
-    return computed(() => {
-      if (this.phase === 'acquiring')
-        throw new Error('Defer observations until acquisition completes')
-      return facet.cell(this).output.value
+    const observation = computed(() => facet.cell(this).output.value)
+    // A computed can return its cache without running its callback. Guard the
+    // getter so even warmed observations reject reads during acquisition.
+    return new Proxy(observation, {
+      get: (target, property, receiver) => {
+        if (property === 'value' && this.phase === 'acquiring')
+          throw new Error('Defer observations until acquisition completes')
+        return Reflect.get(target, property, receiver)
+      },
     })
   }
 
