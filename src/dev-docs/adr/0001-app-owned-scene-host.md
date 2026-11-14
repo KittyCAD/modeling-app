@@ -1,0 +1,7 @@
+# App-owned scene hosting with a future zoo-web-view adapter
+
+The new project shell needs the application's packaged-desktop connection path and local renderer, while the existing KCL prototype uses zoo-web-view. Extract explicit connection and presentation dependencies from the existing application, retaining adapters for the legacy route. Reuse ConnectionManager, native KCL execution, and the existing renderers; do not create another transport or geometry implementation.
+
+Zoo-web-view remains the intended integration target. Keep application concerns such as project storage, editor ownership, command review, and sketch interaction outside the presentation adapter. Limit the shared boundary to operations required by working consumers: connection, command dispatch, sizing, media attachment, and disposal. A future zoo-web-view adapter should satisfy the same behavioral tests; do not mirror private SDK fields, DOM selectors, or worker asset-loading assumptions in the shared contract. Actual SDK support for packaged assets and local rendering must be verified before switching adapters.
+
+Editor presentation modes and modeling interaction states are distinct. Enter/Edit sketch belongs to a modeling interaction session, not another editor tab. Extrude and Loft demonstrate the command-and-dialog integration; basic sketch tools may extend that proof after the execution and presentation boundaries are working, but do not imply complete sketch parity.
