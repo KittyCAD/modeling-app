@@ -1,5 +1,5 @@
 import { writeProjectThumbnailFile } from '@src/lib/desktop'
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import { createProjectThumbnail } from '@src/lib/screenshot'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 
