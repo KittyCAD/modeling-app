@@ -263,21 +263,20 @@ async fn native_boundary_failures_invalidate_previous_results() {
 #[tokio::test]
 async fn cached_boundary_failures_invalidate_stored_results() {
     for boundary in [1, 2] {
-        for cache_hit in [false, true] {
-            let (ctx, fail_on) = context_with_boundary_failure();
-            let program = Program::parse_no_errs(PROGRAM).unwrap();
-            ctx.run_with_caching(program.clone()).await.unwrap();
-            assert!(ctx.cache.read_old_ast().await.unwrap().exec_state.named_views.is_some());
-            let next = if cache_hit {
-                program
-            } else {
-                Program::parse_no_errs(&format!("{PROGRAM}\nx = 2")).unwrap()
-            };
-            fail_on.store(boundary, Ordering::Relaxed);
-            let error = ctx.run_with_caching(next).await.unwrap_err();
-            assert!(error.error.message().contains("Injected execution boundary failure"));
-            assert!(ctx.cache.read_old_ast().await.is_none());
-            ctx.close().await;
-        }
+        let (ctx, fail_on) = context_with_boundary_failure();
+        let program = Program::parse_no_errs(PROGRAM).unwrap();
+        let first = ctx.run_with_caching(program.clone()).await.unwrap();
+        assert!(ctx.cache.read_old_ast().await.unwrap().exec_state.named_views.is_some());
+
+        fail_on.store(boundary, Ordering::Relaxed);
+        let hit = ctx.run_with_caching(program).await.unwrap();
+        assert_eq!(hit.named_views, first.named_views);
+        assert_eq!(hit.engine_scene_generation, first.engine_scene_generation);
+
+        let next = Program::parse_no_errs(&format!("{PROGRAM}\nx = 2")).unwrap();
+        let error = ctx.run_with_caching(next).await.unwrap_err();
+        assert!(error.error.message().contains("Injected execution boundary failure"));
+        assert!(ctx.cache.read_old_ast().await.is_none());
+        ctx.close().await;
     }
 }

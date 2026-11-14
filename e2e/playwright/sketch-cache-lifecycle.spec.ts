@@ -144,6 +144,10 @@ test.describe('Rust-owned sketch cache lifecycle', { tag: '@web' }, () => {
       expect(current.engineBodyIds).toContain(baseline.bodyId)
       expect(current.commands).not.toContain('set_kcl_version')
       expect(current.commands).not.toContain('scene_clear_all')
+      expect(current.commands).not.toContain('edge_lines_visible')
+      expect(current.commands).not.toContain('set_grid_scale')
+      expect(current.commands).not.toContain('set_grid_auto_scale')
+      expect(current.commands).not.toContain('set_default_system_properties')
       expect(current.preferences).toEqual(original.preferences)
       expect(current.fileUnit).toBe(original.fileUnit)
       return current

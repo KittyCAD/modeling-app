@@ -261,6 +261,130 @@ async fn kcl_test_cache_contract_anonymous_execution_cannot_replace_loaded_file(
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_contract_unchanged_programs_do_not_contact_engine() {
+    use std::sync::atomic::Ordering::Relaxed;
+
+    let project = tempfile::tempdir().unwrap();
+    let main = project.path().join("main.kcl");
+    tokio::fs::write(&main, BODY).await.unwrap();
+    tokio::fs::write(
+        project.path().join("dimensions.kcl"),
+        "@settings(kclVersion = 3.0)\nexport height = 5mm",
+    )
+    .await
+    .unwrap();
+    with_context(new_context(Some(main.clone()), BODY).await, async |ctx| {
+        for code in [BODY, IMPORTING_BODY] {
+            tokio::fs::write(&main, code).await.unwrap();
+            let original = execute(ctx, code).await;
+            let ids = solid_ids(ctx).await;
+            assert_eq!(ids.len(), 1);
+            assert_volume(volume(ctx).await, 5.0);
+            let commands = ctx.engine.stats().commands_batched.load(Relaxed);
+            let batches = ctx.engine.stats().batches_sent.load(Relaxed);
+            for source in [code.to_owned(), format!("{code}\n// Unchanged geometry and imports")] {
+                tokio::fs::write(&main, &source).await.unwrap();
+                let outcome = execute(ctx, &source).await;
+                assert_eq!(outcome.engine_scene_generation, original.engine_scene_generation);
+                assert_eq!(outcome.variables, original.variables);
+                assert_eq!(outcome.artifact_graph, original.artifact_graph);
+                assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), commands);
+                assert_eq!(ctx.engine.stats().batches_sent.load(Relaxed), batches);
+            }
+            assert_eq!(solid_ids(ctx).await, ids);
+            assert_volume(volume(ctx).await, 5.0);
+
+            // Appending geometry retains the existing body's IDs. A subsequent
+            // preference change still applies without rebuilding that body.
+            let appended = format!("{code}\nextraPlane = offsetPlane(XY, offset = 20mm)");
+            tokio::fs::write(&main, &appended).await.unwrap();
+            let appended_outcome = execute(ctx, &appended).await;
+            assert_eq!(
+                appended_outcome.engine_scene_generation,
+                original.engine_scene_generation + 1
+            );
+            assert!(appended_outcome.variables.contains_key("extraPlane"));
+            assert_eq!(solid_ids(ctx).await, ids);
+            assert_volume(volume(ctx).await, 5.0);
+            ctx.settings.highlight_edges = !ctx.settings.highlight_edges;
+            let updated_preferences = execute(ctx, &appended).await;
+            assert_eq!(
+                updated_preferences.engine_scene_generation,
+                appended_outcome.engine_scene_generation
+            );
+            assert_eq!(solid_ids(ctx).await, ids);
+            assert_volume(volume(ctx).await, 5.0);
+        }
+    })
+    .await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_contract_parse_and_preferences_preserve_real_geometry() {
+    use std::sync::atomic::Ordering::Relaxed;
+
+    let project = tempfile::tempdir().unwrap();
+    let main = project.path().join("main.kcl");
+    tokio::fs::write(&main, BODY).await.unwrap();
+    with_context(new_context(Some(main), BODY).await, async |ctx| {
+        let original = execute(ctx, BODY).await;
+        let ids = solid_ids(ctx).await;
+        assert_eq!(ids.len(), 1);
+        let settings = ctx.settings.clone();
+        for settings in [
+            settings.clone(),
+            ExecutorSettings {
+                show_grid: !settings.show_grid,
+                ..settings.clone()
+            },
+            ExecutorSettings {
+                fixed_size_grid: !settings.fixed_size_grid,
+                ..settings.clone()
+            },
+            ExecutorSettings {
+                highlight_edges: !settings.highlight_edges,
+                ..settings.clone()
+            },
+            ExecutorSettings {
+                default_backface_color: Some("#123456".to_owned()),
+                ..settings.clone()
+            },
+        ] {
+            ctx.settings = settings;
+            let commands = ctx.engine.stats().commands_batched.load(Relaxed);
+            let batches = ctx.engine.stats().batches_sent.load(Relaxed);
+            for valid in [
+                BODY.to_owned(),
+                BODY.replace("height = 5mm", "height = 8mm"),
+                String::new(),
+            ] {
+                let parsed = ctx.parse_for_execution(&valid).await.unwrap();
+                assert!(parsed.program.is_some());
+                assert!(parsed.issues.iter().all(|issue| !issue.severity.is_err()));
+            }
+            let syntax = ctx
+                .parse_for_execution("@settings(kclVersion = 3.0)\nx = )")
+                .await
+                .unwrap();
+            assert!(syntax.issues.iter().any(|issue| issue.severity.is_err()));
+            let lexical = ctx
+                .parse_for_execution("@settings(kclVersion = 3.0)\nx = \"unterminated")
+                .await
+                .unwrap_err();
+            assert!(matches!(lexical.error, KclError::Lexical { .. }));
+            assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), commands);
+            assert_eq!(ctx.engine.stats().batches_sent.load(Relaxed), batches);
+            let cached = execute(ctx, BODY).await;
+            assert_eq!(cached.engine_scene_generation, original.engine_scene_generation);
+            assert_eq!(cached.variables, original.variables);
+            assert_eq!(solid_ids(ctx).await, ids);
+            assert_volume(volume(ctx).await, 5.0);
+        }
+    })
+    .await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_contract_invalid_entry_clears_real_geometry_only_once() {
     use std::sync::atomic::Ordering::Relaxed;
 
@@ -399,6 +523,88 @@ async fn kcl_test_cache_contract_replacement_engine_rebuilds_without_a_javascrip
         assert_volume(volume(replacement).await, 5.0);
         let cached = execute(replacement, BODY).await;
         assert_eq!(cached.engine_scene_generation, changed.engine_scene_generation);
+    })
+    .await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_contract_imported_model_kernel_error_is_the_appended_fillet() {
+    use std::sync::atomic::Ordering::Relaxed;
+
+    let repository = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    let fixture = tokio::fs::read_to_string(repository.join("rust/kcl-lib/tests/named_views_hide_extrude/input.kcl"))
+        .await
+        .unwrap();
+    // Match the app's existing unannotated entry point and legacy imports.
+    // Adding a 3.0 header would reject this workload before any geometry runs.
+    let code = format!(
+        "{}\n\nimport \"large-model/main.kcl\" as performanceModel\nperformanceModel\n",
+        fixture.trim_end()
+    );
+    let tail = "\n// Intentional trailing kernel failure for the performance profile.\nperformanceInvalid = fillet(boxVisible, edges = [{ sideFaces = [boxVisible.sketch.tags.line1, boxVisible.sketch.tags.line2] }], radius = 100000mm)\n";
+    let failing = format!("{}\n{tail}", code.trim_end());
+    let tail_start = failing.find("performanceInvalid = ").unwrap();
+    let project = tempfile::tempdir().unwrap();
+    let main = project.path().join("main.kcl");
+    let modules = project.path().join("large-model");
+    tokio::fs::create_dir(&modules).await.unwrap();
+    let mut sources = tokio::fs::read_dir(repository.join("public/kcl-samples/cpu-cooler"))
+        .await
+        .unwrap();
+    while let Some(source) = sources.next_entry().await.unwrap() {
+        tokio::fs::copy(source.path(), modules.join(source.file_name()))
+            .await
+            .unwrap();
+    }
+    tokio::fs::write(&main, &code).await.unwrap();
+    with_context(new_context(Some(main.clone()), &code).await, async |ctx| {
+        let warm = execute(ctx, &code).await;
+        let ids = solid_ids(ctx).await;
+        assert!(
+            ids.len() > 2,
+            "the real imported CPU cooler must exist before appending the failure"
+        );
+        let loaded_volume = volume(ctx).await;
+        let commands = ctx.engine.stats().commands_batched.load(Relaxed);
+        let cached = execute(ctx, &code).await;
+        assert_eq!(cached.engine_scene_generation, warm.engine_scene_generation);
+        assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), commands);
+
+        // Same file/session and real bytes. Only the root tail changes.
+        tokio::fs::write(&main, &failing).await.unwrap();
+        let failure = ctx.run_with_caching(Program::parse_no_errs(&failing).unwrap()).await;
+        let drained = ctx.engine_batch.is_empty().await;
+        let append_commands = ctx.engine.stats().commands_batched.load(Relaxed) - commands;
+        let retained_ids = solid_ids(ctx).await;
+        let retained_volume = volume(ctx).await;
+
+        let failure = failure.expect_err("the deliberate fillet must fail; success is a regression");
+        let KclError::Engine { details } = failure.error else {
+            panic!("expected the appended engine fillet failure, got {failure:?}");
+        };
+        assert!(
+            details
+                .message
+                .contains("Fillet blend creation encountered an internal error."),
+            "wrong kernel failure: {}\nranges: {:?}\nappend commands: {append_commands}\nsource ({} bytes):\n{failing}",
+            details.message,
+            details.source_ranges,
+            failing.len()
+        );
+        assert!(!details.source_ranges.is_empty());
+        for range in details.source_ranges {
+            assert!(range.module_id().is_top_level());
+            assert!(range.start() >= tail_start && range.end() <= failing.len());
+        }
+        assert!(
+            drained,
+            "all real commands must settle before returning the kernel failure"
+        );
+        assert_eq!(
+            retained_ids, ids,
+            "the failing append must not recreate unchanged imported/root bodies"
+        );
+        assert!((retained_volume - loaded_volume).abs() <= loaded_volume.abs() * 1e-9);
     })
     .await;
 }

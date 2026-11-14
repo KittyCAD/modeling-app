@@ -1,4 +1,5 @@
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+import { batch } from '@preact/signals-core'
 import {
   createSettingsCommand,
   settingsWithCommandConfigs,
@@ -9,6 +10,7 @@ import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
+import { Setting } from '@src/lib/settings/Setting'
 import type {
   BaseUnit,
   DynamicBooleanSetEvent,
@@ -29,6 +31,7 @@ import {
   Themes,
 } from '@src/lib/theme'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { hexToRgba } from '@src/lib/utils'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type { ProjectLibrarySettingDefaultPolicy } from '@src/registry/contracts/projectLibraries'
@@ -87,6 +90,8 @@ export type SettingsMachineEvent = (
 
 export type SettingsMachineContext = SettingsMachineInput & {
   deferredEvents: SettingsMachineEvent[]
+  backfaceColorToPersist: Record<SettingsLevel, string | undefined>
+  pendingBackfaceColors: Partial<Record<SettingsLevel, SettingsMachineEvent>>
 }
 
 export type SettingsActorType = ActorRefFrom<typeof settingsMachine>
@@ -111,6 +116,48 @@ async function loadSettings(input: SettingsLoadInput, projectPath?: string) {
   return settings
 }
 
+function backfaceColorChange(event: SettingsMachineEvent) {
+  if (
+    !('data' in event) ||
+    (event.type !== 'set.modeling.backfaceColor' &&
+      !(event.type === '*' && event.data.path === 'modeling.backfaceColor'))
+  ) {
+    return
+  }
+  const { level, value } = event.data
+  if (
+    value !== undefined &&
+    (typeof value !== 'string' || hexToRgba(value) === null)
+  ) {
+    return
+  }
+  return { level, value }
+}
+
+function restorePendingBackfaceColors(
+  settings: SettingsType,
+  pending: SettingsMachineContext['pendingBackfaceColors']
+) {
+  for (const event of Object.values(pending)) {
+    const change = backfaceColorChange(event)
+    if (change) settings.modeling.backfaceColor[change.level] = change.value
+  }
+}
+
+function replaceSettings(
+  context: SettingsMachineContext,
+  settings: SettingsType
+) {
+  const backfaceColorToPersist = {
+    user: settings.modeling.backfaceColor.user,
+    project: settings.modeling.backfaceColor.project,
+  }
+  batch(() =>
+    restorePendingBackfaceColors(settings, context.pendingBackfaceColors)
+  )
+  return { ...settings, backfaceColorToPersist }
+}
+
 export const settingsMachine = setup({
   types: {
     context: {} as SettingsMachineContext,
@@ -133,18 +180,24 @@ export const settingsMachine = setup({
 
       const {
         currentProject,
-        defaultProjectLibraries: _defaultProjectLibraries,
         extensionSettings,
         wasmInstancePromise,
-        commandBarActor: _c,
         fileOperations,
-        ...settings
       } = input.context
+      const settings = getOnlySettingsFromContext(input.context)
+      // Only color previews can change during this write. Copy their accepted
+      // values before saveSettings awaits Wasm or filesystem operations.
+      const backfaceColor = new Setting({
+        defaultValue: settings.modeling.backfaceColor.default,
+        validate: () => true,
+      })
+      backfaceColor.user = input.context.backfaceColorToPersist.user
+      backfaceColor.project = input.context.backfaceColorToPersist.project
 
       await saveSettings(
         fileOperations,
         wasmInstancePromise,
-        settings,
+        { ...settings, modeling: { ...settings.modeling, backfaceColor } },
         extensionSettings,
         input.level === 'user' ? undefined : currentProject?.path
       )
@@ -287,8 +340,20 @@ export const settingsMachine = setup({
     clearProjectSettings: assign(({ context }) => {
       // Peel off all non-settings context
       const currentSettings = getOnlySettingsFromContext(context)
-      const newSettings = clearSettingsAtLevel(currentSettings, 'project')
-      return newSettings
+      batch(() => {
+        clearSettingsAtLevel(currentSettings, 'project')
+        restorePendingBackfaceColors(
+          currentSettings,
+          context.pendingBackfaceColors
+        )
+      })
+      return {
+        ...currentSettings,
+        backfaceColorToPersist: {
+          ...context.backfaceColorToPersist,
+          project: undefined,
+        },
+      }
     }),
     /** Unload the current project's info from memory */
     clearCurrentProject: assign(({ context }) => {
@@ -301,24 +366,50 @@ export const settingsMachine = setup({
 
       // Clear the selected level entirely so settings fall back to the
       // parent level/default rather than retaining stale values in memory.
-      const newSettings = clearSettingsAtLevel(
-        getOnlySettingsFromContext(context),
-        event.level
-      )
+      const newSettings = getOnlySettingsFromContext(context)
+      batch(() => {
+        clearSettingsAtLevel(newSettings, event.level)
+        restorePendingBackfaceColors(newSettings, context.pendingBackfaceColors)
+      })
 
-      return newSettings
+      return {
+        ...newSettings,
+        backfaceColorToPersist: {
+          ...context.backfaceColorToPersist,
+          [event.level]: undefined,
+        },
+      }
     }),
     toastSettingsReset: ({ event }) => {
       if (event.type !== 'Reset settings') return
       toast.success(`Your ${event.level}-level settings were reset.`)
     },
-    setAllSettings: assign(({ event, context }) => {
-      if ('settings' in event) return event.settings
-      else if ('output' in event) return event.output || context
-      else return context
-    }),
+    setAllSettings: assign(({ event, context }) =>
+      event.type === 'Set all settings'
+        ? replaceSettings(context, event.settings)
+        : {}
+    ),
     setSettingAtLevel: assign(({ context, event }) => {
       if (!('data' in event)) return {}
+      const colorChange = backfaceColorChange(event)
+      if (colorChange) {
+        const { level, value } = colorChange
+        const pending = context.pendingBackfaceColors[level]
+        const pendingBackfaceColors = { ...context.pendingBackfaceColors }
+        // Replayed saves advance persistence without rolling back a newer preview.
+        if (!pending || pending === event) {
+          context.modeling.backfaceColor[level] = value
+        }
+        if (pending === event) delete pendingBackfaceColors[level]
+        return {
+          modeling: { ...context.modeling },
+          backfaceColorToPersist: {
+            ...context.backfaceColorToPersist,
+            [level]: value,
+          },
+          pendingBackfaceColors,
+        }
+      }
       const { level, value } = event.data
       const settingPath =
         event.type === '*' ? event.data.path : event.type.replace(/^set\./, '')
@@ -341,20 +432,37 @@ export const settingsMachine = setup({
 
       return newContext
     }),
-    deferEventUntilSettingsPersist: assign({
-      deferredEvents: ({ context, event }) => [
-        ...context.deferredEvents,
-        event,
-      ],
+    deferEventUntilSettingsPersist: assign(({ context, event }) => {
+      const deferredEvents = [...context.deferredEvents]
+      const change = backfaceColorChange(event)
+      if (!change) return { deferredEvents: [...deferredEvents, event] }
+      const previous = deferredEvents.at(-1)
+      const previousChange = previous && backfaceColorChange(previous)
+      // Coalesce adjacent saves without crossing lifecycle/reset events or
+      // converting a doNotPersist update into a write.
+      if (
+        previousChange?.level === change.level &&
+        Boolean(previous?.doNotPersist) === Boolean(event.doNotPersist)
+      ) {
+        deferredEvents.pop()
+      }
+      deferredEvents.push(event)
+      context.modeling.backfaceColor[change.level] = change.value
+      return {
+        deferredEvents,
+        modeling: { ...context.modeling },
+        pendingBackfaceColors: {
+          ...context.pendingBackfaceColors,
+          [change.level]: event,
+        },
+      }
     }),
     flushDeferredSettingsEvents: enqueueActions(({ context, enqueue }) => {
-      // Replay after the current write finishes so filesystem operations never
-      // overlap, while preserving the order in which the user changed settings.
-      const deferredEvents = context.deferredEvents
-      enqueue.assign({ deferredEvents: [] })
-      for (const event of deferredEvents) {
-        enqueue.raise(event)
-      }
+      // Drain one event per completed operation, retaining later previews and
+      // their ordering across project changes, resets, and disk reloads.
+      const [event, ...deferredEvents] = context.deferredEvents
+      enqueue.assign({ deferredEvents })
+      if (event) enqueue.raise(event)
     }),
     setThemeClass: ({ context }) => {
       const currentTheme = context.app.theme.current ?? Themes.System
@@ -386,6 +494,11 @@ export const settingsMachine = setup({
       ...createSettings(),
       ...input,
       deferredEvents: [],
+      backfaceColorToPersist: {
+        user: input.modeling.backfaceColor.user,
+        project: input.modeling.backfaceColor.project,
+      },
+      pendingBackfaceColors: {},
     }
   },
   invoke: [
@@ -536,6 +649,7 @@ export const settingsMachine = setup({
             'setAllSettings',
             'sendThemeToWatcher',
             'updateRegisteredCommands',
+            'flushDeferredSettingsEvents',
           ],
         },
 
@@ -559,6 +673,7 @@ export const settingsMachine = setup({
             'clearProjectSettings',
             'clearCurrentProject',
             'updateRegisteredCommands',
+            'flushDeferredSettingsEvents',
           ],
         },
       },
@@ -572,7 +687,9 @@ export const settingsMachine = setup({
         onDone: {
           target: 'idle',
           actions: [
-            'setAllSettings',
+            assign(({ context, event }) =>
+              replaceSettings(context, event.output)
+            ),
             'flushDeferredSettingsEvents',
             'sendThemeToWatcher',
             'updateRegisteredCommands',
@@ -662,7 +779,9 @@ export const settingsMachine = setup({
         onDone: {
           target: 'idle',
           actions: [
-            'setAllSettings',
+            assign(({ context, event }) =>
+              replaceSettings(context, event.output)
+            ),
             'sendThemeToWatcher',
             'updateRegisteredCommands',
           ],
@@ -676,6 +795,9 @@ export const settingsMachine = setup({
       },
     },
     loadingProject: {
+      on: {
+        '*': { actions: ['deferEventUntilSettingsPersist'] },
+      },
       entry: [
         assign({
           currentProject: ({ event }) =>
@@ -688,12 +810,18 @@ export const settingsMachine = setup({
         onDone: {
           target: 'idle',
           actions: [
-            'setAllSettings',
+            assign(({ context, event }) =>
+              replaceSettings(context, event.output)
+            ),
+            'flushDeferredSettingsEvents',
             'sendThemeToWatcher',
             'updateRegisteredCommands',
           ],
         },
-        onError: 'idle',
+        onError: {
+          target: 'idle',
+          actions: ['flushDeferredSettingsEvents'],
+        },
         input: ({ event, context }) => {
           assertEvent(event, 'load.project')
           return {
@@ -724,6 +852,8 @@ export function getOnlySettingsFromContext(
     fileOperations: _fileOperations,
     wasmInstancePromise: _w,
     deferredEvents: _deferredEvents,
+    backfaceColorToPersist: _backfaceColorToPersist,
+    pendingBackfaceColors: _pendingBackfaceColors,
     ...settings
   } = s
   return settings
