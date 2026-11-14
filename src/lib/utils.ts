@@ -256,8 +256,8 @@ export function toSync<F extends AsyncFn<F>>(
 }
 
 export function getNormalisedCoordinates(
-  e: PointerEvent | React.MouseEvent<HTMLDivElement, MouseEvent>,
-  elVideo: HTMLVideoElement,
+  e: Pick<MouseEvent, 'clientX' | 'clientY'>,
+  elVideo: Pick<HTMLElement, 'getBoundingClientRect'>,
   streamDimensions: {
     width: number
     height: number

@@ -57,8 +57,8 @@ function makeConnectionManager(
         }
         return undefined
       }),
-    subscribeTo: vi.fn(),
-    subscribeToUnreliable: vi.fn(),
+    subscribeTo: vi.fn(() => () => {}),
+    subscribeToUnreliable: vi.fn(() => () => {}),
   } as unknown as ConnectionManager
 }
 
@@ -1187,6 +1187,50 @@ describe('hover queries', () => {
         command.cmd.type === 'highlight_set_entity'
     )
   }
+
+  it('uses the supplied scene element and suppresses a queued hover when a dialog disables picking', () => {
+    vi.useFakeTimers()
+    const manager = makeConnectionManager({ width: 800, height: 600 })
+    const canvas = makeCanvas(400, 300)
+    vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue(
+      new DOMRect(100, 50, 400, 300)
+    )
+    const controls = new CameraControls(
+      canvas,
+      manager,
+      unusedSettings,
+      () => null,
+      () => canvas
+    )
+    const send = vi.spyOn(manager, 'sendSceneCommand').mockClear()
+    const move = () =>
+      controls.onMouseMove(
+        new PointerEvent('pointermove', {
+          clientX: 200,
+          clientY: 125,
+          pointerType: 'mouse',
+        })
+      )
+    try {
+      move()
+      vi.advanceTimersToNextFrame()
+      expect(send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cmd: {
+            type: 'highlight_set_entity',
+            selected_at_window: { x: 200, y: 150 },
+          },
+        })
+      )
+      send.mockClear()
+      move()
+      controls.hoverPickingDisabled = true
+      vi.advanceTimersToNextFrame()
+      expect(send).not.toHaveBeenCalled()
+    } finally {
+      controls.dispose()
+    }
+  })
 
   it.each([true, false])(
     'are sent outside a sketch (local camera: %s)',

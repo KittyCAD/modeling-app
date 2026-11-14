@@ -1,3 +1,5 @@
+import { createKclSceneSelection } from '@src/lib/kcl/sceneSelection'
+import type { SceneSelectionController } from '@src/lib/scene/selection'
 import { effect } from '@preact/signals-core'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
@@ -37,6 +39,7 @@ export interface KclSceneResource {
   readonly runtime: KclRuntime
   readonly presentation: ScenePresentation
   readonly localHost: LocalRendererHost | undefined
+  readonly selection: SceneSelectionController
   readonly preferences: ScenePresentationPreferences
   resize: (size: { width: number; height: number }) => Promise<void>
   /** Apply the legacy initial-camera reset; `KclSession` requests it once per streamed connection. */
@@ -80,6 +83,7 @@ export async function openKclScene({
   let infra: SceneInfra | undefined
   let viewport: SceneViewport | undefined
   let connectionWatch: ReturnType<typeof watchConnection> | undefined
+  let picking: ReturnType<typeof createKclSceneSelection> | undefined
   let stopUnits: (() => void) | undefined
   let disposed = false
   const element = createSceneElement()
@@ -90,6 +94,7 @@ export async function openKclScene({
     disposed = true
     connectionWatch?.dispose()
     stopUnits?.()
+    picking?.dispose()
     viewport?.dispose()
     infra?.localRenderer?.dispose()
     if (infra) infra.localRenderer = null
@@ -139,8 +144,18 @@ export async function openKclScene({
     stopUnits = effect(() => {
       sceneInfra.baseUnit = preferences.defaultUnit.value
     })
+    const selectionBinding = createKclSceneSelection(manager, sceneInfra, model)
+    picking = selectionBinding
     const view = createSceneViewport(
-      { element, connection: connected, manager, sceneInfra, model, settings },
+      {
+        element,
+        connection: connected,
+        manager,
+        sceneInfra,
+        model,
+        settings,
+        selection: selectionBinding.selection,
+      },
       presentation,
       preferences,
       () => disposed || signal.aborted
@@ -156,6 +171,7 @@ export async function openKclScene({
       runtime,
       presentation,
       localHost: view.localHost,
+      selection: selectionBinding.selection,
       preferences,
       resize: view.resize,
       applySettings: view.applySettings,

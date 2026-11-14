@@ -8,6 +8,7 @@ import { EngineConnectionEvents } from '@src/lib/engineConnection/utils'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
+import { SceneExecutionEvents } from '@src/lib/scene/execution'
 import { beforeEach, expect, it, vi } from 'vitest'
 
 const owned = vi.hoisted(() => ({
@@ -23,6 +24,8 @@ vi.mock('@src/lib/engineConnection/connectionManager', () => ({
     constructor() {
       owned.managers.push(this)
     }
+    streamDimensions = { width: 640, height: 360 }
+    sendSceneCommand = vi.fn(async () => null)
     setTheme = vi.fn(async () => {})
     setDefaultSystemProperties = vi.fn(async () => {})
     setHighlightEdges = vi.fn(async () => {})
@@ -258,3 +261,36 @@ it('tracks the captured connection and removes its close listener on disposal', 
   expect(options.onDisconnect).toHaveBeenCalledOnce()
   preferences.dispose()
 })
+it.each(['local', 'streamed'] as const)(
+  'invalidates %s view selection and dialog targets on each execution',
+  async (presentation) => {
+    const { model, options, preferences } = setup()
+    const scene = await openKclScene({ ...options, presentation })
+    if (scene instanceof Error) return expect.fail(scene.message)
+    const done = () =>
+      model.events.dispatchEvent(
+        new CustomEvent(SceneExecutionEvents.ExecutionDone, {
+          detail: { successful: true },
+        })
+      )
+    try {
+      expect(scene.selection.pickingEnabled.peek()).toBe(false)
+      done()
+      const original = scene.selection.model.peek()
+      expect(original).not.toBeNull()
+      const dialog = scene.selection.beginPicking({ arguments: [] })
+      if (dialog instanceof Error) return expect.fail(dialog.message)
+      model.executing.value = true
+      expect(scene.selection.model.peek()).toBeNull()
+      expect(dialog.model.peek()).toBeNull()
+      model.executing.value = false
+      done()
+      expect(scene.selection.model.peek()).not.toBe(original)
+      expect(dialog.validate([])).toBeInstanceOf(Error)
+      expect(dialog.bindCurrentModel()).toBeUndefined()
+    } finally {
+      await scene.dispose()
+      preferences.dispose()
+    }
+  }
+)
