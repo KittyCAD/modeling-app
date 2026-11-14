@@ -50,6 +50,7 @@ export function createSketchInteraction(
       {
         id: 'kcl.sketch.start',
         name: 'Start Sketch',
+        groupId: 'kcl.sketch.entry',
         icon: 'sketch',
         presentation: selectionPresentation,
         createSession: async (context, signal) =>

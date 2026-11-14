@@ -7,6 +7,7 @@ import { isErr } from '@src/lib/trap'
 
 /** Extensions contribute presentation and a typed dialog factory; the view owns its lifecycle. */
 export interface ModelingToolDefinition {
+  groupId?: string
   id: string
   name: string
   icon: Command['icon']

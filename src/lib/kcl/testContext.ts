@@ -1,3 +1,4 @@
+import { defaultModelingToolGroups } from '@src/lib/kcl/toolGroups'
 import { createModelingInteractions } from '@src/lib/kcl/interactions'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@src/lang/wasm'
@@ -106,6 +107,7 @@ export function modelingTestContext() {
     fileOperations: undefined,
     measurement: createMeasurementToolService(),
     physicalAnalysis: createPhysicalAnalysisService(),
+    toolGroups: signal(defaultModelingToolGroups),
     statusItems: signal(defaultModelingStatusItems),
   }
   return {

@@ -2,7 +2,10 @@ import { forwardRef, useRef } from 'react'
 import { render, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
-import { ToolbarDropdownPanel } from '@src/components/ToolbarDropdownPanel'
+import {
+  ToolbarDropdownPanel,
+  positionPanelFromButton,
+} from '@src/components/ToolbarDropdownPanel'
 
 const mocks = vi.hoisted(() => ({
   reportClientError: vi.fn(async () => {}),
@@ -181,4 +184,18 @@ describe('ToolbarDropdownPanel', () => {
       }),
     })
   })
+})
+
+test('opens submenus to the left at the right edge and keeps them inside the viewport', () => {
+  const panel = document.createElement('div'),
+    button = document.createElement('button')
+  vi.spyOn(panel, 'getBoundingClientRect').mockReturnValue(
+    new DOMRect(0, 0, 200, 180)
+  )
+  vi.spyOn(button, 'getBoundingClientRect').mockReturnValue(
+    new DOMRect(window.innerWidth - 40, window.innerHeight - 30, 30, 25)
+  )
+  positionPanelFromButton(panel, button, 'beside')
+  expect(Number.parseFloat(panel.style.left)).toBe(window.innerWidth - 240)
+  expect(Number.parseFloat(panel.style.top)).toBe(window.innerHeight - 188)
 })

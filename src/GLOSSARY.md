@@ -68,6 +68,14 @@ An Area showing the 3D modeling scene. It contains controls to manipulate the CA
 
 An element within the Scene that contains buttons to invoke modeling operations. It changes based on the current modeling state, such as being in sketch mode.
 
+### Tool group
+
+A named category of related toolbar tools. A group can contain tools or other groups. Depending on available space, it appears inline between dividers, as a split button with its last-used tool, or as a submenu inside another group. These are presentations of the same category.
+
+### Split button
+
+A toolbar control pairing a primary tool button with a menu arrow. The primary button invokes the group's last-used tool; the arrow reveals its other tools and subgroups.
+
 ### View Controls
 
 A cluster of interface elements within the Scene that help the user orient themselves in the 3D space of the Scene.

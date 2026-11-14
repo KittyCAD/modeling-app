@@ -3,6 +3,7 @@ import type { SketchToolDefinition } from '@src/lib/kcl/sketch/contract'
 export const circleSketchTool: SketchToolDefinition = {
   id: 'sketch.circle',
   name: 'Circle',
+  groupId: 'kcl.sketch.draw',
   icon: 'circle',
   create: async (host) => {
     const { createCircleInteraction } = await import(

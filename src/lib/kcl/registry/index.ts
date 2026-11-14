@@ -1,3 +1,4 @@
+import { defaultModelingToolGroups } from '@src/lib/kcl/toolGroups'
 import { sketchToolsValueSpec } from '@src/lib/kcl/sketch/contract'
 import { circleSketchTool } from '@src/lib/kcl/sketch/tools'
 import { createModelingInteractions } from '@src/lib/kcl/interactions'
@@ -9,6 +10,7 @@ import { createModelingTools } from '@src/lib/kcl/modelingTools'
 import { defaultModelingTools } from '@src/lib/kcl/toolDefinitions'
 import type { ModelingViewContext } from '@src/lib/kcl/registry/contract'
 import {
+  modelingToolGroupsValueSpec,
   modelingStatusItemsValueSpec,
   modelingToolsValueSpec,
 } from '@src/lib/kcl/registry/contract'
@@ -123,6 +125,9 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
     id: 'kcl',
     uses: [projectSourcesExtension],
     provides: [
+      ...defaultModelingToolGroups.map((group) =>
+        provide(modelingToolGroupsValueSpec, group)
+      ),
       provide(sketchToolsValueSpec, circleSketchTool),
       provide(
         modelingInteractionsValueSpec,
@@ -168,6 +173,7 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
             fileOperations: services.optional(fileOperationsService),
             measurement,
             physicalAnalysis,
+            toolGroups: valueSpecs.signal(modelingToolGroupsValueSpec),
             statusItems: valueSpecs.signal(modelingStatusItemsValueSpec),
           }
           const stopRecovery = effect(() => {

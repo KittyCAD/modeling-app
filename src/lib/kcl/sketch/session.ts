@@ -378,6 +378,7 @@ export async function createSketchSession(
       ? [
           ...tools.value.map((tool) => ({
             id: tool.id,
+            groupId: tool.groupId,
             title: tool.name,
             icon: tool.icon,
             status: 'available' as const,
@@ -390,6 +391,7 @@ export async function createSketchSession(
           })),
           {
             id: 'sketch.exit',
+            groupId: 'kcl.sketch.session',
             title: 'Exit Sketch',
             icon: 'checkmark' as const,
             status: 'available' as const,
@@ -403,6 +405,7 @@ export async function createSketchSession(
       : [
           {
             id: 'sketch.cancel',
+            groupId: 'kcl.sketch.session',
             title: 'Cancel',
             icon: 'close' as const,
             status: 'available' as const,

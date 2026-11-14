@@ -1,3 +1,4 @@
+import type { ToolbarGroupDefinition } from '@src/components/Toolbar/groups'
 import type {
   createModelingInteractions,
   ModelingInteractionDefinition,
@@ -26,6 +27,7 @@ export interface ModelingViewContext {
   fileOperations: FileOperationsRegistryService | undefined
   measurement: ReturnType<typeof createMeasurementToolService>
   physicalAnalysis: ReturnType<typeof createPhysicalAnalysisService>
+  toolGroups: ReadonlySignal<readonly ToolbarGroupDefinition[]>
   statusItems: ReadonlySignal<readonly ModelingStatusItem[]>
 }
 export interface ModelingStatusItem {
@@ -35,6 +37,9 @@ export interface ModelingStatusItem {
   Component: ComponentType<{ context: ModelingViewContext }>
 }
 export const modelingViewContract = defineContract({
+  modelingToolGroupsValueSpec: appendValueSpec<ToolbarGroupDefinition>(
+    'modeling-view.tool-groups'
+  ),
   modelingInteractionsValueSpec: appendValueSpec<ModelingInteractionDefinition>(
     'modeling-view.interactions'
   ),
@@ -46,6 +51,7 @@ export const modelingViewContract = defineContract({
   ),
 })
 export const {
+  modelingToolGroupsValueSpec,
   modelingStatusItemsValueSpec,
   modelingToolsValueSpec,
   modelingInteractionsValueSpec,

@@ -118,3 +118,11 @@ with focused regression tests.
 
 Gesture settlement waits for the pending valid preview before committing. A first
 preview failure restores the baseline without publishing a formatting-only edit.
+
+## Toolbar groups
+
+Contribute categories through `modelingToolGroupsValueSpec` and give tools a
+`groupId`. Stable category IDs, parent IDs, order, and collapse priority describe
+semantics; the toolbar chooses inline, split-button, or submenu presentation from
+container width. Command and sketch behavior do not belong to that layout state.
+The responsive presentation can be adopted independently of adding another tool.

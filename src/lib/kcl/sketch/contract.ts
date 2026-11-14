@@ -36,6 +36,7 @@ export interface SketchTool {
   dispose: () => Promise<void>
 }
 export interface SketchToolDefinition {
+  groupId?: string
   id: string
   name: string
   icon: ToolbarViewItem['icon']

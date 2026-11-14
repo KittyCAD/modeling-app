@@ -15,6 +15,7 @@ export interface ModelingInteractionSession {
   dispose: () => Promise<void>
 }
 export interface ModelingInteractionEntry {
+  groupId?: string
   id: string
   name: string
   icon: ToolbarViewItem['icon']

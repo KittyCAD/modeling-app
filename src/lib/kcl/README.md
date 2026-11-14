@@ -95,6 +95,9 @@ The dialog owns its argument document and temporary picks. Submission checks the
 captured source and execution, then applies one undoable document transaction.
 The executor refreshes the resulting model through the normal path.
 
+Tool categories come from `modelingToolGroupsValueSpec`. The toolbar adapts those
+groups to its container, retaining each group's last-used tool when collapsed.
+
 ## Sketch editing
 
 Start/Edit Sketch opens an interaction session inside the Modeling view. It owns

@@ -3,7 +3,7 @@ import type { StdlibTool } from '@src/lib/kcl/stdlibTools'
 
 /** Keep native command implementations lazy while capturing each tool's argument type. */
 export function defineStdlibModelingTool<Args extends object>(
-  metadata: Pick<ModelingToolDefinition, 'id' | 'name' | 'icon'>,
+  metadata: Pick<ModelingToolDefinition, 'id' | 'name' | 'icon' | 'groupId'>,
   load: () => Promise<Pick<StdlibTool<Args>, 'arguments' | 'codemod'>>
 ): ModelingToolDefinition {
   return {
@@ -26,11 +26,16 @@ export function defineStdlibModelingTool<Args extends object>(
 
 export const defaultModelingTools = [
   defineStdlibModelingTool(
-    { id: 'kcl.extrude', name: 'Extrude', icon: 'extrude' },
+    {
+      groupId: 'kcl.solids',
+      id: 'kcl.extrude',
+      name: 'Extrude',
+      icon: 'extrude',
+    },
     async () => (await import('@src/lib/kcl/stdlibTools')).extrudeTool
   ),
   defineStdlibModelingTool(
-    { id: 'kcl.loft', name: 'Loft', icon: 'loft' },
+    { groupId: 'kcl.solids', id: 'kcl.loft', name: 'Loft', icon: 'loft' },
     async () => (await import('@src/lib/kcl/stdlibTools')).loftTool
   ),
 ]

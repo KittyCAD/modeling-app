@@ -1,9 +1,8 @@
+import { ResponsiveToolbar } from '@src/components/Toolbar/ResponsiveToolbar'
+import { groupToolbarItems } from '@src/components/Toolbar/groups'
 import { useSignals } from '@preact/signals-react/runtime'
 import { lazy, Suspense, useId } from 'react'
-import {
-  ToolbarView,
-  type ToolbarViewItem,
-} from '@src/components/Toolbar/ToolbarView'
+import { type ToolbarViewItem } from '@src/components/Toolbar/ToolbarView'
 import { ErrorBanner } from '@src/components/ErrorBanner'
 import usePlatform from '@src/hooks/usePlatform'
 import {
@@ -11,7 +10,7 @@ import {
   modelingStdLibCommandDocsLink,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { ModelingViewContext } from '@src/lib/kcl/registry/contract'
-import { reportRejection } from '@src/lib/trap'
+import { isErr, reportRejection } from '@src/lib/trap'
 const Dialog = lazy(() => import('@src/lib/kcl/ModelingToolDialog'))
 
 /** Adapt one view's command host to the same toolbar used by the file route. */
@@ -32,6 +31,7 @@ export function ModelingToolbar({ context }: { context: ModelingViewContext }) {
     const docs = modelingStdLibCommandDocsLink(tool.name)
     return {
       id: tool.id,
+      groupId: tool.groupId,
       title: tool.name,
       icon: tool.icon,
       status: 'available',
@@ -48,6 +48,7 @@ export function ModelingToolbar({ context }: { context: ModelingViewContext }) {
     .flatMap((definition) => definition.entries)
     .map((entry) => ({
       id: entry.id,
+      groupId: entry.groupId,
       title: entry.name,
       icon: entry.icon,
       status: 'available',
@@ -62,15 +63,17 @@ export function ModelingToolbar({ context }: { context: ModelingViewContext }) {
   const shownItems = interaction
     ? [...interaction.toolbar.value]
     : [...entries, ...items]
+  const grouped = groupToolbarItems(shownItems, context.toolGroups.value)
   const error =
+    (isErr(grouped) ? grouped : undefined) ??
     interaction?.error.value ??
     context.interactions.error.value ??
     tools.error.value
   return (
     <>
       <div className="toolbar-container pointer-events-none absolute inset-x-0 top-0 z-[19]">
-        <ToolbarView
-          items={shownItems}
+        <ResponsiveToolbar
+          items={isErr(grouped) ? shownItems : grouped}
           mode={interaction ? 'sketching' : 'modeling'}
           platform={platform}
           idPrefix={idPrefix}
@@ -91,7 +94,7 @@ export function ModelingToolbar({ context }: { context: ModelingViewContext }) {
               />
             </div>
           )}
-        </ToolbarView>
+        </ResponsiveToolbar>
       </div>
       {tools.active.value && (
         <Suspense fallback={null}>
