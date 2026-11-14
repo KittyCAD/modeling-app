@@ -136,6 +136,16 @@ Prepare these system dependencies:
 
 - Set `$VITE_ZOO_API_TOKEN` from https://zoo.dev/account/developer
 
+The expensive Zookeeper replay acceptance cases are skipped by default. To run
+generated large-history, delayed-setup, and oversized-message cases serially:
+
+```bash
+npm run test:e2e:replay:acceptance
+```
+
+These cases mock Zookeeper traffic and check frontend behavior, not production
+database performance. They use disposable local projects and do not send generation prompts.
+
 #### Desktop tests (Electron on all platforms)
 
 ```

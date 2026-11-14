@@ -82,6 +82,18 @@ export const ZookeeperConversationPane = (props: {
   const attachmentFetches = useSelector(actor, (snapshot) => {
     return snapshot.context.attachmentFetches
   })
+  const replayNextCursor = useSelector(
+    actor,
+    (snapshot) => snapshot.context.replayNextCursor
+  )
+  const replayPageRequestId = useSelector(
+    actor,
+    (snapshot) => snapshot.context.replayPageRequestId
+  )
+  const replayPageError = useSelector(
+    actor,
+    (snapshot) => snapshot.context.replayPageError
+  )
   const defaultMode = useSelector(actor, (snapshot) => {
     return snapshot.context.defaultMode
   })
@@ -178,6 +190,12 @@ export const ZookeeperConversationPane = (props: {
         isLoadingAttachments={isLoadingAttachments}
         contexts={[{ type: 'selections', data: props.selectionRanges }]}
         conversation={conversation}
+        canLoadOlderMessages={replayNextCursor !== undefined}
+        isLoadingOlderMessages={replayPageRequestId !== undefined}
+        olderMessagesError={replayPageError}
+        onLoadOlderMessages={() =>
+          actor.send({ type: ZookeeperManagerTransitions.ReplayPageFetch })
+        }
         attachmentFetches={attachmentFetches}
         onFetchAttachment={(attachmentRef) => {
           actor.send({
@@ -192,7 +210,15 @@ export const ZookeeperConversationPane = (props: {
         onClickClearChat={() => {
           setIsConfirmingClearChat(true)
         }}
-        onReconnect={() => controller.reconnect()}
+        onReconnect={() => {
+          if (
+            actor.getSnapshot().context.replayPageError &&
+            !actor.getSnapshot().context.abruptlyClosed
+          ) {
+            actor.send({ type: ZookeeperManagerTransitions.AbruptClose })
+          }
+          controller.reconnect()
+        }}
         onCheckBilling={checkBillingAccess}
         onOpenBilling={onOpenBilling}
         connectionError={
