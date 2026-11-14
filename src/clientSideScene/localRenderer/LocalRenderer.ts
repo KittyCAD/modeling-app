@@ -1112,6 +1112,7 @@ export class LocalRenderer {
       antialias: true,
       alpha: false,
       device,
+      logarithmicDepthBuffer: true,
     })
     await renderer.init()
     if (this.disposed) {
