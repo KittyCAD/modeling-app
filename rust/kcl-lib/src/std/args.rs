@@ -51,6 +51,7 @@ use crate::std::shapes::PolygonType;
 use crate::std::shapes::SketchOrSurface;
 use crate::std::sketch::FaceTag;
 use crate::std::sweep::SweepPath;
+use crate::std::utils::untype_point3d_in_one_unit;
 
 const ERROR_STRING_SKETCH_TO_SOLID_HELPER: &str =
     "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`";
@@ -864,8 +865,7 @@ impl<'a> FromKclValue<'a> for crate::execution::Point3d {
             let_field_of!(obj, x, TyF64);
             let_field_of!(obj, y, TyF64);
             let_field_of!(obj, z, TyF64);
-            // TODO here and below we could use coercing combination.
-            let (a, ty) = NumericType::combine_eq_array(&[x, y, z]);
+            let (a, ty) = untype_point3d_in_one_unit([x, y, z]);
             return Some(Self {
                 x: a[0],
                 y: a[1],
@@ -875,7 +875,7 @@ impl<'a> FromKclValue<'a> for crate::execution::Point3d {
         }
         // Case 2: Array of 3 numbers.
         let [x, y, z]: [TyF64; 3] = FromKclValue::from_kcl_val(arg)?;
-        let (a, ty) = NumericType::combine_eq_array(&[x, y, z]);
+        let (a, ty) = untype_point3d_in_one_unit([x, y, z]);
         Some(Self {
             x: a[0],
             y: a[1],
