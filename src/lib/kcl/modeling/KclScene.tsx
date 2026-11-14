@@ -28,8 +28,10 @@ export function KclScene({
   const state = session.state.value
   const resource = session.resource.value
   const preferences = resource?.preferences.localRenderer.value
+  const selection = resource?.selection
+  const selectedCount = selection?.displayed.value.length ?? 0
   const output = viewExecution.state.value
-  const error = output.error
+  const error = selection?.error.value ?? output.error
   useEffect(() => {
     if (container.current) return session.attach(container.current)
   }, [session])
@@ -44,9 +46,21 @@ export function KclScene({
           shouldHighlightEdges={preferences.highlightEdges}
           fixedSizeGrid={preferences.fixedSizeGrid}
           backfaceColor={preferences.backfaceColor}
-          pickingEnabled={false}
+          pickingEnabled={selection?.pickingEnabled.value ?? false}
           defaultPlaneVisibility={hiddenPlanes}
         />
+      )}
+      {selection && (
+        <div className="absolute bottom-4 right-4 z-40 flex items-center gap-2 rounded bg-2 p-2 text-2">
+          <output aria-label="Scene selection">{selectedCount} selected</output>
+          <button
+            type="button"
+            disabled={!selectedCount || !selection.pickingEnabled.value}
+            onClick={() => selection.clear()}
+          >
+            Clear selection
+          </button>
+        </div>
       )}
       <KclConnectionStatus session={session} />
       {state.type === 'ready' && error ? (

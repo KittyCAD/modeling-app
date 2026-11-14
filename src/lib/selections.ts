@@ -1,3 +1,5 @@
+import { sendQueryEntityTypeWithPointFromSceneClick } from '@src/lib/scene/picking'
+export { sendQueryEntityTypeWithPointFromSceneClick } from '@src/lib/scene/picking'
 import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
 import type {
@@ -113,7 +115,6 @@ import {
 } from '@src/lib/primitiveBodySelection'
 import { err, isErr } from '@src/lib/trap'
 import {
-  getNormalisedCoordinates,
   isArray,
   isNonNullable,
   isOverlap,
@@ -2561,14 +2562,6 @@ function getEngineEntityIdForSelection(
   return resolveToCodeRef(selection, artifactGraph)?.artifact?.id
 }
 
-function getQueryEntityTypeWithPointData(
-  res: unknown
-): QueryEntityTypeWithPoint | undefined {
-  if (!isModelingResponse(res)) return undefined
-  const mr = res.resp.data.modeling_response
-  return mr.type === 'query_entity_type_with_point' ? mr.data : undefined
-}
-
 type QueryEntityTypeWithPointEvent =
   | (QueryEntityTypeWithPoint & { entity_id?: string })
   | { data: QueryEntityTypeWithPoint & { entity_id?: string } }
@@ -3065,54 +3058,11 @@ export async function sendQueryEntityTypeWithPoint(
     engineCommandManager: ConnectionManager
   }
 ) {
-  const { x, y } = getNormalisedCoordinates(
+  return sendQueryEntityTypeWithPointFromSceneClick(
     e,
     videoRef,
-    systemDeps.engineCommandManager.streamDimensions
+    systemDeps.engineCommandManager
   )
-  let res = await systemDeps.engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd: {
-      type: 'query_entity_type_with_point',
-      selected_at_window: { x, y },
-      selection_type: 'add',
-    },
-    cmd_id: uuidv4(),
-  })
-  if (!res) {
-    console.warn('No response')
-    return undefined
-  }
-
-  if (isArray(res)) {
-    res = res[0]
-  }
-  return getQueryEntityTypeWithPointData(res)
-}
-
-/** Query entity at point using scene element for coordinates (e.g. renderer.domElement). Used when handling double-click from scene onClick. */
-export async function sendQueryEntityTypeWithPointFromSceneClick(
-  mouseEvent: MouseEvent,
-  elementForRect: { getBoundingClientRect(): DOMRect },
-  engineCommandManager: ConnectionManager
-) {
-  const { x, y } = getNormalisedCoordinates(
-    mouseEvent as PointerEvent,
-    elementForRect as HTMLVideoElement,
-    engineCommandManager.streamDimensions
-  )
-  let res = await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd: {
-      type: 'query_entity_type_with_point',
-      selected_at_window: { x, y },
-      selection_type: 'add',
-    },
-    cmd_id: uuidv4(),
-  })
-  if (!res) return undefined
-  if (isArray(res)) res = res[0]
-  return getQueryEntityTypeWithPointData(res)
 }
 
 /** Handle double-click in scene (onClick path): query entity, set selection, send Enter sketch. Call when args.mouseEvent.detail === 2 in idle. */

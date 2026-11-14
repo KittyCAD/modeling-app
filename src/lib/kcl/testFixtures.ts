@@ -1,3 +1,4 @@
+import { createSceneSelection } from '@src/lib/scene/selection'
 import { signal } from '@preact/signals-core'
 import { emptyExecState } from '@src/lang/wasm'
 import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
@@ -71,7 +72,13 @@ export function createTestKclScene(
   const settings = createSettings()
   const preferences = createScenePresentationPreferences(() => settings)
   onTestFinished(preferences.dispose)
+  const selection = createSceneSelection(
+    { pick: async () => undefined, present: async () => {} },
+    ['face', 'edge', 'solid3d']
+  )
+  onTestFinished(selection.dispose)
   return {
+    selection,
     element: document.createElement('div'),
     presentation,
     localHost: undefined,
