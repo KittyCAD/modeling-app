@@ -201,37 +201,24 @@ does not revert the committed graph. Acquisition/publication failures and cleanu
 failures are preserved together. Overlapping mutations are rejected while a
 transaction or cleanup is in progress.
 
-## Services and plugins
+## Helper functions
 
-`service<T>(name)` derives singleton composition from a Facet. Provider order never
-chooses a winner. Conflicts report every provider ID/path and retain provider
-records for developer tools. Multiple capabilities can be composed explicitly
-through an ordinary list Facet, avoiding the old `multiple` flag's array-to-`T` cast.
+These helpers define contributions and resources, group shared tokens, and control
+replaceable content. `provide` exposes a readonly Service facade and blocks method
+calls during Facet computation. Protection is shallow: nested objects and returned
+values remain owned by the service.
 
-`provide(token, implementation, options?)` publishes a readonly service facade.
-Methods preserve their original receiver and are guarded against calls during
-Facet computation. Signal fields are exposed as readonly computed signals.
-Facades are stable per implementation, service token, and registry. Frozen objects,
-accessors, and class methods are supported without modifying the implementation.
-Protection is shallow: ordinary nested objects and returned values remain owned
-by the service. Directly freezing the facade is unsupported; it is already guarded
-against property mutation.
-
-`createPlugin({ id, title, description, items, enabledByDefault? })` is an ordinary
-keyed Factory. `plugins` collects its metadata and controller service token. The
-controller exposes `active`, `enable`, `disable`, and `toggle`. Metadata and the
-controller remain installed while content is disabled. `active` follows committed
-content, including when removal commits but cleanup rejects.
-
-## Verification
-
-The suites cover dependency order, first occurrence, cycles, typed path navigation,
-service cardinality, mixed-type atomic publication, per-registry isolation, retained
-owners, shared dependency lifetimes, injected exports, rollback, precedence/key selection, protected capabilities, and terminal
-disposal. Plugin histories exercise enable/disable transitions and cleanup failures.
-A React integration test imports the public package entrypoint and checks that live
-service state survives plugin reconfiguration. Application consumers use the same
-public entrypoint as the package examples.
+| Helper | Purpose |
+| --- | --- |
+| `factory({ dependencies, create })` | Define a Factory with inferred dependency inputs and exports. |
+| `contribute(facet, source, options?)` | Create a Binding from a source function, with optional key and precedence. |
+| `service<T>(name)` | Create a Service token. Conflicts identify every provider; order never chooses a winner. |
+| `provide(service, implementation, options?)` | Create a Binding that provides a Service implementation. |
+| `contract(tokens)` | Group named Facets and Services in a shallow, readonly copy that preserves their types. |
+| `slot(items, key?)` | Create a Factory with replaceable children and no other resources. |
+| `createPlugin(spec)` | Register metadata in `plugins` and provide a controller exposing `active`, `enable`, `disable`, and `toggle`. Metadata and controls remain when content is disabled. |
+| `plan(items)` | Order dependencies, flatten groups, and reject cycles without calling `create`. |
+| `formatPath(path)` | Format an `ItemPath` for diagnostics. |
 
 ## Package layout
 
@@ -241,8 +228,3 @@ public entrypoint as the package examples.
 - `src/plugins.ts`: metadata and toggle controllers composed from the primitives.
 - `src/examples/document-workspace.ts`: a document model shared by a live title,
   replaceable sidebar panels, and an independently toggled outline plugin.
-
-Application-created Factories use synchronous `create` callbacks and awaitable
-cleanup. Declarative groups use ordinary Extension arrays; they should not acquire an
-extra lifetime merely to group contributions. Application startup and settings
-changes await queued graph updates through `App.registryReady`.
