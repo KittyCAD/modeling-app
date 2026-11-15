@@ -1,9 +1,5 @@
 import type { EntityType } from '@kittycad/lib'
-import {
-  computed,
-  signal as createSignal,
-  type ReadonlySignal,
-} from '@preact/signals-core'
+import { computed, effect, signal as createSignal } from '@preact/signals-core'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -14,7 +10,11 @@ import {
   getDimensions,
 } from '@src/lib/engineConnection/utils'
 import { createKclRuntime, type KclRuntime } from '@src/lib/kcl/runtime'
-import type { KclSceneSettings } from '@src/lib/kcl/settings'
+import type {
+  ScenePresentationPreferences,
+  SceneCameraPreferences,
+  SceneAppearancePreferences,
+} from '@src/lib/kcl/presentationPreferences'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import {
   connectScene,
@@ -35,7 +35,7 @@ export interface KclSceneResource {
   readonly runtime: KclRuntime
   readonly presentation: ScenePresentation
   readonly localHost: LocalRendererHost | undefined
-  readonly preferences: ReadonlySignal<KclSceneSettings>
+  readonly preferences: ScenePresentationPreferences
   resize: (size: { width: number; height: number }) => Promise<void>
   frameModel: () => Promise<void>
   isConnected: () => boolean
@@ -58,7 +58,7 @@ export async function openKclScene({
 }: {
   wasm: Promise<ModuleType>
   settings: SettingsRegistryService
-  preferences: ReadonlySignal<KclSceneSettings>
+  preferences: ScenePresentationPreferences
   nativeSettings?: SceneExecutionSettings
   kclVersion?: KclVersion
   token: string | undefined
@@ -74,6 +74,7 @@ export async function openKclScene({
   let video: HTMLVideoElement | undefined
   let detachVideo: (() => void) | undefined
   let stopDisconnect: (() => void) | undefined
+  let stopUnits: (() => void) | undefined
   let disposed = false
   const element = document.createElement('div')
   Object.assign(element.style, {
@@ -86,6 +87,7 @@ export async function openKclScene({
     if (disposed) return
     disposed = true
     stopDisconnect?.()
+    stopUnits?.()
     detachVideo?.()
     infra?.localRenderer?.dispose()
     if (infra) infra.localRenderer = null
@@ -144,6 +146,9 @@ export async function openKclScene({
     infra = new Infra(manager, wasm, () => settings.current.peek())
     const sceneInfra = infra
     const model = runtime
+    stopUnits = effect(() => {
+      sceneInfra.baseUnit = preferences.defaultUnit.value
+    })
     const camera = sceneInfra.camControls
     camera.localCameraMode = presentation === 'local'
     if (camera.localCameraMode) camera.resetLocalCameraToDefaultView()
@@ -214,18 +219,36 @@ export async function openKclScene({
             exportModel: model.exportModel,
           }
         : undefined
+    let appliedCamera: SceneCameraPreferences | undefined
+    let appliedAppearance: SceneAppearancePreferences | undefined
     const applySettings = async () => {
       if (disposed || signal.aborted) return
-      const next = preferences.peek()
-      sceneInfra.baseUnit = next.defaultUnit
-      sceneInfra.theme = next.theme
-      camera.interactionGuards = cameraMouseDragGuards[next.mouseControls]
-      camera.enableTouchControls = next.enableTouchControls
-      camera.initTouchControls(next.enableTouchControls)
-      await camera.setCameraProjection(next.cameraProjection)
-      if (presentation === 'local') return
-      await manager.setTheme(next.theme)
-      manager.setViewportRendering(next.viewportRendering)
+      const nextCamera = preferences.camera.peek()
+      const nextAppearance = preferences.appearance.peek()
+      if (appliedCamera?.mouseControls !== nextCamera.mouseControls)
+        camera.interactionGuards =
+          cameraMouseDragGuards[nextCamera.mouseControls]
+      if (
+        appliedCamera?.enableTouchControls !== nextCamera.enableTouchControls
+      ) {
+        camera.enableTouchControls = nextCamera.enableTouchControls
+        camera.initTouchControls(nextCamera.enableTouchControls)
+      }
+      if (appliedCamera?.cameraProjection !== nextCamera.cameraProjection)
+        await camera.setCameraProjection(nextCamera.cameraProjection)
+      appliedCamera = nextCamera
+      if (appliedAppearance?.theme !== nextAppearance.theme) {
+        sceneInfra.theme = nextAppearance.theme
+        if (presentation === 'streamed')
+          await manager.setTheme(nextAppearance.theme)
+      }
+      if (
+        presentation === 'streamed' &&
+        appliedAppearance?.viewportRendering !==
+          nextAppearance.viewportRendering
+      )
+        manager.setViewportRendering(nextAppearance.viewportRendering)
+      appliedAppearance = nextAppearance
     }
     sceneInfra.animate()
     return {

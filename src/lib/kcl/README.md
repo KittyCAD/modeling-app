@@ -56,8 +56,10 @@ Both presentations use the application's `ConnectionManager` and camera controls
 - **Local:** a geometry-only connection supplies native execution output to
   `LocalWebGPUSceneView` through `LocalRendererHost`.
 
-Native execution applies edge, grid, and backface settings. The presentation
-adapter handles camera and theme updates. Execution, native export, and scene
+Native execution applies settings declared through `sceneExecution`.
+[`presentationPreferences.ts`](presentationPreferences.ts) groups the camera,
+appearance, local-renderer, and unit inputs by consumer. Renderer-only updates
+leave camera controls and the streamed connection unchanged. Execution, native export, and scene
 rebuilds share a queue so disposal can wait for borrowed native memory.
 The renderer choice is captured when the scene opens; reopen the Modeling view
 after changing it.

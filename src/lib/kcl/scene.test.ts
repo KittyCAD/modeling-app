@@ -2,7 +2,7 @@ import { signal } from '@preact/signals-core'
 import { emptyExecState } from '@src/lang/wasm'
 import { createKclRuntime } from '@src/lib/kcl/runtime'
 import { openKclScene } from '@src/lib/kcl/scene'
-import { createKclSceneSettings } from '@src/lib/kcl/settings'
+import { createScenePresentationPreferences } from '@src/lib/kcl/presentationPreferences'
 import { connectScene } from '@src/lib/scene/connection'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -84,7 +84,9 @@ function setup() {
     current: signal(createSettings()),
     actor: {},
   } as unknown as SettingsRegistryService
-  const preferences = createKclSceneSettings(() => settings.current.value)
+  const preferences = createScenePresentationPreferences(
+    () => settings.current.value
+  )
   return {
     connection,
     model,
@@ -92,7 +94,7 @@ function setup() {
     options: {
       wasm: Promise.resolve({} as ModuleType),
       settings,
-      preferences: preferences.current,
+      preferences,
       token: 'token',
       size: { width: 640, height: 360 },
       signal: new AbortController().signal,
@@ -164,4 +166,42 @@ it('releases a connection if native startup completes after cancellation', async
   expect(model.dispose).toHaveBeenCalledOnce()
   expect(owned.cameras).toHaveLength(0)
   preferences.dispose()
+})
+
+it('applies only changed camera and stream preferences, preserving the camera on renderer changes', async () => {
+  const { options, preferences } = setup()
+  const scene = await openKclScene({ ...options, presentation: 'streamed' })
+  if (scene instanceof Error) return expect.fail(scene.message)
+  const camera = owned.cameras[0] as {
+    setCameraProjection: ReturnType<typeof vi.fn>
+    initTouchControls: ReturnType<typeof vi.fn>
+  }
+  const manager = owned.managers[0] as {
+    setTheme: ReturnType<typeof vi.fn>
+    setViewportRendering: ReturnType<typeof vi.fn>
+  }
+  try {
+    await scene.applySettings()
+    options.settings.current.peek().modeling.highlightEdges.user =
+      !options.settings.current.peek().modeling.highlightEdges.current
+    await scene.applySettings()
+    await scene.applySettings()
+    expect(camera.setCameraProjection).toHaveBeenCalledOnce()
+    expect(camera.initTouchControls).toHaveBeenCalledOnce()
+    expect(manager.setTheme).toHaveBeenCalledOnce()
+    expect(manager.setViewportRendering).toHaveBeenCalledOnce()
+    options.settings.current.peek().modeling.cameraProjection.user =
+      options.settings.current.peek().modeling.cameraProjection.current ===
+      'orthographic'
+        ? 'perspective'
+        : 'orthographic'
+    await scene.applySettings()
+    expect(camera.setCameraProjection).toHaveBeenCalledTimes(2)
+    expect(camera.initTouchControls).toHaveBeenCalledOnce()
+    expect(manager.setTheme).toHaveBeenCalledOnce()
+    expect(manager.setViewportRendering).toHaveBeenCalledOnce()
+  } finally {
+    await scene.dispose()
+    preferences.dispose()
+  }
 })
