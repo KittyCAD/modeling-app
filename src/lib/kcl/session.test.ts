@@ -51,19 +51,19 @@ function container(width = 200) {
   return element
 }
 
-it('waits for a visible size and retains the scene across presentation mounts', async () => {
+it('waits for a visible size and retains the scene across presentation attachments', async () => {
   const resource = scene()
   const open = vi.fn<OpenKclScene>().mockResolvedValue(resource)
   const session = createKclSession(open)
   const parent = container(0)
-  const detach = session.mount(parent)
+  const detach = session.attach(parent)
   expect(open).not.toHaveBeenCalled()
   Object.defineProperty(parent, 'clientWidth', { value: 200 })
   resize()
   await session.execute(snapshot, runSignal())
   detach()
   expect(resource.dispose).not.toHaveBeenCalled()
-  session.mount(container())
+  session.attach(container())
   expect(open).toHaveBeenCalledOnce()
   expect(session.element.contains(resource.element)).toBe(true)
   session.dispose()
@@ -78,7 +78,7 @@ it.each(['local', 'streamed'] as const)(
     const pending = Promise.withResolvers<ReturnType<typeof emptyExecState>>()
     vi.mocked(resource.runtime.execute).mockReturnValueOnce(pending.promise)
     const session = createKclSession(async () => resource)
-    session.mount(container())
+    session.attach(container())
     const first = session.execute(snapshot, runSignal())
     const second = session.execute(snapshot, runSignal())
     await vi.waitFor(() =>
@@ -98,7 +98,7 @@ it.each(['local', 'streamed'] as const)(
 it('releases a late opening when the executor closes during startup', async () => {
   const opening = Promise.withResolvers<KclSceneResource | Error>()
   const session = createKclSession(() => opening.promise)
-  session.mount(container())
+  session.attach(container())
   const run = session.execute(snapshot, runSignal())
   session.dispose()
   expect(await run).toBeInstanceOf(Error)
@@ -117,7 +117,7 @@ it('does not publish success when interrupted during camera/settings work', asyn
   })
   const session = createKclSession(async () => resource)
   const controller = new AbortController()
-  session.mount(container())
+  session.attach(container())
   const run = session.execute(snapshot, controller.signal)
   await vi.waitFor(() => expect(resource.frameModel).toHaveBeenCalledOnce())
   controller.abort()
@@ -129,7 +129,7 @@ it('does not publish success when interrupted during camera/settings work', asyn
 it('bounds startup even when WASM initialization never settles', async () => {
   vi.useFakeTimers()
   const session = createKclSession(() => new Promise(() => {}))
-  session.mount(container())
+  session.attach(container())
   const run = session.execute(snapshot, runSignal())
   await vi.advanceTimersByTimeAsync(60_000)
   expect(await run).toBeInstanceOf(Error)
@@ -145,7 +145,7 @@ it('settles running and queued work on disconnect without starting another nativ
     disconnect = fail
     return resource
   })
-  session.mount(container())
+  session.attach(container())
   const first = session.execute(snapshot, runSignal())
   const second = session.execute(snapshot, runSignal())
   await vi.waitFor(() =>
@@ -173,7 +173,7 @@ it('reopens a disconnected mounted scene on focus and refreshes its current exec
   const refresh = vi.fn()
   const session = createKclSession(open, refresh)
   const parent = container()
-  const detach = session.mount(parent)
+  const detach = session.attach(parent)
   await session.execute(snapshot, runSignal())
   disconnect(new Error('Idle connection expired'))
   expect(session.resource.peek()).toBeUndefined()
@@ -207,8 +207,8 @@ it('recovers a stale captured connection on focus without reopening a healthy si
   const siblingOpen = vi.fn<OpenKclScene>().mockResolvedValue(two)
   const session = createKclSession(open),
     sibling = createKclSession(siblingOpen)
-  const detach = session.mount(container()),
-    detachSibling = sibling.mount(container())
+  const detach = session.attach(container()),
+    detachSibling = sibling.attach(container())
   await session.execute(snapshot, runSignal())
   await sibling.execute(snapshot, runSignal())
   connected = false
@@ -234,7 +234,7 @@ it('ignores late resize failures from a retired connection', async () => {
     .mockResolvedValueOnce(first)
     .mockResolvedValueOnce(second)
   const session = createKclSession(open)
-  const detach = session.mount(container())
+  const detach = session.attach(container())
   await session.execute(snapshot, runSignal())
   vi.mocked(first.resize).mockImplementationOnce(() => resizing.promise)
   resize()
