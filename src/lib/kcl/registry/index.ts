@@ -25,7 +25,7 @@ import { KclScene } from '@src/lib/kcl/KclScene'
 import { openKclScene } from '@src/lib/kcl/scene'
 import { createKclSession } from '@src/lib/kcl/session'
 import { createSceneExecutionSettings } from '@src/lib/kcl/scene/executionSettings'
-import { createKclSceneSettings } from '@src/lib/kcl/settings'
+import { createScenePresentationPreferences } from '@src/lib/kcl/presentationPreferences'
 import projectSourcesExtension from '@src/lib/projectSession/registry/sources'
 import { projectSourcesService } from '@src/lib/projectSession/next/contract'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
@@ -51,7 +51,9 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
   const execution = createKclExecution(
     (executor) => {
       const settings = services.get(settingsService)
-      const preferences = createKclSceneSettings(() => settings.current.value)
+      const preferences = createScenePresentationPreferences(
+        () => settings.current.value
+      )
       const session = createKclSession(
         async (size, signal, onDisconnect) => {
           const wasm = getWasm()
@@ -63,7 +65,7 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
             wasm,
             settings,
             nativeSettings,
-            preferences: preferences.current,
+            preferences,
             token: services.optional(authService)?.token.peek(),
             presentation: settings.current.peek().modeling.useLocalRenderer
               .current

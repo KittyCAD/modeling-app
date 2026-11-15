@@ -16,7 +16,7 @@ export function KclScene({
   const { executor, session } = context
   const state = session.state.value
   const resource = session.resource.value
-  const preferences = resource?.preferences.value
+  const preferences = resource?.preferences.localRenderer.value
   const output = executor.output.value
   const error = output.errors['kcl.execution']
   useEffect(() => {

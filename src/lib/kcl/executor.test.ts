@@ -97,7 +97,11 @@ it.each(['focus', 'manual'] as const)(
       ({
         element: document.createElement('div'),
         presentation: 'local',
-        preferences: signal({}),
+        preferences: {
+          camera: signal({}),
+          appearance: signal({}),
+          localRenderer: signal({}),
+        },
         isConnected: () => true,
         runtime: { execute: vi.fn(async () => emptyExecState()) },
         resize: async () => {},
