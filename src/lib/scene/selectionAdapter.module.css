@@ -1,0 +1,4 @@
+/* Scene keyboard focus supports shortcuts without outlining the entire viewport. */
+.pickingSurface:focus {
+  outline: none;
+}

@@ -170,4 +170,3 @@ The project-shell KCL consumer now owns its ConnectionManager, native context,
 source snapshots, and camera. It connects through this boundary and supplies an
 explicit host to the local renderer. See [KCL Modeling](../README.md) for
 ownership, renderer choice, tests, and the remaining packaged/web smoke checks.
-
