@@ -10,6 +10,7 @@ import type {
 import type { CameraControls } from '@src/clientSideScene/CameraControls'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
+import styles from './selectionAdapter.module.css'
 
 /** Project selection state onto the existing engine protocol; local rendering intercepts the same commands. */
 export function sceneSelectionAdapter(
@@ -62,6 +63,8 @@ export function attachSceneSelectionInput(
   selection: SceneSelectionController
 ) {
   const previousTabIndex = canvas.getAttribute('tabindex')
+  const hadFocusStyle = canvas.classList.contains(styles.pickingSurface)
+  canvas.classList.add(styles.pickingSurface)
   canvas.tabIndex = 0
   const down = () => {
     canvas.focus({ preventScroll: true })
@@ -90,6 +93,7 @@ export function attachSceneSelectionInput(
     canvas.removeEventListener('pointerdown', down)
     canvas.removeEventListener('pointerup', up)
     canvas.removeEventListener('keydown', key)
+    if (!hadFocusStyle) canvas.classList.remove(styles.pickingSurface)
     if (previousTabIndex === null) canvas.removeAttribute('tabindex')
     else canvas.setAttribute('tabindex', previousTabIndex)
   }
