@@ -1,6 +1,7 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { evaluateCommandArgumentFlags } from '@src/components/CommandBar/utils'
 import type { ArtifactGraph, Program } from '@src/lang/wasm'
+import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selectionCoercion'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
@@ -12,6 +13,7 @@ import {
 } from '@src/lib/selections'
 import { isErr } from '@src/lib/trap'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 export type DialogField = {
   name: string
@@ -22,6 +24,35 @@ export type SelectionArgument = Extract<
   CommandArgument<unknown>,
   { inputType: 'selection' }
 >
+
+export function filterDialogSelection(
+  selection: Selections,
+  arg: SelectionArgument,
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph
+): Selections {
+  // Coerce first so a selected face can still satisfy a body argument.
+  const coerced =
+    coerceSelectionsForBodyOnlySelectionTypes(
+      selection,
+      arg.selectionTypes,
+      artifactGraph
+    ) ?? selection
+  const accepts = (candidate: Selections) =>
+    canSubmitSelectionArg(
+      getSelectionCountByType(ast, candidate, artifactGraph),
+      arg,
+      candidate
+    )
+  return {
+    graphSelections: coerced.graphSelections.filter((selection) =>
+      accepts({ graphSelections: [selection], otherSelections: [] })
+    ),
+    otherSelections: coerced.otherSelections.filter((selection) =>
+      accepts({ graphSelections: [], otherSelections: [selection] })
+    ),
+  }
+}
 
 export function hasValue(value: unknown): boolean {
   return isSelections(value)
@@ -70,6 +101,8 @@ export async function initializeArguments(
         value = (options.find((option) => option.isCurrent) ?? options[0])
           ?.value
       }
+      if (value === undefined && arg.inputType === 'color' && isRequired)
+        value = '#000000'
     }
     values[name] = value
   }
@@ -109,16 +142,27 @@ export async function resolveArguments(
     const { isRequired } = evaluateCommandArgumentFlags(arg, current)
     let value = resolved[name]
     if (arg.inputType === 'selection') {
-      if (context.argumentsToSubmit.nodeToEdit)
-        value = context.argumentsToSubmit[name]
-      const selection =
-        isSelections(value) && hasValue(value) ? value : undefined
+      if (context.argumentsToSubmit.nodeToEdit) {
+        // Edit collectors are read-only. Their original references can use
+        // legacy selection types that the creation collector does not accept.
+        resolved[name] = context.argumentsToSubmit[name]
+        continue
+      }
+      let selection = isSelections(value) && hasValue(value) ? value : undefined
+      if (selection && artifactGraph && !context.argumentsToSubmit.nodeToEdit) {
+        selection = coerceSelectionsForBodyOnlySelectionTypes(
+          selection,
+          arg.selectionTypes,
+          artifactGraph
+        )
+      }
       if (
         (isRequired && !selection) ||
         (selection &&
           !canSubmitSelectionArg(
             getSelectionCountByType(ast, selection, artifactGraph),
-            arg
+            arg,
+            selection
           ))
       ) {
         return new Error(`Select ${arg.displayName || name}.`)

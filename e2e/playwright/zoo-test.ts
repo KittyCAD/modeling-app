@@ -23,7 +23,7 @@ declare module '@playwright/test' {
 // So in some sense there is an implicit pool.
 // For example, the variable just beneath this text is reused many times
 // *for one worker*.
-let electronZooInstance = new ElectronZoo()
+let electronZooInstance: ElectronZoo | undefined
 
 // Track whether this is the first run for this worker process
 // Mac needs more time for the first window creation
@@ -34,14 +34,20 @@ let isFirstRun = true
 const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
   tronApp?: ElectronZoo
   userFeatures: Feature[]
+  mockApiRoutes: boolean
 }>({
   userFeatures: [[], { option: true }],
+  mockApiRoutes: [true, { option: true }],
   tronApp: [
-    async ({ userFeatures }, use, testInfo) => {
+    async ({ userFeatures, mockApiRoutes, launchOptions }, use, testInfo) => {
       if (process.env.TARGET === 'web') {
         await use(undefined)
         return
       }
+
+      const instance = (electronZooInstance ??= new ElectronZoo({
+        args: launchOptions.args,
+      }))
 
       // Create a single timeout for the entire tronApp setup process
       // This will ensure tests fail faster if there's an issue with setup
@@ -52,10 +58,11 @@ const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
 
       try {
         await Promise.race([
-          electronZooInstance.createInstanceIfMissing(
+          instance.createInstanceIfMissing(
             testInfo,
             userFeatures,
-            setupTimeout
+            setupTimeout,
+            mockApiRoutes
           ),
           new Promise<never>((_, reject) => {
             timeoutId = setTimeout(() => {
@@ -72,18 +79,15 @@ const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
         // First run is complete at this point
         isFirstRun = false
 
-        await use(electronZooInstance)
-        if (
-          testInfo.status === 'timedOut' ||
-          electronZooInstance.rendererCrashed
-        ) {
-          await electronZooInstance.dispose(testInfo)
+        await use(instance)
+        if (testInfo.status === 'timedOut' || instance.rendererCrashed) {
+          await instance.dispose(testInfo)
         } else {
-          await electronZooInstance.makeAvailableAgain()
+          await instance.makeAvailableAgain()
         }
       } catch (error) {
         try {
-          await electronZooInstance.dispose(testInfo)
+          await instance.dispose(testInfo)
         } catch (cleanupError) {
           throw new AggregateError(
             [error, cleanupError],
@@ -94,8 +98,8 @@ const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
       } finally {
         if (timeoutId) clearTimeout(timeoutId)
         // Expected failures can keep this worker alive after disposal.
-        if (!electronZooInstance.available) {
-          electronZooInstance = new ElectronZoo()
+        if (!instance.available) {
+          electronZooInstance = undefined
           isFirstRun = true
         }
       }

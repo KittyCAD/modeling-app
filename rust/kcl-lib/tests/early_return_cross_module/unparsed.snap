@@ -5,7 +5,7 @@ description: Result of unparsing early_return_cross_module.kcl
 // The entry point's kclVersion governs the whole execution: this
 // KCL 3.0 entry point gives early-return semantics to functions from
 // an imported module that declares no kclVersion too.
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 import addOne from "dep.kcl"
 

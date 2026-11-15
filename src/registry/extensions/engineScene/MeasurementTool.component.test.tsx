@@ -79,9 +79,14 @@ beforeEach(() => {
 })
 
 describe('Face API measurement wiring', () => {
-  it.each([MeasurementTool, MeasurementStatusBarItem])(
-    'resolves a reference-only edge before measuring its length (%s)',
-    async (Component) => {
+  it.each(
+    [MeasurementTool, MeasurementStatusBarItem].map((Component) => ({
+      Component,
+      name: Component.name,
+    }))
+  )(
+    'resolves a reference-only edge before measuring its length ($name)',
+    async ({ Component }) => {
       const commands = setup(1)
       render(<Component />)
       if (Component === MeasurementTool) await screen.findByText('42')

@@ -25,6 +25,69 @@ fn root_operations(outcome: &ExecOutcome) -> &Vec<Operation> {
         .expect("root module operations should exist")
 }
 
+fn sync_other_files(
+    directory: &std::path::Path,
+    previous: &[(std::path::PathBuf, String)],
+    current: &[(std::path::PathBuf, String)],
+) -> std::io::Result<()> {
+    for (path, _) in previous {
+        if !current.iter().any(|(current_path, _)| current_path == path) {
+            std::fs::remove_file(directory.join(path))?;
+        }
+    }
+    for (path, code) in current {
+        if previous
+            .iter()
+            .any(|(previous_path, previous_code)| previous_path == path && previous_code == code)
+        {
+            continue;
+        }
+        let file = directory.join(path);
+        std::fs::create_dir_all(file.parent().unwrap())?;
+        std::fs::write(file, code)?;
+    }
+    Ok(())
+}
+
+#[test]
+fn cache_fixture_files_preserve_unchanged_and_reconcile_owned_paths() {
+    let directory = tempfile::tempdir().unwrap();
+    let original = vec![(
+        std::path::PathBuf::from("nested/value.kcl"),
+        "@settings(kclVersion = 3.0)\nexport value = 1\n".to_owned(),
+    )];
+    sync_other_files(directory.path(), &[], &original).unwrap();
+    let file = directory.path().join(&original[0].0);
+    let modified = std::time::UNIX_EPOCH + std::time::Duration::from_secs(1_600_000_000);
+    std::fs::File::options()
+        .write(true)
+        .open(&file)
+        .unwrap()
+        .set_times(std::fs::FileTimes::new().set_modified(modified))
+        .unwrap();
+    sync_other_files(directory.path(), &original, &original).unwrap();
+    assert_eq!(std::fs::metadata(&file).unwrap().modified().unwrap(), modified);
+
+    let untracked = directory.path().join("untracked.kcl");
+    std::fs::write(&untracked, "@settings(kclVersion = 3.0)\nvalue = 9\n").unwrap();
+    let mut updated = original.clone();
+    updated[0].1 = "@settings(kclVersion = 3.0)\nexport value = 2\n".to_owned();
+    updated.push((
+        std::path::PathBuf::from("added.kcl"),
+        "@settings(kclVersion = 3.0)\nvalue = 3\n".to_owned(),
+    ));
+    sync_other_files(directory.path(), &original, &updated).unwrap();
+    assert_eq!(std::fs::read_to_string(&file).unwrap(), updated[0].1);
+    assert_eq!(
+        std::fs::read_to_string(directory.path().join("added.kcl")).unwrap(),
+        updated[1].1
+    );
+    sync_other_files(directory.path(), &updated, &[]).unwrap();
+    assert!(!file.exists());
+    assert!(!directory.path().join("added.kcl").exists());
+    assert!(untracked.exists());
+}
+
 async fn cache_test(
     test_name: &str,
     variations: Vec<Variation<'_>>,
@@ -33,6 +96,10 @@ async fn cache_test(
         .first()
         .ok_or_else(|| anyhow::anyhow!("No variations provided for test '{}'", test_name))
         .unwrap();
+    let project = variations
+        .iter()
+        .any(|variation| !variation.other_files.is_empty())
+        .then(|| tempfile::tempdir().unwrap());
 
     let first_program = kcl_lib::Program::parse_no_errs(first.code).unwrap();
     let mut ctx = kcl_lib::ExecutorContext::new_with_client(
@@ -46,26 +113,19 @@ async fn cache_test(
 
     ctx.bust_cache().await;
     let mut img_results = Vec::new();
+    let mut previous_files: &[(std::path::PathBuf, String)] = &[];
     for (index, variation) in variations.iter().enumerate() {
         let program = kcl_lib::Program::parse_no_errs(variation.code).unwrap();
 
         // set the new settings.
         ctx.settings = variation.settings.clone();
 
-        if !variation.other_files.is_empty() {
-            let tmp_dir = std::env::temp_dir();
-            let tmp_dir = tmp_dir
-                .join(format!("kcl_test_{test_name}"))
-                .join(uuid::Uuid::new_v4().to_string());
-
-            // Create a temporary file for each of the other files.
-            for (variant_path, variant_code) in &variation.other_files {
-                let tmp_file = tmp_dir.join(variant_path);
-                std::fs::create_dir_all(tmp_file.parent().unwrap()).unwrap();
-                std::fs::write(tmp_file, variant_code).unwrap();
-            }
-
-            ctx.settings.project_directory = Some(kcl_lib::TypedPath(tmp_dir.clone()));
+        if let Some(project) = &project {
+            // Variants edit one project; they must not accidentally change the
+            // execution owner or rewrite unchanged imported dependencies.
+            ctx.settings.project_directory = Some(kcl_lib::TypedPath(project.path().to_owned()));
+            sync_other_files(project.path(), previous_files, &variation.other_files).unwrap();
+            previous_files = &variation.other_files;
         }
 
         let outcome = match ctx.run_with_caching(program).await {

@@ -2,7 +2,6 @@ import { type RegistryItem, Slot } from '@kittycad/registry'
 import { bundledRegistryItemCatalog } from '@src/registry/catalog'
 import { defaultRegistryItemIds } from '@src/registry/defaultComposition'
 
-export const appRegistryServicesSlot = new Slot()
 export const appRegistryOverridesSlot = new Slot()
 
 // Extensions are always-on infrastructure. Plugins retain their existing

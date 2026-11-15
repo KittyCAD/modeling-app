@@ -341,6 +341,7 @@ export interface ExecState {
   variables: { [key in string]?: KclValueView }
   operations: OperationsByModule
   artifactGraph: ArtifactGraph
+  namedViews: RustExecOutcome['namedViews']
   legacyAngleRefactorMetadata: LegacyAngleRefactorMeta[]
   issues: CompilationIssue[]
   filenames: { [x: number]: ModulePath | undefined }
@@ -349,6 +350,12 @@ export interface ExecState {
   edgeRefactorMetadata: EdgeRefactorMeta[]
   /** Populated when fillet/chamfer is called with direct tags (e.g. tags = [e1]). Used for Z0006 code mod. */
   directTagFilletMetadata: DirectTagFilletMeta[]
+  /**
+   * The engine scene generation when this outcome was produced: the number of
+   * runs so far that changed the engine scene. Runs answered from the cache
+   * and mock runs leave it unchanged. Null when no run reached the engine.
+   */
+  engineSceneGeneration: number | null
 }
 
 export function emptyOperationsByModule(): OperationsByModule {
@@ -385,12 +392,14 @@ export function emptyExecState(): ExecState {
     variables: {},
     operations: emptyOperationsByModule(),
     artifactGraph: defaultArtifactGraph(),
+    namedViews: null,
     legacyAngleRefactorMetadata: [],
     issues: [],
     filenames: [],
     defaultPlanes: null,
     edgeRefactorMetadata: [],
     directTagFilletMetadata: [],
+    engineSceneGeneration: null,
   }
 }
 
@@ -497,12 +506,14 @@ export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
     variables: execOutcome.variables,
     operations: execOutcome.operations,
     artifactGraph,
+    namedViews: execOutcome.namedViews,
     legacyAngleRefactorMetadata,
     issues: execOutcome.issues,
     filenames: execOutcome.filenames,
     defaultPlanes: execOutcome.defaultPlanes,
     edgeRefactorMetadata,
     directTagFilletMetadata,
+    engineSceneGeneration: execOutcome.engineSceneGeneration,
   }
 }
 
@@ -596,7 +607,8 @@ export const errFromErrWithOutputs = (e: any): KCLError => {
     parsed.operations,
     artifactGraphFromRust(parsed.artifactGraph),
     parsed.filenames,
-    parsed.defaultPlanes
+    parsed.defaultPlanes,
+    parsed.engineSceneGeneration
   )
 }
 

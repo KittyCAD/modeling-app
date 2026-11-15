@@ -1,3 +1,4 @@
+import { selectCommand } from '@src/lib/commandUtils'
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
@@ -76,17 +77,11 @@ const importInCurrentFileExtension = defineRegistryItemFactory((ctx) => {
       isVisible,
       onSelect: (context) => {
         if (!context.project || !isVisible(context)) return
-        ctx.services.get(commandSystemService).send({
-          type: 'Find and select command',
-          data: {
-            name: 'Import',
-            groupId: 'code',
-            argDefaultValues: {
-              path: toProjectRelativePath(
-                context.project.path,
-                context.row.path
-              ),
-            },
+        selectCommand(ctx.services.get(commandSystemService), {
+          name: 'Import',
+          groupId: 'code',
+          argDefaultValues: {
+            path: toProjectRelativePath(context.project.path, context.row.path),
           },
         })
       },

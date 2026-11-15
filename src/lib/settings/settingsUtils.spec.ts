@@ -32,6 +32,7 @@ import {
   getAllCurrentSettings,
   getChangedSettingsAtLevel,
   hiddenOnPlatform,
+  jsAppSettings,
   mergeProjectConfiguration,
   projectConfigurationToSettingsPayload,
   replaceProjectSettingsPreservingMetadata,
@@ -61,7 +62,139 @@ const projectLibrariesExtensionSettings = projectLibrariesSettingsContribution
 const createSettingsWithProjectLibraries = () =>
   createSettings(projectLibrariesExtensionSettings)
 
+describe('viewport rendering settings', () => {
+  it.each([true, false])(
+    'preserves legacy user SSAO = %s with the default style',
+    (enabled) => {
+      const configuration = { settings: { modeling: { enable_ssao: enabled } } }
+      const settings = createSettings()
+      setSettingsAtLevel(
+        settings,
+        'user',
+        configurationToSettingsPayload(configuration)
+      )
+      expect(settings.modeling.viewportRendering.current).toBe('default')
+      expect(settings.modeling.enableSSAO.current).toBe(enabled)
+    }
+  )
+
+  it.each(['ssao', 'noeffect'] as const)(
+    'migrates the old %s style to shared SSAO',
+    (style) => {
+      const enabled = style === 'ssao'
+      const configuration = {
+        settings: {
+          modeling: { viewport_rendering: style, enable_ssao: !enabled },
+        },
+      }
+      const payload = configurationToSettingsPayload(configuration)
+      expect(payload.modeling).toMatchObject({
+        viewportRendering: 'default',
+        enableSSAO: enabled,
+      })
+      expect(
+        configurationToSettingsPayload(settingsPayloadToConfiguration(payload))
+          .modeling
+      ).toMatchObject({ viewportRendering: 'default', enableSSAO: enabled })
+    }
+  )
+
+  it.each(['default', 'retrocad', 'phosphor'] as const)(
+    'persists %s independently of shared SSAO',
+    (viewportRendering) => {
+      for (const enableSSAO of [true, false]) {
+        const modeling = {
+          viewportRendering,
+          enableSSAO,
+          useLocalRenderer: true,
+        }
+        const configuration = settingsPayloadToConfiguration({ modeling })
+        expect(configuration.settings?.modeling?.enable_ssao).toBe(enableSSAO)
+        expect(
+          configurationToSettingsPayload(configuration).modeling
+        ).toMatchObject(modeling)
+      }
+    }
+  )
+
+  it('keeps SSAO disabled when resetting the rendering style to default', () => {
+    const configuration = settingsPayloadToConfiguration({
+      modeling: { enableSSAO: false, viewportRendering: undefined },
+    })
+    expect(
+      configurationToSettingsPayload(configuration).modeling
+    ).toMatchObject({
+      viewportRendering: 'default',
+      enableSSAO: false,
+    })
+  })
+
+  it.each([true, false])(
+    'ignores legacy project SSAO = %s',
+    async (enabled) => {
+      const wasmInstance = await loadAndInitialiseWasmInstance(
+        join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+      )
+      const configuration = parseProjectSettings(
+        `[settings.modeling]\nenable_ssao = ${enabled}\nviewport_rendering = "phosphor"\n`,
+        wasmInstance
+      )
+      if (configuration instanceof Error) throw configuration
+      const settings = createSettings()
+      settings.modeling.enableSSAO.user = !enabled
+      const payload = projectConfigurationToSettingsPayload(configuration)
+      setSettingsAtLevel(settings, 'project', payload)
+      expect(payload.modeling?.enableSSAO).toBeUndefined()
+      expect(payload.modeling?.viewportRendering).toBeUndefined()
+      expect(settings.modeling.enableSSAO.current).toBe(!enabled)
+      expect(settings.modeling.viewportRendering.current).toBe('default')
+      const saved = settingsPayloadToProjectConfiguration({
+        modeling: { enableSSAO: enabled },
+      })
+      expect(saved.settings?.modeling?.enable_ssao).toBeUndefined()
+    }
+  )
+
+  it.each(['default', 'retrocad', 'phosphor'] as const)(
+    'sends effective cloud SSAO for %s without changing the saved preference',
+    (style) => {
+      const settings = createSettings()
+      settings.modeling.viewportRendering.user = style
+      for (const local of [true, false]) {
+        settings.modeling.useLocalRenderer.user = local
+        for (const enabled of [true, false]) {
+          settings.modeling.enableSSAO.user = enabled
+          expect(jsAppSettings(settings).settings?.modeling?.enable_ssao).toBe(
+            enabled && style === 'default'
+          )
+          expect(settings.modeling.enableSSAO.current).toBe(enabled)
+          expect(
+            settingsPayloadToConfiguration(getAllCurrentSettings(settings))
+              .settings?.modeling?.enable_ssao
+          ).toBe(enabled)
+        }
+      }
+    }
+  )
+})
+
 describe('testing settings initialization', () => {
+  it.each(['multiple', 'single', 'invalid', undefined])(
+    'parses tab open behavior %s with a multiple default',
+    (value) => {
+      const settings = createSettings()
+      const payload = configurationToSettingsPayload({
+        settings: {
+          layout: value === undefined ? {} : { tab_open_behavior: value },
+        },
+      })
+      setSettingsAtLevel(settings, 'user', payload)
+      expect(settings.layout.paneOpenBehavior.current).toBe(
+        value === 'single' ? 'single' : 'multiple'
+      )
+    }
+  )
+
   it(`sets settings at the 'user' level`, () => {
     const settings = createSettings()
     const appConfiguration: DeepPartial<Configuration> = {
@@ -321,7 +454,7 @@ describe('project settings serialization regression', () => {
             mouseControls: 'OnShape',
             gizmoType: 'axis',
             enableTouchControls: false,
-            useSketchSolveMode: false,
+            useLocalRenderer: false,
             showSketchGrid: true,
             snapToGrid: true,
             majorGridSpacing: 2.5,
@@ -336,6 +469,7 @@ describe('project settings serialization regression', () => {
             blinkingCursor: false,
           },
           layout: {
+            paneOpenBehavior: 'single',
             configs: {
               default: createLayoutWithMetadata(defaultLayoutConfig),
             },
@@ -360,7 +494,7 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).toContain('mouse_controls = "onshape"')
     expect(serializedToml).toContain('gizmo_type = "axis"')
     expect(serializedToml).toContain('enable_touch_controls = false')
-    expect(serializedToml).toContain('use_sketch_solve_mode = false')
+    expect(serializedToml).toContain('use_local_renderer = false')
     expect(serializedToml).toContain('show_sketch_grid = true')
     expect(serializedToml).toContain('snap_to_grid = true')
     expect(serializedToml).toContain('major_grid_spacing = 2.5')
@@ -375,6 +509,7 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).toContain('text_wrapping = false')
     expect(serializedToml).toContain('blinking_cursor = false')
     expect(serializedToml).toContain('[settings.layout.configs]')
+    expect(serializedToml).toContain('tab_open_behavior = "single"')
     expect(serializedToml).toContain('default = ')
     expect(serializedToml).not.toContain('[settings.zds')
 
@@ -405,7 +540,6 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.modeling?.mouseControls).toBe('OnShape')
     expect(parsedPayload.modeling?.gizmoType).toBe('axis')
     expect(parsedPayload.modeling?.enableTouchControls).toBe(false)
-    expect(parsedPayload.modeling?.useSketchSolveMode).toBe(false)
     expect(parsedPayload.modeling?.showSketchGrid).toBe(true)
     expect(parsedPayload.modeling?.snapToGrid).toBe(true)
     expect(parsedPayload.modeling?.majorGridSpacing).toBe(2.5)
@@ -417,6 +551,7 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.layout?.configs?.default.version).toBe(
       LATEST_LAYOUT_VERSION
     )
+    expect(parsedPayload.layout?.paneOpenBehavior).toBe('single')
     expect(parsedPayload.layout?.configs?.default.layout.id).toBe(
       defaultLayoutConfig.id
     )
@@ -817,6 +952,22 @@ describe('project settings serialization regression', () => {
     const parsedPayload = configurationToSettingsPayload(parsedConfiguration)
     expect(parsedPayload.debug?.showPanel).toBe(true)
     expect(parsedPayload.debug?.showModelingMachineState).toBe(false)
+  })
+
+  it('loads the saved renderer choice from the modeling section', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    const parsedConfiguration = parseAppSettings(
+      '[settings.modeling]\nuse_local_renderer = false\n',
+      wasmInstance
+    )
+    if (parsedConfiguration instanceof Error) {
+      throw parsedConfiguration
+    }
+
+    const parsedPayload = configurationToSettingsPayload(parsedConfiguration)
+    expect(parsedPayload.modeling?.useLocalRenderer).toBe(false)
   })
 
   it('preserves debug settings through the project debug section', async () => {

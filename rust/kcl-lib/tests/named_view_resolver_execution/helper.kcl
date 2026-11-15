@@ -1,0 +1,10 @@
+@settings(kclVersion = "3.0", defaultLengthUnit = mm)
+
+export fn makeFront(@plane) {
+  return view::named(
+    "Front",
+    camera = view::oriented(view::Orientation::Top),
+    baseline = view::Visibility::Hide,
+    except = [plane],
+  )
+}

@@ -31,7 +31,11 @@ import { getNodeFromPath } from '@src/lang/queryAst'
 import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
 import { formatNumberValue, isPathToNode } from '@src/lang/wasm'
 import type { AppSettingsSystem } from '@src/lib/app'
-import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
+import type {
+  CommandArgument,
+  CommandInputValidationState,
+  KclCommandValue,
+} from '@src/lib/commandTypes'
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import { getResolvedTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
@@ -72,6 +76,7 @@ export function CommandKclInput({
   name,
   arg,
   label,
+  labelAction,
   description,
   placeholder: placeholderText,
   isRequired = true,
@@ -92,6 +97,7 @@ export function CommandKclInput({
   name: string
   arg: CommandKclArgument
   label: ReactNode
+  labelAction?: ReactNode
   description?: ReactNode
   placeholder?: string
   isRequired?: boolean
@@ -103,7 +109,7 @@ export function CommandKclInput({
   submittedValue?: unknown
   autoFocus?: boolean
   onChange: (change: CommandKclChange) => void
-  onValidationChange: (state: CommandKclValidationState) => void
+  onValidationChange: (state: CommandInputValidationState) => void
 }) {
   useSignals()
   const wasmInstance = use(wasmPromise)
@@ -460,7 +466,7 @@ export function CommandKclInput({
   }, [resolvedKclValue, value])
 
   useEffect(() => {
-    const nextValidationState: CommandKclValidationState = {
+    const nextValidationState: CommandInputValidationState = {
       canSubmit: canSubmitKclValue,
       isChecking: !isEmpty && isExecuting,
       message: validationMessage,
@@ -474,23 +480,35 @@ export function CommandKclInput({
     onValidationChangeRef.current(nextValidationState)
   }, [canSubmitKclValue, isEmpty, isExecuting, validationMessage])
 
+  const FieldContainer = labelAction ? 'div' : 'label'
+  const fieldLabel = (
+    <span
+      id={labelId}
+      data-testid="cmd-bar-arg-name"
+      className="capitalize text-chalkboard-80 dark:text-chalkboard-20"
+    >
+      {label}
+      {!inline && isRequired && <span aria-hidden="true"> *</span>}
+    </span>
+  )
+
   return (
     <div className={inline ? '' : 'flex flex-col gap-1'}>
-      <label
+      <FieldContainer
         className={
           inline
             ? 'flex gap-4 items-center mx-4 my-4 border-solid border-b border-chalkboard-50'
             : 'flex flex-col gap-1'
         }
       >
-        <span
-          id={labelId}
-          data-testid="cmd-bar-arg-name"
-          className="capitalize text-chalkboard-80 dark:text-chalkboard-20"
-        >
-          {label}
-          {!inline && isRequired && <span aria-hidden="true"> *</span>}
-        </span>
+        {labelAction ? (
+          <div className="flex items-center justify-between gap-1">
+            {fieldLabel}
+            {labelAction}
+          </div>
+        ) : (
+          fieldLabel
+        )}
         <div
           id={inputId}
           data-testid="cmd-bar-arg-value"
@@ -528,14 +546,14 @@ export function CommandKclInput({
             </span>
           </span>
         )}
-      </label>
+      </FieldContainer>
       {description}
       {arg.createVariable !== 'disallow' && (
         <div
           className={
             inline
               ? 'flex items-baseline gap-4 mx-4'
-              : 'flex flex-wrap items-baseline gap-2 text-xs'
+              : 'flex flex-wrap items-center gap-2 text-xs'
           }
         >
           <input
@@ -614,12 +632,6 @@ export type CommandKclChange = {
   source: 'edit' | 'calculation'
   // Keep the raw text while its expression is empty, invalid, or calculating.
   value: KclCommandValue | string
-}
-
-export type CommandKclValidationState = {
-  canSubmit: boolean
-  isChecking: boolean
-  message?: string
 }
 
 export type CommandKclArgument = Extract<
