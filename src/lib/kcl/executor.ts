@@ -10,7 +10,11 @@ import { isErr } from '@src/lib/trap'
 import * as Effect from 'effect/Effect'
 import * as Scope from 'effect/Scope'
 
-/** Native models belong to individual executors, including when their view is detached. */
+/**
+ * Binds the generic executor capability to KCL source capture and a scene session.
+ * `getSession` reuses a session for the same `Executor`; its Effect finalizer calls
+ * `session.dispose` when that executor closes, independently of React mounts.
+ */
 export function createKclExecution(
   createSession: (executor: Executor) => KclSession,
   loadSources: (

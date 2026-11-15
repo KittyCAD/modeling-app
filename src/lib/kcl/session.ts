@@ -7,18 +7,35 @@ import { isErr, reportRejection } from '@src/lib/trap'
 type KclConnectionState =
   | { type: 'connecting' | 'ready' | 'closed' }
   | { type: 'error'; error: Error }
-/** Each opening has independent readiness, cancellation, and failure; late results cannot revive a replaced scene. */
+/**
+ * One attempt to obtain a `KclSceneResource` from `openKclScene`.
+ * `recover` replaces this object; `current` checks its identity before an async
+ * callback can publish a resource or change the session's connection state.
+ */
 function opening() {
   return {
+    // Passed to `openKclScene`; aborting closes connection work and makes its
+    // checks after WASM/SceneInfra startup reject late resources.
     lifetime: new AbortController(),
+    // `execute` may arrive before a viewport mounts. `start` resolves this once
+    // the connection and native runtime exist; `fail`/`dispose` resolve an `Error`.
     ready: Promise.withResolvers<KclSceneResource | Error>(),
+    // Lets queued/running executions return an error immediately on connection
+    // loss. The runtime's separate native queue still waits before freeing WASM.
     closed: Promise.withResolvers<Error>(),
+    // Set after `execute` calls `frameModel` for the first successful streamed
+    // model. Later edits/remounts retain the user's camera; reconnects start fresh.
     framed: false,
+    // `begin` installs the startup deadline; each `execute` has its own run timer.
     timer: undefined as ReturnType<typeof setTimeout> | undefined,
   }
 }
 
-/** The executor owns scene lifetime. A mounted view recovers its failed connection when the app regains focus. */
+/**
+ * `createKclExecution` retains this session for one executor and disposes it with
+ * the executor's Effect scope. `KclScene` only mounts/detaches its DOM element.
+ * Connection attempts can be replaced while the executor and document survive.
+ */
 export function createKclSession(
   open: OpenKclScene,
   onReconnect: () => void = () => {}
@@ -41,11 +58,15 @@ export function createKclSession(
   let stopSettings: (() => void) | undefined
   const current = (owner: ReturnType<typeof opening>) =>
     !disposed && attempt === owner && state.peek().type !== 'error'
+  // Orders session-level execution and preference application. Native execution,
+  // exports, and freeing memory are serialized separately by `createKclRuntime`.
   const enqueue = <T>(work: () => Promise<T>): Promise<T> => {
     const result = queue.then(work)
     queue = result.catch(() => undefined)
     return result
   }
+  // Hide the failed resource immediately. `start` awaits its asynchronous
+  // disposal before opening a replacement, including any pending native work.
   const retire = () => {
     stopSettings?.()
     stopSettings = undefined
@@ -119,6 +140,8 @@ export function createKclSession(
     )
     void start(size, owner)
   }
+  // Manual retry, viewport resize, and focus recovery use the same checks.
+  // Only an attached viewport with a usable size can replace a failed/stale resource.
   const recover = (container: HTMLElement) => {
     if (
       disposed ||
@@ -133,16 +156,18 @@ export function createKclSession(
     attempt = opening()
     state.value = { type: 'connecting' }
     begin({ width: container.clientWidth, height: container.clientHeight })
-    onReconnect()
+    onReconnect() // The KCL registry supplies `executor.refresh` to reload current sources.
   }
   return {
     state,
     resource,
     element,
+    /** Retry this mounted view; healthy, detached, and disposed sessions are left alone. */
     reconnect: () => {
       const container = element.parentElement
       if (container) recover(container)
     },
+    /** Attach the viewport and its listeners. The returned detach function preserves the scene and model. */
     mount: (container: HTMLElement) => {
       container.appendChild(element)
       resource.peek()?.resume()
@@ -190,6 +215,7 @@ export function createKclSession(
       detachMounts.add(detach)
       return detach
     },
+    /** Run against the captured connection attempt; a reconnect cannot redirect queued old source into its replacement. */
     execute: (
       sources: KclSourceSnapshot,
       signal: AbortSignal
@@ -224,6 +250,8 @@ export function createKclSession(
               return new Error('KCL execution was cancelled')
             return { result }
           }
+          // Report a closed connection without waiting for a hung native call.
+          // `retire` still waits for `runtime.dispose` before native memory is freed.
           return await Promise.race([work(), owner.closed.promise])
         } catch (cause) {
           return isErr(cause)
@@ -234,6 +262,7 @@ export function createKclSession(
         }
       })
     },
+    /** Close waiting calls/listeners synchronously and initiate resource disposal through `retire`. */
     dispose: () => {
       if (disposed) return
       disposed = true

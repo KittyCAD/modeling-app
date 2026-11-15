@@ -3,7 +3,7 @@ import { ConnectionRecovery } from '@src/components/ConnectionRecovery'
 import Loading from '@src/components/Loading'
 import type { KclSession } from '@src/lib/kcl/session'
 
-/** The existing connection views borrow status and retry from this scene's owner. */
+/** Adapts this session's connection state to the shared `Loading`/`ConnectionRecovery` views; retry calls `session.reconnect`. */
 export function KclConnectionStatus({
   session,
 }: {
