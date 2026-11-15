@@ -17,6 +17,8 @@ import {
 } from '@e2e/playwright/test-utils'
 import { mockCloudStorage } from '@e2e/playwright/lib/cloudStorageFixture'
 import { cloudProjectResponse } from '@e2e/playwright/lib/cloudProjectTestUtils'
+import type * as BrowserTestUtils from '@e2e/playwright/lib/browserTestUtils'
+import { browserTestUtilsPath } from '@e2e/playwright/lib/browserTestUtilsPath'
 import { decode } from '@msgpack/msgpack'
 
 const projectId = '12902000-0000-4000-8000-000000000091'
@@ -329,11 +331,11 @@ test(
       `/file/${encodeURIComponent(`/__zoo_cloud__/${projectId}/main.kcl`)}`
     )
     await page.locator('.cm-content').first().waitFor({ state: 'visible' })
-    const promptState = await page.evaluateHandle(async () => {
-      const modulePath = '/src/lib/zookeeper/zookeeperPromptState.ts'
-      const { zookeeperPromptRunningSignal } = await import(modulePath)
+    const promptState = await page.evaluateHandle(async (modulePath) => {
+      const { zookeeperPromptRunningSignal }: typeof BrowserTestUtils =
+        await import(modulePath)
       return zookeeperPromptRunningSignal
-    })
+    }, browserTestUtilsPath)
     await promptState.evaluate((state) => {
       state.value = true
     })
