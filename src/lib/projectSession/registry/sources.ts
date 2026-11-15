@@ -6,6 +6,7 @@ import {
 } from '@src/lib/projectSession/next/contract'
 import { createProjectSources } from '@src/lib/projectSession/next/sources'
 
+/** Shared by the project-session and KCL factories through `uses`; resolve documents and the selected opening lazily after registry configuration. */
 export default defineRegistryItemFactory(
   ({ services }) => ({
     id: 'project-sources',

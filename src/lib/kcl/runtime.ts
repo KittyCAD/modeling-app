@@ -32,10 +32,16 @@ type NativeEngine = Pick<
   | 'waitForAllModelingCommands'
 >
 
+// WASM can reject with a serialized KCL error containing partial geometry.
+// Keep that rejection intact for `executionProgram` to pass to `errFromErrWithOutputs`.
 const fromPromise = <A>(work: () => Promise<A>) =>
   Effect.tryPromise({ try: work, catch: (cause) => cause })
 
-/** Each scene owns native model memory and serializes exports with execution to avoid overlapping WASM borrows. */
+/**
+ * `openKclScene` creates one WASM `Context` per connection. Its filesystem reads
+ * the current execution's captured bytes. The Promise queue orders all native
+ * execution/exports, and `dispose` waits for that queue before calling `free`.
+ */
 export async function createKclRuntime(
   wasmPromise: Promise<ModuleType>,
   engine: NativeEngine,
@@ -66,6 +72,8 @@ export async function createKclRuntime(
   })
   const settings = () => JSON.stringify(getSettings())
   let rebuiltRevision = getRebuildRevision()
+  // A rejected operation must not poison later runs. Only the caller receives
+  // its rejection; `queue` settles so disposal and subsequent operations can proceed.
   const enqueue = <T>(work: () => Promise<T>): Promise<T> => {
     const result = queue.then(() =>
       disposed ? Promise.reject<T>(new Error('The KCL scene closed')) : work()
@@ -111,6 +119,8 @@ export async function createKclRuntime(
       })
       return result
     }).pipe(
+      // Native error output can contain newly created planes/artifacts. Preserve
+      // that output for the renderer while rejecting the failed execution itself.
       Effect.catchAllCause((cause) =>
         Effect.suspend(() => {
           const failure = Cause.squash(cause)
@@ -129,8 +139,9 @@ export async function createKclRuntime(
     )
   const execute = (snapshot: KclSourceSnapshot) =>
     enqueue(async () => {
-      // Interrupting an Effect does not cancel an underlying native Promise. Keep
-      // the queue occupied until native work settles before permitting disposal.
+      // Interrupting an Effect cannot stop an already-running WASM Promise.
+      // `uninterruptible` keeps `enqueue` occupied until native work and command
+      // draining settle, so `dispose` cannot free the borrowed context early.
       const exit = await Effect.runPromiseExit(
         Effect.acquireUseRelease(
           Effect.sync(() => {
@@ -161,6 +172,8 @@ export async function createKclRuntime(
             })
         ).pipe(Effect.uninterruptible)
       )
+      // `runPromiseExit` lets the Promise API reject with the original error,
+      // rather than the `FiberFailure` wrapper produced by `Effect.runPromise`.
       return Exit.isSuccess(exit)
         ? exit.value
         : Promise.reject(Cause.squash(exit.cause))

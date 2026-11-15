@@ -5,23 +5,23 @@ import type { ReadonlySignal } from '@preact/signals-core'
 import type { Editor } from '@src/lib/editors/registry/contract'
 import type { Scope } from 'effect/Scope'
 
-/** Live editor handle plus a source snapshot; interruption aborts signal when supported. */
+/** Passed to `ExecutorCapability.execute`; `src` is captured for that run, while `editor` remains a live document handle. */
 export interface ExecutorRunContext {
   readonly executor: Executor
   readonly editor: Editor
-  /** Captured with the contents; use this path rather than rereading the live editor after awaiting. */
+  /** Captured alongside the `contents` argument, so async work keeps its original source path. */
   readonly src: string
   readonly signal: AbortSignal
 }
 
-/** A computation contributed for a matching source snapshot, without file IO. */
+/** A registry-contributed computation for matching editor text. The capability may load dependencies; the generic executor schedules it and collects its result. */
 export interface ExecutorCapability<
   T extends Record<string, unknown> = Record<string, unknown>,
 > {
-  /** Unique contribution ID, used to name its data or error in the output. */
+  /** Key used by `ExecutorOutput.data` and `.errors`; duplicate IDs overwrite summary entries, while typed `output.get` uses object identity. */
   id: string
   matches: EditorMatcher
-  /** Additional inputs whose changes require a new source execution, such as imported buffers. */
+  /** Dependencies beyond editor text. `createExecutor` compares successive values with `Object.is`, so producers must publish a new value when those inputs change. */
   revision?: ReadonlySignal<unknown>
   execute: (
     contents: string,
@@ -29,44 +29,44 @@ export interface ExecutorCapability<
   ) => Error | T | Promise<Error | T>
 }
 
-/** Infer a capability's successful data from its synchronous or asynchronous execute function. */
+/** The successful return type of `ExecutorCapability.execute`, excluding its returned `Error` case. */
 export type CapabilityData<C extends ExecutorCapability> = Exclude<
   Awaited<ReturnType<C['execute']>>,
   Error
 >
 
-/** Preserve the concrete function return type and literal ID when defining a capability. */
+/** Retain the contributed `execute` function's inferred return type for typed `output.get` calls. */
 export function defineExecutorCapability<const C extends ExecutorCapability>(
   capability: C
 ): C {
   return capability
 }
 
-/** An atomic snapshot with typed capability lookups and ID-indexed summaries. */
+/** Results for captured `src`/`contents`. Completed capabilities can publish while `running` remains true for pending siblings. */
 export interface ExecutorOutput {
   readonly src: string
   readonly contents: string
   readonly running: boolean
   readonly data: Readonly<Record<string, Record<string, unknown>>>
   readonly errors: Readonly<Record<string, Error>>
-  /** Read data produced by this exact capability; absent, failed, and pending results are undefined. */
+  /** `createExecutorOutput` keys successful results by capability object identity; absent, failed, and pending results return `undefined`. */
   get: <C extends ExecutorCapability>(
     capability: C
   ) => CapabilityData<C> | undefined
 }
 
-/** A watcher of one editor; its lifecycle and results are independent of other executors. */
+/** One execution owner for an `Editor`. Several executors can watch the same document while retaining separate results and scopes. */
 export interface Executor {
-  /** Long-lived capability resources are released when this executor closes. */
+  /** Capability resources register finalizers here; closing the executor initiates `Scope.close`. */
   readonly scope: Scope
   readonly id: symbol
   readonly editor: Editor
   readonly output: ReadonlySignal<ExecutorOutput>
-  /** Retry current source and dependencies in this executor only. */
+  /** Retry this executor's current source and capability revisions without editing its document or refreshing sibling executors. */
   refresh: () => void
 }
 
-/** Computation is acquired explicitly by mode contexts or other consumers, independently of focus. */
+/** Creates explicit executors or leases shared ones for mode contexts; editor focus does not select the execution target. */
 export interface ExecutorsService {
   executors: ReadonlySignal<readonly Executor[]>
   createExecutor: (editor: Editor) => Executor | Error

@@ -16,7 +16,7 @@ export interface SceneCameraPreferences {
   cameraProjection: 'perspective' | 'orthographic'
 }
 
-/** Theme and post-processing applied to `SceneInfra` and the streamed connection. */
+/** `theme` updates `SceneInfra.theme`; the streamed connection also receives the effective `viewportRendering` mode. */
 export interface SceneAppearancePreferences {
   theme: ResolvedTheme
   viewportRendering: PostEffectType
@@ -31,7 +31,7 @@ export interface LocalRendererPreferences {
   fixedSizeGrid: boolean
 }
 
-/** Separate signals let local-renderer changes update React without reapplying camera or stream settings. */
+/** `KclSession` observes `camera`/`appearance`; `KclScene` observes `localRenderer`. Shared inputs such as theme can update both consumers. */
 export interface ScenePresentationPreferences {
   camera: ReadonlySignal<SceneCameraPreferences>
   appearance: ReadonlySignal<SceneAppearancePreferences>
@@ -39,7 +39,7 @@ export interface ScenePresentationPreferences {
   defaultUnit: ReadonlySignal<UnitLength>
 }
 
-/** Resolve the OS theme and effective user/project values for each presentation consumer. */
+/** Resolve user/project values and OS theme for presentation consumers. The KCL registry releases the OS listener through `dispose` when its executor closes. */
 export function createScenePresentationPreferences(
   getSettings: () => SettingsType
 ) {

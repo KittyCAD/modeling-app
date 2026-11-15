@@ -8,7 +8,7 @@ import type {
   ProjectSessionService,
 } from '@src/lib/projectSession/next/contract'
 
-/** Only this service can publish project changes; consumers receive a readonly signal. */
+/** Internal writable counterpart of `OpenProjectSession`; its public type exposes `project` as a `ReadonlySignal`. */
 interface MutableProjectSession extends OpenProjectSession {
   readonly project: Signal<Project>
 }
@@ -19,8 +19,9 @@ type ProjectStorage = Pick<
 >
 
 /**
- * Bind file capabilities to the root and access grant captured for this opening.
- * Operations never re-read the global selection, so switching projects cannot retarget I/O.
+ * Capture the root and write grant for an `OpenProjectSession`. Each file method
+ * resolves its argument against this root, so switching project selection cannot
+ * redirect an existing `files.readBytes` or `files.write` call into another project.
  */
 function createSession(
   project: Project,
