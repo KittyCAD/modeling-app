@@ -61,14 +61,17 @@ export function SelectionItem({ context }: { context: ModelingViewContext }) {
   useSignals()
   const host = viewSceneToolsHost(context)
   const scene = context.session.resource.value
-  const selection = scene?.selection
-  const count = selection?.displayed.value.length ?? 0
+  const active = context.selection
+  const count = active.items.value.length
+  const sketch = active.items.value.some((item) => item.kind === 'sketch')
   const ast = scene?.runtime.ast.value
-  const label = ast
-    ? getSelectionTypeDisplayText(ast, host.selections, host.artifactGraph)
-    : count
-      ? `${count} selected`
-      : null
+  const label = sketch
+    ? `${count} sketch ${count === 1 ? 'entity' : 'entities'} selected`
+    : ast
+      ? getSelectionTypeDisplayText(ast, host.selections, host.artifactGraph)
+      : count
+        ? `${count} selected`
+        : null
   return (
     <div className="flex" aria-label="Scene selection">
       <SelectionStatusBarItem
@@ -80,8 +83,8 @@ export function SelectionItem({ context }: { context: ModelingViewContext }) {
               <button
                 type="button"
                 className={defaultStatusBarItemClassNames}
-                disabled={!count || !selection?.pickingEnabled.value}
-                onClick={() => selection?.clear()}
+                disabled={!active.canClear.value}
+                onClick={active.clear}
               >
                 Clear selection
               </button>

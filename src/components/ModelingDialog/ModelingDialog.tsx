@@ -18,6 +18,7 @@ import type { CommandScopeService } from '@src/registry/contracts/commands'
 import type { EngineSceneViewExtensionProps } from '@src/registry/contracts/engineScene'
 import {
   type DialogField,
+  type SelectionArgument,
   getDialogFields,
   hasValue,
   initializeArguments,
@@ -34,6 +35,7 @@ export default function ModelingDialog({
   commandScopes,
   selectionRanges,
   modelingSend,
+  onSelectionFieldChange,
 }: {
   containerRef: RefObject<HTMLElement | null>
   kclManager: KclManager
@@ -43,6 +45,9 @@ export default function ModelingDialog({
   commandScopes?: CommandScopeService
   selectionRanges: Selections
   modelingSend: EngineSceneViewExtensionProps['modelingSend']
+  onSelectionFieldChange?: (
+    field: { name: string; arg: SelectionArgument } | undefined
+  ) => void
 }) {
   useSignals()
   const state = commands.useState()
@@ -76,6 +81,14 @@ export default function ModelingDialog({
     selectionRanges,
     modelingSend,
   })
+  useEffect(() => {
+    onSelectionFieldChange?.(
+      selection.activeName && selection.activeArg?.inputType === 'selection'
+        ? { name: selection.activeName, arg: selection.activeArg }
+        : undefined
+    )
+    return () => onSelectionFieldChange?.(undefined)
+  }, [onSelectionFieldChange, selection.activeName, selection.activeArg])
   const context = {
     ...state.context,
     argumentsToSubmit: {
