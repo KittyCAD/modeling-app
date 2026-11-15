@@ -17,9 +17,102 @@ import {
 } from '@e2e/playwright/test-utils'
 import { mockCloudStorage } from '@e2e/playwright/lib/cloudStorageFixture'
 import { cloudProjectResponse } from '@e2e/playwright/lib/cloudProjectTestUtils'
+import type * as BrowserTestUtils from '@e2e/playwright/lib/browserTestUtils'
+import { browserTestUtilsPath } from '@e2e/playwright/lib/browserTestUtilsPath'
 import { decode } from '@msgpack/msgpack'
 
 const projectId = '12902000-0000-4000-8000-000000000091'
+
+for (const startEmpty of [false, true]) {
+  test(
+    `shows initial project loading but keeps the ${startEmpty ? 'empty list' : 'project cards'} visible during refresh`,
+    { tag: '@web' },
+    async ({ context, page }, testInfo) => {
+      await mockClientErrorReports(context)
+      await mockCloudStorage(context, { startEmpty })
+      await setup(context, page, testInfo)
+      let release = Promise.withResolvers<undefined>()
+      await context.route('**/user/projects**', async (route) => {
+        if (new URL(route.request().url()).pathname === '/user/projects')
+          await release.promise
+        await route.fallback()
+      })
+      try {
+        await page.goto('/home')
+        await waitForAppLoad(page)
+        const loading = page.getByRole('status', { name: 'Loading projects' })
+        await expect(loading).toBeVisible()
+        release.resolve(undefined)
+        const refresh = page.getByRole('button', { name: 'Refresh projects' })
+        await expect(refresh).toHaveAttribute('aria-busy', 'false')
+        await expect(loading).toHaveCount(0)
+        const contents = startEmpty
+          ? page.getByTestId('projects-none')
+          : page.getByText('Cloud memory model', { exact: true })
+        await expect(contents).toBeVisible()
+        release = Promise.withResolvers<undefined>()
+        await refresh.click()
+        await expect(refresh).toHaveAttribute('aria-busy', 'true')
+        await expect(contents).toBeVisible()
+        await expect(loading).toHaveCount(0)
+        release.resolve(undefined)
+        await expect(refresh).toHaveAttribute('aria-busy', 'false')
+      } finally {
+        release.resolve(undefined)
+      }
+    }
+  )
+}
+
+test(
+  'refreshes projects only on entry or request, with a five-second button cooldown',
+  { tag: '@web' },
+  async ({ context, page }, testInfo) => {
+    await mockClientErrorReports(context)
+    const remote = await mockCloudStorage(context)
+    await setup(context, page, testInfo)
+    await page.goto('/home')
+    await waitForAppLoad(page)
+    const refresh = page.getByRole('button', { name: 'Refresh projects' })
+    await expect(refresh).toHaveAttribute('aria-busy', 'false')
+    await expect(
+      page.getByText('Cloud memory model', { exact: true })
+    ).toBeVisible()
+    await page.clock.install()
+    await page.clock.pauseAt(new Date())
+    remote.project.title = 'Changed elsewhere'
+    await page.getByTestId('home-sort-by-name').click()
+    await page.evaluate(() => {
+      window.dispatchEvent(new Event('focus'))
+      window.dispatchEvent(new Event('online'))
+      document.dispatchEvent(new Event('visibilitychange'))
+    })
+    await page.clock.runFor(60_000)
+    await expect(
+      page.getByText('Cloud memory model', { exact: true })
+    ).toBeVisible()
+    await expect(
+      page.getByText('Changed elsewhere', { exact: true })
+    ).toHaveCount(0)
+    await refresh.click()
+    await expect(
+      page.getByText('Changed elsewhere', { exact: true })
+    ).toBeVisible()
+    await expect(refresh).toHaveAttribute('aria-busy', 'false')
+    await expect(refresh).toBeDisabled()
+    await page.clock.runFor(4_999)
+    await expect(refresh).toBeDisabled()
+    await page.clock.runFor(1)
+    await expect(refresh).toBeEnabled()
+    await page.getByText('Changed elsewhere', { exact: true }).dblclick()
+    await page.locator('.cm-content').first().waitFor({ state: 'visible' })
+    remote.project.title = 'Changed while modeling'
+    await page.getByTestId('app-logo').click()
+    await expect(
+      page.getByText('Changed while modeling', { exact: true })
+    ).toBeVisible()
+  }
+)
 
 test(
   'polls revisions and reflects remote edits and deletions without reloading the page',
@@ -238,11 +331,11 @@ test(
       `/file/${encodeURIComponent(`/__zoo_cloud__/${projectId}/main.kcl`)}`
     )
     await page.locator('.cm-content').first().waitFor({ state: 'visible' })
-    const promptState = await page.evaluateHandle(async () => {
-      const modulePath = '/src/lib/zookeeper/zookeeperPromptState.ts'
-      const { zookeeperPromptRunningSignal } = await import(modulePath)
+    const promptState = await page.evaluateHandle(async (modulePath) => {
+      const { zookeeperPromptRunningSignal }: typeof BrowserTestUtils =
+        await import(modulePath)
       return zookeeperPromptRunningSignal
-    })
+    }, browserTestUtilsPath)
     await promptState.evaluate((state) => {
       state.value = true
     })
