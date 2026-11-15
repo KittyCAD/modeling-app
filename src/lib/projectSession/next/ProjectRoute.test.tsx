@@ -34,7 +34,8 @@ import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 
 const registry = vi.hoisted(() => ({ get: vi.fn(), signal: vi.fn() }))
 const commands = vi.hoisted(() => ({ send: vi.fn() }))
-// "Next"-era panes can access ordinary editor views, but no modeling singleton.
+// `ProjectRoute` obtains documents/views from the registry. Mock only the app's
+// registry/command access through `useApp`, leaving those services under test.
 vi.mock('@src/lib/boot', () => ({ useApp: () => ({ registry, commands }) }))
 
 function createSession(

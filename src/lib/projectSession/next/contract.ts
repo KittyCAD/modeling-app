@@ -3,60 +3,66 @@ import type { ReadonlySignal } from '@preact/signals-core'
 import type { Project } from '@src/lib/projectSession/next/types'
 import type { FileEntry } from '@src/lib/project'
 
-/** File capabilities captured for one project opening; paths are project-relative. */
+/** Storage access bound by `createSession` to one project root. All arguments are project-relative paths checked against that root. */
 export interface ProjectFiles {
   readBytes: (relativePath: string) => Promise<Uint8Array>
   read: (relativePath: string) => Promise<string>
   write: (relativePath: string, contents: string) => Promise<void>
 }
 
-/** Captured working bytes for an entrypoint and its project inputs. */
+/** Bytes collected by `ProjectSourcesService.capture`; `src` identifies the entrypoint key in `files`. */
 export interface ProjectSourceSnapshot {
   readonly src: string
   readonly files: ReadonlyMap<string, Uint8Array>
 }
 
-/** Document overlays and storage reads share the captured project opening. */
+/** Supplies execution consumers with open-document text in preference to storage, using the project opening captured at the start of `capture`. */
 export interface ProjectSourcesService {
+  /** `createKclExecution` uses this through its capability revision; it changes for live document text/paths and project file-tree replacement. */
   readonly revision: ReadonlySignal<unknown>
   capture: (request: {
+    /** Explicit run input takes precedence over a live document at the same source path. */
     document: { readonly src?: string; readonly contents: string }
+    /** Virtual entrypoint name for an unnamed document, supplied by the language consumer. */
     unnamedPath: string
+    /** Cancels this capture independently of project replacement. */
     signal: AbortSignal
+    /** Select other project files; the explicit entrypoint is always included. */
     include?: (path: string) => boolean
   }) => Promise<ProjectSourceSnapshot | Error>
 }
 
 /**
- * Captures a project and its file capabilities for asynchronous work.
- * Changing the selection leaves existing references bound to their original project.
+ * A project opening returned by `ProjectSessionService.openProject`.
+ * `files` retains that opening's root even after another project is selected;
+ * `signal` lets document/execution owners stop work when the opening is replaced.
  */
 export interface OpenProjectSession {
-  /** Aborted when this opening is closed or replaced; editor/runtime resources share this lifetime. */
+  /** `openProject`/`closeProject` abort the previous opening; editors created in it subscribe to this signal. */
   readonly signal: AbortSignal
   readonly project: ReadonlySignal<Project>
   readonly files: ProjectFiles
 }
 
-/** Experimental project route state, independent of the existing editor session. */
+/** Project selection for `/local/:path` and `/project/:id`; the legacy `/file/:id` route retains its separate project service. */
 export interface ProjectSessionService {
-  /** Selection for views. Project operations receive a captured session instead. */
+  /** Selected opening for the project UI; async operations capture this value once rather than selecting a project again after awaiting. */
   readonly currentSession: ReadonlySignal<OpenProjectSession | undefined>
   readonly currentProject: ReadonlySignal<Project | undefined>
-  /** Flatten the current project's file tree, excluding directories; no filesystem I/O. */
+  /** Flatten the selected project's recorded `contents` tree into file entries; this does not discover changes on disk. */
   listFiles: () => readonly FileEntry[]
   openProject: (project: Project) => OpenProjectSession
-  /** Adopt fresh project data for this opening, preserving its root and storage identity. */
+  /** Replace data only for the still-selected `session`; reject a different root or cloud project ID. */
   updateProject: (
     session: OpenProjectSession,
     project: Project
   ) => Error | undefined
-  /** Refresh descriptive metadata for the captured opening; closed/replaced openings are ignored. */
+  /** Update the current opening's title/default-file metadata without replacing its file tree; ignore a retired `session`. */
   updateMetadata: (
     session: OpenProjectSession,
     metadata: Pick<Project['metadata'], 'title' | 'defaultFile'>
   ) => void
-  /** Clear the selection; captured sessions remain usable. */
+  /** Clear project selection and abort the opening's signal. Captured `files` still addresses its original root. */
   closeProject: () => void
 }
 

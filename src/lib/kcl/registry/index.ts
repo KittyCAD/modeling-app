@@ -28,7 +28,11 @@ import { authService } from '@src/registry/contracts/auth'
 import { settingsService } from '@src/registry/contracts/settings'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 
-/** KCL syntax and executor-backed Modeling share editor classification, not scene ownership. */
+/**
+ * Contributes KCL Code syntax, execution, and a Modeling mode for KCL documents.
+ * The mode's context creates a distinct executor per view, so views share editor
+ * text/history while each owns its connection, native model, and camera.
+ */
 const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
   let fallbackWasm: ReturnType<typeof initialiseWasm> | undefined
   const getWasm = () =>

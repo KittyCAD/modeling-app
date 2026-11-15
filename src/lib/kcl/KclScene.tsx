@@ -6,7 +6,11 @@ import { useEffect, useRef } from 'react'
 
 const hiddenPlanes = { xy: false, xz: false, yz: false }
 
-/** The scene session survives React mounts; this surface owns only presentation attachment. */
+/**
+ * Renders one Modeling view using the session supplied by its mode context.
+ * The effect's cleanup detaches the DOM through `session.mount`; executor-scope
+ * cleanup owns closing the connection and freeing the native runtime.
+ */
 export function KclScene({
   context,
 }: {
