@@ -1,3 +1,6 @@
+import * as Cause from 'effect/Cause'
+import * as Effect from 'effect/Effect'
+import * as Exit from 'effect/Exit'
 import { batch, signal } from '@preact/signals-core'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
@@ -28,6 +31,9 @@ type NativeEngine = Pick<
   | 'trackExecution'
   | 'waitForAllModelingCommands'
 >
+
+const fromPromise = <A>(work: () => Promise<A>) =>
+  Effect.tryPromise({ try: work, catch: (cause) => cause })
 
 /** Each scene owns native model memory and serializes exports with execution to avoid overlapping WASM borrows. */
 export async function createKclRuntime(
@@ -67,57 +73,49 @@ export async function createKclRuntime(
     queue = result.catch(() => undefined)
     return result
   }
-  return {
-    state,
-    executing,
-    failed,
-    events,
-    execute: (snapshot: KclSourceSnapshot) =>
-      enqueue(async () => {
-        const stopTracking = engine.trackExecution()
-        executing.value = true
-        files = new Map(
-          [...snapshot.files].map(([path, bytes]) => [
-            fsZds.join(path),
-            bytes.slice(),
-          ])
+  const executionProgram = (snapshot: KclSourceSnapshot) =>
+    Effect.gen(function* () {
+      files = new Map(
+        [...snapshot.files].map(([path, bytes]) => [
+          fsZds.join(path),
+          bytes.slice(),
+        ])
+      )
+      const source = files.get(fsZds.join(snapshot.src))
+      if (!source)
+        return yield* Effect.fail(
+          new Error('The KCL entrypoint is missing from its snapshot')
         )
-        let successful = false
-        try {
-          const source = files.get(fsZds.join(snapshot.src))
-          if (!source)
-            return Promise.reject(
-              new Error('The KCL entrypoint is missing from its snapshot')
-            )
-          const ast = parse(new TextDecoder().decode(source), wasm)
-          if (isErr(ast)) return Promise.reject(ast)
-          if (!resultIsOk(ast))
-            return Promise.reject(new Error('Fix KCL syntax before executing'))
-          const configuration = settings()
-          const rebuildRevision = getRebuildRevision()
-          if (rebuiltRevision !== rebuildRevision) {
-            await native.bustCacheAndResetScene(configuration, snapshot.src)
-            rebuiltRevision = rebuildRevision
-          }
-          if (disposed) return Promise.reject(new Error('The KCL scene closed'))
-          const delta: SceneGraphDelta = await native.execute(
-            JSON.stringify(ast.program),
-            snapshot.src,
-            configuration
-          )
-          await engine.waitForAllModelingCommands()
-          const result = execStateFromRust(delta.exec_outcome)
-          if (disposed) return Promise.reject(new Error('The KCL scene closed'))
-          batch(() => {
-            state.value = result
-            failed.value = false
-          })
-          successful = true
-          return result
-        } catch (cause) {
-          if (!disposed) failed.value = true
-          if (isErr(cause)) return Promise.reject(cause)
-          const error = errFromErrWithOutputs(cause)
+      const ast = parse(new TextDecoder().decode(source), wasm)
+      if (isErr(ast)) return yield* Effect.fail(ast)
+      if (!resultIsOk(ast))
+        return yield* Effect.fail(new Error('Fix KCL syntax before executing'))
+      const configuration = settings()
+      const rebuildRevision = getRebuildRevision()
+      if (rebuiltRevision !== rebuildRevision) {
+        yield* fromPromise(() =>
+          native.bustCacheAndResetScene(configuration, snapshot.src)
+        )
+        rebuiltRevision = rebuildRevision
+      }
+      if (disposed) return yield* Effect.fail(new Error('The KCL scene closed'))
+      const delta: SceneGraphDelta = yield* fromPromise(() =>
+        native.execute(JSON.stringify(ast.program), snapshot.src, configuration)
+      )
+      yield* fromPromise(() => engine.waitForAllModelingCommands())
+      const result = execStateFromRust(delta.exec_outcome)
+      if (disposed) return yield* Effect.fail(new Error('The KCL scene closed'))
+      batch(() => {
+        state.value = result
+        failed.value = false
+      })
+      return result
+    }).pipe(
+      Effect.catchAllCause((cause) =>
+        Effect.suspend(() => {
+          const failure = Cause.squash(cause)
+          if (isErr(failure)) return Effect.fail(failure)
+          const error = errFromErrWithOutputs(failure)
           if (!disposed)
             state.value = {
               ...state.peek(),
@@ -125,26 +123,55 @@ export async function createKclRuntime(
               defaultPlanes: error.defaultPlanes,
               engineSceneGeneration: error.engineSceneGeneration,
             }
-          return Promise.reject(error)
-        } finally {
-          if (!disposed) failed.value = !successful
-          executing.value = false
-          stopTracking()
-          if (!disposed)
-            events.dispatchEvent(
-              new CustomEvent<SceneExecutionDoneDetail>(
-                SceneExecutionEvents.ExecutionDone,
-                {
-                  detail: {
-                    successful,
-                    isInterrupted: false,
-                    hasErrors: !successful,
-                  },
-                }
-              )
-            )
-        }
-      }),
+          return Effect.fail(error)
+        })
+      )
+    )
+  const execute = (snapshot: KclSourceSnapshot) =>
+    enqueue(async () => {
+      // Interrupting an Effect does not cancel an underlying native Promise. Keep
+      // the queue occupied until native work settles before permitting disposal.
+      const exit = await Effect.runPromiseExit(
+        Effect.acquireUseRelease(
+          Effect.sync(() => {
+            const stopTracking = engine.trackExecution()
+            executing.value = true
+            return stopTracking
+          }),
+          () => executionProgram(snapshot),
+          (stopTracking, exit) =>
+            Effect.sync(() => {
+              const successful = Exit.isSuccess(exit)
+              if (!disposed) failed.value = !successful
+              executing.value = false
+              stopTracking()
+              if (!disposed)
+                events.dispatchEvent(
+                  new CustomEvent<SceneExecutionDoneDetail>(
+                    SceneExecutionEvents.ExecutionDone,
+                    {
+                      detail: {
+                        successful,
+                        isInterrupted: false,
+                        hasErrors: !successful,
+                      },
+                    }
+                  )
+                )
+            })
+        ).pipe(Effect.uninterruptible)
+      )
+      return Exit.isSuccess(exit)
+        ? exit.value
+        : Promise.reject(Cause.squash(exit.cause))
+    })
+  return {
+    state,
+    executing,
+    failed,
+    events,
+    execute,
+
     exportModel: (
       format: Parameters<LocalRendererHost['exportModel']>[0]
     ): ReturnType<LocalRendererHost['exportModel']> =>
