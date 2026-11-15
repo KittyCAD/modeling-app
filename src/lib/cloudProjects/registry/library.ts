@@ -281,8 +281,7 @@ export default defineFactory({
             !loggedIn ||
             !(
               path === PATHS.HOME ||
-              path ===
-                `${PATHS.LIBRARY}/${PERSONAL_CLOUD_PROJECT_LIBRARY_ID}`
+              path === `${PATHS.LIBRARY}/${PERSONAL_CLOUD_PROJECT_LIBRARY_ID}`
             )
           )
             return
