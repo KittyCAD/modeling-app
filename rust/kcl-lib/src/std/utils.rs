@@ -27,6 +27,25 @@ pub(crate) fn untype_array<const N: usize>(p: [TyF64; N]) -> ([f64; N], NumericT
     )
 }
 
+/// Like [`untype_array`] for a 3D point or direction, but when the parts are
+/// lengths in different units, like `[1in, 25.4mm, 0mm]`, they are all read in
+/// the unit of the first part that isn't zero instead of keeping their numbers
+/// with an unknown unit. Parts that share a unit keep their numbers and type.
+pub(crate) fn untype_point3d_in_one_unit(p: [TyF64; 3]) -> ([f64; 3], NumericType) {
+    let (values, ty) = untype_array(p.clone());
+    if !ty.is_unknown() || !p.iter().all(TyF64::is_length_compatible) {
+        return (values, ty);
+    }
+    let first = p.iter().find(|part| part.n != 0.0).unwrap_or(&p[0]);
+    let Some(units) = first.ty.as_length() else {
+        return (values, ty);
+    };
+    match p.each_ref().map(|part| part.to_length_units(units)) {
+        [Some(x), Some(y), Some(z)] => ([x, y, z], NumericType::length(units)),
+        _ => (values, ty),
+    }
+}
+
 pub(crate) fn point_to_mm(p: [TyF64; 2]) -> [f64; 2] {
     [p[0].unwrap_to_mm(), p[1].unwrap_to_mm()]
 }
