@@ -10,7 +10,6 @@ import { Suspense, useMemo } from 'react'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ArtifactGraph } from '@src/lang/wasm'
 const emptyGraph: ArtifactGraph = new Map()
-const emptySelection: Selections = { graphSelections: [], otherSelections: [] }
 
 /** A status contribution always receives the view whose footer contains it. */
 export function ModelingStatusBar({
@@ -22,21 +21,27 @@ export function ModelingStatusBar({
   const scene = context.session.resource.value
   const model = scene?.selection.model.value ?? null
   const output = context.executor.output.value
-  const selected = scene?.selection.displayed.value
+  const selected = context.selection.items.value
   const graph = scene?.runtime.state.value.artifactGraph ?? emptyGraph
   const selections = useMemo<Selections>(
-    () =>
-      selected
-        ? {
-            graphSelections: selected.map(({ reference }) => ({
-              entityRef: reference,
-              ...resolveToCodeRef({ entityRef: reference }, graph),
-              engineTopologyFallback:
-                engineTopologyFallbackFromReference(reference),
-            })),
-            otherSelections: [],
-          }
-        : emptySelection,
+    () => ({
+      graphSelections: selected.flatMap((item) =>
+        item.kind === 'model'
+          ? [
+              {
+                entityRef: item.value.reference,
+                ...resolveToCodeRef({ entityRef: item.value.reference }, graph),
+                engineTopologyFallback: engineTopologyFallbackFromReference(
+                  item.value.reference
+                ),
+              },
+            ]
+          : []
+      ),
+      otherSelections: selected.flatMap((item) =>
+        item.kind === 'engine-primitive' ? [item.selection] : []
+      ),
+    }),
     [selected, graph]
   )
   const sendModelingCommand = useMemo(
@@ -48,7 +53,11 @@ export function ModelingStatusBar({
     [context, scene, model, output.contents, output.src]
   )
   const executing = output.running || (scene?.runtime.executing.value ?? false)
-  const idle = !!model && !executing && !output.errors['kcl.execution']
+  const idle =
+    !!model &&
+    !context.interactions.active.value &&
+    !executing &&
+    !output.errors['kcl.execution']
   const unit =
     scene?.runtime.fileSettings.value.defaultLengthUnit ??
     scene?.preferences.defaultUnit.value ??
