@@ -44,8 +44,9 @@ export const dummyInitSketchGraphDelta: SceneGraphDelta = Object.freeze({
   },
 })
 
-export const modelingMachineInitialInternalContext: ModelingMachineInternalContext =
-  {
+/** Mutable selection, visibility, overlays, and sketch data belong to one actor. */
+export function createModelingMachineInternalContext(): ModelingMachineInternalContext {
+  return {
     currentTool: 'none',
     showNonVisualConstraints: false,
     toastId: null,
@@ -76,8 +77,13 @@ export const modelingMachineInitialInternalContext: ModelingMachineInternalConte
     planesInitialized: false,
     sketchSolveToolName: null,
     sketchSolveTool: null,
-    initialSceneGraphDelta: dummyInitSketchGraphDelta,
+    initialSceneGraphDelta: structuredClone(dummyInitSketchGraphDelta),
   }
+}
+
+// Retain the exported template for existing test inputs; actors allocate their own defaults.
+export const modelingMachineInitialInternalContext =
+  createModelingMachineInternalContext()
 
 export function generateModelingMachineDefaultContext(systemDeps: {
   kclManager: KclManager
@@ -86,40 +92,6 @@ export function generateModelingMachineDefaultContext(systemDeps: {
   engineCommandManager: ConnectionManager
   commandBarActor: CommandBarActorType
   machineManager: MachineManager
-}) {
-  const context: ModelingMachineContext = {
-    currentTool: 'none',
-    showNonVisualConstraints: false,
-    toastId: null,
-    selection: [],
-    selectionRanges: {
-      graphSelections: [],
-      otherSelections: [],
-    },
-    sketchDetails: null,
-    sketchSolveInit: null,
-    sketchPlaneId: '',
-    sketchEnginePathId: '',
-    moveDescs: [],
-    mouseState: { type: 'idle' },
-    segmentOverlays: {},
-    segmentHoverMap: {},
-    store: {},
-    defaultPlaneVisibility: {
-      xy: true,
-      xz: true,
-      yz: true,
-    },
-    savedDefaultPlaneVisibility: {
-      xy: true,
-      xz: true,
-      yz: true,
-    },
-    planesInitialized: false,
-    sketchSolveTool: null,
-    sketchSolveToolName: null,
-    initialSceneGraphDelta: dummyInitSketchGraphDelta,
-    ...systemDeps,
-  }
-  return context
+}): ModelingMachineContext {
+  return { ...createModelingMachineInternalContext(), ...systemDeps }
 }

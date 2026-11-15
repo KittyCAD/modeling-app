@@ -10,6 +10,7 @@ import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import { modelingStdLibCommandSummary } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
+import { bindModelingMachine } from '@src/machines/modelingMachineBinding'
 import {
   EngineConnectionEvents,
   EngineConnectionStateType,
@@ -219,18 +220,10 @@ export const ModelingMachineProvider = ({
     }
   }, [modelingActor])
 
-  // Give the state back to the kclManager.
-  useEffect(() => {
-    kclManager.modelingSend = modelingSend
-  }, [modelingSend, kclManager])
-
-  useEffect(() => {
-    kclManager.modelingState = modelingState
-  }, [modelingState, kclManager])
-
-  useEffect(() => {
-    kclManager.selectionRanges = modelingState.context.selectionRanges
-  }, [modelingState.context.selectionRanges, kclManager])
+  useEffect(
+    () => bindModelingMachine(modelingActor, kclManager),
+    [modelingActor, kclManager]
+  )
 
   // When changing camera modes reset the camera to the default orientation to correct
   // the up vector otherwise the conconical orientation for the camera modes will be
