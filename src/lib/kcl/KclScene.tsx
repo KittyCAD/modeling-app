@@ -8,7 +8,7 @@ const hiddenPlanes = { xy: false, xz: false, yz: false }
 
 /**
  * Renders one Modeling view using the session supplied by its mode context.
- * The effect's cleanup detaches the DOM through `session.mount`; executor-scope
+ * The effect's cleanup detaches the DOM through `session.attach`; executor-scope
  * cleanup owns closing the connection and freeing the native runtime.
  */
 export function KclScene({
@@ -24,7 +24,7 @@ export function KclScene({
   const output = executor.output.value
   const error = output.errors['kcl.execution']
   useEffect(() => {
-    if (container.current) return session.mount(container.current)
+    if (container.current) return session.attach(container.current)
   }, [session])
   return (
     <div className="relative h-full w-full overflow-hidden">

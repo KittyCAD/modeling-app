@@ -137,7 +137,7 @@ it.each(['focus', 'manual'] as const)(
       clientWidth: { value: 200 },
       clientHeight: { value: 150 },
     })
-    const detach = session.mount(container)
+    const detach = session.attach(container)
     try {
       await vi.waitFor(() =>
         expect(owned.executor.output.peek().running).toBe(false)

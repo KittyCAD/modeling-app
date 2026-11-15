@@ -33,7 +33,7 @@ it.each(['streamed', 'local'] as const)(
       clientWidth: { value: 200 },
       clientHeight: { value: 150 },
     })
-    session.mount(container)
+    session.attach(container)
     const resource = {
       element: document.createElement('div'),
       presentation,
