@@ -1,13 +1,13 @@
-# Local Modeling review sequence
+# Modeling review sequence
 
-This is the local review plan for the scene and Modeling extension work. Publish one wave at a time; each wave contains at most four PRs. Later waves use the previous wave's final branch until that wave lands, then can be retargeted to main. The local ancestry remains connected so the complete feature can be exercised. No remote branches or PRs were changed by this reorganization.
+This is the review plan for the scene and Modeling extension work. Open PRs one wave at a time; each wave contains at most four PRs. Later waves use the previous wave's final branch until that wave lands, then can be retargeted to main. The ancestry remains connected so the complete feature can be exercised. The review branches are published; the foundation changes update existing PRs #15158, #15159, and #15160 rather than creating duplicate PRs.
 
 ## Base and preserved history
 
-- Fetched main: `5303033040`.
-- `codex/review-foundation-save`, `codex/review-foundation-project`, and `codex/review-base` are local rebased copies of the existing save, project, and executor foundations. They are preparation for updating the existing PRs, not three additional feature PRs.
-- The previous development branches retain their original tips. `codex/backup-compact-status-before-reorg-20261114` preserves the formerly uncommitted layout work. `codex/backup-modeling-source-on-main-20261114` preserves the complete original stack replayed onto fetched main.
-- Yesterday's sketch-on-face fix, PR #15152 (`1dadedc191`), was already in the original foundation and remains included. The four newer main commits are included as well.
+- Fetched main: `7d8ead1efc`, including the shared prebuilt E2E fix (#15196).
+- Canonical foundations: `franknoirot/add-save` (#15158), `codex/cloud-project-opening` (#15159), and `franknoirot/add-executors` (#15160). Their duplicate remote review branches have been removed. The scene host is based directly on the actual executor PR branch.
+- Archived development branches preserve the earlier implementation history. `codex/backup-compact-status-before-reorg-20261114` preserves the formerly uncommitted layout work. `codex/backup-modeling-source-on-main-20261114` preserves the complete original stack replayed onto fetched main.
+- The sketch-on-face fix, PR #15152 (`1dadedc191`), and all main commits through `7d8ead1efc` remain included.
 
 ## Branches and intended behavior changes
 
@@ -15,10 +15,10 @@ Extraction branches keep the legacy adapters and existing control flow. Their go
 
 ### Wave 1: Scene foundations (4 branches)
 
-Initial base: `codex/review-base`.
+Initial base: `franknoirot/add-executors`.
 
 1. `codex/review-scene-host`
-   - PR base: `codex/review-base`.
+   - PR base: `franknoirot/add-executors`.
    - Extract owned scene connections and renderer hosts.
    - Existing routes use adapters over the extracted connection and renderer boundaries.
    - Camera and overlay resources are released with their owning scene.
