@@ -2,7 +2,7 @@ import { signal } from '@preact/signals-core'
 import { emptyExecState } from '@src/lang/wasm'
 import type { KclSceneResource, OpenKclScene } from '@src/lib/kcl/scene'
 import { createKclSession } from '@src/lib/kcl/session'
-import type { KclSceneSettings } from '@src/lib/kcl/settings'
+import type { ScenePresentationPreferences } from '@src/lib/kcl/presentationPreferences'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 
 let resize: () => void
@@ -29,7 +29,11 @@ function scene(presentation: 'local' | 'streamed' = 'streamed') {
     element: document.createElement('div'),
     presentation,
     localHost: undefined,
-    preferences: signal({} as KclSceneSettings),
+    preferences: {
+      camera: signal({}),
+      appearance: signal({}),
+      localRenderer: signal({}),
+    } as unknown as ScenePresentationPreferences,
     runtime: { execute: vi.fn().mockResolvedValue(emptyExecState()) },
     resize: vi.fn().mockResolvedValue(undefined),
     resume: vi.fn(),

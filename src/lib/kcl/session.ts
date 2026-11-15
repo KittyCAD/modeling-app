@@ -88,7 +88,8 @@ export function createKclSession(
       state.value = { type: 'ready' }
       owner.ready.resolve(opened)
       stopSettings = effect(() => {
-        void opened.preferences.value
+        void opened.preferences.camera.value
+        void opened.preferences.appearance.value
         void enqueue(async () => {
           if (current(owner)) await opened.applySettings()
         }).catch((cause) =>
