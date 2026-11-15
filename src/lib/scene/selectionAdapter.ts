@@ -62,13 +62,7 @@ export function attachSceneSelectionInput(
   controls: Pick<CameraControls, 'wasDragging' | 'hoverPickingDisabled'>,
   selection: SceneSelectionController
 ) {
-  const previousTabIndex = canvas.getAttribute('tabindex')
-  const hadFocusStyle = canvas.classList.contains(styles.pickingSurface)
-  canvas.classList.add(styles.pickingSurface)
-  canvas.tabIndex = 0
-  const down = () => {
-    canvas.focus({ preventScroll: true })
-  }
+  const stopFocus = attachSceneKeyboardFocus(canvas)
   const up = (event: PointerEvent) => {
     if (event.button !== 0 || controls.wasDragging || event.defaultPrevented)
       return
@@ -85,14 +79,28 @@ export function attachSceneSelectionInput(
   const stop = effect(() => {
     controls.hoverPickingDisabled = !selection.pickingEnabled.value
   })
-  canvas.addEventListener('pointerdown', down)
   canvas.addEventListener('pointerup', up)
   canvas.addEventListener('keydown', key)
   return () => {
     stop()
-    canvas.removeEventListener('pointerdown', down)
+    stopFocus()
     canvas.removeEventListener('pointerup', up)
     canvas.removeEventListener('keydown', key)
+  }
+}
+
+/** Scene shortcuts need keyboard focus independently of which selection owner handles input. */
+export function attachSceneKeyboardFocus(canvas: HTMLCanvasElement) {
+  const previousTabIndex = canvas.getAttribute('tabindex')
+  const hadFocusStyle = canvas.classList.contains(styles.pickingSurface)
+  canvas.classList.add(styles.pickingSurface)
+  canvas.tabIndex = 0
+  const down = () => {
+    canvas.focus({ preventScroll: true })
+  }
+  canvas.addEventListener('pointerdown', down)
+  return () => {
+    canvas.removeEventListener('pointerdown', down)
     if (!hadFocusStyle) canvas.classList.remove(styles.pickingSurface)
     if (previousTabIndex === null) canvas.removeAttribute('tabindex')
     else canvas.setAttribute('tabindex', previousTabIndex)
