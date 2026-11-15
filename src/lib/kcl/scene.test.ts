@@ -3,7 +3,8 @@ import { emptyExecState } from '@src/lang/wasm'
 import { createKclRuntime } from '@src/lib/kcl/runtime'
 import { openKclScene } from '@src/lib/kcl/scene'
 import { createScenePresentationPreferences } from '@src/lib/kcl/presentationPreferences'
-import { connectScene } from '@src/lib/scene/connection'
+import { connectScene, type SceneConnection } from '@src/lib/scene/connection'
+import { EngineConnectionEvents } from '@src/lib/engineConnection/utils'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
@@ -12,10 +13,12 @@ import { beforeEach, expect, it, vi } from 'vitest'
 const owned = vi.hoisted(() => ({
   managers: [] as object[],
   cameras: [] as object[],
+  disposeInfra: vi.fn(),
 }))
 vi.mock('@src/lib/engineConnection/connectionManager', () => ({
   ConnectionManager: class {
     connection = new EventTarget()
+    isReady = true
     settings = { viewportRendering: {} }
     constructor() {
       owned.managers.push(this)
@@ -43,7 +46,7 @@ vi.mock('@src/clientSideScene/sceneInfra', () => ({
     }
     animate = vi.fn()
     onCanvasResized = vi.fn()
-    dispose = vi.fn()
+    dispose = owned.disposeInfra
   },
 }))
 vi.mock('@src/lib/scene/connection', () => ({ connectScene: vi.fn() }))
@@ -58,7 +61,9 @@ beforeEach(() => {
 })
 function setup() {
   const connection = {
-    attachVideo: vi.fn(() => vi.fn()),
+    attachVideo: vi.fn<SceneConnection['attachVideo']>(() =>
+      vi.fn<() => void>()
+    ),
     resize: vi.fn(async () => {}),
     send: vi.fn(async () => {}),
     dispose: vi.fn(),
@@ -204,4 +209,52 @@ it('applies only changed camera and stream preferences, preserving the camera on
     await scene.dispose()
     preferences.dispose()
   }
+})
+
+it.each(['local', 'streamed'] as const)(
+  'releases the %s connection and its close listener if native startup fails',
+  async (presentation) => {
+    const { options, preferences, connection } = setup()
+    const failure = new Error('Native initialization failed')
+    vi.mocked(createKclRuntime).mockRejectedValueOnce(failure)
+    expect(await openKclScene({ ...options, presentation })).toBe(failure)
+    expect(connection.dispose).toHaveBeenCalledOnce()
+    const manager = owned.managers[0] as { connection: EventTarget }
+    manager.connection.dispatchEvent(new Event(EngineConnectionEvents.Closed))
+    expect(options.onDisconnect).not.toHaveBeenCalled()
+    expect(owned.cameras).toHaveLength(0)
+    preferences.dispose()
+  }
+)
+
+it('releases native and Three.js resources when video cannot attach', async () => {
+  const { options, preferences, connection, model } = setup()
+  const failure = new Error('Video attachment failed')
+  connection.attachVideo.mockReturnValueOnce(failure)
+  expect(await openKclScene({ ...options, presentation: 'streamed' })).toBe(
+    failure
+  )
+  expect(connection.dispose).toHaveBeenCalledOnce()
+  expect(model.dispose).toHaveBeenCalledOnce()
+  expect(owned.disposeInfra).toHaveBeenCalledOnce()
+  preferences.dispose()
+})
+
+it('tracks the captured connection and removes its close listener on disposal', async () => {
+  const { options, preferences } = setup()
+  const scene = await openKclScene({ ...options, presentation: 'local' })
+  if (scene instanceof Error) return expect.fail(scene.message)
+  const manager = owned.managers[0] as { connection: EventTarget }
+  const opened = manager.connection
+  expect(scene.isConnected()).toBe(true)
+  manager.connection = new EventTarget()
+  expect(scene.isConnected()).toBe(false)
+  manager.connection.dispatchEvent(new Event(EngineConnectionEvents.Closed))
+  expect(options.onDisconnect).not.toHaveBeenCalled()
+  opened.dispatchEvent(new Event(EngineConnectionEvents.Closed))
+  expect(options.onDisconnect).toHaveBeenCalledOnce()
+  await scene.dispose()
+  opened.dispatchEvent(new Event(EngineConnectionEvents.Closed))
+  expect(options.onDisconnect).toHaveBeenCalledOnce()
+  preferences.dispose()
 })
