@@ -1,3 +1,4 @@
+import type { NativeContextHost } from '@src/lib/rustContext/nativeHost'
 import type { WebSocketResponse } from '@kittycad/lib'
 
 import { encode as msgpackEncode } from '@msgpack/msgpack'
@@ -113,7 +114,8 @@ export default class RustContext {
     private readonly engineCommandManager: ConnectionManager,
     public readonly settingsActor: SettingsActorType,
     private projectId = 0,
-    private readonly beforeSketchInsertion?: () => Promise<void>
+    private readonly beforeSketchInsertion?: () => Promise<void>,
+    private readonly nativeHost?: NativeContextHost
   ) {
     this.initialization = this.createContextFromWasm()
     void this.initialization.catch((error: unknown) => {
@@ -124,11 +126,15 @@ export default class RustContext {
   private async createContextFromWasm(): Promise<Context> {
     const instance = await this.wasmInstancePromise
     if (this.destroyed) return this._checkContextInstance()
-    const context = new instance.Context(
-      this.engineCommandManager,
-      projectFsManager,
-      undefined
-    )
+    const context = this.nativeHost
+      ? await this.nativeHost.create()
+      : new instance.Context(
+          this.engineCommandManager,
+          projectFsManager,
+          undefined
+        )
+    if (this.destroyed)
+      return Promise.reject(new Error('Rust context has been destroyed.'))
     this.ctxInstance = context
     return context
   }
@@ -139,41 +145,48 @@ export default class RustContext {
   async sendOpenProject(currentFilePath: string | null, kclFiles: ApiFile[]) {
     this.namedViewsInvalidated.dispatch()
     this.projectRevision += 1
-    const context = await this._checkContextInstance()
-    await context.open_project(
-      this.projectId,
-      JSON.stringify(kclFiles),
-      kclFiles.find((file) => file.path === currentFilePath)?.id ?? -1
-    )
-    this.hasOpenedProject = true
+    return this.withContext(async (context) => {
+      await context.open_project(
+        this.projectId,
+        JSON.stringify(kclFiles),
+        kclFiles.find((file) => file.path === currentFilePath)?.id ?? -1
+      )
+      if (!this.destroyed) this.hasOpenedProject = true
+    })
   }
 
   /** Helper to verify the state on the WASM side, useful for testing */
   async getProjectState() {
-    const context = await this._checkContextInstance()
-    return context.get_project(this.projectId)
+    return this.withContext(async (context) => {
+      return context.get_project(this.projectId)
+    })
   }
 
   /** Helper to verify the state on the WASM side, useful for testing */
   async getFileState(fileId: number) {
-    const context = await this._checkContextInstance()
-    return context.get_file(this.projectId, fileId)
+    return this.withContext(async (context) => {
+      return context.get_file(this.projectId, fileId)
+    })
   }
 
   async sendAddFile(file: ApiFile) {
-    const context = await this._checkContextInstance()
-    return context.add_file(this.projectId, JSON.stringify(file))
+    return this.withContext(async (context) => {
+      return context.add_file(this.projectId, JSON.stringify(file))
+    })
   }
 
   async sendUpdateFile(fileId: number, code: string) {
-    if (!this.hasOpenedProject) return
-    const context = await this._checkContextInstance()
-    return context.update_file(this.projectId, fileId, code)
+    if (!this.nativeHost && !this.hasOpenedProject) return
+    return this.withContext(async (context) => {
+      if (!this.hasOpenedProject) return
+      return context.update_file(this.projectId, fileId, code)
+    })
   }
 
   async sendRemoveFile(fileId: number) {
-    const context = await this._checkContextInstance()
-    return context.remove_file(this.projectId, fileId)
+    return this.withContext(async (context) => {
+      return context.remove_file(this.projectId, fileId)
+    })
   }
 
   /** Execute a program. */
@@ -183,39 +196,40 @@ export default class RustContext {
     path?: string,
     callbacks?: ExecCallbacks
   ): Promise<ExecState> {
-    const instance = await this._checkContextInstance()
-    const planeOwner = this.capturePlaneOwner(instance)
-    const executionContext = callbacks
-      ? instance.cloneWithExecuteCallbacks(callbacks)
-      : instance
+    return this.withContext(async (instance) => {
+      const planeOwner = this.capturePlaneOwner(instance)
+      const executionContext = callbacks
+        ? instance.cloneWithExecuteCallbacks(callbacks)
+        : instance
 
-    try {
-      const result: SceneGraphDelta = await executionContext.execute(
-        JSON.stringify(node),
-        path,
-        JSON.stringify(settings)
-      )
-      const outcome = execStateFromRust(result.exec_outcome)
+      try {
+        const result: SceneGraphDelta = await executionContext.execute(
+          JSON.stringify(node),
+          path,
+          JSON.stringify(settings)
+        )
+        const outcome = execStateFromRust(result.exec_outcome)
 
-      // Set the default planes, safe to call after execute.
-      this.setDefaultPlanes(
-        outcome.defaultPlanes,
-        outcome.engineSceneGeneration,
-        planeOwner
-      )
+        // Set the default planes, safe to call after execute.
+        this.setDefaultPlanes(
+          outcome.defaultPlanes,
+          outcome.engineSceneGeneration,
+          planeOwner
+        )
 
-      // Return the result.
-      return outcome
-    } catch (e: any) {
-      this.namedViewsInvalidated.dispatch()
-      const err = errFromErrWithOutputs(e)
-      this.setDefaultPlanes(
-        err.defaultPlanes,
-        err.engineSceneGeneration,
-        planeOwner
-      )
-      return Promise.reject(err)
-    }
+        // Return the result.
+        return outcome
+      } catch (e: any) {
+        this.namedViewsInvalidated.dispatch()
+        const err = errFromErrWithOutputs(e)
+        this.setDefaultPlanes(
+          err.defaultPlanes,
+          err.engineSceneGeneration,
+          planeOwner
+        )
+        return Promise.reject(err)
+      }
+    })
   }
 
   /** Execute a program with in mock mode. */
@@ -226,39 +240,40 @@ export default class RustContext {
     usePrevMemory?: boolean,
     callbacks?: ExecCallbacks
   ): Promise<ExecState> {
-    const instance = await this._checkContextInstance()
-    const planeOwner = this.capturePlaneOwner(instance)
-    const executionContext = callbacks
-      ? instance.cloneWithExecuteCallbacks(callbacks)
-      : instance
+    return this.withContext(async (instance) => {
+      const planeOwner = this.capturePlaneOwner(instance)
+      const executionContext = callbacks
+        ? instance.cloneWithExecuteCallbacks(callbacks)
+        : instance
 
-    if (usePrevMemory === undefined) {
-      usePrevMemory = true
-    }
+      if (usePrevMemory === undefined) {
+        usePrevMemory = true
+      }
 
-    try {
-      const result = await executionContext.executeMock(
-        JSON.stringify(node),
-        path,
-        JSON.stringify(settings),
-        usePrevMemory
-      )
-      const outcome = execStateFromRust(result)
-      this.setDefaultPlanes(
-        outcome.defaultPlanes,
-        outcome.engineSceneGeneration,
-        planeOwner
-      )
-      return outcome
-    } catch (e: any) {
-      const err = errFromErrWithOutputs(e)
-      this.setDefaultPlanes(
-        err.defaultPlanes,
-        err.engineSceneGeneration,
-        planeOwner
-      )
-      return Promise.reject(err)
-    }
+      try {
+        const result = await executionContext.executeMock(
+          JSON.stringify(node),
+          path,
+          JSON.stringify(settings),
+          usePrevMemory
+        )
+        const outcome = execStateFromRust(result)
+        this.setDefaultPlanes(
+          outcome.defaultPlanes,
+          outcome.engineSceneGeneration,
+          planeOwner
+        )
+        return outcome
+      } catch (e: any) {
+        const err = errFromErrWithOutputs(e)
+        this.setDefaultPlanes(
+          err.defaultPlanes,
+          err.engineSceneGeneration,
+          planeOwner
+        )
+        return Promise.reject(err)
+      }
+    })
   }
 
   /** Parse the active entry point. Rust owns scene/cache behavior for invalid files. */
@@ -267,48 +282,50 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     path?: string
   ): Promise<ParseResult | Error> {
-    const instance = await this._checkContextInstance()
-    const planeOwner = this.capturePlaneOwner(instance)
-    try {
-      const parsed: ParsedExecutionSource = await instance.parseForExecution(
-        code,
-        JSON.stringify(settings),
-        path
-      )
-      this.setDefaultPlanes(
-        parsed.default_planes,
-        parsed.engine_scene_generation,
-        planeOwner
-      )
-      return new ParseResult(
-        parsed.program?.ast ?? null,
-        parsed.program?.kcl_version ?? null,
-        parsed.issues.filter((issue) => issue.severity !== 'Warning'),
-        parsed.issues.filter((issue) => issue.severity === 'Warning')
-      )
-    } catch (error) {
-      const failure = errFromErrWithOutputs(error)
-      this.setDefaultPlanes(
-        failure.defaultPlanes,
-        failure.engineSceneGeneration,
-        planeOwner
-      )
-      return failure
-    }
+    return this.withContext(async (instance) => {
+      const planeOwner = this.capturePlaneOwner(instance)
+      try {
+        const parsed: ParsedExecutionSource = await instance.parseForExecution(
+          code,
+          JSON.stringify(settings),
+          path
+        )
+        this.setDefaultPlanes(
+          parsed.default_planes,
+          parsed.engine_scene_generation,
+          planeOwner
+        )
+        return new ParseResult(
+          parsed.program?.ast ?? null,
+          parsed.program?.kcl_version ?? null,
+          parsed.issues.filter((issue) => issue.severity !== 'Warning'),
+          parsed.issues.filter((issue) => issue.severity === 'Warning')
+        )
+      } catch (error) {
+        const failure = errFromErrWithOutputs(error)
+        this.setDefaultPlanes(
+          failure.defaultPlanes,
+          failure.engineSceneGeneration,
+          planeOwner
+        )
+        return failure
+      }
+    })
   }
 
   /** Evaluate an input expression with the current Rust model's settings. */
   async evaluateExpression(node: Node<Program>): Promise<ExecState> {
-    const instance = await this._checkContextInstance()
-    try {
-      const result = await instance.evaluateExpression(
-        JSON.stringify(node),
-        JSON.stringify(jsAppSettings(this.settingsActor))
-      )
-      return execStateFromRust(result)
-    } catch (e: any) {
-      return Promise.reject(errFromErrWithOutputs(e))
-    }
+    return this.withContext(async (instance) => {
+      try {
+        const result = await instance.evaluateExpression(
+          JSON.stringify(node),
+          JSON.stringify(jsAppSettings(this.settingsActor))
+        )
+        return execStateFromRust(result)
+      } catch (e: any) {
+        return Promise.reject(errFromErrWithOutputs(e))
+      }
+    })
   }
 
   /** Export a scene to a file. */
@@ -317,20 +334,20 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     toastId?: string
   ): Promise<ModelingAppFile[] | undefined> {
-    const instance = await this._checkContextInstance()
-
-    try {
-      return await instance.export(
-        JSON.stringify(format),
-        JSON.stringify(settings)
-      )
-    } catch (e: any) {
-      const parsed: RustKclError = JSON.parse(e.toString())
-      if (toastId) {
-        toast.error(parsed.details.msg, { id: toastId })
+    return this.withContext(async (instance) => {
+      try {
+        return await instance.export(
+          JSON.stringify(format),
+          JSON.stringify(settings)
+        )
+      } catch (e: any) {
+        const parsed: RustKclError = JSON.parse(e.toString())
+        if (toastId) {
+          toast.error(parsed.details.msg, { id: toastId })
+        }
+        return
       }
-      return
-    }
+    })
   }
 
   /**
@@ -418,36 +435,37 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     path?: string
   ): Promise<ExecState> {
-    const instance = await this._checkContextInstance()
-    this.namedViewsInvalidated.dispatch()
-    const planeOwner = this.capturePlaneOwner(instance)
+    return this.withContext(async (instance) => {
+      this.namedViewsInvalidated.dispatch()
+      const planeOwner = this.capturePlaneOwner(instance)
 
-    try {
-      const result = await instance.bustCacheAndResetScene(
-        JSON.stringify(settings),
-        path
-      )
+      try {
+        const result = await instance.bustCacheAndResetScene(
+          JSON.stringify(settings),
+          path
+        )
 
-      /* Set the default planes, safe to call after execute. */
-      const outcome = execStateFromRust(result)
+        /* Set the default planes, safe to call after execute. */
+        const outcome = execStateFromRust(result)
 
-      this.setDefaultPlanes(
-        outcome.defaultPlanes,
-        outcome.engineSceneGeneration,
-        planeOwner
-      )
+        this.setDefaultPlanes(
+          outcome.defaultPlanes,
+          outcome.engineSceneGeneration,
+          planeOwner
+        )
 
-      // Return the result.
-      return outcome
-    } catch (e: any) {
-      const err = errFromErrWithOutputs(e)
-      this.setDefaultPlanes(
-        err.defaultPlanes,
-        err.engineSceneGeneration,
-        planeOwner
-      )
-      return Promise.reject(err)
-    }
+        // Return the result.
+        return outcome
+      } catch (e: any) {
+        const err = errFromErrWithOutputs(e)
+        this.setDefaultPlanes(
+          err.defaultPlanes,
+          err.engineSceneGeneration,
+          planeOwner
+        )
+        return Promise.reject(err)
+      }
+    })
   }
 
   getDefaultPlaneId(name: DefaultPlaneStr): string | Error {
@@ -462,15 +480,20 @@ export default class RustContext {
 
   /** Send a response back to the rust side, that we got back from the engine. */
   async sendResponse(response: WebSocketResponse): Promise<void> {
-    const instance = await this._checkContextInstance()
-
-    try {
-      const serialized = msgpackEncode(response)
-      await instance.sendResponse(serialized)
-    } catch (e: any) {
-      const err = errFromErrWithOutputs(e)
-      return Promise.reject(err)
+    // Execution can be waiting for this reply while occupying the operation queue.
+    // Deliver responses directly to that live context rather than queueing behind it.
+    const deliver = async () => {
+      const instance = await this._checkContextInstance()
+      try {
+        const serialized = msgpackEncode(response)
+        await instance.sendResponse(serialized)
+      } catch (e: any) {
+        return Promise.reject(errFromErrWithOutputs(e))
+      }
     }
+    return this.nativeHost
+      ? this.nativeHost.deliverResponse(deliver)
+      : deliver()
   }
 
   /**
@@ -482,35 +505,35 @@ export default class RustContext {
     program_ast: Node<Program>,
     settings: DeepPartial<Configuration>
   ): Promise<SetProgramOutcome> {
-    const instance = await this._checkContextInstance()
+    return this.withContext(async (instance) => {
+      try {
+        const result: RustSetProgramOutcome & {
+          checkpointId?: bigint | number | null
+        } = await instance.hack_set_program(
+          JSON.stringify(program_ast),
+          JSON.stringify(settings)
+        )
+        if (result.type !== 'Success') {
+          this.namedViewsInvalidated.dispatch()
+          return result
+        }
 
-    try {
-      const result: RustSetProgramOutcome & {
-        checkpointId?: bigint | number | null
-      } = await instance.hack_set_program(
-        JSON.stringify(program_ast),
-        JSON.stringify(settings)
-      )
-      if (result.type !== 'Success') {
+        const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+        if (checkpointId instanceof Error) {
+          this.namedViewsInvalidated.dispatch()
+          return Promise.reject(checkpointId)
+        }
+
+        return {
+          ...result,
+          checkpointId,
+        }
+      } catch (e: any) {
         this.namedViewsInvalidated.dispatch()
-        return result
+        const err = errFromErrWithOutputs(e)
+        return Promise.reject(err)
       }
-
-      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
-      if (checkpointId instanceof Error) {
-        this.namedViewsInvalidated.dispatch()
-        return Promise.reject(checkpointId)
-      }
-
-      return {
-        ...result,
-        checkpointId,
-      }
-    } catch (e: any) {
-      this.namedViewsInvalidated.dispatch()
-      const err = errFromErrWithOutputs(e)
-      return Promise.reject(err)
-    }
+    })
   }
 
   /**
@@ -521,31 +544,31 @@ export default class RustContext {
     version: ApiVersion,
     sketch: ApiObjectId
   ): Promise<SketchMutationResult> {
-    const instance = await this._checkContextInstance()
-
-    try {
-      const result: {
-        sourceDelta: SourceDelta
-        sceneGraphDelta: SceneGraphDelta
-        checkpointId?: number | null
-      } = await instance.sketch_execute_mock(
-        JSON.stringify(version),
-        JSON.stringify(sketch),
-        JSON.stringify(jsAppSettings(this.settingsActor))
-      )
-      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
-      if (checkpointId instanceof Error) {
-        return Promise.reject(checkpointId)
+    return this.withContext(async (instance) => {
+      try {
+        const result: {
+          sourceDelta: SourceDelta
+          sceneGraphDelta: SceneGraphDelta
+          checkpointId?: number | null
+        } = await instance.sketch_execute_mock(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(jsAppSettings(this.settingsActor))
+        )
+        const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+        if (checkpointId instanceof Error) {
+          return Promise.reject(checkpointId)
+        }
+        return {
+          kclSource: result.sourceDelta,
+          sceneGraphDelta: result.sceneGraphDelta,
+          checkpointId,
+        }
+      } catch (e: any) {
+        const err = errFromErrWithOutputs(e)
+        return Promise.reject(err)
       }
-      return {
-        kclSource: result.sourceDelta,
-        sceneGraphDelta: result.sceneGraphDelta,
-        checkpointId,
-      }
-    } catch (e: any) {
-      const err = errFromErrWithOutputs(e)
-      return Promise.reject(err)
-    }
+    })
   }
 
   /** Call once before a tool first generates source, never between draft mutations. */
@@ -560,37 +583,37 @@ export default class RustContext {
     version: ApiVersion,
     sketchArgs: SketchCtor
   ): Promise<NewSketchResult> {
-    const instance = await this._checkContextInstance()
-
-    try {
-      const result: {
-        sourceDelta: SourceDelta
-        sceneGraphDelta: SceneGraphDelta
-        sketchId: ApiObjectId
-        checkpointId?: number | null
-      } = await instance.new_sketch(
-        JSON.stringify(project),
-        JSON.stringify(file),
-        JSON.stringify(version),
-        JSON.stringify(sketchArgs),
-        JSON.stringify(jsAppSettings(this.settingsActor))
-      )
-      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
-      if (checkpointId instanceof Error) {
+    return this.withContext(async (instance) => {
+      try {
+        const result: {
+          sourceDelta: SourceDelta
+          sceneGraphDelta: SceneGraphDelta
+          sketchId: ApiObjectId
+          checkpointId?: number | null
+        } = await instance.new_sketch(
+          JSON.stringify(project),
+          JSON.stringify(file),
+          JSON.stringify(version),
+          JSON.stringify(sketchArgs),
+          JSON.stringify(jsAppSettings(this.settingsActor))
+        )
+        const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+        if (checkpointId instanceof Error) {
+          this.namedViewsInvalidated.dispatch()
+          return Promise.reject(checkpointId)
+        }
+        return {
+          kclSource: result.sourceDelta,
+          sceneGraphDelta: result.sceneGraphDelta,
+          sketchId: result.sketchId,
+          checkpointId,
+        }
+      } catch (e: any) {
         this.namedViewsInvalidated.dispatch()
-        return Promise.reject(checkpointId)
+        const err = errFromErrWithOutputs(e)
+        return Promise.reject(err)
       }
-      return {
-        kclSource: result.sourceDelta,
-        sceneGraphDelta: result.sceneGraphDelta,
-        sketchId: result.sketchId,
-        checkpointId,
-      }
-    } catch (e: any) {
-      this.namedViewsInvalidated.dispatch()
-      const err = errFromErrWithOutputs(e)
-      return Promise.reject(err)
-    }
+    })
   }
 
   /** Enter sketch mode for an existing sketch. */
@@ -600,31 +623,31 @@ export default class RustContext {
     version: ApiVersion,
     sketch: ApiObjectId
   ): Promise<EditSketchResult> {
-    const instance = await this._checkContextInstance()
-
-    try {
-      const result: {
-        sceneGraphDelta: SceneGraphDelta
-        checkpointId?: number | null
-      } = await instance.edit_sketch(
-        JSON.stringify(project),
-        JSON.stringify(file),
-        JSON.stringify(version),
-        JSON.stringify(sketch),
-        JSON.stringify(jsAppSettings(this.settingsActor))
-      )
-      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
-      if (checkpointId instanceof Error) {
-        return Promise.reject(checkpointId)
+    return this.withContext(async (instance) => {
+      try {
+        const result: {
+          sceneGraphDelta: SceneGraphDelta
+          checkpointId?: number | null
+        } = await instance.edit_sketch(
+          JSON.stringify(project),
+          JSON.stringify(file),
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(jsAppSettings(this.settingsActor))
+        )
+        const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+        if (checkpointId instanceof Error) {
+          return Promise.reject(checkpointId)
+        }
+        return {
+          sceneGraphDelta: result.sceneGraphDelta,
+          checkpointId,
+        }
+      } catch (e: any) {
+        const err = errFromErrWithOutputs(e)
+        return Promise.reject(err)
       }
-      return {
-        sceneGraphDelta: result.sceneGraphDelta,
-        checkpointId,
-      }
-    } catch (e: any) {
-      const err = errFromErrWithOutputs(e)
-      return Promise.reject(err)
-    }
+    })
   }
 
   /** Exit sketch mode. */
@@ -632,20 +655,20 @@ export default class RustContext {
     version: ApiVersion,
     sketch: ApiObjectId
   ): Promise<SceneGraphDelta> {
-    const instance = await this._checkContextInstance()
-
-    try {
-      const result: SceneGraphDelta = await instance.exit_sketch(
-        JSON.stringify(version),
-        JSON.stringify(sketch),
-        JSON.stringify(jsAppSettings(this.settingsActor))
-      )
-      return result
-    } catch (e: any) {
-      this.namedViewsInvalidated.dispatch()
-      const err = errFromErrWithOutputs(e)
-      return Promise.reject(err)
-    }
+    return this.withContext(async (instance) => {
+      try {
+        const result: SceneGraphDelta = await instance.exit_sketch(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(jsAppSettings(this.settingsActor))
+        )
+        return result
+      } catch (e: any) {
+        this.namedViewsInvalidated.dispatch()
+        const err = errFromErrWithOutputs(e)
+        return Promise.reject(err)
+      }
+    })
   }
 
   /** Delete a sketch. */
@@ -657,24 +680,24 @@ export default class RustContext {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
   }> {
-    const instance = await this._checkContextInstance()
-
-    try {
-      const result: [SourceDelta, SceneGraphDelta] =
-        await instance.delete_sketch(
-          JSON.stringify(version),
-          JSON.stringify(sketch),
-          JSON.stringify(settings)
-        )
-      return {
-        kclSource: result[0],
-        sceneGraphDelta: result[1],
+    return this.withContext(async (instance) => {
+      try {
+        const result: [SourceDelta, SceneGraphDelta] =
+          await instance.delete_sketch(
+            JSON.stringify(version),
+            JSON.stringify(sketch),
+            JSON.stringify(settings)
+          )
+        return {
+          kclSource: result[0],
+          sceneGraphDelta: result[1],
+        }
+      } catch (e: any) {
+        this.namedViewsInvalidated.dispatch()
+        const err = errFromErrWithOutputs(e)
+        return Promise.reject(err)
       }
-    } catch (e: any) {
-      this.namedViewsInvalidated.dispatch()
-      const err = errFromErrWithOutputs(e)
-      return Promise.reject(err)
-    }
+    })
   }
 
   /** Add a segment to a sketch. */
@@ -686,34 +709,34 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     createCheckpoint = false
   ): Promise<SketchMutationResult> {
-    const instance = await this._checkContextInstance()
-
-    try {
-      const result: {
-        sourceDelta: SourceDelta
-        sceneGraphDelta: SceneGraphDelta
-        checkpointId?: number | null
-      } = await instance.add_segment(
-        JSON.stringify(version),
-        JSON.stringify(sketch),
-        JSON.stringify(segment),
-        label,
-        JSON.stringify(settings),
-        createCheckpoint
-      )
-      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
-      if (checkpointId instanceof Error) {
-        return Promise.reject(checkpointId)
+    return this.withContext(async (instance) => {
+      try {
+        const result: {
+          sourceDelta: SourceDelta
+          sceneGraphDelta: SceneGraphDelta
+          checkpointId?: number | null
+        } = await instance.add_segment(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(segment),
+          label,
+          JSON.stringify(settings),
+          createCheckpoint
+        )
+        const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+        if (checkpointId instanceof Error) {
+          return Promise.reject(checkpointId)
+        }
+        return {
+          kclSource: result.sourceDelta,
+          sceneGraphDelta: result.sceneGraphDelta,
+          checkpointId,
+        }
+      } catch (e: any) {
+        const err = errFromErrWithOutputs(e)
+        return Promise.reject(err)
       }
-      return {
-        kclSource: result.sourceDelta,
-        sceneGraphDelta: result.sceneGraphDelta,
-        checkpointId,
-      }
-    } catch (e: any) {
-      const err = errFromErrWithOutputs(e)
-      return Promise.reject(err)
-    }
+    })
   }
 
   /** Edit segments and optional constraint label positions in one sketch execution. */
@@ -728,43 +751,43 @@ export default class RustContext {
     dragAnchors: SegmentDragAnchor[] = [],
     constraintLabelEdits: ConstraintLabelPositionEdit[] = []
   ): Promise<SketchMutationResult> {
-    const instance = await this._checkContextInstance()
+    return this.withContext(async (instance) => {
+      try {
+        if (!commitSolverResults && createCheckpoint) {
+          return Promise.reject(
+            new Error('Preview segment edits cannot create sketch checkpoints')
+          )
+        }
 
-    try {
-      if (!commitSolverResults && createCheckpoint) {
-        return Promise.reject(
-          new Error('Preview segment edits cannot create sketch checkpoints')
+        const result: {
+          sourceDelta: SourceDelta
+          sceneGraphDelta: SceneGraphDelta
+          checkpointId?: number | null
+        } = await instance.edit_segments(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(segments),
+          JSON.stringify(settings),
+          createCheckpoint,
+          JSON.stringify(anchorSegmentIds ?? null),
+          JSON.stringify(dragAnchors),
+          commitSolverResults,
+          JSON.stringify(constraintLabelEdits)
         )
+        const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+        if (checkpointId instanceof Error) {
+          return Promise.reject(checkpointId)
+        }
+        return {
+          kclSource: result.sourceDelta,
+          sceneGraphDelta: result.sceneGraphDelta,
+          checkpointId,
+        }
+      } catch (e: any) {
+        const err = errFromErrWithOutputs(e)
+        return Promise.reject(err)
       }
-
-      const result: {
-        sourceDelta: SourceDelta
-        sceneGraphDelta: SceneGraphDelta
-        checkpointId?: number | null
-      } = await instance.edit_segments(
-        JSON.stringify(version),
-        JSON.stringify(sketch),
-        JSON.stringify(segments),
-        JSON.stringify(settings),
-        createCheckpoint,
-        JSON.stringify(anchorSegmentIds ?? null),
-        JSON.stringify(dragAnchors),
-        commitSolverResults,
-        JSON.stringify(constraintLabelEdits)
-      )
-      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
-      if (checkpointId instanceof Error) {
-        return Promise.reject(checkpointId)
-      }
-      return {
-        kclSource: result.sourceDelta,
-        sceneGraphDelta: result.sceneGraphDelta,
-        checkpointId,
-      }
-    } catch (e: any) {
-      const err = errFromErrWithOutputs(e)
-      return Promise.reject(err)
-    }
+    })
   }
 
   /** Delete objects in a sketch. */
@@ -776,34 +799,34 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     createCheckpoint = false
   ): Promise<SketchMutationResult> {
-    const instance = await this._checkContextInstance()
-
-    try {
-      const result: {
-        sourceDelta: SourceDelta
-        sceneGraphDelta: SceneGraphDelta
-        checkpointId?: number | null
-      } = await instance.delete_objects(
-        JSON.stringify(version),
-        JSON.stringify(sketch),
-        JSON.stringify(constraintIds),
-        JSON.stringify(segmentIds),
-        JSON.stringify(settings),
-        createCheckpoint
-      )
-      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
-      if (checkpointId instanceof Error) {
-        return Promise.reject(checkpointId)
+    return this.withContext(async (instance) => {
+      try {
+        const result: {
+          sourceDelta: SourceDelta
+          sceneGraphDelta: SceneGraphDelta
+          checkpointId?: number | null
+        } = await instance.delete_objects(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(constraintIds),
+          JSON.stringify(segmentIds),
+          JSON.stringify(settings),
+          createCheckpoint
+        )
+        const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+        if (checkpointId instanceof Error) {
+          return Promise.reject(checkpointId)
+        }
+        return {
+          kclSource: result.sourceDelta,
+          sceneGraphDelta: result.sceneGraphDelta,
+          checkpointId,
+        }
+      } catch (e: any) {
+        const err = errFromErrWithOutputs(e)
+        return Promise.reject(err)
       }
-      return {
-        kclSource: result.sourceDelta,
-        sceneGraphDelta: result.sceneGraphDelta,
-        checkpointId,
-      }
-    } catch (e: any) {
-      const err = errFromErrWithOutputs(e)
-      return Promise.reject(err)
-    }
+    })
   }
 
   /** Add a constraint to a sketch. */
@@ -814,33 +837,33 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     createCheckpoint = false
   ): Promise<SketchMutationResult> {
-    const instance = await this._checkContextInstance()
-
-    try {
-      const result: {
-        sourceDelta: SourceDelta
-        sceneGraphDelta: SceneGraphDelta
-        checkpointId?: number | null
-      } = await instance.add_constraint(
-        JSON.stringify(version),
-        JSON.stringify(sketch),
-        JSON.stringify(constraint),
-        JSON.stringify(settings),
-        createCheckpoint
-      )
-      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
-      if (checkpointId instanceof Error) {
-        return Promise.reject(checkpointId)
+    return this.withContext(async (instance) => {
+      try {
+        const result: {
+          sourceDelta: SourceDelta
+          sceneGraphDelta: SceneGraphDelta
+          checkpointId?: number | null
+        } = await instance.add_constraint(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(constraint),
+          JSON.stringify(settings),
+          createCheckpoint
+        )
+        const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+        if (checkpointId instanceof Error) {
+          return Promise.reject(checkpointId)
+        }
+        return {
+          kclSource: result.sourceDelta,
+          sceneGraphDelta: result.sceneGraphDelta,
+          checkpointId,
+        }
+      } catch (e: any) {
+        const err = errFromErrWithOutputs(e)
+        return Promise.reject(err)
       }
-      return {
-        kclSource: result.sourceDelta,
-        sceneGraphDelta: result.sceneGraphDelta,
-        checkpointId,
-      }
-    } catch (e: any) {
-      const err = errFromErrWithOutputs(e)
-      return Promise.reject(err)
-    }
+    })
   }
 
   /** Edit a constraint value in a sketch. */
@@ -852,34 +875,34 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     createCheckpoint = false
   ): Promise<SketchMutationResult> {
-    const instance = await this._checkContextInstance()
-
-    try {
-      const result: {
-        sourceDelta: SourceDelta
-        sceneGraphDelta: SceneGraphDelta
-        checkpointId?: number | null
-      } = await instance.edit_constraint_value(
-        JSON.stringify(version),
-        JSON.stringify(sketch),
-        JSON.stringify(constraintId),
-        valueExpression,
-        JSON.stringify(settings),
-        createCheckpoint
-      )
-      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
-      if (checkpointId instanceof Error) {
-        return Promise.reject(checkpointId)
+    return this.withContext(async (instance) => {
+      try {
+        const result: {
+          sourceDelta: SourceDelta
+          sceneGraphDelta: SceneGraphDelta
+          checkpointId?: number | null
+        } = await instance.edit_constraint_value(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(constraintId),
+          valueExpression,
+          JSON.stringify(settings),
+          createCheckpoint
+        )
+        const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+        if (checkpointId instanceof Error) {
+          return Promise.reject(checkpointId)
+        }
+        return {
+          kclSource: result.sourceDelta,
+          sceneGraphDelta: result.sceneGraphDelta,
+          checkpointId,
+        }
+      } catch (e: any) {
+        const err = errFromErrWithOutputs(e)
+        return Promise.reject(err)
       }
-      return {
-        kclSource: result.sourceDelta,
-        sceneGraphDelta: result.sceneGraphDelta,
-        checkpointId,
-      }
-    } catch (e: any) {
-      const err = errFromErrWithOutputs(e)
-      return Promise.reject(err)
-    }
+    })
   }
 
   async editAngleConstraint(
@@ -891,38 +914,39 @@ export default class RustContext {
     createCheckpoint = false,
     commitSolverResults = true
   ): Promise<SketchMutationResult> {
-    const instance =
-      (await this._checkContextInstance()) as ContextWithAngleConstraintEdit
+    return this.withContext(async (context) => {
+      const instance = context as ContextWithAngleConstraintEdit
 
-    try {
-      if (!commitSolverResults && createCheckpoint) {
-        return Promise.reject(
-          new Error('Preview angle edits cannot create sketch checkpoints')
+      try {
+        if (!commitSolverResults && createCheckpoint) {
+          return Promise.reject(
+            new Error('Preview angle edits cannot create sketch checkpoints')
+          )
+        }
+
+        const result = await instance.edit_angle_constraint(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(constraintId),
+          JSON.stringify(constraint),
+          JSON.stringify(settings),
+          createCheckpoint,
+          commitSolverResults
         )
+        const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+        if (checkpointId instanceof Error) {
+          return Promise.reject(checkpointId)
+        }
+        return {
+          kclSource: result.sourceDelta,
+          sceneGraphDelta: result.sceneGraphDelta,
+          checkpointId,
+        }
+      } catch (e: any) {
+        const err = errFromErrWithOutputs(e)
+        return Promise.reject(err)
       }
-
-      const result = await instance.edit_angle_constraint(
-        JSON.stringify(version),
-        JSON.stringify(sketch),
-        JSON.stringify(constraintId),
-        JSON.stringify(constraint),
-        JSON.stringify(settings),
-        createCheckpoint,
-        commitSolverResults
-      )
-      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
-      if (checkpointId instanceof Error) {
-        return Promise.reject(checkpointId)
-      }
-      return {
-        kclSource: result.sourceDelta,
-        sceneGraphDelta: result.sceneGraphDelta,
-        checkpointId,
-      }
-    } catch (e: any) {
-      const err = errFromErrWithOutputs(e)
-      return Promise.reject(err)
-    }
+    })
   }
 
   async editDistanceConstraint(
@@ -937,38 +961,39 @@ export default class RustContext {
     createCheckpoint = false,
     commitSolverResults = true
   ): Promise<SketchMutationResult> {
-    const instance =
-      (await this._checkContextInstance()) as ContextWithDistanceConstraintEdit
+    return this.withContext(async (context) => {
+      const instance = context as ContextWithDistanceConstraintEdit
 
-    try {
-      if (!commitSolverResults && createCheckpoint) {
-        return Promise.reject(
-          new Error('Preview distance edits cannot create sketch checkpoints')
+      try {
+        if (!commitSolverResults && createCheckpoint) {
+          return Promise.reject(
+            new Error('Preview distance edits cannot create sketch checkpoints')
+          )
+        }
+
+        const result = await instance.edit_distance_constraint(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(constraintId),
+          JSON.stringify(constraint),
+          JSON.stringify(settings),
+          createCheckpoint,
+          commitSolverResults
         )
+        const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+        if (checkpointId instanceof Error) {
+          return Promise.reject(checkpointId)
+        }
+        return {
+          kclSource: result.sourceDelta,
+          sceneGraphDelta: result.sceneGraphDelta,
+          checkpointId,
+        }
+      } catch (e: any) {
+        const err = errFromErrWithOutputs(e)
+        return Promise.reject(err)
       }
-
-      const result = await instance.edit_distance_constraint(
-        JSON.stringify(version),
-        JSON.stringify(sketch),
-        JSON.stringify(constraintId),
-        JSON.stringify(constraint),
-        JSON.stringify(settings),
-        createCheckpoint,
-        commitSolverResults
-      )
-      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
-      if (checkpointId instanceof Error) {
-        return Promise.reject(checkpointId)
-      }
-      return {
-        kclSource: result.sourceDelta,
-        sceneGraphDelta: result.sceneGraphDelta,
-        checkpointId,
-      }
-    } catch (e: any) {
-      const err = errFromErrWithOutputs(e)
-      return Promise.reject(err)
-    }
+    })
   }
 
   async editDistanceConstraintLabelPosition(
@@ -981,42 +1006,42 @@ export default class RustContext {
     anchorSegmentIds: ApiObjectId[] = [],
     commitSolverResults = true
   ): Promise<SketchMutationResult> {
-    const instance = await this._checkContextInstance()
+    return this.withContext(async (instance) => {
+      try {
+        if (!commitSolverResults && createCheckpoint) {
+          return Promise.reject(
+            new Error('Preview label edits cannot create sketch checkpoints')
+          )
+        }
 
-    try {
-      if (!commitSolverResults && createCheckpoint) {
-        return Promise.reject(
-          new Error('Preview label edits cannot create sketch checkpoints')
+        const result: {
+          sourceDelta: SourceDelta
+          sceneGraphDelta: SceneGraphDelta
+          checkpointId?: number | null
+        } = await instance.edit_distance_constraint_label_position(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(constraintId),
+          JSON.stringify(labelPosition),
+          JSON.stringify(settings),
+          createCheckpoint,
+          JSON.stringify(anchorSegmentIds),
+          commitSolverResults
         )
+        const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+        if (checkpointId instanceof Error) {
+          return Promise.reject(checkpointId)
+        }
+        return {
+          kclSource: result.sourceDelta,
+          sceneGraphDelta: result.sceneGraphDelta,
+          checkpointId,
+        }
+      } catch (e: any) {
+        const err = errFromErrWithOutputs(e)
+        return Promise.reject(err)
       }
-
-      const result: {
-        sourceDelta: SourceDelta
-        sceneGraphDelta: SceneGraphDelta
-        checkpointId?: number | null
-      } = await instance.edit_distance_constraint_label_position(
-        JSON.stringify(version),
-        JSON.stringify(sketch),
-        JSON.stringify(constraintId),
-        JSON.stringify(labelPosition),
-        JSON.stringify(settings),
-        createCheckpoint,
-        JSON.stringify(anchorSegmentIds),
-        commitSolverResults
-      )
-      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
-      if (checkpointId instanceof Error) {
-        return Promise.reject(checkpointId)
-      }
-      return {
-        kclSource: result.sourceDelta,
-        sceneGraphDelta: result.sceneGraphDelta,
-        checkpointId,
-      }
-    } catch (e: any) {
-      const err = errFromErrWithOutputs(e)
-      return Promise.reject(err)
-    }
+    })
   }
 
   /** Chain a segment to a previous segment by adding it and creating a coincident constraint. */
@@ -1029,66 +1054,68 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     createCheckpoint = false
   ): Promise<SketchMutationResult> {
-    const instance = await this._checkContextInstance()
-
-    try {
-      const result: {
-        sourceDelta: SourceDelta
-        sceneGraphDelta: SceneGraphDelta
-        checkpointId?: number | null
-      } = await instance.chain_segment(
-        JSON.stringify(version),
-        JSON.stringify(sketch),
-        JSON.stringify(previousSegmentEndPointId),
-        JSON.stringify(segment),
-        label,
-        JSON.stringify(settings),
-        createCheckpoint
-      )
-      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
-      if (checkpointId instanceof Error) {
-        return Promise.reject(checkpointId)
+    return this.withContext(async (instance) => {
+      try {
+        const result: {
+          sourceDelta: SourceDelta
+          sceneGraphDelta: SceneGraphDelta
+          checkpointId?: number | null
+        } = await instance.chain_segment(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(previousSegmentEndPointId),
+          JSON.stringify(segment),
+          label,
+          JSON.stringify(settings),
+          createCheckpoint
+        )
+        const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+        if (checkpointId instanceof Error) {
+          return Promise.reject(checkpointId)
+        }
+        return {
+          kclSource: result.sourceDelta,
+          sceneGraphDelta: result.sceneGraphDelta,
+          checkpointId,
+        }
+      } catch (e: any) {
+        const err = errFromErrWithOutputs(e)
+        return Promise.reject(err)
       }
-      return {
-        kclSource: result.sourceDelta,
-        sceneGraphDelta: result.sceneGraphDelta,
-        checkpointId,
-      }
-    } catch (e: any) {
-      const err = errFromErrWithOutputs(e)
-      return Promise.reject(err)
-    }
+    })
   }
 
   async restoreSketchCheckpoint(
     checkpointId: number
   ): Promise<RestoreSketchCheckpointResult> {
-    const instance = await this._checkContextInstance()
-
-    try {
-      const result: {
-        sourceDelta: SourceDelta
-        sceneGraphDelta: SceneGraphDelta
-      } = await instance.restore_sketch_checkpoint(JSON.stringify(checkpointId))
-      return {
-        kclSource: result.sourceDelta,
-        sceneGraphDelta: result.sceneGraphDelta,
+    return this.withContext(async (instance) => {
+      try {
+        const result: {
+          sourceDelta: SourceDelta
+          sceneGraphDelta: SceneGraphDelta
+        } = await instance.restore_sketch_checkpoint(
+          JSON.stringify(checkpointId)
+        )
+        return {
+          kclSource: result.sourceDelta,
+          sceneGraphDelta: result.sceneGraphDelta,
+        }
+      } catch (e: any) {
+        const err = { message: e }
+        return Promise.reject(err)
       }
-    } catch (e: any) {
-      const err = { message: e }
-      return Promise.reject(err)
-    }
+    })
   }
 
   async clearSketchCheckpoints(): Promise<void> {
-    const instance = await this._checkContextInstance()
-
-    try {
-      await instance.clear_sketch_checkpoints()
-    } catch (e: any) {
-      const err = { message: e }
-      return Promise.reject(err)
-    }
+    return this.withContext(async (instance) => {
+      try {
+        await instance.clear_sketch_checkpoints()
+      } catch (e: any) {
+        const err = { message: e }
+        return Promise.reject(err)
+      }
+    })
   }
 
   /** Execute trim operations on a sketch. Runs the full trim loop in Rust. */
@@ -1103,38 +1130,49 @@ export default class RustContext {
     operationsPerformed: boolean
     checkpointId?: number | null
   }> {
-    const instance = await this._checkContextInstance()
+    return this.withContext(async (instance) => {
+      try {
+        // Flatten array of [x, y] tuples into a Float64Array [x1, y1, x2, y2, ...]
+        // wasm-bindgen expects a typed array for Vec<f64>
+        const flattenedPoints = new Float64Array(points.flat())
 
-    try {
-      // Flatten array of [x, y] tuples into a Float64Array [x1, y1, x2, y2, ...]
-      // wasm-bindgen expects a typed array for Vec<f64>
-      const flattenedPoints = new Float64Array(points.flat())
+        const result: {
+          source_delta: SourceDelta
+          scene_graph_delta: SceneGraphDelta
+          operations_performed: boolean
+          checkpoint_id?: number | null
+        } = await instance.execute_trim(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          flattenedPoints,
+          JSON.stringify(settings)
+        )
+        const checkpointId = normalizeSketchCheckpointId(result.checkpoint_id)
+        if (checkpointId instanceof Error) {
+          return Promise.reject(checkpointId)
+        }
+        return {
+          kclSource: result.source_delta,
+          sceneGraphDelta: result.scene_graph_delta,
+          operationsPerformed: result.operations_performed,
+          checkpointId,
+        }
+      } catch (e: any) {
+        const err = errFromErrWithOutputs(e)
+        return Promise.reject(err)
+      }
+    })
+  }
 
-      const result: {
-        source_delta: SourceDelta
-        scene_graph_delta: SceneGraphDelta
-        operations_performed: boolean
-        checkpoint_id?: number | null
-      } = await instance.execute_trim(
-        JSON.stringify(version),
-        JSON.stringify(sketch),
-        flattenedPoints,
-        JSON.stringify(settings)
-      )
-      const checkpointId = normalizeSketchCheckpointId(result.checkpoint_id)
-      if (checkpointId instanceof Error) {
-        return Promise.reject(checkpointId)
-      }
-      return {
-        kclSource: result.source_delta,
-        sceneGraphDelta: result.scene_graph_delta,
-        operationsPerformed: result.operations_performed,
-        checkpointId,
-      }
-    } catch (e: any) {
-      const err = errFromErrWithOutputs(e)
-      return Promise.reject(err)
+  /** Borrowed operations occupy the scene owner's queue until native work and result conversion settle. */
+  private withContext<T>(work: (context: Context) => Promise<T>): Promise<T> {
+    const run = async () => {
+      const context = await this._checkContextInstance()
+      if (this.destroyed)
+        return Promise.reject(new Error('Rust context has been destroyed.'))
+      return work(context)
     }
+    return this.nativeHost ? this.nativeHost.run(run) : run()
   }
 
   /** Helper to check if context instance exists */
