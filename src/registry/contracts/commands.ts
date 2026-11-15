@@ -17,6 +17,7 @@ export const BASE_COMMAND_SCOPE = 'base'
 export const CODE_EDITOR_FOCUSED_COMMAND_SCOPE = 'code-editor-focused'
 export const CODE_EDITOR_NOT_FOCUSED_COMMAND_SCOPE = 'code-editor-not-focused'
 export const EDITABLE_FOCUSED_COMMAND_SCOPE = 'editable-focused'
+export const MODELING_DIALOG_FOCUSED_COMMAND_SCOPE = 'modeling-dialog-focused'
 export const MODE_MODELING_COMMAND_SCOPE = 'mode-modeling'
 export const MODE_SKETCHING_COMMAND_SCOPE = 'mode-sketching'
 export const MODE_SKETCH_NO_FACE_COMMAND_SCOPE = 'mode-sketch-no-face'
@@ -131,6 +132,13 @@ export const DEFAULT_COMMAND_SCOPES: readonly CommandScope[] = [
     displayName: 'Editable control focused',
     group: COMMAND_CONTEXT_SCOPE_GROUP,
     priority: 1100,
+    userEditable: false,
+  },
+  {
+    id: MODELING_DIALOG_FOCUSED_COMMAND_SCOPE,
+    displayName: 'Modeling dialog focused',
+    group: COMMAND_CONTEXT_SCOPE_GROUP,
+    priority: 1200,
     userEditable: false,
   },
   {

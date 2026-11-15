@@ -91,12 +91,14 @@ export function SettingsSearchBar({
                 ? (['project', 'user'] satisfies SettingsLevel[])
                 : (['user'] satisfies SettingsLevel[])
             )
-              .filter((l) => !shouldHideSetting(s, l, hasFeature))
+              .filter(
+                (l) => !shouldHideSetting(s, l, settingsValues, hasFeature)
+              )
               .map((l) => ({
                 category: formatSettingsLabel(category),
                 name: settingName,
                 description: s.description ?? '',
-                displayName: formatSettingsLabel(settingName),
+                displayName: s.title ?? formatSettingsLabel(settingName),
                 level: l,
               }))
           })

@@ -8,11 +8,11 @@ import {
   type Artifact,
   type ArtifactGraph,
   type CodeRef,
-  assertParse,
   recast,
 } from '@src/lang/wasm'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
+import { getAstAndArtifactGraph } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
@@ -37,7 +37,7 @@ beforeEach(async () => {
   }
 
   const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine({ webrtc: false, pool: 'cpu' })
+    await buildTheWorldAndConnectToEngine({ webrtc: false, geometryOnly: true })
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
@@ -49,22 +49,6 @@ afterAll(() => {
     initiatedBy: 'client',
   })
 })
-
-async function getAstAndArtifactGraph(
-  code: string,
-  instance: ModuleType,
-  kclManager: KclManager
-) {
-  const ast = assertParse(code, instance)
-  await kclManager.executeAst({ ast })
-  const {
-    artifactGraph,
-    execState: { operations },
-    variables,
-  } = kclManager
-  await new Promise((resolve) => setTimeout(resolve, 100))
-  return { ast, artifactGraph, operations, variables }
-}
 
 async function getKclCommandValue(value: string, rustContext: RustContext) {
   const allowArrays = value.trim().startsWith('[')

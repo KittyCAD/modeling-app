@@ -57,6 +57,8 @@ macro_rules! eprint {
 static ALLOC: dhat::Alloc = dhat::Alloc;
 
 pub mod collections;
+#[cfg(test)]
+mod csg_test_fixtures;
 mod docs;
 mod engine;
 mod errors;
@@ -184,6 +186,8 @@ pub use execution::ExecOutcome;
 pub use execution::ExecState;
 pub use execution::ExecutionCallbacks;
 pub use execution::ExecutorContext;
+#[cfg(not(target_arch = "wasm32"))]
+pub use execution::ExecutorContextBuilder;
 pub use execution::ExecutorSettings;
 pub use execution::KclValueView;
 pub use execution::KclVersion;

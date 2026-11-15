@@ -19,5 +19,5 @@
     "noEmit": true,
     "types": ["vite/client", "vitest/globals"]
   },
-  "include": ["src", ".storybook", "vite.config.ts", "vitest.config.ts"]
+  "include": ["src", ".storybook", ".storybook-web-components", "vite.config.ts", "vitest.config.ts"]
 }

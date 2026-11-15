@@ -29,9 +29,9 @@ const _INPUT_TYPES = [
   'text',
   'kcl',
   'selection',
-  'selectionMixed',
   'boolean',
   'vector3d',
+  'camera',
 ] as const
 type INPUT_TYPE = typeof _INPUT_TYPES
 export interface KclExpression {
@@ -47,6 +47,11 @@ export interface KclExpressionWithVariable extends KclExpression {
 }
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
 export type CommandInputType = INPUT_TYPE[number]
+export type CommandInputValidationState = {
+  canSubmit: boolean
+  isChecking: boolean
+  message?: string
+}
 type CommandStatus =
   | 'active'
   | 'development'
@@ -150,7 +155,7 @@ export type Command<
   disabled?: boolean
   /** Keep unsupported modeling flows in the command bar instead of a dialog. */
   forceCommandBar?: boolean
-  /** Resolved from forceCommandBar and the modeling_dialogs feature gate. */
+  /** Resolved from the command group and forceCommandBar. */
   useModelingDialog?: boolean
   status?: CommandStatus
 }
@@ -171,6 +176,8 @@ export type CommandConfig<
   | 'scopes'
   | 'useModelingDialog'
 > & {
+  /** Whether to offer this command in the current machine context. */
+  available?: (context: ContextFrom<T>) => boolean
   needsReview?: boolean
   status?: CommandStatus
   scopes?: CommandScopes
@@ -190,6 +197,8 @@ export type CommandArgumentConfig<
   available?: (context: C) => boolean
   displayName?: string
   description?: string
+  /** Reference documentation shown on demand, separate from command-bar hints. */
+  documentation?: string
   status?: CommandArgumentStatus
   statusMessage?: string
   required: CommandArgumentRequired<C>
@@ -236,6 +245,8 @@ export type CommandArgumentConfig<
   | {
       inputType: 'selection'
       selectionTypes: CommandSelectionType[]
+      /** Accept non-empty code selections for codemod resolution. */
+      allowCodeReferences?: boolean
       clearSelectionFirst?: boolean
       selectionFilter?: EntityType[]
       multiple: boolean
@@ -244,23 +255,6 @@ export type CommandArgumentConfig<
         context: CommandBarContext
         machineContext?: C
       }) => Promise<boolean | string>
-    }
-  | {
-      inputType: 'selectionMixed'
-      selectionTypes: CommandSelectionType[]
-      selectionFilter?: EntityType[]
-      multiple: boolean
-      clearSelectionFirst?: boolean
-      allowNoSelection?: boolean
-      validation?: (props: {
-        data: any
-        context: CommandBarContext
-        machineContext?: C
-      }) => Promise<boolean | string>
-      selectionSource?: {
-        allowSceneSelection?: boolean
-        allowCodeSelection?: boolean
-      }
     }
   | {
       inputType: 'kcl'
@@ -299,6 +293,9 @@ export type CommandArgumentConfig<
         context: CommandBarContext
         machineContext?: C
       }) => Promise<boolean | string>
+    }
+  | {
+      inputType: 'camera'
     }
   | {
       inputType: 'text'
@@ -381,6 +378,8 @@ export type CommandArgument<
 > = {
   displayName?: string
   description?: string
+  /** Reference documentation shown on demand, separate from command-bar hints. */
+  documentation?: string
   status?: CommandArgumentStatus
   statusMessage?: string
   required:
@@ -433,6 +432,7 @@ export type CommandArgument<
   | {
       inputType: 'selection'
       selectionTypes: CommandSelectionType[]
+      allowCodeReferences?: boolean
       clearSelectionFirst?: boolean
       selectionFilter?: EntityType[]
       multiple: boolean
@@ -441,23 +441,6 @@ export type CommandArgument<
         context: CommandBarContext
         machineContext?: ContextFrom<T>
       }) => Promise<boolean | string>
-    }
-  | {
-      inputType: 'selectionMixed'
-      selectionTypes: CommandSelectionType[]
-      selectionFilter?: EntityType[]
-      multiple: boolean
-      clearSelectionFirst?: boolean
-      allowNoSelection?: boolean
-      validation?: (props: {
-        data: any
-        context: CommandBarContext
-        machineContext?: ContextFrom<T>
-      }) => Promise<boolean | string>
-      selectionSource?: {
-        allowSceneSelection?: boolean
-        allowCodeSelection?: boolean
-      }
     }
   | {
       inputType: 'kcl'
@@ -506,6 +489,9 @@ export type CommandArgument<
             wasmInstance?: ModuleType
           ) => OutputType)
       filters: FiltersConfig
+    }
+  | {
+      inputType: 'camera'
     }
   | {
       inputType: 'text'

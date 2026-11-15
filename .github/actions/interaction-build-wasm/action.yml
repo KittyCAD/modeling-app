@@ -11,8 +11,6 @@ runs:
       with:
         node-version-file: .nvmrc
         package-manager-cache: false
-    - run: npm ci
-      shell: bash
     - name: Use correct Rust toolchain
       shell: bash
       run: |
@@ -28,7 +26,7 @@ runs:
       shell: bash
       run: |
         cargo fetch --locked --manifest-path rust/Cargo.toml
-        npm run build:wasm
+        ./scripts/build-wasm.sh
     - name: Record Wasm provenance and reject lockfile drift
       shell: bash
       run: node .performance-pipeline/e2e/performance/build-comparison.cjs wasm .

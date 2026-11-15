@@ -49,6 +49,7 @@ describe('test kclErrToDiagnostic', () => {
         artifactGraph: defaultArtifactGraph(),
         filenames: {},
         defaultPlanes: null,
+        engineSceneGeneration: null,
       },
       {
         name: '',
@@ -63,6 +64,7 @@ describe('test kclErrToDiagnostic', () => {
         artifactGraph: defaultArtifactGraph(),
         filenames: {},
         defaultPlanes: null,
+        engineSceneGeneration: null,
       },
     ]
     const diagnostics = kclErrorsToDiagnostics(errors, 'TEST PROGRAM')
@@ -113,6 +115,7 @@ describe('test kclErrToDiagnostic', () => {
         artifactGraph: defaultArtifactGraph(),
         filenames: {},
         defaultPlanes: null,
+        engineSceneGeneration: null,
       },
     ]
     const diagnostics = kclErrorsToDiagnostics(errors, sourceCode)
@@ -152,6 +155,7 @@ describe('test kclErrToDiagnostic', () => {
         artifactGraph: defaultArtifactGraph(),
         filenames: {},
         defaultPlanes: null,
+        engineSceneGeneration: null,
       },
     ]
     const diagnostics = kclErrorsToDiagnostics(errors, sourceCode)
@@ -187,6 +191,7 @@ describe('test kclErrToDiagnostic', () => {
         artifactGraph: defaultArtifactGraph(),
         filenames: {},
         defaultPlanes: null,
+        engineSceneGeneration: null,
       },
     ]
     const diagnostics = kclErrorsToDiagnostics(errors, sourceCode)
@@ -232,6 +237,7 @@ describe('test kclErrToDiagnostic', () => {
         artifactGraph: defaultArtifactGraph(),
         filenames: {},
         defaultPlanes: null,
+        engineSceneGeneration: null,
       },
     ]
     const diagnostics = kclErrorsToDiagnostics(errors, sourceCode)
@@ -273,6 +279,7 @@ describe('test kclErrToDiagnostic', () => {
       artifactGraph: defaultArtifactGraph(),
       filenames: {},
       defaultPlanes: null,
+      engineSceneGeneration: null,
     }
   }
   // Every recursive frame repeats the same call site, so it produces one

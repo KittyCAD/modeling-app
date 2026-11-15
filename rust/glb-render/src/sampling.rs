@@ -63,12 +63,22 @@ fn sample_edge(edge: &gltf::Edge<'_>) -> Result<Vec<Vec3>, String> {
         }
         Geometry3d::Nurbs(nurbs) => {
             validate_nurbs(&nurbs, domain)?;
-            let start = evaluate(domain.0)?;
-            let end = evaluate(domain.1)?;
-            let mut samples = vec![start];
-            subdivide_nurbs(&curve, (domain.0, start), (domain.1, end), 0, &mut samples)?;
-            if samples.len() > MAX_CURVE_SEGMENTS + 1 {
-                samples = sample_uniformly(&curve, domain, MAX_CURVE_SEGMENTS)?;
+            let mut start = (domain.0, evaluate(domain.0)?);
+            let mut samples = vec![start.1];
+            // Refine each knot span independently so complete turns cannot hide between probes.
+            for t in nurbs
+                .knot_vector()
+                .iter()
+                .copied()
+                .filter(|t| *t > domain.0 && *t < domain.1)
+                .chain(std::iter::once(domain.1))
+            {
+                if t <= start.0 {
+                    continue;
+                }
+                let end = (t, evaluate(t)?);
+                subdivide_nurbs(&curve, start, end, 0, &mut samples)?;
+                start = end;
             }
             samples
         }
@@ -251,13 +261,69 @@ mod tests {
         let mut extension = nurbs();
         let data = sample(extension.clone()).unwrap();
         let points = &data.edge_polylines[0];
-        assert!(points.len() > 2 && points.len() <= MAX_CURVE_SEGMENTS + 1);
+        assert!(points.len() > 2);
         assert!(points.iter().all(|point| (point.length() - 10.0).abs() < 1.0e-5));
         extension["edges"][0]["t"] = json!([0.25, 0.75]);
         let data = sample(extension).unwrap();
         let points = &data.edge_polylines[0];
         assert!(points.first().unwrap().distance(Vec3::new(9.297883, 3.680947, 0.0)) < 1.0e-4);
         assert!(points.last().unwrap().distance(Vec3::new(3.680947, 9.297883, 0.0)) < 1.0e-4);
+    }
+
+    #[test]
+    fn preserves_short_and_long_exported_helices() {
+        let fixture: Value = serde_json::from_str(include_str!(
+            "../../../src/clientSideScene/localRenderer/helix-four-turn.fixture.json"
+        ))
+        .unwrap();
+        for repeats in [1, 32] {
+            let mut curve = fixture["curve"].clone();
+            let original = curve["nurbs"]["controlPoints"].as_array().unwrap().clone();
+            let mut controls = Vec::new();
+            for repeat in 0..repeats {
+                for point in &original[..original.len() - 1] {
+                    controls.push(json!([
+                        point[0].as_f64().unwrap() + f64::from(repeat) * 0.01,
+                        point[1],
+                        point[2]
+                    ]));
+                }
+            }
+            let last = original.last().unwrap();
+            controls.push(json!([
+                last[0].as_f64().unwrap() + f64::from(repeats - 1) * 0.01,
+                last[1],
+                last[2]
+            ]));
+            let spans = 16 * repeats;
+            let knots: Vec<_> = std::iter::once(0)
+                .chain((0..=spans).flat_map(|i| [i, i, i]))
+                .chain(std::iter::once(spans))
+                .collect();
+            curve["nurbs"]["controlPoints"] = json!(controls);
+            curve["nurbs"]["knotVector"] = json!(knots);
+            let mut edge = fixture["edge"].clone();
+            edge["t"] = json!([0, spans]);
+            let data = sample(json!({
+                "vertices": [fixture["vertices"][0], controls.last().unwrap()], "edges": [edge], "curves3D": [curve]
+            }))
+            .unwrap();
+            let points = &data.edge_polylines[0];
+            assert!(points.len() > 2);
+            assert!(points.first().unwrap().distance(Vec3::new(20.0, 35.0, -30.0)) < 1.0e-4);
+            assert!(
+                points
+                    .last()
+                    .unwrap()
+                    .distance(Vec3::new(20.0 + 10.0 * repeats as f32, 35.0, -30.0))
+                    < 1.0e-4
+            );
+            for pair in points.windows(2) {
+                let middle = (pair[0] + pair[1]) * 0.5;
+                let radius = (middle.y - 40.0).hypot(middle.z + 30.0);
+                assert!(5.0 - radius <= CURVE_CHORD_ERROR + 1.0e-4);
+            }
+        }
     }
 
     #[test]

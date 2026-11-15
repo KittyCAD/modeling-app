@@ -1,3 +1,4 @@
+import { selectCommand } from '@src/lib/commandUtils'
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useAppState } from '@src/AppState'
@@ -21,6 +22,7 @@ import {
   type FileOperationsRegistryService,
   fileOperationsService,
 } from '@src/registry/contracts/fileOperations'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import {
   EXPORT_TO_SLICER_ACTION_TYPE,
@@ -122,7 +124,8 @@ function createExportToSlicerCommand({
 const exportToSlicerSidebarItem = defineRegistryItemFactory((ctx) => {
   const getCommandSystem = () => ctx.services.get(commandSystemService)
   const getKclManager = () =>
-    getCommandSystem().actor.getSnapshot().context.kclManager
+    ctx.services.optional(projectSession)?.project.value?.executingEditor
+      .value ?? undefined
   const exportToSlicerCommand = createExportToSlicerCommand({
     getKclManager,
     getFileOperations: () => ctx.services.get(fileOperationsService),
@@ -140,12 +143,9 @@ const exportToSlicerSidebarItem = defineRegistryItemFactory((ctx) => {
           useHidden: () => !isDesktop(),
           useDisabled: useExportToSlicerDisabled,
           execute: () => {
-            getCommandSystem().send({
-              type: 'Find and select command',
-              data: {
-                name: EXPORT_TO_SLICER_COMMAND_NAME,
-                groupId: EXPORT_TO_SLICER_COMMAND_GROUP_ID,
-              },
+            selectCommand(getCommandSystem(), {
+              name: EXPORT_TO_SLICER_COMMAND_NAME,
+              groupId: EXPORT_TO_SLICER_COMMAND_GROUP_ID,
             })
           },
         },

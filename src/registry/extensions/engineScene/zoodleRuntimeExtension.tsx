@@ -35,7 +35,7 @@ const zoodleStreamStackClassName = defineEngineSceneStreamClassName({
   id: 'zookeeper.zoodle.stream-stack',
   order: 100,
   className:
-    'inset-4 z-20 rounded-lg transition-all duration-150 ease-out before:content-[""] before:absolute before:-inset-4 before:bg-ml-green',
+    'inset-4 z-20 rounded-lg before:content-[""] before:absolute before:-inset-4 before:bg-ml-green',
 })
 
 const clampZoodleBrushSize = (brushSize: number) => {

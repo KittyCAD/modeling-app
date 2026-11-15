@@ -1,16 +1,27 @@
-import { defineContract, defineService } from '@kittycad/registry'
+import type { FileOperationsMount } from '@src/lib/fileSystem/mounts'
+import type { MemoryFileDeletion } from '@src/lib/fileSystem/deletionHistory'
+import {
+  appendValueSpec,
+  defineContract,
+  defineService,
+} from '@kittycad/registry'
+import type { ProjectOperationsService } from '@src/lib/projectSession/projectOperations'
 import type { FileNameParts } from '@src/lib/fileSystem/fileNames'
 import type {
   CopyOptions,
   FileContents,
   FileStat,
+  StatOptions,
 } from '@src/lib/fileSystem/fileOperations'
 
 /** Promise facade for coordinated project-directory and file operations. */
 export interface FileOperationsRegistryService {
   readonly pending: () => Promise<number>
-  /** Observe one path while coordinated mutations of it are excluded. */
-  readonly stat: (path: string) => Promise<FileStat>
+  /**
+   * Observe one path while coordinated mutations of it are excluded.
+   * Follows symbolic links unless disabled to inspect the directory entry itself.
+   */
+  readonly stat: (path: string, options?: StatOptions) => Promise<FileStat>
   /** Check whether the current platform grant allows reading and writing. */
   readonly canReadWrite: (path: string) => Promise<boolean>
   /**
@@ -27,7 +38,7 @@ export interface FileOperationsRegistryService {
     destination: string,
     options?: CopyOptions
   ) => Promise<void>
-  /** Move, falling back to copy-and-remove when rename is unavailable. */
+  /** Move within one backing filesystem. Cross-backing moves must reject. */
   readonly move: (source: string, destination: string) => Promise<void>
   /** Write bytes, or encode a string as UTF-8, without retaining caller data. */
   readonly writeFile: (path: string, contents: FileContents) => Promise<void>
@@ -46,14 +57,29 @@ export interface FileOperationsRegistryService {
     parent: string,
     preferredName: string
   ) => Promise<string>
+  readonly removeWithSnapshot: (path: string) => Promise<MemoryFileDeletion>
+  readonly replayDeletion: (
+    deletion: MemoryFileDeletion,
+    restore: boolean
+  ) => Promise<void>
   readonly remove: (path: string) => Promise<void>
+  /** Rename without replacing a distinct entry; filesystem spelling aliases are allowed. */
   readonly rename: (source: string, destination: string) => Promise<void>
 }
 
 export const fileOperationsContract = defineContract({
+  projectOperationsService: defineService<ProjectOperationsService>(
+    'fileOperations.projects'
+  ),
   fileOperationsService: defineService<FileOperationsRegistryService>(
     'fileOperations.service'
   ),
 })
 
-export const { fileOperationsService } = fileOperationsContract
+export const { fileOperationsService, projectOperationsService } =
+  fileOperationsContract
+
+export type { ProjectOperationsService } from '@src/lib/projectSession/projectOperations'
+
+export const fileOperationsMountsValueSpec =
+  appendValueSpec<FileOperationsMount>('fileOperations.mounts')

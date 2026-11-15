@@ -53,7 +53,10 @@ export const PluginsList = forwardRef(
 
       const setting =
         settingsByCategory[activation.category]?.[activation.settingName]
-      return !setting || !shouldHideSetting(setting, 'user', hasFeature)
+      return (
+        !setting ||
+        !shouldHideSetting(setting, 'user', settingsContext, hasFeature)
+      )
     })
 
     // This is how we will get the interaction map from the context

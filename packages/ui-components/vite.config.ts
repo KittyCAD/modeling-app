@@ -13,8 +13,11 @@ export default defineConfig({
   build: {
     cssCodeSplit: false,
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
-      fileName: 'index',
+      entry: {
+        index: resolve(__dirname, 'src/index.ts'),
+        'web-components': resolve(__dirname, 'src/web-components/index.ts'),
+      },
+      fileName: (_format, name) => `${name}.js`,
       formats: ['es'],
     },
     rollupOptions: {
