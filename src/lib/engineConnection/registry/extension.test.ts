@@ -8,6 +8,11 @@ import { settingsService } from '@src/registry/contracts/settings'
 import { factory, provide, Registry } from 'plankton'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+// Toolbar commands load generated WASM; this suite exercises the extension's own behavior.
+vi.mock('@src/registry/extensions/commands/toolbarCommands', () => ({
+  createToolbarCommands: () => [],
+}))
+
 describe('engine connection extension', () => {
   let registry: Registry | undefined
   afterEach(async () => {

@@ -195,6 +195,11 @@ function hasFeatureControlledPane(rootLayout: Layout) {
     })
   )
 }
+// Toolbar commands load generated WASM; this suite exercises the extension's own behavior.
+vi.mock('@src/registry/extensions/commands/toolbarCommands', () => ({
+  createToolbarCommands: () => [],
+}))
+
 describe('layout extension', () => {
   let registry: Registry | undefined
   afterEach(async () => {

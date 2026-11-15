@@ -8,7 +8,12 @@ import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { settingsService } from '@src/registry/contracts/settings'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { factory, provide, Registry } from 'plankton'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+
+// Toolbar commands load generated WASM; this suite exercises the extension's own behavior.
+vi.mock('@src/registry/extensions/commands/toolbarCommands', () => ({
+  createToolbarCommands: () => [],
+}))
 
 describe('rust context extension', () => {
   let registry: Registry | undefined

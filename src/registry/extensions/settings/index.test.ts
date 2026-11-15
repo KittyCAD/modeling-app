@@ -14,6 +14,11 @@ import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { vi } from 'vitest'
 
+// Toolbar commands load generated WASM; this suite exercises the extension's own behavior.
+vi.mock('@src/registry/extensions/commands/toolbarCommands', () => ({
+  createToolbarCommands: () => [],
+}))
+
 describe('settings extension', () => {
   it('contributes the settings status bar item', async () => {
     const registry = new Registry()
