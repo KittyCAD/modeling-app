@@ -1,6 +1,7 @@
 import { LocalWebGPUSceneView } from '@src/clientSideScene/localRenderer/LocalWebGPUScene'
 import type { Executor } from '@src/lib/executors/registry/contract'
 import type { KclSession } from '@src/lib/kcl/session'
+import { KclConnectionStatus } from '@src/lib/kcl/KclConnectionStatus'
 import { useEffect, useRef } from 'react'
 
 const hiddenPlanes = { xy: false, xz: false, yz: false }
@@ -17,8 +18,7 @@ export function KclScene({
   const resource = session.resource.value
   const preferences = resource?.preferences.value
   const output = executor.output.value
-  const error =
-    state.type === 'error' ? state.error : output.errors['kcl.execution']
+  const error = output.errors['kcl.execution']
   useEffect(() => {
     if (container.current) return session.mount(container.current)
   }, [session])
@@ -37,7 +37,8 @@ export function KclScene({
           defaultPlaneVisibility={hiddenPlanes}
         />
       )}
-      {error ? (
+      <KclConnectionStatus session={session} />
+      {state.type === 'ready' && error ? (
         <p
           role="alert"
           className="absolute bottom-4 left-4 z-50 bg-2 p-3 text-destroy-80"
@@ -45,14 +46,13 @@ export function KclScene({
           {error.message}
         </p>
       ) : (
-        (state.type === 'connecting' || output.running) && (
+        state.type === 'ready' &&
+        output.running && (
           <p
             role="status"
             className="pointer-events-none absolute bottom-4 left-4 z-50"
           >
-            {state.type === 'connecting'
-              ? 'Connecting to engine…'
-              : 'Executing…'}
+            Executing…
           </p>
         )
       )}
