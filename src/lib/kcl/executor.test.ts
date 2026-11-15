@@ -83,87 +83,91 @@ it('reruns unchanged entrypoints when imported inputs change, and isolates execu
   await vi.waitFor(() => expect(two.dispose).toHaveBeenCalledOnce())
 })
 
-it('re-executes the latest editor source and clears execution errors after focus reconnects its scene', async () => {
-  vi.stubGlobal(
-    'ResizeObserver',
-    class {
-      observe() {}
-      disconnect() {}
+it.each(['focus', 'manual'] as const)(
+  're-executes the latest editor source and clears execution errors after %s reconnection',
+  async (trigger) => {
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        observe() {}
+        disconnect() {}
+      }
+    )
+    const makeScene = () =>
+      ({
+        element: document.createElement('div'),
+        presentation: 'local',
+        preferences: signal({}),
+        isConnected: () => true,
+        runtime: { execute: vi.fn(async () => emptyExecState()) },
+        resize: async () => {},
+        applySettings: async () => {},
+        resume: () => {},
+        frameModel: async () => {},
+        dispose: async () => {},
+      }) as unknown as KclSceneResource
+    const initial = makeScene(),
+      fresh = makeScene()
+    let disconnect: (error: Error) => void = () => {}
+    let opening = 0
+    const execution = createKclExecution(
+      (executor) =>
+        createKclSession(async (_size, _signal, onDisconnect) => {
+          disconnect = onDisconnect
+          return opening++ === 0 ? initial : fresh
+        }, executor.refresh),
+      async (contents, context) => ({
+        src: context.src,
+        files: new Map([[context.src, new TextEncoder().encode(contents)]]),
+      })
+    )
+    const source = editor()
+    const owned = createExecutor(
+      source.editor,
+      signal([execution.capability]),
+      () => {}
+    )
+    const session = execution.getSession(owned.executor)
+    const container = document.createElement('div')
+    Object.defineProperties(container, {
+      clientWidth: { value: 200 },
+      clientHeight: { value: 150 },
+    })
+    const detach = session.mount(container)
+    try {
+      await vi.waitFor(() =>
+        expect(owned.executor.output.peek().running).toBe(false)
+      )
+      disconnect(new Error('Idle session expired'))
+      source.document.dispatch({
+        changes: {
+          from: 0,
+          to: source.document.contents.peek().length,
+          insert: 'answer = 84',
+        },
+      })
+      await vi.waitFor(() =>
+        expect(
+          owned.executor.output.peek().errors['kcl.execution']
+        ).toBeInstanceOf(Error)
+      )
+      if (trigger === 'manual') session.reconnect()
+      else window.dispatchEvent(new Event('focus'))
+      await vi.waitFor(() => {
+        expect(owned.executor.output.peek().running).toBe(false)
+        expect(
+          owned.executor.output.peek().errors['kcl.execution']
+        ).toBeUndefined()
+      })
+      const request = vi.mocked(fresh.runtime.execute).mock.calls.at(-1)?.[0]
+      expect(new TextDecoder().decode(request?.files.get('/main.kcl'))).toBe(
+        'answer = 84'
+      )
+    } finally {
+      detach()
+      owned.dispose()
+      source.dispose()
+      vi.unstubAllGlobals()
     }
-  )
-  const makeScene = () =>
-    ({
-      element: document.createElement('div'),
-      presentation: 'local',
-      preferences: signal({}),
-      isConnected: () => true,
-      runtime: { execute: vi.fn(async () => emptyExecState()) },
-      resize: async () => {},
-      applySettings: async () => {},
-      resume: () => {},
-      frameModel: async () => {},
-      dispose: async () => {},
-    }) as unknown as KclSceneResource
-  const initial = makeScene(),
-    fresh = makeScene()
-  let disconnect: (error: Error) => void = () => {}
-  let opening = 0
-  const execution = createKclExecution(
-    (executor) =>
-      createKclSession(async (_size, _signal, onDisconnect) => {
-        disconnect = onDisconnect
-        return opening++ === 0 ? initial : fresh
-      }, executor.refresh),
-    async (contents, context) => ({
-      src: context.src,
-      files: new Map([[context.src, new TextEncoder().encode(contents)]]),
-    })
-  )
-  const source = editor()
-  const owned = createExecutor(
-    source.editor,
-    signal([execution.capability]),
-    () => {}
-  )
-  const session = execution.getSession(owned.executor)
-  const container = document.createElement('div')
-  Object.defineProperties(container, {
-    clientWidth: { value: 200 },
-    clientHeight: { value: 150 },
-  })
-  const detach = session.mount(container)
-  try {
-    await vi.waitFor(() =>
-      expect(owned.executor.output.peek().running).toBe(false)
-    )
-    disconnect(new Error('Idle session expired'))
-    source.document.dispatch({
-      changes: {
-        from: 0,
-        to: source.document.contents.peek().length,
-        insert: 'answer = 84',
-      },
-    })
-    await vi.waitFor(() =>
-      expect(
-        owned.executor.output.peek().errors['kcl.execution']
-      ).toBeInstanceOf(Error)
-    )
-    window.dispatchEvent(new Event('focus'))
-    await vi.waitFor(() => {
-      expect(owned.executor.output.peek().running).toBe(false)
-      expect(
-        owned.executor.output.peek().errors['kcl.execution']
-      ).toBeUndefined()
-    })
-    const request = vi.mocked(fresh.runtime.execute).mock.calls.at(-1)?.[0]
-    expect(new TextDecoder().decode(request?.files.get('/main.kcl'))).toBe(
-      'answer = 84'
-    )
-  } finally {
-    detach()
-    owned.dispose()
-    source.dispose()
-    vi.unstubAllGlobals()
   }
-})
+)
