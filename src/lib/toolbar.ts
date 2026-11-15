@@ -1,3 +1,8 @@
+import {
+  getSelectedSketchTarget,
+  sketchButtonPresentation,
+  sketchButtonHelp,
+} from '@src/lib/sketchButtonPresentation'
 export {
   getDefaultRecentToolbarItemIds,
   promoteRecentToolbarItemId,
@@ -8,11 +13,7 @@ export {
 import { selectCommand } from '@src/lib/commandUtils'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
-import {
-  getSelectedPlaneId,
-  getSelectedSketchTarget as getSelectedSketchTargetId,
-} from '@src/lang/queryAst'
-import { useApp } from '@src/lib/boot'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import {
   modelingStdLibCommandName,
@@ -22,22 +23,13 @@ import {
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { Command } from '@src/lib/commandTypes'
 import { commandKey } from '@src/lib/commandUtils'
-import {
-  EXPERIMENTAL_POINT_AND_CLICK_FLAG,
-  LEGACY_SKETCH_MODE_REMOVED_MESSAGE,
-  SKETCH_DEFAULT_PLANE_XY,
-  SKETCH_DEFAULT_PLANE_XZ,
-  SKETCH_DEFAULT_PLANE_YZ,
-  SKETCH_SELECTION_RGB_STR,
-} from '@src/lib/constants'
+import { LEGACY_SKETCH_MODE_REMOVED_MESSAGE } from '@src/lib/constants'
 import type { HotkeySequence } from '@src/lib/hotkeys'
 import { selectSketchPlane } from '@src/lib/selectSketchPlane'
-import { getSelectedDefaultPlane } from '@src/lib/selections'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 import { constraintToolMetadata } from '@src/machines/sketchSolve/constraints/constraintMetadata'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ConstraintToolName } from '@src/machines/sketchSolve/tools/constraintToolModel'
@@ -48,7 +40,6 @@ import {
   MODE_SKETCHING_KEYMAP_SCOPE,
 } from '@src/registry/contracts/keymap'
 import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommandIds'
-import { useMemo } from 'react'
 import type { EventFrom, StateFrom } from 'xstate'
 
 export type ToolbarModeName =
@@ -144,7 +135,7 @@ export type ToolbarItem = {
       ) => string | undefined)
 }
 
-type ToolbarConfig = Record<ToolbarModeName, ToolbarMode>
+export type ToolbarConfig = Record<ToolbarModeName, ToolbarMode>
 
 export function getToolbarItemDescription(
   item: Pick<ToolbarItem, 'command' | 'description'>,
@@ -381,7 +372,7 @@ const sketchSolveConstraintItems: ToolbarItem[] = [
   }),
 ]
 
-type ToolbarCommands = Pick<ReturnType<typeof useApp>['commands'], 'send'>
+type ToolbarCommands = Pick<CommandBarActorType, 'send'>
 
 export function isLegacySketchEditRequest({
   editorHasFocus,
@@ -533,7 +524,10 @@ export function buildToolbarConfig(
           },
           icon: 'sketch',
           iconColor: ({ modelingState }) =>
-            getSelectedSketchIconColor(modelingState.context.selectionRanges),
+            sketchButtonPresentation(
+              false,
+              modelingState.context.selectionRanges
+            ).iconColor,
           status: 'available',
           disabled: (_state, _wasmInstance, props) =>
             Boolean(props && isLegacySketchEditRequest(props)),
@@ -541,45 +535,26 @@ export function buildToolbarConfig(
             props && isLegacySketchEditRequest(props)
               ? LEGACY_SKETCH_MODE_REMOVED_MESSAGE
               : undefined,
-          title: ({ editorHasFocus, sketchPathId, modelingState }) => {
-            const isSketchBlock = isSketchBlockSelected(
-              modelingState.context.selectionRanges,
-              modelingState.context.kclManager.artifactGraph
-            )
-
-            if ((editorHasFocus && sketchPathId) || isSketchBlock) {
-              return 'Edit Sketch'
-            }
-
-            return 'Start Sketch'
-          },
-          tooltipTitle: ({ editorHasFocus, sketchPathId, modelingState }) => {
-            const isSketchBlock = isSketchBlockSelected(
-              modelingState.context.selectionRanges,
-              modelingState.context.kclManager.artifactGraph
-            )
-
-            if ((editorHasFocus && sketchPathId) || isSketchBlock) {
-              return 'Edit Sketch'
-            }
-
-            const selectedSketchTarget = getSelectedSketchTarget(
+          title: ({ editorHasFocus, sketchPathId, modelingState }) =>
+            sketchButtonPresentation(
+              Boolean(editorHasFocus && sketchPathId) ||
+                isSketchBlockSelected(
+                  modelingState.context.selectionRanges,
+                  modelingState.context.kclManager.artifactGraph
+                ),
               modelingState.context.selectionRanges
-            )
-            if (selectedSketchTarget) {
-              return selectedSketchTarget.title
-            }
-
-            return 'Start Sketch'
-          },
+            ).title,
+          tooltipTitle: ({ editorHasFocus, sketchPathId, modelingState }) =>
+            sketchButtonPresentation(
+              Boolean(editorHasFocus && sketchPathId) ||
+                isSketchBlockSelected(
+                  modelingState.context.selectionRanges,
+                  modelingState.context.kclManager.artifactGraph
+                ),
+              modelingState.context.selectionRanges
+            ).tooltipTitle,
           showTitle: true,
-          description: 'Start drawing a 2D sketch.',
-          links: [
-            {
-              label: 'KCL docs',
-              url: withSiteBaseURL('/docs/kcl-lang/sketches'),
-            },
-          ],
+          ...sketchButtonHelp,
         },
         'break',
         modelingCommand('Extrude', {
@@ -1451,66 +1426,6 @@ export function buildToolbarConfig(
   return filterExperimentalToolbarConfig(
     toolbarConfig,
     showExperimentalFeatures
-  )
-}
-
-function getSelectedSketchTarget(selectionRanges: Selections): {
-  id: string
-  title: string
-} | null {
-  const defaultPlane = getSelectedDefaultPlane(selectionRanges)
-  if (defaultPlane) {
-    return {
-      id: defaultPlane.id,
-      title: `Start Sketch on ${defaultPlane.name.toUpperCase()}`,
-    }
-  }
-
-  const id = getSelectedSketchTargetId(selectionRanges)
-  if (!id) return null
-
-  return {
-    id,
-    title:
-      getSelectedPlaneId(selectionRanges) === id
-        ? 'Start Sketch on plane'
-        : 'Start Sketch on face',
-  }
-}
-
-function getSelectedSketchIconColor(
-  selectionRanges: Selections
-): string | undefined {
-  const defaultPlane = getSelectedDefaultPlane(selectionRanges)
-  if (defaultPlane) {
-    switch (defaultPlane.name.toLowerCase()) {
-      case 'xy':
-        return SKETCH_DEFAULT_PLANE_XY
-      case 'xz':
-        return SKETCH_DEFAULT_PLANE_XZ
-      case 'yz':
-        return SKETCH_DEFAULT_PLANE_YZ
-    }
-  }
-
-  return getSelectedSketchTargetId(selectionRanges)
-    ? `rgb(${SKETCH_SELECTION_RGB_STR})`
-    : undefined
-}
-
-export const useToolbarConfig = () => {
-  const { commands, userFeatures } = useApp()
-  const showExperimentalFeatures = userFeatures.useHas(
-    EXPERIMENTAL_POINT_AND_CLICK_FLAG,
-    false
-  )
-
-  return useMemo<Record<ToolbarModeName, ToolbarMode>>(
-    () =>
-      buildToolbarConfig(commands, {
-        showExperimentalFeatures,
-      }),
-    [commands, showExperimentalFeatures]
   )
 }
 

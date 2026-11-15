@@ -52,7 +52,8 @@ import {
   resizeSceneCanvas,
 } from '@src/lib/kcl/scene/viewport'
 import type { CameraSystem } from '@src/lib/cameraControls'
-import { getSketchSolveToolIconMap, useToolbarConfig } from '@src/lib/toolbar'
+import { getSketchSolveToolIconMap } from '@src/lib/toolbar'
+import { useToolbarConfig } from '@src/hooks/useToolbarConfig'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type { SegmentOverlay } from '@src/machines/modelingSharedTypes'
