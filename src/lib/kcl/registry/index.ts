@@ -7,7 +7,6 @@ import { initialiseWasm, relevantFileExtensions } from '@src/lang/wasmUtils'
 import {
   codeEditorsExtensionValueSpec,
   editorLanguagesValueSpec,
-  editorsService,
   editorViewsValueSpec,
 } from '@src/lib/editors/registry/contract'
 import { defineEditorView } from '@src/lib/editors/views'
@@ -21,12 +20,11 @@ import { openKclScene } from '@src/lib/kcl/scene'
 import { createKclSession } from '@src/lib/kcl/session'
 import { createSceneExecutionSettings } from '@src/lib/scene/settings'
 import { createKclSceneSettings } from '@src/lib/kcl/settings'
-import { loadKclSources } from '@src/lib/kcl/sources'
-import { projectSessionService } from '@src/lib/projectSession/next/contract'
+import projectSourcesExtension from '@src/lib/projectSession/registry/sources'
+import { projectSourcesService } from '@src/lib/projectSession/next/contract'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
 import { isErr } from '@src/lib/trap'
 import { authService } from '@src/registry/contracts/auth'
-import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { settingsService } from '@src/registry/contracts/settings'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 
@@ -82,27 +80,24 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
     },
     async (contents, context) => {
       const extensions = relevantFileExtensions(await getWasm())
-      return loadKclSources(
-        contents,
-        context,
-        services.optional(projectSessionService),
-        services.get(editorsService).editors.peek(),
-        services.optional(fileOperationsService),
-        (path) =>
-          extensions.some((extension) => path.toLowerCase().endsWith(extension))
-      )
+      return services.get(projectSourcesService).capture({
+        document: { src: context.src || undefined, contents },
+        unnamedPath: 'main.kcl',
+        signal: context.signal,
+        include: (path) =>
+          extensions.some((extension) =>
+            path.toLowerCase().endsWith(extension)
+          ),
+      })
     },
     computed(() => ({
-      project: services.optional(projectSessionService)?.currentProject.value,
+      sources: services.get(projectSourcesService).revision.value,
       settings: settingsRevision.value,
-      buffers: services.get(editorsService).editors.value.map((editor) => ({
-        src: editor.src.value,
-        contents: editor.contents.value,
-      })),
     }))
   )
   return {
     id: 'kcl',
+    uses: [projectSourcesExtension],
     provides: [
       provide(executorCapabilityValueSpec, execution.capability),
       provide(

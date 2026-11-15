@@ -47,7 +47,7 @@ function createSession(
       contents: { name: title, path: `/projects/${title}`, children },
       metadata: { title, readWriteAccess: false },
     }),
-    files: { read: vi.fn(), write: vi.fn() },
+    files: { readBytes: vi.fn(), read: vi.fn(), write: vi.fn() },
   }
 }
 
