@@ -33,7 +33,13 @@ function snapshot(code: string, imports: Record<string, string> = {}) {
 async function runtime(
   instance = wasm,
   settings = createSettings(),
-  requests: EngineCommand[] = []
+  requests: EngineCommand[] = [],
+  hooks: Partial<
+    Pick<
+      Parameters<typeof createKclRuntime>[1],
+      'trackExecution' | 'waitForAllModelingCommands'
+    >
+  > = {}
 ) {
   const engine = {
     engineSessionId: undefined,
@@ -71,6 +77,7 @@ async function runtime(
         })
       }
     ),
+    ...hooks,
   }
   const nativeSettings = createTestKclExecutionSettings(() => settings)
   const model = await createKclRuntime(
@@ -266,4 +273,136 @@ it('does not start execution after a scene closes during a native rebuild', asyn
   await expect(run).rejects.toBeInstanceOf(Error)
   await closing
   expect(calls).toEqual(['execute', 'rebuild'])
+})
+
+it.each(['execute', 'drain'] as const)(
+  'preserves a rejected Error from %s, releases tracking, and accepts the next run',
+  async (stage) => {
+    const failure = new Error('The engine operation failed')
+    let failNext = true
+    class Context extends wasm.Context {
+      async execute(
+        ...args: Parameters<InstanceType<ModuleType['Context']>['execute']>
+      ) {
+        if (stage === 'execute' && failNext) {
+          failNext = false
+          throw failure
+        }
+        return super.execute(...args)
+      }
+    }
+    const stopTracking = vi.fn()
+    const model = await runtime({ ...wasm, Context }, createSettings(), [], {
+      trackExecution: () => stopTracking,
+      waitForAllModelingCommands: async () => {
+        if (stage === 'drain' && failNext) {
+          failNext = false
+          throw failure
+        }
+        return []
+      },
+    })
+    const done = vi.fn()
+    model.events.addEventListener(SceneExecutionEvents.ExecutionDone, done)
+    const source = snapshot('@settings(kclVersion = 3.0)\nanswer = 42')
+    await expect(model.execute(source)).rejects.toBe(failure)
+    expect(model.executing.peek()).toBe(false)
+    expect(model.failed.peek()).toBe(true)
+    expect(stopTracking).toHaveBeenCalledOnce()
+    expect(done.mock.calls[0][0].detail).toMatchObject({
+      successful: false,
+      hasErrors: true,
+    })
+    expect((await model.execute(source)).variables.answer).toMatchObject({
+      value: 42,
+    })
+    expect(model.failed.peek()).toBe(false)
+    expect(stopTracking).toHaveBeenCalledTimes(2)
+    expect(done).toHaveBeenCalledTimes(2)
+    expect(done.mock.calls[1][0].detail).toMatchObject({
+      successful: true,
+      hasErrors: false,
+    })
+  }
+)
+
+it('retains partial native error output while releasing execution tracking', async () => {
+  const stopTracking = vi.fn()
+  const model = await runtime(wasm, createSettings(), [], {
+    trackExecution: () => stopTracking,
+  })
+  const failure = await model
+    .execute(snapshot('@settings(kclVersion = 3.0)\nanswer = missingValue'))
+    .catch((cause: unknown) => cause)
+  expect(failure).toBeInstanceOf(Error)
+  expect(failure).toHaveProperty('artifactGraph')
+  expect(model.state.peek()).toMatchObject({
+    artifactGraph: (failure as { artifactGraph: unknown }).artifactGraph,
+    defaultPlanes: (failure as { defaultPlanes: unknown }).defaultPlanes,
+    engineSceneGeneration: (failure as { engineSceneGeneration: unknown })
+      .engineSceneGeneration,
+  })
+  expect(model.executing.peek()).toBe(false)
+  expect(model.failed.peek()).toBe(true)
+  expect(stopTracking).toHaveBeenCalledOnce()
+})
+
+it('waits for native execution and command draining before closing, without publishing late output', async () => {
+  const execution = Promise.withResolvers<undefined>()
+  const commands = Promise.withResolvers<undefined>()
+  const calls: string[] = []
+  class Context extends wasm.Context {
+    async execute(
+      ...args: Parameters<InstanceType<ModuleType['Context']>['execute']>
+    ) {
+      calls.push('execute')
+      await execution.promise
+      return super.execute(...args)
+    }
+    async export() {
+      calls.push('export')
+      return []
+    }
+    free() {
+      calls.push('free')
+      super.free()
+    }
+  }
+  const model = await runtime({ ...wasm, Context }, createSettings(), [], {
+    trackExecution: () => () => calls.push('stop'),
+    waitForAllModelingCommands: async () => {
+      calls.push('drain')
+      await commands.promise
+      return []
+    },
+  })
+  const baseline = model.state.peek()
+  const done = vi.fn()
+  model.events.addEventListener(SceneExecutionEvents.ExecutionDone, done)
+  const run = model.execute(
+    snapshot('@settings(kclVersion = 3.0)\nanswer = 42')
+  )
+  const queued = model.exportModel({
+    type: 'gltf',
+    storage: 'embedded',
+    presentation: 'compact',
+  })
+  const rejectedRun = expect(run).rejects.toThrow('The KCL scene closed')
+  const rejectedExport = expect(queued).rejects.toThrow('The KCL scene closed')
+  try {
+    await vi.waitFor(() => expect(calls).toEqual(['execute']))
+    const closing = model.dispose()
+    execution.resolve(undefined)
+    await vi.waitFor(() => expect(calls).toEqual(['execute', 'drain']))
+    expect(model.executing.peek()).toBe(true)
+    commands.resolve(undefined)
+    await Promise.all([rejectedRun, rejectedExport, closing])
+    expect(calls).toEqual(['execute', 'drain', 'stop', 'free'])
+    expect(model.state.peek()).toBe(baseline)
+    expect(model.executing.peek()).toBe(false)
+    expect(done).not.toHaveBeenCalled()
+  } finally {
+    execution.resolve(undefined)
+    commands.resolve(undefined)
+  }
 })
