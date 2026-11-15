@@ -10,7 +10,7 @@ import {
 
 import {
   dummyInitSketchGraphDelta,
-  modelingMachineInitialInternalContext,
+  createModelingMachineInternalContext,
 } from '@src/machines/modelingSharedContext'
 import type {
   DefaultPlane,
@@ -1034,12 +1034,9 @@ export const modelingMachine = setup({
       currentTool: ({ event }) =>
         event.type === 'change tool' ? event.data.tool || 'none' : 'none',
     }),
-    'reset selections': assign({
-      selectionRanges: {
-        otherSelections: [],
-        graphSelections: [],
-      },
-    }),
+    'reset selections': assign(() => ({
+      selectionRanges: { otherSelections: [], graphSelections: [] },
+    })),
     'set sketchMetadata from pathToNode': assign(
       ({ context: { sketchDetails } }) => {
         if (!sketchDetails?.sketchEntryNodePath || !sketchDetails) return {}
@@ -1062,7 +1059,7 @@ export const modelingMachine = setup({
       sketchEnginePathId: '',
       sketchPlaneId: '',
       showNonVisualConstraints: false,
-      initialSceneGraphDelta: dummyInitSketchGraphDelta,
+      initialSceneGraphDelta: () => structuredClone(dummyInitSketchGraphDelta),
     }),
     'reset camera position': ({ context: { engineCommandManager } }) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -4815,10 +4812,9 @@ export const modelingMachine = setup({
   id: 'Modeling',
 
   context: ({ input }) => ({
-    ...modelingMachineInitialInternalContext,
+    ...createModelingMachineInternalContext(),
     ...input,
     store: {
-      ...modelingMachineInitialInternalContext.store,
       ...input.store,
     },
   }),

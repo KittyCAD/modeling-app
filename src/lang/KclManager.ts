@@ -2982,7 +2982,7 @@ export class KclManager extends File {
   get modelingState(): StateFrom<typeof modelingMachine> | null {
     return this._modelingState.value
   }
-  set modelingState(state: StateFrom<typeof modelingMachine>) {
+  set modelingState(state: StateFrom<typeof modelingMachine> | null) {
     this._modelingState.value = state
   }
   get highlightRange(): Array<[number, number]> {
