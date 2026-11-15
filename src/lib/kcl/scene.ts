@@ -1,28 +1,26 @@
-import type { EntityType } from '@kittycad/lib'
-import { computed, effect, signal as createSignal } from '@preact/signals-core'
+import { effect } from '@preact/signals-core'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { cameraMouseDragGuards } from '@src/lib/cameraControls'
+import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
   EngineConnectionEvents,
   getDimensions,
 } from '@src/lib/engineConnection/utils'
 import { createKclRuntime, type KclRuntime } from '@src/lib/kcl/runtime'
-import type {
-  ScenePresentationPreferences,
-  SceneCameraPreferences,
-  SceneAppearancePreferences,
-} from '@src/lib/kcl/presentationPreferences'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import type { ScenePresentationPreferences } from '@src/lib/kcl/presentationPreferences'
+import {
+  createSceneElement,
+  createSceneViewport,
+  type SceneViewport,
+} from '@src/lib/kcl/scenePresentation'
 import {
   connectScene,
   type SceneConnection,
   type ScenePresentation,
 } from '@src/lib/kcl/scene/connection'
-import { type SceneExecutionSettings } from '@src/lib/kcl/scene/executionSettings'
-import { isErr, reportRejection } from '@src/lib/trap'
+import type { SceneExecutionSettings } from '@src/lib/kcl/scene/executionSettings'
+import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 
@@ -77,24 +75,19 @@ export async function openKclScene({
   let connection: SceneConnection | undefined
   let runtime: KclRuntime | undefined
   let infra: SceneInfra | undefined
-  let video: HTMLVideoElement | undefined
-  let detachVideo: (() => void) | undefined
-  let stopDisconnect: (() => void) | undefined
+  let viewport: SceneViewport | undefined
+  let connectionWatch: ReturnType<typeof watchConnection> | undefined
   let stopUnits: (() => void) | undefined
   let disposed = false
-  const element = document.createElement('div')
-  Object.assign(element.style, {
-    position: 'relative',
-    width: '100%',
-    height: '100%',
-    overflow: 'hidden',
-  })
+  const element = createSceneElement()
+  // Startup assigns each resource as it is acquired. The same disposer handles
+  // partial startup and normal closure; native disposal waits for its work queue.
   const dispose = async () => {
     if (disposed) return
     disposed = true
-    stopDisconnect?.()
+    connectionWatch?.dispose()
     stopUnits?.()
-    detachVideo?.()
+    viewport?.dispose()
     infra?.localRenderer?.dispose()
     if (infra) infra.localRenderer = null
     infra?.dispose()
@@ -114,25 +107,16 @@ export async function openKclScene({
       kclVersion,
       timeoutMs: 30_000,
     })
-    if (isErr(connected)) return connected
-    connection = connected
-    // `isConnected` and the close listener belong to this exact connection.
-    // `KclSession.current` rejects callbacks from an attempt replaced by recovery.
-    const ownedConnection = manager.connection
-    const disconnect = () => {
-      if (!disposed && !signal.aborted)
-        onDisconnect(
-          new Error(
-            'The engine disconnected. Return to this view to reconnect.'
-          )
-        )
+    if (isErr(connected)) {
+      await dispose()
+      return connected
     }
-    ownedConnection?.addEventListener(EngineConnectionEvents.Closed, disconnect)
-    stopDisconnect = () =>
-      ownedConnection?.removeEventListener(
-        EngineConnectionEvents.Closed,
-        disconnect
-      )
+    connection = connected
+    connectionWatch = watchConnection(
+      manager,
+      () => disposed || signal.aborted,
+      onDisconnect
+    )
     runtime = await createKclRuntime(
       wasm,
       manager,
@@ -144,14 +128,7 @@ export async function openKclScene({
       await dispose()
       return new Error('The KCL scene closed')
     }
-    const { SceneInfra: Infra } = await import(
-      '@src/clientSideScene/sceneInfra'
-    )
-    if (signal.aborted) {
-      await dispose()
-      return new Error('The KCL scene closed')
-    }
-    infra = new Infra(manager, wasm, () => settings.current.peek())
+    infra = new SceneInfra(manager, wasm, () => settings.current.peek())
     const sceneInfra = infra
     const model = runtime
     // `SceneInfra.baseUnit` controls client-side coordinate conversion even
@@ -159,132 +136,29 @@ export async function openKclScene({
     stopUnits = effect(() => {
       sceneInfra.baseUnit = preferences.defaultUnit.value
     })
-    const camera = sceneInfra.camControls
-    camera.localCameraMode = presentation === 'local'
-    if (camera.localCameraMode) camera.resetLocalCameraToDefaultView()
-    if (presentation === 'streamed') {
-      video = document.createElement('video')
-      video.autoplay = true
-      video.muted = true
-      video.playsInline = true
-      Object.assign(video.style, {
-        position: 'absolute',
-        inset: '0',
-        width: '100%',
-        height: '100%',
-        objectFit: 'contain',
-      })
-      const attached = connection.attachVideo(video)
-      if (isErr(attached)) {
-        await dispose()
-        return attached
-      }
-      detachVideo = attached
-      element.appendChild(video)
-    }
-    Object.assign(sceneInfra.renderer.domElement.style, {
-      position: 'absolute',
-      inset: '0',
-      width: '100%',
-      height: '100%',
-      zIndex: '2',
-    })
-    element.append(
-      sceneInfra.renderer.domElement,
-      sceneInfra.labelRenderer.domElement
+    const view = createSceneViewport(
+      { element, connection: connected, manager, sceneInfra, model, settings },
+      presentation,
+      preferences,
+      () => disposed || signal.aborted
     )
-    const resize = async (nextSize: { width: number; height: number }) => {
-      if (
-        disposed ||
-        signal.aborted ||
-        nextSize.width < 4 ||
-        nextSize.height < 4
-      )
-        return
-      sceneInfra.onCanvasResized()
-      camera.onWindowResize()
-      await connection!.resize(getDimensions(nextSize.width, nextSize.height))
+    if (isErr(view)) {
+      await dispose()
+      return view
     }
-    // Bind GLB exports, artifacts, and camera input to this runtime. The shared
-    // renderer must not obtain them from the legacy route's active editor.
-    const localHost: LocalRendererHost | undefined =
-      presentation === 'local'
-        ? {
-            executionEvents: model.events,
-            executing: model.executing,
-            sceneGeneration: computed(
-              () => model.state.value.engineSceneGeneration
-            ),
-            currentSceneGeneration: () =>
-              model.state.peek().engineSceneGeneration,
-            selectionFilter: createSignal<EntityType[]>([
-              'face',
-              'edge',
-              'solid3d',
-            ]),
-            commands: manager,
-            sceneInfra,
-            settingsActor: settings.actor,
-            artifacts: () => model.state.peek().artifactGraph,
-            defaultPlanes: () => model.state.peek().defaultPlanes,
-            hasErrors: () => model.failed.peek(),
-            exportModel: model.exportModel,
-          }
-        : undefined
-    // `KclSession` also invokes `applySettings` after execution. Remember applied
-    // values so a new model or an unrelated preference cannot replay camera commands.
-    let appliedCamera: SceneCameraPreferences | undefined
-    let appliedAppearance: SceneAppearancePreferences | undefined
-    const applySettings = async () => {
-      if (disposed || signal.aborted) return
-      const nextCamera = preferences.camera.peek()
-      const nextAppearance = preferences.appearance.peek()
-      if (appliedCamera?.mouseControls !== nextCamera.mouseControls)
-        camera.interactionGuards =
-          cameraMouseDragGuards[nextCamera.mouseControls]
-      if (
-        appliedCamera?.enableTouchControls !== nextCamera.enableTouchControls
-      ) {
-        camera.enableTouchControls = nextCamera.enableTouchControls
-        camera.initTouchControls(nextCamera.enableTouchControls)
-      }
-      if (appliedCamera?.cameraProjection !== nextCamera.cameraProjection)
-        await camera.setCameraProjection(nextCamera.cameraProjection)
-      appliedCamera = nextCamera
-      if (appliedAppearance?.theme !== nextAppearance.theme) {
-        sceneInfra.theme = nextAppearance.theme
-        if (presentation === 'streamed')
-          await manager.setTheme(nextAppearance.theme)
-      }
-      if (
-        presentation === 'streamed' &&
-        appliedAppearance?.viewportRendering !==
-          nextAppearance.viewportRendering
-      )
-        manager.setViewportRendering(nextAppearance.viewportRendering)
-      appliedAppearance = nextAppearance
-    }
+    viewport = view
     sceneInfra.animate()
     return {
       element,
       runtime,
       presentation,
-      localHost,
+      localHost: view.localHost,
       preferences,
-      resize,
-      applySettings,
-      frameModel: async () => {
-        if (!disposed && !signal.aborted && presentation === 'streamed')
-          await resetCameraPosition({
-            sceneInfra,
-            settingsActor: settings.actor,
-          })
-      },
-      isConnected: () =>
-        !disposed && manager.isReady && manager.connection === ownedConnection,
-      resume: () => {
-        if (!disposed && video) void video.play().catch(reportRejection)
-      },
+      resize: view.resize,
+      applySettings: view.applySettings,
+      frameModel: view.frameModel,
+      isConnected: connectionWatch.isConnected,
+      resume: view.resume,
       dispose,
     }
   } catch (cause) {
@@ -294,6 +168,32 @@ export async function openKclScene({
       : new Error('Unable to open the KCL scene', { cause })
   }
 }
+
+/** Subscribe to the captured connection; neither health checks nor listener removal should switch to a replacement on the manager. */
+function watchConnection(
+  manager: ConnectionManager,
+  isClosed: () => boolean,
+  onDisconnect: (error: Error) => void
+) {
+  const ownedConnection = manager.connection
+  const disconnect = () => {
+    if (!isClosed())
+      onDisconnect(
+        new Error('The engine disconnected. Return to this view to reconnect.')
+      )
+  }
+  ownedConnection?.addEventListener(EngineConnectionEvents.Closed, disconnect)
+  return {
+    isConnected: () =>
+      !isClosed() && manager.isReady && manager.connection === ownedConnection,
+    dispose: () =>
+      ownedConnection?.removeEventListener(
+        EngineConnectionEvents.Closed,
+        disconnect
+      ),
+  }
+}
+
 export type OpenKclScene = (
   size: { width: number; height: number },
   signal: AbortSignal,
