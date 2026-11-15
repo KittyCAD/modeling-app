@@ -1,5 +1,22 @@
 import { kclExecutionSettingsService } from '@src/lib/kcl/scene/executionSettingsContract'
 import { kclExecutionSettingsRegistryItem } from '@src/lib/kcl/scene/executionSettingsRegistry'
+import {
+  keymapService,
+  keymapScopesValueSpec,
+} from '@src/registry/contracts/keymap'
+import {
+  createMachineModelingHost,
+  type MachineModelingHost,
+} from '@src/lib/kcl/machine/host'
+import { machineManagerService } from '@src/registry/contracts/machineManager'
+import { MachineManager } from '@src/lib/MachineManager'
+import { projectSessionService } from '@src/lib/projectSession/next/contract'
+import { modelingInteractionViewsValueSpec } from '@src/lib/kcl/registry/contract'
+import { createActiveSelection } from '@src/lib/kcl/selection'
+import { createModelingInteractions } from '@src/lib/kcl/interactions'
+import { modelingInteractionsValueSpec } from '@src/lib/kcl/registry/contract'
+import { userFeaturesService } from '@src/registry/contracts/userFeatures'
+import type { ModelingViewRuntime as ModelingViewContext } from '@src/lib/kcl/registry/contract'
 import { modelingStatusItemsValueSpec } from '@src/lib/kcl/registry/contract'
 import { defaultModelingStatusItems } from '@src/lib/kcl/statusItems'
 import { createMeasurementToolService } from '@src/registry/extensions/engineScene/measurementToolService'
@@ -10,7 +27,7 @@ import {
   defineRegistryItemFactory,
   provide,
 } from '@kittycad/registry'
-import { computed } from '@preact/signals-core'
+import { computed, effect, signal } from '@preact/signals-core'
 import { editorKclHighlight } from '@src/editor/plugins/theme'
 import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import { initialiseWasm, relevantFileExtensions } from '@src/lang/wasmUtils'
@@ -32,7 +49,7 @@ import { createScenePresentationPreferences } from '@src/lib/kcl/presentationPre
 import projectSourcesExtension from '@src/lib/projectSession/registry/sources'
 import { projectSourcesService } from '@src/lib/projectSession/next/contract'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
-import { isErr } from '@src/lib/trap'
+import { isErr, reportRejection } from '@src/lib/trap'
 import { authService } from '@src/registry/contracts/auth'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { settingsService } from '@src/registry/contracts/settings'
@@ -136,7 +153,23 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
             measurement.close()
             physicalAnalysis.close()
           })
-          return {
+          let machine: MachineModelingHost
+          const context: ModelingViewContext = {
+            selection: createActiveSelection(
+              () => context,
+              () => context.machine?.owner.value?.selection
+            ),
+            interactions: createModelingInteractions(
+              () => context,
+              valueSpecs.signal(modelingInteractionsValueSpec),
+              valueSpecs.signal(modelingInteractionViewsValueSpec),
+              (id) => machine.enter(id)
+            ),
+            tools: {
+              error: signal(undefined),
+              close: () => machine?.closeDialog(),
+            },
+            settings: services.get(settingsService),
             executor,
             session: execution.getSession(executor),
             wasm: getWasm(),
@@ -145,6 +178,38 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
             physicalAnalysis,
             statusItems: valueSpecs.signal(modelingStatusItemsValueSpec),
           }
+          machine = createMachineModelingHost(() => context, {
+            keymapTree: services.get(keymapService).keymap,
+            keymapScopes: valueSpecs.signal(keymapScopesValueSpec),
+            fileOperations: services.get(fileOperationsService),
+            userFeatures: services.get(userFeaturesService),
+            machineManager:
+              services.optional(machineManagerService)?.manager ??
+              new MachineManager(),
+            // TODO: Supply project export metadata through an explicit next-project adapter.
+            // The native model and files are already captured by this view's executor.
+            project: signal(undefined),
+            projectPath: signal(
+              services.optional(projectSessionService)?.currentProject.peek()
+                ?.contents.path ?? ''
+            ),
+          })
+          context.machine = machine
+          onDispose(() => {
+            machine.dispose().catch(reportRejection)
+          })
+          const stopRecovery = effect(() => {
+            const state = context.session.state.value
+            if (state.type === 'connecting' || state.type === 'error') {
+              context.tools.close()
+              context.tools.error.value = undefined
+              context.interactions.close().catch(reportRejection)
+              context.interactions.error.value = undefined
+            }
+          })
+          onDispose(stopRecovery)
+          onDispose(context.interactions.dispose)
+          return context
         })({
           id: 'kcl.modeling',
           label: 'Modeling',

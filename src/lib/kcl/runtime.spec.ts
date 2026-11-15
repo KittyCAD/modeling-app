@@ -495,3 +495,65 @@ it('delivers replies during queued work and waits for pending replies before fre
     releaseResponse.resolve(undefined)
   }
 })
+
+it('skips acknowledged machine edits but waits for their owner before executing changed imports', async () => {
+  const execute = vi.fn()
+  class NativeContext extends wasm.Context {
+    async execute(
+      ...args: Parameters<InstanceType<ModuleType['Context']>['execute']>
+    ) {
+      execute()
+      return super.execute(...args)
+    }
+  }
+  const model = await runtime({ ...wasm, Context: NativeContext })
+  const code =
+    '@settings(kclVersion = 3.0)\nimport width from "dimensions.kcl"\nanswer = width * 3'
+  await model.execute(
+    snapshot(code, {
+      '/model/dimensions.kcl': '@settings(kclVersion = 3.0)\nexport width = 7',
+    })
+  )
+  const release = Promise.withResolvers<undefined>()
+  let releaseLease = () => {}
+  const invalidated = vi.fn(async () => {
+    await release.promise
+    releaseLease()
+  })
+  const lease = model.borrowModel(invalidated)
+  if (lease instanceof Error) throw lease
+  releaseLease = lease.release
+  try {
+    const edited = code.replace('width * 3', 'width * 4')
+    lease.source(edited)
+    await model.execute(
+      snapshot(edited, {
+        '/model/dimensions.kcl':
+          '@settings(kclVersion = 3.0)\nexport width = 7',
+      })
+    )
+    expect(execute).toHaveBeenCalledOnce()
+    const rerun = model.execute(
+      snapshot(edited, {
+        '/model/dimensions.kcl':
+          '@settings(kclVersion = 3.0)\nexport width = 21',
+      })
+    )
+    await vi.waitFor(() => expect(invalidated).toHaveBeenCalledOnce())
+    expect(execute).toHaveBeenCalledOnce()
+    release.resolve(undefined)
+    expect((await rerun).variables.answer).toMatchObject({
+      type: 'Number',
+      value: 84,
+    })
+    lease.source('stale source')
+    expect(
+      new TextDecoder().decode(
+        model.sources.peek()?.files.get('/model/main.kcl')
+      )
+    ).toBe(edited)
+  } finally {
+    release.resolve(undefined)
+    lease.release()
+  }
+})

@@ -1,3 +1,12 @@
+import type { MachineModelingHost } from '@src/lib/kcl/machine/host'
+import type {
+  createModelingInteractions,
+  ModelingInteractionDefinition,
+} from '@src/lib/kcl/interactions'
+import type { ModelingInteractionViewDefinition } from '@src/lib/kcl/interactionViews'
+import type { SelectionSource } from '@src/lib/kcl/selection'
+import type { SettingsRegistryService } from '@src/registry/contracts/settings'
+import type { Signal } from '@preact/signals-core'
 import { appendValueSpec, defineContract } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { ComponentType } from 'react'
@@ -10,6 +19,11 @@ import type { createPhysicalAnalysisService } from '@src/registry/extensions/eng
 
 /** Contributions receive their owning view explicitly; focus never changes their target. */
 export interface ModelingViewContext {
+  settings: SettingsRegistryService
+  selection: SelectionSource
+  interactions: ReturnType<typeof createModelingInteractions>
+  tools: { error: Signal<Error | undefined>; close: () => void }
+
   executor: Executor
   session: KclSession
   wasm: Promise<ModuleType>
@@ -18,6 +32,10 @@ export interface ModelingViewContext {
   physicalAnalysis: ReturnType<typeof createPhysicalAnalysisService>
   statusItems: ReadonlySignal<readonly ModelingStatusItem[]>
 }
+/** The factory retains the machine's mutable ownership and disposal controls. */
+export interface ModelingViewRuntime extends ModelingViewContext {
+  machine?: MachineModelingHost
+}
 export interface ModelingStatusItem {
   id: string
   side: 'start' | 'end'
@@ -25,8 +43,19 @@ export interface ModelingStatusItem {
   Component: ComponentType<{ context: ModelingViewContext }>
 }
 export const modelingViewContract = defineContract({
+  modelingInteractionsValueSpec: appendValueSpec<ModelingInteractionDefinition>(
+    'modeling-view.interactions'
+  ),
+  modelingInteractionViewsValueSpec:
+    appendValueSpec<ModelingInteractionViewDefinition>(
+      'modeling-view.interaction-views'
+    ),
   modelingStatusItemsValueSpec: appendValueSpec<ModelingStatusItem>(
     'modeling-view.status-items'
   ),
 })
-export const { modelingStatusItemsValueSpec } = modelingViewContract
+export const {
+  modelingStatusItemsValueSpec,
+  modelingInteractionsValueSpec,
+  modelingInteractionViewsValueSpec,
+} = modelingViewContract

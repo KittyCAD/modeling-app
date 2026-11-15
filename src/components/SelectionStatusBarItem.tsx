@@ -51,6 +51,7 @@ export function SelectionStatusBarItem({
       {isOpen && (
         <div
           className="absolute right-0 bottom-full mb-1 z-20 w-[min(240px,calc(100vw-1rem))] max-h-[60vh] overflow-auto rounded-md border border-chalkboard-30 bg-chalkboard-10 shadow-lg dark:border-chalkboard-80 dark:bg-chalkboard-100"
+          data-status-popover
           data-testid="selection-references-popover"
         >
           <div className="sticky top-0 z-10 flex justify-end border-b border-chalkboard-30 dark:border-chalkboard-80 bg-chalkboard-10 dark:bg-chalkboard-100 p-1">

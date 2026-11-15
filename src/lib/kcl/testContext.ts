@@ -1,9 +1,17 @@
+import type { ScenePresentation } from '@src/lib/kcl/scene/connection'
+import { createActiveSelection } from '@src/lib/kcl/selection'
+import type { KclSourceSnapshot } from '@src/lib/kcl/sources'
+import { createModelingInteractions } from '@src/lib/kcl/interactions'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Program } from '@src/lang/wasm'
+import { createSettings } from '@src/lib/settings/initialSettings'
+import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { signal } from '@preact/signals-core'
 import { emptyExecState } from '@src/lang/wasm'
 import { createEditorDocument } from '@src/lib/editors/document'
 import type { Executor } from '@src/lib/executors/registry/contract'
 import { createExecutorOutput } from '@src/lib/executors/output'
-import type { ModelingViewContext } from '@src/lib/kcl/registry/contract'
+import type { ModelingViewRuntime as ModelingViewContext } from '@src/lib/kcl/registry/contract'
 import type { KclSession } from '@src/lib/kcl/session'
 import { defaultModelingStatusItems } from '@src/lib/kcl/statusItems'
 import { createSceneSelection } from '@src/lib/scene/selection'
@@ -11,12 +19,19 @@ import { createMeasurementToolService } from '@src/registry/extensions/engineSce
 import { createPhysicalAnalysisService } from '@src/registry/extensions/engineScene/physicalAnalysis/physicalAnalysisService'
 import { vi } from 'vitest'
 
-export function modelingTestContext() {
+export function modelingTestContext(
+  presentation: ScenePresentation = 'streamed'
+) {
   const document = createEditorDocument(
     '@settings(kclVersion = 3.0)\nanswer = 42'
   )
   const editor = {
+    id: Symbol('test editor'),
+    classification: signal({ languageId: 'kcl' }),
     ...document.document,
+    get state() {
+      return document.document.state
+    },
     src: signal('/main.kcl'),
     readOnly: signal(false),
   }
@@ -27,24 +42,35 @@ export function modelingTestContext() {
       }),
       present: async () => {},
     },
-    ['region']
+    ['region'],
+    presentation === 'local' ? 'separate' : 'selection'
   )
   selection.setModel({ sceneId: Symbol(), executionId: Symbol() })
   const resource = {
+    presentation,
     element: globalThis.document.createElement('div'),
     selection,
     preferences: {
-      camera: signal({}),
+      camera: signal({ cameraProjection: 'perspective' }),
       appearance: signal({}),
       localRenderer: signal({}),
       defaultUnit: signal('mm'),
     },
     runtime: {
+      sources: signal<KclSourceSnapshot | undefined>(undefined),
       state: signal(emptyExecState()),
-      ast: signal(null),
+      ast: signal<Node<Program> | null>(null),
       fileSettings: signal({}),
       executionRevision: signal(1),
       executionElapsedMs: signal(25),
+      evaluateExpression: vi.fn(async (_ast: Node<Program>) =>
+        emptyExecState()
+      ),
+      validate: vi.fn(
+        async (_ast: Node<Program>, _src: string): Promise<Error | undefined> =>
+          undefined
+      ),
+      waitForAllEngineModelingCommands: async () => {},
       executing: signal(false),
       failed: signal(false),
     },
@@ -65,7 +91,15 @@ export function modelingTestContext() {
       return () => resource.element.remove()
     },
   }
+  const settings = createSettings()
   const context: ModelingViewContext = {
+    selection: createActiveSelection(() => context),
+    interactions: createModelingInteractions(() => context, signal([])),
+    tools: { error: signal(undefined), close: () => {} },
+    settings: {
+      current: signal(settings),
+      useSettings: () => settings,
+    } as SettingsRegistryService,
     executor: {
       editor,
       output: signal(
@@ -88,6 +122,7 @@ export function modelingTestContext() {
     resource,
     editor,
     dispose: () => {
+      context.interactions.dispose()
       selection.dispose()
       document.dispose()
     },
