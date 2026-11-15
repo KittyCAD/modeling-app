@@ -2,7 +2,7 @@
 
 `createEntityStyling()` gives a scene owner a reset/disposal boundary and a small
 `EntityStyling` service to lend to consumers. Consumers acquire independently
-owned group handles. Each group specifies rendered entity references, an sRGB
+owned group handles. Each group specifies typed targets, an sRGB
 color, fill and outline opacity, line width in screen pixels, and priority.
 
 Higher-priority groups win a shared rendered target. Equal-priority groups use
@@ -36,3 +36,11 @@ a higher-priority overlapping group, removal revealing the lower group, and a
 scene reset leaving no styles. Verify faces and lines in both light and dark
 themes. Unit tests cover lease isolation/expiration, ordering, target resolution,
 and disposal without freeing source geometry.
+
+
+The service is generic in target identity. Model hosts use the default engine
+`EntityReference`; native sketch surfaces use `EntityStyling<number>` scoped to
+their current solver graph. `ObjectStylingRenderer` supplies the WebGL backend
+for the latter: it consumes resolved meshes and opaque style groups, with no
+knowledge of solver IDs or correspondence semantics. Its overlays are not
+pickable and never dispose borrowed geometry or alter source materials.

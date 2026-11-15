@@ -1,3 +1,4 @@
+import type { EntityReference } from '@kittycad/lib'
 import { expect, it } from 'vitest'
 import fc from 'fast-check'
 import {
@@ -13,7 +14,7 @@ const style: EntityStyle = {
   lineWidth: 1,
 }
 const face = (id: string) => ({ type: 'face' as const, face_id: id })
-function group(owner: ReturnType<typeof createEntityStyling>) {
+function group(owner: ReturnType<typeof createEntityStyling<EntityReference>>) {
   const handle = owner.service.createGroup(style)
   if (handle instanceof Error) throw handle
   return handle

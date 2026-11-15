@@ -11,26 +11,26 @@ export interface EntityStyle {
   readonly lineWidth: number
   readonly priority: number
 }
-export interface EntityStyleGroup {
+export interface EntityStyleGroup<Target = EntityReference> {
   readonly id: symbol
   readonly style: EntityStyle
-  readonly entities: readonly EntityReference[]
+  readonly entities: readonly Target[]
 }
 /** A lease can update only its own group. Resetting the scene expires existing leases. */
-export interface EntityStyleHandle {
-  set: (entities: readonly EntityReference[]) => Error | undefined
+export interface EntityStyleHandle<Target = EntityReference> {
+  set: (entities: readonly Target[]) => Error | undefined
   clear: () => void
   dispose: () => void
 }
-export interface EntityStyling {
-  readonly groups: ReadonlySignal<readonly EntityStyleGroup[]>
-  createGroup: (style: EntityStyle) => EntityStyleHandle | Error
+export interface EntityStyling<Target = EntityReference> {
+  readonly groups: ReadonlySignal<readonly EntityStyleGroup<Target>[]>
+  createGroup: (style: EntityStyle) => EntityStyleHandle<Target> | Error
 }
-export function createEntityStyling() {
-  const groups = signal<readonly EntityStyleGroup[]>([])
+export function createEntityStyling<Target = EntityReference>() {
+  const groups = signal<readonly EntityStyleGroup<Target>[]>([])
   let epoch = 0
   let closed = false
-  const service: EntityStyling = {
+  const service: EntityStyling<Target> = {
     groups,
     createGroup: (style) => {
       const channels = [...style.color, style.fillOpacity, style.outlineOpacity]
