@@ -430,3 +430,72 @@ it('waits for native execution and command draining before closing, without publ
     commands.resolve(undefined)
   }
 })
+
+it('waits for borrowed legacy work before freeing the native context and rejects later borrows', async () => {
+  const freed = vi.fn()
+  class NativeContext extends wasm.Context {
+    free() {
+      freed()
+      super.free()
+    }
+  }
+  const model = await runtime({ ...wasm, Context: NativeContext })
+  const started = Promise.withResolvers<undefined>(),
+    release = Promise.withResolvers<undefined>()
+  const work = model.nativeContextHost.run(async () => {
+    started.resolve(undefined)
+    await release.promise
+  })
+  await started.promise
+  const closing = model.dispose()
+  expect(freed).not.toHaveBeenCalled()
+  release.resolve(undefined)
+  await work
+  await closing
+  expect(freed).toHaveBeenCalledOnce()
+  await expect(model.nativeContextHost.create()).rejects.toThrow('closed')
+  await expect(model.nativeContextHost.run(async () => {})).rejects.toThrow(
+    'closed'
+  )
+})
+
+it('delivers replies during queued work and waits for pending replies before freeing native memory', async () => {
+  const freed = vi.fn()
+  class NativeContext extends wasm.Context {
+    free() {
+      freed()
+      super.free()
+    }
+  }
+  const model = await runtime({ ...wasm, Context: NativeContext })
+  const operationStarted = Promise.withResolvers<undefined>()
+  const releaseOperation = Promise.withResolvers<undefined>()
+  const releaseResponse = Promise.withResolvers<undefined>()
+  const responseStarted = Promise.withResolvers<undefined>()
+  const work = model.nativeContextHost.run(async () => {
+    operationStarted.resolve(undefined)
+    await releaseOperation.promise
+  })
+  try {
+    await operationStarted.promise
+    const closing = model.dispose()
+    const response = model.nativeContextHost.deliverResponse(async () => {
+      responseStarted.resolve(undefined)
+      await releaseResponse.promise
+    })
+    await responseStarted.promise
+    expect(freed).not.toHaveBeenCalled()
+    releaseOperation.resolve(undefined)
+    await work
+    expect(freed).not.toHaveBeenCalled()
+    releaseResponse.resolve(undefined)
+    await Promise.all([response, closing])
+    expect(freed).toHaveBeenCalledOnce()
+    await expect(
+      model.nativeContextHost.deliverResponse(async () => {})
+    ).rejects.toThrow('closed')
+  } finally {
+    releaseOperation.resolve(undefined)
+    releaseResponse.resolve(undefined)
+  }
+})

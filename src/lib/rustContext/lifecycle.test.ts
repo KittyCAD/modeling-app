@@ -53,6 +53,13 @@ function runtime(
       .fn<NativeContextContract['remove_file']>()
       .mockResolvedValue(undefined)
     get_project = vi.fn(async () => ({ module: label }))
+    sendResponse = vi.fn(async () => {})
+    edit_angle_constraint = vi.fn(async () => {
+      throw new Error('Native angle boundary reached')
+    })
+    edit_distance_constraint = vi.fn(async () => {
+      throw new Error('Native distance boundary reached')
+    })
     parseForExecution = vi
       .fn<NativeContextContract['parseForExecution']>()
       .mockResolvedValue(parsedPlanes(1))
@@ -392,5 +399,183 @@ describe('RustContext module lifecycle', () => {
     pending.resolve(first.module)
     await pending.promise
     expect(first.instances).toHaveLength(0)
+  })
+})
+
+describe('borrowed native context hosts', () => {
+  function borrowed(label: string, pendingOpen?: Promise<void>) {
+    const native = runtime(
+      label,
+      vi.fn<ContextOpen>(() => pendingOpen ?? Promise.resolve())
+    )
+    const settingsActor = new Actor(settingsMachine)
+    const manager = new ConnectionManager({ settingsActor })
+    const context = new native.module.Context(manager, {}, undefined)
+    let tail: Promise<unknown> = Promise.resolve()
+    const adapter = new RustContext(
+      Promise.resolve(native.module),
+      manager,
+      settingsActor,
+      0,
+      undefined,
+      {
+        create: async () => context,
+        deliverResponse: (work) => work(),
+        run: <T>(work: () => Promise<T>) => {
+          const next = tail.then(work)
+          tail = next.catch(() => undefined)
+          return next
+        },
+      }
+    )
+    return { adapter, context, native }
+  }
+
+  it('uses the supplied native model and keeps sibling adapters independent', async () => {
+    const first = borrowed('first'),
+      second = borrowed('second')
+    try {
+      expect(await first.adapter.getProjectState()).toEqual({ module: 'first' })
+      expect(await second.adapter.getProjectState()).toEqual({
+        module: 'second',
+      })
+      expect(first.native.instances).toHaveLength(1)
+      expect(second.native.instances).toHaveLength(1)
+      first.adapter.destroy()
+      await expect(first.adapter.getProjectState()).rejects.toThrow('destroyed')
+      expect(await second.adapter.getProjectState()).toEqual({
+        module: 'second',
+      })
+      expect(first.context.free).not.toHaveBeenCalled()
+    } finally {
+      first.adapter.destroy()
+      second.adapter.destroy()
+    }
+  })
+
+  it('queues legacy operations behind pending work and rejects queued operations after adapter closure', async () => {
+    const pending = Promise.withResolvers<undefined>(),
+      first = borrowed('first', pending.promise),
+      second = borrowed('second')
+    const opening = first.adapter.sendOpenProject(main.path, [main])
+    try {
+      await vi.waitFor(() =>
+        expect(first.context.open_project).toHaveBeenCalledOnce()
+      )
+      const queued = first.adapter.getProjectState()
+      const failure = expect(queued).rejects.toThrow('destroyed')
+      expect(first.context.get_project).not.toHaveBeenCalled()
+      expect(await second.adapter.getProjectState()).toEqual({
+        module: 'second',
+      })
+      first.adapter.destroy()
+      pending.resolve(undefined)
+      await opening
+      await failure
+      expect(first.context.get_project).not.toHaveBeenCalled()
+      expect(first.context.free).not.toHaveBeenCalled()
+    } finally {
+      pending.resolve(undefined)
+      first.adapter.destroy()
+      second.adapter.destroy()
+    }
+  })
+  it('applies an update submitted while project opening is pending', async () => {
+    const pending = Promise.withResolvers<undefined>()
+    const current = borrowed('updates', pending.promise)
+    const opening = current.adapter.sendOpenProject(main.path, [main])
+    try {
+      await vi.waitFor(() =>
+        expect(current.context.open_project).toHaveBeenCalledOnce()
+      )
+      const update = current.adapter.sendUpdateFile(main.id, 'changed code')
+      expect(current.context.update_file).not.toHaveBeenCalled()
+      pending.resolve(undefined)
+      await Promise.all([opening, update])
+      expect(current.context.update_file).toHaveBeenCalledWith(
+        0,
+        main.id,
+        'changed code'
+      )
+    } finally {
+      pending.resolve(undefined)
+      current.adapter.destroy()
+    }
+  })
+
+  it('serializes angle and distance edits with the other borrowed operations', async () => {
+    const pending = Promise.withResolvers<undefined>()
+    const current = borrowed('constraints', pending.promise)
+    const opening = current.adapter.sendOpenProject(main.path, [main])
+    try {
+      await vi.waitFor(() =>
+        expect(current.context.open_project).toHaveBeenCalledOnce()
+      )
+      const angle = current.adapter.editAngleConstraint(
+        0,
+        1,
+        2,
+        {
+          type: 'Angle',
+          lines: [3, 4],
+          angle: { value: 90, units: 'Deg' },
+          source: { expr: '90deg', is_literal: true },
+        },
+        {}
+      )
+      const distance = current.adapter.editDistanceConstraint(
+        0,
+        1,
+        5,
+        {
+          type: 'Distance',
+          segments: [],
+          distance: { value: 5, units: 'Mm' },
+          source: { expr: '5mm', is_literal: true },
+        },
+        {}
+      )
+      const angleFailure = expect(angle).rejects.toThrow(
+        'Native angle boundary reached'
+      )
+      const distanceFailure = expect(distance).rejects.toThrow(
+        'Native distance boundary reached'
+      )
+      await Promise.resolve()
+      expect(current.context.edit_angle_constraint).not.toHaveBeenCalled()
+      expect(current.context.edit_distance_constraint).not.toHaveBeenCalled()
+      pending.resolve(undefined)
+      await Promise.all([opening, angleFailure, distanceFailure])
+      expect(current.context.edit_angle_constraint).toHaveBeenCalledOnce()
+      expect(current.context.edit_distance_constraint).toHaveBeenCalledOnce()
+    } finally {
+      pending.resolve(undefined)
+      current.adapter.destroy()
+    }
+  })
+
+  it('delivers engine replies while an operation is occupying the native queue', async () => {
+    const pending = Promise.withResolvers<undefined>(),
+      current = borrowed('current', pending.promise)
+    const opening = current.adapter.sendOpenProject(main.path, [main])
+    try {
+      await vi.waitFor(() =>
+        expect(current.context.open_project).toHaveBeenCalledOnce()
+      )
+      const response = current.adapter.sendResponse({
+        success: false,
+        request_id: 'request',
+        errors: [],
+      })
+      await vi.waitFor(() =>
+        expect(current.context.sendResponse).toHaveBeenCalledOnce()
+      )
+      await response
+      expect(current.context.open_project).toHaveBeenCalledOnce()
+    } finally {
+      pending.resolve(undefined)
+      await opening
+      current.adapter.destroy()
+    }
   })
 })
