@@ -17,6 +17,7 @@ import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelin
 import { modelingStdLibCommandSummary } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { Project } from '@src/lib/project'
 import { modelingMachine } from '@src/machines/modelingMachine'
+import { bindModelingMachine } from '@src/machines/modelingMachineBinding'
 
 import { useSignals } from '@preact/signals-react/runtime'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
@@ -222,18 +223,10 @@ export const ModelingMachineProvider = ({
     }
   }, [modelingActor])
 
-  // Give the state back to the kclManager.
-  useEffect(() => {
-    kclManager.modelingSend = modelingSend
-  }, [modelingSend, kclManager])
-
-  useEffect(() => {
-    kclManager.modelingState = modelingState
-  }, [modelingState, kclManager])
-
-  useEffect(() => {
-    kclManager.selectionRanges = modelingState.context.selectionRanges
-  }, [modelingState.context.selectionRanges, kclManager])
+  useEffect(
+    () => bindModelingMachine(modelingActor, kclManager),
+    [modelingActor, kclManager]
+  )
 
   // When changing camera modes reset the camera to the default orientation to correct
   // the up vector otherwise the conconical orientation for the camera modes will be
