@@ -1,4 +1,5 @@
 import { applySceneOverlayTheme } from '@src/lib/kcl/scene/applyPreferences'
+import type { ModelingDocumentAdapter } from '@src/lib/kcl/machine/document'
 import { observeLegacySceneExecutionSettings } from '@src/lib/kcl/scene/legacyExecutionSettings'
 import {
   SceneExecutionEvents as KclManagerEvents,
@@ -337,6 +338,13 @@ export interface PendingFeatureTreeSourceSelection {
   range: [number, number, number]
 }
 
+/** A Modeling view lends its document and scene; the legacy file route continues to allocate them. */
+export interface KclManagerViewHost {
+  document: ModelingDocumentAdapter
+  sceneInfra: SceneInfra
+  publishState: (state: ExecState) => void
+}
+
 export class KclManager extends File {
   // SYSTEM DEPENDENCIES
 
@@ -367,6 +375,9 @@ export class KclManager extends File {
   }
   private closed = false
   private fileSelectionGeneration = 0
+  get hasDocumentHost() {
+    return this.viewHost !== undefined
+  }
   readonly systemDeps: ProjectSystemDeps
   private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
   /** React publishes modeling snapshots for consumers such as Named Views. */
@@ -576,8 +587,8 @@ export class KclManager extends File {
   redoDepth = signal(0)
   historyOperationInProgress = signal(false)
   private updateHistoryDepth = (state = this._editorView.state) => {
-    const localUndo = undoDepth(state)
-    const localRedo = redoDepth(state)
+    const localUndo = undoDepth(this.viewHost?.document.state ?? state)
+    const localRedo = redoDepth(this.viewHost?.document.state ?? state)
     const globalUndo = this._globalHistoryView.undoDepth
     const globalRedo = this._globalHistoryView.redoDepth
 
@@ -819,6 +830,29 @@ export class KclManager extends File {
   private set execState(execState) {
     this._execState.value = execState
     this.variables = execState.variables
+    if (!this.closed) this.viewHost?.publishState(execState)
+  }
+
+  /** Adopt the executor's completed model before the view's machine starts handling it. */
+  adoptExecution(code: string, ast: Node<Program>, state: ExecState) {
+    if (this.closed) return
+    this.ast = ast
+    this.execState = state
+    this.lastSuccessfulVariables = state.variables
+    this.lastSuccessfulOperations = state.operations
+    this.lastSuccessfulCode = code
+    this.markCodeAsExecuted(code)
+    this.setArtifactGraphState(state.artifactGraph)
+    this.dispatchUpdateOperations(
+      getOperationsForCurrentFile({
+        operationsByModule: state.operations,
+        filenames: state.filenames,
+        currentPath: this.path,
+      })
+    )
+    this.rustContext
+      .adoptExecutedProject(state.defaultPlanes, state.engineSceneGeneration)
+      .catch(reportRejection)
   }
 
   private clearNamedViews() {
@@ -1063,6 +1097,7 @@ export class KclManager extends File {
     sceneGraphDelta: SceneGraphDelta,
     options: { refreshLintDiagnostics?: boolean } = {}
   ): void {
+    if (this.closed) return
     const execState = execStateFromRust(sceneGraphDelta.exec_outcome)
 
     this.diagnostics = []
@@ -1289,6 +1324,7 @@ export class KclManager extends File {
   }
 
   setEditorAutomaticallyRender(shouldAutomaticallyRender: boolean) {
+    if (this.viewHost) return
     if (this._automaticallyRenderEnabled === shouldAutomaticallyRender) {
       return
     }
@@ -1907,7 +1943,9 @@ export class KclManager extends File {
   })()
 
   private createEditorExtensions() {
-    const shouldAutomaticallyRender = this.getAutomaticallyRenderSetting()
+    const shouldAutomaticallyRender = this.viewHost
+      ? true
+      : this.getAutomaticallyRenderSetting()
     this._automaticallyRenderEnabled = shouldAutomaticallyRender
 
     return [
@@ -1958,7 +1996,7 @@ export class KclManager extends File {
       executionCompartment.of(
         this.getExecutionExtension(shouldAutomaticallyRender)
       ),
-      this.writeToFileListener,
+      this.viewHost ? [] : this.writeToFileListener,
       this.sketchModeDirectEditHistoryExtension,
       this.syntheticHistoryCommitExtension,
       this.sketchCheckpointHistoryExtension,
@@ -2070,7 +2108,8 @@ export class KclManager extends File {
     path: string,
     initialCode: string,
     systemDeps: ProjectSystemDeps,
-    fileId = 0
+    fileId = 0,
+    private readonly viewHost?: KclManagerViewHost
   ) {
     super(path, systemDeps.textFileIO, fileId)
     // Remove obsolete persisted drafts, including files not opened this session.
@@ -2087,11 +2126,13 @@ export class KclManager extends File {
       getSettingsFromActorContext(this.systemDeps.settings)
     this.engineCommandManager = this.systemDeps.engineCommandManager
     this.rustContext = this.systemDeps.rustContext
-    this.sceneInfra = new SceneInfra(
-      this.engineCommandManager,
-      systemDeps.wasmInstancePromise,
-      getSettings
-    )
+    this.sceneInfra =
+      viewHost?.sceneInfra ??
+      new SceneInfra(
+        this.engineCommandManager,
+        systemDeps.wasmInstancePromise,
+        getSettings
+      )
     this.sceneEntitiesManager = new SceneEntities(
       this.engineCommandManager,
       this.sceneInfra,
@@ -2105,11 +2146,34 @@ export class KclManager extends File {
       fsHistoryExtension(),
       zookeeperHistoryExtension(),
     ])
-    this._editorView = this.createEditorView(initialCode)
+    this._editorView = viewHost
+      ? viewHost.document.createView(
+          this.createEditorExtensions(),
+          (effect) =>
+            effect.is(sketchCheckpointHistoryEffect) ||
+            effect.is(syntheticHistoryCommitEffect) ||
+            effect.is(directSketchHistoryMarkerEffect),
+          (effect, transaction) => {
+            if (effect.is(syntheticHistoryCommitEffect))
+              return {
+                before: effect.value.undoCode,
+                after: effect.value.redoCode,
+              }
+            if (effect.is(sketchCheckpointHistoryEffect))
+              return {
+                before: this.lastCommittedCode,
+                after: transaction.state.doc.toString(),
+              }
+            return undefined
+          }
+        )
+      : this.createEditorView(initialCode)
     // TODO: Delete this._code, only derive from the editorView's doc
     this._code.value = initialCode
     this.markFileCodeAsSynced(initialCode)
-    this._globalHistoryView.registerLocalHistoryTarget(this._editorView)
+    if (viewHost) this.lastCommittedCode = initialCode
+    if (!viewHost)
+      this._globalHistoryView.registerLocalHistoryTarget(this._editorView)
     this.disposeGlobalHistorySubscription =
       this._globalHistoryView.subscribeToHistoryChanges(() => {
         this.updateHistoryDepth()
@@ -2120,6 +2184,7 @@ export class KclManager extends File {
 
     this.systemDeps.wasmInstancePromise
       .then(async (wasmInstance) => {
+        if (this.closed) return
         this._kclVersion = getKclVersion(wasmInstance)
         if (typeof wasmInstance === 'string') {
           this.wasmInitFailed = true
@@ -2158,6 +2223,10 @@ export class KclManager extends File {
     this.disposeSettings = undefined
     this.disposeGlobalHistorySubscription?.()
     this.unwatch()
+    if (this.viewHost) {
+      this.viewHost.document.suspend()
+      this._globalHistoryView.destroy()
+    }
   }
 
   private cloudSnapshotGeneration = 0
@@ -3102,7 +3171,7 @@ export class KclManager extends File {
   }
 
   private startWatchingSettings() {
-    if (this.disposeSettings) return
+    if (this.viewHost || this.disposeSettings) return
     this.disposeSettings = this.watchSettings()
   }
 
@@ -3486,10 +3555,12 @@ export class KclManager extends File {
     )
   }
   undo() {
-    this._globalHistoryView.undo(this._editorView)
+    if (this.viewHost) this.viewHost.document.undo()
+    else this._globalHistoryView.undo(this._editorView)
   }
   redo() {
-    this._globalHistoryView.redo(this._editorView)
+    if (this.viewHost) this.viewHost.document.redo()
+    else this._globalHistoryView.redo(this._editorView)
   }
   synchronizeLocalHistoryAfterDirectGlobalRedo() {
     if (!this.restoredEditorHistoryOnLastFileSwitch) {
@@ -3948,6 +4019,7 @@ export class KclManager extends File {
     options: Partial<UpdateCodeEditorOptions> = KclManager.defaultUpdateCodeEditorOptions,
     additionalSpec?: UpdateCodeEditorAdditionalSpec
   ): void {
+    if (this.closed) return
     const resolvedOptions: UpdateCodeEditorOptions = Object.assign(
       structuredClone(KclManager.defaultUpdateCodeEditorOptions),
       options
@@ -4072,6 +4144,7 @@ export class KclManager extends File {
     requestedDocumentVersion = this._documentVersion,
     options: { suppressConflictToast?: boolean } = {}
   ) {
+    if (this.viewHost) return
     if (this.path !== '') {
       this.systemDeps.projectSession?.editorChanged(this.path)
       // KclManager is reused across file navigation. Bind this save to the

@@ -361,6 +361,16 @@ export default class RustContext {
     return this._defaultPlanes
   }
 
+  /** The executor opened this borrowed native project; adopt its file/plane readiness without opening a second project. */
+  async adoptExecutedProject(
+    planes: DefaultPlanes | null,
+    generation: number | null | undefined
+  ) {
+    const context = await this._checkContextInstance()
+    this.hasOpenedProject = true
+    this.setDefaultPlanes(planes, generation, this.capturePlaneOwner(context))
+  }
+
   private capturePlaneOwner(context: Context): PlanePublicationOwner {
     return {
       context,
