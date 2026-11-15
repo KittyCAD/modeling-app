@@ -12,9 +12,9 @@ text while keeping their engine connections and native contexts independent.
 
 The registry contribution connects three parts:
 
-1. **Capture sources.** `loadKclSources` captures the entrypoint and open imported
-   buffers, including unsaved edits. It loads other relevant project files from
-   storage, preserving binary imports as bytes.
+1. **Capture sources.** The project source service captures the entrypoint and
+   open imported buffers, including unsaved edits. Project sessions supply byte
+   reads for other files. KCL declares its supported import types.
 2. **Execute.** The executor runs that snapshot through the view's native KCL
    runtime. Changes to the buffer, imported buffers, project contents, or opted-in
    settings invalidate the previous run. External storage updates enter through
@@ -31,7 +31,8 @@ setting opts into execution refresh.
 | Owner | Responsibility |
 | --- | --- |
 | Editor | Working text and undo history shared by its presentations |
-| Modeling view's executor | Source snapshots, run cancellation, results, and scene lifetime |
+| Project source service | Working-document precedence, project membership, captured bytes, and source revisions |
+| Modeling view's executor | Run cancellation, results, and scene lifetime |
 | `createKclSession` | Connection startup, presentation attachment, resizing, and recovery |
 | `createKclRuntime` | Native model memory and serialized execution, export, and disposal |
 
@@ -69,7 +70,8 @@ boundary and its ownership decisions.
 ## Code map
 
 - [`registry/index.ts`](registry/index.ts): contributes KCL editing and Modeling.
-- [`sources.ts`](sources.ts): captures execution inputs.
+- [`project sources`](../projectSession/next/sources.ts): captures working documents
+  and stored bytes for a specific project opening.
 - [`executor.ts`](executor.ts): connects an editor executor to its scene session.
 - [`session.ts`](session.ts): owns connection and presentation lifetime.
 - [`runtime.ts`](runtime.ts): owns native KCL operations.

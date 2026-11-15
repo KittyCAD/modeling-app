@@ -60,10 +60,7 @@ function createSession(
         readWriteAccess: false,
       },
     }),
-    files: {
-      read: vi.fn(),
-      write: vi.fn(),
-    },
+    files: { readBytes: vi.fn(), read: vi.fn(), write: vi.fn() },
   }
 }
 describe('project screen', () => {
