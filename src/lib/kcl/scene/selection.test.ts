@@ -302,3 +302,176 @@ it('changes only its own view filter and clears its selections, while a dialog r
     second.selection.dispose()
   }
 })
+
+it('projects correspondence without changing selection, defers it during dialog picking, and invalidates it with the model', async () => {
+  const { selection, adapter, pick } = setup()
+  try {
+    await pick(1)
+    const model = selection.model.peek()!
+    selection.setCorrespondence([{ model, reference: region('2') }])
+    await vi.waitFor(() =>
+      expect(adapter.present.mock.lastCall?.[0]).toEqual([
+        region('1'),
+        region('2'),
+      ])
+    )
+    expect(selection.selected.peek().map((item) => item.reference)).toEqual([
+      region('1'),
+    ])
+    const argument = profiles()
+    const dialog = requireValue(
+      selection.beginPicking({ arguments: [argument] })
+    )
+    dialog.activate('profiles')
+    selection.offer([{ model, reference: region('3') }])
+    await vi.waitFor(() =>
+      expect(adapter.present.mock.lastCall?.[0]).toEqual([region('3')])
+    )
+    expect(selection.promoteCorrespondence()).toBeInstanceOf(Error)
+    dialog.close()
+    await vi.waitFor(() =>
+      expect(adapter.present.mock.lastCall?.[0]).toEqual([
+        region('1'),
+        region('2'),
+      ])
+    )
+    expect(selection.promoteCorrespondence()).toBeUndefined()
+    expect(selection.selected.peek().map((item) => item.reference)).toEqual([
+      region('2'),
+    ])
+    selection.setModel({ sceneId: model.sceneId, executionId: Symbol() })
+    expect(selection.correspondence.peek()).toEqual([])
+    expect(
+      selection.setCorrespondence([{ model, reference: region('2') }])
+    ).toBeInstanceOf(Error)
+  } finally {
+    selection.dispose()
+  }
+})
+
+it('rejects stale or incompatible linked picks as a whole without partially changing an argument', () => {
+  const { selection } = setup()
+  try {
+    const argument = profiles()
+    const dialog = requireValue(
+      selection.beginPicking({ arguments: [argument] })
+    )
+    dialog.activate('profiles')
+    const model = selection.model.peek()!
+    selection.offer([{ model, reference: region('1') }])
+    expect(
+      selection.offer([
+        { model, reference: region('2') },
+        { model, reference: { type: 'face', face_id: 'face' } },
+      ])
+    ).toBeInstanceOf(Error)
+    expect(argument.value.peek().map((item) => item.reference)).toEqual([
+      region('1'),
+    ])
+    expect(
+      selection.offer([
+        { model: { ...model, executionId: Symbol() }, reference: region('3') },
+      ])
+    ).toBeInstanceOf(Error)
+    expect(argument.value.peek().map((item) => item.reference)).toEqual([
+      region('1'),
+    ])
+    dialog.close()
+    expect(selection.offer([{ model, reference: region('2') }])).toBeInstanceOf(
+      Error
+    )
+  } finally {
+    selection.dispose()
+  }
+})
+
+it('does not resend scene highlights when a bridge projects the same correspondence again', async () => {
+  const { selection, adapter, pick } = setup()
+  try {
+    await pick(1)
+    const model = selection.model.peek()!
+    selection.setCorrespondence([{ model, reference: region('2') }])
+    await vi.waitFor(() =>
+      expect(adapter.present.mock.lastCall?.[0]).toEqual([
+        region('1'),
+        region('2'),
+      ])
+    )
+    const count = adapter.present.mock.calls.length
+    selection.setCorrespondence([{ model, reference: region('2') }])
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(adapter.present.mock.calls).toHaveLength(count)
+  } finally {
+    selection.dispose()
+  }
+})
+
+it('keeps separate-renderer correspondence out of engine selection while allowing explicit promotion', async () => {
+  const present = vi.fn<SelectionAdapter['present']>(async () => {})
+  const selection = createSceneSelection(
+    { pick: async () => undefined, present },
+    ['region'],
+    'separate'
+  )
+  try {
+    const current = model()
+    selection.setModel(current)
+    selection.setCorrespondence([{ model: current, reference: region('hint') }])
+    await vi.waitFor(() => expect(present).toHaveBeenCalled())
+    expect(present.mock.calls.every((call) => call[0].length === 0)).toBe(true)
+    expect(selection.selected.peek()).toEqual([])
+    expect(selection.promoteCorrespondence()).toBeUndefined()
+    await vi.waitFor(() =>
+      expect(present.mock.lastCall?.[0]).toEqual([region('hint')])
+    )
+  } finally {
+    selection.dispose()
+  }
+})
+
+it('hands input and projection to a machine while forwarding view controls to that owner', async () => {
+  const { selection, adapter, pick } = setup()
+  await pick(1)
+  const projectionCount = adapter.present.mock.calls.length
+  const clear = vi.fn(),
+    setFilter = vi.fn(() => undefined)
+  const owned = selection.handoff({ enabled: signal(true), clear, setFilter })
+  owned.observe([region('owned')], ['face'])
+  await pick(2)
+  expect(adapter.pick).toHaveBeenCalledOnce()
+  expect(adapter.present).toHaveBeenCalledTimes(projectionCount)
+  expect(selection.displayed.peek().map((value) => value.reference)).toEqual([
+    region('owned'),
+  ])
+  selection.clear()
+  selection.setFilter(['region'])
+  expect(clear).toHaveBeenCalledOnce()
+  expect(setFilter).toHaveBeenCalledWith(['region'])
+  owned.release()
+  await pick(3)
+  expect(adapter.pick).toHaveBeenCalledTimes(2)
+  expect(selection.selected.peek().map((value) => value.reference)).toEqual([
+    region('3'),
+  ])
+  selection.dispose()
+})
+
+it('ignores a retired handoff and rejects control calls after disposal', async () => {
+  const { selection, adapter, pick } = setup()
+  const first = selection.handoff()
+  const clear = vi.fn(),
+    setFilter = vi.fn(() => undefined)
+  const second = selection.handoff({ enabled: signal(true), clear, setFilter })
+  first.release()
+  first.observe([region('stale')], ['face'])
+  second.observe([region('current')], ['region'])
+  await pick(1)
+  expect(adapter.pick).not.toHaveBeenCalled()
+  expect(selection.selected.peek()[0].reference).toEqual(region('current'))
+  selection.dispose()
+  selection.clear()
+  expect(selection.setFilter(['face'])).toBeInstanceOf(Error)
+  expect(clear).not.toHaveBeenCalled()
+  expect(setFilter).not.toHaveBeenCalled()
+})
