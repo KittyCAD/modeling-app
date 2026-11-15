@@ -45,7 +45,7 @@ import {
 } from '@src/registry/contracts/keymap'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { useSelector } from '@xstate/react'
-import { memo, useMemo } from 'react'
+import { memo, useMemo, type ComponentType, type ComponentProps } from 'react'
 import type { SnapshotFrom } from 'xstate'
 
 export type ModelingMachineToolbarProps = {
@@ -63,6 +63,7 @@ export type ModelingMachineToolbarProps = {
 
 /** Per-view inputs for the existing machine-state toolbar resolver. Legacy app lookup stays in `Toolbar`. */
 export interface ModelingMachineToolbarHost {
+  ToolbarComponent?: ComponentType<ComponentProps<typeof ToolbarView>>
   toolbarConfig: ToolbarConfig
   registeredCommands: readonly Command[]
   activeDialogCommandKey: string | undefined
@@ -366,8 +367,9 @@ export function ModelingMachineToolbar(
         ? { ...item, array: item.array.map(adaptItem) }
         : adaptItem(item)
   )
+  const View = host.ToolbarComponent ?? ToolbarView
   return (
-    <ToolbarView
+    <View
       items={items}
       mode={toolbarConfigurationName}
       platform={platform}
@@ -406,7 +408,7 @@ export function ModelingMachineToolbar(
           <p className="text-xs">{symmetricToolPrompt}</p>
         </div>
       )}
-    </ToolbarView>
+    </View>
   )
 }
 
