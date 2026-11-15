@@ -18,7 +18,7 @@ import * as Fiber from 'effect/Fiber'
 import * as Scope from 'effect/Scope'
 import * as Exit from 'effect/Exit'
 
-/** A run captures source, contents, and applicable contributions together. */
+/** Inputs compared by `sameInput` to decide whether this editor needs a replacement run. */
 interface ExecutionInput {
   src: string
   contents: string
@@ -27,7 +27,7 @@ interface ExecutionInput {
   refresh: number
 }
 
-/** Owns a scoped watcher and interrupts the previous computation before starting another. */
+/** Watches one `Editor` and matching contributions; replacement input interrupts its Effect fiber before new results can publish. */
 export function createExecutor(
   editor: Editor,
   contributions: ReadonlySignal<readonly ExecutorCapability[]>,
@@ -57,7 +57,8 @@ export function createExecutor(
   const execute = (input: ExecutionInput) =>
     Effect.gen(function* () {
       if (input.capabilities.length === 0) return
-      // Yield before starting computations so edits from the same turn coalesce.
+      // Delay capability calls by a microtask. Another edit in this JavaScript
+      // turn can interrupt this fiber before it starts expensive computation.
       yield* Effect.promise(() => Promise.resolve())
       const completed: ExecutorResult[] = []
       const results = yield* Effect.forEach(
@@ -89,7 +90,8 @@ export function createExecutor(
             Effect.tap((result) =>
               Effect.sync(() => {
                 completed.push(result)
-                // A view can use its result while an unrelated capability awaits resources.
+                // Publish this capability's result immediately; other capabilities
+                // may still be waiting for resources such as a mounted viewport.
                 output.value = createExecutorOutput(
                   { src: input.src, contents: input.contents, running: true },
                   completed
@@ -130,8 +132,8 @@ export function createExecutor(
           const next = snapshot()
           if (previous && sameInput(previous, next)) return
           previous = next
-          // Interrupt at the signal boundary, before a queued old completion can
-          // publish. A buffered stream alone leaves a window before consumption.
+          // Cancel when the input signal changes, before queued Promise
+          // continuations from the old run can reach their output-publication effect.
           if (currentRun) Effect.runSync(Fiber.interruptFork(currentRun))
           output.value = pending(next)
           currentRun = Effect.runSync(

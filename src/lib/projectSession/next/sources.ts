@@ -7,11 +7,18 @@ import type {
 } from '@src/lib/projectSession/next/contract'
 import { isErr } from '@src/lib/trap'
 
-/** Capture live documents before awaiting storage; all reads stay bound to one project opening. */
+/**
+ * The project source provider used by KCL's executor capability. `capture` copies
+ * all open document text synchronously, then reads missing files through the
+ * captured session's `files.readBytes`. Storage reads happen per file; this is
+ * not an atomic snapshot of external filesystem changes.
+ */
 export function createProjectSources(
   getProjects: () => ProjectSessionService | undefined,
   getDocuments: () => readonly Pick<Editor, 'src' | 'contents'>[]
 ): ProjectSourcesService {
+  // Metadata updates retain `contents`; this intermediate computed prevents a
+  // title/default-file change from invalidating the execution source revision.
   const projectTree = computed(
     () => getProjects()?.currentSession.value?.project.value.contents
   )
@@ -33,6 +40,8 @@ export function createProjectSources(
       const projects = getProjects()
       const session = projects?.currentSession.peek()
       const tree = session?.project.peek().contents
+      // A new file tree or project opening invalidates a partially loaded input.
+      // Already captured document text remains independent of subsequent typing.
       const cancelled = () =>
         signal.aborted ||
         (!!session &&
