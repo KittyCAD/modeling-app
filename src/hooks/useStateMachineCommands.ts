@@ -13,7 +13,7 @@ import type {
   StateMachineCommandSetSchema,
 } from '@src/lib/commandTypes'
 import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
-import { createMachineCommand } from '@src/lib/createMachineCommand'
+import { registerMachineCommands } from '@src/lib/registerMachineCommands'
 
 interface UseStateMachineCommandsArgs<
   T extends AnyStateMachine,
@@ -30,13 +30,7 @@ interface UseStateMachineCommandsArgs<
   onCancel?: () => void
 }
 
-/**
- * @deprecated the type plumbing required for this function is way over-complicated.
- * Instead, opt to create `Commands` directly.
- *
- * This is only used for modelingMachine commands now, and once that is decoupled from React,
- * TODO: Delete this function and other state machine helper functions.
- */
+/** Legacy app readiness adapter; view-owned command actors can call `registerMachineCommands` directly. */
 export default function useStateMachineCommands<
   T extends AnyStateMachine,
   S extends StateMachineCommandSetSchema<T>,
@@ -77,46 +71,18 @@ export default function useStateMachineCommands<
     disableForUnrenderedChanges
 
   useEffect(() => {
-    const newCommands = Object.keys(commandBarConfig || {})
-      .flatMap((type) => {
-        const typeWithProperType = type as EventFrom<T>['type']
-        return createMachineCommand<T, S>({
-          // The group is the owner machine's ID.
-          groupId: machineId,
-          type: typeWithProperType,
-          state,
-          send,
-          actor,
-          commandBarConfig,
-          getDefaultDescription,
-          defaultScopes: scopes,
-          onCancel,
-          forceDisable: shouldDisableEngineCommands,
-          showExperimentalCommands,
-        })
-      })
-      .map((command) =>
-        command
-          ? {
-              ...command,
-              useModelingDialog:
-                command.groupId === 'modeling' && !command.forceCommandBar,
-            }
-          : command
-      )
-      .filter((c) => c !== null) as Command[] // TS isn't smart enough to know this filter removes nulls
-
-    commands.send({
-      type: 'Add commands',
-      data: { commands: newCommands },
+    return registerMachineCommands<T, S>(commands, {
+      machineId,
+      state,
+      send,
+      actor,
+      commandBarConfig,
+      getDefaultDescription,
+      scopes,
+      onCancel,
+      forceDisable: shouldDisableEngineCommands,
+      showExperimentalCommands,
     })
-
-    return () => {
-      commands.send({
-        type: 'Remove commands',
-        data: { commands: newCommands },
-      })
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [
     shouldDisableEngineCommands,
