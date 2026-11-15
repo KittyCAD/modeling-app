@@ -37,7 +37,11 @@ export interface PickingArgument {
   readonly multiple: boolean
   readonly value: ReadonlySignal<readonly SceneSelection[]>
   accepts: (reference: EntityReference) => boolean
-  setValue: (value: readonly SceneSelection[]) => void
+  /** User edits carry intent; seeding and execution invalidation do not. */
+  setValue: (
+    value: readonly SceneSelection[],
+    intent?: { additive: boolean }
+  ) => void
 }
 /**
  * Controls which dialog field receives scene picks. Re-execution clears the
@@ -70,6 +74,16 @@ export interface SelectionAdapter {
   ) => Promise<void>
 }
 
+/** A legacy machine can own picking while existing view consumers borrow its read/clear/filter interface. */
+export interface ExternalSelectionOwner {
+  readonly enabled: ReadonlySignal<boolean>
+  readonly argument?: ReadonlySignal<PickingArgument | undefined>
+  readonly dialogOpen?: ReadonlySignal<boolean>
+  clear: () => void
+  restore?: () => void
+  setFilter: (filter: readonly EntityType[]) => Error | undefined
+}
+
 interface DialogState {
   target: Signal<SelectionModel | null>
   arguments: readonly PickingArgument[]
@@ -84,14 +98,19 @@ interface DialogState {
  */
 export function createSceneSelection(
   adapter: SelectionAdapter,
-  defaultFilter: readonly EntityType[]
+  defaultFilter: readonly EntityType[],
+  correspondencePresentation: 'selection' | 'separate' = 'selection'
 ) {
   const model = signal<SelectionModel | null>(null)
   const selected = signal<readonly SceneSelection[]>([])
+  const correspondence = signal<readonly SceneSelection[]>([])
   const viewFilter = signal<readonly EntityType[]>([...defaultFilter])
   const error = signal<Error | undefined>(undefined)
   const dialog = signal<DialogState | undefined>(undefined)
   let disposed = false
+  const externalOwner = signal(false)
+  const externalControls = signal<ExternalSelectionOwner | undefined>(undefined)
+  let externalGeneration = 0
   let ownership = 0
   let projection = 0
   let presents = Promise.resolve()
@@ -116,13 +135,28 @@ export function createSceneSelection(
     () =>
       !disposed &&
       model.value !== null &&
+      (!externalOwner.value || !!externalControls.value?.enabled.value) &&
       (!dialog.value ||
         (dialog.value.target.value === model.value &&
           !!dialog.value.active.value))
   )
   const stop = effect(() => {
+    if (externalOwner.value && !dialog.value) {
+      projection++
+      return
+    }
     const currentModel = model.value
-    const values = displayed.value
+    const values =
+      dialog.value || correspondencePresentation === 'separate'
+        ? displayed.value
+        : [...displayed.value, ...correspondence.value].filter(
+            (value, index, values) =>
+              values.findIndex(
+                (item) =>
+                  entityReferenceKey(item.reference) ===
+                  entityReferenceKey(value.reference)
+              ) === index
+          )
     const currentFilter = filter.value
     const ticket = ++projection
     if (!currentModel) return
@@ -177,7 +211,7 @@ export function createSceneSelection(
           : [...previous, target]
         : [target]
     error.value = undefined
-    if (argument) argument.setValue(next)
+    if (argument) argument.setValue(next, { additive })
     else selected.value = next
   }
   const invalidate = () => {
@@ -185,6 +219,7 @@ export function createSceneSelection(
     batch(() => {
       model.value = null
       selected.value = []
+      correspondence.value = []
       error.value = undefined
       const session = dialog.peek()
       if (session) {
@@ -195,13 +230,142 @@ export function createSceneSelection(
     })
   }
   return {
+    /** Machine picking owns engine projection and input; this controller remains a read model for existing consumers. */
+    handoff: (controls?: ExternalSelectionOwner) => {
+      const ticket = ++externalGeneration
+      changeOwner()
+      externalControls.value = controls
+      externalOwner.value = true
+      return {
+        observe: (
+          references: readonly EntityReference[],
+          nextFilter: readonly EntityType[]
+        ) => {
+          const target = model.peek()
+          if (
+            disposed ||
+            ticket !== externalGeneration ||
+            !externalOwner.peek() ||
+            !target
+          )
+            return
+          batch(() => {
+            selected.value = references.map((reference) => ({
+              reference,
+              model: target,
+            }))
+            viewFilter.value = [...nextFilter]
+          })
+        },
+        release: () => {
+          if (disposed || ticket !== externalGeneration) return
+          externalGeneration++
+          changeOwner()
+          externalOwner.value = false
+          externalControls.value = undefined
+        },
+      }
+    },
     model: computed(() => model.value),
     selected: computed(() => selected.value),
     displayed,
+    correspondence: correspondence as ReadonlySignal<readonly SceneSelection[]>,
+    pickingArgument: computed(() =>
+      dialog.value
+        ? dialog.value.active.value
+        : externalControls.value?.argument?.value
+    ),
+    /** Correspondence is presentation only; commands continue reading their own selection owner. */
+    setCorrespondence: (values: readonly SceneSelection[]) => {
+      if (disposed || values.some((value) => value.model !== model.peek()))
+        return new Error('The correspondence model changed.')
+      const previous = correspondence.peek()
+      if (
+        previous.length === values.length &&
+        previous.every(
+          (item, index) =>
+            item.model === values[index].model &&
+            entityReferenceKey(item.reference) ===
+              entityReferenceKey(values[index].reference)
+        )
+      )
+        return undefined
+      correspondence.value = values.map((value) => ({
+        ...value,
+        reference: structuredClone(value.reference),
+      }))
+      return undefined
+    },
+    /** Programmatic promotion is deliberately unused by UI; navigation remains a separate capability. */
+    // TODO: Keep promotion unbound from UI while its interaction semantics are evaluated.
+    promoteCorrespondence: () => {
+      if (disposed || dialog.peek() || !model.peek())
+        return new Error(
+          'A picking session owns selection, or the model is unavailable.'
+        )
+      changeOwner()
+      selected.value = [...correspondence.peek()]
+      return undefined
+    },
+    /** Linked modalities offer complete, validated picks to the active argument without mutating view selection. */
+    offer: (values: readonly SceneSelection[], additive = false) => {
+      if (disposed) return new Error('This selection owner closed.')
+      if (externalOwner.peek() && !dialog.peek()) {
+        const argument = externalControls.peek()?.argument?.peek()
+        if (
+          !argument ||
+          !pickingEnabled.peek() ||
+          values.some(
+            (value) =>
+              value.model !== model.peek() || !argument.accepts(value.reference)
+          )
+        )
+          return new Error('No current compatible argument is accepting picks.')
+        argument.setValue(
+          additive ? [...argument.value.peek(), ...values] : values,
+          { additive }
+        )
+        return undefined
+      }
+      const argument = dialog.peek()?.active.peek()
+      if (
+        !argument ||
+        !pickingEnabled.peek() ||
+        dialog.peek()?.target.peek() !== model.peek()
+      )
+        return new Error('No current argument is accepting picks.')
+      if (
+        !values.length ||
+        values.some(
+          (value) =>
+            value.model !== model.peek() || !argument.accepts(value.reference)
+        )
+      )
+        return new Error('The offered geometry is stale or incompatible.')
+      const next = additive
+        ? [...argument.value.peek(), ...values]
+        : [...values]
+      const unique = next.filter(
+        (value, index) =>
+          next.findIndex(
+            (item) =>
+              entityReferenceKey(item.reference) ===
+              entityReferenceKey(value.reference)
+          ) === index
+      )
+      if (!argument.multiple && unique.length !== 1)
+        return new Error('This argument accepts one entity.')
+      changeOwner()
+      argument.setValue(unique, { additive })
+      return undefined
+    },
     filter,
     pickingEnabled,
     error,
-    dialogOpen: computed(() => !!dialog.value),
+    internalPicking: computed(() => !!dialog.value),
+    dialogOpen: computed(
+      () => !!dialog.value || !!externalControls.value?.dialogOpen?.value
+    ),
     setModel: (next: SelectionModel | null) => {
       if (next !== model.peek()) {
         invalidate()
@@ -214,6 +378,7 @@ export function createSceneSelection(
       additive = false
     ) => {
       const owner = ownership
+      if (externalOwner.peek() && !dialog.peek()) return Promise.resolve()
       const currentModel = model.peek()
       const currentFilter = filter.peek()
       if (!pickingEnabled.peek()) return Promise.resolve()
@@ -250,6 +415,9 @@ export function createSceneSelection(
       return picks
     },
     setFilter: (next: readonly EntityType[]) => {
+      if (disposed) return new Error('This selection owner closed.')
+      if (externalOwner.peek())
+        return externalControls.peek()?.setFilter(next) ?? undefined
       if (disposed || dialog.peek())
         return new Error('A dialog owns the selection filter.')
       changeOwner()
@@ -260,6 +428,11 @@ export function createSceneSelection(
       return undefined
     },
     clear: () => {
+      if (disposed) return
+      if (externalOwner.peek()) {
+        externalControls.peek()?.clear()
+        return
+      }
       changeOwner()
       change(undefined, false)
     },
@@ -356,12 +529,15 @@ export function createSceneSelection(
             session.active.value = undefined
             session.target.value = null
           })
+          externalControls.peek()?.restore?.()
         },
       }
     },
     dispose: () => {
       if (!disposed) {
         disposed = true
+        externalGeneration++
+        externalControls.value = undefined
         invalidate()
         dialog.value = undefined
         projection++
