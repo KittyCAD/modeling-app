@@ -1,3 +1,5 @@
+import { ModelingMachineContext } from '@src/machines/modelingMachineContext'
+export { ModelingMachineContext } from '@src/machines/modelingMachineContext'
 import { useAppState } from '@src/AppState'
 import { enterSketchModeAndSyncCamera } from '@src/clientSideScene/CameraControls'
 import { SKETCH_GROUP_SEGMENTS } from '@src/clientSideScene/sceneUtils'
@@ -7,13 +9,11 @@ import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
 import { reportRejection } from '@src/lib/trap'
 import { useMachine } from '@xstate/react'
 import type React from 'react'
-import { createContext, use, useEffect, useMemo, useRef } from 'react'
-import type { MutableRefObject } from 'react'
-import type { Actor, ContextFrom, Prop, StateFrom } from 'xstate'
+import { use, useEffect, useMemo, useRef } from 'react'
 
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import { modelingCommandsForMachineApi } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import { modelingStdLibCommandSummary } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { Project } from '@src/lib/project'
 import { modelingMachine } from '@src/machines/modelingMachine'
@@ -36,16 +36,6 @@ import { keymapService } from '@src/registry/contracts/keymap'
 
 const MODELING_COMMAND_SCOPES = [MODE_MODELING_COMMAND_SCOPE] as const
 
-export const ModelingMachineContext = createContext(
-  {} as {
-    state: StateFrom<typeof modelingMachine>
-    context: ContextFrom<typeof modelingMachine>
-    send: Prop<Actor<typeof modelingMachine>, 'send'>
-    actor: Actor<typeof modelingMachine>
-    theProject: MutableRefObject<Project | undefined>
-  }
-)
-
 export const ModelingMachineProvider = ({
   children,
 }: {
@@ -62,14 +52,10 @@ export const ModelingMachineProvider = ({
     modeling: { defaultUnit, cameraProjection, cameraOrbit },
   } = settingsValues
   const machineApiEnabled = settingsValues.app.machineApi.current
-  const commandBarConfig = useMemo(() => {
-    if (machineApiEnabled) {
-      return modelingMachineCommandConfig
-    }
-
-    const { Make: _make, ...configWithoutMake } = modelingMachineCommandConfig
-    return configWithoutMake
-  }, [machineApiEnabled])
+  const commandBarConfig = useMemo(
+    () => modelingCommandsForMachineApi(machineApiEnabled),
+    [machineApiEnabled]
+  )
   const previousCameraOrbit = useRef<CameraOrbitType | null>(null)
   const theProject = useRef<Project | undefined>(
     project?.projectIORefSignal.value
