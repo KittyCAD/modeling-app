@@ -5,8 +5,26 @@ import type { FileEntry } from '@src/lib/project'
 
 /** File capabilities captured for one project opening; paths are project-relative. */
 export interface ProjectFiles {
+  readBytes: (relativePath: string) => Promise<Uint8Array>
   read: (relativePath: string) => Promise<string>
   write: (relativePath: string, contents: string) => Promise<void>
+}
+
+/** Captured working bytes for an entrypoint and its project inputs. */
+export interface ProjectSourceSnapshot {
+  readonly src: string
+  readonly files: ReadonlyMap<string, Uint8Array>
+}
+
+/** Document overlays and storage reads share the captured project opening. */
+export interface ProjectSourcesService {
+  readonly revision: ReadonlySignal<unknown>
+  capture: (request: {
+    document: { readonly src?: string; readonly contents: string }
+    unnamedPath: string
+    signal: AbortSignal
+    include?: (path: string) => boolean
+  }) => Promise<ProjectSourceSnapshot | Error>
 }
 
 /**
@@ -43,9 +61,12 @@ export interface ProjectSessionService {
 }
 
 export const projectSessionContract = defineContract({
+  projectSourcesService:
+    defineService<ProjectSourcesService>('project-sources'),
   projectSessionService: defineService<ProjectSessionService>(
     'project-session-next'
   ),
 })
 
-export const { projectSessionService } = projectSessionContract
+export const { projectSessionService, projectSourcesService } =
+  projectSessionContract

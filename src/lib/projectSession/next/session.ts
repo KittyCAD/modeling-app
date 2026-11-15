@@ -49,17 +49,19 @@ function createSession(
     }
     return path
   }
+  const readBytes = async (relativePath: string) => {
+    const path = filePath(relativePath)
+    if (path instanceof Error) return Promise.reject(path)
+    return storage().readFile(path)
+  }
 
   return {
     signal: lifetime,
     project: signal(project),
     files: {
-      read: async (relativePath) => {
-        const path = filePath(relativePath)
-        if (path instanceof Error) return Promise.reject(path)
-        const bytes = await storage().readFile(path)
-        return new TextDecoder().decode(bytes)
-      },
+      readBytes,
+      read: async (relativePath) =>
+        new TextDecoder().decode(await readBytes(relativePath)),
       write: async (relativePath, contents) => {
         if (!canWrite) return Promise.reject(new Error('Project is read-only'))
         const path = filePath(relativePath)

@@ -3,6 +3,7 @@ import { createProjectSessionService } from '@src/lib/projectSession/next/sessio
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
+import projectSourcesExtension from '@src/lib/projectSession/registry/sources'
 
 const id = 'project-session-next-extension'
 
@@ -13,6 +14,7 @@ export default withProjectShellFeature(
     )
     return {
       id,
+      uses: [projectSourcesExtension],
       providesServices: [provideService(projectSessionService, service)],
       dispose: service.closeProject,
     }
