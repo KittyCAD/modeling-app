@@ -54,10 +54,12 @@ export async function createKclRuntime(
 ) {
   const wasm = await wasmPromise
   let files: ReadonlyMap<string, Uint8Array> = new Map()
+  let entrypoint: string | undefined
   let disposed = false
   let nativeFreed = false
   const pendingResponses = new Set<Promise<unknown>>()
   let queue: Promise<unknown> = Promise.resolve()
+  const sources = signal<KclSourceSnapshot | undefined>(undefined)
   const state = signal<ExecState>(emptyExecState())
   const executing = signal(false)
   const program = signal<Node<Program> | null>(null)
@@ -67,7 +69,7 @@ export async function createKclRuntime(
   let elapsedTimer: ReturnType<typeof setInterval> | undefined
   const failed = signal(false)
   const events = new EventTarget()
-  const native = new wasm.Context(engine, {
+  const fileSystem = {
     async readFile(path: string) {
       const contents = files.get(fsZds.join(path))
       if (!contents)
@@ -80,7 +82,8 @@ export async function createKclRuntime(
     async getAllFiles() {
       return JSON.stringify([...files.keys()])
     },
-  })
+  }
+  const native = new wasm.Context(engine, fileSystem)
   const settings = () => JSON.stringify(getSettings())
   // A rejected operation must not poison later runs. Only the caller receives
   // its rejection; `queue` settles so disposal and subsequent operations can proceed.
@@ -91,16 +94,53 @@ export async function createKclRuntime(
     queue = result.catch(() => undefined)
     return result
   }
+  let sketch:
+    | { configuration: string; invalidate: () => Promise<void> }
+    | undefined
+  const matchesSketch = (snapshot: KclSourceSnapshot) => {
+    if (
+      !sketch ||
+      sketch.configuration !== settings() ||
+      snapshot.files.size !== files.size
+    )
+      return false
+    for (const [path, bytes] of snapshot.files) {
+      const expected = files.get(fsZds.join(path))
+      if (
+        !expected ||
+        expected.length !== bytes.length ||
+        bytes.some((byte, index) => expected[index] !== byte)
+      )
+        return false
+    }
+    return true
+  }
   const executionProgram = (
     snapshot: KclSourceSnapshot,
     configuration: string
   ) =>
     Effect.gen(function* () {
+      sources.value = undefined
+      const path = fsZds.join(snapshot.src)
+      entrypoint = path
       files = new Map(
         [...snapshot.files].map(([path, bytes]) => [
           fsZds.join(path),
           bytes.slice(),
         ])
+      )
+      yield* fromPromise(() =>
+        native.open_project(
+          0,
+          JSON.stringify([
+            {
+              id: 0,
+              path,
+              text: new TextDecoder().decode(files.get(path)),
+            },
+          ]),
+          0
+        )
       )
       const source = files.get(fsZds.join(snapshot.src))
       if (!source)
@@ -125,6 +165,12 @@ export async function createKclRuntime(
         fileSettings.value = isErr(annotation) ? {} : annotation
         failed.value = false
       })
+      sources.value = {
+        src: snapshot.src,
+        files: new Map(
+          [...files].map(([path, bytes]) => [path, bytes.slice()])
+        ),
+      }
       return result
     }).pipe(
       // Native error output can contain newly created planes/artifacts. Preserve
@@ -218,29 +264,81 @@ export async function createKclRuntime(
   }
   return {
     nativeContextHost,
+    /** The machine owns native edits until external source/settings changes require a full executor run. */
+    borrowModel: (invalidate: () => Promise<void>) => {
+      if (disposed || sketch)
+        return new Error('The native model already has an editing owner')
+      const owner = { configuration: settings(), invalidate }
+      sketch = owner
+      const current = () => sketch === owner && !disposed
+      return {
+        source: (text: string) => {
+          if (!current() || !entrypoint) return
+          files = new Map(files).set(entrypoint, new TextEncoder().encode(text))
+          const parsed = parse(text, wasm)
+          if (!isErr(parsed) && resultIsOk(parsed)) {
+            program.value = parsed.program
+            const annotation = getSettingsAnnotation(parsed.program, wasm)
+            if (!isErr(annotation)) fileSettings.value = annotation
+          }
+          sources.value = { src: entrypoint, files: new Map(files) }
+        },
+        publish: (output: ExecState) => {
+          if (current()) state.value = output
+        },
+        completed: (detail: SceneExecutionDoneDetail) => {
+          if (!current()) return
+          executionRevision.value++
+          failed.value = !detail.successful
+          events.dispatchEvent(
+            new CustomEvent(SceneExecutionEvents.ExecutionDone, { detail })
+          )
+        },
+        release: () => {
+          if (sketch === owner) sketch = undefined
+        },
+      }
+    },
     state,
     ast: program,
     fileSettings,
+    sources,
     executionRevision,
     executionElapsedMs,
     executing,
     failed,
     events,
-    execute,
-
+    execute: async (snapshot: KclSourceSnapshot) => {
+      if (sketch) {
+        if (matchesSketch(snapshot) && fsZds.join(snapshot.src) === entrypoint)
+          return state.peek()
+        await sketch.invalidate()
+      }
+      return execute(snapshot)
+    },
     exportModel: (
       format: Parameters<LocalRendererHost['exportModel']>[0]
     ): ReturnType<LocalRendererHost['exportModel']> =>
       enqueue(async () => native.export(JSON.stringify(format), settings())),
+    endSketch: async () => {
+      await sketch?.invalidate()
+    },
     async dispose() {
       if (disposed) return
-      disposed = true
-      clearInterval(elapsedTimer)
-      await queue
-      while (pendingResponses.size)
-        await Promise.allSettled([...pendingResponses])
-      nativeFreed = true
-      native.free()
+      try {
+        await sketch?.invalidate()
+      } finally {
+        disposed = true
+        sources.value = undefined
+        clearInterval(elapsedTimer)
+        await queue
+        // A reply must remain deliverable while queued native work is draining.
+        // Once both paths settle, reject new replies before releasing memory.
+        while (pendingResponses.size)
+          await Promise.allSettled([...pendingResponses])
+        nativeFreed = true
+        native.free()
+      }
     },
   }
 }

@@ -113,5 +113,12 @@ export function useDialogSelection({
         : values,
     [activeName, selection, values]
   )
-  return { activeName, selectionRanges: selection, draft, select, update }
+  return {
+    activeName,
+    activeArg,
+    selectionRanges: selection,
+    draft,
+    select,
+    update,
+  }
 }
