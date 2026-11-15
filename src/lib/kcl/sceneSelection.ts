@@ -1,3 +1,4 @@
+import type { ScenePresentation } from '@src/lib/kcl/scene/connection'
 import { effect } from '@preact/signals-core'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
@@ -14,14 +15,16 @@ import { defaultSelectionFilter } from '@src/lib/selectionFilterUtils'
 export function createKclSceneSelection(
   manager: ConnectionManager,
   sceneInfra: SceneInfra,
-  model: KclRuntime
+  model: KclRuntime,
+  presentation: ScenePresentation
 ) {
   const sceneId = Symbol('scene')
   let disposed = false,
     handoffGeneration = 0
   const selection = createSceneSelection(
     sceneSelectionAdapter(manager, sceneInfra.renderer.domElement),
-    defaultSelectionFilter
+    defaultSelectionFilter,
+    presentation === 'local' ? 'separate' : 'selection'
   )
   let stopInput = attachSceneSelectionInput(
     sceneInfra.renderer.domElement,
