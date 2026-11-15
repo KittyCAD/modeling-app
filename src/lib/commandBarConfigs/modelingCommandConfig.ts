@@ -2474,3 +2474,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
 }
 
 // TODO: update modelingMachineCommandConfig with satisfies?
+
+/** Both machine hosts apply the same machine-API visibility policy. */
+export function modelingCommandsForMachineApi(enabled: boolean) {
+  if (enabled) return modelingMachineCommandConfig
+  const { Make: _make, ...commands } = modelingMachineCommandConfig
+  return commands
+}
