@@ -112,10 +112,17 @@ fn number_to_solver_distance(
     source_range: crate::SourceRange,
     description: &str,
 ) -> Result<f64, KclError> {
-    let value = ty_f64_to_kcl_value(
-        TyF64::new(number.value, numeric_suffix_to_type(number.units, exec_state)),
-        source_range,
-    );
+    let value = TyF64::new(number.value, numeric_suffix_to_type(number.units, exec_state));
+    ty_f64_to_solver_distance(value, exec_state, source_range, description)
+}
+
+fn ty_f64_to_solver_distance(
+    value: TyF64,
+    exec_state: &mut ExecState,
+    source_range: crate::SourceRange,
+    description: &str,
+) -> Result<f64, KclError> {
+    let value = ty_f64_to_kcl_value(value, source_range);
     let normalized = normalize_to_solver_distance_unit(&value, source_range, exec_state, description)?;
     let Some(n) = normalized.as_ty_f64() else {
         return Err(KclError::new_internal(KclErrorDetails::new(
@@ -4937,7 +4944,7 @@ fn extract_axis_line_vars(
 enum PointToAlign {
     /// Variable point that could be constrained.
     Variable { x: SketchVarId, y: SketchVarId },
-    /// Fixed millimeter constant.
+    /// Fixed constant, in whatever length unit the user wrote.
     Fixed { x: TyF64, y: TyF64 },
 }
 
@@ -5167,13 +5174,6 @@ fn axis_constraint_points(
         })
         .collect::<Option<Vec<_>>>();
 
-    let Some(sketch_state) = exec_state.sketch_block_mut() else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("{}() can only be used inside a sketch block", kind.function_name()),
-            vec![args.source_range],
-        )));
-    };
-
     let points: Vec<PointToAlign> = point_values
         .iter()
         .map(|point| extract_axis_point_vars(point, kind, args.source_range))
@@ -5208,10 +5208,14 @@ fn axis_constraint_points(
         // ...
         // fixed(n.x, fix.x)
         // (or y, whatever is appropriate)
+        let description = format!("{}() fixed point", kind.function_name());
+        let fix_point = (
+            ty_f64_to_solver_distance(fix_point.0, exec_state, args.source_range, &description)?,
+            ty_f64_to_solver_distance(fix_point.1, exec_state, args.source_range, &description)?,
+        );
         for point in var_points {
             let solver_point = datum_point([point.0, point.1], args.source_range)?;
-            let fix_point_mm = (fix_point.0.unwrap_to_mm(), fix_point.1.unwrap_to_mm());
-            solver_constraints.push(kind.constraint_aligning_point_to_constant(solver_point, fix_point_mm));
+            solver_constraints.push(kind.constraint_aligning_point_to_constant(solver_point, fix_point));
         }
     } else {
         // For points 0, 1, 2, ..., n, create constraints
@@ -5233,6 +5237,12 @@ fn axis_constraint_points(
             solver_constraints.push(kind.point_pair_constraint(anchor, solver_point));
         }
     }
+    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("{}() can only be used inside a sketch block", kind.function_name()),
+            vec![args.source_range],
+        )));
+    };
     sketch_state.solver_constraints.extend(solver_constraints);
 
     if let Some(point_ids) = trackable_point_ids {
@@ -5463,4 +5473,171 @@ pub async fn horizontal(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 
 pub async fn vertical(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     axis_constraint(AxisConstraintKind::Vertical, exec_state, args).await
+}
+
+#[cfg(test)]
+mod tests {
+    use kittycad_modeling_cmds::ModelingCmd;
+    use kittycad_modeling_cmds::shared::PathSegment;
+
+    use crate::errors::KclError;
+    use crate::execution::ExecTestResults;
+    use crate::execution::KclValue;
+    use crate::execution::SegmentKind;
+    use crate::execution::SegmentRepr;
+    use crate::execution::parse_execute;
+
+    /// Every case runs under each of these KCL versions. The fixed point
+    /// conversion has no version gate, so the results must be the same.
+    const KCL_VERSIONS: [&str; 2] = ["2.0", "3.0"];
+
+    /// Returns the solved end point of each named line in `lines` of the
+    /// sketch block `s`, in mm.
+    fn solved_line_ends_in_mm(result: &ExecTestResults, lines: &[&str], code: &str) -> Vec<[f64; 2]> {
+        let sketch = result.variable("s");
+        let Some(fields) = sketch.as_object() else {
+            panic!("expected `s` to be a sketch block, got {sketch:?} for:\n{code}");
+        };
+        lines
+            .iter()
+            .map(|name| {
+                let Some(KclValue::Segment { value: segment }) = fields.get(*name) else {
+                    panic!("expected `s.{name}` to be a segment for:\n{code}");
+                };
+                let SegmentRepr::Solved { segment } = &segment.repr else {
+                    panic!("expected `s.{name}` to be solved for:\n{code}");
+                };
+                let SegmentKind::Line { end, .. } = &segment.kind else {
+                    panic!("expected `s.{name}` to be a line for:\n{code}");
+                };
+                end.each_ref()
+                    .map(|n| n.to_mm().expect("solved endpoint must be a length"))
+            })
+            .collect()
+    }
+
+    /// Returns the end of every absolute line segment sent to the engine, in
+    /// mm. Sketch blocks send their solved lines this way.
+    fn engine_line_ends_in_mm(result: &ExecTestResults) -> Vec<[f64; 2]> {
+        let mut ends = Vec::new();
+        for command in result.root_module_artifact_commands() {
+            if let ModelingCmd::ExtendPath(extend) = &command.command
+                && let PathSegment::Line { end, relative: false } = &extend.segment
+            {
+                ends.push([end.x.0, end.y.0]);
+            }
+        }
+        ends
+    }
+
+    fn assert_close(actual: &[[f64; 2]], expected: &[[f64; 2]], code: &str) {
+        assert_eq!(
+            actual.len(),
+            expected.len(),
+            "expected {expected:?}, got {actual:?} for:\n{code}"
+        );
+        for (a, e) in actual.iter().zip(expected) {
+            assert!(
+                (a[0] - e[0]).abs() < 1e-6 && (a[1] - e[1]).abs() < 1e-6,
+                "expected {expected:?}, got {actual:?} for:\n{code}"
+            );
+        }
+    }
+
+    /// Runs `code` once and checks that the solved ends of `lines` and the
+    /// line ends sent to the engine are both at `expected`, in mm.
+    async fn assert_line_ends(code: &str, lines: &[&str], expected: &[[f64; 2]]) {
+        let result = parse_execute(code)
+            .await
+            .unwrap_or_else(|e| panic!("expected to run, got {e:?} for:\n{code}"));
+        assert_close(&solved_line_ends_in_mm(&result, lines, code), expected, code);
+        assert_close(&engine_line_ends_in_mm(&result), expected, code);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn horizontal_and_vertical_fixed_point_uses_the_file_length_unit() {
+        // Every case pins the end of `line1` to the same place, 1in to the
+        // right of and 2in above the origin, so the solved line and the line
+        // sent to the engine must come out the same in mm whichever unit the
+        // file or the fixed point uses.
+        let cases = [
+            ("in", "[1in, 2in]"),
+            ("in", "[25.4mm, 50.8mm]"),
+            ("in", "[1, 2]"),
+            ("cm", "[2.54cm, 5.08cm]"),
+            ("cm", "[1in, 2in]"),
+            ("mm", "[25.4mm, 50.8mm]"),
+            ("mm", "[1in, 2in]"),
+        ];
+        for version in KCL_VERSIONS {
+            for (unit, fixed) in cases {
+                let code = format!(
+                    r#"@settings(kclVersion = {version}, defaultLengthUnit = {unit})
+s = sketch(on = XY) {{
+  line1 = line(start = [var 0, var 0], end = [var 1, var 1])
+  coincident([line1.start, ORIGIN])
+  horizontal([line1.end, {fixed}])
+  vertical([line1.end, {fixed}])
+}}
+"#
+                );
+                assert_line_ends(&code, &["line1"], &[[25.4, 50.8]]).await;
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn several_variable_points_align_to_one_fixed_point_in_an_inch_file() {
+        // `horizontal` only uses the y of the fixed point and `vertical` only
+        // uses the x, so each line end gets its own x and a shared y.
+        for version in KCL_VERSIONS {
+            let code = format!(
+                r#"@settings(kclVersion = {version}, defaultLengthUnit = in)
+s = sketch(on = XY) {{
+  line1 = line(start = [var 0, var 0], end = [var 1, var 1])
+  line2 = line(start = [var 0, var 0], end = [var 2, var 1])
+  line3 = line(start = [var 0, var 0], end = [var 3, var 1])
+  coincident([line1.start, line2.start, line3.start, ORIGIN])
+  horizontal([line1.end, line2.end, line3.end, [100in, 2in]])
+  vertical([line1.end, [1in, 100in]])
+  vertical([line2.end, [2in, 100in]])
+  vertical([line3.end, [3in, 100in]])
+}}
+"#
+            );
+            let expected = [[25.4, 50.8], [50.8, 50.8], [76.2, 50.8]];
+            assert_line_ends(&code, &["line1", "line2", "line3"], &expected).await;
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn fixed_point_that_is_not_a_length_is_rejected() {
+        // The KCL signature only takes points made of lengths, so an angle
+        // point is rejected with an argument error before it is converted.
+        for version in KCL_VERSIONS {
+            for function in ["horizontal", "vertical"] {
+                let code = format!(
+                    r#"@settings(kclVersion = {version}, defaultLengthUnit = in)
+s = sketch(on = XY) {{
+  line1 = line(start = [var 0, var 0], end = [var 1, var 1])
+  {function}([line1.end, [1deg, 2deg]])
+}}
+"#
+                );
+                let error = match parse_execute(&code).await {
+                    Ok(_) => panic!("expected an error for:\n{code}"),
+                    Err(error) => error,
+                };
+                assert!(matches!(error, KclError::Argument { .. }), "{error:?} for:\n{code}");
+                let expected = format!(
+                    "The input argument of `{function}` requires a value with type `Segment` or an array of 2 or more `Segment`s or `Point2d`s"
+                );
+                assert!(
+                    error.message().starts_with(&expected),
+                    "expected `{expected}`, got `{}` for:\n{code}",
+                    error.message()
+                );
+            }
+        }
+    }
 }
