@@ -165,6 +165,14 @@ Stack locally after `codex/review-editor-selection-bridges`:
    and faint local correspondence. Streaming retains its existing fallback and
    exposes the arbitrary-styling capability as unsupported.
 
+3. `codex/webgl-entity-styling`: generic typed styling targets and a WebGL backend
+   for borrowed meshes and fat lines, with non-pickable overlays and owned cleanup.
+4. `codex/sketch-correspondence`: execution-qualified native source mapping,
+   bidirectional Code/sketch correspondence in both presentations, and
+   UTF-8/UTF-16 boundary conversion. Native solver selection
+   remains unchanged by correspondence; preview/source mismatches suspend it.
+
 The isolated browser GPU smoke checks verify actual pixel colors, group clearing,
 selection precedence, and reset. The renderer still needs protocol support before
-this styling is available in Zoo streaming.
+this styling is available for remote geometry in Zoo streaming. Native sketch
+geometry is rendered client-side in both presentations and supports it already.

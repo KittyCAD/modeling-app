@@ -1,3 +1,5 @@
+import { createSketchCorrespondence } from '@src/lib/kcl/sketch/correspondence'
+import type { SketchCorrespondenceEndpoint } from '@src/lib/kcl/correspondence/sketchContract'
 import type { SelectionSource } from '@src/lib/kcl/selection'
 import { createMoveToolInteraction } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import type { SourceDelta } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -53,6 +55,10 @@ export async function createSketchSession(
     xz: true,
     yz: true,
   })
+  const correspondenceSource = signal<SketchCorrespondenceEndpoint | undefined>(
+    undefined
+  )
+  let correspondence: ReturnType<typeof createSketchCorrespondence> | undefined
   const selectionSource = signal<SelectionSource | undefined>(undefined)
   const selectionSessionId = Symbol('sketch selection')
   let runtime: SketchRuntime | undefined
@@ -99,10 +105,12 @@ export async function createSketchSession(
   }
   const render = (
     delta: SceneGraphDelta,
-    draft?: { segmentIds: number[]; constraintIds: number[] }
+    draft?: { segmentIds: number[]; constraintIds: number[] },
+    source = runtime?.sourceFor(delta)
   ) => {
     latest = delta
     surface?.render(delta, draft)
+    correspondence?.rendered(delta, source)
   }
   const deactivateMove = () => {
     const active = move
@@ -144,7 +152,8 @@ export async function createSketchSession(
           publish(result.sourceDelta.text, result.sceneGraphDelta)
           error.value = undefined
         }
-        if (current()) render(result.sceneGraphDelta)
+        if (current())
+          render(result.sceneGraphDelta, undefined, result.sourceDelta.text)
       },
       onError: (cause) => {
         error.value = isErr(cause)
@@ -218,6 +227,9 @@ export async function createSketchSession(
       await entering
       await circle?.dispose()
       await deactivateMove()
+      correspondenceSource.value = undefined
+      correspondence?.dispose()
+      correspondence = undefined
       selectionSource.value = undefined
       surface?.dispose()
       try {
@@ -303,6 +315,15 @@ export async function createSketchSession(
         target.plane,
         sketchId
       )
+      correspondence = createSketchCorrespondence({
+        editor: context.executor.editor,
+        src: captured.src,
+        sketchId,
+        surface,
+        sources: scene.runtime.sources.peek(),
+        isCurrent: () => current() && phase.peek() === 'editing',
+      })
+      correspondenceSource.value = correspondence.endpoint
       const ownedSurface = surface
       const ownedSketchId = sketchId
       selectionSource.value = {
@@ -337,13 +358,16 @@ export async function createSketchSession(
       if (scene.presentation === 'local')
         await infra.camControls.transitionToSketch(surface.group, signal_)
       infra.camControls.syncDirection = 'clientToEngine'
+      phase.value = 'editing'
       render(latest)
       activateMove()
-      phase.value = 'editing'
     })().catch(async (cause) => {
       error.value = isErr(cause)
         ? cause
         : new Error('Unable to enter sketch', { cause })
+      correspondenceSource.value = undefined
+      correspondence?.dispose()
+      correspondence = undefined
       selectionSource.value = undefined
       surface?.dispose()
       surface = undefined
@@ -450,6 +474,7 @@ export async function createSketchSession(
   return {
     id: 'kcl.sketch',
     selection: selectionSource,
+    correspondence: correspondenceSource,
     toolbar,
     prompt,
     defaultPlanes,

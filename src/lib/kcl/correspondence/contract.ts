@@ -1,3 +1,4 @@
+import type { SketchCorrespondenceEndpoint } from '@src/lib/kcl/correspondence/sketchContract'
 import type { EntityStyle } from '@src/lib/scene/entityStyling'
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
@@ -40,6 +41,7 @@ export interface ModelingCorrespondenceEndpoint {
   readonly enabled?: ReadonlySignal<boolean>
   readonly execution: ReadonlySignal<CorrespondenceExecution | undefined>
   readonly selection: SelectionSource
+  readonly sketch?: ReadonlySignal<SketchCorrespondenceEndpoint | undefined>
   readonly interacting: ReadonlySignal<boolean>
   readonly pickingArgument: ReadonlySignal<PickingArgument | undefined>
   project: (

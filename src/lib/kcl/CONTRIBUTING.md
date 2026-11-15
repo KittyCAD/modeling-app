@@ -193,11 +193,9 @@ operation, tested but deliberately unused by UI. It refuses promotion while a
 dialog owns picking. Navigation is separate and no automatic navigation is
 installed.
 
-TODO extension points are marked beside the bridge: feature-tree candidate
-submission, link/destination controls, and native sketch correspondence. Sketch
-selection already participates in `context.selection`, but solver source deltas
-need an execution-qualified correspondence endpoint before they can safely
-participate in the Code bridge. Do not interpret solver IDs as engine artifacts.
+TODO extension points remain for feature-tree candidate submission and link/
+destination controls. Native sketch correspondence is supplied by the active
+interaction's own endpoint; solver IDs are never interpreted as engine artifacts.
 
 
 ### Bridge ownership and extensibility
@@ -237,7 +235,8 @@ then switch tabs to see source decorations without cursor movement. Select a
 geometry-producing expression in Code, then return to Modeling to see projected
 highlights without changing ordinary selection. Independent buffers containing
 the same text do not auto-link. Switching a single view between modes is not a
-parallel-view test. Native sketch/solver-region correspondence remains a TODO.
+parallel-view test. Native sketches participate through their own execution context. Ordinary model
+solver-region provenance remains a separate artifact-graph TODO.
 
 
 Correspondence groups retain source-view identity through the bridge until the
@@ -246,3 +245,41 @@ suppresses those groups; closing it restores the same source hues. Unlinking a
 source, leaving its mode, re-executing, or closing a view releases/invalidates
 its groups. The per-view hue uses a WeakMap keyed by the view instance, so
 remounting Code preserves its hue without retaining closed views.
+
+
+### Native sketch correspondence
+
+An interaction can supply `correspondence`, a read-only signal containing a
+`SketchCorrespondenceEndpoint`. The Sketch session publishes native graphs with
+their paired source bytes and a fresh revision identity after rendering. The
+bridge uses that endpoint while it is active, independently of the ordinary
+executor's artifact graph/output. Native IDs remain scoped to the current sketch
+and revision. `Simple` source references are definitions; `BackTrace` references
+are contributing provenance and may identify several source locations/modules.
+
+Native graph snapshots and Code buffers must match exactly. Provisional previews
+with different source text suspend correspondence; accepted source, rollback, or
+restored checkpoints can re-establish it. Old projections are ignored, external
+source edits invalidate highlights, and exit/disposal releases the styling groups.
+The Code adapter translates native UTF-8 ranges to CodeMirror UTF-16 offsets and
+converts intentional Code selections back at the boundary, preserving module IDs.
+
+The native sketch surface is client-side Three.js in both streamed and local
+presentations. Its WebGL styling adapter uses the shared typed group API with
+solver object IDs. It borrows geometry, owns overlay materials, and neither
+modifies the original materials nor participates in picking. Existing selection,
+hover, draft, and constraint-hover behavior takes precedence through the shared
+legacy render-state helpers. DOM-only annotation labels remain outside mesh
+styling; geometry belonging to them can still be styled.
+
+When a tool wraps a native delta for previews or snapping, pass its paired source
+as `host.render(delta, draft, nativeSource)`. The runtime also retains weak graph/
+source associations for direct native results. Do not map a rendered preview
+against the last committed source merely because its solver IDs look familiar.
+
+To smoke test, keep linked Code and Modeling views of one buffer. Enter/Edit a
+sketch, click a circle/line/point, and switch to Code to see its source decorated
+without cursor movement. Click inside the defining expression in Code, then
+return to the sketch to see the source-view tint without selecting that geometry.
+Repeat in streamed and local modes; check hover/selection precedence, dragging,
+preview cancellation, Unicode before the sketch, and cleanup on Exit Sketch.

@@ -71,7 +71,7 @@ export function createCircleInteraction(host: SketchToolHost) {
     outcome: (result, kind, draft) => {
       if (kind === 'commit') host.accept(result)
       if (!host.isCurrent()) return
-      host.render(result.sceneGraphDelta, draft)
+      host.render(result.sceneGraphDelta, draft, result.kclSource.text)
     },
   })
 }

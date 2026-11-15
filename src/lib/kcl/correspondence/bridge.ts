@@ -1,3 +1,8 @@
+import type {
+  SketchCorrespondenceEndpoint,
+  SketchCorrespondenceSnapshot,
+  SketchCorrespondenceLayer,
+} from '@src/lib/kcl/correspondence/sketchContract'
 import { correspondenceStyle } from '@src/lib/kcl/correspondence/appearance'
 import type { EntityReference } from '@kittycad/lib'
 import { computed, effect, signal, type Signal } from '@preact/signals-core'
@@ -50,13 +55,14 @@ export function createCorrespondenceBridge(routing: {
     return (
       run && {
         ...run,
+        filenames: run.state.filenames,
         query: createArtifactCorrespondence(run.state.artifactGraph),
       }
     )
   }
   const sourceModule = (
     code: CodeRegistration,
-    run: NonNullable<ReturnType<typeof execution>>
+    run: Pick<SketchCorrespondenceSnapshot, 'output' | 'sources' | 'filenames'>
   ) => {
     const src = code.editor.src.value
     if (!src)
@@ -73,7 +79,7 @@ export function createCorrespondenceBridge(routing: {
       new TextDecoder().decode(bytes) !== code.editor.contents.value
     )
       return undefined
-    const module = Object.entries(run.state.filenames).find(
+    const module = Object.entries(run.filenames).find(
       ([, path]) =>
         path?.type === 'Local' && fsZds.join(path.value) === normalized
     )
@@ -81,6 +87,14 @@ export function createCorrespondenceBridge(routing: {
   }
   const projected = computed(() => {
     const codeRanges = new Map<symbol, SourceRange[]>()
+    const sketches = new Map<
+      symbol,
+      {
+        endpoint: SketchCorrespondenceEndpoint
+        snapshot: SketchCorrespondenceSnapshot | undefined
+        layers: SketchCorrespondenceLayer[]
+      }
+    >()
     const geometry = new Map<
       symbol,
       {
@@ -89,6 +103,39 @@ export function createCorrespondenceBridge(routing: {
       }
     >()
     for (const model of models.value) {
+      const sketch = model.sketch?.value
+      if (sketch) {
+        const snapshot = sketch.snapshot.value
+        const layers: SketchCorrespondenceLayer[] = []
+        if (snapshot)
+          for (const code of codes.value) {
+            if (!linked(code, model)) continue
+            const module = sourceModule(code, snapshot)
+            if (module === undefined) continue
+            const ranges = codeRanges.get(code.id) ?? []
+            ranges.push(
+              ...sketch
+                .selectedSources(snapshot)
+                .filter((range) => range[2] === module)
+            )
+            codeRanges.set(code.id, ranges)
+            const ids = [
+              ...new Set(
+                code.ranges.value.flatMap((range) =>
+                  sketch.targetsForCode(snapshot, [range[0], range[1], module])
+                )
+              ),
+            ]
+            if (ids.length)
+              layers.push({
+                sourceViewId: code.id,
+                style: code.style ?? correspondenceStyle(code),
+                ids,
+              })
+          }
+        sketches.set(model.id, { endpoint: sketch, snapshot, layers })
+        continue
+      }
       const run = execution(model)
       if (!run) continue
       const layers: CorrespondenceLayer[] = []
@@ -105,7 +152,6 @@ export function createCorrespondenceBridge(routing: {
                 .filter((item) => item.range[2] === module)
                 .map((item) => item.range)
             )
-          // TODO: Project native sketch solver source references here once an execution-qualified sketch correspondence endpoint is exposed.
         }
         codeRanges.set(code.id, ranges)
         // Native sketch interaction owns its surface and must not receive engine selection projections.
@@ -125,14 +171,29 @@ export function createCorrespondenceBridge(routing: {
       }
       geometry.set(model.id, { run, layers })
     }
-    return { codeRanges, geometry, codes: codes.value, models: models.value }
+    return {
+      codeRanges,
+      geometry,
+      sketches,
+      codes: codes.value,
+      models: models.value,
+    }
   })
+  let projectedSketches = new Set<SketchCorrespondenceEndpoint>()
   const stop = effect(() => {
     const projection = projected.value
     const ticket = ++generation
     // CodeMirror cannot be dispatched from inside its update listener. Coalesce projections after the update completes.
     queueMicrotask(() => {
       if (disposed || ticket !== generation) return
+      const current = new Set(
+        [...projection.sketches.values()].map((item) => item.endpoint)
+      )
+      for (const endpoint of projectedSketches)
+        if (!current.has(endpoint)) endpoint.project(undefined, [])
+      for (const item of projection.sketches.values())
+        item.endpoint.project(item.snapshot, item.layers)
+      projectedSketches = current
       for (const code of projection.codes)
         code.decorate(projection.codeRanges.get(code.id) ?? [])
       for (const model of projection.models) {
@@ -236,6 +297,8 @@ export function createCorrespondenceBridge(routing: {
       disposed = true
       generation++
       stop()
+      for (const endpoint of projectedSketches) endpoint.project(undefined, [])
+      projectedSketches.clear()
       for (const cleanup of [...cleanups]) cleanup()
       codes.value = []
       models.value = []

@@ -26,3 +26,11 @@ export function sourceRangeContains(
 ): boolean {
   return outer[0] <= inner[0] && outer[1] >= inner[1] && outer[2] === inner[2]
 }
+
+/** Source ranges use module-local UTF-8 offsets; cursors select the containing span. */
+export function rangesOverlap(a: SourceRange, b: SourceRange) {
+  if (a[2] !== b[2]) return false
+  return a[0] === a[1]
+    ? b[0] <= a[0] && a[0] < b[1]
+    : a[0] < b[1] && b[0] < a[1]
+}

@@ -1,3 +1,7 @@
+import { createEntityStyling } from '@src/lib/scene/entityStyling'
+import { createSketchSurface } from '@src/lib/kcl/sketch/surface'
+import { testCorrespondenceBridge } from '@src/lib/kcl/correspondence/testBridge'
+import { toUtf8, toUtf16 } from '@src/lang/errors'
 import { getSettingsAnnotation } from '@src/lang/queryAst'
 import { baseUnitToMm } from '@src/lib/utils'
 import { isErr } from '@src/lib/trap'
@@ -40,56 +44,60 @@ import { createExecutorOutput } from '@src/lib/executors/output'
 import { createSceneExecutionSettings } from '@src/lib/scene/settings'
 import { ModelingToolbar } from '@src/lib/kcl/ModelingToolbar'
 vi.mock('@src/lib/kcl/sketch/surface', () => ({
-  createSketchSurface: (
-    _infra: unknown,
-    _settings: unknown,
-    _plane: unknown,
-    sketchId: number
-  ) => {
-    const selected = signal<SketchSolveSelectionId[]>([])
-    let hoveredId: SketchSolveSelectionId | null = null
-    let duringAreaSelectIds: number[] = []
-    let selectionCoordinates: SelectionCoordinates = {}
-    return {
-      group: new Group(),
-      hover: (id: SketchSolveSelectionId | null) => {
-        hoveredId = id
-      },
-      selected,
-      select: (ids: SketchSolveSelectionId[]) => {
-        selected.value = ids
-      },
-      getState: (sketchExecOutcome: MoveToolState['sketchExecOutcome']) => ({
-        sketchId,
-        selectedIds: selected.peek(),
-        hoveredId,
-        duringAreaSelectIds,
-        selectionCoordinates,
-        constraintHoverPopups: [],
-        showNonVisualConstraints: false,
-        sketchExecOutcome,
-      }),
-      selection: (data: Parameters<MoveToolHost['selection']>[0]) => {
-        if (data.duringAreaSelectIds !== undefined)
-          duringAreaSelectIds = data.duringAreaSelectIds
-        if (data.selectedIds !== undefined) {
-          const update = updateSketchSelection(
-            selected.peek(),
-            data.selectedIds,
-            { ...selectionCoordinates, ...data.selectionCoordinates },
-            data.replaceExistingSelection
-          )
-          selected.value = update.selectedIds
-          selectionCoordinates = update.selectionCoordinates
-        }
-      },
-      updateHover: (data: Parameters<MoveToolHost['hover']>[0]) => {
-        hoveredId = data.hoveredId
-      },
-      render: vi.fn(),
-      dispose: vi.fn(),
+  createSketchSurface: vi.fn(
+    (
+      _infra: unknown,
+      _settings: unknown,
+      _plane: unknown,
+      sketchId: number
+    ) => {
+      const styling = createEntityStyling<number>()
+      const selected = signal<SketchSolveSelectionId[]>([])
+      let hoveredId: SketchSolveSelectionId | null = null
+      let duringAreaSelectIds: number[] = []
+      let selectionCoordinates: SelectionCoordinates = {}
+      return {
+        entityStyling: styling.service,
+        group: new Group(),
+        hover: (id: SketchSolveSelectionId | null) => {
+          hoveredId = id
+        },
+        selected,
+        select: (ids: SketchSolveSelectionId[]) => {
+          selected.value = ids
+        },
+        getState: (sketchExecOutcome: MoveToolState['sketchExecOutcome']) => ({
+          sketchId,
+          selectedIds: selected.peek(),
+          hoveredId,
+          duringAreaSelectIds,
+          selectionCoordinates,
+          constraintHoverPopups: [],
+          showNonVisualConstraints: false,
+          sketchExecOutcome,
+        }),
+        selection: (data: Parameters<MoveToolHost['selection']>[0]) => {
+          if (data.duringAreaSelectIds !== undefined)
+            duringAreaSelectIds = data.duringAreaSelectIds
+          if (data.selectedIds !== undefined) {
+            const update = updateSketchSelection(
+              selected.peek(),
+              data.selectedIds,
+              { ...selectionCoordinates, ...data.selectionCoordinates },
+              data.replaceExistingSelection
+            )
+            selected.value = update.selectedIds
+            selectionCoordinates = update.selectionCoordinates
+          }
+        },
+        updateHover: (data: Parameters<MoveToolHost['hover']>[0]) => {
+          hoveredId = data.hoveredId
+        },
+        render: vi.fn(),
+        dispose: vi.fn(styling.dispose),
+      }
     }
-  },
+  ),
 }))
 vi.mock('@src/clientSideScene/CameraControls', () => ({
   enterSketchModeAndSyncCamera: vi.fn(async () => {}),
@@ -269,7 +277,8 @@ async function fixture(
         (work) => work(),
         () => configuration,
         () => {},
-        () => {}
+        () => {},
+        view.editor.contents.peek()
       ),
   })
   view.context.wasm = Promise.resolve(wasm)
@@ -621,6 +630,12 @@ it.each(['streamed', 'local'] as const)(
       ])
     )
     expect(view.editor.contents.peek()).not.toBe(before)
+    expect(
+      view.context.interactions.active
+        .peek()
+        ?.correspondence?.peek()
+        ?.snapshot.peek()?.output.contents
+    ).toBe(view.editor.contents.peek())
     view.editor.undo()
     expect(view.editor.contents.peek()).toBe(before)
   }
@@ -840,3 +855,68 @@ it('keeps dragged coordinates in the inch file unit rather than converting them 
   )
   expect(view.edit.mock.calls[0][2]).toContain('"units":"Inch"')
 })
+
+it.each(['streamed', 'local'] as const)(
+  'maps an edited native Circle to linked Code and back in %s, preserving selection and source',
+  async (presentation) => {
+    const code =
+      '@settings(kclVersion = 3.0)\n// café 🌐\nprofile = sketch(on = XY) {\n c = circle(start = [10mm, 0mm], center = [0mm, 0mm])\n radius(c) == 10mm\n}'
+    const view = await fixture(code, presentation),
+      bridge = testCorrespondenceBridge(),
+      codeView = Symbol(),
+      decorate = vi.fn()
+    try {
+      bridge.registerModel({ id: Symbol(), context: view.context })
+      bridge.registerCode({ id: codeView, editor: view.editor, decorate })
+      await view.pick({ type: 'region', region_id: 'region' })
+      await view.context.interactions.enter('kcl.sketch.start')
+      await vi.waitFor(() =>
+        expect(
+          view.context.interactions.active
+            .peek()
+            ?.correspondence?.peek()
+            ?.snapshot.peek()
+        ).toBeDefined()
+      )
+      const session = view.context.interactions.active.peek()!,
+        snapshot = session.correspondence!.peek()!.snapshot.peek()!
+      const circle = snapshot.graph.objects.find(
+        (object) =>
+          object.kind.type === 'Segment' &&
+          object.kind.segment.type === 'Circle'
+      )
+      if (!circle) throw new Error('Native Circle missing')
+      const surface: ReturnType<typeof createSketchSurface> = vi
+        .mocked(createSketchSurface)
+        .mock.results.at(-1)!.value
+      surface.selected.value = [circle.id]
+      await vi.waitFor(() =>
+        expect(decorate).toHaveBeenLastCalledWith(
+          expect.arrayContaining([expect.any(Array)])
+        )
+      )
+      const ranges = decorate.mock.lastCall![0] as [number, number, number][]
+      expect(
+        ranges.some((range) =>
+          code
+            .slice(toUtf16(range[0], code), toUtf16(range[1], code))
+            .includes('circle(')
+        )
+      ).toBe(true)
+      surface.selected.value = []
+      const cursor = code.indexOf('circle(') + 3
+      bridge.selectCode(codeView, [toUtf8([cursor, cursor, 0], code)])
+      await vi.waitFor(() =>
+        expect(
+          surface.entityStyling.groups.peek().flatMap((group) => group.entities)
+        ).toContain(circle.id)
+      )
+      expect(surface.selected.peek()).toEqual([])
+      expect(view.editor.contents.peek()).toBe(code)
+      await view.context.interactions.close()
+      expect(surface.entityStyling.groups.peek()).toEqual([])
+    } finally {
+      bridge.dispose()
+    }
+  }
+)

@@ -271,7 +271,8 @@ export async function createKclRuntime(
           if (sketch === owner) sketch = undefined
           if (!disposed && sketchId !== undefined && entrypoint)
             await execute({ src: entrypoint, files })
-        }
+        },
+        entrypoint ? new TextDecoder().decode(files.get(entrypoint)) : ''
       )
     },
     state,

@@ -19,9 +19,16 @@ export function createSketchRuntime(
   run: <T>(work: () => Promise<T>) => Promise<T>,
   getSettings: CircleRuntime['getSettings'],
   acknowledge: (text: string, delta: SceneGraphDelta) => void,
-  released: (sketchId?: number) => void | Promise<void>
+  released: (sketchId?: number) => void | Promise<void>,
+  initialSource = ''
 ) {
   let closed = false
+  let source = initialSource
+  const sources = new WeakMap<SceneGraphDelta['new_graph'], string>()
+  const observe = (delta: SceneGraphDelta, text = source) => {
+    source = text
+    sources.set(delta.new_graph, text)
+  }
   const checkpoint = signal<number | null>(null)
   const call = <T>(work: () => Promise<T>) =>
     run(() =>
@@ -29,6 +36,7 @@ export function createSketchRuntime(
     )
   const mutation = async (work: () => Promise<SketchMutationOutcome>) => {
     const result = await call(work)
+    observe(result.sceneGraphDelta, result.sourceDelta.text)
     if (result.checkpointId != null)
       checkpoint.value = Number(result.checkpointId)
     return {
@@ -136,6 +144,7 @@ export function createSketchRuntime(
         const restored: RestoreSketchCheckpointOutcome =
           await native.restore_sketch_checkpoint(JSON.stringify(id))
         checkpoint.value = id
+        observe(restored.sceneGraphDelta, restored.sourceDelta.text)
         return {
           kclSource: restored.sourceDelta,
           sceneGraphDelta: restored.sceneGraphDelta,
@@ -151,6 +160,8 @@ export function createSketchRuntime(
       ),
   }
   return {
+    sourceFor: (delta: SceneGraphDelta) =>
+      closed ? undefined : sources.get(delta.new_graph),
     mutations: circle,
     move,
     checkpoint,
@@ -175,6 +186,7 @@ export function createSketchRuntime(
           JSON.stringify(args),
           settings()
         )
+        observe(result.sceneGraphDelta, result.sourceDelta.text)
         checkpoint.value =
           result.checkpointId == null ? null : Number(result.checkpointId)
         return result
@@ -188,6 +200,7 @@ export function createSketchRuntime(
           JSON.stringify(id),
           settings()
         )
+        observe(result.sceneGraphDelta)
         checkpoint.value =
           result.checkpointId == null ? null : Number(result.checkpointId)
         return result
@@ -203,7 +216,10 @@ export function createSketchRuntime(
           false
         )
       ),
-    accept: acknowledge,
+    accept: (text: string, delta: SceneGraphDelta) => {
+      observe(delta, text)
+      acknowledge(text, delta)
+    },
     close: async (id?: number) => {
       if (closed) return
       closed = true

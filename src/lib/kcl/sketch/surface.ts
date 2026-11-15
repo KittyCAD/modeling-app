@@ -1,3 +1,5 @@
+import { createEntityStyling } from '@src/lib/scene/entityStyling'
+import { ObjectStylingRenderer } from '@src/lib/scene/ObjectStylingRenderer'
 import type {
   MoveToolHost,
   MoveToolState,
@@ -10,7 +12,7 @@ import {
 } from '@src/machines/sketchSolve/sketchSolveSelection'
 import { attachSketchInput } from '@src/clientSideScene/sketchInput'
 import { isArray } from '@src/lib/utils'
-import { Vector3 } from 'three'
+import { Vector3, type Mesh } from 'three'
 import { quaternionFromUpNForward } from '@src/clientSideScene/helpers'
 import {
   createIntersectionPlane,
@@ -24,6 +26,8 @@ import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   updateSceneGraphFromDelta,
+  getSegmentRenderState,
+  getHoveredSegmentIds,
   type SketchSceneContext,
 } from '@src/machines/sketchSolve/sketchSceneGraph'
 import type { SketchPlane } from '@src/lib/kcl/sketch/target'
@@ -47,6 +51,8 @@ export function createSketchSurface(
     object.position.set(...plane.origin)
   }
   const axes = createSketchAxis(infra, plane.zAxis, plane.yAxis, plane.origin)
+  const styling = createEntityStyling<number>()
+  const stylingRenderer = new ObjectStylingRenderer(infra.scene)
   const selected = signal<SketchSolveSelectionId[]>([])
   const hovered = signal<SketchSolveSelectionId | null>(null)
   let coordinates: SelectionCoordinates = {}
@@ -62,12 +68,59 @@ export function createSketchSurface(
     constraintHoverPopups: [],
   }
   let latest: SceneGraphDelta | undefined
+  const projectStyles = () => {
+    if (disposed || !latest) return
+    if (!styling.service.groups.peek().length) {
+      stylingRenderer.setGroups([])
+      return
+    }
+    const objects = latest.new_graph.objects
+    const hoveredSegments = getHoveredSegmentIds(hovered.peek(), objects)
+    stylingRenderer.setGroups(
+      styling.service.groups.peek().map((styleGroup) => ({
+        id: styleGroup.id,
+        style: styleGroup.style,
+        targets: styleGroup.entities.flatMap((id) => {
+          if (!objects[id]) return []
+          const state = getSegmentRenderState(
+            id,
+            selected.peek(),
+            duringAreaSelectIds,
+            hovered.peek(),
+            hoveredSegments,
+            context.draftEntities?.segmentIds,
+            objects
+          )
+          if (
+            state.selected ||
+            state.hovered ||
+            state.secondaryHovered ||
+            state.draft
+          )
+            return []
+          const object = group.getObjectByName(String(id)),
+            targets: Mesh[] = []
+          object?.traverse((child) => {
+            if ((child as Mesh).isMesh) targets.push(child as Mesh)
+          })
+          return targets
+        }),
+      }))
+    )
+  }
+  const stopStyling = styling.service.groups.subscribe(() => {
+    if (latest) {
+      projectStyles()
+      infra.resumeRendering()
+    }
+  })
   const render = (
     delta: SceneGraphDelta,
     draft?: { segmentIds: number[]; constraintIds: number[] }
   ) => {
-    latest = delta
     if (disposed) return
+    if (latest !== delta) styling.reset()
+    latest = delta
     selected.value = selected
       .peek()
       .filter(
@@ -87,6 +140,7 @@ export function createSketchSurface(
       selectedIds: selected.peek(),
       duringAreaSelectIds,
     })
+    projectStyles()
     infra.scene.updateMatrixWorld(true)
     infra.resumeRendering()
   }
@@ -100,6 +154,7 @@ export function createSketchSurface(
         selectedIds: selected.peek(),
         duringAreaSelectIds,
       })
+    projectStyles()
     infra.resumeRendering()
   }
   const hover = (id: SketchSolveSelectionId | null) => {
@@ -163,9 +218,11 @@ export function createSketchSurface(
         selectedIds: selected.peek(),
         duringAreaSelectIds,
       })
+    projectStyles()
   })
   return {
     selected,
+    entityStyling: styling.service,
     hovered,
     hover,
     select,
@@ -176,6 +233,9 @@ export function createSketchSurface(
     render,
     dispose: () => {
       disposed = true
+      stopStyling()
+      styling.dispose()
+      stylingRenderer.dispose()
       infra.renderer.domElement.removeEventListener('mouseleave', leave)
       detachInput()
       infra.setOnBeforeRender(null)

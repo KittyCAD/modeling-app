@@ -84,6 +84,11 @@ it('creates a sketch and commits a circle through the shared native circle opera
   )
   await sketch.synchronize(ast)
   const created = await sketch.create({ on: { default: 'xy' } })
+  const initialSource = created.sourceDelta.text
+  expect(sketch.sourceFor(created.sceneGraphDelta)).toBe(initialSource)
+  expect(
+    sketch.sourceFor({ ...created.sceneGraphDelta, new_objects: [] })
+  ).toBe(initialSource)
   const input = {
     rustContext: sketch.mutations,
     sketchId: created.sketchId,
@@ -97,9 +102,14 @@ it('creates a sketch and commits a circle through the shared native circle opera
     input: { ...input, circleId: draft.draft.circleId, startPoint: [10, 0] },
   })
   if ('error' in committed) throw new Error(committed.error)
+  expect(sketch.sourceFor(created.sceneGraphDelta)).toBe(initialSource)
+  expect(sketch.sourceFor(committed.sceneGraphDelta)).toBe(
+    committed.kclSource.text
+  )
   sketch.accept(committed.kclSource.text, committed.sceneGraphDelta)
   expect(accepted).toContain('sketch(on = XY)')
   expect(accepted).toContain('circle(')
   expect(accepted).toContain('answer = 42')
   await sketch.close(created.sketchId)
+  expect(sketch.sourceFor(committed.sceneGraphDelta)).toBeUndefined()
 })

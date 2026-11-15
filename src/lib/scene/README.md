@@ -184,3 +184,9 @@ and updates can return an Error. A new model invalidates old handles, so acquire
 a new group against the current model rather than replaying stale references.
 The API never sends selection commands, changes model materials, or owns mesh
 geometry.
+
+
+Native sketch geometry uses the client-side Three.js surface in either renderer
+mode. Its WebGL adapter supports the same typed styling-group API, so native
+sketch correspondence has source-specific hues in streamed mode too. This does
+not add arbitrary styling support to the remotely rendered 3D model protocol.

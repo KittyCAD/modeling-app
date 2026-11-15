@@ -1,3 +1,4 @@
+import { rangesOverlap } from '@src/lang/sourceRange'
 import type { EntityReference } from '@kittycad/lib'
 import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
 import { artifactToEntityRef } from '@src/lang/queryAst'
@@ -173,13 +174,6 @@ export function createArtifactCorrespondence(graph: ArtifactGraph) {
     return result
   }
   return { forEntity, forCode }
-}
-
-export function rangesOverlap(a: SourceRange, b: SourceRange) {
-  if (a[2] !== b[2]) return false
-  return a[0] === a[1]
-    ? b[0] <= a[0] && a[0] < b[1]
-    : a[0] < b[1] && b[0] < a[1]
 }
 
 /** Each intentional source selection must identify one direct target. Multiplicity permits several such selections, not ambiguity. */

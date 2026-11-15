@@ -19,7 +19,8 @@ export interface SketchToolHost {
   getDelta: () => SceneGraphDelta
   render: (
     delta: SceneGraphDelta,
-    draft?: { segmentIds: number[]; constraintIds: number[] }
+    draft?: { segmentIds: number[]; constraintIds: number[] },
+    source?: string
   ) => void
   accept: (
     result: Pick<
