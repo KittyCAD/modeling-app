@@ -4,7 +4,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { KclConnectionStatus } from '@src/lib/kcl/KclConnectionStatus'
 import type { KclSceneResource, OpenKclScene } from '@src/lib/kcl/scene'
 import { createKclSession } from '@src/lib/kcl/session'
-import type { KclSceneSettings } from '@src/lib/kcl/settings'
+import type { ScenePresentationPreferences } from '@src/lib/kcl/presentationPreferences'
 
 beforeEach(() => {
   vi.stubGlobal(
@@ -37,7 +37,11 @@ it.each(['streamed', 'local'] as const)(
     const resource = {
       element: document.createElement('div'),
       presentation,
-      preferences: signal({} as KclSceneSettings),
+      preferences: {
+        camera: signal({}),
+        appearance: signal({}),
+        localRenderer: signal({}),
+      } as unknown as ScenePresentationPreferences,
       resize: async () => {},
       resume: () => {},
       applySettings: async () => {},
