@@ -138,6 +138,10 @@ export function createKclSession(
     state,
     resource,
     element,
+    reconnect: () => {
+      const container = element.parentElement
+      if (container) recover(container)
+    },
     mount: (container: HTMLElement) => {
       container.appendChild(element)
       resource.peek()?.resume()
