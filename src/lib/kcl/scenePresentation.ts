@@ -13,6 +13,7 @@ import type {
 } from '@src/lib/kcl/presentationPreferences'
 import styles from './scenePresentation.module.css'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { getSceneOverlayTheme } from '@src/lib/settings/viewportRendering'
 import type {
   SceneConnection,
   ScenePresentation,
@@ -176,8 +177,15 @@ export function createSceneViewport(
       if (appliedCamera?.cameraProjection !== nextCamera.cameraProjection)
         await camera.setCameraProjection(nextCamera.cameraProjection)
       appliedCamera = nextCamera
-      if (appliedAppearance?.theme !== nextAppearance.theme)
-        sceneInfra.theme = nextAppearance.theme
+      const overlayTheme = getSceneOverlayTheme(
+        nextAppearance.theme,
+        nextAppearance.viewportRendering,
+        presentation === 'local'
+      )
+      if (sceneInfra.theme !== overlayTheme) {
+        sceneInfra.theme = overlayTheme
+        sceneInfra.resumeRendering()
+      }
       await adapter.applyAppearance(nextAppearance, appliedAppearance)
       appliedAppearance = nextAppearance
     },
