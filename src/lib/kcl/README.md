@@ -1,64 +1,77 @@
-# KCL Modeling in the project shell
+# KCL editors
 
-The KCL registry contribution supplies syntax, an executor capability, and the
-Modeling editor presentation. It is gated with the new project shell. Each
-Modeling view creates its own executor; two views of the same document share text
-but own separate engine connections, native contexts, cameras, and models.
+This package adds KCL syntax to Code views and a Modeling mode to project-owned
+editors. Code and Modeling work on the same live document: editing either
+presentation updates the buffer, and execution uses its current contents without
+waiting for a save. These contributions require `zds_project_shell_refactor`.
 
-The executor captures the entrypoint and unsaved imported buffers before file
-reads. Other relevant project files are read as bytes, including binary imports.
-A project replacement or cancelled run invalidates the snapshot. The capability's
-revision observes project contents, open buffers, and the shared scene-execution
-settings revision. Settings opt in beside their definitions through
-`SettingProps.sceneExecution`; the KCL registry has no separate setting list.
-External storage changes must first be adopted by the project/editor services,
-as on other executor-backed surfaces.
+Each Modeling view has its own model and camera. Two views of one document share
+text while keeping their engine connections and native contexts independent.
 
-The scene session starts only after a mounted presentation has a usable size.
-React remounts attach the existing scene; closing the view/editor/project closes
-the executor scope. Startup and execution have deadlines, disconnects surface an
-error, and closing during startup disposes late resources. Returning focus to a
-mounted view recreates a failed or stale connection and refreshes only its owning
-executor. That refresh reloads the current editor/import snapshots and clears old
-execution errors; it does not replay a saved document snapshot or restart healthy
-sibling views. Each opening has its own readiness, cancellation, and camera-frame
-state so late callbacks cannot affect a replacement connection.
+## From a document to a model
 
-The session uses `connectScene` with an independent ConnectionManager. Streamed
-presentation attaches its video and uses the application's camera controls. Local
-presentation uses a geometry-only connection and supplies execution events,
-artifacts, generations, native GLB export, and the same camera to
-LocalWebGPUSceneView. Native execution owns edge/grid/backface settings; the host
-updates camera, theme, and connection presentation without replaying those native
-settings after execution. Streamed backface changes rebuild the native scene
-before re-execution; the local renderer applies its color directly. Native
-exports, rebuilds, and executions share a queue; disposing waits
-for borrowed native memory before freeing it. The renderer setting is captured
-when the scene opens; reopen the Modeling view after changing it.
+The registry contribution connects three parts:
 
-The WASM promise comes from the app registry, with the app's asset-relative loader
-as a fallback. There is no SDK worker, `file://` rejection, `location.origin`
-assumption, private RTC access, or SDK DOM selector. Zoo-web-view remains the
-intended presentation adapter; project storage, executor ownership, and native
-execution stay outside that integration. See
-[the scene-host decision](../../dev-docs/adr/0001-app-owned-scene-host.md).
+1. **Capture sources.** `loadKclSources` captures the entrypoint and open imported
+   buffers, including unsaved edits. It loads other relevant project files from
+   storage, preserving binary imports as bytes.
+2. **Execute.** The executor runs that snapshot through the view's native KCL
+   runtime. Changes to the buffer, imported buffers, project contents, or opted-in
+   settings invalidate the previous run. External storage updates enter through
+   the project/editor services before they become execution input.
+3. **Present.** `KclScene` attaches the scene and displays its streamed or local
+   rendering. Switching tabs or remounting React attaches the existing session.
 
-This is execution/presentation proof, not full modeling-tool parity. Selection,
-command tools, dialogs, and Enter/Edit sketch are subsequent work; local picking
-and default planes remain disabled in this inspection view.
+The [executor guide](../executors/README.md) describes scheduling and output.
+[Scene settings](../scene/README.md#shared-execution-settings) explains how a
+setting opts into execution refresh.
 
-## Smoke testing before publishing
+## Ownership and lifetime
 
-Open a project through the new shell in a web build and packaged desktop build.
-With each renderer setting, open a KCL file in Modeling alongside Code; change
-geometry and an imported module without saving. Check the model updates, camera
-orbit/pan/zoom, resizing, switching tabs, syntax-error recovery, project switching,
-and closing one of two Modeling views without disturbing the other. Test a binary
-import and a disconnected engine, then reopen the view to reconnect.
+| Owner | Responsibility |
+| --- | --- |
+| Editor | Working text and undo history shared by its presentations |
+| Modeling view's executor | Source snapshots, run cancellation, results, and scene lifetime |
+| `createKclSession` | Connection startup, presentation attachment, resizing, and recovery |
+| `createKclRuntime` | Native model memory and serialized execution, export, and disposal |
 
-Unit tests exercise presentation choice, captured source bytes, ownership,
-deadlines, cancellation, remounts, and dependency invalidation. Native WASM tests
-execute KCL with imports, independent contexts, error recovery, and serialized
-exports/disposal using mocked engine acknowledgements. Existing local-renderer
-tests cover GLB loading. These checks do not prove live-engine geometry, GPU
-output, or packaged-desktop behavior.
+The session opens a connection once its mounted viewport has a usable size.
+Closing the view, editor, or project releases its owned execution resources.
+Startup and execution have deadlines; cancellation also releases resources that
+finish opening after their owner has closed.
+
+Connection progress uses the shared `Loading` view. A connection failure displays
+`ConnectionRecovery` with a Reconnect action. Manual retry and returning focus to
+a failed or stale mounted scene use the same recovery path: open a fresh
+connection, then refresh that executor from current sources. Each attempt owns
+its callbacks, so late failures cannot replace a newer connection. KCL execution
+errors are reported separately from connection failures.
+
+## Rendering
+
+Both presentations use the application's `ConnectionManager` and camera controls:
+
+- **Streamed:** the connection supplies video from the engine.
+- **Local:** a geometry-only connection supplies native execution output to
+  `LocalWebGPUSceneView` through `LocalRendererHost`.
+
+Native execution applies edge, grid, and backface settings. The presentation
+adapter handles camera and theme updates. Execution, native export, and scene
+rebuilds share a queue so disposal can wait for borrowed native memory.
+The renderer choice is captured when the scene opens; reopen the Modeling view
+after changing it.
+
+The [scene boundary](../scene/README.md) describes the shared host and legacy
+adapters. Zoo-web-view remains the intended presentation integration; the
+[scene-host ADR](../../dev-docs/adr/0001-app-owned-scene-host.md) records that
+boundary and its ownership decisions.
+
+## Code map
+
+- [`registry/index.ts`](registry/index.ts): contributes KCL editing and Modeling.
+- [`sources.ts`](sources.ts): captures execution inputs.
+- [`executor.ts`](executor.ts): connects an editor executor to its scene session.
+- [`session.ts`](session.ts): owns connection and presentation lifetime.
+- [`runtime.ts`](runtime.ts): owns native KCL operations.
+- [`scene.ts`](scene.ts): assembles a connection, runtime, camera, and renderer host.
+- [`KclScene.tsx`](KclScene.tsx): renders the Modeling viewport.
