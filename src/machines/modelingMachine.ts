@@ -353,7 +353,7 @@ async function enterSketchSolveFromSketchBlockArtifact({
   kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
   const project = projectRef?.current
-  if (!project) {
+  if (!project && !kclManager.hasDocumentHost) {
     console.warn('No project available for editSketch call')
   }
 
@@ -3376,7 +3376,9 @@ export const modelingMachine = setup({
 
         // Call newSketch API
         const project = projectRef?.current
-        if (!project) {
+        // A view-owned native runtime has already opened its captured project.
+        // The file route still requires its legacy project owner.
+        if (!project && !kclManager.hasDocumentHost) {
           return reject(new Error('No active project to start a sketch in.'))
         }
 
