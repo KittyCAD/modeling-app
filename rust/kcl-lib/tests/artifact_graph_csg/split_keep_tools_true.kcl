@@ -1,0 +1,49 @@
+@settings(kclVersion = "3.0", defaultLengthUnit = mm)
+
+targetSketch = sketch(on = XY) {
+  bottom = line(start = [var -10, var -10], end = [var 10, var -10])
+  right = line(start = [var 10, var -10], end = [var 10, var 10])
+  top = line(start = [var 10, var 10], end = [var -10, var 10])
+  left = line(start = [var -10, var 10], end = [var -10, var -10])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+  parallel([bottom, top])
+  parallel([left, right])
+  perpendicular([bottom, right])
+}
+
+target = extrude(region(point = [0, 0], sketch = targetSketch), length = 10)
+
+cutterSketch = sketch(on = offsetPlane(XY, offset = -1)) {
+  bottom = line(start = [var -1, var -12], end = [var 1, var -12])
+  right = line(start = [var 1, var -12], end = [var 1, var 12])
+  top = line(start = [var 1, var 12], end = [var -1, var 12])
+  left = line(start = [var -1, var 12], end = [var -1, var -12])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+  parallel([bottom, top])
+  parallel([left, right])
+  perpendicular([bottom, right])
+}
+
+cutter = extrude(region(point = [0, 0], sketch = cutterSketch), length = 12)
+
+result = split(target, tools = [cutter], keepTools = true)
+
+hide([result[0], cutter])
+showExcept = view::named(
+  "Show except selected bodies",
+  camera = view::oriented(view::Orientation::Front),
+  baseline = view::Visibility::Show,
+  except = [result[0], cutter],
+)
+hideExcept = view::named(
+  "Hide except selected bodies",
+  camera = view::oriented(view::Orientation::Front),
+  baseline = view::Visibility::Hide,
+  except = [result[0], cutter],
+)

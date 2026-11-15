@@ -1,7 +1,7 @@
 // This tests if/else-if/else branch scoping under KCL 3.0:
 // each branch body introduces its own scope, so branch-local variables may
 // shadow outer ones and are dropped at the branch's closing brace.
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 // Shadowing an outer variable inside a branch leaves the outer one intact.
 outer = 1

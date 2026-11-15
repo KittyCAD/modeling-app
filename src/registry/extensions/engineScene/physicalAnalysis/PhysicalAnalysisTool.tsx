@@ -693,7 +693,7 @@ export function PhysicalAnalysisStatusBarItem() {
   }, [isOpen])
 
   return (
-    <div className="relative">
+    <div className="relative flex">
       <button
         type="button"
         className={defaultStatusBarItemClassNames}

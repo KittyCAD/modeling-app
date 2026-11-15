@@ -1,0 +1,5 @@
+@settings(kclVersion = "3.0", defaultLengthUnit = mm)
+
+export firstPlane = offsetPlane(XY, offset = 10)
+export secondPlane = offsetPlane(XY, offset = 20)
+hide([firstPlane, secondPlane])

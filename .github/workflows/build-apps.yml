@@ -31,7 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
 
-      - uses: actions/setup-node@v7.0.0
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -119,6 +119,9 @@ jobs:
     name: build-apps (${{ matrix.platform }})
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
+      # The build runs out of memory with Node's default ~2GB heap on
+      # the macOS and Windows runners.
+      NODE_OPTIONS: --max-old-space-size=4096
     steps:
       - uses: actions/checkout@v7.0.1
 
@@ -153,7 +156,7 @@ jobs:
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
       - name: Sync node version and setup cache
-        uses: actions/setup-node@v7.0.0
+        uses: actions/setup-node@v7.1.0
         with:
           node-version-file: .nvmrc
           cache: npm # Set this to npm, npm or pnpm.

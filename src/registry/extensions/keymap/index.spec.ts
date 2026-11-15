@@ -1,10 +1,16 @@
+import { requireSuccess, codeSurface } from '@src/lib/editors/testViews'
+import '@src/lib/projectSession/next/testFeature'
 import {
   defineRegistryItem,
+  provide,
   provideService,
   Registry,
   Slot,
 } from '@kittycad/registry'
 import type { Command } from '@src/lib/commandTypes'
+import editorsExtension from '@src/lib/editors/registry'
+import { editorsService } from '@src/lib/editors/registry/contract'
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { kclCommands } from '@src/lib/kclCommands'
 import {
   type CommandSystemService,
@@ -15,6 +21,7 @@ import {
   GLOBAL_COMMAND_SCOPES,
   HOME_COMMAND_SCOPE,
   MODE_MODELING_COMMAND_SCOPE,
+  MODELING_DIALOG_FOCUSED_COMMAND_SCOPE,
   SETTINGS_COMMAND_SCOPE,
 } from '@src/registry/contracts/commands'
 import {
@@ -29,8 +36,8 @@ import {
   keymapContract,
   keymapScopesValueSpec,
   keymapService,
+  keymapEventOwnersValueSpec,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
-  MODE_SKETCHING_KEYMAP_SCOPE,
   type PersistedKeymap,
   provideKeymapDocument,
   provideKeymapItem,
@@ -49,6 +56,145 @@ const testFileOperations = {} as FileOperationsRegistryService
 vi.mock('@src/registry/extensions/keymap/persistence', () => persistenceMocks)
 
 describe('keymap extension', () => {
+  it('keeps undo and redo with the focused editor', async () => {
+    await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
+    const send = vi.fn()
+    const registry = createRegistryWithKeymapItems(
+      [
+        {
+          id: 'legacy-undo',
+          title: 'Legacy undo',
+          source: 'test',
+          command: 'legacy-undo',
+          keystrokes: ['mod+z'],
+          when: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+        },
+        {
+          id: 'legacy-redo',
+          title: 'Legacy redo',
+          source: 'test',
+          command: 'legacy-redo',
+          keystrokes: ['mod+shift+z'],
+          when: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+        },
+        {
+          id: 'other-shortcut',
+          title: 'Other shortcut',
+          source: 'test',
+          command: 'other-shortcut',
+          keystrokes: ['mod+k'],
+          when: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+        },
+      ],
+      { send, extraItems: [editorsExtension] }
+    )
+    const editors = registry.get(editorsService)
+    const first = requireSuccess(editors.openEditor('first.txt', 'original'))
+    const second = requireSuccess(editors.openEditor('second.txt', 'separate'))
+    document.body.append(
+      codeSurface(registry.get(editorsService), first).dom,
+      codeSurface(registry.get(editorsService), second).dom
+    )
+    try {
+      first.dispatch({ changes: { from: 0, to: 8, insert: 'edited' } })
+      codeSurface(registry.get(editorsService), first).focus()
+      const press = (key: string, shiftKey = false) =>
+        codeSurface(
+          registry.get(editorsService),
+          first
+        ).contentDOM.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            key,
+            code: `Key${key.toUpperCase()}`,
+            keyCode: key.toUpperCase().charCodeAt(0),
+            shiftKey,
+            ctrlKey: !/Mac/.test(navigator.platform),
+            metaKey: /Mac/.test(navigator.platform),
+            bubbles: true,
+            cancelable: true,
+          })
+        )
+      press('z')
+      expect(
+        codeSurface(registry.get(editorsService), first).state.doc.toString()
+      ).toBe('original')
+      press('Z', true)
+      expect(
+        codeSurface(registry.get(editorsService), first).state.doc.toString()
+      ).toBe('edited')
+      press('z')
+      press('y')
+      expect(
+        codeSurface(registry.get(editorsService), first).state.doc.toString()
+      ).toBe('edited')
+      expect(
+        codeSurface(registry.get(editorsService), second).state.doc.toString()
+      ).toBe('separate')
+      expect(send).not.toHaveBeenCalled()
+      press('k')
+      expect(send).toHaveBeenCalledOnce()
+    } finally {
+      codeSurface(registry.get(editorsService), first).dom.remove()
+      codeSurface(registry.get(editorsService), second).dom.remove()
+      registry[Symbol.dispose]()
+    }
+  })
+  it('leaves widget keys local while allowing explicitly scoped editable bindings', () => {
+    const send = vi.fn()
+    const tree = document.createElement('zoo-feature-tree')
+    const row = document.createElement('zoo-feature-tree-row')
+    const registry = createRegistryWithKeymapItems(
+      [
+        {
+          id: 'global-x',
+          title: 'Global X',
+          source: 'test',
+          command: 'global-x',
+          keystrokes: ['x'],
+          when: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
+        },
+        {
+          id: 'tree-y',
+          title: 'Tree Y',
+          source: 'test',
+          command: 'tree-y',
+          keystrokes: ['y'],
+          when: ['feature-tree.focused'],
+        },
+      ],
+      {
+        send,
+        extraItems: [
+          defineRegistryItem({
+            id: 'widget-owner',
+            provides: [
+              provide(keymapEventOwnersValueSpec, {
+                id: 'tree',
+                scope: 'feature-tree.focused',
+                owns: (event) => event.composedPath().includes(tree),
+              }),
+            ],
+          }),
+        ],
+      }
+    )
+    const keymap = registry.get(keymapService)
+    keymap.applyScope('feature-tree.focused')
+    const event = (key: string) => {
+      const event = createKeyboardEventWithTarget(key, row, {
+        cancelable: true,
+      })
+      vi.spyOn(event, 'composedPath').mockReturnValue([row, tree])
+      return event
+    }
+    const printable = event('x')
+    expect(keymap.handleKeyDown(printable, { source: 'global' })).toBe(false)
+    expect(printable.defaultPrevented).toBe(false)
+    expect(send).not.toHaveBeenCalled()
+    expect(keymap.handleKeyDown(event('y'), { source: 'global' })).toBe(true)
+    expect(send).toHaveBeenCalledOnce()
+    registry[Symbol.dispose]()
+  })
   beforeEach(() => {
     persistenceMocks.readUserKeymapFile.mockReset().mockResolvedValue({
       version: KEYMAP_SCHEMA_VERSION,
@@ -94,6 +240,48 @@ describe('keymap extension', () => {
     expect(keymapContract.keymapScopesValueSpec).toBe(commandScopesValueSpec)
   })
 
+  it('submits modeling dialogs only from the active collector or scene focus', () => {
+    const registry = createRegistryWithKeymapItems([])
+    const keymap = registry.get(keymapService)
+    const form = document.createElement('form')
+    const selection = document.createElement('button')
+    selection.type = 'button'
+    selection.dataset.modelingDialogSelection = 'true'
+    const remove = document.createElement('button')
+    remove.type = 'button'
+    form.append(selection, remove)
+    document.body.append(form)
+    const requestSubmit = vi
+      .spyOn(form, 'requestSubmit')
+      .mockImplementation(() => {})
+
+    for (const target of [selection, document.body]) {
+      if (target === selection) selection.focus()
+      else selection.blur()
+      expect(
+        keymap.handleKeyDown(createKeyboardEventWithTarget('Enter', target), {
+          source: 'global',
+        })
+      ).toBe(true)
+      expect(keymap.getCurrentScopes()).toContain(
+        MODELING_DIALOG_FOCUSED_COMMAND_SCOPE
+      )
+    }
+    remove.focus()
+    expect(
+      keymap.handleKeyDown(createKeyboardEventWithTarget('Enter', remove), {
+        source: 'global',
+      })
+    ).toBe(false)
+    expect(keymap.getCurrentScopes()).not.toContain(
+      MODELING_DIALOG_FOCUSED_COMMAND_SCOPE
+    )
+    expect(requestSubmit).toHaveBeenCalledTimes(2)
+
+    form.remove()
+    registry[Symbol.dispose]()
+  })
+
   it('keeps the Import command compatible with saved Insert shortcuts', () => {
     const commands = kclCommands({
       kclManager: { fileSettings: {} },
@@ -111,42 +299,15 @@ describe('keymap extension', () => {
   it('uses Shift+Escape to exit sketch across desktop and web', () => {
     expect(
       defaultKeymap.bindings.find(
-        (binding) => binding.id === 'toolbar.sketch-legacy.exit'
-      )?.keystrokes
-    ).toEqual(['shift+escape'])
-    expect(
-      defaultKeymap.bindings.find(
         (binding) => binding.id === 'toolbar.sketch.exit'
       )?.keystrokes
     ).toEqual(['shift+escape'])
 
     expect(
       defaultKeymap.bindings.filter((binding) =>
-        binding.id.startsWith('toolbar.sketch-legacy.exit')
-      )
-    ).toHaveLength(1)
-    expect(
-      defaultKeymap.bindings.filter((binding) =>
         binding.id.startsWith('toolbar.sketch.exit')
       )
     ).toHaveLength(1)
-  })
-
-  it('hides legacy sketch keybindings and links them to user-facing sketch bindings', () => {
-    expect(
-      defaultKeymap.bindings.find(
-        (binding) => binding.id === 'toolbar.sketch-legacy.line'
-      )
-    ).toMatchObject({
-      hidden: true,
-      command: 'zds.toolbar.sketchLegacy.line',
-      userBindingCommand: 'zds.toolbar.sketch.line',
-    })
-    const sketchLine = defaultKeymap.bindings.find(
-      (binding) => binding.id === 'toolbar.sketch.line'
-    )
-    expect(sketchLine?.command).toBe('zds.toolbar.sketch.line')
-    expect(sketchLine?.hidden).toBeUndefined()
   })
 
   it('uses P for the hovered tool picker while preserving sketch shortcuts', () => {
@@ -418,9 +579,6 @@ describe('keymap extension', () => {
     )
     const registry = createRegistryWithKeymapItems([], {
       commands: [
-        createTestCommand('zds.toolbar.sketchLegacy.line', [
-          MODE_SKETCHING_KEYMAP_SCOPE,
-        ]),
         createTestCommand('zds.toolbar.sketch.line', [
           MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
         ]),
@@ -428,7 +586,7 @@ describe('keymap extension', () => {
     })
 
     const keymap = registry.get(keymapService)
-    keymap.applyScope(MODE_SKETCHING_KEYMAP_SCOPE)
+    keymap.applyScope(MODE_SKETCH_SOLVE_KEYMAP_SCOPE)
 
     const savePromise = keymap.savePersistedKeymap({
       version: KEYMAP_SCHEMA_VERSION,

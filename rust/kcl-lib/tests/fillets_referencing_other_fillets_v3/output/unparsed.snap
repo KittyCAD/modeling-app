@@ -2,7 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing fillets_referencing_other_fillets_v3.kcl
 ---
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 // Z-Bracket
 

@@ -1,4 +1,3 @@
-import type { KclManager } from '@src/lang/KclManager'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type {
   Command,
@@ -69,7 +68,6 @@ export type CommandBarContext = CommandBarInput & {
   reviewValidationError?: string
   reviewValidationDetails?: CommandReviewValidationDetails
   machineManager: MachineManager
-  kclManager?: KclManager
   userFeatures?: UserFeaturesService
 }
 
@@ -92,6 +90,7 @@ export type CommandBarMachineEvent =
         argumentsToSubmit: Record<string, unknown>
       }
     }
+  | { type: 'Dialog draft changed' }
   | {
       type: 'Add argument'
       data: { argument: CommandArgumentWithName<unknown> }
@@ -142,7 +141,6 @@ export type CommandBarMachineEvent =
       type: 'Change current argument'
       data: { [x: string]: CommandArgumentWithName<unknown> }
     }
-  | { type: 'Set kclManager'; data: KclManager }
 
 export const commandBarMachine = setup({
   types: {
@@ -161,12 +159,6 @@ export const commandBarMachine = setup({
           ...context.argumentsToSubmit,
           [argName]: argData,
         }
-      },
-    }),
-    'Set kclManager': assign({
-      kclManager: ({ event }) => {
-        assertEvent(event, 'Set kclManager')
-        return event.data
       },
     }),
     'Set userFeatures': assign({
@@ -385,36 +377,23 @@ export const commandBarMachine = setup({
         }
       },
     }),
-    'Notify review validation error': ({ event }) => {
-      if (
-        event.type !== 'xstate.done.actor.validateArguments' ||
-        !event.output.reviewValidationError
-      ) {
-        return
-      }
-      toast.error(event.output.reviewValidationError)
-    },
-    'Notify argument validation error': ({ event }) => {
-      if (event.type !== 'xstate.error.actor.validateArguments') {
-        return
-      }
-      const argName =
-        event.error &&
-        typeof event.error === 'object' &&
-        'arg' in event.error &&
-        event.error.arg &&
-        typeof event.error.arg === 'object' &&
-        'name' in event.error.arg
-          ? String(event.error.arg.name)
-          : undefined
-      const message =
-        event.error instanceof Error
-          ? event.error.message
-          : argName
+    'Clear review validation error': assign({
+      reviewValidationError: undefined,
+      reviewValidationDetails: undefined,
+    }),
+    'Set argument validation error': assign({
+      reviewValidationError: ({ event }) => {
+        if (event.type !== 'xstate.error.actor.validateArguments') return
+        const argName = event.error?.arg?.name
+        return (
+          event.error?.message ||
+          (argName
             ? `Unable to validate "${argName}".`
-            : 'Unable to validate command arguments.'
-      toast.error(message)
-    },
+            : 'Unable to validate command arguments.')
+        )
+      },
+      reviewValidationDetails: undefined,
+    }),
   },
   guards: {
     'Command needs review': ({ context }) =>
@@ -508,8 +487,7 @@ export const commandBarMachine = setup({
             context.selectedCommand &&
             (argConfig?.inputType === 'selection' ||
               argConfig?.inputType === 'string' ||
-              argConfig?.inputType === 'options' ||
-              argConfig?.inputType === 'selectionMixed') &&
+              argConfig?.inputType === 'options') &&
             argConfig?.validation
           ) {
             argConfig
@@ -859,10 +837,7 @@ export const commandBarMachine = setup({
           {
             target: 'Gathering arguments',
             guard: 'Has review validation error',
-            actions: [
-              'Set review validation error',
-              'Notify review validation error',
-            ],
+            actions: ['Set review validation error'],
           },
           {
             target: 'Closed',
@@ -872,16 +847,13 @@ export const commandBarMachine = setup({
         onError: [
           {
             target: 'Gathering arguments',
-            actions: ['Notify argument validation error'],
+            actions: ['Set argument validation error'],
           },
         ],
       },
     },
   },
   on: {
-    'Set kclManager': {
-      actions: 'Set kclManager',
-    },
     'Set userFeatures': {
       actions: 'Set userFeatures',
     },
@@ -906,6 +878,11 @@ export const commandBarMachine = setup({
       guard: 'Command uses dialog',
       target: '.Checking Arguments for Dialog',
       actions: ['Set arguments to submit', 'Clear current argument'],
+    },
+    'Dialog draft changed': {
+      guard: 'Command uses dialog',
+      target: '.Gathering arguments',
+      actions: ['Clear review validation error'],
     },
     'Add commands': {
       actions: [

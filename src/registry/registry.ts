@@ -3,7 +3,6 @@ import type { BundledRegistryItemId } from '@src/registry/catalogMetadata'
 import { bundledRegistryItemCatalog } from '@src/registry/catalog'
 import { defaultRegistryItemIds } from '@src/registry/defaultComposition'
 
-export const appRegistryServicesSlot = new Slot()
 export const appRegistryOverridesSlot = new Slot()
 
 // Extensions are always-on infrastructure. Plugins retain their existing

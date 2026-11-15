@@ -1,3 +1,4 @@
+import { createProjectForTest } from '@src/lib/projectTestUtils'
 import { defineRegistryItem } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import env from '@src/env'
@@ -15,7 +16,7 @@ import { findKwArg, findKwArgAny } from '@src/lang/util'
 import type { CallExpressionKw, Expr } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import { createTextFileIO } from '@src/lib/projectSession/textFileIO'
 import { MachineManager } from '@src/lib/MachineManager'
 import RustContext from '@src/lib/rustContext'
@@ -31,6 +32,8 @@ import {
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { join } from 'path'
 import { createActor } from 'xstate'
+
+export { createProjectForTest } from '@src/lib/projectTestUtils'
 
 /**
  * Throw x if it's an Error. Only use this in tests.
@@ -84,10 +87,10 @@ export function createSettledUserFeaturesForTest(): UserFeaturesSettleService {
 // if this runs in vitest the engineCommandManager will run a lite connection mode.
 export async function buildTheWorldAndConnectToEngine({
   webrtc = true,
-  pool,
+  geometryOnly = false,
 }: {
   webrtc?: boolean
-  pool?: 'cpu'
+  geometryOnly?: boolean
 } = {}) {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
   const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
@@ -116,9 +119,7 @@ export async function buildTheWorldAndConnectToEngine({
   const rustContext = new RustContext(
     instancePromise,
     engineCommandManager,
-    settingsActor,
-    0,
-    pool === 'cpu'
+    settingsActor
   )
   const kclManager = new KclManager('some-file', '', {
     fileOperations: testFileOperations,
@@ -132,6 +133,7 @@ export async function buildTheWorldAndConnectToEngine({
     engineCommandManager,
     rustContext,
     userFeatures: createSettledUserFeaturesForTest(),
+    project: signal(createProjectForTest()),
     projectPath: signal('some-project'),
   })
 
@@ -157,7 +159,8 @@ export async function buildTheWorldAndConnectToEngine({
           }
         },
         unitTestWebrtc: webrtc,
-        unitTestPool: pool,
+        unitTestGeometryOnly: geometryOnly,
+        geometryOnly,
         rustContext: kclManager.rustContext,
       })
       .catch(reportRejection)
@@ -251,6 +254,7 @@ export async function buildTheWorldAndNoEngineConnection(
     engineCommandManager,
     rustContext,
     userFeatures,
+    project: signal(createProjectForTest()),
     projectPath: signal('some-project'),
   })
 

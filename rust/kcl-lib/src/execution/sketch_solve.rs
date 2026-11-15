@@ -620,7 +620,7 @@ pub(super) fn create_segment_scene_objects(
                     id: segment.object_id,
                     kind: ObjectKind::Segment {
                         segment: kcl_api::Segment::Point(kcl_api::Point {
-                            position: point2d.clone(),
+                            position: point2d,
                             ctor: Some(kcl_api::PointCtor {
                                 position: ctor.position.clone(),
                             }),
@@ -632,7 +632,7 @@ pub(super) fn create_segment_scene_objects(
                     label: Default::default(),
                     comments: Default::default(),
                     artifact_id,
-                    source: source.clone(),
+                    source,
                 };
                 scene_objects.push(point_object);
             }
@@ -659,7 +659,7 @@ pub(super) fn create_segment_scene_objects(
                     id: *start_object_id,
                     kind: ObjectKind::Segment {
                         segment: kcl_api::Segment::Point(kcl_api::Point {
-                            position: start_point2d.clone(),
+                            position: start_point2d,
                             ctor: None,
                             owner: Some(segment.object_id),
                             freedom: start_final_freedom,
@@ -685,7 +685,7 @@ pub(super) fn create_segment_scene_objects(
                     id: *end_object_id,
                     kind: ObjectKind::Segment {
                         segment: kcl_api::Segment::Point(kcl_api::Point {
-                            position: end_point2d.clone(),
+                            position: end_point2d,
                             ctor: None,
                             owner: Some(segment.object_id),
                             freedom: end_final_freedom,
@@ -748,7 +748,7 @@ pub(super) fn create_segment_scene_objects(
                     id: *start_object_id,
                     kind: ObjectKind::Segment {
                         segment: kcl_api::Segment::Point(kcl_api::Point {
-                            position: start_point2d.clone(),
+                            position: start_point2d,
                             ctor: None,
                             owner: Some(segment.object_id),
                             freedom: start_final_freedom,
@@ -774,7 +774,7 @@ pub(super) fn create_segment_scene_objects(
                     id: *end_object_id,
                     kind: ObjectKind::Segment {
                         segment: kcl_api::Segment::Point(kcl_api::Point {
-                            position: end_point2d.clone(),
+                            position: end_point2d,
                             ctor: None,
                             owner: Some(segment.object_id),
                             freedom: end_final_freedom,
@@ -800,7 +800,7 @@ pub(super) fn create_segment_scene_objects(
                     id: *center_object_id,
                     kind: ObjectKind::Segment {
                         segment: kcl_api::Segment::Point(kcl_api::Point {
-                            position: center_point2d.clone(),
+                            position: center_point2d,
                             ctor: None,
                             owner: Some(segment.object_id),
                             freedom: center_final_freedom,
@@ -859,7 +859,7 @@ pub(super) fn create_segment_scene_objects(
                     id: *start_object_id,
                     kind: ObjectKind::Segment {
                         segment: kcl_api::Segment::Point(kcl_api::Point {
-                            position: start_point2d.clone(),
+                            position: start_point2d,
                             ctor: None,
                             owner: Some(segment.object_id),
                             freedom: start_final_freedom,
@@ -885,7 +885,7 @@ pub(super) fn create_segment_scene_objects(
                     id: *center_object_id,
                     kind: ObjectKind::Segment {
                         segment: kcl_api::Segment::Point(kcl_api::Point {
-                            position: center_point2d.clone(),
+                            position: center_point2d,
                             ctor: None,
                             owner: Some(segment.object_id),
                             freedom: center_final_freedom,

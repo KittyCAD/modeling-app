@@ -4,6 +4,7 @@ import type { StateFrom } from 'xstate'
 
 import { useSelectionLifecycle } from '@src/hooks/useSelectionLifecycle'
 import type { KclManager } from '@src/lang/KclManager'
+import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selectionCoercion'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
@@ -36,22 +37,35 @@ function CommandBarSelectionInput({
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = commands.useState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
-  const selection = useSelector(arg.machineActor, selectionSelector)
-  const selectionsByType = useMemo(() => {
-    return getSelectionCountByType(
-      kclManager.astSignal.value,
-      selection,
-      kclManager.artifactGraph
-    )
-  }, [selection, kclManager.astSignal.value, kclManager.artifactGraph])
+  const rawSelection = useSelector(arg.machineActor, selectionSelector)
+  const selection = useMemo(
+    () =>
+      coerceSelectionsForBodyOnlySelectionTypes(
+        rawSelection,
+        arg.selectionTypes,
+        kclManager.artifactGraph
+      ),
+    [rawSelection, arg.selectionTypes, kclManager.artifactGraph]
+  )
   const isArgRequired =
     arg.required instanceof Function
       ? arg.required(commandBarState.context)
       : arg.required
-  const canSubmitSelection = useMemo<boolean>(
-    () => canSubmitSelectionArg(selectionsByType, arg),
-    [selectionsByType, arg]
+  const hasSelection = Boolean(
+    selection &&
+      selection.graphSelections.length + selection.otherSelections.length
   )
+  const canSubmitSelection =
+    (arg.allowCodeReferences && !isArgRequired) ||
+    canSubmitSelectionArg(
+      getSelectionCountByType(
+        kclManager.astSignal.value,
+        selection,
+        kclManager.artifactGraph
+      ),
+      arg,
+      selection
+    )
 
   useSelectionLifecycle({
     arg,
@@ -141,7 +155,7 @@ function CommandBarSelectionInput({
           (!hasSubmitted || canSubmitSelection || 'text-destroy-50')
         }
       >
-        {canSubmitSelection
+        {canSubmitSelection && hasSelection
           ? getSelectionTypeDisplayText(
               kclManager.astSignal.value,
               selection,
@@ -149,7 +163,7 @@ function CommandBarSelectionInput({
             ) + ' selected'
           : `Please select ${
               arg.multiple ? 'one or more ' : 'one '
-            }${getSemanticSelectionType(arg.selectionTypes).join(' or ')}`}
+            }${getSemanticSelectionType(arg.selectionTypes).join(' or ') || (arg.multiple ? 'objects' : 'object')}`}
         <span data-testid="cmd-bar-arg-name" className="sr-only">
           {arg.name}
         </span>

@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createActor } from 'xstate'
+import toast from 'react-hot-toast'
 
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Command } from '@src/lib/commandTypes'
@@ -156,6 +157,7 @@ describe('commandBarMachine', () => {
     }
 
     it('keeps argument and codemod validation failures editable', async () => {
+      const toastError = vi.spyOn(toast, 'error').mockReturnValue('error')
       const validation = vi.fn(async ({ data }: { data: unknown }) =>
         data === 'duplicate' ? 'This variable name is already in use.' : true
       )
@@ -188,6 +190,9 @@ describe('commandBarMachine', () => {
         expect(validation).toHaveBeenCalledWith(
           expect.objectContaining({ data: 'duplicate' })
         )
+        expect(actor.getSnapshot().context.reviewValidationError).toBe(
+          'This variable name is already in use.'
+        )
 
         submit('invalid geometry')
         await vi.waitFor(() => {
@@ -197,6 +202,15 @@ describe('commandBarMachine', () => {
           )
         })
         expect(command.onSubmit).not.toHaveBeenCalled()
+        expect(toastError).not.toHaveBeenCalled()
+
+        actor.send({ type: 'Dialog draft changed' })
+        expect(
+          actor.getSnapshot().context.reviewValidationError
+        ).toBeUndefined()
+        expect(
+          actor.getSnapshot().context.reviewValidationDetails
+        ).toBeUndefined()
 
         submit('unique')
         await vi.waitFor(() =>
@@ -206,6 +220,7 @@ describe('commandBarMachine', () => {
         )
       } finally {
         actor.stop()
+        toastError.mockRestore()
       }
     })
 
@@ -261,6 +276,8 @@ describe('commandBarMachine', () => {
         expect(
           actor.getSnapshot().matches('Checking Arguments for Dialog')
         ).toBe(true)
+        actor.send({ type: 'Dialog draft changed' })
+        expect(actor.getSnapshot().matches('Gathering arguments')).toBe(true)
         actor.send({
           type: 'Find and select command',
           data: {

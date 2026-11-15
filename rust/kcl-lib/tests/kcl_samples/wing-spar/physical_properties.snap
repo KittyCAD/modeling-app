@@ -24,6 +24,6 @@ description: Physical properties wing-spar.kcl
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 628.4217783928572
+    "value": 628.4217783928568
   }
 }

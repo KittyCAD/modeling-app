@@ -13,8 +13,8 @@ description: Lints if_arm_scoped_geometry.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      510,
-      543,
+      500,
+      533,
       0
     ],
     "overridden": false,

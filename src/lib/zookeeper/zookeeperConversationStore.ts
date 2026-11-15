@@ -1,3 +1,4 @@
+import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import { PROJECT_SETTINGS_FILE_NAME, REGEXP_UUIDV4 } from '@src/lib/constants'
 import { getAppSettingsFilePath } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
@@ -56,8 +57,9 @@ const readZookeeperConversations = async (
   fileOperations: FileOperationsRegistryService
 ): Promise<ZookeeperConversations> => {
   try {
-    const json = new TextDecoder().decode(
-      await fileOperations.readFile(await getZookeeperConversationsFilePath())
+    const json = await readTextFile(
+      fileOperations,
+      await getZookeeperConversationsFilePath()
     )
     return jsonToZookeeperConversations(json ?? '')
   } catch (error) {
@@ -88,9 +90,7 @@ export const makeProjectZookeeperConversationStore = (
     if (!environment) {
       return Promise.reject(new Error('Missing Zookeeper environment'))
     }
-    const contents = new TextDecoder().decode(
-      await fileOperations.readFile(projectTomlPath)
-    )
+    const contents = await readTextFile(fileOperations, projectTomlPath)
     if (getProjectIdFromProjectTomlContents(contents) !== projectId) {
       return Promise.reject(
         new Error('Project identity changed or project.toml is invalid')
