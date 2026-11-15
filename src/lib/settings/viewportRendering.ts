@@ -1,5 +1,9 @@
 import type { PostEffectType } from '@kittycad/lib'
-import { getThemeColorForEngine, Themes } from '@src/lib/theme'
+import {
+  getOppositeTheme,
+  getThemeColorForEngine,
+  Themes,
+} from '@src/lib/theme'
 
 export type ViewportRendering =
   | 'default'
@@ -39,6 +43,15 @@ export function getViewportTheme(
   mode: ViewportRendering | PostEffectType
 ): Themes {
   return mode === 'retrocad' || mode === 'phosphor' ? Themes.Dark : theme
+}
+
+/** `SceneInfra.theme` selects foreground colors for sketch segments, origins, and constraints. Legacy helpers expect the opposite of the viewport background theme. */
+export function getSceneOverlayTheme(
+  theme: Themes,
+  mode: ViewportRendering | PostEffectType,
+  geometryOnly: boolean
+) {
+  return getOppositeTheme(geometryOnly ? theme : getViewportTheme(theme, mode))
 }
 
 export function getViewportBackgroundColor(
