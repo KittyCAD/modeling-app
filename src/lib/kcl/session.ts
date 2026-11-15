@@ -17,14 +17,14 @@ function opening() {
     // Passed to `openKclScene`; aborting closes connection work and makes its
     // checks after WASM/SceneInfra startup reject late resources.
     lifetime: new AbortController(),
-    // `execute` may arrive before a viewport mounts. `start` resolves this once
+    // `execute` may arrive before a viewport attaches. `start` resolves this once
     // the connection and native runtime exist; `fail`/`dispose` resolve an `Error`.
     ready: Promise.withResolvers<KclSceneResource | Error>(),
     // Lets queued/running executions return an error immediately on connection
     // loss. The runtime's separate native queue still waits before freeing WASM.
     closed: Promise.withResolvers<Error>(),
     // Set after `execute` calls `frameModel` for the first successful streamed
-    // model. Later edits/remounts retain the user's camera; reconnects start fresh.
+    // model. Later edits/reattachments retain the user's camera; reconnects start fresh.
     framed: false,
     // `begin` installs the startup deadline; each `execute` has its own run timer.
     timer: undefined as ReturnType<typeof setTimeout> | undefined,
@@ -33,7 +33,7 @@ function opening() {
 
 /**
  * `createKclExecution` retains this session for one executor and disposes it with
- * the executor's Effect scope. `KclScene` only mounts/detaches its DOM element.
+ * the executor's Effect scope. `KclScene` only attaches/detaches its DOM element.
  * Connection attempts can be replaced while the executor and document survive.
  */
 export function createKclSession(
@@ -50,7 +50,7 @@ export function createKclSession(
   const resource = signal<KclSceneResource | undefined>(undefined)
   let attempt = opening()
   const observers = new Set<ResizeObserver>()
-  const detachMounts = new Set<() => void>()
+  const detachments = new Set<() => void>()
   let started = false
   let disposed = false
   let queue: Promise<unknown> = Promise.resolve()
@@ -168,7 +168,7 @@ export function createKclSession(
       if (container) recover(container)
     },
     /** Attach the viewport and its listeners. The returned detach function preserves the scene and model. */
-    mount: (container: HTMLElement) => {
+    attach: (container: HTMLElement) => {
       container.appendChild(element)
       resource.peek()?.resume()
       const resized = () => {
@@ -205,14 +205,14 @@ export function createKclSession(
       observer.observe(container)
       resized()
       const detach = () => {
-        detachMounts.delete(detach)
+        detachments.delete(detach)
         window.removeEventListener('focus', focus)
         document.removeEventListener('visibilitychange', focus)
         observer.disconnect()
         observers.delete(observer)
         if (element.parentElement === container) element.remove()
       }
-      detachMounts.add(detach)
+      detachments.add(detach)
       return detach
     },
     /** Run against the captured connection attempt; a reconnect cannot redirect queued old source into its replacement. */
@@ -267,7 +267,7 @@ export function createKclSession(
       if (disposed) return
       disposed = true
       clearTimeout(attempt.timer)
-      for (const detach of [...detachMounts]) detach()
+      for (const detach of [...detachments]) detach()
       for (const observer of observers) observer.disconnect()
       observers.clear()
       attempt.lifetime.abort()
