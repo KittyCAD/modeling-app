@@ -1,3 +1,7 @@
+import {
+  previewHistory,
+  replayDocumentPreview,
+} from '@src/lib/editors/historyReplay'
 import type { Transaction } from '@codemirror/state'
 import { EditorState, type TransactionSpec } from '@codemirror/state'
 import { history, undo, redo } from '@codemirror/commands'
@@ -13,10 +17,15 @@ export function createEditorDocument(
   const lifetime = new AbortController()
   let state = EditorState.create({
     doc: contents,
-    extensions: [history(), EditorState.allowMultipleSelections.of(true)],
+    extensions: [
+      history(),
+      previewHistory,
+      EditorState.allowMultipleSelections.of(true),
+    ],
   })
   const listeners = new Set<(transaction: Transaction) => void>()
-  const apply = (transaction: Transaction) => {
+  const apply = (input: Transaction) => {
+    const transaction = replayDocumentPreview(input)
     if (lifetime.signal.aborted || (transaction.docChanged && !canEdit()))
       return
     state = transaction.state
