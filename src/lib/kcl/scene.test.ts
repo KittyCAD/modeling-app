@@ -7,6 +7,7 @@ import { createScenePresentationPreferences } from '@src/lib/kcl/presentationPre
 import { connectScene, type SceneConnection } from '@src/lib/kcl/scene/connection'
 import { EngineConnectionEvents } from '@src/lib/engineConnection/utils'
 import { createSettings } from '@src/lib/settings/initialSettings'
+import { Themes } from '@src/lib/theme'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { beforeEach, expect, it, vi } from 'vitest'
@@ -14,6 +15,7 @@ import { beforeEach, expect, it, vi } from 'vitest'
 const owned = vi.hoisted(() => ({
   managers: [] as object[],
   cameras: [] as object[],
+  infra: [] as { theme: string; resumeRendering: ReturnType<typeof vi.fn> }[],
   disposeInfra: vi.fn(),
 }))
 vi.mock('@src/lib/engineConnection/connectionManager', () => ({
@@ -33,6 +35,8 @@ vi.mock('@src/lib/engineConnection/connectionManager', () => ({
 }))
 vi.mock('@src/clientSideScene/sceneInfra', () => ({
   SceneInfra: class {
+    theme = 'system'
+    resumeRendering = vi.fn()
     renderer = { domElement: document.createElement('canvas') }
     labelRenderer = { domElement: document.createElement('div') }
     camControls = {
@@ -44,6 +48,7 @@ vi.mock('@src/clientSideScene/sceneInfra', () => ({
     }
     constructor() {
       owned.cameras.push(this.camControls)
+      owned.infra.push(this)
     }
     animate = vi.fn()
     onCanvasResized = vi.fn()
@@ -59,6 +64,7 @@ beforeEach(() => {
   vi.clearAllMocks()
   owned.managers.length = 0
   owned.cameras.length = 0
+  owned.infra.length = 0
 })
 function setup() {
   const connection = {
@@ -259,3 +265,41 @@ it('tracks the captured connection and removes its close listener on disposal', 
   expect(options.onDisconnect).toHaveBeenCalledOnce()
   preferences.dispose()
 })
+
+it.each(['local', 'streamed'] as const)(
+  'keeps sketch overlays contrasted against the %s viewport when theme or rendering style changes',
+  async (presentation) => {
+    const { options, preferences } = setup()
+    const settings = options.settings.current.peek()
+    settings.app.theme.user = Themes.Light
+    settings.modeling.viewportRendering.user = 'default'
+    const scene = await openKclScene({ ...options, presentation })
+    if (scene instanceof Error) return expect.fail(scene.message)
+    const infra = owned.infra[0]
+    try {
+      await scene.applySettings()
+      expect(infra.theme).toBe(Themes.Dark)
+      infra.resumeRendering.mockClear()
+      settings.modeling.viewportRendering.user = 'retrocad'
+      await scene.applySettings()
+      expect(infra.theme).toBe(
+        presentation === 'local' ? Themes.Dark : Themes.Light
+      )
+      if (presentation === 'streamed')
+        expect(infra.resumeRendering).toHaveBeenCalled()
+      settings.app.theme.user = Themes.Dark
+      await scene.applySettings()
+      expect(infra.theme).toBe(Themes.Light)
+      settings.modeling.viewportRendering.user = 'default'
+      await scene.applySettings()
+      infra.resumeRendering.mockClear()
+      settings.app.theme.user = Themes.Light
+      await scene.applySettings()
+      expect(infra.theme).toBe(Themes.Dark)
+      expect(infra.resumeRendering).toHaveBeenCalled()
+    } finally {
+      await scene.dispose()
+      preferences.dispose()
+    }
+  }
+)
