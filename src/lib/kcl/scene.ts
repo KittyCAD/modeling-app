@@ -26,7 +26,11 @@ import { isErr, reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 
-/** One owned connection/native model with interchangeable streamed and local presentations. */
+/**
+ * Resources created by `openKclScene` for one connection attempt. `KclSession`
+ * attaches `element`, runs `runtime`, and eventually calls `dispose`. The
+ * presentation is fixed at creation; a local presentation also supplies a GLB host.
+ */
 export interface KclSceneResource {
   readonly element: HTMLElement
   readonly runtime: KclRuntime
@@ -34,13 +38,18 @@ export interface KclSceneResource {
   readonly localHost: LocalRendererHost | undefined
   readonly preferences: ScenePresentationPreferences
   resize: (size: { width: number; height: number }) => Promise<void>
+  /** Apply the legacy initial-camera reset; `KclSession` requests it once per streamed connection. */
   frameModel: () => Promise<void>
+  /** Compare the manager's live connection with the one this resource opened. */
   isConnected: () => boolean
+  /** Retry video playback when `KclScene` reattaches this resource's DOM. */
   resume: () => void
+  /** Apply changed camera/appearance values; execution declarations and local React props have separate consumers. */
   applySettings: () => Promise<void>
   dispose: () => Promise<void>
 }
 
+/** Build the connection, native runtime, and `SceneInfra`; return an `Error` and dispose partial startup resources on failure. */
 export async function openKclScene({
   wasm,
   settings,
@@ -107,6 +116,8 @@ export async function openKclScene({
     })
     if (isErr(connected)) return connected
     connection = connected
+    // `isConnected` and the close listener belong to this exact connection.
+    // `KclSession.current` rejects callbacks from an attempt replaced by recovery.
     const ownedConnection = manager.connection
     const disconnect = () => {
       if (!disposed && !signal.aborted)
@@ -143,6 +154,8 @@ export async function openKclScene({
     infra = new Infra(manager, wasm, () => settings.current.peek())
     const sceneInfra = infra
     const model = runtime
+    // `SceneInfra.baseUnit` controls client-side coordinate conversion even
+    // without a local model renderer. Unit changes do not replay camera preferences.
     stopUnits = effect(() => {
       sceneInfra.baseUnit = preferences.defaultUnit.value
     })
@@ -192,6 +205,8 @@ export async function openKclScene({
       camera.onWindowResize()
       await connection!.resize(getDimensions(nextSize.width, nextSize.height))
     }
+    // Bind GLB exports, artifacts, and camera input to this runtime. The shared
+    // renderer must not obtain them from the legacy route's active editor.
     const localHost: LocalRendererHost | undefined =
       presentation === 'local'
         ? {
@@ -216,6 +231,8 @@ export async function openKclScene({
             exportModel: model.exportModel,
           }
         : undefined
+    // `KclSession` also invokes `applySettings` after execution. Remember applied
+    // values so a new model or an unrelated preference cannot replay camera commands.
     let appliedCamera: SceneCameraPreferences | undefined
     let appliedAppearance: SceneAppearancePreferences | undefined
     const applySettings = async () => {

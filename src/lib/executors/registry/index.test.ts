@@ -286,7 +286,8 @@ describe('executors extension', () => {
     const latest = executor.output.value
     old.resolve({ contents: 'stale' })
     await old.promise
-    // Allow all continuations of the obsolete run to finish.
+    // Let `old.promise` continuations run before checking that they cannot
+    // overwrite the already-published `latest` output.
     await new Promise((resolve) => setTimeout(resolve, 0))
     expect(executor.output.value).toBe(latest)
   })
