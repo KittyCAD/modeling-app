@@ -1,4 +1,24 @@
 import {
+  Registry,
+  defineRegistryItem,
+  provideService,
+  provide,
+} from '@kittycad/registry'
+import { commandsExtension } from '@src/registry/extensions/commands'
+import {
+  commandSystemService,
+  contextualCommandsService,
+} from '@src/registry/contracts/commands'
+import { machineManagerService } from '@src/registry/contracts/machineManager'
+import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import type { MachineManager } from '@src/lib/MachineManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+
+import {
+  SKETCH_SOLVE_GROUP,
+  RAYCASTABLE_PLANE,
+} from '@src/clientSideScene/sceneUtils'
+import {
   act,
   fireEvent,
   render,
@@ -12,7 +32,9 @@ import { createScenePresentationPreferences } from '@src/lib/kcl/presentationPre
 import { createExecutorOutput } from '@src/lib/executors/output'
 import type { ScenePresentation } from '@src/lib/kcl/scene/connection'
 import type { WebSocketResponse } from '@kittycad/lib'
-import { Vector2, Vector3 } from 'three'
+import { Vector2, Vector3, Sprite } from 'three'
+import { Themes } from '@src/lib/theme'
+import { SKETCH_SOLVE_ORIGIN_SPRITE } from '@src/machines/sketchSolve/originSprite'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { encode } from '@msgpack/msgpack'
 import { signal } from '@preact/signals-core'
@@ -36,12 +58,32 @@ import {
 import { createKeymapTree } from '@src/registry/contracts/keymap'
 import type { KclSceneResource } from '@src/lib/kcl/scene'
 
+function commandEnvironment(wasm: ModuleType, manager: MachineManager) {
+  const registry = new Registry()
+  registry.configure([
+    commandsExtension,
+    defineRegistryItem({
+      providesServices: [provideService(machineManagerService, { manager })],
+      provides: [provide(wasmPromiseValueSpec, Promise.resolve(wasm))],
+    }),
+  ])
+  return {
+    commands: registry.get(commandSystemService),
+    contextualCommands: registry.get(contextualCommandsService),
+    dispose: () => registry[Symbol.dispose](),
+  }
+}
+
 async function fixture(
   presentation: ScenePresentation = 'streamed',
-  code = '@settings(kclVersion = 3.0)\nanswer = 42'
+  code = '@settings(kclVersion = 3.0)\nanswer = 42',
+  sharedCommands?: ReturnType<typeof commandEnvironment>
 ) {
   await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
   const world = await buildTheWorldAndNoEngineConnection()
+  // The harness's original manager lends the scene, not its sketch-owned objects.
+  world.kclManager.sceneEntitiesManager.sketchSolveGroup.removeFromParent()
+  world.kclManager.sceneEntitiesManager.intersectionPlane.removeFromParent()
   // The integration suite's WebGL mock omits clearing; retain real scene lifecycle/actions.
   world.sceneInfra.renderer.clear = vi.fn()
   world.sceneInfra.renderer.forceContextLoss = vi.fn()
@@ -174,7 +216,11 @@ async function fixture(
   view.context.settings.actor = world.settingsActor
   view.context.wasm = Promise.resolve(world.instance)
   const invalidated = vi.fn(async () => {})
+  const commandEnv =
+    sharedCommands ?? commandEnvironment(world.instance, world.machineManager)
   const deps = {
+    commands: commandEnv.commands,
+    contextualCommands: commandEnv.contextualCommands,
     keymapTree: signal(createKeymapTree([])),
     keymapScopes: signal([]),
     fileOperations: world.kclManager.systemDeps.fileOperations,
@@ -199,8 +245,10 @@ async function fixture(
     scene,
     picking,
     invalidated,
+    commandEnv,
     dispose: async () => {
       await result.dispose()
+      if (!sharedCommands) commandEnv.dispose()
       picking.dispose()
       await native.dispose()
       preferences.dispose()
@@ -400,6 +448,13 @@ it('renders the machine-backed Modeling view and cancels plane picking without l
     const toolbar = await screen.findByRole('toolbar', {
       name: 'Modeling tools',
     })
+    const picking = view.scene.selection.beginPicking({ arguments: [] })
+    if (picking instanceof Error) throw picking
+    await act(async () => {
+      view.scene.sceneInfra.modelingSend({ type: 'Enter sketch' })
+    })
+    expect(host.owner.peek()?.state.peek().matches('idle')).toBe(true)
+    picking.close()
     fireEvent.click(
       within(toolbar).getByRole('button', { name: /Start Sketch/i })
     )
@@ -418,6 +473,444 @@ it('renders the machine-backed Modeling view and cancels plane picking without l
   } finally {
     cleanupReact()
     await host.dispose()
+    await view.dispose()
+  }
+})
+
+it('refreshes existing sketch origin colors when the scene theme changes without executing again', async () => {
+  const view = await fixture('local')
+  try {
+    view.scene.sceneInfra.theme = Themes.Light
+    view.owner.actor.send({ type: 'Enter sketch' })
+    view.owner.actor.send({
+      type: 'Select sketch solve plane',
+      data: view.owner.rust.defaultPlanes!.xy,
+    })
+    await vi.waitFor(() =>
+      expect(view.owner.state.peek().matches('sketchSolveMode')).toBe(true)
+    )
+    const origin =
+      view.owner.model.sceneEntitiesManager.sketchSolveGroup.getObjectByName(
+        SKETCH_SOLVE_ORIGIN_SPRITE
+      )
+    if (!(origin instanceof Sprite))
+      throw new Error('Expected sketch origin sprite')
+    const darkViewportTexture = origin.material.map
+    const execute = vi.spyOn(view.owner.model, 'executeCode')
+    view.scene.sceneInfra.theme = Themes.Dark
+    expect(origin.material.map).not.toBe(darkViewportTexture)
+    expect(execute).not.toHaveBeenCalled()
+    view.scene.sceneInfra.theme = Themes.Light
+    expect(origin.material.map).toBe(darkViewportTexture)
+    expect(view.owner.state.peek().matches('sketchSolveMode')).toBe(true)
+  } finally {
+    await view.dispose()
+  }
+})
+
+it('opens modeling dialogs from the toolbar, hotkey, and shared command catalogue', async () => {
+  const view = await fixture('local')
+  view.view.context.machine = {
+    owner: signal(view.owner),
+    error: signal(undefined),
+  }
+  view.deps.keymapTree.value = createKeymapTree([
+    {
+      id: 'extrude',
+      title: 'Extrude',
+      source: 'test',
+      when: ['mode-modeling'],
+      keystrokes: ['e'],
+      command: 'modeling:Extrude',
+    },
+  ])
+  try {
+    render(<KclScene context={view.view.context} />)
+    const toolbar = await screen.findByRole('toolbar', {
+      name: 'Modeling tools',
+    })
+    fireEvent.click(within(toolbar).getByRole('button', { name: /^Extrude/ }))
+    await screen.findByRole('region', { name: 'Extrude' })
+    const shared = view.commandEnv.commands.actor
+    expect(shared.getSnapshot().context.selectedCommand?.machineActor).toBe(
+      view.owner.actor
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+    await vi.waitFor(() =>
+      expect(shared.getSnapshot().matches('Closed')).toBe(true)
+    )
+    fireEvent.keyDown(view.scene.element, { key: 'e', bubbles: true })
+    await screen.findByRole('region', { name: 'Extrude' })
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+    await vi.waitFor(() =>
+      expect(shared.getSnapshot().matches('Closed')).toBe(true)
+    )
+    expect(
+      shared
+        .getSnapshot()
+        .context.commands.some(
+          (command) => command.groupId === 'modeling' && command.name === 'Loft'
+        )
+    ).toBe(true)
+    await act(async () =>
+      view.commandEnv.commands.send({
+        type: 'Find and select command',
+        data: { name: 'Loft', groupId: 'modeling' },
+      })
+    )
+    await screen.findByRole('region', { name: 'Loft' })
+    expect(shared.getSnapshot().context.selectedCommand?.machineActor).toBe(
+      view.owner.actor
+    )
+  } finally {
+    cleanupReact()
+    await view.dispose()
+  }
+})
+
+it.each(['streamed', 'local'] as const)(
+  'adds and toggles dialog picks with Shift, then replaces after release in %s',
+  async (presentation) => {
+    const view = await fixture(
+      presentation,
+      `@settings(kclVersion = 3.0)
+profile = sketch(on = XY) {
+  circle(center = [0, 0], start = [10, 0])
+  circle(center = [30, 0], start = [40, 0])
+}`
+    )
+    view.view.context.machine = {
+      owner: signal(view.owner),
+      error: signal(undefined),
+    }
+    try {
+      const segments = [...view.owner.model.artifactGraph.values()].filter(
+        (artifact) => artifact.type === 'segment'
+      )
+      expect(segments).toHaveLength(2)
+      render(<KclScene context={view.view.context} />)
+      const toolbar = await screen.findByRole('toolbar', {
+        name: 'Modeling tools',
+      })
+      await act(async () => {
+        fireEvent.click(
+          within(toolbar).getByRole('button', { name: /^Extrude/ })
+        )
+      })
+      const profiles = await screen.findByRole('group', {
+        name: 'Profiles selections',
+      })
+      const pick = async (index: number) => {
+        const segment = segments[index]
+        await act(async () => {
+          for (const callback of Object.values(
+            view.scene.machineInput.manager.subscriptions
+              .query_entity_type_with_point
+          )) {
+            callback({
+              type: 'query_entity_type_with_point',
+              data: {
+                reference: {
+                  type: 'segment',
+                  segment_id: segment.id,
+                  path_id: segment.pathId,
+                },
+              },
+            })
+          }
+        })
+      }
+      await pick(0)
+      await vi.waitFor(() =>
+        expect(
+          view.owner.state.peek().context.selectionRanges.graphSelections
+        ).toHaveLength(1)
+      )
+      fireEvent.keyDown(window, { key: 'Shift', shiftKey: true })
+      await pick(1)
+      await vi.waitFor(() =>
+        expect(
+          view.owner.state.peek().context.selectionRanges.graphSelections
+        ).toHaveLength(2)
+      )
+      expect(
+        within(profiles).getAllByRole('button', { name: /Remove/ })
+      ).toHaveLength(2)
+      await pick(0)
+      await vi.waitFor(() =>
+        expect(
+          view.owner.state.peek().context.selectionRanges.graphSelections
+        ).toHaveLength(1)
+      )
+      fireEvent.keyUp(window, { key: 'Shift' })
+      await pick(0)
+      await vi.waitFor(() =>
+        expect(
+          view.owner.state
+            .peek()
+            .context.selectionRanges.graphSelections.map(
+              (selection) => selection.entityRef
+            )
+        ).toEqual([
+          {
+            type: 'segment',
+            segment_id: segments[0].id,
+            path_id: segments[0].pathId,
+          },
+        ])
+      )
+      expect(
+        within(profiles).getAllByRole('button', { name: /Remove/ })
+      ).toHaveLength(1)
+    } finally {
+      fireEvent.keyUp(window, { key: 'Shift' })
+      cleanupReact()
+      await view.dispose()
+    }
+  }
+)
+
+it('keeps an open command bound to its original view when another view becomes active or closes', async () => {
+  const first = await fixture()
+  const second = await fixture('local', undefined, first.commandEnv)
+  try {
+    expect(second.owner.commands.actor).toBe(first.owner.commands.actor)
+    first.owner.commandSource.activate()
+    first.owner.commands.send({
+      type: 'Find and select command',
+      data: { name: 'Extrude', groupId: 'modeling' },
+    })
+    const shared = first.owner.commands.actor
+    expect(shared.getSnapshot().context.selectedCommand?.machineActor).toBe(
+      first.owner.actor
+    )
+    second.owner.commandSource.activate()
+    expect(shared.getSnapshot().context.selectedCommand?.machineActor).toBe(
+      first.owner.actor
+    )
+    await second.owner.dispose()
+    expect(shared.getSnapshot().context.selectedCommand?.machineActor).toBe(
+      first.owner.actor
+    )
+    expect(shared.getSnapshot().matches('Closed')).toBe(false)
+    await first.owner.dispose()
+    expect(shared.getSnapshot().matches('Closed')).toBe(true)
+    expect(shared.getSnapshot().status).toBe('active')
+  } finally {
+    await second.dispose()
+    await first.dispose()
+  }
+})
+
+it.each(['streamed', 'local'] as const)(
+  'double-clicks existing sketch geometry through the machine canvas in %s',
+  async (presentation) => {
+    const view = await fixture(
+      presentation,
+      `@settings(kclVersion = 3.0)
+profile = sketch(on = XY) {
+  circle(center = [0, 0], start = [10, 0])
+}`
+    )
+    try {
+      const segment = [...view.owner.model.artifactGraph.values()].find(
+        (artifact) => artifact.type === 'segment'
+      )
+      expect(segment?.type).toBe('segment')
+      if (!segment || segment.type !== 'segment')
+        throw new Error('Expected native sketch segment')
+      const send = vi.spyOn(view.scene.machineInput.manager, 'sendSceneCommand')
+      const ordinaryCommand = send.getMockImplementation()!
+      const picked = {
+        success: true,
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response: {
+              type: 'query_entity_type_with_point',
+              data: {
+                reference: {
+                  type: 'segment',
+                  segment_id: segment.id,
+                  path_id: segment.pathId,
+                },
+              },
+            },
+          },
+        },
+      } as WebSocketResponse
+      send.mockImplementation((request) =>
+        request.type === 'modeling_cmd_req' &&
+        request.cmd.type === 'query_entity_type_with_point'
+          ? Promise.resolve(picked)
+          : ordinaryCommand(request)
+      )
+      vi.spyOn(
+        view.scene.sceneInfra.renderer.domElement,
+        'getBoundingClientRect'
+      ).mockReturnValue(new DOMRect(0, 0, 640, 360))
+      const mouseEvent = new MouseEvent('mouseup', {
+        button: 0,
+        detail: 2,
+        clientX: 100,
+        clientY: 100,
+      })
+      Object.defineProperty(mouseEvent, 'which', { value: 1 })
+      await view.scene.sceneInfra.onClickCallback({
+        mouseEvent,
+        wasmInstance: view.owner.state.peek().context.wasmInstance,
+        intersects: [],
+      })
+      await vi.waitFor(() =>
+        expect(view.owner.state.peek().matches('sketchSolveMode')).toBe(true)
+      )
+    } finally {
+      await view.dispose()
+    }
+  }
+)
+
+it.each(['streamed', 'local'] as const)(
+  'replaces retired sketch graphics before orienting a new sketch plane in %s',
+  async (presentation) => {
+    const view = await fixture(presentation)
+    let replacement: typeof view.owner | undefined
+    try {
+      view.owner.actor.send({ type: 'Enter sketch' })
+      view.owner.actor.send({
+        type: 'Select sketch solve plane',
+        data: view.owner.rust.defaultPlanes!.xy,
+      })
+      await vi.waitFor(() =>
+        expect(view.owner.state.peek().matches('sketchSolveMode')).toBe(true)
+      )
+      const oldEntities = view.owner.model.sceneEntitiesManager
+      const oldCamera = vi.spyOn(oldEntities, 'onCamChange')
+      view.owner.actor.send({ type: 'Exit sketch' })
+      await vi.waitFor(() =>
+        expect(view.owner.state.peek().matches('idle')).toBe(true)
+      )
+      await view.owner.dispose()
+      expect(
+        view.scene.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+      ).toBeUndefined()
+      expect(
+        view.scene.sceneInfra.scene.getObjectByName(RAYCASTABLE_PLANE)
+      ).toBeUndefined()
+      const code = view.view.editor.contents.peek()
+      await view.native.execute({
+        src: '/main.kcl',
+        files: new Map([['/main.kcl', new TextEncoder().encode(code)]]),
+      })
+      const next = await openMachineModelingOwner(
+        view.view.context,
+        view.scene,
+        view.deps,
+        view.invalidated
+      )
+      if (next instanceof Error) throw next
+      replacement = next
+      next.actor.send({ type: 'Enter sketch' })
+      next.actor.send({
+        type: 'Select sketch solve plane',
+        data: next.rust.defaultPlanes!.yz,
+      })
+      await vi.waitFor(() =>
+        expect(next.state.peek().matches('sketchSolveMode')).toBe(true)
+      )
+      const rendered =
+        view.scene.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+      expect(rendered).toBe(next.model.sceneEntitiesManager.sketchSolveGroup)
+      expect(rendered!.children.length).toBeGreaterThan(0)
+      const normal = new Vector3(0, 0, 1).applyQuaternion(rendered!.quaternion)
+      expect(Math.abs(normal.x)).toBeCloseTo(1)
+      expect(normal.y).toBeCloseTo(0)
+      expect(normal.z).toBeCloseTo(0)
+      oldCamera.mockClear()
+      view.scene.sceneInfra.camControls.cameraChange.dispatch()
+      view.scene.sceneInfra.baseUnitChange.dispatch()
+      expect(oldCamera).not.toHaveBeenCalled()
+    } finally {
+      await replacement?.dispose()
+      await view.dispose()
+    }
+  }
+)
+
+it('does not deliver a delayed double-click to a replacement machine owner', async () => {
+  const view = await fixture(
+    'streamed',
+    `@settings(kclVersion = 3.0)
+profile = sketch(on = XY) {
+  circle(center = [0, 0], start = [10, 0])
+}`
+  )
+  let replacement: typeof view.owner | undefined
+  const response = Promise.withResolvers<WebSocketResponse>()
+  try {
+    const segment = [...view.owner.model.artifactGraph.values()].find(
+      (artifact) => artifact.type === 'segment'
+    )
+    if (!segment || segment.type !== 'segment')
+      throw new Error('Expected native sketch segment')
+    const send = vi.spyOn(view.scene.machineInput.manager, 'sendSceneCommand')
+    const ordinary = send.getMockImplementation()!
+    const queried = vi.fn()
+    send.mockImplementation((request) => {
+      if (
+        request.type === 'modeling_cmd_req' &&
+        request.cmd.type === 'query_entity_type_with_point'
+      ) {
+        queried()
+        return response.promise
+      }
+      return ordinary(request)
+    })
+    vi.spyOn(
+      view.scene.sceneInfra.renderer.domElement,
+      'getBoundingClientRect'
+    ).mockReturnValue(new DOMRect(0, 0, 640, 360))
+    const mouseEvent = new MouseEvent('mouseup', { button: 0, detail: 2 })
+    Object.defineProperty(mouseEvent, 'which', { value: 1 })
+    const activation = view.scene.sceneInfra.onClickCallback({
+      mouseEvent,
+      wasmInstance: view.owner.state.peek().context.wasmInstance,
+      intersects: [],
+    })
+    await vi.waitFor(() => expect(queried).toHaveBeenCalledOnce())
+    await view.owner.dispose()
+    const next = await openMachineModelingOwner(
+      view.view.context,
+      view.scene,
+      view.deps,
+      view.invalidated
+    )
+    if (next instanceof Error) throw next
+    replacement = next
+    response.resolve({
+      success: true,
+      resp: {
+        type: 'modeling',
+        data: {
+          modeling_response: {
+            type: 'query_entity_type_with_point',
+            data: {
+              reference: {
+                type: 'segment',
+                segment_id: segment.id,
+                path_id: segment.pathId,
+              },
+            },
+          },
+        },
+      },
+    })
+    await activation
+    expect(next.state.peek().matches('idle')).toBe(true)
+    expect(next.child.peek()).toBeUndefined()
+  } finally {
+    response.resolve({ success: false, errors: [] })
+    await replacement?.dispose()
     await view.dispose()
   }
 })
