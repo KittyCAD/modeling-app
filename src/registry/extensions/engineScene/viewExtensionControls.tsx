@@ -1,3 +1,4 @@
+import { SketchBackgroundOpacityControl } from '@src/components/SketchBackgroundOpacityControl'
 import { CustomIcon } from '@src/components/CustomIcon'
 import type { EngineSceneViewExtensionProps } from '@src/registry/contracts/engineScene'
 import { Suspense, lazy } from 'react'
@@ -49,29 +50,11 @@ export function SketchBackgroundOpacityViewExtension({
   sketchSolveStreamDimming,
   setSketchSolveStreamDimming,
 }: EngineSceneViewExtensionProps) {
-  const streamVisibilityPercent = Math.round(
-    (1 - sketchSolveStreamDimming) * 100
-  )
-
   return (
-    <div className="px-2 py-1 border border-chalkboard-20 dark:border-chalkboard-80 rounded bg-chalkboard-10/80 dark:bg-chalkboard-100/80 backdrop-blur-sm">
-      <div className="text-[10px] text-chalkboard-70 dark:text-chalkboard-40">
-        Background Opacity
-      </div>
-      <input
-        aria-label="Sketch background opacity"
-        type="range"
-        min="0"
-        max="100"
-        step="1"
-        value={streamVisibilityPercent}
-        onChange={(event) => {
-          const nextVisibilityPercent = Number(event.target.value)
-          setSketchSolveStreamDimming((100 - nextVisibilityPercent) / 100)
-        }}
-        className="w-32 cursor-pointer"
-      />
-    </div>
+    <SketchBackgroundOpacityControl
+      dimming={sketchSolveStreamDimming}
+      onDimmingChange={setSketchSolveStreamDimming}
+    />
   )
 }
 

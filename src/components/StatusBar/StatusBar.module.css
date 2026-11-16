@@ -1,0 +1,49 @@
+.frame {
+  container: status-bar / inline-size;
+  min-width: 0;
+}
+
+.layout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: space-between;
+  min-height: 2rem;
+  min-width: 0;
+}
+
+.layout > [data-status-side] {
+  display: flex;
+  min-width: 0;
+  align-items: stretch;
+}
+
+@container status-bar (max-width: 40rem) {
+  .layout {
+    justify-content: flex-start;
+  }
+
+  .layout > [data-status-side] {
+    display: contents;
+  }
+
+  .layout > [data-status-side] > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .layout > [data-status-side] > :has([data-status-popover]) {
+    position: static;
+  }
+
+  .layout [data-status-popover] {
+    position: absolute;
+    inset-block-end: 100%;
+    inset-inline-end: 0;
+    max-inline-size: 100cqi;
+  }
+
+  .layout [data-status-separator] {
+    display: none;
+  }
+}

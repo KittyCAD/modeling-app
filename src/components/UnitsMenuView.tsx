@@ -44,6 +44,7 @@ export function UnitsMenuView({
               : currentUnit}
           </Popover.Button>
           <Popover.Panel
+            data-status-popover
             className={`z-10 absolute bottom-full right-0 mb-1 p-1 w-52 bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
           shadow-lg`}
