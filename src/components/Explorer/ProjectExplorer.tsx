@@ -18,7 +18,7 @@ import {
   NOTHING_IS_SELECTED,
   STARTING_INDEX_TO_SELECT,
 } from '@src/components/Explorer/utils'
-import { fsArchiveFile, fsMoveFile } from '@src/editor/plugins/fs'
+import { fsFileDeletion, fsMoveFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { useApp, useSingletons } from '@src/lib/boot'
 import type { Command } from '@src/lib/commandTypes'
@@ -33,13 +33,13 @@ import {
   getParentAbsolutePath,
   joinOSPaths,
   parentPathRelativeToApplicationDirectory,
-  toArchivePath,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { isErr, trap, reportRejection } from '@src/lib/trap'
 import type { MaybePressOrBlur } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE } from '@src/registry/contracts/commands'
+
 import {
   keymapService,
   PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
@@ -621,7 +621,7 @@ export const ProjectExplorer = ({
         scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'arrow-up',
         groupId: 'project-explorer',
-        displayName: 'Move project explorer selection up',
+        displayName: 'Clone project explorer selection up',
         needsReview: false,
         hideFromSearch: true,
         onSubmit: () => projectExplorerCommandHandlersRef.current.arrowUp(),
@@ -631,7 +631,7 @@ export const ProjectExplorer = ({
         scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'arrow-down',
         groupId: 'project-explorer',
-        displayName: 'Move project explorer selection down',
+        displayName: 'Clone project explorer selection down',
         needsReview: false,
         hideFromSearch: true,
         onSubmit: () => projectExplorerCommandHandlersRef.current.arrowDown(),
@@ -1025,61 +1025,23 @@ export const ProjectExplorer = ({
               isPathWithinFileExplorerEntry(file?.path, child.path) &&
               canNavigate
 
-            if (shouldWeNavigate && file && file.path) {
-              const src = child.path
-              setFileTreeMutationPending(true)
-              toArchivePath(src)
-                .then((target) => {
-                  void runFileTreeMutation(async () => {
-                    await fileOperations.move(src, target)
-                    setLastRecursiveMoveTarget(target)
-                    if (app.project?.path === project.path)
-                      await app.projectSession.openFile(project.default_file, {
-                        projectPath: project.path,
-                      })
-                    toast.success('Archived successfully')
-                  })
-                  kclManager.addGlobalHistoryEvent(
-                    fsArchiveFile({
-                      src,
-                      target,
-                      requestedProjectName: project.name,
-                    })
-                  )
+            const current = app.project
+            void runFileTreeMutation(async () => {
+              if (!current) return
+              const deletion = await app.projectSession.deleteEntry(child.path)
+              if (isErr(deletion)) return Promise.reject(deletion)
+              if (!deletion) return
+              if (app.project !== current) return
+              if (shouldWeNavigate)
+                await app.projectSession.openFile(project.default_file, {
+                  projectPath: project.path,
                 })
-                .catch((e) => {
-                  setFileTreeMutationPending(false)
-                  console.error(e)
-                  console.warn(
-                    `Error while archiving: the deletion of ${child.path} may have been unrecoverable.`
-                  )
-                })
-            } else {
-              const src = child.path
-              setFileTreeMutationPending(true)
-              toArchivePath(src)
-                .then((target) => {
-                  void runFileTreeMutation(async () => {
-                    await fileOperations.move(src, target)
-                    setLastRecursiveMoveTarget(target)
-                    toast.success('Archived successfully')
-                  })
-                  kclManager.addGlobalHistoryEvent(
-                    fsArchiveFile({
-                      src,
-                      target,
-                      requestedProjectName: project.name,
-                    })
-                  )
-                })
-                .catch((e) => {
-                  setFileTreeMutationPending(false)
-                  console.error(e)
-                  console.warn(
-                    `Error while archiving: the deletion of ${child.path} may have been unrecoverable.`
-                  )
-                })
-            }
+              if (deletion && app.project === current)
+                current.executingEditor
+                  .peek()
+                  ?.addGlobalHistoryEvent(fsFileDeletion(deletion))
+              toast.success('Deleted successfully')
+            })
           },
           onOpenInNewWindow: () => {
             window.electron?.openInNewWindow(row.path)
@@ -1136,8 +1098,19 @@ export const ProjectExplorer = ({
               if (result && result.src && result.target) {
                 const { src, target } = result
                 void runFileTreeMutation(async () => {
-                  await fileOperations.move(src, target)
+                  const activePath = file?.path
+                  await app.projectSession.rename(src, target)
                   setLastRecursiveMoveTarget(target)
+                  if (
+                    activePath &&
+                    isPathWithinFileExplorerEntry(activePath, src) &&
+                    canNavigate &&
+                    app.project?.path === project.path
+                  )
+                    await app.projectSession.openFile(
+                      fsZds.join(target, fsZds.relative(src, activePath)),
+                      { projectPath: project.path }
+                    )
                   toast.success('Moved successfully')
                 })
                 kclManager.addGlobalHistoryEvent(
@@ -1207,7 +1180,7 @@ export const ProjectExplorer = ({
                   const shouldWeNavigate =
                     oldPath !== undefined &&
                     newPath !== undefined &&
-                    file?.path?.startsWith(oldPath) &&
+                    isPathWithinFileExplorerEntry(file?.path, oldPath) &&
                     canNavigate
 
                   if (shouldWeNavigate && file && file.path) {

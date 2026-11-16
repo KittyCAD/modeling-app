@@ -5,8 +5,7 @@ import {
 import { Spinner } from '@src/components/Spinner'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import { useSingletons } from '@src/lib/boot'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 // The default planes are shown or hidden about 200 ms after an execution, so
@@ -31,7 +30,6 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const rendererRef = useRef<LocalRenderer | null>(null)
   const latestPropsRef = useRef(props)
-  const app = useApp()
   const { kclManager } = useSingletons()
   const { state } = useModelingContext()
   const pickingEnabled =
@@ -62,20 +60,15 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
         setIsAwaitingModel(false)
       }
       const renderer = rendererRef.current
-      const projectPath = app.project?.projectIORefSignal.value.path
-      if (isNewModel && renderer && projectPath) {
+      const captureThumbnail = kclManager.captureProjectThumbnail
+      if (isNewModel && renderer && captureThumbnail) {
         setTimeout(() => {
-          renderer.readFrame((renderedCanvas) =>
-            createThumbnailPNGOnDesktop({
-              fileOperations: app.fileOperations,
-              projectDirectoryWithoutEndingSlash: projectPath,
-              renderedCanvas,
-            })
-          )
+          if (rendererRef.current !== renderer) return
+          renderer.readFrame(captureThumbnail)
         }, THUMBNAIL_DELAY_MS)
       }
     },
-    [kclManager, app]
+    [kclManager]
   )
 
   useEffect(() => {

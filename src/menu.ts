@@ -1,5 +1,9 @@
 import { modelingDesignRole } from '@src/menu/designRole'
-import { modelingEditRole, projectEditRole } from '@src/menu/editRole'
+import {
+  editorEditRole,
+  modelingEditRole,
+  projectEditRole,
+} from '@src/menu/editRole'
 import {
   type FileMenuActions,
   modelingFileRole,
@@ -154,13 +158,16 @@ export function buildAndSetMenuForModelingPage(
 // All state management from the previous menu is going to be lost.
 export function buildAndSetMenuForProjectPage(
   mainWindow: BrowserWindow,
-  actions: FileMenuActions
+  actions: FileMenuActions,
+  history: 'native' | 'editor' = 'native'
 ): Electron.Menu {
   const template = [
     // Expand empty elements for environments that are not Mac
     ...appMenuMacOnly(),
     projectFileRole(mainWindow, actions),
-    projectEditRole(mainWindow),
+    history === 'editor'
+      ? editorEditRole(mainWindow)
+      : projectEditRole(mainWindow),
     projectViewRole(mainWindow),
     // Help role is the same for all pages
     helpRole(mainWindow),

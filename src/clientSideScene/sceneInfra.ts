@@ -1,4 +1,3 @@
-import * as TWEEN from '@tweenjs/tween.js'
 import { Object3D } from 'three'
 import type { Group, Intersection } from 'three'
 import {
@@ -223,8 +222,8 @@ export class SceneInfra {
     this.modelingSend = send
   }
 
-  overlayTimeout = 0
-  callbacks: (() => SegmentOverlayPayload | null)[] = []
+  private overlayFrame: number | null = null
+  private pendingOverlayCallbacks: (() => SegmentOverlayPayload | null)[] = []
 
   _overlayCallbacks(callbacks: (() => SegmentOverlayPayload | null)[]) {
     const segmentOverlayPayload: SegmentOverlayPayload = {
@@ -245,19 +244,14 @@ export class SceneInfra {
     })
   }
 
-  overlayCallbacks(
-    callbacks: (() => SegmentOverlayPayload | null)[],
-    instant = false
-  ) {
-    if (instant) {
-      this._overlayCallbacks(callbacks)
-      return
-    }
-    this.callbacks = callbacks
-    if (this.overlayTimeout) clearTimeout(this.overlayTimeout)
-    this.overlayTimeout = setTimeout(() => {
-      this._overlayCallbacks(this.callbacks)
-    }, 100) as unknown as number
+  overlayCallbacks(callbacks: (() => SegmentOverlayPayload | null)[]) {
+    this.pendingOverlayCallbacks = callbacks
+    this.overlayFrame ??= requestAnimationFrame(() => {
+      this.overlayFrame = null
+      const pending = this.pendingOverlayCallbacks
+      this.pendingOverlayCallbacks = []
+      this._overlayCallbacks(pending)
+    })
   }
 
   updateOverlayDetails({
@@ -351,6 +345,9 @@ export class SceneInfra {
 
     // RENDERER
     this.renderer = new WebGLRenderer({ antialias: true, alpha: true }) // Enable transparency
+    // Shader log queries synchronize with the GPU. Keep diagnostics in dev,
+    // without blocking the first production sketch frame on debug readbacks.
+    this.renderer.debug.checkShaderErrors = import.meta.env.DEV
     this.renderer.setClearColor(0x000000, 0) // Set clear color to black with 0 alpha (fully transparent)
 
     // LABEL RENDERER
@@ -427,7 +424,6 @@ export class SceneInfra {
 
   animate = () => {
     this.animationFrameId = requestAnimationFrame(this.animate)
-    TWEEN.update() // This will update all tweens during the animation loop
     if (!this.isFovAnimationInProgress) {
       this.camControls.update()
 
@@ -460,6 +456,12 @@ export class SceneInfra {
   }
 
   stop = () => {
+    this.camControls.cancelPendingUpdates()
+    if (this.overlayFrame !== null) {
+      cancelAnimationFrame(this.overlayFrame)
+      this.overlayFrame = null
+      this.pendingOverlayCallbacks = []
+    }
     if (this.animationFrameId !== -1) {
       cancelAnimationFrame(this.animationFrameId)
       this.animationFrameId = -1

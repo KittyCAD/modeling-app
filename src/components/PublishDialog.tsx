@@ -15,7 +15,8 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import type {
   CurrentProjectPublicationDetails,
   ProjectPublishSubmission,
-} from '@src/lib/share'
+} from '@src/lib/publishing/publication'
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 type PublishDialogMarkdownEditorKeymap = {
@@ -31,7 +32,7 @@ type PublishDialogProps = {
   initialTitle?: string
   publishDisabled?: boolean
   publishRequiresUsername?: boolean
-  willMoveProjectToCloud?: boolean
+  willCloneProjectToCloud?: boolean
   accountUrl: string
   publicationDetails?: CurrentProjectPublicationDetails | null
   isLoadingPublicationDetails?: boolean
@@ -59,7 +60,7 @@ export function PublishDialog({
   initialTitle = '',
   publishDisabled = false,
   publishRequiresUsername = false,
-  willMoveProjectToCloud = false,
+  willCloneProjectToCloud = false,
   accountUrl,
   publicationDetails = null,
   isLoadingPublicationDetails = false,
@@ -435,11 +436,10 @@ export function PublishDialog({
         </section>
 
         <section className="sticky -bottom-4 z-10 -mx-4 -mb-4 border-t border-chalkboard-20/70 bg-chalkboard-10/95 px-4 pb-4 pt-4 backdrop-blur-sm dark:border-chalkboard-80/70 dark:bg-chalkboard-90/95">
-          {willMoveProjectToCloud && (
+          {willCloneProjectToCloud && (
             <p className="mb-3 w-full rounded border border-destroy-40 bg-destroy-10/50 px-3 py-2 text-xs leading-5 text-destroy-80 dark:border-destroy-80 dark:bg-destroy-80/20 dark:text-destroy-20">
-              Publishing will also move this project from its current folder to
-              your Personal Cloud library so it stays synced with your Zoo
-              account.
+              Publishing creates a new project in Personal Cloud. The original
+              project stays in its current folder.
             </p>
           )}
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4 md:gap-6">

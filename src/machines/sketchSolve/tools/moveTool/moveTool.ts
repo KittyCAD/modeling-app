@@ -1225,7 +1225,11 @@ function isScreenRectHitObject(
     hitObject.type === 'screenRect' &&
     'center' in hitObject &&
     isArray(hitObject.center) &&
-    hitObject.center.length === 3
+    hitObject.center.length === 3 &&
+    'sizePx' in hitObject &&
+    isArray(hitObject.sizePx) &&
+    hitObject.sizePx.length === 2 &&
+    hitObject.sizePx.every((value) => typeof value === 'number')
   )
 }
 
@@ -1343,11 +1347,78 @@ function localToScreen(
   return project3DToScreen(worldPoint, camera, viewportSize)
 }
 
-const CONSTRAINT_HOVER_POPUP_TIMEOUT_MS = 2000
-
 type ConstraintHoverPopupEntry = {
   popup: ConstraintHoverPopup
-  hideTimeoutId: ReturnType<typeof setTimeout> | null
+  sourcePosition: Coords2d
+}
+
+export function isPointerWithinConstraintPopupBridge(
+  popup: ConstraintHoverPopup,
+  sourcePosition: Coords2d,
+  mousePosition: Coords2d,
+  {
+    scene,
+    camera,
+    viewportSize,
+    sketchSolveGroup,
+  }: {
+    scene: Object3D
+    camera: Parameters<typeof project3DToScreen>[1]
+    viewportSize: Vector2
+    sketchSolveGroup: Group | null
+  }
+): boolean {
+  const source = localToScreen(
+    [sourcePosition[0], sourcePosition[1], 0],
+    camera,
+    viewportSize,
+    sketchSolveGroup
+  )
+  const pointer = localToScreen(
+    [mousePosition[0], mousePosition[1], 0],
+    camera,
+    viewportSize,
+    sketchSolveGroup
+  )
+  // Connect the source to the actual icon hit rectangles so crossing the gap
+  // keeps them usable, without retaining a popup after the pointer leaves.
+  let left = source.x - 4
+  let right = source.x + 4
+  let top = source.y - 4
+  let bottom = source.y + 4
+  let hasIcons = false
+  scene.traverse((child) => {
+    const owner = child.userData.constraintHoverPopup
+    const hitObjects = child.userData.hitObjects
+    if (
+      !isConstraintHoverPopup(owner) ||
+      owner.segmentId !== popup.segmentId ||
+      !isArray(hitObjects)
+    ) {
+      return
+    }
+    for (const hitObject of hitObjects) {
+      if (!isScreenRectHitObject(hitObject)) continue
+      const center = localToScreen(
+        hitObject.center,
+        camera,
+        viewportSize,
+        sketchSolveGroup
+      )
+      hasIcons = true
+      left = Math.min(left, center.x - hitObject.sizePx[0] / 2 - 4)
+      right = Math.max(right, center.x + hitObject.sizePx[0] / 2 + 4)
+      top = Math.min(top, center.y - hitObject.sizePx[1] / 2 - 4)
+      bottom = Math.max(bottom, center.y + hitObject.sizePx[1] / 2 + 4)
+    }
+  })
+  return (
+    hasIcons &&
+    pointer.x >= left &&
+    pointer.x <= right &&
+    pointer.y >= top &&
+    pointer.y <= bottom
+  )
 }
 
 function areSameConstraintHoverPopups(
@@ -1817,17 +1888,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
     setHorizontalLine,
   }
 
-  const clearConstraintHoverPopupTimer = (
-    entry: ConstraintHoverPopupEntry,
-    timerKey: 'hideTimeoutId'
-  ) => {
-    const timeoutId = entry[timerKey]
-    if (timeoutId !== null) {
-      clearTimeout(timeoutId)
-      entry[timerKey] = null
-    }
-  }
-
   const getConstraintHoverPopups = () =>
     constraintHoverPopupState.entries.map((entry) => entry.popup)
 
@@ -1844,10 +1904,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       return false
     }
 
-    const [entry] = constraintHoverPopupState.entries.splice(index, 1)
-    if (entry) {
-      clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
-    }
+    constraintHoverPopupState.entries.splice(index, 1)
 
     return true
   }
@@ -1912,16 +1969,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
   }
 
   const clearConstraintHoverPopups = () => {
-    constraintHoverPopupState.entries.forEach((entry) => {
-      clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
-    })
     constraintHoverPopupState.entries = []
-  }
-
-  const hideConstraintHoverPopup = (segmentId: number) => {
-    if (removeConstraintHoverPopup(segmentId)) {
-      sendHoveredState(self.getSnapshot().context.hoveredId)
-    }
   }
 
   const beginDragSession = () => {
@@ -1975,25 +2023,20 @@ export function setUpOnDragAndSelectionClickCallbacks({
       ? null
       : constraintHoverPopupState.entries.splice(existingIndex, 1)[0]) ?? {
       popup: { segmentId, position },
-      hideTimeoutId: null,
+      sourcePosition: position,
     }
 
-    clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
     entry.popup = { segmentId, position }
+    entry.sourcePosition = position
     constraintHoverPopupState.entries.push(entry)
   }
 
-  const scheduleConstraintHoverPopupHide = (
-    entry: ConstraintHoverPopupEntry
-  ) => {
-    clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
-    entry.hideTimeoutId = setTimeout(() => {
-      entry.hideTimeoutId = null
-      hideConstraintHoverPopup(entry.popup.segmentId)
-    }, CONSTRAINT_HOVER_POPUP_TIMEOUT_MS)
-  }
-
   context.sceneInfra.setCallbacks({
+    onMouseLeave: () => {
+      clearConstraintHoverPopups()
+      constraintHoverPopupState.lastHoveredTargetId = null
+      sendHoveredState(null)
+    },
     onDragStart: createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
       setLastGoodPreview,
@@ -2558,41 +2601,46 @@ export function setUpOnDragAndSelectionClickCallbacks({
     onMouseDownSelection: () => {
       setDraggedEntityId(null)
       const snapshot = self.getSnapshot()
-      const hoveredId = snapshot.context.hoveredId
-      if (!isObjectSelectionId(hoveredId)) {
-        // Only api objects can be dragged, ORIGIN cannot be.
+      const planeIntersectPoint = context.sceneInfra.getPlaneIntersectPoint()
+      if (!planeIntersectPoint?.twoD) {
         return false
       }
-
       const objects =
         snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ??
         []
-      const hoveredObject = objects[hoveredId]
-      if (isConstraintWithDraggableLabel(hoveredObject)) {
+      // Mouse-down has the current pointer even if asynchronous move handling
+      // has not published its hover state yet.
+      const target = getClosestSelectionTarget(
+        [planeIntersectPoint.twoD.x, planeIntersectPoint.twoD.y],
+        getCurrentSketchObjectsById(objects, snapshot.context.sketchId),
+        context.sceneInfra
+      )
+      const targetId = target?.selectionId ?? null
+      if (!isObjectSelectionId(targetId)) {
+        // Only api objects can be dragged, ORIGIN cannot be.
+        return false
+      }
+      const targetObject = objects[targetId]
+      if (isConstraintWithDraggableLabel(targetObject)) {
         // Allow dragging the label of a constraint
-        const planeIntersectPoint = context.sceneInfra.getPlaneIntersectPoint()
-        if (!planeIntersectPoint?.twoD) {
-          return false
-        }
-
         const labelHitDistance = getClosestConstraintLabelHitDistance(
           [planeIntersectPoint.twoD.x, planeIntersectPoint.twoD.y],
-          hoveredId,
+          targetId,
           context.sceneInfra
         )
         if (labelHitDistance !== null) {
-          setDraggedEntityId(hoveredId)
+          setDraggedEntityId(targetId)
           return true
         }
         return false
       }
       // If it's a point which is already coincident with ORIGIN -> don't allow dragging
       const canDrag = !(
-        isPointSegment(hoveredObject) &&
-        hasCoincidentConstraintWithOrigin(hoveredId, objects)
+        isPointSegment(targetObject) &&
+        hasCoincidentConstraintWithOrigin(targetId, objects)
       )
       if (canDrag) {
-        setDraggedEntityId(hoveredId)
+        setDraggedEntityId(targetId)
       }
       return canDrag
     },
@@ -2665,7 +2713,15 @@ export function setUpOnDragAndSelectionClickCallbacks({
       constraintHoverPopupState.lastHoveredTargetId =
         constraintHoverPopupSegmentId
 
-      constraintHoverPopupState.entries.forEach((entry) => {
+      const sketchSolveGroupObject =
+        context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+      const sketchSolveGroup =
+        sketchSolveGroupObject instanceof Group ? sketchSolveGroupObject : null
+      const viewportSize = new Vector2(
+        context.sceneInfra.renderer.domElement.clientWidth,
+        context.sceneInfra.renderer.domElement.clientHeight
+      )
+      for (const entry of [...constraintHoverPopupState.entries]) {
         const isHoveringSourceSegment =
           constraintHoverPopupSegmentId === entry.popup.segmentId
         const isHoveringConstraintHoverPopup =
@@ -2676,12 +2732,25 @@ export function setUpOnDragAndSelectionClickCallbacks({
             apiObjects
           )
 
-        if (isHoveringSourceSegment || isHoveringConstraintHoverPopup) {
-          clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
-        } else if (entry.hideTimeoutId === null) {
-          scheduleConstraintHoverPopupHide(entry)
+        if (isHoveringSourceSegment) entry.sourcePosition = mousePosition
+        if (
+          !isHoveringSourceSegment &&
+          !isHoveringConstraintHoverPopup &&
+          !isPointerWithinConstraintPopupBridge(
+            entry.popup,
+            entry.sourcePosition,
+            mousePosition,
+            {
+              scene: context.sceneInfra.scene,
+              camera: context.sceneInfra.camControls.camera,
+              viewportSize,
+              sketchSolveGroup,
+            }
+          )
+        ) {
+          removeConstraintHoverPopup(entry.popup.segmentId)
         }
-      })
+      }
 
       const currentConstraintHoverPopups = getConstraintHoverPopups()
       const constraintHoverPopupsChanged = !areSameConstraintHoverPopups(

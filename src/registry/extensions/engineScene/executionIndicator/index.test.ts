@@ -23,6 +23,9 @@ function createProjectSession(
   const libraryId = signal<string | undefined>(undefined)
   return {
     storageFor: vi.fn(),
+    retrySave: vi.fn(async () => undefined),
+    deleteEntry: vi.fn(async () => undefined),
+    applyStorageSnapshot: vi.fn(async () => {}),
     editorChanged: vi.fn(),
     writeThumbnail: vi.fn(async () => {}),
     refreshProject: vi.fn(async () => undefined),

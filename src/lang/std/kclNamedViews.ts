@@ -1,3 +1,4 @@
+import { incrementMapCounter } from '@src/lib/utils'
 import type { ArtifactVisibility } from '@rust/kcl-lib/bindings/Artifact'
 import type { NamedView } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
@@ -69,7 +70,7 @@ export function namedViewDisplayNames(views: KclNamedView[]): string[] {
   const nameCounts = new Map<string, number>()
   for (const view of views) {
     const name = view.artifact.name
-    nameCounts.set(name, (nameCounts.get(name) ?? 0) + 1)
+    incrementMapCounter(nameCounts, name)
   }
 
   return views.map((view) => {

@@ -1,4 +1,7 @@
-import type { ProjectStorage } from '@src/lib/projectSession/storage'
+import type {
+  ProjectDeletion,
+  ProjectStorage,
+} from '@src/lib/projectSession/storage'
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal, Signal } from '@preact/signals-core'
 import type { Project } from '@src/lib/project'
@@ -35,9 +38,19 @@ export interface ExecutingEditor {
  * fields delegate to this service while call sites are migrated.
  */
 export interface ProjectSessionService {
-  /** Resolve storage capabilities for the captured path without selecting a backend in callers. */
   storageFor: (path: string) => ProjectStorage
+  /** Retry persistence and reconcile saved contents only with the owning editor. */
+  retrySave: () => Promise<Error | undefined>
+  /** Flush edits and capture backing-owned undo history before deleting an entry. */
+  deleteEntry: (path: string) => Promise<ProjectDeletion | Error | undefined>
+  /** Adopt an authoritative storage snapshot without applying it to a replacement session. */
+  applyStorageSnapshot: (
+    root: string,
+    files: readonly { relativePath: string; data: Uint8Array }[]
+  ) => Promise<void> | undefined
+  /** Keep derived thumbnail persistence behind continued editor activity. */
   editorChanged: (path: string) => void
+  /** Stage cloud thumbnails for the next save; write directory thumbnails immediately. */
   writeThumbnail: (projectPath: string, bytes: Uint8Array) => Promise<void>
   /** Reload the captured project's tree; stale results never replace another session. */
   refreshProject: () => Promise<Project | undefined>

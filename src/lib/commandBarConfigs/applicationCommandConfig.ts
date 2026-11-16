@@ -1,3 +1,6 @@
+import { getFileRoute } from '@src/lib/paths'
+import { selectCommand } from '@src/lib/commandUtils'
+import { createProjectLibraryArgument } from '@src/lib/homeProjects/commands'
 import env from '@src/env'
 import type { App } from '@src/lib/app'
 import type { Command } from '@src/lib/commandTypes'
@@ -16,12 +19,7 @@ import {
   findKclSample,
 } from '@src/lib/kclSamples'
 import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
-import {
-  getStringAfterLastSeparator,
-  joinOSPaths,
-  PATHS,
-  safeEncodeForRouterPaths,
-} from '@src/lib/paths'
+import { getStringAfterLastSeparator, joinOSPaths } from '@src/lib/paths'
 import { getProjectDirectoryOptions } from '@src/lib/projectDisplayName'
 import { reportRejection, trap } from '@src/lib/trap'
 import { isArray, returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
@@ -327,9 +325,7 @@ export function createApplicationCommands({
 
             void app.registry
               .get(routerService)
-              .navigate(
-                `${PATHS.FILE}/${safeEncodeForRouterPaths(project.default_file)}`
-              )
+              .navigate(getFileRoute(project.default_file))
           })
           .catch((error: unknown) => {
             trap(
@@ -367,22 +363,10 @@ export function createApplicationCommands({
           }
         }),
       },
-      libraryId: {
-        displayName: 'Library',
-        required: () => createProjectLibraryOptions().length > 1,
-        prepopulate: true,
-        hidden: () => createProjectLibraryOptions().length <= 1,
-        inputType: 'options',
-        options: createProjectLibraryOptions,
-        defaultValue: defaultCreateProjectLibraryId,
-        valueSummary(value) {
-          return (
-            createProjectLibraryOptions().find(
-              (option) => option.value === value
-            )?.name ?? 'Library'
-          )
-        },
-      },
+      libraryId: createProjectLibraryArgument(
+        createProjectLibraryOptions,
+        defaultCreateProjectLibraryId
+      ),
     },
   }
 
@@ -625,15 +609,12 @@ export function sendAddFileToProjectCommandForCurrentProject(
   commandBarActor: CommandBarActorType
 ) {
   const currentProject = settingsActor.getSnapshot().context.currentProject
-  commandBarActor.send({
-    type: 'Find and select command',
-    data: {
-      name: 'add-kcl-file-to-project',
-      groupId: 'application',
-      argDefaultValues: {
-        method: 'existingProject',
-        projectName: currentProject?.name,
-      },
+  selectCommand(commandBarActor, {
+    name: 'add-kcl-file-to-project',
+    groupId: 'application',
+    argDefaultValues: {
+      method: 'existingProject',
+      projectName: currentProject?.name,
     },
   })
 }

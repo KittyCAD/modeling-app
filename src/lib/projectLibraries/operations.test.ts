@@ -1,4 +1,4 @@
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'

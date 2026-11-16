@@ -1,6 +1,6 @@
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
+import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import { projectFilesContract } from '@src/lib/projectSession/testSupport/projectFilesContract'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import nodefs from '@src/lib/fs-zds/nodefs'
@@ -13,14 +13,14 @@ beforeAll(() =>
 projectFilesContract('project file collection on NodeFS', async () => {
   const fs = nodefs.impl
   const root = await mkdtemp(fs.join(tmpdir(), 'zds-project-files-'))
-  const runtime = createFileOperationsRuntime(fs)
+  const scheduler = createFileOperationsScheduler(fs)
   return {
     fs,
     root,
-    operations: runtime.operations,
+    operations: scheduler.operations,
     dispose: async () => {
       try {
-        await runtime.dispose()
+        await scheduler.dispose()
       } finally {
         await fs.rm(root, { recursive: true, force: true })
       }

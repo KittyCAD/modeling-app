@@ -3,7 +3,7 @@ import {
   defineRegistryItemFactory,
   provideService,
 } from '@kittycad/registry'
-import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
+import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import {
   createMountedFileOperations,
   type FileOperationsMount,
@@ -26,8 +26,12 @@ export function createFileOperationsServices(
     Promise.reject(new Error('Missing WASM promise.')),
   mounts: () => readonly FileOperationsMount[] = () => []
 ) {
-  const runtime = createFileOperationsRuntime(paths)
-  const mounted = createMountedFileOperations(runtime.operations, paths, mounts)
+  const scheduler = createFileOperationsScheduler(paths)
+  const mounted = createMountedFileOperations(
+    scheduler.operations,
+    paths,
+    mounts
+  )
   return {
     operations: mounted.operations,
     projects: createProjectOperations({
@@ -35,7 +39,7 @@ export function createFileOperationsServices(
       batch: mounted.batch,
       wasm,
     }),
-    dispose: runtime.dispose,
+    dispose: scheduler.dispose,
   }
 }
 

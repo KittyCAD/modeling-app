@@ -17,10 +17,6 @@ import {
 } from '@src/lib/kclNamedViewActivation'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type RustContext from '@src/lib/rustContext'
-import {
-  getSettingsFromActorContext,
-  jsAppSettings,
-} from '@src/lib/settings/settingsUtils'
 import { isErr, reportRejection } from '@src/lib/trap'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { useCallback, useRef } from 'react'
@@ -71,6 +67,7 @@ const attemptToConnectToEngine = async ({
   }
 
   const connection = new Promise<boolean>((resolve, reject) => {
+    // zds-performance-exception: network-deadline -- Reject a connection attempt that never finishes; successful connections proceed immediately.
     const cancelTimeout = setTimeout(() => {
       EngineDebugger.addLog({
         label: 'useTryConnect.tsx',
@@ -164,13 +161,11 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   settingsActor,
   engineCommandManager,
   kclManager,
-  rustContext,
 }: {
   sceneInfra: SceneInfra
   settingsActor: SettingsActorType
   engineCommandManager: ConnectionManager
   kclManager: KclManager
-  rustContext: RustContext
 }) => {
   const connection = engineCommandManager.connection
   stopTrackingActiveViewCamera()
@@ -182,21 +177,8 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   }
   const cameraState =
     reconnectCameraState ?? sceneInfra.camControls.oldCameraState
-  const providedSettings = getSettingsFromActorContext(settingsActor)
-  const settings = jsAppSettings(providedSettings)
-  EngineDebugger.addLog({
-    label: 'onEngineConnectionReadyForRequests',
-    message: 'rustContext.clearSceneAndBustCache()',
-    metadata: {
-      jsAppSettings: settings,
-      filePath: kclManager.path || undefined,
-    },
-  })
-  // Bust the cache always! A new connection has been made. The engine has no previous state
-  await rustContext.clearSceneAndBustCache(
-    settings,
-    kclManager.path || undefined
-  )
+  // Rust binds cached execution to the actual engine session. Reconnecting
+  // rebuilds the scene without a JavaScript cache reset.
   if (engineCommandManager.connection !== connection) {
     return
   }
@@ -337,7 +319,6 @@ export async function tryConnecting({
             settingsActor,
             engineCommandManager,
             kclManager,
-            rustContext,
           })
 
           /**

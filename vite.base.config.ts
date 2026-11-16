@@ -167,6 +167,7 @@ export function indexHtmlCsp(enabled: boolean): Plugin {
   const csp = [
     //  By default, only allow same origin.
     "default-src 'self'",
+    "worker-src 'self' blob:",
     // Allow inline styles and styles from the same origin. This is how we use CSS rightnow.
     "style-src 'self' 'unsafe-inline'",
     // Allow images from any source and inline images. We fetch user profile images from any origin.

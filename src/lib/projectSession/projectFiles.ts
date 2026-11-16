@@ -15,6 +15,7 @@ import {
 import type { ProjectArchiveFile } from '@src/lib/cloudProjects/runtime/types'
 
 import fsZds from '@src/lib/fs-zds'
+import { assertProjectPathWithoutSymlinks } from '@src/lib/fileSystem/projectPath'
 
 import {
   appendGitignoreForDirectoryWithFs,
@@ -36,6 +37,11 @@ async function walkProjectFiles(
     skipMissing?: boolean
   } = {}
 ) {
+  await assertProjectPathWithoutSymlinks(
+    fileOperations,
+    projectRoot,
+    projectRoot
+  )
   const gitignoreFs = fileOperationsGitignoreFs(fileOperations)
   const normalize = options.normalize ?? normalizeRelativePath
   const walk = async (directory: string, stack: GitignoreStackEntry[]) => {
@@ -45,7 +51,12 @@ async function walkProjectFiles(
       const relativePath = normalize(fsZds.relative(projectRoot, path))
       let isDirectory: boolean
       try {
-        isDirectory = (await fileOperations.stat(path)).kind === 'directory'
+        const stat = await fileOperations.stat(path, { followSymlinks: false })
+        if (stat.kind === 'symlink')
+          return Promise.reject(
+            new Error('Project files cannot traverse symbolic links.')
+          )
+        isDirectory = stat.kind === 'directory'
       } catch (error) {
         if (options.skipMissing && error instanceof FileNotFound) continue
         return Promise.reject(error)
