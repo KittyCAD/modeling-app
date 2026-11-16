@@ -198,6 +198,7 @@ import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl
 import type {
   EquipTool,
   UpdateSketchOutcomeEvent,
+  SketchSourceChangedEvent,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { sendToActorIfActive } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
@@ -684,6 +685,7 @@ export type ModelingMachineEvent =
     }
   | { type: 'unequip tool' }
   | UpdateSketchOutcomeEvent
+  | SketchSourceChangedEvent
   | {
       type: 'sketch solve tool changed'
       data: { tool: EquipTool | null }
@@ -1996,7 +1998,7 @@ export const modelingMachine = setup({
         return {}
       }
     ),
-    'Set mouse state': assign(({ context, event }) => {
+    'Set mouse state': assign(({ context, event, self }) => {
       if (event.type !== 'Set mouse state') return {}
       const nextSegmentHoverMap = () => {
         if (event.data.type === 'isHovering') {
@@ -2026,15 +2028,27 @@ export const modelingMachine = setup({
           const pathToNodeString = JSON.stringify(
             mouseOnParent?.userData?.pathToNode
           )
-          const timeoutId = setTimeout(() => {
-            context.kclManager.sceneInfra.modelingSend({
+          const filePath = context.kclManager.path
+          const projectPath = context.kclManager.systemDeps.projectPath.peek()
+          // zds-performance-exception: feedback-lifetime -- Keep the visible toolbar reachable while the pointer crosses its 20px gap to the controls.
+          const timeoutId = window.setTimeout(() => {
+            const snapshot = self.getSnapshot()
+            if (
+              snapshot.status !== 'active' ||
+              snapshot.context.kclManager.path !== filePath ||
+              snapshot.context.kclManager.systemDeps.projectPath.peek() !==
+                projectPath ||
+              snapshot.context.segmentHoverMap[pathToNodeString] !== timeoutId
+            )
+              return
+            self.send({
               type: 'Set mouse state',
               data: {
                 type: 'timeoutEnd',
                 pathToNodeString,
               },
             })
-          }, OVERLAY_TIMEOUT_MS) as unknown as number
+          }, OVERLAY_TIMEOUT_MS)
           return {
             ...context.segmentHoverMap,
             [pathToNodeString]: timeoutId,
@@ -6529,6 +6543,9 @@ export const modelingMachine = setup({
               actions: ['forward event to sketch solve if active'],
             },
             'delete selected': {
+              actions: ['forward event to sketch solve if active'],
+            },
+            'sketch source changed': {
               actions: ['forward event to sketch solve if active'],
             },
             'update sketch outcome': {

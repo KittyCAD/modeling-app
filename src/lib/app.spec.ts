@@ -1,5 +1,7 @@
 import * as cloudPolling from '@src/lib/cloudProjects/polling'
 import '@src/lib/projectSession/next/testFeature'
+import { requireSuccess, codeSurface } from '@src/lib/editors/testViews'
+import { editorsService } from '@src/lib/editors/registry/contract'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
 import { createProjectForTest } from '@src/lib/projectTestUtils'
@@ -32,10 +34,8 @@ import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createTestWasmRegistryItem, loadWasm } from '@src/unitTestUtils'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
-const mockProject: Project = {
-  name: 'test',
+const mockProject: Project = createProjectForTest('/some-dir/test', {
   default_file: 'main.kcl',
-  directory_count: 0,
   kcl_file_count: 1,
   metadata: {
     accessed: null,
@@ -45,8 +45,6 @@ const mockProject: Project = {
     size: 100,
     type: null,
   },
-  path: '/some-dir/test',
-  readWriteAccess: true,
   children: [
     {
       name: 'main.kcl',
@@ -54,7 +52,7 @@ const mockProject: Project = {
       children: [],
     },
   ],
-}
+})
 
 // wasm-bindgen owns one module-scoped instance. Share initialization so app
 // startup cannot replace it while older Rust closures are still alive.
@@ -207,16 +205,19 @@ function expectedRuntimeFlags() {
 }
 
 describe('project system', () => {
-  it('closes the next project session through the Home navigation boundary', async () => {
+  it('closes project editor resources through the Home navigation boundary', async () => {
     const app = createAppForTest()
     try {
       await waitForSettingsIdle(app)
       await waitForAuthSettled(app)
       const projects = app.registry.get(projectSessionService)
       const session = projects.openProject({
-        contents: { name: 'standalone', path: '/standalone', children: [] },
-        metadata: { title: 'Standalone', readWriteAccess: true },
+        contents: { name: 'project', path: '/project', children: [] },
+        metadata: { title: 'Project', readWriteAccess: true },
       })
+      const editors = app.registry.get(editorsService)
+      const editor = requireSuccess(editors.openEditor('/project/main.kcl', ''))
+      const destroy = vi.spyOn(codeSurface(editors, editor), 'destroy')
       // Exercise Home's actual close boundary without starting unrelated folder IO.
       loadHomeProjects({
         projectLibraries: { refreshProjects: vi.fn(async () => {}) },
@@ -225,6 +226,8 @@ describe('project system', () => {
       })
       expect(projects.currentSession.value).toBeUndefined()
       expect(session.signal.aborted).toBe(true)
+      expect(editors.editors.value).toEqual([])
+      expect(destroy).toHaveBeenCalledOnce()
     } finally {
       await app.disposeAsync()
     }
@@ -406,6 +409,9 @@ describe('project system', () => {
       )
       const engine = app.engineCommandManager
       const theme = vi.spyOn(engine, 'setTheme').mockResolvedValue(undefined)
+      const rendering = vi
+        .spyOn(engine, 'setViewportRendering')
+        .mockImplementation(() => {})
       const edges = vi
         .spyOn(engine, 'setHighlightEdges')
         .mockResolvedValue(undefined)
@@ -420,6 +426,7 @@ describe('project system', () => {
 
       project.executingPath = first.path
       expect(theme).not.toHaveBeenCalled()
+      expect(rendering).not.toHaveBeenCalled()
       expect(edges).not.toHaveBeenCalled()
       expect(backface).not.toHaveBeenCalled()
       expect(execute).not.toHaveBeenCalled()
@@ -435,10 +442,12 @@ describe('project system', () => {
       project.executingPath = second.path
       expect(project.executingEditor.peek()).toBe(second)
       expect(theme).toHaveBeenCalledTimes(1)
+      expect(rendering).toHaveBeenCalledExactlyOnceWith('ssao')
       expect(edges).toHaveBeenCalledTimes(1)
       expect(backface).toHaveBeenCalledTimes(1)
       project.executingPath = second.path
       expect(theme).toHaveBeenCalledTimes(1)
+      expect(rendering).toHaveBeenCalledTimes(1)
       expect(edges).toHaveBeenCalledTimes(1)
       expect(backface).toHaveBeenCalledTimes(1)
     } finally {
@@ -474,6 +483,10 @@ describe('project system', () => {
       vi.spyOn(app.engineCommandManager, 'setTheme').mockResolvedValue(
         undefined
       )
+      vi.spyOn(
+        app.engineCommandManager,
+        'setViewportRendering'
+      ).mockImplementation(() => {})
       vi.spyOn(app.engineCommandManager, 'setHighlightEdges').mockResolvedValue(
         undefined
       )
@@ -848,6 +861,7 @@ describe('project system', () => {
         name: 'zoo-modeling-app',
       },
       getAppTestProperty: vi.fn().mockResolvedValue(undefined),
+      menuOn: vi.fn(() => vi.fn()),
       pluginIpc: {
         invoke: vi.fn(),
         syncActivePlugins,
@@ -1029,15 +1043,11 @@ describe('project system', () => {
 
     try {
       await writeText(mainPath, 'main = true\n')
-      const project: Project = {
+      const project: Project = createProjectForTest(projectPath, {
         name: fsZds.basename(projectPath),
         default_file: mainPath,
-        directory_count: 0,
         kcl_file_count: 1,
-        metadata: null,
-        path: projectPath,
         libraryPath,
-        readWriteAccess: true,
         children: [
           {
             name: 'main.kcl',
@@ -1045,7 +1055,7 @@ describe('project system', () => {
             children: null,
           },
         ],
-      }
+      })
       const openedProject = await app.openProject(project)
       const kclManager = await openedProject.openEditor(mainPath)
       await Promise.resolve()
@@ -1112,20 +1122,16 @@ describe('project system', () => {
     try {
       await writeText(mainPath, '@settings(kclVersion = 3.0)\nwidth = 1\n')
       await writeText(oldPath, '@settings(kclVersion = 3.0)\nsize = 1\n')
-      const project: Project = {
+      const project: Project = createProjectForTest(projectPath, {
         name: fsZds.basename(projectPath),
-        path: projectPath,
         default_file: mainPath,
         cloudProjectId: 'remote-one',
-        metadata: null,
-        directory_count: 0,
         kcl_file_count: 2,
-        readWriteAccess: true,
         children: [
           { name: 'main.kcl', path: mainPath, children: null },
           { name: 'old.kcl', path: oldPath, children: null },
         ],
-      }
+      })
       const opened = await app.openProject(project)
       const editor = await opened.openEditor(mainPath)
       editor.engineCommandManager.connection = {
@@ -1171,14 +1177,10 @@ describe('project system', () => {
     try {
       await writeText(mainPath, 'main = true\n')
       await writeText(alternatePath, 'alternate = true\n')
-      const project: Project = {
+      const project: Project = createProjectForTest(projectPath, {
         name: fsZds.basename(projectPath),
         default_file: mainPath,
-        directory_count: 0,
         kcl_file_count: 2,
-        metadata: null,
-        path: projectPath,
-        readWriteAccess: true,
         children: [
           {
             name: 'main.kcl',
@@ -1191,7 +1193,7 @@ describe('project system', () => {
             children: null,
           },
         ],
-      }
+      })
       const openedProject = await app.openProject(project)
       const kclManager = await openedProject.openEditor(mainPath)
       const calls: string[] = []
@@ -1341,19 +1343,15 @@ describe('project system', () => {
     try {
       await writeText(mainPath, 'main = true\n')
       await writeText(alternatePath, 'alternate = true\n')
-      const project: Project = {
+      const project: Project = createProjectForTest(projectPath, {
         name: fsZds.basename(projectPath),
         default_file: mainPath,
-        directory_count: 0,
         kcl_file_count: 2,
-        metadata: null,
-        path: projectPath,
-        readWriteAccess: true,
         children: [
           { name: 'main.kcl', path: mainPath, children: null },
           { name: 'alternate.kcl', path: alternatePath, children: null },
         ],
-      }
+      })
       const openedProject = await app.openProject(project)
       const kclManager = await openedProject.openEditor(
         mainPath,

@@ -1,7 +1,6 @@
-import {
-  DUPLICATE_PROJECT_TEMPORARY_PREFIX,
-  PROJECT_SETTINGS_FILE_NAME,
-} from '@src/lib/constants'
+import { createStagedProject } from '@src/lib/fileSystem/createStagedProject'
+import { getRelativePathIfContained } from '@src/lib/paths'
+import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import {
   createNewProjectDirectory,
   getProjectInfo,
@@ -43,15 +42,6 @@ async function getProjectDirectoryEntryNames(
     }
     return Promise.reject(error)
   }
-}
-
-async function rejectProjectImport(
-  fileOperations: FileOperationsRegistryService,
-  temporaryProjectPath: string,
-  error: unknown
-): Promise<never> {
-  await fileOperations.remove(temporaryProjectPath).catch(() => undefined)
-  return Promise.reject(error)
 }
 
 export async function createProjectInLocalDirectory({
@@ -129,22 +119,12 @@ async function createProjectFromFilesInLocalDirectory({
   initialProject: ProjectLibraryInitialProject
   wasmInstancePromise: Promise<ModuleType> | ModuleType
 }): Promise<Project> {
-  const temporaryProjectPath = fsZds.join(
-    projectDirectoryPath,
-    `${DUPLICATE_PROJECT_TEMPORARY_PREFIX}${v4()}`
-  )
   const projectPath = fsZds.join(projectDirectoryPath, projectName)
-  const relativeProjectPath = fsZds.relative(
-    fsZds.resolve(projectDirectoryPath),
-    fsZds.resolve(projectPath)
+  const relativeProjectPath = getRelativePathIfContained(
+    projectDirectoryPath,
+    projectPath
   )
-  if (
-    !relativeProjectPath ||
-    relativeProjectPath === '..' ||
-    relativeProjectPath.startsWith(`..${fsZds.sep}`) ||
-    relativeProjectPath.includes(fsZds.sep) ||
-    relativeProjectPath === fsZds.resolve(relativeProjectPath)
-  ) {
+  if (!relativeProjectPath || relativeProjectPath.includes(fsZds.sep)) {
     return Promise.reject(
       new Error(
         `The shared project contained an invalid project directory name: "${requestedProjectName}".`
@@ -152,70 +132,55 @@ async function createProjectFromFilesInLocalDirectory({
     )
   }
 
-  await fileOperations.createDirectory(temporaryProjectPath)
-  try {
-    for (const file of initialProject.files) {
-      if (file.requestedFileName === PROJECT_SETTINGS_FILE_NAME) {
-        continue
-      }
+  await createStagedProject(
+    fileOperations,
+    projectPath,
+    async (temporaryProjectPath) => {
+      for (const file of initialProject.files) {
+        if (file.requestedFileName === PROJECT_SETTINGS_FILE_NAME) {
+          continue
+        }
 
-      const targetPath = fsZds.resolve(
-        temporaryProjectPath,
-        file.requestedFileName
-      )
-      const relativeTargetPath = fsZds.relative(
-        temporaryProjectPath,
-        targetPath
-      )
-      if (
-        !relativeTargetPath ||
-        relativeTargetPath === '..' ||
-        relativeTargetPath.startsWith(`..${fsZds.sep}`) ||
-        relativeTargetPath === fsZds.resolve(relativeTargetPath)
-      ) {
-        return rejectProjectImport(
-          fileOperations,
+        const targetPath = fsZds.resolve(
           temporaryProjectPath,
-          new Error(
-            `The shared project contained an invalid file path: "${file.requestedFileName}".`
-          )
+          file.requestedFileName
         )
+        if (!getRelativePathIfContained(temporaryProjectPath, targetPath)) {
+          return Promise.reject(
+            new Error(
+              `The shared project contained an invalid file path: "${file.requestedFileName}".`
+            )
+          )
+        }
+
+        await ensureDirectory(fileOperations, fsZds.dirname(targetPath))
+        await fileOperations.writeFile(targetPath, file.requestedData)
       }
 
-      await ensureDirectory(fileOperations, fsZds.dirname(targetPath))
-      await fileOperations.writeFile(targetPath, file.requestedData)
-    }
-
-    const sourceProjectToml = initialProject.files.find(
-      (file) => file.requestedFileName === PROJECT_SETTINGS_FILE_NAME
-    )
-    const projectTomlWithEntrypoint =
-      setProjectDefaultFileInProjectTomlContents(
-        sourceProjectToml
-          ? new TextDecoder().decode(sourceProjectToml.requestedData)
-          : '',
-        initialProject.entrypointFilePath
+      const sourceProjectToml = initialProject.files.find(
+        (file) => file.requestedFileName === PROJECT_SETTINGS_FILE_NAME
       )
-    const projectToml = prepareProjectTomlForDuplication(
-      projectTomlWithEntrypoint,
-      projectTitle,
-      v4()
-    )
-    if (isErr(projectToml)) {
-      return rejectProjectImport(
-        fileOperations,
-        temporaryProjectPath,
-        projectToml
+      const projectTomlWithEntrypoint =
+        setProjectDefaultFileInProjectTomlContents(
+          sourceProjectToml
+            ? new TextDecoder().decode(sourceProjectToml.requestedData)
+            : '',
+          initialProject.entrypointFilePath
+        )
+      const projectToml = prepareProjectTomlForDuplication(
+        projectTomlWithEntrypoint,
+        projectTitle,
+        v4()
+      )
+      if (isErr(projectToml)) {
+        return Promise.reject(projectToml)
+      }
+      await fileOperations.writeFile(
+        fsZds.join(temporaryProjectPath, PROJECT_SETTINGS_FILE_NAME),
+        new TextEncoder().encode(projectToml)
       )
     }
-    await fileOperations.writeFile(
-      fsZds.join(temporaryProjectPath, PROJECT_SETTINGS_FILE_NAME),
-      new TextEncoder().encode(projectToml)
-    )
-    await fileOperations.rename(temporaryProjectPath, projectPath)
-  } catch (error) {
-    return rejectProjectImport(fileOperations, temporaryProjectPath, error)
-  }
+  )
 
   return getProjectInfo(fileOperations, projectPath, await wasmInstancePromise)
 }
@@ -238,28 +203,20 @@ export async function cloneProjectIntoLocalDirectory({
   requestedProjectTitle?: string
   wasmInstancePromise: Promise<ModuleType> | ModuleType
 }): Promise<CloneProjectIntoLocalDirectoryResult> {
-  const relativeDirectory = fsZds.relative(
-    sourceProjectPath,
-    projectDirectoryPath
+  if (
+    getRelativePathIfContained(sourceProjectPath, projectDirectoryPath) !==
+    undefined
   )
-  const outsideSource =
-    relativeDirectory === '..' ||
-    relativeDirectory.startsWith(`..${fsZds.sep}`) ||
-    relativeDirectory === fsZds.resolve(relativeDirectory)
-  if (!outsideSource)
     return Promise.reject(
       new Error('The clone destination must be outside the source project.')
     )
   const entrypoint = defaultFile
-    ? fsZds.relative(sourceProjectPath, defaultFile).replaceAll('\\', '/')
+    ? getRelativePathIfContained(sourceProjectPath, defaultFile)?.replaceAll(
+        '\\',
+        '/'
+      )
     : 'main.kcl'
-  if (
-    !entrypoint ||
-    entrypoint === '..' ||
-    entrypoint.startsWith('../') ||
-    entrypoint.startsWith('/') ||
-    /^[a-z]:/i.test(entrypoint)
-  )
+  if (!entrypoint)
     return Promise.reject(
       new Error('The project entrypoint must be inside the source project.')
     )

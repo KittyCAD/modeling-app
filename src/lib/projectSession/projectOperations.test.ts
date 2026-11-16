@@ -1,6 +1,6 @@
 import { posix } from '@chainner/node-path'
 import { createProjectOperations } from '@src/lib/projectSession/projectOperations'
-import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
+import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import noopfs from '@src/lib/fs-zds/noopfs'
 import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
@@ -19,7 +19,7 @@ vi.mock('@src/lib/projectLibraries/directoryScanner', () => ({
 }))
 
 let memory: ReturnType<typeof createMemoryFileSystem>
-let runtime: ReturnType<typeof createFileOperationsRuntime>
+let scheduler: ReturnType<typeof createFileOperationsScheduler>
 
 beforeEach(async () => {
   vi.mocked(readProjectsFromProjectDirectory).mockReset()
@@ -28,10 +28,10 @@ beforeEach(async () => {
   await memory.mkdir('/outside', { recursive: true })
   await memory.writeFile('/project/keep.kcl', new TextEncoder().encode('keep'))
   await memory.writeFile('/outside/private.bin', new Uint8Array([42]))
-  runtime = createFileOperationsRuntime(memory)
+  scheduler = createFileOperationsScheduler(memory)
 })
 afterEach(async () => {
-  await runtime?.dispose()
+  await scheduler?.dispose()
   vi.useRealTimers()
 })
 
@@ -48,7 +48,7 @@ const invalidPaths = fc.constantFrom(
 describe('project file operations on MemoryFS', () => {
   it('rejects an invalid path anywhere in an edit batch without changing storage', async () => {
     const projects = createProjectOperations({
-      operations: runtime.operations,
+      operations: scheduler.operations,
       wasm: vi.fn(),
     })
     await fc.assert(
@@ -92,7 +92,7 @@ describe('project file operations on MemoryFS', () => {
       .mockReturnValueOnce(older.promise)
       .mockReturnValueOnce(newer.promise)
     const projects = createProjectOperations({
-      operations: runtime.operations,
+      operations: scheduler.operations,
       wasm: vi.fn(),
     })
     const first = projects.listProjects('/older')
@@ -118,7 +118,7 @@ describe('project file operations on MemoryFS', () => {
       listing.promise
     )
     const projects = createProjectOperations({
-      operations: runtime.operations,
+      operations: scheduler.operations,
       wasm: vi.fn(),
     })
     const discovery = projects.listProjects('/outside')
@@ -149,11 +149,11 @@ describe('project file operations on MemoryFS', () => {
             const written = Promise.withResolvers<undefined>()
             const acknowledged = Promise.withResolvers<undefined>()
             const projects = createProjectOperations({
-              operations: runtime.operations,
+              operations: scheduler.operations,
               wasm: vi.fn(),
               batch: async (_root, run) => {
                 await start.promise
-                const result = await run(runtime.operations)
+                const result = await run(scheduler.operations)
                 written.resolve(undefined)
                 await acknowledged.promise
                 return result
@@ -206,7 +206,7 @@ describe('project file operations on MemoryFS', () => {
     const failure = new Error('Write failed')
     const projects = createProjectOperations({
       operations: {
-        ...runtime.operations,
+        ...scheduler.operations,
         writeFile: async () => Promise.reject(failure),
       },
       wasm: vi.fn(),
@@ -224,7 +224,7 @@ describe('project file operations on MemoryFS', () => {
 
   it('creates nested files and removes only the requested file', async () => {
     const projects = createProjectOperations({
-      operations: runtime.operations,
+      operations: scheduler.operations,
       wasm: vi.fn(),
     })
     await projects.applyEdits('/project', [
@@ -248,7 +248,7 @@ describe('project file operations on MemoryFS', () => {
     'nested/../../outside/private.bin',
   ])('rejects import traversal %s before changing any files', async (path) => {
     const projects = createProjectOperations({
-      operations: runtime.operations,
+      operations: scheduler.operations,
       wasm: vi.fn(),
     })
     await expect(

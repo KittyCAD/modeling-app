@@ -1,3 +1,4 @@
+import { selectCommand } from '@src/lib/commandUtils'
 import { reportRejection } from '@src/lib/trap'
 import { Popover } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
@@ -385,11 +386,7 @@ function ProjectMenuPopover({
             </>
           ),
           disabled: !findCommand(exportCommandInfo),
-          onClick: () =>
-            commands.send({
-              type: 'Find and select command',
-              data: exportCommandInfo,
-            }),
+          onClick: () => selectCommand(commands, exportCommandInfo),
         },
         {
           id: 'download-project-zip',
@@ -411,11 +408,7 @@ function ProjectMenuPopover({
             </>
           ),
           disabled: !findCommand(exportProjectZipCommandInfo),
-          onClick: () =>
-            commands.send({
-              type: 'Find and select command',
-              data: exportProjectZipCommandInfo,
-            }),
+          onClick: () => selectCommand(commands, exportProjectZipCommandInfo),
         },
         {
           id: 'make',
@@ -438,10 +431,7 @@ function ProjectMenuPopover({
           ),
           disabled: !findCommand(makeCommandInfo) || machineCount === 0,
           onClick: () => {
-            commands.send({
-              type: 'Find and select command',
-              data: makeCommandInfo,
-            })
+            selectCommand(commands, makeCommandInfo)
           },
         },
         { kind: 'break', id: 'before-go-home' },

@@ -102,6 +102,7 @@ function createHomeProjectActions(
   overrides: Partial<HomeProjectActionsService> = {}
 ): HomeProjectActionsService {
   return {
+    pendingActions: signal(new Map()),
     watchRemoteThumbnail: vi.fn(() => vi.fn()),
     canOpen: vi.fn(() => true),
     canDuplicate: vi.fn(() => true),
@@ -674,6 +675,7 @@ describe('project command config', () => {
     })
     const commands = createProjectCommands({
       ...dependencies,
+      getProjectLibraries: () => [sourceLibrary, targetLibrary],
       getHomeProjectActions: () => homeProjectActions,
       getHomeProjectEntries: () => [homeProject],
     })
@@ -700,6 +702,7 @@ describe('project command config', () => {
     expect(moveCommand && projectOptions(moveCommand, 'project')).toEqual([
       {
         name: 'Client Bracket',
+        description: 'Client Projects',
         value: 'local:/client-projects/bracket',
         isCurrent: false,
       },
@@ -724,37 +727,16 @@ describe('project command config', () => {
         },
       } as unknown as ContextFrom<typeof commandBarMachine>)
     ).toBe('cloud-personal')
-    expect(
-      projectArg.hidden({
-        argumentsToSubmit: {
-          project: homeProject.id,
-          library: targetLibrary.id,
-        },
-      })
-    ).toBe(true)
-    expect(
-      libraryArg.hidden({
-        argumentsToSubmit: {
-          project: homeProject.id,
-          library: targetLibrary.id,
-        },
-      })
-    ).toBe(true)
-    expect(
-      projectArg.hidden({
-        argumentsToSubmit: {
-          project: homeProject.id,
-        },
-      })
-    ).toBe(false)
-    expect(
-      libraryArg.hidden({
-        argumentsToSubmit: {
-          project: homeProject.id,
-          library: 'unknown-library',
-        },
-      })
-    ).toBe(false)
+    // Arguments remain editable on review; Step back can return to the library.
+    expect(projectArg.hidden).toBeUndefined()
+    expect(libraryArg.hidden).toBeUndefined()
+    const summaries = moveCommand!.args!
+    expect(summaries.project.valueSummary!(homeProject.id)).toBe(
+      'Client Bracket'
+    )
+    expect(summaries.library.valueSummary!(targetLibrary.id)).toBe(
+      'Personal Cloud'
+    )
 
     await moveCommand?.onSubmit({
       project: homeProject.id,

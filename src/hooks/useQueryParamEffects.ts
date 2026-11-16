@@ -1,3 +1,5 @@
+import { getFileRoute } from '@src/lib/paths'
+import { selectCommand } from '@src/lib/commandUtils'
 import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
 
 import { base64ToString } from '@src/lib/base64'
@@ -20,7 +22,6 @@ import {
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import { downloadKclSample } from '@src/lib/kclSamples'
-import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
 import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
@@ -108,13 +109,10 @@ export function useQueryParamEffects() {
         searchParams,
         webProjectName
       )
-      commands.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Import file from URL',
-          argDefaultValues,
-        },
+      selectCommand(commands, {
+        groupId: 'projects',
+        name: 'Import file from URL',
+        argDefaultValues,
       })
 
       // Delete the query params after the command has been invoked.
@@ -205,11 +203,7 @@ export function useQueryParamEffects() {
         return
       }
 
-      void navigate(
-        `${PATHS.FILE}/${safeEncodeForRouterPaths(
-          importedProject.default_file
-        )}`
-      )
+      void navigate(getFileRoute(importedProject.default_file))
     })().catch((error) => {
       if (cancelled) {
         return
@@ -255,7 +249,7 @@ export function useQueryParamEffects() {
 
           void navigate(
             {
-              pathname: `${PATHS.FILE}/${safeEncodeForRouterPaths(defaultFile)}`,
+              pathname: getFileRoute(defaultFile),
               search: searchParams.toString(),
             },
             { replace: true }
@@ -336,11 +330,7 @@ export function useQueryParamEffects() {
           return
         }
 
-        void navigate(
-          `${PATHS.FILE}/${safeEncodeForRouterPaths(
-            importedProject.default_file
-          )}`
-        )
+        void navigate(getFileRoute(importedProject.default_file))
       })().catch((error) => {
         if (cancelled) {
           return
@@ -379,10 +369,7 @@ export function useQueryParamEffects() {
     function sendCommand() {
       if (sent) return
       sent = true
-      commands.send({
-        type: 'Find and select command',
-        data: commandData,
-      })
+      selectCommand(commands, commandData)
       cleanupQueryParams()
     }
 

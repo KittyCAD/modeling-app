@@ -1,7 +1,7 @@
 import { mkdtemp, rm, symlink } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
+import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import nodefs from '@src/lib/fs-zds/nodefs'
 import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import fc from 'fast-check'
@@ -19,13 +19,13 @@ for (const kind of ['disk', 'memory'] as const) {
       const backing =
         kind === 'disk' ? nodefs.impl : createMemoryFileSystem(nodefs.impl)
       await backing.mkdir(root, { recursive: true })
-      const runtime = createFileOperationsRuntime(backing)
+      const scheduler = createFileOperationsScheduler(backing)
       return {
         root,
         backing,
-        ...runtime,
+        ...scheduler,
         dispose: async () => {
-          await runtime.dispose()
+          await scheduler.dispose()
           await rm(root, { recursive: true, force: true })
         },
       }
@@ -295,10 +295,10 @@ for (const kind of ['disk', 'memory'] as const) {
           await gate
           return new TextEncoder().encode('original')
         })
-      const runtime = createFileOperationsRuntime(f.backing)
+      const scheduler = createFileOperationsScheduler(f.backing)
       try {
         const deleted = vi.fn()
-        const deletion = runtime.operations
+        const deletion = scheduler.operations
           .removeWithSnapshot(target)
           .then((value) => {
             deleted()
@@ -306,8 +306,10 @@ for (const kind of ['disk', 'memory'] as const) {
           })
         await vi.waitFor(() => expect(read).toHaveBeenCalledOnce())
         const written = vi.fn()
-        const write = runtime.operations.writeFile(target, 'new').then(written)
-        await runtime.operations.writeFile(join(f.root, 'unrelated'), 'keep')
+        const write = scheduler.operations
+          .writeFile(target, 'new')
+          .then(written)
+        await scheduler.operations.writeFile(join(f.root, 'unrelated'), 'keep')
         vi.useFakeTimers({ toFake: ['Date', 'setTimeout', 'clearTimeout'] })
         await vi.advanceTimersByTimeAsync(7_000)
         expect(deleted).not.toHaveBeenCalled()
@@ -323,7 +325,7 @@ for (const kind of ['disk', 'memory'] as const) {
         release()
         vi.useRealTimers()
         read.mockRestore()
-        await runtime.dispose()
+        await scheduler.dispose()
         await f.dispose()
       }
     })
@@ -352,26 +354,26 @@ for (const kind of ['disk', 'memory'] as const) {
 
 it('refuses a symlink tree without deleting the link or its external target', async () => {
   const root = await mkdtemp(join(tmpdir(), 'zds-deletion-link-'))
-  const runtime = createFileOperationsRuntime(nodefs.impl)
+  const scheduler = createFileOperationsScheduler(nodefs.impl)
   try {
     const target = join(root, 'target')
     const link = join(root, 'link')
-    await runtime.operations.createDirectory(target)
-    await runtime.operations.createFile(join(target, 'file'), 'external')
+    await scheduler.operations.createDirectory(target)
+    await scheduler.operations.createFile(join(target, 'file'), 'external')
     await symlink(target, link, 'junction')
     await expect(
-      runtime.operations.removeWithSnapshot(link)
+      scheduler.operations.removeWithSnapshot(link)
     ).rejects.toBeDefined()
     expect(
-      (await runtime.operations.stat(link, { followSymlinks: false })).kind
+      (await scheduler.operations.stat(link, { followSymlinks: false })).kind
     ).toBe('symlink')
     expect(
       new TextDecoder().decode(
-        await runtime.operations.readFile(join(target, 'file'))
+        await scheduler.operations.readFile(join(target, 'file'))
       )
     ).toBe('external')
   } finally {
-    await runtime.dispose()
+    await scheduler.dispose()
     await rm(root, { recursive: true, force: true })
   }
 })

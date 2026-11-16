@@ -1,4 +1,4 @@
-import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
+import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import { projectFilesContract } from '@src/lib/projectSession/testSupport/projectFilesContract'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
@@ -14,14 +14,14 @@ projectFilesContract('project file collection on MemoryFS', async () => {
   const fs = createMemoryFileSystem(nodefs.impl)
   const root = fs.resolve('/project-files-contract', crypto.randomUUID())
   await fs.mkdir(root, { recursive: true })
-  const runtime = createFileOperationsRuntime(fs)
+  const scheduler = createFileOperationsScheduler(fs)
   return {
     fs,
     root,
-    operations: runtime.operations,
+    operations: scheduler.operations,
     dispose: async () => {
       try {
-        await runtime.dispose()
+        await scheduler.dispose()
       } finally {
         await fs.rm(root, { recursive: true, force: true })
       }
