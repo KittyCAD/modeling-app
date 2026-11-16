@@ -1,6 +1,6 @@
 /// Define gears that users can include in their models.
 
-fn gearProfile(nTeeth: number(Count), module: number(Length), pressureAngle: number(Angle), offsetHeight: number(Length), helixAngle: number(Angle), profileShift: number(_)) {
+fn gearProfile(nTeeth: number(Count), module: number(Length), pressureAngle: number(Angle), offsetHeight: number(Length), helixAngle: number(Angle), profileShift?: number(_) = 0_) {
 // Gear circles
 pitchDiameter = module * nTeeth
 pitchRadius = pitchDiameter / 2
@@ -110,7 +110,7 @@ export fn helical(nTeeth: number(Count),
   pressureAngle: number(Angle),
   helixAngle: number(Angle),
   gearHeight: number(Length),
-  profileShift: number(_),
+  profileShift?: number(_) = 0_,
 ): Solid {
   // Calculate gear parameters
   pitchDiameter = module * nTeeth
@@ -153,7 +153,7 @@ export fn spur(
   module: number(Length),
   pressureAngle: number(Angle),
   gearHeight: number(Length),
-  profileShift: number(_),
+  profileShift?: number(_) = 0_,
 ): Solid {
   // Calculate gear parameters
   pitchDiameter = module * nTeeth
@@ -193,7 +193,7 @@ export fn herringbone(
   pressureAngle: number(Angle),
   gearHeight: number(Length),
   helixAngle: number(Angle),
-  profileShift: number(_),
+  profileShift?: number(_) = 0_,
 ): Solid {
   // Calculate gear parameters
   pitchDiameter = module * nTeeth
@@ -263,7 +263,7 @@ export fn ring(
   pressureAngle: number(Angle),
   helixAngle: number(Angle),
   gearHeight: number(Length),
-    profileShift: number(_),
+  profileShift?: number(_) = 0_,
 ): Solid {
   // Calculate gear parameters
   pitchDiameter = module * nTeeth
@@ -278,6 +278,6 @@ export fn ring(
   return startSketchOn(XY)
   |> circle(radius = tipDiameter / 1.85)
   |> subtract2d(tool = helicalGear)
-  |> extrude(length = gearHeight, twistAngle = twistAngle, twistAngleStep = 0)
+  |> extrude(length = gearHeight)
 
 }

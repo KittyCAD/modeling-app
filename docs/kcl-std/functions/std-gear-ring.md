@@ -16,6 +16,7 @@ gear::ring(
   pressureAngle: number(Angle),
   helixAngle: number(Angle),
   gearHeight: number(Length),
+  profileShift?: number(_),
 ): Solid
 ```
 
@@ -31,6 +32,7 @@ Use `translate()` and `rotate()` to move it around once it's created.
 | `pressureAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 | `helixAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 | `gearHeight` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
+| `profileShift` | [`number(_)`](/docs/kcl-std/types/std-types-number) | A number. | No |
 
 ### Returns
 
@@ -50,6 +52,7 @@ gear::ring(
   pressureAngle = 14deg,
   helixAngle = -25deg,
   gearHeight = 5,
+  profileShift = 0,
 )
 
 ```

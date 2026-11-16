@@ -16,6 +16,7 @@ gear::herringbone(
   pressureAngle: number(Angle),
   gearHeight: number(Length),
   helixAngle: number(Angle),
+  profileShift?: number(_),
 ): Solid
 ```
 
@@ -31,6 +32,7 @@ Use `translate()` and `rotate()` to move it around once it's created.
 | `pressureAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 | `gearHeight` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 | `helixAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
+| `profileShift` | [`number(_)`](/docs/kcl-std/types/std-types-number) | A number. | No |
 
 ### Returns
 
@@ -50,6 +52,7 @@ myGear = gear::herringbone(
   pressureAngle = 20deg,
   gearHeight = 5,
   helixAngle = 40deg,
+  profileShift = 0,
 )
 
 ```

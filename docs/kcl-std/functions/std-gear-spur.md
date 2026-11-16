@@ -15,6 +15,7 @@ gear::spur(
   module: number(Length),
   pressureAngle: number(Angle),
   gearHeight: number(Length),
+  profileShift?: number(_),
 ): Solid
 ```
 
@@ -29,6 +30,7 @@ Use `translate()` and `rotate()` to move it around once it's created.
 | `module` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 | `pressureAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 | `gearHeight` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
+| `profileShift` | [`number(_)`](/docs/kcl-std/types/std-types-number) | A number. | No |
 
 ### Returns
 
@@ -47,6 +49,7 @@ gear::spur(
   module = 1.5,
   pressureAngle = 14deg,
   gearHeight = 6,
+  profileShift = 0,
 )
 
 ```
