@@ -1,6 +1,13 @@
 /// Define gears that users can include in their models.
 
-fn gearProfile(nTeeth: number(Count), module: number(Length), pressureAngle: number(Angle), offsetHeight: number(Length), helixAngle: number(Angle), profileShift?: number(_) = 0_) {
+fn gearProfile(
+  nTeeth: number(Count),
+  module: number(Length),
+  pressureAngle: number(Angle),
+  offsetHeight: number(Length),
+  helixAngle: number(Angle),
+  profileShift?: number(_) = 0_,
+) {
 // Gear circles
 pitchDiameter = module * nTeeth
 pitchRadius = pitchDiameter / 2
