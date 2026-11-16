@@ -1,2 +1,1 @@
-[test_graphics.EngineRender]
-reason = "CPU/GPU bounds differ because GPU scene bounds can be stale; retain baseline until engine#5178 / engine#5228 is resolved"
+test_graphics = "CpuEngineRender"

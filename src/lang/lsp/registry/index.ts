@@ -1,3 +1,4 @@
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
@@ -10,6 +11,7 @@ import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 
 export const lspExtension = defineRegistryItemFactory((ctx) => {
   const lsp = createLspService({
+    getFileOperations: () => ctx.services.get(fileOperationsService),
     getAuth: () => ctx.services.get(authService),
     getUserFeatures: () => ctx.services.get(userFeaturesService),
   })

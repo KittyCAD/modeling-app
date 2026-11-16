@@ -1,4 +1,7 @@
-import { waitForWebKitBillingToSettle } from '@e2e/playwright/test-utils'
+import {
+  waitForAppLoad,
+  waitForWebKitBillingToSettle,
+} from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 
@@ -23,7 +26,7 @@ function getToastError(page: Page) {
 test.describe('Share link tests', () => {
   test(
     `Open in desktop app with 2000-long code works non-Windows`,
-    { tag: ['@web', '@macos', '@linux'] },
+    { tag: ['@web', '@macos', '@linux', '@localRenderer'] },
     async ({ page }) => {
       test.skip(process.platform === 'win32')
 
@@ -59,7 +62,7 @@ test.describe('Share link tests', () => {
 
   test(
     'should prefill demo project name on web',
-    { tag: ['@web'] },
+    { tag: ['@web', '@localRenderer'] },
     async ({ page }) => {
       await waitForWebKitBillingToSettle(page)
 
@@ -69,6 +72,7 @@ test.describe('Share link tests', () => {
       next.searchParams.set('name', 'test')
       next.searchParams.set('code', code)
       await page.goto(next.toString())
+      await waitForAppLoad(page)
 
       const projectTab = page
         .getByTestId('cmd-bar-input-tab')

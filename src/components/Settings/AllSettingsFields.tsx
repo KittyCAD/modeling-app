@@ -1,5 +1,6 @@
 import { ActionButton } from '@src/components/ActionButton'
 import type { Feature } from '@kittycad/lib'
+import { SettingRestartButton } from '@src/components/Settings/SettingRestartButton'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { useApp } from '@src/lib/boot'
@@ -89,7 +90,12 @@ export const AllSettingsFields = forwardRef(
               // Filter out categories that don't have any non-hidden settings
               Object.values(categorySettings).some(
                 (setting) =>
-                  !shouldHideSetting(setting, searchParamTab, hasFeature)
+                  !shouldHideSetting(
+                    setting,
+                    searchParamTab,
+                    context,
+                    hasFeature
+                  )
               )
             )
             .map(([category, categorySettings]) => (
@@ -102,7 +108,12 @@ export const AllSettingsFields = forwardRef(
                 </h2>
                 {Object.entries(categorySettings)
                   .filter((item: [string, Setting<unknown>]) =>
-                    shouldShowSettingInput(item[1], searchParamTab, hasFeature)
+                    shouldShowSettingInput(
+                      item[1],
+                      searchParamTab,
+                      context,
+                      hasFeature
+                    )
                   )
                   .map(([settingName, s]) => {
                     const setting = s as Setting
@@ -110,7 +121,9 @@ export const AllSettingsFields = forwardRef(
                       setting[setting.getParentLevel(searchParamTab)]
                     return (
                       <SettingsSection
-                        title={formatSettingsLabel(settingName)}
+                        title={
+                          setting.title ?? formatSettingsLabel(settingName)
+                        }
                         id={settingName}
                         className={
                           location.hash === `#${settingName}`
@@ -144,6 +157,7 @@ export const AllSettingsFields = forwardRef(
                           settingsLevel={searchParamTab}
                           setting={setting}
                         />
+                        <SettingRestartButton setting={setting} />
                       </SettingsSection>
                     )
                   })}

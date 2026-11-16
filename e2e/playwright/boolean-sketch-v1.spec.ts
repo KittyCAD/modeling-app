@@ -33,115 +33,116 @@ test.describe(
       const commandName = `Boolean ${
         operationName.charAt(0).toUpperCase() + operationName.slice(1)
       }`
-      test(`Create boolean operation -- ${operationName}`, async ({
-        context,
-        homePage,
-        modelingDialog,
-        editor,
-        toolbar,
-        scene,
-        page,
-      }) => {
-        const file = await fs.readFile(
-          path.resolve(
-            __dirname,
-            '../../',
-            './rust/kcl-lib/e2e/executor/inputs/boolean-setup-with-sketch-on-faces.kcl'
-          ),
-          'utf-8'
-        )
-        await context.addInitScript((file) => {
-          localStorage.setItem('persistCode', file)
-        }, file)
-        await homePage.goToModelingScene()
-        await scene.settled()
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-
-        // Test coordinates for selection - these might need adjustment based on actual scene layout
-        const cylinderPoint = { x: 592, y: 174 }
-        const secondObjectPoint = { x: 683, y: 273 }
-
-        // Create mouse helpers for selecting objects
-        const [clickFirstObject] = scene.makeMouseHelpers(
-          cylinderPoint.x,
-          cylinderPoint.y,
-          { steps: 10 }
-        )
-        const [clickSecondObject] = scene.makeMouseHelpers(
-          secondObjectPoint.x,
-          secondObjectPoint.y,
-          { steps: 10 }
-        )
-
-        await test.step(`Test ${operationName} operation`, async () => {
-          // Click the boolean operation button in the toolbar
-          if (operationName === 'split') {
-            await toolbar.splitButton.click()
-          } else {
-            await toolbar.selectBoolean(operationName)
-          }
-
-          await expect(modelingDialog.locator).toHaveAttribute(
-            'aria-label',
-            commandName
+      for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+        test(`Create boolean operation -- ${operationName} ${rendererTag}`, async ({
+          context,
+          homePage,
+          modelingDialog,
+          editor,
+          toolbar,
+          scene,
+          page,
+        }) => {
+          const file = await fs.readFile(
+            path.resolve(
+              __dirname,
+              '../../',
+              './rust/kcl-lib/e2e/executor/inputs/boolean-setup-with-sketch-on-faces.kcl'
+            ),
+            'utf-8'
           )
-          // Select first object in the scene, expect there to be a pixel diff from the selection color change
-          await clickFirstObject({ pixelDiff: 50 })
-          await page.waitForTimeout(1000)
+          await context.addInitScript((file) => {
+            localStorage.setItem('persistCode', file)
+          }, file)
+          await homePage.goToModelingScene()
+          await scene.settled()
+          await toolbar.closePane(DefaultLayoutPaneID.Code)
 
-          // For subtract, we need to proceed to the next step before selecting the second object
-          if (operationName !== 'subtract') {
-            // should down shift key to select multiple objects
-            await page.keyboard.down('Shift')
-          } else {
-            await modelingDialog.selection('Tools').click()
-          }
+          await test.step(`Test ${operationName} operation`, async () => {
+            // Click the boolean operation button in the toolbar
+            if (operationName === 'split') {
+              await toolbar.splitButton.click()
+            } else {
+              await toolbar.selectBoolean(operationName)
+            }
 
-          // Select second object
-          await clickSecondObject({ pixelDiff: 50 })
-          await page.keyboard.up('Shift')
-
-          await page.waitForTimeout(1000)
-
-          if (operationName === 'subtract') {
-            await expect(modelingDialog.selection('Solids')).toHaveText(
-              '1 sweep'
+            await expect(modelingDialog.locator).toHaveAttribute(
+              'aria-label',
+              commandName
             )
-            await expect(modelingDialog.selection('Tools')).toHaveText(
-              '1 sweep'
+            // Select first object in the scene, expect there to be a pixel diff from the selection color change
+            const [clickFirstObject] = await scene.makeSelectionHelpers({
+              kind: 'face',
+              index: 7,
+              stream: { x: 592, y: 174, format: 'pixels' },
+            })
+            await clickFirstObject({ pixelDiff: 50 })
+            await page.waitForTimeout(1000)
+
+            // For subtract, we need to proceed to the next step before selecting the second object
+            if (operationName !== 'subtract') {
+              // should down shift key to select multiple objects
+              await page.keyboard.down('Shift')
+            } else {
+              await modelingDialog.selection('Tools').click()
+            }
+
+            // Local selection resolves asynchronously; keep Shift held until both
+            // bodies are selected rather than releasing it on the first pixel diff.
+            try {
+              // Select second object
+              const [clickSecondObject] = await scene.makeSelectionHelpers({
+                kind: 'face',
+                index: 1,
+                stream: { x: 683, y: 273, format: 'pixels' },
+              })
+              await clickSecondObject({ pixelDiff: 50 })
+
+              await page.waitForTimeout(1000)
+
+              if (operationName === 'subtract') {
+                await expect(modelingDialog.selection('Solids')).toHaveText(
+                  '1 sweep'
+                )
+                await expect(modelingDialog.selection('Tools')).toHaveText(
+                  '1 sweep'
+                )
+              } else {
+                await expect(
+                  modelingDialog.selection(
+                    operationName === 'split' ? 'Targets' : 'Solids'
+                  )
+                ).toHaveText('2 sweeps')
+              }
+            } finally {
+              await page.keyboard.up('Shift')
+            }
+            await modelingDialog.submit()
+            await scene.settled()
+            await editor.openPane()
+            await editor.scrollToText(operation.code)
+            await editor.expectEditor.toContain(operation.code)
+          })
+
+          await test.step(`Delete ${operationName} operation via feature tree selection`, async () => {
+            await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+            const op = await toolbar.getFeatureTreeOperation(
+              operationName === 'split' ? 'split001' : 'solid001',
+              0
             )
-          } else {
+            await op.click({ button: 'right' })
+            await page.getByTestId('context-menu-delete').click()
+            await scene.settled()
+            await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+
+            // Expect changes in ft and code
+            await editor.expectEditor.not.toContain(operation.code)
             await expect(
-              modelingDialog.selection(
-                operationName === 'split' ? 'Targets' : 'Solids'
-              )
-            ).toHaveText('2 sweeps')
-          }
-          await modelingDialog.submit()
-          await scene.settled()
-          await editor.openPane()
-          await editor.scrollToText(operation.code)
-          await editor.expectEditor.toContain(operation.code)
+              await toolbar.getFeatureTreeOperation(operationName, 0)
+            ).not.toBeVisible()
+          })
         })
-
-        await test.step(`Delete ${operationName} operation via feature tree selection`, async () => {
-          await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-          const op = await toolbar.getFeatureTreeOperation(
-            operationName === 'split' ? 'split001' : 'solid001',
-            0
-          )
-          await op.click({ button: 'right' })
-          await page.getByTestId('context-menu-delete').click()
-          await scene.settled()
-          await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-
-          // Expect changes in ft and code
-          await editor.expectEditor.not.toContain(operation.code)
-          await expect(
-            await toolbar.getFeatureTreeOperation(operationName, 0)
-          ).not.toBeVisible()
-        })
-      })
+      }
     }
   }
 )

@@ -1,5 +1,3 @@
+test_graphics = "CpuEngineRender"
 kcl_versions = ["2.0", "3.0"]
 redact_uuids = true
-
-[test_graphics.EngineRender]
-reason = "CPU/GPU bounds differ because GPU scene bounds can be stale; retain baseline until engine#5178 / engine#5228 is resolved"

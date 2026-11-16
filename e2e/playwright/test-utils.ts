@@ -63,6 +63,7 @@ import {
   PLAYWRIGHT_PROJECT_DIRECTORY,
   TEST_SETTINGS,
   TEST_SETTINGS_KEY,
+  geometryOnlyForTestTags,
   playwrightPluginSettings,
   playwrightProjectLibraries,
 } from '@e2e/playwright/storageStates'
@@ -718,6 +719,16 @@ export async function getUtils(page: Page, test_?: typeof test) {
         await page.getByTestId('create-file-button').click()
         await page.getByTestId('file-rename-field').fill(name)
         await page.keyboard.press('Enter')
+        await expect
+          .poll(() =>
+            page.evaluate((name) => {
+              const current = window.app.project?.executingPath
+              const basename = current ? window.fsZds.basename(current) : ''
+              return basename === name || basename === `${name}.kcl`
+            }, name)
+          )
+          .toBe(true)
+        await expect(page.locator(editorSelector)).toBeEditable()
       })
     },
 
@@ -1095,6 +1106,7 @@ export async function setup(
     reload?: boolean
   } = {}
 ) {
+  const localRendererEnabled = geometryOnlyForTestTags(testInfo?.tags)
   if (!mockApiRoutes && userFeatures.length > 0)
     throw new Error('userFeatures requires mockApiRoutes to be enabled')
 
@@ -1163,6 +1175,14 @@ export async function setup(
       settings: settingsToToml({
         settings: {
           ...TEST_SETTINGS,
+          ...(localRendererEnabled === undefined
+            ? {}
+            : {
+                modeling: {
+                  ...TEST_SETTINGS.modeling,
+                  use_local_renderer: localRendererEnabled,
+                },
+              }),
           plugins: playwrightPluginSettings({
             cloudSyncEnabled,
             zookeeperEnabled: testInfo?.tags.includes('@zookeeper'),
@@ -1425,7 +1445,9 @@ export async function createProject({
 
 export async function goToHomePageFromModeling(page: Page) {
   await page.getByTestId('app-logo').click()
-  await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+  await expect(
+    page.getByRole('heading', { name: 'Project Libraries' })
+  ).toBeVisible()
 }
 
 export function executorInputPath(fileName: string): string {
@@ -1442,6 +1464,32 @@ export function kclSamplesPath(fileName: string): string {
 
 // Restore the camera used when a model is initially loaded.
 export async function resetView(scene: SceneFixture) {
+  if (test.info().tags.includes('@localRenderer')) {
+    // Keep the isometric framing used by the projected selections.
+    // Plane hiding is deferred after execution. Wait for both the current model
+    // and that visibility update so zoom-to-fit frames the model, not the planes.
+    await expect
+      .poll(
+        () =>
+          scene.page.evaluate(() => {
+            const manager = window.app.singletons.kclManager
+            const view = manager.sceneInfra.localRenderer
+            return (
+              !manager.isExecuting &&
+              view?.isLoadedSceneCurrent() &&
+              !view.hasVisibleDefaultPlanes
+            )
+          }),
+        { timeout: 30_000 }
+      )
+      .toBe(true)
+    await scene.page.evaluate(() =>
+      window.app.singletons.kclManager.sceneInfra.camControls.viewIsometric({
+        padding: 0.1,
+      })
+    )
+    return
+  }
   // The camera may already face this way, so no image change is guaranteed.
   await scene.moveCameraTo({ x: 0, y: -128, z: 64 }, undefined, {
     waitForImageChange: false,
