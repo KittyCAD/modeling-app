@@ -583,7 +583,10 @@ fn fill_in_node_paths(
             annotation.code_ref = code_ref_for_range(
                 programs,
                 cached_body_items,
-                annotation.code_ref.definition_range.unwrap_or(annotation.code_ref.range),
+                annotation
+                    .code_ref
+                    .definition_range
+                    .unwrap_or(annotation.code_ref.range),
                 import_code_refs,
             );
         }

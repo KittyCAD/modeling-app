@@ -21,7 +21,10 @@ fn imported_definition_locations_survive_cache_and_clone() {
     assert_eq!(code_ref.range, navigation_range);
     assert_eq!(code_ref.node_path, node_path);
     assert_eq!(code_ref.definition_range, Some(definition_range));
-    assert_eq!(code_ref_for_range(&programs, 0, navigation_range, &imports).definition_range, None);
+    assert_eq!(
+        code_ref_for_range(&programs, 0, navigation_range, &imports).definition_range,
+        None
+    );
 
     let id = ArtifactId::new(Uuid::new_v4());
     let artifact = Artifact::ImportedGeometry(ImportedGeometryArtifact {
