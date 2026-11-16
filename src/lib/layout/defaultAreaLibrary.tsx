@@ -1,5 +1,5 @@
 import { useSignals } from '@preact/signals-react/runtime'
-import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/ClientSideSceneComp'
+import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/lib/sketchStreamDimming'
 import { ConnectionStream } from '@src/components/ConnectionStream'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
 import { EditorPane } from '@src/components/layout/areas/EditorPane'
