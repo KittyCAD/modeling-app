@@ -280,10 +280,13 @@ export default defineFactory({
         cloneProjectTo: {
           isAvailable: ({ library }) => !isApiProjectLibrary(library),
           run: async ({ source, project, requestedProjectTitle }) => {
-            const archive = await collectProjectFilesForUpload({
-              fileOperations: operations(),
-              projectRoot: source.localProjectPath,
-            })
+            const archive =
+              source.files ??
+              (await collectProjectFilesForUpload({
+                fileOperations: operations(),
+                projectRoot: source.localProjectPath,
+                includeIgnored: true,
+              }))
             const created = await cloud().createProject(
               requestedProjectTitle ?? getHomeProjectDisplayName(project),
               archive

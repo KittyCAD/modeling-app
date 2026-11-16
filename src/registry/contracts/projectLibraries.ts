@@ -160,6 +160,7 @@ export interface ProjectLibraryCloneProjectSource {
   localProjectPath: string
   localProjectName: string
   defaultFile?: string
+  files?: readonly { relativePath: string; data: Uint8Array }[]
 }
 export interface ProjectLibraryCloneProjectToInput
   extends ProjectLibraryProjectInput {
