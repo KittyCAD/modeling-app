@@ -12,7 +12,7 @@ import {
 import { FREE_CLOUD_PROJECT_TRAINING_POLICY_URL } from '@src/lib/projectLibraries/trainingDisclosure'
 import { getNextSearchParams, getSortIcon } from '@src/lib/sorting'
 import { getProjectLibraryIconName } from '@src/routes/projectLibraryIcons'
-import type { HTMLProps, ReactNode } from 'react'
+import { type HTMLProps, type ReactNode, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 type ReadWriteProjectState = {
@@ -50,6 +50,13 @@ export function HomeHeader({
   showFreeCloudProjectTrainingDisclosure = false,
   ...rest
 }: HomeHeaderProps) {
+  const [refreshCoolingDown, setRefreshCoolingDown] = useState(false)
+  useEffect(() => {
+    if (!refreshCoolingDown) return
+    const timeout = setTimeout(() => setRefreshCoolingDown(false), 5_000)
+    return () => clearTimeout(timeout)
+  }, [refreshCoolingDown])
+
   const isSortByModified = sort?.includes('modified') || !sort || sort === null
   const libraryDetailsDescription = library
     ? getProjectLibraryDetailsDescription(library)
@@ -94,8 +101,11 @@ export function HomeHeader({
           {onRefresh && (
             <ActionButton
               Element="button"
-              onClick={onRefresh}
-              disabled={isRefreshing}
+              onClick={() => {
+                setRefreshCoolingDown(true)
+                onRefresh()
+              }}
+              disabled={isRefreshing || refreshCoolingDown}
               aria-label="Refresh projects"
               aria-busy={isRefreshing}
               className="text-xs border-primary/10"

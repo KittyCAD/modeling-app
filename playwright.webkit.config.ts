@@ -15,12 +15,20 @@ export default defineConfig({
     ? undefined
     : [
         {
-          command: 'npm start -- --strictPort',
+          command:
+            process.env.E2E_USE_PREBUILT_APP === '1'
+              ? 'npm run start:prod -- --strictPort'
+              : 'npm start -- --strictPort',
+          env: { BROWSER: 'none' },
           url: 'http://localhost:3000',
           reuseExistingServer: !process.env.CI,
         },
         {
-          command: 'node scripts/playwright-webkit-proxy.mjs',
+          command:
+            process.env.E2E_USE_PREBUILT_APP === '1'
+              ? 'npm run start:prod -- --port=5173 --strictPort'
+              : 'node scripts/playwright-webkit-proxy.mjs',
+          env: { BROWSER: 'none' },
           url: 'http://localhost:5173',
           reuseExistingServer: false,
         },
