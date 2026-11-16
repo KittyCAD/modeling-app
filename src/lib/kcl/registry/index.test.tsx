@@ -1,3 +1,4 @@
+import { signal } from '@preact/signals-core'
 import '@src/lib/projectSession/next/testFeature'
 import { contribute, provide, Registry } from 'plankton'
 import editorsExtension from '@src/lib/editors/registry'
@@ -20,6 +21,16 @@ import {
   createTestSettings,
 } from '@src/lib/kcl/testFixtures'
 
+// This suite checks registry/executor ownership. The real machine/native boundary is exercised by machine/host.spec.tsx.
+vi.mock('@src/lib/kcl/machine/host', () => ({
+  createMachineModelingHost: () => ({
+    owner: signal(undefined),
+    error: signal(undefined),
+    enter: async () => {},
+    dispose: async () => {},
+    closeDialog: () => {},
+  }),
+}))
 vi.mock('@src/clientSideScene/localRenderer/LocalWebGPUScene', () => ({
   LocalWebGPUSceneView: () => null,
 }))

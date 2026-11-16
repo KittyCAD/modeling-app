@@ -34,7 +34,7 @@ export interface ModelingViewContext {
 }
 /** The factory retains the machine's mutable ownership and disposal controls. */
 export interface ModelingViewRuntime extends ModelingViewContext {
-  machine?: MachineModelingHost
+  machine?: Pick<MachineModelingHost, 'owner' | 'error'>
 }
 export interface ModelingStatusItem {
   id: string
