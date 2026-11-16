@@ -1,66 +1,7 @@
-import {
-  computed,
-  effect,
-  untracked,
-  type ReadonlySignal,
-} from '@preact/signals-core'
-import type { KclExecutionInput } from '@src/lib/kcl/scene/settingsContract'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { effect, untracked } from '@preact/signals-core'
+import type { SceneExecutionSettings } from '@src/lib/kcl/scene/executionSettings'
+import type { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
-
-/**
- * The native configuration to execute with, plus keys for deciding when settings
- * require another execution. The keys compare contributed values, so replacing
- * a `Setting` instance with an equivalent one does not request execution.
- */
-export interface SceneExecutionSettings {
-  configuration: ReadonlySignal<ReturnType<typeof jsAppSettings>>
-  executeRevision: ReadonlySignal<string>
-  rebuildRevision: ReadonlySignal<string>
-  revision: (geometryOnly: () => boolean) => ReadonlySignal<string>
-}
-
-/**
- * Read effective preferences through `getSettings` and follow the registry's
- * contributed inputs through `declarations`. `configuration` includes all native
- * settings; only the contributed inputs determine the refresh keys.
- */
-export function createSceneExecutionSettings(
-  getSettings: () => SettingsType,
-  declarations: ReadonlySignal<readonly KclExecutionInput[]>
-): SceneExecutionSettings {
-  const configuration = computed(() =>
-    jsAppSettings(getSettings(), { reactive: true })
-  )
-  const inputs = computed(() => {
-    const execute: unknown[] = []
-    const rebuild: unknown[] = []
-    for (const input of declarations.value) {
-      const value = [input.id, input.read(getSettings())]
-      if (input.refresh === 'execute') execute.push(value)
-      else rebuild.push(value)
-    }
-    return {
-      execute: JSON.stringify(execute),
-      rebuild: JSON.stringify(rebuild),
-    }
-  })
-  const executeRevision = computed(() => inputs.value.execute)
-  const rebuildRevision = computed(() => inputs.value.rebuild)
-  return {
-    configuration,
-    executeRevision,
-    rebuildRevision,
-    revision: (geometryOnly: () => boolean) =>
-      computed(() =>
-        JSON.stringify([
-          executeRevision.value,
-          geometryOnly() ? null : rebuildRevision.value,
-        ])
-      ),
-  }
-}
 
 /**
  * Refresh the active, connected legacy scene when a contributed KCL input changes.
@@ -74,7 +15,7 @@ export function createSceneExecutionSettings(
  * disposer prevents queued work from starting; it cannot abort a native operation
  * that has already started.
  */
-export function observeSceneExecutionSettings({
+export function observeLegacySceneExecutionSettings({
   settings,
   active,
   connected,

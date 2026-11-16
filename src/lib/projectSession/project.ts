@@ -1,5 +1,5 @@
-import type { SceneExecutionSettings } from '@src/lib/kcl/scene/settings'
-import { kclExecutionSettingsService } from '@src/lib/kcl/scene/settingsContract'
+import type { SceneExecutionSettings } from '@src/lib/kcl/scene/executionSettings'
+import { kclExecutionSettingsService } from '@src/lib/kcl/scene/executionSettingsContract'
 import {
   computed,
   type ReadonlySignal,

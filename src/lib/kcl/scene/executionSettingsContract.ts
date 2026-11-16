@@ -1,6 +1,6 @@
 import { appendValueSpec, defineService, provide } from '@kittycad/registry'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type { SceneExecutionSettings } from '@src/lib/kcl/scene/settings'
+import type { SceneExecutionSettings } from '@src/lib/kcl/scene/executionSettings'
 
 /**
  * A preference consumed by KCL execution. Extensions contribute these separately

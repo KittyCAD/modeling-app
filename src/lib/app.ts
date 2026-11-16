@@ -1,4 +1,4 @@
-import { kclExecutionSettingsService } from '@src/lib/kcl/scene/settingsContract'
+import { kclExecutionSettingsService } from '@src/lib/kcl/scene/executionSettingsContract'
 import { computed, effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { KclManager } from '@src/lang/KclManager'

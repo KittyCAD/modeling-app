@@ -1,8 +1,8 @@
 import { Registry } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { createSceneExecutionSettings } from '@src/lib/kcl/scene/settings'
-import { kclExecutionInputsValueSpec } from '@src/lib/kcl/scene/settingsContract'
-import { coreKclExecutionInputs } from '@src/lib/kcl/scene/settingsRegistry'
+import { createSceneExecutionSettings } from '@src/lib/kcl/scene/executionSettings'
+import { kclExecutionInputsValueSpec } from '@src/lib/kcl/scene/executionSettingsContract'
+import { coreKclExecutionInputs } from '@src/lib/kcl/scene/executionSettingsRegistry'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 
 /**

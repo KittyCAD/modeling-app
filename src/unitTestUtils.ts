@@ -1,4 +1,4 @@
-import { createTestKclExecutionSettings } from '@src/lib/kcl/scene/settingsTestUtils'
+import { createTestKclExecutionSettings } from '@src/lib/kcl/scene/executionSettingsTestUtils'
 import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import { signal } from '@preact/signals-core'
 import env from '@src/env'
