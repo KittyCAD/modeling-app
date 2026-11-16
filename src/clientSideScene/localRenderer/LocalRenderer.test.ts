@@ -380,7 +380,7 @@ describe('local GLB loading', () => {
         type: 'gltf',
         storage: 'binary',
         presentation: 'compact',
-        tessellation: { accurate: false },
+        tessellation: { mode: 'visual' },
         include_uuids: true,
         extras: ['sketches', 'regions'],
       },

@@ -1301,7 +1301,7 @@ export class LocalRenderer {
           type: 'gltf',
           storage: 'binary',
           presentation: 'compact',
-          tessellation: { accurate: false },
+          tessellation: { mode: 'visual' },
           // Deployed engines still need this flag to link exported geometry to the artifact graph.
           // It also stands in for the `geometry_uuids` extra, which older engines reject.
           include_uuids: true,

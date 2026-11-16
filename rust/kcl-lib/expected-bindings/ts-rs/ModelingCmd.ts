@@ -1950,6 +1950,10 @@ object_id: string, };
  */
 export type FbxExportOptions = { 
 /**
+ * Settings used when generating a mesh from CAD surfaces.
+ */
+tessellation?: TessellationOptions, 
+/**
  * Specifies which kind of FBX will be exported.
  */
 storage: FbxStorage, 
@@ -2045,7 +2049,7 @@ extras: Array<GltfExportExtra>,
 /**
  * Tessellation to use when this export needs to generate a display mesh.
  */
-tessellation?: GltfTessellationOptions, 
+tessellation?: TessellationOptions, 
 /**
  * Named views in the scene.
  */
@@ -2065,15 +2069,6 @@ export type GltfPresentation = "compact" | "pretty";
  * Describes the storage format of a glTF 2.0 scene.
  */
 export type GltfStorage = "binary" | "standard" | "embedded";
-
-/**
- * Controls mesh generation for a single glTF export.
- */
-export type GltfTessellationOptions = { 
-/**
- * Use accurate tessellation (default). Set to false for standard display tessellation.
- */
-accurate: boolean, };
 
 /**
  * Stop dragging the mouse.
@@ -2498,6 +2493,10 @@ split_closed_faces: boolean, };
  * Options for exporting OBJ.
  */
 export type ObjExportOptions = { 
+/**
+ * Settings used when generating a mesh from CAD surfaces.
+ */
+tessellation?: TessellationOptions, 
 /**
  * Co-ordinate system of output data.
  *
@@ -2980,6 +2979,10 @@ color: Color, };
  * Options for exporting PLY.
  */
 export type PlyExportOptions = { 
+/**
+ * Settings used when generating a mesh from CAD surfaces.
+ */
+tessellation?: TessellationOptions, 
 /**
  * Co-ordinate system of output data.
  *
@@ -4112,6 +4115,10 @@ export type StepSchema = "ap203" | "ap214" | "ap242";
  */
 export type StlExportOptions = { 
 /**
+ * Settings used when generating a mesh from CAD surfaces.
+ */
+tessellation?: TessellationOptions, 
+/**
  * Co-ordinate system of output data.
  *
  * Defaults to the [KittyCAD co-ordinate system].
@@ -4285,6 +4292,20 @@ export type TakeSnapshot = {
  * What image format to return.
  */
 format: ImageFormat, };
+
+/**
+ * Selects the purpose of the generated mesh.
+ */
+export type TessellationMode = "visual" | "accurate";
+
+/**
+ * Controls mesh generation for mesh exports.
+ */
+export type TessellationOptions = { 
+/**
+ * Tessellation mode. Defaults to accurate.
+ */
+mode: TessellationMode, };
 
 /**
  * Enable or disable graphics.
