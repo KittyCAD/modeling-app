@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        attempt: [1, 2, 3]
+        workers: [1, 2]
     env:
       E2E_USE_PREBUILT_APP: '1'
     steps:
@@ -55,13 +55,13 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
       - run: npm run playwright install webkit
       - name: Diagnose viewport video
-        run: npm run test:e2e:web:webkit -- viewport-rendering.spec.ts zookeeper-pagination.spec.ts zookeeper.spec.ts --workers=2 --retries=0
+        run: npm run test:e2e:web:webkit -- viewport-rendering.spec.ts zookeeper-pagination.spec.ts zookeeper.spec.ts --workers=${{ matrix.workers }} --repeat-each=3 --retries=0
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TARGET: web
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: viewport-video-diagnostic-${{ matrix.attempt }}
+          name: viewport-video-diagnostic-workers-${{ matrix.workers }}
           path: playwright-report/
           include-hidden-files: true
