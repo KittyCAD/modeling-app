@@ -3,7 +3,6 @@ import { settingsToToml, tomlToSettings } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.afterEach(async ({ page }, testInfo) => {
-  if (testInfo.status === testInfo.expectedStatus) return
   const capture = () => page.evaluate(async () => {
     const video = document.querySelector<HTMLVideoElement>('#video-stream')
     if (!video) return { missingVideo: true }
@@ -23,7 +22,7 @@ test.afterEach(async ({ page }, testInfo) => {
     const incoming: Record<string, unknown>[] = []
     stats?.forEach(stat => {
       if (stat.type === 'inbound-rtp') {
-        incoming.push(Object.fromEntries(['kind', 'bytesReceived', 'framesReceived', 'framesDecoded', 'framesDropped', 'frameWidth', 'frameHeight', 'decoderImplementation'].map(key => [key, stat[key]])))
+        incoming.push({ ...Object.fromEntries(['kind', 'bytesReceived', 'framesReceived', 'framesDecoded', 'framesDropped', 'frameWidth', 'frameHeight', 'decoderImplementation', 'keyFramesDecoded', 'pliCount', 'firCount', 'nackCount', 'packetsLost'].map(key => [key, stat[key]])), codec: stats?.get(stat.codecId) })
       }
     })
     return {
@@ -41,6 +40,8 @@ test.afterEach(async ({ page }, testInfo) => {
       tracks: stream?.getVideoTracks().map(track => ({ muted: track.muted, enabled: track.enabled, readyState: track.readyState })),
       pixel,
       incoming,
+      streamMatches: stream === window.engineCommandManager.connection?.mediaStream,
+      trackMatches: stream?.getVideoTracks()[0] === peer?.getReceivers().find(r => r.track.kind === 'video')?.track,
     }
   })
   const before = await capture()
@@ -48,6 +49,7 @@ test.afterEach(async ({ page }, testInfo) => {
     body: JSON.stringify(before, null, 2),
     contentType: 'application/json',
   })
+  if (testInfo.status === testInfo.expectedStatus) return
   const playResult = await page.evaluate(async () => {
     try {
       return await Promise.race([
@@ -68,6 +70,15 @@ test.afterEach(async ({ page }, testInfo) => {
     body: await page.screenshot(),
     contentType: 'image/png',
   })
+  await page.evaluate(() => {
+    const video = document.querySelector<HTMLVideoElement>('#video-stream')!
+    const stream = window.engineCommandManager.connection?.mediaStream
+    video.srcObject = null
+    video.srcObject = stream ?? null
+    void video.play().catch(() => {})
+  })
+  await page.waitForTimeout(2000)
+  await testInfo.attach('video-after-reattach', { body: JSON.stringify(await capture()), contentType: 'application/json' })
 })
 
 test(
