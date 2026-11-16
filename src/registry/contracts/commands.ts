@@ -1,3 +1,4 @@
+import type { ContextualCommandsService } from '@src/lib/commands/contextual'
 import {
   appendValueSpec,
   defineContract,
@@ -305,6 +306,9 @@ function compareActiveScopeOrder(
 }
 
 export const commandsContract = defineContract({
+  contextualCommandsService: defineService<ContextualCommandsService>(
+    'commands.contextual'
+  ),
   commandScopeService: defineService<CommandScopeService>(
     'command.scope-service'
   ),
@@ -318,6 +322,7 @@ export const commandsContract = defineContract({
 })
 
 export const {
+  contextualCommandsService,
   commandScopeService,
   commandScopesValueSpec,
   commandSystemService,

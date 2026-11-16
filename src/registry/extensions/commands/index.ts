@@ -1,3 +1,4 @@
+import { createContextualCommands } from '@src/lib/commands/contextual'
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
@@ -14,6 +15,7 @@ import {
   COMMAND_PALETTE_OPEN_COMMAND_SCOPE,
   type CommandSystemService,
   commandKey,
+  contextualCommandsService,
   commandScopeService,
   commandSystemService,
   commandsValueSpec,
@@ -34,6 +36,8 @@ type FindAndSelectCommandEvent = Extract<
 
 export const commandsExtension = defineRegistryItemFactory((ctx) => {
   const commandsSignal = ctx.valueSpecs.signal(commandsValueSpec)
+  const contextual = createContextualCommands()
+  let ownedScopes: readonly string[] = []
 
   let commandBarActor: CommandSystemService['actor'] | undefined
   let stopCommandPaletteScopeSync: (() => void) | undefined
@@ -104,24 +108,38 @@ export const commandsExtension = defineRegistryItemFactory((ctx) => {
       commandPaletteScopeSubscription.unsubscribe()
 
     stopCommandsEffect = effect(() => {
-      const nextCommands = commandsSignal.value
+      const source = contextual.active.value
+      const nextCommands = [
+        ...new Map(
+          [...commandsSignal.value, ...(source?.commands.value ?? [])].map(
+            (command) => [commandKey(command), command]
+          )
+        ).values(),
+      ]
+      const nextScopes = source?.scopes.value ?? []
+      untracked(() => {
+        const scopes = ctx.services.optional(commandScopeService)
+        for (const scope of ownedScopes)
+          if (!nextScopes.includes(scope)) scopes?.removeScope(scope)
+        for (const scope of nextScopes)
+          if (!ownedScopes.includes(scope)) scopes?.applyScope(scope)
+        ownedScopes = nextScopes
 
-      if (registeredCommands.length > 0) {
-        commandBarActor?.send({
-          type: 'Remove commands',
-          data: { commands: [...registeredCommands] },
-        })
-      }
-
-      if (nextCommands.length > 0) {
-        commandBarActor?.send({
-          type: 'Add commands',
-          data: { commands: [...nextCommands] },
-        })
-      }
-
-      registeredCommands = nextCommands
-      flushPendingCommandSelections()
+        if (registeredCommands.length > 0) {
+          commandBarActor?.send({
+            type: 'Remove commands',
+            data: { commands: [...registeredCommands] },
+          })
+        }
+        if (nextCommands.length > 0) {
+          commandBarActor?.send({
+            type: 'Add commands',
+            data: { commands: [...nextCommands] },
+          })
+        }
+        registeredCommands = nextCommands
+        flushPendingCommandSelections()
+      })
     })
 
     return commandBarActor
@@ -156,8 +174,14 @@ export const commandsExtension = defineRegistryItemFactory((ctx) => {
 
   return {
     id: 'commands-extension',
-    providesServices: [provideService(commandSystemService, serviceImpl)],
+    providesServices: [
+      provideService(commandSystemService, serviceImpl),
+      provideService(contextualCommandsService, contextual),
+    ],
     dispose: () => {
+      contextual.dispose()
+      for (const scope of ownedScopes)
+        ctx.services.optional(commandScopeService)?.removeScope(scope)
       pendingCommandSelections = []
       stopCommandPaletteScopeSync?.()
       ctx.services

@@ -22,6 +22,7 @@ import {
   SKETCH_COMMAND_SCOPES,
   commandScopeService,
   commandSystemService,
+  contextualCommandsService,
   provideCommand,
 } from '@src/registry/contracts/commands'
 import { getKeymapItemWhen } from '@src/registry/contracts/keymap'
@@ -178,6 +179,90 @@ describe('commands extension', () => {
     expect(onSubmit).toHaveBeenCalledOnce()
 
     registry[Symbol.dispose]()
+  })
+
+  it('routes shared commands to the active view and restores registry defaults when that view retires', () => {
+    const registry = new Registry()
+    const submitted: string[] = []
+    const command = (target: string): Command => ({
+      groupId: 'test',
+      name: 'Run',
+      scopes: GLOBAL_COMMAND_SCOPES,
+      needsReview: false,
+      onSubmit: () => {
+        submitted.push(target)
+      },
+    })
+    const activeScopes = signal<readonly string[]>([])
+    registry.configure([
+      commandsExtension,
+      defineRegistryItem({
+        provides: [
+          provideWasmPromise(Promise.resolve({} as ModuleType)),
+          provideCommand(command('default')),
+        ],
+        providesServices: [
+          provideService(machineManagerService, {
+            manager: new MachineManager(),
+          }),
+          provideService(commandScopeService, {
+            activeScopes,
+            applyScope: (scope) => {
+              activeScopes.value = [...activeScopes.value, scope]
+            },
+            removeScope: (scope) => {
+              activeScopes.value = activeScopes.value.filter(
+                (value) => value !== scope
+              )
+            },
+            getCurrentScopes: () => activeScopes.value,
+            focusScope: () => ({ onFocus: () => {}, onBlur: () => {} }),
+          }),
+        ],
+      }),
+    ])
+    const service = registry.get(commandSystemService)
+    const contextual = registry.get(contextualCommandsService)
+    const firstCommands = signal([command('first')])
+    const firstScopes = signal(['mode-modeling'])
+    const first = contextual.register({
+      commands: firstCommands,
+      scopes: firstScopes,
+    })
+    const second = contextual.register({
+      commands: signal([command('second')]),
+      scopes: signal(['mode-sketchSolve']),
+    })
+    const invoke = () =>
+      service.send({
+        type: 'Find and select command',
+        data: { name: 'Run', groupId: 'test' },
+      })
+    try {
+      invoke()
+      first.activate()
+      invoke()
+      activeScopes.value = [...activeScopes.peek(), 'unrelated']
+      firstCommands.value = [command('updated first')]
+      invoke()
+      second.activate()
+      first.dispose()
+      invoke()
+      expect(activeScopes.peek()).toEqual(['unrelated', 'mode-sketchSolve'])
+      second.dispose()
+      invoke()
+      expect(activeScopes.peek()).toEqual(['unrelated'])
+      expect(submitted).toEqual([
+        'default',
+        'first',
+        'updated first',
+        'second',
+        'default',
+      ])
+      expect(service.actor.getSnapshot().status).toBe('active')
+    } finally {
+      registry[Symbol.dispose]()
+    }
   })
 
   it('syncs the command palette scope with command machine state', () => {
