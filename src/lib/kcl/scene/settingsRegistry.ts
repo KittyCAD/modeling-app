@@ -11,7 +11,10 @@ import {
 } from '@src/lib/kcl/scene/settingsContract'
 import { settingsService } from '@src/registry/contracts/settings'
 
-/** KCL's policy for existing modeling preferences; other consumers can react to the same preferences differently. */
+/**
+ * The preferences that require KCL to execute again. Backface color additionally
+ * requires clearing the streamed scene; local rendering applies it directly.
+ */
 export const coreKclExecutionInputs = defineRegistryItem({
   id: 'kcl.execution-inputs.core',
   provides: [
@@ -47,6 +50,8 @@ const executionSettings = defineRegistryItemFactory(
     providesServices: [
       provideService(
         kclExecutionSettingsService,
+        // The settings service is read when the computed configuration or keys
+        // are consumed, after registry setup permits service resolution.
         createSceneExecutionSettings(
           () => services.get(settingsService).current.value,
           valueSpecs.signal(kclExecutionInputsValueSpec)

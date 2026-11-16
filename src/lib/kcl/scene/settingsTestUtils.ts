@@ -5,7 +5,11 @@ import { kclExecutionInputsValueSpec } from '@src/lib/kcl/scene/settingsContract
 import { coreKclExecutionInputs } from '@src/lib/kcl/scene/settingsRegistry'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 
-/** Resolve the production core declarations for isolated scene fixtures without constructing app services. */
+/**
+ * Use the real core KCL input declarations in scene tests without app services.
+ * Copy them into a standalone signal before disposing this temporary registry;
+ * these fixtures track setting values, but not registry reconfiguration.
+ */
 export function createTestKclExecutionSettings(
   getSettings: () => SettingsType
 ) {
