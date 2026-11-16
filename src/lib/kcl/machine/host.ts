@@ -303,7 +303,8 @@ export async function openMachineModelingOwner(
       context,
       commands,
       deps.userFeatures.has(EXPERIMENTAL_POINT_AND_CLICK_FLAG, false),
-      commandState
+      commandState,
+      (command) => command.machineActor === actor
     )
     rollback.push(dialogs.dispose)
     const interaction: ModelingInteractionSession = {

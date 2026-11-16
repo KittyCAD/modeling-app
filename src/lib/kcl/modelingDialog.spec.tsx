@@ -621,14 +621,32 @@ it('keeps Form/Code and dialog-owned picks while submitting through the machine 
       },
     },
     false,
-    state
+    state,
+    (selected) => selected.onSubmit === submit
   )
   cleanup.push(dialogs.dispose)
+  const sibling = await fixture()
+  const siblingDialogs = bindMachineDialogs(
+    sibling.context,
+    {
+      actor,
+      send: (event) => actor.send(event),
+      useState: () => {
+        throw new Error('No React owner is needed')
+      },
+    },
+    false,
+    state,
+    (selected) => selected.onSubmit !== submit
+  )
+  cleanup.push(siblingDialogs.dispose)
   actor.send({
     type: 'Find and select command',
     data: { name: 'Extrude', groupId: 'modeling' },
   })
   await vi.waitFor(() => expect(dialogs.active.peek()).toBeDefined())
+  expect(siblingDialogs.active.peek()).toBeUndefined()
+  expect(sibling.resource.selection.internalPicking.peek()).toBe(false)
   const dialog = dialogs.active.peek()!
   dialog.save('length', 'height')
   const formMode = dialog.editors.viewState(dialog.instance).peek().selected!.id

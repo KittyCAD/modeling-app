@@ -1,3 +1,4 @@
+import type { Command } from '@src/lib/commandTypes'
 import { computed, effect, type ReadonlySignal } from '@preact/signals-core'
 import { waitFor } from 'xstate'
 import type { CommandSystemService } from '@src/registry/contracts/commands'
@@ -11,12 +12,16 @@ export function bindMachineDialogs(
   experimental: boolean,
   state: ReadonlySignal<
     ReturnType<CommandSystemService['actor']['getSnapshot']>
-  >
+  >,
+  ownsCommand: (command: Command) => boolean
 ) {
   const active = context.tools.active
   const selected = computed(() => {
     const current = state.value
-    return current.matches('Closed') ||
+    const command = current.context.selectedCommand
+    return !command ||
+      !ownsCommand(command) ||
+      current.matches('Closed') ||
       current.context.argumentsToSubmit.nodeToEdit
       ? undefined
       : current.context.selectedCommand
