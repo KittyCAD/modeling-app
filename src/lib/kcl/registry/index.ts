@@ -4,10 +4,6 @@ import {
   keymapService,
   keymapScopesValueSpec,
 } from '@src/registry/contracts/keymap'
-import {
-  createMachineModelingHost,
-  type MachineModelingHost,
-} from '@src/lib/kcl/machine/host'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { MachineManager } from '@src/lib/MachineManager'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
@@ -42,7 +38,8 @@ import {
   executorsService,
 } from '@src/lib/executors/registry/contract'
 import { createKclExecution } from '@src/lib/kcl/executor'
-import { KclScene } from '@src/lib/kcl/KclScene'
+import { KclSceneLoader as KclScene } from '@src/lib/kcl/KclSceneLoader'
+import { deferMachineHost } from '@src/lib/kcl/machine/deferred'
 import { openKclScene } from '@src/lib/kcl/scene'
 import { createKclSession } from '@src/lib/kcl/session'
 import { createScenePresentationPreferences } from '@src/lib/kcl/presentationPreferences'
@@ -153,7 +150,7 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
             measurement.close()
             physicalAnalysis.close()
           })
-          let machine: MachineModelingHost
+          let machine: ReturnType<typeof deferMachineHost>
           const context: ModelingViewContext = {
             selection: createActiveSelection(
               () => context,
@@ -163,11 +160,15 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
               () => context,
               valueSpecs.signal(modelingInteractionsValueSpec),
               valueSpecs.signal(modelingInteractionViewsValueSpec),
-              (id) => machine.enter(id)
+              (id) => machine.use((host) => host.enter(id))
             ),
             tools: {
               error: signal(undefined),
-              close: () => machine?.closeDialog(),
+              close: () => {
+                void machine
+                  ?.use((host) => host.closeDialog())
+                  .catch(reportRejection)
+              },
             },
             settings: services.get(settingsService),
             executor,
@@ -178,21 +179,26 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
             physicalAnalysis,
             statusItems: valueSpecs.signal(modelingStatusItemsValueSpec),
           }
-          machine = createMachineModelingHost(() => context, {
-            keymapTree: services.get(keymapService).keymap,
-            keymapScopes: valueSpecs.signal(keymapScopesValueSpec),
-            fileOperations: services.get(fileOperationsService),
-            userFeatures: services.get(userFeaturesService),
-            machineManager:
-              services.optional(machineManagerService)?.manager ??
-              new MachineManager(),
-            // TODO: Supply project export metadata through an explicit next-project adapter.
-            // The native model and files are already captured by this view's executor.
-            project: signal(undefined),
-            projectPath: signal(
-              services.optional(projectSessionService)?.currentProject.peek()
-                ?.contents.path ?? ''
-            ),
+          machine = deferMachineHost(async () => {
+            const { createMachineModelingHost } = await import(
+              '@src/lib/kcl/machine/host'
+            )
+            return createMachineModelingHost(() => context, {
+              keymapTree: services.get(keymapService).keymap,
+              keymapScopes: valueSpecs.signal(keymapScopesValueSpec),
+              fileOperations: services.get(fileOperationsService),
+              userFeatures: services.get(userFeaturesService),
+              machineManager:
+                services.optional(machineManagerService)?.manager ??
+                new MachineManager(),
+              // TODO: Supply project export metadata through an explicit next-project adapter.
+              // The native model and files are already captured by this view's executor.
+              project: signal(undefined),
+              projectPath: signal(
+                services.optional(projectSessionService)?.currentProject.peek()
+                  ?.contents.path ?? ''
+              ),
+            })
           })
           context.machine = machine
           onDispose(() => {

@@ -1,3 +1,16 @@
+import {
+  keymapService,
+  createKeymapTree,
+  type KeymapService,
+} from '@src/registry/contracts/keymap'
+import {
+  userFeaturesService,
+  type UserFeaturesRegistryService,
+} from '@src/registry/contracts/userFeatures'
+import {
+  fileOperationsService,
+  type FileOperationsRegistryService,
+} from '@src/registry/contracts/fileOperations'
 import '@src/lib/projectSession/next/testFeature'
 import {
   defineRegistryItem,
@@ -28,6 +41,16 @@ import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { act, render } from '@testing-library/react'
 import { afterEach, beforeAll, expect, it, vi } from 'vitest'
 
+// This suite checks registry/executor ownership. The real machine/native boundary is exercised by machine/host.spec.tsx.
+vi.mock('@src/lib/kcl/machine/host', () => ({
+  createMachineModelingHost: () => ({
+    owner: signal(undefined),
+    error: signal(undefined),
+    enter: async () => {},
+    dispose: async () => {},
+    closeDialog: () => {},
+  }),
+}))
 vi.mock('@src/clientSideScene/localRenderer/LocalWebGPUScene', () => ({
   LocalWebGPUSceneView: () => null,
 }))
@@ -81,6 +104,16 @@ it.each([false, true])(
       kclExtension,
       defineRegistryItem({
         providesServices: [
+          provideService(keymapService, {
+            keymap: signal(createKeymapTree([])),
+          } as KeymapService),
+          provideService(userFeaturesService, {
+            has: () => false,
+          } as unknown as UserFeaturesRegistryService),
+          provideService(
+            fileOperationsService,
+            {} as FileOperationsRegistryService
+          ),
           provideService(settingsService, {
             current: signal(settings),
             actor: {},
