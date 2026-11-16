@@ -10,7 +10,7 @@ import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { getDimensions } from '@src/lib/engineConnection/utils'
 import { UnsupportedEngineVideoCodecError } from '@src/lib/engineConnection/videoCodecSupport'
-import { connectScene } from '@src/lib/scene/connection'
+import { connectScene } from '@src/lib/kcl/scene/connection'
 import {
   reapplyActiveViewAfterReconnect,
   stopTrackingActiveViewCamera,

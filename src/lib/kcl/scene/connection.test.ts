@@ -3,7 +3,7 @@ import {
   connectScene,
   type SceneConnectionManager,
   type ScenePresentation,
-} from '@src/lib/scene/connection'
+} from '@src/lib/kcl/scene/connection'
 import {
   preflightEngineVideoCodecSupport,
   UnsupportedEngineVideoCodecError,

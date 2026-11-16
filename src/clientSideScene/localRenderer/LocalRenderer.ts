@@ -30,7 +30,7 @@ import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
 import {
   SceneExecutionEvents,
   type SceneExecutionDoneDetail,
-} from '@src/lib/scene/execution'
+} from '@src/lib/kcl/scene/execution'
 import { artifactToEntityRef } from '@src/lang/queryAst'
 import { DprDetector } from '@src/lib/DprDetector'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
