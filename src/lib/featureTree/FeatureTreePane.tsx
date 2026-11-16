@@ -1127,12 +1127,9 @@ const OperationItem = ({
   const isNamedView = item.type === 'StdLibCall' && item.name === 'view::named'
 
   const variableName = useMemo(() => {
-    // Module-owned ModuleInstance operations have a nodePath relative to their
-    // own module's AST, not the currently open file.  Looking up the import
-    // alias in the wrong AST would return a bogus result (e.g. the parent
-    // module's alias).  Other operation types (VariableDeclaration, etc.)
-    // derive their name from the operation data directly, so they're safe.
-    if (isModuleOwned && item.type === 'ModuleInstance') return undefined
+    // Imported node paths belong to their definition file, not the active AST.
+    if (isModuleOwned)
+      return item.type === 'VariableDeclaration' ? item.name : undefined
     return getOperationVariableName(item, ast, wasmInstance)
   }, [item, ast, wasmInstance, isModuleOwned])
 

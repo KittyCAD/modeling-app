@@ -422,7 +422,6 @@ describe('Layout utils', () => {
       const legacyTree: Layout = {
         id: 'feature-tree',
         label: 'Feature Tree',
-        icon: 'model',
         type: LayoutType.Splits,
         orientation: 'block',
         sizes: [70, 30],
@@ -460,7 +459,13 @@ describe('Layout utils', () => {
       })
       expect(migrated).toMatchObject({
         version: 'v5',
-        layout: { sizes: [60, 40], children: [featureTreePaneConfig, sibling] },
+        layout: {
+          sizes: [60, 40],
+          children: [
+            { ...legacyTree, sizes: [100], children: [legacyTree.children[0]] },
+            sibling,
+          ],
+        },
       })
     })
 
