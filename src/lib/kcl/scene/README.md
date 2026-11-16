@@ -29,20 +29,30 @@ they are not requirements for zoo-web-view's public API.
 
 ## Shared execution settings
 
-Settings that affect native execution declare their behavior on the existing
-`Setting` definition:
+KCL owns the refresh policy through the `kclExecutionInputsValueSpec` registry
+contribution point. Generic `Setting` definitions describe preferences without
+knowing which executors consume them. A KCL extension contributes a stable input
+ID, a reader of its effective value, and the required refresh:
 
 ```ts
-sceneExecution: 'execute' // Re-execute with the existing native cache.
-sceneExecution: 'rebuild-streamed' // Clear the streamed scene/cache, then execute.
+provideKclExecutionInput({
+  id: 'modeling.highlightEdges',
+  read: (settings) => settings.modeling.highlightEdges.currentSignal.value,
+  refresh: 'execute', // Use the existing native cache.
+})
 ```
 
-`createSceneExecutionSettings` discovers these declarations across all setting
-categories. It supplies stable revisions of effective values and a reactive
-native configuration using the existing `jsAppSettings` conversion. Project
-overrides and replacement Setting instances retain their normal precedence;
-unchanged effective inputs do not invalidate execution. Adding another opted-in
-setting requires no consumer-specific dependency list.
+`rebuild-streamed` clears the streamed scene/cache before executing; local
+rendering handles that preference without invalidating native execution. The
+core KCL input contributions remain installed when project-shell editing is
+disabled, so the legacy file route uses the same policy.
+
+`createSceneExecutionSettings` requires the registry's live contribution signal.
+Adding or removing a contribution updates every consumer without another
+consumer-specific dependency list. It supplies stable revisions of effective
+values and a reactive native configuration using the existing `jsAppSettings`
+conversion. Project overrides and replacement Setting instances retain their
+normal precedence; unchanged effective inputs do not invalidate execution.
 
 `observeSceneExecutionSettings` contains the refresh and cache-rebuild logic
 extracted from KclManager. The legacy adapter supplies scene activity, connection

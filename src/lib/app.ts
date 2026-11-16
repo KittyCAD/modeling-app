@@ -1,3 +1,4 @@
+import { kclExecutionSettingsService } from '@src/lib/kcl/scene/settingsContract'
 import { computed, effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { KclManager } from '@src/lang/KclManager'
@@ -634,6 +635,7 @@ export class App implements AppSubsystems {
       modelingReady: () => this.project?.modelingReady ?? Promise.resolve(),
       projectSession: this.projectSession,
       settings: this.settings.actor,
+      kclExecutionSettings: this.registry.get(kclExecutionSettingsService),
       wasmInstancePromise: this.wasmPromise,
       commandBar: this.commands.actor,
       projectPath: signal(''),

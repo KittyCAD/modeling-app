@@ -207,7 +207,6 @@ function createCoreSettings() {
        * The default unit to use in modeling dimensions
        */
       defaultUnit: new Setting<BaseUnit>({
-        sceneExecution: 'execute',
         defaultValue: DEFAULT_DEFAULT_LENGTH_UNIT,
         description:
           'Set the default length unit setting value to give any new files.',
@@ -281,7 +280,6 @@ function createCoreSettings() {
         },
       }),
       backfaceColor: new Setting<string>({
-        sceneExecution: 'rebuild-streamed',
         defaultValue: DEFAULT_BACKFACE_COLOR,
         description: 'Default backface color for surfaces.',
         hideOnLevel: 'project',
@@ -473,7 +471,6 @@ function createCoreSettings() {
        * Whether to highlight edges of 3D objects
        */
       highlightEdges: new Setting<boolean>({
-        sceneExecution: 'execute',
         defaultValue: true,
         description: 'Whether to highlight edges of 3D objects.',
         validate: (v) => typeof v === 'boolean',
@@ -486,7 +483,6 @@ function createCoreSettings() {
        * Whether to show a scale grid in the 3D modeling view
        */
       showScaleGrid: new Setting<boolean>({
-        sceneExecution: 'execute',
         defaultValue: false,
         description: 'Whether to show a scale grid in the 3D modeling view.',
         validate: (v) => typeof v === 'boolean',
@@ -504,7 +500,6 @@ function createCoreSettings() {
         },
       }),
       fixedSizeGrid: new Setting<boolean>({
-        sceneExecution: 'execute',
         defaultValue: true,
         description:
           'When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.',

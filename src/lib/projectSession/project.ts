@@ -1,3 +1,5 @@
+import type { SceneExecutionSettings } from '@src/lib/kcl/scene/settings'
+import { kclExecutionSettingsService } from '@src/lib/kcl/scene/settingsContract'
 import {
   computed,
   type ReadonlySignal,
@@ -46,6 +48,7 @@ export interface ProjectSystemDeps {
   >
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
+  kclExecutionSettings: SceneExecutionSettings
   commandBar: CommandBarActorType
   projectPath: Signal<string>
   engineCommandManager: ConnectionManager
@@ -187,6 +190,7 @@ export class ZDSProject {
       wasmInstancePromise: this.app.wasmPromise,
       commandBar: this.app.commands.actor,
       settings: this.app.settings.actor,
+      kclExecutionSettings: this.app.registry.get(kclExecutionSettingsService),
       engineCommandManager: this.app.engineCommandManager,
       rustContext: this.app.rustContext,
       userFeatures: this.app.userFeatures,
