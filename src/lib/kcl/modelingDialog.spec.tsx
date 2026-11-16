@@ -15,7 +15,6 @@ import { createExecutorOutput } from '@src/lib/executors/output'
 import { modelingTestContext } from '@src/lib/kcl/testContext'
 import { createModelingDialog } from '@src/lib/kcl/modelingDialog'
 import { extrudeTool, loftTool } from '@src/lib/kcl/stdlibTools'
-import { defineStdlibModelingTool } from '@src/lib/kcl/toolDefinitions'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import ModelingToolDialogView from '@src/lib/kcl/ModelingToolDialog'
 vi.mock('@src/clientSideScene/localRenderer/LocalWebGPUScene', () => ({
