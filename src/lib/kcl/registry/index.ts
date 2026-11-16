@@ -1,4 +1,4 @@
-import { kclExecutionInputsValueSpec } from '@src/lib/kcl/scene/executionSettingsContract'
+import { kclExecutionSettingsService } from '@src/lib/kcl/scene/executionSettingsContract'
 import { kclExecutionSettingsRegistryItem } from '@src/lib/kcl/scene/executionSettingsRegistry'
 import { kcl } from '@kittycad/codemirror-lang-kcl'
 import {
@@ -24,7 +24,6 @@ import { createKclExecution } from '@src/lib/kcl/executor'
 import { KclScene } from '@src/lib/kcl/KclScene'
 import { openKclScene } from '@src/lib/kcl/scene'
 import { createKclSession } from '@src/lib/kcl/session'
-import { createSceneExecutionSettings } from '@src/lib/kcl/scene/executionSettings'
 import { createScenePresentationPreferences } from '@src/lib/kcl/presentationPreferences'
 import projectSourcesExtension from '@src/lib/projectSession/registry/sources'
 import { projectSourcesService } from '@src/lib/projectSession/next/contract'
@@ -43,18 +42,21 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
   let fallbackWasm: ReturnType<typeof initialiseWasm> | undefined
   const getWasm = () =>
     valueSpecs.get(wasmPromiseValueSpec) ?? (fallbackWasm ??= initialiseWasm())
-  const nativeSettings = createSceneExecutionSettings(
-    () => services.get(settingsService).current.value,
-    valueSpecs.signal(kclExecutionInputsValueSpec)
-  )
-  const settingsRevision = nativeSettings.revision(
-    () =>
-      services.get(settingsService).current.value.modeling.useLocalRenderer
-        .currentSignal.value
+  // Resolve the shared policy only when execution inputs are observed, after
+  // registry setup. Keep the selected revision signal until its service changes.
+  const settingsRevision = computed(() =>
+    services
+      .get(kclExecutionSettingsService)
+      .revision(
+        () =>
+          services.get(settingsService).current.value.modeling.useLocalRenderer
+            .currentSignal.value
+      )
   )
   const execution = createKclExecution(
     (executor) => {
       const settings = services.get(settingsService)
+      const nativeSettings = services.get(kclExecutionSettingsService)
       const preferences = createScenePresentationPreferences(
         () => settings.current.value
       )
@@ -105,7 +107,7 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
     },
     computed(() => ({
       sources: services.get(projectSourcesService).revision.value,
-      settings: settingsRevision.value,
+      settings: settingsRevision.value.value,
     }))
   )
   return {
