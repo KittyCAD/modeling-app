@@ -1,3 +1,4 @@
+import type { ContextualCommandsService } from '@src/lib/commands/contextual'
 import { inputs, observeService, observe } from '@src/registry/inputs'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { Command } from '@src/lib/commandTypes'
@@ -299,6 +300,7 @@ function compareActiveScopeOrder(
     : a.scope.localeCompare(b.scope)
 }
 export const commandsContract = contract({
+  contextualCommandsService: service<ContextualCommandsService>('commands.contextual'),
   commandScopeService: service<CommandScopeService>('command.scope-service'),
   commandScopesFacet: new Facet<CommandScope, CommandScope[]>(
     'commands.scopes',
@@ -312,7 +314,7 @@ export const commandsContract = contract({
 })
 
 export const {
-  commandScopeService,
+  contextualCommandsService,  commandScopeService,
   commandScopesFacet,
   commandSystemService,
   commandsFacet,
@@ -344,6 +346,7 @@ function compareCommandScopeDisplayOrder(a: CommandScope, b: CommandScope) {
 }
 
 export const observations = inputs({
+  contextualCommandsService: observeService(contextualCommandsService),
   commandsFacet: observe(commandsFacet),
   commandScopeService: observeService(commandScopeService),
   commandSystemService: observeService(commandSystemService),
