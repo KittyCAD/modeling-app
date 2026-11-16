@@ -62,22 +62,22 @@ export function ZookeeperAttachment({
           onClose={() => setOpen(false)}
           className="fixed inset-0 z-50 overflow-y-auto p-4"
         >
-          <Dialog.Overlay className="fixed inset-0 bg-chalkboard-10/80 dark:bg-chalkboard-110/60" />
+          <Dialog.Overlay className="fixed inset-0 bg-1/80" />
           <div className="relative flex min-h-full items-center justify-center">
-            <Dialog.Panel className="flex max-h-[90vh] w-full max-w-5xl flex-col rounded border border-chalkboard-30 bg-chalkboard-10 shadow-lg dark:border-chalkboard-70 dark:bg-chalkboard-100">
-              <div className="flex items-center justify-between gap-4 border-b border-chalkboard-20 p-4 dark:border-chalkboard-70">
+            <Dialog.Panel className="flex max-h-[90vh] w-full max-w-5xl flex-col rounded border b-4 bg-1 shadow-lg">
+              <div className="flex items-center justify-between gap-4 border-b b-3 p-4">
                 <Dialog.Title as="h2" className="text-lg font-bold">
                   {isImage ? 'Image preview' : 'Text preview'}
                 </Dialog.Title>
                 <button
                   type="button"
-                  className="group m-0 flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border-none bg-transparent p-0 hover:bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-appForeground"
+                  className="group m-0 flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border-none bg-transparent p-0 hover:bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-color-4"
                   aria-label="Close preview"
                   onClick={() => setOpen(false)}
                 >
                   <ActionIcon
                     icon="close"
-                    className="!self-center rounded-sm text-chalkboard-80 dark:text-chalkboard-20 group-hover:brightness-110"
+                    className="!self-center rounded-sm text-2 group-hover:brightness-110"
                   />
                 </button>
               </div>
@@ -127,6 +127,7 @@ function AttachmentContents({
     file: AttachmentFile
     content?: string
     error?: string
+    actualSize?: boolean
   }>()
 
   useEffect(() => {
@@ -169,18 +170,40 @@ function AttachmentContents({
     return <p role="alert">{preview.error}</p>
   }
   return isImage ? (
-    <img
-      src={preview.content}
-      alt="Attachment preview"
-      className="mx-auto max-h-[70vh] max-w-full object-contain"
-      onError={() =>
-        setPreview((current) =>
-          current === preview
-            ? { file, error: 'Could not preview this attachment.' }
-            : current
-        )
-      }
-    />
+    <div className="flex min-w-0 flex-col gap-3">
+      <button
+        type="button"
+        className="self-end rounded border b-4 px-3 py-1 text-sm hover:bg-2"
+        aria-pressed={Boolean(preview.actualSize)}
+        onClick={() =>
+          setPreview((current) =>
+            current === preview
+              ? { ...current, actualSize: !current.actualSize }
+              : current
+          )
+        }
+      >
+        {preview.actualSize ? 'Fit to window' : 'View actual size'}
+      </button>
+      <div className="max-h-[70vh] overflow-auto">
+        <img
+          src={preview.content}
+          alt="Attachment preview"
+          className={
+            preview.actualSize
+              ? 'mx-auto max-w-none'
+              : 'mx-auto max-h-[70vh] max-w-full object-contain'
+          }
+          onError={() =>
+            setPreview((current) =>
+              current === preview
+                ? { file, error: 'Could not preview this attachment.' }
+                : current
+            )
+          }
+        />
+      </div>
+    </div>
   ) : (
     <pre className="m-0 whitespace-pre-wrap break-words font-mono text-sm">
       {preview.content}

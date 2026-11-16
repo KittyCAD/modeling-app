@@ -126,6 +126,41 @@ describe('attachment preview dialogs', () => {
     expect(revokeObjectURL).toHaveBeenCalledWith('blob:preview')
   })
 
+  test('can switch between fitting an image and viewing its actual size', () => {
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:preview')
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
+    const file = new File(['image'], 'snapshot.png', { type: 'image/png' })
+    render(
+      <ZookeeperAttachment file={file} className="">
+        {file.name}
+      </ZookeeperAttachment>
+    )
+
+    const trigger = screen.getByRole('button', { name: file.name })
+    fireEvent.click(trigger)
+    const dialog = screen.getByRole('dialog', { name: 'Image preview' })
+    const zoom = within(dialog).getByRole('button', {
+      name: 'View actual size',
+    })
+    expect(zoom).toHaveAttribute('aria-pressed', 'false')
+    fireEvent.click(zoom)
+    expect(
+      within(dialog).getByRole('button', { name: 'Fit to window' })
+    ).toHaveAttribute('aria-pressed', 'true')
+    fireEvent.click(zoom)
+    expect(zoom).toHaveAccessibleName('View actual size')
+    expect(zoom).toHaveAttribute('aria-pressed', 'false')
+
+    fireEvent.click(zoom)
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: 'Close preview' })
+    )
+    fireEvent.click(trigger)
+    expect(
+      screen.getByRole('button', { name: 'View actual size' })
+    ).toHaveAttribute('aria-pressed', 'false')
+  })
+
   test('ignores a text read that finishes after the selected file changes', async () => {
     let finishRead: (value: ArrayBuffer) => void = () => {}
     const first = new File(['old'], 'first.txt', { type: 'text/plain' })
