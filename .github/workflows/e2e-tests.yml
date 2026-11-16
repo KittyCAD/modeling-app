@@ -6,7 +6,7 @@ permissions:
   actions: read
 jobs:
   viewport-diagnostic:
-    runs-on: namespace-profile-macos-8-cores
+    runs-on: macos-15
     timeout-minutes: 20
     strategy:
       fail-fast: false
