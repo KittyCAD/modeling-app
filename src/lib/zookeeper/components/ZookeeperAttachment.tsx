@@ -127,7 +127,6 @@ function AttachmentContents({
     file: AttachmentFile
     content?: string
     error?: string
-    actualSize?: boolean
   }>()
 
   useEffect(() => {
@@ -170,40 +169,18 @@ function AttachmentContents({
     return <p role="alert">{preview.error}</p>
   }
   return isImage ? (
-    <div className="flex min-w-0 flex-col gap-3">
-      <button
-        type="button"
-        className="self-end rounded border b-4 px-3 py-1 text-sm hover:bg-2"
-        aria-pressed={Boolean(preview.actualSize)}
-        onClick={() =>
-          setPreview((current) =>
-            current === preview
-              ? { ...current, actualSize: !current.actualSize }
-              : current
-          )
-        }
-      >
-        {preview.actualSize ? 'Fit to window' : 'View actual size'}
-      </button>
-      <div className="max-h-[70vh] overflow-auto">
-        <img
-          src={preview.content}
-          alt="Attachment preview"
-          className={
-            preview.actualSize
-              ? 'mx-auto max-w-none'
-              : 'mx-auto max-h-[70vh] max-w-full object-contain'
-          }
-          onError={() =>
-            setPreview((current) =>
-              current === preview
-                ? { file, error: 'Could not preview this attachment.' }
-                : current
-            )
-          }
-        />
-      </div>
-    </div>
+    <img
+      src={preview.content}
+      alt="Attachment preview"
+      className="mx-auto max-h-[70vh] max-w-full object-contain"
+      onError={() =>
+        setPreview((current) =>
+          current === preview
+            ? { file, error: 'Could not preview this attachment.' }
+            : current
+        )
+      }
+    />
   ) : (
     <pre className="m-0 whitespace-pre-wrap break-words font-mono text-sm">
       {preview.content}
