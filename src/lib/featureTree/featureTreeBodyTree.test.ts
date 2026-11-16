@@ -62,6 +62,22 @@ function bodies(...artifacts: BodyArtifact[]) {
 }
 
 describe('body feature hierarchy', () => {
+  it('keeps body identities while live operations replay against the previous graph', () => {
+    const feature = call(20)
+    const body = sweep('body', 20)
+    const artifacts = graph(body)
+    const liveBodies = bodies(body)
+    const completed = [feature]
+    const key = buildBodyOperationTree(completed, liveBodies, artifacts)
+      .branches[0].expansionKey
+    for (const partial of [[], [call(25)]]) {
+      expect(
+        buildBodyOperationTree(partial, liveBodies, artifacts, completed)
+          .branches[0].expansionKey
+      ).toBe(key)
+    }
+  })
+
   it('includes supporting planes without collecting other sketches on the same plane', () => {
     const offset = { ...call(10), name: 'offsetPlane' }
     const unused = { ...call(80), name: 'offsetPlane' }

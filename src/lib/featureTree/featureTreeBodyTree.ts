@@ -73,12 +73,13 @@ function inputIds(operation: Operation): string[] {
 export function buildBodyOperationTree(
   nodes: OperationTreeNode[],
   bodies: Map<string, BodyArtifact>,
-  graph: ArtifactGraph
+  graph: ArtifactGraph,
+  identityNodes: OperationTreeNode[] = nodes
 ) {
   const operations: Operation[] = []
   const modules = new Set([0])
   const importOwners = new Map<string, number>()
-  function index(items: OperationTreeNode[]) {
+  function index(items: OperationTreeNode[], collected = operations) {
     for (const node of items) {
       if (isOperationTreeBranch(node)) {
         modules.add(node.parent.moduleId)
@@ -86,11 +87,24 @@ export function buildBodyOperationTree(
           node.parent.sourceRange.join(','),
           node.parent.moduleId
         )
-        index(node.children)
-      } else operations.push(...(isArray(node) ? node : [node]))
+        index(node.children, collected)
+      } else collected.push(...(isArray(node) ? node : [node]))
     }
   }
   index(nodes)
+  const identityOperations = identityNodes === nodes ? operations : []
+  if (identityNodes !== nodes) index(identityNodes, identityOperations)
+  const identityAtRange = new Map(
+    identityOperations.flatMap((operation) =>
+      'sourceRange' in operation
+        ? [[operation.sourceRange.join(','), operation] as const]
+        : []
+    )
+  )
+  const identityProducer = (artifact: Artifact) => {
+    const range = definitionRange(artifact)
+    return range ? identityAtRange.get(range.join(',')) : undefined
+  }
   const order = new Map(
     operations.map((operation, index) => [operation, index])
   )
@@ -295,14 +309,15 @@ export function buildBodyOperationTree(
         importOwners.get(artifact.codeRef.range.join(',')) ??
         range?.[2] ??
         0
-      const creation = producer(artifact)
+      // Live operations can be incomplete or shifted while this graph is still old.
+      const creation = identityProducer(artifact)
       // Include the specific input profile and output slot for multi-body calls.
       // These are source identities, independent of graph order and engine UUIDs.
       const profile =
         artifact.type === 'sweep' && artifact.pathId
           ? graph.get(artifact.pathId)
           : undefined
-      const profileOperation = profile && producer(profile)
+      const profileOperation = profile && identityProducer(profile)
       const expansionKey = JSON.stringify([
         owner,
         creation ? getFeatureKey(creation) : artifact.codeRef.nodePath,

@@ -289,15 +289,21 @@ export const FeatureTreePaneContents = memo(() => {
     [operationsByModule]
   )
   const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
-  const artifactGraph = kclManager.execStateSignal.value.artifactGraph
+  const execState = kclManager.execStateSignal.value
+  const artifactGraph = execState.artifactGraph
+  const identityOperations = useMemo(
+    () => buildOperationTree(execState.operations, ROOT_MODULE_ID),
+    [execState.operations]
+  )
   const bodyTree = useMemo(
     () =>
       buildBodyOperationTree(
         operationList,
         getBodiesFromArtifactGraph(artifactGraph),
-        artifactGraph
+        artifactGraph,
+        identityOperations
       ),
-    [operationList, artifactGraph]
+    [operationList, artifactGraph, identityOperations]
   )
 
   const liveLatestOperationKey = kclManager.liveLatestOperationKey
