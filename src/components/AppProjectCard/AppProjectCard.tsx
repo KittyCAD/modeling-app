@@ -661,11 +661,19 @@ function AppProjectCard({
         if (!canOpen || isBusy) return
         setIsOpening(true)
         void (async () => {
-          if (projectShellEnabled && e.shiftKey && project.localProjectPath) {
-            await navigate(
-              `${PATHS.LOCAL}/${encodeURIComponent(project.localProjectPath)}`
-            )
-            return
+          if (projectShellEnabled && e.shiftKey) {
+            if (project.localProjectPath) {
+              await navigate(
+                `${PATHS.LOCAL}/${encodeURIComponent(project.localProjectPath)}`
+              )
+              return
+            }
+            if (project.remoteProjectId) {
+              await navigate(
+                `${PATHS.PROJECT}/${encodeURIComponent(project.remoteProjectId)}`
+              )
+              return
+            }
           }
           const result = await projectActions.open(project)
           if (result?.defaultFile) {
@@ -686,8 +694,10 @@ function AppProjectCard({
           to={openHref}
           aria-disabled={!canOpen || isBusy}
           title={
-            projectShellEnabled && canOpen && project.localProjectPath
-              ? 'Shift-click to open without an editor'
+            projectShellEnabled &&
+            canOpen &&
+            (project.localProjectPath || project.remoteProjectId)
+              ? 'Shift-click to open in the new project shell'
               : undefined
           }
         >

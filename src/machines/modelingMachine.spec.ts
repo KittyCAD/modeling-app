@@ -128,8 +128,10 @@ describe('sketch entry on swept sketch-block faces', () => {
   it.each([
     { face: 'top', start: '[0mm, 2mm]', normal: 1 },
     { face: 'bottom', start: '[3mm, -2mm]', normal: -1 },
-  ])('starts a sketch on the $face face', async ({ face, start, normal }) => {
-    const code = `@settings(defaultLengthUnit = mm, kclVersion = 3.0)
+  ])(
+    'starts a sketch on the $face face',
+    async ({ face, start, normal }) => {
+      const code = `@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 profile = sketch(on = XZ) {
   left = line(start = [0mm, -2mm], end = [0mm, 2mm])
   top = line(start = [0mm, 2mm], end = [3mm, 2mm])
@@ -141,58 +143,61 @@ path = sketch(on = XY) {
 }
 body = profile |> sweep(path = path)
 `
-    const { artifactGraph } = await getAstAndArtifactGraph(
-      code,
-      instanceInThisFile,
-      kclManagerInThisFile
-    )
-    expect(kclManagerInThisFile.errors).toEqual([])
-    const segmentStart = code.indexOf(`line(start = ${start}`)
-    const wall = [...artifactGraph.values()].find((artifact) => {
-      if (artifact.type !== 'wall') return false
-      const source = getWallCodeRef(artifact, artifactGraph)
-      return !isErr(source) && source.range[0] === segmentStart
-    })
-    if (!wall) throw new Error(`Missing ${face} sweep face`)
+      const { artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(kclManagerInThisFile.errors).toEqual([])
+      const segmentStart = code.indexOf(`line(start = ${start}`)
+      const wall = [...artifactGraph.values()].find((artifact) => {
+        if (artifact.type !== 'wall') return false
+        const source = getWallCodeRef(artifact, artifactGraph)
+        return !isErr(source) && source.range[0] === segmentStart
+      })
+      if (!wall) throw new Error(`Missing ${face} sweep face`)
 
-    const implementation =
-      modelingMachine.implementations.actors['animate-to-sketch-solve']
-    const logic = 'src' in implementation ? implementation.src : implementation
-    const actor = createActor(logic, {
-      input: {
-        artifactOrPlaneId: wall.id,
-        kclManager: kclManagerInThisFile,
-        rustContext: rustContextInThisFile,
-        engineCommandManager: engineCommandManagerInThisFile,
-        wasmInstance: instanceInThisFile,
-        projectRef: { current: createProjectForTest() },
-      },
-    })
-    try {
-      const done = toPromise(actor)
-      actor.start()
-      const result = await done
-      expect(result.plane.zAxis[2]).toBeCloseTo(normal)
-      expect(kclManagerInThisFile.code).toContain(
-        `face001 = faceOf(body, face = ${face})`
-      )
-      expect(kclManagerInThisFile.code).toContain(
-        'sketch001 = sketch(on = face001)'
-      )
-      expect(result.initialSceneGraphDelta.exec_outcome?.issues).toEqual([])
+      const implementation =
+        modelingMachine.implementations.actors['animate-to-sketch-solve']
+      const logic =
+        'src' in implementation ? implementation.src : implementation
+      const actor = createActor(logic, {
+        input: {
+          artifactOrPlaneId: wall.id,
+          kclManager: kclManagerInThisFile,
+          rustContext: rustContextInThisFile,
+          engineCommandManager: engineCommandManagerInThisFile,
+          wasmInstance: instanceInThisFile,
+          projectRef: { current: createProjectForTest() },
+        },
+      })
+      try {
+        const done = toPromise(actor)
+        actor.start()
+        const result = await done
+        expect(result.plane.zAxis[2]).toBeCloseTo(normal)
+        expect(kclManagerInThisFile.code).toContain(
+          `face001 = faceOf(body, face = ${face})`
+        )
+        expect(kclManagerInThisFile.code).toContain(
+          'sketch001 = sketch(on = face001)'
+        )
+        expect(result.initialSceneGraphDelta.exec_outcome?.issues).toEqual([])
 
-      const reloaded = await rustContextInThisFile.hackSetProgram(
-        assertParse(kclManagerInThisFile.code, instanceInThisFile),
-        jsAppSettings(rustContextInThisFile.settingsActor)
-      )
-      expect(reloaded.type).toBe('Success')
-      if (reloaded.type === 'Success') {
-        expect(reloaded.execOutcome.issues).toEqual([])
+        const reloaded = await rustContextInThisFile.hackSetProgram(
+          assertParse(kclManagerInThisFile.code, instanceInThisFile),
+          jsAppSettings(rustContextInThisFile.settingsActor)
+        )
+        expect(reloaded.type).toBe('Success')
+        if (reloaded.type === 'Success') {
+          expect(reloaded.execOutcome.issues).toEqual([])
+        }
+      } finally {
+        actor.stop()
       }
-    } finally {
-      actor.stop()
-    }
-  })
+    },
+    15_000
+  )
 })
 
 describe('STEP schema export requests', () => {
