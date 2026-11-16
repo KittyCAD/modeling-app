@@ -2,7 +2,7 @@
 
 The primary migration reuses `modelingMachine`, its sketch children, the legacy toolbar, and the legacy form dialogs inside independently owned editor views. Independent tool contributions remain the intended direction, recorded in [ADR 0002](../src/dev-docs/adr/0002-machine-backed-modeling-transition.md). They are not a prerequisite for the editor ownership change.
 
-Each wave contains at most four branches. Each row is based on the preceding row, including across waves. Existing foundations remain PRs #15158, #15159, and #15160; no duplicate foundation PRs are needed. This arrangement is local. Previously published optional review refs have not been updated; their replacements use new local names. The existing `codex/modeling-machine-host` branch is the shortened primary cutover.
+Each wave contains at most four branches. Each row is based on the preceding row, including across waves. Existing foundations remain PRs #15158, #15159, and #15160; no duplicate foundation PRs are needed. Reorganized optional review refs use new names; older published optional refs are retained as development history. The existing `codex/modeling-machine-host` branch is the shortened primary cutover.
 
 | Wave | Branch | Review focus |
 | --- | --- | --- |
