@@ -79,8 +79,10 @@ export function observeSceneExecutionSettings({
   let previousExecute = settings.executeRevision.peek()
   let previousRebuild = settings.rebuildRevision.peek()
   let pendingRebuild: Promise<boolean> | undefined
-  return effect(() => {
+  let ownerVersion = 0
+  const stop = effect(() => {
     const enabled = active()
+    const hasConnection = connected()
     const execute = settings.executeRevision.value
     const rebuild = settings.rebuildRevision.value
     const needsExecution = execute !== previousExecute
@@ -89,16 +91,25 @@ export function observeSceneExecutionSettings({
     previousRebuild = rebuild
     let cancelled = false
     untracked(() => {
-      if (!enabled || !connected() || (!needsExecution && !needsRebuild)) return
+      if (!enabled || !hasConnection) {
+        ownerVersion++
+        return
+      }
+      if (!needsExecution && !needsRebuild) return
       const owner = capture()
-      const isCurrent = () => !cancelled && owner.isCurrent()
+      const version = ownerVersion
+      const ownsScene = () => version === ownerVersion && owner.isCurrent()
+      const isCurrent = () => !cancelled && ownsScene()
       const executeIfCurrent = () => {
         if (isCurrent()) return owner.execute()
       }
       if (needsRebuild) {
         const configuration = settings.configuration.peek()
         const clear = async () => {
-          if (!isCurrent()) return false
+          // A newer execution input still needs this rebuild. Only a newer
+          // rebuild input or a retired scene owner can supersede the clear.
+          if (!ownsScene() || settings.rebuildRevision.peek() !== rebuild)
+            return false
           try {
             await owner.rebuild(configuration)
             return true
@@ -127,4 +138,8 @@ export function observeSceneExecutionSettings({
       cancelled = true
     }
   })
+  return () => {
+    ownerVersion++
+    stop()
+  }
 }

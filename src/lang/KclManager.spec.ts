@@ -722,8 +722,8 @@ describe('KclManager settings ownership', () => {
     }
   )
 
-  it.each(['closed', 'inactive'])(
-    'does not render after a backface cache clear finishes for a %s manager',
+  it.each(['closed', 'inactive', 'reconnected'])(
+    'does not render after a backface cache clear loses its owner (%s)',
     async (state) => {
       const { app, kclManager } = createKclManagerTestHarness()
       try {
@@ -738,7 +738,19 @@ describe('KclManager settings ownership', () => {
         )
         expect(mocks.clearScene).toHaveBeenCalledTimes(1)
         if (state === 'closed') kclManager.close()
-        else kclManager.setSceneSettingsActive(false)
+        else if (state === 'inactive') kclManager.setSceneSettingsActive(false)
+        else {
+          kclManager.engineCommandManager.connection = new Connection({
+            url: 'ws://localhost',
+            token: '',
+            handleOnDataChannelMessage: () => {},
+            recordShutdownTrigger: () => false,
+            tearDownManager: () => {},
+            rejectPendingCommand: () => {},
+            handleMessage: () => {},
+            getCloudProjectId: () => undefined,
+          })
+        }
         pending.resolve(kclManager.execState)
         await flushPromises()
         expect(mocks.executeCode).not.toHaveBeenCalled()
