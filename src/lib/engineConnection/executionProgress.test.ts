@@ -63,4 +63,35 @@ describe('source-aligned execution progress', () => {
     progress.complete('batch')
     expect(progress.fraction).toBe(0)
   })
+
+  it('does not close unfinished loop stages when a parallel module completes', () => {
+    const progress = new ExecutionProgress()
+    const otherModule: SourceRange = [10, 20, 1]
+    const afterLoop: SourceRange = [50, 60, 0]
+    progress.setPlan({
+      count: 102,
+      milestones: [
+        ...Array.from({ length: 50 }, () => [loop, tail]).flat(),
+        afterLoop,
+        otherModule,
+      ].map(milestone),
+    })
+    progress.register('x0', [loop])
+    progress.register('y0', [tail])
+    progress.complete('x0')
+    progress.register('other', [otherModule])
+    progress.complete('other')
+    expect(progress.fraction).toBeLessThan(0.03)
+
+    progress.complete('y0')
+    for (let i = 1; i < 50; i++) {
+      progress.register(`x${i}`, [loop])
+      progress.complete(`x${i}`)
+      progress.register(`y${i}`, [tail])
+      progress.complete(`y${i}`)
+    }
+    progress.register('after', [afterLoop])
+    progress.complete('after')
+    expect(progress.fraction).toBe(0.95)
+  })
 })

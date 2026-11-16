@@ -15,13 +15,13 @@ const key = (range: SourceRange) => range.join(':')
 export class ExecutionProgress {
   private stages = new Map<string, Stage>()
   private requests = new Map<string, Stage[]>()
-  private latestPosition = -1
+  private latestPositions = new Map<SourceRange[2], number>()
   private initialCount = 0
 
   reset() {
     this.stages.clear()
     this.requests.clear()
-    this.latestPosition = -1
+    this.latestPositions.clear()
     this.initialCount = 0
   }
 
@@ -70,7 +70,7 @@ export class ExecutionProgress {
           positions: [
             following
               ? following.positions[0] - 0.5
-              : this.latestPosition + 0.5,
+              : (this.latestPositions.get(range[2]) ?? -1) + 0.5,
           ],
           sent: 0,
           completed: 0,
@@ -86,11 +86,14 @@ export class ExecutionProgress {
   complete(id: string) {
     for (const stage of this.requests.get(id) ?? []) {
       stage.completed++
-      this.latestPosition = Math.max(
-        this.latestPosition,
-        stage.positions[
-          Math.min(stage.completed - 1, stage.positions.length - 1)
-        ]
+      this.latestPositions.set(
+        stage.range[2],
+        Math.max(
+          this.latestPositions.get(stage.range[2]) ?? -1,
+          stage.positions[
+            Math.min(stage.completed - 1, stage.positions.length - 1)
+          ]
+        )
       )
     }
     this.requests.delete(id)
@@ -104,9 +107,11 @@ export class ExecutionProgress {
       const closed =
         stage.sent > 0 &&
         stage.completed === stage.sent &&
-        this.latestPosition > stage.positions[stage.positions.length - 1]
+        (this.latestPositions.get(stage.range[2]) ?? -1) >
+          stage.positions[stage.positions.length - 1]
       // Keep room within the active source block for further loop iterations or
-      // extra queries. A later milestone closes that block at its actual count.
+      // extra queries. Only a later milestone in the same module closes the block;
+      // imported modules can execute concurrently.
       const expected = Math.max(
         stage.weight,
         stage.sent + Math.max(2, Math.ceil(stage.sent / 4))
