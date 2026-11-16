@@ -3,6 +3,34 @@ import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 test(
+  'pump housing has no contributing features above its bodies',
+  { tag: ['@web', '@localRenderer'] },
+  async ({ page, homePage, scene, editor, toolbar }, testInfo) => {
+    const code = await readFile(
+      'e2e/playwright/fixtures/pump-housing.kcl',
+      'utf8'
+    )
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
+    await toolbar.openFeatureTreePane()
+    await expect(page.getByTestId('feature-tree-body')).toHaveCount(6)
+    // All body disclosures start closed; no geometry feature is visible at root.
+    await expect(
+      toolbar.featureTreePane.getByTestId('feature-tree-operation-item')
+    ).toHaveCount(0)
+    await toolbar.expandFeatureTreeBodies()
+    await expect(
+      toolbar.featureTreePane.getByRole('button', { name: /Offset Plane/ })
+    ).toHaveCount(3)
+    await testInfo.attach('pump-housing-body-hierarchy', {
+      body: await toolbar.featureTreePane.screenshot(),
+      contentType: 'image/png',
+    })
+  }
+)
+
+test(
   'PC Fan imports own their bodies and consumed Boolean histories',
   { tag: ['@web', '@localRenderer'] },
   async ({ page, homePage, scene, toolbar, fs, folderSetupFn }, testInfo) => {

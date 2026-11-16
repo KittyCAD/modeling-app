@@ -79,3 +79,31 @@ test('PC Fan keeps the housing Boolean inputs beneath its three bodies', async (
     tree.nodes.filter((node) => !isArray(node) && 'body' in node)
   ).toHaveLength(0)
 }, 30_000)
+
+test('pump housing nests all contributing features beneath its six bodies', async () => {
+  const code = await readFile(
+    'e2e/playwright/fixtures/pump-housing.kcl',
+    'utf8'
+  )
+  const state = await getAstAndArtifactGraph(
+    code,
+    world.instance,
+    world.kclManager
+  )
+  const tree = buildBodyOperationTree(
+    buildOperationTree(state.operations, 0),
+    getBodiesFromArtifactGraph(state.artifactGraph),
+    state.artifactGraph
+  )
+  expect(tree.branches).toHaveLength(6)
+  expect(tree.operations).toEqual([])
+  expect(tree.nodes.every((node) => !isArray(node) && 'body' in node)).toBe(
+    true
+  )
+  const supportingPlanes = tree.branches
+    .flatMap((body) => body.operations)
+    .filter(
+      (node) => !isArray(node) && 'name' in node && node.name === 'offsetPlane'
+    )
+  expect(supportingPlanes).toHaveLength(3)
+}, 30_000)

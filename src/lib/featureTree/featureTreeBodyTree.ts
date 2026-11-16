@@ -178,10 +178,13 @@ export function buildBodyOperationTree(
       ].filter((id): id is string => !!id)
     if (artifact.type === 'path')
       return [
+        artifact.planeId,
         artifact.sketchBlockId,
         artifact.originPathId,
         artifact.innerPathId,
       ].filter((id): id is string => !!id)
+    if (artifact.type === 'sketchBlock')
+      return artifact.planeId ? [artifact.planeId] : []
     if (artifact.type === 'compositeSolid')
       // Boolean inputs can be engine profile IDs. Only follow sweepId here,
       // never while walking a shared sketch's dependencies.

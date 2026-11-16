@@ -62,6 +62,44 @@ function bodies(...artifacts: BodyArtifact[]) {
 }
 
 describe('body feature hierarchy', () => {
+  it('includes supporting planes without collecting other sketches on the same plane', () => {
+    const offset = { ...call(10), name: 'offsetPlane' }
+    const unused = { ...call(80), name: 'offsetPlane' }
+    const plane: Artifact = {
+      type: 'plane',
+      id: 'offset',
+      pathIds: ['profile', 'other-profile'],
+      codeRef: codeRef(10),
+    }
+    const profile: Artifact = {
+      type: 'path',
+      id: 'profile',
+      subType: 'region',
+      planeId: plane.id,
+      segIds: [],
+      consumed: false,
+      trajectorySweepId: null,
+      codeRef: codeRef(20),
+    }
+    const otherProfile = {
+      ...profile,
+      id: 'other-profile',
+      codeRef: codeRef(50),
+    }
+    const a = sweep('a', 30, profile.id)
+    const b = sweep('b', 60, otherProfile.id)
+    const nodes = [offset, call(20), call(30), call(50), call(60), unused]
+    const tree = buildBodyOperationTree(
+      nodes,
+      bodies(a, b),
+      graph(plane, profile, otherProfile, a, b)
+    )
+    expect(tree.branches[0].operations).toEqual(nodes.slice(0, 3))
+    expect(tree.branches[1].operations).toEqual([offset, nodes[3], nodes[4]])
+    expect(tree.branches[0].operations[0]).toBe(tree.branches[1].operations[0])
+    expect(tree.operations).toEqual([unused])
+  })
+
   it('identifies outputs of one extrude by their profiles across reordered rebuilds', () => {
     function execute(offset: number, reverse: boolean) {
       const profiles = [0, 1].map(
