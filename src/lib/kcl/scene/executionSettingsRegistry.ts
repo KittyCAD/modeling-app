@@ -3,12 +3,12 @@ import {
   defineRegistryItemFactory,
   provideService,
 } from '@kittycad/registry'
-import { createSceneExecutionSettings } from '@src/lib/kcl/scene/settings'
+import { createSceneExecutionSettings } from '@src/lib/kcl/scene/executionSettings'
 import {
   kclExecutionInputsValueSpec,
   kclExecutionSettingsService,
   provideKclExecutionInput,
-} from '@src/lib/kcl/scene/settingsContract'
+} from '@src/lib/kcl/scene/executionSettingsContract'
 import { settingsService } from '@src/registry/contracts/settings'
 
 /**

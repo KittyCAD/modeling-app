@@ -1,4 +1,4 @@
-import { observeSceneExecutionSettings } from '@src/lib/kcl/scene/settings'
+import { observeLegacySceneExecutionSettings } from '@src/lib/kcl/scene/legacyExecutionSettings'
 import {
   SceneExecutionEvents as KclManagerEvents,
   type SceneExecutionDoneDetail as KclExecutionDoneDetail,
@@ -3217,7 +3217,7 @@ export class KclManager extends File {
     )
 
     disposers.push(
-      observeSceneExecutionSettings({
+      observeLegacySceneExecutionSettings({
         settings: this.systemDeps.kclExecutionSettings,
         active: () => this.sceneSettingsActive.value,
         connected: () => !!this.engineCommandManager.connection,

@@ -1,4 +1,4 @@
-import { createTestKclExecutionSettings } from '@src/lib/kcl/scene/settingsTestUtils'
+import { createTestKclExecutionSettings } from '@src/lib/kcl/scene/executionSettingsTestUtils'
 import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import { createProjectForTest } from '@src/lib/projectTestUtils'
 import { defineRegistryItem } from '@kittycad/registry'

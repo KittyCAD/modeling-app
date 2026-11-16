@@ -63,7 +63,7 @@ The two rules describe different operations:
   Backface color uses this rule. The local renderer applies that color directly,
   so this input does not request native execution in local rendering.
 
-`createSceneExecutionSettings` reads the registry's live contribution signal and
+`createSceneExecutionSettings` in `executionSettings.ts` reads the registry's live contribution signal and
 the effective preferences. It provides native configuration through the existing
 `jsAppSettings` conversion, plus comparison keys for deciding when to refresh.
 Adding or removing a contribution updates those keys. Project overrides retain
@@ -76,7 +76,8 @@ because the file route also needs them.
 
 ## Applying changes to the active scene
 
-`observeSceneExecutionSettings` watches the comparison keys.
+`observeLegacySceneExecutionSettings` in `legacyExecutionSettings.ts` watches the
+comparison keys.
 `KclManager.watchSettings` supplies callbacks bound to the active file, project,
 and connection: execute the model, clear its scene/cache, and check whether those
 resources are still current.

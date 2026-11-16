@@ -1,4 +1,4 @@
-import { kclExecutionSettingsService } from '@src/lib/kcl/scene/settingsContract'
+import { kclExecutionSettingsService } from '@src/lib/kcl/scene/executionSettingsContract'
 import type { SnapshotFrom } from 'xstate'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import {

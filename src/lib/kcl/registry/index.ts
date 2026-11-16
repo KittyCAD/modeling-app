@@ -1,4 +1,4 @@
-import { kclExecutionSettingsRegistryItem } from '@src/lib/kcl/scene/settingsRegistry'
+import { kclExecutionSettingsRegistryItem } from '@src/lib/kcl/scene/executionSettingsRegistry'
 import { kcl } from '@kittycad/codemirror-lang-kcl'
 import { editorKclHighlight } from '@src/editor/plugins/theme'
 import {
