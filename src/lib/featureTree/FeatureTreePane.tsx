@@ -461,11 +461,11 @@ function BodyBranchGroup({
       <div className="flex items-start gap-1" data-testid="feature-tree-body">
         <Disclosure.Button
           aria-label={`Toggle Body ${index + 1} features`}
-          className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2"
+          className="reset group/disclosure !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2"
         >
           <CustomIcon
             name="caretDown"
-            className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
+            className="w-4 h-4 block -rotate-90 group-aria-expanded/disclosure:rotate-0"
             aria-hidden
           />
         </Disclosure.Button>
@@ -572,11 +572,11 @@ function OperationItemGroup({
         <div className="flex items-start gap-1">
           <Disclosure.Button
             data-testid="operation-group-caret"
-            className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25"
+            className="reset group/disclosure !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25"
           >
             <CustomIcon
               name="caretDown"
-              className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
+              className="w-4 h-4 block -rotate-90 group-aria-expanded/disclosure:rotate-0"
               aria-hidden
             />
           </Disclosure.Button>
@@ -627,10 +627,10 @@ function OperationItemGroup({
 
   return (
     <FeatureTreeDisclosure expansionKey={expansionKey}>
-      <Disclosure.Button className="reset w-full min-w-[0px] !px-1 flex items-center gap-2 text-left text-base !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25">
+      <Disclosure.Button className="reset group/disclosure w-full min-w-[0px] !px-1 flex items-center gap-2 text-left text-base !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25">
         <CustomIcon
           name="caretDown"
-          className="w-6 h-6 block self-start -rotate-90 ui-open:rotate-0 ui-open:transform"
+          className="w-6 h-6 block self-start -rotate-90 group-aria-expanded/disclosure:rotate-0"
           aria-hidden
         />
         <span className="text-sm flex-1">
@@ -713,11 +713,11 @@ function OperationBranchGroup({
       >
         <Disclosure.Button
           data-testid="operation-group-caret"
-          className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25"
+          className="reset group/disclosure !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25"
         >
           <CustomIcon
             name="caretDown"
-            className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
+            className="w-4 h-4 block -rotate-90 group-aria-expanded/disclosure:rotate-0"
             aria-hidden
           />
         </Disclosure.Button>

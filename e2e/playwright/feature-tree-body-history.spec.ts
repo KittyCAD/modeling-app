@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { closeOnboardingModalIfPresent } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout'
 
 test(
   'retains body and sketch disclosure through editing and execution',
@@ -26,6 +27,15 @@ body001 = extrude(region001, length = 5mm)`
     await bodyToggle.click()
     const sketchToggle = branch.getByTestId('operation-group-caret').first()
     await expect(sketchToggle).toHaveAttribute('aria-expanded', 'false')
+    await expect
+      .poll(() =>
+        sketchToggle
+          .locator('svg')
+          .evaluate((svg) =>
+            Math.round(new DOMMatrix(getComputedStyle(svg).transform).b)
+          )
+      )
+      .toBe(-1)
     await sketchToggle.click()
     await branch
       .getByRole('button', { name: 'sketch001', exact: true })
@@ -79,6 +89,7 @@ test(
     await closeOnboardingModalIfPresent(page)
     await scene.settled()
     await toolbar.openFeatureTreePane()
+    await toolbar.closePane(DefaultLayoutPaneID.Code)
     await expect(page.locator('#bodies-list-pane')).toHaveCount(0)
     const importRow = toolbar.featureTreePane
       .locator('[data-module-branch]')
@@ -152,12 +163,36 @@ firstBody = extrude(region(segments = [profile.first]), length = 10mm)
 secondBody = extrude(region(segments = [profile.second]), length = 10mm)`
     await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await toolbar.openFeatureTreePane()
+    await toolbar.closePane(DefaultLayoutPaneID.Code)
+    await scene.moveCameraTo({ x: 50, y: -70, z: 50 }, { x: 10, y: 0, z: 5 })
+    await page.evaluate(() =>
+      window.app.singletons.kclManager.sceneInfra.camControls.zoomToFit({
+        padding: 0.15,
+      })
+    )
     const rows = page.getByTestId('feature-tree-body')
     await expect(rows).toHaveCount(2)
     await rows
       .first()
       .getByRole('button', { name: 'Body 1', exact: true })
       .click()
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const bounds =
+            window.app.singletons.kclManager.sceneInfra.localRenderer?.getSelectionBounds()
+          return (
+            !!bounds &&
+            bounds.min.x < -4.8 &&
+            bounds.max.x > 4.8 &&
+            bounds.max.x < 5.2 &&
+            bounds.min.z > -0.1 &&
+            bounds.max.z > 9.9 &&
+            bounds.max.z < 10.1
+          )
+        })
+      )
+      .toBe(true)
     const visibility = rows
       .first()
       .getByTestId('feature-tree-visibility-toggle')
@@ -171,6 +206,7 @@ secondBody = extrude(region(segments = [profile.second]), length = 10mm)`
       .getByRole('button', { name: 'Body 1', exact: true })
       .click({ button: 'right' })
     await expect(page.getByTestId('context-menu-delete')).toBeVisible()
+    await page.mouse.move(400, 55)
     await testInfo.attach('body-delete-before.png', {
       body: await page.screenshot(),
       contentType: 'image/png',
@@ -180,6 +216,7 @@ secondBody = extrude(region(segments = [profile.second]), length = 10mm)`
     )
     await expect(rows).toHaveCount(1)
     await editor.expectEditor.toContain('delete(')
+    await page.mouse.move(400, 55)
     await testInfo.attach('body-delete-after.png', {
       body: await page.screenshot(),
       contentType: 'image/png',
