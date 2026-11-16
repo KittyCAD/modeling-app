@@ -73,9 +73,19 @@ export function createCloudProjectRuntime(
   const memory = createMemoryFileSystem(paths)
   let pendingRequests = 0
   const saves = signal<ReadonlyMap<string, CloudSaveState>>(new Map())
-  const projects = signal<readonly RemoteProjectSummary[]>([])
+  const projectIndex = signal<{
+    owner?: string
+    items: readonly RemoteProjectSummary[]
+  }>({ items: [] })
+  const projects = computed(() =>
+    projectIndex.value.owner === config().accountId
+      ? projectIndex.value.items
+      : []
+  )
   let listGeneration = 0
-  const pendingProjectLists = signal(0)
+  const projectListRequests = signal<
+    ReadonlyMap<AbortController, string | undefined>
+  >(new Map())
   const opened = new Map<string, OpenCloudProject>()
   // Update checks capture these per-project counters and discard downloaded
   // snapshots if edits or acknowledged revision changes advance them.
@@ -257,10 +267,10 @@ export function createCloudProjectRuntime(
       observedRevision: remote.revision,
     })
     listGeneration += 1
-    projects.value = [
-      ...projects.peek().filter((item) => item.id !== id),
-      remote,
-    ]
+    projectIndex.value = {
+      owner: config().accountId,
+      items: [...projects.peek().filter((item) => item.id !== id), remote],
+    }
     state(id, { state: 'saved' })
     if (project?.remote.revision !== remote.revision) recordProjectChange(id)
   }
@@ -700,6 +710,7 @@ export function createCloudProjectRuntime(
       await ready
     },
     detach: async () => {
+      for (const request of projectListRequests.peek().keys()) request.abort()
       await Promise.allSettled([...polling.values()])
       await Promise.all(
         [...pendingThumbnails.keys()].map((id) => {
@@ -774,7 +785,10 @@ export function createCloudProjectRuntime(
     remainingSaves.delete(id)
     saves.value = remainingSaves
     listGeneration += 1
-    projects.value = projects.peek().filter((project) => project.id !== id)
+    projectIndex.value = {
+      owner: requestConfig.accountId,
+      items: projects.peek().filter((project) => project.id !== id),
+    }
     notify([{ path: pathFor(id), eventType: 'unlinkDir' }])
   }
   const createProject = async (
@@ -805,21 +819,37 @@ export function createCloudProjectRuntime(
     ...fs,
     root,
     projects,
-    projectsLoading: computed(() => pendingProjectLists.value > 0),
+    projectsLoading: computed(() => {
+      const account = config().accountId
+      return [...projectListRequests.value.values()].some(
+        (owner) => owner === account
+      )
+    }),
     listProjects: async () => {
       const generation = ++listGeneration
       const requestConfig = config()
-      pendingProjectLists.value = pendingProjectLists.peek() + 1
+      const controller = new AbortController()
+      const requests = new Map(projectListRequests.peek())
+      for (const [request, owner] of requests)
+        if (owner !== requestConfig.accountId) request.abort()
+      requests.set(controller, requestConfig.accountId)
+      projectListRequests.value = requests
       try {
-        const result = await api.listRemoteProjects(requestConfig)
+        const result = await api.listRemoteProjects(
+          requestConfig,
+          undefined,
+          controller.signal
+        )
         if (
           generation === listGeneration &&
           requestConfig.accountId === config().accountId
         )
-          projects.value = result
+          projectIndex.value = { owner: requestConfig.accountId, items: result }
         return result
       } finally {
-        pendingProjectLists.value = pendingProjectLists.peek() - 1
+        const requests = new Map(projectListRequests.peek())
+        requests.delete(controller)
+        projectListRequests.value = requests
       }
     },
     exists: async (id: string) => {
@@ -856,7 +886,14 @@ export function createCloudProjectRuntime(
             ? new Error('Cloud snapshot changed; queued operation canceled.')
             : undefined
     },
-    saves,
+    saves: computed(
+      () =>
+        new Map(
+          [...saves.value].filter(
+            ([id]) => opened.get(id)?.owner === config().accountId
+          )
+        )
+    ),
     stageThumbnail: async (path: string, bytes: Uint8Array) => {
       if (isOffline()) return
       const id = idFor(path)

@@ -76,11 +76,14 @@ function isRemoteProjectSummary(value: unknown): value is RemoteProjectSummary {
 
 export async function listRemoteProjects(
   config: CloudApiConfig,
-  beforeRequest: () => Promise<void> = async () => undefined
+  beforeRequest: () => Promise<void> = async () => undefined,
+  signal?: AbortSignal
 ): Promise<RemoteProjectSummary[]> {
   await beforeRequest()
-  const response: unknown = await cloudCall(config, (client) =>
-    collectApiPages(projects.list_projects_pager({ client }))
+  const response: unknown = await cloudCall(
+    config,
+    (client) => collectApiPages(projects.list_projects_pager({ client })),
+    signal
   )
   if (!isArray(response) || !response.every(isRemoteProjectSummary)) {
     return Promise.reject(

@@ -1,3 +1,4 @@
+import { signal } from '@preact/signals-core'
 import fc from 'fast-check'
 import { CLOUD_DIRECTORIES_FILE } from '@src/lib/cloudProjects/runtime/directories'
 import { readTextFile } from '@src/lib/fileSystem/readTextFile'
@@ -1218,6 +1219,36 @@ describe.each([
     gate.resolve(new ArrayBuffer(0))
     await rejected
     expect(reconciled).not.toHaveBeenCalled()
+  })
+
+  it('hides the previous account catalog while a new list is pending and rejects late results', async () => {
+    const account = signal('first')
+    const { fs } = setup(() => account.value)
+    vi.mocked(api.listRemoteProjects).mockResolvedValueOnce([remote])
+    await fs.listProjects()
+    const old = Promise.withResolvers<(typeof remote)[]>()
+    vi.mocked(api.listRemoteProjects).mockReturnValueOnce(old.promise)
+    const oldRequest = fs.listProjects()
+    account.value = 'second'
+    expect(fs.projects.value).toEqual([])
+    expect(fs.projectsLoading.value).toBe(false)
+    const next = Promise.withResolvers<(typeof remote)[]>()
+    vi.mocked(api.listRemoteProjects).mockReturnValueOnce(next.promise)
+    const nextRequest = fs.listProjects()
+    expect(vi.mocked(api.listRemoteProjects).mock.calls[1][2]?.aborted).toBe(
+      true
+    )
+    expect(fs.projectsLoading.value).toBe(true)
+    old.resolve([remote])
+    await oldRequest
+    expect(fs.projects.value).toEqual([])
+    expect(fs.projectsLoading.value).toBe(true)
+    next.resolve([{ ...remote, id: 'second-project' }])
+    await nextRequest
+    expect(fs.projectsLoading.value).toBe(false)
+    expect(fs.projects.value.map((project) => project.id)).toEqual([
+      'second-project',
+    ])
   })
 
   it('rejects stale-account reads, mutations, and deletion', async () => {
