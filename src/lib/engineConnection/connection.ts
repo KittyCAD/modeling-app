@@ -970,7 +970,7 @@ export class Connection extends EventTarget {
       return
     }
 
-    if (this.peerConnection.connectionState === 'closed') {
+    if (this.peerConnection.connectionState !== 'closed') {
       EngineDebugger.addLog({
         label: 'connection',
         message: 'disconnectPeerConnection',

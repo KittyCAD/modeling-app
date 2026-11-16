@@ -185,6 +185,9 @@ hide(profile)
 
     for (const mode of ['phosphor', 'retrocad']) {
       const connectionCount = modes.length
+      const previousPeer = await page.evaluateHandle(
+        () => window.engineCommandManager.connection?.peerConnection
+      )
       await scene.waitForExecutionDoneAfter(async () => {
         await rendering.selectOption(mode)
         await expect(ssao).toBeChecked()
@@ -192,6 +195,10 @@ hide(profile)
         await page.getByTestId('settings-close-button').click()
       })
       await scene.settled()
+      expect(await previousPeer.evaluate((peer) => peer?.connectionState)).toBe(
+        'closed'
+      )
+      await previousPeer.dispose()
       expect(modes.slice(connectionCount)).toEqual([mode])
       await scene.expectPixelColor([0, 0, 0], backgroundPoint, 10, {
         format: 'ratio',

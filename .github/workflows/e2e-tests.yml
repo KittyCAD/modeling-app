@@ -45,6 +45,10 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - name: Build app with candidate connection cleanup
+        run: npm run build:e2e:web
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
       - uses: actions/cache@v6.1.0
         with:
           path: ~/Library/Caches/ms-playwright
