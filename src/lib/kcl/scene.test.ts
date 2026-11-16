@@ -110,6 +110,9 @@ function setup() {
       wasm: Promise.resolve({} as ModuleType),
       settings,
       preferences,
+      nativeSettings: createTestKclExecutionSettings(
+        () => settings.current.value
+      ),
       token: 'token',
       size: { width: 640, height: 360 },
       signal: new AbortController().signal,
