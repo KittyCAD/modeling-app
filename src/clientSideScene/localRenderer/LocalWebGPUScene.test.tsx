@@ -1,9 +1,17 @@
 import { signal } from '@preact/signals-core'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
 import { LocalWebGPUSceneView } from '@src/clientSideScene/localRenderer/LocalWebGPUScene'
 import { Themes } from '@src/lib/theme'
-import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { settingsMachine } from '@src/machines/settingsMachine'
+import { commandBarMachine } from '@src/machines/commandBarMachine'
+import { createActor } from 'xstate'
+import { MachineManager } from '@src/lib/MachineManager'
+import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { createSettings } from '@src/lib/settings/initialSettings'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import fsZds from '@src/lib/fs-zds'
+import { createFileOperationsServices } from '@src/registry/extensions/fileOperations'
 import { cleanup, render } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
 
@@ -41,7 +49,51 @@ afterEach(() => {
   vi.clearAllMocks()
 })
 
-it('mounts from an explicit host without app providers and releases only its renderer', () => {
+function sceneFixture() {
+  const settings = createSettings()
+  const wasm = new Promise<ModuleType>(() => {})
+  const files = createFileOperationsServices(fsZds)
+  const commands = createActor(commandBarMachine, {
+    input: {
+      commands: [],
+      machineManager: new MachineManager(),
+      wasmInstancePromise: wasm,
+    },
+  })
+  // Unstarted actors provide typed snapshots without loading persisted settings or WASM.
+  const settingsActor = createActor(settingsMachine, {
+    input: {
+      ...settings,
+      commandBarActor: commands,
+      wasmInstancePromise: wasm,
+      defaultProjectLibraries: [],
+      projectLibrarySettingDefaultPolicies: [],
+      extensionSettings: {},
+      fileOperations: files.operations,
+    },
+  })
+  const manager = new ConnectionManager({ settingsActor })
+  const sceneInfra = new SceneInfra(manager, wasm, () => settings)
+  // The test's shared WebGL mock omits these browser cleanup operations.
+  sceneInfra.renderer.clear = vi.fn()
+  sceneInfra.renderer.forceContextLoss = vi.fn()
+  return {
+    sceneInfra,
+    settingsActor,
+    dispose: () => {
+      sceneInfra.dispose()
+      settingsActor.stop()
+      commands.stop()
+      return files.dispose()
+    },
+  }
+}
+
+it('mounts from an explicit host without app providers and releases only its renderer', ({
+  onTestFinished,
+}) => {
+  const scene = sceneFixture()
+  onTestFinished(scene.dispose)
   const host: LocalRendererHost = {
     executionEvents: new EventTarget(),
     executing: signal(false),
@@ -53,8 +105,8 @@ it('mounts from an explicit host without app providers and releases only its ren
       sendSceneCommand: vi.fn().mockResolvedValue(null),
       setLocalSelectionCommandHandler: vi.fn(),
     },
-    sceneInfra: { localRenderer: null } as SceneInfra,
-    settingsActor: {} as SettingsActorType,
+    sceneInfra: scene.sceneInfra,
+    settingsActor: scene.settingsActor,
     artifacts: () => new Map(),
     defaultPlanes: () => ({
       xy: 'xy',
