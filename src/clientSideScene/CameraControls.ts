@@ -150,6 +150,9 @@ export class CameraControls {
   }
   localCameraMode = false
   private pendingSketchCamera: { faceId?: string } | undefined
+  zoomInteractionRevision = 0
+  private lastLocalFitDistance: number | undefined
+  private cancelFitTween: (() => void) | undefined
   camera: PerspectiveCamera | OrthographicCamera
   target: Vector3
   domElement: HTMLCanvasElement
@@ -352,6 +355,7 @@ export class CameraControls {
   }
 
   cancelPendingUpdates() {
+    this.cancelZoomToFit()
     this.moveFrame.reset()
     this.zoomFrame.reset()
     this.hoverFrame.reset()
@@ -996,6 +1000,10 @@ export class CameraControls {
     }
 
     if (this.pendingZoom) {
+      if (this.effectiveCameraMode === 'local' && this.pendingZoom !== 1) {
+        this.zoomInteractionRevision += 1
+        this.cancelZoomToFit()
+      }
       if (this.camera instanceof PerspectiveCamera) {
         // move camera towards or away from the target
         const distance = this.camera.position.distanceTo(this.target)
@@ -1252,19 +1260,89 @@ export class CameraControls {
    * Frames the model without turning the camera, as the engine's zoom_to_fit
    * does. `padding` grows the model's bounds by that fraction of their size.
    */
-  async zoomToFit({ padding }: { padding: number }): Promise<void> {
+  async zoomToFit({
+    padding,
+    duration = 0,
+    minScaleChange = 0,
+  }: {
+    padding: number
+    duration?: number
+    minScaleChange?: number
+  }): Promise<void> {
     if (this.effectiveCameraMode === 'local') {
       const bounds = this.getLocalScene()?.getFitBounds()
       if (bounds) {
+        const camera = this.camera
+        const destination = camera.clone()
+        const target = this.target.clone()
         frameLocalCamera(
-          this.camera,
-          this.target,
+          destination,
+          target,
           bounds,
           padding,
           this.lastPerspectiveFov,
           this.normalizedViewportAspect()
         )
-        this.onCameraChange()
+        const endDistance = destination.position.distanceTo(target)
+        if (
+          minScaleChange > 0 &&
+          this.lastLocalFitDistance !== undefined &&
+          Math.abs(endDistance - this.lastLocalFitDistance) <
+            this.lastLocalFitDistance * minScaleChange
+        )
+          return
+        this.lastLocalFitDistance = endDistance
+        this.cancelFitTween?.()
+        if (
+          duration <= 0 ||
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ) {
+          camera.position.copy(destination.position)
+          camera.up.copy(destination.up)
+          camera.zoom = destination.zoom
+          camera.updateProjectionMatrix()
+          this.target.copy(target)
+          this.onCameraChange()
+        } else {
+          const startTarget = this.target.clone()
+          const startDistance = camera.position.distanceTo(this.target)
+          const startZoom = camera.zoom
+          await new Promise<void>((resolve) => {
+            let frame: number | undefined
+            let finished = false
+            const finish = () => {
+              finished = true
+              if (frame !== undefined) cancelAnimationFrame(frame)
+              this.cancelFitTween = undefined
+              resolve()
+            }
+            const startedAt = performance.now()
+            this.cancelFitTween = finish
+            const update = (time: number) => {
+              if (finished) return
+              if (this.camera !== camera) {
+                finish()
+                return
+              }
+              const progress = Math.min(1, (time - startedAt) / duration)
+              const t =
+                progress < 0.5
+                  ? 2 * progress * progress
+                  : 1 - (-2 * progress + 2) ** 2 / 2
+              this.target.lerpVectors(startTarget, target, t)
+              camera.position
+                .set(0, 0, MathUtils.lerp(startDistance, endDistance, t))
+                .applyQuaternion(camera.quaternion)
+                .add(this.target)
+              camera.zoom = MathUtils.lerp(startZoom, destination.zoom, t)
+              camera.updateProjectionMatrix()
+              this.onCameraChange()
+              if (progress === 1) finish()
+              else frame = requestAnimationFrame(update)
+            }
+            frame = requestAnimationFrame(update)
+          })
+        }
       }
       return
     }
@@ -1273,6 +1351,10 @@ export class CameraControls {
       engineCommandManager: this.engineCommandManager,
       padding,
     })
+  }
+
+  cancelZoomToFit() {
+    this.cancelFitTween?.()
   }
 
   /**

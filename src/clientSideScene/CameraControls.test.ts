@@ -13,6 +13,7 @@ import {
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { getDimensions } from '@src/lib/engineConnection/utils'
 import {
+  Box3,
   Group,
   OrthographicCamera,
   PerspectiveCamera,
@@ -1289,3 +1290,134 @@ async function expectViewRestored(
   expect(restored.eye_offset).toBeCloseTo(view.eye_offset)
   expect({ ...restored, eye_offset: view.eye_offset }).toEqual(view)
 }
+
+describe('animated local bounds fit', () => {
+  it('interpolates for 100 ms while preserving a rotation made during the fit', async () => {
+    vi.stubGlobal('matchMedia', () => ({ matches: false }))
+    let nextFrame: FrameRequestCallback | undefined
+    vi.stubGlobal(
+      'requestAnimationFrame',
+      vi.fn((callback: FrameRequestCallback) => {
+        nextFrame = callback
+        return 1
+      })
+    )
+    vi.stubGlobal('cancelAnimationFrame', vi.fn())
+    const bounds = new Box3(new Vector3(-10, -10, -10), new Vector3(10, 10, 10))
+    const controls = new CameraControls(
+      makeCanvas(800, 600),
+      makeConnectionManager({ width: 800, height: 600 }),
+      unusedSettings,
+      () => ({
+        getFitBounds: () => bounds,
+        getSelectionBounds: () => undefined,
+      })
+    )
+    controls.localCameraMode = true
+    controls.camera.position.set(0, 0, 1000)
+    controls.target.set(0, 0, 0)
+    controls.camera.lookAt(controls.target)
+    const started = performance.now()
+    const pending = controls.zoomToFit({ padding: 0.1, duration: 100 })
+    expect(controls.camera.position.z).toBe(1000)
+    nextFrame?.(started + 50)
+    const midway = controls.camera.position.length()
+    expect(midway).toBeLessThan(1000)
+    controls.camera.rotateY(0.2)
+    const rotation = controls.camera.quaternion.clone()
+    nextFrame?.(started + 110)
+    await pending
+    expect(controls.camera.position.length()).toBeLessThan(midway)
+    expect(controls.camera.quaternion.equals(rotation)).toBe(true)
+    expect(controls.zoomInteractionRevision).toBe(0)
+    expect(
+      controls.camera.position
+        .clone()
+        .normalize()
+        .distanceTo(new Vector3(0, 0, 1).applyQuaternion(rotation))
+    ).toBeLessThan(1e-8)
+  })
+})
+
+describe('manual zoom takeover', () => {
+  it('cancels an active refit when a local zoom is applied', async () => {
+    vi.stubGlobal('matchMedia', () => ({ matches: false }))
+    let frame: FrameRequestCallback | undefined
+    vi.stubGlobal(
+      'requestAnimationFrame',
+      vi.fn((callback: FrameRequestCallback) => {
+        frame = callback
+        return 1
+      })
+    )
+    const cancel = vi.fn()
+    vi.stubGlobal('cancelAnimationFrame', cancel)
+    const bounds = new Box3(new Vector3(-10, -10, -10), new Vector3(10, 10, 10))
+    const controls = new CameraControls(
+      makeCanvas(800, 600),
+      makeConnectionManager({ width: 800, height: 600 }),
+      unusedSettings,
+      () => ({
+        getFitBounds: () => bounds,
+        getSelectionBounds: () => undefined,
+      })
+    )
+    controls.localCameraMode = true
+    controls.camera.position.set(0, 0, 1000)
+    controls.target.set(0, 0, 0)
+    const pending = controls.zoomToFit({ padding: 0.1, duration: 100 })
+    const time = performance.now()
+    frame?.(time + 30)
+    controls.pendingZoom = 0.8
+    controls.update()
+    const position = controls.camera.position.clone()
+    await pending
+    expect(controls.zoomInteractionRevision).toBe(1)
+    expect(cancel).toHaveBeenCalled()
+    frame?.(time + 200)
+    expect(controls.camera.position.equals(position)).toBe(true)
+  })
+})
+
+describe('cumulative automatic fit threshold', () => {
+  it.each([false, true])(
+    'compares against the last applied scale (orthographic: %s)',
+    async (orthographic) => {
+      const bounds = new Box3(
+        new Vector3(-10, -10, -10),
+        new Vector3(10, 10, 10)
+      )
+      const controls = new CameraControls(
+        makeCanvas(800, 600),
+        makeConnectionManager({ width: 800, height: 600 }),
+        unusedSettings,
+        () => ({
+          getFitBounds: () => bounds,
+          getSelectionBounds: () => undefined,
+        })
+      )
+      controls.localCameraMode = true
+      if (orthographic) controls.useOrthographicCamera()
+      await controls.zoomToFit({ padding: 0.1 })
+      const original = controls.camera.position.clone()
+      const zoom = controls.camera.zoom
+      const rotation = controls.camera.quaternion.clone()
+      bounds.min.multiplyScalar(1.3)
+      bounds.max.multiplyScalar(1.3)
+      await controls.zoomToFit({ padding: 0.1, minScaleChange: 0.5 })
+      expect(controls.camera.position.equals(original)).toBe(true)
+      expect(controls.camera.zoom).toBe(zoom)
+      bounds.min.multiplyScalar(1.3)
+      bounds.max.multiplyScalar(1.3)
+      await controls.zoomToFit({ padding: 0.1, minScaleChange: 0.5 })
+      expect(controls.camera.position.distanceTo(controls.target)).toBeCloseTo(
+        original.length() * 1.69
+      )
+      expect(controls.camera.quaternion.equals(rotation)).toBe(true)
+      const applied = controls.camera.position.clone()
+      bounds.translate(new Vector3(1, 0, 0))
+      await controls.zoomToFit({ padding: 0.1, minScaleChange: 0.5 })
+      expect(controls.camera.position.equals(applied)).toBe(true)
+    }
+  )
+})
