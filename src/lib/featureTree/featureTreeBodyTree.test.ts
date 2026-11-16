@@ -62,6 +62,40 @@ function bodies(...artifacts: BodyArtifact[]) {
 }
 
 describe('body feature hierarchy', () => {
+  it('keeps imported input features in an assembly-authored body without repeating the import wrapper', () => {
+    const imported = {
+      ...sweep('input', 10),
+      consumed: true,
+      codeRef: codeRef(10, 1),
+    }
+    const creation = { ...call(10), sourceRange: codeRef(10, 1).range }
+    const parent: Extract<Operation, { type: 'ModuleInstance' }> = {
+      type: 'ModuleInstance',
+      name: 'part',
+      moduleId: 1,
+      sourceRange: codeRef(0).range,
+      nodePath: { steps: [] },
+    }
+    const result: BodyArtifact = {
+      type: 'compositeSolid',
+      id: 'assembly-result',
+      subType: 'union',
+      consumed: false,
+      solidIds: [imported.id],
+      toolIds: [],
+      codeRef: codeRef(30),
+    }
+    const combine = { ...call(30), name: 'union' }
+    const tree = buildBodyOperationTree(
+      [{ parent, children: [creation] }, combine],
+      bodies(result),
+      graph(imported, result)
+    )
+    expect(tree.nodes[1]).toEqual({
+      body: tree.branches[0],
+      children: [creation, combine],
+    })
+  })
   it('retains split output identities when graph order, offsets and engine IDs change', () => {
     function execute(offset: number, reverse: boolean) {
       const outputs = [0, 1].map(

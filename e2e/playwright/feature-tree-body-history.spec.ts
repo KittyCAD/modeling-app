@@ -39,8 +39,11 @@ body001 = extrude(region001, length = 5mm)`
     await bodyToggle.click()
     await bodyToggle.click()
     await expect(sketchToggle).toHaveAttribute('aria-expanded', 'false')
+    const editedCode = await page.evaluate(
+      () => window.app.singletons.kclManager.code
+    )
     await scene.waitForExecutionDoneAfter(() =>
-      editor.replaceCode(code, `// Shift source offsets\n${code}`)
+      editor.replaceCode('', `// Shift source offsets\n${editedCode}`)
     )
     await expect(bodyToggle).toHaveAttribute('aria-expanded', 'true')
     await expect(sketchToggle).toHaveAttribute('aria-expanded', 'false')

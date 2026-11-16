@@ -228,14 +228,9 @@ export function buildBodyOperationTree(
       return assigned.has(node) ? [] : [node]
     })
   }
-  function unwrap(
-    items: OperationTreeNode[],
-    path: number[]
-  ): OperationTreeNode[] {
+  function unwrap(items: OperationTreeNode[]): OperationTreeNode[] {
     return items.flatMap((node): OperationTreeNode[] =>
-      isOperationTreeBranch(node) && path.includes(node.parent.moduleId)
-        ? unwrap(node.children, path)
-        : [node]
+      isOperationTreeBranch(node) ? unwrap(node.children) : [node]
     )
   }
   function assemble(
@@ -255,7 +250,7 @@ export function buildBodyOperationTree(
     for (const body of branches.filter((b) => b.ownerModuleId === moduleId)) {
       result.push({
         body,
-        children: unwrap(body.operations, modulePaths.get(moduleId) ?? []),
+        children: unwrap(body.operations),
       })
     }
     return result
