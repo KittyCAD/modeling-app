@@ -2,20 +2,6 @@ import { TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { settingsToToml, tomlToSettings } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => {
-    const peers: RTCPeerConnection[] = []
-    ;(window as any).__diagnosticPeers = peers
-    const NativePeer = window.RTCPeerConnection
-    window.RTCPeerConnection = class extends NativePeer {
-      constructor(...args: ConstructorParameters<typeof RTCPeerConnection>) {
-        super(...args)
-        peers.push(this)
-      }
-    }
-  })
-})
-
 test.afterEach(async ({ page }, testInfo) => {
   const capture = () => page.evaluate(async () => {
     const video = document.querySelector<HTMLVideoElement>('#video-stream')
@@ -56,7 +42,6 @@ test.afterEach(async ({ page }, testInfo) => {
       incoming,
       streamMatches: stream === window.engineCommandManager.connection?.mediaStream,
       trackMatches: stream?.getVideoTracks()[0] === peer?.getReceivers().find(r => r.track.kind === 'video')?.track,
-      peers: ((window as any).__diagnosticPeers as RTCPeerConnection[] | undefined)?.map(p => ({ current: p === peer, state: p.connectionState, tracks: p.getReceivers().map(r => r.track.readyState) })),
     }
   })
   const before = await capture()
@@ -94,17 +79,6 @@ test.afterEach(async ({ page }, testInfo) => {
   })
   await page.waitForTimeout(2000)
   await testInfo.attach('video-after-reattach', { body: JSON.stringify(await capture()), contentType: 'application/json' })
-  await page.evaluate(() => {
-    const current = window.engineCommandManager.connection?.peerConnection
-    for (const peer of (window as any).__diagnosticPeers as RTCPeerConnection[]) {
-      if (peer !== current) {
-        for (const receiver of peer.getReceivers()) receiver.track.stop()
-        peer.close()
-      }
-    }
-  })
-  await page.waitForTimeout(2000)
-  await testInfo.attach('video-after-stop-old-tracks', { body: JSON.stringify(await capture()), contentType: 'application/json' })
 })
 
 test(
