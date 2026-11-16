@@ -63,7 +63,6 @@ import type DenoiseNode from 'three/examples/jsm/tsl/display/DenoiseNode.js'
 import { denoise } from 'three/examples/jsm/tsl/display/DenoiseNode.js'
 import type GTAONode from 'three/examples/jsm/tsl/display/GTAONode.js'
 import { ao } from 'three/examples/jsm/tsl/display/GTAONode.js'
-import { smaa } from 'three/examples/jsm/tsl/display/SMAANode.js'
 import {
   color,
   frontFacing,
@@ -134,7 +133,7 @@ type AmbientOcclusionPipeline = {
   aoPass: GTAONode
   denoisePass: DenoiseNode | null
   denoiseNoiseTexture: Texture | null
-  antialiasPass: ReturnType<typeof smaa>
+  colorPass: PassNode
 }
 type DisposableGpuDevice = {
   destroy: () => void
@@ -797,8 +796,7 @@ export class LocalRenderer {
     this.ambientOcclusionPipeline?.aoPass.dispose()
     this.ambientOcclusionPipeline?.denoiseNoiseTexture?.dispose()
     this.ambientOcclusionPipeline?.denoisePass?.dispose()
-    this.ambientOcclusionPipeline?.antialiasPass.textureNode.dispose()
-    this.ambientOcclusionPipeline?.antialiasPass.dispose()
+    this.ambientOcclusionPipeline?.colorPass.dispose()
     this.ambientOcclusionPipeline = null
   }
 
@@ -854,8 +852,8 @@ export class LocalRenderer {
         if (this.ambientOcclusionPipeline?.camera !== camera) {
           this.disposeAmbientOcclusionPipeline()
 
-          // GTAO expects a regular depth texture. The renderer itself can keep
-          // using MSAA, but this intermediate pass must be single-sampled.
+          // GTAO needs single-sampled depth/normals. Render color separately so
+          // geometry and edges retain MSAA coverage before AO is composited.
           const scenePass = pass(scene, camera, {
             samples: 0,
           })
@@ -867,9 +865,10 @@ export class LocalRenderer {
               })
             )
           }
-          const scenePassColor = LOCAL_WEBGPU_GTAO_USE_NORMAL_MRT
-            ? scenePass.getTextureNode('output')
-            : scenePass.getTextureNode()
+          const colorPass = pass(scene, camera, {
+            samples: renderer.samples,
+          })
+          const scenePassColor = colorPass.getTextureNode()
           const scenePassNormal = LOCAL_WEBGPU_GTAO_USE_NORMAL_MRT
             ? scenePass.getTextureNode('normal')
             : null
@@ -903,12 +902,9 @@ export class LocalRenderer {
           // Preserve some indirect light even at maximum occlusion while leaving
           // enough contrast to make the setting visibly effective.
           const ambientOcclusion = aoOutput.r.mul(0.8).add(0.2)
-          // The single-sampled scene texture has no MSAA coverage to resolve.
-          // Smooth its edges before the selection renderer applies output color.
-          const antialiasPass = smaa(
-            scenePassColor.mul(vec4(vec3(ambientOcclusion), 1))
+          pipeline.outputNode = scenePassColor.mul(
+            vec4(vec3(ambientOcclusion), 1)
           )
-          pipeline.outputNode = antialiasPass.getTextureNode()
 
           this.ambientOcclusionPipeline = {
             camera,
@@ -917,7 +913,7 @@ export class LocalRenderer {
             aoPass,
             denoisePass,
             denoiseNoiseTexture,
-            antialiasPass,
+            colorPass,
           }
         }
 

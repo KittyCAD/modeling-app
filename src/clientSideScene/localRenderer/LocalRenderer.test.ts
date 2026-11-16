@@ -54,7 +54,7 @@ type RendererInternals = {
     aoPass: { dispose(): void }
     denoisePass: { dispose(): void } | null
     denoiseNoiseTexture: { dispose(): void } | null
-    antialiasPass: { dispose(): void; textureNode: { dispose(): void } }
+    colorPass: { dispose(): void }
   } | null
 }
 
@@ -530,10 +530,10 @@ describe('local GLB loading', () => {
       aoPass: { dispose },
       denoisePass: null,
       denoiseNoiseTexture: null,
-      antialiasPass: { dispose, textureNode: { dispose } },
+      colorPass: { dispose },
     }
     f.renderer.setEnableSSAO(false)
-    expect(dispose).toHaveBeenCalledTimes(5)
+    expect(dispose).toHaveBeenCalledTimes(4)
     expect(f.state.ambientOcclusionPipeline).toBeNull()
     f.renderer.dispose()
   })
