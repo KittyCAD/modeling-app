@@ -47,6 +47,30 @@ describe('unit testing engine connection', () => {
     vi.unstubAllGlobals()
   })
 
+  it.each<RTCPeerConnectionState>([
+    'new',
+    'connecting',
+    'connected',
+    'disconnected',
+    'failed',
+  ])('closes a %s peer connection and tolerates repeated teardown', (state) => {
+    const { connection } = createUnitTestConnection({ webrtc: false })
+    const peer = {
+      connectionState: state,
+      close: vi.fn(() => {
+        peer.connectionState = 'closed'
+      }),
+    }
+    connection.peerConnection = peer as unknown as RTCPeerConnection
+
+    connection.disconnectPeerConnection()
+    expect(peer.connectionState).toBe('closed')
+    expect(peer.close).toHaveBeenCalledOnce()
+
+    connection.disconnectPeerConnection()
+    expect(peer.close).toHaveBeenCalledOnce()
+  })
+
   it('can disable WebRTC without requesting geometry-only mode', () => {
     createUnitTestConnection({ webrtc: false })
 
