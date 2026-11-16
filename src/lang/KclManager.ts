@@ -1,7 +1,7 @@
 import {
   createSceneExecutionSettings,
   observeSceneExecutionSettings,
-} from '@src/lib/scene/settings'
+} from '@src/lib/kcl/scene/settings'
 import {
   SceneExecutionEvents as KclManagerEvents,
   type SceneExecutionDoneDetail as KclExecutionDoneDetail,
