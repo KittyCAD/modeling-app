@@ -87,5 +87,14 @@ Returning Home releases that opening's editors and poller.
    simultaneously. A write against an outdated revision adopts the cloud version
    without a dialog. Use disposable work: the competing local edit is discarded.
 
-`e2e/playwright/cloud-project-shell.spec.ts` exercises autosave, offline editing
-restrictions, and remote adoption against an intercepted cloud API.
+`next/session.test.tsx` exercises cloud autosave, revision-conflict adoption,
+fresh-session reopening, offline status and read-only tabs, blocked Code edits,
+and saving pending changes after reconnecting. It uses the real registry,
+editors, saving, mounted file operations, and cloud runtime with fake timers and
+mocked cloud API calls; no browser, engine, or Wasm binary is needed.
+
+Project-card routing and cloud loading are already covered by
+`src/components/AppProjectCard/AppProjectCard.spec.tsx` and
+`src/lib/routeLoaders.test.ts`. Generic autosave and read-only policy behavior
+belongs in `src/lib/save/autosave/autosave.test.ts`; snapshot tree and metadata
+variations are covered by `next/snapshot.test.ts` properties.

@@ -1,4 +1,11 @@
 import '@src/lib/projectSession/next/testFeature'
+import { act, cleanup, render, screen } from '@testing-library/react'
+import { CloudProjectStatus } from '@src/lib/cloudProjects/next/CloudProjectStatus'
+import { EditorsPane } from '@src/lib/editors/EditorsPane'
+import { codeSurface } from '@src/lib/editors/testViews'
+import { editorTabIndicatorsValueSpec } from '@src/lib/editors/registry/contract'
+import { LayoutType } from '@src/lib/layout/types'
+import { EDITOR_SAVE_DEBOUNCE_MS } from '@src/lib/constants'
 import nextSessionExtension from '@src/lib/cloudProjects/registry/nextSession'
 import routerExtension from '@src/registry/extensions/router'
 import { routerService } from '@src/registry/contracts/router'
@@ -73,11 +80,14 @@ beforeEach(() => {
   vi.mocked(api.updateRemoteProject).mockResolvedValue(remoteSnapshot('2'))
 })
 afterEach(async () => {
+  cleanup()
   stop?.()
   registry?.[Symbol.dispose]()
   await fileServices?.dispose()
   await cloudServices?.dispose()
   vi.resetAllMocks()
+  vi.restoreAllMocks()
+  vi.useRealTimers()
 })
 
 async function setup(bridge = false) {
@@ -111,7 +121,12 @@ async function setup(bridge = false) {
   })
   const editors = registry.get(editorsService)
   const editor = requireSuccess(
-    editors.openEditor(`${root}/main.kcl`, 'original')
+    editors.openEditor(
+      `${root}/main.kcl`,
+      new TextDecoder().decode(
+        await fileServices.operations.readFile(`${root}/main.kcl`)
+      )
+    )
   )
   const saving = registry.get(editorSaveService)
   stop = bridge
@@ -251,4 +266,177 @@ it('withdraws cloud policies and the snapshot veto outside the new cloud route',
   } finally {
     online.mockRestore()
   }
+})
+
+async function openCloudShell() {
+  const opened = await setup(true)
+  registry.get(routerService).setLocation({
+    pathname: '/project/one',
+    search: '',
+    hash: '',
+    state: null,
+    key: 'test',
+  })
+  await vi.waitFor(() =>
+    expect(
+      registry
+        .get(editorAutosavePoliciesValueSpec)
+        .find((policy) => policy.id === 'cloud.autosave')?.required.value
+    ).toBe(true)
+  )
+  const { editors, editor } = opened
+  const code = codeSurface(editors, editor)
+  render(
+    <>
+      <CloudProjectStatus app={{ registry }} className="" />
+      <EditorsPane
+        editors={editors}
+        indicators={registry.signal(editorTabIndicatorsValueSpec)}
+        layout={{
+          id: 'editors',
+          label: 'Editors',
+          type: LayoutType.Simple,
+          areaType: 'editors',
+        }}
+      />
+    </>
+  )
+  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+  return { ...opened, code }
+}
+
+it('autosaves cloud edits, adopts a conflicting remote write, and reopens the accepted contents', async () => {
+  const { editor, saving } = await openCloudShell()
+  vi.mocked(api.updateRemoteProject).mockImplementationOnce(
+    async ({ files }) => {
+      const uploaded = files.map(({ relativePath, data }) => ({
+        relativePath,
+        data: new Uint8Array(data),
+      }))
+      const saved = remoteSnapshot('2', uploaded)
+      vi.mocked(api.getRemoteProject).mockResolvedValue(saved)
+      vi.mocked(parseProjectArchive).mockResolvedValue(uploaded)
+      return saved
+    }
+  )
+  act(() => {
+    editor.dispatch({
+      changes: { from: 0, to: editor.state.doc.length, insert: 'local edit' },
+    })
+  })
+  expect(
+    screen.getByRole('img', { name: 'Unsaved changes' })
+  ).toBeInTheDocument()
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS)
+    await vi.waitFor(() =>
+      expect(saving.state(editor).peek().dirty).toBe(false)
+    )
+  })
+  expect(api.updateRemoteProject).toHaveBeenCalledWith(
+    expect.objectContaining({
+      expectedRevision: '1',
+      files: expect.arrayContaining([file('main.kcl', 'local edit')]),
+    })
+  )
+  expect(
+    screen.queryByRole('img', { name: 'Unsaved changes' })
+  ).not.toBeInTheDocument()
+
+  const remote = archive('remote edit')
+  vi.mocked(api.getRemoteProject).mockResolvedValue(remoteSnapshot('3', remote))
+  vi.mocked(parseProjectArchive).mockResolvedValue(remote)
+  vi.mocked(api.updateRemoteProject).mockRejectedValueOnce(
+    new api.CloudApiError(409, 'Revision changed')
+  )
+  act(() => {
+    editor.dispatch({
+      changes: {
+        from: 0,
+        to: editor.state.doc.length,
+        insert: 'conflicting local edit',
+      },
+    })
+  })
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS)
+    await vi.waitFor(() => expect(editor.contents.peek()).toBe('remote edit'))
+  })
+  expect(saving.state(editor).peek()).toMatchObject({
+    dirty: false,
+    saving: false,
+    error: undefined,
+  })
+  expect(
+    screen.queryByRole('img', { name: 'Unsaved changes' })
+  ).not.toBeInTheDocument()
+  const updates = vi.mocked(api.updateRemoteProject).mock.calls
+  expect(updates).toHaveLength(2)
+  expect(updates[1][0]).toMatchObject({ expectedRevision: '2' })
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS)
+  })
+  expect(api.updateRemoteProject).toHaveBeenCalledTimes(2)
+
+  cleanup()
+  stop()
+  registry[Symbol.dispose]()
+  await fileServices.dispose()
+  await cloudServices.dispose()
+  const reopened = await setup()
+  expect(reopened.editor.contents.peek()).toBe('remote edit')
+  expect(reopened.saving.state(reopened.editor).peek().dirty).toBe(false)
+})
+
+it('shows offline status, blocks Code edits, and autosaves the pending cloud edit after reconnecting', async () => {
+  const { editor, code, saving } = await openCloudShell()
+  act(() => {
+    editor.dispatch({
+      changes: { from: 0, to: editor.state.doc.length, insert: 'pending edit' },
+    })
+  })
+  const online = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
+  await act(async () => {
+    window.dispatchEvent(new Event('offline'))
+  })
+  expect(screen.getByRole('status')).toHaveTextContent('Offline')
+  expect(screen.getByRole('tab', { name: /main.kcl/ })).toHaveTextContent(
+    'Read-only'
+  )
+  expect(code.contentDOM).toHaveAttribute('contenteditable', 'false')
+  act(() => {
+    code.dispatch({ changes: { from: 0, insert: 'blocked edit' } })
+  })
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS * 2)
+  })
+  expect(editor.contents.peek()).toBe('pending edit')
+  expect(code.state.doc.toString()).toBe('pending edit')
+  expect(api.updateRemoteProject).not.toHaveBeenCalled()
+  expect(saving.state(editor).peek().dirty).toBe(true)
+
+  online.mockReturnValue(true)
+  await act(async () => {
+    window.dispatchEvent(new Event('online'))
+  })
+  expect(code.contentDOM).toHaveAttribute('contenteditable', 'true')
+  expect(screen.getByRole('tab', { name: /main.kcl/ })).not.toHaveTextContent(
+    'Read-only'
+  )
+  expect(screen.queryByText('Offline', { exact: true })).not.toBeInTheDocument()
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS)
+    await vi.waitFor(() =>
+      expect(saving.state(editor).peek().dirty).toBe(false)
+    )
+  })
+  expect(api.updateRemoteProject).toHaveBeenCalledExactlyOnceWith(
+    expect.objectContaining({
+      expectedRevision: '1',
+      files: expect.arrayContaining([file('main.kcl', 'pending edit')]),
+    })
+  )
+  expect(
+    screen.queryByRole('img', { name: 'Unsaved changes' })
+  ).not.toBeInTheDocument()
 })

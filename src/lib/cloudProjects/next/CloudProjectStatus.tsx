@@ -10,7 +10,13 @@ import { isOffline } from '@src/lib/networkStatus'
 import { reportRejection } from '@src/lib/trap'
 
 /** Connectivity and persistence status belong to the project, across all editor modes. */
-export function CloudProjectStatus({ app, className }: AppHeaderItemProps) {
+export function CloudProjectStatus({
+  app,
+  className,
+}: {
+  app: Pick<AppHeaderItemProps['app'], 'registry'>
+  className: string
+}) {
   useSignals()
   const { registry } = app
   const [offline, setOffline] = useState(isOffline)
