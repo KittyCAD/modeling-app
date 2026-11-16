@@ -1,6 +1,11 @@
+import { kclExecutionSettingsRegistryItem } from '@src/lib/kcl/scene/settingsRegistry'
 import { kcl } from '@kittycad/codemirror-lang-kcl'
 import { editorKclHighlight } from '@src/editor/plugins/theme'
-import { defineRegistryItemFactory, provide } from '@kittycad/registry'
+import {
+  defineRegistryItem,
+  defineRegistryItemFactory,
+  provide,
+} from '@kittycad/registry'
 import {
   codeEditorsExtensionValueSpec,
   editorLanguagesValueSpec,
@@ -26,4 +31,10 @@ const extension = defineRegistryItemFactory(() => {
   }
 }, 'kcl')
 
-export default withProjectShellFeature(extension, 'kcl')
+export default defineRegistryItem({
+  id: 'kcl.extension',
+  uses: [
+    kclExecutionSettingsRegistryItem,
+    withProjectShellFeature(extension, 'kcl'),
+  ],
+})

@@ -101,9 +101,6 @@ export interface SettingComponentProps<T = unknown> {
 }
 
 export interface SettingProps<T = unknown> {
-  /** Native scene input: execute again, or rebuild the streamed scene before executing. */
-  sceneExecution?: 'execute' | 'rebuild-streamed'
-
   /**
    * The default value of the setting, used if no user or project value is set
    */

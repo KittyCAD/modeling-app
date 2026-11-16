@@ -1,3 +1,4 @@
+import { kclExecutionSettingsService } from '@src/lib/kcl/scene/settingsContract'
 import type { SnapshotFrom } from 'xstate'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import {
@@ -730,6 +731,7 @@ export class App implements AppSubsystems {
       modelingReady: () => this.project?.modelingReady ?? Promise.resolve(),
       projectSession: this.projectSession,
       settings: this.settings.actor,
+      kclExecutionSettings: this.registry.get(kclExecutionSettingsService),
       wasmInstancePromise: this.wasmPromise,
       commandBar: this.commands.actor,
       projectPath: signal(''),

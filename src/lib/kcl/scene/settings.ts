@@ -4,7 +4,7 @@ import {
   untracked,
   type ReadonlySignal,
 } from '@preact/signals-core'
-import { Setting } from '@src/lib/settings/Setting'
+import type { KclExecutionInput } from '@src/lib/kcl/scene/settingsContract'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
@@ -19,7 +19,8 @@ export interface SceneExecutionSettings {
 
 /** Native configuration and refresh inputs share the effective user/project settings. */
 export function createSceneExecutionSettings(
-  getSettings: () => SettingsType
+  getSettings: () => SettingsType,
+  declarations: ReadonlySignal<readonly KclExecutionInput[]>
 ): SceneExecutionSettings {
   const configuration = computed(() =>
     jsAppSettings(getSettings(), { reactive: true })
@@ -27,13 +28,10 @@ export function createSceneExecutionSettings(
   const inputs = computed(() => {
     const execute: unknown[] = []
     const rebuild: unknown[] = []
-    for (const [category, settings] of Object.entries(getSettings())) {
-      for (const [name, setting] of Object.entries(settings)) {
-        if (!(setting instanceof Setting) || !setting.sceneExecution) continue
-        const input = [category, name, setting.currentSignal.value]
-        if (setting.sceneExecution === 'execute') execute.push(input)
-        else rebuild.push(input)
-      }
+    for (const input of declarations.value) {
+      const value = [input.id, input.read(getSettings())]
+      if (input.refresh === 'execute') execute.push(value)
+      else rebuild.push(value)
     }
     return {
       execute: JSON.stringify(execute),

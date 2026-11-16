@@ -5,12 +5,20 @@ import {
   observeSceneExecutionSettings,
 } from '@src/lib/kcl/scene/settings'
 import { createSettings } from '@src/lib/settings/initialSettings'
-import { Setting } from '@src/lib/settings/Setting'
+import { createTestKclExecutionSettings } from '@src/lib/kcl/scene/settingsTestUtils'
+import { Registry, Slot, defineRegistryItem } from '@kittycad/registry'
+import { coreKclExecutionInputs } from '@src/lib/kcl/scene/settingsRegistry'
+import {
+  kclExecutionInputsValueSpec,
+  provideKclExecutionInput,
+} from '@src/lib/kcl/scene/settingsContract'
+import kclExtension from '@src/lib/kcl/registry'
+import { editorLanguagesValueSpec } from '@src/lib/editors/registry/contract'
 import { expect, it, vi } from 'vitest'
 
-it('discovers opted-in settings and follows effective values rather than hidden overrides', () => {
+it('follows core KCL inputs and effective values rather than hidden overrides', () => {
   const settings = createSettings()
-  const snapshots = createSceneExecutionSettings(() => settings)
+  const snapshots = createTestKclExecutionSettings(() => settings)
   const revision = snapshots.revision(() => false)
   const before = revision.peek()
   settings.textEditor.blinkingCursor.user = false
@@ -25,23 +33,11 @@ it('discovers opted-in settings and follows effective values rather than hidden 
   expect(
     snapshots.configuration.peek().settings?.modeling?.highlight_edges
   ).toBe(false)
-  const custom = new Setting({
-    defaultValue: 1,
-    validate: () => true,
-    sceneExecution: 'execute',
-  })
-  Object.assign(settings.modeling, { testExecutionInput: custom })
-  // Replacing the setting container models actor-level adoption of an extended configuration.
-  const extended = signal(settings)
-  const dynamic = createSceneExecutionSettings(() => extended.value)
-  const initial = dynamic.executeRevision.peek()
-  custom.user = 2
-  expect(dynamic.executeRevision.peek()).not.toBe(initial)
 })
 
 it('preserves revisions across equivalent settings replacements and tracks the replacement', () => {
   const settings = signal(createSettings())
-  const snapshots = createSceneExecutionSettings(() => settings.value)
+  const snapshots = createTestKclExecutionSettings(() => settings.value)
   const revision = snapshots.revision(() => false)
   const before = revision.peek()
   settings.value = createSettings()
@@ -55,7 +51,7 @@ it('preserves revisions across equivalent settings replacements and tracks the r
 
 it('opts backface changes into streamed rebuilds while local rendering updates directly', () => {
   const settings = createSettings()
-  const snapshots = createSceneExecutionSettings(() => settings)
+  const snapshots = createTestKclExecutionSettings(() => settings)
   const streamed = snapshots.revision(() => false)
   const local = snapshots.revision(() => true)
   const oldStreamed = streamed.peek()
@@ -80,7 +76,7 @@ function observer() {
     ) => Promise<void>
   >(async () => {})
   const current = signal(true)
-  const snapshots = createSceneExecutionSettings(() => settings)
+  const snapshots = createTestKclExecutionSettings(() => settings)
   const dispose = observeSceneExecutionSettings({
     settings: snapshots,
     active: () => active.value,
@@ -221,3 +217,60 @@ it.each(['close', 'deactivate', 'replace', 'reactivate', 'reconnect'] as const)(
     }
   }
 )
+
+it('composes added and removed KCL inputs for every consumer without changing setting definitions', () => {
+  const registry = new Registry()
+  const extra = new Slot()
+  registry.configure([coreKclExecutionInputs, extra.of()])
+  const settings = createSettings()
+  const inputs = registry.signal(kclExecutionInputsValueSpec)
+  const first = createSceneExecutionSettings(() => settings, inputs)
+  const second = createSceneExecutionSettings(() => settings, inputs)
+  const baseline = first.executeRevision.peek()
+  try {
+    settings.modeling.enableTouchControls.user = false
+    expect(first.executeRevision.peek()).toBe(baseline)
+    registry.reconfigure(extra, [
+      defineRegistryItem({
+        provides: [
+          provideKclExecutionInput({
+            id: 'test.touch-controls',
+            read: (s) => s.modeling.enableTouchControls.currentSignal.value,
+            refresh: 'execute',
+          }),
+        ],
+      }),
+    ])
+    const registered = first.executeRevision.peek()
+    expect(registered).not.toBe(baseline)
+    settings.modeling.enableTouchControls.user = true
+    expect(first.executeRevision.peek()).not.toBe(registered)
+    expect(second.executeRevision.peek()).toBe(first.executeRevision.peek())
+    registry.reconfigure(extra, [])
+    expect(first.executeRevision.peek()).toBe(baseline)
+    settings.modeling.enableTouchControls.user = false
+    expect(first.executeRevision.peek()).toBe(baseline)
+    expect(second.executeRevision.peek()).toBe(baseline)
+  } finally {
+    registry[Symbol.dispose]()
+  }
+})
+
+it('keeps legacy KCL refresh inputs installed when project-shell editing is disabled', async () => {
+  const registry = new Registry()
+  registry.configure([kclExtension])
+  try {
+    await Promise.resolve()
+    expect(registry.get(editorLanguagesValueSpec)).toEqual([])
+    const settings = createSettings()
+    const snapshots = createSceneExecutionSettings(
+      () => settings,
+      registry.signal(kclExecutionInputsValueSpec)
+    )
+    const before = snapshots.executeRevision.peek()
+    settings.modeling.highlightEdges.user = false
+    expect(snapshots.executeRevision.peek()).not.toBe(before)
+  } finally {
+    registry[Symbol.dispose]()
+  }
+})

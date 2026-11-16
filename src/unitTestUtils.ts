@@ -1,3 +1,5 @@
+import { createTestKclExecutionSettings } from '@src/lib/kcl/scene/settingsTestUtils'
+import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import { createProjectForTest } from '@src/lib/projectTestUtils'
 import { defineRegistryItem } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
@@ -129,6 +131,9 @@ export async function buildTheWorldAndConnectToEngine({
     }),
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
+    kclExecutionSettings: createTestKclExecutionSettings(() =>
+      getSettingsFromActorContext(settingsActor)
+    ),
     commandBar: commandBarActor,
     engineCommandManager,
     rustContext,
@@ -250,6 +255,9 @@ export async function buildTheWorldAndNoEngineConnection(
     }),
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
+    kclExecutionSettings: createTestKclExecutionSettings(() =>
+      getSettingsFromActorContext(settingsActor)
+    ),
     commandBar: commandBarActor,
     engineCommandManager,
     rustContext,
