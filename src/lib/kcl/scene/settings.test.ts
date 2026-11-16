@@ -3,7 +3,7 @@ import {
   type SceneExecutionSettings,
   createSceneExecutionSettings,
   observeSceneExecutionSettings,
-} from '@src/lib/scene/settings'
+} from '@src/lib/kcl/scene/settings'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { Setting } from '@src/lib/settings/Setting'
 import { expect, it, vi } from 'vitest'
