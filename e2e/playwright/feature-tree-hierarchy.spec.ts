@@ -15,10 +15,10 @@ test(
     await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await toolbar.openFeatureTreePane()
     await expect(page.getByTestId('feature-tree-body')).toHaveCount(6)
-    // All body disclosures start closed; no geometry feature is visible at root.
+    // Only the six body rows and three standard planes are visible initially.
     await expect(
       toolbar.featureTreePane.getByTestId('feature-tree-operation-item')
-    ).toHaveCount(0)
+    ).toHaveCount(9)
     await toolbar.expandFeatureTreeBodies()
     await expect(
       toolbar.featureTreePane.getByRole('button', { name: /Offset Plane/ })
@@ -73,19 +73,18 @@ test(
     }
     const booleanBody = part
       .getByTestId('feature-tree-body-branch')
-      .filter({ has: page.getByRole('button', { name: /solid001/ }) })
+      .filter({
+        has: page.getByRole('button', { name: 'Subtract', exact: true }),
+      })
     await expect(
-      booleanBody.getByRole('button', { name: /extrude001/ })
+      booleanBody.getByRole('button', { name: 'Extrude', exact: true })
     ).toBeVisible()
     await expect(
-      booleanBody.getByRole('button', { name: /revolve001/ })
+      booleanBody.getByRole('button', { name: 'Revolve', exact: true })
     ).toBeVisible()
     await expect(
-      booleanBody.getByRole('button', { name: /sketch001/ })
-    ).toBeVisible()
-    await expect(
-      booleanBody.getByRole('button', { name: /sketch002/ })
-    ).toBeVisible()
+      booleanBody.getByRole('button', { name: 'Sketch', exact: true })
+    ).toHaveCount(2)
     await testInfo.attach('pc-fan-body-hierarchy', {
       body: await toolbar.featureTreePane.screenshot(),
       contentType: 'image/png',
@@ -126,7 +125,9 @@ body001 = extrude(region001, length = 5mm)`
     await expect(sketchToggle).toHaveAttribute('aria-expanded', 'false')
     await sketchToggle.click()
 
-    await branch.getByRole('button', { name: 'Sketch', exact: true }).dblclick()
+    await branch
+      .getByRole('button', { name: 'sketch001', exact: true })
+      .dblclick()
     await expect(toolbar.exitSketchBtn).toBeEnabled()
     await toolbar.exitSketch()
     await scene.settled()
