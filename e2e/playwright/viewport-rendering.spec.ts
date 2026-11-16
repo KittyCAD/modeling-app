@@ -2,6 +2,68 @@ import { TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { settingsToToml, tomlToSettings } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
+test.afterEach(async ({ page }, testInfo) => {
+  if (testInfo.status === testInfo.expectedStatus) return
+  const capture = () => page.evaluate(async () => {
+    const video = document.querySelector<HTMLVideoElement>('#video-stream')
+    if (!video) return { missingVideo: true }
+    const stream = video.srcObject instanceof MediaStream ? video.srcObject : null
+    const style = getComputedStyle(video)
+    let pixel: number[] | undefined
+    if (video.readyState >= 2 && video.videoWidth && video.videoHeight) {
+      const canvas = document.createElement('canvas')
+      canvas.width = video.videoWidth
+      canvas.height = video.videoHeight
+      const ctx = canvas.getContext('2d')!
+      ctx.drawImage(video, 0, 0)
+      pixel = [...ctx.getImageData(Math.floor(canvas.width * .9), Math.floor(canvas.height * .3), 1, 1).data]
+    }
+    const peer = window.engineCommandManager.connection?.peerConnection
+    const stats = peer ? await peer.getStats() : undefined
+    const incoming: Record<string, unknown>[] = []
+    stats?.forEach(stat => {
+      if (stat.type === 'inbound-rtp') {
+        incoming.push(Object.fromEntries(['kind', 'bytesReceived', 'framesReceived', 'framesDecoded', 'framesDropped', 'frameWidth', 'frameHeight', 'decoderImplementation'].map(key => [key, stat[key]])))
+      }
+    })
+    return {
+      visibility: document.visibilityState,
+      paused: video.paused,
+      muted: video.muted,
+      readyState: video.readyState,
+      currentTime: video.currentTime,
+      width: video.videoWidth,
+      height: video.videoHeight,
+      error: video.error?.code,
+      display: style.display,
+      visibilityStyle: style.visibility,
+      opacity: style.opacity,
+      tracks: stream?.getVideoTracks().map(track => ({ muted: track.muted, enabled: track.enabled, readyState: track.readyState })),
+      pixel,
+      incoming,
+    }
+  })
+  const before = await capture()
+  const playResult = await page.evaluate(async () => {
+    try {
+      await document.querySelector<HTMLVideoElement>('#video-stream')?.play()
+      return 'resolved'
+    } catch (error) {
+      return String(error)
+    }
+  })
+  await page.waitForTimeout(300)
+  const after = await capture()
+  await testInfo.attach('video-diagnostic', {
+    body: JSON.stringify({ before, playResult, after }, null, 2),
+    contentType: 'application/json',
+  })
+  await testInfo.attach('after-play', {
+    body: await page.screenshot(),
+    contentType: 'image/png',
+  })
+})
+
 test(
   'shared SSAO and cloud rendering styles persist across reloads',
   { tag: '@web' },
