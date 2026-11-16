@@ -2,6 +2,62 @@
 
 use super::*;
 
+#[test]
+fn imported_definition_locations_survive_cache_and_clone() {
+    let code = "import \"part.kcl\" as part";
+    let ast = crate::parsing::parse_str(code, ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast.clone(), Default::default());
+    let navigation_range = SourceRange::new(0, code.len(), ModuleId::default());
+    let node_path = NodePath::from_range(&programs, 0, navigation_range).unwrap();
+    let imports = AHashMap::from_iter([(
+        ModuleId::from_usize(1),
+        ImportCodeRef {
+            range: navigation_range,
+            node_path: node_path.clone(),
+        },
+    )]);
+    let definition_range = SourceRange::new(20, 40, ModuleId::from_usize(1));
+    let code_ref = code_ref_for_range(&programs, 0, definition_range, &imports);
+    assert_eq!(code_ref.range, navigation_range);
+    assert_eq!(code_ref.node_path, node_path);
+    assert_eq!(code_ref.definition_range, Some(definition_range));
+    assert_eq!(code_ref_for_range(&programs, 0, navigation_range, &imports).definition_range, None);
+
+    let id = ArtifactId::new(Uuid::new_v4());
+    let artifact = Artifact::ImportedGeometry(ImportedGeometryArtifact {
+        id,
+        code_ref,
+        consumed: false,
+    });
+    let cached = ArtifactGraph::from_parts(IndexMap::from_iter([(id, artifact.clone())]), 0);
+    let rebuilt = build_artifact_graph(
+        &[],
+        &IndexMap::new(),
+        &ast,
+        &mut IndexMap::new(),
+        cached,
+        &programs,
+        &Default::default(),
+    )
+    .unwrap();
+    assert_eq!(rebuilt.get(&id), Some(&artifact));
+
+    let clone_id = ArtifactId::new(Uuid::new_v4());
+    let clone_range = SourceRange::new(50, 70, ModuleId::from_usize(1));
+    let clone_ref = code_ref_for_range(&programs, 0, clone_range, &imports);
+    let cloned = remap_artifact_for_clone(
+        &artifact,
+        &AHashMap::from_iter([(id, clone_id)]),
+        &clone_ref,
+        clone_id.into(),
+        id,
+    );
+    let Artifact::ImportedGeometry(cloned) = cloned else {
+        panic!("Expected imported geometry");
+    };
+    assert_eq!(cloned.code_ref, clone_ref);
+}
+
 #[tokio::test]
 async fn offset_plane_artifact_transform_includes_function_local_planes_and_units() {
     let result = crate::execution::parse_execute(
