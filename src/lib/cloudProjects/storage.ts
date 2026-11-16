@@ -53,6 +53,7 @@ export function createCloudProjectStorageProvider(
         }),
       batch: (path, run) => cloud.batch(path, run),
       refresh: async (isCurrent, revision) => {
+        if (revision === undefined) return cloud.checkForUpdates(id, isCurrent)
         await cloud.refreshProject(id, isCurrent, revision)
       },
       retry: () => cloud.retry(id),

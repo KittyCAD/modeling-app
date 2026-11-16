@@ -102,6 +102,7 @@ function createHomeProjectActions(
   overrides: Partial<HomeProjectActionsService> = {}
 ): HomeProjectActionsService {
   return {
+    pendingActions: signal(new Map()),
     watchRemoteThumbnail: vi.fn(() => vi.fn()),
     canOpen: vi.fn(() => true),
     canDuplicate: vi.fn(() => true),

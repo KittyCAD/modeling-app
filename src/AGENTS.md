@@ -60,7 +60,7 @@ After reviewing, tell the human what should be smoke tested and whether the PR's
 
 ## Code style
 
-- Format with Biome and lint with ESLint, both covered by `make check`.
+- Check formatting, types, and lints with `make verify`. Use `make format` to apply Biome and Rust formatting changes.
 - Keep TypeScript types understandable and maintainable. Prefer explicit interfaces, straightforward unions, and local type guards over clever conditional types, heavy generics, or type-level plumbing.
 - Use type-only imports for types (`import type { Foo } ...`) because ESLint enforces `@typescript-eslint/consistent-type-imports`.
 - Use `isArray()` from `@src/lib/utils`, and any other helpful utils instead of reinventing your own.
@@ -88,7 +88,8 @@ After reviewing, tell the human what should be smoke tested and whether the PR's
 ## Tests
 
 - Vitest picks the suite from the filename: `*.test.ts(x)` is unit (`npm run test:unit`); `*.spec.ts(x)` is integration (`npm run test:integration`).
-- Unit tests must not import or need `wasm-lib`. To verify, remove `rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm` before `npm run test:unit`.
+- Unit tests must not import or need `wasm-lib`. Check this boundary in a clean checkout without built Wasm; preserve existing local build artifacts.
+- Verify browser snapshots with `npm run test:snapshots:verify`. Update expected snapshots only for intentional UI changes, inspect the diff, then verify again.
 - Prefer targeted Vitest runs while iterating, for example `npm run test:unit -- src/path/to/file.test.ts`.
 - Use property-based testing with `fast-check` for unit-testable logic with many possible permutations.
 - Component tests should prefer user-visible queries (`screen.getByRole`, `screen.getByText`) when practical. `data-testid` is fine for controls or generated content without a stable accessible label.
@@ -100,13 +101,13 @@ After reviewing, tell the human what should be smoke tested and whether the PR's
 For a typical `src/` change, prefer the smallest useful checks first:
 
 ```sh
-make check
+make verify
 npm run test:unit -- src/path/to/file.test.ts
 ```
 
 Before a broad PR, run all tests including web e2e (headless):
 
 ```sh
-make check
+make verify
 make test
 ```

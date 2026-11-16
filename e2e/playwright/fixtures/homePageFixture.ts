@@ -150,9 +150,10 @@ export class HomePageFixture {
 
   openProject = async (projectTitle: string) => {
     await this.projectsLoaded()
-    const projectCard = this.projectCard.locator(
-      this.page.getByText(projectTitle)
-    )
+    const projectCard = this.projectCard.filter({
+      has: this.page.getByText(projectTitle, { exact: true }),
+    })
+    await expect(projectCard).toBeEnabled()
     await projectCard.click()
   }
 

@@ -578,7 +578,7 @@ function storageForTest(): ProjectStorage {
     createMissingEntrypoint: false,
     watch: vi.fn(() => vi.fn()),
     batch: vi.fn(async (_path, run) => run({ ...testFileOperations })),
-    refresh: vi.fn(async () => {}),
+    refresh: vi.fn(async () => undefined),
     retry: vi.fn(async () => {}),
     editorChanged: vi.fn(),
     writeThumbnail: vi.fn(async () => {}),
