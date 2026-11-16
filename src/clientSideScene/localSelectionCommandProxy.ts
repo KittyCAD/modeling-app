@@ -1,4 +1,5 @@
-import type { WebSocketRequest, WebSocketResponse } from '@kittycad/lib'
+import type { WebSocketResponse } from '@kittycad/lib'
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
 
 type StreamDimensions = {
   width: number
@@ -22,6 +23,6 @@ export type LocalSelectionCommandResult = {
  * to answer, so the caller can still send it in the same step.
  */
 export type LocalSelectionCommandHandler = (
-  command: WebSocketRequest,
+  command: EngineCommand,
   context: { streamDimensions: StreamDimensions }
 ) => Promise<LocalSelectionCommandResult | null> | null

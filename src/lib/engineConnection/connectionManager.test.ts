@@ -6,6 +6,7 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
 })
 
 import type { ModelingCmdReq } from '@kittycad/lib'
+import type RustContext from '@src/lib/rustContext'
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
 import type {
   BatchResponse,
@@ -196,6 +197,56 @@ function pendingWasmCommand(manager: ConnectionManager, requestId: string) {
 }
 
 describe('ConnectionManager', () => {
+  it.each([false, true])(
+    'retains ordinary exports but releases ephemeral native snapshots (native=%s)',
+    async (native) => {
+      const manager = createConnectionManager()
+      manager.connection = { send: vi.fn() } as unknown as Connection
+      const rust = { sendResponse: vi.fn().mockResolvedValue(undefined) }
+      const cmd = {
+        type: 'export' as const,
+        entity_ids: [],
+        format: native
+          ? { type: 'native_brep' as const }
+          : { type: 'gltf' as const, storage: 'binary' as const },
+      }
+      const result = manager.sendCommand(
+        'snapshot',
+        {
+          command: { type: 'modeling_cmd_req', cmd_id: 'snapshot', cmd },
+          range: [0, 0, 0],
+          idToRangeMap: {},
+        },
+        true
+      )
+      const response = new MessageEvent('message', {
+        data: JSON.stringify({
+          success: true,
+          request_id: 'snapshot',
+          resp: {
+            type: 'export',
+            data: {
+              files: [
+                {
+                  name: native ? 'preview.brep.json' : 'model.glb',
+                  contents: [123, 125],
+                },
+              ],
+            },
+          },
+        }),
+      })
+      const handleMessage = manager.createMessageHandler(
+        rust as unknown as RustContext
+      )
+      handleMessage(response)
+      await result
+      if (native) handleMessage(response)
+      expect(rust.sendResponse).toHaveBeenCalledTimes(native ? 0 : 1)
+      expect(Boolean(manager.responseMap.snapshot)).toBe(!native)
+    }
+  )
+
   it('identifies actual connection replacement without treating scene resets as a new session', async () => {
     const manager = createConnectionManager()
     const createTransport = () =>
@@ -389,6 +440,107 @@ describe('ConnectionManager', () => {
       expect(sendSceneCommand).toHaveBeenCalledTimes(geometryOnly ? 0 : 5)
       expect(send).toHaveBeenCalledTimes(geometryOnly ? 0 : 1)
     }
+  })
+
+  it('waits for a batch preview before allowing WASM execution to continue', async () => {
+    const manager = createConnectionManager()
+    manager.connection = {} as Connection
+    const finish = manager.trackExecution()
+    vi.spyOn(manager, 'sendCommand').mockResolvedValue([
+      {
+        success: true,
+        request_id: 'batch',
+        resp: { type: 'modeling_batch', data: { responses: {} } },
+      },
+    ])
+    const capture = Promise.withResolvers<undefined>()
+    manager.executionBatchPreview = vi.fn(() => capture.promise)
+    let resumed = false
+    const result = manager
+      .sendModelingCommandFromWasm(
+        'batch',
+        '[0,0,0]',
+        JSON.stringify({
+          type: 'modeling_cmd_batch_req',
+          requests: [],
+          batch_id: 'batch',
+          responses: true,
+        }),
+        '{}'
+      )
+      .then(() => {
+        resumed = true
+      })
+    await vi.waitFor(() =>
+      expect(manager.executionBatchPreview).toHaveBeenCalledTimes(1)
+    )
+    expect(resumed).toBe(false)
+    capture.resolve(undefined)
+    await result
+    expect(resumed).toBe(true)
+    finish()
+  })
+
+  it.each(['begin_execution', 'end_execution', 'export'])(
+    'does not schedule a preview for %s',
+    async (type) => {
+      const manager = createConnectionManager()
+      manager.connection = {} as Connection
+      const finish = manager.trackExecution()
+      vi.spyOn(manager, 'sendCommand').mockResolvedValue([
+        {
+          success: true,
+          resp: { type: 'modeling_batch', data: { responses: {} } },
+        },
+      ])
+      manager.executionBatchPreview = vi.fn().mockResolvedValue(undefined)
+      await manager.sendModelingCommandFromWasm(
+        type,
+        '[0,0,0]',
+        JSON.stringify({
+          type: 'modeling_cmd_req',
+          cmd_id: type,
+          cmd:
+            type === 'export'
+              ? { type, entity_ids: [], format: { type: 'gltf' } }
+              : { type },
+        }),
+        '{}'
+      )
+      expect(manager.executionBatchPreview).not.toHaveBeenCalled()
+      finish()
+    }
+  )
+
+  it('keeps executing when optional preview capture fails', async () => {
+    const manager = createConnectionManager()
+    manager.connection = {} as Connection
+    const finish = manager.trackExecution()
+    vi.spyOn(manager, 'sendCommand').mockResolvedValue([
+      {
+        success: true,
+        request_id: 'batch',
+        resp: { type: 'modeling_batch', data: { responses: {} } },
+      },
+    ])
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    manager.executionBatchPreview = vi.fn(async () => {
+      throw new Error('Nothing to export')
+    })
+    await expect(
+      manager.sendModelingCommandFromWasm(
+        'batch',
+        '[0,0,0]',
+        JSON.stringify({
+          type: 'modeling_cmd_batch_req',
+          requests: [],
+          batch_id: 'batch',
+          responses: true,
+        }),
+        '{}'
+      )
+    ).resolves.toBeInstanceOf(Uint8Array)
+    finish()
   })
 
   it('awaits a scene batch and delivers subscriptions once in request order before completion', async () => {
@@ -805,6 +957,36 @@ describe('ConnectionManager', () => {
       expect(close).toHaveBeenCalledOnce()
     }
   )
+
+  it('releases an unanswered optional native export so reconnect can proceed', async () => {
+    vi.useFakeTimers()
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const { manager, close, requestReconnect } = reconnectHarness()
+    const result = manager
+      .sendCommand(
+        'native-timeout',
+        {
+          command: {
+            type: 'modeling_cmd_req',
+            cmd_id: 'native-timeout',
+            cmd: {
+              type: 'export',
+              entity_ids: [],
+              format: { type: 'native_brep' },
+            },
+          },
+          range: [0, 0, 0],
+          idToRangeMap: {},
+        },
+        true
+      )
+      .catch(() => undefined)
+    requestReconnect()
+    await vi.advanceTimersByTimeAsync(PENDING_COMMAND_TIMEOUT)
+    expect(manager.pendingCommands).toEqual({})
+    expect(close).toHaveBeenCalledOnce()
+    await result
+  })
 
   it('releases a timed-out command so reconnect can proceed', async () => {
     vi.useFakeTimers()

@@ -253,6 +253,8 @@ export class ConnectionManager extends EventTarget {
     this.lastConnectionError = undefined
   }
 
+  executionBatchPreview?: (command: EngineCommand) => Promise<void>
+
   trackExecution(): () => void {
     const execution = Symbol('execution')
     this.activeExecutions.add(execution)
@@ -1135,12 +1137,15 @@ export class ConnectionManager extends EventTarget {
       isSceneCommand,
     }
 
-    // For exports do not time out the command
+    // Final exports can be slow; only optional snapshots use the command timeout.
     let timeoutPendingCommand = true
     if (message.command.type === 'modeling_cmd_req') {
       const commandName = message.command.cmd.type
       if (commandName.includes('export')) {
-        timeoutPendingCommand = false
+        timeoutPendingCommand =
+          (message.command.cmd.type === 'export' ||
+            message.command.cmd.type === 'export3d') &&
+          message.command.cmd.format.type === 'native_brep'
       }
     }
 
@@ -1207,21 +1212,34 @@ export class ConnectionManager extends EventTarget {
         return
       }
 
+      const pending = this.pendingCommands[message.request_id || '']
+      const isNativePreview =
+        (pending?.command.type === 'modeling_cmd_req' &&
+          (pending.command.cmd.type === 'export' ||
+            pending.command.cmd.type === 'export3d') &&
+          pending.command.cmd.format.type === 'native_brep') ||
+        (isExportResponse(message) &&
+          message.resp.data.files.some((file) =>
+            file.name.endsWith('.brep.json')
+          ))
+
+      // Native previews are ephemeral; retaining their payloads in either response
+      // history would keep every complete B-rep snapshot alive for the whole run.
       // If the connection is started from WASM it doesn't need
       // `sendResponse` at all, because the call is coming from
       // inside the house, as it were, from WASM itself.
-      rustContext?.sendResponse(message).catch((error) => {
-        console.warn('Error sending response to rust', error)
-        EngineDebugger.addLog({
-          label: 'rustContext.sendResponse',
-          message: 'error sending response to rust',
-          metadata: {
-            error,
-          },
+      if (!isNativePreview)
+        rustContext?.sendResponse(message).catch((error) => {
+          console.warn('Error sending response to rust', error)
+          EngineDebugger.addLog({
+            label: 'rustContext.sendResponse',
+            message: 'error sending response to rust',
+            metadata: {
+              error,
+            },
+          })
         })
-      })
 
-      const pending = this.pendingCommands[message.request_id || '']
       if (pending && !message.success) {
         pending.reject([message])
         delete this.pendingCommands[message.request_id || '']
@@ -1246,7 +1264,11 @@ export class ConnectionManager extends EventTarget {
       pending.resolve([message])
       delete this.pendingCommands[message.request_id || '']
 
-      if (message.resp.type === 'export' && message.request_id) {
+      if (
+        message.resp.type === 'export' &&
+        message.request_id &&
+        !isNativePreview
+      ) {
         this.responseMap[message.request_id] = message.resp
       } else if (
         message.resp.type === 'modeling' &&
@@ -1841,6 +1863,20 @@ export class ConnectionManager extends EventTarget {
         range,
         idToRangeMap,
       })
+      if (
+        (command.type === 'modeling_cmd_batch_req' ||
+          (command.type === 'modeling_cmd_req' &&
+            !isExecutionBoundaryCommand(command) &&
+            !command.cmd.type.includes('export'))) &&
+        !this.executionIsStale &&
+        this.activeExecutions.size > 0
+      ) {
+        try {
+          await this.executionBatchPreview?.(command)
+        } catch (error) {
+          console.warn('Execution preview unavailable', error)
+        }
+      }
       return msgpackEncode(resp[0])
     } catch (e) {
       const isExecutionInterrupt =
