@@ -13,7 +13,7 @@ const catalogs = {
     importName: 'default',
   },
   'electronPlugins.ts': {
-    binding: 'bundledElectronPluginRegistrations',
+    binding: 'bundledElectronPluginCatalog',
     directories: [['registry/plugins', 'electron.ts']],
     importName: 'register',
   },
@@ -102,6 +102,23 @@ export default {
               : []
         for (const entry of entries) {
           if (entry?.type === 'Identifier') selectedBindings.add(entry.name)
+          if (
+            catalog.importName === 'register' &&
+            entry?.type === 'ObjectExpression'
+          ) {
+            const registration = entry.properties.find(
+              (property) =>
+                property.type === 'Property' &&
+                property.key.type === 'Identifier' &&
+                property.key.name === 'register'
+            )
+            if (
+              registration?.type === 'Property' &&
+              registration.value.type === 'Identifier'
+            ) {
+              selectedBindings.add(registration.value.name)
+            }
+          }
         }
       },
       'Program:exit'(node) {

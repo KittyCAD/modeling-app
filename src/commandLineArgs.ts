@@ -3,6 +3,10 @@ import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 
 export const argvFromYargs = yargs(hideBin(process.argv))
+  .option('app-config', {
+    type: 'string',
+    description: 'Read the app extension composition from a TOML manifest.',
+  })
   .option('telemetry', {
     alias: 't',
     type: 'boolean',
@@ -14,8 +18,14 @@ export const argvFromYargs = yargs(hideBin(process.argv))
 
 export function parseCLIArgs(argv: string[]): minimist.ParsedArgs {
   return minimist(argv, {
-    // Treat all double-hyphenated arguments without equal signs as boolean
-    boolean: true,
+    // Preserve boolean handling of existing flags, while allowing --app-config
+    // to consume its value instead of treating the TOML path as a project.
+    boolean: argv.flatMap((arg) => {
+      if (!arg.startsWith('--')) return []
+      const name = arg.slice(2).split('=')[0]
+      return name === 'app-config' ? [] : [name]
+    }),
+    string: ['app-config'],
   })
 }
 

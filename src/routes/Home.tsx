@@ -70,6 +70,7 @@ import {
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import { projectSession } from '@src/registry/contracts/projectSession'
+import { projectPublicationEnabledValueSpec } from '@src/registry/contracts/publishing'
 import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
@@ -340,7 +341,11 @@ const Home = () => {
   const billingContext = billing.useContext()
 
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
+  const publicationEnabled = registry.signal(
+    projectPublicationEnabledValueSpec
+  ).value
   const projectStatuses = useProjectStatuses(
+    publicationEnabled,
     registry.get(cloudStorageService),
     homeProjectEntries,
     apiToken

@@ -1,5 +1,6 @@
-import { isErr } from '@src/lib/trap'
-import { isArray, isRecord } from '@src/lib/utils'
+/* eslint-disable no-restricted-imports -- Shared with Vite before app aliases exist. */
+import { isErr } from '../lib/trap'
+import { isArray, isRecord } from '../lib/utils'
 import { parse, stringify } from 'smol-toml'
 
 /** A versioned app composition request, independent of extension code or settings. */

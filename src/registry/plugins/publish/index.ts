@@ -3,6 +3,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { PublishButton } from '@src/components/PublishButton'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
+import { projectPublicationEnabledValueSpec } from '@src/registry/contracts/publishing'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { createElement } from 'react'
 
@@ -18,6 +19,7 @@ function PublishHeaderItem({ app }: AppHeaderItemProps) {
 
 const publishHeaderItem = defineRegistryItem({
   provides: [
+    provide(projectPublicationEnabledValueSpec, true),
     provide(appHeaderItemsValueSpec, {
       id: 'publish.open',
       order: 100,

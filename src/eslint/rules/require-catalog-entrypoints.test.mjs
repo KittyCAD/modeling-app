@@ -70,7 +70,7 @@ ruleTester.run('require-catalog-entrypoints', rule, {
       ),
       code: `
         import { register as registerTool } from './plugins/tool/electron'
-        export const bundledElectronPluginRegistrations = [registerTool]
+        export const bundledElectronPluginCatalog = { tool: { registryItemId: 'zoo:tool', register: registerTool } }
       `,
     },
     {
@@ -122,7 +122,7 @@ ruleTester.run('require-catalog-entrypoints', rule, {
       ),
       code: `
         import { register as unused } from './plugins/new/electron.ts'
-        export const bundledElectronPluginRegistrations = []
+        export const bundledElectronPluginCatalog = {}
       `,
       errors: [{ messageId: 'missingEntrypoint' }],
     },
@@ -131,7 +131,7 @@ ruleTester.run('require-catalog-entrypoints', rule, {
         ['registry/plugins/new/electron.ts'],
         'electronPlugins.ts'
       ),
-      code: 'export const bundledElectronPluginRegistrations = []',
+      code: 'export const bundledElectronPluginCatalog = {}',
       errors: [{ messageId: 'missingEntrypoint' }],
     },
   ],
