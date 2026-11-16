@@ -152,6 +152,19 @@ export function createSceneViewport(
   // values prevents a new model from resetting the user's camera.
   let appliedCamera: SceneCameraPreferences | undefined
   let appliedAppearance: SceneAppearancePreferences | undefined
+  const applyOverlayTheme = () => {
+    const appearance = preferences.appearance.peek()
+    const overlayTheme = getSceneOverlayTheme(
+      appearance.theme,
+      appearance.viewportRendering,
+      presentation === 'local'
+    )
+    if (sceneInfra.theme !== overlayTheme) {
+      sceneInfra.theme = overlayTheme
+      sceneInfra.resumeRendering()
+    }
+  }
+  applyOverlayTheme()
   return {
     localHost: adapter.localHost,
     video: adapter.video,
@@ -163,6 +176,7 @@ export function createSceneViewport(
     },
     applySettings: async () => {
       if (isClosed()) return
+      applyOverlayTheme()
       const nextCamera = preferences.camera.peek()
       const nextAppearance = preferences.appearance.peek()
       if (appliedCamera?.mouseControls !== nextCamera.mouseControls)
@@ -177,15 +191,6 @@ export function createSceneViewport(
       if (appliedCamera?.cameraProjection !== nextCamera.cameraProjection)
         await camera.setCameraProjection(nextCamera.cameraProjection)
       appliedCamera = nextCamera
-      const overlayTheme = getSceneOverlayTheme(
-        nextAppearance.theme,
-        nextAppearance.viewportRendering,
-        presentation === 'local'
-      )
-      if (sceneInfra.theme !== overlayTheme) {
-        sceneInfra.theme = overlayTheme
-        sceneInfra.resumeRendering()
-      }
       await adapter.applyAppearance(nextAppearance, appliedAppearance)
       appliedAppearance = nextAppearance
     },
