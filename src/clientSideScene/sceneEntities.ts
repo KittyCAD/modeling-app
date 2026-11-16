@@ -246,12 +246,8 @@ export class SceneEntities {
     this.sketchSolveGroup = SceneEntities.createSketchSolveGroup(
       this.sceneInfra
     )
-    this.sceneInfra.camControls.cameraChange.add(() => {
-      this.onCamChange().catch(reportRejection)
-    })
-    this.sceneInfra.baseUnitChange.add(() => {
-      this.onCamChange().catch(reportRejection)
-    })
+    this.sceneInfra.camControls.cameraChange.add(this.refreshCamera)
+    this.sceneInfra.baseUnitChange.add(this.refreshCamera)
   }
 
   /**
@@ -282,8 +278,31 @@ export class SceneEntities {
     this.createSketchAxis(zAxis, yAxis, origin)
   }
 
+  private disposed = false
+  private refreshCamera = () => {
+    this.onCamChange().catch(reportRejection)
+  }
+
+  /** Release geometry and subscriptions acquired by this manager when its borrowed scene outlives it. */
+  dispose() {
+    if (this.disposed) return
+    this.disposed = true
+    this.sceneInfra.camControls.cameraChange.remove(this.refreshCamera)
+    this.sceneInfra.baseUnitChange.remove(this.refreshCamera)
+    this.tearDownSketch({ removeAxis: true })
+    disposeGroupChildren(this.sketchSolveGroup)
+    this.sketchSolveGroup.removeFromParent()
+    this.intersectionPlane.removeFromParent()
+    this.intersectionPlane.geometry.dispose()
+    const materials = isArray(this.intersectionPlane.material)
+      ? this.intersectionPlane.material
+      : [this.intersectionPlane.material]
+    materials.forEach((material) => material.dispose())
+  }
+
   onCamChange = async () => {
     const wasmInstance = await this.kclManager.wasmInstancePromise
+    if (this.disposed) return
     const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
     const callbacks: (() => SegmentOverlayPayload | null)[] = []
     Object.values(this.activeSegments).forEach((segment, _index) => {
