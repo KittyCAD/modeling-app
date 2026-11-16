@@ -1,3 +1,4 @@
+import { tryEnterSketchOnDoubleClickFromScene } from '@src/lib/kcl/scene/activateEntity'
 import toast from 'react-hot-toast'
 import { Mesh, Vector2, Vector3 } from 'three'
 import {
@@ -185,7 +186,6 @@ import {
   isEnginePrimitiveSelection,
   isEngineRegionSelection,
   selectionBodyFace,
-  tryEnterSketchOnDoubleClickFromScene,
   updateExtraSegments,
   updateSelections,
 } from '@src/lib/selections'
@@ -1525,7 +1525,7 @@ export const modelingMachine = setup({
       sceneInfra.setCallbacks({
         onClick: (args) => {
           if (args?.mouseEvent?.detail === 2) {
-            void tryEnterSketchOnDoubleClickFromScene(
+            return tryEnterSketchOnDoubleClickFromScene(
               args,
               sceneInfra.renderer.domElement,
               {
@@ -1533,7 +1533,7 @@ export const modelingMachine = setup({
                 kclManager: context.kclManager,
                 sceneInfra,
               }
-            )
+            ).catch(reportRejection)
           }
         },
       })
@@ -5083,9 +5083,9 @@ export const modelingMachine = setup({
       },
 
       entry: [
-        'set modeling idle double-click callback',
         'restore modeling camera controls',
         'reset client scene mouse handlers',
+        'set modeling idle double-click callback',
       ],
 
       states: {

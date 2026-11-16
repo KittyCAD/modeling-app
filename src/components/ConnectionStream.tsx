@@ -1,3 +1,4 @@
+import { activateSceneEntityAtPoint } from '@src/lib/kcl/scene/activateEntity'
 import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import { LocalWebGPUScene } from '@src/clientSideScene/localRenderer/LocalWebGPUScene'
@@ -20,28 +21,14 @@ import { useTryConnect } from '@src/hooks/network/useTryConnect'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
-import { findOperationForArtifact } from '@src/lang/queryAst'
-import {
-  getArtifactOfTypes,
-  getSketchBlockForArtifact,
-} from '@src/lang/std/artifactGraph'
-import { getAllOperations } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { btnName } from '@src/lib/cameraControls'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
-import {
-  LEGACY_SKETCH_MODE_REMOVED_MESSAGE,
-  NUMBER_OF_ENGINE_RETRIES,
-} from '@src/lib/constants'
+import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
-import { prepareEditCommand } from '@src/lib/featureTree'
-import {
-  getEngineRegionSelectionFromPoint,
-  normalizeEntityReference,
-  sendQueryEntityTypeWithPoint,
-} from '@src/lib/selections'
+import { sendQueryEntityTypeWithPoint } from '@src/lib/selections'
 import { getResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
-import { err, reportRejection } from '@src/lib/trap'
+import { reportRejection } from '@src/lib/trap'
 import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import type {
   EngineSceneExtensionContext,
@@ -49,7 +36,6 @@ import type {
 } from '@src/registry/contracts/engineScene'
 import type { MouseEventHandler } from 'react'
 import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import toast from 'react-hot-toast'
 
 const TIME_TO_CONNECT = 30_000
 const stringHash = (value: string) => {
@@ -176,7 +162,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
 
   /**
    * On double-click of sketch entities we automatically enter sketch mode with the selected sketch,
-   * allowing for quick editing of sketches. TODO: This should be moved to a more central place.
+   * allowing for quick editing through the shared scene activation handler.
    */
   const enterSketchModeIfSelectingSketch: MouseEventHandler<HTMLDivElement> =
     useCallback(
@@ -190,120 +176,17 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         ) {
           return
         }
-        sendQueryEntityTypeWithPoint(e, videoRef.current, {
+        const send = sceneInfra.modelingSend
+        activateSceneEntityAtPoint(e, videoRef.current, {
+          kclManager,
           engineCommandManager,
-        })
-          .then(async (result) => {
-            if (!result?.reference) {
-              return
-            }
-            const selectedEntityRef = normalizeEntityReference(result.reference)
-            let entityId: string | undefined
-            switch (selectedEntityRef?.type) {
-              case 'annotation':
-                entityId = selectedEntityRef.annotation_id
-                break
-              case 'plane':
-                entityId = selectedEntityRef.plane_id
-                break
-              case 'face':
-                entityId = selectedEntityRef.face_id
-                break
-              case 'solid2d':
-                entityId = selectedEntityRef.solid2d_id
-                break
-              case 'solid3d':
-                entityId = selectedEntityRef.solid3d_id
-                break
-              case 'solid2d_edge':
-                entityId = selectedEntityRef.edge_id
-                break
-              case 'segment':
-                entityId = selectedEntityRef.segment_id
-                break
-              case 'region':
-                entityId = selectedEntityRef.region_id
-                break
-              case 'edge':
-              case 'vertex':
-                entityId = selectedEntityRef.side_faces[0]
-                break
-              case 'helix':
-              case undefined:
-                break
-            }
-            if (!entityId) {
-              return
-            }
-            const directArtifact = kclManager.artifactGraph.get(entityId)
-            if (directArtifact?.type === 'gdtAnnotation') {
-              const operation = findOperationForArtifact({
-                artifact: directArtifact,
-                operations: getAllOperations(kclManager.operationsByModule),
-              })
-              if (!operation) return
-
-              await prepareEditCommand({
-                artifactGraph: kclManager.artifactGraph,
-                code: kclManager.code,
-                commandBarActor: commands.actor,
-                operation,
-                rustContext: kclManager.rustContext,
-                artifact: directArtifact,
-              })
-              return
-            }
-
-            const sketchBlockArtifact = getSketchBlockForArtifact(
-              directArtifact,
-              kclManager.artifactGraph
-            )
-            if (sketchBlockArtifact) {
-              sceneInfra.modelingSend({
-                type: 'Edit sketch solve',
-                data: { artifactId: sketchBlockArtifact.id },
-              })
-              return
-            }
-
-            if (!directArtifact) {
-              const regionSelection = await getEngineRegionSelectionFromPoint(
-                entityId,
-                kclManager.artifactGraph,
-                kclManager.ast,
-                engineCommandManager,
-                wasmInstance
-              )
-
-              if (regionSelection?.sketchId) {
-                sceneInfra.modelingSend({
-                  type: 'Edit sketch solve',
-                  data: { artifactId: regionSelection.sketchId },
-                })
-              }
-              return
-            }
-
-            const artifactResult = getArtifactOfTypes(
-              {
-                key: entityId,
-                types: ['path', 'solid2d', 'segment', 'helix'],
-              },
-              kclManager.artifactGraph
-            )
-            if (err(artifactResult)) {
-              return artifactResult
-            }
-            // Anything left here belongs to a KCL 1.0 sketch, since sketch
-            // blocks and undeclared regions were handled above.
-            toast.error(LEGACY_SKETCH_MODE_REMOVED_MESSAGE, {
-              duration: 5_000,
-            })
-            return
-          })
-          .catch((e) => {
-            reportRejection(e)
-          })
+          commandBarActor: commands.actor,
+          wasmInstance,
+          send,
+          acceptsInput: () =>
+            sceneInfra.modelingSend === send &&
+            (kclManager.modelingState?.matches('idle') ?? false),
+        }).catch(reportRejection)
       },
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [
