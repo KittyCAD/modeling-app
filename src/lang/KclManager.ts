@@ -1,11 +1,11 @@
 import {
   SceneExecutionEvents as KclManagerEvents,
   type SceneExecutionDoneDetail as KclExecutionDoneDetail,
-} from '@src/lib/scene/execution'
+} from '@src/lib/kcl/scene/execution'
 export {
   SceneExecutionEvents as KclManagerEvents,
   type SceneExecutionDoneDetail as KclExecutionDoneDetail,
-} from '@src/lib/scene/execution'
+} from '@src/lib/kcl/scene/execution'
 import { buildMinimalDocumentChange } from '@src/lib/minimalDocumentChange'
 import type { EntityType } from '@kittycad/lib'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'

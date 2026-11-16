@@ -1,8 +1,8 @@
-# App-owned scene boundary
+# KCL scene connections and execution events
 
 This is the first extraction from the existing application, not a second engine
 or a replacement for zoo-web-view. The integration goal is recorded in
-[ADR 0001](../../dev-docs/adr/0001-app-owned-scene-host.md).
+[ADR 0001](../../../dev-docs/adr/0001-app-owned-scene-host.md).
 
 `connectScene` starts a supplied ConnectionManager for either streamed video or
 geometry-only local rendering. The returned handle captures that connection:
