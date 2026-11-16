@@ -142,9 +142,11 @@ const ClientSideSceneContent = ({
     const stopSize = observeViewportSize(element, resizeCanvas)
     const stopDensity = observeViewportDensity(resizeCanvas)
 
-    // send
-    sceneInfra.setSend(send)
-    engineCommandManager.modelingSend = send
+    // An editor-owned scene already has a guarded input owner; the legacy route supplies its own sender here.
+    if (!container) {
+      sceneInfra.setSend(send)
+      engineCommandManager.modelingSend = send
+    }
 
     return () => {
       detachInput()
