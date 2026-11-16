@@ -22,6 +22,7 @@ export function modelingCorrespondenceEndpoint(
     const model = scene?.selection.model.value
     if (
       enabled?.value === false ||
+      context.interactions.busy.value ||
       !scene ||
       !model ||
       output.running ||
@@ -53,6 +54,11 @@ export function modelingCorrespondenceEndpoint(
     enabled,
     execution,
     selection: context.selection,
+    sketch: computed(() =>
+      enabled?.value === false
+        ? undefined
+        : context.interactions.active.value?.correspondence?.value
+    ),
     interacting: computed(() => !!context.interactions.active.value),
     pickingArgument: computed(() => {
       const selection = context.session.resource.value?.selection

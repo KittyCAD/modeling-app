@@ -1,3 +1,4 @@
+import { toUtf8, toUtf16 } from '@src/lang/errors'
 import { correspondenceStyle } from '@src/lib/kcl/correspondence/appearance'
 import type { ReadonlySignal } from '@preact/signals-core'
 import { StateEffect, StateField } from '@codemirror/state'
@@ -77,7 +78,15 @@ export function correspondenceCodeExtension(
                 !this.destroyed &&
                 host.view.state.field(correspondence, false) !== undefined
               )
-                host.view.dispatch({ effects: setCorrespondence.of(ranges) })
+                host.view.dispatch({
+                  effects: setCorrespondence.of(
+                    ranges.map((range) => [
+                      toUtf16(range[0], host.view.state.doc.toString()),
+                      toUtf16(range[1], host.view.state.doc.toString()),
+                      range[2],
+                    ])
+                  ),
+                })
             },
           })
           if (handle instanceof Error) reportRejection(handle)
@@ -92,11 +101,9 @@ export function correspondenceCodeExtension(
             )
           )
             this.handle?.select(
-              update.state.selection.ranges.map((range) => [
-                range.from,
-                range.to,
-                0,
-              ])
+              update.state.selection.ranges.map((range) =>
+                toUtf8([range.from, range.to, 0], update.state.doc.toString())
+              )
             )
         }
         destroy() {

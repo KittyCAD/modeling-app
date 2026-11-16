@@ -1,6 +1,7 @@
 import type { SceneExecutionSettings } from '@src/lib/kcl/scene/executionSettings'
 import { trackSelectionModifiers } from '@src/lib/selectionModifiers'
 import { getResolvedTheme } from '@src/lib/theme'
+import { bindMachineSketchCorrespondence } from '@src/lib/kcl/machine/correspondence'
 import { bindMachineDialogs } from '@src/lib/kcl/machine/dialogs'
 import { bindMachinePicking } from '@src/lib/kcl/machine/picking'
 import type { KeymapTree, KeymapScope } from '@src/registry/contracts/keymap'
@@ -307,8 +308,16 @@ export async function openMachineModelingOwner(
       (command) => command.machineActor === actor
     )
     rollback.push(dialogs.dispose)
+    const correspondence = bindMachineSketchCorrespondence(
+      context.executor.editor,
+      scene,
+      model,
+      child
+    )
+    rollback.push(correspondence.dispose)
     const interaction: ModelingInteractionSession = {
       id: 'kcl.sketch',
+      correspondence: correspondence.endpoint,
       viewActive: computed(() => state.value.matches('sketchSolveMode')),
       selection: computed(() =>
         state.value.matches('sketchSolveMode') ? picking.sketch : undefined
@@ -346,6 +355,7 @@ export async function openMachineModelingOwner(
       stopModifiers()
       // Stop document publication first. The legacy exit flow may finish native
       // draft cleanup, but cannot overwrite a newer canonical source snapshot.
+      correspondence.dispose()
       dialogs.dispose()
       model.close()
       scene.sceneInfra.resetMouseListeners()

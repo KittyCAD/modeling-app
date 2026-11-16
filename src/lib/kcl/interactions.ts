@@ -1,3 +1,4 @@
+import type { SketchCorrespondenceEndpoint } from '@src/lib/kcl/correspondence/sketchContract'
 import {
   createInteractionViews,
   type ModelingInteractionViewDefinition,
@@ -12,6 +13,7 @@ import { isErr, reportRejection } from '@src/lib/trap'
 /** A sustained interaction owns tools and scene input inside one Modeling presentation. */
 export interface ModelingInteractionSession {
   id: string
+  correspondence?: ReadonlySignal<SketchCorrespondenceEndpoint | undefined>
   /** False while acquiring a target or closing, before an interaction surface is usable. */
   viewActive?: ReadonlySignal<boolean>
   selection?: ReadonlySignal<SelectionSource | undefined>

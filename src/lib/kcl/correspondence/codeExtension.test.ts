@@ -104,3 +104,93 @@ it('decorates code without moving its cursor or echoing a pick, but accepts inte
 vi.mock('@src/lib/fs-zds', async () => ({
   default: (await import('node:path')).posix,
 }))
+
+it('converts native UTF-8 ranges and CodeMirror UTF-16 selections without moving the cursor', async () => {
+  const model = modelingTestContext(),
+    bridge = createCorrespondenceBridge()
+  const text = '// café 🌐\n' + 'a'.repeat(40),
+    from = text.indexOf('a'.repeat(40)),
+    to = from + 10
+  model.editor.dispatch({
+    changes: { from: 0, to: model.editor.state.doc.length, insert: text },
+  })
+  model.context.executor = {
+    ...model.context.executor,
+    output: signal(
+      createExecutorOutput({ contents: text, src: '/main.kcl', running: false })
+    ),
+  }
+  const byteStart = new TextEncoder().encode(text.slice(0, from)).length,
+    byteEnd = byteStart + 10
+  model.resource.runtime.state.value.artifactGraph.set('segment', {
+    type: 'segment',
+    id: 'segment',
+    pathId: 'path',
+    edgeIds: [],
+    commonSurfaceIds: [],
+    codeRef: {
+      range: [byteStart, byteEnd, 0],
+      pathToNode: [],
+      nodePath: { steps: [] },
+    },
+  })
+  bridge.registerModel({ id: Symbol(), context: model.context })
+  const view = new EditorView({ doc: text }),
+    instance = {
+      id: Symbol(),
+      editor: model.editor,
+      element: signal<HTMLElement | undefined>(view.dom),
+      codeView: signal<EditorView | undefined>(view),
+    }
+  view.dispatch({
+    effects: StateEffect.appendConfig.of(
+      correspondenceCodeExtension(
+        { instance, editor: model.editor, view, onDispose: () => {} },
+        bridge.registrations
+      )
+    ),
+  })
+  const values = signal<readonly SceneSelection[]>([])
+  const picking = model.resource.selection.beginPicking({
+    arguments: [
+      {
+        id: 'profiles',
+        filter: ['curve'],
+        multiple: true,
+        value: values,
+        accepts: (entity) => entity.type === 'segment',
+        setValue: (next) => {
+          values.value = next
+        },
+      },
+    ],
+  })
+  if (picking instanceof Error) throw picking
+  picking.activate('profiles')
+  try {
+    model.resource.selection.offer([
+      {
+        model: model.resource.selection.model.peek()!,
+        reference: { type: 'segment', path_id: 'path', segment_id: 'segment' },
+      },
+    ])
+    await new Promise<void>((resolve) => queueMicrotask(resolve))
+    expect(
+      view.dom.querySelector('.cm-geometry-correspondence')?.textContent
+    ).toBe(text.slice(from, to))
+    expect(view.state.selection.main.head).toBe(0)
+    values.value = []
+    view.dispatch({
+      selection: { anchor: from + 2 },
+      annotations: Transaction.userEvent.of('select.pointer'),
+    })
+    expect(values.peek().map((item) => item.reference)).toEqual([
+      { type: 'segment', path_id: 'path', segment_id: 'segment' },
+    ])
+  } finally {
+    picking.close()
+    view.destroy()
+    bridge.dispose()
+    model.dispose()
+  }
+})

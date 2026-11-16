@@ -1260,7 +1260,7 @@ function getInvisibleConstraintDisplayState(
   }
 }
 
-function getHoveredSegmentIds(
+export function getHoveredSegmentIds(
   hoveredId: SketchSolveSelectionId | null,
   objects: ApiObject[]
 ): number[] {
@@ -1272,7 +1272,7 @@ function getHoveredSegmentIds(
     : []
 }
 
-function getSegmentRenderState(
+export function getSegmentRenderState(
   segmentId: number,
   selectedIds: Array<SketchSolveSelectionId>,
   duringAreaSelectIds: Array<number>,
