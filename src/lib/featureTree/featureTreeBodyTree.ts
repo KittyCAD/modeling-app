@@ -301,6 +301,24 @@ function sourceIds(a: Artifact, graph: ArtifactGraph): string[] {
       a.type === 'pattern' ? [a.sourceId] : [...a.solidIds, ...a.toolIds]
     return inputs.flatMap((id) => {
       const input = graph.get(id)
+      if (
+        input?.type === 'compositeSolid' &&
+        [...input.solidIds, ...input.toolIds].includes(id)
+      ) {
+        // A Boolean output can replace its input path at the same engine ID.
+        return [
+          id,
+          ...[...graph.values()]
+            .filter(
+              (source) =>
+                (source.type === 'segment' && source.pathId === id) ||
+                (source.type === 'sweep' &&
+                  source.pathId === id &&
+                  !source.sourceSweepId)
+            )
+            .map((source) => source.id),
+        ]
+      }
       return input?.type === 'path' && input.sweepId
         ? [id, input.sweepId]
         : [id]
@@ -310,5 +328,7 @@ function sourceIds(a: Artifact, graph: ArtifactGraph): string[] {
     return [a.sketchBlockId, a.originPathId, a.innerPathId].filter(
       (id): id is string => !!id
     )
+  if (a.type === 'segment')
+    return [a.pathId, a.originalSegId].filter((id): id is string => !!id)
   return []
 }

@@ -62,6 +62,64 @@ function bodies(...artifacts: BodyArtifact[]) {
 }
 
 describe('body feature hierarchy', () => {
+  it('recovers a consumed region when a Boolean result reuses its engine ID', () => {
+    const result: BodyArtifact = {
+      type: 'compositeSolid',
+      id: 'result',
+      subType: 'subtract',
+      consumed: false,
+      solidIds: ['result'],
+      toolIds: [],
+      codeRef: codeRef(80),
+    }
+    const input = { ...sweep('input', 40, 'result'), consumed: true }
+    const clone = { ...sweep('clone', 60, 'result'), sourceSweepId: input.id }
+    const sketch: Artifact = {
+      type: 'path',
+      id: 'sketch',
+      subType: 'sketch',
+      planeId: 'xy',
+      segIds: ['original'],
+      consumed: false,
+      trajectorySweepId: null,
+      codeRef: codeRef(0),
+    }
+    const original: Extract<Artifact, { type: 'segment' }> = {
+      type: 'segment',
+      id: 'original',
+      pathId: sketch.id,
+      edgeIds: [],
+      commonSurfaceIds: [],
+      codeRef: codeRef(0),
+    }
+    const regionSegment: Artifact = {
+      ...original,
+      id: 'region-segment',
+      pathId: result.id,
+      originalSegId: original.id,
+      codeRef: codeRef(20),
+    }
+    const nodes = [
+      call(0),
+      { ...call(20), name: 'region' },
+      call(40),
+      call(60),
+      { ...call(80), name: 'subtract' },
+    ]
+    const tree = buildBodyOperationTree(
+      nodes,
+      bodies(result),
+      graph(result, input, clone, sketch, original, regionSegment)
+    )
+    expect(tree.branches[0].operations).toEqual([
+      nodes[0],
+      nodes[1],
+      nodes[2],
+      nodes[4],
+    ])
+    expect(tree.operations).toEqual([nodes[3]])
+  })
+
   it('keeps a contributing offset plane with its body without following default planes or their other sketches', () => {
     const plane: Artifact = {
       type: 'plane',

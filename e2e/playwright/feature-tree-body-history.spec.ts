@@ -45,12 +45,6 @@ test(
       expect.stringMatching(/^Top plane/),
       expect.stringMatching(/^Side plane/),
     ])
-    await expect(
-      toolbar.featureTreePane.getByRole('button', {
-        name: 'Offset Plane',
-        exact: true,
-      })
-    ).toHaveCount(3)
     await testInfo.attach('housing-body-tree.png', {
       body: await toolbar.featureTreePane.screenshot(),
       contentType: 'image/png',

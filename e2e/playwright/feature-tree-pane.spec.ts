@@ -314,7 +314,10 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
       })
 
       await test.step('Hide cylinder again from the bodies pane', async () => {
-        const bodyRow = bodiesPane.getByRole('button', { name: 'Body 1' })
+        const bodyRow = bodiesPane.getByRole('button', {
+          name: 'Body 1',
+          exact: true,
+        })
         const bodyToggle = bodyRow
           .locator('..')
           .getByTestId('feature-tree-visibility-toggle')
