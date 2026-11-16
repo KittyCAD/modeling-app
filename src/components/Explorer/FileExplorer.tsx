@@ -290,12 +290,12 @@ function DeleteFileTreeItemDialog({
       }}
     >
       <p className="my-4">
-        This will permanently delete "{row.name || 'this file'}"
+        This will delete "{row.name || 'this file'}"
         {row.children !== null ? ' and all of its contents. ' : '. '}
       </p>
       <p className="my-4">
         Are you sure you want to delete "{row.name || 'this file'}
-        "? This action cannot be undone.
+        "? You can undo this deletion.
       </p>
     </DeleteConfirmationDialog>
   )

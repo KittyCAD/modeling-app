@@ -66,7 +66,7 @@ describe('engine connection setup', () => {
         connection,
         settings: {
           theme: Themes.Light,
-          enableSSAO: true,
+          viewportRendering: 'ssao',
           showScaleGrid: true,
           highlightEdges: true,
           cameraProjection: 'orthographic',

@@ -51,10 +51,10 @@ class ReconnectTestWebSocket extends EventTarget {
   }
 }
 
-function createConnectionManager() {
+function createConnectionManager(settings = createSettings()) {
   return new ConnectionManager({
     settingsActor: {
-      getSnapshot: () => ({ context: createSettings() }),
+      getSnapshot: () => ({ context: settings }),
     } as unknown as SettingsActorType,
   })
 }
@@ -235,11 +235,84 @@ describe('ConnectionManager', () => {
     ReconnectTestWebSocket.instances = []
   })
 
+  it('only requests a rendering reconnect when the connected mode differs', () => {
+    const manager = createConnectionManager()
+    const requestReconnect = vi.fn()
+    const connection = new Connection({
+      url: 'wss://example.test/modeling?post_effect=ssao',
+      token: 'test-token',
+      handleOnDataChannelMessage: vi.fn(),
+      recordShutdownTrigger: vi.fn(() => true),
+      tearDownManager: vi.fn(),
+      rejectPendingCommand: vi.fn(),
+      handleMessage: vi.fn(),
+      getCloudProjectId: () => undefined,
+    })
+    vi.spyOn(connection, 'requestReconnect').mockImplementation(
+      requestReconnect
+    )
+    manager.connection = connection
+    manager.setViewportRendering('ssao')
+    expect(requestReconnect).not.toHaveBeenCalled()
+    manager.setViewportRendering('retrocad')
+    expect(requestReconnect).toHaveBeenCalledOnce()
+  })
+
+  it.each([true, false])(
+    'does not reconnect a local session with the local preference set to %s',
+    (useLocalRenderer) => {
+      const settings = createSettings()
+      settings.modeling.useLocalRenderer.user = useLocalRenderer
+      const manager = createConnectionManager(settings)
+      const requestReconnect = vi.fn()
+      manager.connection = {
+        geometryOnly: true,
+        url: 'wss://example.test/modeling?geometry_only=true&webrtc=false',
+        requestReconnect,
+      } as unknown as Connection
+
+      for (const mode of [
+        'ssao',
+        'retrocad',
+        'phosphor',
+        'noeffect',
+      ] as const) {
+        manager.setViewportRendering(mode)
+      }
+      expect(requestReconnect).not.toHaveBeenCalled()
+    }
+  )
+
+  it('does not start a disconnected local session when the stream style changes', () => {
+    const settings = createSettings()
+    settings.modeling.useLocalRenderer.user = true
+    const manager = createConnectionManager(settings)
+    const online = vi.spyOn(manager, 'online')
+
+    manager.setViewportRendering('retrocad')
+    expect(online).not.toHaveBeenCalled()
+  })
+
+  it('keeps using stream settings until the renderer restart happens', () => {
+    const settings = createSettings()
+    settings.modeling.useLocalRenderer.user = true
+    const manager = createConnectionManager(settings)
+    const requestReconnect = vi.fn()
+    manager.connection = {
+      geometryOnly: false,
+      url: 'wss://example.test/modeling?post_effect=ssao',
+      requestReconnect,
+    } as unknown as Connection
+
+    manager.setViewportRendering('retrocad')
+    expect(requestReconnect).toHaveBeenCalledOnce()
+  })
+
   it('uses geometry-only URL parameters without engine render settings', () => {
     const manager = createConnectionManager()
     vi.spyOn(manager, 'settings', 'get').mockReturnValue({
       theme: Themes.Light,
-      enableSSAO: true,
+      viewportRendering: 'ssao',
       showScaleGrid: true,
       highlightEdges: true,
       cameraProjection: 'perspective',
@@ -259,8 +332,24 @@ describe('ConnectionManager', () => {
       expect(url.searchParams.has('show_grid')).toBe(!geometryOnly)
       expect(url.searchParams.has('video_res_width')).toBe(true)
     }
-    expect(manager.settings.enableSSAO).toBe(true)
+    expect(manager.settings.viewportRendering).toBe('ssao')
   })
+
+  it.each(['default', 'retrocad', 'phosphor'] as const)(
+    'uses shared SSAO only for the default cloud style: %s',
+    (style) => {
+      const settings = createSettings()
+      settings.modeling.viewportRendering.user = style
+      const manager = createConnectionManager(settings)
+      for (const enableSSAO of [true, false]) {
+        settings.modeling.enableSSAO.user = enableSSAO
+        const url = new URL(manager.generateWebsocketURL())
+        expect(url.searchParams.get('post_effect')).toBe(
+          style === 'default' ? (enableSSAO ? 'ssao' : 'noeffect') : style
+        )
+      }
+    }
+  )
 
   it('skips rendering updates only for the current geometry-only connection', async () => {
     const manager = createConnectionManager()
@@ -786,9 +875,13 @@ describe('ConnectionManager', () => {
     expect(newClose).not.toHaveBeenCalled()
   })
 
-  it.each([1000, 1006])(
-    'carries a reconnect request through socket closure %s and manager cleanup',
-    (code) => {
+  it.each([
+    { code: 1000, source: 'api' },
+    { code: 1006, source: 'api' },
+    { code: 1000, source: 'client' },
+  ] as const)(
+    'carries a $source reconnect through socket closure $code and manager cleanup',
+    ({ code, source }) => {
       vi.stubGlobal('WebSocket', ReconnectTestWebSocket)
       const manager = createConnectionManager()
       const closeDetails: EngineDisconnectEventDetail[] = []
@@ -824,8 +917,13 @@ describe('ConnectionManager', () => {
         request_id: null,
         resp: { type: 'reconnect', data: {} },
       })
-      socket.dispatchEvent(new MessageEvent('message', { data: notice }))
-      socket.dispatchEvent(new MessageEvent('message', { data: notice }))
+      if (source === 'api') {
+        socket.dispatchEvent(new MessageEvent('message', { data: notice }))
+        socket.dispatchEvent(new MessageEvent('message', { data: notice }))
+      } else {
+        connection.requestReconnect()
+        connection.requestReconnect()
+      }
       expect(socket.close).toHaveBeenCalledExactlyOnceWith(
         1000,
         'reconnect requested'
@@ -836,7 +934,7 @@ describe('ConnectionManager', () => {
         expect.objectContaining({
           extra: expect.objectContaining({
             shutdownRoute: 'websocket-closed',
-            initiatedBy: 'api',
+            initiatedBy: source,
             websocketCloseCode: '1000',
             websocketCloseReason: 'reconnect requested',
             reconnectRequested: true,

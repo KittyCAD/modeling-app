@@ -242,7 +242,7 @@ describe('RustContext plane notifications', () => {
 
 describe('RustContext module lifecycle', () => {
   it.each(['add', 'chain'] as const)(
-    'waits seven seconds for fresh storage before %s insertion, but not dragging',
+    'checks once before a logical %s insertion without interrupting its native mutations',
     async (operation) => {
       vi.useFakeTimers()
       const native = runtime('insertion')
@@ -264,10 +264,12 @@ describe('RustContext module lifecycle', () => {
         },
       } as const
       try {
-        const call =
-          operation === 'add'
+        const call = (async () => {
+          await context.prepareForSketchInsertion()
+          return operation === 'add'
             ? context.addSegment(0, 1, segment, undefined, {})
             : context.chainSegment(0, 1, 2, segment, undefined, {})
+        })()
         const result = expect(call).rejects.toThrow(
           'Native sketch boundary reached'
         )
@@ -288,9 +290,9 @@ describe('RustContext module lifecycle', () => {
         expect(native.instances[0].edit_segments).toHaveBeenCalledOnce()
         expect(before).toHaveBeenCalledOnce()
         before.mockRejectedValueOnce(new Error('Cannot refresh storage'))
-        await expect(
-          context.addSegment(0, 1, segment, undefined, {})
-        ).rejects.toThrow('Cannot refresh storage')
+        await expect(context.prepareForSketchInsertion()).rejects.toThrow(
+          'Cannot refresh storage'
+        )
         expect(native.instances[0].add_segment).toHaveBeenCalledTimes(
           operation === 'add' ? 1 : 0
         )

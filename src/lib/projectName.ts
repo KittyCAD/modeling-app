@@ -18,7 +18,11 @@ export function getProjectDirectoryNameFromTitle(
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
 
-  return normalized || fallback
+  const directoryName = normalized || fallback
+  // These device names are reserved even when used as directories on Windows.
+  return /^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i.test(directoryName)
+    ? `project-${directoryName}`
+    : directoryName
 }
 
 export function getProjectTitleFromUniqueDirectoryName({
@@ -54,7 +58,7 @@ export function getUniqueProjectNameFromExistingNames(
   while (names.has(uniqueName.toLowerCase())) {
     const nameEndsWithNumber = uniqueName.match(/\d+$/)
     uniqueName = nameEndsWithNumber
-      ? uniqueName.replace(/\d+$/, (num) => `${parseInt(num, 10) + 1}`)
+      ? uniqueName.replace(/\d+$/, (num) => (BigInt(num) + 1n).toString())
       : `${name}-1`
   }
   return uniqueName
@@ -73,10 +77,11 @@ export function getUniqueDuplicateProjectName(
 // create a regex to match the project name
 // replacing any instances of "$n" with a regex to match any number
 function interpolateProjectName(projectName: string) {
-  const regex = new RegExp(
-    projectName.replace(getPaddedIdentifierRegExp(), '([0-9]+)')
-  )
-  return regex
+  const identifier = getPaddedIdentifierRegExp().exec(projectName)
+  const pattern = identifier
+    ? `${escapeRegExpChars(projectName.slice(0, identifier.index))}([0-9]+)${escapeRegExpChars(projectName.slice(identifier.index + identifier[0].length))}`
+    : escapeRegExpChars(projectName)
+  return new RegExp(`^${pattern}$`, 'i')
 }
 
 export function getNextProjectIndexFromNames(
@@ -84,22 +89,23 @@ export function getNextProjectIndexFromNames(
   existingNames: readonly string[]
 ) {
   const regex = interpolateProjectName(projectName)
-  const matches = existingNames.map((name) => name.match(regex))
-  const indices = matches
-    .filter(Boolean)
-    .map((match) => (match !== null ? match[1] : '-1'))
-    .map((maybeMatchIndex) => {
-      return parseInt(maybeMatchIndex || '0', 10)
-    })
-  const maxIndex = Math.max(...indices, -1)
-  return maxIndex + 1
+  let nextIndex = 0n
+  for (const name of existingNames) {
+    const match = regex.exec(name)
+    if (!match) continue
+    const index = BigInt(match[1] || '0')
+    if (index >= nextIndex) nextIndex = index + 1n
+  }
+  return nextIndex <= BigInt(Number.MAX_SAFE_INTEGER)
+    ? Number(nextIndex)
+    : nextIndex
 }
 
 // Interpolates the project name with the next available index,
 // padding the index with 0s if necessary
 export function interpolateProjectNameWithIndex(
   projectName: string,
-  index: number
+  index: number | bigint
 ) {
   const regex = getPaddedIdentifierRegExp()
 

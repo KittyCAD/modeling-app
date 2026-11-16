@@ -11,14 +11,15 @@ import {
   PROJECT_ENTRYPOINT,
   PROJECT_SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
-import { webSafePathSplit } from '@src/lib/pathUtils'
 import {
   getProjectDefaultFileFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
-import { isArray } from '@src/lib/utils'
-import JSZip from 'jszip'
+import {
+  firstExistingProjectFile,
+  readProjectZip,
+} from '@src/lib/cloudProjects/runtime/archiveContents'
 
 type PrepareProjectFilesForCloudUploadOptions = {
   expectedRevision?: Revision
@@ -107,36 +108,23 @@ export function getProjectArchiveEntrypointPath(
   preferredEntrypointPath?: string
 ) {
   const filePaths = new Set(files.map((file) => file.relativePath))
-  const normalizedPreferredEntrypointPath = preferredEntrypointPath
-    ? normalizeRelativePath(preferredEntrypointPath)
-    : undefined
-  if (
-    normalizedPreferredEntrypointPath &&
-    filePaths.has(normalizedPreferredEntrypointPath)
-  ) {
-    return normalizedPreferredEntrypointPath
-  }
-
-  const projectTomlDefaultFile = getProjectTomlDefaultFile(files)
-  if (projectTomlDefaultFile && filePaths.has(projectTomlDefaultFile)) {
-    return projectTomlDefaultFile
-  }
-  if (filePaths.has(PROJECT_ENTRYPOINT)) {
-    return PROJECT_ENTRYPOINT
-  }
-
-  const fallbackKclFile = files
-    .map((file) => file.relativePath)
-    .filter(
-      (relativePath) =>
-        archivePaths.extname(relativePath).toLowerCase() === '.kcl'
-    )
-    .toSorted((a, b) => a.localeCompare(b))[0]
-  if (fallbackKclFile) {
-    return fallbackKclFile
-  }
-
-  return undefined
+  return (
+    firstExistingProjectFile(
+      filePaths,
+      preferredEntrypointPath
+        ? normalizeRelativePath(preferredEntrypointPath)
+        : undefined
+    ) ??
+    firstExistingProjectFile(
+      filePaths,
+      getProjectTomlDefaultFile(files),
+      PROJECT_ENTRYPOINT
+    ) ??
+    files
+      .map((file) => file.relativePath)
+      .filter((path) => archivePaths.extname(path).toLowerCase() === '.kcl')
+      .toSorted((a, b) => a.localeCompare(b))[0]
+  )
 }
 
 function getUploadEntrypointPath(
@@ -245,100 +233,10 @@ export function toArrayBuffer(data: Uint8Array): ArrayBuffer {
 export async function parseProjectArchive(archive: ArrayBuffer) {
   return withCloudFailureContext(
     { stage: 'archive', point: 'parse-project-archive' },
-    async () => {
-      try {
-        return await parseZipProjectArchive(archive)
-      } catch (zipError) {
-        const jsonProject = parseJsonProjectArchive(archive)
-        if (jsonProject) {
-          return jsonProject
-        }
-        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-        throw zipError
-      }
-    }
+    async () =>
+      (await readProjectZip(archive)).map((file) => ({
+        ...file,
+        relativePath: normalizeRelativePath(file.relativePath),
+      }))
   )
-}
-
-async function parseZipProjectArchive(archive: ArrayBuffer) {
-  const zip = await JSZip.loadAsync(archive)
-  const zipEntries = Object.values(zip.files).filter(
-    (entry) => !entry.dir && !entry.name.startsWith('__MACOSX/')
-  )
-  const rootDirectory = getCommonArchiveRoot(
-    zipEntries.map((entry) => entry.name)
-  )
-
-  return Promise.all(
-    zipEntries.map(async (entry) => ({
-      relativePath: normalizeRelativePath(
-        stripArchiveRoot(entry.name, rootDirectory)
-      ),
-      data: Uint8Array.from(await entry.async('uint8array')),
-    }))
-  )
-}
-
-function parseJsonProjectArchive(archive: ArrayBuffer) {
-  try {
-    const decoded = new TextDecoder().decode(new Uint8Array(archive))
-    const parsed = JSON.parse(decoded)
-    if (!parsed || typeof parsed !== 'object' || !isArray(parsed.files)) {
-      return undefined
-    }
-
-    const files: ProjectArchiveFile[] = []
-    for (const file of parsed.files) {
-      if (!file || typeof file !== 'object') {
-        continue
-      }
-      const relativePath =
-        typeof file.relativePath === 'string'
-          ? file.relativePath
-          : typeof file.requestedFileName === 'string'
-            ? file.requestedFileName
-            : undefined
-      if (!relativePath) {
-        continue
-      }
-
-      if (typeof file.contents === 'string') {
-        files.push({
-          relativePath: normalizeRelativePath(relativePath),
-          data: new TextEncoder().encode(file.contents),
-        })
-      }
-    }
-    return files
-  } catch {
-    return undefined
-  }
-}
-
-function getCommonArchiveRoot(fileNames: string[]) {
-  if (fileNames.length === 0) {
-    return ''
-  }
-  const splitPaths = fileNames.map((name) =>
-    webSafePathSplit(name).filter(Boolean)
-  )
-  const firstPath = splitPaths[0]
-  if (firstPath.length <= 1) {
-    return ''
-  }
-
-  const firstSegment = firstPath[0]
-  if (splitPaths.every((parts) => parts[0] === firstSegment)) {
-    return firstSegment
-  }
-  return ''
-}
-
-function stripArchiveRoot(fileName: string, rootDirectory: string) {
-  if (!rootDirectory) {
-    return fileName
-  }
-  return fileName.startsWith(`${rootDirectory}/`)
-    ? fileName.slice(rootDirectory.length + 1)
-    : fileName
 }

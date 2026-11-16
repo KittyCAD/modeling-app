@@ -1,7 +1,7 @@
 import { posix } from '@chainner/node-path'
 import { getProjectInfo } from '@src/lib/desktop'
 import { FileNotFound } from '@src/lib/fileSystem/fileOperations'
-import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
+import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import noopfs from '@src/lib/fs-zds/noopfs'
 import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
@@ -19,15 +19,15 @@ vi.mock('@src/lib/desktop', () => ({
 }))
 
 let memory: ReturnType<typeof createMemoryFileSystem>
-let runtime: ReturnType<typeof createFileOperationsRuntime>
+let scheduler: ReturnType<typeof createFileOperationsScheduler>
 beforeEach(async () => {
   vi.mocked(getProjectInfo).mockReset()
   memory = createMemoryFileSystem({ ...noopfs.impl, ...posix })
   await memory.mkdir('/projects', { recursive: true })
-  runtime = createFileOperationsRuntime(memory)
+  scheduler = createFileOperationsScheduler(memory)
 })
 afterEach(async () => {
-  await runtime.dispose()
+  await scheduler.dispose()
 })
 
 const wasmInstancePromise = Promise.resolve({} as ModuleType)
@@ -39,11 +39,11 @@ describe('directory project scanner', () => {
     const failure = Object.assign(new Error('Permission denied'), {
       code: 'EACCES',
     })
-    const stat = runtime.operations.stat
+    const stat = scheduler.operations.stat
     const onProjectStatFailures = vi.fn()
     const projects = await readProjectsFromProjectDirectory({
       fileOperations: {
-        ...runtime.operations,
+        ...scheduler.operations,
         stat: async (path) => {
           if (path === '/projects/missing') {
             await memory.rm(path, { recursive: true })
@@ -73,7 +73,7 @@ describe('directory project scanner', () => {
     })
     vi.mocked(getProjectInfo).mockResolvedValue(project)
     const projects = await readProjectsFromProjectDirectory({
-      fileOperations: runtime.operations,
+      fileOperations: scheduler.operations,
       projectDirectoryPath: '/projects',
       wasmInstancePromise,
     })

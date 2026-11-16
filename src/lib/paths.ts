@@ -1,8 +1,10 @@
+import { getContainedRelativePath } from '@src/lib/fileSystem/pathContainment'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { APP_NAME, ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import { getEXTNoPeriod } from '@src/lib/fileExtensions'
 import fsZds from '@src/lib/fs-zds'
 import { webSafeJoin } from '@src/lib/pathUtils'
+import { PATHS } from '@src/lib/routePaths'
 import {
   getDefaultDirectoryProjectLibraryPath,
   isProjectLibrarySettings,
@@ -42,24 +44,15 @@ function getProjectDirectorySetting(
   return typeof directory === 'string' ? directory : undefined
 }
 
-function getRelativePathIfContained(
+export function getRelativePathIfContained(
   parentDirectory: string,
   targetPath: string
-): string | undefined {
-  const relativePath = fsZds.relative(parentDirectory, targetPath)
-  if (relativePath === '') {
-    return relativePath
-  }
-  if (
-    relativePath === '..' ||
-    relativePath.startsWith(`..${fsZds.sep}`) ||
-    relativePath.startsWith('/') ||
-    relativePath.startsWith('\\') ||
-    /^[a-zA-Z]:/.test(relativePath)
-  ) {
-    return undefined
-  }
-  return relativePath
+) {
+  return getContainedRelativePath(
+    { relative: fsZds.relative, sep: fsZds.sep },
+    parentDirectory,
+    targetPath
+  )
 }
 
 export function normalizeFilesystemPathForComparison(path: string): string {
@@ -465,4 +458,9 @@ export async function toArchivePath(absolutePath: string) {
   // Make that make sense, right? So our archive paths need to replace that character.
   const absolutePathWithSafeDriveName = absolutePath.replace(':', '_DRIVE')
   return fsZds.join(basePath, absolutePathWithSafeDriveName)
+}
+
+/** Route to a file whose path is encoded as one router segment. */
+export function getFileRoute(path: string): string {
+  return `${PATHS.FILE}/${safeEncodeForRouterPaths(path)}`
 }

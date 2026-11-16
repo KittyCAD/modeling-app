@@ -11,7 +11,6 @@ import editorsExtension from '@src/lib/editors/registry'
 import markdownExtension from '@src/lib/markdown/registry'
 import { editorsService } from '@src/lib/editors/registry/contract'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import projectSessionNextExtension from '@src/lib/projectSession/registry'
@@ -31,6 +30,7 @@ import {
   it,
   vi,
 } from 'vitest'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 
 const registry = vi.hoisted(() => ({ get: vi.fn(), signal: vi.fn() }))
 const commands = vi.hoisted(() => ({ send: vi.fn() }))

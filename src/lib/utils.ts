@@ -797,3 +797,14 @@ export function hexToRgba(hex: string): RgbaColor | null {
     a: 1,
   }
 }
+
+/** Increment a per-key counter, starting missing keys at zero. */
+export function incrementMapCounter<Key>(counts: Map<Key, number>, key: Key) {
+  return counts.set(key, (counts.get(key) ?? 0) + 1)
+}
+
+/** Register a listener and return its disposer. */
+export function subscribeToSet<T>(listeners: Set<T>, listener: T) {
+  listeners.add(listener)
+  return () => listeners.delete(listener)
+}

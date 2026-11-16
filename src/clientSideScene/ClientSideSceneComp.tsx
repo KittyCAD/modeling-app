@@ -1,3 +1,4 @@
+import { selectCommand } from '@src/lib/commandUtils'
 import { Popover } from '@headlessui/react'
 import {
   type CSSProperties,
@@ -663,17 +664,14 @@ const ConstraintSymbol = ({
         // disabled={implicitDesc} TODO why does this change styles that are hard to override?
         onClick={toSync(async () => {
           if (!isConstrained) {
-            commands.send({
-              type: 'Find and select command',
-              data: {
-                name: 'Constrain with named value',
-                groupId: 'modeling',
-                argDefaultValues: {
-                  currentValue: {
-                    pathToNode,
-                    variableName: varName,
-                    valueText: value,
-                  },
+            selectCommand(commands, {
+              name: 'Constrain with named value',
+              groupId: 'modeling',
+              argDefaultValues: {
+                currentValue: {
+                  pathToNode,
+                  variableName: varName,
+                  valueText: value,
                 },
               },
             })
@@ -817,12 +815,9 @@ export const CamDebugSettings = () => {
         type="checkbox"
         checked={camSettings.type === 'perspective'}
         onChange={() =>
-          commands.send({
-            type: 'Find and select command',
-            data: {
-              groupId: 'settings',
-              name: 'modeling.cameraProjection',
-            },
+          selectCommand(commands, {
+            groupId: 'settings',
+            name: 'modeling.cameraProjection',
           })
         }
       />

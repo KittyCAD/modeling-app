@@ -1,3 +1,4 @@
+import { selectCommand } from '@src/lib/commandUtils'
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
 import { markdown } from '@codemirror/lang-markdown'
 import { python } from '@codemirror/lang-python'
@@ -495,15 +496,12 @@ const KclEditorKclMenu = () => {
           onClick={() => {
             const currentProject =
               settingsActor.getSnapshot().context.currentProject
-            commands.send({
-              type: 'Find and select command',
-              data: {
-                name: 'add-kcl-file-to-project',
-                groupId: 'application',
-                argDefaultValues: {
-                  method: 'existingProject',
-                  projectName: currentProject?.name,
-                },
+            selectCommand(commands, {
+              name: 'add-kcl-file-to-project',
+              groupId: 'application',
+              argDefaultValues: {
+                method: 'existingProject',
+                projectName: currentProject?.name,
               },
             })
           }}

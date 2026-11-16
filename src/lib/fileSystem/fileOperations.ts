@@ -70,8 +70,8 @@ function snapshotFileContents(contents: FileContents): OwnedFileContents {
  * target locks, allowing unrelated paths to proceed concurrently without
  * exposing a file during a coordinated mutation. Backends that guarantee
  * complete file snapshots may opt out of file-read locking below.
- * Locks coordinate only operations through this runtime; they cannot exclude
- * external programs or other runtimes accessing the same backing storage.
+ * Locks coordinate only operations through this scheduler; they cannot exclude
+ * external programs or other schedulers accessing the same backing storage.
  */
 export interface FileOperationsService {
   readonly pending: Effect.Effect<number>

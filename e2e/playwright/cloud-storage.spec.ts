@@ -1,3 +1,13 @@
+import {
+  readEditorCode,
+  holdFileRead,
+  holdModelingOpen,
+} from '@e2e/playwright/lib/editorTestUtils'
+import {
+  installPausedClock,
+  pauseAppClock,
+  openLayoutPanes,
+} from '@e2e/playwright/lib/appTestUtils'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { expect, test } from '@e2e/playwright/base-test'
 import {
@@ -7,9 +17,102 @@ import {
 } from '@e2e/playwright/test-utils'
 import { mockCloudStorage } from '@e2e/playwright/lib/cloudStorageFixture'
 import { cloudProjectResponse } from '@e2e/playwright/lib/cloudProjectTestUtils'
+import type * as BrowserTestUtils from '@e2e/playwright/lib/browserTestUtils'
+import { browserTestUtilsPath } from '@e2e/playwright/lib/browserTestUtilsPath'
 import { decode } from '@msgpack/msgpack'
 
 const projectId = '12902000-0000-4000-8000-000000000091'
+
+for (const startEmpty of [false, true]) {
+  test(
+    `shows initial project loading but keeps the ${startEmpty ? 'empty list' : 'project cards'} visible during refresh`,
+    { tag: '@web' },
+    async ({ context, page }, testInfo) => {
+      await mockClientErrorReports(context)
+      await mockCloudStorage(context, { startEmpty })
+      await setup(context, page, testInfo)
+      let release = Promise.withResolvers<undefined>()
+      await context.route('**/user/projects**', async (route) => {
+        if (new URL(route.request().url()).pathname === '/user/projects')
+          await release.promise
+        await route.fallback()
+      })
+      try {
+        await page.goto('/home')
+        await waitForAppLoad(page)
+        const loading = page.getByRole('status', { name: 'Loading projects' })
+        await expect(loading).toBeVisible()
+        release.resolve(undefined)
+        const refresh = page.getByRole('button', { name: 'Refresh projects' })
+        await expect(refresh).toHaveAttribute('aria-busy', 'false')
+        await expect(loading).toHaveCount(0)
+        const contents = startEmpty
+          ? page.getByTestId('projects-none')
+          : page.getByText('Cloud memory model', { exact: true })
+        await expect(contents).toBeVisible()
+        release = Promise.withResolvers<undefined>()
+        await refresh.click()
+        await expect(refresh).toHaveAttribute('aria-busy', 'true')
+        await expect(contents).toBeVisible()
+        await expect(loading).toHaveCount(0)
+        release.resolve(undefined)
+        await expect(refresh).toHaveAttribute('aria-busy', 'false')
+      } finally {
+        release.resolve(undefined)
+      }
+    }
+  )
+}
+
+test(
+  'refreshes projects only on entry or request, with a five-second button cooldown',
+  { tag: '@web' },
+  async ({ context, page }, testInfo) => {
+    await mockClientErrorReports(context)
+    const remote = await mockCloudStorage(context)
+    await setup(context, page, testInfo)
+    await page.goto('/home')
+    await waitForAppLoad(page)
+    const refresh = page.getByRole('button', { name: 'Refresh projects' })
+    await expect(refresh).toHaveAttribute('aria-busy', 'false')
+    await expect(
+      page.getByText('Cloud memory model', { exact: true })
+    ).toBeVisible()
+    await page.clock.install()
+    await page.clock.pauseAt(new Date())
+    remote.project.title = 'Changed elsewhere'
+    await page.getByTestId('home-sort-by-name').click()
+    await page.evaluate(() => {
+      window.dispatchEvent(new Event('focus'))
+      window.dispatchEvent(new Event('online'))
+      document.dispatchEvent(new Event('visibilitychange'))
+    })
+    await page.clock.runFor(60_000)
+    await expect(
+      page.getByText('Cloud memory model', { exact: true })
+    ).toBeVisible()
+    await expect(
+      page.getByText('Changed elsewhere', { exact: true })
+    ).toHaveCount(0)
+    await refresh.click()
+    await expect(
+      page.getByText('Changed elsewhere', { exact: true })
+    ).toBeVisible()
+    await expect(refresh).toHaveAttribute('aria-busy', 'false')
+    await expect(refresh).toBeDisabled()
+    await page.clock.runFor(4_999)
+    await expect(refresh).toBeDisabled()
+    await page.clock.runFor(1)
+    await expect(refresh).toBeEnabled()
+    await page.getByText('Changed elsewhere', { exact: true }).dblclick()
+    await page.locator('.cm-content').first().waitFor({ state: 'visible' })
+    remote.project.title = 'Changed while modeling'
+    await page.getByTestId('app-logo').click()
+    await expect(
+      page.getByText('Changed while modeling', { exact: true })
+    ).toBeVisible()
+  }
+)
 
 test(
   'polls revisions and reflects remote edits and deletions without reloading the page',
@@ -21,13 +124,8 @@ test(
     const root = `/__zoo_cloud__/${projectId}`
     await page.goto(`/file/${encodeURIComponent(`${root}/main.kcl`)}`)
     await page.locator('.cm-content').first().waitFor({ state: 'visible' })
-    await page.evaluate(
-      (id) => window.app.layout.openPane(id),
-      DefaultLayoutPaneID.Files
-    )
-    const clockStart = new Date()
-    await page.clock.install({ time: clockStart })
-    await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+    await openLayoutPanes(page, DefaultLayoutPaneID.Files)
+    await installPausedClock(page)
     const initialReads = { ...remote.reads }
     await page.clock.runFor(8_000)
     await expect
@@ -151,9 +249,7 @@ test(
       `/file/${encodeURIComponent(`/__zoo_cloud__/${projectId}/main.kcl`)}`
     )
     await page.locator('.cm-content').first().waitFor({ state: 'visible' })
-    await page.clock.pauseAt(
-      new Date((await page.evaluate(() => Date.now())) + 1_000)
-    )
+    await pauseAppClock(page)
     const probes = await page.evaluateHandle((projectId) => {
       const originalFetch = window.fetch
       let started = 0
@@ -235,11 +331,11 @@ test(
       `/file/${encodeURIComponent(`/__zoo_cloud__/${projectId}/main.kcl`)}`
     )
     await page.locator('.cm-content').first().waitFor({ state: 'visible' })
-    const promptState = await page.evaluateHandle(async () => {
-      const modulePath = '/src/lib/zookeeper/zookeeperPromptState.ts'
-      const { zookeeperPromptRunningSignal } = await import(modulePath)
+    const promptState = await page.evaluateHandle(async (modulePath) => {
+      const { zookeeperPromptRunningSignal }: typeof BrowserTestUtils =
+        await import(modulePath)
       return zookeeperPromptRunningSignal
-    })
+    }, browserTestUtilsPath)
     await promptState.evaluate((state) => {
       state.value = true
     })
@@ -301,10 +397,7 @@ for (const kind of ['file', 'directory']) {
       const root = `/__zoo_cloud__/${projectId}`
       await page.goto(`/file/${encodeURIComponent(`${root}/main.kcl`)}`)
       await page.locator('.cm-content').first().waitFor({ state: 'visible' })
-      await page.evaluate(
-        (id) => window.app.layout.openPane(id),
-        DefaultLayoutPaneID.Files
-      )
+      await openLayoutPanes(page, DefaultLayoutPaneID.Files)
       const parts = page.getByRole('treeitem', { name: 'parts', exact: true })
       await parts.click()
       const handle = page.getByRole('treeitem', {
@@ -347,7 +440,7 @@ for (const kind of ['file', 'directory']) {
         expect(remote.project.files['main.kcl']).toBe(
           '@settings(kclVersion = 3.0)\n'
         )
-        expect(await history.evaluate((h) => h.count())).toBe(0)
+        expect(await history.evaluate((h) => h.count())).toBe(1)
         expect(
           await page.evaluate(async () => {
             const storage = await navigator.storage.getDirectory()
@@ -385,7 +478,7 @@ for (const kind of ['file', 'directory']) {
 }
 
 test(
-  'keeps the local archive and undo history for local file deletion',
+  'keeps local deletion undo in memory without creating an archive',
   { tag: '@web' },
   async ({ context, page }, testInfo) => {
     await mockClientErrorReports(context)
@@ -412,10 +505,7 @@ test(
     })
     await page.goto(`/file/${encodeURIComponent(`${root}/main.kcl`)}`)
     await page.locator('.cm-content').first().waitFor({ state: 'visible' })
-    await page.evaluate(
-      (id) => window.app.layout.openPane(id),
-      DefaultLayoutPaneID.Files
-    )
+    await openLayoutPanes(page, DefaultLayoutPaneID.Files)
     const note = page.getByRole('treeitem', { name: 'note.md', exact: true })
     const historyBefore = await page.evaluate(
       () => window.app.singletons.kclManager.globalHistoryView.undoDepth
@@ -426,20 +516,50 @@ test(
     await expect(note).not.toBeVisible()
     expect(
       await page.evaluate(
-        async (root) =>
-          new TextDecoder().decode(
-            await window.fsZds.readFile(
-              window.fsZds.join('/userData/archive', root, 'note.md')
-            )
+        (root) =>
+          window.app.fileOperations.exists(
+            window.fsZds.join('/userData/archive', root, 'note.md')
           ),
         root
       )
-    ).toBe('local backup contents')
+    ).toBe(false)
     expect(
       await page.evaluate(
         () => window.app.singletons.kclManager.globalHistoryView.undoDepth
       )
     ).toBe(historyBefore + 1)
+    await page
+      .getByRole('button', { name: 'arrow turn left', exact: true })
+      .click()
+    await expect(note).toBeVisible()
+    expect(
+      await page.evaluate(
+        (root) =>
+          window.fsZds.readFile(window.fsZds.join(root, 'note.md'), 'utf8'),
+        root
+      )
+    ).toBe('local backup contents')
+    await page
+      .getByRole('button', { name: 'arrow turn right', exact: true })
+      .click()
+    await expect(note).not.toBeVisible()
+    await page.reload({ waitUntil: 'domcontentloaded' })
+    await waitForAppLoad(page)
+    await expect(page.locator('.cm-content').first()).toBeVisible()
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => window.app.singletons.kclManager.globalHistoryView.undoDepth
+        )
+      )
+      .toBe(0)
+    expect(
+      await page.evaluate(
+        (root) =>
+          window.app.fileOperations.exists(window.fsZds.join(root, 'note.md')),
+        root
+      )
+    ).toBe(false)
   }
 )
 
@@ -562,9 +682,7 @@ test(
     await expect
       .poll(() => page.evaluate(() => window.app.fileOperations.pending()))
       .toBe(0)
-    const clockStart = new Date()
-    await page.clock.install({ time: clockStart })
-    await page.clock.pauseAt(new Date(clockStart.getTime() + 1_000))
+    await installPausedClock(page)
     await expect
       .poll(() => page.evaluate(() => window.app.fileOperations.pending()))
       .toBe(0)
@@ -635,32 +753,12 @@ test(
       .click()
     await page.locator('.cm-content').first().waitFor({ state: 'visible' })
     await expect(page).toHaveURL(/main\.kcl/)
-    await page.evaluate(
-      (ids) => {
-        for (const id of ids) window.app.layout.openPane(id)
-      },
-      [DefaultLayoutPaneID.Code, DefaultLayoutPaneID.Files]
+    await openLayoutPanes(
+      page,
+      ...[DefaultLayoutPaneID.Code, DefaultLayoutPaneID.Files]
     )
     const originalProject = await page.evaluateHandle(() => window.app.project)
-    const releaseBuffer = await page.evaluateHandle(() => {
-      const target = window.app.project?.files.find((file) =>
-        file.path.endsWith('/other.kcl')
-      )
-      if (!target) throw new Error('Missing target file')
-      const read = target.read.bind(target)
-      let release!: () => void
-      const gate = new Promise<void>((resolve) => {
-        release = resolve
-      })
-      target.read = async () => {
-        await gate
-        return read()
-      }
-      return () => {
-        target.read = read
-        release()
-      }
-    })
+    const releaseBuffer = await holdFileRead(page, 'other.kcl')
     const save = Promise.withResolvers<undefined>()
     let blockedSave = false
     await context.route('**/user/projects/**', async (route) => {
@@ -670,33 +768,7 @@ test(
       }
       await route.fallback()
     })
-    const releaseModeling = await page.evaluateHandle(() => {
-      const rust = window.app.rustContext
-      const original = rust.sendOpenProject.bind(rust)
-      const originalUpdate = rust.sendUpdateFile.bind(rust)
-      const sourceId = window.app.singletons.kclManager.id
-      let updatesBeforeReady = 0
-      let ready = false
-      rust.sendUpdateFile = async (...args) => {
-        if (!ready && args[0] !== sourceId) updatesBeforeReady += 1
-        return originalUpdate(...args)
-      }
-      let release!: () => void
-      const gate = new Promise<void>((resolve) => {
-        release = resolve
-      })
-      rust.sendOpenProject = async (...args) => {
-        await gate
-        return original(...args)
-      }
-      return () => {
-        rust.sendOpenProject = original
-        rust.sendUpdateFile = originalUpdate
-        ready = true
-        release()
-        return updatesBeforeReady
-      }
-    })
+    const releaseModeling = await holdModelingOpen(page)
     try {
       await page.evaluate(() =>
         window.app.singletons.kclManager.updateCodeEditor(
@@ -829,7 +901,7 @@ test(
       },
     })
     await expect
-      .poll(() => page.evaluate(() => window.app.singletons.kclManager.code), {
+      .poll(() => readEditorCode(page), {
         timeout: 30_000,
       })
       .toContain('width = 42')
@@ -851,6 +923,12 @@ test(
       )
       .toEqual({ added: true, deleted: false, id: projectId })
     expect(remote.uploads).toHaveLength(initialUploads)
+    expect(remote.downloadRequests.at(-1)).toEqual({
+      revision: remote.project.revision,
+      paths: ['main.kcl', 'new/data.bin'],
+      selected: true,
+    })
+    const downloadsBeforeDeletion = remote.downloads.length
     delete remote.project.files['main.kcl']
     remote.project.revision = String(Number(remote.project.revision) + 1)
     send({
@@ -873,6 +951,7 @@ test(
         root
       )
     ).toBe(false)
+    expect(remote.downloads).toHaveLength(downloadsBeforeDeletion)
     expect(remote.uploads).toHaveLength(initialUploads)
   }
 )

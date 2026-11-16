@@ -1,3 +1,4 @@
+import { incrementMapCounter } from '@src/lib/utils'
 import { signal } from '@preact/signals-core'
 import toast from 'react-hot-toast'
 
@@ -154,7 +155,7 @@ export function adoptStorageTextSnapshot(
     )
   for (const path of paths)
     if (belongs(path)) {
-      fileGenerations.set(path, (fileGenerations.get(path) ?? 0) + 1)
+      incrementMapCounter(fileGenerations, path)
       outgoingWrites.delete(path)
     }
   if (pendingWrite && belongs(pendingWrite.path)) {

@@ -132,14 +132,14 @@ it('records directory, cyclic, and dangling links as leaves without traversing t
   const { tmpdir } = await import('node:os')
   const path = await import('node:path')
   const { default: nodeFileSystem } = await import('@src/lib/fs-zds/nodefs')
-  const { createFileOperationsRuntime } = await import(
-    '@src/lib/fileSystem/runtime'
+  const { createFileOperationsScheduler } = await import(
+    '@src/lib/fileSystem/scheduler'
   )
   const { getProjectContents } = await import(
     '@src/lib/projectSession/next/utils'
   )
   const temporary = await fs.mkdtemp(path.join(tmpdir(), 'zds-project-links-'))
-  const runtime = createFileOperationsRuntime(nodeFileSystem.impl)
+  const scheduler = createFileOperationsScheduler(nodeFileSystem.impl)
   try {
     const project = path.join(temporary, 'project')
     const outside = path.join(temporary, 'outside')
@@ -154,8 +154,8 @@ it('records directory, cyclic, and dangling links as leaves without traversing t
       path.join(project, 'dangling'),
       'junction'
     )
-    const readDirectory = vi.spyOn(runtime.operations, 'readDirectory')
-    const contents = await getProjectContents(runtime.operations, project)
+    const readDirectory = vi.spyOn(scheduler.operations, 'readDirectory')
+    const contents = await getProjectContents(scheduler.operations, project)
     expect(
       contents.children
         .map(({ name, children }) => ({ name, children }))
@@ -169,10 +169,10 @@ it('records directory, cyclic, and dangling links as leaves without traversing t
     expect(readDirectory).toHaveBeenCalledExactlyOnceWith(project)
     // Ordinary stat callers retain their existing target-following behavior.
     expect(
-      (await runtime.operations.stat(path.join(project, 'external'))).kind
+      (await scheduler.operations.stat(path.join(project, 'external'))).kind
     ).toBe('directory')
   } finally {
-    await runtime.dispose()
+    await scheduler.dispose()
     await fs.rm(temporary, { recursive: true, force: true })
   }
 })

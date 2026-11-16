@@ -1,5 +1,5 @@
 import { posix } from '@chainner/node-path'
-import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
+import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import noopfs from '@src/lib/fs-zds/noopfs'
 import { cloneProjectIntoLocalDirectory } from '@src/lib/projectLibraries/operations'
@@ -40,8 +40,8 @@ async function setup() {
     '/source/original/main.kcl',
     encoder.encode('captured')
   )
-  const runtime = createFileOperationsRuntime(memory)
-  return { memory, runtime }
+  const scheduler = createFileOperationsScheduler(memory)
+  return { memory, scheduler }
 }
 
 describe('independent project clones', () => {
@@ -50,7 +50,7 @@ describe('independent project clones', () => {
       fc.asyncProperty(
         fc.array(fc.uint8Array({ maxLength: 128 }), { maxLength: 4 }),
         async (files) => {
-          const { memory, runtime } = await setup()
+          const { memory, scheduler } = await setup()
           try {
             await memory.mkdir('/destination/original', { recursive: true })
             await memory.writeFile(
@@ -63,7 +63,7 @@ describe('independent project clones', () => {
                 bytes
               )
             const result = await cloneProjectIntoLocalDirectory({
-              fileOperations: runtime.operations,
+              fileOperations: scheduler.operations,
               projectDirectoryPath: '/destination',
               sourceProjectPath: '/source/original',
               sourceProjectName: 'original',
@@ -100,7 +100,7 @@ describe('independent project clones', () => {
               await memory.readFile('/source/original/project.toml', 'utf8')
             ).toBe(toml)
           } finally {
-            await runtime.dispose()
+            await scheduler.dispose()
           }
         }
       )
@@ -114,12 +114,12 @@ describe('independent project clones', () => {
           maxLength: 4,
         }),
         async (segments) => {
-          const { memory, runtime } = await setup()
+          const { memory, scheduler } = await setup()
           try {
             const before = await memory.readdir('/source/original')
             await expect(
               cloneProjectIntoLocalDirectory({
-                fileOperations: runtime.operations,
+                fileOperations: scheduler.operations,
                 projectDirectoryPath: posix.join(
                   '/source/original',
                   ...segments
@@ -134,7 +134,7 @@ describe('independent project clones', () => {
               await memory.readFile('/source/original/project.toml', 'utf8')
             ).toBe(toml)
           } finally {
-            await runtime.dispose()
+            await scheduler.dispose()
           }
         }
       )
@@ -144,11 +144,11 @@ describe('independent project clones', () => {
   it.each(['/outside/main.kcl', '/source', '/source/original'])(
     'rejects an entrypoint outside the source files: %s',
     async (defaultFile) => {
-      const { memory, runtime } = await setup()
+      const { memory, scheduler } = await setup()
       try {
         await expect(
           cloneProjectIntoLocalDirectory({
-            fileOperations: runtime.operations,
+            fileOperations: scheduler.operations,
             projectDirectoryPath: '/destination',
             sourceProjectPath: '/source/original',
             sourceProjectName: 'original',
@@ -161,7 +161,7 @@ describe('independent project clones', () => {
           await memory.readFile('/source/original/project.toml', 'utf8')
         ).toBe(toml)
       } finally {
-        await runtime.dispose()
+        await scheduler.dispose()
       }
     }
   )
@@ -169,14 +169,14 @@ describe('independent project clones', () => {
   it.each([false, true])(
     'retains source edits made during a seven-second destination write (failure: %s)',
     async (fail) => {
-      const { memory, runtime } = await setup()
+      const { memory, scheduler } = await setup()
       const started = Promise.withResolvers<undefined>()
       const release = Promise.withResolvers<undefined>()
       const operations = {
-        ...runtime.operations,
+        ...scheduler.operations,
         writeFile: async (
           path: string,
-          contents: Parameters<typeof runtime.operations.writeFile>[1]
+          contents: Parameters<typeof scheduler.operations.writeFile>[1]
         ) => {
           if (path.startsWith('/destination/')) {
             started.resolve(undefined)
@@ -184,7 +184,7 @@ describe('independent project clones', () => {
             if (fail)
               return Promise.reject(new Error('Destination unavailable'))
           }
-          await runtime.operations.writeFile(path, contents)
+          await scheduler.operations.writeFile(path, contents)
         },
       }
       const clone = cloneProjectIntoLocalDirectory({
@@ -225,7 +225,7 @@ describe('independent project clones', () => {
         release.resolve(undefined)
         await Promise.allSettled([clone])
         vi.useRealTimers()
-        await runtime.dispose()
+        await scheduler.dispose()
       }
     }
   )

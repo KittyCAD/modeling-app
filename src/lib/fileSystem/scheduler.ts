@@ -33,29 +33,29 @@ import type { FileOperationsRegistryService } from '@src/registry/contracts/file
 import * as Effect from 'effect/Effect'
 import * as Either from 'effect/Either'
 import * as Layer from 'effect/Layer'
-import * as ManagedRuntime from 'effect/ManagedRuntime'
+import { make as makeScheduler } from 'effect/ManagedRuntime'
 
-export interface FileOperationsRuntime {
+export interface FileOperationsScheduler {
   readonly operations: FileOperationsRegistryService
   readonly dispose: () => Promise<void>
 }
 
 /**
- * Own one Effect runtime for the mounted file-operations registry node.
+ * Own shared locks and operation lifetimes for one filesystem backing.
  *
  * Promise conversion happens privately at this registry boundary. Effect-aware
  * code composes against the internal filesystem layers while registry
  * consumers use the conventional FileOperations Promise facade.
  */
-export function createFileOperationsRuntime(
+export function createFileOperationsScheduler(
   backing: IZooDesignStudioFS,
   options: FileOperationsOptions = {}
-): FileOperationsRuntime {
+): FileOperationsScheduler {
   const baseLayer = fileSystemLayer(backing)
   const layer = fileOperationsLayer(backing, options).pipe(
     Layer.provide(baseLayer)
   )
-  const runtime = ManagedRuntime.make(layer)
+  const scheduler = makeScheduler(layer)
   const active = new Set<Promise<unknown>>()
   const track = <T>(task: Promise<T>) => {
     active.add(task)
@@ -66,11 +66,13 @@ export function createFileOperationsRuntime(
     return task
   }
 
-  const runRuntimePromise = async <A, E, R extends FileOperations>(
+  const runScheduledPromise = async <A, E, R extends FileOperations>(
     program: Effect.Effect<A, E, R>,
     onFailure?: (error: E) => void
   ): Promise<A> => {
-    const result = await track(runtime.runPromise(program.pipe(Effect.either)))
+    const result = await track(
+      scheduler.runPromise(program.pipe(Effect.either))
+    )
     if (Either.isLeft(result)) {
       onFailure?.(result.left)
       return Promise.reject(result.left)
@@ -82,12 +84,12 @@ export function createFileOperationsRuntime(
     operation: FileOperationsOperation,
     program: Effect.Effect<A, FileSystemError, FileOperations>
   ) =>
-    runRuntimePromise(program, (error) =>
+    runScheduledPromise(program, (error) =>
       reportFileOperationsError(operation, error)
     )
 
   const operations: FileOperationsRegistryService = {
-    pending: () => runRuntimePromise(pendingFileOperations),
+    pending: () => runScheduledPromise(pendingFileOperations),
     stat: (path, options) =>
       runFileOperationsPromise('stat', statOperation(path, options)),
     canReadWrite: (path) =>
@@ -145,7 +147,7 @@ export function createFileOperationsRuntime(
     operations,
     dispose: async () => {
       while (active.size) await Promise.allSettled([...active])
-      await runtime.dispose()
+      await scheduler.dispose()
     },
   }
 }

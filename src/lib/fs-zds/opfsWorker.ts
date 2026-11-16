@@ -2,15 +2,21 @@ import { resolveOPFSHandle as walk } from '@src/lib/fs-zds/opfsHandle'
 
 const OPFS_PATH_SEPARATOR = '/'
 
-type WriteFileRequest = {
-  id: number
-  type: 'write-file'
-  targetPath: string
-  data: Uint8Array<ArrayBuffer>
-}
+export type OPFSWorkerRequest =
+  | {
+      id: number
+      type: 'write-file'
+      targetPath: string
+      data: Uint8Array<ArrayBuffer>
+    }
+  | {
+      id: number
+      type: 'read-file'
+      targetPath: string
+    }
 
-type WorkerResponse =
-  | { id: number; ok: true }
+export type OPFSWorkerResponse =
+  | { id: number; ok: true; data?: Uint8Array<ArrayBuffer> }
   | { id: number; ok: false; error: string }
 
 const writeWithHandle = async (
@@ -35,7 +41,14 @@ const writeWithHandle = async (
     const accessHandle = await syncHandleMethod.call(handle)
     try {
       accessHandle.truncate(0)
-      accessHandle.write(data, { at: 0 })
+      let offset = 0
+      while (offset < data.byteLength) {
+        const written = accessHandle.write(data.subarray(offset), {
+          at: offset,
+        })
+        if (written === 0) return Promise.reject('OPFS_WRITE_INCOMPLETE')
+        offset += written
+      }
       accessHandle.flush()
     } finally {
       accessHandle.close()
@@ -83,19 +96,55 @@ const writeFile = async (
   await writeWithHandle(fileHandle, data)
 }
 
-self.onmessage = (event: MessageEvent<WriteFileRequest>) => {
-  const { id, type, targetPath, data } = event.data
-  if (type !== 'write-file') {
-    return
+const readFile = async (
+  targetPath: string
+): Promise<Uint8Array<ArrayBuffer>> => {
+  const handle = await walk(targetPath)
+  if (!handle) return Promise.reject('ENOENT')
+  if (!(handle instanceof FileSystemFileHandle)) return Promise.reject('EISDIR')
+  const create = (
+    handle as FileSystemFileHandle & {
+      createSyncAccessHandle: () => Promise<{
+        getSize: () => number
+        read: (data: Uint8Array<ArrayBuffer>, options: { at: number }) => number
+        close: () => void
+      }>
+    }
+  ).createSyncAccessHandle
+  if (typeof create !== 'function')
+    return Promise.reject('OPFS_READ_UNSUPPORTED')
+  const access = await create.call(handle)
+  try {
+    const data = new Uint8Array(access.getSize())
+    let offset = 0
+    while (offset < data.byteLength) {
+      const count = access.read(data.subarray(offset), { at: offset })
+      if (count === 0) return Promise.reject('OPFS_READ_INCOMPLETE')
+      offset += count
+    }
+    return data
+  } finally {
+    access.close()
   }
+}
 
-  void writeFile(targetPath, data)
-    .then(() => {
-      const response: WorkerResponse = { id, ok: true }
+self.onmessage = (event: MessageEvent<OPFSWorkerRequest>) => {
+  const request = event.data
+  const { id, targetPath } = request
+  const result =
+    request.type === 'write-file'
+      ? writeFile(targetPath, request.data)
+      : readFile(targetPath)
+
+  void result
+    .then((data) => {
+      const response: OPFSWorkerResponse = data
+        ? { id, ok: true, data }
+        : { id, ok: true }
       postMessage(response)
     })
     .catch((error: unknown) => {
-      const response: WorkerResponse = {
+      const response: OPFSWorkerResponse = {
         id,
         ok: false,
         error: error instanceof Error ? error.message : String(error),

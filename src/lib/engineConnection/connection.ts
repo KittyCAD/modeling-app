@@ -109,6 +109,7 @@ export class Connection extends EventTarget {
   handleMessage: ((event: MessageEvent<any>) => void) | null
   private readonly getCloudProjectId: () => string | undefined
   private reconnectRequested = false
+  private reconnectInitiatedBy: 'api' | 'client' = 'api'
   private readonly onReconnectRequested: (connection: Connection) => void
 
   constructor({
@@ -656,6 +657,19 @@ export class Connection extends EventTarget {
     return this.peerConnection
   }
 
+  requestReconnect(initiatedBy: 'api' | 'client' = 'client') {
+    if (
+      this.reconnectRequested ||
+      this.websocket?.readyState !== WebSocket.OPEN
+    ) {
+      return
+    }
+
+    this.reconnectRequested = true
+    this.reconnectInitiatedBy = initiatedBy
+    this.onReconnectRequested(this)
+  }
+
   closeForReconnect() {
     if (
       !this.reconnectRequested ||
@@ -666,7 +680,7 @@ export class Connection extends EventTarget {
 
     this.recordShutdownTrigger({
       route: 'websocket-closed',
-      initiatedBy: 'api',
+      initiatedBy: this.reconnectInitiatedBy,
       code: WebSocketCloseCode.NormalClosure.toString(),
       reason: 'reconnect requested',
       reconnectRequested: true,
@@ -727,17 +741,7 @@ export class Connection extends EventTarget {
         modelingApiCallId: this.apiCallId ?? null,
       }),
       tearDownManager: this.tearDownManager.bind(this),
-      requestReconnect: () => {
-        if (
-          this.reconnectRequested ||
-          this.websocket?.readyState !== WebSocket.OPEN
-        ) {
-          return
-        }
-
-        this.reconnectRequested = true
-        this.onReconnectRequested(this)
-      },
+      requestReconnect: () => this.requestReconnect('api'),
     })
     const onWebSocketClose = createOnWebSocketClose({
       websocket: this.websocket,

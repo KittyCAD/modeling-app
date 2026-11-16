@@ -22,16 +22,18 @@ export function renameEntry(
       const parent = yield* fs.stat(sourceParent)
       const targetParent = yield* fs.stat(destinationParent)
       const nameKey = conservativePathLockKey(paths.basename(source))
-      const sameEntry =
-        Number.isSafeInteger(original.inode) &&
-        original.inode !== 0 &&
-        original.inode === target.inode &&
-        original.device === target.device
-      const sameParent =
-        Number.isSafeInteger(parent.inode) &&
-        parent.inode !== 0 &&
-        parent.inode === targetParent.inode &&
-        parent.device === targetParent.device
+      const sameEntry = fs.isSameEntry
+        ? yield* fs.isSameEntry(source, destination)
+        : Number.isSafeInteger(original.inode) &&
+          original.inode !== 0 &&
+          original.inode === target.inode &&
+          original.device === target.device
+      const sameParent = fs.isSameEntry
+        ? yield* fs.isSameEntry(sourceParent, destinationParent)
+        : Number.isSafeInteger(parent.inode) &&
+          parent.inode !== 0 &&
+          parent.inode === targetParent.inode &&
+          parent.device === targetParent.device
       // A shared inode alone is insufficient: distinct hard links may have it.
       // One directory entry must account for both spellings on this backing.
       const alias =

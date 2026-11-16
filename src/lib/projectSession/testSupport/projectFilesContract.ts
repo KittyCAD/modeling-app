@@ -245,7 +245,10 @@ export function projectFilesContract(
       }
     })
 
-    it('uses live editor contents for the selected project file after path normalization', async () => {
+    it.each([
+      { name: 'after path normalization', hasExecFileNames: true },
+      { name: 'when exec filenames are unavailable', hasExecFileNames: false },
+    ])('uses live editor contents $name', async ({ hasExecFileNames }) => {
       const projectPath = fixture.root
       const mainPath = fs.join(projectPath, 'main.kcl')
       await fs.mkdir(projectPath, { recursive: true })
@@ -254,55 +257,18 @@ export function projectFilesContract(
       try {
         const projectFiles = await collectProjectFiles({
           selectedFileContents: 'boxHeight = 500mm',
-          selectedFilePath: `${projectPath}${fs.sep}.${fs.sep}main.kcl`,
-          fileNames: {
-            0: {
-              type: 'Local',
-              value: mainPath,
-              original_import_path: null,
-            },
-          },
-          projectContext: {
-            name: 'zookeeper-project',
-            path: projectPath,
-            children: [
-              {
-                name: 'main.kcl',
-                path: mainPath,
-                children: null,
-              },
-            ],
-            metadata: null,
-            kcl_file_count: 1,
-            directory_count: 0,
-            default_file: mainPath,
-            readWriteAccess: true,
-          },
-        })
-
-        const mainFile = projectFiles.find(
-          (file) => file.relPath === 'main.kcl'
-        )
-        expect(mainFile).toMatchObject({
-          type: 'kcl',
-          fileContents: 'boxHeight = 500mm',
-        })
-      } finally {
-        await fs.rm(projectPath, { recursive: true, force: true })
-      }
-    })
-
-    it('uses exec state index 0 for the selected project file when exec filenames are unavailable', async () => {
-      const projectPath = fixture.root
-      const mainPath = fs.join(projectPath, 'main.kcl')
-      await fs.mkdir(projectPath, { recursive: true })
-      await fs.writeFile(mainPath, new TextEncoder().encode('boxHeight = 50mm'))
-
-      try {
-        const projectFiles = await collectProjectFiles({
-          selectedFileContents: 'boxHeight = 500mm',
-          selectedFilePath: mainPath,
-          fileNames: {},
+          selectedFilePath: hasExecFileNames
+            ? `${projectPath}${fs.sep}.${fs.sep}main.kcl`
+            : mainPath,
+          fileNames: hasExecFileNames
+            ? {
+                0: {
+                  type: 'Local',
+                  value: mainPath,
+                  original_import_path: null,
+                },
+              }
+            : {},
           projectContext: {
             name: 'zookeeper-project',
             path: projectPath,

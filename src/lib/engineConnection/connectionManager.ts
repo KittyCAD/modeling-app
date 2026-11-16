@@ -1,4 +1,8 @@
-import type { ModelingCmdReq, WebSocketResponse } from '@kittycad/lib'
+import type {
+  ModelingCmdReq,
+  PostEffectType,
+  WebSocketResponse,
+} from '@kittycad/lib'
 import {
   decode as msgpackDecode,
   encode as msgpackEncode,
@@ -56,6 +60,11 @@ import {
 import type RustContext from '@src/lib/rustContext'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
+import {
+  getViewportBackgroundColor,
+  getViewportPostEffect,
+  getViewportTheme,
+} from '@src/lib/settings/viewportRendering'
 import {
   darkModeMatcher,
   edgeColor,
@@ -204,7 +213,10 @@ export class ConnectionManager extends EventTarget {
     return {
       theme: s.app.theme.current,
       highlightEdges: s.modeling.highlightEdges.current,
-      enableSSAO: s.modeling.enableSSAO.current,
+      viewportRendering: getViewportPostEffect(
+        s.modeling.viewportRendering.current,
+        s.modeling.enableSSAO.current
+      ),
       showScaleGrid: s.modeling.showScaleGrid.current,
       cameraProjection: s.modeling.cameraProjection.current,
       cameraOrbit: s.modeling.cameraOrbit.current,
@@ -591,6 +603,7 @@ export class ConnectionManager extends EventTarget {
     // Engine is ready to start sending events!
     // Gotcha: The other listenerse above need to be initialized otherwise this will halt forever.
     await onEngineConnectionOpened()
+    this.setViewportRendering(this.settings.viewportRendering)
   }
 
   /**
@@ -647,7 +660,7 @@ export class ConnectionManager extends EventTarget {
         `?geometry_only=true&webrtc=false${resolution}${versionQuery}`
       )
     }
-    let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
+    let additionalSettings = `&post_effect=${this.settings.viewportRendering}`
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
     additionalSettings += versionQuery
@@ -655,6 +668,21 @@ export class ConnectionManager extends EventTarget {
       `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )
     return url
+  }
+
+  setViewportRendering(mode: PostEffectType) {
+    const connection = this.connection
+    const useLocalRenderer =
+      connection?.geometryOnly ??
+      getSettingsFromActorContext(this.systemDeps.settingsActor).modeling
+        .useLocalRenderer.current
+    if (useLocalRenderer) return
+    if (!connection) {
+      return
+    }
+    const connectedMode =
+      new URL(connection.url).searchParams.get('post_effect') ?? 'noeffect'
+    if (connectedMode !== mode) connection.requestReconnect()
   }
 
   // Set the engine's theme
@@ -674,6 +702,9 @@ export class ConnectionManager extends EventTarget {
 
     await this.connection?.deferredConnection?.promise
 
+    const mode = this.settings.viewportRendering
+    const backgroundColor = getViewportBackgroundColor(theme, mode)
+
     // Set the stream background color
     // This takes RGBA values from 0-1
     // So we convert from the conventional 0-255 found in Figma
@@ -683,7 +714,7 @@ export class ConnectionManager extends EventTarget {
       metadata: {
         cmd: {
           type: 'set_background_color',
-          color: getThemeColorForEngine(theme),
+          color: backgroundColor,
         },
       },
     })
@@ -692,7 +723,7 @@ export class ConnectionManager extends EventTarget {
       type: 'modeling_cmd_req',
       cmd: {
         type: 'set_background_color',
-        color: getThemeColorForEngine(theme),
+        color: backgroundColor,
       },
     })
     EngineDebugger.addLog({
@@ -701,13 +732,13 @@ export class ConnectionManager extends EventTarget {
       metadata: {
         cmd: {
           type: 'set_background_color',
-          color: getThemeColorForEngine(theme),
+          color: backgroundColor,
         },
       },
     })
 
     // Sets the default line colors
-    const opposingTheme = getOppositeTheme(theme)
+    const opposingTheme = getOppositeTheme(getViewportTheme(theme, mode))
     const defaultSystemColor = getThemeColorForEngine(opposingTheme)
     const setDefaultSystemPropertiesCmd = {
       type: 'set_default_system_properties',
@@ -1614,14 +1645,13 @@ export class ConnectionManager extends EventTarget {
     this.tearDown({ route: 'window-offline', initiatedBy: 'client' })
   }
 
-  // VITEST ONLY
   online() {
     this.dispatchEvent(
       new CustomEvent(EngineConnectionManagerEvents.OnlineRequest, {})
     )
     EngineDebugger.addLog({
       label: 'connectionManager',
-      message: 'online - EngineRestartRequest',
+      message: 'online - OnlineRequest',
     })
   }
 
