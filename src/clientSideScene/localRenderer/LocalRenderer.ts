@@ -233,7 +233,7 @@ export class LocalRenderer {
       KclManagerEvents.ExecutionDone,
       this.onExecutionDone
     )
-    const dprDetector = new DprDetector(this.resize)
+    const dprDetector = new DprDetector(this.updateLocalCamera)
     this.disposers.push(
       () =>
         kclManager.removeEventListener(
@@ -1034,17 +1034,6 @@ export class LocalRenderer {
     this.scheduleRender()
   }
 
-  private readonly resize = () => {
-    const renderer = this.gpu?.renderer
-    const width = this.container.clientWidth
-    const height = this.container.clientHeight
-    if (!renderer || width === 0 || height === 0) {
-      return
-    }
-
-    this.updateLocalCamera()
-  }
-
   /**
    * What zoom to fit frames, as in the engine: the loaded model and the
    * visible planes. In the engine's world: Z up, in mm.
@@ -1187,9 +1176,7 @@ export class LocalRenderer {
     // updateLocalCamera() below matches this to the shared camera.
     this.previewCamera = new PerspectiveCamera()
     this.disposers.push(
-      kclManager.sceneInfra.camControls.cameraChange.add(
-        this.updateLocalCamera
-      )
+      kclManager.sceneInfra.camControls.cameraChange.add(this.updateLocalCamera)
     )
 
     this.rebuildSelectionTargets()
@@ -1229,9 +1216,8 @@ export class LocalRenderer {
       inputCanvas.removeEventListener('pointerleave', onLeave)
     })
 
-    this.resize()
     this.updateLocalCamera()
-    const resizeObserver = new ResizeObserver(this.resize)
+    const resizeObserver = new ResizeObserver(this.updateLocalCamera)
     resizeObserver.observe(container)
     this.disposers.push(() => resizeObserver.disconnect())
 
