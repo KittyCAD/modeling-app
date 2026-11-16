@@ -64,14 +64,23 @@ export function ZookeeperAttachment({
         >
           <Dialog.Overlay className="fixed inset-0 bg-1/80" />
           <div className="relative flex min-h-full items-center justify-center">
-            <Dialog.Panel className="flex max-h-[90vh] w-full max-w-5xl flex-col rounded border b-4 bg-1 shadow-lg">
-              <div className="flex items-center justify-between gap-4 border-b b-3 p-4">
-                <Dialog.Title as="h2" className="text-lg font-bold">
+            <Dialog.Panel className="relative flex max-h-[90vh] w-full max-w-5xl flex-col rounded border b-4 bg-1 shadow-lg">
+              <div
+                className={
+                  isImage
+                    ? 'absolute right-2 top-2 z-10'
+                    : 'flex items-center justify-between gap-4 border-b b-3 p-4'
+                }
+              >
+                <Dialog.Title
+                  as="h2"
+                  className={isImage ? 'sr-only' : 'text-lg font-bold'}
+                >
                   {isImage ? 'Image preview' : 'Text preview'}
                 </Dialog.Title>
                 <button
                   type="button"
-                  className="group m-0 flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border-none bg-transparent p-0 hover:bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-color-4"
+                  className="group m-0 flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border-none bg-1/90 p-0 hover:bg-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-color-4"
                   aria-label="Close preview"
                   onClick={() => setOpen(false)}
                 >
