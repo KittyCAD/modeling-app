@@ -56,7 +56,7 @@ it('retains split-button choices so the selected command can be invoked again', 
     />
   )
   fireEvent.click(screen.getByRole('button', { name: /Solids: open menu/ }))
-  fireEvent.click(screen.getByRole('button', { name: /Loft/ }))
+  fireEvent.click(screen.getByRole('menuitem', { name: /Loft/ }))
   expect(loft.onClick).toHaveBeenCalledOnce()
   fireEvent.click(screen.getByRole('button', { name: 'Loft' }))
   expect(loft.onClick).toHaveBeenCalledTimes(2)

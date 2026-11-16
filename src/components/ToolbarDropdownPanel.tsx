@@ -10,6 +10,9 @@ type ToolbarDropdownPanelProps = {
   open: boolean
 }
 
+export const toolbarDropdownPanelClassName =
+  '!pointer-events-auto absolute z-20 w-fit max-w-[280px] max-h-[80vh] overflow-y-auto text-inherit dark:text-chalkboard-10 bg-chalkboard-10 dark:bg-chalkboard-100 rounded shadow-lg border border-solid border-chalkboard-30 dark:border-chalkboard-80 text-sm m-0 p-0'
+
 const anchorTolerance = 2
 const dropdownGap = 16
 const viewportPadding = 8
@@ -126,7 +129,11 @@ function reportUnresolvedAnchor(
   }).catch(reportRejection)
 }
 
-function positionPanelFromButton(panel: HTMLElement, button: HTMLElement) {
+export function positionPanelFromButton(
+  panel: HTMLElement,
+  button: HTMLElement,
+  side: 'below' | 'beside' = 'below'
+) {
   const buttonRect = button.getBoundingClientRect()
   const panelRect = panel.getBoundingClientRect()
   const maxLeft = Math.max(
@@ -138,14 +145,21 @@ function positionPanelFromButton(panel: HTMLElement, button: HTMLElement) {
     window.innerHeight - viewportPadding - panelRect.height
   )
   const centeredLeft =
-    buttonRect.left + buttonRect.width / 2 - panelRect.width / 2
+    side === 'beside'
+      ? buttonRect.right + panelRect.width + viewportPadding <=
+        window.innerWidth
+        ? buttonRect.right
+        : buttonRect.left - panelRect.width
+      : buttonRect.left + buttonRect.width / 2 - panelRect.width / 2
   const belowButton = buttonRect.bottom + dropdownGap
   const aboveButton = buttonRect.top - dropdownGap - panelRect.height
   const preferredTop =
-    belowButton + panelRect.height > window.innerHeight - viewportPadding &&
-    aboveButton >= viewportPadding
-      ? aboveButton
-      : belowButton
+    side === 'beside'
+      ? buttonRect.top
+      : belowButton + panelRect.height > window.innerHeight - viewportPadding &&
+          aboveButton >= viewportPadding
+        ? aboveButton
+        : belowButton
   const left = Math.min(Math.max(centeredLeft, viewportPadding), maxLeft)
   const top = Math.min(Math.max(preferredTop, viewportPadding), maxTop)
 
@@ -271,7 +285,7 @@ export function ToolbarDropdownPanel({
     <Popover.Panel
       ref={panelRef}
       popover="manual"
-      className="!pointer-events-auto absolute z-20 w-fit max-w-[280px] max-h-[80vh] overflow-y-auto text-inherit dark:text-chalkboard-10 bg-chalkboard-10 dark:bg-chalkboard-100 rounded shadow-lg border border-solid border-chalkboard-30 dark:border-chalkboard-80 text-sm m-0 p-0"
+      className={toolbarDropdownPanelClassName}
       style={panelStyle}
       unmount={false}
     >

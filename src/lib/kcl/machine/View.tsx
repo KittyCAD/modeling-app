@@ -1,3 +1,4 @@
+import { MachineResponsiveToolbar } from '@src/lib/kcl/machine/Toolbar'
 import ModelingToolDialogView from '@src/lib/kcl/ModelingToolDialog'
 import { ErrorBanner } from '@src/components/ErrorBanner'
 import { machineDialogPicking } from '@src/lib/kcl/machine/dialogPicking'
@@ -167,6 +168,7 @@ export function MachineModelingView({
           isStreamReady={owner.scene.isConnected()}
           isStreamAcceptingInput={owner.scene.isConnected()}
           host={{
+            ToolbarComponent: MachineResponsiveToolbar,
             toolbarConfig: owner.toolbarConfig,
             registeredCommands: owner.commandDefinitions.value,
             activeDialogCommandKey: dialogOpen

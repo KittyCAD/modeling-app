@@ -1,5 +1,8 @@
 import { ActionButton } from '@src/components/ActionButton'
-import { ActionButtonDropdown } from '@src/components/ActionButtonDropdown'
+import {
+  ActionButtonDropdown,
+  type ToolbarMenuItem,
+} from '@src/components/ActionButtonDropdown'
 import { ActionButtonRecentDropdown } from '@src/components/ActionButtonRecentDropdown'
 import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
 import Tooltip, {
@@ -29,6 +32,7 @@ import {
 /** Resolved actions and eligibility come from the owning host; this layer owns only toolbar presentation. */
 export interface ToolbarViewItem {
   id: string
+  groupId?: string
   title: string
   description: string
   tooltipTitle?: string
@@ -47,7 +51,10 @@ export interface ToolbarViewItem {
 }
 export interface ToolbarViewDropdown {
   id: string
+  title?: string
   array: ToolbarViewItem[]
+  selectedId?: string
+  menuItems?: ToolbarMenuItem[]
   display?: 'default' | 'recent'
   visibleItemCount?: number
   defaultVisibleItemIds?: string[]
@@ -67,6 +74,9 @@ export function ToolbarView({
   disableAllButtons = false,
   idPrefix = '',
   children,
+  testId = 'toolbar',
+  nowrap = false,
+  onMenuOpenChange,
 }: {
   items: readonly ToolbarViewEntry[]
   mode: string
@@ -75,6 +85,9 @@ export function ToolbarView({
   disableAllButtons?: boolean
   idPrefix?: string
   children?: ReactNode
+  testId?: string
+  nowrap?: boolean
+  onMenuOpenChange?: (open: boolean) => void
 }) {
   const iconClassName =
     'group-disabled:text-chalkboard-50 !text-inherit dark:group-enabled:group-hover:!text-inherit'
@@ -144,7 +157,7 @@ export function ToolbarView({
       aria-label="Modeling tools"
       aria-disabled={disabled}
       data-current-mode={mode}
-      data-testid="toolbar"
+      data-testid={testId}
       data-onboarding-id="toolbar"
       className={`toolbar pointer-events-auto z-[19] max-w-full whitespace-nowrap px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm ${
         disabled ? 'opacity-50' : ''
@@ -152,7 +165,7 @@ export function ToolbarView({
     >
       <ul
         ref={toolbarButtonsRef}
-        className={`has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex flex-wrap gap-1.5 items-center ${
+        className={`has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex ${nowrap ? 'flex-nowrap overflow-x-auto [&>*]:shrink-0' : 'flex-wrap'} gap-1.5 items-center ${
           disabled ? 'pointer-events-none' : ''
         }`}
       >
@@ -225,6 +238,7 @@ export function ToolbarView({
                       <ActionButton
                         Element="button"
                         id={idPrefix + itemConfig.id}
+                        data-toolbar-tool-id={itemConfig.id}
                         data-testid={itemConfig.id}
                         data-onboarding-id={itemConfig.id}
                         iconStart={{
@@ -293,17 +307,21 @@ export function ToolbarView({
             }
 
             const selectedIcon =
+              maybeIconConfig.array.find(
+                (c) => c.id === maybeIconConfig.selectedId
+              ) ||
               maybeIconConfig.array.find((c) => c.isActive) ||
               maybeIconConfig.array[lastSelectedMultiActionItem.get(i) ?? 0]
 
             return (
               <ActionButtonDropdown
                 Element="button"
-                key={selectedIcon.id}
+                key={maybeIconConfig.id}
                 data-testid={selectedIcon.id + '-dropdown'}
                 data-onboarding-id={selectedIcon.id + '-dropdown'}
                 id={idPrefix + selectedIcon.id + '-dropdown'}
-                name={maybeIconConfig.id}
+                name={maybeIconConfig.title ?? maybeIconConfig.id}
+                onOpenChange={onMenuOpenChange}
                 platform={platform}
                 className={
                   (maybeIconConfig.array[0].alwaysDark
@@ -313,28 +331,31 @@ export function ToolbarView({
                   buttonBorderClassName +
                   ' relative group !gap-0'
                 }
-                splitMenuItems={maybeIconConfig.array.map((itemConfig) => ({
-                  id: itemConfig.id,
-                  label: itemConfig.title,
-                  icon: itemConfig.icon,
-                  iconColor: itemConfig.iconColor,
-                  hotkey: itemConfig.hotkey,
-                  onClick: (event) => {
-                    setLastSelectedMultiActionItem((previous) => {
-                      const next = new Map(previous)
-                      next.set(i, maybeIconConfig.array.indexOf(itemConfig))
-                      return next
-                    })
-                    itemConfig.onClick(event)
-                  },
-                  disabled:
-                    disableAllButtons ||
-                    !['available', 'experimental'].includes(
-                      itemConfig.status
-                    ) ||
-                    itemConfig.disabled === true,
-                  status: itemConfig.status,
-                }))}
+                splitMenuItems={
+                  maybeIconConfig.menuItems ??
+                  maybeIconConfig.array.map((itemConfig) => ({
+                    id: itemConfig.id,
+                    label: itemConfig.title,
+                    icon: itemConfig.icon,
+                    iconColor: itemConfig.iconColor,
+                    hotkey: itemConfig.hotkey,
+                    onClick: (event) => {
+                      setLastSelectedMultiActionItem((previous) => {
+                        const next = new Map(previous)
+                        next.set(i, maybeIconConfig.array.indexOf(itemConfig))
+                        return next
+                      })
+                      itemConfig.onClick(event)
+                    },
+                    disabled:
+                      disableAllButtons ||
+                      !['available', 'experimental'].includes(
+                        itemConfig.status
+                      ) ||
+                      itemConfig.disabled === true,
+                    status: itemConfig.status,
+                  }))
+                }
               >
                 <div
                   className="contents"
@@ -345,6 +366,7 @@ export function ToolbarView({
                   <ActionButton
                     Element="button"
                     id={idPrefix + selectedIcon.id}
+                    data-toolbar-tool-id={selectedIcon.id}
                     data-testid={selectedIcon.id}
                     data-onboarding-id={selectedIcon.id}
                     iconStart={{
@@ -414,6 +436,7 @@ export function ToolbarView({
                 Element="button"
                 key={itemConfig.id}
                 id={idPrefix + itemConfig.id}
+                data-toolbar-tool-id={itemConfig.id}
                 data-testid={itemConfig.id}
                 data-onboarding-id={itemConfig.id}
                 iconStart={{
