@@ -20,13 +20,15 @@ gdt::radius(
 ): GdtAnnotation
 ```
 
-
+Constant-radius fillet faces are also supported, including fillets around circular
+edges. The radius is measured from a circular seam or matching circular end arcs
+of the evaluated face. Ambiguous or noncircular profiles cannot be annotated this way.
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `target` | [`Face`](/docs/kcl-std/types/std-types-Face) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) or [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`any`](/docs/kcl-std/types/std-types-any) | The circular edge or cylindrical face to annotate. Edges may use an adjacent-face specifier. | Yes |
+| `target` | [`Face`](/docs/kcl-std/types/std-types-Face) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) or [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`any`](/docs/kcl-std/types/std-types-any) | The circular edge, cylindrical face, or constant-radius fillet face to annotate. Edges may use an adjacent-face specifier. | Yes |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Optional dimensional tolerance. Omit it or use zero to hide the tolerance. | No |
 | `precision` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Decimal places to display, from 0 to 9. Defaults to 3. | No |
 | `framePosition` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Offset of the label from the leader in the display plane. Defaults to [20mm, 20mm]. | No |
@@ -46,17 +48,25 @@ gdt::radius(
 @settings(kclVersion = 3.0)
 
 profile = sketch(on = XY) {
-  rim = arc(start = [var 10mm, var 0mm], end = [var -10mm, var 0mm], center = [var 0mm, var 0mm])
-  closing = line(start = [var -10mm, var 0mm], end = [var 10mm, var 0mm])
+  rim = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
 }
-solid = extrude(region(segments = [profile.rim, profile.closing]), length = 5mm, tagEnd = $top)
+solid = extrude(region(segments = [profile.rim]), length = 10mm, tagEnd = $top)
+rounded = fillet(
+  solid,
+  edges = [
+    {
+      sideFaces = [solid.sketch.tags.rim, solid.faces.top]
+    }
+  ],
+  radius = 2mm,
+  tag = $round,
+)
 gdt::radius(
-  target = {
-    sideFaces = [solid.sketch.tags.rim, solid.faces.top]
-  },
+  target = round,
   tolerance = 0.05mm,
   precision = 2,
-  framePlane = XY,
+  framePlane = XZ,
+  framePosition = [-12mm, 12mm],
 )
 
 ```

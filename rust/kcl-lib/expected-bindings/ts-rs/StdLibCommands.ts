@@ -4322,7 +4322,7 @@ export default {
       {
         "name": "target",
         "ty": "Face | TaggedFace | Edge | any",
-        "docs": "The circular edge or cylindrical face to annotate. Edges may use an adjacent-face specifier.",
+        "docs": "The circular edge, cylindrical face, or constant-radius fillet face to annotate. Edges may use an adjacent-face specifier.",
         "required": true,
         "special": false,
         "experimental": false,
