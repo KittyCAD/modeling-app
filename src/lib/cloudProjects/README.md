@@ -64,9 +64,15 @@ A future CRDT extension can provide offline editing and reconciliation instead.
 
 ## New project shell
 
+Cloud project links use `/project/:id`, where the ID is the API project ID.
+Signed-out browser users return to that project link after signing in.
+Without `zds_project_shell_refactor`, these links redirect to the existing
+`/file/:id` workflow with its existing default-file selection. Sharing a project
+link does not change who can access it.
+
 With `zds_project_shell_refactor` enabled, Shift-click a Personal Cloud card to
-open `/project/:id`. The ID is the API project ID; the loader waits for auth,
-opens the cloud storage mount, reads the project, and opens its initial editor
+open `/project/:id`. The loader waits for auth, opens the cloud storage mount,
+reads the project, and opens its initial editor
 through the same helper as `/local/:path`. Failed or cancelled discovery leaves
 the previous session selected. No local copy or default file is created.
 

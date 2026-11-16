@@ -706,14 +706,18 @@ describe('cloud project loader', () => {
     }
   )
 
-  it('retains the feature gate without reading local storage', async () => {
+  it('redirects to the existing cloud file route when the new shell is disabled', async () => {
     const app = new App(App.getDefaultSystems())
+    const pathFor = vi.fn(() => '/__zoo_cloud__/remote-123')
+    const registryGet = vi
+      .spyOn(app.registry, 'required')
+      .mockReturnValue({ pathFor })
     environment.projectRouteEnabled = false
     try {
       const result = await projectLoader({
         app,
       })({
-        request: new Request('https://app.zoo.dev/project/remote-123'),
+        request: new Request('https://app.zoo.dev/project/remote-123?cmd=test'),
         params: {
           id: 'remote-123',
         },
@@ -722,8 +726,13 @@ describe('cloud project loader', () => {
       })
       expect(result).toBeInstanceOf(Response)
       if (!(result instanceof Response)) throw new Error('Expected a redirect')
-      expect(result.headers.get('Location')).toBe(PATHS.HOME)
-      expect(vi.spyOn(app.registry, 'required')).not.toHaveBeenCalled()
+      expect(result.headers.get('Location')).toBe(
+        '/file/%2F__zoo_cloud__%2Fremote-123?cmd=test'
+      )
+      expect(registryGet).toHaveBeenCalledExactlyOnceWith(cloudStorageService)
+      expect(pathFor).toHaveBeenCalledWith('remote-123')
+      expect(readProject).not.toHaveBeenCalled()
+      expect(loadAndValidateSettings).not.toHaveBeenCalled()
     } finally {
       environment.projectRouteEnabled = true
     }

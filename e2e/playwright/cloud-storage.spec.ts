@@ -72,6 +72,46 @@ test(
   }
 )
 
+test(
+  'opens a shared project after sign-in with the new shell disabled',
+  { tag: '@web' },
+  async ({ context, page, baseURL }, testInfo) => {
+    await mockClientErrorReports(context)
+    const remote = await mockCloudStorage(context)
+    remote.project.files['main.kcl'] =
+      '@settings(kclVersion = 3.0)\nmainMarker = 7\n'
+    await setup(context, page, testInfo, [])
+    let signedIn = false
+    await context.route('**/user', (route) =>
+      signedIn
+        ? route.fallback()
+        : route.fulfill({ status: 401, json: { message: 'Please sign in' } })
+    )
+    await context.route(
+      (url) =>
+        url.pathname === '/signin' && url.searchParams.has('callbackUrl'),
+      (route) =>
+        route.fulfill({
+          contentType: 'text/html',
+          body: '<title>Sign in</title>',
+        })
+    )
+    const sharedPath = `/project/${projectId}?source=shared%2Blink%26notes`
+    await page.goto(sharedPath)
+    await page.waitForURL('**/signin?callbackUrl=*')
+    const callback = new URL(page.url()).searchParams.get('callbackUrl')
+    expect(callback).toBe(new URL(sharedPath, baseURL).href)
+    signedIn = true
+    await page.goto(callback!)
+    const target = `/file/${encodeURIComponent(`/__zoo_cloud__/${projectId}/main.kcl`)}`
+    await expect(page).toHaveURL((url) => url.pathname === target)
+    await expect(page.locator('.cm-content').first()).toContainText(
+      'mainMarker = 7'
+    )
+    expect(remote.creates).toHaveLength(0)
+  }
+)
+
 for (const startEmpty of [false, true]) {
   test(
     `shows initial project loading but keeps the ${startEmpty ? 'empty list' : 'project cards'} visible during refresh`,
