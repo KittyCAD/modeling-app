@@ -82,6 +82,8 @@ export class EdgeRenderer {
     linewidth = LOCAL_WEBGPU_EDGE_LINE_WIDTH_PX
   ) {
     this.material = new Line2NodeMaterial({ color, linewidth })
+    // Smoothed cap coverage stipples densely sampled, overlapping segments.
+    this.material.alphaToCoverage = false
     this.material.worldUnits = false
     this.material.transparent = false
     this.material.opacity = 1
