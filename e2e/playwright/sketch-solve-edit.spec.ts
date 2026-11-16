@@ -2200,6 +2200,13 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       editor,
       toolbar,
     }) => {
+      let queryPointMm: { x: number; y: number } | undefined
+      await page.exposeFunction(
+        'recordRegionQueryPoint',
+        (point: { x: number; y: number }) => {
+          queryPointMm = point
+        }
+      )
       await test.step('Set up scene with a closed sketch block in inches', async () => {
         await context.addInitScript(async (code) => {
           localStorage.setItem('persistCode', code)
@@ -2229,7 +2236,28 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
                 },
               }
             }
-            return sendSceneCommand(...args)
+            const response = await sendSceneCommand(...args)
+            if (
+              command.type === 'modeling_cmd_req' &&
+              command.cmd.type === 'region_get_query_point' &&
+              response &&
+              'resp' in response &&
+              response.resp.type === 'modeling' &&
+              response.resp.data.modeling_response.type ===
+                'region_get_query_point'
+            ) {
+              await (
+                window as typeof window & {
+                  recordRegionQueryPoint: (point: {
+                    x: number
+                    y: number
+                  }) => Promise<void>
+                }
+              ).recordRegionQueryPoint(
+                response.resp.data.modeling_response.data.query_point
+              )
+            }
+            return response
           }
         })
       })
@@ -2259,9 +2287,20 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await scene.settled()
         await editor.openPane()
         await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
-        await editor.expectEditor.toContain(
-          'region(point = [0.0009843in, -0.078248in], sketch = sketch001)'
+        const regionPoint =
+          /region\(point = \[([-\d.e]+)in, ([-\d.e]+)in\], sketch = sketch001\)/
+        await editor.expectEditor.toContain(regionPoint)
+        const match = (await editor.codeContent.textContent())?.match(
+          regionPoint
         )
+        if (!match || !queryPointMm) {
+          throw new Error(
+            'Missing the engine query point or generated inch coordinates'
+          )
+        }
+        // The engine may choose a different interior point; its conversion must still be correct.
+        expect(Number(match[1])).toBeCloseTo(queryPointMm.x / 25.4, 6)
+        expect(Number(match[2])).toBeCloseTo(queryPointMm.y / 25.4, 6)
         await editor.expectEditor.toContain(
           'extrude001 = extrude(region001, length = 5)'
         )
