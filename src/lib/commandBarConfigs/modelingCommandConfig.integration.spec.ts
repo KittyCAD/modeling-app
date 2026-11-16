@@ -37,6 +37,7 @@ import {
 } from '@src/lib/constants'
 import {
   canSubmitSelectionArg,
+  getSelectionCountByType,
   type ResolvedSelectionType,
 } from '@src/lib/selections'
 import { isArray } from '@src/lib/utils'
@@ -148,6 +149,38 @@ gdt::datum(face = capEnd001, name = "A")`
 })
 
 describe('GDT tolerance defaults', () => {
+  it('accepts an inline fillet boundary as a Dimension target', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const command = modelingMachineCommandConfig['GDT Distance']
+    if (!command || isArray(command))
+      throw new Error('Expected Dimension command')
+    const objects = command.args?.objects
+    if (!objects || objects.inputType !== 'selection')
+      throw new Error('Expected dimension selection')
+    expect(command.displayName).toBe('Dimension')
+    const counts = getSelectionCountByType(assertParse('', instance), {
+      graphSelections: [
+        {
+          artifact: {
+            type: 'edgeCutEdge',
+            id: 'boundary',
+            edgeCutId: 'fillet',
+            surfaceId: 'cap',
+          },
+        },
+      ],
+      otherSelections: [],
+    })
+    expect(counts).toEqual(new Map([['edgeCutEdge', 1]]))
+    expect(
+      canSubmitSelectionArg(counts, {
+        inputType: 'selection',
+        selectionTypes: objects.selectionTypes,
+        multiple: objects.multiple,
+        required: true,
+      })
+    ).toBe(true)
+  })
   it('keeps distance tolerance optional and infers the frame for viewport edges', () => {
     const command = modelingMachineCommandConfig['GDT Distance']
     if (!command || isArray(command))
