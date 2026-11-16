@@ -1,4 +1,7 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { resetView } from '@e2e/playwright/test-utils'
+import { DefaultLayoutPaneID } from '@src/lib/layout'
+import { isArray } from '@src/lib/utils'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -6,6 +9,7 @@ test(
   'pump housing has no contributing features above its bodies',
   { tag: ['@web', '@localRenderer'] },
   async ({ page, homePage, scene, editor, toolbar }, testInfo) => {
+    await page.setBodyDimensions({ width: 1440, height: 1000 })
     const code = await readFile(
       'e2e/playwright/fixtures/pump-housing.kcl',
       'utf8'
@@ -14,6 +18,7 @@ test(
     await scene.settled()
     await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await toolbar.openFeatureTreePane()
+    await toolbar.closePane(DefaultLayoutPaneID.Code)
     await expect(page.getByTestId('feature-tree-body')).toHaveCount(6)
     // Only the six body rows and three standard planes are visible initially.
     await expect(
@@ -34,6 +39,7 @@ test(
   'PC Fan imports own their bodies and consumed Boolean histories',
   { tag: ['@web', '@localRenderer'] },
   async ({ page, homePage, scene, toolbar, fs, folderSetupFn }, testInfo) => {
+    await page.setBodyDimensions({ width: 1440, height: 1000 })
     await folderSetupFn(async (dir) => {
       const project = await fs.join(dir, 'body-history-fan')
       await fs.mkdir(project, { recursive: true })
@@ -55,6 +61,7 @@ test(
     await homePage.openProject('body-history-fan')
     await scene.settled()
     await toolbar.openFeatureTreePane()
+    await toolbar.closePane(DefaultLayoutPaneID.Code)
     await expect(page.getByTestId('feature-tree-body')).toHaveCount(0)
     const housing = toolbar.featureTreePane
       .locator('[data-module-branch]')
@@ -83,6 +90,7 @@ test(
     await expect(
       booleanBody.getByRole('button', { name: 'Sketch', exact: true })
     ).toHaveCount(2)
+    await importToggle.scrollIntoViewIfNeeded()
     await testInfo.attach('pc-fan-body-hierarchy', {
       body: await toolbar.featureTreePane.screenshot(),
       contentType: 'image/png',
@@ -148,6 +156,7 @@ test(
   'body context menu deletes only the selected body',
   { tag: ['@web', '@localRenderer'] },
   async ({ page, homePage, scene, editor, toolbar }, testInfo) => {
+    await page.setBodyDimensions({ width: 1440, height: 1000 })
     await homePage.goToModelingScene()
     await scene.settled()
     await scene.waitForExecutionDoneAfter(() =>
@@ -164,7 +173,32 @@ keptBody = clone(body001)
     )
     await toolbar.openFeatureTreePane()
     await expect(page.getByTestId('feature-tree-body')).toHaveCount(2)
+    await resetView(scene)
     const source = page.getByRole('button', { name: 'Body 1', exact: true })
+    await source.click()
+    const bodyId = await page.evaluate(() => {
+      const body = window.app.singletons.kclManager.variables.body001
+      if (body?.type !== 'Solid') throw new Error('Expected body001')
+      return body.value.id
+    })
+    await expect
+      .poll(async () => {
+        const response = await page.evaluate(() =>
+          window.app.singletons.kclManager.engineCommandManager.sendSceneCommand(
+            {
+              type: 'modeling_cmd_req',
+              cmd_id: crypto.randomUUID(),
+              cmd: { type: 'select_get' },
+            }
+          )
+        )
+        const reply = isArray(response) ? response[0] : response
+        if (!reply?.success || !('resp' in reply)) return []
+        if (reply.resp.type !== 'modeling') return []
+        const result = reply.resp.data.modeling_response
+        return result.type === 'select_get' ? result.data.entity_ids : []
+      })
+      .toEqual([bodyId])
     await source.click({ button: 'right' })
     await expect(page.getByTestId('context-menu-delete')).toBeVisible()
     await testInfo.attach('body-before-delete', {
