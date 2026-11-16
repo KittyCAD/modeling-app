@@ -130,6 +130,39 @@ Integration tests will be slower, require more dependencies, and could be flaky.
 
 ## Running tests
 
+### Verifying without updating results
+
+Use these commands to compare against existing expected results. Existing
+formatting and update commands remain available for making changes and reviewing
+their diffs.
+
+| Check | Verification command | Apply changes or update expected results |
+| --- | --- | --- |
+| Formatting, TypeScript types, and ESLint | `make verify` | `make check` |
+| Formatting only | `make format-check` | `make format` |
+| Rust tests and snapshots, from `rust/` | `just verify` | Existing snapshot update commands below and in `rust/justfile` |
+| One simulation test, from `rust/` | `just verify simulation_tests::foo_bar::` | `just overwrite-sim-test foo_bar` |
+| Generated stdlib Markdown, from `rust/` | `just verify docs::gen_std_tests::test_generate_stdlib` | `just redo-kcl-stdlib-docs-no-imgs` |
+| TypeScript bindings | `npm run bindings:verify` | `npm run bindings:update` |
+| Browser snapshots | `npm run test:snapshots:verify` | `npm run test:snapshots -- --update-snapshots` |
+
+Run commands from the repository root unless the table specifies `rust/`.
+Prepare dependencies and the Wasm build separately using the setup instructions
+above. `make verify` and `make format-check` do not install dependencies or rebuild
+generated files. `bindings:verify` regenerates the ignored bindings and compares
+them with the committed copies without replacing those copies.
+
+`just verify` accepts Cargo Nextest arguments, including test filters. It disables
+snapshot updates even when update settings are exported in the calling shell.
+Engine tests still require `ZOO_API_TOKEN`; parse-only tests and generated Markdown
+checks can run without it. Browser verification fails for missing snapshots as
+well as mismatches and can write diagnostic artifacts in the test report folders.
+
+When an expected result needs to change, use the existing update command, inspect
+the resulting diff, and rerun verification. Keep local Wasm build artifacts intact;
+use a clean checkout without built Wasm when checking that unit tests work without
+it.
+
 ### Playwright tests
 
 Prepare these system dependencies:
@@ -151,6 +184,20 @@ You may use `-- -g "my test"` to match specific test titles, or `-- path/to/file
 npm run test:e2e:web
 ```
 
+CI builds the web app once and shares it across the web and snapshot jobs. Tests
+serve that build without running Vite's development server. To use the same path
+locally after preparing Wasm and installing dependencies:
+
+```sh
+npm run build:e2e:web
+E2E_USE_PREBUILT_APP=1 npm run test:e2e:web
+```
+
+The build keeps the development environment settings. Test credentials are read
+by Playwright at runtime; the CI build does not embed an API token. Rebuild after
+changing application code. Without `E2E_USE_PREBUILT_APP=1`, local tests continue
+to use the development server. The flag also works with WebKit and snapshot tests.
+
 #### Web tests (WebKit on macOS)
 
 [Playwright WebKit](https://playwright.dev/docs/browsers#webkit) provides the
@@ -164,9 +211,10 @@ npm run test:e2e:web:webkit
 
 Local WebKit tests use two workers on `http://localhost:3000` and
 `http://localhost:5173`, both allowed by the development API CORS policy. The
-second origin proxies the same app; separate origins isolate WebKit's shared
-OPFS storage. Keep both ports free in CI. Use `-- --workers=1` to compare with
-a serial run. Runs against `VERCEL_BASE_URL` remain single-worker.
+second origin proxies the development server, or serves the same build directly
+when using the prebuilt app. Separate origins isolate WebKit's shared OPFS
+storage. Keep both ports free in CI. Use `-- --workers=1` to compare with a serial
+run. Runs against `VERCEL_BASE_URL` remain single-worker.
 
 #### Snapshot tests (Google Chrome on Ubuntu only)
 
