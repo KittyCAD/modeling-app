@@ -73,6 +73,7 @@ export function bindMachinePicking({
       return (
         !commandState.value.matches('Closed') &&
         !!command &&
+        command.machineActor === actor &&
         isModelingDialogCommand(command)
       )
     }),

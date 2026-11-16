@@ -4,7 +4,7 @@ The project editor's Modeling view now uses the existing `modelingMachine` and i
 
 ## Ownership
 
-`src/lib/kcl/machine/host.ts` creates one owner for a completed scene execution. That owner contains a real `KclManager`, the modeling actor, and a command actor. It borrows the scene's existing `SceneInfra`, `ConnectionManager`, native context, and native operation queue. Constructing the manager does not allocate another renderer or native model.
+`src/lib/kcl/machine/host.ts` creates one owner for a completed scene execution. That owner contains a real `KclManager` and the modeling actor. Its command definitions are bound to that actor and published through the application command service when the view receives focus or pointer input. The application owns the single command actor; opening a dialog captures its target view, so changing focus does not retarget an in-progress command. The owner borrows the scene's existing `SceneInfra`, `ConnectionManager`, native context, and native operation queue. Constructing the manager does not allocate another renderer or native model.
 
 The shared editor remains the authority for text, history, and persistence. The manager's hidden CodeMirror surface retains its existing AST, diagnostics, checkpoint listeners, and view-local selection behavior. Its document adapter forwards edits to the shared editor. The manager does not install another save listener, filesystem watcher, or scene-settings observer.
 
@@ -24,7 +24,9 @@ Retirement first suspends document publication. The actor can then finish its ex
 
 The selection controller remains a read model for existing status and correspondence consumers. Clear and filter actions delegate to the machine. A dialog-owned picking session temporarily handles point queries and projection; the machine's ordinary selection remains untouched. Closing that session restores the machine's selection presentation. Delayed scene queries and stale handoff cleanup cannot take ownership back from a newer owner.
 
-`ClientSideSceneView` reuses the existing Three.js input, geometry, labels, hover, drag, and constraint-editing views. Its explicit host supplies the manager, settings, toolbar configuration, and command actor. `ClientSideScene`, `EditingConstraintInput`, and `KclInput` retain small file-route adapters for their existing app lookups. `ModelingMachineContext` carries the supplied actor without importing its legacy provider.
+`ClientSideSceneView` reuses the existing Three.js input, geometry, labels, hover, drag, and constraint-editing views. Its explicit host supplies the manager, settings, toolbar configuration, and shared application command service. `ClientSideScene`, `EditingConstraintInput`, and `KclInput` retain small file-route adapters for their existing app lookups. `ModelingMachineContext` carries the supplied actor without importing its legacy provider.
+
+Streaming sketch presentation is an interaction-view contribution: it places a theme-colored tint below the Three.js canvas and registers the existing opacity control in the lower-left corner. Local rendering does not register this contribution. Scene theme changes refresh existing sketch graphics through the native sketch rendering helpers without another execution.
 
 The existing machine toolbar resolver supplies guards, smart Start/Edit Sketch behavior, plane-picking prompts, and child-actor state. Both routes use the existing toolbar presentation. Responsive semantic groups are a separate follow-up.
 

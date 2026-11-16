@@ -2,6 +2,10 @@ import { kclExecutionSettingsService } from '@src/lib/kcl/scene/executionSetting
 import { kclExecutionSettingsRegistryItem } from '@src/lib/kcl/scene/executionSettingsRegistry'
 import { streamedSketchPresentation } from '@src/lib/kcl/sketch/streamPresentation'
 import {
+  commandSystemService,
+  contextualCommandsService,
+} from '@src/registry/contracts/commands'
+import {
   keymapService,
   keymapScopesValueSpec,
 } from '@src/registry/contracts/keymap'
@@ -154,6 +158,7 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
           })
           let machine: ReturnType<typeof deferMachineHost>
           const context: ModelingViewContext = {
+            commandRouting: services.get(contextualCommandsService),
             selection: createActiveSelection(
               () => context,
               () => context.machine?.owner.value?.selection
@@ -186,6 +191,9 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
               '@src/lib/kcl/machine/host'
             )
             return createMachineModelingHost(() => context, {
+              commands: services.get(commandSystemService),
+              contextualCommands: services.get(contextualCommandsService),
+              kclExecutionSettings: services.get(kclExecutionSettingsService),
               keymapTree: services.get(keymapService).keymap,
               keymapScopes: valueSpecs.signal(keymapScopesValueSpec),
               fileOperations: services.get(fileOperationsService),

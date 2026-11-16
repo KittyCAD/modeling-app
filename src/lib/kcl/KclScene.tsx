@@ -21,11 +21,22 @@ const hiddenPlanes = { xy: false, xz: false, yz: false }
  */
 export function KclScene({ context }: { context: ModelingViewContext }) {
   useSignals()
+  const root = useRef<HTMLDivElement>(null)
   const container = useRef<HTMLDivElement>(null)
   const { executor, session } = context
   const state = session.state.value
   const resource = session.resource.value
   const machineOwner = context.machine?.owner.value
+  const activateCommands = () => {
+    if (machineOwner) machineOwner.commandSource.activate()
+    else context.commandRouting?.clear()
+  }
+  useEffect(() => {
+    if (root.current?.contains(document.activeElement)) {
+      if (machineOwner) machineOwner.commandSource.activate()
+      else context.commandRouting?.clear()
+    }
+  }, [machineOwner, context.commandRouting])
   const preferences = resource?.preferences.localRenderer.value
   const selection = resource?.selection
   const output = executor.output.value
@@ -58,7 +69,13 @@ export function KclScene({ context }: { context: ModelingViewContext }) {
     return () => root.removeEventListener('keydown', key)
   }, [context])
   return (
-    <div className="flex h-full min-h-0 w-full flex-col">
+    <div
+      ref={root}
+      className="flex h-full min-h-0 w-full flex-col"
+      onClickCapture={activateCommands}
+      onFocusCapture={activateCommands}
+      onPointerDownCapture={activateCommands}
+    >
       <div className="relative min-h-0 flex-1 overflow-hidden">
         <div ref={container} className="absolute inset-0" />
         {resource?.localHost && preferences && (

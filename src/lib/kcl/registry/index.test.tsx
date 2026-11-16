@@ -1,3 +1,4 @@
+import { commandsExtension } from '@src/registry/extensions/commands'
 import {
   keymapService,
   createKeymapTree,
@@ -101,6 +102,7 @@ it.each([false, true])(
     registry.configure([
       editorsExtension,
       executorsExtension,
+      commandsExtension,
       kclExtension,
       defineRegistryItem({
         providesServices: [

@@ -14,7 +14,7 @@ This refines the proof-of-concept scope in [ADR 0001](0001-app-owned-scene-host.
 
 The primary ten-branch migration establishes ownership boundaries. It does not finish the replacement architecture. In particular:
 
-- `machine/host.ts` still constructs `KclManager`, the modeling actor, and the command actor directly. The KCL registry factory selects this host; alternative hosts are not registry contributions yet.
+- `machine/host.ts` still constructs `KclManager` and the modeling actor directly. View-bound command definitions register through the shared application command service; its single command actor captures the target modeling actor when a command opens. The KCL registry factory selects this host; alternative hosts are not registry contributions yet.
 - `ModelingViewContext` on the primary branch still exposes the full executor, session, and interaction controller. These are wider capabilities than extensions should ultimately receive. The optional selection-bridge branch narrows parts of that surface; the primary branch alone does not enforce the final boundary.
 - `modelingInteractionsValueSpec` and `modelingInteractionViewsValueSpec` exist, but the machine host's `enter` adapter only handles Start Sketch. Registering an arbitrary interaction does not currently replace its machine flow. Interaction views and status items are working contribution points; general interaction replacement remains work.
 - The optional `modelingToolsValueSpec` contributes argument editors. Its Extrude/Loft adapters still submit through the machine's commands. This is not yet a registry of independent modeling-operation implementations.
