@@ -701,7 +701,7 @@ export class LocalRenderer {
     this.invalidateBaseRender()
   }
 
-  private readonly syncPreviewCameraFromShared = () => {
+  private readonly updateLocalCamera = () => {
     const cameraControls = this.kclManager.sceneInfra.camControls
     if (cameraControls.isDragging) {
       // Dragging should clear hover, but mouse scroll shouldn't (to avoid flickering when over a plane)
@@ -1042,7 +1042,7 @@ export class LocalRenderer {
       return
     }
 
-    this.syncPreviewCameraFromShared()
+    this.updateLocalCamera()
   }
 
   /**
@@ -1184,11 +1184,11 @@ export class LocalRenderer {
       ),
     }
 
-    // syncPreviewCameraFromShared() below matches this to the shared camera.
+    // updateLocalCamera() below matches this to the shared camera.
     this.previewCamera = new PerspectiveCamera()
     this.disposers.push(
       kclManager.sceneInfra.camControls.cameraChange.add(
-        this.syncPreviewCameraFromShared
+        this.updateLocalCamera
       )
     )
 
@@ -1230,7 +1230,7 @@ export class LocalRenderer {
     })
 
     this.resize()
-    this.syncPreviewCameraFromShared()
+    this.updateLocalCamera()
     const resizeObserver = new ResizeObserver(this.resize)
     resizeObserver.observe(container)
     this.disposers.push(() => resizeObserver.disconnect())
