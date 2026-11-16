@@ -1,10 +1,11 @@
-use bevy_math::DVec3;
-use bevy_math::Vec3;
 use gltf::kittycad_boundary_representation::Endpoints;
 use gltf::kittycad_boundary_representation::curve::Circle3d;
 use gltf::kittycad_boundary_representation::curve::Curve3d;
 use gltf::kittycad_boundary_representation::curve::Geometry3d;
 use gltf::kittycad_boundary_representation::curve::Nurbs3d;
+use nalgebra::Vector3;
+
+use crate::Vec3;
 
 /// Zoo exports geometry in metres. One displayed millimetre occupies one world unit.
 const WORLD_SCALE: f32 = 1_000.0;
@@ -33,8 +34,8 @@ impl BrepRenderData {
 }
 
 fn world_point(point: [f64; 3]) -> Result<Vec3, String> {
-    let point = Vec3::from_array(point.map(|coordinate| coordinate as f32)) * WORLD_SCALE;
-    if point.is_finite() {
+    let point = Vec3::from(point.map(|coordinate| coordinate as f32)) * WORLD_SCALE;
+    if point.iter().all(|coordinate| coordinate.is_finite()) {
         Ok(point)
     } else {
         Err("curve produced a non-finite position".into())
@@ -92,15 +93,15 @@ fn sample_edge(edge: &gltf::Edge<'_>) -> Result<Vec<Vec3>, String> {
 }
 
 fn sample_circle(circle: &Circle3d<'_>, domain: (f64, f64), count: usize) -> Result<Vec<Vec3>, String> {
-    let origin = DVec3::from_array(circle.origin());
-    let xaxis = DVec3::from_array(circle.xaxis());
-    let yaxis = DVec3::from_array(circle.yaxis());
+    let origin = Vector3::from(circle.origin());
+    let xaxis = Vector3::from(circle.xaxis());
+    let yaxis = Vector3::from(circle.yaxis());
     (0..=count)
         .map(|step| {
             let t = lerp(domain.0, domain.1, step as f64 / count as f64);
             // The glTF circle evaluator uses platform trigonometry.
             let (sine, cosine) = libm::sincos(t);
-            world_point((origin + (xaxis * cosine + yaxis * sine) * circle.radius()).to_array())
+            world_point((origin + (xaxis * cosine + yaxis * sine) * circle.radius()).into())
         })
         .collect()
 }
@@ -176,12 +177,12 @@ fn subdivide_nurbs(
 
 fn distance_to_segment(point: Vec3, start: Vec3, end: Vec3) -> f32 {
     let segment = end - start;
-    let length_squared = segment.length_squared();
+    let length_squared = segment.norm_squared();
     if length_squared <= f32::MIN_POSITIVE {
-        return point.distance(start);
+        return point.metric_distance(&start);
     }
-    let t = ((point - start).dot(segment) / length_squared).clamp(0.0, 1.0);
-    point.distance(start + segment * t)
+    let t = ((point - start).dot(&segment) / length_squared).clamp(0.0, 1.0);
+    point.metric_distance(&(start + segment * t))
 }
 
 #[cfg(test)]
@@ -215,7 +216,7 @@ mod tests {
     fn scales_line_endpoints() {
         assert_eq!(
             sample(line()).unwrap().edge_polylines,
-            vec![vec![Vec3::ZERO, Vec3::X * 5.0]]
+            vec![vec![Vec3::zeros(), Vec3::x() * 5.0]]
         );
     }
 
@@ -242,16 +243,16 @@ mod tests {
         let points = &data.edge_polylines[0];
         assert!(points.len() > MIN_CLOSED_CURVE_SEGMENTS);
         assert!(points.len() <= MAX_CURVE_SEGMENTS + 1);
-        assert!(points.first().unwrap().distance(*points.last().unwrap()) < 1.0e-5);
+        assert!(points.first().unwrap().metric_distance(points.last().unwrap()) < 1.0e-5);
         for pair in points.windows(2) {
-            assert!(10.0 - ((pair[0] + pair[1]) * 0.5).length() <= CURVE_CHORD_ERROR * 1.01);
+            assert!(10.0 - ((pair[0] + pair[1]) * 0.5).norm() <= CURVE_CHORD_ERROR * 1.01);
         }
         extension["edges"][0] = json!({"curve": [0, -1], "start": 0, "end": 1, "t": [0, std::f64::consts::FRAC_PI_2]});
         extension["vertices"] = json!([[0, 0.01, 0], [0.01, 0, 0]]);
         let data = sample(extension).unwrap();
         let points = &data.edge_polylines[0];
-        assert!(points.first().unwrap().distance(Vec3::Y * 10.0) < 1.0e-5);
-        assert!(points.last().unwrap().distance(Vec3::X * 10.0) < 1.0e-5);
+        assert!(points.first().unwrap().metric_distance(&(Vec3::y() * 10.0)) < 1.0e-5);
+        assert!(points.last().unwrap().metric_distance(&(Vec3::x() * 10.0)) < 1.0e-5);
     }
 
     #[test]
@@ -266,8 +267,8 @@ mod tests {
         }))
         .unwrap();
         let points = &data.edge_polylines[0];
-        assert!(points.first().unwrap().distance(Vec3::new(20.0, 30.0, 50.0)) < 1.0e-5);
-        assert!(points.last().unwrap().distance(Vec3::new(20.0, 40.0, 40.0)) < 1.0e-5);
+        assert!(points.first().unwrap().metric_distance(&Vec3::new(20.0, 30.0, 50.0)) < 1.0e-5);
+        assert!(points.last().unwrap().metric_distance(&Vec3::new(20.0, 40.0, 40.0)) < 1.0e-5);
     }
 
     fn nurbs() -> Value {
@@ -288,12 +289,24 @@ mod tests {
         let data = sample(extension.clone()).unwrap();
         let points = &data.edge_polylines[0];
         assert!(points.len() > 2);
-        assert!(points.iter().all(|point| libm::fabsf(point.length() - 10.0) < 1.0e-5));
+        assert!(points.iter().all(|point| libm::fabsf(point.norm() - 10.0) < 1.0e-5));
         extension["edges"][0]["t"] = json!([0.25, 0.75]);
         let data = sample(extension).unwrap();
         let points = &data.edge_polylines[0];
-        assert!(points.first().unwrap().distance(Vec3::new(9.297883, 3.680947, 0.0)) < 1.0e-4);
-        assert!(points.last().unwrap().distance(Vec3::new(3.680947, 9.297883, 0.0)) < 1.0e-4);
+        assert!(
+            points
+                .first()
+                .unwrap()
+                .metric_distance(&Vec3::new(9.297883, 3.680947, 0.0))
+                < 1.0e-4
+        );
+        assert!(
+            points
+                .last()
+                .unwrap()
+                .metric_distance(&Vec3::new(3.680947, 9.297883, 0.0))
+                < 1.0e-4
+        );
     }
 
     #[test]
@@ -336,12 +349,12 @@ mod tests {
             .unwrap();
             let points = &data.edge_polylines[0];
             assert!(points.len() > 2);
-            assert!(points.first().unwrap().distance(Vec3::new(20.0, 35.0, -30.0)) < 1.0e-4);
+            assert!(points.first().unwrap().metric_distance(&Vec3::new(20.0, 35.0, -30.0)) < 1.0e-4);
             assert!(
                 points
                     .last()
                     .unwrap()
-                    .distance(Vec3::new(20.0 + 10.0 * repeats as f32, 35.0, -30.0))
+                    .metric_distance(&Vec3::new(20.0 + 10.0 * repeats as f32, 35.0, -30.0))
                     < 1.0e-4
             );
             for pair in points.windows(2) {
