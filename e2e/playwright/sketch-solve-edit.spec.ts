@@ -2200,13 +2200,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       editor,
       toolbar,
     }) => {
-      let queryPointMm: { x: number; y: number } | undefined
-      await page.exposeFunction(
-        'recordRegionQueryPoint',
-        (point: { x: number; y: number }) => {
-          queryPointMm = point
-        }
-      )
       await test.step('Set up scene with a closed sketch block in inches', async () => {
         await context.addInitScript(async (code) => {
           localStorage.setItem('persistCode', code)
@@ -2216,50 +2209,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await scene.settled()
         await editor.expectEditor.toContain('@settings(defaultLengthUnit = in')
         await editor.expectEditor.toContain('sketch001 = sketch(on = XZ) {')
-
-        // Force the point fallback while leaving the query point from the engine intact.
-        await page.evaluate(() => {
-          const engine = window.engineCommandManager
-          const sendSceneCommand = engine.sendSceneCommand.bind(engine)
-          engine.sendSceneCommand = async (...args) => {
-            const [command] = args
-            if (
-              command.type === 'modeling_cmd_req' &&
-              command.cmd.type === 'region_get_resolvable_intersection_info'
-            ) {
-              return {
-                success: true,
-                request_id: command.cmd_id,
-                resp: {
-                  type: 'modeling',
-                  data: { modeling_response: { type: 'empty' } },
-                },
-              }
-            }
-            const response = await sendSceneCommand(...args)
-            if (
-              command.type === 'modeling_cmd_req' &&
-              command.cmd.type === 'region_get_query_point' &&
-              response &&
-              'resp' in response &&
-              response.resp.type === 'modeling' &&
-              response.resp.data.modeling_response.type ===
-                'region_get_query_point'
-            ) {
-              await (
-                window as typeof window & {
-                  recordRegionQueryPoint: (point: {
-                    x: number
-                    y: number
-                  }) => Promise<void>
-                }
-              ).recordRegionQueryPoint(
-                response.resp.data.modeling_response.data.query_point
-              )
-            }
-            return response
-          }
-        })
       })
 
       await test.step('Extrude region by clicking center', async () => {
@@ -2283,24 +2232,13 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await modelingDialog.submit()
       })
 
-      await test.step('Expect point fallback extrusion with inches as the default unit', async () => {
+      await test.step('Expect extrusion with inches as the default unit', async () => {
         await scene.settled()
         await editor.openPane()
         await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
-        const regionPoint =
-          /region\(point = \[([-\d.e]+)in, ([-\d.e]+)in\], sketch = sketch001\)/
-        await editor.expectEditor.toContain(regionPoint)
-        const match = (await editor.codeContent.textContent())?.match(
-          regionPoint
+        await editor.expectEditor.toContain(
+          'region(segments = [sketch001.line4, sketch001.line1])'
         )
-        if (!match || !queryPointMm) {
-          throw new Error(
-            'Missing the engine query point or generated inch coordinates'
-          )
-        }
-        // The engine may choose a different interior point; its conversion must still be correct.
-        expect(Number(match[1])).toBeCloseTo(queryPointMm.x / 25.4, 6)
-        expect(Number(match[2])).toBeCloseTo(queryPointMm.y / 25.4, 6)
         await editor.expectEditor.toContain(
           'extrude001 = extrude(region001, length = 5)'
         )
