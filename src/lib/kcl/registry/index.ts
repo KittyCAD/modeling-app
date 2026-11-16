@@ -5,6 +5,8 @@ import {
   commandSystemService,
   contextualCommandsService,
 } from '@src/registry/contracts/commands'
+import { kclCorrespondenceEndpointsService } from '@src/lib/kcl/correspondence/contract'
+import { modelingCorrespondenceEndpoint } from '@src/lib/kcl/correspondence/modelEndpoint'
 import { createModelingTools } from '@src/lib/kcl/modelingTools'
 import { defaultModelingTools } from '@src/lib/kcl/toolDefinitions'
 import { modelingToolsValueSpec } from '@src/lib/kcl/registry/contract'
@@ -38,6 +40,7 @@ import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import { initialiseWasm, relevantFileExtensions } from '@src/lang/wasmUtils'
 import {
   codeEditorsExtensionValueSpec,
+  editorsService,
   editorLanguagesValueSpec,
   editorViewsValueSpec,
 } from '@src/lib/editors/registry/contract'
@@ -152,7 +155,7 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
       provide(executorCapabilityValueSpec, execution.capability),
       provide(
         editorViewsValueSpec,
-        defineEditorView(({ editor, onDispose }) => {
+        defineEditorView(({ editor, instance, onDispose }) => {
           const executors = services.get(executorsService)
           const executor = executors.createExecutor(editor)
           if (isErr(executor)) return executor
@@ -229,6 +232,27 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
           onDispose(() => {
             machine.dispose().catch(reportRejection)
           })
+          onDispose(
+            effect(() => {
+              const correspondence = services.signal(
+                kclCorrespondenceEndpointsService
+              ).value
+              if (!correspondence) return
+              const unregister = correspondence.registerModel(
+                modelingCorrespondenceEndpoint(
+                  instance.id,
+                  context,
+                  computed(
+                    () =>
+                      services.get(editorsService).viewState(instance).value
+                        .selected?.id === 'kcl.modeling'
+                  )
+                )
+              )
+              if (isErr(unregister)) reportRejection(unregister)
+              else return unregister
+            })
+          )
           const stopRecovery = effect(() => {
             const state = context.session.state.value
             if (state.type === 'connecting' || state.type === 'error') {

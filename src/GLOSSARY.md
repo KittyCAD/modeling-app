@@ -68,6 +68,14 @@ An Area showing the 3D modeling scene. It contains controls to manipulate the CA
 
 An element within the Scene that contains buttons to invoke modeling operations. It changes based on the current modeling state, such as being in sketch mode.
 
+### Tool group
+
+A named category of related toolbar tools. A group can contain tools or other groups. Depending on available space, it appears inline between dividers, as a split button with its last-used tool, or as a submenu inside another group. These are presentations of the same category.
+
+### Split button
+
+A toolbar control pairing a primary tool button with a menu arrow. The primary button invokes the group's last-used tool; the arrow reveals its other tools and subgroups.
+
 ### View Controls
 
 A cluster of interface elements within the Scene that help the user orient themselves in the 3D space of the Scene.
@@ -198,6 +206,21 @@ The current activity within a Modeling presentation, such as inspecting a model 
 
 **Related:** [Editor mode](#editor-mode) chooses a presentation of the document; a [Sketch editing session](#sketch-editing-session) is a sustained modeling interaction.
 
+## Modeling interaction context
+
+An extension-contributed activity within one Modeling editor presentation. Its
+active session owns the available tools, toolbar, scene input, and cleanup. The
+ordinary modeling context applies when no interaction session is active; entering
+sketching replaces that context without opening another editor presentation or
+creating another document executor.
+
+**Related:** [Modeling interaction state](#modeling-interaction-state) describes
+the current activity; a [Sketch editing session](#sketch-editing-session) owns a
+particular sketch's editing resources.
+
+**Search anchors:** `ModelingInteractionDefinition`, `modelingInteractionsValueSpec`,
+`SketchToolDefinition`, `sketchToolsValueSpec`.
+
 ## Sketch editing session
 
 A period of editing one selected sketch, including its sketch plane, geometry, constraints, and active sketch tools. Entering or leaving sketch editing changes the modeling interaction state while retaining the same document.
@@ -214,3 +237,19 @@ Temporary ownership of geometry picking by an open command dialog. Picks populat
 ## Model target
 
 The particular model view and completed execution bound to a command. A new execution invalidates that target and requires binding and picking again.
+
+## Active selection
+
+The selection belonging to the interaction currently accepting input in a Modeling view. It may belong to the view, an open dialog, or an active sketch; selections in other scopes remain independent.
+
+## Geometry/source correspondence
+
+A relationship between geometry and the source that defines it, generates it, contributes to it, or imports it. Correspondence can be many-to-many and does not itself select geometry or text.
+
+## Correspondence highlighting
+
+A visual indication of geometry/source correspondence that leaves the receiving view's selection and navigation unchanged.
+
+## Selection bridge
+
+A connection between editor views through which an adapter can explain selections or offer compatible command input. Each view retains its own selection; the adapter determines the meaning of the relationship between them.

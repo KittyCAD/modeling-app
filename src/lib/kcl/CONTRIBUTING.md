@@ -17,3 +17,9 @@ The machine's sketch child remains the only owner of active sketch interaction. 
 Extract one existing behavior behind explicit dependencies, retain a legacy adapter, and test both consumers before replacing its machine flow. Keep selection/hover, snapping, modifier keys, preview ordering, repeated operations, Escape, tool switching, and cleanup in the slice. Toolbar actions and keybindings must resolve against the owning view's command actor rather than the global file route.
 
 The feature tree and project export metadata still need explicit next-project adapters. Code/geometry correspondence is separate follow-up work; it must not silently change tool selection or navigate another view.
+
+## Link selections between editor views
+
+The selection-bridge registry composes view links independently of execution and tools. The KCL adapter interprets artifact provenance for Code/Modeling correspondence. Highlighting does not move a cursor, navigate, or change the receiving selection. Offering command input requires one compatible direct target per source selection and an explicit destination when more than one linked view is picking.
+
+Feature-tree input, selection promotion UI, and extensible default correspondence policies remain documented seams in the bridge/query modules. Keep those concerns separate from the Rendering API's arbitrary entity styling.
