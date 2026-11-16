@@ -375,8 +375,106 @@ fn split_triangle(uv: [Uv; 3], axis: usize, knot: f64) -> Vec<[Uv; 3]> {
     triangles
 }
 
+// A sweep may have hundreds of knots along straight runs. Keep parameter cuts
+// only where one of its cross-sections departs from a straight chord.
+fn surface_cuts(surface: &Surface) -> Result<[Vec<f64>; 2], String> {
+    let Surface::Nurbs { nurbs } = surface else {
+        return Ok([vec![], vec![]]);
+    };
+    let (u, v) = nurbs
+        .knot_vector
+        .split_at_checked(nurbs.num_knots[0])
+        .ok_or("Invalid surface control net")?;
+    let knots = [u, v];
+    let domain = |axis: usize| -> Result<[f64; 2], String> {
+        Ok([
+            *knots[axis]
+                .get(nurbs.order[axis].saturating_sub(1))
+                .ok_or("Invalid NURBS dimensions")?,
+            *knots[axis]
+                .get(nurbs.num_control_points[axis])
+                .ok_or("Invalid NURBS dimensions")?,
+        ])
+    };
+    let domains = [domain(0)?, domain(1)?];
+    surface.evaluate([domains[0][0], domains[1][0]])?;
+    let mut cuts = [vec![], vec![]];
+    for axis in 0..2 {
+        let [start, end] = domains[axis];
+        let other = 1 - axis;
+        let [other_start, other_end] = domains[other];
+        let mut parameters = Vec::new();
+        for span in knots[axis]
+            .windows(2)
+            .filter(|span| span[0] >= start && span[1] <= end && span[0] < span[1])
+        {
+            for fraction in [0.0, 0.25, 0.5, 0.75] {
+                parameters.push(span[0] + (span[1] - span[0]) * fraction);
+            }
+        }
+        parameters.push(end);
+        if parameters.len() < 3 {
+            continue;
+        }
+        let mut points = Vec::new();
+        let mut low = [f64::INFINITY; 3];
+        let mut high = [f64::NEG_INFINITY; 3];
+        for &parameter in &parameters {
+            let mut section = [[0.0; 3]; 5];
+            for (i, point) in section.iter_mut().enumerate() {
+                let mut uv = [0.0; 2];
+                uv[axis] = parameter;
+                uv[other] = other_start + (other_end - other_start) * i as f64 / 4.0;
+                *point = surface.evaluate(uv)?;
+                for k in 0..3 {
+                    low[k] = low[k].min(point[k]);
+                    high[k] = high[k].max(point[k]);
+                }
+            }
+            points.push(section);
+        }
+        let tolerance2 = ((0..3).map(|k| (high[k] - low[k]).powi(2)).sum::<f64>().sqrt() * 0.001)
+            .max(1e-12)
+            .powi(2);
+        let mut keep = vec![false; parameters.len()];
+        let mut stack = vec![(0, parameters.len() - 1)];
+        while let Some((start, end)) = stack.pop() {
+            keep[start] = true;
+            keep[end] = true;
+            let mut farthest = (start, tolerance2);
+            for i in start + 1..end {
+                for ((&a, &b), &p) in points[start].iter().zip(&points[end]).zip(&points[i]) {
+                    let delta: Point = std::array::from_fn(|k| b[k] - a[k]);
+                    let length2 = delta.iter().map(|x| x * x).sum::<f64>();
+                    let fraction = if length2 > 0.0 {
+                        ((0..3).map(|k| (p[k] - a[k]) * delta[k]).sum::<f64>() / length2).clamp(0.0, 1.0)
+                    } else {
+                        0.0
+                    };
+                    let distance2 = (0..3).map(|k| (p[k] - a[k] - fraction * delta[k]).powi(2)).sum::<f64>();
+                    if distance2 > farthest.1 {
+                        farthest = (i, distance2);
+                    }
+                }
+            }
+            if farthest.1 > tolerance2 {
+                stack.push((start, farthest.0));
+                stack.push((farthest.0, end));
+            }
+        }
+        cuts[axis] = parameters
+            .into_iter()
+            .zip(keep)
+            .skip(1)
+            .filter_map(|(parameter, keep)| (keep && parameter < end).then_some(parameter))
+            .collect();
+    }
+    Ok(cuts)
+}
+
 struct SurfaceSamples<'a> {
     surface: &'a Surface,
+    cuts: [Vec<f64>; 2],
     vertices: std::collections::HashMap<[u64; 2], (Point, Option<Point>)>,
 }
 
@@ -414,30 +512,21 @@ fn triangle(
         }
         return Ok(());
     }
-    // Uniform UV steps can skip entire bends in a multi-span sweep. Split at
-    // surface knots even in coarse mode, after the bounded uniform refinement.
-    if let Surface::Nurbs { nurbs } = samples.surface {
-        for axis in 0..2 {
-            let low = uv.iter().map(|p| p[axis]).fold(f64::INFINITY, f64::min);
-            let high = uv.iter().map(|p| p[axis]).fold(f64::NEG_INFINITY, f64::max);
-            let tolerance = 16.0 * f64::EPSILON * low.abs().max(high.abs()).max(1.0);
-            let offset = if axis == 0 { 0 } else { nurbs.num_knots[0] };
-            let knots = offset
-                .checked_add(nurbs.num_knots[axis])
-                .and_then(|end| nurbs.knot_vector.get(offset..end))
-                .ok_or("Invalid surface control net")?;
-            let middle = (low + high) / 2.0;
-            if let Some(knot) = knots
-                .iter()
-                .copied()
-                .filter(|knot| *knot > low + tolerance && *knot < high - tolerance)
-                .min_by(|a, b| (a - middle).abs().total_cmp(&(b - middle).abs()))
-            {
-                for part in split_triangle(uv, axis, knot) {
-                    triangle(samples, part, 0, reverse, circumference_intervals, out)?;
-                }
-                return Ok(());
+    for axis in 0..2 {
+        let low = uv.iter().map(|p| p[axis]).fold(f64::INFINITY, f64::min);
+        let high = uv.iter().map(|p| p[axis]).fold(f64::NEG_INFINITY, f64::max);
+        let tolerance = 16.0 * f64::EPSILON * low.abs().max(high.abs()).max(1.0);
+        let middle = (low + high) / 2.0;
+        if let Some(knot) = samples.cuts[axis]
+            .iter()
+            .copied()
+            .filter(|knot| *knot > low + tolerance && *knot < high - tolerance)
+            .min_by(|a, b| (a - middle).abs().total_cmp(&(b - middle).abs()))
+        {
+            for part in split_triangle(uv, axis, knot) {
+                triangle(samples, part, 0, reverse, circumference_intervals, out)?;
             }
+            return Ok(());
         }
     }
     // Keep circular silhouettes round even when the scene budget selects the
@@ -604,9 +693,7 @@ fn tessellate_limited(
             }
         };
         let mut refinement = refinement.min(max_subdivision.clamp(2, 5));
-        if max_subdivision == 2
-            && let Surface::Nurbs { nurbs } = surface
-        {
+        if let Surface::Nurbs { nurbs } = surface {
             // Cylinders and straight ruled annuli need circumferential
             // samples, but no interior samples along their straight axis.
             let straight_other_axis = (0..2).any(|axis| {
@@ -619,6 +706,7 @@ fn tessellate_limited(
         let first_vertex = out.positions.len() / 3;
         let mut samples = SurfaceSamples {
             surface,
+            cuts: surface_cuts(surface)?,
             vertices: std::collections::HashMap::new(),
         };
         for t in indices.as_chunks::<3>().0 {
@@ -721,30 +809,81 @@ mod tests {
 
     #[test]
     fn narrow_surface_knot_spans_preserve_bends_even_at_coarse_detail() {
+        for transpose in [false, true] {
+            let mut input = sample();
+            input.brep.faces.remove(0);
+            input.brep.surfaces[1] = serde_json::from_value(serde_json::json!({
+                "type": "nurbs", "nurbs": {
+                    "controlPoints": [[0, 0, 0], [0, 0.1, 0], [1, 0, 0], [1, 0.1, 0],
+                        [1, 0, 1], [1, 0.1, 1], [0, 0, 1], [0, 0.1, 1], [0, 0, 2], [0, 0.1, 2]],
+                    "numControlPoints": [5, 2], "numKnots": [7, 4], "order": [2, 2],
+                    "knotVector": [0, 0, 0.49, 0.5, 0.51, 1, 1, 0, 0, 1, 1]
+                }
+            }))
+            .unwrap();
+            if transpose {
+                let Surface::Nurbs { nurbs } = &mut input.brep.surfaces[1] else {
+                    panic!("Expected NURBS")
+                };
+                let points = &nurbs.control_points;
+                nurbs.control_points = (0..2).flat_map(|v| (0..5).map(move |u| points[u * 2 + v])).collect();
+                nurbs.num_control_points.swap(0, 1);
+                nurbs.num_knots.swap(0, 1);
+                nurbs.knot_vector.rotate_left(7);
+            }
+            for (budget, depth, circumference) in [(150_000, 5, 32), (0, 2, 16)] {
+                let mesh = tessellate_limited(&input, 0, budget, depth, circumference).unwrap();
+                for corner in [[1.0, 0.0, 0.0], [1.0, 0.0, 1.0], [0.0, 0.0, 1.0]] {
+                    let distance = mesh
+                        .positions
+                        .as_chunks::<3>()
+                        .0
+                        .iter()
+                        .map(|point| (0..3).map(|i| (f64::from(point[i]) - corner[i]).powi(2)).sum::<f64>())
+                        .fold(f64::INFINITY, f64::min)
+                        .sqrt();
+                    assert!(distance < 1e-5, "Missing bend {corner:?}: {distance}, depth {depth}");
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn redundant_straight_knots_do_not_multiply_preview_geometry() {
         let mut input = sample();
         input.brep.faces.remove(0);
-        input.brep.surfaces[1] = serde_json::from_value(serde_json::json!({
-            "type": "nurbs", "nurbs": {
-                "controlPoints": [[0, 0, 0], [0, 0.1, 0], [1, 0, 0], [1, 0.1, 0],
-                    [1, 0, 1], [1, 0.1, 1], [0, 0, 1], [0, 0.1, 1], [0, 0, 2], [0, 0.1, 2]],
-                "numControlPoints": [5, 2], "numKnots": [7, 4], "order": [2, 2],
-                "knotVector": [0, 0, 0.49, 0.5, 0.51, 1, 1, 0, 0, 1, 1]
+        let base = tessellate_limited(&input, 0, 0, 2, 16).unwrap();
+        let Surface::Nurbs { nurbs } = &mut input.brep.surfaces[1] else {
+            panic!("Expected NURBS")
+        };
+        let points = &nurbs.control_points;
+        let weights = &nurbs.weights;
+        let mut refined_points = Vec::new();
+        let mut refined_weights = Vec::new();
+        for u in 0..3 {
+            for v in 0..=64 {
+                refined_points.push(std::array::from_fn(|k| {
+                    points[u * 2][k] + (points[u * 2 + 1][k] - points[u * 2][k]) * v as f64 / 64.0
+                }));
+                refined_weights.push(weights[u * 2]);
             }
-        }))
-        .unwrap();
-        for (budget, depth, circumference) in [(150_000, 5, 32), (0, 2, 16)] {
-            let mesh = tessellate_limited(&input, 0, budget, depth, circumference).unwrap();
-            for corner in [[1.0, 0.0, 0.0], [1.0, 0.0, 1.0], [0.0, 0.0, 1.0]] {
-                let distance = mesh
-                    .positions
-                    .as_chunks::<3>()
-                    .0
-                    .iter()
-                    .map(|point| (0..3).map(|i| (f64::from(point[i]) - corner[i]).powi(2)).sum::<f64>())
-                    .fold(f64::INFINITY, f64::min)
-                    .sqrt();
-                assert!(distance < 1e-5, "Missing bend {corner:?}: {distance}, depth {depth}");
-            }
+        }
+        nurbs.control_points = refined_points;
+        nurbs.weights = refined_weights;
+        nurbs.num_control_points[1] = 65;
+        nurbs.num_knots[1] = 67;
+        nurbs.knot_vector.truncate(6);
+        nurbs.knot_vector.extend([0.0, 0.0]);
+        nurbs.knot_vector.extend((1..64).map(|i| i as f64 / 64.0));
+        nurbs.knot_vector.extend([1.0, 1.0]);
+        let mesh = tessellate_limited(&input, 0, 0, 2, 16).unwrap();
+        assert!(!mesh.positions.is_empty());
+        assert!(
+            mesh.positions.len() <= base.positions.len() * 2,
+            "Redundant knots must not turn a straight extrusion into a dense grid"
+        );
+        for point in mesh.positions.as_chunks::<3>().0 {
+            assert!(((point[0] - 1.5).hypot(point[1]) - 1.0).abs() < 1e-6);
         }
     }
 
