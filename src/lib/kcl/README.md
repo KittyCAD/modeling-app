@@ -58,7 +58,9 @@ Both presentations use the application's `ConnectionManager` and camera controls
 - **Local:** a geometry-only connection supplies native execution output to
   `LocalWebGPUSceneView` through `LocalRendererHost`.
 
-Native execution applies KCL execution inputs contributed through the registry.
+Native execution uses `kclExecutionSettingsService`, the same composed policy
+consumed by the legacy file route. The registry resolves it when execution inputs
+are observed or a scene session is created, after registry setup.
 [`presentationPreferences.ts`](presentationPreferences.ts) groups the camera,
 appearance, local-renderer, and unit inputs by consumer. Renderer-only updates
 leave camera controls and the streamed connection unchanged. Execution, native
