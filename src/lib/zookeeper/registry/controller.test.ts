@@ -180,16 +180,6 @@ class TestActor {
   }
 }
 
-function deferred<T>() {
-  let resolve!: (value: T) => void
-  let reject!: (reason?: unknown) => void
-  const promise = new Promise<T>((resolvePromise, rejectPromise) => {
-    resolve = resolvePromise
-    reject = rejectPromise
-  })
-  return { promise, reject, resolve }
-}
-
 const projectId = '24d8709c-8d07-4855-9357-f20d7d35a499'
 const projectPath = '/projects/bracket'
 const interruptedConversation = {
@@ -401,7 +391,7 @@ describe('Zookeeper session controller', () => {
 
   it('supersedes an in-flight refresh when a newer mutation arrives', async () => {
     const h = createHarness({ cloudProjectId: 'remote-one' })
-    const gate = deferred<undefined>()
+    const gate = Promise.withResolvers<undefined>()
     h.refreshProject.mockReturnValueOnce(gate.promise)
     h.actor.emit('ready', {
       cloudProjectChange: {
@@ -501,7 +491,7 @@ describe('Zookeeper session controller', () => {
 
   it('waits for a pending cloud refresh before continuing a restored turn', async () => {
     const h = createHarness({ cloudProjectId: 'remote-one' })
-    const gate = deferred<undefined>()
+    const gate = Promise.withResolvers<undefined>()
     h.refreshProject.mockReturnValueOnce(gate.promise)
     const context = {
       cloudProjectChange: { callId: 'call-1', projectId: 'remote-one' },
@@ -535,7 +525,7 @@ describe('Zookeeper session controller', () => {
 
   it('drains an in-flight refresh on dispose without updating a replacement session', async () => {
     const h = createHarness({ cloudProjectId: 'remote-one' })
-    const gate = deferred<undefined>()
+    const gate = Promise.withResolvers<undefined>()
     h.refreshProject.mockReturnValueOnce(gate.promise)
     h.actor.emit('ready', {
       cloudProjectChange: { callId: 'call-1', projectId: 'remote-one' },
@@ -764,7 +754,7 @@ describe('Zookeeper session controller', () => {
   })
 
   it('does not submit a queued prompt removed during project collection', async () => {
-    const collectedFiles = deferred<[]>()
+    const collectedFiles = Promise.withResolvers<[]>()
     projectFilesMocks.collect.mockReturnValueOnce(collectedFiles.promise)
     const { actor, controller } = createHarness({
       actorContext: { awaitingResponse: true },
@@ -807,8 +797,8 @@ describe('Zookeeper session controller', () => {
   })
 
   it('keeps rapid prompts in submission order', async () => {
-    const firstCollection = deferred<[]>()
-    const secondCollection = deferred<[]>()
+    const firstCollection = Promise.withResolvers<[]>()
+    const secondCollection = Promise.withResolvers<[]>()
     projectFilesMocks.collect
       .mockReturnValueOnce(firstCollection.promise)
       .mockReturnValueOnce(secondCollection.promise)
@@ -844,7 +834,7 @@ describe('Zookeeper session controller', () => {
   })
 
   it('recollects project files when editor code changes during collection', async () => {
-    const firstCollection = deferred<[]>()
+    const firstCollection = Promise.withResolvers<[]>()
     projectFilesMocks.collect.mockReturnValueOnce(firstCollection.promise)
     const { actor, controller, kclManager } = createHarness({
       actorState: 'ready-await',
@@ -868,7 +858,7 @@ describe('Zookeeper session controller', () => {
 
   it('waits for the saved conversation lookup and for the browser to be online', async () => {
     online = false
-    const lookup = deferred<string | undefined>()
+    const lookup = Promise.withResolvers<string | undefined>()
     const { actor } = createHarness({
       actorState: 'ready-await',
       storeGet: lookup.promise,
@@ -916,7 +906,7 @@ describe('Zookeeper session controller', () => {
 
   it('starts without a saved conversation when its lookup fails', async () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
-    const lookup = deferred<string | undefined>()
+    const lookup = Promise.withResolvers<string | undefined>()
     const { actor, controller } = createHarness({
       actorState: 'ready-await',
       storeGet: lookup.promise,
@@ -1017,8 +1007,8 @@ describe('Zookeeper session controller', () => {
   })
 
   it('deletes persisted state before closing and starts one fresh conversation', async () => {
-    const lookup = deferred<string | undefined>()
-    const deletion = deferred<undefined>()
+    const lookup = Promise.withResolvers<string | undefined>()
+    const deletion = Promise.withResolvers<undefined>()
     const { actor, controller, conversationStore } = createHarness({
       actorContext: { awaitingResponse: true },
       storeGet: lookup.promise,
@@ -1064,7 +1054,7 @@ describe('Zookeeper session controller', () => {
   })
 
   it('does not let an old-conversation snapshot cancel a clear', async () => {
-    const deletion = deferred<undefined>()
+    const deletion = Promise.withResolvers<undefined>()
     const { actor, controller, conversationStore } = createHarness()
     vi.mocked(
       conversationStore.deleteProjectConversationId
@@ -1088,8 +1078,8 @@ describe('Zookeeper session controller', () => {
   })
 
   it('cancels a prompt being collected when clear starts', async () => {
-    const collectedFiles = deferred<[]>()
-    const deletion = deferred<undefined>()
+    const collectedFiles = Promise.withResolvers<[]>()
+    const deletion = Promise.withResolvers<undefined>()
     projectFilesMocks.collect.mockReturnValueOnce(collectedFiles.promise)
     const { actor, controller, conversationStore } = createHarness({
       actorState: 'ready-await',
@@ -1119,7 +1109,7 @@ describe('Zookeeper session controller', () => {
   })
 
   it('does not let a stalled old collection block the fresh conversation', async () => {
-    const oldCollection = deferred<[]>()
+    const oldCollection = Promise.withResolvers<[]>()
     projectFilesMocks.collect.mockReturnValueOnce(oldCollection.promise)
     const { actor, controller } = createHarness({ actorState: 'ready-await' })
 
@@ -1140,8 +1130,8 @@ describe('Zookeeper session controller', () => {
   })
 
   it('cancels an interrupted-turn collection when clear starts', async () => {
-    const collectedFiles = deferred<[]>()
-    const deletion = deferred<undefined>()
+    const collectedFiles = Promise.withResolvers<[]>()
+    const deletion = Promise.withResolvers<undefined>()
     projectFilesMocks.collect.mockReturnValueOnce(collectedFiles.promise)
     const { actor, controller, conversationStore } = createHarness()
     vi.mocked(
@@ -1165,7 +1155,7 @@ describe('Zookeeper session controller', () => {
   })
 
   it('drops a stale ContinueCheck after project ownership changes', async () => {
-    const collectedFiles = deferred<[]>()
+    const collectedFiles = Promise.withResolvers<[]>()
     projectFilesMocks.collect.mockReturnValueOnce(collectedFiles.promise)
     const harness = createHarness()
 
@@ -1260,7 +1250,7 @@ describe('Zookeeper session controller', () => {
   )
 
   it('keeps manual resume for a turn interrupted before this session', async () => {
-    const collectedFiles = deferred<[]>()
+    const collectedFiles = Promise.withResolvers<[]>()
     projectFilesMocks.collect.mockReturnValueOnce(collectedFiles.promise)
     const { actor, controller } = createHarness()
     actor.emit('wait-for-continue-check', {
@@ -1290,7 +1280,7 @@ describe('Zookeeper session controller', () => {
   })
 
   it('automatically resumes an active turn after an unexpected disconnect', async () => {
-    const collectedFiles = deferred<[]>()
+    const collectedFiles = Promise.withResolvers<[]>()
     projectFilesMocks.collect.mockReturnValueOnce(collectedFiles.promise)
     const { actor, controller } = createHarness()
 
@@ -1466,7 +1456,7 @@ describe('Zookeeper session controller', () => {
   })
 
   it('drops an automatic resume when the user stops during file collection', async () => {
-    const collectedFiles = deferred<[]>()
+    const collectedFiles = Promise.withResolvers<[]>()
     projectFilesMocks.collect.mockReturnValueOnce(collectedFiles.promise)
     const { actor, controller } = createHarness()
 
@@ -1525,7 +1515,7 @@ describe('Zookeeper session controller', () => {
   })
 
   it('invalidates a pending resume after leaving the continue state', async () => {
-    const collectedFiles = deferred<[]>()
+    const collectedFiles = Promise.withResolvers<[]>()
     projectFilesMocks.collect.mockReturnValueOnce(collectedFiles.promise)
     const { actor, controller } = createHarness()
     actor.emit('wait-for-continue-check', {
@@ -1556,7 +1546,7 @@ describe('Zookeeper session controller', () => {
 
   it('retries a failed conversation save', async () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
-    const failedSave = deferred<undefined>()
+    const failedSave = Promise.withResolvers<undefined>()
     const { actor, conversationStore } = createHarness()
     vi.mocked(conversationStore.saveProjectConversationId)
       .mockReturnValueOnce(failedSave.promise)
@@ -1572,8 +1562,8 @@ describe('Zookeeper session controller', () => {
   })
 
   it('drains pending conversation persistence on dispose', async () => {
-    const save = deferred<undefined>()
-    const deletion = deferred<undefined>()
+    const save = Promise.withResolvers<undefined>()
+    const deletion = Promise.withResolvers<undefined>()
     const { actor, controller, conversationStore } = createHarness()
     vi.mocked(conversationStore.saveProjectConversationId).mockReturnValueOnce(
       save.promise

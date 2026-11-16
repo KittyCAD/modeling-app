@@ -151,6 +151,20 @@ You may use `-- -g "my test"` to match specific test titles, or `-- path/to/file
 npm run test:e2e:web
 ```
 
+CI builds the web app once and shares it across the web and snapshot jobs. Tests
+serve that build without running Vite's development server. To use the same path
+locally after preparing Wasm and installing dependencies:
+
+```sh
+npm run build:e2e:web
+E2E_USE_PREBUILT_APP=1 npm run test:e2e:web
+```
+
+The build keeps the development environment settings. Test credentials are read
+by Playwright at runtime; the CI build does not embed an API token. Rebuild after
+changing application code. Without `E2E_USE_PREBUILT_APP=1`, local tests continue
+to use the development server. The flag also works with WebKit and snapshot tests.
+
 #### Web tests (WebKit on macOS)
 
 [Playwright WebKit](https://playwright.dev/docs/browsers#webkit) provides the
@@ -164,9 +178,10 @@ npm run test:e2e:web:webkit
 
 Local WebKit tests use two workers on `http://localhost:3000` and
 `http://localhost:5173`, both allowed by the development API CORS policy. The
-second origin proxies the same app; separate origins isolate WebKit's shared
-OPFS storage. Keep both ports free in CI. Use `-- --workers=1` to compare with
-a serial run. Runs against `VERCEL_BASE_URL` remain single-worker.
+second origin proxies the development server, or serves the same build directly
+when using the prebuilt app. Separate origins isolate WebKit's shared OPFS
+storage. Keep both ports free in CI. Use `-- --workers=1` to compare with a serial
+run. Runs against `VERCEL_BASE_URL` remain single-worker.
 
 #### Snapshot tests (Google Chrome on Ubuntu only)
 
