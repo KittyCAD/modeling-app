@@ -5,6 +5,63 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 
 test(
+  'Artificial Heart housing keeps contributing geometry and offset planes inside bodies',
+  { tag: ['@web', '@localRenderer', '@demo'] },
+  async ({ page, homePage, scene, editor, toolbar }, testInfo) => {
+    const code = await readFile(
+      path.join('public', 'kcl-samples', 'artificial-heart', 'housing.kcl'),
+      'utf8'
+    )
+    await page.setBodyDimensions({ width: 1400, height: 1800 })
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
+    await toolbar.openFeatureTreePane()
+    await testInfo.attach('housing-artifacts.json', {
+      body: JSON.stringify(
+        await page.evaluate(() => ({
+          artifacts: [
+            ...window.app.singletons.kclManager.artifactGraph.values(),
+          ],
+          operations: window.app.singletons.kclManager.lastSuccessfulOperations,
+        }))
+      ),
+      contentType: 'application/json',
+    })
+    await expect(page.getByTestId('feature-tree-body')).toHaveCount(6)
+    await toolbar.closePane(DefaultLayoutPaneID.Code)
+    await toolbar.revealBodyFeatures()
+    const rootFeatures = await toolbar.featureTreePane
+      .getByTestId('feature-tree-operation-item')
+      .evaluateAll((rows) =>
+        rows
+          .filter(
+            (row) => !row.closest('[data-testid="feature-tree-body-branch"]')
+          )
+          .map((row) => row.querySelector('button')?.textContent?.trim())
+      )
+    expect(rootFeatures).toEqual([
+      expect.stringMatching(/^Front plane/),
+      expect.stringMatching(/^Top plane/),
+      expect.stringMatching(/^Side plane/),
+    ])
+    await expect(
+      toolbar.featureTreePane.getByRole('button', {
+        name: 'Offset Plane',
+        exact: true,
+      })
+    ).toHaveCount(3)
+    await testInfo.attach('housing-body-tree.png', {
+      body: await toolbar.featureTreePane.screenshot(),
+      contentType: 'image/png',
+    })
+    expect(
+      await page.evaluate(() => window.app.singletons.kclManager.errors)
+    ).toEqual([])
+  }
+)
+
+test(
   'retains body and sketch disclosure through editing and execution',
   { tag: ['@web', '@localRenderer', '@demo'] },
   async ({ page, homePage, scene, editor, toolbar }) => {

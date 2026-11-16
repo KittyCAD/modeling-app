@@ -62,6 +62,66 @@ function bodies(...artifacts: BodyArtifact[]) {
 }
 
 describe('body feature hierarchy', () => {
+  it('keeps a contributing offset plane with its body without following default planes or their other sketches', () => {
+    const plane: Artifact = {
+      type: 'plane',
+      id: 'offset',
+      pathIds: ['profile', 'unrelated'],
+      codeRef: codeRef(0),
+    }
+    const defaultPlane: Artifact = {
+      type: 'plane',
+      id: 'default',
+      pathIds: ['other'],
+      codeRef: codeRef(120),
+    }
+    const unusedPlane: Artifact = {
+      ...plane,
+      id: 'unused',
+      pathIds: [],
+      codeRef: codeRef(140),
+    }
+    const profile: Extract<Artifact, { type: 'path' }> = {
+      type: 'path',
+      id: 'profile',
+      subType: 'region',
+      planeId: plane.id,
+      segIds: [],
+      consumed: true,
+      trajectorySweepId: null,
+      codeRef: codeRef(20),
+    }
+    const other: Artifact = {
+      ...profile,
+      id: 'other',
+      planeId: defaultPlane.id,
+      codeRef: codeRef(80),
+    }
+    const a = sweep('a', 40, profile.id)
+    const b = sweep('b', 100, other.id)
+    const planeOp = { ...call(0), name: 'offsetPlane' }
+    const unusedPlaneOp = { ...call(140), name: 'offsetPlane' }
+    const nodes = [
+      planeOp,
+      call(20),
+      call(40),
+      call(80),
+      call(100),
+      call(120),
+      unusedPlaneOp,
+    ]
+    const tree = buildBodyOperationTree(
+      nodes,
+      bodies(a, b),
+      graph(a, b, profile, other, plane, defaultPlane, unusedPlane)
+    )
+    expect(tree.branches.map((branch) => branch.operations)).toEqual([
+      nodes.slice(0, 3),
+      nodes.slice(3, 5),
+    ])
+    expect(tree.operations).toEqual(nodes.slice(5))
+  })
+
   it('keeps imported input features in an assembly-authored body without repeating the import wrapper', () => {
     const imported = {
       ...sweep('input', 10),

@@ -53,6 +53,13 @@ export function buildBodyOperationTree(
     }
   }
   index(nodes)
+  const offsetPlaneRanges = new Set(
+    operations.flatMap((op) =>
+      op.type === 'StdLibCall' && op.name === 'offsetPlane'
+        ? [op.sourceRange.join()]
+        : []
+    )
+  )
   const order = new Map(operations.map((op, i) => [op, i]))
   const sourceOrder = new Map(
     operations.flatMap((op, i) =>
@@ -142,6 +149,14 @@ export function buildBodyOperationTree(
           sourceOrder.get(definition(a)?.join() ?? '') ?? Infinity
         )
         pending.push(...sourceIds(a, graph).map((id) => ({ id, until })))
+        if (a.type === 'path') {
+          const plane = graph.get(a.planeId)
+          if (
+            plane?.type === 'plane' &&
+            offsetPlaneRanges.has(definition(plane)?.join() ?? '')
+          )
+            pending.push({ id: plane.id, until })
+        }
       }
       before.set(id, Infinity)
       for (const p of bodyPatterns) {
