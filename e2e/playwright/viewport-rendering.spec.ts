@@ -44,10 +44,16 @@ test.afterEach(async ({ page }, testInfo) => {
     }
   })
   const before = await capture()
+  await testInfo.attach('video-before-play', {
+    body: JSON.stringify(before, null, 2),
+    contentType: 'application/json',
+  })
   const playResult = await page.evaluate(async () => {
     try {
-      await document.querySelector<HTMLVideoElement>('#video-stream')?.play()
-      return 'resolved'
+      return await Promise.race([
+        document.querySelector<HTMLVideoElement>('#video-stream')?.play().then(() => 'resolved'),
+        new Promise(resolve => setTimeout(() => resolve('timed out'), 3000)),
+      ])
     } catch (error) {
       return String(error)
     }
