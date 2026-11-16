@@ -34,6 +34,7 @@ const extension = defineRegistryItemFactory(() => {
 export default defineRegistryItem({
   id: 'kcl.extension',
   uses: [
+    // The legacy file route needs these inputs even with project-shell editing off.
     kclExecutionSettingsRegistryItem,
     withProjectShellFeature(extension, 'kcl'),
   ],

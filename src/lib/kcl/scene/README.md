@@ -1,71 +1,99 @@
-# KCL scene connections and execution events
+# KCL scene connections and refresh settings
 
-This is the first extraction from the existing application, not a second engine
-or a replacement for zoo-web-view. The integration goal is recorded in
-[ADR 0001](../../../dev-docs/adr/0001-app-owned-scene-host.md).
+This module connects KCL scenes to the engine and defines which preference
+changes require KCL execution. It uses `ConnectionManager` for transport and
+provides the refresh policy consumed by `KclManager` in the file route.
 
-`connectScene` starts a supplied ConnectionManager for either streamed video or
-geometry-only local rendering. The returned handle captures that connection:
-commands, sizing, and disposal cannot target a subsequent connection on the same
-manager. An abort signal owns the handle's lifetime after connection as well as
-during startup. The deadline includes browser codec inspection. Video attachment
-returns a release callback; releasing an older attachment cannot clear a newer
-attachment of the same media. The caller disposes its handle when its scene
-session closes, rather than when a temporary presentation unmounts.
+## Connection ownership
 
-The legacy `useTryConnect` hook adapts its React state, DOM references, reconnect
-policy, and error reporting to this boundary. Those policies remain outside the
-transport handle. ConnectionManager still supplies the application's WebSocket,
-WebRTC, response correlation, and geometry-only behavior.
+`connectScene` opens a supplied `ConnectionManager` in one of two presentations:
+`streamed` receives rendered video; `local` requests a geometry-only connection
+for the local renderer. It returns a `SceneConnection` handle or an `Error`.
 
-`LocalRendererHost` supplies execution events, model generations, artifacts,
-native export, camera/selection resources, and settings explicitly.
-`LocalWebGPUSceneView` consumes it without application providers.
-`legacyLocalRendererHost` and the existing `LocalWebGPUScene` component adapt the
-legacy route. Current and published model generations remain separate because
-execution can finish before its artifact graph has been published. SceneInfra
-and settings-actor types remain application-side inputs to the local renderer;
-they are not requirements for zoo-web-view's public API.
+The caller owns the handle and calls `dispose` when the scene closes. An optional
+abort signal can also end the connection, including during startup. The startup
+timeout covers browser codec inspection and connection establishment.
 
-## Shared execution settings
+Each handle captures one connection. Its commands, resizing, and disposal cannot
+act on a replacement connection opened on the same manager. `attachVideo` binds
+that connection's media to a video element and returns a detach callback.
+Detaching releases the presentation without closing the connection; an older
+callback cannot detach media attached by a newer handle.
 
-KCL owns the refresh policy through the `kclExecutionInputsValueSpec` registry
-contribution point. Generic `Setting` definitions describe preferences without
-knowing which executors consume them. A KCL extension contributes a stable input
-ID, a reader of its effective value, and the required refresh:
+[`useTryConnect`](../../../hooks/network/useTryConnect.tsx) supplies the file route's React
+state, DOM references, reconnect policy, and error reporting. Those decisions
+remain with the caller of `connectScene`.
+
+## Local renderer inputs
+
+[`LocalRendererHost`](../../../clientSideScene/localRenderer/host.ts) supplies
+`LocalWebGPUSceneView` with execution events, artifacts, native export, camera and
+selection resources, and settings. The view does not need application providers.
+`legacyLocalRendererHost` adapts `KclManager` and the file route's resources to
+these inputs.
+
+The host distinguishes the latest native model from the model published with its
+artifact graph. Execution can finish before the graph is published; the renderer
+uses those model generations to avoid displaying geometry with an older graph.
+`SceneExecutionEvents` in this module defines the execution notifications that
+presentations consume.
+
+## KCL refresh policy
+
+KCL extensions contribute refresh inputs through
+`kclExecutionInputsValueSpec`. Each input has a stable ID, a reader of its
+effective value, and a refresh rule. Generic `Setting` definitions do not need to
+know which executors consume them.
+
+For example, the core KCL policy includes:
 
 ```ts
 provideKclExecutionInput({
   id: 'modeling.highlightEdges',
   read: (settings) => settings.modeling.highlightEdges.currentSignal.value,
-  refresh: 'execute', // Use the existing native cache.
+  refresh: 'execute',
 })
 ```
 
-`rebuild-streamed` clears the streamed scene/cache before executing; local
-rendering handles that preference without invalidating native execution. The
-core KCL input contributions remain installed when project-shell editing is
-disabled, so the legacy file route uses the same policy.
+The two rules describe different operations:
 
-`createSceneExecutionSettings` requires the registry's live contribution signal.
-Adding or removing a contribution updates every consumer without another
-consumer-specific dependency list. It supplies stable revisions of effective
-values and a reactive native configuration using the existing `jsAppSettings`
-conversion. Project overrides and replacement Setting instances retain their
-normal precedence; unchanged effective inputs do not invalidate execution.
+- `execute` reruns KCL with the existing native cache. Default units, edge
+  highlighting, and scale-grid visibility and size use this rule.
+- `rebuild-streamed` clears the streamed scene and native cache before executing.
+  Backface color uses this rule. The local renderer applies that color directly,
+  so this input does not request native execution in local rendering.
 
-`observeSceneExecutionSettings` contains the refresh and cache-rebuild logic
-extracted from KclManager. The legacy adapter supplies scene activity, connection
-identity, and the current file and project. A newer execution setting waits for
-the latest queued rebuild; closing, deactivating, or replacing the scene prevents
-queued work from restarting it. Native execution still applies edge visibility,
-grid visibility/scale, and backface settings.
+`createSceneExecutionSettings` reads the registry's live contribution signal and
+the effective preferences. It provides native configuration through the existing
+`jsAppSettings` conversion, plus comparison keys for deciding when to refresh.
+Adding or removing a contribution updates those keys. Project overrides retain
+their normal precedence, and replacing settings with equivalent values does not
+request another execution.
 
-Presentation and connection settings remain explicit: theme, camera controls,
-and local rendering update their existing presentation paths; the existing
-effective viewport-style/SSAO policy requests a connection restart. A local
-backface change updates LocalRenderer without clearing or executing native state.
+`kclExecutionSettingsService` exposes the composed settings to `KclManager`. The
+core contributions remain installed when project-shell editing is disabled,
+because the file route also needs them.
 
-Keep the eventual SDK adapter small: use public connection, command, sizing,
-presentation, and disposal behavior. Do not depend on private `rtc` fields, a
-`.start` element, or worker asset URLs inferred from `location.origin`.
+## Applying changes to the active scene
+
+`observeSceneExecutionSettings` watches the comparison keys.
+`KclManager.watchSettings` supplies callbacks bound to the active file, project,
+and connection: execute the model, clear its scene/cache, and check whether those
+resources are still current.
+
+Cache clears run in order. If an execute-only preference changes while a clear is
+pending, execution waits for that clear; otherwise the clear could erase the
+newly rendered model. Closing the observer, deactivating the file, or replacing
+the connection prevents queued work from starting against stale resources.
+Disposal cannot abort a native operation that has already started.
+
+The observer records preference changes while inactive or disconnected without
+executing. File opening and reconnecting own their initial execution, so simply
+activating the observer does not request another one.
+
+Presentation preferences use their existing consumers: theme and camera controls
+update presentation, and viewport-style/SSAO changes request a connection restart.
+They do not become KCL refresh inputs merely because they are settings.
+
+The SDK integration direction and adapter constraints are documented in
+[ADR 0001](../../../dev-docs/adr/0001-app-owned-scene-host.md).

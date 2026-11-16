@@ -889,7 +889,9 @@ export class ConnectionManager extends EventTarget {
   async setShowScaleGrid(shouldShowGrid: boolean) {
     if (this.geometryOnly) return
 
-    // Engine-owned scale-grid objects, shared with rust/kcl-lib/src/engine/mod.rs.
+    // Toggle both the grid and its scale label. These IDs must match
+    // `GRID_OBJECT_ID` and `GRID_SCALE_TEXT_OBJECT_ID` in
+    // `rust/kcl-lib/src/engine/mod.rs`, which creates the engine objects.
     const commands = [
       'cfa78409-653d-4c26-96f1-7c45fb784840',
       '10782f33-f588-4668-8bcd-040502d26590',
