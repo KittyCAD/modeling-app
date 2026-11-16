@@ -533,6 +533,7 @@ export class CameraControls {
   dispose() {
     if (this.disposed) return
     this.disposed = true
+    this.cancelSketchCameraTransition()
     this.cancelPendingUpdates()
     this.domElement.removeEventListener('pointerdown', this.onMouseDown)
     this.domElement.removeEventListener('pointermove', this.onMouseMove)

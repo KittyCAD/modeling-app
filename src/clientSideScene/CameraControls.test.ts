@@ -862,6 +862,8 @@ describe('local sketch camera transition', () => {
   function setup(geometryOnly = true) {
     const manager = makeConnectionManager({ width: 800, height: 600 })
     Object.defineProperty(manager, 'geometryOnly', { value: geometryOnly })
+    vi.spyOn(manager, 'subscribeTo').mockReturnValue(() => {})
+    vi.spyOn(manager, 'subscribeToUnreliable').mockReturnValue(() => {})
     const controls = new CameraControls(
       makeCanvas(800, 600),
       manager,
@@ -1000,6 +1002,33 @@ describe('local sketch camera transition', () => {
       ).toBeLessThan(1e-8)
     }
   )
+
+  it('ignores a pending face-center response after disposal', async () => {
+    const { controls, sendSceneCommand } = setup()
+    const response = promiseFactory<WebSocketResponse>()
+    sendSceneCommand.mockReturnValueOnce(response.promise)
+    const camera = controls.camera
+    const position = camera.position.clone()
+    controls.requestSketchCameraTransition('face-id')
+    const pending = controls.transitionToSketch(new Group())
+    controls.dispose()
+    response.resolve({
+      success: true,
+      resp: {
+        type: 'modeling',
+        data: {
+          modeling_response: {
+            type: 'face_get_center',
+            data: { pos: { x: 10, y: 20, z: 30 } },
+          },
+        },
+      },
+    })
+    await pending
+    expect(controls.camera).toBe(camera)
+    expect(camera.position).toEqual(position)
+    expect(controls.target.toArray()).toEqual([0, 0, 0])
+  })
 
   it('ignores a face-centre response after leaving sketch mode', async () => {
     const { controls, sendSceneCommand } = setup()
