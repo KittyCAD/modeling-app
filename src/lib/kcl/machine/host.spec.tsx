@@ -1,3 +1,4 @@
+import { createModelingTools } from '@src/lib/kcl/modelingTools'
 import {
   Registry,
   defineRegistryItem,
@@ -118,6 +119,10 @@ async function fixture(
     }
   )
   const view = modelingTestContext(presentation)
+  // These host regressions cover legacy dialogs; modelingDialog.spec.tsx covers contributed Form/Code dialogs.
+  view.context.tools.dispose()
+  const tools = createModelingTools(() => view.context, signal([]))
+  view.context.tools = tools
   view.editor.dispatch({
     changes: { from: 0, to: view.editor.state.doc.length, insert: code },
   })
@@ -248,6 +253,7 @@ async function fixture(
     commandEnv,
     dispose: async () => {
       await result.dispose()
+      tools.dispose()
       if (!sharedCommands) commandEnv.dispose()
       picking.dispose()
       await native.dispose()
