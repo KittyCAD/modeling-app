@@ -5,7 +5,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
   'retains body and sketch disclosure through editing and execution',
-  { tag: ['@web', '@localRenderer'] },
+  { tag: ['@web', '@localRenderer', '@demo'] },
   async ({ page, homePage, scene, editor, toolbar }) => {
     const code = `@settings(kclVersion = 3.0)
 sketch001 = sketch(on = XY) {
@@ -52,7 +52,7 @@ body001 = extrude(region001, length = 5mm)`
 
 test(
   'PC Fan keeps part bodies and consumed Boolean inputs within their imports',
-  { tag: ['@web', '@localRenderer'] },
+  { tag: ['@web', '@localRenderer', '@demo'] },
   async ({ page, homePage, scene, toolbar, fs, folderSetupFn }, testInfo) => {
     await page.setBodyDimensions({ width: 1400, height: 900 })
     await folderSetupFn(async (dir) => {
@@ -138,7 +138,7 @@ test(
 
 test(
   'body visibility and deletion keep geometry actions in the unified tree',
-  { tag: ['@web', '@localRenderer'] },
+  { tag: ['@web', '@localRenderer', '@demo'] },
   async ({ page, homePage, scene, editor, toolbar }, testInfo) => {
     await page.setBodyDimensions({ width: 1400, height: 900 })
     await homePage.goToModelingScene()
