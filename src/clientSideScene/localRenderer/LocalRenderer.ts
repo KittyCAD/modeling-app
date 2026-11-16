@@ -63,6 +63,7 @@ import type DenoiseNode from 'three/examples/jsm/tsl/display/DenoiseNode.js'
 import { denoise } from 'three/examples/jsm/tsl/display/DenoiseNode.js'
 import type GTAONode from 'three/examples/jsm/tsl/display/GTAONode.js'
 import { ao } from 'three/examples/jsm/tsl/display/GTAONode.js'
+import { smaa } from 'three/examples/jsm/tsl/display/SMAANode.js'
 import {
   color,
   frontFacing,
@@ -133,6 +134,7 @@ type AmbientOcclusionPipeline = {
   aoPass: GTAONode
   denoisePass: DenoiseNode | null
   denoiseNoiseTexture: Texture | null
+  antialiasPass: ReturnType<typeof smaa>
 }
 type DisposableGpuDevice = {
   destroy: () => void
@@ -795,6 +797,8 @@ export class LocalRenderer {
     this.ambientOcclusionPipeline?.aoPass.dispose()
     this.ambientOcclusionPipeline?.denoiseNoiseTexture?.dispose()
     this.ambientOcclusionPipeline?.denoisePass?.dispose()
+    this.ambientOcclusionPipeline?.antialiasPass.textureNode.dispose()
+    this.ambientOcclusionPipeline?.antialiasPass.dispose()
     this.ambientOcclusionPipeline = null
   }
 
@@ -899,9 +903,12 @@ export class LocalRenderer {
           // Preserve some indirect light even at maximum occlusion while leaving
           // enough contrast to make the setting visibly effective.
           const ambientOcclusion = aoOutput.r.mul(0.8).add(0.2)
-          pipeline.outputNode = scenePassColor.mul(
-            vec4(vec3(ambientOcclusion), 1)
+          // The single-sampled scene texture has no MSAA coverage to resolve.
+          // Smooth its edges before the selection renderer applies output color.
+          const antialiasPass = smaa(
+            scenePassColor.mul(vec4(vec3(ambientOcclusion), 1))
           )
+          pipeline.outputNode = antialiasPass.getTextureNode()
 
           this.ambientOcclusionPipeline = {
             camera,
@@ -910,6 +917,7 @@ export class LocalRenderer {
             aoPass,
             denoisePass,
             denoiseNoiseTexture,
+            antialiasPass,
           }
         }
 
