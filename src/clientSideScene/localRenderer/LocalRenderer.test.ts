@@ -333,6 +333,71 @@ describe('local GLB loading', () => {
     return f
   }
 
+  it('highlights a body selected outside the viewport before any face has been clicked', async () => {
+    const f = selectionFixture()
+    const face = f.state.currentModel?.children[0] as Mesh
+    face.userData.bodyMeshIndex = 1
+    const otherFace = new Mesh()
+    otherFace.userData = { faceUuid: 'other-face', bodyMeshIndex: 1 }
+    const unrelated = new Mesh()
+    unrelated.userData = { faceUuid: 'unrelated', bodyMeshIndex: 2 }
+    f.state.currentModel?.add(otherFace, unrelated)
+    f.state.rebuildSelectionTargets()
+    const reply = (type: string, data: object) => ({
+      resp: { type: 'modeling', data: { modeling_response: { type, data } } },
+    })
+    f.manager.engineCommandManager.sendSceneCommand
+      .mockResolvedValueOnce(reply('select_get', { entity_ids: ['body'] }))
+      .mockResolvedValueOnce(
+        reply('query_entity_type', {
+          reference: { type: 'solid3d', solid3d_id: 'body' },
+        })
+      )
+      .mockResolvedValueOnce(
+        reply('solid3d_get_face_uuid', { face_id: 'face' })
+      )
+    await f.state.syncSelectionFromEngine()
+    expect(
+      f.gpu.selectionHighlightRenderer.setSelection
+    ).toHaveBeenLastCalledWith([face, otherFace])
+    f.manager.engineCommandManager.sendSceneCommand.mockResolvedValueOnce(
+      reply('select_get', { entity_ids: ['body'] })
+    )
+    await f.state.syncSelectionFromEngine()
+    expect(
+      f.manager.engineCommandManager.sendSceneCommand
+    ).toHaveBeenCalledTimes(4)
+    f.renderer.dispose()
+  })
+
+  it('ignores a body lookup answered after a new execution starts', async () => {
+    const f = selectionFixture()
+    const reply = (type: string, data: object) => ({
+      resp: { type: 'modeling', data: { modeling_response: { type, data } } },
+    })
+    const pending = Promise.withResolvers<unknown>()
+    f.manager.engineCommandManager.sendSceneCommand
+      .mockResolvedValueOnce(reply('select_get', { entity_ids: ['body'] }))
+      .mockResolvedValueOnce(
+        reply('query_entity_type', {
+          reference: { type: 'solid3d', solid3d_id: 'body' },
+        })
+      )
+      .mockReturnValueOnce(pending.promise)
+    f.gpu.selectionHighlightRenderer.setSelection.mockClear()
+    const selection = f.state.syncSelectionFromEngine()
+    await vi.waitFor(() =>
+      expect(
+        f.manager.engineCommandManager.sendSceneCommand
+      ).toHaveBeenCalledTimes(3)
+    )
+    f.manager.isExecutingSignal.value = true
+    pending.resolve(reply('solid3d_get_face_uuid', { face_id: 'face' }))
+    await selection
+    expect(f.gpu.selectionHighlightRenderer.setSelection).not.toHaveBeenCalled()
+    f.renderer.dispose()
+  })
+
   it.each<EntityType>(['solid3d', 'object'])(
     'hovers the face without the engine but clicks select its body with the %s filter',
     async (type) => {

@@ -200,7 +200,7 @@ export class LocalRenderer {
   // Several meshes, since periodic surfaces can be split with one face ID.
   private readonly targetsByEntityId = new Map<string, Mesh[]>()
   private readonly facesByBodyMesh = new Map<number, Mesh[]>()
-  // Filled in by clicks, since the GLB doesn't have the solids' UUIDs: the engine
+  // Filled in by selection, since the GLB doesn't have the solids' UUIDs: the engine
   // writes them, but the format crate loses them when it tessellates through
   // HOOPS (map_topology_uuids only restores edges and faces). Once the GLB has
   // them, this can go and faces can be matched to their body by that UUID.
@@ -459,6 +459,7 @@ export class LocalRenderer {
    */
   private async syncSelectionFromEngine() {
     const version = ++this.selectionRequestVersion
+    const executionVersion = this.executionVersion
     // Lets the command that changed the selection be sent first, and lets only
     // the last command of a burst ask.
     await Promise.resolve()
@@ -481,8 +482,45 @@ export class LocalRenderer {
     if (single && isModelingResponse(single)) {
       const modelingResponse = single.resp.data.modeling_response
       if (modelingResponse.type === 'select_get') {
+        await Promise.all(
+          modelingResponse.data.entity_ids.map((id) => this.cacheBodyFaces(id))
+        )
+        if (
+          this.disposed ||
+          version !== this.selectionRequestVersion ||
+          executionVersion !== this.executionVersion
+        )
+          return
         this.selectedEntityIds = modelingResponse.data.entity_ids
         this.updateSelection()
+      }
+    }
+  }
+
+  private async cacheBodyFaces(id: string) {
+    if (
+      this.bodyFacesById.has(id) ||
+      this.targetsByEntityId.has(id) ||
+      this.getPlaneTarget(id)
+    )
+      return
+    const version = this.executionVersion
+    const reference = await this.getEngineEntityReference(id)
+    if (reference?.type !== 'solid3d') return
+    // Tree selections have no picked face from which to recover the body mesh.
+    const response =
+      await this.kclManager.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: { type: 'solid3d_get_face_uuid', object_id: id, face_index: 0 },
+      })
+    if (this.disposed || version !== this.executionVersion) return
+    const single = isArray(response) ? response[0] : response
+    if (single && isModelingResponse(single)) {
+      const result = single.resp.data.modeling_response
+      if (result.type === 'solid3d_get_face_uuid') {
+        const target = this.targetsByEntityId.get(result.data.face_id)?.[0]
+        if (target) this.bodyFacesById.set(id, this.getBodyFaces(target))
       }
     }
   }
