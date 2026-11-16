@@ -1,8 +1,10 @@
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { ModelingCmd, UnitLength } from '@kittycad/lib'
 import { changeDefaultUnits } from '@src/lang/wasm'
 import { buildMinimalDocumentChange } from '@src/lib/minimalDocumentChange'
 import type { ModelingViewContext } from '@src/lib/kcl/registry/contract'
-import type { KclSceneResource } from '@src/lib/kcl/scene'
+import type { ModelingSceneAccess as KclSceneResource } from '@src/lib/kcl/registry/contract'
 import type { SelectionModel } from '@src/lib/scene/selection'
 import { isErr } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
@@ -40,6 +42,22 @@ export function boundSceneCommands(
     return current()
       ? response
       : new Error('The model changed before the request completed.')
+  }
+}
+
+/** Legacy reference helpers query only the captured scene; expired results cannot become reference rows. */
+export function boundSceneQueries(
+  context: Pick<ModelingViewContext, 'executor' | 'session'>,
+  scene: KclSceneResource,
+  model: SelectionModel
+): Pick<ConnectionManager, 'sendSceneCommand'> {
+  const send = boundSceneCommands(context, scene, model)
+  return {
+    sendSceneCommand: async (request) => {
+      if (request.type !== 'modeling_cmd_req') return null
+      const result = await send(request.cmd)
+      return isModelingResponse(result) ? result : null
+    },
   }
 }
 

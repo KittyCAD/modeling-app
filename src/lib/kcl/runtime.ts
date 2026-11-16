@@ -85,6 +85,7 @@ export async function createKclRuntime(
     },
   }
   const native = new wasm.Context(engine, fileSystem)
+  let analysis: InstanceType<ModuleType['Context']> | undefined
   const settings = () => JSON.stringify(getSettings())
   let rebuiltRevision = getRebuildRevision()
   // A rejected operation must not poison later runs. Only the caller receives
@@ -319,6 +320,35 @@ export async function createKclRuntime(
       }
       return execute(snapshot)
     },
+    evaluateExpression: (ast: Node<Program>) =>
+      enqueue(async () => {
+        try {
+          return execStateFromRust(
+            await native.evaluateExpression(JSON.stringify(ast), settings())
+          )
+        } catch (cause) {
+          return Promise.reject(
+            isErr(cause) ? cause : errFromErrWithOutputs(cause)
+          )
+        }
+      }),
+    validate: (ast: Node<Program>, src: string) =>
+      enqueue(async (): Promise<Error | undefined> => {
+        try {
+          analysis ??= new wasm.Context(engine, fileSystem)
+          await analysis.executeMock(
+            JSON.stringify(ast),
+            src,
+            settings(),
+            false
+          )
+        } catch (cause) {
+          return isErr(cause) ? cause : errFromErrWithOutputs(cause)
+        }
+      }),
+    waitForAllEngineModelingCommands: async () => {
+      await engine.waitForAllModelingCommands()
+    },
     exportModel: (
       format: Parameters<LocalRendererHost['exportModel']>[0]
     ): ReturnType<LocalRendererHost['exportModel']> =>
@@ -341,6 +371,7 @@ export async function createKclRuntime(
           await Promise.allSettled([...pendingResponses])
         nativeFreed = true
         native.free()
+        analysis?.free()
       }
     },
   }

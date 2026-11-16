@@ -8,6 +8,7 @@ function host(): MachineModelingHost {
     owner: signal(undefined),
     error: signal(undefined),
     enter: vi.fn(async () => {}),
+    openTool: vi.fn(async () => {}),
     closeDialog: vi.fn(),
     dispose: vi.fn(async () => {}),
   }

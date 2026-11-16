@@ -5,6 +5,10 @@ import {
   commandSystemService,
   contextualCommandsService,
 } from '@src/registry/contracts/commands'
+import { createModelingTools } from '@src/lib/kcl/modelingTools'
+import { defaultModelingTools } from '@src/lib/kcl/toolDefinitions'
+import { modelingToolsValueSpec } from '@src/lib/kcl/registry/contract'
+import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import {
   keymapService,
   keymapScopesValueSpec,
@@ -139,6 +143,9 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
     uses: [projectSourcesExtension],
     provides: [
       provide(modelingInteractionViewsValueSpec, streamedSketchPresentation),
+      ...defaultModelingTools.map((tool) =>
+        provide(modelingToolsValueSpec, tool)
+      ),
       ...defaultModelingStatusItems.map((item) =>
         provide(modelingStatusItemsValueSpec, item)
       ),
@@ -169,14 +176,22 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
               valueSpecs.signal(modelingInteractionViewsValueSpec),
               (id) => machine.use((host) => host.enter(id))
             ),
-            tools: {
-              error: signal(undefined),
-              close: () => {
-                void machine
-                  ?.use((host) => host.closeDialog())
-                  .catch(reportRejection)
-              },
-            },
+            tools: createModelingTools(
+              () => context,
+              valueSpecs.signal(modelingToolsValueSpec),
+              () =>
+                services
+                  .get(userFeaturesService)
+                  .has(EXPERIMENTAL_POINT_AND_CLICK_FLAG, false),
+              {
+                open: (id) => machine.use((host) => host.openTool(id)),
+                close: () => {
+                  void machine
+                    ?.use((host) => host.closeDialog())
+                    .catch(reportRejection)
+                },
+              }
+            ),
             settings: services.get(settingsService),
             executor,
             session: execution.getSession(executor),
@@ -224,6 +239,7 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
             }
           })
           onDispose(stopRecovery)
+          onDispose(context.tools.dispose)
           onDispose(context.interactions.dispose)
           return context
         })({

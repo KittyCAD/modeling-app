@@ -1,3 +1,4 @@
+import ModelingToolDialogView from '@src/lib/kcl/ModelingToolDialog'
 import { ErrorBanner } from '@src/components/ErrorBanner'
 import { machineDialogPicking } from '@src/lib/kcl/machine/dialogPicking'
 import type { SelectionArgument } from '@src/components/ModelingDialog/arguments'
@@ -191,7 +192,10 @@ export function MachineModelingView({
           />
         </div>
       )}
-      {dialogOpen && (
+      {owner.dialogs.active.value && (
+        <ModelingToolDialogView dialog={owner.dialogs.active.value} />
+      )}
+      {dialogOpen && !owner.dialogs.supported.value && (
         <div
           ref={container}
           className="pointer-events-none absolute inset-x-2 top-20 bottom-2 z-50 flex items-start justify-end"

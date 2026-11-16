@@ -1,3 +1,5 @@
+import { createModelingTools } from '@src/lib/kcl/modelingTools'
+import { defaultModelingTools } from '@src/lib/kcl/toolDefinitions'
 import type { ScenePresentation } from '@src/lib/kcl/scene/connection'
 import { createActiveSelection } from '@src/lib/kcl/selection'
 import type { KclSourceSnapshot } from '@src/lib/kcl/sources'
@@ -95,7 +97,7 @@ export function modelingTestContext(
   const context: ModelingViewContext = {
     selection: createActiveSelection(() => context),
     interactions: createModelingInteractions(() => context, signal([])),
-    tools: { error: signal(undefined), close: () => {} },
+    tools: createModelingTools(() => context, signal(defaultModelingTools)),
     settings: {
       current: signal(settings),
       useSettings: () => settings,
@@ -122,6 +124,7 @@ export function modelingTestContext(
     resource,
     editor,
     dispose: () => {
+      context.tools.dispose()
       context.interactions.dispose()
       selection.dispose()
       document.dispose()

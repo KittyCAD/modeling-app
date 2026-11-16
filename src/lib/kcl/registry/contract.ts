@@ -1,4 +1,9 @@
 import type { ContextualCommandsService } from '@src/lib/commands/contextual'
+import type { KclSceneResource } from '@src/lib/kcl/scene'
+import type {
+  createModelingTools,
+  ModelingToolDefinition,
+} from '@src/lib/kcl/modelingTools'
 import type { MachineModelingHost } from '@src/lib/kcl/machine/host'
 import type {
   createModelingInteractions,
@@ -7,7 +12,6 @@ import type {
 import type { ModelingInteractionViewDefinition } from '@src/lib/kcl/interactionViews'
 import type { SelectionSource } from '@src/lib/kcl/selection'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
-import type { Signal } from '@preact/signals-core'
 import { appendValueSpec, defineContract } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { ComponentType } from 'react'
@@ -23,7 +27,7 @@ export interface ModelingViewContext {
   settings: SettingsRegistryService
   selection: SelectionSource
   interactions: ReturnType<typeof createModelingInteractions>
-  tools: { error: Signal<Error | undefined>; close: () => void }
+  tools: ReturnType<typeof createModelingTools>
 
   executor: Executor
   session: KclSession
@@ -45,6 +49,9 @@ export interface ModelingStatusItem {
   Component: ComponentType<{ context: ModelingViewContext }>
 }
 export const modelingViewContract = defineContract({
+  modelingToolsValueSpec: appendValueSpec<ModelingToolDefinition>(
+    'modeling-view.tools'
+  ),
   modelingInteractionsValueSpec: appendValueSpec<ModelingInteractionDefinition>(
     'modeling-view.interactions'
   ),
@@ -57,7 +64,11 @@ export const modelingViewContract = defineContract({
   ),
 })
 export const {
+  modelingToolsValueSpec,
   modelingStatusItemsValueSpec,
   modelingInteractionsValueSpec,
   modelingInteractionViewsValueSpec,
 } = modelingViewContract
+
+/** A tool borrows the model currently owned by its view. */
+export type ModelingSceneAccess = KclSceneResource

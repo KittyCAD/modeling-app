@@ -1,6 +1,7 @@
 import type { SceneExecutionSettings } from '@src/lib/kcl/scene/executionSettings'
 import { trackSelectionModifiers } from '@src/lib/selectionModifiers'
 import { getResolvedTheme } from '@src/lib/theme'
+import { bindMachineDialogs } from '@src/lib/kcl/machine/dialogs'
 import { bindMachinePicking } from '@src/lib/kcl/machine/picking'
 import type { KeymapTree, KeymapScope } from '@src/registry/contracts/keymap'
 import {
@@ -298,6 +299,13 @@ export async function openMachineModelingOwner(
     }
     picking.attach()
     rollback.push(() => stopEngine?.(), stopCommands)
+    const dialogs = bindMachineDialogs(
+      context,
+      commands,
+      deps.userFeatures.has(EXPERIMENTAL_POINT_AND_CLICK_FLAG, false),
+      commandState
+    )
+    rollback.push(dialogs.dispose)
     const interaction: ModelingInteractionSession = {
       id: 'kcl.sketch',
       viewActive: computed(() => state.value.matches('sketchSolveMode')),
@@ -337,6 +345,7 @@ export async function openMachineModelingOwner(
       stopModifiers()
       // Stop document publication first. The legacy exit flow may finish native
       // draft cleanup, but cannot overwrite a newer canonical source snapshot.
+      dialogs.dispose()
       model.close()
       scene.sceneInfra.resetMouseListeners()
       try {
@@ -383,6 +392,7 @@ export async function openMachineModelingOwner(
       scene,
       model,
       pickingArgument: picking.argument,
+      dialogs,
       selection: picking.selection,
       keymapTree: deps.keymapTree,
       keymapScopes: deps.keymapScopes,
@@ -499,6 +509,30 @@ export function createMachineModelingHost(
           groupId: 'toolbar',
           name: TOOLBAR_COMMAND_IDS.modeling.sketch,
         },
+      })
+    },
+    openTool: async (id: string) => {
+      const context = getContext(),
+        current = owner.peek()
+      const definition = context.tools.definitions
+        .peek()
+        .find((tool) => tool.id === id)
+      if (!current || !definition) {
+        context.tools.error.value = new Error(
+          'Wait for the model before opening this command.'
+        )
+        return
+      }
+      if (!current.actor.getSnapshot().matches('idle')) {
+        context.tools.error.value = new Error(
+          'Exit the current interaction before opening a modeling command.'
+        )
+        return
+      }
+      current.commandSource.activate()
+      current.commands.send({
+        type: 'Find and select command',
+        data: { name: definition.name, groupId: 'modeling' },
       })
     },
     closeDialog: () => {
