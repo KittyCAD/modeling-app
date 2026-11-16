@@ -3,6 +3,12 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 import { queryModelingCommand } from '@src/lib/engineConnection/utils'
 
 type FramePlane = 'XY' | 'XZ' | 'YZ'
+export function getCircularFramePlane(normal: Point3d): FramePlane {
+  const axis = (['z', 'y', 'x'] as const).reduce((best, axis) =>
+    Math.abs(normal[axis]) > Math.abs(normal[best]) ? axis : best
+  )
+  return axis === 'z' ? 'XY' : axis === 'y' ? 'XZ' : 'YZ'
+}
 const subtract = (a: Point3d, b: Point3d): Point3d => ({
   x: a.x - b.x,
   y: a.y - b.y,
@@ -55,13 +61,9 @@ export function getCircularFrameGeometry(points: Point3d[]) {
   const radial = subtract(points[Math.floor(points.length / 2)], center)
   const radialLength = length(radial)
   if (!(radius > 0) || !(radialLength > 0)) return undefined
-  const axis = (['z', 'y', 'x'] as const).reduce((best, axis) =>
-    Math.abs(normal[axis]) > Math.abs(normal[best]) ? axis : best
-  )
-  const framePlane: FramePlane =
-    axis === 'z' ? 'XY' : axis === 'y' ? 'XZ' : 'YZ'
   return {
-    framePlane,
+    framePlane: getCircularFramePlane(normal),
+    center,
     normal,
     radius,
     radial: {
@@ -75,6 +77,11 @@ export function getCircularFrameGeometry(points: Point3d[]) {
 export type CircularFrameGeometry = NonNullable<
   ReturnType<typeof getCircularFrameGeometry>
 >
+
+export type CircularFaceBoundary = CircularFrameGeometry & {
+  closed: boolean
+  seam: boolean
+}
 
 export async function getCircularCurveGeometry(
   engine: Pick<ConnectionManager, 'sendSceneCommand'>,
@@ -120,20 +127,28 @@ export async function getCircularFrameGeometryForEntity(
   id: string,
   isEdge: boolean
 ): Promise<CircularFrameGeometry | undefined> {
+  return isEdge
+    ? getCircularCurveGeometry(engine, id)
+    : (await getCircularFaceBoundaries(engine, id))[0]
+}
+
+export async function getCircularFaceBoundaries(
+  engine: Pick<ConnectionManager, 'sendSceneCommand'>,
+  id: string
+): Promise<CircularFaceBoundary[]> {
   const query = (cmd: ModelingCmd) => queryModelingCommand(engine, cmd)
   const curve = async (edgeId: string) => {
     return getCircularCurveGeometry(engine, edgeId)
   }
   try {
-    if (isEdge) return await curve(id)
     const parent = await query({ type: 'entity_get_parent_id', entity_id: id })
-    if (parent?.type !== 'entity_get_parent_id') return undefined
+    if (parent?.type !== 'entity_get_parent_id') return []
     const body = parent.data.entity_id
     const children = await query({
       type: 'entity_get_all_child_uuids',
       entity_id: body,
     })
-    if (children?.type !== 'entity_get_all_child_uuids') return undefined
+    if (children?.type !== 'entity_get_all_child_uuids') return []
     const rims = await Promise.all(
       children.data.entity_ids.map(async (edgeId) => {
         const type = await query({ type: 'get_entity_type', entity_id: edgeId })
@@ -152,12 +167,20 @@ export async function getCircularFrameGeometryForEntity(
           !adjacent.data.faces.includes(id)
         )
           return undefined
-        return curve(edgeId)
+        const geometry = await curve(edgeId)
+        return (
+          geometry && {
+            ...geometry,
+            seam: adjacent.data.faces.every((face) => face === id),
+          }
+        )
       })
     )
-    return rims.find((rim) => rim !== undefined)
+    return rims.filter(
+      (rim): rim is NonNullable<typeof rim> => rim !== undefined
+    )
   } catch {
-    return undefined
+    return []
   }
 }
 

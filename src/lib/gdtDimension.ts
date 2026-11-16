@@ -1,14 +1,78 @@
 import type { ModelingCmd, Point3d } from '@kittycad/lib'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
+  getCircularFaceBoundaries,
   getCircularCurveGeometry,
   getCircularFrameGeometry,
 } from '@src/lib/gdtCircularFrame'
+import {
+  getFilletProfileGeometry,
+  getFilletProfileFrameGeometry,
+} from '@src/lib/gdtFilletFace'
+import type { ArtifactGraph } from '@src/lang/wasm'
 import { queryModelingCommand } from '@src/lib/engineConnection/utils'
 import { getEngineTopologyFallbackNormalized } from '@src/lib/primitiveBodySelection'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
 export type DimensionFunction = 'distance' | 'diameter' | 'radius'
+
+export async function getDimensionDetails(
+  selections: Selections,
+  engine: Pick<ConnectionManager, 'sendSceneCommand'>,
+  graph: ArtifactGraph
+) {
+  if (
+    selections.graphSelections.length + selections.otherSelections.length ===
+    1
+  ) {
+    const selected = selections.graphSelections[0],
+      primitive = selections.otherSelections[0]
+    const id =
+      selected?.engineEntityId ??
+      (selected?.entityRef?.type === 'face'
+        ? selected.entityRef.face_id
+        : selected?.artifact?.id) ??
+      (typeof primitive === 'object' &&
+      'type' in primitive &&
+      primitive.type === 'enginePrimitive'
+        ? primitive.entityId
+        : undefined)
+    const fillet = [selected?.artifact, id ? graph.get(id) : undefined].some(
+      (a) => a?.type === 'edgeCut' && a.subType === 'fillet'
+    )
+    if (
+      id &&
+      fillet &&
+      selected?.entityRef?.type !== 'edge' &&
+      selected?.artifact?.type !== 'edgeCutEdge'
+    ) {
+      const boundaries = await getCircularFaceBoundaries(engine, id)
+      const profile = getFilletProfileGeometry(boundaries)
+      if (profile)
+        return {
+          dimensionFunction: 'radius' as const,
+          geometry: await getFilletProfileFrameGeometry(
+            engine,
+            id,
+            profile,
+            boundaries
+          ),
+        }
+      const measurement = await getDimensionFunction(selections, engine)
+      return {
+        dimensionFunction:
+          measurement === 'distance'
+            ? ('distance' as const)
+            : ('radius' as const),
+        geometry: boundaries[0],
+      }
+    }
+  }
+  return {
+    dimensionFunction: await getDimensionFunction(selections, engine),
+    geometry: undefined,
+  }
+}
 
 /** Recover current topology only when the selected edge lacks a live reference. */
 export async function resolveDimensionSelections(

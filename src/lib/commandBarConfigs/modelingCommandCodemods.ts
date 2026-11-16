@@ -1,6 +1,6 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
-  getDimensionFunction,
+  getDimensionDetails,
   resolveDimensionSelections,
 } from '@src/lib/gdtDimension'
 import { getCircularFrameGeometryForEntity } from '@src/lib/gdtCircularFrame'
@@ -319,23 +319,26 @@ const distanceCodemod = defineModelingCodemod<
       kclManager.engineCommandManager
     )
     if (isErr(objects)) return objects
-    const dimensionFunction = await getDimensionFunction(
-      objects,
-      kclManager.engineCommandManager
-    )
+    const { dimensionFunction, geometry: filletGeometry } =
+      await getDimensionDetails(
+        objects,
+        kclManager.engineCommandManager,
+        kclManager.artifactGraph
+      )
     if (dimensionFunction !== 'distance') {
       const id = getEngineEntityIdsForGdtSelections(objects)[0]
       const picked =
         objects.graphSelections[0] ??
         objects.otherSelections.find(isEnginePrimitiveSelection)
       const geometry =
-        id && picked
+        filletGeometry ??
+        (id && picked
           ? await getCircularFrameGeometryForEntity(
               kclManager.engineCommandManager,
               id,
               isEdgeSelection(picked)
             )
-          : undefined
+          : undefined)
       const data = await withDefaultGdtFrameDefaults({
         data: { ...args, objects },
         engineCommandManager: kclManager.engineCommandManager,
