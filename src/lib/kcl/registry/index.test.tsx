@@ -1,3 +1,4 @@
+import { commandsExtension } from '@src/registry/extensions/commands'
 import { signal } from '@preact/signals-core'
 import '@src/lib/projectSession/next/testFeature'
 import { contribute, provide, Registry } from 'plankton'
@@ -66,6 +67,7 @@ it.each([false, true])(
     await registry.configure([
       editorsExtension,
       executorsExtension,
+      commandsExtension,
       kclExtension,
       [
         [provide(settingsService, settingsProvider)],

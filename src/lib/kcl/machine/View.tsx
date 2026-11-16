@@ -40,8 +40,12 @@ export function MachineModelingView({
   const container = useRef<HTMLDivElement>(null)
   const platform = usePlatform()
   const current = commands.context.selectedCommand
+  const ownsCommand = current?.machineActor === owner.actor
   const dialogOpen =
-    !commands.matches('Closed') && current && isModelingDialogCommand(current)
+    ownsCommand &&
+    !commands.matches('Closed') &&
+    current &&
+    isModelingDialogCommand(current)
   const settings = context.settings.current.value
   const selectionField = useCallback(
     (field: { name: string; arg: SelectionArgument } | undefined) => {
@@ -163,7 +167,7 @@ export function MachineModelingView({
           isStreamAcceptingInput={owner.scene.isConnected()}
           host={{
             toolbarConfig: owner.toolbarConfig,
-            registeredCommands: commands.context.commands,
+            registeredCommands: owner.commandDefinitions.value,
             activeDialogCommandKey: dialogOpen
               ? commandKey(current)
               : undefined,

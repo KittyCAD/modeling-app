@@ -1,4 +1,6 @@
 import type { SceneExecutionSettings } from '@src/lib/kcl/scene/executionSettings'
+import { trackSelectionModifiers } from '@src/lib/selectionModifiers'
+import { getResolvedTheme } from '@src/lib/theme'
 import { bindMachinePicking } from '@src/lib/kcl/machine/picking'
 import type { KeymapTree, KeymapScope } from '@src/registry/contracts/keymap'
 import {
@@ -13,7 +15,6 @@ import {
   type ReadonlySignal,
 } from '@preact/signals-core'
 import { createActor, waitFor, type SnapshotFrom } from 'xstate'
-import { useSelector } from '@xstate/react'
 import { KclManager, KclManagerEvents } from '@src/lang/KclManager'
 import type { ProjectSystemDeps } from '@src/lib/projectSession/project'
 import { createTextFileIO } from '@src/lib/projectSession/textFileIO'
@@ -23,17 +24,22 @@ import type { ModelingInteractionSession } from '@src/lib/kcl/interactions'
 import type { KclSceneResource } from '@src/lib/kcl/scene'
 import { modelingMachine } from '@src/machines/modelingMachine'
 import { bindModelingMachine } from '@src/machines/modelingMachineBinding'
-import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { modelingCommandsForMachineApi } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import { modelingStdLibCommandSummary } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
-import { registerMachineCommands } from '@src/lib/registerMachineCommands'
+import { createMachineCommands } from '@src/lib/registerMachineCommands'
+import type { ContextualCommandsService } from '@src/lib/commands/contextual'
 import {
   buildToolbarConfig,
+  modelingMachineStateToToolbarModeName,
+  toolbarModeNameToKeymapScope,
   isSketchToolbarTransitioning,
 } from '@src/lib/toolbar'
 import { bindEngineConnectionSubscriptions } from '@src/lib/scene/modelingMachineSubscriptions'
 import RustContext from '@src/lib/rustContext'
-import { cleanupSketchSolveGroup } from '@src/machines/sketchSolve/sketchSolveImpl'
+import {
+  refreshSketchSolveScale,
+  cleanupSketchSolveGroup,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import { MODE_MODELING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import type { CommandSystemService } from '@src/registry/contracts/commands'
@@ -48,6 +54,8 @@ import { isErr, reportRejection } from '@src/lib/trap'
 
 interface Dependencies {
   kclExecutionSettings: SceneExecutionSettings
+  commands: CommandSystemService
+  contextualCommands: ContextualCommandsService
   keymapTree: ReadonlySignal<KeymapTree>
   keymapScopes: ReadonlySignal<readonly KeymapScope[]>
   fileOperations: FileOperationsRegistryService
@@ -84,19 +92,8 @@ export async function openMachineModelingOwner(
   let published = false
   try {
     const manager = scene.machineInput.manager
-    const commandsActor = createActor(commandBarMachine, {
-      input: {
-        commands: [],
-        wasmInstancePromise: context.wasm,
-        machineManager: deps.machineManager,
-      },
-    }).start()
-    rollback.push(() => commandsActor.stop())
-    const commands: CommandSystemService = {
-      actor: commandsActor,
-      send: (event) => commandsActor.send(event),
-      useState: () => useSelector(commandsActor, (state) => state),
-    }
+    const commands = deps.commands
+    const commandsActor = commands.actor
     const rust = new RustContext(
       context.wasm,
       manager,
@@ -138,7 +135,12 @@ export async function openMachineModelingOwner(
       0,
       { document, sceneInfra: scene.sceneInfra, publishState: lease.publish }
     )
-    rollback.push(() => model.close())
+    rollback.push(() => {
+      model.close()
+      model.sceneEntitiesManager.dispose()
+    })
+    const stopModifiers = trackSelectionModifiers(model)
+    rollback.push(stopModifiers)
     model.adoptExecution(
       context.executor.editor.contents.peek(),
       ast,
@@ -224,6 +226,15 @@ export async function openMachineModelingOwner(
       () => subscription.unsubscribe(),
       () => stopChild?.()
     )
+    const stopTheme = scene.sceneInfra.themeChange.add(() => {
+      model.sceneEntitiesManager.updateSegmentBaseColor(
+        getResolvedTheme(scene.sceneInfra.theme)
+      )
+      const current = child.peek()?.context
+      if (current) refreshSketchSolveScale(current)
+      scene.sceneInfra.resumeRendering()
+    })
+    rollback.push(stopTheme)
     const done = (event: Event) =>
       lease.completed((event as CustomEvent).detail)
     model.addEventListener(KclManagerEvents.ExecutionDone, done)
@@ -234,41 +245,57 @@ export async function openMachineModelingOwner(
       getState: () => actor.getSnapshot(),
       acceptsPick: () => !scene.selection.internalPicking.peek(),
     })
-    commandsActor.send({
-      type: 'Add commands',
-      data: {
-        commands: [
-          ...createToolbarCommands(
-            () => model,
-            () => deps.userFeatures
-          ),
-          ...createAppCommands(() => model),
-        ],
-      },
-    })
-    const stopCommands = effect(() => {
+    const commonCommands = [
+      ...createToolbarCommands(
+        () => model,
+        () => deps.userFeatures
+      ),
+      ...createAppCommands(() => model),
+    ]
+    const commandDefinitions = computed(() => {
       void model.kclProgramVersionSignal.value
-      return registerMachineCommands(commandsActor, {
-        machineId: modelingMachine.id,
-        actor,
-        state: state.peek(),
-        send: (event) => actor.send(event),
-        commandBarConfig: modelingCommandsForMachineApi(
-          context.settings.current.value.app.machineApi.currentSignal.value
-        ),
-        getDefaultDescription: modelingStdLibCommandSummary,
-        scopes: [MODE_MODELING_COMMAND_SCOPE],
-        forceDisable:
-          context.executor.editor.readOnly.value ||
-          context.executor.output.value.running ||
-          model.isExecutingSignal.value ||
-          !scene.isConnected(),
-        showExperimentalCommands: deps.userFeatures.has(
-          EXPERIMENTAL_POINT_AND_CLICK_FLAG,
-          false
-        ),
-      })
+      return [
+        ...commonCommands,
+        ...createMachineCommands({
+          machineId: 'modeling',
+          actor,
+          state: state.value,
+          send: (event) => actor.send(event),
+          commandBarConfig: modelingCommandsForMachineApi(
+            context.settings.current.value.app.machineApi.currentSignal.value
+          ),
+          getDefaultDescription: modelingStdLibCommandSummary,
+          scopes: [MODE_MODELING_COMMAND_SCOPE],
+          forceDisable:
+            context.executor.editor.readOnly.value ||
+            context.executor.output.value.running ||
+            model.isExecutingSignal.value ||
+            !scene.isConnected(),
+          showExperimentalCommands: deps.userFeatures.has(
+            EXPERIMENTAL_POINT_AND_CLICK_FLAG,
+            false
+          ),
+        }),
+      ]
     })
+    const commandScope = computed(
+      () =>
+        toolbarModeNameToKeymapScope[
+          modelingMachineStateToToolbarModeName(state.value)
+        ]
+    )
+    const commandSource = deps.contextualCommands.register({
+      commands: commandDefinitions,
+      scopes: computed(() => [commandScope.value]),
+    })
+    const stopCommands = () => {
+      commandSource.dispose()
+      if (
+        commandsActor.getSnapshot().context.selectedCommand?.machineActor ===
+        actor
+      )
+        commands.send({ type: 'Close' })
+    }
     picking.attach()
     rollback.push(() => stopEngine?.(), stopCommands)
     const interaction: ModelingInteractionSession = {
@@ -306,6 +333,8 @@ export async function openMachineModelingOwner(
       stopCommands()
       stopEngine?.()
       stopChild?.()
+      stopTheme()
+      stopModifiers()
       // Stop document publication first. The legacy exit flow may finish native
       // draft cleanup, but cannot overwrite a newer canonical source snapshot.
       model.close()
@@ -334,10 +363,9 @@ export async function openMachineModelingOwner(
       subscription.unsubscribe()
       unbind()
       actor.stop()
-      commandsActor.stop()
       document.dispose()
-      model.sceneEntitiesManager.tearDownSketch({ removeAxis: true })
       cleanupSketchSolveGroup(scene.sceneInfra)
+      model.sceneEntitiesManager.dispose()
       scene.sceneInfra.resetMouseListeners()
       scene.sceneInfra.setSend(() => {})
       manager.modelingSend = () => {}
@@ -363,6 +391,8 @@ export async function openMachineModelingOwner(
       state,
       child,
       commands,
+      commandSource,
+      commandDefinitions,
       toolbarConfig: buildToolbarConfig(commands, {
         showExperimentalFeatures: deps.userFeatures.has(
           EXPERIMENTAL_POINT_AND_CLICK_FLAG,
@@ -471,7 +501,15 @@ export function createMachineModelingHost(
         },
       })
     },
-    closeDialog: () => owner.peek()?.commands.send({ type: 'Close' }),
+    closeDialog: () => {
+      const current = owner.peek()
+      if (
+        current &&
+        current.commands.actor.getSnapshot().context.selectedCommand
+          ?.machineActor === current.actor
+      )
+        current.commands.send({ type: 'Close' })
+    },
     dispose: () => {
       if (disposed) return retiring
       disposed = true
