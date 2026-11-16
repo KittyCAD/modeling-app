@@ -461,9 +461,9 @@ describe('ConnectionManager', () => {
     async (visible) => {
       const manager = createConnectionManager()
       addConnectedState(manager)
-      manager.connection!.deferredConnection = {
-        promise: Promise.resolve(),
-      } as Connection['deferredConnection']
+      const ready = promiseFactory<boolean>()
+      ready.resolve(true)
+      manager.connection!.deferredConnection = ready
       const send = vi.spyOn(manager, 'sendSceneCommand').mockResolvedValue(null)
       await manager.setHighlightEdges(true)
       await manager.setShowScaleGrid(visible)
