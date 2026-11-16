@@ -139,9 +139,10 @@ export async function createKclRuntime(
     )
   const execute = (snapshot: KclSourceSnapshot) =>
     enqueue(async () => {
-      // Interrupting an Effect cannot stop an already-running WASM Promise.
-      // `uninterruptible` keeps `enqueue` occupied until native work and command
-      // draining settle, so `dispose` cannot free the borrowed context early.
+      // The WASM Promise cannot be interrupted safely. Keep this Effect
+      // uninterruptible so `enqueue` waits for native execution to settle before
+      // `dispose` frees the context. Successful runs also drain engine commands;
+      // rejected runs go directly to error handling without that drain.
       const exit = await Effect.runPromiseExit(
         Effect.acquireUseRelease(
           Effect.sync(() => {
