@@ -29,6 +29,10 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct CodeRef {
     pub range: SourceRange,
+    /// Original feature location when range navigates to an import statement.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub definition_range: Option<SourceRange>,
     pub node_path: NodePath,
     // TODO: We should implement this in Rust.
     #[serde(default, serialize_with = "serialize_dummy_path_to_node")]
@@ -40,6 +44,7 @@ impl CodeRef {
     pub fn placeholder(range: SourceRange) -> Self {
         Self {
             range,
+            definition_range: None,
             node_path: Default::default(),
             path_to_node: Vec::new(),
         }
@@ -818,6 +823,22 @@ impl ArtifactGraph {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn code_refs_keep_definition_range_optional() {
+        let original = CodeRef::placeholder(SourceRange::default());
+        let json = serde_json::to_value(&original).unwrap();
+        assert!(json.get("definitionRange").is_none());
+        assert_eq!(serde_json::from_value::<CodeRef>(json).unwrap(), original);
+
+        let imported = CodeRef {
+            definition_range: Some([10, 20, 1].into()),
+            ..original
+        };
+        let json = serde_json::to_value(&imported).unwrap();
+        assert_eq!(json["definitionRange"], serde_json::json!([10, 20, 1]));
+        assert_eq!(serde_json::from_value::<CodeRef>(json).unwrap(), imported);
+    }
 
     #[test]
     fn default_artifact_graph_json_round_trip() {

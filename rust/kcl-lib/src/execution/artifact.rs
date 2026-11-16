@@ -443,15 +443,21 @@ fn code_ref_for_range(
     cached_body_items: usize,
     range: SourceRange,
     import_code_refs: &AHashMap<ModuleId, ImportCodeRef>,
-) -> (SourceRange, NodePath) {
-    if let Some(code_ref) = import_code_refs.get(&range.module_id()) {
-        return (code_ref.range, code_ref.node_path.clone());
+) -> CodeRef {
+    let (navigation_range, node_path) = if let Some(code_ref) = import_code_refs.get(&range.module_id()) {
+        (code_ref.range, code_ref.node_path.clone())
+    } else {
+        (
+            range,
+            NodePath::from_range(programs, cached_body_items, range).unwrap_or_default(),
+        )
+    };
+    CodeRef {
+        range: navigation_range,
+        definition_range: (navigation_range != range).then_some(range),
+        node_path,
+        path_to_node: Vec::new(),
     }
-
-    (
-        range,
-        NodePath::from_range(programs, cached_body_items, range).unwrap_or_default(),
-    )
 }
 
 /// Build the artifact graph from the artifact commands and the responses.  The
@@ -546,38 +552,24 @@ fn fill_in_node_paths(
 ) {
     match artifact {
         Artifact::StartSketchOnFace(face) if face.code_ref.node_path.is_empty() => {
-            let (range, node_path) =
-                code_ref_for_range(programs, cached_body_items, face.code_ref.range, import_code_refs);
-            face.code_ref.range = range;
-            face.code_ref.node_path = node_path;
+            face.code_ref = code_ref_for_range(programs, cached_body_items, face.code_ref.range, import_code_refs);
         }
         Artifact::StartSketchOnPlane(plane) if plane.code_ref.node_path.is_empty() => {
-            let (range, node_path) =
-                code_ref_for_range(programs, cached_body_items, plane.code_ref.range, import_code_refs);
-            plane.code_ref.range = range;
-            plane.code_ref.node_path = node_path;
+            plane.code_ref = code_ref_for_range(programs, cached_body_items, plane.code_ref.range, import_code_refs);
         }
         Artifact::SketchBlock(block) if block.code_ref.node_path.is_empty() => {
-            let (range, node_path) =
-                code_ref_for_range(programs, cached_body_items, block.code_ref.range, import_code_refs);
-            block.code_ref.range = range;
-            block.code_ref.node_path = node_path;
+            block.code_ref = code_ref_for_range(programs, cached_body_items, block.code_ref.range, import_code_refs);
         }
         Artifact::SketchBlockConstraint(constraint) if constraint.code_ref.node_path.is_empty() => {
             constraint.code_ref.node_path =
                 NodePath::from_range(programs, cached_body_items, constraint.code_ref.range).unwrap_or_default();
         }
         Artifact::GdtAnnotation(annotation) if annotation.code_ref.node_path.is_empty() => {
-            let (range, node_path) =
+            annotation.code_ref =
                 code_ref_for_range(programs, cached_body_items, annotation.code_ref.range, import_code_refs);
-            annotation.code_ref.range = range;
-            annotation.code_ref.node_path = node_path;
         }
         Artifact::NamedView(view) if view.code_ref.node_path.is_empty() => {
-            let (range, node_path) =
-                code_ref_for_range(programs, cached_body_items, view.code_ref.range, import_code_refs);
-            view.code_ref.range = range;
-            view.code_ref.node_path = node_path;
+            view.code_ref = code_ref_for_range(programs, cached_body_items, view.code_ref.range, import_code_refs);
         }
         _ => {}
     }
@@ -1392,17 +1384,8 @@ fn artifacts_to_update(
     let uuid = artifact_command.cmd_id;
     let response = responses.get(&uuid);
 
-    // TODO: Build path-to-node from artifact_command source range.  Right now,
-    // we're serializing an empty array, and the TS wrapper fills it in with the
-    // correct value based on NodePath.
-    let path_to_node = Vec::new();
     let range = artifact_command.range;
-    let (code_ref_range, node_path) = code_ref_for_range(programs, cached_body_items, range, import_code_refs);
-    let code_ref = CodeRef {
-        range: code_ref_range,
-        node_path,
-        path_to_node,
-    };
+    let code_ref = code_ref_for_range(programs, cached_body_items, range, import_code_refs);
 
     let id = ArtifactId::new(uuid);
     let cmd = &artifact_command.command;
