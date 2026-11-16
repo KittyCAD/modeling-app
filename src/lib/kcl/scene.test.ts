@@ -4,7 +4,10 @@ import { emptyExecState } from '@src/lang/wasm'
 import { createKclRuntime } from '@src/lib/kcl/runtime'
 import { openKclScene } from '@src/lib/kcl/scene'
 import { createScenePresentationPreferences } from '@src/lib/kcl/presentationPreferences'
-import { connectScene, type SceneConnection } from '@src/lib/kcl/scene/connection'
+import {
+  connectScene,
+  type SceneConnection,
+} from '@src/lib/kcl/scene/connection'
 import { EngineConnectionEvents } from '@src/lib/engineConnection/utils'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { Themes } from '@src/lib/theme'
@@ -277,6 +280,8 @@ it.each(['local', 'streamed'] as const)(
     if (scene instanceof Error) return expect.fail(scene.message)
     const infra = owned.infra[0]
     try {
+      // Overlay contrast must be ready before opening sketch or awaiting camera updates.
+      expect(infra.theme).toBe(Themes.Dark)
       await scene.applySettings()
       expect(infra.theme).toBe(Themes.Dark)
       infra.resumeRendering.mockClear()
