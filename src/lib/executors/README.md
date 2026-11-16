@@ -28,6 +28,8 @@ one tab leaves the document and its remaining contexts alive. Closing the last
 view disposes the document and interrupts its executors.
 
 `Executor.refresh()` retries the current editor and capability inputs for that
-executor without editing the document or rerunning sibling executors. Scene
-recovery uses it after acquiring a fresh connection, so normal source loading and
-error publication handle the retry. Calls after disposal are ignored.
+executor without editing the document or rerunning sibling executors. KCL scene
+recovery starts opening a replacement connection and calls `refresh` to load
+current sources. Source capture can run during startup; the KCL session waits for
+the connection and native runtime before executing. Calls after disposal are
+ignored.
