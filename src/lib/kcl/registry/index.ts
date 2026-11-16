@@ -1,5 +1,6 @@
 import { kclExecutionSettingsService } from '@src/lib/kcl/scene/executionSettingsContract'
 import { kclExecutionSettingsRegistryItem } from '@src/lib/kcl/scene/executionSettingsRegistry'
+import { streamedSketchPresentation } from '@src/lib/kcl/sketch/streamPresentation'
 import {
   keymapService,
   keymapScopesValueSpec,
@@ -133,6 +134,7 @@ const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
     id: 'kcl',
     uses: [projectSourcesExtension],
     provides: [
+      provide(modelingInteractionViewsValueSpec, streamedSketchPresentation),
       ...defaultModelingStatusItems.map((item) =>
         provide(modelingStatusItemsValueSpec, item)
       ),
