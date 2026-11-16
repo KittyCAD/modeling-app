@@ -14,6 +14,7 @@ import executorsExtension from '@src/lib/executors/registry'
 import { executorsService } from '@src/lib/executors/registry/contract'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import kclExtension from '@src/lib/kcl/registry'
+import { kclExecutionSettingsService } from '@src/lib/kcl/scene/executionSettingsContract'
 import type { KclSceneResource } from '@src/lib/kcl/scene'
 import { openKclScene } from '@src/lib/kcl/scene'
 import { createSettings } from '@src/lib/settings/initialSettings'
@@ -40,6 +41,7 @@ afterEach(() => vi.restoreAllMocks())
 it.each([false, true])(
   'binds classified buffers to independent Modeling scenes (local rendering: %s)',
   async (local) => {
+    vi.mocked(openKclScene).mockClear()
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(640)
     vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(360)
     const resources: KclSceneResource[] = []
@@ -108,6 +110,14 @@ it.each([false, true])(
         </>
       )
       await vi.waitFor(() => expect(resources).toHaveLength(2))
+      // All views consume the same registered policy as the legacy file route.
+      const nativeSettings = registry.get(kclExecutionSettingsService)
+      for (const [options] of vi.mocked(openKclScene).mock.calls) {
+        expect(
+          options.nativeSettings === nativeSettings,
+          "Modeling views must use the registry's shared execution settings"
+        ).toBe(true)
+      }
       await vi.waitFor(() =>
         expect(
           registry
