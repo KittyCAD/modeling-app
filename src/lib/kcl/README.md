@@ -1,9 +1,9 @@
 # KCL editors
 
 This package adds KCL syntax to Code views and a Modeling mode to project-owned
-editors. Code and Modeling work on the same live document: editing either
-presentation updates the buffer, and execution uses its current contents without
-waiting for a save. These contributions require `zds_project_shell_refactor`.
+editors. A Code view edits the live document; a Modeling view executes its current
+contents and presents the resulting model without waiting for a save. These
+contributions require `zds_project_shell_refactor`.
 
 Each Modeling view has its own model and camera. Two views of one document share
 text while keeping their engine connections and native contexts independent.
@@ -23,7 +23,7 @@ The registry contribution connects three parts:
    rendering. Switching tabs or remounting React attaches the existing session.
 
 The [executor guide](../executors/README.md) describes scheduling and output.
-[Scene settings](../scene/README.md#shared-execution-settings) explains how a
+[Scene settings](scene/README.md#kcl-refresh-policy) explains how a
 setting opts into execution refresh.
 
 ## Ownership and lifetime
@@ -43,10 +43,12 @@ finish opening after their owner has closed.
 
 Connection progress uses the shared `Loading` view. A connection failure displays
 `ConnectionRecovery` with a Reconnect action. Manual retry and returning focus to
-a failed or stale mounted scene use the same recovery path: open a fresh
-connection, then refresh that executor from current sources. Each attempt owns
-its callbacks, so late failures cannot replace a newer connection. KCL execution
-errors are reported separately from connection failures.
+a failed or stale mounted scene use the same recovery path: start opening a fresh
+connection and refresh that executor from current sources. Source capture can run
+while the connection opens; execution waits until the connection and native
+runtime are ready. Each attempt owns its callbacks, so late failures cannot
+replace a newer connection. KCL execution errors are reported separately from
+connection failures.
 
 ## Rendering
 
@@ -59,12 +61,13 @@ Both presentations use the application's `ConnectionManager` and camera controls
 Native execution applies KCL execution inputs contributed through the registry.
 [`presentationPreferences.ts`](presentationPreferences.ts) groups the camera,
 appearance, local-renderer, and unit inputs by consumer. Renderer-only updates
-leave camera controls and the streamed connection unchanged. Execution, native export, and scene
-rebuilds share a queue so disposal can wait for borrowed native memory.
+leave camera controls and the streamed connection unchanged. Execution, native
+export, and scene rebuilds share a queue so disposal can wait for borrowed native
+memory.
 The renderer choice is captured when the scene opens; reopen the Modeling view
 after changing it.
 
-The [scene boundary](../scene/README.md) describes the shared host and legacy
+The [scene boundary](scene/README.md) describes the shared host and legacy
 adapters. Zoo-web-view remains the intended presentation integration; the
 [scene-host ADR](../../dev-docs/adr/0001-app-owned-scene-host.md) records that
 boundary and its ownership decisions.
