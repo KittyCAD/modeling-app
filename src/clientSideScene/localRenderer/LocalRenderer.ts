@@ -32,7 +32,6 @@ import { KclManagerEvents } from '@src/lang/KclManager'
 import { artifactToEntityRef } from '@src/lang/queryAst'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { DprDetector } from '@src/lib/DprDetector'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { type ResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
@@ -182,6 +181,12 @@ export class LocalRenderer {
   private readonly disposers: (() => void)[] = []
   private animationFrameId = -1
   private currentModel: Object3D | null = null
+  private previewCrossfade: {
+    canvas: HTMLCanvasElement
+    animation: Animation
+  } | null = null
+  private executionZoomRevision: number
+  private firstExecutionFitPending = true
   private pickingSuspendedForPreview = false
   private nativeFinalCaptureVersion: number | null = null
   private nativePreviewWorker: Worker | null = null
@@ -206,8 +211,6 @@ export class LocalRenderer {
   private failedPreviewVersion: number | null = null
   /** The engine scene generation of the model on screen, once it has loaded. */
   private loadedSceneGeneration: number | null = null
-  /** A camera reset waiting for the next model. The first model always gets one. */
-  private cameraResetPending = true
   private camera: PerspectiveCamera | OrthographicCamera | null = null
   private ambientOcclusionRadius = 0.01
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
@@ -238,6 +241,8 @@ export class LocalRenderer {
     this.container = container
     this.kclManager = kclManager
     this.activeFilePath = kclManager.path
+    this.executionZoomRevision =
+      kclManager.sceneInfra.camControls.zoomInteractionRevision
     this.settings = {
       theme: props.theme,
       enableSSAO: props.enableSSAO,
@@ -262,6 +267,9 @@ export class LocalRenderer {
     })
 
     this.disposers.push(() => this.stopNativePreviewWorker())
+    this.disposers.push(() =>
+      kclManager.sceneInfra.camControls.cancelZoomToFit()
+    )
     this.container.style.opacity = '0'
     kclManager.addEventListener(
       KclManagerEvents.ExecutionDone,
@@ -297,6 +305,10 @@ export class LocalRenderer {
           // A new execution invalidates exports, GLB parses, picks and engine
           // queries still in flight.
           this.cancelDeferredPreview()
+          kclManager.sceneInfra.camControls.cancelZoomToFit()
+          this.executionZoomRevision =
+            kclManager.sceneInfra.camControls.zoomInteractionRevision
+          this.firstExecutionFitPending = true
           this.failedPreviewVersion = null
           this.nativeFinalExportFailed = false
           this.pickingSuspendedForPreview = false
@@ -1126,7 +1138,61 @@ export class LocalRenderer {
     return bounds.isEmpty() ? undefined : gltfToEngineBounds(bounds)
   }
 
+  private capturePreviewFrame(): HTMLCanvasElement | undefined {
+    if (
+      !this.executionPreviewModel ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    )
+      return
+    const source = this.gpu?.renderer.domElement
+    if (!source) return
+    const canvas = document.createElement('canvas')
+    canvas.width = source.width
+    canvas.height = source.height
+    const context = canvas.getContext('2d')
+    if (!context) return
+    try {
+      this.render()
+      context.drawImage(source, 0, 0)
+      return canvas
+    } catch (error) {
+      console.warn('[Local renderer preview] Crossfade capture skipped', error)
+      return
+    }
+  }
+
+  private clearPreviewCrossfade() {
+    const fade = this.previewCrossfade
+    this.previewCrossfade = null
+    if (fade) {
+      fade.animation.onfinish = null
+      fade.animation.cancel()
+      fade.canvas.remove()
+      fade.canvas.width = 0
+      fade.canvas.height = 0
+    }
+  }
+
+  private startPreviewCrossfade(canvas?: HTMLCanvasElement) {
+    if (!canvas) return
+    canvas.style.cssText =
+      'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1'
+    canvas.setAttribute('aria-hidden', 'true')
+    this.container.append(canvas)
+    const animation = canvas.animate([{ opacity: 1 }, { opacity: 0 }], {
+      duration: 150,
+      easing: 'ease-in-out',
+      fill: 'forwards',
+    })
+    const fade = { canvas, animation }
+    this.previewCrossfade = fade
+    animation.onfinish = () => {
+      if (this.previewCrossfade === fade) this.clearPreviewCrossfade()
+    }
+  }
+
   private clearExecutionPreview() {
+    this.clearPreviewCrossfade()
     this.nativePreviewNotice?.remove()
     this.nativePreviewNotice = null
     delete this.container.dataset.executionPreview
@@ -1319,6 +1385,7 @@ export class LocalRenderer {
       if (this.currentModel) this.currentModel.visible = false
       this.gpu?.scene.add(model)
       this.updateAmbientOcclusionScale(new Box3().setFromObject(model))
+      this.fitCameraToModel()
       this.invalidateBaseRender()
       if (final) {
         this.loadedSceneGeneration = null
@@ -1559,6 +1626,10 @@ export class LocalRenderer {
   private readonly onFileChanged = () => {
     if (this.activeFilePath === this.kclManager.path) return
     this.activeFilePath = this.kclManager.path
+    this.kclManager.sceneInfra.camControls.cancelZoomToFit()
+    this.firstExecutionFitPending = true
+    this.executionZoomRevision =
+      this.kclManager.sceneInfra.camControls.zoomInteractionRevision
     this.executionVersion += 1
     this.failedPreviewVersion = null
     this.cancelDeferredPreview()
@@ -1720,7 +1791,7 @@ export class LocalRenderer {
       this.pickingSuspendedForPreview = false
       this.loadedSceneGeneration = sceneGeneration
       this.rebuildSelectionTargets()
-      this.resetCameraIfPending()
+      this.fitCameraToModel()
       this.onModelLoadSettled?.(true)
       return
     }
@@ -1764,6 +1835,7 @@ export class LocalRenderer {
       }
 
       this.stopNativePreviewWorker()
+      const previewFrame = this.capturePreviewFrame()
       this.clearModel()
 
       assignFaceUuids(gltf)
@@ -1785,7 +1857,8 @@ export class LocalRenderer {
       this.rebuildSelectionTargets()
       const bounds = new Box3().setFromObject(gltf.scene)
       this.updateAmbientOcclusionScale(bounds)
-      this.resetCameraIfPending()
+      this.fitCameraToModel()
+      this.startPreviewCrossfade(previewFrame)
       this.invalidateBaseRender()
       this.pickingSuspendedForPreview = false
       this.loadedSceneGeneration = sceneGeneration
@@ -1813,34 +1886,26 @@ export class LocalRenderer {
     this.onModelLoadSettled?.()
   }
 
-  /**
-   * The reset after an execution, once its model is on screen. A failed
-   * execution loads no model, so its reset waits for the next one.
-   */
   resetCameraAfterModelLoad() {
-    if (this.isLoadedSceneCurrent()) {
-      this.resetCamera()
-    } else {
-      this.cameraResetPending = true
-    }
+    if (this.isLoadedSceneCurrent()) this.fitCameraToModel()
   }
 
-  /**
-   * Also stands in for the reset after opening a project, which local mode
-   * skips because the model is not loaded yet.
-   */
-  private resetCameraIfPending() {
-    if (this.cameraResetPending) {
-      this.cameraResetPending = false
-      this.resetCamera()
-    }
-  }
-
-  private resetCamera() {
-    resetCameraPosition({
-      sceneInfra: this.kclManager.sceneInfra,
-      settingsActor: this.kclManager.systemDeps.settings,
-    }).catch(reportRejection)
+  private fitCameraToModel() {
+    if (
+      this.kclManager.sceneInfra.camControls.zoomInteractionRevision !==
+      this.executionZoomRevision
+    )
+      return
+    if (!this.getFitBounds()) return
+    const firstFit = this.firstExecutionFitPending
+    this.firstExecutionFitPending = false
+    this.kclManager.sceneInfra.camControls
+      .zoomToFit({
+        padding: 0.1,
+        duration: firstFit ? 0 : 100,
+        minScaleChange: firstFit ? 0 : 0.5,
+      })
+      .catch(reportRejection)
   }
 }
 

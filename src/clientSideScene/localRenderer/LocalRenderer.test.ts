@@ -33,17 +33,14 @@ vi.mock('@src/lib/settings/settingsUtils', () => ({
   jsAppSettings: () => ({ settings: { modeling: { base_unit: 'mm' } } }),
 }))
 vi.mock('@src/lib/trap', () => ({ reportRejection: vi.fn() }))
-vi.mock('@src/lib/resetCameraPosition', () => ({
-  resetCameraPosition: vi.fn(async () => {}),
-}))
 
 import { LocalRenderer } from '@src/clientSideScene/localRenderer/LocalRenderer'
 import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type { Artifact } from '@src/lang/wasm'
 
 // Exercise the real export/GLTFLoader lifecycle without requesting a GPU device.
 type RendererInternals = {
+  capturePreviewFrame(): HTMLCanvasElement | undefined
   initialize(): Promise<void>
   scheduleRender(): void
   gpu: FakeGpu | null
@@ -159,6 +156,9 @@ function fixture(
         hoverPickingDisabled: false,
         target: new Vector3(),
         onCameraChange: vi.fn(),
+        zoomToFit: vi.fn(async () => {}),
+        cancelZoomToFit: vi.fn(),
+        zoomInteractionRevision: 0,
       },
     },
   })
@@ -232,9 +232,6 @@ describe('local GLB loading', () => {
     vi.spyOn(prototype, 'scheduleRender').mockImplementation(() => {})
     vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
     vi.spyOn(console, 'warn').mockImplementation(() => {})
-    // The unit project keeps mock calls between tests, which run shuffled, so
-    // clear the camera reset mock.
-    vi.mocked(resetCameraPosition).mockClear()
   })
   afterEach(() => {
     vi.restoreAllMocks()
@@ -453,11 +450,57 @@ describe('local GLB loading', () => {
     expect(mesh.material).toBeInstanceOf(MeshStandardNodeMaterial)
     expect(mesh.material.metalness).toBe(0.3)
     expect(mesh.material.roughness).toBe(0.4)
-    expect(resetCameraPosition).toHaveBeenCalledExactlyOnceWith({
-      sceneInfra: f.manager.sceneInfra,
-      settingsActor: f.manager.systemDeps.settings,
+    expect(
+      f.manager.sceneInfra.camControls.zoomToFit
+    ).toHaveBeenCalledExactlyOnceWith({
+      padding: 0.1,
+      duration: 0,
+      minScaleChange: 0,
     })
     expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
+    f.renderer.dispose()
+  })
+
+  it('crossfades for 150 ms and cancels the captured preview when a new execution starts', async () => {
+    const f = fixture()
+    const frame = document.createElement('canvas')
+    const animation = { cancel: vi.fn(), onfinish: null }
+    const animate = vi.fn(() => animation as unknown as Animation)
+    frame.animate = animate
+    vi.spyOn(f.state, 'capturePreviewFrame').mockReturnValue(frame)
+    f.done()
+    await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+    expect(frame.parentElement).not.toBeNull()
+    expect(animate).toHaveBeenCalledWith([{ opacity: 1 }, { opacity: 0 }], {
+      duration: 150,
+      easing: 'ease-in-out',
+      fill: 'forwards',
+    })
+    f.manager.isExecutingSignal.value = true
+    expect(frame.parentElement).toBeNull()
+    expect(animation.cancel).toHaveBeenCalledOnce()
+    f.renderer.dispose()
+  })
+
+  it('honours manual zoom through final loading and resets takeover on the next execution', async () => {
+    const f = fixture()
+    f.manager.isExecutingSignal.value = true
+    f.manager.sceneInfra.camControls.zoomInteractionRevision += 1
+    f.done()
+    await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+    expect(f.manager.sceneInfra.camControls.zoomToFit).not.toHaveBeenCalled()
+    f.manager.isExecutingSignal.value = true
+    f.done()
+    await vi.waitFor(() =>
+      expect(f.onModelLoadSettled).toHaveBeenCalledTimes(2)
+    )
+    expect(
+      f.manager.sceneInfra.camControls.zoomToFit
+    ).toHaveBeenCalledExactlyOnceWith({
+      padding: 0.1,
+      duration: 0,
+      minScaleChange: 0,
+    })
     f.renderer.dispose()
   })
 
@@ -629,7 +672,13 @@ describe('local GLB loading', () => {
     const onmessage = worker.onmessage
     if (!onmessage) throw new Error('Missing worker callback')
     onmessage(result)
-    expect(resetCameraPosition).not.toHaveBeenCalled()
+    expect(
+      f.manager.sceneInfra.camControls.zoomToFit
+    ).toHaveBeenCalledExactlyOnceWith({
+      padding: 0.1,
+      duration: 0,
+      minScaleChange: 0,
+    })
     expect(f.manager.rustContext.export).toHaveBeenCalledOnce()
     expect(f.state.executionPreviewModel).not.toBeNull()
     expect(f.state.nativePreviewNotice?.textContent).toBe(
@@ -641,10 +690,14 @@ describe('local GLB loading', () => {
     await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
     expect(f.state.executionPreviewModel).toBeNull()
     expect(f.state.nativePreviewNotice).toBeNull()
-    expect(resetCameraPosition).toHaveBeenCalledExactlyOnceWith({
-      sceneInfra: f.manager.sceneInfra,
-      settingsActor: f.manager.systemDeps.settings,
-    })
+    expect(f.manager.sceneInfra.camControls.zoomToFit).toHaveBeenNthCalledWith(
+      2,
+      {
+        padding: 0.1,
+        duration: 100,
+        minScaleChange: 0.5,
+      }
+    )
     expect(f.onModelLoadSettled).toHaveBeenCalledWith(true)
     onmessage(result)
     expect(f.state.executionPreviewModel).toBeNull()
