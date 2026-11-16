@@ -61,6 +61,12 @@ test('harness waits for usable modeling content', async ({
   let report: InteractionReport
   try {
     for (const { definition, selector, control } of delayedContent) {
+      if (definition.id === interactions.sketchGroupExpand.id) {
+        const body = page
+          .getByRole('button', { name: 'Toggle body features', exact: true })
+          .first()
+        if (await body.isVisible()) await body.click()
+      }
       // Delay the real content without replacing its UI or event handlers.
       const style = await page.addStyleTag({
         content: `${selector} { visibility: hidden !important; }`,
