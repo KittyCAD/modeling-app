@@ -413,6 +413,15 @@ export function createCloudProjectRuntime(
       return Promise.reject(
         new Error('Cloud snapshot needs reconciliation. Retry before editing.')
       )
+    if (
+      project.remote.access?.can_edit === false &&
+      (persist || reportSaveFailure)
+    ) {
+      const error = new Error(
+        'This project is read-only. Create an editable copy in another library.'
+      )
+      return Promise.reject(error)
+    }
     const generation = project.generation
     pendingRequests += 1
     const result = project.queue
@@ -894,6 +903,8 @@ export function createCloudProjectRuntime(
           )
         )
     ),
+    isReadOnlyProject: (id: string) =>
+      opened.get(id)?.remote.access?.can_edit === false,
     stageThumbnail: async (path: string, bytes: Uint8Array) => {
       if (isOffline()) return
       const id = idFor(path)
@@ -902,6 +913,7 @@ export function createCloudProjectRuntime(
         return Promise.reject(
           new Error('Cloud project is not open for this account.')
         )
+      if (project.remote.access?.can_edit === false) return
       if (project.needsReconciliation)
         return Promise.reject(new Error('Cloud snapshot is being reconciled.'))
       clearThumbnail(id)

@@ -127,7 +127,10 @@ export default defineFactory({
     })
     const projectInfo = async (id: string) => {
       const path = await cloud().openProject(id)
-      const project = await getProjectInfo(operations(), path, await wasm())
+      const project = await getProjectInfo(operations(), path, await wasm(), {
+        createMissingEntrypoint: false,
+        readOnly: cloud().isReadOnlyProject(id),
+      })
       return {
         ...project,
         cloudProjectId: id,
@@ -265,8 +268,7 @@ export default defineFactory({
           },
         },
         cloneProjectFrom: {
-          canCloneProject: ({ project }) =>
-            Boolean(project.remoteProjectId && project.readWriteAccess),
+          canCloneProject: ({ project }) => Boolean(project.remoteProjectId),
           run: async ({ project }) => {
             if (!project.remoteProjectId) return undefined
             const info = await projectInfo(project.remoteProjectId)

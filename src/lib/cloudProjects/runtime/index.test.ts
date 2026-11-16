@@ -1251,6 +1251,30 @@ describe.each([
     ])
   })
 
+  it('rejects read-only edits before changing files and leaves snapshots available for cloning', async () => {
+    const { fs } = setup()
+    vi.mocked(api.getRemoteProject).mockResolvedValue({
+      ...remote,
+      access: {
+        can_edit: false,
+        can_delete: false,
+        can_manage_organization: false,
+        scope: 'organization',
+      },
+    })
+    const root = await fs.openProject('one')
+    await fs.refreshProject('one')
+    const before = await fs.snapshot('one')
+    await expect(
+      fs.writeFile(paths.join(root, 'main.kcl'), encoder.encode('unsaved'))
+    ).rejects.toThrow('read-only')
+    expect(await fs.snapshot('one')).toEqual(before)
+    expect(fs.isReadOnlyProject('one')).toBe(true)
+    expect(fs.saves.value.get('one')?.state).toBe('saved')
+    await fs.refreshProject('one')
+    expect(api.updateRemoteProject).not.toHaveBeenCalled()
+  })
+
   it('rejects stale-account reads, mutations, and deletion', async () => {
     let account = 'first'
     const { fs } = setup(() => account)
