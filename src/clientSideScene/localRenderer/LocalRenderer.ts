@@ -740,10 +740,8 @@ export class LocalRenderer {
     this.camera.position.copy(position)
     this.camera.up.copy(up)
     // Preserve the shared clip range, including a negative orthographic near plane.
-    this.camera.near =
-      sharedCamera.near * ENGINE_MILLIMETERS_TO_GLTF_METERS
-    this.camera.far =
-      sharedCamera.far * ENGINE_MILLIMETERS_TO_GLTF_METERS
+    this.camera.near = sharedCamera.near * ENGINE_MILLIMETERS_TO_GLTF_METERS
+    this.camera.far = sharedCamera.far * ENGINE_MILLIMETERS_TO_GLTF_METERS
 
     if (
       sharedCamera instanceof PerspectiveCamera &&
@@ -757,12 +755,9 @@ export class LocalRenderer {
       sharedCamera instanceof OrthographicCamera &&
       this.camera instanceof OrthographicCamera
     ) {
-      this.camera.left =
-        sharedCamera.left * ENGINE_MILLIMETERS_TO_GLTF_METERS
-      this.camera.right =
-        sharedCamera.right * ENGINE_MILLIMETERS_TO_GLTF_METERS
-      this.camera.top =
-        sharedCamera.top * ENGINE_MILLIMETERS_TO_GLTF_METERS
+      this.camera.left = sharedCamera.left * ENGINE_MILLIMETERS_TO_GLTF_METERS
+      this.camera.right = sharedCamera.right * ENGINE_MILLIMETERS_TO_GLTF_METERS
+      this.camera.top = sharedCamera.top * ENGINE_MILLIMETERS_TO_GLTF_METERS
       this.camera.bottom =
         sharedCamera.bottom * ENGINE_MILLIMETERS_TO_GLTF_METERS
       this.camera.zoom = sharedCamera.zoom
