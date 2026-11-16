@@ -1,3 +1,4 @@
+import { createEntityStyling } from '@src/lib/scene/entityStyling'
 import { createModelingTools } from '@src/lib/kcl/modelingTools'
 import { defaultModelingTools } from '@src/lib/kcl/toolDefinitions'
 import type { ScenePresentation } from '@src/lib/kcl/scene/connection'
@@ -48,7 +49,9 @@ export function modelingTestContext(
     presentation === 'local' ? 'separate' : 'selection'
   )
   selection.setModel({ sceneId: Symbol(), executionId: Symbol() })
+  const styling = createEntityStyling()
   const resource = {
+    entityStyling: styling.service,
     presentation,
     element: globalThis.document.createElement('div'),
     selection,
@@ -127,6 +130,7 @@ export function modelingTestContext(
       context.tools.dispose()
       context.interactions.dispose()
       selection.dispose()
+      styling.dispose()
       document.dispose()
     },
   }

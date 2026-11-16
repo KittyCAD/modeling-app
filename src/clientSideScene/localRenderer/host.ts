@@ -1,3 +1,4 @@
+import type { EntityStyleGroup } from '@src/lib/scene/entityStyling'
 import type { EntityType } from '@kittycad/lib'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -8,6 +9,7 @@ import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 /** Execution and interaction inputs consumed by the local presentation, independent of editor ownership. */
 export interface LocalRendererHost {
+  readonly entityStyles?: ReadonlySignal<readonly EntityStyleGroup[]>
   readonly executionEvents: Pick<
     EventTarget,
     'addEventListener' | 'removeEventListener'

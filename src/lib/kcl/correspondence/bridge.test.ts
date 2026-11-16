@@ -6,8 +6,8 @@ import { createExecutorOutput } from '@src/lib/executors/output'
 import { testCorrespondenceBridge as createCorrespondenceBridge } from '@src/lib/kcl/correspondence/testBridge'
 import type { SceneSelection } from '@src/lib/scene/selection'
 
-function fixture() {
-  const view = modelingTestContext()
+function fixture(presentation: 'local' | 'streamed' = 'streamed') {
+  const view = modelingTestContext(presentation)
   view.editor.dispatch({
     changes: {
       from: 0,
@@ -271,6 +271,53 @@ it('does not route picks to a retained Modeling context after its view switches 
     expect(pick.values.peek()).toEqual([])
     expect(view.resource.selection.correspondence.peek()).toEqual([])
     pick.session.close()
+  } finally {
+    bridge.dispose()
+    view.dispose()
+  }
+})
+
+it('gives local correspondence independent source hues without changing engine selection, and clears groups during picking', async () => {
+  const view = fixture('local'),
+    bridge = createCorrespondenceBridge(),
+    a = Symbol(),
+    b = Symbol()
+  try {
+    bridge.registerModel({ id: Symbol(), context: view.context })
+    const closeA = bridge.registerCode({
+      id: a,
+      editor: view.editor,
+      decorate: () => {},
+    })
+    bridge.registerCode({ id: b, editor: view.editor, decorate: () => {} })
+    bridge.selectCode(a, [[12, 12, 0]])
+    bridge.selectCode(b, [[12, 12, 0]])
+    await flush()
+    let groups = view.resource.entityStyling.groups.peek()
+    expect(groups).toHaveLength(2)
+    expect(groups[0].style.color).not.toEqual(groups[1].style.color)
+    expect(groups.every((group) => group.style.fillOpacity < 0.1)).toBe(true)
+    expect(view.resource.selection.selected.peek()).toEqual([])
+    expect(
+      view.resource.selection.correspondence
+        .peek()
+        .map((item) => item.reference)
+    ).toEqual([{ type: 'segment', path_id: 'sketch', segment_id: 'segment' }])
+    expect(view.resource.commands.sendSceneCommand).not.toHaveBeenCalled()
+    const colors = groups.map((group) => group.style.color)
+    const pick = picking(view)
+    await flush()
+    expect(view.resource.entityStyling.groups.peek()).toEqual([])
+    pick.session.close()
+    await flush()
+    groups = view.resource.entityStyling.groups.peek()
+    expect(groups.map((group) => group.style.color)).toEqual(colors)
+    closeA()
+    await flush()
+    expect(view.resource.entityStyling.groups.peek()).toHaveLength(1)
+    view.resource.selection.invalidate()
+    await flush()
+    expect(view.resource.entityStyling.groups.peek()).toEqual([])
   } finally {
     bridge.dispose()
     view.dispose()

@@ -1,3 +1,4 @@
+import type { EntityStyle } from '@src/lib/scene/entityStyling'
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { EntityReference } from '@kittycad/lib'
@@ -21,7 +22,13 @@ export interface CorrespondenceExecution {
   readonly output: { readonly src: string; readonly contents: string }
   readonly sources: KclSourceSnapshot | undefined
 }
+export interface CorrespondenceLayer {
+  readonly sourceViewId: symbol
+  readonly style: EntityStyle
+  readonly references: readonly EntityReference[]
+}
 export interface CodeCorrespondenceEndpoint {
+  readonly style?: EntityStyle
   readonly id: symbol
   readonly editor: Pick<Editor, 'id' | 'src' | 'contents'>
   readonly enabled?: ReadonlySignal<boolean>
@@ -37,7 +44,7 @@ export interface ModelingCorrespondenceEndpoint {
   readonly pickingArgument: ReadonlySignal<PickingArgument | undefined>
   project: (
     execution: CorrespondenceExecution | undefined,
-    references: readonly EntityReference[]
+    layers: readonly CorrespondenceLayer[]
   ) => void
   offer: (
     execution: CorrespondenceExecution,

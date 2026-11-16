@@ -31,6 +31,7 @@ type Observed<T> = {
 /** Contributions borrow native operations and selection capabilities, without owning scene or runtime disposal. */
 export type ModelingSceneAccess = Pick<
   KclSceneResource,
+  | 'entityStyling'
   | 'sceneInfra'
   | 'element'
   | 'presentation'

@@ -1,5 +1,6 @@
 import { createTestKclExecutionSettings } from '@src/lib/kcl/scene/executionSettingsTestUtils'
 import { SceneExecutionEvents } from '@src/lib/kcl/scene/execution'
+import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { signal } from '@preact/signals-core'
 import { emptyExecState } from '@src/lang/wasm'
 import { createKclRuntime } from '@src/lib/kcl/runtime'
@@ -82,9 +83,11 @@ function setup() {
   const model = {
     events: new EventTarget(),
     state: signal(emptyExecState()),
+    fileSettings: signal<KclSettingsAnnotation>({}),
     failed: signal(false),
     executing: signal(false),
     exportModel: vi.fn(),
+    endSketch: vi.fn(async () => {}),
     dispose: vi.fn(async () => {}),
   }
   vi.mocked(connectScene).mockResolvedValue(
@@ -344,5 +347,32 @@ it.each(['local', 'streamed'] as const)(
       await scene.dispose()
       preferences.dispose()
     }
+  }
+)
+
+it.each(['local', 'streamed'] as const)(
+  'keeps file units authoritative for the %s scene and releases the subscription on disposal',
+  async (presentation) => {
+    const { model, preferences, options } = setup()
+    const scene = await openKclScene({ ...options, presentation })
+    if (scene instanceof Error) return expect.fail(scene.message)
+    try {
+      model.fileSettings.value = { defaultLengthUnit: 'in' }
+      expect(scene.sceneInfra.baseUnit).toBe('in')
+      options.settings.current.peek().modeling.defaultUnit.user = 'cm'
+      await scene.applySettings()
+      expect(scene.sceneInfra.baseUnit).toBe('in')
+      if (presentation === 'local')
+        expect(scene.localHost?.sceneInfra.baseUnit).toBe('in')
+      model.fileSettings.value = { defaultLengthUnit: 'mm' }
+      expect(scene.sceneInfra.baseUnit).toBe('mm')
+      model.fileSettings.value = {}
+      expect(scene.sceneInfra.baseUnit).toBe('cm')
+    } finally {
+      await scene.dispose()
+      preferences.dispose()
+    }
+    model.fileSettings.value = { defaultLengthUnit: 'ft' }
+    expect(scene.sceneInfra.baseUnit).toBe('cm')
   }
 )

@@ -1,3 +1,4 @@
+import { entityStyleTargets } from '@src/clientSideScene/localRenderer/entityStyleTargets'
 import type {
   EntityReference,
   EntityType,
@@ -248,12 +249,17 @@ export class LocalRenderer {
           // queries still in flight.
           this.executionVersion += 1
           this.clearHover()
+          this.gpu?.selectionHighlightRenderer.setEntityStyles([])
         }
       }),
       host.selectionFilter.subscribe(() => this.rebuildSelectionTargets()),
       host.sceneInfra.baseUnitChange.add(this.syncPlaneScale),
       () => dprDetector.dispose()
     )
+    if (host.entityStyles)
+      this.disposers.push(
+        host.entityStyles.subscribe(() => this.updateEntityStyles())
+      )
     // Remounting the renderer must project the selection already held by its scene.
     void this.syncSelectionFromEngine().catch(reportRejection)
     void this.initialize().catch(this.handleInitializationError)
@@ -277,6 +283,7 @@ export class LocalRenderer {
     this.gpu?.integerIdPicker.invalidate()
     this.clearHover()
     this.updateSelection()
+    this.updateEntityStyles()
     this.invalidateBaseRender()
   }
 
@@ -308,6 +315,30 @@ export class LocalRenderer {
 
   private updateSelection() {
     this.gpu?.selectionHighlightRenderer.setSelection(this.getSelectedTargets())
+    this.scheduleRender()
+  }
+
+  private updateEntityStyles() {
+    const groups =
+      this.host.executing.peek() || !this.isLoadedSceneCurrent()
+        ? []
+        : (this.host.entityStyles?.peek() ?? [])
+    this.gpu?.selectionHighlightRenderer.setEntityStyles(
+      groups.map((group) => ({
+        group,
+        targets: entityStyleTargets(
+          group.entities,
+          this.host.artifacts(),
+          (id) => {
+            const plane = this.getPlaneTarget(id)
+            return (
+              this.bodyFacesById.get(id) ??
+              (plane ? [plane] : (this.targetsByEntityId.get(id) ?? []))
+            )
+          }
+        ),
+      }))
+    )
     this.scheduleRender()
   }
 
@@ -386,6 +417,7 @@ export class LocalRenderer {
     ])
     this.clearHover()
     this.updateSelection()
+    this.updateEntityStyles()
   }
 
   // Decides if the target can be selected by the currently set filter.
@@ -1339,6 +1371,7 @@ export class LocalRenderer {
       this.resetCameraIfPending()
       this.invalidateBaseRender()
       this.loadedSceneGeneration = sceneGeneration
+      this.updateEntityStyles()
       this.onModelLoadSettled?.(true)
     } catch (error) {
       if (isCurrent()) this.handleModelLoadError(error)

@@ -1,3 +1,4 @@
+import { correspondenceStyle } from '@src/lib/kcl/correspondence/appearance'
 import type { EntityReference } from '@kittycad/lib'
 import { computed, effect, signal, type Signal } from '@preact/signals-core'
 import type {
@@ -7,6 +8,7 @@ import type {
 import {
   kclSelectionBridge,
   type CodeCorrespondenceEndpoint,
+  type CorrespondenceLayer,
   type ModelingCorrespondenceEndpoint,
   type KclCorrespondenceEndpoints,
   type KclCorrespondenceStatus,
@@ -83,13 +85,13 @@ export function createCorrespondenceBridge(routing: {
       symbol,
       {
         run: NonNullable<ReturnType<typeof execution>>
-        entities: EntityReference[]
+        layers: CorrespondenceLayer[]
       }
     >()
     for (const model of models.value) {
       const run = execution(model)
       if (!run) continue
-      const entities = new Map<string, EntityReference>()
+      const layers: CorrespondenceLayer[] = []
       for (const code of codes.value) {
         if (!linked(code, model)) continue
         const module = sourceModule(code, run)
@@ -108,13 +110,20 @@ export function createCorrespondenceBridge(routing: {
         codeRanges.set(code.id, ranges)
         // Native sketch interaction owns its surface and must not receive engine selection projections.
         if (model.interacting.value) continue
+        const entities = new Map<string, EntityReference>()
         for (const range of code.ranges.value)
           for (const item of run.query.forCode([range[0], range[1], module])) {
             const key = entityReferenceKey(item.entity)
             if (key) entities.set(key, item.entity)
           }
+        if (entities.size)
+          layers.push({
+            sourceViewId: code.id,
+            style: code.style ?? correspondenceStyle(code),
+            references: [...entities.values()],
+          })
       }
-      geometry.set(model.id, { run, entities: [...entities.values()] })
+      geometry.set(model.id, { run, layers })
     }
     return { codeRanges, geometry, codes: codes.value, models: models.value }
   })
@@ -128,7 +137,7 @@ export function createCorrespondenceBridge(routing: {
         code.decorate(projection.codeRanges.get(code.id) ?? [])
       for (const model of projection.models) {
         const geometry = projection.geometry.get(model.id)
-        model.project(geometry?.run, geometry?.entities ?? [])
+        model.project(geometry?.run, geometry?.layers ?? [])
       }
     })
   })
