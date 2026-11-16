@@ -2,7 +2,13 @@
 
 use kcl_syntax::lexer::lex;
 
-lalrpop_util::lalrpop_mod!(settings);
+lalrpop_util::lalrpop_mod!(
+    #[expect(
+        unreachable_code,
+        reason = "LALRPOP generates a conversion from Infallible to ParseError::User"
+    )]
+    settings
+);
 
 /// Returns whether the complete source matches the initial settings grammar.
 ///
