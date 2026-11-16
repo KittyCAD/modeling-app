@@ -19,13 +19,12 @@ Each wave contains at most four branches. Each row is based on the preceding row
 | Machine migration | `codex/review-tool-dialog-modes` | Optional contributed Extrude/Loft Form/Code editors submitting through the machine |
 | Presentation | `codex/review-machine-responsive-tools` | Optional semantic groups and responsive toolbar presentation |
 | Presentation | `codex/review-machine-compact-status` | Optional compact status layout |
-| Presentation | `codex/review-machine-sketch-presentation` | Stream-only sketch tint and opacity control, projected from machine activity |
 | Correspondence | `codex/review-machine-artifact-correspondence` | Artifact-backed provenance query policies |
 | Correspondence | `codex/review-machine-selection-bridges` | Explicit Code/Modeling links, decorations, and constrained cross-view command picking |
 | Correspondence | `codex/review-machine-entity-styling` | Arbitrary local entity styling and source-view correspondence hues |
 | Correspondence | `codex/review-machine-sketch-correspondence` | Correspondence through the machine's native sketch context |
 
-The initial editor transition can stop at `codex/modeling-machine-host`. The later branches are enhancements, not dependencies of that transition. Command reuse exposes the existing tool system; it does not establish tested parity for every command or renderer. Project export metadata and feature-tree integration remain explicit adapter work. Live stream, local GPU, and packaged desktop smoke tests remain necessary.
+The initial editor transition can stop at `codex/modeling-machine-host`, which includes the stream-only sketch tint and opacity control. The former `codex/review-machine-sketch-presentation` cut is folded into that primary branch; its local ref is retained as an alias of its parent and needs no separate PR. The later branches are enhancements, not dependencies of that transition. Command reuse exposes the existing tool system; it does not establish tested parity for every command or renderer. Project export metadata and feature-tree integration remain explicit adapter work. Live stream, local GPU, and packaged desktop smoke tests remain necessary.
 
 ## Deferred independent-tool research
 
