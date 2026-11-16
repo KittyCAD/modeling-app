@@ -187,7 +187,7 @@ export class LocalRenderer {
   private loadedSceneGeneration: number | null = null
   /** A camera reset waiting for the next model. The first model always gets one. */
   private cameraResetPending = true
-  private previewCamera: PerspectiveCamera | OrthographicCamera | null = null
+  private camera: PerspectiveCamera | OrthographicCamera | null = null
   private ambientOcclusionRadius = 0.01
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
   private baseRenderDirty = true
@@ -508,7 +508,7 @@ export class LocalRenderer {
         (isHover &&
           (!this.pointerOverCanvas || controls.hoverPickingDisabled)) ||
         (!isHover && controls.wasDragging) ||
-        !this.previewCamera
+        !this.camera
       )
         return {}
       const requestVersion = isHover
@@ -520,7 +520,7 @@ export class LocalRenderer {
         ...cmd.selected_at_window,
         streamWidth: streamDimensions.width,
         streamHeight: streamDimensions.height,
-        camera: this.previewCamera,
+        camera: this.camera,
       })
 
       if (
@@ -630,7 +630,7 @@ export class LocalRenderer {
     }
 
     this.settings.enableSSAO = enableSSAO
-    // renderPreview() rebuilds the pipeline if SSAO is turned back on.
+    // render() rebuilds the pipeline if SSAO is turned back on.
     if (!enableSSAO) {
       this.disposeAmbientOcclusionPipeline()
     }
@@ -685,7 +685,7 @@ export class LocalRenderer {
         .then(() => gpu.device?.destroy())
         .catch(reportRejection)
     }
-    this.previewCamera = null
+    this.camera = null
   }
 
   private readonly syncPlaneScale = () => {
@@ -710,7 +710,7 @@ export class LocalRenderer {
     const sharedCamera = cameraControls.camera
     const sharedTarget = cameraControls.target
     this.syncPlaneScale()
-    if (!this.previewCamera) {
+    if (!this.camera) {
       return
     }
 
@@ -726,57 +726,57 @@ export class LocalRenderer {
 
     if (
       sharedCamera instanceof PerspectiveCamera &&
-      !(this.previewCamera instanceof PerspectiveCamera)
+      !(this.camera instanceof PerspectiveCamera)
     ) {
-      this.previewCamera = new PerspectiveCamera()
+      this.camera = new PerspectiveCamera()
     } else if (
       sharedCamera instanceof OrthographicCamera &&
-      !(this.previewCamera instanceof OrthographicCamera)
+      !(this.camera instanceof OrthographicCamera)
     ) {
-      this.previewCamera = new OrthographicCamera()
+      this.camera = new OrthographicCamera()
     }
 
-    this.previewCamera.layers.mask = sharedCamera.layers.mask
-    this.previewCamera.position.copy(position)
-    this.previewCamera.up.copy(up)
+    this.camera.layers.mask = sharedCamera.layers.mask
+    this.camera.position.copy(position)
+    this.camera.up.copy(up)
     // Preserve the shared clip range, including a negative orthographic near plane.
-    this.previewCamera.near =
+    this.camera.near =
       sharedCamera.near * ENGINE_MILLIMETERS_TO_GLTF_METERS
-    this.previewCamera.far =
+    this.camera.far =
       sharedCamera.far * ENGINE_MILLIMETERS_TO_GLTF_METERS
 
     if (
       sharedCamera instanceof PerspectiveCamera &&
-      this.previewCamera instanceof PerspectiveCamera
+      this.camera instanceof PerspectiveCamera
     ) {
-      this.previewCamera.fov = sharedCamera.fov
-      this.previewCamera.aspect =
+      this.camera.fov = sharedCamera.fov
+      this.camera.aspect =
         Math.max(this.container.clientWidth, 1) /
         Math.max(this.container.clientHeight, 1)
     } else if (
       sharedCamera instanceof OrthographicCamera &&
-      this.previewCamera instanceof OrthographicCamera
+      this.camera instanceof OrthographicCamera
     ) {
-      this.previewCamera.left =
+      this.camera.left =
         sharedCamera.left * ENGINE_MILLIMETERS_TO_GLTF_METERS
-      this.previewCamera.right =
+      this.camera.right =
         sharedCamera.right * ENGINE_MILLIMETERS_TO_GLTF_METERS
-      this.previewCamera.top =
+      this.camera.top =
         sharedCamera.top * ENGINE_MILLIMETERS_TO_GLTF_METERS
-      this.previewCamera.bottom =
+      this.camera.bottom =
         sharedCamera.bottom * ENGINE_MILLIMETERS_TO_GLTF_METERS
-      this.previewCamera.zoom = sharedCamera.zoom
+      this.camera.zoom = sharedCamera.zoom
     }
 
-    this.previewCamera.lookAt(target)
-    this.previewCamera.updateProjectionMatrix()
-    this.previewCamera.updateMatrixWorld(true)
+    this.camera.lookAt(target)
+    this.camera.updateProjectionMatrix()
+    this.camera.updateMatrixWorld(true)
     this.gpu?.integerIdPicker.invalidate()
     this.invalidateBaseRender()
   }
 
   private readonly handleInitializationError = (error: unknown) => {
-    console.error('[LocalWebGPUScene] preview initialization failed', error)
+    console.error('[LocalRenderer] initialization failed', error)
     reportRejection(error)
   }
 
@@ -825,9 +825,9 @@ export class LocalRenderer {
     }
   }
 
-  private renderPreview() {
-    const { previewCamera, gpu } = this
-    if (!previewCamera || !gpu) {
+  private render() {
+    const { camera, gpu } = this
+    if (!camera || !gpu) {
       return
     }
     const { renderer, scene, selectionHighlightRenderer } = gpu
@@ -850,14 +850,14 @@ export class LocalRenderer {
     )
     if (baseRendered) {
       if (!this.settings.enableSSAO) {
-        renderer.render(scene, previewCamera)
+        renderer.render(scene, camera)
       } else {
-        if (this.ambientOcclusionPipeline?.camera !== previewCamera) {
+        if (this.ambientOcclusionPipeline?.camera !== camera) {
           this.disposeAmbientOcclusionPipeline()
 
           // GTAO expects a regular depth texture. The renderer itself can keep
           // using MSAA, but this intermediate pass must be single-sampled.
-          const scenePass = pass(scene, previewCamera, {
+          const scenePass = pass(scene, camera, {
             samples: 0,
           })
           if (LOCAL_WEBGPU_GTAO_USE_NORMAL_MRT) {
@@ -878,7 +878,7 @@ export class LocalRenderer {
           const aoPass = (ao as CreateAmbientOcclusion)(
             scenePassDepth,
             scenePassNormal,
-            previewCamera
+            camera
           )
           aoPass.resolutionScale = 0.5
           const denoisePass = LOCAL_WEBGPU_GTAO_USE_DENOISE
@@ -886,7 +886,7 @@ export class LocalRenderer {
                 aoPass.getTextureNode(),
                 scenePassDepth,
                 scenePassNormal as Node,
-                previewCamera
+                camera
               )
             : null
           const denoiseNoiseTexture = denoisePass
@@ -909,7 +909,7 @@ export class LocalRenderer {
           )
 
           this.ambientOcclusionPipeline = {
-            camera: previewCamera,
+            camera,
             pipeline,
             scenePass,
             aoPass,
@@ -924,12 +924,12 @@ export class LocalRenderer {
       this.baseRenderDirty = false
     }
 
-    selectionHighlightRenderer.render(previewCamera)
+    selectionHighlightRenderer.render(camera)
   }
 
   /** Debug/E2E snapshot in CSS viewport pixels, using the same camera and picker as clicks. */
   async getProjectedEntities() {
-    const camera = this.previewCamera
+    const camera = this.camera
     const canvas = this.gpu?.renderer.domElement
     if (
       !camera ||
@@ -1009,23 +1009,23 @@ export class LocalRenderer {
    */
   readFrame<T>(read: (canvas: HTMLCanvasElement) => T) {
     const { gpu } = this
-    if (!gpu || !this.previewCamera) return undefined
-    this.renderPreview()
+    if (!gpu || !this.camera) return undefined
+    this.render()
     return read(gpu.renderer.domElement)
   }
 
   private scheduleRender() {
-    if (this.disposed || !this.previewCamera || this.animationFrameId !== -1) {
+    if (this.disposed || !this.camera || this.animationFrameId !== -1) {
       return
     }
 
     this.animationFrameId = requestAnimationFrame(() => {
       this.animationFrameId = -1
-      if (this.disposed || !this.previewCamera) {
+      if (this.disposed || !this.camera) {
         return
       }
 
-      this.renderPreview()
+      this.render()
     })
   }
 
@@ -1174,7 +1174,7 @@ export class LocalRenderer {
     }
 
     // updateLocalCamera() below matches this to the shared camera.
-    this.previewCamera = new PerspectiveCamera()
+    this.camera = new PerspectiveCamera()
     this.disposers.push(
       kclManager.sceneInfra.camControls.cameraChange.add(this.updateLocalCamera)
     )
@@ -1364,7 +1364,7 @@ export class LocalRenderer {
   private handleModelLoadError(error: unknown) {
     this.clearModel()
     this.rebuildSelectionTargets()
-    console.error('[LocalWebGPUScene] GLB model load failed', error)
+    console.error('[LocalRenderer] GLB model load failed', error)
     reportRejection(error)
     this.onModelLoadSettled?.()
   }
@@ -1476,7 +1476,7 @@ export function assignFaceUuids(gltf: KITTYCAD_GLTF) {
   const brep = gltf.userData.gltfExtensions?.KITTYCAD_boundary_representation
   if (!brep) {
     console.warn(
-      '[LocalWebGPUScene] The model has no B-rep data, so its faces and edges cannot be selected.'
+      '[LocalRenderer] The model has no B-rep data, so its faces and edges cannot be selected.'
     )
     return
   }
