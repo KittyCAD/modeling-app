@@ -30,24 +30,9 @@ export const playwrightLayoutConfig = {
         {
           id: 'feature-tree',
           label: 'Feature Tree',
-          type: 'split',
+          type: 'simple',
+          areaType: 'featureTree',
           icon: 'model',
-          sizes: [75, 25],
-          orientation: 'block',
-          children: [
-            {
-              id: 'operations-list',
-              label: 'Feature Tree',
-              type: 'simple',
-              areaType: 'featureTree',
-            },
-            {
-              id: 'bodies-list',
-              label: 'Bodies List',
-              type: 'simple',
-              areaType: 'bodies',
-            },
-          ],
         },
         {
           id: 'code',

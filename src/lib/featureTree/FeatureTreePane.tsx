@@ -15,7 +15,10 @@ import {
   isOffsetPlane,
 } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
-import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
+import {
+  getArtifactFromRange,
+  getBodiesFromArtifactGraph,
+} from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import {
   base64Decode,
@@ -32,10 +35,9 @@ import {
   findSameVisibleStdLibOperationAfterSourceChange,
   getOperationKey,
   getOperationTreeNodeKey,
-  isOperationTreeBranch,
-  type OperationTreeNode,
 } from '@src/lib/featureTree/featureTreeOperationTree'
 import {
+  getHideOpByArtifactId,
   getHideOperations,
   getOperationCalculatedDisplay,
   getOperationIcon,
@@ -56,6 +58,10 @@ import toast from 'react-hot-toast'
 export { buildOperationTree } from '@src/lib/featureTree/featureTreeOperationTree'
 
 import { Disclosure } from '@headlessui/react'
+import {
+  FeatureTreeDisclosure,
+  FeatureTreeExpansionProvider,
+} from '@src/lib/featureTree/FeatureTreeDisclosure'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -93,6 +99,13 @@ import {
   keymapService,
 } from '@src/registry/contracts/keymap'
 import { projectSession } from '@src/registry/contracts/projectSession'
+import { BodyItem } from '@src/lib/featureTree/BodiesPane'
+import {
+  buildBodyOperationTree,
+  getBodyTreeNodeKey,
+  type BodyTreeNode,
+  type BodyOperationTreeBranch,
+} from '@src/lib/featureTree/featureTreeBodyTree'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: feature-tree file opening (useNavigate).
 import { useNavigate } from 'react-router-dom'
@@ -156,7 +169,7 @@ export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
     <LayoutPanel
       title={props.layout.label}
-      id={`${props.layout.id}-pane`}
+      id="operations-list-pane"
       className="border-none"
     >
       <LayoutPanelHeader
@@ -164,13 +177,7 @@ export function FeatureTreePane(props: AreaTypeComponentProps) {
         icon="model"
         title={props.layout.label}
         Menu={FeatureTreeMenu}
-        onClose={() => {
-          // Gotcha: because our layout system is a goofy first draft,
-          // it doesn't know how to handle Splits as children of Panes very well,
-          // so the onClose here needs to explicitly state the Split to close,
-          // since this layout will be used in a Simple layout now.
-          props.onClose?.('feature-tree')
-        }}
+        onClose={() => props.onClose?.(props.layout.id)}
       />
       <FeatureTreePaneContents />
     </LayoutPanel>
@@ -282,9 +289,17 @@ export const FeatureTreePaneContents = memo(() => {
     [operationsByModule]
   )
   const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
+  const artifactGraph = kclManager.execStateSignal.value.artifactGraph
+  const bodyTree = useMemo(
+    () =>
+      buildBodyOperationTree(
+        operationList,
+        getBodiesFromArtifactGraph(artifactGraph),
+        artifactGraph
+      ),
+    [operationList, artifactGraph]
+  )
 
-  // Live execution tracking: expand only the active module branch.
-  const liveActiveModuleId = kclManager.liveActiveModuleId
   const liveLatestOperationKey = kclManager.liveLatestOperationKey
 
   function goToError() {
@@ -301,7 +316,25 @@ export const FeatureTreePaneContents = memo(() => {
     )
   }
 
-  return (
+  const renderOperation = (node: BodyTreeNode) => (
+    <OperationTreeNodeItem
+      key={getBodyTreeNodeKey(node)}
+      node={node}
+      expansionKey={getBodyTreeNodeKey(node)}
+      code={operationsCode}
+      isStaleReference={isReadOnlyFeatureTree}
+      sketchNoFace={sketchNoFace}
+      systemDeps={systemDeps}
+      modelingActor={modelingActor}
+      engineCommandManager={engineCommandManager}
+      onSelect={selectOperation}
+      visibilityOperations={visibilityOperations}
+      editorSelection={editorSelection}
+      liveLatestOperationKey={liveLatestOperationKey}
+    />
+  )
+
+  const tree = (
     <div className="relative">
       <section
         data-testid="debug-panel"
@@ -377,28 +410,95 @@ export const FeatureTreePaneContents = memo(() => {
               </div>
             </div>
           )}
-          {operationList.map((node, index) => (
-            <OperationTreeNodeItem
-              key={getOperationTreeNodeKey(node, index)}
-              node={node}
-              code={operationsCode}
-              isStaleReference={isReadOnlyFeatureTree}
-              sketchNoFace={sketchNoFace}
-              systemDeps={systemDeps}
-              modelingActor={modelingActor}
-              engineCommandManager={engineCommandManager}
-              onSelect={selectOperation}
-              visibilityOperations={visibilityOperations}
-              editorSelection={editorSelection}
-              liveActiveModuleId={liveActiveModuleId}
-              liveLatestOperationKey={liveLatestOperationKey}
-            />
-          ))}
+          {bodyTree.nodes.map(renderOperation)}
         </>
       </section>
     </div>
   )
+  return (
+    <FeatureTreeExpansionProvider filePath={kclManager.path}>
+      {tree}
+    </FeatureTreeExpansionProvider>
+  )
 })
+
+function BodyBranchGroup({
+  branch,
+  childItems,
+  ...props
+}: Omit<OperationProps, 'item'> & {
+  expansionKey: string
+  branch: BodyOperationTreeBranch
+  childItems: BodyTreeNode[]
+  isModuleOwned?: boolean
+}) {
+  useSignals()
+  const { kclManager } = props.systemDeps
+  const artifactGraph = kclManager.execStateSignal.value.artifactGraph
+  const bodyOperations = props.visibilityOperations
+  const { id, artifact, index } = branch
+  const patternIndex =
+    artifact.type === 'pattern'
+      ? Math.max(0, artifact.copyIds.indexOf(id) + 1)
+      : undefined
+  const hideOperation =
+    getHideOpByArtifactId(bodyOperations, id) ??
+    (artifact.type === 'pattern' && patternIndex === 0
+      ? getHideOpByArtifactId(bodyOperations, artifact.sourceId)
+      : undefined)
+  return (
+    <FeatureTreeDisclosure
+      expansionKey={props.expansionKey}
+      as="div"
+      data-testid="feature-tree-body-branch"
+    >
+      <div className="flex items-start gap-1" data-testid="feature-tree-body">
+        <Disclosure.Button
+          aria-label="Toggle body features"
+          className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2"
+        >
+          <CustomIcon
+            name="caretDown"
+            className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
+            aria-hidden
+          />
+        </Disclosure.Button>
+        <div className="flex-1 min-w-0">
+          <BodyItem
+            label={`Body ${index + 1}`}
+            artifact={artifact}
+            artifactGraph={artifactGraph}
+            hideOperation={hideOperation}
+            engineEntityId={artifact.type === 'pattern' ? id : undefined}
+            patternIndex={patternIndex}
+            disabled={props.isStaleReference || kclManager.isExecuting}
+          />
+        </div>
+      </div>
+      <Disclosure.Panel
+        className="border-l b-4 ml-6"
+        data-testid="feature-tree-body-features"
+      >
+        {childItems.map((node) => {
+          const operation = isArray(node) ? node[0] : node
+          const isModuleOwned =
+            operation && 'sourceRange' in operation
+              ? operation.sourceRange[2] !== ROOT_MODULE_ID
+              : props.isModuleOwned
+          return (
+            <OperationTreeNodeItem
+              key={getBodyTreeNodeKey(node)}
+              node={node}
+              {...props}
+              expansionKey={`${props.expansionKey}/${getBodyTreeNodeKey(node)}`}
+              isModuleOwned={isModuleOwned}
+            />
+          )
+        })}
+      </Disclosure.Panel>
+    </FeatureTreeDisclosure>
+  )
+}
 
 interface VisibilityToggleProps {
   visible: boolean
@@ -409,6 +509,7 @@ interface VisibilityToggleProps {
  * A grouping of operation items into a disclosure (or dropdown)
  */
 function OperationItemGroup({
+  expansionKey,
   items,
   code,
   isStaleReference,
@@ -422,6 +523,7 @@ function OperationItemGroup({
   isModuleOwned = false,
   liveLatestOperationKey,
 }: Omit<OperationProps, 'item'> & {
+  expansionKey: string
   items: Operation[]
   isModuleOwned?: boolean
 }) {
@@ -460,7 +562,7 @@ function OperationItemGroup({
     }
 
     return (
-      <Disclosure>
+      <FeatureTreeDisclosure expansionKey={expansionKey}>
         <div className="flex items-start gap-1">
           <Disclosure.Button
             data-testid="operation-group-caret"
@@ -513,12 +615,12 @@ function OperationItemGroup({
             })}
           </div>
         </Disclosure.Panel>
-      </Disclosure>
+      </FeatureTreeDisclosure>
     )
   }
 
   return (
-    <Disclosure>
+    <FeatureTreeDisclosure expansionKey={expansionKey}>
       <Disclosure.Button className="reset w-full min-w-[0px] !px-1 flex items-center gap-2 text-left text-base !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25">
         <CustomIcon
           name="caretDown"
@@ -553,11 +655,12 @@ function OperationItemGroup({
           })}
         </div>
       </Disclosure.Panel>
-    </Disclosure>
+    </FeatureTreeDisclosure>
   )
 }
 
 function OperationBranchGroup({
+  expansionKey,
   parentItem,
   childItems,
   code,
@@ -570,11 +673,11 @@ function OperationBranchGroup({
   visibilityOperations,
   editorSelection,
   isModuleOwned = false,
-  liveActiveModuleId,
   liveLatestOperationKey,
 }: Omit<OperationProps, 'item'> & {
+  expansionKey: string
   parentItem: ModuleInstanceOperation
-  childItems: OperationTreeNode[]
+  childItems: BodyTreeNode[]
   isModuleOwned?: boolean
 }) {
   if (childItems.length === 0) {
@@ -596,18 +699,8 @@ function OperationBranchGroup({
     )
   }
 
-  // During live execution, only expand the branch whose module received the
-  // latest operation.  Outside live execution every branch defaults open.
-  // Changing the key forces a Disclosure remount with the new defaultOpen
-  // (headlessui v1 does not support a controlled `open` prop).
-  const isLive = liveActiveModuleId != null
-  const shouldBeOpen = !isLive || liveActiveModuleId === parentItem.moduleId
-
   return (
-    <Disclosure
-      key={`${parentItem.moduleId}-${shouldBeOpen}`}
-      defaultOpen={shouldBeOpen}
-    >
+    <FeatureTreeDisclosure expansionKey={expansionKey}>
       <div
         className="flex items-start gap-1"
         data-module-branch={parentItem.moduleId}
@@ -641,11 +734,12 @@ function OperationBranchGroup({
       </div>
       <Disclosure.Panel>
         <div className="border-l b-4 ml-6">
-          {childItems.map((node, index) => {
+          {childItems.map((node) => {
             return (
               <OperationTreeNodeItem
-                key={getOperationTreeNodeKey(node, index)}
+                key={getBodyTreeNodeKey(node)}
                 node={node}
+                expansionKey={`${expansionKey}/${getBodyTreeNodeKey(node)}`}
                 code={code}
                 isStaleReference={isStaleReference}
                 sketchNoFace={sketchNoFace}
@@ -662,7 +756,7 @@ function OperationBranchGroup({
           })}
         </div>
       </Disclosure.Panel>
-    </Disclosure>
+    </FeatureTreeDisclosure>
   )
 }
 
@@ -670,14 +764,25 @@ const OperationTreeNodeItem = memo(function OperationTreeNodeItem({
   node,
   ...props
 }: Omit<OperationProps, 'item'> & {
-  node: OperationTreeNode
+  expansionKey: string
+  node: BodyTreeNode
   isModuleOwned?: boolean
 }) {
   if (isArray(node)) {
     return <OperationItemGroup items={node} {...props} />
   }
 
-  if (isOperationTreeBranch(node)) {
+  if ('body' in node) {
+    return (
+      <BodyBranchGroup
+        branch={node.body}
+        childItems={node.children}
+        {...props}
+      />
+    )
+  }
+
+  if ('parent' in node) {
     return (
       <OperationBranchGroup
         parentItem={node.parent}
@@ -841,8 +946,6 @@ interface OperationProps {
   editorSelection: EditorSelection
   size?: 'default' | 'sm'
   isModuleOwned?: boolean
-  /** During live execution, the module that received the latest operation. */
-  liveActiveModuleId?: number | null
   /** During live execution, the operation that was most recently added. */
   liveLatestOperationKey: string | null
   /** When set, this item is a deduplicated module reference; clicking scrolls to the expanded branch. */

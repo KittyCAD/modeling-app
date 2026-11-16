@@ -156,6 +156,19 @@ export function scenarioActions(
                 .getByTestId('feature-tree-operation-item')
                 .first()
             ).toBeVisible()
+            // The sketch is now inside a collapsed body. Reveal it before the
+            // existing sketch-group measurements; older comparison builds have no body caret.
+            const body = page
+              .getByRole('button', {
+                name: 'Toggle body features',
+                exact: true,
+              })
+              .first()
+            if (
+              (await body.isVisible()) &&
+              (await body.getAttribute('aria-expanded')) === 'false'
+            )
+              await body.click()
             await expect(
               page.getByTestId('operation-group-caret').first()
             ).toHaveAttribute('aria-expanded', 'false')

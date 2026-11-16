@@ -369,6 +369,7 @@ export class ToolbarFixture {
   async getFeatureTreeOperation(operationName: string, operationIndex: number) {
     await this.openFeatureTreePane()
     await expect(this.featureTreePane).toBeVisible()
+    await this.expandFeatureTreeBodies()
     return this.featureTreePane
       .getByRole('button', {
         name: operationName,
@@ -397,7 +398,16 @@ export class ToolbarFixture {
   async getFeatureTreeOperationGroupCaret(index: number) {
     await this.openFeatureTreePane()
     await expect(this.featureTreePane).toBeVisible()
+    await this.expandFeatureTreeBodies()
     return this.featureTreePane.getByTestId('operation-group-caret').nth(index)
+  }
+
+  /** Reveal body histories when a test requests a feature; opening the pane stays collapsed. */
+  async expandFeatureTreeBodies() {
+    const collapsed = this.featureTreePane.locator(
+      '[data-testid="feature-tree-body"] > button[aria-expanded="false"], [data-module-branch] > button[aria-expanded="false"]'
+    )
+    while (await collapsed.count()) await collapsed.first().click()
   }
 
   getDefaultPlaneVisibilityButton(plane: 'XY' | 'XZ' | 'YZ' = 'XY') {
