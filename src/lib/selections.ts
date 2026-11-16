@@ -24,7 +24,6 @@ import {
 } from '@src/clientSideScene/sceneConstants'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { OnClickCallbackArgs } from '@src/clientSideScene/sceneInfra'
 import { AXIS_GROUP, X_AXIS } from '@src/clientSideScene/sceneUtils'
 import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 import type { KclManager } from '@src/lang/KclManager'
@@ -3064,82 +3063,6 @@ export async function sendQueryEntityTypeWithPoint(
     videoRef,
     systemDeps.engineCommandManager
   )
-}
-
-/** Handle double-click in scene (onClick path): query entity, set selection, send Enter sketch. Call when args.mouseEvent.detail === 2 in idle. */
-export async function tryEnterSketchOnDoubleClickFromScene(
-  args: OnClickCallbackArgs,
-  elementForRect: { getBoundingClientRect(): DOMRect },
-  deps: {
-    engineCommandManager: ConnectionManager
-    kclManager: { artifactGraph: ArtifactGraph }
-    sceneInfra: SceneInfra
-  }
-): Promise<void> {
-  if (args?.mouseEvent?.detail !== 2 || args.mouseEvent.which !== 1) return
-  if (deps.sceneInfra.camControls.wasDragging === true) return
-
-  const result = await sendQueryEntityTypeWithPointFromSceneClick(
-    args.mouseEvent,
-    elementForRect,
-    deps.engineCommandManager
-  )
-  if (!result) return
-
-  let entityId: string | undefined = (result as { entity_id?: string })
-    .entity_id
-  if (!entityId && (result as { reference?: unknown }).reference) {
-    const entityRef = normalizeEntityReference(
-      (result as { reference: unknown }).reference
-    )
-    if (entityRef) {
-      if (entityRef.type === 'plane') entityId = entityRef.plane_id
-      else if (entityRef.type === 'face') entityId = entityRef.face_id
-      else if (entityRef.type === 'solid2d') entityId = entityRef.solid2d_id
-      else if (entityRef.type === 'solid3d') entityId = entityRef.solid3d_id
-      else if (entityRef.type === 'solid2d_edge') entityId = entityRef.edge_id
-      else if (entityRef.type === 'segment') entityId = entityRef.segment_id
-      else if (entityRef.type === 'region') entityId = entityRef.region_id
-      else if (entityRef.type === 'edge' && entityRef.side_faces.length > 0)
-        entityId = entityRef.side_faces[0]
-      else if (entityRef.type === 'vertex' && entityRef.side_faces.length > 0)
-        entityId = entityRef.side_faces[0]
-    }
-  }
-  if (!entityId) return
-
-  const artifactResult = getArtifactOfTypes(
-    { key: entityId, types: ['path', 'solid2d', 'segment', 'helix'] },
-    deps.kclManager.artifactGraph
-  )
-  if (err(artifactResult)) return
-
-  const artifact = artifactResult
-  let entityRef: EntityReference | undefined = artifactToEntityRef(
-    artifact.type,
-    entityId,
-    artifact.type === 'segment'
-      ? (artifact as { pathId: string }).pathId
-      : undefined
-  )
-  if (!entityRef) {
-    if (artifact.type === 'path')
-      entityRef = { type: 'solid2d', solid2d_id: artifact.id }
-  }
-  if (!entityRef) return
-
-  const codeRef = getCodeRefsByArtifactId(
-    entityId,
-    deps.kclManager.artifactGraph
-  )?.[0]
-  deps.sceneInfra.modelingSend({
-    type: 'Set selection',
-    data: {
-      selectionType: 'singleCodeCursor',
-      selection: { entityRef, codeRef },
-    },
-  })
-  deps.sceneInfra.modelingSend({ type: 'Enter sketch' })
 }
 
 export function updateSelections(
