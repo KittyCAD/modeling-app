@@ -293,6 +293,7 @@ type ExecutionCompletionResult = {
 export enum KclManagerEvents {
   LongExecution = 'long-execution',
   ExecutionDone = 'execution-done',
+  FileChanged = 'file-changed',
 }
 
 export interface KclExecutionDoneDetail {
@@ -2029,6 +2030,7 @@ export class KclManager extends File {
     providedEditor.isExecuting = false
     providedEditor.editorOwnershipVersion += 1
     providedEditor.path = file.path
+    providedEditor.dispatchEvent(new CustomEvent(KclManagerEvents.FileChanged))
     providedEditor.id = file.id
     providedEditor.codeSignal.value = initialCode
     const savedEditorState = providedEditor.editorStatesByPath.get(file.path)
