@@ -86,6 +86,10 @@ async fn inner_is_equal_body_type(
     expected: BodyType,
 ) -> Result<bool, KclError> {
     if args.ctx.no_engine_commands().await {
+        args.ctx
+            .engine
+            .stats()
+            .record_mock_command(args.source_range, "solid3d_get_body_type");
         // In mock execution, we can't query the surface type and know it for real.
         // So just give a best-effort attempt to figure out the surface/solid type.
         return if let Some(body_type) = surface.best_guess_body_type {
@@ -180,6 +184,16 @@ async fn inner_delete_face(
     // If we tracked faces, we would remove some faces... but we don't really.
     let no_engine_commands = args.ctx.no_engine_commands().await;
     if no_engine_commands {
+        for _ in face_indices.as_deref().unwrap_or_default() {
+            args.ctx
+                .engine
+                .stats()
+                .record_mock_command(args.source_range, "solid3d_get_face_uuid");
+        }
+        args.ctx
+            .engine
+            .stats()
+            .record_mock_command(args.source_range, "entity_delete_children");
         return Ok(body);
     }
 

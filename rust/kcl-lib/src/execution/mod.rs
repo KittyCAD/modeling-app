@@ -6658,6 +6658,74 @@ edges = map([0mm, 1mm, 2mm], f = fn(@x) {
         ctx.close().await;
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn command_estimate_includes_suppressed_operations() {
+        let source = r#"@settings(kclVersion = 3.0)
+profile = sketch(on = XY) {
+  c = circle(center = [var 0mm, var 0mm], start = [var 10mm, var 0mm])
+}
+profileRegion = region(segments = [profile.c])
+body = extrude(profileRegion, length = 5mm)
+"#;
+        for (operation, expected) in [
+            ("result = union([body, body])", vec![("boolean_union", 1)]),
+            ("result = intersect([body, body])", vec![("boolean_intersection", 1)]),
+            ("result = subtract(body, tools = [body])", vec![("boolean_subtract", 1)]),
+            ("result = split(body, tools = [body])", vec![("boolean_imprint", 1)]),
+            (
+                "result = clone(body)",
+                vec![("entity_clone", 1), ("entity_get_all_child_uuids", 2)],
+            ),
+            (
+                "result = mirror3d(body, across = XZ)",
+                vec![("entity_mirror_across", 1), ("entity_get_all_child_uuids", 2)],
+            ),
+            ("result = mirror2d(profileRegion, axis = X)", vec![("entity_mirror", 1)]),
+            ("result = faceId(body, index = 0)", vec![("solid3d_get_face_uuid", 1)]),
+            ("result = isSolid(body)", vec![("solid3d_get_body_type", 1)]),
+            (
+                "result = deleteFace(body, faceIndices = [0, 1])",
+                vec![("solid3d_get_face_uuid", 2), ("entity_delete_children", 1)],
+            ),
+            (
+                "result = helix(axis = Z, radius = 2mm, length = 10mm, revolutions = 2, angleStart = 0deg)",
+                vec![("entity_make_helix_from_params", 1)],
+            ),
+            (
+                "result = getNextAdjacentEdge(profileRegion.tags.c)",
+                vec![("solid3d_get_next_adjacent_edge", 1), ("query_entity_type", 1)],
+            ),
+            (
+                "result = getOppositeEdge(profileRegion.tags.c)",
+                vec![("solid3d_get_opposite_edge", 1), ("query_entity_type", 1)],
+            ),
+            (
+                "result = planeOf(body, face = profileRegion.tags.c)",
+                vec![("face_is_planar", 1)],
+            ),
+        ] {
+            let program = crate::Program::parse_no_errs(&format!("{source}{operation}\n")).unwrap();
+            let ctx = versioned_modules_context(&[]);
+            let plan = ctx
+                .estimate_command_plan(&program)
+                .await
+                .unwrap_or_else(|error| panic!("{operation}: {}", error.error.message()));
+            for (command, count) in expected {
+                assert_eq!(
+                    plan.milestones
+                        .iter()
+                        .filter(|milestone| milestone.command == command)
+                        .count(),
+                    count,
+                    "{operation}: {command}"
+                );
+            }
+            assert_eq!(plan.count, plan.milestones.len(), "{operation}");
+            assert!(ctx.engine.stats().progress_trace.lock().unwrap().is_none());
+            ctx.close().await;
+        }
+    }
+
     /// Builds a mock-engine context whose project directory holds `modules`
     /// in an in-memory file system, with `main.kcl` as the current file so
     /// that errors can name the entry point's path. Nothing touches disk, so

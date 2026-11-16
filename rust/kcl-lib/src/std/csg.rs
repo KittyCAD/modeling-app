@@ -121,6 +121,10 @@ pub(crate) async fn inner_union(
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
+        args.ctx
+            .engine
+            .stats()
+            .record_mock_command(args.source_range, "boolean_union");
         record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Union, &new_solids);
         return Ok(new_solids);
     }
@@ -219,6 +223,10 @@ pub(crate) async fn inner_intersect(
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
+        args.ctx
+            .engine
+            .stats()
+            .record_mock_command(args.source_range, "boolean_intersection");
         record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Intersect, &new_solids);
         return Ok(new_solids);
     }
@@ -308,6 +316,10 @@ pub(crate) async fn inner_subtract(
     let tool_ids = tools.iter().map(|s| s.id).collect::<Vec<_>>();
 
     if args.ctx.no_engine_commands().await {
+        args.ctx
+            .engine
+            .stats()
+            .record_mock_command(args.source_range, "boolean_subtract");
         // Output N new bodies, where N is the number of input target bodies.
         let new_solids = solids
             .iter()
@@ -454,6 +466,10 @@ pub(crate) async fn inner_imprint(
     let separate_bodies = !merge;
 
     if args.ctx.no_engine_commands().await {
+        args.ctx
+            .engine
+            .stats()
+            .record_mock_command(args.source_range, "boolean_imprint");
         if separate_bodies {
             let extra_solid_id = exec_state.next_uuid();
             let mut new_solid = body.clone();

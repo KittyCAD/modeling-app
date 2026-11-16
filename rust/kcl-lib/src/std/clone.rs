@@ -130,6 +130,19 @@ async fn inner_clone(
         };
 
         if args.ctx.no_engine_commands().await {
+            args.ctx
+                .engine
+                .stats()
+                .record_mock_command(args.source_range, "entity_clone");
+            record_mock_clone_queries(
+                match &geometry {
+                    GeometryWithImportedGeometry::Solid(solid) => Some(solid),
+                    _ => None,
+                },
+                old_id,
+                source_topology_id,
+                &args,
+            );
             res.push(new_geometry);
         } else {
             exec_state
@@ -147,6 +160,32 @@ async fn inner_clone(
 
     Ok(res)
 }
+
+// Mirror and clone skip the same topology reconstruction in mock execution.
+pub(super) fn record_mock_clone_queries(
+    solid: Option<&Solid>,
+    old_id: uuid::Uuid,
+    source_topology_id: uuid::Uuid,
+    args: &Args,
+) {
+    let stats = args.ctx.engine.stats();
+    for _ in 0..if old_id == source_topology_id { 2 } else { 3 } {
+        stats.record_mock_command(args.source_range, "entity_get_all_child_uuids");
+    }
+    if let Some(solid) = solid {
+        if solid.best_guess_body_type.is_none() {
+            stats.record_mock_command(args.source_range, "solid3d_get_body_type");
+        }
+        if solid.sketch().is_some() {
+            stats.record_mock_command(args.source_range, "object_bring_to_front");
+            stats.record_mock_command(args.source_range, "solid3d_get_extrusion_face_info");
+            if !args.ctx.settings.skip_artifact_graph && !solid.sectional {
+                stats.record_mock_command(args.source_range, "solid3d_get_adjacency_info");
+            }
+        }
+    }
+}
+
 /// Fix the tags and references of the cloned geometry.
 pub(super) async fn fix_tags_and_references(
     new_geometry: &mut GeometryWithImportedGeometry,

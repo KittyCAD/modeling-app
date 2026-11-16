@@ -141,6 +141,14 @@ async fn inner_helix(
     });
 
     if args.ctx.no_engine_commands().await {
+        let command = if cylinder.is_some() {
+            "entity_make_helix"
+        } else if matches!(axis, Some(Axis3dOrEdgeReference::Axis { .. })) {
+            "entity_make_helix_from_params"
+        } else {
+            "entity_make_helix_from_edge"
+        };
+        args.ctx.engine.stats().record_mock_command(args.source_range, command);
         return Ok(helix_result);
     }
 

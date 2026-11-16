@@ -48,6 +48,10 @@ pub(crate) async fn inner_plane_of(
     // Support mock execution
     // Return an arbitrary (incorrect) plane and a non-fatal error.
     if args.ctx.no_engine_commands().await {
+        args.ctx
+            .engine
+            .stats()
+            .record_mock_command(args.source_range, "face_is_planar");
         exec_state.err(crate::CompilationIssue {
             source_range: args.source_range,
             message: "The engine isn't available, so returning an arbitrary incorrect plane".to_owned(),

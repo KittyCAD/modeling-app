@@ -61,6 +61,10 @@ pub(crate) async fn get_face_ids_for_edge(
     args: &Args,
 ) -> Result<Vec<Uuid>, KclError> {
     if args.ctx.no_engine_commands().await {
+        args.ctx
+            .engine
+            .stats()
+            .record_mock_command(args.source_range, "solid3d_get_all_edge_faces");
         // Return two so that anything that is expecting an edge on a solid
         // works.
         return Ok(vec![exec_state.next_uuid(), exec_state.next_uuid()]);
@@ -106,6 +110,10 @@ pub(crate) async fn get_refactor_meta_for_edge(
     stdlib_fn: EdgeRefactorStdlibFn,
 ) -> Result<EdgeRefactorMeta, KclError> {
     if args.ctx.no_engine_commands().await {
+        args.ctx
+            .engine
+            .stats()
+            .record_mock_command(args.source_range, "query_entity_type");
         return Ok(EdgeRefactorMeta {
             edge_id,
             face_ids: [exec_state.next_uuid(), exec_state.next_uuid()],
@@ -219,6 +227,10 @@ pub(crate) async fn record_refactor_meta_for_direct_tag(
             .await?;
     }
     if args.ctx.no_engine_commands().await {
+        args.ctx
+            .engine
+            .stats()
+            .record_mock_command(args.source_range, "solid3d_get_adjacency_info");
         let face_ids = [exec_state.next_uuid(), exec_state.next_uuid()];
         exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
             edge_id: tag_info.id,
@@ -319,6 +331,9 @@ async fn inner_get_opposite_edge(
     // before substituting a synthetic opposite-edge ID.
     let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false).await?;
     if args.ctx.no_engine_commands().await {
+        let stats = args.ctx.engine.stats();
+        stats.record_mock_command(args.source_range, "solid3d_get_opposite_edge");
+        stats.record_mock_command(args.source_range, "query_entity_type");
         return Ok(exec_state.next_uuid());
     }
 
@@ -384,6 +399,9 @@ async fn inner_get_next_adjacent_edge(
 ) -> Result<Uuid, KclError> {
     check_tag_not_ambiguous(&edge, &args)?;
     if args.ctx.no_engine_commands().await {
+        let stats = args.ctx.engine.stats();
+        stats.record_mock_command(args.source_range, "solid3d_get_next_adjacent_edge");
+        stats.record_mock_command(args.source_range, "query_entity_type");
         return Ok(exec_state.next_uuid());
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false).await?;
@@ -456,6 +474,9 @@ async fn inner_get_previous_adjacent_edge(
 ) -> Result<Uuid, KclError> {
     check_tag_not_ambiguous(&edge, &args)?;
     if args.ctx.no_engine_commands().await {
+        let stats = args.ctx.engine.stats();
+        stats.record_mock_command(args.source_range, "solid3d_get_prev_adjacent_edge");
+        stats.record_mock_command(args.source_range, "query_entity_type");
         return Ok(exec_state.next_uuid());
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false).await?;
@@ -559,6 +580,9 @@ async fn inner_get_common_edge(
     check_tag_not_ambiguous(&face2, &args)?;
     let id = exec_state.next_uuid();
     if args.ctx.no_engine_commands().await {
+        let stats = args.ctx.engine.stats();
+        stats.record_mock_command(args.source_range, "solid3d_get_common_edge");
+        stats.record_mock_command(args.source_range, "query_entity_type");
         return Ok(id);
     }
 

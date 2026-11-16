@@ -214,8 +214,8 @@ impl EngineStats {
         }
     }
 
-    /// Record queries suppressed by mock geometry, only during progress planning.
-    pub fn record_mock_query(&self, source_range: SourceRange, command: &str) {
+    /// Record commands suppressed by mock geometry, only during progress planning.
+    pub fn record_mock_command(&self, source_range: SourceRange, command: &str) {
         if let Ok(mut trace) = self.progress_trace.lock()
             && let Some(trace) = trace.as_mut()
         {
