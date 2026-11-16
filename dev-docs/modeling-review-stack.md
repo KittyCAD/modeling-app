@@ -2,7 +2,7 @@
 
 The primary migration reuses `modelingMachine`, its sketch children, the legacy toolbar, and the legacy form dialogs inside independently owned editor views. Independent tool contributions remain the intended direction, recorded in [ADR 0002](../src/dev-docs/adr/0002-machine-backed-modeling-transition.md). They are not a prerequisite for the editor ownership change.
 
-Each wave contains at most four branches. Each row is based on the preceding row, including across waves. Existing foundations remain PRs #15158, #15159, and #15160; no duplicate foundation PRs are needed. This arrangement is local. Previously published review refs have not been updated.
+Each wave contains at most four branches. Each row is based on the preceding row, including across waves. Existing foundations remain PRs #15158, #15159, and #15160; no duplicate foundation PRs are needed. This arrangement is local. Previously published optional review refs have not been updated; their replacements use new local names. The existing `codex/modeling-machine-host` branch is the shortened primary cutover.
 
 | Wave | Branch | Review focus |
 | --- | --- | --- |
@@ -17,12 +17,13 @@ Each wave contains at most four branches. Each row is based on the preceding row
 | Machine migration | `codex/review-machine-document` | Canonical document/history adapter and adoption of an already-executed native model |
 | Machine migration | `codex/modeling-machine-host` | Actual machine-backed Modeling view, exclusive picking handoff, source acknowledgement, retirement, and ADR 0002 |
 | Machine migration | `codex/review-tool-dialog-modes` | Optional contributed Extrude/Loft Form/Code editors submitting through the machine |
-| Presentation | `codex/review-responsive-tool-groups` | Optional semantic groups and responsive toolbar presentation |
-| Presentation | `codex/review-compact-status-bars` | Optional compact status layout |
-| Correspondence | `codex/review-artifact-correspondence` | Artifact-backed provenance query policies |
-| Correspondence | `codex/review-editor-selection-bridges` | Explicit Code/Modeling links, decorations, and constrained cross-view command picking |
-| Correspondence | `codex/local-entity-styling` | Arbitrary local entity styling and source-view correspondence hues |
-| Correspondence | `codex/sketch-correspondence` | Correspondence through the machine's native sketch context |
+| Presentation | `codex/review-machine-responsive-tools` | Optional semantic groups and responsive toolbar presentation |
+| Presentation | `codex/review-machine-compact-status` | Optional compact status layout |
+| Presentation | `codex/review-machine-sketch-presentation` | Stream-only sketch tint and opacity control, projected from machine activity |
+| Correspondence | `codex/review-machine-artifact-correspondence` | Artifact-backed provenance query policies |
+| Correspondence | `codex/review-machine-selection-bridges` | Explicit Code/Modeling links, decorations, and constrained cross-view command picking |
+| Correspondence | `codex/review-machine-entity-styling` | Arbitrary local entity styling and source-view correspondence hues |
+| Correspondence | `codex/review-machine-sketch-correspondence` | Correspondence through the machine's native sketch context |
 
 The initial editor transition can stop at `codex/modeling-machine-host`. The later branches are enhancements, not dependencies of that transition. Command reuse exposes the existing tool system; it does not establish tested parity for every command or renderer. Project export metadata and feature-tree integration remain explicit adapter work. Live stream, local GPU, and packaged desktop smoke tests remain necessary.
 
