@@ -35,7 +35,7 @@ test(
   { tag: ['@web', '@localRenderer'] },
   async ({ page, homePage, scene, toolbar, fs, folderSetupFn }, testInfo) => {
     await folderSetupFn(async (dir) => {
-      const project = join(dir, 'body-history-fan')
+      const project = await fs.join(dir, 'body-history-fan')
       await fs.mkdir(project, { recursive: true })
       for (const file of [
         'main.kcl',
@@ -45,7 +45,7 @@ test(
         'parameters.kcl',
       ]) {
         await fs.writeFile(
-          join(project, file),
+          await fs.join(project, file),
           new Uint8Array(
             await readFile(join('public/kcl-samples/axial-fan', file))
           )
@@ -71,11 +71,9 @@ test(
       await expect(toggle).toHaveAttribute('aria-expanded', 'false')
       await toggle.click()
     }
-    const booleanBody = part
-      .getByTestId('feature-tree-body-branch')
-      .filter({
-        has: page.getByRole('button', { name: 'Subtract', exact: true }),
-      })
+    const booleanBody = part.getByTestId('feature-tree-body-branch').filter({
+      has: page.getByRole('button', { name: 'Subtract', exact: true }),
+    })
     await expect(
       booleanBody.getByRole('button', { name: 'Extrude', exact: true })
     ).toBeVisible()

@@ -110,7 +110,8 @@ export function buildBodyOperationTree(
         (a) =>
           a.type === 'sweep' ||
           a.type === 'compositeSolid' ||
-          a.type === 'pattern'
+          a.type === 'pattern' ||
+          a.type === 'path'
       )
       .map(producer)
   )
@@ -120,7 +121,16 @@ export function buildBodyOperationTree(
     Extract<Artifact, { type: 'pattern' }>
   >()
   const patternSources = new Map<string, string>()
+  const profileMembers = new Map<string, string[]>()
   for (const artifact of graph.values()) {
+    if (
+      (artifact.type === 'sweep' || artifact.type === 'segment') &&
+      artifact.pathId
+    ) {
+      const members = profileMembers.get(artifact.pathId) ?? []
+      members.push(artifact.id)
+      profileMembers.set(artifact.pathId, members)
+    }
     if (artifact.type === 'pattern') {
       for (const id of artifact.copyIds) patternByCopy.set(id, artifact)
     } else if (
@@ -185,6 +195,8 @@ export function buildBodyOperationTree(
       ].filter((id): id is string => !!id)
     if (artifact.type === 'sketchBlock')
       return artifact.planeId ? [artifact.planeId] : []
+    if (artifact.type === 'segment')
+      return [artifact.originalSegId ?? artifact.pathId]
     if (artifact.type === 'compositeSolid')
       // Boolean inputs can be engine profile IDs. Only follow sweepId here,
       // never while walking a shared sketch's dependencies.
@@ -192,7 +204,9 @@ export function buildBodyOperationTree(
         const input = graph.get(id)
         return input?.type === 'path' && input.sweepId
           ? [id, input.sweepId]
-          : [id]
+          : // Boolean outputs can replace their input path at the same ID.
+            // Its segments retain the region code reference and original sketch.
+            [id, ...(profileMembers.get(id) ?? [])]
       })
     if (artifact.type === 'pattern') return [sourceBody(artifact.id)]
     return []

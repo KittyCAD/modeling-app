@@ -426,6 +426,71 @@ describe('body feature hierarchy', () => {
     expect(tree.operations).toEqual([])
   })
 
+  it('retains a region and its sketch when a Boolean output reuses the profile ID', () => {
+    const sketch: Artifact = {
+      type: 'path',
+      id: 'sketch',
+      subType: 'sketch',
+      planeId: 'xy',
+      segIds: ['original'],
+      trajectorySweepId: null,
+      consumed: false,
+      codeRef: codeRef(0),
+    }
+    const segment: Artifact = {
+      type: 'segment',
+      id: 'original',
+      pathId: sketch.id,
+      edgeIds: [],
+      commonSurfaceIds: [],
+      codeRef: codeRef(0),
+    }
+    const regionSegment: Artifact = {
+      ...segment,
+      id: 'region-segment',
+      pathId: 'profile',
+      originalSegId: segment.id,
+      codeRef: codeRef(10),
+    }
+    const unused: Artifact = {
+      ...sketch,
+      id: 'unused-region',
+      subType: 'region',
+      codeRef: codeRef(20),
+    }
+    const extrusion = { ...sweep('extrusion', 30, 'profile'), consumed: true }
+    const result: BodyArtifact = {
+      type: 'compositeSolid',
+      id: 'profile',
+      subType: 'subtract',
+      consumed: false,
+      solidIds: ['profile'],
+      toolIds: [],
+      codeRef: codeRef(40),
+    }
+    const region = (start: number): Operation => ({
+      ...call(start),
+      name: 'region',
+      unlabeledArg: {
+        value: { type: 'Segment', artifact_id: segment.id },
+        sourceRange: codeRef(start).range,
+      },
+    })
+    const nodes = [call(0), region(10), region(20), call(30), call(40)]
+    const tree = buildBodyOperationTree(
+      nodes,
+      bodies(result),
+      graph(sketch, segment, regionSegment, unused, extrusion, result)
+    )
+    expect(tree.branches[0].operations).toEqual([
+      nodes[0],
+      nodes[1],
+      nodes[3],
+      nodes[4],
+    ])
+    expect(tree.operations).toEqual([nodes[2]])
+  })
+
   it('keeps pattern copies and their edits in the source body history', () => {
     const a = sweep('a', 10, 'path')
     const pattern: BodyArtifact = {

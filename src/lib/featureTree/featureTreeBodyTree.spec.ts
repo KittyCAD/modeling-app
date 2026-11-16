@@ -1,12 +1,12 @@
 import { readFile, readdir, access } from 'node:fs/promises'
-import { resolve } from 'node:path'
+import { basename, resolve } from 'node:path'
 import { afterAll, beforeAll, expect, test } from 'vitest'
 import { getBodiesFromArtifactGraph } from '@src/lang/std/artifactGraph'
+import { assertParse } from '@src/lang/wasm'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import { buildBodyOperationTree } from '@src/lib/featureTree/featureTreeBodyTree'
 import { buildOperationTree } from '@src/lib/featureTree/featureTreeOperationTree'
-import { getAstAndArtifactGraph } from '@src/lib/testHelpers'
-import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import { isArray } from '@src/lib/utils'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 
@@ -19,13 +19,13 @@ beforeAll(async () => {
   })
   const directory = resolve('public/kcl-samples/axial-fan')
   projectFsManager.setOperations({
-    readFile: (path) => readFile(resolve(directory, path)),
+    readFile: (path) => readFile(resolve(directory, basename(path))),
     exists: (path) =>
-      access(resolve(directory, path)).then(
+      access(resolve(directory, basename(path))).then(
         () => true,
         () => false
       ),
-    readDirectory: (path) => readdir(resolve(directory, path)),
+    readDirectory: () => readdir(directory),
   })
 })
 
@@ -37,14 +37,14 @@ afterAll(() => {
     route: 'user-requested',
     initiatedBy: 'client',
   })
+  world?.rustContext.destroy()
 })
 
 test('PC Fan keeps the housing Boolean inputs beneath its three bodies', async () => {
   const code = await readFile('public/kcl-samples/axial-fan/main.kcl', 'utf8')
-  const state = await getAstAndArtifactGraph(
-    code,
-    world.instance,
-    world.kclManager
+  const state = await world.rustContext.execute(
+    assertParse(code, world.instance),
+    {}
   )
   const tree = buildBodyOperationTree(
     buildOperationTree(state.operations, 0),
@@ -85,10 +85,9 @@ test('pump housing nests all contributing features beneath its six bodies', asyn
     'e2e/playwright/fixtures/pump-housing.kcl',
     'utf8'
   )
-  const state = await getAstAndArtifactGraph(
-    code,
-    world.instance,
-    world.kclManager
+  const state = await world.rustContext.execute(
+    assertParse(code, world.instance),
+    {}
   )
   const tree = buildBodyOperationTree(
     buildOperationTree(state.operations, 0),
