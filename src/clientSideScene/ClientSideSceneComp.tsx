@@ -130,7 +130,6 @@ export const ClientSideScene = ({
         resizeFrame = undefined
         sceneInfra.onCanvasResized()
         sceneInfra.camControls.onWindowResize()
-        sceneEntitiesManager.onCamChange().catch(reportRejection)
       })
     })
     observer.observe(container)
