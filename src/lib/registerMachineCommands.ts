@@ -26,7 +26,28 @@ export function registerMachineCommands<
     showExperimentalCommands: boolean
   }
 ) {
-  const registered = Object.keys(input.commandBarConfig ?? {})
+  const registered = createMachineCommands<T, S>(input)
+  commands.send({ type: 'Add commands', data: { commands: registered } })
+  return () =>
+    commands.send({ type: 'Remove commands', data: { commands: registered } })
+}
+
+export function createMachineCommands<
+  T extends AnyStateMachine,
+  S extends StateMachineCommandSetSchema<T>,
+>(input: {
+  machineId: T['id']
+  state: StateFrom<T>
+  send: (event: EventFrom<T>) => void
+  actor: Actor<T>
+  commandBarConfig?: StateMachineCommandSetConfig<T, S>
+  getDefaultDescription?: (type: EventFrom<T>['type']) => string | undefined
+  scopes: Command['scopes']
+  onCancel?: () => void
+  forceDisable: boolean
+  showExperimentalCommands: boolean
+}) {
+  return Object.keys(input.commandBarConfig ?? {})
     .flatMap((type) =>
       createMachineCommand<T, S>({
         groupId: input.machineId,
@@ -52,7 +73,4 @@ export function registerMachineCommands<
         : command
     )
     .filter((command) => command !== null) as Command[]
-  commands.send({ type: 'Add commands', data: { commands: registered } })
-  return () =>
-    commands.send({ type: 'Remove commands', data: { commands: registered } })
 }

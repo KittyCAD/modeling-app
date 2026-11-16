@@ -8,6 +8,7 @@ import type { UserFeaturesService } from '@src/machines/userFeaturesMachine'
 import {
   COMMAND_PALETTE_OPEN_COMMAND_SCOPE,
   commandScopeService,
+  contextualCommandsService,
   commandSystemService,
   commandsFacet,
   FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
@@ -171,6 +172,75 @@ describe('commands extension', () => {
     expect(onSubmit).toHaveBeenCalledOnce()
     await registry.dispose()
   })
+  it('routes shared commands to the active view and restores registry defaults when that view retires', async () => {
+    const registry = new Registry()
+    const submitted: string[] = []
+    const command = (target: string): Command => ({
+      groupId: 'test',
+      name: 'Run',
+      scopes: GLOBAL_COMMAND_SCOPES,
+      needsReview: false,
+      onSubmit: () => {
+        submitted.push(target)
+      },
+    })
+    const activeScopes = signal<readonly string[]>([])
+    await registry.configure([
+      createCommandsExtension(defineFactory({create:()=>({exports:{manager:new MachineManager()}})})),
+      provideWasmPromise(() => Promise.resolve({} as ModuleType)),
+      provideCommand(command('default')),
+      provide(commandScopeService, {
+        activeScopes,
+        applyScope: (scope) => {activeScopes.value=[...activeScopes.value,scope]},
+        removeScope: (scope) => {activeScopes.value=activeScopes.value.filter(value=>value!==scope)},
+        getCurrentScopes:()=>activeScopes.value,
+        focusScope:()=>({onFocus:()=>{},onBlur:()=>{}}),
+      }),
+    ])
+    const service = registry.required(commandSystemService)
+    const contextual = registry.required(contextualCommandsService)
+    const firstCommands = signal([command('first')])
+    const firstScopes = signal(['mode-modeling'])
+    const first = contextual.register({
+      commands: firstCommands,
+      scopes: firstScopes,
+    })
+    const second = contextual.register({
+      commands: signal([command('second')]),
+      scopes: signal(['mode-sketchSolve']),
+    })
+    const invoke = () =>
+      service.send({
+        type: 'Find and select command',
+        data: { name: 'Run', groupId: 'test' },
+      })
+    try {
+      invoke()
+      first.activate()
+      invoke()
+      activeScopes.value = [...activeScopes.peek(), 'unrelated']
+      firstCommands.value = [command('updated first')]
+      invoke()
+      second.activate()
+      first.dispose()
+      invoke()
+      expect(activeScopes.peek()).toEqual(['unrelated', 'mode-sketchSolve'])
+      second.dispose()
+      invoke()
+      expect(activeScopes.peek()).toEqual(['unrelated'])
+      expect(submitted).toEqual([
+        'default',
+        'first',
+        'updated first',
+        'second',
+        'default',
+      ])
+      expect(service.actor.getSnapshot().status).toBe('active')
+    } finally {
+      await registry.dispose()
+    }
+  })
+
   it('syncs the command palette scope with command machine state', async () => {
     const activeScopes = signal<readonly string[]>([])
     const applyScope = (scope: string) => {
