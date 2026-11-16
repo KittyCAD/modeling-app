@@ -3226,11 +3226,13 @@ export class KclManager extends File {
         connected: () => !!this.engineCommandManager.connection,
         geometryOnly: () => this.engineCommandManager.geometryOnly,
         capture: () => {
+          const connection = this.engineCommandManager.connection
           const path = this.path
           const projectPath = this.systemDeps.projectPath.peek()
           return {
             isCurrent: () =>
               this.sceneSettingsActive.peek() &&
+              this.engineCommandManager.connection === connection &&
               this.path === path &&
               this.systemDeps.projectPath.peek() === projectPath,
             execute: () => this.executeCode(),

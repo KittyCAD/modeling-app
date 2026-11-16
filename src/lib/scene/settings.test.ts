@@ -1,5 +1,6 @@
 import { batch, signal } from '@preact/signals-core'
 import {
+  type SceneExecutionSettings,
   createSceneExecutionSettings,
   observeSceneExecutionSettings,
 } from '@src/lib/scene/settings'
@@ -71,14 +72,19 @@ function observer() {
   const settings = createSettings()
   const active = signal(false)
   const local = signal(false)
+  const connected = signal(true)
   const execute = vi.fn(async () => {})
-  const rebuild = vi.fn(async () => {})
+  const rebuild = vi.fn<
+    (
+      configuration: SceneExecutionSettings['configuration']['value']
+    ) => Promise<void>
+  >(async () => {})
   const current = signal(true)
   const snapshots = createSceneExecutionSettings(() => settings)
   const dispose = observeSceneExecutionSettings({
     settings: snapshots,
     active: () => active.value,
-    connected: () => true,
+    connected: () => connected.value,
     geometryOnly: () => local.value,
     capture: () => ({
       execute,
@@ -86,7 +92,16 @@ function observer() {
       isCurrent: () => active.peek() && current.peek(),
     }),
   })
-  return { settings, active, local, execute, rebuild, current, dispose }
+  return {
+    settings,
+    active,
+    local,
+    connected,
+    execute,
+    rebuild,
+    current,
+    dispose,
+  }
 }
 
 it('keeps inactive baselines current and batches refresh inputs for the active scene', () => {
@@ -144,3 +159,65 @@ it('keeps local backface changes out of native refresh', () => {
     state.dispose()
   }
 })
+
+it('applies the latest queued backface rebuild before executing a newer ordinary setting', async () => {
+  const state = observer()
+  const first = Promise.withResolvers<undefined>()
+  const second = Promise.withResolvers<undefined>()
+  state.rebuild
+    .mockImplementationOnce(() => first.promise)
+    .mockImplementationOnce(() => second.promise)
+  try {
+    state.active.value = true
+    state.settings.modeling.backfaceColor.user = '#123456'
+    state.settings.modeling.backfaceColor.user = '#654321'
+    state.settings.modeling.highlightEdges.user = false
+    expect(state.rebuild).toHaveBeenCalledOnce()
+    expect(state.execute).not.toHaveBeenCalled()
+
+    first.resolve(undefined)
+    await vi.waitFor(() => expect(state.rebuild).toHaveBeenCalledTimes(2))
+    expect(
+      state.rebuild.mock.calls[1][0].settings?.modeling?.backface_color
+    ).toBe('#654321')
+    expect(state.execute).not.toHaveBeenCalled()
+    second.resolve(undefined)
+    await vi.waitFor(() => expect(state.execute).toHaveBeenCalledOnce())
+  } finally {
+    state.dispose()
+    first.resolve(undefined)
+    second.resolve(undefined)
+  }
+})
+
+it.each(['close', 'deactivate', 'replace', 'reactivate', 'reconnect'] as const)(
+  'does not restart queued refreshes after the scene owner changes (%s)',
+  async (change) => {
+    const state = observer()
+    const first = Promise.withResolvers<undefined>()
+    state.rebuild.mockImplementationOnce(() => first.promise)
+    try {
+      state.active.value = true
+      state.settings.modeling.backfaceColor.user = '#123456'
+      state.settings.modeling.backfaceColor.user = '#654321'
+      state.settings.modeling.highlightEdges.user = false
+      if (change === 'close') state.dispose()
+      if (change === 'deactivate' || change === 'reactivate')
+        state.active.value = false
+      if (change === 'replace') state.current.value = false
+      if (change === 'reactivate') state.active.value = true
+      if (change === 'reconnect') {
+        state.connected.value = false
+        state.connected.value = true
+      }
+      first.resolve(undefined)
+      await first.promise
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(state.rebuild).toHaveBeenCalledOnce()
+      expect(state.execute).not.toHaveBeenCalled()
+    } finally {
+      state.dispose()
+      first.resolve(undefined)
+    }
+  }
+)
