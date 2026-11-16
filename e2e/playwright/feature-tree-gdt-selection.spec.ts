@@ -34,10 +34,9 @@ ${treatment}001 = ${treatment}(
       await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
       await scene.settled()
       await toolbar.openFeatureTreePane()
-      await toolbar.featureTreePane
-        .getByRole('button', { name: new RegExp(`${treatment}001`) })
-        .first()
-        .click()
+      await (
+        await toolbar.getFeatureTreeOperation(new RegExp(`${treatment}001`), 0)
+      ).click()
       await expect(toolbar.selectionStatus).toContainText('1 face')
       await cmdBar.openCmdBar()
       await page.getByPlaceholder('Search commands').fill('GDT Annotation')

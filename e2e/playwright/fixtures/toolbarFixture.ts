@@ -366,14 +366,29 @@ export class ToolbarFixture {
    * Get a specific operation button from the Feature Tree pane.
    * Index is 0-based.
    */
-  async getFeatureTreeOperation(operationName: string, operationIndex: number) {
+  async getFeatureTreeOperation(
+    operationName: string | RegExp,
+    operationIndex: number
+  ) {
     await this.openFeatureTreePane()
     await expect(this.featureTreePane).toBeVisible()
-    return this.featureTreePane
+    const operation = this.featureTreePane
       .getByRole('button', {
         name: operationName,
       })
       .nth(operationIndex)
+    await this.revealBodyFeatures(() => operation.isVisible())
+    return operation
+  }
+
+  async revealBodyFeatures(isRevealed?: () => Promise<boolean>) {
+    const collapsed = this.featureTreePane.locator(
+      '[data-module-branch] > button[aria-expanded="false"], [data-testid="feature-tree-body"] > button[aria-expanded="false"]'
+    )
+    while ((await collapsed.count()) > 0) {
+      if (isRevealed && (await isRevealed())) return
+      await collapsed.first().click()
+    }
   }
 
   async openFeatureTreeOperationContextMenu(
@@ -397,6 +412,7 @@ export class ToolbarFixture {
   async getFeatureTreeOperationGroupCaret(index: number) {
     await this.openFeatureTreePane()
     await expect(this.featureTreePane).toBeVisible()
+    await this.revealBodyFeatures()
     return this.featureTreePane.getByTestId('operation-group-caret').nth(index)
   }
 

@@ -180,7 +180,7 @@ export const interactionOutcomes = {
     isReady(document) {
       const panel = document.querySelector('#operations-list-pane')
       const operation = panel?.querySelector(
-        '[data-testid="feature-tree-operation-item"] > button:not(:disabled)'
+        '[data-testid="feature-tree-operation-item"] > button:not(:disabled), [data-testid="feature-tree-body"] button:not(:disabled)'
       )
       return isVisible(operation) && transitionsEnded(panel)
     },

@@ -1,4 +1,5 @@
 import { prepareModeling } from '@e2e/performance/scenarios'
+import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import {
   expectInteractionBudget,
   finishCapture,
@@ -33,7 +34,7 @@ test('harness waits for usable modeling content', async ({
     {
       definition: interactions.featureTreeOpen,
       selector:
-        '#operations-list-pane [data-testid="feature-tree-operation-item"] > button',
+        '#operations-list-pane [data-testid="feature-tree-operation-item"] > button, #operations-list-pane [data-testid="feature-tree-body"] button',
       control: page.getByTestId(interactions.featureTreeOpen.testId),
     },
     {
@@ -77,6 +78,9 @@ test('harness waits for usable modeling content', async ({
         })
         await control.click()
         await waitForSample(page, definition.id, 1)
+        if (definition.id === interactions.featureTreeOpen.id) {
+          await new ToolbarFixture(page).revealBodyFeatures()
+        }
       } finally {
         await style.evaluate((element) =>
           element.parentNode?.removeChild(element)

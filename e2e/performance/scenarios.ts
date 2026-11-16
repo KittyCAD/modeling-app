@@ -3,6 +3,7 @@ import path from 'node:path'
 import { expect } from '@playwright/test'
 import type { Locator, Page } from '@playwright/test'
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
+import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import type { ComparisonContext } from '@e2e/performance/comparison'
 import { interactions } from '@src/lib/interactionPerformance/definitions'
 import type { InteractionDescription } from '@src/lib/interactionPerformance/types'
@@ -150,6 +151,8 @@ export function scenarioActions(
         {
           definition: interactions.featureTreeOpen,
           verify: async () => {
+            // Reveal the parent bodies after measuring pane opening, before measuring sketches.
+            await new ToolbarFixture(page).revealBodyFeatures()
             await expect(
               page
                 .locator('#operations-list-pane')

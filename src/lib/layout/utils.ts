@@ -29,7 +29,7 @@ import { capitaliseFC, throttle } from '@src/lib/utils'
 import type React from 'react'
 
 /** Most recent layout system version */
-export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v4'
+export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v5'
 
 export const defaultLayout = defaultLayoutConfig
 
@@ -1115,6 +1115,59 @@ function getLayoutMigrations(): LayoutMigrationMap {
                       ],
                     }
                   : layout,
+            ],
+          },
+        ],
+      },
+    ],
+    [
+      'v4',
+      {
+        newVersion: 'v5',
+        transformationSets: [
+          {
+            matcher: (layout) =>
+              layout.id === featureTreePaneConfig.id &&
+              layout.type === LayoutType.Splits &&
+              layout.children.some(
+                (child) =>
+                  child.type === LayoutType.Simple &&
+                  child.areaType === AreaType.FeatureTree
+              ) &&
+              layout.children.some(
+                (child) =>
+                  child.type === LayoutType.Simple &&
+                  child.areaType === AreaType.Bodies
+              ),
+            transformations: [
+              (layout) => {
+                if (layout.type !== LayoutType.Splits) return layout
+                const reclaimed = layout.children.reduce(
+                  (size, child, index) =>
+                    child.type === LayoutType.Simple &&
+                    child.areaType === AreaType.Bodies
+                      ? size + layout.sizes[index]
+                      : size,
+                  0
+                )
+                const retained = layout.children
+                  .map((child, index) => ({ child, size: layout.sizes[index] }))
+                  .filter(
+                    ({ child }) =>
+                      child.type !== LayoutType.Simple ||
+                      child.areaType !== AreaType.Bodies
+                  )
+                return {
+                  ...layout,
+                  children: retained.map(({ child }) => child),
+                  sizes: retained.map(({ child, size }) =>
+                    child.type === LayoutType.Simple &&
+                    child.areaType === AreaType.FeatureTree
+                      ? size + reclaimed
+                      : size
+                  ),
+                }
+              },
             ],
           },
         ],
