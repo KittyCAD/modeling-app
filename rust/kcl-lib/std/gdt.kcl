@@ -1457,6 +1457,14 @@ export fn distance(
   fontSize?: number(Length),
   /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
   annotationName?: string,
+  /// Text above the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textAbove?: string,
+  /// Text below the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textBelow?: string,
+  /// Text left the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textLeft?: string,
+  /// Text right the complete label, outside any control frame. Uses fontSize and the annotation plane. Empty text adds no spacing.
+  textRight?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T profile annotation specifying how much edges or faces may deviate from their ideal shape.
