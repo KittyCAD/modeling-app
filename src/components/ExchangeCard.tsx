@@ -519,14 +519,11 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
     }
   }, [isEndOfStream])
 
-  if (isEndOfStream) {
-    const endOfStreamResponse = getEndOfStreamResponse(props.responses)
-    if (endOfStreamResponse !== undefined) {
-      startedAt = new Date(endOfStreamResponse.end_of_stream.started_at ?? 0)
-    }
-  }
-
   const endOfStreamResponse = getEndOfStreamResponse(props.responses)
+  const responseStartedAt = endOfStreamResponse?.end_of_stream.started_at
+  if (responseStartedAt) {
+    startedAt = new Date(responseStartedAt)
+  }
   const completedAt = endOfStreamResponse?.end_of_stream.completed_at
   const elapsedMs = Math.max(
     0,
@@ -578,7 +575,10 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
     if (latestWarning !== undefined) break
   }
   const progressStatus = latestCommentary ?? 'Working…'
-  const durationText = `${isEndOfStream ? 'Worked' : 'Working'} for ${elapsedLabel}`
+  const durationText =
+    endOfStreamResponse && (!responseStartedAt || !completedAt)
+      ? 'Worked'
+      : `${isEndOfStream ? 'Worked' : 'Working'} for ${elapsedLabel}`
   const activityCardClass = `rounded-md border border-chalkboard-30 p-3 text-xs text-chalkboard-70 dark:border-chalkboard-70 dark:text-chalkboard-30 ${
     isEndOfStream ? '' : 'zk-activity-card-running'
   }`

@@ -748,6 +748,36 @@ describe('ExchangeCard activity after replay', () => {
   })
 
   test.each([
+    {},
+    { started_at: '2026-07-15T12:00:00.000Z' },
+    { completed_at: '2026-07-15T12:01:00.000Z' },
+  ])(
+    'omits unknown completed durations and retains the known turn start: %j',
+    (timestamps) => {
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2026-07-15T12:01:00.000Z'))
+      render(
+        <ExchangeCard
+          request={{ type: 'user', content: 'Add a hole' }}
+          responses={[
+            { reasoning: { type: 'text', content: 'Checking constraints' } },
+            { end_of_stream: { whole_response: 'Done.', ...timestamps } },
+          ]}
+          deltasAggregated="Done."
+          startedAt={new Date('2026-07-15T12:00:00.000Z')}
+          isLastResponse
+          onClickClearChat={vi.fn()}
+        />
+      )
+
+      expect(
+        screen.getByRole('button', { name: 'Worked View activity' })
+      ).toBeVisible()
+      expect(screen.getByText('1 minute ago')).toBeVisible()
+    }
+  )
+
+  test.each([
     { info: { text: 'Message canceled by user.' } },
     { error: { detail: 'Request failed.' } },
   ])('stops the activity timer for a terminal notice: %j', (notice) => {

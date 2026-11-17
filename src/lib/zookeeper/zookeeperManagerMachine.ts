@@ -22,6 +22,7 @@ import { getKclVersion } from '@src/lib/kclVersion'
 import { Socket, SocketConnectionError } from '@src/lib/socket'
 import { cleanErrs, isErr } from '@src/lib/trap'
 import { binaryToUuid, isArray, isRecord, uuidv4 } from '@src/lib/utils'
+import { parseZookeeperActivity } from '@src/lib/zookeeper/activityMessages'
 import { withZookeeperWebSocketURL } from '@src/lib/withBaseURL'
 import { S, transitions, xstateEventError } from '@src/machines/utils'
 import ms from 'ms'
@@ -812,7 +813,13 @@ export const ZookeeperConversationToMarkdown = (
               'deleted_project_file',
             ].includes(response.reasoning.type) === false
           ) {
-            const contentWithoutCode = response.reasoning.content.replace(
+            const activity = parseZookeeperActivity(response)
+            const content = activity
+              ? activity.kind === 'tool'
+                ? activity.label || activity.name.replaceAll('_', ' ')
+                : activity.text
+              : response.reasoning.content
+            const contentWithoutCode = content.replace(
               /```[\s\S]*?```/gm,
               '~~Code redacted~~'
             )

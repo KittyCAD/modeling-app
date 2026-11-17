@@ -122,7 +122,7 @@ test.describe(
 
         await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
         await expect(copilot.conversationInput).toBeVisible()
-        await expect(copilot.activityCard).toContainText('Worked for', {
+        await expect(copilot.activityCard).toContainText('Worked', {
           timeout: 30_000,
         })
         expect(zookeeperConnectionCount).toBe(1)
