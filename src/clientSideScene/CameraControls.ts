@@ -272,9 +272,11 @@ export class CameraControls {
 
   private handleStart = () => {
     this._isCamMovingCallback(true)
+    this.cameraInteraction.dispatch()
   }
   private handleEnd = () => {
     this._isCamMovingCallback(false)
+    this.cameraInteraction.dispatch()
   }
 
   setCam = (camProps: ReactCameraProperties) => {
@@ -548,6 +550,8 @@ export class CameraControls {
   }
 
   public readonly cameraChange = new LegacySignal()
+  /** Navigation starts and ends, including a drag held still before release. */
+  public readonly cameraInteraction = new LegacySignal()
 
   /**
    * The client camera and engine stream must use the same normalized viewport
@@ -1252,9 +1256,15 @@ export class CameraControls {
    * Frames the model without turning the camera, as the engine's zoom_to_fit
    * does. `padding` grows the model's bounds by that fraction of their size.
    */
-  async zoomToFit({ padding }: { padding: number }): Promise<void> {
+  async zoomToFit({
+    padding,
+    bounds,
+  }: {
+    padding: number
+    bounds?: Box3
+  }): Promise<void> {
     if (this.effectiveCameraMode === 'local') {
-      const bounds = this.getLocalScene()?.getFitBounds()
+      bounds ??= this.getLocalScene()?.getFitBounds()
       if (bounds) {
         frameLocalCamera(
           this.camera,

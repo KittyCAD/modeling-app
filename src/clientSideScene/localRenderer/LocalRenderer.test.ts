@@ -9,7 +9,7 @@ import { Themes } from '@src/lib/theme'
 import {
   Group,
   Mesh,
-  type OrthographicCamera,
+  OrthographicCamera,
   PerspectiveCamera,
   Scene,
   Vector3,
@@ -17,6 +17,7 @@ import {
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { MeshStandardNodeMaterial } from 'three/webgpu'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import * as modelVisibility from '@src/clientSideScene/localRenderer/modelViewportCoverage'
 
 vi.mock('@src/lang/KclManager', () => ({
   KclManagerEvents: { ExecutionDone: 'execution-done' },
@@ -39,6 +40,7 @@ import type { Artifact } from '@src/lang/wasm'
 type RendererInternals = {
   initialize(): Promise<void>
   scheduleRender(): void
+  updateLocalCamera(): void
   gpu: FakeGpu | null
   currentModel: Group | null
   loadedSceneGeneration: number | null
@@ -130,6 +132,7 @@ function fixture(
       baseUnitChange: new Signal(),
       camControls: {
         camera,
+        cameraInteraction: new Signal(),
         isDragging: false,
         wasDragging: false,
         hoverPickingDisabled: false,
@@ -179,7 +182,10 @@ describe('local GLB loading', () => {
     // clear the camera reset mock.
     vi.mocked(resetCameraPosition).mockClear()
   })
-  afterEach(() => vi.restoreAllMocks())
+  afterEach(() => {
+    vi.restoreAllMocks()
+    vi.useRealTimers()
+  })
 
   function planeFixture(id = 'plane-xy') {
     const f = fixture()
@@ -418,6 +424,87 @@ describe('local GLB loading', () => {
       boundsWithPlanes?.getSize(new Vector3()).length() ?? 0
     )
     f.renderer.dispose()
+  })
+
+  it('updates model visibility with hysteresis on camera changes', async () => {
+    vi.useFakeTimers()
+    const camera = new OrthographicCamera(-1000, 1000, 1000, -1000, 0.1, 1e6)
+    const f = fixture(camera)
+    f.state.camera = new PerspectiveCamera()
+    camera.position.set(500, -2000, 500)
+    camera.up.set(0, 0, 1)
+    f.manager.sceneInfra.camControls.target.set(500, 0, 500)
+    f.state.updateLocalCamera()
+    const lost = f.renderer.isModelOutOfView
+    expect(lost.value).toBe(false)
+    f.done()
+    await vi.waitFor(() => expect(f.renderer.isLoadedSceneCurrent()).toBe(true))
+    await vi.advanceTimersByTimeAsync(300)
+    expect(lost.value).toBe(false)
+
+    camera.zoom = 0.3
+    f.state.updateLocalCamera()
+    expect(lost.value).toBe(false)
+    await vi.advanceTimersByTimeAsync(300)
+    expect(lost.value).toBe(true)
+    // Do not flicker when the model is only just above the show threshold.
+    camera.zoom = 0.35
+    f.state.updateLocalCamera()
+    await vi.advanceTimersByTimeAsync(300)
+    expect(lost.value).toBe(true)
+    camera.zoom = 1
+    f.state.updateLocalCamera()
+    await vi.advanceTimersByTimeAsync(300)
+    expect(lost.value).toBe(false)
+
+    camera.position.x += 50000
+    f.manager.sceneInfra.camControls.target.x += 50000
+    f.state.updateLocalCamera()
+    await vi.advanceTimersByTimeAsync(300)
+    expect(lost.value).toBe(true)
+    f.renderer.dispose()
+  })
+
+  it('checks visibility once after navigation settles and waits for a held drag to end', async () => {
+    vi.useFakeTimers()
+    const coverage = vi.spyOn(modelVisibility, 'modelViewportCoverage')
+    const f = fixture()
+    f.state.camera = new PerspectiveCamera()
+    f.done()
+    await vi.waitFor(() => expect(f.renderer.isLoadedSceneCurrent()).toBe(true))
+    await vi.advanceTimersByTimeAsync(300)
+    coverage.mockClear()
+    const controls = f.manager.sceneInfra.camControls
+    controls.camera.position.set(100000, -100000, 100000)
+
+    for (let frame = 0; frame < 60; frame++) {
+      f.state.updateLocalCamera()
+      await vi.advanceTimersByTimeAsync(16)
+    }
+    expect(coverage).not.toHaveBeenCalled()
+    expect(f.renderer.isModelOutOfView.value).toBe(false)
+    await vi.advanceTimersByTimeAsync(299 - 16)
+    expect(coverage).not.toHaveBeenCalled()
+    await vi.advanceTimersByTimeAsync(1)
+    expect(coverage).toHaveBeenCalledOnce()
+    expect(f.renderer.isModelOutOfView.value).toBe(true)
+
+    controls.isDragging = true
+    controls.cameraInteraction.dispatch()
+    expect(f.renderer.isModelOutOfView.value).toBe(false)
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(coverage).toHaveBeenCalledOnce()
+    controls.isDragging = false
+    controls.cameraInteraction.dispatch()
+    await vi.advanceTimersByTimeAsync(300)
+    expect(coverage).toHaveBeenCalledTimes(2)
+    expect(f.renderer.isModelOutOfView.value).toBe(true)
+
+    f.state.updateLocalCamera()
+    f.renderer.dispose()
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(coverage).toHaveBeenCalledTimes(2)
+    expect(f.renderer.isModelOutOfView.value).toBe(false)
   })
 
   it('keeps the loaded model when an execution leaves the scene unchanged', async () => {

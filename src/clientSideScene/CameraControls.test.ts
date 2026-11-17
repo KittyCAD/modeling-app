@@ -13,6 +13,7 @@ import {
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { getDimensions } from '@src/lib/engineConnection/utils'
 import {
+  Box3,
   Group,
   OrthographicCamera,
   PerspectiveCamera,
@@ -20,6 +21,7 @@ import {
   Vector2,
   Vector3,
 } from 'three'
+import { modelViewportCoverage } from '@src/clientSideScene/localRenderer/modelViewportCoverage'
 import { afterEach, describe, expect, it, type MockInstance, vi } from 'vitest'
 
 afterEach(() => {
@@ -66,6 +68,34 @@ function unusedSettings(): never {
   throw new Error('Settings are not used by viewport projection updates')
 }
 
+it.each(['perspective', 'orthographic'])(
+  'recovers a tiny displaced model despite visible planes in %s',
+  async (projection) => {
+    const model = new Box3(new Vector3(10000, 0, 0), new Vector3(10001, 1, 1))
+    const sceneBounds = model
+      .clone()
+      .union(new Box3(new Vector3(-50, -50, -50), new Vector3(50, 50, 50)))
+    const controls = new CameraControls(
+      makeCanvas(1024, 768),
+      makeConnectionManager({ width: 1024, height: 768 }),
+      unusedSettings,
+      () => ({
+        getFitBounds: () => sceneBounds,
+        getSelectionBounds: () => undefined,
+      })
+    )
+    controls.localCameraMode = true
+    if (projection === 'orthographic') controls.useOrthographicCamera()
+    await controls.zoomToFit({ padding: 0.1 })
+    expect(modelViewportCoverage(model, controls.camera)).toBeLessThan(0.03)
+    await controls.zoomToFit({ padding: 0.1, bounds: model })
+    expect(modelViewportCoverage(model, controls.camera)).toBeGreaterThan(0.04)
+    expect(
+      controls.target.distanceTo(model.getCenter(new Vector3()))
+    ).toBeLessThan(1e-6)
+  }
+)
+
 /** Commands issued by camera controls, including any unsupported graphics commands. */
 function sentCommandTypes(
   send: MockInstance<ConnectionManager['sendSceneCommand']>
@@ -106,6 +136,15 @@ describe('local canvas spherical orbit', () => {
       buttons: 2,
     })
   }
+
+  it('notifies navigation observers when a held drag starts and ends', () => {
+    const { controls } = setup()
+    const dragStates: boolean[] = []
+    controls.cameraInteraction.add(() => dragStates.push(controls.isDragging))
+    controls.onMouseDown(pointer(512, 100))
+    controls.onMouseUp(pointer(512, 100))
+    expect(dragStates).toEqual([true, false])
+  })
 
   it.each(['perspective', 'orthographic'] as const)(
     'continues through both poles for multiple revolutions in %s',

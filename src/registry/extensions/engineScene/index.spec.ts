@@ -341,6 +341,7 @@ describe('engineScene extension', () => {
       { id: 'engine-scene.toolbar', zone: 'top' },
       { id: 'engine-scene.sketch-background-opacity', zone: 'bottom' },
       { id: 'engine-scene.sketch-constraints-toggle', zone: 'bottom' },
+      { id: 'engine-scene.recenter', zone: 'bottom' },
       { id: 'engine-scene.gizmo', zone: 'bottom' },
       { id: 'engine-scene.modeling-dialog', zone: 'overlay' },
     ])
@@ -404,6 +405,7 @@ describe('engineScene extension', () => {
       ).map((extension) => extension.id)
     ).toEqual([
       'engine-scene.toolbar',
+      'engine-scene.recenter',
       'engine-scene.gizmo',
       'engine-scene.modeling-dialog',
     ])
@@ -417,6 +419,7 @@ describe('engineScene extension', () => {
       'engine-scene.toolbar',
       'engine-scene.sketch-background-opacity',
       'engine-scene.sketch-constraints-toggle',
+      'engine-scene.recenter',
       'engine-scene.gizmo',
       'engine-scene.modeling-dialog',
     ])

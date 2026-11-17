@@ -27,11 +27,13 @@ import {
 import { viewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
 import { createElement, lazy, Suspense } from 'react'
 import executionIndicator from './executionIndicator'
+import { viewportNavigationRuntimeSlot } from './viewportNavigationRuntimeExtension'
 import { measurementToolService } from './measurementToolService'
 import { physicalAnalysisService } from './physicalAnalysis/physicalAnalysisService'
 import { saveViewportScreenshot } from './saveViewportScreenshot'
 import {
   EngineSceneGizmoViewExtension,
+  EngineSceneRecenterViewExtension,
   EngineSceneToolbarViewExtension,
   EngineSceneModelingDialogViewExtension,
   SketchBackgroundOpacityViewExtension,
@@ -231,12 +233,20 @@ const modelingDialogViewExtension = defineEngineSceneViewExtension({
   wrapperClassName: '!pointer-events-none',
 })
 
+const recenterViewExtension = defineEngineSceneViewExtension({
+  id: 'engine-scene.recenter',
+  zone: 'bottom',
+  order: 19,
+  Component: EngineSceneRecenterViewExtension,
+  // Keep the view controls together at the right edge even when Recenter is hidden.
+  wrapperClassName: 'ml-auto self-center',
+})
+
 const gizmoViewExtension = defineEngineSceneViewExtension({
   id: 'engine-scene.gizmo',
   zone: 'bottom',
   order: 20,
   Component: EngineSceneGizmoViewExtension,
-  wrapperClassName: 'ml-auto',
 })
 
 const EngineSceneMeasurementStatusBarItem = () =>
@@ -402,6 +412,9 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
           key: sketchConstraintsToggleViewExtension.id,
         }
       ),
+      provide(engineSceneViewExtensionsValueSpec, recenterViewExtension, {
+        key: recenterViewExtension.id,
+      }),
       provide(engineSceneViewExtensionsValueSpec, gizmoViewExtension, {
         key: gizmoViewExtension.id,
       }),
@@ -409,7 +422,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
         key: modelingDialogViewExtension.id,
       }),
     ],
-    uses: [executionIndicator],
+    uses: [executionIndicator, viewportNavigationRuntimeSlot.of()],
   }
 }, 'engine-scene-extension')
 

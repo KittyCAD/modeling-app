@@ -3,6 +3,7 @@ import type {
   EntityType,
   OkModelingCmdResponse,
 } from '@kittycad/lib'
+import { signal } from '@preact/signals-core'
 import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
 import {
   LOCAL_WEBGPU_GTAO_SAMPLES,
@@ -26,6 +27,7 @@ import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import { IntegerIdPicker } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
 import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
 import { SelectionHighlightRenderer } from '@src/clientSideScene/localRenderer/SelectionHighlightRenderer'
+import { modelViewportCoverage } from '@src/clientSideScene/localRenderer/modelViewportCoverage'
 import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
 import { artifactToEntityRef } from '@src/lang/queryAst'
@@ -89,6 +91,7 @@ import type {
 } from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
 
 const ENGINE_MILLIMETERS_TO_GLTF_METERS = 1 / 1000
+const MODEL_VISIBILITY_IDLE_MS = 300
 
 // If the filter selects whole bodies, returns which kind: 'solid3d' (the "Bodies"
 // filter) or 'object' (set by commands, also allows planes and regions).
@@ -169,6 +172,7 @@ export interface LocalRendererProps {
 }
 
 export class LocalRenderer {
+  readonly isModelOutOfView = signal(false)
   private readonly container: HTMLDivElement
   private readonly kclManager: KclManager
   private readonly settings: RendererSettings
@@ -178,6 +182,9 @@ export class LocalRenderer {
   private readonly disposers: (() => void)[] = []
   private animationFrameId = -1
   private currentModel: Object3D | null = null
+  private readonly modelBounds = new Box3()
+  private modelVisibilityTimeout: ReturnType<typeof setTimeout> | undefined
+  private modelWasOutOfView = false
   private readonly gltfLoader = new GLTFLoader()
   // Shared by all model materials, so a new color doesn't rebuild their shaders.
   private readonly backfaceColor = uniform(new Color())
@@ -252,6 +259,9 @@ export class LocalRenderer {
         this.rebuildSelectionTargets()
       ),
       kclManager.sceneInfra.baseUnitChange.add(this.syncPlaneScale),
+      kclManager.sceneInfra.camControls.cameraInteraction.add(
+        this.scheduleModelVisibilityCheck
+      ),
       () => dprDetector.dispose()
     )
     void this.initialize().catch(this.handleInitializationError)
@@ -766,6 +776,7 @@ export class LocalRenderer {
     this.camera.lookAt(target)
     this.camera.updateProjectionMatrix()
     this.camera.updateMatrixWorld(true)
+    this.scheduleModelVisibilityCheck()
     this.gpu?.integerIdPicker.invalidate()
     this.invalidateBaseRender()
   }
@@ -1029,10 +1040,39 @@ export class LocalRenderer {
     this.scheduleRender()
   }
 
-  /**
-   * What zoom to fit frames, as in the engine: the loaded model and the
-   * visible planes. In the engine's world: Z up, in mm.
-   */
+  private readonly scheduleModelVisibilityCheck = () => {
+    clearTimeout(this.modelVisibilityTimeout)
+    this.modelVisibilityTimeout = undefined
+    this.isModelOutOfView.value = false
+    if (this.disposed || this.modelBounds.isEmpty()) return
+
+    this.modelVisibilityTimeout = setTimeout(() => {
+      this.modelVisibilityTimeout = undefined
+      if (this.kclManager.sceneInfra.camControls.isDragging) return
+      this.updateModelVisibility()
+    }, MODEL_VISIBILITY_IDLE_MS)
+  }
+
+  private updateModelVisibility() {
+    const outOfView = this.isModelOutOfView
+    const coverage = this.camera
+      ? modelViewportCoverage(this.modelBounds, this.camera)
+      : undefined
+    // A little hysteresis prevents flickering at the three-percent boundary.
+    this.modelWasOutOfView =
+      coverage !== undefined &&
+      coverage <= (this.modelWasOutOfView ? 0.04 : 0.03)
+    outOfView.value = this.modelWasOutOfView
+  }
+
+  /** Loaded model only, in the camera's world: Z up, in mm. */
+  getModelBounds(): Box3 | undefined {
+    return this.modelBounds.isEmpty()
+      ? undefined
+      : gltfToEngineBounds(this.modelBounds)
+  }
+
+  /** Standard zoom to fit includes the model and visible reference planes. */
   getFitBounds(): Box3 | undefined {
     const bounds = this.gpu?.planeRenderer.getVisibleBounds() ?? new Box3()
     if (this.currentModel) {
@@ -1057,6 +1097,11 @@ export class LocalRenderer {
 
   private clearModel() {
     const { gpu } = this
+    clearTimeout(this.modelVisibilityTimeout)
+    this.modelVisibilityTimeout = undefined
+    this.modelWasOutOfView = false
+    this.modelBounds.makeEmpty()
+    this.isModelOutOfView.value = false
     this.loadedSceneGeneration = null
     this.engineEntityReferences.clear()
     this.bodyFacesById.clear()
@@ -1346,6 +1391,8 @@ export class LocalRenderer {
 
       this.rebuildSelectionTargets()
       const bounds = new Box3().setFromObject(gltf.scene)
+      this.modelBounds.copy(bounds)
+      this.scheduleModelVisibilityCheck()
       this.updateAmbientOcclusionScale(bounds)
       this.resetCameraIfPending()
       this.invalidateBaseRender()
