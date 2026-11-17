@@ -369,34 +369,87 @@ describe('local GLB loading', () => {
     }
   )
 
-  it('exports once after successful execution and loads standard geometry/materials', async () => {
+  it.each([false, true])(
+    'loads standard geometry/materials with typed bytes: %s',
+    async (typedBytes) => {
+      const f = fixture()
+      if (typedBytes) {
+        const file = triangleGlb()
+        f.manager.rustContext.export.mockResolvedValue([
+          { ...file, contents: new Uint8Array(file.contents) },
+        ])
+      }
+      f.manager.isExecutingSignal.value = true
+      expect(f.manager.rustContext.export).not.toHaveBeenCalled()
+      f.done()
+      await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+      expect(f.manager.rustContext.export).toHaveBeenCalledExactlyOnceWith(
+        {
+          type: 'gltf',
+          storage: 'binary',
+          presentation: 'compact',
+          include_uuids: true,
+          extras: ['sketches', 'regions'],
+        },
+        { settings: { modeling: { base_unit: 'mm' } } }
+      )
+      const mesh = f.state.currentModel?.children[0]
+      expect(mesh).toBeInstanceOf(Mesh)
+      if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
+      expect(mesh.geometry.getAttribute('position').count).toBe(3)
+      expect(mesh.material).toBeInstanceOf(MeshStandardNodeMaterial)
+      expect(mesh.material.metalness).toBe(0.3)
+      expect(mesh.material.roughness).toBe(0.4)
+      expect(resetCameraPosition).toHaveBeenCalledExactlyOnceWith({
+        sceneInfra: f.manager.sceneInfra,
+        settingsActor: f.manager.systemDeps.settings,
+      })
+      expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
+      f.renderer.dispose()
+    }
+  )
+
+  it('shares the backface shader across distinct glTF materials', async () => {
     const f = fixture()
-    f.manager.isExecutingSignal.value = true
-    expect(f.manager.rustContext.export).not.toHaveBeenCalled()
+    f.manager.rustContext.export.mockResolvedValue([triangleGlb(2)])
     f.done()
     await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
-    expect(f.manager.rustContext.export).toHaveBeenCalledExactlyOnceWith(
-      {
-        type: 'gltf',
-        storage: 'binary',
-        presentation: 'compact',
-        include_uuids: true,
-        extras: ['sketches', 'regions'],
-      },
-      { settings: { modeling: { base_unit: 'mm' } } }
-    )
-    const mesh = f.state.currentModel?.children[0]
-    expect(mesh).toBeInstanceOf(Mesh)
-    if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
-    expect(mesh.geometry.getAttribute('position').count).toBe(3)
-    expect(mesh.material).toBeInstanceOf(MeshStandardNodeMaterial)
-    expect(mesh.material.metalness).toBe(0.3)
-    expect(mesh.material.roughness).toBe(0.4)
-    expect(resetCameraPosition).toHaveBeenCalledExactlyOnceWith({
-      sceneInfra: f.manager.sceneInfra,
-      settingsActor: f.manager.systemDeps.settings,
+    const materials: MeshStandardNodeMaterial[] = []
+    f.state.currentModel?.traverse((object) => {
+      if (
+        object instanceof Mesh &&
+        object.material instanceof MeshStandardNodeMaterial
+      ) {
+        materials.push(object.material)
+      }
     })
-    expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
+    expect(materials).toHaveLength(2)
+    expect(materials[0]).not.toBe(materials[1])
+    expect(materials[0].roughness).not.toBe(materials[1].roughness)
+    expect(materials[0].customProgramCacheKey()).toBe(
+      materials[1].customProgramCacheKey()
+    )
+    const key = materials[0].customProgramCacheKey()
+    f.renderer.setBackfaceColor('#ff0000')
+    expect(materials[0].customProgramCacheKey()).toBe(key)
+    f.done()
+    await vi.waitFor(() =>
+      expect(f.manager.rustContext.export).toHaveBeenCalledTimes(2)
+    )
+    await vi.waitFor(() =>
+      expect(f.onModelLoadSettled).toHaveBeenCalledTimes(2)
+    )
+    const reloadedMaterials: MeshStandardNodeMaterial[] = []
+    f.state.currentModel?.traverse((object) => {
+      if (
+        object instanceof Mesh &&
+        object.material instanceof MeshStandardNodeMaterial
+      ) {
+        reloadedMaterials.push(object.material)
+      }
+    })
+    expect(reloadedMaterials).toHaveLength(2)
+    expect(reloadedMaterials[0].customProgramCacheKey()).toBe(key)
     f.renderer.dispose()
   })
 
@@ -554,7 +607,7 @@ function offsetPlane(): Extract<Artifact, { type: 'plane' }> {
   }
 }
 
-function triangleGlb(): ModelingAppFile {
+function triangleGlb(materialCount = 1): ModelingAppFile {
   const vertices = new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0])
   const json = JSON.stringify({
     asset: { version: '2.0' },
@@ -567,10 +620,20 @@ function triangleGlb(): ModelingAppFile {
     scene: 0,
     scenes: [{ nodes: [0] }],
     nodes: [{ mesh: 0 }],
-    meshes: [{ primitives: [{ attributes: { POSITION: 0 }, material: 0 }] }],
-    materials: [
-      { pbrMetallicRoughness: { metallicFactor: 0.3, roughnessFactor: 0.4 } },
+    meshes: [
+      {
+        primitives: Array.from({ length: materialCount }, (_, material) => ({
+          attributes: { POSITION: 0 },
+          material,
+        })),
+      },
     ],
+    materials: Array.from({ length: materialCount }, (_, index) => ({
+      pbrMetallicRoughness: {
+        metallicFactor: 0.3,
+        roughnessFactor: 0.4 + index * 0.1,
+      },
+    })),
     buffers: [{ byteLength: vertices.byteLength }],
     bufferViews: [{ buffer: 0, byteLength: vertices.byteLength }],
     accessors: [
