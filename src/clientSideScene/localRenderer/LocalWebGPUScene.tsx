@@ -11,6 +11,9 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 // The default planes are shown or hidden about 200 ms after an execution, so
 // the thumbnail waits for them, like the streamed one does.
 const THUMBNAIL_DELAY_MS = 500
+// The projects API keeps an uploaded thumbnail only at exactly this size, and
+// renders its own with the engine otherwise.
+const THUMBNAIL_SIZE = { width: 1280, height: 720 }
 // How often the pending command count is read, as the status bar's tooltip does.
 const PENDING_COMMAND_POLL_MS = 100
 
@@ -64,7 +67,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
       if (isNewModel && renderer && captureThumbnail) {
         setTimeout(() => {
           if (rendererRef.current !== renderer) return
-          renderer.readFrame(captureThumbnail)
+          renderer.readFrame(captureThumbnail, THUMBNAIL_SIZE)
         }, THUMBNAIL_DELAY_MS)
       }
     },

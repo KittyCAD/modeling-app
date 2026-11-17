@@ -94,6 +94,23 @@ function encodeVisibleFrame(
   if (!crop) {
     return Promise.resolve(null)
   }
+  return encodeCanvas(frameCanvas)
+}
+
+// Copies all of the canvas before returning, and encodes it afterwards.
+function encodeWholeCanvas(canvas: HTMLCanvasElement): Promise<Blob | null> {
+  const frameCanvas = document.createElement('canvas')
+  frameCanvas.width = canvas.width
+  frameCanvas.height = canvas.height
+  const context = frameCanvas.getContext('2d')
+  if (!context) {
+    return Promise.resolve(null)
+  }
+  context.drawImage(canvas, 0, 0, canvas.width, canvas.height)
+  return encodeCanvas(frameCanvas)
+}
+
+function encodeCanvas(frameCanvas: HTMLCanvasElement): Promise<Blob> {
   return new Promise((resolve, reject) => {
     // Serialize thumbnails asynchronously so PNG encoding does not block input.
     frameCanvas.toBlob((blob) => {
@@ -200,9 +217,9 @@ export function createProjectThumbnail({
   fileOperations: FileOperationsRegistryService
   projectDirectoryWithoutEndingSlash: string
   /**
-   * A canvas the local renderer drew in this same task, used instead of the
-   * video stream. WebGPU and WebGL canvases read back blank afterwards, so it
-   * is copied before this returns.
+   * A canvas the local renderer drew in this same task at the thumbnail's
+   * size, used whole instead of the video stream. WebGPU and WebGL canvases
+   * read back blank afterwards, so it is copied before this returns.
    */
   renderedCanvas?: HTMLCanvasElement
   isCurrent: () => boolean
@@ -226,7 +243,7 @@ export function createProjectThumbnail({
   }
   if (renderedCanvas) {
     if (projectDirectoryWithoutEndingSlash) {
-      save(encodeVisibleFrame(renderedCanvas, renderedCanvas))
+      save(encodeWholeCanvas(renderedCanvas))
     }
     return
   }
