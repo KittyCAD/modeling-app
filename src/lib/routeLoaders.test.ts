@@ -1,5 +1,8 @@
+import { signal } from '@preact/signals-core'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
+import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import '@src/lib/projectSession/next/testFeature'
-import { posix } from '@chainner/node-path'
 import { App } from '@src/lib/app'
 import editorsExtension from '@src/lib/editors/registry'
 import { editorsService } from '@src/lib/editors/registry/contract'
@@ -10,10 +13,12 @@ import type { ZDSProject } from '@src/lib/projectSession'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import type { Project } from '@src/lib/projectSession/next/types'
 import { readProject } from '@src/lib/projectSession/next/utils'
-import projectSessionExtension from '@src/lib/projectSession/registry'
+import projectSessionExtension, {
+  createProjectSessionExtension,
+} from '@src/lib/projectSession/registry'
 import { fileLoader, localLoader, projectLoader } from '@src/lib/routeLoaders'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import { Registry } from 'plankton'
+import { factory, provide, Registry } from 'plankton'
 import {
   afterEach,
   beforeAll,
@@ -29,7 +34,7 @@ const environment = vi.hoisted(() => ({
 }))
 vi.mock('@src/lib/fs-zds', async (importOriginal) => ({
   ...(await importOriginal<typeof FsZdsModule>()),
-  default: posix,
+  default: (await import('@chainner/node-path')).posix,
 }))
 
 // Transitive loader imports reach this wrapper even though redirects never use
@@ -553,7 +558,7 @@ describe('local directory loader', () => {
 })
 describe('cloud project loader', () => {
   beforeEach(() => vi.clearAllMocks())
-  it.each(['remote-123', '/projects/not-a-cloud-id', 'cloud:remote-123'])(
+  it.each(['/projects/not-a-cloud-id', 'cloud:remote-123', '..'])(
     'never treats a cloud-route ID as a local path: %s',
     async (id) => {
       const app = new App(App.getDefaultSystems())
@@ -570,12 +575,128 @@ describe('cloud project loader', () => {
           context: undefined,
           unstable_pattern: '/project/:id',
         })
-      ).rejects.toThrow('Cloud projects are not yet supported')
+      ).rejects.toThrow('Expected a cloud project API ID')
       expect(vi.spyOn(app.registry, 'required')).not.toHaveBeenCalled()
       expect(readProject).not.toHaveBeenCalled()
       expect(loadAndValidateSettings).not.toHaveBeenCalled()
     }
   )
+  async function setupCloud() {
+    const app = new App(App.getDefaultSystems())
+    const registry = new Registry()
+    const readFile = vi.fn(async () =>
+      new TextEncoder().encode('cloud file contents')
+    )
+    await registry.configure([
+      editorsExtension,
+      createProjectSessionExtension(
+        factory({
+          create: () => ({
+            exports: { operations: { ...testFileOperations, readFile } },
+          }),
+        })
+      ),
+      provide(fileOperationsService, { ...testFileOperations, readFile }),
+    ])
+    const path = '/__zoo_cloud__/api-id'
+    const cloud = {
+      openProject: vi.fn(async () => path),
+      projects: signal([{ id: 'api-id', title: 'Cloud bracket' }]),
+    }
+    vi.spyOn(app.registry, 'required').mockImplementation((token) =>
+      Object.is(token, cloudStorageService) ? cloud : registry.required(token)
+    )
+    vi.spyOn(app.registry, 'optional').mockImplementation((token) =>
+      Object.is(token, cloudStorageService) ? cloud : registry.optional(token)
+    )
+    const project: Project = {
+      contents: {
+        name: 'api-id',
+        path,
+        children: [
+          { name: 'main.kcl', path: `${path}/main.kcl`, children: null },
+        ],
+      },
+      metadata: { title: 'api-id', readWriteAccess: true },
+    }
+    vi.mocked(readProject).mockResolvedValue(project)
+    return {
+      app,
+      registry,
+      cloud,
+      project,
+      readFile,
+      closeProject: vi.spyOn(app, 'closeProject'),
+    }
+  }
+
+  it('opens the API ID through cloud storage and loads its initial editor from the returned mount', async () => {
+    const { app, registry, cloud, readFile } = await setupCloud()
+    try {
+      await projectLoader({ app })({
+        request: new Request('https://app.zoo.dev/project/api-id'),
+        params: { id: 'api-id' },
+        context: undefined,
+        unstable_pattern: '/project/:id',
+      })
+      expect(cloud.openProject).toHaveBeenCalledWith('api-id')
+      const session = registry
+        .required(projectSessionService)
+        .currentSession.peek()!
+      expect(session.project.peek().storage).toEqual({
+        type: 'cloud',
+        projectId: 'api-id',
+      })
+      expect(session.project.peek().metadata.title).toBe('Cloud bracket')
+      const editor = registry.required(editorsService).editors.peek()[0]
+      expect(editor.src.peek()).toBe('/__zoo_cloud__/api-id/main.kcl')
+      expect(editor.contents.peek()).toBe('cloud file contents')
+      expect(registry.required(editorsService).views.peek()[0].editor).toBe(
+        editor
+      )
+      expect(readFile).toHaveBeenCalledWith('/__zoo_cloud__/api-id/main.kcl')
+      expect(loadAndValidateSettings).not.toHaveBeenCalled()
+    } finally {
+      await registry.dispose()
+    }
+  })
+
+  it.each(['cancel', 'failure'] as const)(
+    'preserves the selected project after opening %s',
+    async (kind) => {
+      const { app, registry, cloud, project, closeProject } = await setupCloud()
+      try {
+        const projects = registry.required(projectSessionService)
+        const previous = projects.openProject(project)
+        const controller = new AbortController()
+        if (kind === 'cancel')
+          cloud.openProject.mockImplementationOnce(async () => {
+            controller.abort()
+            return project.contents.path
+          })
+        else
+          vi.mocked(readProject).mockRejectedValueOnce(
+            new Error('Download failed')
+          )
+        await expect(
+          projectLoader({ app })({
+            request: new Request('https://app.zoo.dev/project/api-id', {
+              signal: controller.signal,
+            }),
+            params: { id: 'api-id' },
+            context: undefined,
+            unstable_pattern: '/project/:id',
+          })
+        ).rejects.toBeInstanceOf(Error)
+        expect(projects.currentSession.peek()).toBe(previous)
+        expect(registry.required(editorsService).editors.peek()).toHaveLength(0)
+        expect(closeProject).not.toHaveBeenCalled()
+      } finally {
+        await registry.dispose()
+      }
+    }
+  )
+
   it('retains the feature gate without reading local storage', async () => {
     const app = new App(App.getDefaultSystems())
     environment.projectRouteEnabled = false

@@ -1,12 +1,13 @@
+import fsZds from '@src/lib/fs-zds'
+import { authService } from '@src/registry/contracts/auth'
+import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
+
+import { resolveProjectLocation } from '@src/lib/fileSystem/mounts'
+import { reportRejection } from '@src/lib/trap'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
-import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
 import { FILE_EXT, PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
-import { loadProjectEditor } from '@src/lib/editors/loadProjectEditor'
-import { editorsService } from '@src/lib/editors/registry/contract'
-import { resolveProjectLocation } from '@src/lib/fileSystem/mounts'
-import fsZds from '@src/lib/fs-zds'
 import {
   getRouterSearchFromRequestUrl,
   PATHS,
@@ -14,16 +15,10 @@ import {
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import { getProjectLibraryOwnership } from '@src/lib/projectLibraryOwnership'
-import { projectSessionService } from '@src/lib/projectSession/next/contract'
-import { hasProjectShellFeature } from '@src/lib/projectSession/next/feature'
-import { readProject } from '@src/lib/projectSession/next/utils'
-import { getOnboardingChildRoute } from '@src/lib/routeLoaderNavigation'
 import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
+import { getOnboardingChildRoute } from '@src/lib/routeLoaderNavigation'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import { isErr, reportRejection } from '@src/lib/trap'
 import type { HomeLoaderData } from '@src/lib/types'
-import { waitForUserFeaturesSettled } from '@src/machines/userFeaturesMachine'
-import { authService } from '@src/registry/contracts/auth'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   projectLibrarySettingDefaultPoliciesFacet,
@@ -33,7 +28,15 @@ import { settingsFacet } from '@src/registry/contracts/settings'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
+import { hasProjectShellFeature } from '@src/lib/projectSession/next/feature'
+import { waitForUserFeaturesSettled } from '@src/machines/userFeaturesMachine'
+import { readProject } from '@src/lib/projectSession/next/utils'
+import { projectSessionService } from '@src/lib/projectSession/next/contract'
+import { openInitialProjectEditor } from '@src/lib/projectSession/next/initialEditor'
+import { isErr } from '@src/lib/trap'
+
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
+
 function loadRouteSettings(
   app: App,
   wasmInstance: Awaited<App['wasmPromise']>,
@@ -71,6 +74,7 @@ export const baseLoader =
     if (!window.electron && url.searchParams.has('ask-open-desktop')) {
       return
     }
+
     return redirect(PATHS.HOME + routerSearch)
   }
 
@@ -81,21 +85,62 @@ async function canOpenProjectShell(app: App, signal: AbortSignal) {
   return hasProjectShellFeature(app.userFeatures)
 }
 
-/**
- * `/project/:id` identifies a cloud project by its API ID, never a disk path or
- * an internal cloud relationship ID. Cloud opening is reserved for a follow-up;
- * this route must not fall through to filesystem discovery in the meantime.
- */
+/** Open a cloud API ID through its memory mount, never as a local directory path. */
 export const projectLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async ({ request, params }) => {
     if (!(await canOpenProjectShell(app, request.signal)))
       return redirect(PATHS.HOME)
-    if (!params.id)
-      return Promise.reject(new Error('No cloud project ID provided'))
-    return Promise.reject(
-      new Error('Cloud projects are not yet supported by this route')
+    const id = params.id
+    if (!id || id === '.' || id === '..' || /[\\/:]/.test(id))
+      return Promise.reject(new Error('Expected a cloud project API ID'))
+    const projects = app.registry.required(projectSessionService)
+    const cloud = app.registry.required(cloudStorageService)
+    const ownsServices = () =>
+      hasProjectShellFeature(app.userFeatures) &&
+      app.registry.optional(projectSessionService) === projects &&
+      app.registry.optional(cloudStorageService) === cloud
+    const auth = app.registry.optional(authService)
+    if (auth)
+      await waitFor(auth.actor, (state) => !state.matches('checkIfLoggedIn'), {
+        signal: request.signal,
+      })
+    request.signal.throwIfAborted()
+    if (!ownsServices()) return redirect(PATHS.HOME)
+    const path = await cloud.openProject(id)
+    request.signal.throwIfAborted()
+    if (!ownsServices()) return redirect(PATHS.HOME)
+    const fileOperations = app.registry.required(fileOperationsService)
+    const library = await getProjectLibraryOwnership(
+      app.settings.get().app.libraries.current,
+      path
     )
+    const project = await readProject(fileOperations, path, {
+      signal: request.signal,
+      library,
+    })
+    request.signal.throwIfAborted()
+    if (!ownsServices()) return redirect(PATHS.HOME)
+    // Retire the other route's poller before selecting this opening.
+    app.closeProject()
+    const session = projects.openProject({
+      ...project,
+      storage: { type: 'cloud', projectId: id },
+      metadata: {
+        ...project.metadata,
+        title:
+          cloud.projects.peek().find((item) => item.id === id)?.title ||
+          project.metadata.title,
+      },
+    })
+    const error = await openInitialProjectEditor(
+      app,
+      session,
+      request.signal,
+      fileOperations
+    )
+    if (isErr(error)) return Promise.reject(error)
+    return session
   }
 
 /**
@@ -112,6 +157,7 @@ export const localLoader =
     const { path } = params
     if (!path)
       return Promise.reject(new Error('No local directory path provided'))
+
     const assertCurrent = () => request.signal.throwIfAborted()
     const fileOperations = app.registry.required(fileOperationsService)
     const projectSessions = app.registry.required(projectSessionService)
@@ -120,6 +166,7 @@ export const localLoader =
     const ownsSession = () =>
       hasProjectShellFeature(app.userFeatures) &&
       app.registry.optional(projectSessionService) === projectSessions
+
     const library = await getProjectLibraryOwnership(
       app.settings.get().app.libraries.current,
       path
@@ -134,36 +181,16 @@ export const localLoader =
     if (!ownsSession()) return redirect(PATHS.HOME)
     // Consumers retain this session instead of resolving the global selection again.
     const session = projectSessions.openProject(project)
-    const files = projectSessions.listFiles()
-    const configuredPath = project.metadata.defaultFile
-      ? fsZds.join(project.contents.path, project.metadata.defaultFile)
-      : undefined
-    const entrypoint = fsZds.join(project.contents.path, PROJECT_ENTRYPOINT)
-    const initialFile =
-      files.find((file) => file.path === configuredPath) ??
-      files.find((file) => file.path === entrypoint) ??
-      files.find((file) => fsZds.extname(file.path).toLowerCase() === '.kcl')
-    if (initialFile) {
-      const editor = await loadProjectEditor(
-        initialFile.path,
-        app.registry.required(editorsService),
-        () => projectSessions,
-        () => fileOperations,
-        {
-          signal: request.signal,
-          reuseExisting: true,
-        }
-      )
-      assertCurrent()
-      if (isErr(editor)) return Promise.reject(editor)
-      const editors = app.registry.required(editorsService)
-      if (!editors.views.peek().some((view) => view.editor === editor)) {
-        const view = editors.createView(editor)
-        if (isErr(view)) return Promise.reject(view)
-      }
-    }
+    const error = await openInitialProjectEditor(
+      app,
+      session,
+      request.signal,
+      fileOperations
+    )
+    if (isErr(error)) return Promise.reject(error)
     return session
   }
+
 export const fileLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async (routerData) => {
@@ -172,14 +199,13 @@ export const fileLoader =
       settings: { actor: settingsActor },
     } = app
     const { kclManager } = app.singletons
-    const params = {
-      ...routerData.params,
-    }
+    const params = { ...routerData.params }
     // Old web bookmarks encode /browser/... as the file route's id. These
     // paths no longer identify projects, so return home before filesystem I/O.
     if (params.id?.startsWith('/browser')) {
       return redirect(PATHS.HOME)
     }
+
     if (params.id?.startsWith('local:')) {
       const url = new URL(routerData.request.url)
       url.pathname = url.pathname.replace(
@@ -210,9 +236,7 @@ export const fileLoader =
         undefined,
         true,
         assertCurrent,
-        {
-          deferModeling: true,
-        }
+        { deferModeling: true }
       )
       assertCurrent()
       return
@@ -240,6 +264,7 @@ export const fileLoader =
       params.id = location.id
       assertCurrent()
     }
+
     const cloudStorage = app.registry.required(cloudStorageService)
     if (params.id?.startsWith(`${cloudStorage.root}${fsZds.sep}`)) {
       await waitForCloudAuth()
@@ -254,6 +279,7 @@ export const fileLoader =
       }
       assertCurrent()
     }
+
     const wasmInstance = await kclManager.wasmInstancePromise
     assertCurrent()
 
@@ -279,16 +305,21 @@ export const fileLoader =
             : [],
         })
       : undefined
+
     if (!projectPathData) {
       return Promise.reject(
         new Error('bug: projectPathData undefined, early return')
       )
     }
+
     await loadRouteSettings(app, wasmInstance, projectPathData.projectPath)
     assertCurrent()
+
     const { projectName, projectPath, currentFileName, currentFilePath } =
       projectPathData
+
     const urlObj = new URL(routerData.request.url)
+
     if (!urlObj.pathname.endsWith('/settings')) {
       const fallbackFile = (
         await getProjectInfo(
@@ -320,6 +351,7 @@ export const fileLoader =
         )
         return redirect(requestUrlWithDefaultFile)
       }
+
       if (!fileExists || !currentFileName || !currentFilePath || !projectName) {
         const routerSearch = getRouterSearchFromRequestUrl(
           routerData.request.url,
@@ -329,7 +361,9 @@ export const fileLoader =
           ? getOnboardingChildRoute(routerData.request.url, params.id)
           : ''
         return redirect(
-          `${PATHS.FILE}/${encodeURIComponent(fallbackFile)}${onboardingChildRoute}${routerSearch}`
+          `${PATHS.FILE}/${encodeURIComponent(
+            fallbackFile
+          )}${onboardingChildRoute}${routerSearch}`
         )
       }
     }
@@ -338,6 +372,7 @@ export const fileLoader =
     // So that WASM gets an updated path for operations
     projectFsManager.setOperations(app.fileOperations)
     projectFsManager.dir = projectPath
+
     const defaultProjectData = {
       name: projectName || 'unnamed',
       path: projectPath,
@@ -348,12 +383,14 @@ export const fileLoader =
       default_file: projectPath,
       readWriteAccess: true,
     }
+
     const maybeProjectInfo = await getProjectInfo(
       app.registry.required(fileOperationsService),
       projectPath,
       wasmInstance
     )
     assertCurrent()
+
     const project = maybeProjectInfo ?? defaultProjectData
     const cloud = app.registry.required(cloudStorageService)
     if (projectPath.startsWith(`${cloud.root}${fsZds.sep}`))
@@ -391,6 +428,7 @@ export const fileLoader =
       assertCurrent
     )
     assertCurrent()
+
     void app.projectLibraries.refreshProjects().catch(reportRejection)
   }
 

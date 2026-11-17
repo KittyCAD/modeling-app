@@ -1,4 +1,4 @@
-import { inputs, observe } from '@src/registry/inputs'
+import { inputs, observe, observeService } from '@src/registry/inputs'
 import type {
   EditorState,
   Extension,
@@ -16,6 +16,7 @@ import type { ComponentType } from 'react'
 
 /** One live working document, independent of the views displaying it. */
 export interface Editor {
+  readonly readOnly: ReadonlySignal<boolean>
   readonly id: symbol
   /** Undefined for a new buffer; otherwise a local path or cloud ID plus relative path. */
   readonly src: ReadonlySignal<string | undefined>
@@ -132,6 +133,13 @@ export interface CodeEditorExtension {
   extensions: Extension | ((host: CodeEditorHost) => Extension | Error)
 }
 
+/** A backing or extension can prohibit document edits across every presentation. */
+export interface EditorReadOnlyPolicy {
+  id: string
+  matches: EditorMatcher
+  readOnly: ReadonlySignal<boolean>
+}
+
 /** Informational decorations contributed alongside a buffer's tab label. */
 export interface EditorTabIndicator {
   id: string
@@ -162,6 +170,10 @@ export interface EditorsService {
   closeEditor: (id: symbol) => Error | undefined
 }
 export const editorsContract = contract({
+  editorReadOnlyPoliciesFacet: new Facet<
+    EditorReadOnlyPolicy,
+    readonly EditorReadOnlyPolicy[]
+  >('editors.readOnlyPolicies', (values) => values),
   editorLanguagesFacet: new Facet<EditorLanguage, readonly EditorLanguage[]>(
     'editors.languages',
     (inputs) => inputs
@@ -187,6 +199,7 @@ export const editorsContract = contract({
 export const {
   editorsService,
   editorLanguagesFacet,
+  editorReadOnlyPoliciesFacet,
   editorCapabilityFacet,
   editorTabIndicatorsFacet,
   editorViewsFacet,
@@ -194,6 +207,8 @@ export const {
 } = editorsContract
 
 export const observations = inputs({
+  editorsService: observeService(editorsService),
+  editorReadOnlyPoliciesFacet: observe(editorReadOnlyPoliciesFacet),
   editorCapabilityFacet: observe(editorCapabilityFacet),
   editorViewsFacet: observe(editorViewsFacet),
   codeEditorsExtensionFacet: observe(codeEditorsExtensionFacet),

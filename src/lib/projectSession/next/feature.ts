@@ -21,6 +21,20 @@ export function hasProjectShellFeature(
   return features?.has(PROJECT_SHELL_FEATURE, false) ?? false
 }
 
+/** Gates in one registry share a queue because replacements cannot overlap. */
+const replacements = defineFactory({
+  create: () => {
+    let pending = Promise.resolve()
+    return {
+      exports: (replace: () => Promise<void>) => {
+        const next = pending.then(replace)
+        pending = next.catch(() => {})
+        return next
+      },
+    }
+  },
+})
+
 /** Install an Extension only while the default-off project-shell flag is granted. */
 export function withProjectShellFeature(item: Extension, id: string): Factory {
   const content = slot([])
@@ -29,9 +43,9 @@ export function withProjectShellFeature(item: Extension, id: string): Factory {
     (values: readonly boolean[]) => values.length > 0
   )
   return defineFactory({
-    dependencies: { userFeatures: userFeaturesObservations },
+    dependencies: { userFeatures: userFeaturesObservations, replacements },
     key: `${id}.feature-gate`,
-    create: ({ userFeatures: userFeaturesInputs }, scope) => {
+    create: ({ userFeatures: userFeaturesInputs, replacements }, scope) => {
       let disposed = false
       let active = false
       let updates = Promise.resolve()
@@ -52,7 +66,11 @@ export function withProjectShellFeature(item: Extension, id: string): Factory {
               .then(() =>
                 disposed || !mounted.value
                   ? undefined
-                  : scope.replace(content, enabled ? [item] : [])
+                  : replacements(() =>
+                      disposed || !mounted.value
+                        ? Promise.resolve()
+                        : scope.replace(content, enabled ? [item] : [])
+                    )
               )
               .catch(reportRejection)
           }),

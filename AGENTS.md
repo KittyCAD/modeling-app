@@ -8,6 +8,10 @@ This file applies to all work in this repository. More-specific `AGENTS.md` file
 
 - Use the [code-comments skill](.agents/skills/code-comments/SKILL.md) only when explicitly requested.
 
+## Verification
+
+For routine checks, use the verification commands in [CONTRIBUTING.md](CONTRIBUTING.md#verifying-without-updating-results). Use update commands when intentionally changing expected results, inspect the diff, then rerun verification.
+
 ## Pull requests
 
 - Keep PR descriptions focused on information useful to reviewers: what changed, why, risks, and any non-obvious behavior or testing context. Do not add boilerplate validation sections listing routine tests, lints, or formatters; CI already reports those. Mention validation only when it adds specific, reviewer-relevant information.

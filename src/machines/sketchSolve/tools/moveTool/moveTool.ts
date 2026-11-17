@@ -2032,11 +2032,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
   }
 
   context.sceneInfra.setCallbacks({
-    onMouseLeave: () => {
-      clearConstraintHoverPopups()
-      constraintHoverPopupState.lastHoveredTargetId = null
-      sendHoveredState(null)
-    },
+    // This fires on raycast-object changes, including crossing the popup gap.
+    // onMove owns dismissal using the source-to-badge corridor.
+    onMouseLeave: () => {},
     onDragStart: createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
       setLastGoodPreview,

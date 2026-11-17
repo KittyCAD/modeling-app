@@ -1,5 +1,12 @@
+import { matchesEditor } from '@src/lib/editors/matching'
+import { ReadOnlyIndicator } from '@src/lib/editors/ReadOnlyIndicator'
 import type { EditorView as NativeEditorView } from '@codemirror/view'
-import { type Signal, signal } from '@preact/signals-core'
+import {
+  computed,
+  type ReadonlySignal,
+  type Signal,
+  signal,
+} from '@preact/signals-core'
 import { CodeMirrorView } from '@src/lib/editors/CodeMirrorView'
 import { watchEditorCapabilities } from '@src/lib/editors/capabilities'
 import { createEditorClassification } from '@src/lib/editors/classification'
@@ -23,6 +30,7 @@ import {
   type EditorViewState,
   editorsService,
   editorViewsFacet,
+  editorTabIndicatorsFacet,
 } from '@src/lib/editors/registry/contract'
 import { defineEditorView } from '@src/lib/editors/views'
 import { observations as nextProjectSessionObservations } from '@src/lib/projectSession/next/contract'
@@ -161,11 +169,23 @@ const extension: Factory = defineFactory({
             ?.signal
         const resources = createEditorCleanup()
         const source = signal(src)
-        const backing = createEditorDocument(contents)
+        const backing = createEditorDocument(contents, () => !readOnly.peek())
         resources.onDispose(backing.dispose)
         const text = backing.document.contents
         const language = createEditorClassification(source, text, languages)
+        const readOnly: ReadonlySignal<boolean> = computed(() =>
+          editorsInputs.editorReadOnlyPoliciesFacet.value.some(
+            (policy) =>
+              policy.readOnly.value &&
+              matchesEditor(policy.matches, {
+                src: source.value ?? '',
+                contents: text.value,
+                ...language.classification.value,
+              })
+          )
+        )
         const editor: Editor = {
+          readOnly,
           ...backing.document,
           get state() {
             return backing.document.state
@@ -283,6 +303,10 @@ const extension: Factory = defineFactory({
     } satisfies InputOf<typeof codeEditorsExtensionFacet>
     return {
       items: [
+        contribute(editorTabIndicatorsFacet, () => ({
+          id: 'editors.read-only',
+          component: ReadOnlyIndicator,
+        })),
         contribute(editorViewsFacet, () => _editorViewsContribution),
         contribute(
           keymapEventOwnersFacet,

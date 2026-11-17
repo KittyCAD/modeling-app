@@ -475,6 +475,7 @@ describe('editors extension', () => {
         anchor: 3,
       },
     })
+    await Promise.resolve()
     const dispatch = vi.spyOn(view, 'dispatch')
     await registry.replace(slot, [readOnly('.md')])
     expect(

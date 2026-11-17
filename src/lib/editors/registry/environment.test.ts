@@ -1,4 +1,6 @@
 import { signal } from '@preact/signals-core'
+import savingExtension from '@src/lib/save/registry'
+import { editorSaveService } from '@src/lib/save/registry/contract'
 import {
   NEW_EDITOR_COMMAND,
   OPEN_EDITOR_COMMAND,
@@ -18,7 +20,7 @@ import {
   userFeaturesService,
 } from '@src/registry/contracts/userFeatures'
 import { provide, Registry } from 'plankton'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 const granted = signal(false)
 const featureFlags = [
   provide(userFeaturesService, {
@@ -39,18 +41,28 @@ describe('experimental editor registration', () => {
       await registry.configure([
         featureFlags,
         editorsExtension,
+        savingExtension,
         markdownExtension,
         kclExtension,
       ])
       registry.required(userFeaturesService)
-      await Promise.resolve()
-      expect(registry.get(editorViewsFacet).length > 0).toBe(enabled)
-      expect(registry.optional(editorsService) !== undefined).toBe(enabled)
-      expect(registry.get(codeEditorsExtensionFacet).length > 0).toBe(enabled)
-      for (const command of [OPEN_EDITOR_COMMAND, NEW_EDITOR_COMMAND]) {
-        expect(
-          registry.get(commandsFacet).some(({ id }) => id === command.id)
-        ).toBe(enabled)
+      for (const active of [enabled, !enabled]) {
+        granted.value = active
+        await vi.waitFor(() => {
+          expect(registry!.get(editorViewsFacet).length > 0).toBe(active)
+          expect(registry!.optional(editorsService) !== undefined).toBe(active)
+          expect(registry!.optional(editorSaveService) !== undefined).toBe(
+            active
+          )
+          expect(registry!.get(codeEditorsExtensionFacet).length > 0).toBe(
+            active
+          )
+          for (const command of [OPEN_EDITOR_COMMAND, NEW_EDITOR_COMMAND]) {
+            expect(
+              registry!.get(commandsFacet).some(({ id }) => id === command.id)
+            ).toBe(active)
+          }
+        })
       }
     }
   )
