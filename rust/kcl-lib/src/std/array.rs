@@ -200,6 +200,8 @@ pub async fn push(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let (mut array, ty) = args.get_unlabeled_kw_arg_array_and_type("array", exec_state)?;
     let item: KclValue = args.get_kw_arg("item", &RuntimeType::any(), exec_state)?;
 
+    // Later coercions trust the element type, so only preserve it if the new item satisfies it.
+    let ty = if item.has_type(&ty) { ty } else { RuntimeType::any() };
     array.push(item);
 
     Ok(KclValue::HomArray { value: array, ty })
@@ -369,10 +371,117 @@ fn infer_flattened_type(original_ty: RuntimeType, values: &[KclValue]) -> Runtim
 
 #[cfg(test)]
 mod tests {
+    use kcl_api::UnitLength;
+
     use crate::errors::Severity;
     use crate::errors::Tag;
+    use crate::execution::KclValue;
     use crate::execution::KclValueView;
     use crate::execution::MockConfig;
+    use crate::execution::parse_execute;
+    use crate::execution::types::NumericType;
+    use crate::execution::types::NumericTypeExt;
+    use crate::execution::types::RuntimeType;
+    use crate::execution::types::UnitType;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn push_preserves_compatible_element_type() {
+        for (input, expected_len) in [("[]", 1), ("[1mm, 2mm]", 3)] {
+            let code = format!(
+                r#"@settings(kclVersion = 3.0)
+a = {input}: [mm]
+b = push(a, item = 3mm)
+"#
+            );
+            let result = parse_execute(&code).await.unwrap();
+            let b = result.variable("b");
+            let KclValue::HomArray { value, ty } = b else {
+                panic!("expected an array, got {b:?}");
+            };
+            assert_eq!(value.len(), expected_len);
+            assert_eq!(ty, RuntimeType::known_length(UnitLength::Millimeters));
+            assert!(value.iter().all(|item| item.has_type(&ty)));
+            assert_eq!(value.last().unwrap().as_ty_f64().unwrap().n, 3.0);
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn push_widens_incompatible_element_type() {
+        for input in ["[]", "[1mm, 2mm]"] {
+            let code = format!(
+                r#"@settings(kclVersion = 3.0)
+a = {input}: [mm]
+b = push(a, item = "oops")
+"#
+            );
+            let result = parse_execute(&code).await.unwrap();
+            let b = result.variable("b");
+            let KclValue::HomArray { value, ty } = b else {
+                panic!("expected an array, got {b:?}");
+            };
+            assert_eq!(ty, RuntimeType::any());
+            assert!(matches!(value.last(), Some(KclValue::String { value, .. }) if value == "oops"));
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn push_rejects_incompatible_ascription() {
+        for input in ["[]", "[1mm, 2mm]"] {
+            let code = format!(
+                r#"@settings(kclVersion = 3.0)
+a = {input}: [mm]
+b = push(a, item = "oops")
+c = b: [mm]
+"#
+            );
+            let Err(err) = parse_execute(&code).await else {
+                panic!("expected an incompatible array element to fail ascription");
+            };
+            assert!(err.message().contains("could not coerce"), "{err:?}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn push_allows_later_unit_coercion() {
+        let code = r#"@settings(kclVersion = 3.0)
+a = [1mm, 2mm]: [mm]
+b = push(a, item = 1cm)
+fn asMm(@values: [mm]) { return values }
+c = asMm(b)
+d = b: [mm]
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let b = result.variable("b");
+        let KclValue::HomArray { value, ty } = b else {
+            panic!("expected an array, got {b:?}");
+        };
+        assert_eq!(ty, RuntimeType::any());
+        let appended = value.last().unwrap().as_ty_f64().unwrap();
+        assert_eq!(appended.n, 1.0);
+        assert_eq!(
+            appended.ty,
+            NumericType::Known(UnitType::Length(UnitLength::Centimeters))
+        );
+
+        let c = result.variable("c");
+        let KclValue::HomArray { value, ty } = c else {
+            panic!("expected an array, got {c:?}");
+        };
+        assert_eq!(ty, RuntimeType::known_length(UnitLength::Millimeters));
+        let appended = value.last().unwrap().as_ty_f64().unwrap();
+        assert_eq!(appended.n, 10.0);
+        assert_eq!(appended.ty, NumericType::mm());
+
+        // Explicit ascription reinterprets the units rather than converting them.
+        let d = result.variable("d");
+        let KclValue::HomArray { value, ty } = d else {
+            panic!("expected an array, got {d:?}");
+        };
+        assert_eq!(ty, RuntimeType::known_length(UnitLength::Millimeters));
+        let appended = value.last().unwrap().as_ty_f64().unwrap();
+        assert_eq!(appended.n, 1.0);
+        assert_eq!(appended.ty, NumericType::mm());
+    }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn flatten_consumed_solid_reports_deprecation_warning() {
