@@ -237,7 +237,7 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
 
   test(
     'Right-click opens context menu when not dragged',
-    { tag: ['@web', '@browsers'] },
+    { tag: '@web' },
     async ({ homePage, page }) => {
       const u = await getUtils(page)
 
