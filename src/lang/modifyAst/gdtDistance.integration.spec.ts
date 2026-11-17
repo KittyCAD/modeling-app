@@ -433,12 +433,12 @@ extrude002 = extrude(
 )
 
 it.each([
-  { count: 1, mixed: false },
-  { count: 3, mixed: false },
-  { count: 3, mixed: true },
+  { count: 1, mixed: false, precisionName: undefined },
+  { count: 3, mixed: false, precisionName: undefined },
+  { count: 3, mixed: true, precisionName: 'body001' },
 ])(
   'names a variable-less body after resolving $count edges (mixed topology: $mixed)',
-  async ({ count, mixed }) => {
+  async ({ count, mixed, precisionName }) => {
     const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
     const ast = assertParse(
       `@settings(kclVersion = 3.0)
@@ -518,142 +518,186 @@ extrude(region001, length = 5mm, tagEnd = $end)`,
       ast,
       artifactGraph: graph,
       objects,
+      precision: precisionName
+        ? {
+            valueAst: createLiteral(0, instance),
+            valueText: '0',
+            valueCalculated: '0',
+            variableName: precisionName,
+            variableIdentifierAst: createLocalName(precisionName),
+            variableDeclarationAst: createVariableDeclaration(
+              precisionName,
+              createLiteral(0, instance)
+            ),
+            insertIndex: 0,
+          }
+        : undefined,
       wasmInstance: instance,
     })
     if (result instanceof Error) throw result
     const code = recast(result.modifiedAst, instance)
-    expect(code).toContain('body001 = extrude(')
-    expect(code).toContain('body001.faces.end')
+    if (code instanceof Error) throw code
+    const bodyName = precisionName ? 'body002' : 'body001'
+    expect(code).toContain(`${bodyName} = extrude(`)
+    expect(code).toContain(`${bodyName}.faces.end`)
     expect(code).not.toContain('%')
     if (mixed) {
-      expect(code).toContain('edgeId(body001, index = 1)')
-      expect(code).toContain('edgeId(body001, index = 2)')
+      expect(code).toContain(`edgeId(${bodyName}, index = 1)`)
+      expect(code).toContain(`edgeId(${bodyName}, index = 2)`)
+    }
+    if (precisionName) {
+      expect(code.match(/body001 = 0/g)).toHaveLength(1)
+      expect(code.match(/precision = body001/g)).toHaveLength(count)
     }
     await enginelessExecutor(result.modifiedAst, rustContext)
   }
 )
 
-it('keeps each unique edge length paired with its frame and inherited font', async () => {
-  const { instance, rustContext, kclManager, engineCommandManager } =
-    await buildTheWorldAndNoEngineConnection()
-  const ast = assertParse(
-    `@settings(kclVersion = 3.0)
+it.each([
+  { font: 'labelHeight', setback: 61.875 },
+  { font: 'labelHeight * 10', setback: 433.125 },
+  { font: undefined, setback: 26.4 },
+])(
+  'keeps each unique edge length paired with its frame (font: $font)',
+  async ({ font, setback }) => {
+    const { instance, rustContext, kclManager, engineCommandManager } =
+      await buildTheWorldAndNoEngineConnection()
+    const source = `@settings(kclVersion = 3.0)
 profile = sketch(on = XY) {
   outer = circle(center = [0mm, 0mm], start = [20mm, 0mm])
 }
 plate = extrude(region(sketch = profile, point = [0mm, 0mm]), length = 10mm)
 labelHeight = 15mm
-gdt::note(note = "Large labels", fontSize = labelHeight)`,
-    instance
-  )
-  const { artifactGraph, variables } = await enginelessExecutor(
-    ast,
-    rustContext
-  )
-  const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
-  if (sweep?.type !== 'sweep') throw new Error('Missing body')
-  kclManager.artifactGraph = artifactGraph
-  const variableValues = vi
-    .spyOn(kclManager, 'variables', 'get')
-    .mockReturnValue(variables)
-  const mock = vi
-    .spyOn(engineCommandManager, 'sendSceneCommand')
-    .mockImplementation(async (req) => {
-      if (req.type !== 'modeling_cmd_req') throw new Error('Unexpected request')
-      const cmd = req.cmd
-      let response: OkModelingCmdResponse
-      if (cmd.type === 'bounding_box') {
-        // Edge bounds are unavailable. Endpoints and owning-body bounds remain usable.
-        if (cmd.entity_ids[0]?.startsWith('edge'))
-          throw new Error('No edge bounds')
-        response = {
-          type: cmd.type,
-          data: {
-            center: { x: 0, y: 0, z: 0 },
-            dimensions: { x: 40, y: 40, z: 10 },
-          },
+${font ? `gdt::note(note = "Large labels", fontSize = ${font})` : ''}`
+    const ast = assertParse(source, instance)
+    const { artifactGraph } = await enginelessExecutor(ast, rustContext)
+    const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
+    if (sweep?.type !== 'sweep') throw new Error('Missing body')
+    kclManager.artifactGraph = artifactGraph
+    const codeValue = vi
+      .spyOn(kclManager, 'code', 'get')
+      .mockReturnValue(source)
+    // Mock model execution does not populate the expression evaluator's cached scope.
+    const expressionEvaluation = vi
+      .spyOn(rustContext, 'evaluateExpression')
+      .mockImplementation((expression) =>
+        enginelessExecutor(
+          { ...ast, body: [...ast.body, ...expression.body] },
+          rustContext
+        )
+      )
+    const mock = vi
+      .spyOn(engineCommandManager, 'sendSceneCommand')
+      .mockImplementation(async (req) => {
+        if (req.type !== 'modeling_cmd_req')
+          throw new Error('Unexpected request')
+        const cmd = req.cmd
+        let response: OkModelingCmdResponse
+        if (cmd.type === 'bounding_box') {
+          // Edge bounds are unavailable. Endpoints and owning-body bounds remain usable.
+          if (cmd.entity_ids[0]?.startsWith('edge'))
+            throw new Error('No edge bounds')
+          response = {
+            type: cmd.type,
+            data: {
+              center: { x: 0, y: 0, z: 0 },
+              dimensions: { x: 40, y: 40, z: 10 },
+            },
+          }
+        } else if (cmd.type === 'curve_get_end_points') {
+          response = {
+            type: cmd.type,
+            data: {
+              start: { x: -5, y: -5, z: -5 },
+              end:
+                cmd.curve_id === 'edgeX'
+                  ? { x: 5, y: -5, z: -5 }
+                  : cmd.curve_id === 'edgeY'
+                    ? { x: -5, y: 5, z: -5 }
+                    : { x: -5, y: -5, z: 5 },
+            },
+          }
+        } else if (cmd.type === 'entity_get_parent_id') {
+          response = { type: cmd.type, data: { entity_id: sweep.id } }
+        } else throw new Error(`Unexpected query: ${cmd.type}`)
+        return {
+          success: true,
+          request_id: 'test',
+          resp: { type: 'modeling', data: { modeling_response: response } },
         }
-      } else if (cmd.type === 'curve_get_end_points') {
-        response = {
-          type: cmd.type,
-          data: {
-            start: { x: -5, y: -5, z: -5 },
-            end:
-              cmd.curve_id === 'edgeX'
-                ? { x: 5, y: -5, z: -5 }
-                : cmd.curve_id === 'edgeY'
-                  ? { x: -5, y: 5, z: -5 }
-                  : { x: -5, y: -5, z: 5 },
+      })
+    try {
+      const result = await modelingCommandCodemods['GDT Distance'].run({
+        ast,
+        kclManager,
+        wasmInstance: instance,
+        args: {
+          objects: {
+            graphSelections: ['edgeX', 'edgeX', 'edgeY', 'edgeZ'].map(
+              (engineEntityId) => ({
+                engineEntityId,
+                entityRef: {
+                  type: 'edge',
+                  side_faces: ['sideA', 'sideB'],
+                  index: ['edgeX', 'edgeY', 'edgeZ'].indexOf(engineEntityId),
+                },
+                engineTopologyFallback: {
+                  parentId: sweep.id,
+                  primitiveIndex: ['edgeX', 'edgeY', 'edgeZ'].indexOf(
+                    engineEntityId
+                  ),
+                },
+              })
+            ),
+            otherSelections: [],
           },
-        }
-      } else if (cmd.type === 'entity_get_parent_id') {
-        response = { type: cmd.type, data: { entity_id: sweep.id } }
-      } else throw new Error(`Unexpected query: ${cmd.type}`)
-      return {
-        success: true,
-        request_id: 'test',
-        resp: { type: 'modeling', data: { modeling_response: response } },
-      }
-    })
-  try {
-    const result = await modelingCommandCodemods['GDT Distance'].run({
-      ast,
-      kclManager,
-      wasmInstance: instance,
-      args: {
-        objects: {
-          graphSelections: ['edgeX', 'edgeX', 'edgeY', 'edgeZ'].map(
-            (engineEntityId) => ({
-              engineEntityId,
-              entityRef: {
-                type: 'edge',
-                side_faces: ['sideA', 'sideB'],
-                index: ['edgeX', 'edgeY', 'edgeZ'].indexOf(engineEntityId),
-              },
-              engineTopologyFallback: {
-                parentId: sweep.id,
-                primitiveIndex: ['edgeX', 'edgeY', 'edgeZ'].indexOf(
-                  engineEntityId
-                ),
-              },
-            })
-          ),
-          otherSelections: [],
+          precision: {
+            valueAst: createLiteral(0, instance),
+            valueText: '0',
+            valueCalculated: '0',
+            variableName: 'digits',
+            variableIdentifierAst: createLocalName('digits'),
+            variableDeclarationAst: createVariableDeclaration(
+              'digits',
+              createLiteral(0, instance)
+            ),
+            insertIndex: 0,
+          },
         },
-        precision: {
-          valueAst: createLiteral(0, instance),
-          valueText: '0',
-          valueCalculated: '0',
-          variableName: 'digits',
-          variableIdentifierAst: createLocalName('digits'),
-          variableDeclarationAst: createVariableDeclaration(
-            'digits',
-            createLiteral(0, instance)
-          ),
-          insertIndex: 0,
-        },
-      },
-    })
-    if (result instanceof Error) throw result
-    const code = recast(result.modifiedAst, instance)
-    if (code instanceof Error) throw code
-    expect(code.match(/gdt::distance\(/g)).toHaveLength(3)
-    expect(code.match(/framePlane = XY/g)).toHaveLength(2)
-    expect(code.match(/framePlane = XZ/g)).toHaveLength(1)
-    expect(code.match(/framePosition = \[0mm, -61.875mm\]/g)).toHaveLength(1)
-    expect(code.match(/framePosition = \[0mm, 61.875mm\]/g)).toHaveLength(2)
-    expect(code.match(/fontSize = labelHeight/g)).toHaveLength(4)
-    expect(code.match(/digits = 0/g)).toHaveLength(1)
-    expect(code.match(/precision = digits/g)).toHaveLength(3)
-    await enginelessExecutor(result.modifiedAst, rustContext)
-  } finally {
-    mock.mockRestore()
-    variableValues.mockRestore()
+      })
+      if (result instanceof Error) throw result
+      const code = recast(result.modifiedAst, instance)
+      if (code instanceof Error) throw code
+      expect(code.match(/gdt::distance\(/g)).toHaveLength(3)
+      expect(code.match(/framePlane = XY/g)).toHaveLength(2)
+      expect(code.match(/framePlane = XZ/g)).toHaveLength(1)
+      expect(code.split(`framePosition = [0mm, -${setback}mm]`)).toHaveLength(2)
+      expect(code.split(`framePosition = [0mm, ${setback}mm]`)).toHaveLength(3)
+      expect(code.split(`fontSize = ${font ?? '2.1mm'}`)).toHaveLength(
+        font ? 5 : 4
+      )
+      expect(
+        mock.mock.calls.filter(
+          ([req]) =>
+            req.type === 'modeling_cmd_req' &&
+            req.cmd.type === 'bounding_box' &&
+            req.cmd.entity_ids.length === 0
+        )
+      ).toHaveLength(font ? 0 : 1)
+      expect(code.match(/digits = 0/g)).toHaveLength(1)
+      expect(code.match(/precision = digits/g)).toHaveLength(3)
+      expect(expressionEvaluation).toHaveBeenCalledTimes(1)
+      await enginelessExecutor(result.modifiedAst, rustContext)
+    } finally {
+      mock.mockRestore()
+      codeValue.mockRestore()
+      expressionEvaluation.mockRestore()
+    }
   }
-})
+)
 
 it('uses cylindrical face centers when face bounds point to the other side of the body', async () => {
-  const { instance, engineCommandManager } =
+  const { instance, engineCommandManager, rustContext } =
     await buildTheWorldAndNoEngineConnection()
   const mock = vi
     .spyOn(engineCommandManager, 'sendSceneCommand')
@@ -707,9 +751,12 @@ it('uses cylindrical face centers when face bounds point to the other side of th
       mode: 'between',
       engineCommandManager,
       wasmInstance: instance,
+      rustContext,
     })
-    expect(result.framePlane).toBe('XY')
-    expect(result.framePosition?.valueText).toBe('[0mm, -28.8521mm]')
+    expect(result.frameDefaults[0].framePlane).toBe('XY')
+    expect(result.frameDefaults[0].framePosition?.valueText).toBe(
+      '[0mm, -28.8521mm]'
+    )
   } finally {
     mock.mockRestore()
   }

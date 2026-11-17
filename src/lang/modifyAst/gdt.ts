@@ -1348,6 +1348,20 @@ export function addDistanceGdt({
     expr: Expr
   }> = mNodeToEdit ? [{ kind: 'edge', expr: createLocalName('selection') }] : []
   const unnamedBodies = new Map<number, string>()
+  const reservedNames = new Set(
+    [
+      tolerance,
+      precision,
+      framePosition,
+      framePlane,
+      leaderScale,
+      fontSize,
+    ].flatMap((value) =>
+      value && typeof value !== 'string' && 'variableName' in value
+        ? [value.variableName]
+        : []
+    )
+  )
   const bodyExpression = (
     selection: Selection,
     lastChildLookup = false
@@ -1374,8 +1388,9 @@ export function addDistanceGdt({
       let suffix = unnamedBodies.size + 1
       do {
         name = findUniqueName(modifiedAst, 'body', 3, suffix++)
-      } while ([...unnamedBodies.values()].includes(name))
+      } while (reservedNames.has(name))
       unnamedBodies.set(index, name)
+      reservedNames.add(name)
     }
     return createLocalName(name)
   }
