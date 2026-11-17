@@ -260,3 +260,11 @@ impl GridScaleBehavior {
         }
     }
 }
+
+mod test {
+    #[test]
+    fn build_error() {
+        let &result = new_zoo_client(Some("huh"), Some("okay"));
+        dbg!(&result);
+    }
+}
