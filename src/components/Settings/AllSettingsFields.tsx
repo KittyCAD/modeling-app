@@ -11,6 +11,7 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import {
   canRevealInFileExplorer,
+  canRevealPathInFileExplorer,
   revealInFileExplorer,
 } from '@src/lib/revealInFileExplorer'
 import type { Setting } from '@src/lib/settings/Setting'
@@ -26,6 +27,7 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { capitaliseFC, toSync } from '@src/lib/utils'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
+import { fileOperationsMountsValueSpec } from '@src/registry/contracts/fileOperations'
 import {
   acceptOnboarding,
   reportOnboardingStartFailure,
@@ -73,6 +75,13 @@ export const AllSettingsFields = forwardRef(
 
       return projectPath
     }, [location.pathname, isFileSettings])
+    const canRevealSettingsFolder =
+      searchParamTab === 'project'
+        ? canRevealPathInFileExplorer(
+            projectPath,
+            app.registry.get(fileOperationsMountsValueSpec)
+          )
+        : canRevealInFileExplorer()
 
     function restartOnboarding() {
       return acceptOnboarding({
@@ -202,7 +211,7 @@ export const AllSettingsFields = forwardRef(
                   `}
           >
             <div className="flex flex-col items-start gap-4">
-              {canRevealInFileExplorer() && (
+              {canRevealSettingsFolder && (
                 <ActionButton
                   Element="button"
                   onClick={toSync(async () => {

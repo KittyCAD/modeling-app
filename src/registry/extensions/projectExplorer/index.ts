@@ -1,20 +1,17 @@
 import { selectCommand } from '@src/lib/commandUtils'
-import {
-  defineRegistryItem,
-  defineRegistryItemFactory,
-  provide,
-} from '@kittycad/registry'
+import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import { computed, signal } from '@preact/signals-core'
 import {
   isExtensionARelevantExtension,
   toProjectRelativePath,
 } from '@src/lib/paths'
 import {
-  canRevealInFileExplorer,
+  canRevealPathInFileExplorer,
   revealInFileExplorer,
 } from '@src/lib/revealInFileExplorer'
 import { reportRejection } from '@src/lib/trap'
 import { commandSystemService } from '@src/registry/contracts/commands'
+import { fileOperationsMountsValueSpec } from '@src/registry/contracts/fileOperations'
 import {
   type ProjectExplorerRowContextMenuItem,
   type ProjectExplorerRowContextMenuItemContext,
@@ -102,36 +99,43 @@ const importInCurrentFileExtension = defineRegistryItemFactory((ctx) => {
   }
 }, 'project-explorer.import-in-current-file')
 
-const projectExplorerExtension = defineRegistryItem({
-  id: 'project-explorer',
-  uses: [importInCurrentFileExtension],
-  provides: [
-    provide(
-      projectExplorerProjectMenuItemsValueSpec,
-      {
-        id: 'reveal-in-file-explorer.project-menu',
-        order: 100,
-        label: 'Reveal in file explorer',
-        dataTestId: 'project-sidebar-reveal-in-file-explorer',
-        isVisible: ({ projectPath }) =>
-          Boolean(projectPath) && canRevealInFileExplorer(),
-        onSelect: ({ projectPath }) => revealInFileExplorer(projectPath),
-      },
-      { key: 'reveal-in-file-explorer.project-menu' }
-    ),
-    provide(
-      projectExplorerRowContextMenuItemsValueSpec,
-      {
-        id: 'reveal-in-file-explorer.row-context-menu',
-        order: 100,
-        label: 'Reveal in file explorer',
-        dataTestId: 'context-menu-reveal-in-file-explorer',
-        isVisible: ({ row }) => !row.isFake && canRevealInFileExplorer(),
-        onSelect: ({ row }) => revealInFileExplorer(row.path),
-      },
-      { key: 'reveal-in-file-explorer.row-context-menu' }
-    ),
-  ],
-})
+const projectExplorerExtension = defineRegistryItemFactory((ctx) => {
+  const canRevealPath = (path: string) =>
+    canRevealPathInFileExplorer(
+      path,
+      ctx.valueSpecs.get(fileOperationsMountsValueSpec)
+    )
+
+  return {
+    id: 'project-explorer',
+    uses: [importInCurrentFileExtension],
+    provides: [
+      provide(
+        projectExplorerProjectMenuItemsValueSpec,
+        {
+          id: 'reveal-in-file-explorer.project-menu',
+          order: 100,
+          label: 'Reveal in file explorer',
+          dataTestId: 'project-sidebar-reveal-in-file-explorer',
+          isVisible: ({ projectPath }) => canRevealPath(projectPath),
+          onSelect: ({ projectPath }) => revealInFileExplorer(projectPath),
+        },
+        { key: 'reveal-in-file-explorer.project-menu' }
+      ),
+      provide(
+        projectExplorerRowContextMenuItemsValueSpec,
+        {
+          id: 'reveal-in-file-explorer.row-context-menu',
+          order: 100,
+          label: 'Reveal in file explorer',
+          dataTestId: 'context-menu-reveal-in-file-explorer',
+          isVisible: ({ row }) => !row.isFake && canRevealPath(row.path),
+          onSelect: ({ row }) => revealInFileExplorer(row.path),
+        },
+        { key: 'reveal-in-file-explorer.row-context-menu' }
+      ),
+    ],
+  }
+}, 'project-explorer')
 
 export default projectExplorerExtension

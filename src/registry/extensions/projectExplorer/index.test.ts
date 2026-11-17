@@ -1,16 +1,19 @@
 import {
   defineRegistryItem,
+  provide,
   provideService,
   Registry,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
+import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import type { Project } from '@src/lib/project'
 import * as trap from '@src/lib/trap'
 import { getModule, type ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandSystemService } from '@src/registry/contracts/commands'
+import { fileOperationsMountsValueSpec } from '@src/registry/contracts/fileOperations'
 import {
-  type ProjectExplorerRowContextMenuItemContext,
   projectExplorerProjectMenuItemsValueSpec,
   projectExplorerRowContextMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
@@ -46,12 +49,13 @@ describe('project explorer extension', () => {
   afterEach(() => {
     registry[Symbol.dispose]()
     vi.restoreAllMocks()
+    vi.unstubAllGlobals()
   })
 
   const context = (
-    name = 'cube.step'
-  ): ProjectExplorerRowContextMenuItemContext => {
-    const projectPath = fsZds.join(fsZds.sep, 'projects', 'assembly')
+    name = 'cube.step',
+    projectPath = fsZds.join(fsZds.sep, 'projects', 'assembly')
+  ) => {
     const mainPath = fsZds.join(projectPath, 'main.kcl')
     const project: Project = {
       name: 'assembly',
@@ -129,6 +133,51 @@ describe('project explorer extension', () => {
       'import-in-current-file',
       'reveal-in-file-explorer.row-context-menu',
     ])
+  })
+
+  it('hides both reveal actions for mounted projects on desktop', async () => {
+    vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Electron')
+    vi.stubGlobal('electron', { showInFolder: vi.fn() })
+    const root = fsZds.join(fsZds.sep, '__zoo_cloud__')
+    const mount = createFileOperationsScheduler(createMemoryFileSystem(fsZds))
+    try {
+      registry.configure([
+        projectExplorerExtension,
+        defineRegistryItem({
+          provides: [
+            provide(fileOperationsMountsValueSpec, {
+              root,
+              operations: mount.operations,
+            }),
+          ],
+        }),
+      ])
+      const [projectReveal] = registry.get(
+        projectExplorerProjectMenuItemsValueSpec
+      )
+      const rowReveal = registry
+        .get(projectExplorerRowContextMenuItemsValueSpec)
+        .find((item) => item.id === 'reveal-in-file-explorer.row-context-menu')
+      const local = context()
+      const cloud = context('cube.step', fsZds.join(root, 'assembly'))
+
+      expect(
+        projectReveal?.isVisible?.({
+          project: local.project,
+          projectPath: local.project.path,
+        })
+      ).toBe(true)
+      expect(rowReveal?.isVisible?.(local)).toBe(true)
+      expect(
+        projectReveal?.isVisible?.({
+          project: cloud.project,
+          projectPath: cloud.project.path,
+        })
+      ).toBe(false)
+      expect(rowReveal?.isVisible?.(cloud)).toBe(false)
+    } finally {
+      await mount.dispose()
+    }
   })
 
   it.each([
