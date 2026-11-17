@@ -1,6 +1,6 @@
 import type { KclManager } from '@src/lang/KclManager'
 import type { Command } from '@src/lib/commandTypes'
-import { AxisNames } from '@src/lib/constants'
+import { AxisNames, ZOOM_TO_FIT_PADDING } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import {
   FILE_COMMAND_SCOPES,
@@ -106,7 +106,9 @@ export function createStandardViewsCommands(kclManager: KclManager) {
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
-      sceneInfra.camControls.zoomToFit({ padding: 0.1 }).catch(reportRejection)
+      sceneInfra.camControls
+        .zoomToFit({ padding: ZOOM_TO_FIT_PADDING })
+        .catch(reportRejection)
     },
   }
 
