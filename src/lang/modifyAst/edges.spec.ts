@@ -419,6 +419,104 @@ hide([boxProfile, bottomProfile, lowerWallProfile, upperWallProfile, topProfile]
       }
     )
 
+    it.each(['2.0', '3.0'])(
+      'fillets pocket edges from both outputs of a consumed multi-region extrude (KCL %s)',
+      async (kclVersion) => {
+        const code = `@settings(kclVersion = ${kclVersion})
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [-0.74mm, 0.45mm], end = [0.73mm, 0.45mm])
+  line2 = line(start = [0.73mm, 0.45mm], end = [0.73mm, -0.41mm])
+  line3 = line(start = [0.73mm, -0.41mm], end = [-0.74mm, -0.41mm])
+  line4 = line(start = [-0.74mm, -0.41mm], end = [-0.74mm, 0.45mm])
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2], direction = CW)
+extrude001 = extrude(region001, length = -1)
+sketch002 = sketch(on = XY) {
+  line1 = line(start = [-0.61mm, 0.31mm], end = [-0.12mm, 0.31mm])
+  line2 = line(start = [-0.12mm, 0.31mm], end = [-0.12mm, -0.26mm])
+  line3 = line(start = [-0.12mm, -0.26mm], end = [-0.61mm, -0.26mm])
+  line4 = line(start = [-0.61mm, -0.26mm], end = [-0.61mm, 0.31mm])
+  line5 = line(start = [0.12mm, 0.3mm], end = [0.59mm, 0.3mm])
+  line6 = line(start = [0.59mm, 0.3mm], end = [0.59mm, -0.26mm])
+  line7 = line(start = [0.59mm, -0.26mm], end = [0.12mm, -0.26mm])
+  line8 = line(start = [0.12mm, -0.26mm], end = [0.12mm, 0.3mm])
+}
+region002 = region(segments = [sketch002.line1, sketch002.line2], direction = CW)
+region003 = region(segments = [sketch002.line5, sketch002.line6], direction = CW)
+extrude002 = extrude([region002, region003], length = -0.5)
+solid001 = subtract(extrude001, tools = [extrude002[0], extrude002[1]])`
+        const { artifactGraph, ast } = await getAstAndArtifactGraph(
+          code,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        expect(kclManagerInThisFile.errors).toEqual([])
+        const baseSweep = [...artifactGraph.values()].find(
+          (a) =>
+            a.type === 'sweep' &&
+            a.codeRef.range[0] < code.indexOf('sketch002 =')
+        )
+        const cap = [...artifactGraph.values()].find(
+          (a) =>
+            a.type === 'cap' &&
+            a.sweepId === baseSweep?.id &&
+            a.subType === 'end'
+        )
+        if (!cap) throw new Error('Base cap not found')
+
+        const graphSelections: Selection[] = ['line2', 'line6'].map((name) => {
+          const start = code.indexOf(
+            `${name} = line`,
+            code.indexOf('sketch002 =')
+          )
+          const range = topLevelRange(start, code.indexOf('\n', start))
+          const wall = [...artifactGraph.values()].find((a) => {
+            if (a.type !== 'wall') return false
+            const segment = getOriginalSegmentArtifact(a.segId, artifactGraph)
+            return segment && isOverlap(segment.codeRef.range, range)
+          })
+          if (!wall) throw new Error(`Cutter wall for ${name} not found`)
+          const codeRef = getCodeRefsByArtifactId(wall.id, artifactGraph)?.[0]
+          if (!codeRef) throw new Error('Cutter wall code reference not found')
+          return {
+            entityRef: { type: 'edge', side_faces: [wall.id, cap.id] },
+            codeRef,
+          }
+        })
+        const radius = (await stringToKclExpression(
+          '0.05mm',
+          rustContextInThisFile
+        )) as KclCommandValue
+        const result = addFillet({
+          ast,
+          artifactGraph,
+          selection: { graphSelections, otherSelections: [] },
+          radius,
+          wasmInstance: instanceInThisFile,
+        })
+        if (err(result)) throw result
+
+        const newCode = recast(result.modifiedAst, instanceInThisFile)
+        if (err(newCode)) throw newCode
+        expect(result.pathToNode).toHaveLength(1)
+        expect(newCode).toMatch(/fillet001 = fillet\(\s*solid001,/)
+        expect(newCode).toContain('region002.tags.line2')
+        expect(newCode).toContain('region003.tags.line6')
+        expect(newCode.match(/solid001\.faces\.capEnd001/g)).toHaveLength(2)
+        await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+        // KCL 3 geometry is blocked by the separate pocket fillet regression
+        // in KittyCAD/engine#5319. Validate the references with the legacy engine.
+        if (kclVersion === '2.0') {
+          await kclManagerInThisFile.executeAst({ ast: result.modifiedAst })
+          expect(
+            kclManagerInThisFile.errors.map((error) => error.message)
+          ).toEqual([])
+        }
+      },
+      30_000
+    )
+
     it('should add a fillet call using engine primitive edge indices', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,
