@@ -4,7 +4,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
   'shared SSAO and cloud rendering styles persist across reloads',
-  { tag: '@web' },
+  { tag: ['@web', '@browsers'] },
   async ({ page, folderSetupFn, fs, homePage, scene }) => {
     // The shared fixture disables SSAO. Remove that override to test the default.
     const settings = tomlToSettings(
