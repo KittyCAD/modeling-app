@@ -262,9 +262,10 @@ impl GridScaleBehavior {
 }
 
 mod test {
+    use super::*;
     #[test]
     fn build_error() {
-        let &result = new_zoo_client(Some("huh"), Some("okay"));
+        let result = new_zoo_client(Some("huh".to_string()), Some("okay".to_string()));
         dbg!(&result);
     }
 }
