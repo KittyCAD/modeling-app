@@ -56,8 +56,13 @@ export const configureSystemCertificates = (
 
   const now = Date.now()
   const systemCerts = getCACertificates('system').filter((pem) => {
-    const certificate = new X509Certificate(pem)
-    return Date.parse(certificate.validTo) > now
+    try {
+      const certificate = new X509Certificate(pem)
+      return Date.parse(certificate.validTo) > now
+    } catch (error) {
+      console.warn('Skipping unreadable system certificate', error)
+      return false
+    }
   })
   if (systemCerts.length === 0) {
     return

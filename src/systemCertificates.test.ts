@@ -65,6 +65,28 @@ describe('systemCertificates', () => {
     ])
   })
 
+  it('skips unreadable system certificates and keeps valid certificates', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    getCACertificates.mockReturnValueOnce([
+      'invalid certificate',
+      validSystemCertificate,
+    ])
+    const { configureSystemCertificates } = await import(
+      '@src/systemCertificates'
+    )
+
+    configureSystemCertificates('win32')
+
+    expect(setDefaultCACertificates).toHaveBeenCalledWith([
+      'public-root',
+      validSystemCertificate,
+    ])
+    expect(warn).toHaveBeenCalledExactlyOnceWith(
+      'Skipping unreadable system certificate',
+      expect.any(Error)
+    )
+  })
+
   it('skips unsupported platforms', async () => {
     const { configureSystemCertificates } = await import(
       '@src/systemCertificates'
