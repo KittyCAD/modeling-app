@@ -4,7 +4,7 @@ import type {
   ProjectSummaryResponse,
 } from '@kittycad/lib'
 
-import { listClientItems } from '../src/lib/apiPagination.ts'
+import { collectApiPages } from '../src/lib/apiPagination.ts'
 
 const DEVELOPMENT_API = 'https://api.dev.zoo.dev'
 const RETENTION_MS = 60 * 60 * 1000
@@ -58,7 +58,7 @@ async function main() {
 
   const cutoff = Date.now() - RETENTION_MS
   const candidates = (
-    await listClientItems<ProjectSummaryResponse>(client, '/user/projects')
+    await collectApiPages(projects.list_projects_pager({ client }))
   ).filter((project) => isCleanupCandidate(project, cutoff))
   let deleted = 0
   let eligible = 0

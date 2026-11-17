@@ -318,7 +318,7 @@ export type AnnotationMbdLeaderPosition = { "normalized_pos": {
 /**
  * The position
  */
-pos: Point2d<number>, } } | { "centroid": Record<symbol, never> };
+pos: Point2d<number>, } } | { "centroid": Record<symbol, never> } | { "step_from": Record<symbol, never> } | { "auto": Record<symbol, never> };
 
 /**
  * Options for annotations
@@ -1563,9 +1563,13 @@ edge_id?: string | null,
 edge_reference?: EdgeSpecifier | null, };
 
 /**
- * An edge/vertex can be defined by the faces that it is connected to.
+ * A reference identifying a selectable scene entity.
  */
-export type EntityReference = { "type": "plane", 
+export type EntityReference = { "type": "annotation", 
+/**
+ * Id of the annotation object being referenced.
+ */
+annotation_id: string, } | { "type": "plane", 
 /**
  * Id of the plane being referenced.
  */
@@ -1679,7 +1683,7 @@ opacity: number, };
 /**
  * The type of entity
  */
-export type EntityType = "entity" | "object" | "path" | "segment" | "curve" | "solid2d" | "solid3d" | "edge" | "face" | "plane" | "vertex" | "region" | "patterngroup";
+export type EntityType = "entity" | "object" | "path" | "segment" | "curve" | "solid2d" | "solid3d" | "edge" | "face" | "plane" | "vertex" | "region" | "patterngroup" | "annotation";
 
 /**
  * Export the scene to a file.
@@ -2014,6 +2018,11 @@ export type GetSketchModePlane = Record<symbol, never>;
 export type GlobalAxis = "x" | "y" | "z";
 
 /**
+ * Additional data that can be included in a glTF 2.0 export.
+ */
+export type GltfExportExtra = "sketches" | "regions" | "imported_files" | "mbd" | "geometry_uuids";
+
+/**
  * Options for exporting glTF 2.0.
  */
 export type GltfExportOptions = { 
@@ -2026,9 +2035,13 @@ storage: GltfStorage,
  */
 presentation: GltfPresentation, 
 /**
- * Include engine UUIDs in glTF extras. Defaults to false.
+ * Include geometry UUIDs. Setting this to true is equivalent to adding `geometry_uuids` to `extras`.
  */
 include_uuids: boolean, 
+/**
+ * Additional data to include in the exported glTF. Defaults to an empty set.
+ */
+extras: Array<GltfExportExtra>, 
 /**
  * Named views in the scene.
  */

@@ -182,7 +182,7 @@ impl ImportedGeometry {
         }
 
         ctx.engine
-            .ensure_async_command_completed(self.id, self.meta.first().map(|m| m.source_range))
+            .ensure_async_command_completed(&ctx.engine_batch, self.id, self.meta.first().map(|m| m.source_range))
             .await?;
 
         self.completed = true;
