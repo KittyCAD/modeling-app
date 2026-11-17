@@ -1,11 +1,7 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { validateSolidEdgeSelections } from '@src/lang/modifyAst/validateSolidEdgeSelections'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import {
-  getEdgeSelections,
-  isEdgeSelection,
-  isEnginePrimitiveSelection,
-} from '@src/lang/queryAst'
+import { getEdgeSelections, isEdgeSelection } from '@src/lang/queryAst'
 
 import {
   addIntersect,
@@ -316,35 +312,19 @@ const distanceCodemod = defineModelingCodemod<
       }))
     )
     if (isErr(mode)) return mode
-    const measurements =
-      mode === 'between'
-        ? [objects]
-        : targets.map(
-            (selection): Selections =>
-              isEnginePrimitiveSelection(selection)
-                ? {
-                    graphSelections: [],
-                    otherSelections: [selection],
-                  }
-                : { graphSelections: [selection], otherSelections: [] }
-          )
-    const frameDefaults = await Promise.all(
-      measurements.map((measurement) =>
-        getDistanceFrameDefaults({
-          data: { ...args, objects: measurement },
-          mode,
-          engineCommandManager: kclManager.engineCommandManager,
-          artifactGraph: kclManager.artifactGraph,
-          ast,
-          sourceCode: kclManager.code,
-          outputUnit: kclManager.fileSettings.defaultLengthUnit,
-          wasmInstance,
-          variables: kclManager.variables,
-        })
-      )
-    )
+    const { fontSize, frameDefaults } = await getDistanceFrameDefaults({
+      data: args,
+      mode,
+      engineCommandManager: kclManager.engineCommandManager,
+      artifactGraph: kclManager.artifactGraph,
+      ast,
+      sourceCode: kclManager.code,
+      outputUnit: kclManager.fileSettings.defaultLengthUnit,
+      wasmInstance,
+      rustContext: kclManager.rustContext,
+    })
     return addDistanceGdt({
-      ...addCodemodArgs(args, context),
+      ...addCodemodArgs({ ...args, fontSize }, context),
       objects,
       frameDefaults,
     })

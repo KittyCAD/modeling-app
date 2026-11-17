@@ -18,11 +18,13 @@ import type {
   CallExpressionKw,
   Expr,
   Program,
-  VariableMap,
 } from '@src/lang/wasm'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
+import { getCalculatedKclExpressionValue } from '@src/lib/kclHelpers'
+import type RustContext from '@src/lib/rustContext'
+import { isErr } from '@src/lib/trap'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   KCL_PLANE_XY,
@@ -48,7 +50,6 @@ type GdtFrameDefaultsFromNormal = {
 export type DistanceFrameDefaults = {
   framePosition?: KclCommandValue
   framePlane?: string
-  fontSize?: KclCommandValue
 }
 
 const AXIS_INFERENCE_TOLERANCE = 0.05
@@ -775,45 +776,19 @@ export function getOutsideDistanceSetback(
   return (sign * Math.ceil((clearance / 0.8) * 10000)) / 10000
 }
 
-function getGdtFontHeight(
+async function getGdtFontHeight(
   fontSize: KclCommandValue | undefined,
   outputUnit: UnitLength,
-  variables: VariableMap | undefined
-): number | undefined {
-  const value = fontSize?.valueAst
-  const inOutputUnits = (height: number, unit: UnitLength) =>
-    Number.isFinite(height) && height > 0
-      ? (height * baseUnitToMm(unit)) / baseUnitToMm(outputUnit)
-      : undefined
-  if (value?.type === 'Name' && value.path.length === 0) {
-    const resolved = variables?.[value.name.name]
-    if (resolved?.type !== 'Number') return undefined
-    const unit =
-      resolved.ty.type === 'Known' && resolved.ty.value.type === 'Length'
-        ? resolved.ty.value.value
-        : resolved.ty.type === 'Default'
-          ? resolved.ty.value.len
-          : outputUnit
-    return inOutputUnits(resolved.value, unit)
-  }
-  if (
-    value?.type !== 'Literal' ||
-    typeof value.value !== 'object' ||
-    value.value === null ||
-    typeof value.value.value !== 'number'
+  rustContext: RustContext
+): Promise<number | undefined> {
+  if (!fontSize) return undefined
+  const calculated = await getCalculatedKclExpressionValue(
+    `(${fontSize.valueText}) / 1${outputUnit}`,
+    rustContext
   )
-    return undefined
-  const units: Partial<Record<typeof value.value.suffix, UnitLength>> = {
-    Mm: 'mm',
-    Cm: 'cm',
-    M: 'm',
-    Inch: 'in',
-    Ft: 'ft',
-    Yd: 'yd',
-    None: outputUnit,
-  }
-  const unit = units[value.value.suffix]
-  return unit ? inOutputUnits(value.value.value, unit) : undefined
+  if (isErr(calculated) || 'errors' in calculated) return undefined
+  const height = Number.parseFloat(calculated.valueAsString)
+  return Number.isFinite(height) && height > 0 ? height : undefined
 }
 
 // Plane aliases and offsets have already been evaluated in the artifact graph.
@@ -1099,21 +1074,17 @@ async function getDistanceSetback({
   modelBounds,
   selectedBounds,
   plane,
-  fontSize,
+  fontHeight,
   engine,
-  outputUnit,
   boundingBox,
-  variables,
 }: {
   targets: DistanceTarget[]
   modelBounds?: BoundingBox
   selectedBounds?: BoundingBox
   plane: string
-  fontSize?: KclCommandValue
+  fontHeight?: number
   engine: ConnectionManager
-  outputUnit: UnitLength
   boundingBox: DistanceBoundsQuery
-  variables?: VariableMap
 }): Promise<number | undefined> {
   const [a, b] = targets
   const from = targets.length === 1 ? a?.start : a?.center
@@ -1146,7 +1117,7 @@ async function getDistanceSetback({
         Math.max(
           (distanceSetback(bounds) ?? 0) *
             GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO,
-          getGdtFontHeight(fontSize, outputUnit, variables) ?? 0
+          fontHeight ?? 0
         )
       : 0
   const outside =
@@ -1165,7 +1136,7 @@ export async function getDistanceFrameDefaults({
   sourceCode,
   outputUnit = DEFAULT_DEFAULT_LENGTH_UNIT,
   wasmInstance,
-  variables,
+  rustContext,
 }: {
   data: ModelingCommandSchema['GDT Distance']
   mode: 'lengths' | 'between'
@@ -1175,15 +1146,23 @@ export async function getDistanceFrameDefaults({
   sourceCode?: string
   outputUnit?: UnitLength
   wasmInstance: ModuleType
-  variables?: VariableMap
-}): Promise<DistanceFrameDefaults> {
-  const boundingBox: DistanceBoundsQuery = (entityIds) =>
-    getBoundingBoxForGdtEntities({
+  rustContext: RustContext
+}): Promise<{
+  fontSize?: KclCommandValue
+  frameDefaults: DistanceFrameDefaults[]
+}> {
+  let sceneBounds: Promise<BoundingBox | undefined> | undefined
+  const boundingBox: DistanceBoundsQuery = (entityIds) => {
+    if (!entityIds.length && sceneBounds) return sceneBounds
+    const query = getBoundingBoxForGdtEntities({
       engineCommandManager: engine,
       entityIds,
       outputUnit,
       includeEntireScene: true,
     })
+    if (!entityIds.length) sceneBounds = query
+    return query
+  }
   const inheritedFont = data.fontSize ?? getExistingGdtFontSize(ast, sourceCode)
   const modelBounds = !inheritedFont ? await boundingBox([]) : undefined
   const average = modelBounds && distanceSetback(modelBounds)
@@ -1192,52 +1171,64 @@ export async function getDistanceFrameDefaults({
     (average !== undefined
       ? createFontSizeCommandValue(average, outputUnit, wasmInstance)
       : undefined)
-  const defaults: DistanceFrameDefaults = {
-    fontSize: data.fontSize ? undefined : fontSize,
-  }
-  if (data.framePlane && data.framePosition) return defaults
-
-  const targets = await getDistanceTargets(
-    data.objects,
-    engine,
-    outputUnit,
-    boundingBox
-  )
-  const ids = [
-    ...new Set(targets.flatMap((target) => (target.id ? [target.id] : []))),
-  ]
-  const selectedBounds =
-    ids.length === 1
-      ? targets[0]?.bounds
-      : ids.length
-        ? await boundingBox(ids)
-        : undefined
-  const preferred = distanceSourcePlane(data.objects, graph)
-  const framePlane =
-    data.framePlane ??
-    (await getDistanceFramePlane(targets, mode, preferred, engine)) ??
-    preferred ??
-    KCL_PLANE_XY
-  const framePosition =
-    data.framePosition ??
-    createDistanceFramePositionCommandValue(
-      await getDistanceSetback({
-        targets,
-        modelBounds,
-        selectedBounds,
-        plane: framePlane,
-        fontSize,
+  if (data.framePlane && data.framePosition)
+    return { fontSize, frameDefaults: [] }
+  const fontHeight =
+    mode === 'lengths' && !data.framePosition
+      ? await getGdtFontHeight(fontSize, outputUnit, rustContext)
+      : undefined
+  const measurements =
+    mode === 'between'
+      ? [data.objects]
+      : getEdgeSelections(data.objects).map(
+          (selection): Selections =>
+            isEnginePrimitiveSelection(selection)
+              ? { graphSelections: [], otherSelections: [selection] }
+              : { graphSelections: [selection], otherSelections: [] }
+        )
+  const frameDefaults = await Promise.all(
+    measurements.map(async (objects) => {
+      const targets = await getDistanceTargets(
+        objects,
         engine,
         outputUnit,
-        boundingBox,
-        variables,
-      }),
-      outputUnit,
-      wasmInstance
-    )
-  return {
-    ...defaults,
-    framePlane: data.framePlane ? undefined : framePlane,
-    framePosition: data.framePosition ? undefined : framePosition,
-  }
+        boundingBox
+      )
+      const ids = [
+        ...new Set(targets.flatMap((target) => (target.id ? [target.id] : []))),
+      ]
+      const selectedBounds =
+        ids.length === 1
+          ? targets[0]?.bounds
+          : ids.length
+            ? await boundingBox(ids)
+            : undefined
+      const preferred = distanceSourcePlane(objects, graph)
+      const framePlane =
+        data.framePlane ??
+        (await getDistanceFramePlane(targets, mode, preferred, engine)) ??
+        preferred ??
+        KCL_PLANE_XY
+      const framePosition =
+        data.framePosition ??
+        createDistanceFramePositionCommandValue(
+          await getDistanceSetback({
+            targets,
+            modelBounds,
+            selectedBounds,
+            plane: framePlane,
+            fontHeight,
+            engine,
+            boundingBox,
+          }),
+          outputUnit,
+          wasmInstance
+        )
+      return {
+        framePlane: data.framePlane ? undefined : framePlane,
+        framePosition: data.framePosition ? undefined : framePosition,
+      }
+    })
+  )
+  return { fontSize, frameDefaults }
 }
