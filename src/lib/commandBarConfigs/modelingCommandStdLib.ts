@@ -259,6 +259,15 @@ export function stdLibDocsLink(
   }
 }
 
+// Supplemental annotation text remains available through handwritten KCL only.
+const gdtKclOnlyArgs = [
+  'annotationName',
+  'textAbove',
+  'textBelow',
+  'textLeft',
+  'textRight',
+] as const
+
 export const modelingCommandStdLibDriftConfig = {
   'Named View': {
     stdLibName: 'view::named',
@@ -468,13 +477,13 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::flatness',
     editFlow: true,
     flowArgOrder: ['faces', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: gdtKclOnlyArgs,
   },
   'GDT Straightness': {
     stdLibName: 'gdt::straightness',
     editFlow: true,
     flowArgOrder: ['objects', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: gdtKclOnlyArgs,
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -484,7 +493,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::circularity',
     editFlow: true,
     flowArgOrder: ['objects', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: gdtKclOnlyArgs,
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -494,7 +503,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::cylindricity',
     editFlow: true,
     flowArgOrder: ['objects', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: gdtKclOnlyArgs,
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -504,7 +513,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::datum',
     editFlow: true,
     flowArgOrder: ['faces', 'name'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: gdtKclOnlyArgs,
     argAliases: {
       face: 'faces',
     },
@@ -513,7 +522,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::position',
     editFlow: true,
     flowArgOrder: ['objects', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: gdtKclOnlyArgs,
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -523,7 +532,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::profileLine',
     editFlow: true,
     flowArgOrder: ['objects', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: gdtKclOnlyArgs,
     argAliases: {
       edges: 'objects',
     },
@@ -532,7 +541,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::distance',
     editFlow: true,
     flowArgOrder: ['objects'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: gdtKclOnlyArgs,
     argAliases: {
       from: 'objects',
       to: 'objects',
@@ -543,7 +552,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::perpendicularity',
     editFlow: true,
     flowArgOrder: ['objects', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: gdtKclOnlyArgs,
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -553,7 +562,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::angularity',
     editFlow: true,
     flowArgOrder: ['objects', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: gdtKclOnlyArgs,
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -563,7 +572,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::concentricity',
     editFlow: true,
     flowArgOrder: ['objects', 'datums', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: gdtKclOnlyArgs,
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -573,7 +582,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::symmetry',
     editFlow: true,
     flowArgOrder: ['objects', 'datums', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: gdtKclOnlyArgs,
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -583,7 +592,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::runout',
     editFlow: true,
     flowArgOrder: ['objects', 'datums', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: gdtKclOnlyArgs,
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -593,7 +602,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::parallelism',
     editFlow: true,
     flowArgOrder: ['objects', 'tolerance'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: gdtKclOnlyArgs,
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -603,7 +612,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::annotation',
     editFlow: true,
     flowArgOrder: ['objects', 'annotation'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: gdtKclOnlyArgs,
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -613,7 +622,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::note',
     editFlow: true,
     flowArgOrder: ['note'],
-    omittedStdLibArgs: ['annotationName'],
+    omittedStdLibArgs: gdtKclOnlyArgs,
   },
   'Boolean Subtract': {
     stdLibName: 'subtract',
