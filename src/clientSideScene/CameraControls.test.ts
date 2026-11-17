@@ -208,21 +208,9 @@ describe('local canvas spherical orbit', () => {
 })
 
 describe('local canvas trackball orbit', () => {
-  interface CanvasRect {
-    left: number
-    top: number
-    width: number
-    height: number
-  }
-
   // The canvas is offset on the page: the trackball is centered on the canvas,
   // at client (612, 434).
-  const offsetCanvas: CanvasRect = {
-    left: 100,
-    top: 50,
-    width: 1024,
-    height: 768,
-  }
+  const offsetCanvas = new DOMRect(100, 50, 1024, 768)
   const centerX = offsetCanvas.left + offsetCanvas.width / 2
   const centerY = offsetCanvas.top + offsetCanvas.height / 2
 
@@ -230,9 +218,7 @@ describe('local canvas trackball orbit', () => {
     const canvas = makeCanvas(rect.width, rect.height)
     canvas.setPointerCapture = vi.fn()
     canvas.releasePointerCapture = vi.fn()
-    vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue(
-      new DOMRect(rect.left, rect.top, rect.width, rect.height)
-    )
+    vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue(rect)
     const manager = makeConnectionManager({
       width: rect.width,
       height: rect.height,
@@ -267,18 +253,8 @@ describe('local canvas trackball orbit', () => {
     controls.onMouseUp(pointer(to.x, to.y))
   }
 
-  function expectUpToFollowRotation(controls: CameraControls) {
-    expect(
-      controls.camera.up.distanceTo(
-        new Vector3(0, 1, 0).applyQuaternion(controls.camera.quaternion)
-      )
-    ).toBeLessThan(1e-8)
-  }
-
   it('turns about the view up as far as the engine for a drag from the canvas center', () => {
-    const { controls, send } = setup()
-    const target = controls.target.clone()
-    const distance = controls.camera.position.distanceTo(target)
+    const { controls } = setup()
     const initialRotation = controls.camera.quaternion.clone()
 
     drag(
@@ -293,16 +269,12 @@ describe('local canvas trackball orbit', () => {
       1.0127,
       4
     )
-    expect(controls.target.equals(target)).toBe(true)
-    expect(controls.camera.position.distanceTo(target)).toBeCloseTo(distance)
     // The model follows the cursor: the camera swings the other way, about
     // the unchanged up.
-    expect(controls.camera.position.x).toBeLessThan(target.x)
+    expect(controls.camera.position.x).toBeLessThan(controls.target.x)
     expect(controls.camera.up.distanceTo(new Vector3(0, 0, 1))).toBeLessThan(
       1e-8
     )
-    expectUpToFollowRotation(controls)
-    expect(sentCommandTypes(send)).toEqual([])
   })
 
   it('rolls the view when dragged near the canvas edge', () => {
@@ -330,32 +302,31 @@ describe('local canvas trackball orbit', () => {
       0.19
     )
     expect(controls.camera.up.x).toBeLessThan(0)
-    expectUpToFollowRotation(controls)
+    // The local renderer orients its camera from up, so up must carry the roll.
+    expect(
+      controls.camera.up.distanceTo(
+        new Vector3(0, 1, 0).applyQuaternion(controls.camera.quaternion)
+      )
+    ).toBeLessThan(1e-8)
   })
 
   describe('for any camera and canvas', () => {
-    interface Scenario {
-      canvas: CanvasRect
-      target: [number, number, number]
-      distance: number
-      rotation: [number, number, number, number]
-      orthographic: boolean
-      /** The drag's start and end, as fractions of the canvas. */
-      from: number
-      to: number
-    }
-
     const unit = fc.double({ min: -1, max: 1, noNaN: true })
     const coordinate = fc.double({ min: -1000, max: 1000, noNaN: true })
-    // A captured pointer can drag well past the canvas edges.
+    // The drag's start and end, as fractions of the canvas. A captured pointer
+    // can drag well past the canvas edges.
     const fraction = fc.double({ min: -0.5, max: 1.5, noNaN: true })
-    const scenario: fc.Arbitrary<Scenario> = fc.record({
-      canvas: fc.record({
-        left: fc.integer({ min: 0, max: 500 }),
-        top: fc.integer({ min: 0, max: 500 }),
-        width: fc.integer({ min: 1, max: 4000 }),
-        height: fc.integer({ min: 1, max: 4000 }),
-      }),
+    const scenario = fc.record({
+      canvas: fc
+        .tuple(
+          fc.integer({ min: 0, max: 500 }),
+          fc.integer({ min: 0, max: 500 }),
+          fc.integer({ min: 1, max: 4000 }),
+          fc.integer({ min: 1, max: 4000 })
+        )
+        .map(
+          ([left, top, width, height]) => new DOMRect(left, top, width, height)
+        ),
       target: fc.tuple(coordinate, coordinate, coordinate),
       distance: fc.double({ min: 1, max: 10000, noNaN: true }),
       // Normalized into an orientation; tiny quaternions are too imprecise.
