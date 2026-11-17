@@ -8,10 +8,12 @@ const test = web ? browserTest : appTest
 
 const code = '@settings(kclVersion = 3.0)\nvalue = 100\n'
 
-for (const backing of ['local', 'cloud'] as const) {
+const storageKinds = web ? (['cloud'] as const) : (['local', 'cloud'] as const)
+
+for (const backing of storageKinds) {
   test(
     `file creation, sibling rename, and open-file moves preserve edits (${backing})`,
-    { tag: ['@web', '@desktop'] },
+    { tag: backing === 'local' ? '@desktop' : ['@web', '@desktop'] },
     async ({ context, page }, testInfo) => {
       const storage = await prepareStorage(backing, page, context, testInfo)
       const root = await storage.seedAndOpen('Mutation test', code, {
