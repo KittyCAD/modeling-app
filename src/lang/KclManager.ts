@@ -1,3 +1,4 @@
+import { buildMinimalDocumentChange } from '@src/lib/minimalDocumentChange'
 import type { EntityType } from '@kittycad/lib'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -275,61 +276,6 @@ type SyntheticHistoryCommit = {
 
 type DirectSketchHistoryMarker = {
   entryId: number
-}
-
-type MinimalDocumentChange = {
-  from: number
-  to: number
-  insert: string
-}
-
-/**
- * Computes the smallest single replacement that turns `currentCode` into
- * `nextCode` by preserving the longest shared prefix and suffix.
- *
- * We use this when dispatching CodeMirror updates so history, selection
- * mapping, and plugin updates operate on the narrowest possible text change
- * instead of a full-document replace on every sketch/code sync.
- *
- * If there are multiple disjoint edits, this still collapses them into a single
- * replacement range, so the text between those edits is included in the change.
- * That is less minimal than a true diff, but keeps the update logic simple and
- * avoids tracking multiple document changes for one editor transaction.
- */
-function buildMinimalDocumentChange(
-  currentCode: string,
-  nextCode: string
-): MinimalDocumentChange | null {
-  if (currentCode === nextCode) {
-    return null
-  }
-
-  let prefixLength = 0
-  const maxPrefixLength = Math.min(currentCode.length, nextCode.length)
-  while (
-    prefixLength < maxPrefixLength &&
-    currentCode.charCodeAt(prefixLength) === nextCode.charCodeAt(prefixLength)
-  ) {
-    prefixLength++
-  }
-
-  let currentSuffixStart = currentCode.length
-  let nextSuffixStart = nextCode.length
-  while (
-    currentSuffixStart > prefixLength &&
-    nextSuffixStart > prefixLength &&
-    currentCode.charCodeAt(currentSuffixStart - 1) ===
-      nextCode.charCodeAt(nextSuffixStart - 1)
-  ) {
-    currentSuffixStart--
-    nextSuffixStart--
-  }
-
-  return {
-    from: prefixLength,
-    to: currentSuffixStart,
-    insert: nextCode.slice(prefixLength, nextSuffixStart),
-  }
 }
 
 const syntheticHistoryCommitEffect =

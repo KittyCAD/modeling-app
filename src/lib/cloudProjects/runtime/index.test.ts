@@ -541,6 +541,48 @@ describe.each([
     })
   })
 
+  it.each([false, true])(
+    'keeps existing offline polling behavior without a new editor session (observed: %s)',
+    async (observed) => {
+      const { fs } = setup()
+      const root = await fs.openProject('one')
+      const path = paths.join(root, 'main.kcl')
+      const original = await fs.readFile(path, 'utf8')
+      const stop = observed
+        ? fs.watchSnapshots({
+            projectId: 'one',
+            canApply: () => true,
+            onApply: () => {},
+          })
+        : () => {}
+      vi.mocked(api.getRemoteProject).mockResolvedValue(
+        remoteSnapshot('2', 'remote edit')
+      )
+      vi.mocked(parseProjectArchive).mockResolvedValue([
+        { relativePath: 'main.kcl', data: encoder.encode('remote edit') },
+      ])
+      const download = Promise.withResolvers<ArrayBuffer>()
+      vi.mocked(api.downloadRemoteProjectArchive).mockReturnValueOnce(
+        download.promise
+      )
+      const request = fs.checkForUpdates('one', () => true)
+      await vi.waitFor(() =>
+        expect(api.downloadRemoteProjectArchive).toHaveBeenCalledTimes(2)
+      )
+      const online = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
+      try {
+        download.resolve(new ArrayBuffer(0))
+        if (observed)
+          expect(await request).toEqual({ changed: true, refreshed: false })
+        else await expect(request).rejects.toThrow('read-only while offline')
+        expect(await fs.readFile(path, 'utf8')).toBe(original)
+      } finally {
+        online.mockRestore()
+        stop()
+      }
+    }
+  )
+
   it('discards a downloaded snapshot when editing or switching projects during the request', async () => {
     const { fs } = setup()
     const root = await fs.openProject('one')

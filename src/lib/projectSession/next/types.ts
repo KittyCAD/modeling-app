@@ -8,6 +8,8 @@ export interface ProjectDirectory extends FileEntry {
 
 /** Observable project data; storage operations and editors live in the session. */
 export interface Project {
+  /** Cloud API identity stays separate from the filesystem mount path. Absent for local projects. */
+  storage?: { type: 'cloud'; projectId: string }
   contents: ProjectDirectory
   metadata: {
     title: string
