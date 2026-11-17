@@ -198,6 +198,7 @@ import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl
 import type {
   EquipTool,
   UpdateSketchOutcomeEvent,
+  SketchSourceChangedEvent,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { sendToActorIfActive } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
@@ -684,6 +685,7 @@ export type ModelingMachineEvent =
     }
   | { type: 'unequip tool' }
   | UpdateSketchOutcomeEvent
+  | SketchSourceChangedEvent
   | {
       type: 'sketch solve tool changed'
       data: { tool: EquipTool | null }
@@ -6541,6 +6543,9 @@ export const modelingMachine = setup({
               actions: ['forward event to sketch solve if active'],
             },
             'delete selected': {
+              actions: ['forward event to sketch solve if active'],
+            },
+            'sketch source changed': {
               actions: ['forward event to sketch solve if active'],
             },
             'update sketch outcome': {

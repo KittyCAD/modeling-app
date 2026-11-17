@@ -386,11 +386,12 @@ const Home = () => {
   const visibleLibraries = selectedProjectLibrary
     ? [selectedProjectLibrary]
     : projectLibraries
+  const projectsInitiallyLoaded = visibleLibraries.every((library) =>
+    settledLibraryIds.includes(library.id)
+  )
   const projectsLoaded =
     app.projectOperations.pending.value === 0 &&
-    visibleLibraries.every((library) =>
-      settledLibraryIds.includes(library.id)
-    ) &&
+    projectsInitiallyLoaded &&
     !loadingLibraryIds.some(
       (id) => !selectedProjectLibraryId || id === selectedProjectLibraryId
     )
@@ -464,11 +465,15 @@ const Home = () => {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: projectLibraryWatchKey tracks library identity and paths without rebinding on icon/title-only renders.
   useEffect(() => {
-    return projectLibraryRealizations?.watchConfiguredLibraries({
-      libraries: projectLibraries,
-    })
+    for (const library of projectLibraries) {
+      projectLibraryRealizations?.invalidate({ libraryId: library.id })
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- projectLibraryWatchKey tracks library identity and paths without rebinding on icon/title-only renders.
-  }, [projectLibraryRealizations, projectLibraryWatchKey])
+  }, [
+    projectLibraryRealizations,
+    projectLibraryWatchKey,
+    selectedProjectLibraryId,
+  ])
 
   useEffect(() => {
     session.setCurrentProjectLibraryId(selectedProjectLibraryId)
@@ -775,7 +780,7 @@ const Home = () => {
             projectShellEnabled={projectShellEnabled}
             searchResults={searchResults ?? []}
             projects={scopedHomeProjectEntries}
-            projectsLoaded={projectsLoaded}
+            projectsLoaded={projectsInitiallyLoaded}
             query={query}
             sort={sort}
             projectStatuses={projectStatuses}
@@ -793,7 +798,7 @@ const Home = () => {
             libraries={projectLibraries}
             searchResults={searchResults ?? []}
             projects={homeProjectEntries}
-            projectsLoaded={projectsLoaded}
+            projectsLoaded={projectsInitiallyLoaded}
             query={query}
             sort={sort}
             projectStatuses={projectStatuses}

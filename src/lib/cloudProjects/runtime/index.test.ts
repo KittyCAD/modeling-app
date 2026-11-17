@@ -541,6 +541,48 @@ describe.each([
     })
   })
 
+  it.each([false, true])(
+    'keeps existing offline polling behavior without a new editor session (observed: %s)',
+    async (observed) => {
+      const { fs } = setup()
+      const root = await fs.openProject('one')
+      const path = paths.join(root, 'main.kcl')
+      const original = await fs.readFile(path, 'utf8')
+      const stop = observed
+        ? fs.watchSnapshots({
+            projectId: 'one',
+            canApply: () => true,
+            onApply: () => {},
+          })
+        : () => {}
+      vi.mocked(api.getRemoteProject).mockResolvedValue(
+        remoteSnapshot('2', 'remote edit')
+      )
+      vi.mocked(parseProjectArchive).mockResolvedValue([
+        { relativePath: 'main.kcl', data: encoder.encode('remote edit') },
+      ])
+      const download = Promise.withResolvers<ArrayBuffer>()
+      vi.mocked(api.downloadRemoteProjectArchive).mockReturnValueOnce(
+        download.promise
+      )
+      const request = fs.checkForUpdates('one', () => true)
+      await vi.waitFor(() =>
+        expect(api.downloadRemoteProjectArchive).toHaveBeenCalledTimes(2)
+      )
+      const online = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
+      try {
+        download.resolve(new ArrayBuffer(0))
+        if (observed)
+          expect(await request).toEqual({ changed: true, refreshed: false })
+        else await expect(request).rejects.toThrow('read-only while offline')
+        expect(await fs.readFile(path, 'utf8')).toBe(original)
+      } finally {
+        online.mockRestore()
+        stop()
+      }
+    }
+  )
+
   it('discards a downloaded snapshot when editing or switching projects during the request', async () => {
     const { fs } = setup()
     const root = await fs.openProject('one')
@@ -969,6 +1011,59 @@ describe.each([
     expect(fs.saves.value.get('one')?.state).toBe('saved')
     expect(fs.pending()).toBe(0)
   })
+
+  it.each([false, true])(
+    'acknowledges an identical rejected upload without discarding the next edit (thumbnail: %s)',
+    async (thumbnail) => {
+      vi.useFakeTimers()
+      const { fs } = setup()
+      const root = await fs.openProject('one')
+      const file = paths.join(root, 'main.kcl')
+      const gate = Promise.withResolvers<typeof remote>()
+      vi.mocked(api.updateRemoteProject)
+        .mockReturnValueOnce(gate.promise)
+        .mockResolvedValue({ ...remote, revision: '4' })
+      const reconciled = vi.fn()
+      fs.subscribeReconciled(reconciled)
+      if (thumbnail)
+        await fs.stageThumbnail(root, new Uint8Array([0, 255, 128]))
+      const first = fs.writeFile(file, encoder.encode('first committed shape'))
+      const next = fs.writeFile(file, encoder.encode('newer committed shape'))
+      await vi.advanceTimersByTimeAsync(7_000)
+      expect(api.updateRemoteProject).toHaveBeenCalledTimes(1)
+      vi.mocked(api.getRemoteProject).mockResolvedValue({
+        ...remote,
+        revision: '3',
+      })
+      vi.mocked(parseProjectArchive).mockResolvedValue([
+        {
+          relativePath: 'main.kcl',
+          data: encoder.encode('first committed shape'),
+        },
+        ...(thumbnail
+          ? [
+              {
+                relativePath: 'thumbnail.png',
+                data: new Uint8Array([0, 255, 128]),
+              },
+            ]
+          : []),
+      ])
+      gate.reject(new api.CloudApiError(409, 'Already uploaded'))
+      await Promise.all([first, next])
+      await vi.advanceTimersByTimeAsync(0)
+      expect(reconciled).not.toHaveBeenCalled()
+      if (thumbnail)
+        expect(await fs.readFile(paths.join(root, 'thumbnail.png'))).toEqual(
+          new Uint8Array([0, 255, 128])
+        )
+      expect(await fs.readFile(file, 'utf8')).toBe('newer committed shape')
+      expect(api.updateRemoteProject).toHaveBeenLastCalledWith(
+        expect.objectContaining({ expectedRevision: '3' })
+      )
+      expect(fs.saves.value.get('one')?.state).toBe('saved')
+    }
+  )
 
   it.each(['same', 'different'] as const)(
     'adopts the cloud snapshot after a lost acknowledgement and conflict (%s contents)',

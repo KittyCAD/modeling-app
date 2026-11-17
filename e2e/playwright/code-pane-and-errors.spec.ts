@@ -316,9 +316,11 @@ test(
   { tag: ['@desktop', '@localRenderer'] },
   async ({ page, folderSetupFn }) => {
     const PROJECT_DIR_NAME = 'lee-was-here'
+    const initialContent = '@settings(kclVersion = 3.0)\nvalue = 1\n'
     const { dir: projectsDir } = await folderSetupFn(async (dir) => {
       const aProjectDir = join(dir, PROJECT_DIR_NAME)
       await fsp.mkdir(aProjectDir, { recursive: true })
+      await fsp.writeFile(join(aProjectDir, 'main.kcl'), initialContent)
     })
 
     const u = await getUtils(page)
@@ -332,6 +334,7 @@ test(
 
     await u.openFilePanel()
     await u.openKclCodePanel()
+    await u.editorTextMatches(initialContent)
 
     await test.step('Write to file externally and check for changed content', async () => {
       const content = 'foobar'
