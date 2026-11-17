@@ -28,11 +28,11 @@ dashmap = { version = "6.2.1" }
 http = "1"
 indexmap = "2.13.1"
 ezpz = "0.2.29"
-kittycad = { version = "0.6.0", default-features = false, features = [
+kittycad = { version = "0.7.0", default-features = false, features = [
   "js",
   "requests",
 ] }
-kittycad-modeling-cmds = { version = "0.2.256", features = [
+kittycad-modeling-cmds = { version = "0.2.259", features = [
   "ts-rs",
   "websocket",
 ] }
@@ -112,7 +112,7 @@ debug = "line-tables-only"
 #   dependency paths, keeping the declared registry version requirements.
 [patch.crates-io]
 # Temporary for the companion draft; replace with a published modeling-cmds release before merge.
-kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", rev = "087b4efd84268245f8d739dfd9a76e0e5c07e9d0" }
+kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", rev = "0ff86beb7dacb489facfd55ae92fe48dfc5fe584" }
 kcl-api = { path = "kcl-api" }
 kcl-error = { path = "kcl-error" }
 

@@ -24,7 +24,15 @@ export function isOperationTreeBranch(
   return !isArray(node) && 'parent' in node && 'children' in node
 }
 
-export function getOperationTreeNodeKey(node: OperationTreeNode): string {
+/** Source ranges repeat when a function body executes more than once. */
+export function getOperationTreeNodeKey(
+  node: OperationTreeNode,
+  siblingIndex: number
+): string {
+  return `${getOperationTreeNodeSourceKey(node)}-${siblingIndex}`
+}
+
+function getOperationTreeNodeSourceKey(node: OperationTreeNode): string {
   if (isArray(node)) {
     const first = node[0]
     const last = node[node.length - 1]

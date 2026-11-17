@@ -17,6 +17,12 @@ use crate::engine_connection::TransportCloseError;
 /// sending and receiving data over the websocket.
 #[async_trait::async_trait]
 pub trait EngineTransport: Send + Sync + 'static {
+    /// Observe the current session when a transport can replace its connection.
+    /// Fixed-session transports are already identified by their EngineManager.
+    fn session_id(&self) -> Option<String> {
+        None
+    }
+
     /// Send a modeling command without waiting for any response.
     async fn inner_fire_modeling_cmd(
         &self,

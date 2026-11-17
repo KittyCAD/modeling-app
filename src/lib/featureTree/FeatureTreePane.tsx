@@ -1,3 +1,6 @@
+import type { EditorSelection } from '@codemirror/state'
+import { getFileRoute } from '@src/lib/paths'
+import { selectCommand } from '@src/lib/commandUtils'
 import type { Diagnostic } from '@codemirror/lint'
 import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
@@ -33,6 +36,7 @@ import {
   type OperationTreeNode,
 } from '@src/lib/featureTree/featureTreeOperationTree'
 import {
+  getHideOperations,
   getOperationCalculatedDisplay,
   getOperationIcon,
   getOperationLabel,
@@ -70,6 +74,7 @@ import { browserSaveFile } from '@src/lib/browserSaveFile'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import {
+  type FeatureTreeVisibilityState,
   prepareEditCommand,
   resolveFeatureTreeVisibility,
   sendDeleteCommand,
@@ -79,7 +84,6 @@ import {
   type AreaTypeComponentProps,
   DefaultLayoutPaneID,
 } from '@src/lib/layout'
-import { PATHS } from '@src/lib/paths'
 import type RustContext from '@src/lib/rustContext'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import {
@@ -248,11 +252,13 @@ export const FeatureTreePaneContents = memo(() => {
     emptyOperationsByModule()
   )
 
+  const editorSelection = kclManager.editorState.selection
+  const operationsByModule = kclManager.operationsByModule
   const unfilteredOperationsByModule = kclManager.isExecuting
-    ? kclManager.operationsByModule
+    ? operationsByModule
     : !hasParseErrors
       ? !kclManager.errors.length
-        ? kclManager.operationsByModule
+        ? operationsByModule
         : longestErrorOperationsByModule
       : kclManager.lastSuccessfulOperations
   // We use the code that corresponds to the operations. In case this is an
@@ -267,11 +273,14 @@ export const FeatureTreePaneContents = memo(() => {
     hasParseErrors || disableModelingForUnrenderedChanges
 
   // We filter out operations that are not useful to show in the feature tree
-  const operationList = buildOperationTree(
-    unfilteredOperationsByModule,
-    ROOT_MODULE_ID
+  const operationList = useMemo(
+    () => buildOperationTree(unfilteredOperationsByModule, ROOT_MODULE_ID),
+    [unfilteredOperationsByModule]
   )
-  const visibilityOperations = getAllOperations(kclManager.operationsByModule)
+  const visibilityOperations = useMemo(
+    () => getHideOperations(getAllOperations(operationsByModule)),
+    [operationsByModule]
+  )
   const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
 
   // Live execution tracking: expand only the active module branch.
@@ -368,9 +377,9 @@ export const FeatureTreePaneContents = memo(() => {
               </div>
             </div>
           )}
-          {operationList.map((node) => (
+          {operationList.map((node, index) => (
             <OperationTreeNodeItem
-              key={getOperationTreeNodeKey(node)}
+              key={getOperationTreeNodeKey(node, index)}
               node={node}
               code={operationsCode}
               isStaleReference={isReadOnlyFeatureTree}
@@ -380,6 +389,7 @@ export const FeatureTreePaneContents = memo(() => {
               engineCommandManager={engineCommandManager}
               onSelect={selectOperation}
               visibilityOperations={visibilityOperations}
+              editorSelection={editorSelection}
               liveActiveModuleId={liveActiveModuleId}
               liveLatestOperationKey={liveLatestOperationKey}
             />
@@ -408,6 +418,7 @@ function OperationItemGroup({
   engineCommandManager,
   onSelect,
   visibilityOperations,
+  editorSelection,
   isModuleOwned = false,
   liveLatestOperationKey,
 }: Omit<OperationProps, 'item'> & {
@@ -441,6 +452,7 @@ function OperationItemGroup({
           engineCommandManager={engineCommandManager}
           onSelect={onSelect}
           visibilityOperations={visibilityOperations}
+          editorSelection={editorSelection}
           isModuleOwned={isModuleOwned}
           liveLatestOperationKey={liveLatestOperationKey}
         />
@@ -471,6 +483,7 @@ function OperationItemGroup({
               engineCommandManager={engineCommandManager}
               onSelect={onSelect}
               visibilityOperations={visibilityOperations}
+              editorSelection={editorSelection}
               isModuleOwned={isModuleOwned}
               liveLatestOperationKey={liveLatestOperationKey}
             />
@@ -478,10 +491,10 @@ function OperationItemGroup({
         </div>
         <Disclosure.Panel>
           <div className="border-l b-4 ml-6">
-            {childItems.map((item) => {
+            {childItems.map((item, index) => {
               return (
                 <OperationItem
-                  key={getOperationKey(item)}
+                  key={getOperationTreeNodeKey(item, index)}
                   item={item}
                   code={code}
                   isStaleReference={isStaleReference}
@@ -491,6 +504,7 @@ function OperationItemGroup({
                   engineCommandManager={engineCommandManager}
                   onSelect={onSelect}
                   visibilityOperations={visibilityOperations}
+                  editorSelection={editorSelection}
                   size="sm"
                   isModuleOwned={isModuleOwned}
                   liveLatestOperationKey={liveLatestOperationKey}
@@ -517,10 +531,10 @@ function OperationItemGroup({
       </Disclosure.Button>
       <Disclosure.Panel as="ul" className="border-b b-4">
         <div className="border-l b-4 ml-4">
-          {contentItems.map((op) => {
+          {contentItems.map((op, index) => {
             return (
               <OperationItem
-                key={getOperationKey(op)}
+                key={getOperationTreeNodeKey(op, index)}
                 item={op}
                 code={code}
                 isStaleReference={isStaleReference}
@@ -530,6 +544,7 @@ function OperationItemGroup({
                 engineCommandManager={engineCommandManager}
                 onSelect={onSelect}
                 visibilityOperations={visibilityOperations}
+                editorSelection={editorSelection}
                 size="sm"
                 isModuleOwned={isModuleOwned}
                 liveLatestOperationKey={liveLatestOperationKey}
@@ -553,6 +568,7 @@ function OperationBranchGroup({
   engineCommandManager,
   onSelect,
   visibilityOperations,
+  editorSelection,
   isModuleOwned = false,
   liveActiveModuleId,
   liveLatestOperationKey,
@@ -573,6 +589,7 @@ function OperationBranchGroup({
         engineCommandManager={engineCommandManager}
         onSelect={onSelect}
         visibilityOperations={visibilityOperations}
+        editorSelection={editorSelection}
         isModuleOwned={true}
         liveLatestOperationKey={liveLatestOperationKey}
       />
@@ -616,6 +633,7 @@ function OperationBranchGroup({
             engineCommandManager={engineCommandManager}
             onSelect={onSelect}
             visibilityOperations={visibilityOperations}
+            editorSelection={editorSelection}
             isModuleOwned={true}
             liveLatestOperationKey={liveLatestOperationKey}
           />
@@ -623,10 +641,10 @@ function OperationBranchGroup({
       </div>
       <Disclosure.Panel>
         <div className="border-l b-4 ml-6">
-          {childItems.map((node) => {
+          {childItems.map((node, index) => {
             return (
               <OperationTreeNodeItem
-                key={getOperationTreeNodeKey(node)}
+                key={getOperationTreeNodeKey(node, index)}
                 node={node}
                 code={code}
                 isStaleReference={isStaleReference}
@@ -636,6 +654,7 @@ function OperationBranchGroup({
                 engineCommandManager={engineCommandManager}
                 onSelect={onSelect}
                 visibilityOperations={visibilityOperations}
+                editorSelection={editorSelection}
                 isModuleOwned={true}
                 liveLatestOperationKey={liveLatestOperationKey}
               />
@@ -647,7 +666,7 @@ function OperationBranchGroup({
   )
 }
 
-function OperationTreeNodeItem({
+const OperationTreeNodeItem = memo(function OperationTreeNodeItem({
   node,
   ...props
 }: Omit<OperationProps, 'item'> & {
@@ -680,7 +699,7 @@ function OperationTreeNodeItem({
       referenceModuleId={referenceModuleId}
     />
   )
-}
+})
 
 type OpValueProps = {
   name: string
@@ -819,6 +838,7 @@ interface OperationProps {
   modelingActor: ReturnType<typeof useModelingContext>['actor']
   onSelect: (sourceRange: SourceRange) => void
   visibilityOperations: Operation[]
+  editorSelection: EditorSelection
   size?: 'default' | 'sm'
   isModuleOwned?: boolean
   /** During live execution, the module that received the latest operation. */
@@ -955,6 +975,7 @@ const OperationItem = ({
   isModuleOwned = false,
   referenceModuleId,
   visibilityOperations,
+  editorSelection,
   liveLatestOperationKey,
 }: OperationProps) => {
   useSignals()
@@ -967,7 +988,9 @@ const OperationItem = ({
   const ast = kclManager.hasParseErrors() ? kclManager.lastGoodAst : liveAst
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const name = getOperationLabel(item)
+  // Imported rows cannot select text in the active file.
   const sourceRange =
+    !isModuleOwned &&
     'sourceRange' in item &&
     sourceRangeToUtf16(sourceRangeFromRust(item.sourceRange), kclManager.code)
   const isLiveLatest = liveLatestOperationKey === getOperationKey(item)
@@ -976,10 +999,10 @@ const OperationItem = ({
       return false
     }
 
-    return kclManager.editorState.selection.ranges.some(({ from, to }) => {
+    return editorSelection.ranges.some(({ from, to }) => {
       return isOverlap(sourceRange, topLevelRange(from, to))
     })
-  }, [kclManager.editorState.selection, sourceRange])
+  }, [editorSelection, sourceRange])
   const isSelected = isLiveLatest || isEditorSelected
   const valueDetail = useMemo(() => {
     return getFeatureTreeValueDetail(item, code)
@@ -1060,7 +1083,7 @@ const OperationItem = ({
             path: targetPath,
             range: providedSourceRange ?? item.sourceRange,
           }
-          await navigate(`${PATHS.FILE}/${encodeURIComponent(targetPath)}`)
+          await navigate(getFileRoute(targetPath))
           return
         }
       }
@@ -1135,9 +1158,9 @@ const OperationItem = ({
           item.type === 'StdLibCall' ||
           (item.type === 'GroupBegin' && item.group.type === 'FunctionCall')
         ) {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Appearance', groupId: 'modeling' },
+          selectCommand(commandBarActor, {
+            name: 'Appearance',
+            groupId: 'modeling',
           })
         }
       })
@@ -1149,9 +1172,9 @@ const OperationItem = ({
     selectOperation()
       .then(() => {
         if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Translate', groupId: 'modeling' },
+          selectCommand(commandBarActor, {
+            name: 'Translate',
+            groupId: 'modeling',
           })
         }
       })
@@ -1163,9 +1186,9 @@ const OperationItem = ({
     selectOperation()
       .then(() => {
         if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Rotate', groupId: 'modeling' },
+          selectCommand(commandBarActor, {
+            name: 'Rotate',
+            groupId: 'modeling',
           })
         }
       })
@@ -1177,10 +1200,7 @@ const OperationItem = ({
     selectOperation()
       .then(() => {
         if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Scale', groupId: 'modeling' },
-          })
+          selectCommand(commandBarActor, { name: 'Scale', groupId: 'modeling' })
         }
       })
       .catch((e) => toast.error(e))
@@ -1191,10 +1211,7 @@ const OperationItem = ({
     selectOperation()
       .then(() => {
         if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Clone', groupId: 'modeling' },
-          })
+          selectCommand(commandBarActor, { name: 'Clone', groupId: 'modeling' })
         }
       })
       .catch((e) => toast.error(e))
@@ -1441,11 +1458,14 @@ const OperationItem = ({
 
   const enabled = (!sketchNoFace || isOffsetPlane(item)) && !isStaleReference
 
-  const visibilityState = resolveFeatureTreeVisibility({
-    item,
-    operations: visibilityOperations,
-    artifactGraph: kclManager.artifactGraph,
-  })
+  // Imported rows never show an active-file visibility toggle.
+  const visibilityState: FeatureTreeVisibilityState = isModuleOwned
+    ? { canToggleVisibility: false }
+    : resolveFeatureTreeVisibility({
+        item,
+        operations: visibilityOperations,
+        artifactGraph: kclManager.artifactGraph,
+      })
 
   return (
     <OperationItemWrapper
@@ -1465,7 +1485,6 @@ const OperationItem = ({
       Tooltip={
         isModuleOwned ? undefined : (
           <Tooltip
-            delay={500}
             position="bottom-left"
             wrapperClassName="left-0 right-0"
             contentClassName="text-sm max-w-full"
@@ -1491,7 +1510,7 @@ const OperationItem = ({
                 `[data-module-branch="${referenceModuleId}"]`
               ) as HTMLElement | null
               if (branch) {
-                branch.scrollIntoView({ block: 'center', behavior: 'smooth' })
+                branch.scrollIntoView({ block: 'center', behavior: 'instant' })
                 // Brief highlight on the module heading row.
                 const row = branch.querySelector<HTMLElement>(
                   '[data-testid="feature-tree-operation-item"]'

@@ -175,6 +175,8 @@ function getEntitiesForGraphSelection(
   const reference = selection.entityRef
   if (reference) {
     switch (reference.type) {
+      case 'annotation':
+        return [{ id: reference.annotation_id, kind: 'other' }]
       case 'edge': {
         const id =
           selection.engineEntityId ??

@@ -2,7 +2,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
   'Toolbar dropdowns stay anchored when showPopover ignores its source',
-  { tag: '@web' },
+  { tag: ['@web', '@localRenderer'] },
   async ({ page, homePage }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()

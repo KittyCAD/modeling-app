@@ -7,7 +7,7 @@ description: Physical properties import_whole_transitive_import.kcl
     "center": {
       "x": 127.0,
       "y": 127.0,
-      "z": 127.0
+      "z": 128.0
     },
     "dimensions": {
       "x": 609.6,

@@ -1030,9 +1030,133 @@ fn cylindrical_axis_matches(tangent: nalgebra_glm::DVec3, normal: nalgebra_glm::
         && tangent.cross(&normal).norm() <= tangent.norm() * normal.norm() * 1e-5
 }
 
+async fn circular_geometry_query(
+    cmd: ModelingCmd,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<OkModelingCmdResponse, KclError> {
+    match exec_state
+        .send_modeling_cmd(ModelingCmdMeta::from_args(exec_state, args), cmd)
+        .await?
+    {
+        OkWebSocketResponseData::Modeling { modeling_response } => Ok(modeling_response),
+        _ => Err(KclError::new_engine(KclErrorDetails::new(
+            "Unexpected circular geometry query response".to_owned(),
+            vec![args.source_range],
+        ))),
+    }
+}
+
+// Measure a fillet's circular profile directly from its trim boundaries.
+// A seam bounds the same face on both sides; otherwise require matching end arcs.
+async fn fillet_boundary_radius(
+    face_id: uuid::Uuid,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Option<f64>, KclError> {
+    let OkModelingCmdResponse::EntityGetParentId(parent) = circular_geometry_query(
+        mcmd::EntityGetParentId::builder().entity_id(face_id).build().into(),
+        exec_state,
+        args,
+    )
+    .await?
+    else {
+        return Ok(None);
+    };
+    let OkModelingCmdResponse::EntityGetAllChildUuids(children) = circular_geometry_query(
+        mcmd::EntityGetAllChildUuids::builder()
+            .entity_id(parent.entity_id)
+            .build()
+            .into(),
+        exec_state,
+        args,
+    )
+    .await?
+    else {
+        return Ok(None);
+    };
+    let mut arcs = Vec::new();
+    for edge_id in children.entity_ids {
+        let OkModelingCmdResponse::GetEntityType(kind) = circular_geometry_query(
+            mcmd::GetEntityType::builder().entity_id(edge_id).build().into(),
+            exec_state,
+            args,
+        )
+        .await?
+        else {
+            continue;
+        };
+        if kind.entity_type != kcmc::shared::EntityType::Edge {
+            continue;
+        }
+        let faces = edge::get_face_ids_for_edge(exec_state, parent.entity_id, edge_id, args).await?;
+        if !faces.contains(&face_id) {
+            continue;
+        }
+        let OkModelingCmdResponse::CurveGetControlPoints(curve) = circular_geometry_query(
+            mcmd::CurveGetControlPoints::builder().curve_id(edge_id).build().into(),
+            exec_state,
+            args,
+        )
+        .await?
+        else {
+            continue;
+        };
+        let points: Vec<_> = curve
+            .control_points
+            .iter()
+            .map(|p| nalgebra_glm::vec3(p.x, p.y, p.z))
+            .collect();
+        let Some(radius) = circular_curve_radius(&points) else {
+            continue;
+        };
+        let OkModelingCmdResponse::CurveGetEndPoints(ends) = circular_geometry_query(
+            mcmd::CurveGetEndPoints::builder().curve_id(edge_id).build().into(),
+            exec_state,
+            args,
+        )
+        .await?
+        else {
+            continue;
+        };
+        let separation = nalgebra_glm::vec3(
+            ends.start.x.0 - ends.end.x.0,
+            ends.start.y.0 - ends.end.y.0,
+            ends.start.z.0 - ends.end.z.0,
+        );
+        if separation.norm() <= radius * 1e-6 {
+            continue;
+        }
+        arcs.push((radius, faces.iter().all(|id| *id == face_id)));
+    }
+    Ok(fillet_profile_radius(&arcs))
+}
+
+fn fillet_profile_radius(arcs: &[(f64, bool)]) -> Option<f64> {
+    let mut result: Option<f64> = None;
+    let has_seam = arcs.iter().any(|(_, seam)| *seam);
+    for &(radius, seam) in arcs {
+        let matches = |other: f64| (other - radius).abs() <= radius * 1e-5;
+        let is_profile = if has_seam {
+            seam
+        } else {
+            arcs.iter().filter(|(r, _)| matches(*r)).count() >= 2
+        };
+        if !is_profile {
+            continue;
+        }
+        if result.is_some_and(|previous| !matches(previous)) {
+            return None;
+        }
+        result = Some(radius);
+    }
+    result
+}
+
 async fn measure_circular_radius(
     target: &DistanceEntity,
     endpoint: &DistanceEndpoint,
+    allow_fillet_profile: bool,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<f64, KclError> {
@@ -1042,7 +1166,8 @@ async fn measure_circular_radius(
     }
     let invalid = || {
         KclError::new_semantic(KclErrorDetails::new(
-            "Cannot measure target: expected a circular edge or cylindrical face.".to_owned(),
+            "Cannot measure target: expected a circular edge, cylindrical face, or constant-radius fillet face."
+                .to_owned(),
             vec![args.source_range],
         ))
     };
@@ -1083,6 +1208,9 @@ async fn measure_circular_radius(
     }
     let entity_id = entity_id.ok_or_else(invalid)?;
     if matches!(target, DistanceEntity::Face(_) | DistanceEntity::TaggedFace(_)) {
+        if allow_fillet_profile && let Some(radius) = fillet_boundary_radius(entity_id, exec_state, args).await? {
+            return Ok(radius);
+        }
         // Use native surface coordinates. Two translated circular sections
         // distinguish cylindrical faces from cones, spheres and planar faces.
         for swap in [false, true] {
@@ -1182,7 +1310,7 @@ async fn circular_dimension(symbol: MbdSymbol, exec_state: &mut ExecState, args:
         .await?
         .ok_or_else(|| {
             KclError::new_semantic(KclErrorDetails::new(
-                "Diameter and radius require a circular edge or cylindrical face as `target`.".to_owned(),
+                "Diameter and radius require a circular edge or supported face as `target`.".to_owned(),
                 vec![args.source_range],
             ))
         })?;
@@ -1195,7 +1323,7 @@ async fn circular_dimension(symbol: MbdSymbol, exec_state: &mut ExecState, args:
             vec![args.source_range],
         )));
     }
-    let radius_mm = measure_circular_radius(&target, &endpoint, exec_state, &args).await?;
+    let radius_mm = measure_circular_radius(&target, &endpoint, symbol == MbdSymbol::Radius, exec_state, &args).await?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let precision = resolve_precision(
         args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?,
@@ -2385,6 +2513,24 @@ gdt::flatness(
             .iter()
             .map(|artifact_command| artifact_command.command.clone())
             .collect()
+    }
+
+    #[test]
+    fn fillet_profile_arcs_exclude_rails_and_ambiguous_radii() {
+        assert_eq!(
+            fillet_profile_radius(&[(2.0, true), (8.0, false), (10.0, false)]),
+            Some(2.0)
+        );
+        assert_eq!(
+            fillet_profile_radius(&[(2.0, false), (8.0, false), (2.0, false), (10.0, false)]),
+            Some(2.0)
+        );
+        assert_eq!(fillet_profile_radius(&[(2.0, false)]), None);
+        assert_eq!(
+            fillet_profile_radius(&[(2.0, false), (2.0, false), (8.0, false), (8.0, false)]),
+            None
+        );
+        assert_eq!(fillet_profile_radius(&[(2.0, true), (3.0, true)]), None);
     }
 
     #[test]

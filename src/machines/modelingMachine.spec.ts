@@ -1,4 +1,6 @@
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { STRAIGHT_SEGMENT } from '@src/clientSideScene/sceneConstants'
 import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import {
   createIdentifier,
@@ -8,6 +10,7 @@ import {
 import type { KclManager } from '@src/lang/KclManager'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
 import { artifactToEntityRef, getNodeFromPath } from '@src/lang/queryAst'
+import { getWallCodeRef } from '@src/lang/std/artifactGraph'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import {
   removeSingleConstraint,
@@ -25,25 +28,43 @@ import {
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type RustContext from '@src/lib/rustContext'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { getAstAndArtifactGraph } from '@src/lib/testHelpers'
 import { StepSchema } from '@src/lib/stepSchema'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import { modelingMachine } from '@src/machines/modelingMachine'
+import {
+  modelingMachine,
+  positionLocalSketchSolveCamera,
+} from '@src/machines/modelingMachine'
 import {
   dummyInitSketchGraphDelta,
   generateModelingMachineDefaultContext,
   modelingMachineInitialInternalContext,
 } from '@src/machines/modelingSharedContext'
+import type {
+  DefaultPlane,
+  ExtrudeFacePlane,
+  OffsetPlane,
+} from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
   buildTheWorldAndConnectToEngine,
   buildTheWorldAndNoEngineConnection,
+  createProjectForTest,
 } from '@src/unitTestUtils'
 import toast from 'react-hot-toast'
+import { Group } from 'three'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { vi } from 'vitest'
-import { type ActorRefFrom, createActor, fromPromise, toPromise } from 'xstate'
+import {
+  type ActorRefFrom,
+  createActor,
+  fromPromise,
+  toPromise,
+  waitFor,
+} from 'xstate'
 
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
 
@@ -83,7 +104,6 @@ function useEngineWorld() {
     setTestWorld(
       await buildTheWorldAndConnectToEngine({
         webrtc: false,
-        geometryOnly: true,
       })
     )
   })
@@ -100,6 +120,84 @@ function useEngineWorld() {
 beforeAll(async () => {
   worldWithoutEngine = await buildTheWorldAndNoEngineConnection()
   setTestWorld(worldWithoutEngine)
+})
+
+describe('sketch entry on swept sketch-block faces', () => {
+  useEngineWorld()
+
+  it.each([
+    { face: 'top', start: '[0mm, 2mm]', normal: 1 },
+    { face: 'bottom', start: '[3mm, -2mm]', normal: -1 },
+  ])(
+    'starts a sketch on the $face face',
+    async ({ face, start, normal }) => {
+      const code = `@settings(defaultLengthUnit = mm, kclVersion = 3.0)
+profile = sketch(on = XZ) {
+  left = line(start = [0mm, -2mm], end = [0mm, 2mm])
+  top = line(start = [0mm, 2mm], end = [3mm, 2mm])
+  right = line(start = [3mm, 2mm], end = [3mm, -2mm])
+  bottom = line(start = [3mm, -2mm], end = [0mm, -2mm])
+}
+path = sketch(on = XY) {
+  arc1 = arc(start = [0mm, 0mm], end = [20mm, 20mm], center = [20mm, 0mm], direction = CW)
+}
+body = profile |> sweep(path = path)
+`
+      const { artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(kclManagerInThisFile.errors).toEqual([])
+      const segmentStart = code.indexOf(`line(start = ${start}`)
+      const wall = [...artifactGraph.values()].find((artifact) => {
+        if (artifact.type !== 'wall') return false
+        const source = getWallCodeRef(artifact, artifactGraph)
+        return !isErr(source) && source.range[0] === segmentStart
+      })
+      if (!wall) throw new Error(`Missing ${face} sweep face`)
+
+      const implementation =
+        modelingMachine.implementations.actors['animate-to-sketch-solve']
+      const logic =
+        'src' in implementation ? implementation.src : implementation
+      const actor = createActor(logic, {
+        input: {
+          artifactOrPlaneId: wall.id,
+          kclManager: kclManagerInThisFile,
+          rustContext: rustContextInThisFile,
+          engineCommandManager: engineCommandManagerInThisFile,
+          wasmInstance: instanceInThisFile,
+          projectRef: { current: createProjectForTest() },
+        },
+      })
+      try {
+        const done = toPromise(actor)
+        actor.start()
+        const result = await done
+        expect(result.plane.zAxis[2]).toBeCloseTo(normal)
+        expect(kclManagerInThisFile.code).toContain(
+          `face001 = faceOf(body, face = ${face})`
+        )
+        expect(kclManagerInThisFile.code).toContain(
+          'sketch001 = sketch(on = face001)'
+        )
+        expect(result.initialSceneGraphDelta.exec_outcome?.issues).toEqual([])
+
+        const reloaded = await rustContextInThisFile.hackSetProgram(
+          assertParse(kclManagerInThisFile.code, instanceInThisFile),
+          jsAppSettings(rustContextInThisFile.settingsActor)
+        )
+        expect(reloaded.type).toBe('Success')
+        if (reloaded.type === 'Success') {
+          expect(reloaded.execOutcome.issues).toEqual([])
+        }
+      } finally {
+        actor.stop()
+      }
+    },
+    15_000
+  )
 })
 
 describe('STEP schema export requests', () => {
@@ -270,6 +368,121 @@ describe('modelingMachine.test.ts', () => {
   }
 
   describe('modelingMachine - XState', () => {
+    describe('legacy overlay pointer retention', () => {
+      function createOverlayActor() {
+        const input = generateModelingMachineDefaultContext({
+          kclManager: kclManagerInThisFile,
+          rustContext: rustContextInThisFile,
+          wasmInstance: instanceInThisFile,
+          engineCommandManager: engineCommandManagerInThisFile,
+          commandBarActor: commandBarActorInThisFile,
+          machineManager: machineManagerInThisFile,
+        })
+        const actor = createActor(modelingMachine, { input }).start()
+        const group = new Group()
+        group.userData = { type: STRAIGHT_SEGMENT, pathToNode: [] }
+        return { actor, group, key: '[]' }
+      }
+
+      it('shows immediately and retains controls while the pointer crosses their gap', () => {
+        vi.useFakeTimers()
+        const { actor, group, key } = createOverlayActor()
+        const scene = kclManagerInThisFile.sceneInfra
+        const previousSend = scene.modelingSend
+        scene.setSend((event) => actor.send(event))
+        try {
+          actor.send({
+            type: 'Set mouse state',
+            data: { type: 'isHovering', on: group },
+          })
+          expect(actor.getSnapshot().context.segmentHoverMap[key]).toBe(0)
+          actor.send({ type: 'Set mouse state', data: { type: 'idle' } })
+          const retained = actor.getSnapshot().context.segmentHoverMap[key]
+          expect(retained).toBeDefined()
+          vi.advanceTimersByTime(500)
+          expect(actor.getSnapshot().context.segmentHoverMap[key]).toBe(
+            retained
+          )
+          actor.send({
+            type: 'Set mouse state',
+            data: { type: 'isHovering', on: group },
+          })
+          vi.advanceTimersByTime(1500)
+          expect(actor.getSnapshot().context.segmentHoverMap[key]).toBe(0)
+          actor.send({ type: 'Set mouse state', data: { type: 'idle' } })
+          vi.advanceTimersByTime(1000)
+          expect(
+            actor.getSnapshot().context.segmentHoverMap[key]
+          ).toBeUndefined()
+        } finally {
+          actor.stop()
+          scene.setSend(previousSend)
+          vi.clearAllTimers()
+          vi.useRealTimers()
+        }
+      })
+
+      it('cannot remove a replacement actor toolbar with the same segment key', () => {
+        vi.useFakeTimers()
+        const retired = createOverlayActor()
+        const scene = kclManagerInThisFile.sceneInfra
+        const previousSend = scene.modelingSend
+        scene.setSend((event) => retired.actor.send(event))
+        retired.actor.send({
+          type: 'Set mouse state',
+          data: { type: 'isHovering', on: retired.group },
+        })
+        retired.actor.send({ type: 'Set mouse state', data: { type: 'idle' } })
+        retired.actor.stop()
+        const current = createOverlayActor()
+        scene.setSend((event) => current.actor.send(event))
+        try {
+          current.actor.send({
+            type: 'Set mouse state',
+            data: { type: 'isHovering', on: current.group },
+          })
+          vi.advanceTimersByTime(1500)
+          expect(
+            current.actor.getSnapshot().context.segmentHoverMap[current.key]
+          ).toBe(0)
+        } finally {
+          current.actor.stop()
+          scene.setSend(previousSend)
+          vi.clearAllTimers()
+          vi.useRealTimers()
+        }
+      })
+
+      it('does not publish an old file timeout after the editor switches files', () => {
+        vi.useFakeTimers()
+        const { actor, group, key } = createOverlayActor()
+        const scene = kclManagerInThisFile.sceneInfra
+        const previousSend = scene.modelingSend
+        const previousPath = kclManagerInThisFile.path
+        scene.setSend((event) => actor.send(event))
+        try {
+          actor.send({
+            type: 'Set mouse state',
+            data: { type: 'isHovering', on: group },
+          })
+          actor.send({ type: 'Set mouse state', data: { type: 'idle' } })
+          const retained = actor.getSnapshot().context.segmentHoverMap[key]
+          kclManagerInThisFile.path = 'another-overlay-file.kcl'
+          vi.advanceTimersByTime(1500)
+          expect(actor.getSnapshot().context.mouseState.type).toBe('idle')
+          expect(actor.getSnapshot().context.segmentHoverMap[key]).toBe(
+            retained
+          )
+        } finally {
+          actor.stop()
+          kclManagerInThisFile.path = previousPath
+          scene.setSend(previousSend)
+          vi.clearAllTimers()
+          vi.useRealTimers()
+        }
+      })
+    })
+
     describe('when initialized', () => {
       it('should start in the idle state', async () => {
         const contextCopied = generateModelingMachineDefaultContext({
@@ -1603,13 +1816,14 @@ p3 = [342.51, 216.38],
             ast: { body: [] },
             code,
             editorView: { dispatch },
-            hidePlanes: vi.fn(),
+            hidePlanes: vi.fn().mockResolvedValue(undefined),
             isShiftDown: false,
             sceneEntitiesManager: { activeSegments: {} },
             sceneInfra: {
               resetMouseListeners: vi.fn(),
               setCallbacks: vi.fn(),
               camControls: {
+                cancelSketchCameraTransition: vi.fn(),
                 enablePan: true,
                 enableRotate: true,
                 syncDirection: 'engineToClient',
@@ -1811,13 +2025,14 @@ sketch001 = sketch(on = YZ) {
           },
           kclManager: {
             artifactGraph,
-            hidePlanes: vi.fn(),
-            showPlanes: vi.fn(),
+            hidePlanes: vi.fn().mockResolvedValue(undefined),
+            showPlanes: vi.fn().mockResolvedValue(undefined),
             sceneInfra: {
               animate: vi.fn(),
               resetMouseListeners: vi.fn(),
               setCallbacks: vi.fn(),
               camControls: {
+                cancelSketchCameraTransition: vi.fn(),
                 enablePan: true,
                 enableRotate: true,
                 syncDirection: 'engineToClient',
@@ -1872,17 +2087,18 @@ sketch001 = sketch(on = YZ) {
         kclManager: {
           artifactGraph,
           hasErrors: vi.fn(() => false),
-          hidePlanes: vi.fn(),
+          hidePlanes: vi.fn().mockResolvedValue(undefined),
           setCopilotEnabled: vi.fn(),
           setSelectionFilter: vi.fn(),
           setSelectionFilterToDefault: vi.fn(),
-          showPlanes: vi.fn(),
+          showPlanes: vi.fn().mockResolvedValue(undefined),
           sceneInfra: {
             animate: vi.fn(),
             stop: vi.fn(),
             resetMouseListeners: vi.fn(),
             setCallbacks: vi.fn(),
             camControls: {
+              cancelSketchCameraTransition: vi.fn(),
               enablePan: true,
               enableRotate: true,
               syncDirection: 'engineToClient',
@@ -1963,83 +2179,95 @@ sketch001 = sketch(on = YZ) {
       })
     })
 
-    it('restores camera orbit controls when sketch exit errors', async () => {
-      const {
-        instance,
-        kclManager,
-        rustContext,
-        engineCommandManager,
-        commandBarActor,
-        machineManager,
-      } = await buildTheWorldAndNoEngineConnection()
-
-      const sendSceneCommandSpy = vi
-        .spyOn(engineCommandManager, 'sendSceneCommand')
-        .mockRejectedValue(new Error('sketch exit failed'))
-
-      const context = generateModelingMachineDefaultContext({
-        kclManager,
-        rustContext,
-        wasmInstance: instance,
-        engineCommandManager,
-        commandBarActor,
-        machineManager,
-      })
-      context.store.defaultUnit = { current: 'mm' } as any
-      context.projectRef = { current: {} as any }
-
-      const machine = modelingMachine.provide({
-        actors: {
-          'animate-to-sketch-solve': fromPromise(async () => ({
-            plane: {
-              type: 'defaultPlane',
-              plane: 'XY',
-              planeId: 'test-plane-id',
-              zAxis: [0, 0, 1],
-              yAxis: [0, 1, 0],
-              origin: [0, 0, 0],
-            } as any,
-            sketchSolveId: 1,
-            initialSceneGraphDelta: dummyInitSketchGraphDelta,
-          })),
-        },
-      })
-
-      const actor = createActor(machine, { input: context }).start()
-
-      actor.send({ type: 'Enter sketch' })
-      actor.send({
-        type: 'Select sketch solve plane',
-        data: 'test-plane-id',
-      })
-
-      await waitForCondition(() => {
-        return (
-          JSON.stringify(actor.getSnapshot().value) ===
-          JSON.stringify({
-            sketchSolveMode: 'active',
+    it.each<{ projection: 'perspective' | 'orthographic' }>([
+      { projection: 'perspective' },
+      { projection: 'orthographic' },
+    ])(
+      'exits a disposed sketch when the disconnected engine cannot restore $projection',
+      async ({ projection }) => {
+        const {
+          instance,
+          kclManager,
+          rustContext,
+          engineCommandManager,
+          commandBarActor,
+          machineManager,
+        } = await buildTheWorldAndNoEngineConnection()
+        kclManager.sceneInfra.renderer.clear = vi.fn()
+        toastErrorSpy.mockClear()
+        const context = generateModelingMachineDefaultContext({
+          kclManager,
+          rustContext,
+          wasmInstance: instance,
+          engineCommandManager,
+          commandBarActor,
+          machineManager,
+        })
+        const settings = kclManager.systemDeps.settings.getSnapshot().context
+        settings.modeling.cameraProjection.user = projection
+        context.store.defaultUnit = settings.modeling.defaultUnit
+        context.store.cameraProjection = settings.modeling.cameraProjection
+        kclManager.sceneInfra.camControls.camera.position.set(0, -10, 10)
+        const plane: DefaultPlane = {
+          type: 'defaultPlane',
+          plane: 'XY',
+          planeId: 'test-plane-id',
+          zAxis: [0, 0, 1],
+          yAxis: [0, 1, 0],
+        }
+        const machine = modelingMachine.provide({
+          actors: {
+            'animate-to-sketch-solve': fromPromise(
+              async (): Promise<{
+                plane: DefaultPlane | ExtrudeFacePlane | OffsetPlane
+                sketchSolveId: number
+                initialSceneGraphDelta: SceneGraphDelta
+              }> => ({
+                plane,
+                sketchSolveId: 1,
+                initialSceneGraphDelta: dummyInitSketchGraphDelta,
+              })
+            ),
+          },
+        })
+        const actor = createActor(machine, { input: context }).start()
+        try {
+          actor.send({ type: 'Enter sketch' })
+          actor.send({
+            type: 'Select sketch solve plane',
+            data: 'test-plane-id',
           })
-        )
-      })
-
-      actor.send({ type: 'Exit sketch' })
-
-      await waitForCondition(() => {
-        return (
-          JSON.stringify(actor.getSnapshot().value) ===
-          JSON.stringify({
-            idle: 'hidePlanes',
-          })
-        )
-      })
-
-      expect(sendSceneCommandSpy).toHaveBeenCalled()
-      expect(kclManager.sceneInfra.camControls.enableRotate).toBe(true)
-      expect(kclManager.sceneInfra.camControls.enablePan).toBe(true)
-      expect(kclManager.sceneInfra.camControls.syncDirection).toBe(
-        'engineToClient'
-      )
-    })
+          await waitFor(actor, (snapshot) =>
+            snapshot.matches({ sketchSolveMode: 'active' })
+          )
+          toastErrorSpy.mockClear()
+          actor.send({ type: 'Exit sketch' })
+          await waitFor(
+            actor,
+            (snapshot) =>
+              snapshot.matches('idle') ||
+              toastErrorSpy.mock.calls.some(
+                ([message]) =>
+                  message ===
+                  'Camera command sketch_mode_disable was not acknowledged'
+              )
+          )
+          expect(actor.getSnapshot().matches('idle')).toBe(true)
+          expect(kclManager.sceneInfra.camControls.enableRotate).toBe(true)
+          expect(kclManager.sceneInfra.camControls.enablePan).toBe(true)
+          expect(kclManager.sceneInfra.camControls.syncDirection).toBe(
+            'engineToClient'
+          )
+          expect(toastErrorSpy).toHaveBeenCalledWith(
+            'Camera command sketch_mode_disable was not acknowledged'
+          )
+          expect(actor.getSnapshot().context.sketchDetails).toBeNull()
+        } finally {
+          actor.stop()
+          kclManager.close()
+        }
+      }
+    )
 
     it('disables camera orbit controls in sketch solve mode', async () => {
       const {
@@ -2101,5 +2329,42 @@ sketch001 = sketch(on = YZ) {
         'clientToEngine'
       )
     })
+  })
+})
+
+describe('positionLocalSketchSolveCamera', () => {
+  it('orients the sketch before aiming the camera at it', async () => {
+    const order: string[] = []
+    const sketchSolveGroup = {}
+    const plane: DefaultPlane = {
+      type: 'defaultPlane',
+      plane: 'XZ',
+      planeId: 'plane-id',
+      zAxis: [0, -1, 0],
+      yAxis: [0, 0, 1],
+    }
+    const initSketchSolveEntityOrientation = vi.fn(() => {
+      order.push('orient sketch')
+    })
+    const transitionToSketch = vi.fn(async () => {
+      order.push('aim camera')
+    })
+    const signal = new AbortController().signal
+
+    await positionLocalSketchSolveCamera(
+      {
+        sceneEntitiesManager: {
+          sketchSolveGroup,
+          initSketchSolveEntityOrientation,
+        },
+        sceneInfra: { camControls: { transitionToSketch } },
+      } as unknown as KclManager,
+      plane,
+      signal
+    )
+
+    expect(order).toEqual(['orient sketch', 'aim camera'])
+    expect(initSketchSolveEntityOrientation).toHaveBeenCalledWith(plane)
+    expect(transitionToSketch).toHaveBeenCalledWith(sketchSolveGroup, signal)
   })
 })
