@@ -248,12 +248,15 @@ test.describe(
           if (await modelingDialog.locator.isVisible()) {
             await modelingDialog.moveTo({ x: 0, y: 80 })
           }
-          const [clickBracketInScene] = await scene.makeSelectionHelpers({
-            kind: 'face',
-            // The end cap stays visible when the bracket rotates.
-            index: 2,
-            stream: { x: 0.75, y: 0.92, format: 'ratio' },
-          })
+          const [clickBracketInScene] = test
+            .info()
+            .tags.includes('@localRenderer')
+            ? await scene.findFace(2)
+            : await scene.makeMouseHelpersAtWorldPoint({
+                x: 4 * 25.4,
+                y: 0,
+                z: 0,
+              })
           await clickBracketInScene()
           await expect(toolbar.selectionStatus).toContainText(/1 (path|face)/)
           return
@@ -300,6 +303,55 @@ test.describe(
           { shouldNormalise: true }
         )
         await scene.settled()
+        await page.evaluate(async () => {
+          const editor = window.app.project?.executingEditor.value
+          if (!editor) throw new Error('No executing editor')
+          await editor.flushPendingEditorExecution()
+        })
+        await expect
+          .poll(() =>
+            page.evaluate(() => {
+              const editor = window.app.project?.executingEditor.value
+              return Boolean(
+                editor &&
+                  editor.code.includes('import "bracket.kcl" as bracket') &&
+                  editor.lastSuccessfulCode === editor.code &&
+                  !editor.hasErrors() &&
+                  !editor.isExecuting &&
+                  editor.artifactGraph.size > 0
+              )
+            })
+          )
+          .toBe(true)
+        if (!test.info().tags.includes('@localRenderer')) {
+          // Importing preserves the empty project's camera. Fit the loaded
+          // bracket before testing native scene selection and transforms.
+          await page.evaluate(() => {
+            window.app.project?.executingEditor.value?.engineCommandManager.clearCommandLogs()
+          })
+          expect(
+            await doAndWaitForImageDiff(
+              scene.streamWrapper,
+              async () => {
+                await cmdBar.openCmdBar()
+                await cmdBar.chooseCommand('Zoom to fit')
+                await cmdBar.expectState({ stage: 'commandBarClosed' })
+              },
+              300
+            )
+          ).toBe(true)
+          await expect
+            .poll(() =>
+              page.evaluate(() =>
+                window.app.project?.executingEditor.value?.engineCommandManager.commandLogs.some(
+                  (log) =>
+                    log.type === 'receive-reliable' &&
+                    log.cmd_type === 'zoom_to_fit'
+                )
+              )
+            )
+            .toBe(true)
+        }
       })
 
       // The local camera still frames the empty assembly after inserting a part.

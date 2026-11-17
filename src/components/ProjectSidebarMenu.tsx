@@ -632,7 +632,7 @@ export function ProjectBreadcrumbButton({
       resizeObserver?.disconnect()
       window.removeEventListener('resize', updateTruncatedState)
     }
-  })
+  }, [formattedRelativeFilePath, projectDisplayName])
 
   return (
     <Popover.Button

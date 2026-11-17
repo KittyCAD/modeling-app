@@ -46,9 +46,16 @@ test.describe('Regression tests', { tag: '@web' }, () => {
         }
         await expect(page).toHaveURL(new RegExp(`${fileName}$`))
         await scene.settled()
+        await scene.moveCameraTo(
+          { x: 0, y: -128, z: 64 },
+          { x: 0, y: 0, z: 0 },
+          { waitForImageChange: false }
+        )
         await toolbar.startSketchPlaneSelection()
-        const [clickPlane] = scene.makeMouseHelpers(0.5, 0.6, {
-          format: 'ratio',
+        const [clickPlane] = await scene.makeMouseHelpersAtWorldPoint({
+          x: 1,
+          y: -1,
+          z: 0,
         })
         await clickPlane()
         await expect

@@ -290,6 +290,37 @@ export class SceneFixture {
     return resolvedPoint
   }
 
+  async makeMouseHelpersAtWorldPoint(point: {
+    x: number
+    y: number
+    z: number
+  }) {
+    // Only streaming cameras need a server readback after look-at commands.
+    if (!(await this.usesLocalRenderer())) {
+      await sendSceneCommand(this.page, {
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: { type: 'default_camera_get_settings' },
+      })
+    }
+    const projected = await this.page.evaluate((point) => {
+      const editor = window.app.project?.executingEditor.value
+      if (!editor) throw new Error('No executing editor')
+      const camera = editor.sceneInfra.camControls.camera
+      camera.updateMatrixWorld()
+      const projected = camera.position
+        .clone()
+        .set(point.x, point.y, point.z)
+        .project(camera)
+      return { x: (projected.x + 1) / 2, y: (1 - projected.y) / 2 }
+    }, point)
+    expect(projected.x).toBeGreaterThan(0)
+    expect(projected.x).toBeLessThan(1)
+    expect(projected.y).toBeGreaterThan(0)
+    expect(projected.y).toBeLessThan(1)
+    return this.makeMouseHelpers(projected.x, projected.y, { format: 'ratio' })
+  }
+
   makeMouseHelpers = (
     x: number,
     y: number,

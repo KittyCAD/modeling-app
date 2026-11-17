@@ -1418,7 +1418,7 @@ test(
       await editor.openPane()
       await editor.expectEditor.toContain('extrude')
       await editor.codeContent.focus()
-      await page.keyboard.type('\ninterleaveA = 1')
+      await page.keyboard.insertText('\ninterleaveA = 1')
     })
 
     await test.step('Delete another file without navigating away', async () => {
@@ -1437,10 +1437,11 @@ test(
       () => `${window.app.project?.path}/fileToDelete.kcl`
     )
     await test.step('Undo code edits and the intervening file deletion', async () => {
+      const codeBeforeSecondEdit = await editor.codeContent.innerText()
       await editor.codeContent.focus()
-      await page.keyboard.type('\ninterleaveB = 2')
+      await page.keyboard.insertText('\ninterleaveB = 2')
       await undoButton.click()
-      await expect(u.codeLocator).not.toContainText('interleaveB = 2')
+      await expect(editor.codeContent).toHaveText(codeBeforeSecondEdit)
       await expect(u.codeLocator).toContainText('interleaveA = 1')
       await expect(fileToDelete).not.toBeAttached()
       await expect(undoButton).toBeEnabled()
