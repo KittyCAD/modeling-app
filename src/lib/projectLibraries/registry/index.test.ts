@@ -113,6 +113,15 @@ describe('project library realizations registry service', () => {
         expect(settled.value).toEqual([
           projectLibrariesFromSettings(libraries)[0].id,
         ])
+        const refresh = Promise.withResolvers<[]>()
+        readRealizations.mockReturnValue(refresh.promise)
+        registry.get(projectLibraryRealizationsService).invalidate()
+        await vi.waitFor(() => expect(loading.value).toHaveLength(1))
+        expect(settled.value).toEqual([
+          projectLibrariesFromSettings(libraries)[0].id,
+        ])
+        refresh.resolve([])
+        await vi.waitFor(() => expect(loading.value).toEqual([]))
       } finally {
         listing.resolve([])
         log.mockRestore()

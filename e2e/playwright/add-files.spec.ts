@@ -26,7 +26,7 @@ test(
 test.describe('Local Drive picker', { tag: '@localRenderer' }, () => {
   test(
     'Web: opens the picker and adds a local file',
-    { tag: '@web' },
+    { tag: ['@web', '@browsers'] },
     async ({ page, homePage, toolbar, cmdBar }) => {
       await homePage.createAndGoToProject('local-drive')
       await page.waitForFunction(() =>
@@ -80,7 +80,7 @@ test.describe('Local Drive picker', { tag: '@localRenderer' }, () => {
 
   test(
     'Web: opens a local KCL file in the editor',
-    { tag: '@web' },
+    { tag: ['@web', '@browsers'] },
     async ({ page, homePage, toolbar, cmdBar, editor }) => {
       await homePage.createAndGoToProject('local-kcl')
       await page.waitForFunction(() =>

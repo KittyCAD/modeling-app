@@ -35,7 +35,13 @@ import {
   deactivateZoodleRuntimeExtension,
 } from '@src/registry/extensions/engineScene/zoodleRuntimeExtension'
 import type { ChangeEvent, ReactNode } from 'react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 
 const noop = () => {}
 const MAX_INLINE_PASTE_LENGTH = 5_000
@@ -87,6 +93,10 @@ export interface ZookeeperConversationProps {
   modeScopeKey?: string
   attachmentFetches?: Record<string, ZookeeperAttachmentFetchState>
   onFetchAttachment?: (attachmentRef: AttachmentRef) => void
+  canLoadOlderMessages?: boolean
+  isLoadingOlderMessages?: boolean
+  olderMessagesError?: string
+  onLoadOlderMessages?: () => void
 }
 
 const getModeOption = (
@@ -733,37 +743,87 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
   const isEndOfStream =
     lastExchange?.responses.some(isResponseComplete) ?? false
 
-  // Autoscroll: right after sending a prompt when the new exchange is added
-  useEffect(() => {
-    if (exchangesLength === 0 || !refScroll.current) return
-    refScroll.current.scrollTo({
-      top: refScroll.current.scrollHeight,
-      behavior: 'instant',
-    })
-  }, [exchangesLength])
+  const previousScrollState = useRef({ length: 0, isEndOfStream: false })
+  const historyAnchor = useRef<
+    | {
+        element?: Element
+        top: number
+        distanceFromBottom: number
+      }
+    | undefined
+  >(undefined)
+  const exchangeKeys = useRef(new WeakMap<object, number>())
+  const nextExchangeKey = useRef(0)
 
-  // Autoscroll: right after Zookeeper completes its turn in the exchange.
-  useEffect(() => {
-    if (!isEndOfStream || !refScroll.current) return
-    refScroll.current.scrollTo({
-      top: refScroll.current.scrollHeight,
-      behavior: 'instant',
-    })
-  }, [isEndOfStream])
+  useLayoutEffect(() => {
+    const previous = previousScrollState.current
+    previousScrollState.current = { length: exchangesLength, isEndOfStream }
+    const scroll = refScroll.current
+    if (!scroll || exchangesLength === 0) {
+      historyAnchor.current = undefined
+      return
+    }
+    const anchor = historyAnchor.current
+    if (anchor) {
+      if (props.isLoadingOlderMessages) return
+      if (anchor.element?.isConnected) {
+        scroll.scrollTop +=
+          anchor.element.getBoundingClientRect().top - anchor.top
+      } else {
+        scroll.scrollTop = scroll.scrollHeight - anchor.distanceFromBottom
+      }
+      historyAnchor.current = undefined
+      return
+    }
+    if (
+      exchangesLength !== previous.length ||
+      (isEndOfStream && !previous.isEndOfStream)
+    ) {
+      scroll.scrollTo({ top: scroll.scrollHeight, behavior: 'instant' })
+    }
+  }, [
+    exchangesLength,
+    isEndOfStream,
+    props.conversation,
+    props.isLoadingOlderMessages,
+  ])
+
+  const loadOlderMessages = () => {
+    const scroll = refScroll.current
+    if (scroll) {
+      const top = scroll.getBoundingClientRect().top
+      const element = Array.from(
+        scroll.querySelectorAll('[data-zookeeper-exchange]')
+      ).find((element) => element.getBoundingClientRect().bottom > top)
+      historyAnchor.current = {
+        element,
+        top: element?.getBoundingClientRect().top ?? top,
+        distanceFromBottom: scroll.scrollHeight - scroll.scrollTop,
+      }
+    }
+    props.onLoadOlderMessages?.()
+  }
 
   const exchangeCards = props.conversation?.exchanges.flatMap(
     (exchange: Exchange, exchangeIndex: number, list) => {
       const isLastResponse = exchangeIndex === list.length - 1
+      const identity = exchange.request ?? exchange.responses[0] ?? exchange
+      let key = exchangeKeys.current.get(identity)
+      if (key === undefined) {
+        key = nextExchangeKey.current++
+        exchangeKeys.current.set(identity, key)
+      }
       return (
-        <ExchangeCard
-          key={`exchange-${exchangeIndex}`}
-          {...exchange}
-          userAvatar={props.userAvatarSrc}
-          isLastResponse={isLastResponse}
-          onClickClearChat={isLastResponse ? props.onClickClearChat : noop}
-          attachmentFetches={props.attachmentFetches}
-          onFetchAttachment={props.onFetchAttachment}
-        />
+        <div key={key} data-zookeeper-exchange>
+          <ExchangeCard
+            {...exchange}
+            userAvatar={props.userAvatarSrc}
+            isLastResponse={isLastResponse}
+            onClickClearChat={isLastResponse ? props.onClickClearChat : noop}
+            attachmentFetches={props.attachmentFetches}
+            onFetchAttachment={props.onFetchAttachment}
+          />
+        </div>
       )
     }
   )
@@ -773,12 +833,12 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
     <div className="relative">
       <div className="absolute inset-0">
         <div className="flex flex-col h-full">
-          <div className="h-full flex flex-col justify-end overflow-auto relative">
+          <div className="min-h-0 flex-1 flex flex-col justify-end overflow-hidden relative">
             <div
               className={
                 props.showManualConnect
                   ? 'h-full min-h-0 overflow-auto'
-                  : 'overflow-auto'
+                  : 'min-h-0 overflow-auto'
               }
               ref={refScroll}
             >
@@ -813,6 +873,42 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                       }
                     >
                       {props.welcomeMessage}
+                    </div>
+                  )}
+                  {(props.canLoadOlderMessages || props.olderMessagesError) && (
+                    <div className="m-4 flex flex-col items-center gap-2">
+                      {props.olderMessagesError && (
+                        <p role="alert" className="text-sm text-2">
+                          {props.olderMessagesError}
+                        </p>
+                      )}
+                      {!props.canLoadOlderMessages &&
+                        props.olderMessagesError && (
+                          <ActionButton
+                            Element="button"
+                            type="button"
+                            onClick={props.onReconnect}
+                            disabled={props.isClearingChat}
+                          >
+                            Reconnect
+                          </ActionButton>
+                        )}
+                      {props.canLoadOlderMessages && (
+                        <ActionButton
+                          Element="button"
+                          type="button"
+                          onClick={loadOlderMessages}
+                          disabled={
+                            props.isLoadingOlderMessages ||
+                            props.needsReconnect ||
+                            props.isClearingChat
+                          }
+                        >
+                          {props.isLoadingOlderMessages
+                            ? 'Loading older messages...'
+                            : 'Load older messages'}
+                        </ActionButton>
+                      )}
                     </div>
                   )}
                   {hasMessages ? (
@@ -921,7 +1017,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
               Progressively loading attachments into context...
             </div>
           ) : null}
-          <div className="border-t b-4">
+          <div className="shrink-0 border-t b-4">
             <ZookeeperConversationInput
               contexts={props.contexts}
               disabled={props.disabled || props.isLoading}

@@ -1,17 +1,7 @@
 import { expect, test as browserTest } from '@e2e/playwright/base-test'
 import { test as appTest } from '@e2e/playwright/zoo-test'
-import { FsFixture } from '@e2e/playwright/fixtures/fsFixture'
-import { PROJECT_FOLDER } from '@src/lib/constants'
-import {
-  getDefaultCloudProjectLibrarySetting,
-  type ProjectLibrarySetting,
-} from '@src/lib/projectLibraries'
-import { mockCloudStorage } from '@e2e/playwright/lib/cloudStorageFixture'
-import {
-  getUtils,
-  setup,
-  mockClientErrorReports,
-} from '@e2e/playwright/test-utils'
+import { prepareStorage } from '@e2e/playwright/lib/projectStorageFixture'
+import { getUtils } from '@e2e/playwright/test-utils'
 
 const web = process.env.TARGET === 'web'
 const test = web ? browserTest : appTest
@@ -23,61 +13,11 @@ for (const backing of ['local', 'cloud'] as const) {
     `file creation, sibling rename, and open-file moves preserve edits (${backing})`,
     { tag: ['@web', '@desktop'] },
     async ({ context, page }, testInfo) => {
-      await mockClientErrorReports(context)
-      const remote = await mockCloudStorage(context)
-      const files = {
-        'main.kcl': code,
+      const storage = await prepareStorage(backing, page, context, testInfo)
+      const root = await storage.seedAndOpen('Mutation test', code, {
         'parts/component.kcl': code,
         'parts-extra/live.kcl': code,
-        'project.toml': 'title = "Mutation test"\ndefault_file = "main.kcl"\n',
-      }
-      if (backing === 'cloud') remote.project.files = files
-      if (web) await setup(context, page, testInfo)
-      const navigate = async (route: string) => {
-        if (web) await page.goto(route)
-        else {
-          const url = new URL(page.url())
-          url.hash = route
-          await page.goto(url.toString())
-          await page.reload({ waitUntil: 'domcontentloaded' })
-        }
-      }
-      await navigate('/home')
-      await page.waitForFunction(() => !!window.app?.fileOperations)
-      const fs = FsFixture(page)
-      let root = `/__zoo_cloud__/${remote.project.id}`
-      let library: ProjectLibrarySetting =
-        getDefaultCloudProjectLibrarySetting()
-      if (backing === 'local') {
-        const dir = web
-          ? await fs.join(await fs.getPath('documents'), PROJECT_FOLDER)
-          : testInfo.outputPath('local-projects')
-        {
-          const projectRoot = await fs.join(dir, 'mutation-test')
-          for (const [name, contents] of Object.entries(files)) {
-            const path = await fs.join(projectRoot, name)
-            await fs.mkdir(await fs.dirname(path), { recursive: true })
-            await fs.writeFile(path, new TextEncoder().encode(contents))
-          }
-        }
-        root = await fs.join(dir, 'mutation-test')
-        library = { type: 'directory', title: 'Local projects', path: dir }
-      }
-      await page.waitForFunction(() =>
-        window.app.settings.actor.getSnapshot().matches('idle')
-      )
-      await page.evaluate((library) => {
-        window.app.settings.actor.send({
-          type: 'set.app.libraries',
-          data: { level: 'user', value: [library] },
-        })
-      }, library)
-      await page.waitForFunction(() =>
-        window.app.settings.actor.getSnapshot().matches('idle')
-      )
-      await navigate(
-        `/file/${encodeURIComponent(await fs.join(root, 'main.kcl'))}`
-      )
+      })
       await page.locator('.cm-content').first().waitFor({ state: 'visible' })
       const u = await getUtils(page)
       await u.openFilePanel()
@@ -103,10 +43,7 @@ for (const backing of ['local', 'cloud'] as const) {
         // Rows can appear before the mutation and project refresh finish.
         await waitForExplorerReady()
       }
-      const read = async (name: string) =>
-        backing === 'cloud'
-          ? remote.project.files[name]
-          : fs.readFile(await fs.join(root, name), 'utf8')
+      const read = (name: string) => storage.read(root, name)
 
       await test.step('a filename collision allocates a sibling without replacing bytes', async () => {
         await page.getByTestId('create-file-button').click()
@@ -131,7 +68,9 @@ for (const backing of ['local', 'cloud'] as const) {
         await waitForExplorerReady()
         await expect(page).toHaveURL(
           new RegExp(
-            encodeURIComponent(await fs.join(root, 'components', 'live.kcl'))
+            encodeURIComponent(
+              await storage.fs.join(root, 'components', 'live.kcl')
+            )
           )
         )
         const editor = page.locator('.cm-content').first()
@@ -151,7 +90,9 @@ for (const backing of ['local', 'cloud'] as const) {
         await expect(row('empty-folder')).toBeVisible()
         if (backing === 'cloud')
           await expect
-            .poll(() => remote.project.files['.zoo-directories.json'])
+            .poll(
+              () => storage.remote.projects[0].files['.zoo-directories.json']
+            )
             .toContain('empty-folder')
         await page.reload()
         await row('empty-folder').waitFor({ state: 'visible' })
@@ -162,7 +103,9 @@ for (const backing of ['local', 'cloud'] as const) {
         await row('main.kcl').dragTo(row('components'))
         await waitForExplorerReady()
         const movedEntrypoint = new RegExp(
-          encodeURIComponent(await fs.join(root, 'components', 'main.kcl'))
+          encodeURIComponent(
+            await storage.fs.join(root, 'components', 'main.kcl')
+          )
         )
         await expect(page).toHaveURL(movedEntrypoint)
         await expect

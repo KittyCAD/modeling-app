@@ -834,6 +834,28 @@ describe('CameraControls viewport projection', () => {
       5
     )
   })
+
+  it('notifies camera listeners with the resized orthographic bounds', () => {
+    const canvas = makeCanvas(800, 600)
+    const controls = new CameraControls(
+      canvas,
+      makeConnectionManager({ width: 800, height: 600 }),
+      unusedSettings
+    )
+    controls.useOrthographicCamera()
+    const camera = controls.camera as OrthographicCamera
+    let rightWhenNotified: number | undefined
+    controls.cameraChange.add(() => {
+      rightWhenNotified = camera.right
+    })
+
+    // Opening a pane narrows the viewport.
+    Object.defineProperty(canvas, 'clientWidth', { get: () => 400 })
+    controls.onWindowResize()
+
+    const { width, height } = getDimensions(400, 600)
+    expect(rightWhenNotified).toBeCloseTo(20 * (width / height))
+  })
 })
 
 describe('local sketch camera transition', () => {
