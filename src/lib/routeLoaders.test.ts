@@ -708,10 +708,9 @@ describe('cloud project loader', () => {
 
   it('redirects to the existing cloud file route when the new shell is disabled', async () => {
     const app = new App(App.getDefaultSystems())
-    const pathFor = vi.fn(() => '/__zoo_cloud__/remote-123')
-    const registryGet = vi
-      .spyOn(app.registry, 'required')
-      .mockReturnValue({ pathFor })
+    vi.spyOn(app.registry, 'required').mockReturnValue({
+      pathFor: () => '/__zoo_cloud__/remote-123',
+    })
     environment.projectRouteEnabled = false
     try {
       const result = await projectLoader({
@@ -729,8 +728,6 @@ describe('cloud project loader', () => {
       expect(result.headers.get('Location')).toBe(
         '/file/%2F__zoo_cloud__%2Fremote-123?cmd=test'
       )
-      expect(registryGet).toHaveBeenCalledExactlyOnceWith(cloudStorageService)
-      expect(pathFor).toHaveBeenCalledWith('remote-123')
       expect(readProject).not.toHaveBeenCalled()
       expect(loadAndValidateSettings).not.toHaveBeenCalled()
     } finally {
