@@ -2383,34 +2383,34 @@ solid = extrude(region(segments = [profile.rim]), length = 5mm, tagEnd = $top)
     async fn distance_supplemental_text_preserves_measurement() {
         let code = gdt_distance_kcl("mm", "0.05mm", "[0mm, 0.7707mm]")
             .replace("kclVersion = 2", "kclVersion = 3.0")
-            .replace("extrude(region001, length = 10mm)", "extrude(region001, length = 10mm, tagEnd = $capEnd001)")
-            .replace("region001.tags.line4,\n      region001.tags.line1", "region001.tags.line3,\n      extrude001.faces.capEnd001")
+            .replace(
+                "extrude(region001, length = 10mm)",
+                "extrude(region001, length = 10mm, tagEnd = $capEnd001)",
+            )
+            .replace(
+                "region001.tags.line4,\n      region001.tags.line1",
+                "region001.tags.line3,\n      extrude001.faces.capEnd001",
+            )
             .replace("fontSize = 2in", "fontSize = 0.2802mm");
         for arguments in [
             "textLeft = \"MIN\",",
             "textAbove = \"UP\nLINE\", textBelow = \"REFERENCE\", textLeft = \"MIN\", textRight = \"MAX\",",
             "textAbove = \"\", textBelow = \"\", textLeft = \"\", textRight = \"\",",
         ] {
-            let decorated_code = code.replace(
-                "fontSize = 0.2802mm,",
-                &format!("fontSize = 0.2802mm, {arguments}"),
-            );
+            let decorated_code = code.replace("fontSize = 0.2802mm,", &format!("fontSize = 0.2802mm, {arguments}"));
             let plain_commands = gdt_commands(&code).await;
             let decorated_commands = gdt_commands(&decorated_code).await;
-            let original = annotation_options(
-                &plain_commands[new_annotation_command_index(&plain_commands).unwrap()],
-            )
-            .unwrap()
-            .dimension
-            .as_ref()
-            .unwrap();
-            let mut decorated = annotation_options(
-                &decorated_commands[new_annotation_command_index(&decorated_commands).unwrap()],
-            )
-            .unwrap()
-            .dimension
-            .clone()
-            .unwrap();
+            let original = annotation_options(&plain_commands[new_annotation_command_index(&plain_commands).unwrap()])
+                .unwrap()
+                .dimension
+                .as_ref()
+                .unwrap();
+            let mut decorated =
+                annotation_options(&decorated_commands[new_annotation_command_index(&decorated_commands).unwrap()])
+                    .unwrap()
+                    .dimension
+                    .clone()
+                    .unwrap();
             assert_eq!(
                 decorated.text_left.as_deref(),
                 Some(if arguments.contains("MIN") { "MIN" } else { "" })
