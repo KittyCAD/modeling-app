@@ -3,7 +3,7 @@ import fc from 'fast-check'
 import { expect, it } from 'vitest'
 import { contribute, type Extension, factory, Facet } from './algebra'
 import { plan } from './planner'
-import { Registry } from './nextRegistry'
+import { Registry } from './registry'
 
 const runs = { numRuns: 150 }
 

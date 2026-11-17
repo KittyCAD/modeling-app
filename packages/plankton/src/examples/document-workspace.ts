@@ -12,7 +12,7 @@ import {
   slot,
 } from '../algebra'
 import { createPlugin, plugins } from '../plugins'
-import { Registry } from '../nextRegistry'
+import { Registry } from '../registry'
 
 /** A view can render these descriptions; the document model owns editing. */
 export interface Panel {

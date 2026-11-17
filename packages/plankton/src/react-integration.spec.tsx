@@ -11,7 +11,7 @@ import {
   Registry,
   type Signal,
   service,
-} from '@kittycad/registry/next'
+} from 'plankton'
 import { expect, it } from 'vitest'
 
 it('tracks optional services directly as providers appear, change, and disappear', async () => {

@@ -1,10 +1,5 @@
 import { Dialog } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
-import { useCallback, useEffect, useRef } from 'react'
-// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: query-based tabs and hash-based scrolling (useLocation, useNavigate, useSearchParams).
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-
-import { pluginsValueSpec } from '@kittycad/registry'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { PluginsList } from '@src/components/PluginList'
 import { AllKeybindingsFields } from '@src/components/Settings/AllKeybindingsFields'
@@ -19,10 +14,14 @@ import { platform } from '@src/lib/utils'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
-  keymapScopesValueSpec,
+  keymapScopesFacet,
   keymapService,
 } from '@src/registry/contracts/keymap'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
+import { plugins } from 'plankton'
+import { useCallback, useEffect, useRef } from 'react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: query-based tabs and hash-based scrolling (useLocation, useNavigate, useSearchParams).
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 type SettingsTab = SettingsLevel | 'keybindings' | 'plugins'
 
@@ -84,7 +83,7 @@ export const Settings = () => {
           keymap.keymap.value,
           APP_COMMAND_IDS.search.focusSettings,
           ['settings-open'],
-          app.registry.signal(keymapScopesValueSpec).value
+          app.registry.observe(keymapScopesFacet).value
         )?.keystrokes
       : undefined,
     platform()
@@ -165,7 +164,7 @@ export const Settings = () => {
             <PluginsList
               ref={setScrollContainer}
               registry={app.registry}
-              plugins={app.registry.signal(pluginsValueSpec).value}
+              plugins={app.registry.observe(plugins).value}
             />
           ) : null}
         </div>

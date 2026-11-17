@@ -1,6 +1,5 @@
-import { defineService } from '@kittycad/registry'
 import type { InteractionSnapshot } from '@src/lib/interactionPerformance/types'
-
+import { service } from 'plankton'
 export interface InteractionPerformanceService {
   start(): Promise<void>
   snapshot(): InteractionSnapshot
@@ -8,4 +7,4 @@ export interface InteractionPerformanceService {
 }
 
 export const interactionPerformanceService =
-  defineService<InteractionPerformanceService>('interactionPerformance')
+  service<InteractionPerformanceService>('interactionPerformance')

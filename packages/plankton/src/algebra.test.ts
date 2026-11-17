@@ -18,8 +18,8 @@ import {
   type Factory,
   service,
   slot,
-} from './next'
-import { Registry } from './nextRegistry'
+} from './index'
+import { Registry } from './registry'
 
 it('keeps capability and facet types through a shared contract', () => {
   const contract = {

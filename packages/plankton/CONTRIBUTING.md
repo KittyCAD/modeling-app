@@ -1,9 +1,6 @@
-# Contributing to the new registry runtime
+# Contributing to Plankton
 
-This guide applies to `@kittycad/registry/next`; the legacy default entrypoint
-remains in place until the application migration.
-
-Start with the [algebra guide](ALGEBRA.md) for the algebra and examples. Follow the
+Start with the [README](README.md) for the algebra and examples. Follow the
 [repository contributor guide](../../CONTRIBUTING.md) for dependencies and generated
 Rust/Wasm artifacts. Run the commands below from the repository root.
 
@@ -19,7 +16,7 @@ Rust/Wasm artifacts. Run the commands below from the repository root.
 - Keep Facet combiners pure and define their empty-input result. Contributions
   remain explicit source functions, including when the contributed value is a
   function. Services report conflicting providers instead of choosing by order.
-- Keep implementation machinery internal. Public exports in `src/next.ts`
+- Keep implementation machinery internal. Public exports in `src/index.ts`
   should help authors or callers; consumers should not need casts to connect
   correctly typed Facets, sources, or Factory exports.
 - Keep app-specific policy in the app. Core modules use relative imports and
@@ -52,8 +49,8 @@ Start with affected tests, then run the package suite. Runtime or API changes al
 need tests for affected app consumers and a repository typecheck.
 
 ```sh
-npx vitest run --mode=development packages/registry/src
-npx eslint packages/registry/src --max-warnings 0
+npx vitest run --mode=development packages/plankton/src
+npx eslint packages/plankton/src --max-warnings 0
 npm run tsc -- --noEmit
 npm run fmt:check
 ```

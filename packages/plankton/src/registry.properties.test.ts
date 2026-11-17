@@ -3,7 +3,7 @@ import { computed, signal } from '@preact/signals-core'
 import fc from 'fast-check'
 import { expect, it } from 'vitest'
 import { contribute, Facet, provide, type Factory, service } from './algebra'
-import { Registry } from './nextRegistry'
+import { Registry } from './registry'
 
 const runs = { numRuns: 150 }
 
