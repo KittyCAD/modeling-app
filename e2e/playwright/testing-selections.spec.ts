@@ -1,4 +1,4 @@
-import { getUtils } from '@e2e/playwright/test-utils'
+import { getUtils, resetView, sansWhitespace } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import fs from 'fs'
 import path from 'path'
@@ -8,18 +8,18 @@ const bracket = fs.readFileSync(
   'utf8'
 )
 
-test.describe('Testing selections', { tag: '@desktop' }, () => {
+test.use({ useTestSettings: true })
+
+test.describe('Testing selections', { tag: '@web' }, () => {
   test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({
+    scene,
     page,
     editor,
     homePage,
   }) => {
     const u = await getUtils(page)
 
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XZ)
+    const initialCode = `sketch001 = startSketchOn(XZ)
     |> startProfile(at = [3.29, 7.86])
     |> line(end = [2.48, 2.44])
     |> line(end = [2.66, 1.17])
@@ -34,12 +34,15 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     |> close()
   extrude001 = extrude(sketch001, length = 10)
     `
-      )
-    })
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.waitForAuthentication()
     await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
+    await resetView(scene)
     await u.waitForPageLoad()
 
     // wait for execution done
@@ -156,7 +159,7 @@ part001 = startSketchOn(XZ)
   test(
     "Various pipe expressions should and shouldn't allow edit and or extrude",
     { tag: '@localRenderer' },
-    async ({ page, homePage, toolbar, scene, cmdBar }) => {
+    async ({ editor, page, homePage, toolbar, scene, cmdBar }) => {
       const u = await getUtils(page)
       const selectionsSnippets = {
         extrudeAndEditBlocked: '|> startProfile(at = [10.81, 32.99])',
@@ -164,17 +167,8 @@ part001 = startSketchOn(XZ)
         extrudeAndEditAllowed: '|> startProfile(at = [15.72, 4.7])',
         editOnly: '|> startProfile(at = [15.79, -14.6])',
       }
-      await page.addInitScript(
-        async ({
-          extrudeAndEditBlocked,
-          extrudeAndEditBlockedInFunction,
-          extrudeAndEditAllowed,
-          editOnly,
-        }: any) => {
-          localStorage.setItem(
-            'persistCode',
-            `part001 = startSketchOn(XZ)
-  ${extrudeAndEditBlocked}
+      const initialCode = `part001 = startSketchOn(XZ)
+  ${selectionsSnippets.extrudeAndEditBlocked}
   |> line(end = [25.96, 2.93])
   |> line(end = [5.25, -5.72])
   |> line(end = [-2.01, -10.35])
@@ -182,14 +176,14 @@ part001 = startSketchOn(XZ)
   |> close()
   |> extrude(length = 5)
     sketch002 = startSketchOn(XZ)
-  ${extrudeAndEditAllowed}
+  ${selectionsSnippets.extrudeAndEditAllowed}
   |> line(end = [10.32, 6.47])
   |> line(end = [9.71, -6.16])
   |> line(end = [-3.08, -9.86])
   |> line(end = [-12.02, -1.54])
   |> close()
     sketch003 = startSketchOn(XZ)
-  ${editOnly}
+  ${selectionsSnippets.editOnly}
   |> line(end = [27.55, -1.65])
   |> line(end = [4.95, -8])
   |> line(end = [-20.38, -10.12])
@@ -197,7 +191,7 @@ part001 = startSketchOn(XZ)
 
     fn yohey(@pos) {
   sketch004 = startSketchOn(XZ)
-  ${extrudeAndEditBlockedInFunction}
+  ${selectionsSnippets.extrudeAndEditBlockedInFunction}
   |> line(end = [27.55, -1.65])
   |> line(end = [4.95, -10.53])
   |> line(end = [-20.38, -8])
@@ -207,14 +201,13 @@ part001 = startSketchOn(XZ)
 
     yohey([15.79, -34.6])
     `
-          )
-        },
-        selectionsSnippets
-      )
       await page.setBodyDimensions({ width: 1200, height: 1000 })
 
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
 
       // wait for execution done
       await u.openDebugPanel()
@@ -259,6 +252,7 @@ part001 = startSketchOn(XZ)
 
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`"View KCL source code" right click menu in scene ${rendererTag}`, async ({
+      editor,
       page,
       homePage,
       scene,
@@ -268,12 +262,14 @@ part001 = startSketchOn(XZ)
       const [clickEmptyScene] = scene.makeMouseHelpers(0.5, 0.9, {
         format: 'ratio',
       })
-      await page.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, bracket)
 
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', bracket)
+      )
+      await resetView(scene)
+      await editor.scrollToText(bracket.trimStart().split('\n')[0])
 
       const laterCode = page.getByText('finalBracket = hole::holes(')
       const menuItems = page.locator(
@@ -334,20 +330,19 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
 
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`Engine primitive selection works on shell inner face ${rendererTag}`, async ({
-      context,
+      editor,
       page,
       homePage,
       scene,
       toolbar,
       cmdBar,
     }) => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, innerShellCode)
-
       await page.setBodyDimensions({ width: 1200, height: 800 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', innerShellCode)
+      )
 
       // Two dumb hardcoded screen ratio values
 
@@ -374,7 +369,6 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
 
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`Can start a sketch on a shell inner face ${rendererTag}`, async ({
-      context,
       page,
       homePage,
       scene,
@@ -400,13 +394,11 @@ rectangleSketch = sketch(on = XY) {
 extrude001 = extrude(region(point = [1mm, 1mm], sketch = rectangleSketch), length = 1, tagEnd = $capEnd001)
 shell001 = shell(extrude001, faces = capEnd001, thickness = .1)`
 
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, code)
-
       await page.setBodyDimensions({ width: 1200, height: 800 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
+      await resetView(scene)
 
       await expect
         .poll(() =>
@@ -435,8 +427,9 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = .1)`
 
       await expect(toolbar.lineBtn).toBeEnabled()
       await expect
-        .poll(() => editor.getCurrentCode())
-        .toBe(`@settings(kclVersion = 2.0)
+        .poll(async () => sansWhitespace(await editor.getCurrentCode()))
+        .toBe(
+          sansWhitespace(`@settings(kclVersion = 2.0)
 
 
 rectangleSketch = sketch(on = XY) {
@@ -460,12 +453,12 @@ sketch001 = sketch(on = face001) {
 }
 
 `)
+        )
     })
   }
 
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`Shell inner edge: selection uses engine topology_fallback (primitive index); fillet codegen uses edgeId(solid, index) when the artifact graph lacks wall/cap. ${rendererTag}`, async ({
-      context,
       page,
       homePage,
       scene,
@@ -473,13 +466,13 @@ sketch001 = sketch(on = face001) {
       modelingDialog,
       editor,
     }) => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, innerShellCode)
-
       await page.setBodyDimensions({ width: 1200, height: 800 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', innerShellCode)
+      )
+      await resetView(scene)
 
       if (rendererTag === '@localRenderer') {
         // Expose the original inner edge, whose midpoint is otherwise occluded.
