@@ -7,6 +7,7 @@ import * as desktop from '@src/lib/desktop'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { Diagnostic } from '@codemirror/lint'
 import { EditorView } from '@codemirror/view'
+import { LocalRenderer } from '@src/clientSideScene/localRenderer/LocalRenderer'
 import type {
   SceneGraphDelta,
   SourceDelta,
@@ -1776,6 +1777,12 @@ describe('KclManager live operation updates', () => {
         vi.spyOn(editor.rustContext, 'execute').mockResolvedValue(
           editor.execState
         )
+        project.executingPath = editor.path
+        if (localRenderer) {
+          const renderer = vi.mockObject(LocalRenderer.prototype)
+          renderer.isLoadedSceneCurrent.mockReturnValue(true)
+          editor.sceneInfra.localRenderer = renderer
+        }
         const edit = (code: string) => setEditorBuffer(editor, code)
         const onExecutionDone = vi.fn(() => {
           expect(editor.isExecuting).toBe(false)
