@@ -530,6 +530,10 @@ export class App implements AppSubsystems {
               this.settings.actor.getSnapshot().context.currentProject?.path,
             getCurrentProjectLibraryId: () =>
               this.currentProjectLibraryIdSignal.value,
+            getDefaultProjectUnits: () =>
+              this.settings.actor
+                .getSnapshot()
+                .context.modeling.defaultUnit.getFallback('project'),
             getProjectLibraries: () =>
               projectLibrariesFromSettings(
                 this.settings.actor.getSnapshot().context.app.libraries.current

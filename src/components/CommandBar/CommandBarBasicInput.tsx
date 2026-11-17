@@ -26,9 +26,9 @@ function CommandBarBasicInput({
   const { wasmPromise, commands } = useApp()
   const wasmInstance = use(wasmPromise)
   const commandBarState = commands.useState()
-  const previouslySetValue = commandBarState.context.argumentsToSubmit[
-    arg.name
-  ] as string | undefined
+  const previouslySetValue =
+    commandBarState.context.argumentDrafts[arg.name] ??
+    (commandBarState.context.argumentsToSubmit[arg.name] as string | undefined)
   const inputRef = useRef<HTMLInputElement>(null)
   const argMachineContext = useSelector(
     arg.machineActor,
@@ -36,7 +36,7 @@ function CommandBarBasicInput({
   )
   const defaultValue = useMemo(
     () =>
-      previouslySetValue ||
+      previouslySetValue ??
       (arg.defaultValue
         ? arg.defaultValue instanceof Function
           ? arg.defaultValue(
@@ -88,6 +88,7 @@ function CommandBarBasicInput({
           </span>
         )}
         <input
+          key={arg.name}
           {...noAutofillInputProps}
           data-testid="cmd-bar-arg-value"
           id="arg-form"
@@ -98,6 +99,12 @@ function CommandBarBasicInput({
           className={`flex-grow ${arg.inputType === 'color' ? 'h-[41px]' : 'px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80'} !bg-transparent focus:outline-none`}
           placeholder="Enter a value"
           defaultValue={defaultValue}
+          onChange={(event) =>
+            commands.send({
+              type: 'Update argument draft',
+              data: { name: arg.name, value: event.currentTarget.value },
+            })
+          }
           onKeyDown={(event) => {
             if (event.key === 'Backspace' && event.metaKey) {
               stepBack()

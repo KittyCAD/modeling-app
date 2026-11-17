@@ -29,6 +29,104 @@ import { NIL as uuidNIL } from 'uuid'
 
 type ProjectCardContextMenuAction = 'rename' | 'delete'
 
+test(
+  'Create project units default to user settings and can be overridden',
+  { tag: ['@web', '@localRenderer'] },
+  async ({ page, homePage, cmdBar, editor, fs, folderSetupFn }) => {
+    let otherLibraryPath = ''
+    const { dir } = await folderSetupFn(async (dir) => {
+      otherLibraryPath = await fs.join(await fs.dirname(dir), 'other-projects')
+      await fs.mkdir(otherLibraryPath, { recursive: true })
+    })
+    await homePage.projectsLoaded()
+    await page.evaluate(() => {
+      window.app.settings.actor.send({
+        type: 'set.modeling.defaultUnit',
+        data: { level: 'user', value: 'in' },
+      })
+    })
+    await page.waitForFunction(() =>
+      window.app.settings.actor.getSnapshot().matches('idle')
+    )
+    await page.evaluate(
+      (libraries) => {
+        window.app.settings.actor.send({
+          type: 'set.app.libraries',
+          data: { level: 'user', value: libraries },
+        })
+      },
+      [
+        { title: 'Local Projects', path: dir, type: 'directory' },
+        { title: 'Other Projects', path: otherLibraryPath, type: 'directory' },
+      ]
+    )
+    await page.waitForFunction(() =>
+      window.app.settings.actor.getSnapshot().matches('idle')
+    )
+
+    await homePage.createAndGoToProject('user-units')
+    await editor.expectEditor.toContain('defaultLengthUnit = in')
+    const defaultFile = await fs.join(dir, 'user-units', 'main.kcl')
+    expect(new TextDecoder().decode(await fs.readFile(defaultFile))).toBe(
+      '@settings(defaultLengthUnit = in, kclVersion = 3.0)\n'
+    )
+
+    await page.evaluate(() => {
+      window.app.settings.actor.send({
+        type: 'set.modeling.defaultUnit',
+        data: { level: 'project', value: 'ft' },
+        doNotPersist: true,
+      })
+    })
+    await page.waitForFunction(() =>
+      window.app.settings.actor.getSnapshot().matches('idle')
+    )
+    await cmdBar.openCmdBar()
+    await cmdBar.cmdSearchInput.fill('Create project')
+    await cmdBar.chooseCommand('Create project')
+    await expect
+      .poll(() => cmdBar.getState())
+      .toMatchObject({
+        headerArguments: { Units: 'Inches' },
+      })
+    await cmdBar.currentArgumentInput.fill('explicit-units')
+    await cmdBar.clickHeaderArgument('units')
+    await expect
+      .poll(() => cmdBar.getState())
+      .toMatchObject({
+        headerArguments: { Title: 'explicit-units' },
+      })
+    await cmdBar.selectOption({ name: /^Millimeters/ }).click()
+    await expect(cmdBar.currentArgumentInput).toHaveValue('explicit-units')
+    await cmdBar.clickHeaderArgument('libraryid')
+    await cmdBar.selectOption({ name: 'Other Projects', exact: true }).click()
+    await expect(cmdBar.currentArgumentInput).toHaveValue('explicit-units')
+    await cmdBar.clickHeaderArgument('units')
+    await expect(cmdBar.currentArgumentInput).toHaveAttribute(
+      'placeholder',
+      'Millimeters'
+    )
+    await cmdBar.selectOption({ name: /^Millimeters/ }).click()
+    await expect(cmdBar.currentArgumentInput).toHaveValue('explicit-units')
+    await cmdBar.progressCmdBar()
+    await editor.expectEditor.toContain('defaultLengthUnit = mm')
+    const explicitFile = await fs.join(
+      otherLibraryPath,
+      'explicit-units',
+      'main.kcl'
+    )
+    const expectedCode = '@settings(defaultLengthUnit = mm, kclVersion = 3.0)\n'
+    expect(new TextDecoder().decode(await fs.readFile(explicitFile))).toBe(
+      expectedCode
+    )
+    await page.reload()
+    await editor.expectEditor.toContain('defaultLengthUnit = mm')
+    expect(new TextDecoder().decode(await fs.readFile(explicitFile))).toBe(
+      expectedCode
+    )
+  }
+)
+
 async function clickProjectCardContextMenuItem(
   page: Page,
   projectTitle: string,
