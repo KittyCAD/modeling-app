@@ -596,10 +596,15 @@ fn triangle(
             }
             out.positions.push(f);
         }
-        let normal = match vertices[vertex].1 {
+        let mut normal = match vertices[vertex].1 {
             Some(normal) => normal.map(|x| if reverse { -x } else { x }),
             None => n.map(|x| x / length),
         };
+        // Approximate sweep surfaces can briefly double back in parameter space.
+        // Keep their derivative normals on the emitted triangle's visible side.
+        if (0..3).map(|k| normal[k] * n[k]).sum::<f64>() < 0.0 {
+            normal = normal.map(|x| -x);
+        }
         out.normals.extend(normal.map(|x| x as f32));
     }
     Ok(())
@@ -884,6 +889,50 @@ mod tests {
         );
         for point in mesh.positions.as_chunks::<3>().0 {
             assert!(((point[0] - 1.5).hypot(point[1]) - 1.0).abs() < 1e-6);
+        }
+    }
+
+    #[test]
+    fn folded_surface_parameters_do_not_invert_interpolated_normals() {
+        let mut input = sample();
+        input.brep.faces.remove(0);
+        let Surface::Nurbs { nurbs } = &mut input.brep.surfaces[1] else {
+            panic!("Expected NURBS")
+        };
+        let points = &nurbs.control_points;
+        let weights = &nurbs.weights;
+        nurbs.control_points = (0..3)
+            .flat_map(|u| [0.0, 1.0, 0.99, 2.0].map(|z| [points[u * 2][0], points[u * 2][1], z]))
+            .collect();
+        nurbs.weights = (0..3).flat_map(|u| [weights[u * 2]; 4]).collect();
+        nurbs.num_control_points[1] = 4;
+        nurbs.num_knots[1] = 6;
+        nurbs.knot_vector.truncate(6);
+        nurbs.knot_vector.extend([0.0, 0.0, 0.4, 0.5, 1.0, 1.0]);
+        for budget in [0, 150_000] {
+            let mesh = tessellate_with_budget(&input, 0, budget).unwrap();
+            assert!(!mesh.positions.is_empty());
+            for (p, normals) in mesh
+                .positions
+                .as_chunks::<9>()
+                .0
+                .iter()
+                .zip(mesh.normals.as_chunks::<9>().0)
+            {
+                let a = [p[3] - p[0], p[4] - p[1], p[5] - p[2]];
+                let b = [p[6] - p[0], p[7] - p[1], p[8] - p[2]];
+                let n = [
+                    a[1] * b[2] - a[2] * b[1],
+                    a[2] * b[0] - a[0] * b[2],
+                    a[0] * b[1] - a[1] * b[0],
+                ];
+                for normal in normals.as_chunks::<3>().0 {
+                    assert!(
+                        (0..3).map(|k| normal[k] * n[k]).sum::<f32>() >= 0.0,
+                        "A reversed surface derivative must not darken a triangle crossing the fold"
+                    );
+                }
+            }
         }
     }
 
