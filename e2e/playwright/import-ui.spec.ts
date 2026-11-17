@@ -71,7 +71,7 @@ sketch002 = startSketchOn(extrude001, face = seg01)`)
         // The local cap of the body defined in main.kcl.
         const [, hoverOverNonImport] = await scene.makeSelectionHelpers({
           kind: 'face',
-          index: 1,
+          id: '55f55573-4a17-5173-9af8-767495822462',
           stream: { x: 611, y: 364, format: 'pixels' },
         })
         await hoverOverNonImport()
