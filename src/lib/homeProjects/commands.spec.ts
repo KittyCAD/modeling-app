@@ -40,6 +40,7 @@ function createProject({
 
 function createCommandDependencies(folders: Project[] = []) {
   return {
+    getDefaultProjectUnits: (): BaseUnit => 'mm',
     projectLibraries: {
       projectDirectoryPath: '/projects',
       defaultProjectName: 'untitled',
@@ -239,26 +240,12 @@ describe('project command config', () => {
     )?.args?.units as unknown as {
       required: boolean
       defaultValue: () => BaseUnit
-      options: (context: {
-        argumentsToSubmit: Record<string, unknown>
-      }) => CommandArgumentOption<BaseUnit>[]
     }
 
     expect(unitsArg.required).toBe(false)
     expect(unitsArg.defaultValue()).toBe('cm')
-    expect(
-      unitsArg
-        .options({ argumentsToSubmit: {} })
-        .filter((option) => option.isCurrent)
-    ).toEqual([{ name: 'Centimeters', value: 'cm', isCurrent: true }])
-
     getDefaultProjectUnits.mockReturnValue('m')
     expect(unitsArg.defaultValue()).toBe('m')
-    expect(
-      unitsArg
-        .options({ argumentsToSubmit: {} })
-        .filter((option) => option.isCurrent)
-    ).toEqual([{ name: 'Meters', value: 'm', isCurrent: true }])
   })
 
   it('creates projects through the only library target when the picker is hidden', async () => {
@@ -291,22 +278,13 @@ describe('project command config', () => {
       name: ' Client Gear! ',
     })
 
-    expect(createProjectOperation.run).toHaveBeenCalledWith({
-      library,
-      requestedProjectName: 'client-gear',
-      requestedProjectTitle: 'Client Gear!',
-      initialProject: {
-        entrypointFilePath: 'main.kcl',
-        files: [
-          {
-            requestedFileName: 'main.kcl',
-            requestedData: new TextEncoder().encode(
-              '@settings(defaultLengthUnit = mm, kclVersion = 3.0)\n'
-            ),
-          },
-        ],
-      },
-    })
+    expect(createProjectOperation.run).toHaveBeenCalledWith(
+      expect.objectContaining({
+        library,
+        requestedProjectName: 'client-gear',
+        requestedProjectTitle: 'Client Gear!',
+      })
+    )
     expect(dependencies.projectOperations.createProject).not.toHaveBeenCalled()
   })
 

@@ -9,11 +9,7 @@ import type {
   CommandArgumentConfig,
   CommandArgumentOption,
 } from '@src/lib/commandTypes'
-import {
-  DEFAULT_DEFAULT_LENGTH_UNIT,
-  MAX_PROJECT_NAME_LENGTH,
-  PROJECT_ENTRYPOINT,
-} from '@src/lib/constants'
+import { MAX_PROJECT_NAME_LENGTH, PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import {
   getHomeProjectDeleteWarningMessage,
   getHomeProjectDisplayName,
@@ -124,7 +120,7 @@ export function createProjectCommands({
   getCurrentProjectDirectoryName?: () => string | undefined
   getCurrentProjectPath?: () => string | undefined
   getCurrentProjectLibraryId?: () => string | undefined
-  getDefaultProjectUnits?: () => BaseUnit
+  getDefaultProjectUnits: () => BaseUnit
   getProjectLibraries?: () => readonly ProjectLibrary[]
   getCreateProjectLibraryTargets?: () => readonly CreateProjectLibraryTarget[]
   getHomeProjectActions?: () => HomeProjectActionsService | undefined
@@ -133,8 +129,6 @@ export function createProjectCommands({
   const folderSnapshot = () => projectOperations.projects.value
   const defaultProjectFolderNameSnapshot = () =>
     projectLibraries.defaultProjectName
-  const defaultProjectUnitsSnapshot = () =>
-    getDefaultProjectUnits?.() ?? DEFAULT_DEFAULT_LENGTH_UNIT
 
   const currentProjectDirectoryNameSnapshot = () =>
     getCurrentProjectDirectoryName?.()
@@ -404,7 +398,7 @@ export function createProjectCommands({
           return
         }
 
-        const units = record.units ?? defaultProjectUnitsSnapshot()
+        const units = record.units ?? getDefaultProjectUnits()
         const initialProject = {
           entrypointFilePath: PROJECT_ENTRYPOINT,
           files: [
@@ -463,12 +457,12 @@ export function createProjectCommands({
         required: false,
         prepopulate: true,
         inputType: 'options',
-        defaultValue: defaultProjectUnitsSnapshot,
+        defaultValue: getDefaultProjectUnits,
         options: ({ argumentsToSubmit }) => {
           const currentUnits =
             typeof argumentsToSubmit.units === 'string'
               ? argumentsToSubmit.units
-              : defaultProjectUnitsSnapshot()
+              : getDefaultProjectUnits()
           return baseUnitsUnion.map((unit) => ({
             name: baseUnitLabels[unit],
             value: unit,

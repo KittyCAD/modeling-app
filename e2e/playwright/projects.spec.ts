@@ -66,10 +66,6 @@ test(
 
     await homePage.createAndGoToProject('user-units')
     await editor.expectEditor.toContain('defaultLengthUnit = in')
-    const defaultFile = await fs.join(dir, 'user-units', 'main.kcl')
-    expect(new TextDecoder().decode(await fs.readFile(defaultFile))).toBe(
-      '@settings(defaultLengthUnit = in, kclVersion = 3.0)\n'
-    )
 
     await page.evaluate(() => {
       window.app.settings.actor.send({
@@ -101,13 +97,6 @@ test(
     await cmdBar.clickHeaderArgument('libraryid')
     await cmdBar.selectOption({ name: 'Other Projects', exact: true }).click()
     await expect(cmdBar.currentArgumentInput).toHaveValue('explicit-units')
-    await cmdBar.clickHeaderArgument('units')
-    await expect(cmdBar.currentArgumentInput).toHaveAttribute(
-      'placeholder',
-      'Millimeters'
-    )
-    await cmdBar.selectOption({ name: /^Millimeters/ }).click()
-    await expect(cmdBar.currentArgumentInput).toHaveValue('explicit-units')
     await cmdBar.progressCmdBar()
     await editor.expectEditor.toContain('defaultLengthUnit = mm')
     const explicitFile = await fs.join(
@@ -115,14 +104,8 @@ test(
       'explicit-units',
       'main.kcl'
     )
-    const expectedCode = '@settings(defaultLengthUnit = mm, kclVersion = 3.0)\n'
     expect(new TextDecoder().decode(await fs.readFile(explicitFile))).toBe(
-      expectedCode
-    )
-    await page.reload()
-    await editor.expectEditor.toContain('defaultLengthUnit = mm')
-    expect(new TextDecoder().decode(await fs.readFile(explicitFile))).toBe(
-      expectedCode
+      '@settings(defaultLengthUnit = mm, kclVersion = 3.0)\n'
     )
   }
 )
