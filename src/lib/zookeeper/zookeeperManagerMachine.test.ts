@@ -158,6 +158,271 @@ type SetupActorInput = {
 
 const completedConversationStartedAt = new Date('2026-07-15T12:00:00.000Z')
 
+describe('manual-edit notices for live prompts', () => {
+  const notice: MlCopilotServerMessage = {
+    info: { text: 'Manual edits detected since the last Zookeeper state.' },
+  }
+  const actors: ZookeeperManagerActor[] = []
+  afterEach(() => {
+    for (const actor of actors.splice(0)) actor.stop()
+    vi.restoreAllMocks()
+  })
+
+  async function ready() {
+    const ws: TestWebSocket = new TestSocket() as TestWebSocket
+    ws.readyState = WebSocket.OPEN
+    const machine = zookeeperManagerMachine.provide({
+      actors: {
+        [ZookeeperManagerStates.Setup]: fromPromise<
+          Partial<ZookeeperManagerContext>,
+          SetupActorInput
+        >(async () => ({
+          ws,
+          conversationId: 'conversation-id',
+          conversation: { exchanges: [] },
+        })),
+      },
+    })
+    const actor = createActor(machine, { input: { apiToken: 'token' } }).start()
+    actors.push(actor)
+    async function connect() {
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        conversationId: 'conversation-id',
+        refParentSend: (event) => actor.send(event),
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'demo',
+        projectFiles: [],
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+    }
+    await connect()
+    let promptNumber = 0
+    return {
+      actor,
+      connect,
+      async prompt(files?: Record<string, string>, projectId = 'demo') {
+        const prompt = `Prompt ${++promptNumber}`
+        vi.spyOn(
+          zookeeperPromptRequest,
+          'constructZookeeperUserPromptRequest'
+        ).mockResolvedValueOnce({
+          body: { prompt },
+          files: Object.entries(files ?? {}).map(([name, text]) => ({
+            name,
+            data: new Blob([text]),
+          })),
+        })
+        const { kclManager, engineCommandManager, instance } =
+          await buildTheWorldAndNoEngineConnection(true)
+        actor.send({
+          type: ZookeeperManagerTransitions.MessageSend,
+          prompt,
+          projectForPromptOutput: createProjectForTest('/demo', { projectId }),
+          applicationProjectDirectory: '/',
+          fileSelectedDuringPrompting: {
+            entry: { name: 'main.kcl', path: '/demo/main.kcl', children: null },
+            content: files?.['main.kcl'] ?? '',
+          },
+          projectFiles: [],
+          selections: null,
+          artifactGraph: new Map(),
+          kclManager,
+          engineCommandManager,
+          wasmInstance: instance,
+        })
+        await waitFor(actor, (state) => {
+          const request = state.context.conversation?.exchanges.at(-1)?.request
+          return request?.type === 'user' && request.content === prompt
+        })
+      },
+      receive(response: MlCopilotServerMessage = notice) {
+        actor.send({
+          type: ZookeeperManagerTransitions.ResponseReceive,
+          response,
+        })
+      },
+      responses: () =>
+        actor.getSnapshot().context.conversation?.exchanges.at(-1)?.responses ??
+        [],
+    }
+  }
+
+  it('shows an edit once across unchanged answer-only prompts without losing answers or terminal notices', async () => {
+    const chat = await ready()
+    await chat.prompt({ 'main.kcl': 'width = 2\n', 'notes.md': 'Edited' })
+    chat.receive()
+    expect(chat.responses()).toContainEqual(notice)
+    chat.receive({ end_of_stream: { whole_response: 'Hello' } })
+
+    // Source ordering and project metadata do not change the manual edit.
+    await chat.prompt({
+      'notes.md': 'Edited',
+      'main.kcl': 'width = 2\n',
+      'project.toml': 'name = "renamed"',
+    })
+    chat.receive()
+    chat.receive({
+      reasoning: { type: 'text', content: 'Considering the question' },
+    })
+    expect(chat.responses()).not.toContainEqual(notice)
+    expect(chat.actor.getSnapshot().context.awaitingResponse).toBe(true)
+    chat.receive({ info: { text: 'Message canceled by user.' } })
+    expect(chat.responses()).toContainEqual({
+      info: { text: 'Message canceled by user.' },
+    })
+    chat.receive({ end_of_stream: { whole_response: 'Still hello' } })
+    expect(chat.responses()).toContainEqual({
+      end_of_stream: { whole_response: 'Still hello' },
+    })
+
+    await chat.prompt({ 'main.kcl': 'width = 2\n', 'notes.md': 'Edited' })
+    chat.receive()
+    expect(chat.responses()).not.toContainEqual(notice)
+  })
+
+  it('shows the same edit again after a different file state was sent without a notice', async () => {
+    const chat = await ready()
+    await chat.prompt({ 'main.kcl': 'width = 2' })
+    chat.receive()
+    chat.receive({ end_of_stream: { whole_response: 'Done' } })
+    // Restoring the server's original state produces no manual-edit notice.
+    await chat.prompt({ 'main.kcl': 'width = 1' })
+    chat.receive({ end_of_stream: { whole_response: 'Done' } })
+    await chat.prompt({ 'main.kcl': 'width = 2' })
+    chat.receive()
+    expect(chat.responses()).toContainEqual(notice)
+  })
+
+  it.each(['main.kcl', 'NOTES.MD', 'data.csv'])(
+    'shows a new notice after changing %s',
+    async (path) => {
+      const chat = await ready()
+      await chat.prompt({ [path]: 'before' })
+      chat.receive()
+      chat.receive({ end_of_stream: { whole_response: 'Done' } })
+      await chat.prompt({ [path]: 'after' })
+      chat.receive()
+      expect(chat.responses()).toContainEqual(notice)
+    }
+  )
+
+  it.each<{ before: Record<string, string>; after: Record<string, string> }>([
+    {
+      before: { 'main.kcl': 'width = 2' },
+      after: { 'main.kcl': 'width = 2', 'part.kcl': 'height = 3' },
+    },
+    {
+      before: { 'main.kcl': 'width = 2', 'part.kcl': 'height = 3' },
+      after: { 'main.kcl': 'width = 2' },
+    },
+  ])(
+    'shows a new notice when a source file is added or removed: %j',
+    async ({ before, after }) => {
+      const chat = await ready()
+      await chat.prompt(before)
+      chat.receive()
+      chat.receive({ end_of_stream: { whole_response: 'Done' } })
+      await chat.prompt(after)
+      chat.receive()
+      expect(chat.responses()).toContainEqual(notice)
+    }
+  )
+
+  it.each([undefined, {}])(
+    'trusts the server when the prompt has no source snapshot: %j',
+    async (files) => {
+      const chat = await ready()
+      for (let index = 0; index < 2; index++) {
+        await chat.prompt(files)
+        chat.receive()
+        expect(chat.responses()).toContainEqual(notice)
+        chat.receive({ end_of_stream: { whole_response: 'Done' } })
+      }
+    }
+  )
+
+  it('does not suppress notices for a different project with identical files', async () => {
+    const chat = await ready()
+    await chat.prompt({ 'main.kcl': 'width = 2' })
+    chat.receive()
+    chat.receive({ end_of_stream: { whole_response: 'Done' } })
+    await chat.prompt({ 'main.kcl': 'width = 2' }, 'other')
+    chat.receive()
+    expect(chat.responses()).toContainEqual(notice)
+  })
+
+  it.each<MlCopilotServerMessage>([
+    {
+      tool_output: {
+        result: {
+          type: 'edit_kcl_code',
+          status_code: 200,
+          outputs: { 'main.kcl': 'width = 3' },
+        },
+      },
+    },
+    {
+      files: {
+        files: [{ name: 'main.kcl', mimetype: 'text/plain', data: [1] }],
+      },
+    },
+  ])(
+    'trusts a new notice after Zookeeper changes the project: %j',
+    async (edit) => {
+      const chat = await ready()
+      await chat.prompt({ 'main.kcl': 'width = 2' })
+      chat.receive()
+      chat.receive(edit)
+      chat.receive({ end_of_stream: { whole_response: 'Updated' } })
+      // Restoring earlier file contents is a new manual edit after Zookeeper writes.
+      await chat.prompt({ 'main.kcl': 'width = 2' })
+      chat.receive()
+      expect(chat.responses()).toContainEqual(notice)
+    }
+  )
+
+  it('trusts the server again after reconnecting', async () => {
+    const chat = await ready()
+    await chat.prompt({ 'main.kcl': 'width = 2' })
+    chat.receive()
+    chat.receive({ end_of_stream: { whole_response: 'Done' } })
+    chat.actor.send({ type: ZookeeperManagerTransitions.AbruptClose })
+    await chat.connect()
+    await chat.prompt({ 'main.kcl': 'width = 2' })
+    chat.receive()
+    expect(chat.responses()).toContainEqual(notice)
+  })
+  it('invalidates a shown notice when a reflected prompt has different source files', async () => {
+    const chat = await ready()
+    await chat.prompt({ 'main.kcl': 'width = 2' })
+    chat.receive()
+    chat.receive({ end_of_stream: { whole_response: 'Done' } })
+    chat.actor.send({
+      type: ZookeeperManagerTransitions.UserReceive,
+      request: {
+        type: 'user',
+        content: 'Reflected prompt',
+        project_id: 'local:demo',
+        current_files: {
+          'main.kcl': Array.from(new TextEncoder().encode('width = 1')),
+        },
+      },
+    })
+    chat.receive({ end_of_stream: { whole_response: 'Done' } })
+    await chat.prompt({ 'main.kcl': 'width = 2' })
+    chat.receive()
+    expect(chat.responses()).toContainEqual(notice)
+  })
+})
+
 describe('completed live edit retention', () => {
   const actors: ReturnType<typeof createZookeeperManagerActor>[] = []
   afterEach(() => {

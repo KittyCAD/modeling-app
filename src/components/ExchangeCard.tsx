@@ -15,6 +15,7 @@ import {
   type Exchange,
   getZookeeperAttachmentKey,
   isMlCopilotUserRequest,
+  MANUAL_EDIT_NOTICE_TEXT,
   type ZookeeperAttachmentFetchState,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import ms from 'ms'
@@ -49,7 +50,7 @@ const TRANSIENT_RETRY_STATUS_TEXT =
   'Temporary connection issue. Retrying automatically…'
 
 const NON_TERMINAL_INFO_TEXTS = [
-  'Manual edits detected since the last Zookeeper state.',
+  MANUAL_EDIT_NOTICE_TEXT,
   TRANSIENT_RETRY_STATUS_TEXT,
 ]
 
@@ -412,6 +413,7 @@ const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
 
 // This can be used to show `delta` or `tool_output`
 export const ResponsesCard = (props: ResponsesCardProp) => {
+  const isComplete = isExchangeComplete(props.items)
   const hasTransientRetry = props.items.some((response) =>
     isTransientRetryInfoResponse(response)
   )
@@ -425,7 +427,17 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
       // if ('delta' in response) {
       //   return response.delta.delta
       // }
-      if ('info' in response && !isNonTerminalInfoResponse(response)) {
+      // The manual-edit notice comes from the Zookeeper WebSocket. A backend bug
+      // can resend it on the next prompt with unchanged files, so the manager
+      // suppresses duplicates on the client for now.
+      // Hide it when the prompt completes because the next prompt sends the
+      // current project files again, including any further edits.
+      if (
+        'info' in response &&
+        !isTransientRetryInfoResponse(response) &&
+        (!isNonTerminalInfoResponse(response) ||
+          (props.isLastResponse && !isComplete))
+      ) {
         return <span key={index}>{response.info.text}</span>
       }
       return null
@@ -437,7 +449,6 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
   )
 
   const maybeError = props.items.filter((r) => 'error' in r)[0]
-  const isComplete = isExchangeComplete(props.items)
 
   const deltasAggregatedMarkdown = useMemo(() => {
     return props.deltasAggregated !== '' ? (
