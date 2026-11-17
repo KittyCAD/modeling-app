@@ -145,9 +145,26 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
           'aria-pressed',
           'true'
         )
+        const code = await editor.getCurrentCode()
+        const profileStart = code.indexOf('profile005 = circle(')
+        expect(profileStart).toBeGreaterThan(-1)
+        const circleFaceId = await page.evaluate((start) => {
+          const graph = window.app.singletons.kclManager.artifactGraph
+          const path = [...graph.values()].find(
+            (artifact) =>
+              artifact.type === 'path' &&
+              artifact.subType === 'sketch' &&
+              artifact.codeRef.range[0] >= start &&
+              artifact.codeRef.range[0] < start + 'profile005 = circle('.length
+          )
+          if (path?.type !== 'path' || !path.solid2dId) {
+            throw new Error('Could not find the profile005 circle face')
+          }
+          return path.solid2dId
+        }, profileStart)
         const [clickProfile2] = await scene.makeSelectionHelpers({
           kind: 'face',
-          index: 3,
+          id: circleFaceId,
           stream: { x: 0.3816, y: 0.4, format: 'ratio' },
         })
         await clickProfile2()

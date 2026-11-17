@@ -73,7 +73,7 @@ sketch002 = startSketchOn(extrude001, face = seg01)`
           // The local cap of the body defined in main.kcl.
           const [, hoverOverNonImport] = await scene.makeSelectionHelpers({
             kind: 'face',
-            index: 1,
+            id: '55f55573-4a17-5173-9af8-767495822462',
             stream: { x: 611, y: 364, format: 'pixels' },
           })
           await hoverOverNonImport()
@@ -89,7 +89,7 @@ sketch002 = startSketchOn(extrude001, face = seg01)`
         await test.step('check code does nothing when geometry is defined in an import', async () => {
           const [, hoverOverImported] = await scene.makeSelectionHelpers({
             kind: 'face',
-            index: 4,
+            id: '544eecc3-5b00-593c-8dba-2d11f0ec7323',
             stream: { x: 940, y: 150, format: 'pixels' },
           })
           await hoverOverImported()
@@ -110,7 +110,7 @@ sketch002 = startSketchOn(extrude001, face = seg01)`
           // Resolve again after closing the panes and entering plane selection.
           const [importedFaceClick] = await scene.makeSelectionHelpers({
             kind: 'face',
-            index: 2,
+            id: '544eecc3-5b00-593c-8dba-2d11f0ec7323',
             stream: { x: 940, y: 150, format: 'pixels' },
           })
           await importedFaceClick()

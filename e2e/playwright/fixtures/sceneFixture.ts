@@ -163,22 +163,30 @@ export class SceneFixture {
   makeSelectionHelpers = async ({
     kind,
     index,
+    id,
     stream,
     timeout,
     visible,
   }: {
     kind: 'edge' | 'face'
-    index: number
+    index?: number
+    id?: string
     stream: { x: number; y: number; format: 'pixels' | 'ratio'; steps?: number }
     timeout?: number
     visible?: boolean
-  }) =>
-    (await this.usesLocalRenderer())
-      ? this.findEntity(kind, index, { timeout, visible })
-      : this.makeMouseHelpers(stream.x, stream.y, {
-          format: stream.format,
-          steps: stream.steps,
-        })
+  }) => {
+    if (await this.usesLocalRenderer()) {
+      const target = id ?? index
+      if (target === undefined) {
+        throw new Error('A local entity ID or index is required')
+      }
+      return this.findEntity(kind, target, { timeout, visible })
+    }
+    return this.makeMouseHelpers(stream.x, stream.y, {
+      format: stream.format,
+      steps: stream.steps,
+    })
+  }
 
   private usesLocalRenderer = async () =>
     this.expectedLocalRenderer ??
@@ -187,19 +195,26 @@ export class SceneFixture {
   /** Index is zero-based within entities filtered by kind and visibility. */
   private findEntity = async (
     kind: 'edge' | 'face',
-    index: number,
+    indexOrId: number | string,
     {
       timeout = 30_000,
       visible = true,
     }: { timeout?: number; visible?: boolean } = {}
   ) => {
-    if (!Number.isInteger(index) || index < 0) {
+    if (
+      typeof indexOrId === 'number' &&
+      (!Number.isInteger(indexOrId) || indexOrId < 0)
+    ) {
       throw new Error('Entity index must be a non-negative integer')
     }
-    const lookup = async () =>
-      (await this.getProjectedEntities()).filter(
+    const lookup = async () => {
+      const entities = (await this.getProjectedEntities()).filter(
         (entity) => entity.kind === kind && entity.visible === visible
-      )[index]
+      )
+      return typeof indexOrId === 'number'
+        ? entities[indexOrId]
+        : entities.find((entity) => entity.id === indexOrId)
+    }
     // Pane resizing and camera updates can settle after the UI action completes.
     let entity: Awaited<ReturnType<typeof lookup>> | undefined
     await expect
@@ -219,7 +234,7 @@ export class SceneFixture {
       .toBe(true)
     if (!entity) {
       throw new Error(
-        `Missing projected ${kind} at index ${index} (visible: ${visible})`
+        `Missing projected ${kind} at ${typeof indexOrId === 'number' ? `index ${indexOrId}` : `ID ${indexOrId}`} (visible: ${visible})`
       )
     }
     const bounds = await this.streamWrapper.boundingBox()

@@ -420,10 +420,9 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = .1)`
           { x: 1.76, y: 2.635, z: 0.5 }
         )
       }
-      // Visible face 3 is the original inner face, topology primitive index 7.
       const [clickOnInnerFace] = await scene.makeSelectionHelpers({
         kind: 'face',
-        index: 3,
+        id: '2a614cd2-f2e3-5062-8a89-c9006926aaa7',
         stream: { x: 0.6, y: 0.4, format: 'ratio' },
       })
 
