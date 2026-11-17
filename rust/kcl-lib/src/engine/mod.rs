@@ -210,11 +210,12 @@ pub fn zoo_client(
     let mut default_headers = http::HeaderMap::new();
     default_headers.insert(http::header::USER_AGENT, http::HeaderValue::from_static(user_agent));
     for (name, value) in &headers.unwrap_or_default() {
-        let mut parsed_value =
-            http::HeaderValue::try_from(value).map_err(|e| anyhow::anyhow!("Invalid header value {value}: {e}"))?;
+        let mut parsed_value = http::HeaderValue::try_from(value)
+            // Don't include the actual header value in this, because it might contain sensitive credentials.
+            .map_err(|e| anyhow::anyhow!("The header key {name} had an invalid value: {e}"))?;
         parsed_value.set_sensitive(true);
         let parsed_name =
-            http::HeaderName::try_from(name).map_err(|e| anyhow::anyhow!("Invalid header name {name}: {e}"))?;
+            http::HeaderName::try_from(name).map_err(|e| anyhow::anyhow!("The header key {name} is invalid: {e}"))?;
         default_headers.insert(parsed_name, parsed_value);
     }
     let http_client = reqwest::Client::builder()
