@@ -1347,78 +1347,12 @@ function localToScreen(
   return project3DToScreen(worldPoint, camera, viewportSize)
 }
 
+const CONSTRAINT_HOVER_POPUP_TIMEOUT_MS = 2000
+
+// A visible segment's constraint badges and their pending dismissal timer.
 type ConstraintHoverPopupEntry = {
   popup: ConstraintHoverPopup
-  sourcePosition: Coords2d
-}
-
-export function isPointerWithinConstraintPopupBridge(
-  popup: ConstraintHoverPopup,
-  sourcePosition: Coords2d,
-  mousePosition: Coords2d,
-  {
-    scene,
-    camera,
-    viewportSize,
-    sketchSolveGroup,
-  }: {
-    scene: Object3D
-    camera: Parameters<typeof project3DToScreen>[1]
-    viewportSize: Vector2
-    sketchSolveGroup: Group | null
-  }
-): boolean {
-  const source = localToScreen(
-    [sourcePosition[0], sourcePosition[1], 0],
-    camera,
-    viewportSize,
-    sketchSolveGroup
-  )
-  const pointer = localToScreen(
-    [mousePosition[0], mousePosition[1], 0],
-    camera,
-    viewportSize,
-    sketchSolveGroup
-  )
-  // Connect the source to the actual icon hit rectangles so crossing the gap
-  // keeps them usable, without retaining a popup after the pointer leaves.
-  let left = source.x - 4
-  let right = source.x + 4
-  let top = source.y - 4
-  let bottom = source.y + 4
-  let hasIcons = false
-  scene.traverse((child) => {
-    const owner = child.userData.constraintHoverPopup
-    const hitObjects = child.userData.hitObjects
-    if (
-      !isConstraintHoverPopup(owner) ||
-      owner.segmentId !== popup.segmentId ||
-      !isArray(hitObjects)
-    ) {
-      return
-    }
-    for (const hitObject of hitObjects) {
-      if (!isScreenRectHitObject(hitObject)) continue
-      const center = localToScreen(
-        hitObject.center,
-        camera,
-        viewportSize,
-        sketchSolveGroup
-      )
-      hasIcons = true
-      left = Math.min(left, center.x - hitObject.sizePx[0] / 2 - 4)
-      right = Math.max(right, center.x + hitObject.sizePx[0] / 2 + 4)
-      top = Math.min(top, center.y - hitObject.sizePx[1] / 2 - 4)
-      bottom = Math.max(bottom, center.y + hitObject.sizePx[1] / 2 + 4)
-    }
-  })
-  return (
-    hasIcons &&
-    pointer.x >= left &&
-    pointer.x <= right &&
-    pointer.y >= top &&
-    pointer.y <= bottom
-  )
+  hideTimeoutId: ReturnType<typeof setTimeout> | null
 }
 
 function areSameConstraintHoverPopups(
@@ -1888,6 +1822,17 @@ export function setUpOnDragAndSelectionClickCallbacks({
     setHorizontalLine,
   }
 
+  const clearConstraintHoverPopupTimer = (
+    entry: ConstraintHoverPopupEntry,
+    timerKey: 'hideTimeoutId'
+  ) => {
+    const timeoutId = entry[timerKey]
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId)
+      entry[timerKey] = null
+    }
+  }
+
   const getConstraintHoverPopups = () =>
     constraintHoverPopupState.entries.map((entry) => entry.popup)
 
@@ -1904,7 +1849,10 @@ export function setUpOnDragAndSelectionClickCallbacks({
       return false
     }
 
-    constraintHoverPopupState.entries.splice(index, 1)
+    const [entry] = constraintHoverPopupState.entries.splice(index, 1)
+    if (entry) {
+      clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
+    }
 
     return true
   }
@@ -1969,7 +1917,16 @@ export function setUpOnDragAndSelectionClickCallbacks({
   }
 
   const clearConstraintHoverPopups = () => {
+    constraintHoverPopupState.entries.forEach((entry) => {
+      clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
+    })
     constraintHoverPopupState.entries = []
+  }
+
+  const hideConstraintHoverPopup = (segmentId: number) => {
+    if (removeConstraintHoverPopup(segmentId)) {
+      sendHoveredState(self.getSnapshot().context.hoveredId)
+    }
   }
 
   const beginDragSession = () => {
@@ -2023,12 +1980,22 @@ export function setUpOnDragAndSelectionClickCallbacks({
       ? null
       : constraintHoverPopupState.entries.splice(existingIndex, 1)[0]) ?? {
       popup: { segmentId, position },
-      sourcePosition: position,
+      hideTimeoutId: null,
     }
 
+    clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
     entry.popup = { segmentId, position }
-    entry.sourcePosition = position
     constraintHoverPopupState.entries.push(entry)
+  }
+
+  const scheduleConstraintHoverPopupHide = (
+    entry: ConstraintHoverPopupEntry
+  ) => {
+    clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
+    entry.hideTimeoutId = setTimeout(() => {
+      entry.hideTimeoutId = null
+      hideConstraintHoverPopup(entry.popup.segmentId)
+    }, CONSTRAINT_HOVER_POPUP_TIMEOUT_MS)
   }
 
   context.sceneInfra.setCallbacks({
@@ -2713,15 +2680,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       constraintHoverPopupState.lastHoveredTargetId =
         constraintHoverPopupSegmentId
 
-      const sketchSolveGroupObject =
-        context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-      const sketchSolveGroup =
-        sketchSolveGroupObject instanceof Group ? sketchSolveGroupObject : null
-      const viewportSize = new Vector2(
-        context.sceneInfra.renderer.domElement.clientWidth,
-        context.sceneInfra.renderer.domElement.clientHeight
-      )
-      for (const entry of [...constraintHoverPopupState.entries]) {
+      constraintHoverPopupState.entries.forEach((entry) => {
         const isHoveringSourceSegment =
           constraintHoverPopupSegmentId === entry.popup.segmentId
         const isHoveringConstraintHoverPopup =
@@ -2732,25 +2691,12 @@ export function setUpOnDragAndSelectionClickCallbacks({
             apiObjects
           )
 
-        if (isHoveringSourceSegment) entry.sourcePosition = mousePosition
-        if (
-          !isHoveringSourceSegment &&
-          !isHoveringConstraintHoverPopup &&
-          !isPointerWithinConstraintPopupBridge(
-            entry.popup,
-            entry.sourcePosition,
-            mousePosition,
-            {
-              scene: context.sceneInfra.scene,
-              camera: context.sceneInfra.camControls.camera,
-              viewportSize,
-              sketchSolveGroup,
-            }
-          )
-        ) {
-          removeConstraintHoverPopup(entry.popup.segmentId)
+        if (isHoveringSourceSegment || isHoveringConstraintHoverPopup) {
+          clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
+        } else if (entry.hideTimeoutId === null) {
+          scheduleConstraintHoverPopupHide(entry)
         }
-      }
+      })
 
       const currentConstraintHoverPopups = getConstraintHoverPopups()
       const constraintHoverPopupsChanged = !areSameConstraintHoverPopups(
