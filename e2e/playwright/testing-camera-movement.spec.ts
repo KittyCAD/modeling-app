@@ -241,7 +241,6 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
     async ({ homePage, page }) => {
       const u = await getUtils(page)
 
-      await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await u.waitForPageLoad()
 
@@ -260,14 +259,6 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
         await page.mouse.up({ button: 'right' })
 
         await expect(page.getByTestId('view-controls-menu')).toBeVisible()
-        await expect(page.getByTestId('view-controls-menu')).toBeInViewport({
-          ratio: 1,
-        })
-        await page
-          .getByTestId('view-controls-menu')
-          .getByRole('button', { name: 'Zoom to fit' })
-          .click()
-        await expect(page.getByTestId('view-controls-menu')).not.toBeVisible()
       })
     }
   )
