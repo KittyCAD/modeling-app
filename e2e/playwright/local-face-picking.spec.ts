@@ -26,7 +26,7 @@ nose = revolve(region001, axis = X)`
 test(
   'picks the revolved slope after a zero-triangle face',
   {
-    tag: ['@web', '@localRenderer'],
+    tag: ['@web', '@browsers', '@localRenderer'],
   },
   async ({ page, homePage, scene, editor }) => {
     await page.setBodyDimensions({ width: 1200, height: 800 })
