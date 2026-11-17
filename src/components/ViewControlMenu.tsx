@@ -80,6 +80,7 @@ export function useViewControlMenuItems() {
             .zoomToFit({ padding: 0.1 })
             .catch(reportRejection)
         }}
+        hotkey="mod+alt+f"
       >
         Zoom to fit
       </ContextMenuItem>,

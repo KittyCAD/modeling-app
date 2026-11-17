@@ -339,6 +339,13 @@ export const defaultKeymap: KeymapDocument = {
       command: 'standardViews:Zoom to fit',
     },
     {
+      id: 'view.zoom-to-fit-with-modifier',
+      title: 'Zoom to fit',
+      when: FILE_KEYMAP_SCOPES,
+      keystrokes: ['mod+alt+f'],
+      command: 'standardViews:Zoom to fit',
+    },
+    {
       id: 'view.reset',
       title: 'Reset view',
       when: [MODE_MODELING_KEYMAP_SCOPE],
