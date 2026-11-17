@@ -5,7 +5,7 @@ import {
   memo,
   useCallback,
   useEffect,
-  useMemo,
+  useLayoutEffect,
   useRef,
   useState,
 } from 'react'
@@ -47,6 +47,7 @@ export const ContextMenu = memo(function ContextMenu({
     height: globalThis?.window?.innerHeight,
   })
   const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [dialogPosition, setDialogPosition] = useState({ top: 0, left: 0 })
   useHotkeys('esc', () => setOpen(false), {
     enabled: open,
   })
@@ -80,35 +81,15 @@ export const ContextMenu = memo(function ContextMenu({
     setOpen(false)
   }, [])
 
-  const dialogPositionStyle = useMemo(() => {
-    if (!dialogRef.current)
-      return {
-        top: 0,
-        left: 0,
-        right: 'auto',
-        bottom: 'auto',
-      }
+  useLayoutEffect(() => {
+    if (!open || !dialogRef.current) return
 
-    return {
-      top:
-        position.y + dialogRef.current.clientHeight > windowSize.height
-          ? 'auto'
-          : position.y,
-      left:
-        position.x + dialogRef.current.clientWidth > windowSize.width
-          ? 'auto'
-          : position.x,
-      right:
-        position.x + dialogRef.current.clientWidth > windowSize.width
-          ? windowSize.width - position.x
-          : 'auto',
-      bottom:
-        position.y + dialogRef.current.clientHeight > windowSize.height
-          ? windowSize.height - position.y
-          : 'auto',
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [position, windowSize, dialogRef.current])
+    const { width, height } = dialogRef.current.getBoundingClientRect()
+    setDialogPosition({
+      top: Math.max(0, Math.min(position.y, windowSize.height - height)),
+      left: Math.max(0, Math.min(position.x, windowSize.width - width)),
+    })
+  }, [open, position, windowSize, items])
 
   // Listen for window resize to update context menu position
   useEffect(() => {
@@ -146,11 +127,11 @@ export const ContextMenu = memo(function ContextMenu({
         <Dialog.Backdrop className="fixed z-10 inset-0" />
         <Dialog.Panel
           ref={dialogRef}
-          className={`w-52 fixed bg-chalkboard-10 dark:bg-chalkboard-90
+          className={`w-52 max-w-full max-h-screen overflow-y-auto fixed bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-10 dark:border-chalkboard-90 rounded
           shadow-lg backdrop:fixed backdrop:inset-0 backdrop:bg-primary ${className}`}
           style={{
-            ...dialogPositionStyle,
+            ...dialogPosition,
             ...props.style,
           }}
         >
