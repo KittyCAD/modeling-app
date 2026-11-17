@@ -80,6 +80,7 @@ import {
 import {
   MeshStandardNodeMaterial,
   type Node,
+  NodeUpdateType,
   type PassNode,
   RenderPipeline,
   WebGPURenderer,
@@ -922,6 +923,14 @@ export class LocalRenderer {
             ? (denoisePass.noiseNode as unknown as { value: Texture }).value
             : null
           this.configureAmbientOcclusion(aoPass, denoisePass)
+          // These passes draw once per animation frame by default. A thumbnail
+          // draws twice in one, at another size and camera, so each render has
+          // to run them again.
+          for (const passNode of [scenePass, aoPass, denoisePass]) {
+            if (passNode) {
+              passNode.updateBeforeType = NodeUpdateType.RENDER
+            }
+          }
 
           const pipeline = new RenderPipeline(renderer)
           pipeline.outputColorTransform = false
