@@ -25,9 +25,19 @@ test(
       toolbar.featureTreePane.getByTestId('feature-tree-operation-item')
     ).toHaveCount(9)
     await toolbar.expandFeatureTreeBodies()
-    await expect(
-      toolbar.featureTreePane.getByRole('button', { name: /Offset Plane/ })
-    ).toHaveCount(3)
+    // Inline offset planes use the same variable label as their sketch.
+    for (const [index, name] of [
+      'sketch004',
+      'sketch006',
+      'sketch008',
+    ].entries()) {
+      await expect(
+        page
+          .getByTestId('feature-tree-body-features')
+          .nth(index + 3)
+          .getByRole('button', { name, exact: true })
+      ).toHaveCount(2)
+    }
     await testInfo.attach('pump-housing-body-hierarchy', {
       body: await toolbar.featureTreePane.screenshot(),
       contentType: 'image/png',
@@ -199,6 +209,21 @@ keptBody = clone(body001)
         return result.type === 'select_get' ? result.data.entity_ids : []
       })
       .toEqual([bodyId])
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const bounds =
+            window.app.singletons.kclManager.sceneInfra.localRenderer?.getSelectionBounds()
+          return (
+            !!bounds &&
+            bounds.min.x < -4.9 &&
+            bounds.max.x > 4.9 &&
+            bounds.max.x < 5.1 &&
+            bounds.max.z - bounds.min.z > 9.9
+          )
+        })
+      )
+      .toBe(true)
     await source.click({ button: 'right' })
     await expect(page.getByTestId('context-menu-delete')).toBeVisible()
     await testInfo.attach('body-before-delete', {

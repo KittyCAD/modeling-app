@@ -181,6 +181,47 @@ describe('local GLB loading', () => {
   })
   afterEach(() => vi.restoreAllMocks())
 
+  it('highlights a tree-selected body without first picking a face in the scene', async () => {
+    const f = fixture()
+    const first = new Mesh()
+    const second = new Mesh()
+    const otherBody = new Mesh()
+    for (const [index, mesh] of [first, second, otherBody].entries()) {
+      mesh.userData.faceUuid = `face-${index}`
+      mesh.userData.bodyMeshIndex = index === 2 ? 1 : 0
+    }
+    f.state.currentModel = new Group().add(first, second, otherBody)
+    f.state.rebuildSelectionTargets()
+    f.manager.engineCommandManager.sendSceneCommand.mockImplementation(
+      async ({ cmd }) => ({
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response:
+              cmd.type === 'select_get'
+                ? { type: 'select_get', data: { entity_ids: ['body'] } }
+                : cmd.type === 'query_entity_type'
+                  ? {
+                      type: 'query_entity_type',
+                      data: {
+                        reference: { type: 'solid3d', solid3d_id: 'body' },
+                      },
+                    }
+                  : {
+                      type: 'solid3d_get_face_uuid',
+                      data: { face_id: 'face-0' },
+                    },
+          },
+        },
+      })
+    )
+    await f.state.syncSelectionFromEngine()
+    expect(
+      f.gpu.selectionHighlightRenderer.setSelection
+    ).toHaveBeenLastCalledWith([first, second])
+    f.renderer.dispose()
+  })
+
   function planeFixture(id = 'plane-xy') {
     const f = fixture()
     const {
