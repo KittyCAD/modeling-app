@@ -28,7 +28,17 @@ test('does not select a legacy profile through its hole @localRenderer @web', as
     .toEqual([])
   await editor.closePane()
   await scene.moveCameraTo({ x: 5, y: 5, z: 50 }, { x: 5, y: 5, z: 0 })
-  const [clickProfile] = await scene.findFace(0, { visible: true })
+  const face = (await scene.getProjectedEntities()).find(
+    (entity) => entity.kind === 'face'
+  )
+  const bounds = await scene.streamWrapper.boundingBox()
+  if (!face || !bounds) throw new Error('Cannot locate the profile')
+  // Move away from the edge selection area of the hole boundary
+  const [clickProfile] = scene.makeMouseHelpers(
+    (face.x + 40 - bounds.x) / bounds.width,
+    (face.y - bounds.y) / bounds.height,
+    { format: 'ratio' }
+  )
   await clickProfile()
   await expect(page.getByTestId('selection-status')).not.toContainText(
     'No selection'
