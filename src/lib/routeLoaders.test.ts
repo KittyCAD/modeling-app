@@ -245,7 +245,11 @@ describe('local directory loader', () => {
     const operations = {
       readFile: vi.fn(async () => new TextEncoder().encode('file contents')),
     }
-    vi.spyOn(app.registry, 'optional').mockReturnValue(sessions)
+    vi.spyOn(app.registry, 'optional').mockImplementation((token) =>
+      Object.is(token, projectSessionService)
+        ? sessions
+        : registry.optional(token)
+    )
     vi.spyOn(app.registry, 'required')
       .mockImplementation(registry.required.bind(registry))
       .mockReturnValueOnce(operations)
@@ -495,7 +499,12 @@ describe('local directory loader', () => {
         openProject: vi.fn(),
       }
       if (action === 'revoked') environment.projectRouteEnabled = false
-      else vi.spyOn(app.registry, 'optional').mockReturnValue(replacement)
+      else
+        vi.spyOn(app.registry, 'optional').mockImplementation((token) =>
+          Object.is(token, projectSessionService)
+            ? replacement
+            : registry.optional(token)
+        )
       try {
         discovery.resolve(data)
         const result = await loading

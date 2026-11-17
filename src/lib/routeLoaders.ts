@@ -28,7 +28,10 @@ import { settingsFacet } from '@src/registry/contracts/settings'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
-import { hasProjectShellFeature } from '@src/lib/projectSession/next/feature'
+import {
+  hasProjectShellFeature,
+  waitForProjectShellSettled,
+} from '@src/lib/projectSession/next/feature'
 import { waitForUserFeaturesSettled } from '@src/machines/userFeaturesMachine'
 import { readProject } from '@src/lib/projectSession/next/utils'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
@@ -78,10 +81,12 @@ export const baseLoader =
     return redirect(PATHS.HOME + routerSearch)
   }
 
-/** Settle the shared feature grant before either experimental route accesses resources. */
+/** Wait for the grant and its installed content before either route accesses resources. */
 async function canOpenProjectShell(app: App, signal: AbortSignal) {
   await waitForUserFeaturesSettled(app.userFeatures.actor, undefined, signal)
   signal.throwIfAborted()
+  if (!hasProjectShellFeature(app.userFeatures)) return false
+  await waitForProjectShellSettled(app.registry, signal)
   return hasProjectShellFeature(app.userFeatures)
 }
 
