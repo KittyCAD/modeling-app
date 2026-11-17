@@ -16,7 +16,7 @@ import {
   Vector3,
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import { MeshStandardNodeMaterial } from 'three/webgpu'
+import { MeshStandardNodeMaterial, WebGPURenderer } from 'three/webgpu'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lang/KclManager', () => ({
@@ -141,6 +141,7 @@ function fixture(
   })
   manager.sceneInfra.camControls.camera.position.set(100, -100, 100)
   const onModelLoadSettled = vi.fn()
+  const onRendererFailed = vi.fn()
   const renderer = new LocalRenderer(
     document.createElement('div'),
     legacyLocalRendererHost(manager as unknown as KclManager),
@@ -151,6 +152,7 @@ function fixture(
       fixedSizeGrid: true,
       backfaceColor: '#00D5FF',
       onModelLoadSettled,
+      onRendererFailed,
     }
   )
   const state = renderer as unknown as RendererInternals
@@ -166,7 +168,15 @@ function fixture(
       })
     )
   }
-  return { renderer, state, gpu, manager, done, onModelLoadSettled }
+  return {
+    renderer,
+    state,
+    gpu,
+    manager,
+    done,
+    onModelLoadSettled,
+    onRendererFailed,
+  }
 }
 
 describe('local GLB loading', () => {
@@ -535,6 +545,53 @@ describe('local GLB loading', () => {
     expect(dispose).toHaveBeenCalledTimes(3)
     expect(f.state.ambientOcclusionPipeline).toBeNull()
     f.renderer.dispose()
+  })
+})
+
+// Runs the real initialize() up to renderer.init(), which these tests control.
+describe('local renderer GPU failures', () => {
+  beforeEach(() => {
+    const prototype = LocalRenderer.prototype as unknown as RendererInternals
+    vi.spyOn(prototype, 'scheduleRender').mockImplementation(() => {})
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+  })
+  afterEach(() => vi.restoreAllMocks())
+
+  it('reports a renderer that cannot start', async () => {
+    vi.spyOn(WebGPURenderer.prototype, 'init').mockRejectedValue(
+      new Error('Error creating WebGL context.')
+    )
+    const f = fixture()
+    await vi.waitFor(() =>
+      expect(f.onRendererFailed).toHaveBeenCalledWith({
+        kind: 'initialization',
+        message: 'Error creating WebGL context.',
+      })
+    )
+    f.renderer.dispose()
+  })
+
+  it('reports a GPU lost while rendering, but not after dispose', async () => {
+    const init = vi
+      .spyOn(WebGPURenderer.prototype, 'init')
+      .mockReturnValue(new Promise(() => {}))
+    const f = fixture()
+    await vi.waitFor(() => expect(init).toHaveBeenCalledOnce())
+    const created = init.mock.contexts[0] as WebGPURenderer
+    const lost = {
+      api: 'WebGL' as const,
+      message: 'Context lost',
+      reason: null,
+      originalEvent: null,
+    }
+    created.onDeviceLost(lost)
+    expect(f.onRendererFailed).toHaveBeenCalledExactlyOnceWith({
+      kind: 'lost',
+      message: 'Context lost',
+    })
+    f.renderer.dispose()
+    created.onDeviceLost(lost)
+    expect(f.onRendererFailed).toHaveBeenCalledOnce()
   })
 })
 

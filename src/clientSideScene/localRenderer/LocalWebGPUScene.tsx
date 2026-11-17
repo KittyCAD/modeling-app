@@ -1,15 +1,19 @@
 import {
   LocalRenderer,
+  type LocalRendererFailure,
   type LocalRendererProps,
 } from '@src/clientSideScene/localRenderer/LocalRenderer'
+import { ActionButton } from '@src/components/ActionButton'
 import { Spinner } from '@src/components/Spinner'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
 import { legacyLocalRendererHost } from '@src/clientSideScene/localRenderer/legacyHost'
 import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { PROJECT_THUMBNAIL_SIZE } from '@src/lib/screenshot'
+import { reportRejection } from '@src/lib/trap'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { waitFor } from 'xstate'
 
 // The default planes are shown or hidden about 200 ms after an execution, so
 // the thumbnail waits for them, like the streamed one does.
@@ -25,11 +29,26 @@ function getPendingCommandCount(host: LocalRendererHost) {
 export const LocalWebGPUScene = (props: LocalRendererProps) => {
   const { kclManager } = useSingletons()
   const host = useMemo(() => legacyLocalRendererHost(kclManager), [kclManager])
+  const { settings } = useApp()
   const { state } = useModelingContext()
+
+  // The engine session is chosen when the scene mounts, so streaming needs a reload.
+  const switchToStreaming = useCallback(() => {
+    settings.send({
+      type: 'set.modeling.useLocalRenderer',
+      data: { level: 'user', value: false },
+    })
+    // Reloading before the change is saved would start with the old value.
+    waitFor(settings.actor, (snapshot) => snapshot.matches('idle'))
+      .then(() => window.location.reload())
+      .catch(reportRejection)
+  }, [settings])
+
   return (
     <LocalWebGPUSceneView
       {...props}
       host={host}
+      onSwitchToStreaming={switchToStreaming}
       pickingEnabled={state.matches('idle') || state.matches('Sketch no face')}
       defaultPlaneVisibility={state.context.defaultPlaneVisibility}
     />
@@ -41,11 +60,14 @@ export const LocalWebGPUSceneView = ({
   host,
   pickingEnabled,
   defaultPlaneVisibility,
+  onSwitchToStreaming,
   ...props
 }: LocalRendererProps & {
   host: LocalRendererHost
   pickingEnabled: boolean
   defaultPlaneVisibility: PlaneVisibilityMap
+  /** Offered when the renderer fails; the button is hidden when omitted. */
+  onSwitchToStreaming?: () => void
 }) => {
   const {
     theme,
@@ -60,7 +82,8 @@ export const LocalWebGPUSceneView = ({
   const isExecuting = host.executing.value
   const [isAwaitingModel, setIsAwaitingModel] = useState(false)
   const [pendingCommandCount, setPendingCommandCount] = useState(0)
-  const isLoadingModel = isExecuting || isAwaitingModel
+  const [failure, setFailure] = useState<LocalRendererFailure | null>(null)
+  const isLoadingModel = !failure && (isExecuting || isAwaitingModel)
 
   latestPropsRef.current = props
 
@@ -102,6 +125,7 @@ export const LocalWebGPUSceneView = ({
     const renderer = new LocalRenderer(container, host, {
       ...latestPropsRef.current,
       onModelLoadSettled: handleModelLoadSettled,
+      onRendererFailed: setFailure,
     })
     rendererRef.current = renderer
     host.sceneInfra.localRenderer = renderer
@@ -165,6 +189,42 @@ export const LocalWebGPUSceneView = ({
             </span>
           </div>
         </output>
+      )}
+      {failure && (
+        <div
+          role="alert"
+          data-testid="local-renderer-failure"
+          className="absolute inset-0 z-40 flex items-center justify-center p-4"
+        >
+          <div className="flex max-w-md flex-col gap-3 rounded-md border b-4 bg-default p-4 text-default shadow-md">
+            <h2 className="text-base font-semibold">
+              {failure.kind === 'lost'
+                ? 'Local rendering lost access to the GPU'
+                : "Local rendering couldn't start on this device"}
+            </h2>
+            <p className="text-sm text-2">
+              Switch to streaming to keep working, or reload to try local
+              rendering again.
+            </p>
+            <p className="break-words font-mono text-xs text-3">
+              {failure.message}
+            </p>
+            <div className="flex justify-end gap-2">
+              <ActionButton
+                Element="button"
+                onClick={() => window.location.reload()}
+                iconStart={{ icon: 'refresh', size: 'sm', className: 'p-1' }}
+              >
+                Reload
+              </ActionButton>
+              {onSwitchToStreaming && (
+                <ActionButton Element="button" onClick={onSwitchToStreaming}>
+                  Switch to streaming
+                </ActionButton>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </>
   )
