@@ -76,6 +76,15 @@ export function useViewControlMenuItems() {
       <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
+          kclManager.sceneInfra.camControls
+            .zoomToFit({ padding: 0.1 })
+            .catch(reportRejection)
+        }}
+      >
+        Zoom to fit
+      </ContextMenuItem>,
+      <ContextMenuItem
+        onClick={() => {
           resetCameraPosition({
             sceneInfra: kclManager.sceneInfra,
             settingsActor: settings.actor,
