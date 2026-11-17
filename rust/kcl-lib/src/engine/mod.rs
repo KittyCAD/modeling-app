@@ -206,13 +206,16 @@ pub fn zoo_client(
     engine_addr: Option<String>,
     headers: Option<std::collections::BTreeMap<String, String>>,
 ) -> anyhow::Result<kittycad::Client> {
-    let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
+    let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"));
     let mut default_headers = http::HeaderMap::new();
     default_headers.insert(http::header::USER_AGENT, http::HeaderValue::from_static(user_agent));
-    for (name, value) in headers.unwrap_or_default() {
-        let mut value = http::HeaderValue::try_from(value)?;
-        value.set_sensitive(true);
-        default_headers.insert(http::HeaderName::try_from(name)?, value);
+    for (name, value) in &headers.unwrap_or_default() {
+        let mut parsed_value =
+            http::HeaderValue::try_from(value).map_err(|e| anyhow::anyhow!("Invalid header value {value}: {e}"))?;
+        parsed_value.set_sensitive(true);
+        let parsed_name =
+            http::HeaderName::try_from(name).map_err(|e| anyhow::anyhow!("Invalid header name {name}: {e}"))?;
+        default_headers.insert(parsed_name, parsed_value);
     }
     let http_client = reqwest::Client::builder()
         .default_headers(default_headers.clone())
