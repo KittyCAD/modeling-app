@@ -1,43 +1,81 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import { ArrowRight, ChevronRight, X } from 'lucide-react'
-import { useState } from 'react'
-import { type Definition, type Tile, readRules } from './game'
-import type { Runtime } from './registry'
+import { ArrowDown, ChevronRight, X } from 'lucide-react'
+import { useRef, useState } from 'react'
+import type { Definition, Sprite, Tile } from './game'
+import { gameContract, type Runtime } from './registry'
 import { Pixels, artwork, ink } from './tile-art'
 
-/** The explanation reads the same installed contributions as the game and editor. */
+/** An actual definition replacement, viewed from its editor through to its consumer. */
 export function PlanktonDrawer({
   runtime,
   open,
   peek,
+  busy,
   onOpenChange,
   onEdit,
+  onPublish,
 }: {
   runtime: Runtime
   open: boolean
   peek: boolean
+  busy: boolean
   onOpenChange: (open: boolean) => void
   onEdit: (definition: Definition, kind: Tile['kind']) => void
+  onPublish: (definition: Definition) => Promise<boolean>
 }) {
+  const session = useRef(runtime.registry.required(gameContract.session))
   const [selected, setSelected] = useState('BUSH')
+  const [kind, setKind] = useState<Tile['kind']>('entity')
+  const [pixels, setPixels] = useState<Sprite | null>(null)
+  const [before, setBefore] = useState<Definition | null>(null)
+  const [error, setError] = useState('')
   const definitions = runtime.definitions.value
   const definition =
     definitions.find((item) => item.id === selected) ?? definitions[0]
-  const action =
-    definition?.kind === 'property'
-      ? runtime.actions.value.find((item) => item.id === definition.action)
-      : undefined
-  const relatedRules = readRules(runtime.game.board.tiles, definitions).filter(
-    (rule) => rule.noun === definition?.id || rule.property === definition?.id
-  )
-  const picture = (item: Definition, kind: Tile['kind'] = 'word') => (
-    <span className="lesson-tile" role="img" aria-label={`${item.id} ${kind}`}>
-      <Pixels sprite={artwork(item, kind)} color={ink(item, kind)} />
+  const tileKind = definition?.kind === 'entity' ? kind : 'word'
+  const installed = definition ? artwork(definition, tileKind) : []
+  const draft = pixels ?? installed
+  const dirty = JSON.stringify(draft) !== JSON.stringify(installed)
+  const sameSession =
+    session.current === runtime.registry.required(gameContract.session)
+  const { bounds } = runtime.game.puzzle
+  const picture = (item: Definition, type: Tile['kind'] = tileKind) => (
+    <span className="trace-tile" role="img" aria-label={`${item.id} ${type}`}>
+      <Pixels sprite={artwork(item, type)} color={ink(item, type)} />
     </span>
   )
+  function choose(item: Definition) {
+    setSelected(item.id)
+    setKind(item.kind === 'entity' ? 'entity' : 'word')
+    setPixels(null)
+    setBefore(null)
+    setError('')
+  }
+  async function apply() {
+    if (!definition) return
+    const replacement: Definition =
+      definition.kind === 'entity' && tileKind === 'entity'
+        ? { ...definition, sprite: draft }
+        : { ...definition, wordSprite: draft }
+    if (await onPublish(replacement)) {
+      setBefore(before ?? definition)
+      setPixels(null)
+      setError('')
+    } else setError('The edit could not be installed. Try again.')
+  }
 
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+    <Dialog.Root
+      open={open}
+      onOpenChange={(value) => {
+        if (value) {
+          setPixels(null)
+          setBefore(null)
+          setError('')
+        }
+        onOpenChange(value)
+      }}
+    >
       <Dialog.Trigger asChild>
         <button
           className={`editor-edge plankton-edge ${peek ? 'peek' : ''}`}
@@ -51,222 +89,269 @@ export function PlanktonDrawer({
         <Dialog.Overlay className="editor-overlay" />
         <Dialog.Content className="plankton-drawer">
           <header>
-            <span className="lesson-eyebrow">A living registry · paused</span>
+            <span className="trace-caption">PLANKTON · UNDER THE TILES</span>
             <Dialog.Close asChild>
               <button aria-label="Close Plankton explanation">
                 <X size={18} />
               </button>
             </Dialog.Close>
           </header>
-          <Dialog.Title>Plankton, under the tiles.</Dialog.Title>
+          <Dialog.Title>One edit. Same world.</Dialog.Title>
           <Dialog.Description>
-            Plankton brings independent extensions together. This world’s
-            artwork, actions, puzzles, and outcome meanings all arrive through
-            extensions—including the built-ins.
+            Change a pixel. Follow it into the live game.
           </Dialog.Description>
-
-          <section className="plankton-lesson">
-            <h2>
-              <span>01</span> A tile has a definition.
-            </h2>
-            <p>Pick a piece of the installed vocabulary.</p>
-            <div
-              className="lesson-vocabulary"
-              aria-label="Inspect installed extensions"
+          <div className="trace-vocabulary" aria-label="Choose a tile to trace">
+            {definitions.map((item) => (
+              <button
+                key={item.id}
+                disabled={busy}
+                aria-label={`Trace ${item.id}`}
+                aria-pressed={definition?.id === item.id}
+                onClick={() => choose(item)}
+              >
+                <Pixels
+                  sprite={artwork(item, 'word')}
+                  color={ink(item, 'word')}
+                />
+              </button>
+            ))}
+          </div>
+          {definition && (
+            <ol
+              className={`edit-trace ${before && !dirty ? 'trace-applied' : ''}`}
+              aria-label="Tile edit through Plankton"
             >
-              {definitions.map((item) => (
-                <button
-                  key={item.id}
-                  aria-label={`Explain ${item.id}`}
-                  aria-pressed={definition?.id === item.id}
-                  onClick={() => setSelected(item.id)}
-                >
-                  <Pixels
-                    sprite={artwork(item, 'word')}
-                    color={ink(item, 'word')}
-                  />
-                </button>
-              ))}
-            </div>
-            {definition && (
-              <div className="lesson-definition">
-                <div className="lesson-flow">
-                  {picture(definition)}
-                  <ArrowRight size={16} aria-hidden="true" />
-                  <div>
-                    <strong>{definition.id}</strong>
-                    <small>
-                      {definition.kind === 'property'
-                        ? 'Property definition'
-                        : definition.kind === 'entity'
-                          ? 'Entity definition'
-                          : 'Language definition'}
-                    </small>
-                  </div>
-                  {definition.kind === 'entity' &&
-                    picture(definition, 'entity')}
-                </div>
-                <p>
-                  {definition.kind === 'entity'
-                    ? 'One definition supplies an entity sprite and its noun word. The board places copies of these tiles.'
-                    : definition.kind === 'property'
-                      ? `This word refers to the “${action?.label ?? definition.action}” action. That behavior is contributed separately to the actions Facet.`
-                      : 'Its artwork comes from the vocabulary. The sentence parser or an outcome-meaning extension supplies its meaning.'}
-                </p>
-                {action && (
-                  <p className="lesson-action">{action.description}</p>
-                )}
-                {relatedRules.length > 0 && (
-                  <div
-                    className="lesson-outcomes"
-                    aria-label="Rules using this definition"
-                  >
-                    {relatedRules.map((rule, index) => (
-                      <div
-                        className="lesson-outcome"
-                        key={index}
-                        aria-label={`${rule.noun} IS ${rule.property}`}
-                      >
-                        {[rule.noun, 'IS', rule.property].map((id, i) => {
-                          const item = definitions.find(
-                            (entry) => entry.id === id
-                          )
-                          return item ? (
-                            <span key={i}>{picture(item)}</span>
-                          ) : null
-                        })}
-                        <small>on this board</small>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <code>contribute(gameContract.definitions, …)</code>
-                <button
-                  className="lesson-edit"
-                  onClick={() => onEdit(definition, 'word')}
-                >
-                  Edit {definition.id} <ArrowRight size={14} />
-                </button>
-              </div>
-            )}
-          </section>
-
-          <section className="plankton-lesson">
-            <h2>
-              <span>02</span> Many extensions. One vocabulary.
-            </h2>
-            <div className="lesson-flow lesson-assembly">
-              <div className="lesson-stack">
-                {definitions.slice(0, 3).map((item) => (
-                  <span key={item.id}>{picture(item)}</span>
-                ))}
-              </div>
-              <ArrowRight size={16} aria-hidden="true" />
-              <div className="lesson-container">
-                <strong>definitions</strong>
-                <small>Facet · {definitions.length} definitions</small>
-              </div>
-              <ArrowRight size={16} aria-hidden="true" />
-              <span className="lesson-consumer">
-                Board
-                <br />
-                Editor
-                <br />
-                Parser
-              </span>
-            </div>
-            <p>
-              A <strong>Facet</strong> collects contributions under a shared
-              contract. These three consumers read the same vocabulary; none
-              needs to know which extension supplied a tile.
-            </p>
-            <div className="lesson-totals">
-              <span>
-                {runtime.actions.value.length}
-                <small>actions</small>
-              </span>
-              <span>
-                {runtime.outcomeMeanings.value.length}
-                <small>outcome meanings</small>
-              </span>
-              <span>
-                {runtime.puzzles.value.length}
-                <small>starter puzzles</small>
-              </span>
-            </div>
-            <p>
-              Each has its own Facet. The outcome board combines vocabulary
-              tiles with contributed predicate meanings:
-            </p>
-            <div
-              className="lesson-outcomes"
-              aria-label="Installed outcome rules"
-            >
-              {runtime.outcomeProgram.value.rows.map((row) => (
-                <div className="lesson-outcome" key={row.id}>
-                  {row.cells.map((id, index) => {
-                    const item = definitions.find((entry) => entry.id === id)
-                    return (
-                      <span key={index}>
-                        {index === 3 && <span className="lesson-arrow">→</span>}
-                        {item ? (
-                          picture(item)
-                        ) : (
-                          <span className="lesson-tile">{id || '_'}</span>
-                        )}
-                      </span>
-                    )
-                  })}
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="plankton-lesson">
-            <h2>
-              <span>03</span> Change the pieces. Keep the world.
-            </h2>
-            <div className="lesson-owner">
-              <span className="lesson-eyebrow">
-                Session Factory · owns the running game
-              </span>
-              <div className="lesson-flow">
-                <div className="lesson-container">
-                  <strong>Slot</strong>
-                  <small>replaceable extensions</small>
-                </div>
-                <ArrowRight size={16} aria-hidden="true" />
-                <div className="lesson-container">
-                  <strong>Same board</strong>
+              <li className="trace-node trace-editor">
+                <div className="trace-title">
+                  <span>1</span>
+                  <h3>Edit the tile</h3>
                   <small>
-                    {runtime.game.puzzle.bounds.width} ×{' '}
-                    {runtime.game.puzzle.bounds.height} ·{' '}
-                    {runtime.game.board.tiles.length} placed tiles
+                    {dirty
+                      ? 'Unsaved pixels'
+                      : before
+                        ? 'Applied'
+                        : 'Click a pixel'}
                   </small>
                 </div>
-              </div>
-            </div>
-            <p>
-              Saving artwork replaces a definition through a{' '}
-              <strong>Slot</strong>. Its key identifies the vocabulary entry;
-              authored definitions take precedence over built-ins.
-            </p>
-            <p>
-              The session <strong>Factory</strong> stays installed. Its live
-              observations pick up the replacement, preserving the board and
-              movement undo history. A Service exposes that same session to the
-              app.
-            </p>
-            <p>
-              Try editing a tile’s pixels, or create DIE with the Destroy self
-              action and complete BUSH IS DIE. Plankton installs the
-              contributions; the game interprets the rule.
-            </p>
-            <code>registry.replace(slot, extensions)</code>
-          </section>
-          <Dialog.Close asChild>
-            <button className="lesson-return">Return to the world</button>
-          </Dialog.Close>
+                <div className="trace-edit-content">
+                  <div
+                    className="trace-pixels"
+                    aria-label="Trace pixel editor"
+                    style={{
+                      gridTemplateColumns: `repeat(${draft[0].length}, 1fr)`,
+                    }}
+                  >
+                    {draft.flatMap((row, y) =>
+                      [...row].map((pixel, x) => (
+                        <button
+                          key={`${x}-${y}`}
+                          disabled={busy}
+                          aria-label={`Trace pixel ${x + 1}, ${y + 1}`}
+                          aria-pressed={pixel === '1'}
+                          style={{
+                            background:
+                              pixel === '1'
+                                ? ink(definition, tileKind)
+                                : undefined,
+                          }}
+                          onClick={() =>
+                            setPixels(
+                              draft.map((line, index) =>
+                                index === y
+                                  ? [...line]
+                                      .map((value, column) =>
+                                        column === x
+                                          ? value === '1'
+                                            ? '0'
+                                            : '1'
+                                          : value
+                                      )
+                                      .join('')
+                                  : line
+                              )
+                            )
+                          }
+                        />
+                      ))
+                    )}
+                  </div>
+                  <div className="trace-edit-tools">
+                    <strong>{definition.id}</strong>
+                    {definition.kind === 'entity' && (
+                      <div
+                        className="kind-toggle"
+                        aria-label="Trace artwork kind"
+                      >
+                        {(['entity', 'word'] as const).map((type) => (
+                          <button
+                            key={type}
+                            disabled={busy}
+                            aria-pressed={tileKind === type}
+                            onClick={() => {
+                              setKind(type)
+                              setPixels(null)
+                            }}
+                          >
+                            {type}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    <button
+                      className="trace-apply"
+                      disabled={busy || !dirty}
+                      onClick={apply}
+                    >
+                      {busy ? 'Applying…' : 'Apply pixel edit'}
+                    </button>
+                    <button
+                      className="trace-link"
+                      disabled={busy}
+                      onClick={() => onEdit(definition, tileKind)}
+                    >
+                      Full editor ↗
+                    </button>
+                  </div>
+                </div>
+              </li>
+              <li className="trace-node trace-slot">
+                <div className="trace-connector">
+                  <ArrowDown aria-hidden="true" />
+                  <span>replace vocabulary Slot</span>
+                </div>
+                <div className="trace-title">
+                  <span>2</span>
+                  <h3>Extension</h3>
+                  <small>key: {definition.id}</small>
+                </div>
+                <div className="trace-binding">
+                  {before && (
+                    <>
+                      <span className="trace-before">{picture(before)}</span>
+                      <span aria-hidden="true">→</span>
+                    </>
+                  )}
+                  {picture(definition)}
+                  <code>contribute(definitions, …)</code>
+                </div>
+              </li>
+              <li className="trace-node">
+                <div className="trace-connector">
+                  <ArrowDown aria-hidden="true" />
+                  <span>contribute definition</span>
+                </div>
+                <div className="trace-title">
+                  <span>3</span>
+                  <h3>
+                    definitions <em>Facet</em>
+                  </h3>
+                  <small>{definitions.length} entries</small>
+                </div>
+                <div className="trace-facet" aria-label="Installed definitions">
+                  {definitions.map((item) => (
+                    <span
+                      key={item.id}
+                      className={
+                        item.id === definition.id ? 'trace-chosen' : ''
+                      }
+                    >
+                      {picture(
+                        item,
+                        item.id === definition.id ? tileKind : 'word'
+                      )}
+                    </span>
+                  ))}
+                </div>
+              </li>
+              <li className="trace-node trace-session">
+                <div className="trace-connector">
+                  <ArrowDown aria-hidden="true" />
+                  <span>live observation → game</span>
+                </div>
+                <div className="trace-title">
+                  <span>4</span>
+                  <h3>
+                    Session <em>Factory</em>
+                  </h3>
+                  <small className="trace-alive">
+                    ● {sameSession ? 'Same session' : 'Session replaced'}
+                  </small>
+                </div>
+                <div className="trace-game-content">
+                  <div
+                    className="trace-world"
+                    role="img"
+                    aria-label="Running game with installed artwork"
+                    style={{
+                      gridTemplateColumns: `repeat(${bounds.width}, 1fr)`,
+                      aspectRatio: `${bounds.width}/${bounds.height}`,
+                    }}
+                  >
+                    {Array.from(
+                      { length: bounds.width * bounds.height },
+                      (_, index) => (
+                        <span className="trace-cell" key={index}>
+                          {runtime.game.board.tiles
+                            .filter(
+                              (tile) =>
+                                tile.x === index % bounds.width &&
+                                tile.y === Math.floor(index / bounds.width)
+                            )
+                            .map((tile) => {
+                              const item = definitions.find(
+                                (entry) => entry.id === tile.type
+                              )
+                              return item ? (
+                                <span
+                                  key={tile.id}
+                                  className={
+                                    tile.type === definition.id
+                                      ? 'trace-highlight'
+                                      : ''
+                                  }
+                                >
+                                  <Pixels
+                                    sprite={artwork(item, tile.kind)}
+                                    color={ink(item, tile.kind)}
+                                  />
+                                </span>
+                              ) : null
+                            })}
+                        </span>
+                      )
+                    )}
+                  </div>
+                  <div className="trace-retained">
+                    <strong>Still here</strong>
+                    <span>Board positions</span>
+                    <span>Undo history</span>
+                    <span>Turn {runtime.game.board.turns}</span>
+                    <small>Input paused</small>
+                  </div>
+                </div>
+              </li>
+            </ol>
+          )}
+          <div className="trace-status" role="status">
+            {error ||
+              (before
+                ? 'Definition replaced. Session retained.'
+                : 'This edits real artwork in the running game.')}
+          </div>
+          {before && (
+            <button
+              className="trace-link"
+              disabled={busy}
+              onClick={async () => {
+                if (await onPublish(before)) {
+                  setBefore(null)
+                  setPixels(null)
+                }
+              }}
+            >
+              Restore original pixels
+            </button>
+          )}
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

@@ -477,6 +477,13 @@ function App({ runtime }: { runtime: Runtime }) {
         runtime={runtime}
         open={guideOpen}
         peek={guidePeek}
+        busy={busy}
+        onPublish={(definition) =>
+          change(
+            () => runtime.publish(definition),
+            `${definition.id} artwork updated`
+          )
+        }
         onOpenChange={(value) => {
           setGuideOpen(value)
           setGuidePeek(false)
