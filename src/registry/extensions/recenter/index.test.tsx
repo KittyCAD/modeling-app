@@ -113,7 +113,7 @@ it('follows replacement services and disappears when the viewport unmounts', asy
   expect(registry.get(viewControlMenuItemsFacet)).toEqual([])
 })
 
-it('opens and highlights the menu only once, deferring while a dialog is open', async () => {
+it('opens and highlights the menu only once, deferring while another menu or dialog is open', async () => {
   vi.useFakeTimers()
   vi.spyOn(document, 'hasFocus').mockReturnValue(true)
   const lost = signal(true)
@@ -130,6 +130,13 @@ it('opens and highlights the menu only once, deferring while a dialog is open', 
   })
   expect(screen.queryByTestId('gizmo-view-menu')).toBeNull()
   expect(localStorage.getItem(RECENTER_TIP_SEEN_KEY)).toBeNull()
+  dialog.removeAttribute('role')
+  dialog.id = 'headlessui-popover-panel-other'
+  dialog.setAttribute('data-headlessui-state', 'open')
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(500)
+  })
+  expect(screen.queryByTestId('gizmo-view-menu')).toBeNull()
   dialog.remove()
   await act(async () => {
     await vi.advanceTimersByTimeAsync(500)

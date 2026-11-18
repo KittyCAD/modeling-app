@@ -6,6 +6,7 @@ import { Spinner } from '@src/components/Spinner'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { PROJECT_THUMBNAIL_SIZE } from '@src/lib/screenshot'
 import { reportRejection } from '@src/lib/trap'
 import { registerViewportNavigation } from '@src/registry/extensions/engineScene/viewportNavigationRuntimeExtension'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -67,7 +68,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
       if (isNewModel && renderer && captureThumbnail) {
         setTimeout(() => {
           if (rendererRef.current !== renderer) return
-          renderer.readFrame(captureThumbnail)
+          renderer.readFrame(captureThumbnail, PROJECT_THUMBNAIL_SIZE)
         }, THUMBNAIL_DELAY_MS)
       }
     },

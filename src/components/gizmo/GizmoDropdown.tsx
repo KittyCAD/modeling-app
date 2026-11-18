@@ -66,7 +66,7 @@ function GizmoMenu({
         document.hidden ||
         !document.hasFocus() ||
         document.querySelector(
-          '[role="dialog"], [role="menu"], [role="listbox"], [aria-haspopup][aria-expanded="true"]'
+          '[role="dialog"], [role="menu"], [role="listbox"], [aria-haspopup][aria-expanded="true"], [data-headlessui-state~="open"][id^="headlessui-popover-panel"]'
         ) ||
         document.activeElement?.closest(
           'input, textarea, [contenteditable="true"], [role="textbox"]'

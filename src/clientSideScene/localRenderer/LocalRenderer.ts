@@ -49,6 +49,7 @@ import {
   DoubleSide,
   Group,
   Material,
+  MathUtils,
   Mesh,
   NeutralToneMapping,
   type Object3D,
@@ -83,6 +84,7 @@ import {
 import {
   MeshStandardNodeMaterial,
   type Node,
+  NodeUpdateType,
   type PassNode,
   RenderPipeline,
   WebGPURenderer,
@@ -112,6 +114,38 @@ function addToGroup<K>(groups: Map<K, Mesh[]>, key: K, mesh: Mesh) {
   } else {
     groups.set(key, [mesh])
   }
+}
+
+// A frame size in device pixels.
+export type FrameSize = { width: number; height: number }
+
+// Changes the camera to the aspect ratio, still showing all it shows now.
+function widenCameraToAspect(
+  camera: PerspectiveCamera | OrthographicCamera,
+  aspect: number
+) {
+  if (camera instanceof PerspectiveCamera) {
+    if (aspect < camera.aspect) {
+      // A narrower frame keeps the horizontal view and shows more vertically.
+      const halfWidth =
+        Math.tan(MathUtils.degToRad(camera.fov / 2)) * camera.aspect
+      camera.fov = MathUtils.radToDeg(2 * Math.atan(halfWidth / aspect))
+    }
+    camera.aspect = aspect
+  } else {
+    const centerX = (camera.left + camera.right) / 2
+    const centerY = (camera.top + camera.bottom) / 2
+    const halfWidth = Math.max(
+      (camera.right - camera.left) / 2,
+      ((camera.top - camera.bottom) / 2) * aspect
+    )
+    const halfHeight = halfWidth / aspect
+    camera.left = centerX - halfWidth
+    camera.right = centerX + halfWidth
+    camera.top = centerY + halfHeight
+    camera.bottom = centerY - halfHeight
+  }
+  camera.updateProjectionMatrix()
 }
 
 /** glTF is Y-up in meters; the shared navigation camera is Z-up in mm. */
@@ -836,18 +870,19 @@ export class LocalRenderer {
     }
   }
 
-  private render() {
+  // Draws at the viewport's size, or at the given size in device pixels.
+  private render(size?: FrameSize) {
     const { camera, gpu } = this
     if (!camera || !gpu) {
       return
     }
     const { renderer, scene, selectionHighlightRenderer } = gpu
-    const width = this.container.clientWidth
-    const height = this.container.clientHeight
+    const width = size?.width ?? this.container.clientWidth
+    const height = size?.height ?? this.container.clientHeight
     if (width === 0 || height === 0) {
       return
     }
-    const pixelRatio = window.devicePixelRatio
+    const pixelRatio = size ? 1 : window.devicePixelRatio
     if (
       renderer.domElement.width !== Math.floor(width * pixelRatio) ||
       renderer.domElement.height !== Math.floor(height * pixelRatio) ||
@@ -904,6 +939,14 @@ export class LocalRenderer {
             ? (denoisePass.noiseNode as unknown as { value: Texture }).value
             : null
           this.configureAmbientOcclusion(aoPass, denoisePass)
+          // These passes draw once per animation frame by default. A thumbnail
+          // draws twice in one, at another size and camera, so each render has
+          // to run them again.
+          for (const passNode of [scenePass, aoPass, denoisePass]) {
+            if (passNode) {
+              passNode.updateBeforeType = NodeUpdateType.RENDER
+            }
+          }
 
           const pipeline = new RenderPipeline(renderer)
           pipeline.outputColorTransform = false
@@ -1017,10 +1060,25 @@ export class LocalRenderer {
   /**
    * Draws a frame and lends out the canvas. It can only be read during the
    * call: WebGPU and WebGL canvases read back blank in a later task.
+   *
+   * With a size, the frame has that many pixels and shows at least what the
+   * viewport shows. The viewport is drawn again before the browser paints.
    */
-  readFrame<T>(read: (canvas: HTMLCanvasElement) => T) {
-    const { gpu } = this
-    if (!gpu || !this.camera) return undefined
+  readFrame<T>(read: (canvas: HTMLCanvasElement) => T, size?: FrameSize) {
+    const { camera, gpu } = this
+    if (!gpu || !camera) return undefined
+    if (size) {
+      widenCameraToAspect(camera, size.width / size.height)
+      this.baseRenderDirty = true
+      try {
+        this.render(size)
+        return read(gpu.renderer.domElement)
+      } finally {
+        // Copies the shared camera again, which also marks the base dirty.
+        this.updateLocalCamera()
+        this.render()
+      }
+    }
     this.render()
     return read(gpu.renderer.domElement)
   }
