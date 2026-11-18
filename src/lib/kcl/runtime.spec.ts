@@ -334,13 +334,17 @@ it('retains partial native error output while releasing execution tracking', asy
   const failure = await model
     .execute(snapshot('@settings(kclVersion = 3.0)\nanswer = missingValue'))
     .catch((cause: unknown) => cause)
-  expect(failure).toBeInstanceOf(Error)
-  expect(failure).toHaveProperty('artifactGraph')
+  if (
+    !(failure instanceof Error) ||
+    !('artifactGraph' in failure) ||
+    !('defaultPlanes' in failure) ||
+    !('engineSceneGeneration' in failure)
+  )
+    return expect.fail('Expected a native error with partial output')
   expect(model.state.peek()).toMatchObject({
-    artifactGraph: (failure as { artifactGraph: unknown }).artifactGraph,
-    defaultPlanes: (failure as { defaultPlanes: unknown }).defaultPlanes,
-    engineSceneGeneration: (failure as { engineSceneGeneration: unknown })
-      .engineSceneGeneration,
+    artifactGraph: failure.artifactGraph,
+    defaultPlanes: failure.defaultPlanes,
+    engineSceneGeneration: failure.engineSceneGeneration,
   })
   expect(model.executing.peek()).toBe(false)
   expect(model.failed.peek()).toBe(true)

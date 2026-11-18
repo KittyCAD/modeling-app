@@ -44,7 +44,11 @@ export function createExecutor(
       ...context,
       refresh: refresh.value,
       capabilities,
-      revisions: capabilities.map((capability) => capability.revision?.value),
+      revisions: capabilities.map((capability) =>
+        typeof capability.revision === 'function'
+          ? capability.revision(executor)
+          : capability.revision?.value
+      ),
     }
   }
   const pending = (input: ExecutionInput): ExecutorOutput =>
@@ -53,7 +57,14 @@ export function createExecutor(
       contents: input.contents,
       running: input.capabilities.length > 0,
     })
-  const output = signal<ExecutorOutput>(pending(snapshot()))
+  // Revision readers receive the executor, so establish its output before the first snapshot.
+  const output = signal<ExecutorOutput>(
+    createExecutorOutput({
+      src: editor.src.peek() ?? '',
+      contents: editor.contents.peek(),
+      running: false,
+    })
+  )
   const execute = (input: ExecutionInput) =>
     Effect.gen(function* () {
       if (input.capabilities.length === 0) return

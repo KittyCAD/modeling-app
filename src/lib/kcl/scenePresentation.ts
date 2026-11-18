@@ -60,8 +60,14 @@ function createLocalPresentation({
 }: PresentationContext): PresentationAdapter {
   sceneInfra.camControls.localCameraMode = true
   sceneInfra.camControls.resetLocalCameraToDefaultView()
+  let initialCameraFramePending = true
   return {
     localHost: {
+      claimInitialCameraFrame: () => {
+        const pending = initialCameraFramePending
+        initialCameraFramePending = false
+        return pending
+      },
       executionEvents: model.events,
       executing: model.executing,
       sceneGeneration: computed(() => model.state.value.engineSceneGeneration),

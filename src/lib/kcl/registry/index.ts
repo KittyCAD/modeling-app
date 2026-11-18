@@ -4,10 +4,9 @@ import {
 } from '@src/lib/kcl/scene/executionSettingsRegistry'
 import { kcl } from '@kittycad/codemirror-lang-kcl'
 import { factory, contribute } from 'plankton'
-import { computed } from '@preact/signals-core'
+import { computed, signal } from '@preact/signals-core'
 import { editorKclHighlight } from '@src/editor/plugins/theme'
-import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
-import { initialiseWasm, relevantFileExtensions } from '@src/lang/wasmUtils'
+import { initialiseWasm } from '@src/lang/wasmUtils'
 import {
   codeEditorsExtensionFacet,
   editorLanguagesFacet,
@@ -24,12 +23,16 @@ import { openKclScene } from '@src/lib/kcl/scene'
 import { createKclSession } from '@src/lib/kcl/session'
 import { createScenePresentationPreferences } from '@src/lib/kcl/presentationPreferences'
 import projectSourcesExtension from '@src/lib/projectSession/registry/sources'
-
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
 import { isErr } from '@src/lib/trap'
 import { observations as authInputs } from '@src/registry/contracts/auth'
 import { observations as settingsInputs } from '@src/registry/contracts/settings'
 import { observations as wasmInputs } from '@src/registry/contracts/wasm'
+import {
+  readKclFileExtensions,
+  readKclVersion,
+} from '@src/lib/kcl/nativeInputs'
+import type { ScenePresentation } from '@src/lib/kcl/scene/connection'
 
 /**
  * Contributes KCL Code syntax, execution, and a Modeling mode for KCL documents.
@@ -57,23 +60,27 @@ const extension = factory({
     let fallbackWasm: ReturnType<typeof initialiseWasm> | undefined
     const getWasm = () =>
       wasmInput.wasmPromiseFacet.value ?? (fallbackWasm ??= initialiseWasm())
-    const settingsRevision = nativeSettings.revision(
-      () =>
-        settingsInput.settingsService.required().current.value.modeling
-          .useLocalRenderer.currentSignal.value
-    )
     const execution = createKclExecution(
       (executor) => {
         const settings = settingsInput.settingsService.required()
         const preferences = createScenePresentationPreferences(
           () => settings.current.value
         )
+        const choosePresentation = (): ScenePresentation =>
+          settings.current.peek().modeling.useLocalRenderer.current
+            ? 'local'
+            : 'streamed'
+        const presentation = signal(choosePresentation())
+        const settingsRevision = nativeSettings.revision(
+          () => presentation.value === 'local'
+        )
         const session = createKclSession(
           async (size, signal, onDisconnect) => {
             const wasm = getWasm()
-            const version = getKclLanguageVersion(
+            presentation.value = choosePresentation()
+            const version = await readKclVersion(
               executor.editor.contents.peek(),
-              await wasm
+              wasm
             )
             return openKclScene({
               wasm,
@@ -81,10 +88,7 @@ const extension = factory({
               nativeSettings,
               preferences,
               token: auth.authService.current.value?.token.peek(),
-              presentation: settings.current.peek().modeling.useLocalRenderer
-                .current
-                ? 'local'
-                : 'streamed',
+              presentation: presentation.peek(),
               kclVersion: isErr(version) ? undefined : version,
               size,
               signal,
@@ -95,6 +99,10 @@ const extension = factory({
         )
         return {
           ...session,
+          revision: computed(() => ({
+            sources: sources.revision.value,
+            settings: settingsRevision.value,
+          })),
           dispose: () => {
             session.dispose()
             preferences.dispose()
@@ -102,7 +110,7 @@ const extension = factory({
         }
       },
       async (contents, context) => {
-        const extensions = relevantFileExtensions(await getWasm())
+        const extensions = await readKclFileExtensions(getWasm())
         return sources.capture({
           document: { src: context.src || undefined, contents },
           unnamedPath: 'main.kcl',
@@ -113,10 +121,7 @@ const extension = factory({
             ),
         })
       },
-      computed(() => ({
-        sources: sources.revision.value,
-        settings: settingsRevision.value,
-      }))
+      (session) => session.revision.value
     )
     const modelingView = defineEditorView(({ editor, onDispose }) => {
       const executors = executorsInput.executorsService.required()

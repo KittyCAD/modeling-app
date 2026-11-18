@@ -1,9 +1,8 @@
-import { signal } from '@preact/signals-core'
 import { emptyExecState } from '@src/lang/wasm'
 import type { KclSceneResource, OpenKclScene } from '@src/lib/kcl/scene'
 import { createKclSession } from '@src/lib/kcl/session'
-import type { ScenePresentationPreferences } from '@src/lib/kcl/presentationPreferences'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
+import { createTestKclScene } from '@src/lib/kcl/testFixtures'
 
 let resize: () => void
 beforeEach(() => {
@@ -24,24 +23,7 @@ afterEach(() => {
 })
 const snapshot = { src: 'main.kcl', files: new Map() }
 const runSignal = () => new AbortController().signal
-function scene(presentation: 'local' | 'streamed' = 'streamed') {
-  return {
-    element: document.createElement('div'),
-    presentation,
-    localHost: undefined,
-    preferences: {
-      camera: signal({}),
-      appearance: signal({}),
-      localRenderer: signal({}),
-    } as unknown as ScenePresentationPreferences,
-    runtime: { execute: vi.fn().mockResolvedValue(emptyExecState()) },
-    resize: vi.fn().mockResolvedValue(undefined),
-    resume: vi.fn(),
-    applySettings: vi.fn().mockResolvedValue(undefined),
-    frameModel: vi.fn().mockResolvedValue(undefined),
-    dispose: vi.fn().mockResolvedValue(undefined),
-  } as unknown as KclSceneResource
-}
+const scene = createTestKclScene
 function container(width = 200) {
   const element = document.createElement('div')
   Object.defineProperties(element, {

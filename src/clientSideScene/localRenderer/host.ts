@@ -30,5 +30,7 @@ export interface LocalRendererHost {
   exportModel: (
     format: Parameters<RustContext['export']>[0]
   ) => ReturnType<RustContext['export']>
+  /** Return true once per scene to frame its first loaded model; renderer remounts share this decision. Omit for the legacy mount-owned camera. */
+  claimInitialCameraFrame?: () => boolean
   captureThumbnail?: (canvas?: HTMLCanvasElement) => void
 }
