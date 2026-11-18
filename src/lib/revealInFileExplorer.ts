@@ -1,7 +1,6 @@
 import type { FileOperationsMount } from '@src/lib/fileSystem/mounts'
-import { getContainedRelativePath } from '@src/lib/fileSystem/pathContainment'
-import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
+import { getRelativePathIfContained } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
 
 export function canRevealInFileExplorer() {
@@ -18,9 +17,8 @@ export function canRevealPathInFileExplorer(
 ) {
   if (!path || !canRevealInFileExplorer()) return false
 
-  const paths = { relative: fsZds.relative, sep: fsZds.sep }
-  return !mounts.some(
-    ({ root }) => getContainedRelativePath(paths, root, path) !== undefined
+  return mounts.every(
+    ({ root }) => getRelativePathIfContained(root, path) === undefined
   )
 }
 

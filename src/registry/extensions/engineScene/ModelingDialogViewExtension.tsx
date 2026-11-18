@@ -1,9 +1,9 @@
-import { lazy, Suspense, useRef } from 'react'
 import { useDialogReset } from '@src/components/ModelingDialog/useDialogReset'
 import { useApp } from '@src/lib/boot'
 import { isModelingDialogCommand } from '@src/lib/commandUtils'
 import { commandScopeService } from '@src/registry/contracts/commands'
 import type { EngineSceneViewExtensionProps } from '@src/registry/contracts/engineScene'
+import { lazy, Suspense, useRef } from 'react'
 
 const ModelingDialog = lazy(
   () => import('@src/components/ModelingDialog/ModelingDialog')

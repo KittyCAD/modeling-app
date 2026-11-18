@@ -1,24 +1,24 @@
-import {
-  defineRegistryItem,
-  provide,
-  provideService,
-  Registry,
-} from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
-import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import type { Project } from '@src/lib/project'
 import * as trap from '@src/lib/trap'
 import { getModule, type ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandSystemService } from '@src/registry/contracts/commands'
-import { fileOperationsMountsValueSpec } from '@src/registry/contracts/fileOperations'
+import { fileOperationsMountsFacet } from '@src/registry/contracts/fileOperations'
 import {
-  projectExplorerProjectMenuItemsValueSpec,
-  projectExplorerRowContextMenuItemsValueSpec,
+  projectExplorerProjectMenuItemsFacet,
+  projectExplorerRowContextMenuItemsFacet,
 } from '@src/registry/contracts/projectExplorer'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import projectExplorerExtension from '@src/registry/extensions/projectExplorer'
+import {
+  contribute,
+  factory as defineFactory,
+  provide,
+  Registry,
+  type Factory,
+} from 'plankton'
 import {
   afterEach,
   beforeAll,
@@ -46,8 +46,8 @@ describe('project explorer extension', () => {
     registry = new Registry()
     vi.clearAllMocks()
   })
-  afterEach(() => {
-    registry[Symbol.dispose]()
+  afterEach(async () => {
+    await registry.dispose()
     vi.restoreAllMocks()
     vi.unstubAllGlobals()
   })
@@ -79,34 +79,35 @@ describe('project explorer extension', () => {
       },
     }
   }
-
-  const configure = (
+  const configure = async (
     promise: Promise<ModuleType> = Promise.resolve(getModule())
   ) => {
     const wasmPromise = signal(promise)
-    registry.configure([
+    await registry.configure([
       projectExplorerExtension,
-      defineRegistryItem({
-        provides: [provideWasmPromise(wasmPromise)],
-        providesServices: [
-          provideService(commandSystemService, {
-            send,
-            get actor(): never {
-              throw new Error('Unexpected command actor access')
-            },
-            useState(): never {
-              throw new Error('Unexpected command hook access')
-            },
-          }),
-        ],
-      }),
+      defineFactory({
+        create: () => ({
+          items: [
+            provideWasmPromise(() => wasmPromise.value),
+            provide(commandSystemService, {
+              send,
+              get actor(): never {
+                throw new Error('Unexpected command actor access')
+              },
+              useState(): never {
+                throw new Error('Unexpected command hook access')
+              },
+            }),
+          ],
+        }),
+      }) satisfies Factory,
     ])
     return wasmPromise
   }
 
   const importItem = () => {
     const item = registry
-      .get(projectExplorerRowContextMenuItemsValueSpec)
+      .get(projectExplorerRowContextMenuItemsFacet)
       .find((item) => item.id === 'import-in-current-file')
     if (!item) throw new Error('Missing import menu contribution')
     return item
@@ -117,17 +118,14 @@ describe('project explorer extension', () => {
       expect(importItem().isVisible?.(context())).toBe(true)
     )
   }
-
-  it('contributes the import and reveal menu items in order', () => {
-    registry.configure([projectExplorerExtension])
+  it('contributes the import and reveal menu items in order', async () => {
+    await registry.configure([projectExplorerExtension])
     expect(
-      registry
-        .get(projectExplorerProjectMenuItemsValueSpec)
-        .map((item) => item.id)
+      registry.get(projectExplorerProjectMenuItemsFacet).map((item) => item.id)
     ).toEqual(['reveal-in-file-explorer.project-menu'])
     expect(
       registry
-        .get(projectExplorerRowContextMenuItemsValueSpec)
+        .get(projectExplorerRowContextMenuItemsFacet)
         .map((item) => item.id)
     ).toEqual([
       'import-in-current-file',
@@ -135,49 +133,31 @@ describe('project explorer extension', () => {
     ])
   })
 
-  it('hides both reveal actions for mounted projects on desktop', async () => {
+  it('hides both reveal actions for cloud projects on desktop', async () => {
     vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Electron')
     vi.stubGlobal('electron', { showInFolder: vi.fn() })
     const root = fsZds.join(fsZds.sep, '__zoo_cloud__')
-    const mount = createFileOperationsScheduler(createMemoryFileSystem(fsZds))
-    try {
-      registry.configure([
-        projectExplorerExtension,
-        defineRegistryItem({
-          provides: [
-            provide(fileOperationsMountsValueSpec, {
-              root,
-              operations: mount.operations,
-            }),
-          ],
-        }),
-      ])
-      const [projectReveal] = registry.get(
-        projectExplorerProjectMenuItemsValueSpec
-      )
-      const rowReveal = registry
-        .get(projectExplorerRowContextMenuItemsValueSpec)
-        .find((item) => item.id === 'reveal-in-file-explorer.row-context-menu')
-      const local = context()
-      const cloud = context('cube.step', fsZds.join(root, 'assembly'))
+    await registry.configure([
+      projectExplorerExtension,
+      contribute(fileOperationsMountsFacet, () => ({
+        root,
+        operations: testFileOperations,
+      })),
+    ])
+    const [projectReveal] = registry.get(projectExplorerProjectMenuItemsFacet)
+    const rowReveal = registry
+      .get(projectExplorerRowContextMenuItemsFacet)
+      .find((item) => item.id === 'reveal-in-file-explorer.row-context-menu')
+    const cloud = context('cube.step', fsZds.join(root, 'assembly'))
 
-      expect(
-        projectReveal?.isVisible?.({
-          project: local.project,
-          projectPath: local.project.path,
-        })
-      ).toBe(true)
-      expect(rowReveal?.isVisible?.(local)).toBe(true)
-      expect(
-        projectReveal?.isVisible?.({
-          project: cloud.project,
-          projectPath: cloud.project.path,
-        })
-      ).toBe(false)
-      expect(rowReveal?.isVisible?.(cloud)).toBe(false)
-    } finally {
-      await mount.dispose()
-    }
+    expect(
+      projectReveal?.isVisible?.({
+        project: cloud.project,
+        projectPath: cloud.project.path,
+      })
+    ).toBe(false)
+    expect(rowReveal?.isVisible?.(cloud)).toBe(false)
+    expect(rowReveal?.isVisible?.(context())).toBe(true)
   })
 
   it.each([
@@ -193,7 +173,7 @@ describe('project explorer extension', () => {
   ])(
     'shows the import action for $name: $canImport',
     async ({ name, canImport, isFolder = false, isFake = false }) => {
-      configure()
+      await configure()
       await waitForImport()
       const menuContext = context(name)
       menuContext.row.isFolder = isFolder
@@ -205,7 +185,7 @@ describe('project explorer extension', () => {
   it.each([{ readOnly: true }, { file: undefined }, { project: undefined }])(
     'does not import without an editable current file: %j',
     async (override) => {
-      configure()
+      await configure()
       await waitForImport()
       const menuContext = { ...context(), ...override }
       expect(importItem().isVisible?.(menuContext)).toBe(false)
@@ -215,7 +195,7 @@ describe('project explorer extension', () => {
   )
 
   it('opens the registered Import command with the nested project-relative path', async () => {
-    configure()
+    await configure()
     await waitForImport()
     importItem().onSelect(context(fsZds.join('parts', 'cube.step')))
     expect(send).toHaveBeenCalledExactlyOnceWith({
@@ -230,7 +210,7 @@ describe('project explorer extension', () => {
 
   it('updates the menu when the registry Wasm promise resolves', async () => {
     const pending = Promise.withResolvers<ModuleType>()
-    configure(pending.promise)
+    await configure(pending.promise)
     expect(importItem().isVisible?.(context())).toBe(false)
     pending.resolve(getModule())
     await waitForImport()
@@ -238,7 +218,7 @@ describe('project explorer extension', () => {
 
   it('ignores a replaced Wasm promise that resolves late', async () => {
     const pending = Promise.withResolvers<ModuleType>()
-    const wasmPromise = configure(pending.promise)
+    const wasmPromise = await configure(pending.promise)
     expect(importItem().isVisible?.(context())).toBe(false)
     await Promise.resolve()
     wasmPromise.value = Promise.resolve({
@@ -256,10 +236,10 @@ describe('project explorer extension', () => {
 
   it('does not update after the extension is disposed', async () => {
     const pending = Promise.withResolvers<ModuleType>()
-    configure(pending.promise)
+    await configure(pending.promise)
     importItem()
     await Promise.resolve()
-    registry[Symbol.dispose]()
+    await registry.dispose()
     pending.resolve(getModule())
     await pending.promise
     expect(mockWasm.import_file_extensions).not.toHaveBeenCalled()
@@ -270,7 +250,7 @@ describe('project explorer extension', () => {
       .spyOn(trap, 'reportRejection')
       .mockImplementation(() => {})
     const pending = Promise.withResolvers<ModuleType>()
-    configure(pending.promise)
+    await configure(pending.promise)
     expect(importItem().isVisible?.(context())).toBe(false)
     await Promise.resolve()
     const error = new Error('Wasm failed to initialize')

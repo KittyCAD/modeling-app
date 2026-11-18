@@ -27,7 +27,7 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { capitaliseFC, toSync } from '@src/lib/utils'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
-import { fileOperationsMountsValueSpec } from '@src/registry/contracts/fileOperations'
+import { fileOperationsMountsFacet } from '@src/registry/contracts/fileOperations'
 import {
   acceptOnboarding,
   reportOnboardingStartFailure,
@@ -79,7 +79,7 @@ export const AllSettingsFields = forwardRef(
       searchParamTab === 'project'
         ? canRevealPathInFileExplorer(
             projectPath,
-            app.registry.get(fileOperationsMountsValueSpec)
+            app.registry.get(fileOperationsMountsFacet)
           )
         : canRevealInFileExplorer()
 
