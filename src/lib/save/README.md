@@ -6,7 +6,7 @@ selected mode. Code surfaces install Cmd/Ctrl+S; the host also handles the short
 when another editor mode has focus. The Save editor command uses that focused
 document.
 
-`editorOnSaveValueSpec` supplies ordered save handlers. The default
+`editorOnSaveFacet` supplies ordered save handlers. The default
 `persistToFiles` contribution writes the captured source and contents through
 `fileOperations`, which routes local and cloud paths to their backing. It does
 not determine save timing. Failed writes leave the buffer dirty, and typing during
@@ -16,9 +16,9 @@ a save remains dirty after the submitted snapshot is acknowledged.
 buffer, using `EDITOR_SAVE_DEBOUNCE_MS` (1.5 seconds). It is on by default for
 local projects and can be disabled through the user Autosave setting. The setting
 and behavior require the new project shell feature flag.
-`editorAutosavePoliciesValueSpec` allows a host to require autosave independently
+`editorAutosavePoliciesFacet` allows a host to require autosave independently
 of that preference; cloud project sessions do so. Any matching required policy
-keeps autosave enabled. `editorReadOnlyPoliciesValueSpec` accepts independent
+keeps autosave enabled. `editorReadOnlyPoliciesFacet` accepts independent
 editing restrictions from hosts or extensions, including offline state. Editing
 resumes only after every matching restriction is lifted. Read-only documents
 pause their timers and resume saving pending changes when editing becomes

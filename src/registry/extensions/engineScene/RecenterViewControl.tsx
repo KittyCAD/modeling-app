@@ -7,7 +7,7 @@ import { viewportNavigationService } from '@src/registry/contracts/viewportNavig
 export function RecenterViewControl() {
   useSignals()
   const { registry } = useApp()
-  const navigation = registry.signal(viewportNavigationService).value
+  const navigation = registry.optional(viewportNavigationService)
   if (!navigation?.isModelOutOfView.value) return null
   const hint = navigation.recoveryHint?.value ?? { kind: 'neutral' }
   const label =

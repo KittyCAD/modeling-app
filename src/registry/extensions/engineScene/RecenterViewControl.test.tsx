@@ -1,4 +1,4 @@
-import { Registry } from '@kittycad/registry'
+import { Registry } from 'plankton'
 import { signal } from '@preact/signals-core'
 import type { RecenterHint } from '@src/registry/contracts/viewportNavigation'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
@@ -15,24 +15,24 @@ vi.mock('@src/lib/boot', () => ({
 
 import { RecenterViewControl } from '@src/registry/extensions/engineScene/RecenterViewControl'
 
-beforeEach(() => {
+beforeEach(async () => {
   registry = new Registry()
-  registry.configure([viewportNavigationRuntimeSlot.of()])
+  await registry.configure([viewportNavigationRuntimeSlot])
 })
 
-afterEach(() => {
+afterEach(async () => {
   cleanup()
-  registry[Symbol.dispose]()
+  await registry.dispose()
 })
 
-it('shows Recenter only for a lost model and delegates to the viewport service', () => {
+it('shows Recenter only for a lost model and delegates to the viewport service', async () => {
   render(<RecenterViewControl />)
   expect(screen.queryByRole('button', { name: 'Recenter' })).toBeNull()
   const isModelOutOfView = signal(false)
   const recoveryHint = signal<RecenterHint>({ kind: 'direction', angle: 90 })
   const recenter = vi.fn(async () => {})
-  act(() => {
-    registerViewportNavigation(registry, {
+  await act(async () => {
+    await registerViewportNavigation(registry, {
       isModelOutOfView,
       recoveryHint,
       recenter,
@@ -56,18 +56,18 @@ it('shows Recenter only for a lost model and delegates to the viewport service',
   expect(screen.queryByRole('button', { name: 'Recenter' })).toBeNull()
 })
 
-it('follows replacement services and disappears when the viewport unmounts', () => {
+it('follows replacement services and disappears when the viewport unmounts', async () => {
   const previousVisibility = signal(true)
-  registerViewportNavigation(registry, {
+  await registerViewportNavigation(registry, {
     isModelOutOfView: previousVisibility,
     recenter: vi.fn(async () => {}),
   })
   render(<RecenterViewControl />)
   expect(screen.getByRole('button', { name: 'Recenter' })).toBeVisible()
   const currentVisibility = signal(false)
-  let unregisterCurrent = () => {}
-  act(() => {
-    unregisterCurrent = registerViewportNavigation(registry, {
+  let unregisterCurrent = async () => {}
+  await act(async () => {
+    unregisterCurrent = await registerViewportNavigation(registry, {
       isModelOutOfView: currentVisibility,
       recenter: vi.fn(async () => {}),
     })
@@ -77,8 +77,8 @@ it('follows replacement services and disappears when the viewport unmounts', () 
     currentVisibility.value = true
   })
   expect(screen.getByRole('button', { name: 'Recenter' })).toBeVisible()
-  act(() => {
-    unregisterCurrent()
+  await act(async () => {
+    await unregisterCurrent()
   })
   expect(screen.queryByRole('button', { name: 'Recenter' })).toBeNull()
 })

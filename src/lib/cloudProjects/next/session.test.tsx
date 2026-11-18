@@ -3,20 +3,16 @@ import { act, cleanup, render, screen } from '@testing-library/react'
 import { CloudProjectStatus } from '@src/lib/cloudProjects/next/CloudProjectStatus'
 import { EditorsPane } from '@src/lib/editors/EditorsPane'
 import { codeSurface } from '@src/lib/editors/testViews'
-import { editorTabIndicatorsValueSpec } from '@src/lib/editors/registry/contract'
+import { editorTabIndicatorsFacet } from '@src/lib/editors/registry/contract'
 import { LayoutType } from '@src/lib/layout/types'
 import { EDITOR_SAVE_DEBOUNCE_MS } from '@src/lib/constants'
 import nextSessionExtension from '@src/lib/cloudProjects/registry/nextSession'
 import routerExtension from '@src/registry/extensions/router'
 import { routerService } from '@src/registry/contracts/router'
 import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
-import { editorAutosavePoliciesValueSpec } from '@src/lib/save/registry/contract'
+import { editorAutosavePoliciesFacet } from '@src/lib/save/registry/contract'
 import { posix } from '@chainner/node-path'
-import {
-  Registry,
-  defineRegistryItem,
-  provideService,
-} from '@kittycad/registry'
+import { Registry, provide, factory } from 'plankton'
 import { afterEach, beforeAll, beforeEach, expect, it, vi } from 'vitest'
 import { createCloudProjectsServices } from '@src/lib/cloudProjects/service'
 import * as api from '@src/lib/cloudProjects/runtime/api'
@@ -27,7 +23,7 @@ import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type * as ArchiveModule from '@src/lib/cloudProjects/runtime/archive'
 import noopfs from '@src/lib/fs-zds/noopfs'
 import { readProject } from '@src/lib/projectSession/next/utils'
-import projectSessionExtension from '@src/lib/projectSession/registry'
+import { createProjectSessionExtension } from '@src/lib/projectSession/registry'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import editorsExtension from '@src/lib/editors/registry'
 import { editorsService } from '@src/lib/editors/registry/contract'
@@ -35,7 +31,6 @@ import { requireSuccess } from '@src/lib/editors/testViews'
 import saveExtension from '@src/lib/save/registry'
 import { editorSaveService } from '@src/lib/save/registry/contract'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
-
 vi.mock('@src/lib/cloudProjects/runtime/api', async (original) => ({
   ...(await original<typeof api>()),
   getRemoteProject: vi.fn(),
@@ -69,9 +64,12 @@ let cloudServices: ReturnType<typeof createCloudProjectsServices>
 let fileServices: ReturnType<typeof createFileOperationsServices>
 let stop: () => void
 beforeAll(async () => {
-  await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
+  await moduleFsViaModuleImport({
+    type: StorageName.NodeFS,
+    options: {},
+  })
 })
-beforeEach(() => {
+beforeEach(async () => {
   vi.mocked(api.getRemoteProject).mockResolvedValue(remoteSnapshot('1'))
   vi.mocked(api.downloadRemoteProjectArchive).mockResolvedValue(
     new ArrayBuffer(0)
@@ -82,16 +80,18 @@ beforeEach(() => {
 afterEach(async () => {
   cleanup()
   stop?.()
-  registry?.[Symbol.dispose]()
+  await registry?.dispose()
   await fileServices?.dispose()
   await cloudServices?.dispose()
   vi.resetAllMocks()
   vi.restoreAllMocks()
   vi.useRealTimers()
 })
-
 async function setup(bridge = false) {
-  const paths = { ...noopfs.impl, ...posix }
+  const paths = {
+    ...noopfs.impl,
+    ...posix,
+  }
   cloudServices = createCloudProjectsServices(paths, () => ({
     enabled: true,
     accountId: 'test-account',
@@ -100,26 +100,31 @@ async function setup(bridge = false) {
     cloudServices.mount,
   ])
   registry = new Registry()
-  registry.configure([
+  await registry.configure([
     editorsExtension,
     saveExtension,
-    projectSessionExtension,
+    createProjectSessionExtension(
+      factory({
+        create: () => ({ exports: { operations: fileServices.operations } }),
+      })
+    ),
     ...(bridge ? [routerExtension, nextSessionExtension] : []),
-    defineRegistryItem({
-      providesServices: [
-        provideService(fileOperationsService, fileServices.operations),
-        provideService(cloudStorageService, cloudServices.cloud),
-      ],
-    }),
+    [
+      provide(fileOperationsService, fileServices.operations),
+      provide(cloudStorageService, cloudServices.cloud),
+    ],
   ])
   const cloud = cloudServices.cloud
   const root = await cloud.openProject('one')
-  const projects = registry.get(projectSessionService)
+  const projects = registry.required(projectSessionService)
   const session = projects.openProject({
     ...(await readProject(fileServices.operations, root)),
-    storage: { type: 'cloud', projectId: 'one' },
+    storage: {
+      type: 'cloud',
+      projectId: 'one',
+    },
   })
-  const editors = registry.get(editorsService)
+  const editors = registry.required(editorsService)
   const editor = requireSuccess(
     editors.openEditor(
       `${root}/main.kcl`,
@@ -128,13 +133,25 @@ async function setup(bridge = false) {
       )
     )
   )
-  const saving = registry.get(editorSaveService)
+  const saving = registry.required(editorSaveService)
   stop = bridge
     ? () => {}
-    : watchCloudEditorSession({ cloud, projects, session, editors, saving })
-  return { cloud, projects, session, editors, editor, saving }
+    : watchCloudEditorSession({
+        cloud,
+        projects,
+        session,
+        editors,
+        saving,
+      })
+  return {
+    cloud,
+    projects,
+    session,
+    editors,
+    editor,
+    saving,
+  }
 }
-
 it('updates clean buffers, baselines, and the file list together after a remote change', async () => {
   const { cloud, projects, editor, saving } = await setup()
   const files = [...archive('remote edit'), file('nested/added.md', 'new file')]
@@ -146,22 +163,22 @@ it('updates clean buffers, baselines, and the file list together after a remote 
   expect(projects.listFiles().map((file) => file.name)).toContain('added.md')
   expect(api.updateRemoteProject).not.toHaveBeenCalled()
 })
-
 it('maps the cursor through only the changed text when adopting a remote snapshot', async () => {
   const { cloud, editor, saving } = await setup()
-  editor.dispatch({ selection: { anchor: 6 } })
+  editor.dispatch({
+    selection: {
+      anchor: 6,
+    },
+  })
   const files = archive('orNEWiginal')
   vi.mocked(api.getRemoteProject).mockResolvedValue(remoteSnapshot('2', files))
   vi.mocked(parseProjectArchive).mockResolvedValue(files)
-
   await cloud.checkForUpdates('one', () => true)
-
   expect(editor.contents.peek()).toBe('orNEWiginal')
   expect(editor.state.selection.main.head).toBe(9)
   expect(saving.state(editor).peek().dirty).toBe(false)
   expect(editor.undo()).toBe(false)
 })
-
 it('does not dispatch a document change for an unchanged remote snapshot', async () => {
   const { cloud, editor, saving } = await setup()
   const changed = vi.fn()
@@ -169,7 +186,6 @@ it('does not dispatch a document change for an unchanged remote snapshot', async
     if (transaction.docChanged) changed()
   })
   vi.mocked(api.getRemoteProject).mockResolvedValue(remoteSnapshot('2'))
-
   try {
     await cloud.checkForUpdates('one', () => true)
     expect(changed).not.toHaveBeenCalled()
@@ -178,7 +194,6 @@ it('does not dispatch a document change for an unchanged remote snapshot', async
     unsubscribe()
   }
 })
-
 it('protects unsaved edits from polling but adopts remote contents after a conflicting write', async () => {
   const { cloud, editor, saving, projects } = await setup()
   editor.dispatch({
@@ -210,10 +225,14 @@ it('protects unsaved edits from polling but adopts remote contents after a confl
     projects.currentSession.peek()?.project.peek().storage?.projectId
   ).toBe('one')
 })
-
 it('drops its snapshot veto and subscriptions when the project closes', async () => {
   const { cloud, editor, projects } = await setup()
-  editor.dispatch({ changes: { from: 0, insert: 'dirty ' } })
+  editor.dispatch({
+    changes: {
+      from: 0,
+      insert: 'dirty ',
+    },
+  })
   projects.closeProject()
   vi.mocked(api.getRemoteProject).mockResolvedValue(
     remoteSnapshot('2', archive('remote edit'))
@@ -226,10 +245,9 @@ it('drops its snapshot veto and subscriptions when the project closes', async ()
   expect(editor.contents.peek()).toBe('dirty original')
   expect(projects.currentSession.peek()).toBeUndefined()
 })
-
 it('withdraws cloud policies and the snapshot veto outside the new cloud route', async () => {
   const { cloud, editor } = await setup(true)
-  const router = registry.get(routerService)
+  const router = registry.required(routerService)
   const navigate = (pathname: string) =>
     router.setLocation({
       pathname,
@@ -240,7 +258,7 @@ it('withdraws cloud policies and the snapshot veto outside the new cloud route',
     })
   const required = () =>
     registry
-      .get(editorAutosavePoliciesValueSpec)
+      .get(editorAutosavePoliciesFacet)
       .find((policy) => policy.id === 'cloud.autosave')?.required.value
   navigate('/project/one')
   await vi.waitFor(() => expect(required()).toBe(true))
@@ -253,7 +271,12 @@ it('withdraws cloud policies and the snapshot veto outside the new cloud route',
     expect(editor.readOnly.peek()).toBe(false)
     online.mockReturnValue(true)
     window.dispatchEvent(new Event('online'))
-    editor.dispatch({ changes: { from: 0, insert: 'dirty ' } })
+    editor.dispatch({
+      changes: {
+        from: 0,
+        insert: 'dirty ',
+      },
+    })
     vi.mocked(api.getRemoteProject).mockResolvedValue(
       remoteSnapshot('2', archive('remote edit'))
     )
@@ -267,10 +290,9 @@ it('withdraws cloud policies and the snapshot veto outside the new cloud route',
     online.mockRestore()
   }
 })
-
 async function openCloudShell() {
   const opened = await setup(true)
-  registry.get(routerService).setLocation({
+  registry.required(routerService).setLocation({
     pathname: '/project/one',
     search: '',
     hash: '',
@@ -280,7 +302,7 @@ async function openCloudShell() {
   await vi.waitFor(() =>
     expect(
       registry
-        .get(editorAutosavePoliciesValueSpec)
+        .get(editorAutosavePoliciesFacet)
         .find((policy) => policy.id === 'cloud.autosave')?.required.value
     ).toBe(true)
   )
@@ -288,10 +310,15 @@ async function openCloudShell() {
   const code = codeSurface(editors, editor)
   render(
     <>
-      <CloudProjectStatus app={{ registry }} className="" />
+      <CloudProjectStatus
+        app={{
+          registry,
+        }}
+        className=""
+      />
       <EditorsPane
         editors={editors}
-        indicators={registry.signal(editorTabIndicatorsValueSpec)}
+        indicators={registry.observe(editorTabIndicatorsFacet)}
         layout={{
           id: 'editors',
           label: 'Editors',
@@ -301,10 +328,14 @@ async function openCloudShell() {
       />
     </>
   )
-  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
-  return { ...opened, code }
+  vi.useFakeTimers({
+    toFake: ['setTimeout', 'clearTimeout'],
+  })
+  return {
+    ...opened,
+    code,
+  }
 }
-
 it('autosaves cloud edits, adopts a conflicting remote write, and reopens the accepted contents', async () => {
   const { editor, saving } = await openCloudShell()
   vi.mocked(api.updateRemoteProject).mockImplementationOnce(
@@ -321,11 +352,17 @@ it('autosaves cloud edits, adopts a conflicting remote write, and reopens the ac
   )
   act(() => {
     editor.dispatch({
-      changes: { from: 0, to: editor.state.doc.length, insert: 'local edit' },
+      changes: {
+        from: 0,
+        to: editor.state.doc.length,
+        insert: 'local edit',
+      },
     })
   })
   expect(
-    screen.getByRole('img', { name: 'Unsaved changes' })
+    screen.getByRole('img', {
+      name: 'Unsaved changes',
+    })
   ).toBeInTheDocument()
   await act(async () => {
     await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS)
@@ -340,9 +377,10 @@ it('autosaves cloud edits, adopts a conflicting remote write, and reopens the ac
     })
   )
   expect(
-    screen.queryByRole('img', { name: 'Unsaved changes' })
+    screen.queryByRole('img', {
+      name: 'Unsaved changes',
+    })
   ).not.toBeInTheDocument()
-
   const remote = archive('remote edit')
   vi.mocked(api.getRemoteProject).mockResolvedValue(remoteSnapshot('3', remote))
   vi.mocked(parseProjectArchive).mockResolvedValue(remote)
@@ -368,31 +406,37 @@ it('autosaves cloud edits, adopts a conflicting remote write, and reopens the ac
     error: undefined,
   })
   expect(
-    screen.queryByRole('img', { name: 'Unsaved changes' })
+    screen.queryByRole('img', {
+      name: 'Unsaved changes',
+    })
   ).not.toBeInTheDocument()
   const updates = vi.mocked(api.updateRemoteProject).mock.calls
   expect(updates).toHaveLength(2)
-  expect(updates[1][0]).toMatchObject({ expectedRevision: '2' })
+  expect(updates[1][0]).toMatchObject({
+    expectedRevision: '2',
+  })
   await act(async () => {
     await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS)
   })
   expect(api.updateRemoteProject).toHaveBeenCalledTimes(2)
-
   cleanup()
   stop()
-  registry[Symbol.dispose]()
+  await registry.dispose()
   await fileServices.dispose()
   await cloudServices.dispose()
   const reopened = await setup()
   expect(reopened.editor.contents.peek()).toBe('remote edit')
   expect(reopened.saving.state(reopened.editor).peek().dirty).toBe(false)
 })
-
 it('shows offline status, blocks Code edits, and autosaves the pending cloud edit after reconnecting', async () => {
   const { editor, code, saving } = await openCloudShell()
   act(() => {
     editor.dispatch({
-      changes: { from: 0, to: editor.state.doc.length, insert: 'pending edit' },
+      changes: {
+        from: 0,
+        to: editor.state.doc.length,
+        insert: 'pending edit',
+      },
     })
   })
   const online = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
@@ -400,12 +444,19 @@ it('shows offline status, blocks Code edits, and autosaves the pending cloud edi
     window.dispatchEvent(new Event('offline'))
   })
   expect(screen.getByRole('status')).toHaveTextContent('Offline')
-  expect(screen.getByRole('tab', { name: /main.kcl/ })).toHaveTextContent(
-    'Read-only'
-  )
+  expect(
+    screen.getByRole('tab', {
+      name: /main.kcl/,
+    })
+  ).toHaveTextContent('Read-only')
   expect(code.contentDOM).toHaveAttribute('contenteditable', 'false')
   act(() => {
-    code.dispatch({ changes: { from: 0, insert: 'blocked edit' } })
+    code.dispatch({
+      changes: {
+        from: 0,
+        insert: 'blocked edit',
+      },
+    })
   })
   await act(async () => {
     await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS * 2)
@@ -414,16 +465,21 @@ it('shows offline status, blocks Code edits, and autosaves the pending cloud edi
   expect(code.state.doc.toString()).toBe('pending edit')
   expect(api.updateRemoteProject).not.toHaveBeenCalled()
   expect(saving.state(editor).peek().dirty).toBe(true)
-
   online.mockReturnValue(true)
   await act(async () => {
     window.dispatchEvent(new Event('online'))
   })
   expect(code.contentDOM).toHaveAttribute('contenteditable', 'true')
-  expect(screen.getByRole('tab', { name: /main.kcl/ })).not.toHaveTextContent(
-    'Read-only'
-  )
-  expect(screen.queryByText('Offline', { exact: true })).not.toBeInTheDocument()
+  expect(
+    screen.getByRole('tab', {
+      name: /main.kcl/,
+    })
+  ).not.toHaveTextContent('Read-only')
+  expect(
+    screen.queryByText('Offline', {
+      exact: true,
+    })
+  ).not.toBeInTheDocument()
   await act(async () => {
     await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS)
     await vi.waitFor(() =>
@@ -437,6 +493,8 @@ it('shows offline status, blocks Code edits, and autosaves the pending cloud edi
     })
   )
   expect(
-    screen.queryByRole('img', { name: 'Unsaved changes' })
+    screen.queryByRole('img', {
+      name: 'Unsaved changes',
+    })
   ).not.toBeInTheDocument()
 })

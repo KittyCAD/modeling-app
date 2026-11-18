@@ -1,4 +1,4 @@
-import { Registry } from '@kittycad/registry'
+import { Registry } from 'plankton'
 import { signal } from '@preact/signals-core'
 import { viewportNavigationService } from '@src/registry/contracts/viewportNavigation'
 import {
@@ -9,30 +9,32 @@ import { expect, it, vi } from 'vitest'
 
 it('ignores outgoing viewport cleanup and actions after replacement', async () => {
   const registry = new Registry()
-  registry.configure([viewportNavigationRuntimeSlot.of()])
+  await registry.configure([viewportNavigationRuntimeSlot])
   const oldRecenter = vi.fn(async () => {})
-  const unregisterOld = registerViewportNavigation(registry, {
+  const unregisterOld = await registerViewportNavigation(registry, {
     isModelOutOfView: signal(true),
     recenter: oldRecenter,
   })
-  const oldNavigation = registry.get(viewportNavigationService)
+  const oldNavigation = registry.required(viewportNavigationService)
   const currentRecenter = vi.fn(async () => {})
-  const unregisterCurrent = registerViewportNavigation(registry, {
+  const currentRegistration = registerViewportNavigation(registry, {
     isModelOutOfView: signal(false),
     recenter: currentRecenter,
   })
-  const currentNavigation = registry.get(viewportNavigationService)
+  const outgoingCleanup = unregisterOld()
+  const unregisterCurrent = await currentRegistration
+  await outgoingCleanup
+  const currentNavigation = registry.required(viewportNavigationService)
 
-  unregisterOld()
-  expect(registry.get(viewportNavigationService)).toBe(currentNavigation)
+  expect(registry.required(viewportNavigationService)).toBe(currentNavigation)
   expect(currentNavigation.isModelOutOfView.value).toBe(false)
   await oldNavigation.recenter()
   expect(oldRecenter).not.toHaveBeenCalled()
   await currentNavigation.recenter()
   expect(currentRecenter).toHaveBeenCalledOnce()
-  unregisterCurrent()
+  await unregisterCurrent()
   expect(registry.optional(viewportNavigationService)).toBeUndefined()
   await currentNavigation.recenter()
   expect(currentRecenter).toHaveBeenCalledOnce()
-  registry[Symbol.dispose]()
+  await registry.dispose()
 })

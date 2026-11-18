@@ -1,4 +1,4 @@
-import { defineContract, defineService } from '@kittycad/registry'
+import { contract, service } from 'plankton'
 import type { ReadonlySignal } from '@preact/signals-core'
 
 export type RecenterHint =
@@ -13,8 +13,8 @@ export interface ViewportNavigationService {
   recenter(): Promise<void>
 }
 
-export const viewportNavigationContract = defineContract({
-  viewportNavigationService: defineService<ViewportNavigationService>(
+export const viewportNavigationContract = contract({
+  viewportNavigationService: service<ViewportNavigationService>(
     'viewport-navigation'
   ),
 })
