@@ -3,7 +3,7 @@ import type { Definition, PropertyDefinition, Puzzle, Tile } from './game'
 export const initialDefinitions: readonly Definition[] = [
   {
     kind: 'entity',
-    id: 'PLANKTON',
+    id: 'PLNK',
     color: '#c5ed91',
     sprite: [
       '00100100',
@@ -65,12 +65,25 @@ export const bushPuzzle: Puzzle = {
   bounds: { width: 12, height: 10 },
   definitions: initialDefinitions,
   placements: [
-    ...['PLANKTON', 'IS', 'YOU'].map((type, x) => word(type, x + 1, 1)),
-    ...['FLAG', 'IS', 'WIN'].map((type, x) => word(type, x + 1, 2)),
-    ...['BUSH', 'IS', 'STOP'].map((type, x) => word(type, x + 1, 3)),
+    ...['PLNK', 'IS', 'YOU'].map((type, x) => word(type, x + 1, 1)),
+    ...['FLAG', 'IS', 'WIN'].map((type, x) => word(type, x + 1, 4)),
+    ...['BUSH', 'IS', 'STOP'].map((type, x) => word(type, x + 8, 1)),
     word('BUSH', 1, 8),
     word('IS', 2, 8),
-    { id: 'player', kind: 'entity', type: 'PLANKTON', x: 3, y: 5 },
+    ...[
+      ...Array.from({ length: 5 }, (_, x) => ({ x, y: 2 })),
+      { x: 4, y: 0 },
+      { x: 4, y: 1 },
+    ].map(
+      ({ x, y }): Tile => ({
+        id: `enclosure-${x}-${y}`,
+        kind: 'entity',
+        type: 'BUSH',
+        x,
+        y,
+      })
+    ),
+    { id: 'player', kind: 'entity', type: 'PLNK', x: 3, y: 5 },
     { id: 'goal', kind: 'entity', type: 'FLAG', x: 10, y: 5 },
     ...Array.from(
       { length: 10 },

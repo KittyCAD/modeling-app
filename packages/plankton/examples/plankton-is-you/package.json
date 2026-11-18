@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.3.0",
-    "@fontsource/space-grotesk": "^5.3.0",
     "@preact/signals-core": "^1.14.4",
     "@radix-ui/react-dialog": "^1.1.15",
     "lucide-react": "^0.468.0",

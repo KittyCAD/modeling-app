@@ -6,6 +6,8 @@ export type EntityDefinition = {
   id: string
   color: string
   sprite: Sprite
+  wordSprite?: Sprite
+  wordColor?: string
 }
 
 /** Properties supply the turn engine with capabilities and optional turn effects. */
@@ -13,6 +15,8 @@ export type PropertyDefinition = {
   kind: 'property'
   id: string
   color: string
+  wordSprite?: Sprite
+  wordColor?: string
   controls?: boolean
   blocks?: boolean
   wins?: boolean
@@ -21,7 +25,7 @@ export type PropertyDefinition = {
 export type Definition =
   | EntityDefinition
   | PropertyDefinition
-  | { kind: 'grammar'; id: 'IS' }
+  | { kind: 'grammar'; id: 'IS'; wordSprite?: Sprite; wordColor?: string }
 
 /** A portable starting setup, independent of the live session and its undo history. */
 export type Puzzle = {
@@ -183,9 +187,13 @@ export class Game {
     const won = tiles.some(
       (t) =>
         settledHas(t, (p) => !!p.controls) &&
-        tiles.some(
-          (other) => sameCell(t, other) && settledHas(other, (p) => !!p.wins)
-        )
+        (settledHas(t, (p) => !!p.wins) ||
+          tiles.some(
+            (other) =>
+              other.id !== t.id &&
+              sameCell(t, other) &&
+              settledHas(other, (p) => !!p.wins)
+          ))
     )
     this.history.push(this.board)
     this.board = { tiles, turns: this.board.turns + 1, won }

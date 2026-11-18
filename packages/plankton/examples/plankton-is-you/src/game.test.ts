@@ -83,7 +83,7 @@ describe('the living vocabulary', () => {
       game.step({ x: 0, y: 0 })
       expect(
         game.board.tiles.filter((t) => t.kind === 'entity' && t.type === 'BUSH')
-      ).toHaveLength(10)
+      ).toHaveLength(17)
       await runtime.publish(
         compileProperty({ id: 'DIE', color: '#ee927d', action: 'destroy-self' })
       )
@@ -95,18 +95,18 @@ describe('the living vocabulary', () => {
       game.undo()
       expect(
         game.board.tiles.filter((t) => t.kind === 'entity' && t.type === 'BUSH')
-      ).toHaveLength(10)
+      ).toHaveLength(17)
     } finally {
       await runtime.dispose()
     }
   })
 
   it('recognizes vertical sentences and pushes loose words while respecting pinned words', () => {
-    const vertical = ['PLANKTON', 'IS', 'YOU'].map(
+    const vertical = ['PLNK', 'IS', 'YOU'].map(
       (type, y): Tile => ({ id: `v${y}`, kind: 'word', type, x: 0, y })
     )
     expect(readRules(vertical, initialDefinitions)).toEqual([
-      { noun: 'PLANKTON', property: 'YOU' },
+      { noun: 'PLNK', property: 'YOU' },
     ])
     const game = new Game(
       {
@@ -132,7 +132,7 @@ describe('the living vocabulary', () => {
         ...bushPuzzle,
         placements: [
           ...vertical,
-          { id: 'p', kind: 'entity', type: 'PLANKTON', x: 1, y: 1 },
+          { id: 'p', kind: 'entity', type: 'PLNK', x: 1, y: 1 },
         ],
       },
       () => initialDefinitions
@@ -142,7 +142,7 @@ describe('the living vocabulary', () => {
     sentenceGame.step({ x: 0, y: 1 })
     sentenceGame.step({ x: -1, y: 0 }) // YOU is also pinned; no partial push.
     expect(readRules(sentenceGame.board.tiles, initialDefinitions)).toEqual([
-      { noun: 'PLANKTON', property: 'YOU' },
+      { noun: 'PLNK', property: 'YOU' },
     ])
   })
 
@@ -153,9 +153,9 @@ describe('the living vocabulary', () => {
         bounds: { width: 6, height: 6 },
         placements: [
           ...bushPuzzle.placements.filter(
-            (t) => t.kind === 'word' && t.y === 1
+            (t) => t.kind === 'word' && t.y === 1 && t.x < 6
           ),
-          { id: 'p', kind: 'entity', type: 'PLANKTON', x: 3, y: 5 },
+          { id: 'p', kind: 'entity', type: 'PLNK', x: 3, y: 5 },
           { id: 'a', kind: 'word', type: 'FLAG', x: 4, y: 5 },
           { id: 'b', kind: 'word', type: 'WIN', x: 5, y: 5 },
         ],
@@ -165,6 +165,137 @@ describe('the living vocabulary', () => {
     const before = game.board.tiles
     game.step({ x: 1, y: 0 })
     expect(game.board.tiles).toEqual(before)
+  })
+
+  it('wins when a pushed word makes the controlled entity itself WIN', () => {
+    const words = (sentence: string[], y: number): Tile[] =>
+      sentence.map((type, x) => ({
+        id: `${x}-${y}`,
+        kind: 'word',
+        type,
+        x: x + 1,
+        y,
+      }))
+    const game = new Game(
+      {
+        ...bushPuzzle,
+        placements: [
+          ...words(['PLNK', 'IS', 'YOU'], 0),
+          ...words(['PLNK', 'IS'], 3),
+          { id: 'win', kind: 'word', type: 'WIN', x: 3, y: 4 },
+          { id: 'player', kind: 'entity', type: 'PLNK', x: 3, y: 5 },
+        ],
+      },
+      () => initialDefinitions
+    )
+    expect(game.board.won).toBe(false)
+    game.step({ x: 0, y: -1 })
+    expect(game.board.won).toBe(true)
+    expect(game.board.tiles.find((t) => t.id === 'player')).toMatchObject({
+      x: 3,
+      y: 4,
+    })
+    game.undo()
+    expect(game.board.won).toBe(false)
+  })
+
+  it('does not win from WIN alone without a controlled entity', () => {
+    const game = new Game(
+      {
+        ...bushPuzzle,
+        placements: [
+          ...['PLNK', 'IS', 'WIN'].map(
+            (type, x): Tile => ({
+              id: `word-${x}`,
+              kind: 'word',
+              type,
+              x,
+              y: 0,
+            })
+          ),
+          { id: 'player', kind: 'entity', type: 'PLNK', x: 3, y: 5 },
+        ],
+      },
+      () => initialDefinitions
+    )
+    game.step({ x: 0, y: 0 })
+    expect(game.board.won).toBe(false)
+  })
+
+  it('encloses the control sentence and keeps STOP beyond the hedge', () => {
+    const blocked = new Set(
+      bushPuzzle.placements
+        .filter((t) => t.kind === 'entity' && t.type === 'BUSH')
+        .map((t) => `${t.x},${t.y}`)
+    )
+    const reachable = new Set(['3,5'])
+    const queue = [{ x: 3, y: 5 }]
+    for (const point of queue) {
+      for (const [dx, dy] of [
+        [1, 0],
+        [-1, 0],
+        [0, 1],
+        [0, -1],
+      ]) {
+        const x = point.x + dx,
+          y = point.y + dy,
+          key = `${x},${y}`
+        if (
+          x < 0 ||
+          y < 0 ||
+          x >= bushPuzzle.bounds.width ||
+          y >= bushPuzzle.bounds.height ||
+          blocked.has(key) ||
+          reachable.has(key)
+        )
+          continue
+        reachable.add(key)
+        queue.push({ x, y })
+      }
+    }
+    const protectedWords = bushPuzzle.placements.filter(
+      (t) => t.kind === 'word' && t.y === 1
+    )
+    expect(protectedWords.map((t) => t.type)).toEqual([
+      'PLNK',
+      'IS',
+      'YOU',
+      'BUSH',
+      'IS',
+      'STOP',
+    ])
+    expect(protectedWords.every((t) => !reachable.has(`${t.x},${t.y}`))).toBe(
+      true
+    )
+    expect(reachable.has('3,3')).toBe(true)
+    expect(reachable.has('10,5')).toBe(false)
+  })
+
+  it('publishes authored word pixels without changing its meaning or placements', async () => {
+    const runtime = await openGame()
+    try {
+      const definition = runtime.definitions.value.find((d) => d.id === 'PLNK')!
+      const board = runtime.game.board
+      await runtime.publish({
+        ...definition,
+        wordSprite: ['10', '01'],
+        wordColor: '#ff0000',
+      })
+      expect(runtime.game.board).toBe(board)
+      expect(
+        runtime.definitions.value.find((d) => d.id === 'PLNK')?.wordSprite
+      ).toEqual(['10', '01'])
+      expect(
+        runtime.definitions.value.find((d) => d.id === 'PLNK')
+      ).toMatchObject({ color: '#c5ed91', wordColor: '#ff0000' })
+      runtime.game.step({ x: 1, y: 0 })
+      expect(runtime.game.board.tiles.find((t) => t.id === 'player')?.x).toBe(4)
+      expect(
+        readRules(runtime.game.board.tiles, runtime.definitions.value)
+      ).toContainEqual({ noun: 'PLNK', property: 'YOU' })
+    } finally {
+      await runtime.dispose()
+    }
   })
 
   it.each([

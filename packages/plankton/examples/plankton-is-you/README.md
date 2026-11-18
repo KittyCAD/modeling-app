@@ -20,15 +20,22 @@ installation. After changing Plankton itself, reinstall the local dependency.
 
 ## Play the first puzzle
 
-1. Move with arrows or WASD. The full-height bush hedge blocks the flag.
-2. Open **Runtime editor → Sprite**. Draw on the 8 × 8 canvas and publish BUSH
-   to change every bush without resetting the board. A new name creates a new
-   entity and its noun tile.
-3. In **Behavior**, name the property DIE and choose **Destroy this entity**.
-   Publish the extension, then **Resume play**.
-4. Select **DIE word** in the palette. Place it in the marked empty cell after
-   the bottom `BUSH IS` sentence.
-5. Move or press Space to advance a turn. The bushes disappear; reach the flag.
+1. Move with arrows or WASD. The board fills the viewport within its bounds;
+   the surrounding area is letterboxed. The hedge blocks the flag, and bushes
+   enclose `PLNK IS YOU`. `BUSH IS STOP` is on the far side of the hedge.
+2. Click any tile to edit its definition, or move the cursor near the right
+   edge and click the editor as it peeks out. Vocabulary appears above live rules.
+3. Choose an entity or word from the vocabulary. Paint its pixels and publish.
+   Entities use 8 × 8 sprites; words start with editable 16 × 16 pixel lettering.
+   Editing pixels preserves a word's rule identity. A new entity name adds a noun.
+4. Choose **New property**, enter DIE, and choose **At turn end: destroy this
+   entity**. Publish, then edit the new word's pixels if desired.
+5. Click **Place tile** for the DIE word. Click the ordinary empty cell after
+   the bottom `BUSH IS` sentence. There is no special placement tile.
+6. Move or press Space to advance a turn. The bushes disappear; reach the flag.
+
+An entity that is both YOU and WIN also wins without touching a separate flag.
+The protected starting sentence prevents that shortcut before clearing the bushes.
 
 The drawer pauses character input. Palette placement also pauses play until a
 cell is chosen, Escape is pressed, or **Resume play** is clicked. Closing the
@@ -53,7 +60,7 @@ extensions. Reloading the page starts fresh.
   BUSH update replaces its definition without replacing the session.
 - Publishing awaits `Registry.replace`. The UI disables input while it runs.
   This sample has no background reconfiguration or per-turn registry mutation.
-- The Extension tab displays contributions and their actual selected precedence
+- The Extensions view displays contributions and their actual selected precedence
   as built-in/authored provenance. It also shows the property wiring.
 - `game.ts` knows nothing about Plankton. Rules are horizontal/vertical
   `noun IS property` sentences. Properties supply movement capabilities and
