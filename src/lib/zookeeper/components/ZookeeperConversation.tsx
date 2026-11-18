@@ -23,7 +23,7 @@ import type { QueuedMessage } from '@src/lib/zookeeper/registry/controller'
 import {
   type Conversation,
   type Exchange,
-  isResponseComplete,
+  hasBeenInterruptedOnLast,
   type MlCopilotModeId,
   type MlCopilotModeOption,
   type ZookeeperAttachmentFetchState,
@@ -752,7 +752,8 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
     ? props.conversation?.exchanges[exchangesLength - 1]
     : undefined
   const isEndOfStream =
-    lastExchange?.responses.some(isResponseComplete) ?? false
+    hasMessages &&
+    !hasBeenInterruptedOnLast(props.conversation?.exchanges ?? [])
 
   const previousScrollState = useRef({ length: 0, isEndOfStream: false })
   const historyAnchor = useRef<
