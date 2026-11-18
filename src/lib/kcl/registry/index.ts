@@ -1,4 +1,4 @@
-import { kclExecutionSettingsRegistryItem } from '@src/lib/kcl/scene/executionSettingsRegistry'
+import { kclExecutionSettingsExtension } from '@src/lib/kcl/scene/executionSettingsRegistry'
 import { kcl } from '@kittycad/codemirror-lang-kcl'
 import { editorKclHighlight } from '@src/editor/plugins/theme'
 import {
@@ -25,11 +25,7 @@ const extension = [
   contribute(codeEditorsExtensionFacet, () => editorExtensions),
 ] satisfies readonly Extension[]
 
-export default defineRegistryItem({
-  id: 'kcl.extension',
-  uses: [
-    // The legacy file route needs these inputs even with project-shell editing off.
-    kclExecutionSettingsRegistryItem,
-    withProjectShellFeature(extension, 'kcl'),
-  ],
-})
+export default [
+  kclExecutionSettingsExtension,
+  withProjectShellFeature(extension, 'kcl'),
+]

@@ -635,7 +635,7 @@ export class App implements AppSubsystems {
       modelingReady: () => this.project?.modelingReady ?? Promise.resolve(),
       projectSession: this.projectSession,
       settings: this.settings.actor,
-      kclExecutionSettings: this.registry.get(kclExecutionSettingsService),
+      kclExecutionSettings: this.registry.required(kclExecutionSettingsService),
       wasmInstancePromise: this.wasmPromise,
       commandBar: this.commands.actor,
       projectPath: signal(''),

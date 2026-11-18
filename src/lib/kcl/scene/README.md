@@ -41,7 +41,7 @@ presentations consume.
 ## KCL refresh policy
 
 KCL extensions contribute refresh inputs through
-`kclExecutionInputsValueSpec`. Each input has a stable ID, a reader of its
+`kclExecutionInputsFacet`. Each input has a stable ID, a reader of its
 effective value, and a refresh rule. Generic `Setting` definitions do not need to
 know which executors consume them.
 

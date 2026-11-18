@@ -2,14 +2,14 @@ import { signal } from '@preact/signals-core'
 import { createSceneExecutionSettings } from '@src/lib/kcl/scene/executionSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { createTestKclExecutionSettings } from '@src/lib/kcl/scene/executionSettingsTestUtils'
-import { Registry, Slot, defineRegistryItem } from '@kittycad/registry'
+import { Registry, slot } from 'plankton'
 import { coreKclExecutionInputs } from '@src/lib/kcl/scene/executionSettingsRegistry'
 import {
-  kclExecutionInputsValueSpec,
+  kclExecutionInputsFacet,
   provideKclExecutionInput,
 } from '@src/lib/kcl/scene/executionSettingsContract'
 import kclExtension from '@src/lib/kcl/registry'
-import { editorLanguagesValueSpec } from '@src/lib/editors/registry/contract'
+import { editorLanguagesFacet } from '@src/lib/editors/registry/contract'
 import { expect, it } from 'vitest'
 
 it('follows core KCL inputs and effective values rather than hidden overrides', () => {
@@ -60,59 +60,57 @@ it('opts backface changes into streamed rebuilds while local rendering updates d
   ).toBe('#123456')
 })
 
-it('composes added and removed KCL inputs for every consumer without changing setting definitions', () => {
+it('composes added and removed KCL inputs for every consumer without changing setting definitions', async () => {
   const registry = new Registry()
-  const extra = new Slot()
-  registry.configure([coreKclExecutionInputs, extra.of()])
+  const extra = slot([])
+  await registry.configure([coreKclExecutionInputs, extra])
   const settings = createSettings()
-  const inputs = registry.signal(kclExecutionInputsValueSpec)
+  const inputs = registry.observe(kclExecutionInputsFacet)
   const first = createSceneExecutionSettings(() => settings, inputs)
   const second = createSceneExecutionSettings(() => settings, inputs)
   const baseline = first.executeRevision.peek()
   try {
     settings.modeling.enableTouchControls.user = false
     expect(first.executeRevision.peek()).toBe(baseline)
-    registry.reconfigure(extra, [
-      defineRegistryItem({
-        provides: [
-          provideKclExecutionInput({
-            id: 'test.touch-controls',
-            read: (s) => s.modeling.enableTouchControls.currentSignal.value,
-            refresh: 'execute',
-          }),
-        ],
-      }),
+    await registry.replace(extra, [
+      [
+        provideKclExecutionInput({
+          id: 'test.touch-controls',
+          read: (s) => s.modeling.enableTouchControls.currentSignal.value,
+          refresh: 'execute',
+        }),
+      ],
     ])
     const registered = first.executeRevision.peek()
     expect(registered).not.toBe(baseline)
     settings.modeling.enableTouchControls.user = true
     expect(first.executeRevision.peek()).not.toBe(registered)
     expect(second.executeRevision.peek()).toBe(first.executeRevision.peek())
-    registry.reconfigure(extra, [])
+    await registry.replace(extra, [])
     expect(first.executeRevision.peek()).toBe(baseline)
     settings.modeling.enableTouchControls.user = false
     expect(first.executeRevision.peek()).toBe(baseline)
     expect(second.executeRevision.peek()).toBe(baseline)
   } finally {
-    registry[Symbol.dispose]()
+    await registry.dispose()
   }
 })
 
 it('keeps legacy KCL refresh inputs installed when project-shell editing is disabled', async () => {
   const registry = new Registry()
-  registry.configure([kclExtension])
+  await registry.configure([kclExtension])
   try {
     await Promise.resolve()
-    expect(registry.get(editorLanguagesValueSpec)).toEqual([])
+    expect(registry.get(editorLanguagesFacet)).toEqual([])
     const settings = createSettings()
     const snapshots = createSceneExecutionSettings(
       () => settings,
-      registry.signal(kclExecutionInputsValueSpec)
+      registry.observe(kclExecutionInputsFacet)
     )
     const before = snapshots.executeRevision.peek()
     settings.modeling.highlightEdges.user = false
     expect(snapshots.executeRevision.peek()).not.toBe(before)
   } finally {
-    registry[Symbol.dispose]()
+    await registry.dispose()
   }
 })

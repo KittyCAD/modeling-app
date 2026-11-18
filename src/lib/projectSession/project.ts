@@ -190,7 +190,9 @@ export class ZDSProject {
       wasmInstancePromise: this.app.wasmPromise,
       commandBar: this.app.commands.actor,
       settings: this.app.settings.actor,
-      kclExecutionSettings: this.app.registry.get(kclExecutionSettingsService),
+      kclExecutionSettings: this.app.registry.required(
+        kclExecutionSettingsService
+      ),
       engineCommandManager: this.app.engineCommandManager,
       rustContext: this.app.rustContext,
       userFeatures: this.app.userFeatures,
