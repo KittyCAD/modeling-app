@@ -11,7 +11,6 @@ export const engineSceneViewExtensionZones = [
   'center',
   'right',
   'bottom',
-  'bottom-right',
   'overlay',
 ] as const
 
@@ -127,7 +126,6 @@ const zoneClassNames: Record<EngineSceneViewExtensionZone, string> = {
   center: 'absolute inset-2 flex flex-col items-center justify-center gap-2',
   right: `${styles.right} my-2 flex flex-col items-end justify-center gap-2`,
   bottom: `${styles.bottom} m-2 flex items-end gap-2`,
-  'bottom-right': `${styles.bottom} m-2 flex flex-col items-end justify-end gap-3`,
   overlay: 'absolute inset-0',
 }
 

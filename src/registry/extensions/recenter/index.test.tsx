@@ -8,23 +8,37 @@ import {
   viewportNavigationRuntimeSlot,
 } from '@src/registry/extensions/engineScene/viewportNavigationRuntimeExtension'
 
-import { engineSceneViewExtensionsFacet } from '@src/registry/contracts/engineScene'
+import { viewControlMenuItemsFacet } from '@src/registry/contracts/viewControls'
+import GizmoDropdown from '@src/components/gizmo/GizmoDropdown'
 import { createElement } from 'react'
-import recenterExtension from '.'
+import recenterExtension, { RECENTER_TIP_SEEN_KEY } from '.'
 
 let registry: Registry
 
+vi.mock('@src/lib/boot', () => ({ useApp: () => ({ registry }) }))
+vi.mock('@src/components/CustomIcon', () => ({ CustomIcon: () => null }))
+vi.mock('@src/components/ViewControlMenu', () => ({
+  useViewControlMenuItems: (highlightedId?: string) =>
+    registry.get(viewControlMenuItemsFacet).map(({ id, Component }) =>
+      createElement(Component, {
+        key: id,
+        disabled: false,
+        highlighted: id === highlightedId,
+      })
+    ),
+}))
+
 function renderControl() {
-  const [view] = registry.get(engineSceneViewExtensionsFacet)
+  const [view] = registry.get(viewControlMenuItemsFacet)
   expect(view).toMatchObject({
-    id: 'engine-scene.recenter',
-    zone: 'bottom-right',
-    order: 19,
+    id: 'recenter',
+    order: 0,
   })
-  render(createElement(view.Component))
+  render(createElement(view.Component, { disabled: false, highlighted: false }))
 }
 
 beforeEach(async () => {
+  localStorage.removeItem(RECENTER_TIP_SEEN_KEY)
   registry = new Registry()
   await registry.configure([viewportNavigationRuntimeSlot, recenterExtension])
 })
@@ -32,9 +46,11 @@ beforeEach(async () => {
 afterEach(async () => {
   cleanup()
   await registry.dispose()
+  vi.restoreAllMocks()
+  vi.useRealTimers()
 })
 
-it('shows Recenter only for a lost model and delegates to the viewport service', async () => {
+it('keeps Recenter available and marks its help seen when used', async () => {
   renderControl()
   expect(screen.queryByRole('button', { name: 'Recenter' })).toBeNull()
   const isModelOutOfView = signal(false)
@@ -47,7 +63,7 @@ it('shows Recenter only for a lost model and delegates to the viewport service',
       recenter,
     })
   })
-  expect(screen.queryByRole('button', { name: 'Recenter' })).toBeNull()
+  expect(await screen.findByRole('button', { name: 'Recenter' })).toBeVisible()
   act(() => {
     isModelOutOfView.value = true
   })
@@ -62,7 +78,8 @@ it('shows Recenter only for a lost model and delegates to the viewport service',
   act(() => {
     isModelOutOfView.value = false
   })
-  expect(screen.queryByRole('button', { name: 'Recenter' })).toBeNull()
+  expect(screen.getByRole('button', { name: 'Recenter' })).toBeVisible()
+  expect(localStorage.getItem(RECENTER_TIP_SEEN_KEY)).toBe('true')
 })
 
 it('follows replacement services and disappears when the viewport unmounts', async () => {
@@ -81,7 +98,7 @@ it('follows replacement services and disappears when the viewport unmounts', asy
       recenter: vi.fn(async () => {}),
     })
   })
-  expect(screen.queryByRole('button', { name: 'Recenter' })).toBeNull()
+  expect(screen.getByRole('button', { name: 'Recenter' })).toBeVisible()
   act(() => {
     currentVisibility.value = true
   })
@@ -93,5 +110,56 @@ it('follows replacement services and disappears when the viewport unmounts', asy
   await act(async () => {
     await registry.configure([viewportNavigationRuntimeSlot])
   })
-  expect(registry.get(engineSceneViewExtensionsFacet)).toEqual([])
+  expect(registry.get(viewControlMenuItemsFacet)).toEqual([])
+})
+
+it('opens and highlights the menu only once, deferring while a dialog is open', async () => {
+  vi.useFakeTimers()
+  vi.spyOn(document, 'hasFocus').mockReturnValue(true)
+  const lost = signal(true)
+  await registerViewportNavigation(registry, {
+    isModelOutOfView: lost,
+    recenter: vi.fn(async () => {}),
+  })
+  const dialog = document.createElement('div')
+  dialog.setAttribute('role', 'dialog')
+  document.body.append(dialog)
+  render(<GizmoDropdown canOfferHelp />)
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(500)
+  })
+  expect(screen.queryByTestId('gizmo-view-menu')).toBeNull()
+  expect(localStorage.getItem(RECENTER_TIP_SEEN_KEY)).toBeNull()
+  dialog.remove()
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(500)
+  })
+  expect(screen.getByTestId('gizmo-view-menu')).toBeVisible()
+  expect(screen.getByRole('status')).toHaveTextContent("Can't find your model?")
+  expect(screen.getByRole('button', { name: 'Recenter' })).toHaveClass(
+    'ring-primary'
+  )
+  expect(localStorage.getItem(RECENTER_TIP_SEEN_KEY)).toBe('true')
+  fireEvent.click(screen.getByRole('button', { name: 'Got it' }))
+  act(() => {
+    lost.value = false
+  })
+  act(() => {
+    lost.value = true
+  })
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(1000)
+  })
+  expect(screen.queryByTestId('gizmo-view-menu')).toBeNull()
+  cleanup()
+  await registry.dispose()
+  registry = new Registry()
+  await registry.configure([viewportNavigationRuntimeSlot, recenterExtension])
+  await registerViewportNavigation(registry, {
+    isModelOutOfView: signal(true),
+    recenter: vi.fn(async () => {}),
+  })
+  expect(registry.get(viewControlMenuItemsFacet)[0].help?.requested.value).toBe(
+    false
+  )
 })

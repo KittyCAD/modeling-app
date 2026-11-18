@@ -234,9 +234,10 @@ const modelingDialogViewExtension = defineEngineSceneViewExtension({
 
 const gizmoViewExtension = defineEngineSceneViewExtension({
   id: 'engine-scene.gizmo',
-  zone: 'bottom-right',
+  zone: 'bottom',
   order: 20,
   Component: EngineSceneGizmoViewExtension,
+  wrapperClassName: 'ml-auto',
 })
 
 const EngineSceneMeasurementStatusBarItem = () =>

@@ -1,17 +1,21 @@
 import { useSignals } from '@preact/signals-react/runtime'
-import { ActionButton } from '@src/components/ActionButton'
 import { reportRejection } from '@src/lib/trap'
 import type { ReadonlySignal } from '@preact/signals-core'
+import type { ViewControlMenuItemProps } from '@src/registry/contracts/viewControls'
 import type { ViewportNavigationService } from '@src/registry/contracts/viewportNavigation'
 
 export function RecenterViewControl({
   navigation: navigationSignal,
-}: {
+  disabled,
+  highlighted,
+  onUse,
+}: ViewControlMenuItemProps & {
   navigation: ReadonlySignal<ViewportNavigationService | undefined>
+  onUse: () => void
 }) {
   useSignals()
   const navigation = navigationSignal.value
-  if (!navigation?.isModelOutOfView.value) return null
+  if (!navigation) return null
   const hint = navigation.recoveryHint?.value ?? { kind: 'neutral' }
   const label =
     hint.kind === 'direction'
@@ -23,14 +27,14 @@ export function RecenterViewControl({
           : 'Fit the model in view'
 
   return (
-    <ActionButton
-      Element="button"
+    <button
       type="button"
-      tabIndex={0}
-      className="h-8 whitespace-nowrap bg-2 shadow-sm focus-visible:ring-2 focus-visible:ring-primary"
+      disabled={disabled}
+      className={`flex items-center gap-2 py-1 px-2 border-none text-left hover:bg-3 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-primary ${highlighted ? 'bg-primary/15 ring-2 ring-inset ring-primary' : ''}`}
       title={label}
       aria-label="Recenter"
       onClick={() => {
+        onUse()
         navigation.recenter().catch(reportRejection)
       }}
     >
@@ -60,6 +64,6 @@ export function RecenterViewControl({
         )}
       </svg>
       Recenter
-    </ActionButton>
+    </button>
   )
 }

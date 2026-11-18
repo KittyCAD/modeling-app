@@ -34,6 +34,7 @@ vi.mock('@src/components/ViewControlMenu', () => ({
   useViewControlMenuItems: () => [],
   ViewControlContextMenu: () => null,
 }))
+vi.mock('@src/components/gizmo/GizmoDropdown', () => ({ default: () => null }))
 vi.mock('@src/components/CustomIcon', () => ({ CustomIcon: () => null }))
 vi.mock('@src/components/gizmo/GizmoRenderer', () => ({
   default: class {
