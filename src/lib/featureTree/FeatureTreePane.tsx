@@ -805,11 +805,13 @@ const OperationTreeNodeItem = memo(function OperationTreeNodeItem({
     node.type === 'ModuleInstance' ? node.moduleId : undefined
 
   return (
-    <OperationItem
-      item={node}
-      {...props}
-      referenceModuleId={referenceModuleId}
-    />
+    <div className="pl-5">
+      <OperationItem
+        item={node}
+        {...props}
+        referenceModuleId={referenceModuleId}
+      />
+    </div>
   )
 })
 
@@ -854,13 +856,30 @@ export const OperationItemWrapper = memo(
     isSelected?: boolean
     size?: 'default' | 'sm'
   } & OpValueProps) => {
+    const typeLabel =
+      variableName &&
+      !valueDetail &&
+      variableName !== name &&
+      icon !== 'questionMark' &&
+      (type === 'StdLibCall' || (type === 'GroupBegin' && name === 'Sketch'))
+        ? name
+        : undefined
     return (
       <RowItemWithIconMenuAndToggle
         {...props}
         icon={icon}
         size={size}
+        className={className}
+        aria-label={typeLabel ? variableName : props['aria-label']}
+        aria-description={typeLabel}
+        title={typeLabel ? `${variableName} (${typeLabel})` : props.title}
         LabelSecondary={
           <>
+            {typeLabel ? (
+              <span aria-hidden="true" className="text-2 text-xs shrink-0">
+                {typeLabel}
+              </span>
+            ) : null}
             {valueDetail ? (
               <>
                 {variableName ? (
@@ -884,7 +903,16 @@ export const OperationItemWrapper = memo(
         }
         Tooltip={Tooltip}
         Toggle={
-          visibilityToggle ? <VisibilityToggle {...visibilityToggle} /> : null
+          visibilityToggle ? (
+            <VisibilityToggle
+              {...visibilityToggle}
+              label={
+                typeLabel
+                  ? `${variableName} (${typeLabel})`
+                  : (variableName ?? name)
+              }
+            />
+          ) : null
         }
         menuItems={menuItems}
       >

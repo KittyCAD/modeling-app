@@ -5,8 +5,10 @@ import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSel
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import { Signal } from '@src/lib/signal'
 import { defaultSelectionFilter } from '@src/lib/selectionFilterUtils'
+import { promiseFactory } from '@src/lib/utils'
 import { Themes } from '@src/lib/theme'
 import {
+  BoxGeometry,
   Group,
   Mesh,
   type OrthographicCamera,
@@ -46,6 +48,7 @@ type RendererInternals = {
   camera: PerspectiveCamera | OrthographicCamera | null
   handleLocalSelectionCommand: LocalSelectionCommandHandler
   syncSelectionFromEngine(): Promise<void>
+  selectionSync: Promise<void>
   baseRenderDirty: boolean
   pointerOverCanvas: boolean
   ambientOcclusionPipeline: {
@@ -181,11 +184,14 @@ describe('local GLB loading', () => {
   })
   afterEach(() => vi.restoreAllMocks())
 
-  it('highlights a tree-selected body without first picking a face in the scene', async () => {
+  it('waits for a tree-selected body before measuring its bounds and highlighting it', async () => {
     const f = fixture()
-    const first = new Mesh()
-    const second = new Mesh()
-    const otherBody = new Mesh()
+    const first = new Mesh(new BoxGeometry())
+    const second = new Mesh(new BoxGeometry())
+    const otherBody = new Mesh(new BoxGeometry())
+    first.position.set(1, 2, 3)
+    second.position.copy(first.position)
+    otherBody.position.set(100, 100, 100)
     for (const [index, mesh] of [first, second, otherBody].entries()) {
       mesh.userData.faceUuid = `face-${index}`
       mesh.userData.bodyMeshIndex = index === 2 ? 1 : 0
@@ -215,7 +221,19 @@ describe('local GLB loading', () => {
         },
       })
     )
-    await f.state.syncSelectionFromEngine()
+    const selectionReady = promiseFactory()
+    const send = f.manager.engineCommandManager.sendSceneCommand
+    const respond = send.getMockImplementation()!
+    send.mockImplementation(async (...args) => {
+      await selectionReady.promise
+      return respond(...args)
+    })
+    f.state.selectionSync = f.state.syncSelectionFromEngine()
+    const bounds = f.renderer.getSelectionBounds()
+    selectionReady.resolve()
+    expect((await bounds)?.getCenter(new Vector3()).toArray()).toEqual([
+      1000, -3000, 2000,
+    ])
     expect(
       f.gpu.selectionHighlightRenderer.setSelection
     ).toHaveBeenLastCalledWith([first, second])

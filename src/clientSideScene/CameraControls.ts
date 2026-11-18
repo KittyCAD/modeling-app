@@ -110,7 +110,7 @@ interface LocalCameraScene {
   /** What zoom to fit frames. */
   getFitBounds(): Box3 | undefined
   /** What center view on selection centers on. */
-  getSelectionBounds(): Box3 | undefined
+  getSelectionBounds(): Box3 | undefined | Promise<Box3 | undefined>
 }
 
 class CameraFrame {
@@ -1317,9 +1317,14 @@ export class CameraControls {
    */
   async centerOnSelection(): Promise<void> {
     if (this.effectiveCameraMode === 'local') {
-      const center =
-        this.getLocalScene()?.getSelectionBounds()?.getCenter(new Vector3()) ??
-        new Vector3()
+      const scene = this.getLocalScene()
+      const bounds = await scene?.getSelectionBounds()
+      if (
+        scene !== this.getLocalScene() ||
+        this.effectiveCameraMode !== 'local'
+      )
+        return
+      const center = bounds?.getCenter(new Vector3()) ?? new Vector3()
       this.camera.position.add(center).sub(this.target)
       this.target.copy(center)
       this.onCameraChange()

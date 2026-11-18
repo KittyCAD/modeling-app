@@ -13,6 +13,7 @@ import {
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { getDimensions } from '@src/lib/engineConnection/utils'
 import {
+  Box3,
   Group,
   OrthographicCamera,
   PerspectiveCamera,
@@ -76,6 +77,30 @@ function sentCommandTypes(
 }
 
 describe('local canvas spherical orbit', () => {
+  it('centers only after the selected body bounds are resolved', async () => {
+    const manager = makeConnectionManager({ width: 1024, height: 768 })
+    const pending = promiseFactory<Box3>()
+    const scene = {
+      getFitBounds: () => undefined,
+      getSelectionBounds: () => pending.promise,
+    }
+    const controls = new CameraControls(
+      makeCanvas(1024, 768),
+      manager,
+      unusedSettings,
+      () => scene
+    )
+    controls.localCameraMode = true
+    controls.target.set(0, 0, 0)
+    controls.camera.position.set(0, -100, 0)
+    const centered = controls.centerOnSelection()
+    expect(controls.target.toArray()).toEqual([0, 0, 0])
+    pending.resolve(new Box3(new Vector3(10, 20, 30), new Vector3(30, 40, 50)))
+    await centered
+    expect(controls.target.toArray()).toEqual([20, 30, 40])
+    expect(controls.camera.position.toArray()).toEqual([20, -70, 40])
+  })
+
   function setup(local = true) {
     const canvas = makeCanvas(1024, 768)
     canvas.setPointerCapture = vi.fn()

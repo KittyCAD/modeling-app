@@ -1,6 +1,9 @@
 import type { PropsOf } from '@headlessui/react/dist/types'
 import { useSignals } from '@preact/signals-react/runtime'
-import { ContextMenuItem } from '@src/components/ContextMenu'
+import {
+  ContextMenuDivider,
+  ContextMenuItem,
+} from '@src/components/ContextMenu'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
@@ -177,61 +180,81 @@ export function BodyItem({
     })
   }
   const handleDelete = () => {
-    onSelect()
     onDelete({
       modelingActor,
       objects: selections,
     })
   }
+  const centerBody = () => {
+    modelingSend({
+      type: 'Set selection',
+      data: { selectionType: 'completeSelection', selection: selections },
+    })
+    modelingSend({ type: 'Center camera on selection' })
+  }
+  const toggleVisibility = () => {
+    if (hideOperation === undefined) {
+      onHide({
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        modelingActor,
+        objects: selections,
+      })
+    } else {
+      onUnhide({ hideOperation, targetArtifact: artifact, kclManager })
+        .then((result) => {
+          if (err(result)) {
+            toast.error(result.message || 'Error while unhiding.')
+          }
+        })
+        .catch((e) => {
+          toast.error(e.message || 'Error while unhiding.')
+        })
+    }
+  }
 
   return (
-    <div className="px-1 py-0.5 group/visibilityToggle">
+    <div className="min-w-0">
       <RowItemWithIconMenuAndToggle
         icon="body"
         disabled={disabled}
         onClick={onSelect}
-        onContextMenu={() => onSelect()}
+        onContextMenu={() => {
+          if (!isSelected && !disabled) onSelect()
+        }}
         isSelected={isSelected}
+        aria-pressed={isSelected}
+        className={`font-medium ${hideOperation && !isSelected ? 'text-2' : ''}`}
         menuItems={
           disabled
             ? undefined
             : [
                 <ContextMenuItem
+                  key="center"
+                  onClick={centerBody}
+                  disabled={hideOperation !== undefined}
+                >
+                  Center on body
+                </ContextMenuItem>,
+                <ContextMenuItem key="visibility" onClick={toggleVisibility}>
+                  {hideOperation ? 'Show body' : 'Hide body'}
+                </ContextMenuItem>,
+                <ContextMenuDivider key="divider" />,
+                <ContextMenuItem
+                  key="delete"
                   onClick={handleDelete}
                   data-testid="context-menu-delete"
                 >
-                  Delete
+                  Delete body
                 </ContextMenuItem>,
               ]
         }
         Toggle={
           disabled ? undefined : (
             <VisibilityToggle
+              label={label}
               visible={hideOperation === undefined}
-              onVisibilityChange={() => {
-                if (hideOperation === undefined) {
-                  onHide({
-                    ast: kclManager.ast,
-                    artifactGraph: kclManager.artifactGraph,
-                    modelingActor,
-                    objects: selections,
-                  })
-                } else {
-                  onUnhide({
-                    hideOperation,
-                    targetArtifact: artifact,
-                    kclManager,
-                  })
-                    .then((result) => {
-                      if (err(result)) {
-                        toast.error(result.message || 'Error while unhiding.')
-                      }
-                    })
-                    .catch((e) => {
-                      toast.error(e.message || 'Error while unhiding.')
-                    })
-                }
-              }}
+              onVisibilityChange={toggleVisibility}
             />
           )
         }

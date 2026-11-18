@@ -205,6 +205,7 @@ export class LocalRenderer {
   // HOOPS (map_topology_uuids only restores edges and faces). Once the GLB has
   // them, this can go and faces can be matched to their body by that UUID.
   private readonly bodyFacesById = new Map<string, Mesh[]>()
+  private selectionSync: Promise<void> = Promise.resolve()
   private hoveredTarget: Mesh | null = null
   private hoverRequestVersion = 0
   private pointerOverCanvas = false
@@ -1084,7 +1085,12 @@ export class LocalRenderer {
    * What center view on selection centers on, as in the engine: the selected
    * entities. In the engine's world: Z up, in mm.
    */
-  getSelectionBounds(): Box3 | undefined {
+  async getSelectionBounds(): Promise<Box3 | undefined> {
+    let pending: Promise<void>
+    do {
+      pending = this.selectionSync
+      await pending
+    } while (pending !== this.selectionSync)
     const bounds = new Box3()
     for (const target of this.getSelectedTargets()) {
       bounds.union(new Box3().setFromObject(target))
@@ -1223,7 +1229,8 @@ export class LocalRenderer {
               command.cmd.type === 'select_remove' ||
               command.cmd.type === 'select_clear')
           ) {
-            this.syncSelectionFromEngine().catch(reportRejection)
+            this.selectionSync = this.syncSelectionFromEngine()
+            this.selectionSync.catch(reportRejection)
             return null
           }
           return this.settings.pickingEnabled

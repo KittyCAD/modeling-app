@@ -211,9 +211,9 @@ keptBody = clone(body001)
       .toEqual([bodyId])
     await expect
       .poll(() =>
-        page.evaluate(() => {
+        page.evaluate(async () => {
           const bounds =
-            window.app.singletons.kclManager.sceneInfra.localRenderer?.getSelectionBounds()
+            await window.app.singletons.kclManager.sceneInfra.localRenderer?.getSelectionBounds()
           return (
             !!bounds &&
             bounds.min.x < -4.9 &&
@@ -224,6 +224,15 @@ keptBody = clone(body001)
         })
       )
       .toBe(true)
+    await source.click({ button: 'right' })
+    await page.getByRole('button', { name: 'Center on body' }).click()
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => window.app.singletons.kclManager.sceneInfra.camControls.target.z
+        )
+      )
+      .toBeCloseTo(5)
     await source.click({ button: 'right' })
     await expect(page.getByTestId('context-menu-delete')).toBeVisible()
     await testInfo.attach('body-before-delete', {

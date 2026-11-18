@@ -30,8 +30,9 @@ export function RowItemWithIconMenuAndToggle({
   return (
     <div
       ref={menuRef}
-      className={`flex select-none items-center group/visibilityToggle my-0 py-0.5 px-1 ${props.disabled ? 'opacity-50 cursor-not-allowed' : ''} ${isSelected ? 'bg-primary/25 hover:bg-primary/25' : ''} hover:bg-2'}`}
+      className={`flex select-none items-center group/visibilityToggle my-0 py-0.5 px-1 rounded-sm focus-within:ring-1 focus-within:ring-primary ${props.disabled ? 'opacity-50 cursor-not-allowed' : ''} ${isSelected ? 'bg-primary/25 hover:bg-primary/25' : 'hover:bg-2'}`}
       data-testid="feature-tree-operation-item"
+      data-selected={isSelected || undefined}
     >
       <button
         {...props}
@@ -40,14 +41,14 @@ export function RowItemWithIconMenuAndToggle({
         {icon ? (
           <CustomIcon
             name={icon}
-            className={`${size === 'sm' ? 'w-4 mx-1 h-4' : 'w-6 h-6'} block self-start`}
+            className={`${size === 'sm' ? 'w-4 h-4' : 'w-5 h-5'} block shrink-0`}
             aria-hidden
           />
         ) : null}
         <div
           className={`${size === 'sm' ? 'text-xs' : 'text-sm'} flex-1 flex gap-x-2 overflow-x-hidden items-baseline align-baseline`}
         >
-          <span>{children}</span>
+          <span className="min-w-0 truncate">{children}</span>
           {LabelSecondary ?? null}
         </div>
         {Warning ?? null}

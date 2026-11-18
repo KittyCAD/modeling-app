@@ -10,10 +10,14 @@ const state = vi.hoisted(() => {
   const graphSelections: Selection[] = []
   return {
     send: vi.fn<
-      (event: {
-        type: 'Set selection'
-        data: Extract<SetSelections, { selectionType: 'singleCodeCursor' }>
-      }) => void
+      (
+        event:
+          | {
+              type: 'Set selection'
+              data: SetSelections
+            }
+          | { type: 'Center camera on selection' }
+      ) => void
     >(),
     legacySelection: vi.fn(),
     graphSelections,
@@ -44,12 +48,13 @@ vi.mock('@src/lib/operations', () => ({
   onHide: vi.fn(),
   onUnhide: vi.fn(),
 }))
-vi.mock('@src/components/ContextMenu', () => ({
-  ContextMenu: () => null,
-  ContextMenuItem: () => null,
-}))
-
 import { BodyItem } from '@src/lib/featureTree/BodiesPane'
+import {
+  onDelete,
+  onHide,
+  onUnhide,
+  type HideOperation,
+} from '@src/lib/operations'
 
 const codeRef: CodeRef = {
   range: [10, 20, 0],
@@ -96,6 +101,12 @@ function clickBody(name = 'Body 1'): Selection {
   expect(state.send).toHaveBeenCalledOnce()
   const event = state.send.mock.calls[0][0]
   expect(event.type).toBe('Set selection')
+  if (
+    event.type !== 'Set selection' ||
+    event.data.selectionType !== 'singleCodeCursor'
+  ) {
+    throw new Error('Expected a single body selection')
+  }
   expect(event.data.selectionType).toBe('singleCodeCursor')
   return event.data.selection
 }
@@ -106,6 +117,106 @@ beforeEach(() => {
 })
 
 describe('body row scene selection', () => {
+  it('preserves a multiselection on right-click and explicitly targets Center on body', () => {
+    const body = sweep()
+    state.graphSelections.push(
+      { entityRef: { type: 'solid3d', solid3d_id: 'path' } },
+      { entityRef: { type: 'solid3d', solid3d_id: 'other-body' } }
+    )
+    render(
+      <BodyItem
+        label="Body 1"
+        artifact={body}
+        artifactGraph={graph(body, linkedPath(body))}
+      />
+    )
+    fireEvent.contextMenu(
+      screen.getByRole('button', { name: 'Body 1', pressed: true })
+    )
+    expect(state.send).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', { name: 'Center on body' }))
+    expect(state.send.mock.calls.map(([event]) => event)).toEqual([
+      {
+        type: 'Set selection',
+        data: {
+          selectionType: 'completeSelection',
+          selection: {
+            graphSelections: [
+              expect.objectContaining({ engineEntityId: 'path' }),
+            ],
+            otherSelections: [],
+          },
+        },
+      },
+      { type: 'Center camera on selection' },
+    ])
+  })
+
+  it('uses the same body for the eye and context-menu Hide, then Delete', () => {
+    const body = sweep()
+    render(
+      <BodyItem
+        label="Body 1"
+        artifact={body}
+        artifactGraph={graph(body, linkedPath(body))}
+      />
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Hide Body 1' }))
+    expect(state.send).not.toHaveBeenCalled()
+    fireEvent.contextMenu(screen.getByRole('button', { name: 'Body 1' }))
+    expect(state.send).toHaveBeenCalledOnce()
+    fireEvent.click(screen.getByRole('button', { name: 'Hide body' }))
+    const hiddenObjects = vi.mocked(onHide).mock.calls[0][0].objects
+    expect(vi.mocked(onHide).mock.calls[1][0].objects).toEqual(hiddenObjects)
+    expect(hiddenObjects?.graphSelections[0].engineEntityId).toBe('path')
+    fireEvent.contextMenu(screen.getByRole('button', { name: 'Body 1' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Delete body' }))
+    expect(onDelete).toHaveBeenCalledWith(
+      expect.objectContaining({ objects: hiddenObjects })
+    )
+  })
+
+  it('offers Show for a hidden body and no actions for a disabled body', () => {
+    const body = sweep()
+    const hideOperation = { type: 'StdLibCall', name: 'hide' } as HideOperation
+    vi.mocked(onUnhide).mockResolvedValue(undefined)
+    const { rerender } = render(
+      <BodyItem
+        label="Body 1"
+        artifact={body}
+        artifactGraph={graph(body)}
+        hideOperation={hideOperation}
+      />
+    )
+    expect(screen.getByRole('button', { name: 'Show Body 1' })).toBeEnabled()
+    fireEvent.contextMenu(screen.getByRole('button', { name: 'Body 1' }))
+    expect(
+      screen.getByRole('button', { name: 'Center on body' })
+    ).toBeDisabled()
+    fireEvent.click(screen.getByRole('button', { name: 'Show body' }))
+    expect(onUnhide).toHaveBeenCalledWith({
+      hideOperation,
+      targetArtifact: body,
+      kclManager: state.manager,
+    })
+    state.send.mockClear()
+    rerender(
+      <BodyItem
+        label="Body 1"
+        artifact={body}
+        artifactGraph={graph(body)}
+        disabled
+      />
+    )
+    const row = screen.getByRole('button', { name: 'Body 1' })
+    fireEvent.click(row)
+    fireEvent.contextMenu(row)
+    expect(row).toBeDisabled()
+    expect(state.send).not.toHaveBeenCalled()
+    expect(screen.queryByRole('button', { name: 'Center on body' })).toBeNull()
+    expect(screen.queryByTestId('feature-tree-visibility-toggle')).toBeNull()
+  })
+
   it('selects a whole swept body by engine ID instead of reselecting its code range', () => {
     const body = sweep()
     render(
