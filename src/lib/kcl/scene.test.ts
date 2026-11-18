@@ -1,5 +1,4 @@
 import { createTestKclExecutionSettings } from '@src/lib/kcl/scene/executionSettingsTestUtils'
-import { signal } from '@preact/signals-core'
 import { emptyExecState } from '@src/lang/wasm'
 import { createKclRuntime } from '@src/lib/kcl/runtime'
 import { openKclScene } from '@src/lib/kcl/scene'
@@ -9,35 +8,33 @@ import {
   type SceneConnection,
 } from '@src/lib/kcl/scene/connection'
 import { EngineConnectionEvents } from '@src/lib/engineConnection/utils'
-import { createSettings } from '@src/lib/settings/initialSettings'
 import { Themes } from '@src/lib/theme'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { beforeEach, expect, it, vi } from 'vitest'
+import {
+  createTestKclRuntime,
+  createTestSettings,
+} from '@src/lib/kcl/testFixtures'
 
-const owned = vi.hoisted(() => ({
-  managers: [] as object[],
-  cameras: [] as object[],
-  infra: [] as { theme: string; resumeRendering: ReturnType<typeof vi.fn> }[],
-  disposeInfra: vi.fn(),
-}))
-vi.mock('@src/lib/engineConnection/connectionManager', () => ({
-  ConnectionManager: class {
+const owned = vi.hoisted(() => {
+  const managers: TestManager[] = []
+  const cameras: TestInfra['camControls'][] = []
+  const infra: TestInfra[] = []
+  const disposeInfra = vi.fn()
+  class TestManager {
     connection = new EventTarget()
     isReady = true
     settings = { viewportRendering: {} }
     constructor() {
-      owned.managers.push(this)
+      managers.push(this)
     }
     setTheme = vi.fn(async () => {})
     setDefaultSystemProperties = vi.fn(async () => {})
     setHighlightEdges = vi.fn(async () => {})
     setShowScaleGrid = vi.fn(async () => {})
     setViewportRendering = vi.fn()
-  },
-}))
-vi.mock('@src/clientSideScene/sceneInfra', () => ({
-  SceneInfra: class {
+  }
+  class TestInfra {
     theme = 'system'
     resumeRendering = vi.fn()
     renderer = { domElement: document.createElement('canvas') }
@@ -50,13 +47,20 @@ vi.mock('@src/clientSideScene/sceneInfra', () => ({
       setCameraProjection: vi.fn(async () => {}),
     }
     constructor() {
-      owned.cameras.push(this.camControls)
-      owned.infra.push(this)
+      cameras.push(this.camControls)
+      infra.push(this)
     }
     animate = vi.fn()
     onCanvasResized = vi.fn()
-    dispose = owned.disposeInfra
-  },
+    dispose = disposeInfra
+  }
+  return { managers, cameras, infra, disposeInfra, TestManager, TestInfra }
+})
+vi.mock('@src/lib/engineConnection/connectionManager', () => ({
+  ConnectionManager: owned.TestManager,
+}))
+vi.mock('@src/clientSideScene/sceneInfra', () => ({
+  SceneInfra: owned.TestInfra,
 }))
 vi.mock('@src/lib/kcl/scene/connection', () => ({ connectScene: vi.fn() }))
 vi.mock('@src/lib/kcl/runtime', () => ({ createKclRuntime: vi.fn() }))
@@ -71,34 +75,20 @@ beforeEach(() => {
 })
 function setup() {
   const connection = {
+    presentation: 'streamed',
+    id: 'test-connection',
+    mediaStream: undefined,
     attachVideo: vi.fn<SceneConnection['attachVideo']>(() =>
       vi.fn<() => void>()
     ),
-    resize: vi.fn(async () => {}),
-    send: vi.fn(async () => {}),
+    resize: vi.fn<SceneConnection['resize']>(async () => {}),
+    send: vi.fn<SceneConnection['send']>(async () => null),
     dispose: vi.fn(),
-  }
-  const model = {
-    events: new EventTarget(),
-    state: signal(emptyExecState()),
-    failed: signal(false),
-    executing: signal(false),
-    exportModel: vi.fn(),
-    dispose: vi.fn(async () => {}),
-  }
-  vi.mocked(connectScene).mockResolvedValue(
-    connection as unknown as Exclude<
-      Awaited<ReturnType<typeof connectScene>>,
-      Error
-    >
-  )
-  vi.mocked(createKclRuntime).mockResolvedValue(
-    model as unknown as Awaited<ReturnType<typeof createKclRuntime>>
-  )
-  const settings = {
-    current: signal(createSettings()),
-    actor: {},
-  } as unknown as SettingsRegistryService
+  } satisfies SceneConnection
+  const model = createTestKclRuntime()
+  vi.mocked(connectScene).mockResolvedValue(connection)
+  vi.mocked(createKclRuntime).mockResolvedValue(model)
+  const settings = createTestSettings()
   const preferences = createScenePresentationPreferences(
     () => settings.current.value
   )
@@ -107,7 +97,7 @@ function setup() {
     model,
     preferences,
     options: {
-      wasm: Promise.resolve({} as ModuleType),
+      wasm: new Promise<ModuleType>(() => {}),
       settings,
       preferences,
       nativeSettings: createTestKclExecutionSettings(
@@ -153,6 +143,23 @@ it.each(['local', 'streamed'] as const)(
     preferences.dispose()
   }
 )
+it('frames a local camera only once across renderer attachments, and independently for another scene', async () => {
+  const { options, preferences } = setup()
+  const first = await openKclScene({ ...options, presentation: 'local' })
+  const second = await openKclScene({ ...options, presentation: 'local' })
+  if (first instanceof Error || second instanceof Error)
+    return expect.fail('Unable to open scenes')
+  try {
+    expect(first.localHost?.claimInitialCameraFrame?.()).toBe(true)
+    expect(first.localHost?.claimInitialCameraFrame?.()).toBe(false)
+    expect(second.localHost?.claimInitialCameraFrame?.()).toBe(true)
+  } finally {
+    await first.dispose()
+    await second.dispose()
+    preferences.dispose()
+  }
+})
+
 it('does not share a connection manager or camera between KCL scenes', async () => {
   const { options, preferences } = setup()
   const first = await openKclScene({ ...options, presentation: 'local' })
@@ -176,9 +183,7 @@ it('releases a connection if native startup completes after cancellation', async
   })
   await vi.waitFor(() => expect(createKclRuntime).toHaveBeenCalledOnce())
   controller.abort()
-  pending.resolve(
-    model as unknown as Awaited<ReturnType<typeof createKclRuntime>>
-  )
+  pending.resolve(model)
   expect(await opening).toBeInstanceOf(Error)
   expect(connection.dispose).toHaveBeenCalledOnce()
   expect(model.dispose).toHaveBeenCalledOnce()
@@ -190,14 +195,8 @@ it('applies only changed camera and stream preferences, preserving the camera on
   const { options, preferences } = setup()
   const scene = await openKclScene({ ...options, presentation: 'streamed' })
   if (scene instanceof Error) return expect.fail(scene.message)
-  const camera = owned.cameras[0] as {
-    setCameraProjection: ReturnType<typeof vi.fn>
-    initTouchControls: ReturnType<typeof vi.fn>
-  }
-  const manager = owned.managers[0] as {
-    setTheme: ReturnType<typeof vi.fn>
-    setViewportRendering: ReturnType<typeof vi.fn>
-  }
+  const camera = owned.cameras[0]
+  const manager = owned.managers[0]
   try {
     await scene.applySettings()
     options.settings.current.peek().modeling.highlightEdges.user =
@@ -232,7 +231,7 @@ it.each(['local', 'streamed'] as const)(
     vi.mocked(createKclRuntime).mockRejectedValueOnce(failure)
     expect(await openKclScene({ ...options, presentation })).toBe(failure)
     expect(connection.dispose).toHaveBeenCalledOnce()
-    const manager = owned.managers[0] as { connection: EventTarget }
+    const manager = owned.managers[0]
     manager.connection.dispatchEvent(new Event(EngineConnectionEvents.Closed))
     expect(options.onDisconnect).not.toHaveBeenCalled()
     expect(owned.cameras).toHaveLength(0)
@@ -257,7 +256,7 @@ it('tracks the captured connection and removes its close listener on disposal', 
   const { options, preferences } = setup()
   const scene = await openKclScene({ ...options, presentation: 'local' })
   if (scene instanceof Error) return expect.fail(scene.message)
-  const manager = owned.managers[0] as { connection: EventTarget }
+  const manager = owned.managers[0]
   const opened = manager.connection
   expect(scene.isConnected()).toBe(true)
   manager.connection = new EventTarget()

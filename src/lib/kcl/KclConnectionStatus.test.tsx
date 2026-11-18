@@ -1,10 +1,9 @@
-import { signal } from '@preact/signals-core'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { KclConnectionStatus } from '@src/lib/kcl/KclConnectionStatus'
 import type { KclSceneResource, OpenKclScene } from '@src/lib/kcl/scene'
 import { createKclSession } from '@src/lib/kcl/session'
-import type { ScenePresentationPreferences } from '@src/lib/kcl/presentationPreferences'
+import { createTestKclScene } from '@src/lib/kcl/testFixtures'
 
 beforeEach(() => {
   vi.stubGlobal(
@@ -34,20 +33,7 @@ it.each(['streamed', 'local'] as const)(
       clientHeight: { value: 150 },
     })
     session.attach(container)
-    const resource = {
-      element: document.createElement('div'),
-      presentation,
-      preferences: {
-        camera: signal({}),
-        appearance: signal({}),
-        localRenderer: signal({}),
-      } as unknown as ScenePresentationPreferences,
-      resize: async () => {},
-      resume: () => {},
-      applySettings: async () => {},
-      isConnected: () => true,
-      dispose: async () => {},
-    } as unknown as KclSceneResource
+    const resource = createTestKclScene(presentation)
     const mounted = render(<KclConnectionStatus session={session} />)
     try {
       expect(

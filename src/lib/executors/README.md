@@ -6,6 +6,9 @@ without one capability's failure hiding the others. Typed `output.get(capability
 lookups preserve the data type declared by that capability. A capability may supply
 a reactive `revision` for additional inputs, such as imported buffers; a changed
 revision interrupts the previous run even when the bound editor is unchanged.
+A revision reader can instead receive the specific executor and read its owned
+inputs, so sibling views need not refresh for a preference that affects only one
+of their captured presentations.
 
 Creating or acquiring an executor for a closed editor returns an `Error` without
 retaining resources. `executionContext` passes that error to the mode binding.

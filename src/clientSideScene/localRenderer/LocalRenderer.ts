@@ -234,8 +234,9 @@ export class LocalRenderer {
   private executionVersion = 0
   /** The engine scene generation of the model on screen, once it has loaded. */
   private loadedSceneGeneration: number | null = null
-  /** A camera reset waiting for the next model. The first model always gets one. */
-  private cameraResetPending = true
+  /** Explicit camera resets wait for a loaded model; initial framing belongs to the host when supplied. */
+  private cameraResetPending = false
+  private initialModelLoaded = false
   private camera: PerspectiveCamera | OrthographicCamera | null = null
   private ambientOcclusionRadius = 0.01
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
@@ -1492,7 +1493,11 @@ export class LocalRenderer {
    * skips because the model is not loaded yet.
    */
   private resetCameraIfPending() {
-    if (this.cameraResetPending) {
+    const frameInitialModel =
+      !this.initialModelLoaded &&
+      (this.host.claimInitialCameraFrame?.() ?? true)
+    this.initialModelLoaded = true
+    if (this.cameraResetPending || frameInitialModel) {
       this.cameraResetPending = false
       this.resetCamera()
     }
