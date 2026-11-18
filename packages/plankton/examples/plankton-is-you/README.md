@@ -22,7 +22,7 @@ installation. After changing Plankton itself, reinstall the local dependency.
 
 1. Move with arrows or WASD. The board fills the viewport within its bounds;
    the surrounding area is letterboxed. The hedge blocks the flag, and bushes
-   enclose `PLNK IS YOU`. `BUSH IS STOP` is on the far side of the hedge.
+   enclose `PLNK IS YOU`. `BUSH IS STOP` and `FLAG IS WIN` are on the far side of the hedge.
 2. Click any tile to edit its definition, or move the cursor near the right
    edge and click the editor as it peeks out. Vocabulary appears above live rules.
 3. Choose an entity or word from the vocabulary. Paint its pixels and publish.
@@ -41,7 +41,8 @@ The drawer pauses character input. Palette placement also pauses play until a
 cell is chosen, Escape is pressed, or **Resume play** is clicked. Closing the
 drawer restores board focus. Nothing advances on a timer. Publishing changes the
 vocabulary immediately; turn effects run on the next movement or Wait action.
-Z undoes a board edit or turn. Reset reloads the puzzle while keeping authored
+Click a placed tile, then **Remove tile** to delete that instance. The editor's
+Undo button or Z after resuming restores removals, placements, and turns. Reset reloads the puzzle while keeping authored
 extensions. Reloading the page starts fresh.
 
 ## Where Plankton participates

@@ -66,7 +66,7 @@ export const bushPuzzle: Puzzle = {
   definitions: initialDefinitions,
   placements: [
     ...['PLNK', 'IS', 'YOU'].map((type, x) => word(type, x + 1, 1)),
-    ...['FLAG', 'IS', 'WIN'].map((type, x) => word(type, x + 1, 4)),
+    ...['FLAG', 'IS', 'WIN'].map((type, x) => word(type, x + 8, 4)),
     ...['BUSH', 'IS', 'STOP'].map((type, x) => word(type, x + 8, 1)),
     word('BUSH', 1, 8),
     word('IS', 2, 8),

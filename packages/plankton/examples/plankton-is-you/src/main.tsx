@@ -48,7 +48,7 @@ const drawing = (definition: Definition, kind: Tile['kind']) =>
   kind === 'entity' && definition.kind === 'entity'
     ? definition.sprite
     : (definition.wordSprite ?? wordSprite(definition.id))
-type Selection = { definition: Definition; kind: Tile['kind'] }
+type Selection = { definition: Definition; kind: Tile['kind']; tileId?: string }
 
 function App({ runtime }: { runtime: Runtime }) {
   const { game } = runtime
@@ -81,8 +81,12 @@ function App({ runtime }: { runtime: Runtime }) {
   const [action, setAction] = useState<PropertyRecipe['action'] | ''>('')
   const [propertyColor, setPropertyColor] = useState('#ee927d')
 
-  function select(definition: Definition, kind: Tile['kind']) {
-    setSelection({ definition, kind })
+  const inspectedTile = game.board.tiles.find(
+    (tile) => tile.id === selection.tileId
+  )
+
+  function select(definition: Definition, kind: Tile['kind'], tileId?: string) {
+    setSelection({ definition, kind, tileId })
     setName(definition.id)
     setSprite(drawing(definition, kind))
     setColor(ink(definition, kind))
@@ -126,6 +130,7 @@ function App({ runtime }: { runtime: Runtime }) {
       }
       if (event.key === 'z') {
         game.undo()
+        setNotice('Undone')
         refresh()
       } else if (directions[event.key]) {
         event.preventDefault()
@@ -177,7 +182,8 @@ function App({ runtime }: { runtime: Runtime }) {
       if (!current) return
       definition = { ...current, wordSprite: [...sprite], wordColor: color }
     }
-    if (await publish(definition)) select(definition, selection.kind)
+    if (await publish(definition))
+      select(definition, selection.kind, selection.tileId)
   }
   function paint(index: number) {
     setSprite((previous) =>
@@ -200,7 +206,8 @@ function App({ runtime }: { runtime: Runtime }) {
     } else {
       const tile = game.board.tiles.find((t) => t.x === x && t.y === y)
       const definition = definitions.find((d) => d.id === tile?.type)
-      if (tile && definition) select(definition, tile.kind)
+      if (tile && definition) select(definition, tile.kind, tile.id)
+      else setSelection((previous) => ({ ...previous, tileId: undefined }))
       setOpen(true)
     }
   }
@@ -310,6 +317,7 @@ function App({ runtime }: { runtime: Runtime }) {
                   disabled={busy}
                   onClick={() => {
                     game.undo()
+                    setNotice('Undone')
                     refresh()
                   }}
                 >
@@ -337,6 +345,26 @@ function App({ runtime }: { runtime: Runtime }) {
             <Dialog.Description className="editor-description">
               Paused · {game.puzzle.title}
             </Dialog.Description>
+            {inspectedTile && (
+              <div className="inspected-tile">
+                <span>
+                  {inspectedTile.type} · {inspectedTile.x + 1},{' '}
+                  {inspectedTile.y + 1}
+                </span>
+                <button
+                  disabled={busy}
+                  onClick={() => {
+                    game.remove(inspectedTile.id)
+                    setNotice(
+                      `${inspectedTile.type} removed · Undo restores it`
+                    )
+                    refresh()
+                  }}
+                >
+                  Remove tile
+                </button>
+              </div>
+            )}
             <section>
               <h2>Installed vocabulary</h2>
               <div className="vocabulary">
@@ -399,6 +427,10 @@ function App({ runtime }: { runtime: Runtime }) {
                     className="place-button"
                     disabled={busy}
                     onClick={() => {
+                      setSelection((previous) => ({
+                        ...previous,
+                        tileId: undefined,
+                      }))
                       setPlacement({
                         type: selection.definition.id,
                         kind: selection.kind,

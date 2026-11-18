@@ -418,3 +418,21 @@ nav [aria-pressed="true"] {
     transition: none !important;
   }
 }
+.inspected-tile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid #344238;
+  padding: 0 0 14px;
+  margin-bottom: 18px;
+  font-size: 11px;
+}
+.inspected-tile span {
+  color: #a4b39c;
+}
+.inspected-tile button {
+  padding: 6px 9px;
+  color: #e5b6a6;
+  border-color: #74584f;
+}

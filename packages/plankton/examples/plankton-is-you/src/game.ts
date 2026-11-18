@@ -124,6 +124,15 @@ export class Game {
       ],
     }
   }
+  remove(id: string) {
+    if (!this.board.tiles.some((tile) => tile.id === id)) return
+    this.history.push(this.board)
+    this.board = {
+      ...this.board,
+      won: false,
+      tiles: this.board.tiles.filter((tile) => tile.id !== id),
+    }
+  }
   step(direction: Point) {
     if (this.board.won) return
     const definitions = this.definitions()

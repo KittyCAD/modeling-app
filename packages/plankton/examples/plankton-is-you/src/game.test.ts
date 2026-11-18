@@ -222,7 +222,7 @@ describe('the living vocabulary', () => {
     expect(game.board.won).toBe(false)
   })
 
-  it('encloses the control sentence and keeps STOP beyond the hedge', () => {
+  it('encloses the control sentence and keeps STOP and WIN beyond the hedge', () => {
     const blocked = new Set(
       bushPuzzle.placements
         .filter((t) => t.kind === 'entity' && t.type === 'BUSH')
@@ -254,12 +254,15 @@ describe('the living vocabulary', () => {
       }
     }
     const protectedWords = bushPuzzle.placements.filter(
-      (t) => t.kind === 'word' && t.y === 1
+      (t) => t.kind === 'word' && (t.y === 1 || t.y === 4)
     )
     expect(protectedWords.map((t) => t.type)).toEqual([
       'PLNK',
       'IS',
       'YOU',
+      'FLAG',
+      'IS',
+      'WIN',
       'BUSH',
       'IS',
       'STOP',
@@ -296,6 +299,55 @@ describe('the living vocabulary', () => {
     } finally {
       await runtime.dispose()
     }
+  })
+
+  it.each(['player', 'word-3-1'])(
+    'removes only the selected tile and restores it with undo: %s',
+    (id) => {
+      const game = new Game(bushPuzzle, () => initialDefinitions)
+      const before = game.board
+      game.remove(id)
+      expect(game.board.tiles.some((tile) => tile.id === id)).toBe(false)
+      expect(game.board.tiles).toHaveLength(before.tiles.length - 1)
+      expect(game.board.turns).toBe(0)
+      game.undo()
+      expect(game.board).toEqual(before)
+    }
+  )
+
+  it('keeps other tiles in the same cell when removing a tile', () => {
+    const game = new Game(
+      {
+        ...bushPuzzle,
+        placements: [
+          ...bushPuzzle.placements,
+          { id: 'overlapping-flag', kind: 'entity', type: 'FLAG', x: 3, y: 5 },
+        ],
+      },
+      () => initialDefinitions
+    )
+    game.remove('player')
+    expect(
+      game.board.tiles
+        .filter((tile) => tile.x === 3 && tile.y === 5)
+        .map((tile) => tile.id)
+    ).toEqual(['overlapping-flag'])
+    game.undo()
+    expect(
+      game.board.tiles
+        .filter((tile) => tile.x === 3 && tile.y === 5)
+        .map((tile) => tile.id)
+    ).toEqual(['player', 'overlapping-flag'])
+  })
+
+  it('does not consume an undo step when removing a tile that is already gone', () => {
+    const game = new Game(bushPuzzle, () => initialDefinitions)
+    game.remove('player')
+    game.remove('player')
+    game.undo()
+    expect(game.board.tiles.find((tile) => tile.id === 'player')).toMatchObject(
+      { x: 3, y: 5 }
+    )
   })
 
   it.each([
