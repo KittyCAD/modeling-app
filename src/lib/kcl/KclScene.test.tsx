@@ -8,10 +8,10 @@ vi.mock('@src/clientSideScene/localRenderer/LocalWebGPUScene', () => ({
 
 import { KclScene } from '@src/lib/kcl/KclScene'
 import { createSceneSelection } from '@src/lib/scene/selection'
-import type { Executor } from '@src/lib/executors/registry/contract'
-import { createExecutorOutput } from '@src/lib/executors/output'
-import type { KclSession } from '@src/lib/kcl/session'
-import type { KclSceneResource } from '@src/lib/kcl/scene'
+import { createExecutor } from '@src/lib/executors/executor'
+import { createEditorDocument } from '@src/lib/editors/document'
+import { createTestKclScene } from '@src/lib/kcl/testFixtures'
+import { createKclSession } from '@src/lib/kcl/session'
 
 it('keeps the visible selection count across remounts and lets the user clear it', async () => {
   const selection = createSceneSelection(
@@ -24,21 +24,23 @@ it('keeps the visible selection count across remounts and lets the user clear it
     ['region']
   )
   selection.setModel({ sceneId: Symbol(), executionId: Symbol() })
-  const resource = {
-    selection,
-    preferences: signal(undefined),
-    localHost: undefined,
-  } as unknown as KclSceneResource
-  const session = {
-    resource: signal(resource),
-    state: signal({ type: 'ready' }),
-    mount: () => () => {},
-  } as unknown as KclSession
-  const executor = {
-    output: signal(
-      createExecutorOutput({ contents: '', src: '/main.kcl', running: false })
-    ),
-  } as unknown as Executor
+  const resource = createTestKclScene('streamed', { selection })
+  const session = createKclSession(async () => resource)
+  session.resource.value = resource
+  session.state.value = { type: 'ready' }
+  const backing = createEditorDocument('')
+  const editor = {
+    ...backing.document,
+    get state() {
+      return backing.document.state
+    },
+    id: Symbol(),
+    src: signal('/main.kcl'),
+    classification: signal(undefined),
+    readOnly: signal(false),
+  }
+  const owned = createExecutor(editor, signal([]), () => {})
+  const executor = owned.executor
   try {
     const first = render(<KclScene context={{ executor, session }} />)
     expect(screen.getByLabelText('Scene selection')).toHaveTextContent(
@@ -64,6 +66,9 @@ it('keeps the visible selection count across remounts and lets the user clear it
       screen.getByRole('button', { name: 'Clear selection' })
     ).toBeDisabled()
   } finally {
+    session.dispose()
+    owned.dispose()
+    backing.dispose()
     selection.dispose()
   }
 })
