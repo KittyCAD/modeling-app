@@ -426,7 +426,7 @@ function createCoreSettings() {
         defaultValue: 'spherical',
         hideOnLevel: 'project',
         description:
-          'Choose spherical or trackball orbit. CATIA overrides this setting: spherical in the center third of the scene, trackball near the edges.',
+          'Choose spherical or trackball orbit. CATIA overrides this setting: spherical inside a central oval, trackball outside.',
         isEnabled: (context) =>
           context.modeling.mouseControls.current !== 'CATIA',
         validate: (v) => ['spherical', 'trackball'].includes(v),

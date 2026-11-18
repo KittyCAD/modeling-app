@@ -2057,10 +2057,9 @@ export class CameraControls {
       const inCenter =
         width > 0 &&
         height > 0 &&
-        x >= width / 3 &&
-        x <= (2 * width) / 3 &&
-        y >= height / 3 &&
-        y <= (2 * height) / 3
+        ((x - width / 2) / (width / 6)) ** 2 +
+          ((y - height / 2) / (height / 6)) ** 2 <=
+          1
       return inCenter ? 'rotate' : 'rotatetrackball'
     }
     if (

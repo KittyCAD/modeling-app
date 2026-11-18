@@ -1652,8 +1652,13 @@ describe('CATIA button transitions', () => {
       )
       for (const [x, y, expected] of [
         [450, 300, 'rotate'],
-        [300, 200, 'rotate'],
-        [600, 400, 'rotate'],
+        [300, 300, 'rotate'],
+        [600, 300, 'rotate'],
+        [450, 200, 'rotate'],
+        [450, 400, 'rotate'],
+        [400, 250, 'rotate'],
+        [300, 200, 'rotatetrackball'],
+        [600, 400, 'rotatetrackball'],
         [299, 300, 'rotatetrackball'],
         [601, 300, 'rotatetrackball'],
         [450, 199, 'rotatetrackball'],
@@ -1677,12 +1682,40 @@ describe('CATIA button transitions', () => {
     }
   )
 
-  it('switches orbit as the cursor crosses the center third and flushes each engine interaction', () => {
+  it.each([
+    { width: 600, height: 300, left: 0, top: 0 },
+    { width: 300, height: 600, left: 75, top: 140 },
+  ])(
+    'uses an oval inside the central-third bounds for a $width x $height scene',
+    ({ width, height, left, top }) => {
+      const { controls, canvas } = setup()
+      vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue(
+        new DOMRect(left, top, width, height)
+      )
+      for (const [x, y, expected] of [
+        [0.5, 0.5, 'rotate'],
+        [0.4, 0.4, 'rotate'],
+        [0.35, 0.35, 'rotatetrackball'],
+        [0.65, 0.65, 'rotatetrackball'],
+        [1 / 3, 1 / 3, 'rotatetrackball'],
+        [2 / 3, 2 / 3, 'rotatetrackball'],
+        [0.25, 0.5, 'rotatetrackball'],
+      ] as const) {
+        expect(
+          controls.getInteractionType(
+            pointer('pointermove', 6, -1, left + x * width, top + y * height)
+          )
+        ).toBe(expected)
+      }
+    }
+  )
+
+  it('switches orbit as the cursor crosses the oval and flushes each engine interaction', () => {
     const { controls, send } = setup()
     controls.onMouseDown(pointer('pointerdown', 4, 1, 128, 128))
     controlKey('keydown')
     controls.onMouseMove(pointer('pointermove', 4, -1, 140, 128, true))
-    controls.onMouseMove(pointer('pointermove', 4, -1, 220, 128, true))
+    controls.onMouseMove(pointer('pointermove', 4, -1, 90, 90, true))
     controls.onMouseMove(pointer('pointermove', 4, -1, 128, 140, true))
     controls.onMouseUp(pointer('pointerup', 0, 1, 128, 140, true))
     expect(dragCommands(send)).toEqual([
