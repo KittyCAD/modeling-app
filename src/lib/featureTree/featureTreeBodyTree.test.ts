@@ -113,7 +113,8 @@ describe('body feature hierarchy', () => {
     expect(tree.branches[0].operations).toEqual(nodes.slice(0, 3))
     expect(tree.branches[1].operations).toEqual([offset, nodes[3], nodes[4]])
     expect(tree.branches[0].operations[0]).toBe(tree.branches[1].operations[0])
-    expect(tree.operations).toEqual([unused])
+    expect(tree.nodes[0]).toBe(unused)
+    expect(tree.nodes).toHaveLength(3)
   })
 
   it('identifies outputs of one extrude by their profiles across reordered rebuilds', () => {
@@ -196,7 +197,7 @@ describe('body feature hierarchy', () => {
     )
     expect(tree.branches[0].operations).toEqual([...regions, operation])
     expect(tree.branches[0].operations[1]).toBe(regions[1])
-    expect(tree.operations).toEqual([])
+    expect(tree.nodes).toHaveLength(1)
   })
   it('keeps expansion identities when execution changes engine IDs, offsets and body order', () => {
     const parent: Extract<Operation, { type: 'ModuleInstance' }> = {
@@ -327,7 +328,7 @@ describe('body feature hierarchy', () => {
     const b = sweep('b', 20)
     const nodes = [call(10), call(20), call(30, 'a')]
     const tree = buildBodyOperationTree(nodes, bodies(a, b), graph(a, b))
-    expect(tree.operations).toEqual([])
+    expect(tree.nodes).toHaveLength(2)
     expect(tree.branches.map((branch) => branch.operations)).toEqual([
       [nodes[0], nodes[2]],
       [nodes[1]],
@@ -337,12 +338,15 @@ describe('body feature hierarchy', () => {
   it('keeps parameters and unresolved features at the root without dropping them', () => {
     const a = sweep('a', 10)
     const nodes = [call(0), call(10), call(20)]
-    expect(
-      buildBodyOperationTree(nodes, bodies(a), graph(a)).operations
-    ).toEqual([nodes[0], nodes[2]])
-    expect(
-      buildBodyOperationTree(nodes, new Map(), graph()).operations
-    ).toEqual(nodes)
+    const tree = buildBodyOperationTree(nodes, bodies(a), graph(a))
+    expect(tree.nodes).toEqual([
+      nodes[0],
+      nodes[2],
+      { body: tree.branches[0], children: [nodes[1]] },
+    ])
+    expect(buildBodyOperationTree(nodes, new Map(), graph()).nodes).toEqual(
+      nodes
+    )
   })
 
   it('keeps a shared sketch accessible from both bodies without pulling in the other extrusion', () => {
@@ -439,7 +443,6 @@ describe('body feature hierarchy', () => {
       )
     )
     expect(tree.nodes).toEqual([{ body: tree.branches[0], children: nodes }])
-    expect(tree.operations).toEqual([])
   })
 
   it('retains a region and its sketch when a Boolean output reuses the profile ID', () => {
@@ -504,7 +507,10 @@ describe('body feature hierarchy', () => {
       nodes[3],
       nodes[4],
     ])
-    expect(tree.operations).toEqual([nodes[2]])
+    expect(tree.nodes).toEqual([
+      nodes[2],
+      { body: tree.branches[0], children: tree.branches[0].operations },
+    ])
   })
 
   it('keeps pattern copies and their edits in the source body history', () => {
@@ -532,7 +538,7 @@ describe('body feature hierarchy', () => {
     expect(tree.branches.map((branch) => branch.id)).toEqual(['a'])
     expect(tree.branches[0].artifact).toBe(a)
     expect(tree.branches[0].operations).toEqual(nodes)
-    expect(tree.operations).toEqual([])
+    expect(tree.nodes).toHaveLength(1)
   })
 
   it('groups nested 3D patterns without combining unrelated source bodies', () => {
@@ -602,7 +608,6 @@ describe('body feature hierarchy', () => {
       graph(a)
     )
     expect(tree.branches[0].operations).toEqual([feature])
-    expect(tree.operations).toEqual([{ parent, children: [other] }])
     expect(tree.nodes).toEqual([
       {
         parent,

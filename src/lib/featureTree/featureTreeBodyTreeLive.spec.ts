@@ -13,7 +13,7 @@ test('housing live rows have unique render keys before source paths are filled',
   const world = await buildTheWorldAndNoEngineConnection()
   try {
     const code = await readFile(
-      'e2e/playwright/fixtures/pump-housing.kcl',
+      'public/kcl-samples/artificial-heart/housing.kcl',
       'utf8'
     )
     let operations = emptyOperationsByModule()

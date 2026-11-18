@@ -11,7 +11,7 @@ test(
   async ({ page, homePage, scene, editor, toolbar }, testInfo) => {
     await page.setBodyDimensions({ width: 1440, height: 1000 })
     const code = await readFile(
-      'e2e/playwright/fixtures/pump-housing.kcl',
+      'public/kcl-samples/artificial-heart/housing.kcl',
       'utf8'
     )
     await homePage.goToModelingScene()

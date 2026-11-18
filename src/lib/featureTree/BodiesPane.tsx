@@ -1,4 +1,4 @@
-import type { PropsOf } from '@headlessui/react/dist/types'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { useSignals } from '@preact/signals-react/runtime'
 import {
   ContextMenuDivider,
@@ -21,7 +21,6 @@ import { engineIdForArtifact } from '@src/lang/std/kclNamedViews'
 import { useSingletons } from '@src/lib/boot'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import {
-  type HideOperation,
   getHideOpByArtifactId,
   onDelete,
   onHide,
@@ -40,31 +39,6 @@ export function BodiesPane(props: AreaTypeComponentProps) {
   const artifactGraph = execState.artifactGraph
   const operations = getAllOperations(execState.operations)
   const bodies = getBodiesFromArtifactGraph(artifactGraph)
-  const bodiesWithProps: Map<string, PropsOf<typeof BodyItem>> = new Map()
-
-  if (operations) {
-    let i = 0
-    for (let [id, artifact] of bodies || new Map()) {
-      const patternIndex =
-        artifact.type === 'pattern'
-          ? Math.max(0, artifact.copyIds.indexOf(id) + 1)
-          : undefined
-      const hideOperation =
-        getHideOpByArtifactId(operations, id) ??
-        (artifact.type === 'pattern' && patternIndex === 0
-          ? getHideOpByArtifactId(operations, artifact.sourceId)
-          : undefined)
-      bodiesWithProps.set(id, {
-        artifact,
-        artifactGraph,
-        label: `Body ${i + 1}`,
-        hideOperation,
-        engineEntityId: artifact.type === 'pattern' ? id : undefined,
-        patternIndex,
-      })
-      i++
-    }
-  }
 
   return (
     <LayoutPanel
@@ -77,26 +51,22 @@ export function BodiesPane(props: AreaTypeComponentProps) {
         icon="model"
         title={props.layout.label}
       />
-      {bodies && <BodiesList bodies={bodiesWithProps} />}
+      <section className="overflow-auto mr-1 pb-8">
+        <ul>
+          {Array.from(bodies, ([id, artifact], index) => (
+            <li key={id || index}>
+              <BodyItem
+                id={id}
+                label={`Body ${index + 1}`}
+                artifact={artifact}
+                artifactGraph={artifactGraph}
+                operations={operations}
+              />
+            </li>
+          ))}
+        </ul>
+      </section>
     </LayoutPanel>
-  )
-}
-
-function BodiesList({
-  bodies,
-}: {
-  bodies: Map<string, PropsOf<typeof BodyItem>>
-}) {
-  return (
-    <section className="overflow-auto mr-1 pb-8">
-      <ul>
-        {Array.from(bodies.entries()).map(([id, props], i) => (
-          <li key={id || i}>
-            <BodyItem {...props} />
-          </li>
-        ))}
-      </ul>
-    </section>
   )
 }
 
@@ -104,17 +74,15 @@ export function BodyItem({
   label,
   artifact,
   artifactGraph,
-  hideOperation,
-  engineEntityId,
-  patternIndex,
+  id = artifact.id,
+  operations,
   disabled = false,
 }: {
   label: string
   artifact: SolidArtifact
   artifactGraph: ArtifactGraph
-  hideOperation?: HideOperation
-  engineEntityId?: string
-  patternIndex?: number
+  id?: string
+  operations: Operation[]
   disabled?: boolean
 }) {
   const { kclManager } = useSingletons()
@@ -124,6 +92,16 @@ export function BodyItem({
     send: modelingSend,
   } = useModelingContext()
 
+  const engineEntityId = artifact.type === 'pattern' ? id : undefined
+  const patternIndex =
+    artifact.type === 'pattern'
+      ? Math.max(0, artifact.copyIds.indexOf(id) + 1)
+      : undefined
+  const hideOperation =
+    getHideOpByArtifactId(operations, id) ??
+    (artifact.type === 'pattern' && patternIndex === 0
+      ? getHideOpByArtifactId(operations, artifact.sourceId)
+      : undefined)
   const sourceRange = sourceRangeFromRust(artifact.codeRef.range)
   const artifactCodeRef = getCodeRefsByArtifactId(
     artifact.id,

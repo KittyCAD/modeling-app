@@ -5,7 +5,7 @@ import {
   isOperationTreeBranch,
   type OperationTreeNode,
 } from '@src/lib/featureTree/featureTreeOperationTree'
-import { isArray } from '@src/lib/utils'
+import { incrementMapCounter, isArray } from '@src/lib/utils'
 
 export type BodyArtifact = Extract<
   Artifact,
@@ -121,15 +121,15 @@ export function buildBodyOperationTree(
   const order = new Map(
     operations.map((operation, index) => [operation, index])
   )
-  const atRange = new Map<string, Operation[]>()
+  const atRange = new Map<string, Operation>()
   for (const operation of operations) {
     if (!('sourceRange' in operation)) continue
     const key = operation.sourceRange.join(',')
-    atRange.set(key, [...(atRange.get(key) ?? []), operation])
+    if (!atRange.has(key)) atRange.set(key, operation)
   }
   const producer = (artifact: Artifact) => {
     const range = definitionRange(artifact)
-    return range ? atRange.get(range.join(','))?.[0] : undefined
+    return range ? atRange.get(range.join(',')) : undefined
   }
   const producingOperations = new Set(
     [...graph.values()]
@@ -349,11 +349,7 @@ export function buildBodyOperationTree(
   )
   // Never attach a remembered choice to an indistinguishable sibling.
   const keyCounts = new Map<string, number>()
-  for (const body of branches)
-    keyCounts.set(
-      body.expansionKey,
-      (keyCounts.get(body.expansionKey) ?? 0) + 1
-    )
+  for (const body of branches) incrementMapCounter(keyCounts, body.expansionKey)
   for (const body of branches)
     if ((keyCounts.get(body.expansionKey) ?? 0) > 1)
       body.expansionKey += body.id
@@ -379,14 +375,5 @@ export function buildBodyOperationTree(
         .map((body) => ({ body, children: body.operations })),
     ]
   }
-  function unassigned(items: OperationTreeNode[]): OperationTreeNode[] {
-    return items.flatMap((node): OperationTreeNode[] => {
-      if (isOperationTreeBranch(node)) {
-        const children = unassigned(node.children)
-        return children.length ? [{ ...node, children }] : []
-      }
-      return assigned.has(node) ? [] : [node]
-    })
-  }
-  return { branches, nodes: assemble(nodes, 0), operations: unassigned(nodes) }
+  return { branches, nodes: assemble(nodes, 0) }
 }

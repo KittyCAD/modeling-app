@@ -82,7 +82,7 @@ test('PC Fan keeps the housing Boolean inputs beneath its three bodies', async (
 
 test('pump housing nests all contributing features beneath its six bodies', async () => {
   const code = await readFile(
-    'e2e/playwright/fixtures/pump-housing.kcl',
+    'public/kcl-samples/artificial-heart/housing.kcl',
     'utf8'
   )
   const state = await world.rustContext.execute(
@@ -95,7 +95,6 @@ test('pump housing nests all contributing features beneath its six bodies', asyn
     state.artifactGraph
   )
   expect(tree.branches).toHaveLength(6)
-  expect(tree.operations).toEqual([])
   expect(tree.nodes.every((node) => !isArray(node) && 'body' in node)).toBe(
     true
   )

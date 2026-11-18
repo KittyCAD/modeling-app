@@ -37,7 +37,6 @@ import {
   getOperationTreeNodeKey,
 } from '@src/lib/featureTree/featureTreeOperationTree'
 import {
-  getHideOpByArtifactId,
   getHideOperations,
   getOperationCalculatedDisplay,
   getOperationIcon,
@@ -323,24 +322,6 @@ export const FeatureTreePaneContents = memo(() => {
     )
   }
 
-  const renderOperation = (node: BodyTreeNode, index: number) => (
-    <OperationTreeNodeItem
-      key={getBodyTreeNodeRenderKey(node, index)}
-      node={node}
-      expansionKey={getBodyTreeNodeKey(node)}
-      code={operationsCode}
-      isStaleReference={isReadOnlyFeatureTree}
-      sketchNoFace={sketchNoFace}
-      systemDeps={systemDeps}
-      modelingActor={modelingActor}
-      engineCommandManager={engineCommandManager}
-      onSelect={selectOperation}
-      visibilityOperations={visibilityOperations}
-      editorSelection={editorSelection}
-      liveLatestOperationKey={liveLatestOperationKey}
-    />
-  )
-
   const tree = (
     <div className="relative">
       <section
@@ -417,7 +398,23 @@ export const FeatureTreePaneContents = memo(() => {
               </div>
             </div>
           )}
-          {bodyTree.nodes.map(renderOperation)}
+          {bodyTree.nodes.map((node, index) => (
+            <OperationTreeNodeItem
+              key={getBodyTreeNodeRenderKey(node, index)}
+              node={node}
+              expansionKey={getBodyTreeNodeKey(node)}
+              code={operationsCode}
+              isStaleReference={isReadOnlyFeatureTree}
+              sketchNoFace={sketchNoFace}
+              systemDeps={systemDeps}
+              modelingActor={modelingActor}
+              engineCommandManager={engineCommandManager}
+              onSelect={selectOperation}
+              visibilityOperations={visibilityOperations}
+              editorSelection={editorSelection}
+              liveLatestOperationKey={liveLatestOperationKey}
+            />
+          ))}
         </>
       </section>
     </div>
@@ -442,17 +439,7 @@ function BodyBranchGroup({
   useSignals()
   const { kclManager } = props.systemDeps
   const artifactGraph = kclManager.execStateSignal.value.artifactGraph
-  const bodyOperations = props.visibilityOperations
   const { id, artifact, index } = branch
-  const patternIndex =
-    artifact.type === 'pattern'
-      ? Math.max(0, artifact.copyIds.indexOf(id) + 1)
-      : undefined
-  const hideOperation =
-    getHideOpByArtifactId(bodyOperations, id) ??
-    (artifact.type === 'pattern' && patternIndex === 0
-      ? getHideOpByArtifactId(bodyOperations, artifact.sourceId)
-      : undefined)
   return (
     <FeatureTreeDisclosure
       expansionKey={props.expansionKey}
@@ -473,12 +460,11 @@ function BodyBranchGroup({
         </Disclosure.Button>
         <div className="flex-1 min-w-0">
           <BodyItem
+            id={id}
             label={`Body ${index + 1}`}
             artifact={artifact}
             artifactGraph={artifactGraph}
-            hideOperation={hideOperation}
-            engineEntityId={artifact.type === 'pattern' ? id : undefined}
-            patternIndex={patternIndex}
+            operations={props.visibilityOperations}
             disabled={props.isStaleReference || kclManager.isExecuting}
           />
         </div>
