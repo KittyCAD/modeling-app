@@ -120,23 +120,15 @@ part001 = startSketchOn(XZ)
       })
 
       await test.step('Right click on bracket navigates to its source', async () => {
-        {
-          const [clickBracket] = await scene.makeSelectionHelpers({
-            kind: 'face',
-            index: 1,
-            stream: { x: 0.45, y: 0.45, format: 'ratio' },
-          })
-          await clickBracket()
-        }
+        await expect(laterCode).not.toBeInViewport()
+        const [clickBracket] = (await page.evaluate(
+          () => window.engineCommandManager.geometryOnly
+        ))
+          ? await scene.findPickableModelFace()
+          : scene.makeMouseHelpers(0.45, 0.45, { format: 'ratio' })
+        await clickBracket()
         await expect(page.getByText('1 face')).toBeVisible()
-        {
-          const [clickBracket] = await scene.makeSelectionHelpers({
-            kind: 'face',
-            index: 1,
-            stream: { x: 0.45, y: 0.45, format: 'ratio' },
-          })
-          await clickBracket({ shouldRightClick: true })
-        }
+        await clickBracket({ shouldRightClick: true })
         await expect(viewKclSourceCodeOption).toBeVisible()
         await expect(viewKclSourceCodeOption).toBeEnabled()
         await expect(editor.codeContent).not.toBeVisible()
