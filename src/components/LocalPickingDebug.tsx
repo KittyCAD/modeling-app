@@ -29,11 +29,11 @@ export function LocalPickingDebug() {
             renderer?.setEdgePickingMode(event.target.value as EdgePickingMode)
           }
         >
-          <option value="gpu-growth">GPU growth</option>
-          <option value="original-main">Original main</option>
+          <option value="original-main">Original</option>
           <option value="fixed-24">Fixed 24px</option>
           <option value="depth-offset">Depth offset</option>
           <option value="cpu-search">CPU nearest edge</option>
+          <option value="gpu-growth">GPU growth</option>
           <option value="zoom-growth">Zoom-adjusted GPU growth</option>
         </select>
       </label>
