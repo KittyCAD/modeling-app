@@ -1,4 +1,5 @@
-import { appendValueSpec, defineContract } from '@kittycad/registry'
+import { inputs, observe } from '@src/registry/inputs'
+import { Facet, contract } from 'plankton'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { ComponentType } from 'react'
 import type { Executor } from '@src/lib/executors/registry/contract'
@@ -24,9 +25,14 @@ export interface ModelingStatusItem {
   order: number
   Component: ComponentType<{ context: ModelingViewContext }>
 }
-export const modelingViewContract = defineContract({
-  modelingStatusItemsValueSpec: appendValueSpec<ModelingStatusItem>(
-    'modeling-view.status-items'
-  ),
+export const modelingViewContract = contract({
+  modelingStatusItemsFacet: new Facet<
+    ModelingStatusItem,
+    readonly ModelingStatusItem[]
+  >('modeling-view.status-items', (values) => values),
 })
-export const { modelingStatusItemsValueSpec } = modelingViewContract
+export const { modelingStatusItemsFacet } = modelingViewContract
+
+export const observations = inputs({
+  modelingStatusItemsFacet: observe(modelingStatusItemsFacet),
+})

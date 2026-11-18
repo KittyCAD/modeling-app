@@ -88,7 +88,7 @@ See [the selection contract](../scene/README.md#view-selection-and-dialog-pickin
 
 ## View status
 
-`modelingStatusItemsValueSpec` contributes items to the owning view's footer.
+`modelingStatusItemsFacet` contributes items to the owning view's footer.
 Items receive its `ModelingViewContext`, including selection and execution state.
 The default screenshot, measurement, analysis, selection, and units controls reuse
 their legacy views through adapters. App-wide status stays in the project footer.

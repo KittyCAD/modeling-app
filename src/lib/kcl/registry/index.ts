@@ -1,22 +1,34 @@
-import {
-  kclExecutionSettingsExtension,
-  kclExecutionSettingsFactory,
-} from '@src/lib/kcl/scene/executionSettingsRegistry'
-import { kcl } from '@kittycad/codemirror-lang-kcl'
 import { factory, contribute } from 'plankton'
+import { observations as settingsInput } from '@src/registry/contracts/settings'
+import { observations as authInput } from '@src/registry/contracts/auth'
+import { observations as executorsInput } from '@src/lib/executors/registry/contract'
+import { observations as wasmInput } from '@src/registry/contracts/wasm'
+import { observations as filesInput } from '@src/registry/contracts/fileOperations'
+import { observations as modelingInput } from '@src/lib/kcl/registry/contract'
+import {
+  kclExecutionSettingsFactory,
+  kclExecutionSettingsExtension,
+} from '@src/lib/kcl/scene/executionSettingsRegistry'
+import { modelingStatusItemsFacet } from '@src/lib/kcl/registry/contract'
+import { defaultModelingStatusItems } from '@src/lib/kcl/statusItems'
+import { createMeasurementToolService } from '@src/registry/extensions/engineScene/measurementToolService'
+import { createPhysicalAnalysisService } from '@src/registry/extensions/engineScene/physicalAnalysis/physicalAnalysisService'
+import { kcl } from '@kittycad/codemirror-lang-kcl'
 import { computed, signal } from '@preact/signals-core'
 import { editorKclHighlight } from '@src/editor/plugins/theme'
 import { initialiseWasm } from '@src/lang/wasmUtils'
+import {
+  readKclVersion,
+  readKclFileExtensions,
+} from '@src/lib/kcl/nativeInputs'
+import type { ScenePresentation } from '@src/lib/kcl/scene/connection'
 import {
   codeEditorsExtensionFacet,
   editorLanguagesFacet,
   editorViewsFacet,
 } from '@src/lib/editors/registry/contract'
 import { defineEditorView } from '@src/lib/editors/views'
-import {
-  executorCapabilityFacet,
-  observations as executorInputs,
-} from '@src/lib/executors/registry/contract'
+import { executorCapabilityFacet } from '@src/lib/executors/registry/contract'
 import { createKclExecution } from '@src/lib/kcl/executor'
 import { KclScene } from '@src/lib/kcl/KclScene'
 import { openKclScene } from '@src/lib/kcl/scene'
@@ -25,37 +37,27 @@ import { createScenePresentationPreferences } from '@src/lib/kcl/presentationPre
 import projectSourcesExtension from '@src/lib/projectSession/registry/sources'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
 import { isErr } from '@src/lib/trap'
-import { observations as authInputs } from '@src/registry/contracts/auth'
-import { observations as settingsInputs } from '@src/registry/contracts/settings'
-import { observations as wasmInputs } from '@src/registry/contracts/wasm'
-import {
-  readKclFileExtensions,
-  readKclVersion,
-} from '@src/lib/kcl/nativeInputs'
-import type { ScenePresentation } from '@src/lib/kcl/scene/connection'
-
-/**
- * Contributes KCL Code syntax, execution, and a Modeling mode for KCL documents.
- * The mode's context creates a distinct executor per view, so views share editor
- * text/history while each owns its connection, native model, and camera.
- */
 const extension = factory({
   key: 'kcl',
   dependencies: {
     nativeSettings: kclExecutionSettingsFactory,
     sources: projectSourcesExtension,
-    settingsInput: settingsInputs,
-    auth: authInputs,
-    wasmInput: wasmInputs,
-    executorsInput: executorInputs,
+    settingsInput: settingsInput,
+    authInput: authInput,
+    executorsInput: executorsInput,
+    wasmInput: wasmInput,
+    filesInput: filesInput,
+    modelingInput: modelingInput,
   },
   create: ({
     nativeSettings,
     sources,
     settingsInput,
-    auth,
-    wasmInput,
+    authInput,
     executorsInput,
+    wasmInput,
+    filesInput,
+    modelingInput,
   }) => {
     let fallbackWasm: ReturnType<typeof initialiseWasm> | undefined
     const getWasm = () =>
@@ -87,7 +89,7 @@ const extension = factory({
               settings,
               nativeSettings,
               preferences,
-              token: auth.authService.current.value?.token.peek(),
+              token: authInput.authService.current.value?.token.peek(),
               presentation: presentation.peek(),
               kclVersion: isErr(version) ? undefined : version,
               size,
@@ -128,7 +130,21 @@ const extension = factory({
       const executor = executors.createExecutor(editor)
       if (isErr(executor)) return executor
       onDispose(() => executors.closeExecutor(executor.id))
-      return { executor, session: execution.getSession(executor) }
+      const measurement = createMeasurementToolService()
+      const physicalAnalysis = createPhysicalAnalysisService()
+      onDispose(() => {
+        measurement.close()
+        physicalAnalysis.close()
+      })
+      return {
+        executor,
+        session: execution.getSession(executor),
+        wasm: getWasm(),
+        fileOperations: filesInput.fileOperationsService.current.value,
+        measurement,
+        physicalAnalysis,
+        statusItems: modelingInput.modelingStatusItemsFacet,
+      }
     })({
       id: 'kcl.modeling',
       label: 'Modeling',
@@ -138,6 +154,9 @@ const extension = factory({
     })
     return {
       items: [
+        ...defaultModelingStatusItems.map((item) =>
+          contribute(modelingStatusItemsFacet, () => item)
+        ),
         contribute(executorCapabilityFacet, () => execution.capability),
         contribute(editorViewsFacet, () => modelingView),
         contribute(editorLanguagesFacet, () => ({
@@ -154,9 +173,7 @@ const extension = factory({
     }
   },
 })
-
 export default [
-  // The legacy file route needs these inputs even with project-shell editing off.
   kclExecutionSettingsExtension,
   withProjectShellFeature(extension, 'kcl'),
 ]
