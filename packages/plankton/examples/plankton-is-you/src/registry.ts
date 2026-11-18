@@ -13,11 +13,12 @@ import { builtInActions } from './actions'
 import { bushPuzzle } from './content'
 import { type Action, type Definition, Game, type Puzzle } from './game'
 import {
+  type OutcomeMeaning,
   type OutcomeProgram,
   type OutcomeRow,
-  type OutcomeWord,
-  outcomeWords,
+  outcomeMeanings,
   parseOutcomeRows,
+  resolveOutcomeVocabulary,
   startingOutcomeRows,
 } from './outcomes'
 
@@ -27,9 +28,9 @@ export const gameContract = contract({
     (values: readonly Definition[]) => values
   ),
   actions: new Facet('game.actions', (values: readonly Action[]) => values),
-  outcomeWords: new Facet(
-    'game.outcomeWords',
-    (words: readonly OutcomeWord[]) => words
+  outcomeMeanings: new Facet(
+    'game.outcomeMeanings',
+    (words: readonly OutcomeMeaning[]) => words
   ),
   outcomeProgram: new Facet(
     'game.outcomeProgram',
@@ -67,16 +68,19 @@ export async function openGame() {
   }
   const startingContent = slot(compileDefinitions(initialPuzzle.definitions))
   const authoredActions = slot([])
-  const authoredOutcomeWords = slot([])
-  const startingProgram = parseOutcomeRows(startingOutcomeRows, outcomeWords)
+  const authoredOutcomeMeanings = slot([])
+  const startingProgram = parseOutcomeRows(
+    startingOutcomeRows,
+    resolveOutcomeVocabulary(initialPuzzle.definitions, outcomeMeanings)
+  )
   if (!startingProgram.ok) throw new Error(startingProgram.errors.join('; '))
   const outcomeProgram = slot([
     contribute(gameContract.outcomeProgram, () => startingProgram.program, {
       key: 'editor',
     }),
   ])
-  const predicateExtensions = outcomeWords.map((word) =>
-    contribute(gameContract.outcomeWords, () => word, { key: word.id })
+  const predicateExtensions = outcomeMeanings.map((word) =>
+    contribute(gameContract.outcomeMeanings, () => word, { key: word.id })
   )
   const actions = builtInActions.map((action) =>
     contribute(gameContract.actions, () => action, { key: action.id })
@@ -85,12 +89,12 @@ export async function openGame() {
     create: (_dependencies, scope) => {
       const definitions = scope.observe(gameContract.definitions)
       const actions = scope.observe(gameContract.actions)
-      const words = scope.observe(gameContract.outcomeWords)
+      const words = scope.observe(gameContract.outcomeMeanings)
       const program = scope.observe(gameContract.outcomeProgram)
       const game = new Game(initialPuzzle, {
         definitions: () => definitions.value,
         actions: () => actions.value,
-        outcomeWords: () => words.value,
+        outcomeMeanings: () => words.value,
         outcomeProgram: () => program.value,
       })
       return {
@@ -106,7 +110,7 @@ export async function openGame() {
     actions,
     authoredActions,
     predicateExtensions,
-    authoredOutcomeWords,
+    authoredOutcomeMeanings,
     outcomeProgram,
     session,
   ])
@@ -114,7 +118,7 @@ export async function openGame() {
   let authored: readonly Definition[] = []
   let customActions: readonly Action[] = []
   let deleted = new Set<string>()
-  let customOutcomeWords: readonly OutcomeWord[] = []
+  let customOutcomeMeanings: readonly OutcomeMeaning[] = []
   const vocabulary = (
     definitions: readonly Definition[],
     excluded: ReadonlySet<string>
@@ -131,14 +135,17 @@ export async function openGame() {
     game: board,
     registry,
     actions: registry.observe(gameContract.actions),
-    outcomeWords: registry.observe(gameContract.outcomeWords),
+    outcomeMeanings: registry.observe(gameContract.outcomeMeanings),
     outcomeProgram: registry.observe(gameContract.outcomeProgram),
     definitions: registry.observe(gameContract.definitions),
     puzzles: registry.observe(gameContract.puzzles),
     async publishOutcomeRows(rows: readonly OutcomeRow[]) {
       const parsed = parseOutcomeRows(
         rows,
-        registry.get(gameContract.outcomeWords)
+        resolveOutcomeVocabulary(
+          registry.get(gameContract.definitions),
+          registry.get(gameContract.outcomeMeanings)
+        )
       )
       if (!parsed.ok) throw new Error(parsed.errors.join('; '))
       await registry.replace(outcomeProgram, [
@@ -147,18 +154,21 @@ export async function openGame() {
         }),
       ])
     },
-    async publishOutcomeWord(word: OutcomeWord) {
-      const next = [...customOutcomeWords.filter((w) => w.id !== word.id), word]
+    async publishOutcomeMeaning(word: OutcomeMeaning) {
+      const next = [
+        ...customOutcomeMeanings.filter((w) => w.id !== word.id),
+        word,
+      ]
       await registry.replace(
-        authoredOutcomeWords,
+        authoredOutcomeMeanings,
         next.map((w) =>
-          contribute(gameContract.outcomeWords, () => w, {
+          contribute(gameContract.outcomeMeanings, () => w, {
             key: w.id,
             precedence: 'high',
           })
         )
       )
-      customOutcomeWords = next
+      customOutcomeMeanings = next
     },
     async publish(definition: Definition) {
       const next = [
@@ -172,8 +182,15 @@ export async function openGame() {
       deleted = excluded
     },
     async deleteDefinition(id: string) {
-      if (board.board.tiles.some((tile) => tile.type === id))
-        throw new Error('Remove placed tiles before deleting their definition')
+      if (
+        board.board.tiles.some((tile) => tile.type === id) ||
+        registry
+          .get(gameContract.outcomeProgram)
+          .rows.some((row) => row.cells.includes(id))
+      )
+        throw new Error(
+          'Remove placed tiles and applied outcome references before deleting their definition'
+        )
       const excluded = new Set(deleted).add(id)
       await registry.replace(startingContent, vocabulary(authored, excluded))
       deleted = excluded

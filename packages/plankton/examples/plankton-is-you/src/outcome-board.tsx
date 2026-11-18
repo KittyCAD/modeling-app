@@ -1,6 +1,7 @@
 import { Plus, Trash2, Undo2 } from 'lucide-react'
 import type { ReactNode } from 'react'
-import type { OutcomeRow, OutcomeWord } from './outcomes'
+import type { Definition } from './game'
+import type { OutcomeRow } from './outcomes'
 
 export type OutcomeCell = { rowId: string; index: 0 | 1 | 2 | 3 }
 const positions = ['subject', 'predicate', 'target', 'result'] as const
@@ -19,12 +20,12 @@ export function OutcomeBoard({
   onRestore,
 }: {
   rows: readonly OutcomeRow[]
-  words: readonly OutcomeWord[]
+  words: readonly Definition[]
   busy: boolean
   dirty: boolean
   canUndo: boolean
   selected?: OutcomeCell
-  renderWord(word: OutcomeWord): ReactNode
+  renderWord(word: Definition): ReactNode
   onSelect(cell: OutcomeCell): void
   onChange(rows: readonly OutcomeRow[]): void
   onApply(): void
@@ -40,8 +41,8 @@ export function OutcomeBoard({
         </button>
       </div>
       <p className="field-hint">
-        Edit a tile or remove a row. Apply installs the whole program; LOSE
-        takes priority.
+        Choose words from Installed vocabulary for _ _ _ → _. Apply installs the
+        whole program; LOSE takes priority.
       </p>
       <div className="outcome-rows">
         {rows.map((row, rowIndex) => (
@@ -58,7 +59,7 @@ export function OutcomeBoard({
                   aria-label={`Outcome row ${rowIndex + 1} ${positions[index]}: ${row.cells[index] || 'empty'}`}
                   onClick={() => onSelect({ rowId: row.id, index })}
                 >
-                  {word ? renderWord(word) : <span>·</span>}
+                  {word ? renderWord(word) : <span>_</span>}
                 </button>
               )
             })}
@@ -73,7 +74,7 @@ export function OutcomeBoard({
             >
               {(() => {
                 const word = words.find((w) => w.id === row.cells[3])
-                return word ? renderWord(word) : <span>·</span>
+                return word ? renderWord(word) : <span>_</span>
               })()}
             </button>
             <button
@@ -98,7 +99,7 @@ export function OutcomeBoard({
           onClick={() =>
             onChange([
               ...rows,
-              { id: crypto.randomUUID(), cells: ['YOU', 'IS', 'NONE', 'LOSE'] },
+              { id: crypto.randomUUID(), cells: ['', '', '', ''] },
             ])
           }
         >

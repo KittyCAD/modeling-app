@@ -8,16 +8,24 @@ import {
   readRules,
   type Tile,
 } from './game'
-import { outcomeWords, parseOutcomeRows, startingOutcomeRows } from './outcomes'
+import {
+  outcomeMeanings,
+  parseOutcomeRows,
+  resolveOutcomeVocabulary,
+  startingOutcomeRows,
+} from './outcomes'
 import { gameContract, openGame } from './registry'
 
 function createGame(puzzle: Puzzle, definitions: () => readonly Definition[]) {
   return new Game(puzzle, {
     definitions,
     actions: () => builtInActions,
-    outcomeWords: () => outcomeWords,
+    outcomeMeanings: () => outcomeMeanings,
     outcomeProgram: () => {
-      const parsed = parseOutcomeRows(startingOutcomeRows, outcomeWords)
+      const parsed = parseOutcomeRows(
+        startingOutcomeRows,
+        resolveOutcomeVocabulary(definitions(), outcomeMeanings)
+      )
       if (!parsed.ok) throw new Error(parsed.errors.join('; '))
       return parsed.program
     },

@@ -49,6 +49,9 @@ export const initialDefinitions: readonly Definition[] = [
   { kind: 'grammar', id: 'IS' },
   { kind: 'property', id: 'YOU', color: '#c5ed91', action: 'control' },
   { kind: 'property', id: 'WIN', color: '#f6cf75', action: 'win' },
+  { kind: 'property', id: 'LOSE', color: '#ee927d', action: 'lose' },
+  { kind: 'word', id: 'NONE', color: '#ded9cf' },
+  { kind: 'word', id: 'TOUCH', color: '#9cc6bd' },
   { kind: 'property', id: 'STOP', color: '#7eae9a', action: 'block' },
 ]
 const word = (type: string, x: number, y: number): Tile => ({

@@ -1,31 +1,26 @@
-import type { Sprite, Tile } from './game'
+import type { Definition, Rule, Tile } from './game'
 
 export type OutcomeContext = {
+  entities: readonly Tile[]
+  rules: readonly Rule[]
   controlled: readonly Tile[]
   winning: readonly Tile[]
   losing: readonly Tile[]
 }
-type Appearance = {
-  id: string
-  color: string
-  wordSprite?: Sprite
-  description: string
-}
 /** Each word contributes its own selection or predicate meaning, not an entire rule. */
-export type OutcomeWord = Appearance &
-  (
-    | { kind: 'selector'; select(context: OutcomeContext): readonly Tile[] }
-    | {
-        kind: 'unary'
-        test(subject: readonly Tile[]): boolean
-        message(subject: string): string
-      }
-    | {
-        kind: 'relation'
-        test(subject: readonly Tile[], target: readonly Tile[]): boolean
-        message(subject: string, target: string): string
-      }
-  )
+export type OutcomeMeaning = { id: string; description: string } & (
+  | { kind: 'selector'; select(context: OutcomeContext): readonly Tile[] }
+  | {
+      kind: 'unary'
+      test(subject: readonly Tile[]): boolean
+      message(subject: string): string
+    }
+  | {
+      kind: 'relation'
+      test(subject: readonly Tile[], target: readonly Tile[]): boolean
+      message(subject: string, target: string): string
+    }
+)
 export type OutcomeRow = {
   id: string
   cells: readonly [
@@ -54,18 +49,16 @@ export type ParseResult =
   | { ok: true; program: OutcomeProgram }
   | { ok: false; errors: readonly string[] }
 
-export const outcomeWords: readonly OutcomeWord[] = [
+export const outcomeMeanings: readonly OutcomeMeaning[] = [
   {
     id: 'YOU',
     kind: 'selector',
-    color: '#c5ed91',
     description: 'Entities with player control.',
     select: (context) => context.controlled,
   },
   {
     id: 'WIN',
     kind: 'selector',
-    color: '#f6cf75',
     description:
       'Entities with a winning action; after the arrow, declares victory.',
     select: (context) => context.winning,
@@ -73,7 +66,6 @@ export const outcomeWords: readonly OutcomeWord[] = [
   {
     id: 'LOSE',
     kind: 'selector',
-    color: '#ee927d',
     description:
       'Entities with a losing action; after the arrow, declares loss.',
     select: (context) => context.losing,
@@ -81,7 +73,6 @@ export const outcomeWords: readonly OutcomeWord[] = [
   {
     id: 'NONE',
     kind: 'unary',
-    color: '#ded9cf',
     description: 'True when the selected set of entities is empty.',
     test: (subject) => subject.length === 0,
     message: (subject) => `No ${subject} entities remain`,
@@ -89,7 +80,6 @@ export const outcomeWords: readonly OutcomeWord[] = [
   {
     id: 'IS',
     kind: 'relation',
-    color: '#ded9cf',
     description:
       'True when an entity belongs to both sets. Connects a subject to NONE.',
     test: (subject, target) =>
@@ -99,7 +89,6 @@ export const outcomeWords: readonly OutcomeWord[] = [
   {
     id: 'TOUCH',
     kind: 'relation',
-    color: '#9cc6bd',
     description: 'True when distinct entities from the two sets share a cell.',
     test: (subject, target) =>
       subject.some((s) =>
@@ -111,6 +100,43 @@ export const outcomeWords: readonly OutcomeWord[] = [
         : `${subject} touches ${target}`,
   },
 ]
+/** Visible vocabulary owns artwork; contributions supply only language meanings. */
+export function resolveOutcomeVocabulary(
+  definitions: readonly Definition[],
+  meanings: readonly OutcomeMeaning[]
+): readonly OutcomeMeaning[] {
+  return definitions.flatMap((definition): OutcomeMeaning[] => {
+    const meaning = meanings.find((word) => word.id === definition.id)
+    if (meaning) return [meaning]
+    if (definition.kind === 'entity')
+      return [
+        {
+          id: definition.id,
+          kind: 'selector',
+          description: `All ${definition.id} entities.`,
+          select: (context) =>
+            context.entities.filter((tile) => tile.type === definition.id),
+        },
+      ]
+    if (definition.kind === 'property')
+      return [
+        {
+          id: definition.id,
+          kind: 'selector',
+          description: `Entities described as ${definition.id}.`,
+          select: (context) =>
+            context.entities.filter((tile) =>
+              context.rules.some(
+                (rule) =>
+                  rule.noun === tile.type && rule.property === definition.id
+              )
+            ),
+        },
+      ]
+    return []
+  })
+}
+
 export const startingOutcomeRows: readonly OutcomeRow[] = [
   { id: 'no-you', cells: ['YOU', 'IS', 'NONE', 'LOSE'] },
   { id: 'touch-win', cells: ['YOU', 'TOUCH', 'WIN', 'WIN'] },
@@ -121,7 +147,7 @@ export const startingOutcomeRows: readonly OutcomeRow[] = [
 /** Parse a complete draft before publishing. Missing words never become partial rules. */
 export function parseOutcomeRows(
   rows: readonly OutcomeRow[],
-  words: readonly OutcomeWord[]
+  words: readonly OutcomeMeaning[]
 ): ParseResult {
   const rules: OutcomeRule[] = [],
     errors: string[] = []
@@ -193,7 +219,7 @@ export function parseOutcomeRows(
 /** Resolve predicate IDs live, so replacing a meaning affects an installed program. */
 export function evaluateOutcomes(
   program: OutcomeProgram,
-  words: readonly OutcomeWord[],
+  words: readonly OutcomeMeaning[],
   context: OutcomeContext
 ): Resolution {
   let won = false

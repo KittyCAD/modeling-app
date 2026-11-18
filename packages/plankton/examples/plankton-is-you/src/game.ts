@@ -1,8 +1,9 @@
 import {
   evaluateOutcomes,
+  type OutcomeMeaning,
   type OutcomeProgram,
-  type OutcomeWord,
   type Resolution,
+  resolveOutcomeVocabulary,
 } from './outcomes'
 
 export type Point = { x: number; y: number }
@@ -35,6 +36,13 @@ export type Definition =
   | EntityDefinition
   | PropertyDefinition
   | { kind: 'grammar'; id: 'IS'; wordSprite?: Sprite; wordColor?: string }
+  | {
+      kind: 'word'
+      id: string
+      color: string
+      wordSprite?: Sprite
+      wordColor?: string
+    }
 
 /** Actions operate through turn capabilities, without owning the board or registry. */
 export type Turn = {
@@ -69,7 +77,7 @@ export type Board = {
 export type Vocabulary = {
   definitions(): readonly Definition[]
   actions(): readonly Action[]
-  outcomeWords(): readonly OutcomeWord[]
+  outcomeMeanings(): readonly OutcomeMeaning[]
   outcomeProgram(): OutcomeProgram
 }
 const sameCell = (a: Point, b: Point) => a.x === b.x && a.y === b.y
@@ -160,6 +168,7 @@ export class Game {
       (d): d is PropertyDefinition => d.kind === 'property'
     )
     return {
+      rules,
       has: (tile: Tile, predicate: (action: Action) => boolean) =>
         tile.kind === 'entity' &&
         properties.some(
@@ -170,15 +179,20 @@ export class Game {
     }
   }
   private evaluate(tiles: readonly Tile[]): Resolution {
-    const { has } = this.matching(
+    const { rules, has } = this.matching(
       tiles,
       this.vocabulary.definitions(),
       this.vocabulary.actions()
     )
     return evaluateOutcomes(
       this.vocabulary.outcomeProgram(),
-      this.vocabulary.outcomeWords(),
+      resolveOutcomeVocabulary(
+        this.vocabulary.definitions(),
+        this.vocabulary.outcomeMeanings()
+      ),
       {
+        entities: tiles.filter((tile) => tile.kind === 'entity'),
+        rules,
         controlled: tiles.filter((tile) =>
           has(tile, (action) => !!action.controls)
         ),

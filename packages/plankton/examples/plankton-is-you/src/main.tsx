@@ -25,11 +25,7 @@ import {
   type Tile,
 } from './game'
 import { OutcomeBoard, type OutcomeCell } from './outcome-board'
-import {
-  type OutcomeRow,
-  type OutcomeWord,
-  startingOutcomeRows,
-} from './outcomes'
+import { type OutcomeRow, startingOutcomeRows } from './outcomes'
 import { wordSprite } from './pixels'
 import { openGame, type Runtime } from './registry'
 import './style.css'
@@ -82,7 +78,7 @@ type DraftArtwork = {
 type Draft = DraftArtwork &
   (
     | { scope: 'world'; base?: Definition; tileId?: string }
-    | { scope: 'outcome'; base: OutcomeWord; cell: OutcomeCell }
+    | { scope: 'outcome'; base?: Definition; cell: OutcomeCell }
   )
 
 function draftFor(
@@ -152,9 +148,11 @@ function App({ runtime }: { runtime: Runtime }) {
     draft?.base?.kind === 'entity' || (!draft?.base && draft?.kind === 'entity')
   const grammar = draft?.base?.kind === 'grammar'
   const inUse =
-    draft?.scope === 'world' &&
-    !!draft.base &&
-    game.board.tiles.some((t) => t.type === draft.name)
+    !!draft?.base &&
+    (game.board.tiles.some((t) => t.type === draft.name) ||
+      runtime.outcomeProgram.value.rows.some((row) =>
+        row.cells.includes(draft.name)
+      ))
 
   const selectionKey = draft
     ? `${draft.scope}:${draft.base?.id ?? 'new'}:${draft.kind}:${draft.scope === 'outcome' ? `${draft.cell.rowId}:${draft.cell.index}` : ''}`
@@ -169,10 +167,6 @@ function App({ runtime }: { runtime: Runtime }) {
   const outcomeDirty =
     JSON.stringify(outcomeRows) !==
     JSON.stringify(runtime.outcomeProgram.value.rows)
-  const outcomeArt = (word: OutcomeWord) =>
-    word.wordSprite ??
-    definitions.find((d) => d.id === word.id)?.wordSprite ??
-    wordSprite(word.id)
   function editOutcomeRows(rows: readonly OutcomeRow[]) {
     setOutcomeHistory((previous) => [...previous, outcomeRows])
     setOutcomeRows(rows)
@@ -193,27 +187,32 @@ function App({ runtime }: { runtime: Runtime }) {
     )
   }
   function selectOutcome(cell: OutcomeCell, replacement?: string) {
-    const current = outcomeRows.find((row) => row.id === cell.rowId)?.cells[
-      cell.index
-    ]
-    const fallback = ['YOU', 'IS', 'NONE', 'LOSE'][cell.index]
-    const id = replacement ?? current ?? fallback
-    const word =
-      runtime.outcomeWords.value.find((w) => w.id === id) ??
-      runtime.outcomeWords.value.find((w) => w.id === fallback)!
-    if (replacement !== undefined || !current) replaceOutcomeCell(cell, word.id)
-    setDraft({
-      scope: 'outcome',
-      base: word,
-      cell,
-      kind: 'word',
-      name: word.id,
-      entitySprite: blank(),
-      wordSprite: outcomeArt(word),
-      entityColor: word.color,
-      wordColor: word.color,
-      action: '',
-    })
+    const id =
+      replacement ??
+      outcomeRows.find((row) => row.id === cell.rowId)?.cells[cell.index] ??
+      ''
+    if (replacement !== undefined) replaceOutcomeCell(cell, replacement)
+    const definition = definitions.find((word) => word.id === id)
+    setDraft(
+      definition
+        ? {
+            ...draftFor(definition, 'word'),
+            scope: 'outcome',
+            base: definition,
+            cell,
+          }
+        : {
+            scope: 'outcome',
+            cell,
+            kind: 'word',
+            name: '',
+            entitySprite: blank(),
+            wordSprite: wordSprite(''),
+            entityColor: '#c5ed91',
+            wordColor: '#c5ed91',
+            action: '',
+          }
+    )
     setActionEditor(false)
     setNotice('')
   }
@@ -230,6 +229,10 @@ function App({ runtime }: { runtime: Runtime }) {
   }
 
   function select(definition: Definition, kind: Tile['kind'], tileId?: string) {
+    if (draft?.scope === 'outcome' && kind === 'word' && !tileId) {
+      selectOutcome(draft.cell, definition.id)
+      return
+    }
     setDraft(draftFor(definition, kind, tileId))
     setActionEditor(false)
     setErase(false)
@@ -327,26 +330,17 @@ function App({ runtime }: { runtime: Runtime }) {
   }
   async function save() {
     if (!draft) return
-    if (draft.scope === 'outcome') {
-      const word = {
-        ...draft.base,
-        wordSprite: draft.wordSprite,
-        color: draft.wordColor,
-      }
-      if (
-        await change(
-          () => runtime.publishOutcomeWord(word),
-          `${word.id} outcome artwork saved`
-        )
-      )
-        setDraft({ ...draft, base: word })
-      return
-    }
     let definition: Definition
     if (grammar) {
       definition = {
         kind: 'grammar',
         id: 'IS',
+        wordSprite: draft.wordSprite,
+        wordColor: draft.wordColor,
+      }
+    } else if (draft.base?.kind === 'word') {
+      definition = {
+        ...draft.base,
         wordSprite: draft.wordSprite,
         wordColor: draft.wordColor,
       }
@@ -375,7 +369,16 @@ function App({ runtime }: { runtime: Runtime }) {
         `${definition.id} published`
       )
     )
-      setDraft(draftFor(definition, draft.kind, draft.tileId))
+      setDraft(
+        draft.scope === 'outcome'
+          ? {
+              ...draftFor(definition, 'word'),
+              scope: 'outcome',
+              base: definition,
+              cell: draft.cell,
+            }
+          : draftFor(definition, draft.kind, draft.tileId)
+      )
   }
   async function saveAction() {
     const action = compileAction({
@@ -443,6 +446,7 @@ function App({ runtime }: { runtime: Runtime }) {
     (draft.scope === 'outcome' ||
       noun ||
       grammar ||
+      draft.base?.kind === 'word' ||
       actions.some((a) => a.id === draft.action))
 
   return (
@@ -633,12 +637,15 @@ function App({ runtime }: { runtime: Runtime }) {
             </section>
             <OutcomeBoard
               rows={outcomeRows}
-              words={runtime.outcomeWords.value}
+              words={definitions}
               busy={busy}
               dirty={outcomeDirty}
               canUndo={outcomeHistory.length > 0}
               renderWord={(word) => (
-                <Pixels sprite={outcomeArt(word)} color={word.color} />
+                <Pixels
+                  sprite={artwork(word, 'word')}
+                  color={ink(word, 'word')}
+                />
               )}
               selected={draft?.scope === 'outcome' ? draft.cell : undefined}
               onSelect={(cell) => selectOutcome(cell)}
@@ -659,7 +666,7 @@ function App({ runtime }: { runtime: Runtime }) {
                 <div className="tray-heading">
                   <h2>
                     {draft.scope === 'outcome'
-                      ? `Outcome · ${draft.name}`
+                      ? `Outcome · ${draft.name || 'empty'}`
                       : draft.base
                         ? draft.name
                         : 'New'}
@@ -672,8 +679,8 @@ function App({ runtime }: { runtime: Runtime }) {
                         disabled={
                           busy ||
                           (kind === 'entity' &&
-                            !!draft.base &&
-                            draft.base.kind !== 'entity')
+                            (draft.scope === 'outcome' ||
+                              (!!draft.base && draft.base.kind !== 'entity')))
                         }
                         onClick={() => setDraft({ ...draft, kind })}
                       >
@@ -682,11 +689,22 @@ function App({ runtime }: { runtime: Runtime }) {
                     ))}
                   </div>
                 </div>
+                {draft.scope === 'outcome' && (
+                  <button
+                    className="text-button"
+                    onClick={() => {
+                      if (draft.base) setDraft(draftFor(draft.base, 'word'))
+                      else setDraft(null)
+                    }}
+                  >
+                    Done editing cell
+                  </button>
+                )}
                 <label>
                   Name
                   <input
                     value={draft.name}
-                    readOnly={!!draft.base}
+                    readOnly={!!draft.base || draft.scope === 'outcome'}
                     maxLength={8}
                     onChange={(event) => {
                       const name = event.target.value
@@ -701,65 +719,73 @@ function App({ runtime }: { runtime: Runtime }) {
                     That name is already installed. Select its tile to edit it.
                   </p>
                 )}
-                {draft.scope === 'outcome' ? (
-                  <>
-                    <label>
-                      Outcome tile
-                      <select
-                        aria-label="Outcome tile"
-                        value={draft.base.id}
-                        disabled={busy}
-                        onChange={(event) =>
-                          selectOutcome(draft.cell, event.target.value)
-                        }
-                      >
-                        {runtime.outcomeWords.value
-                          .filter((word) =>
-                            draft.cell.index === 0
-                              ? word.kind === 'selector'
-                              : draft.cell.index === 1
-                                ? word.kind === 'relation'
-                                : draft.cell.index === 3
-                                  ? word.id === 'WIN' || word.id === 'LOSE'
-                                  : word.kind === 'selector' ||
-                                    word.kind === 'unary'
-                          )
-                          .map((word) => (
-                            <option key={word.id} value={word.id}>
-                              {word.id}
-                            </option>
-                          ))}
-                      </select>
-                    </label>
-                    <p className="field-hint">{draft.base.description}</p>
-                  </>
-                ) : (
+                {draft.scope === 'outcome' && (
                   <label>
-                    Property action
+                    Outcome tile
                     <select
-                      aria-label="Property action"
-                      disabled={
-                        draft.kind === 'entity' || !!noun || !!grammar || busy
-                      }
-                      value={noun || grammar ? '' : draft.action}
+                      aria-label="Outcome tile"
+                      value={draft.base?.id ?? ''}
+                      disabled={busy}
                       onChange={(event) =>
-                        setDraft({ ...draft, action: event.target.value })
+                        selectOutcome(draft.cell, event.target.value)
                       }
                     >
-                      <option value="">
-                        {noun
-                          ? 'None · entity name'
-                          : grammar
-                            ? 'Sentence connector'
-                            : 'Choose an action…'}
-                      </option>
-                      {actions.map((action) => (
-                        <option key={action.id} value={action.id}>
-                          {action.label}
+                      <option value="">_</option>
+                      {definitions.map((definition) => (
+                        <option key={definition.id} value={definition.id}>
+                          {definition.id}
                         </option>
                       ))}
                     </select>
                   </label>
+                )}
+                <label>
+                  Property action
+                  <select
+                    aria-label="Property action"
+                    disabled={
+                      draft.kind === 'entity' ||
+                      !!noun ||
+                      !!grammar ||
+                      draft.base?.kind === 'word' ||
+                      busy ||
+                      !draft.name
+                    }
+                    value={
+                      noun || grammar || draft.base?.kind === 'word'
+                        ? ''
+                        : draft.action
+                    }
+                    onChange={(event) =>
+                      setDraft({ ...draft, action: event.target.value })
+                    }
+                  >
+                    <option value="">
+                      {noun
+                        ? 'None · entity name'
+                        : grammar
+                          ? 'Sentence connector'
+                          : draft.base?.kind === 'word'
+                            ? 'Outcome predicate'
+                            : 'Choose an action…'}
+                    </option>
+                    {actions.map((action) => (
+                      <option key={action.id} value={action.id}>
+                        {action.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                {runtime.outcomeMeanings.value.find(
+                  (meaning) => meaning.id === draft.name
+                )?.description && (
+                  <p className="field-hint">
+                    {
+                      runtime.outcomeMeanings.value.find(
+                        (meaning) => meaning.id === draft.name
+                      )?.description
+                    }
+                  </p>
                 )}
                 <div className="paint-tools">
                   <label>
@@ -829,6 +855,7 @@ function App({ runtime }: { runtime: Runtime }) {
                   )}
                 </div>
                 {draft.scope === 'world' &&
+                  draft.base?.kind !== 'word' &&
                   !noun &&
                   !grammar &&
                   draft.kind === 'word' && (
@@ -914,11 +941,7 @@ function App({ runtime }: { runtime: Runtime }) {
                     disabled={busy || !canSave}
                     onClick={save}
                   >
-                    {draft.scope === 'outcome'
-                      ? 'Save outcome artwork'
-                      : draft.base
-                        ? 'Save definition'
-                        : 'Create definition'}
+                    {draft.base ? 'Save definition' : 'Create definition'}
                   </button>
                   {draft.scope === 'world' && (
                     <button
@@ -962,12 +985,12 @@ function App({ runtime }: { runtime: Runtime }) {
                       Remove tile
                     </button>
                   )}
-                  {draft.scope === 'world' && draft.base && (
+                  {draft.base && (
                     <button
                       disabled={busy || inUse}
                       title={
                         inUse
-                          ? 'Remove placed tiles before deleting their definition'
+                          ? 'Remove placed tiles and applied outcome references before deleting their definition'
                           : undefined
                       }
                       onClick={async () => {
@@ -988,7 +1011,7 @@ function App({ runtime }: { runtime: Runtime }) {
                 {inUse && (
                   <p className="field-hint">
                     Delete definition becomes available after its placed tiles
-                    are removed.
+                    and applied outcome references are removed.
                   </p>
                 )}
               </section>

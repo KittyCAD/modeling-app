@@ -40,7 +40,7 @@ the hedge, so their words cannot be rearranged before opening the path.
 
 Click a placed tile to **Remove tile**; Undo restores the instance. **Delete
 definition** removes an unused vocabulary entry. First remove any placements of
-that definition, including its noun words. Definition edits/deletions are not part
+that definition, including its noun words, and any applied outcome references. Definition edits/deletions are not part
 of board undo. Reset restores the starting setup while keeping authored content;
 page reload starts fresh. Placement pauses play until a cell is chosen or Escape
 is pressed.
@@ -72,7 +72,7 @@ Static content is an array of Bindings; no Factory is needed for each word.
 
 A session Factory owns the board, exposes it through a Service, and observes the
 four live behavior inputs. Its `start` evaluates the initial outcome after
-publication. Definition, action, outcome-artwork, and outcome-program Slots can
+publication. Definition, action, predicate-meaning, and outcome-program Slots can
 be replaced while that Factory and its dependencies survive. Replacements are awaited while the UI disables input.
 Registry disposal runs on Vite hot replacement; React removes input listeners.
 
@@ -116,11 +116,17 @@ YOU IS WIN     → WIN
 YOU TOUCH LOSE → LOSE
 ```
 
-The arrow is fixed editor layout. Select a cell to open the shared word tray,
-choose another outcome word, or paint its pixels. Artwork is shared by all uses
-of that word in the outcome board. The ordinary puzzle and outcome vocabularies
-have separate meanings; matching word names initially reuse puzzle word artwork.
-An outcome word's artwork can be overridden independently.
+The arrow is fixed editor layout. There is one installed vocabulary: NONE and
+TOUCH are ordinary word definitions, and LOSE is a property word using the
+Lose on contact action. They appear alongside PLNK, FLAG, BUSH, IS, YOU, WIN,
+and STOP, and can be placed on the playable board like other word tiles.
+
+New outcome rows start as `_ _ _ → _`. Select a cell, then choose any word from
+Installed vocabulary or the tray's Outcome tile dropdown. **Done editing cell**
+returns to ordinary definition editing. Outcome rows render the same definitions
+and artwork as the palette, puzzle, and shared tray; saving pixels updates every
+use of that word. The grammar is checked when applying the complete draft rather
+than restricting the picker to a second vocabulary.
 
 Add or remove rows, remove individual tiles, undo draft edits, or restore the
 four defaults. **Apply outcomes** parses the whole draft before replacing the
@@ -130,13 +136,16 @@ also valid and never ends play. Draft edits survive closing the drawer; only
 applied rows affect the game. Reset reloads the puzzle under the currently
 installed outcome program. Page reload restores all defaults.
 
-The `outcomeWords` Facet receives six real word contributions:
+The `outcomeMeanings` Facet supplies executable language meanings without
+duplicating word definitions or artwork:
 
 - YOU, WIN, and LOSE select controlled, winning, and losing entities respectively.
 - NONE is a unary predicate that tests whether its selected set is empty.
 - IS is a relation predicate that tests shared entity identity. In `IS NONE`, it
   also serves as the grammar's connector to the unary predicate.
 - TOUCH is a relation predicate that tests distinct entities sharing a cell.
+- Other entity nouns select their matching entities automatically. Other property
+  words select entities described by that property, including authored words.
 
 `YOU IS NONE` therefore covers disconnected YOU sentences, destruction of the
 last YOU entity, and a connected `BUSH IS YOU` sentence with no bushes. Another
@@ -153,7 +162,8 @@ condition while preserving the action and property.
 `parseOutcomeRows` converts tile choices into a typed program of selector and
 predicate IDs. It captures no predicate callback. Each evaluation resolves those
 IDs from live contributions, so replacing NONE, IS, or TOUCH changes existing
-rows without recompiling them. Missing or mismatched meanings make a dependent
+rows without recompiling them. Meanings are resolved only for currently
+installed vocabulary entries. Missing or mismatched meanings make a dependent
 rule inactive. Predicate callbacks are TypeScript extensions; the tray edits
 artwork and sentence choices, not executable JavaScript.
 

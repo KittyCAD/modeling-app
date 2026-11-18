@@ -1,16 +1,28 @@
 import { describe, expect, it } from 'vitest'
+import { initialDefinitions } from './content'
 import type { Tile } from './game'
 import {
   evaluateOutcomes,
   type OutcomeContext,
   type OutcomeRow,
-  outcomeWords,
+  outcomeMeanings,
   parseOutcomeRows,
+  resolveOutcomeVocabulary,
   startingOutcomeRows,
 } from './outcomes'
 import { gameContract, openGame } from './registry'
 
-const empty: OutcomeContext = { controlled: [], winning: [], losing: [] }
+const outcomeWords = resolveOutcomeVocabulary(
+  initialDefinitions,
+  outcomeMeanings
+)
+const empty: OutcomeContext = {
+  entities: [],
+  rules: [],
+  controlled: [],
+  winning: [],
+  losing: [],
+}
 const player: Tile = { id: 'p', kind: 'entity', type: 'PLNK', x: 3, y: 5 }
 function program(rows: readonly OutcomeRow[]) {
   const parsed = parseOutcomeRows(rows, outcomeWords)
@@ -26,7 +38,12 @@ describe('the outcome tile language', () => {
       ['YOU', 'IS', 'WIN', 'WIN'],
       ['YOU', 'TOUCH', 'LOSE', 'LOSE'],
     ])
-    const selfWin = { controlled: [player], winning: [player], losing: [] }
+    const selfWin = {
+      ...empty,
+      controlled: [player],
+      winning: [player],
+      losing: [],
+    }
     expect(
       evaluateOutcomes(program([startingOutcomeRows[1]]), outcomeWords, selfWin)
         .status
@@ -183,16 +200,16 @@ describe('live outcome composition', () => {
       const before = runtime.outcomeProgram.value
       const none = outcomeWords.find((word) => word.id === 'NONE')
       if (none?.kind !== 'unary') throw new Error('Missing NONE predicate')
-      await runtime.publishOutcomeWord({ ...none, test: () => false })
+      await runtime.publishOutcomeMeaning({ ...none, test: () => false })
       expect(runtime.outcomeProgram.value).toEqual(before)
       runtime.game.settle()
       expect(runtime.game.board.status).toBe('playing')
-      await runtime.publishOutcomeWord(none)
+      await runtime.publishOutcomeMeaning(none)
       runtime.game.settle()
       expect(runtime.game.board.status).toBe('lost')
       expect(
         runtime.registry
-          .debug(gameContract.outcomeWords)
+          .debug(gameContract.outcomeMeanings)
           .value.filter((word) => word.key === 'NONE')
       ).toHaveLength(1)
     } finally {
@@ -226,7 +243,7 @@ describe('live outcome composition', () => {
         expect(runtime.game.board.status).toBe('won')
         const predicate = outcomeWords.find((word) => word.id === id)
         if (predicate?.kind !== 'relation') throw new Error('Missing relation')
-        await runtime.publishOutcomeWord({ ...predicate, test: () => false })
+        await runtime.publishOutcomeMeaning({ ...predicate, test: () => false })
         runtime.game.settle()
         expect(runtime.game.board.status).toBe('playing')
       } finally {
@@ -235,22 +252,117 @@ describe('live outcome composition', () => {
     }
   )
 
-  it('saves predicate artwork without changing its meaning or the running board', async () => {
+  it('shares predicate word artwork through the ordinary vocabulary without changing meaning', async () => {
     const runtime = await openGame()
     try {
-      const none = outcomeWords.find((word) => word.id === 'NONE')!
+      expect(
+        runtime.definitions.value
+          .filter((word) => ['NONE', 'LOSE', 'TOUCH'].includes(word.id))
+          .map((word) => word.id)
+          .sort()
+      ).toEqual(['LOSE', 'NONE', 'TOUCH'])
+      const none = runtime.definitions.value.find((word) => word.id === 'NONE')!
       const board = runtime.game.board
-      await runtime.publishOutcomeWord({
+      await runtime.publish({
         ...none,
         wordSprite: ['10', '01'],
-        color: '#ffffff',
+        wordColor: '#ffffff',
       })
       expect(runtime.game.board).toBe(board)
       expect(
-        runtime.outcomeWords.value.find((word) => word.id === 'NONE')
-      ).toMatchObject({ wordSprite: ['10', '01'], color: '#ffffff' })
+        runtime.definitions.value.filter((word) => word.id === 'NONE')
+      ).toHaveLength(1)
+      expect(
+        runtime.definitions.value.find((word) => word.id === 'NONE')
+      ).toMatchObject({ wordSprite: ['10', '01'], wordColor: '#ffffff' })
+      runtime.game.place({
+        id: 'normal-none',
+        kind: 'word',
+        type: 'NONE',
+        x: 5,
+        y: 8,
+      })
+      expect(
+        runtime.game.board.tiles.find((tile) => tile.id === 'normal-none')
+      ).toMatchObject({ type: 'NONE' })
       runtime.game.remove('player')
       expect(runtime.game.board.status).toBe('lost')
+    } finally {
+      await runtime.dispose()
+    }
+  })
+
+  it('can select an ordinary noun in an outcome without an extra selector extension', async () => {
+    const runtime = await openGame()
+    try {
+      await runtime.publishOutcomeRows([
+        { id: 'noun', cells: ['PLNK', 'IS', 'NONE', 'LOSE'] },
+      ])
+      runtime.game.remove('player')
+      expect(runtime.game.board).toMatchObject({
+        status: 'lost',
+        message: 'No PLNK entities remain',
+      })
+    } finally {
+      await runtime.dispose()
+    }
+  })
+
+  it('can select an authored property from the same installed vocabulary', async () => {
+    const runtime = await openGame()
+    try {
+      await runtime.publish({
+        kind: 'property',
+        id: 'DANGER',
+        color: '#ffffff',
+        action: 'win',
+      })
+      await runtime.publishOutcomeRows([
+        { id: 'custom', cells: ['YOU', 'TOUCH', 'DANGER', 'LOSE'] },
+      ])
+      runtime.game.load({
+        ...runtime.game.puzzle,
+        placements: [
+          ...['PLNK', 'IS', 'YOU'].map(
+            (type, x): Tile => ({ id: `you-${x}`, kind: 'word', type, x, y: 0 })
+          ),
+          ...['BUSH', 'IS', 'DANGER'].map(
+            (type, x): Tile => ({
+              id: `danger-${x}`,
+              kind: 'word',
+              type,
+              x,
+              y: 1,
+            })
+          ),
+          { id: 'p', kind: 'entity', type: 'PLNK', x: 3, y: 5 },
+          { id: 'b', kind: 'entity', type: 'BUSH', x: 4, y: 5 },
+        ],
+      })
+      runtime.game.step({ x: 1, y: 0 })
+      expect(runtime.game.board).toMatchObject({
+        status: 'lost',
+        message: 'YOU touches DANGER',
+        ruleId: 'custom',
+      })
+    } finally {
+      await runtime.dispose()
+    }
+  })
+
+  it('keeps vocabulary entries referenced by the applied outcome program installed', async () => {
+    const runtime = await openGame()
+    try {
+      await expect(runtime.deleteDefinition('NONE')).rejects.toThrow(
+        'outcome references'
+      )
+      await runtime.publishOutcomeRows(
+        startingOutcomeRows.filter((row) => row.id !== 'no-you')
+      )
+      await runtime.deleteDefinition('NONE')
+      expect(runtime.definitions.value.some((word) => word.id === 'NONE')).toBe(
+        false
+      )
     } finally {
       await runtime.dispose()
     }
