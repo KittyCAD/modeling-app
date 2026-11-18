@@ -102,7 +102,10 @@ and click the revealed editor handle. Editing pauses player input.
 Approach the left edge to open **Plankton**, a visual trace of a real tile edit.
 Choose a tile, toggle pixels, and apply: its extension is replaced through the
 vocabulary Slot, the definitions Facet updates, and the running board renders the
-new artwork. A session identity check stays visible alongside the board preview.
+new artwork. After a successful Apply, a tile packet and successive highlights
+trace that update through the diagram. The session frame stays fixed, with its
+identity check visible alongside the board preview. Reduced motion skips the
+animation and shows the applied state immediately.
 **Restore original pixels** reverses the artwork edit; **Full editor** opens the
 selected artwork in the right tray. The explanation pauses player input.
 

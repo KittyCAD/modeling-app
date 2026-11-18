@@ -926,3 +926,75 @@ svg {
     font-size: 11px;
   }
 }
+
+/* Only the artwork and transient overlays animate; the session frame stays fixed. */
+.trace-edit-content,
+.trace-binding,
+.trace-facet,
+.trace-world {
+  position: relative;
+}
+.trace-arrival {
+  position: absolute;
+  inset: -4px;
+  pointer-events: none;
+  border: 2px solid #c5ed91;
+  border-radius: 3px;
+  box-shadow: inset 0 0 14px #c5ed9133;
+  opacity: 0;
+  animation: trace-arrive 0.75s ease-out var(--trace-delay) both;
+  z-index: 1;
+}
+.trace-world .trace-arrival {
+  inset: 0;
+}
+.trace-packet {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 17px;
+  height: 17px;
+  background: var(--panel);
+  border: 1px solid #c5ed91;
+  padding: 1px;
+  pointer-events: none;
+  opacity: 0;
+  animation: trace-travel 0.45s linear var(--trace-delay) both;
+}
+.trace-packet svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+@keyframes trace-travel {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+@keyframes trace-arrive {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  15%,
+  65% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .trace-arrival,
+  .trace-packet {
+    display: none;
+  }
+}

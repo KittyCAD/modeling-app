@@ -1,6 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { ArrowDown, ChevronRight, X } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { type CSSProperties, useRef, useState } from 'react'
 import type { Definition, Sprite, Tile } from './game'
 import { gameContract, type Runtime } from './registry'
 import { Pixels, artwork, ink } from './tile-art'
@@ -29,6 +29,7 @@ export function PlanktonDrawer({
   const [pixels, setPixels] = useState<Sprite | null>(null)
   const [before, setBefore] = useState<Definition | null>(null)
   const [error, setError] = useState('')
+  const [flow, setFlow] = useState(0)
   const definitions = runtime.definitions.value
   const definition =
     definitions.find((item) => item.id === selected) ?? definitions[0]
@@ -44,7 +45,34 @@ export function PlanktonDrawer({
       <Pixels sprite={artwork(item, type)} color={ink(item, type)} />
     </span>
   )
+  // Registry replacement is atomic. These highlights trace the completed update;
+  // keyed overlays restart the explanation without remounting the session frame.
+  const pulse = (delay: number) =>
+    flow > 0 && (
+      <span
+        key={flow}
+        className="trace-arrival"
+        style={{ '--trace-delay': `${delay}s` } as CSSProperties}
+        aria-hidden="true"
+      />
+    )
+  const packet = (delay: number) =>
+    flow > 0 &&
+    definition && (
+      <span
+        key={flow}
+        className="trace-packet"
+        style={{ '--trace-delay': `${delay}s` } as CSSProperties}
+        aria-hidden="true"
+      >
+        <Pixels
+          sprite={artwork(definition, tileKind)}
+          color={ink(definition, tileKind)}
+        />
+      </span>
+    )
   function choose(item: Definition) {
+    setFlow(0)
     setSelected(item.id)
     setKind(item.kind === 'entity' ? 'entity' : 'word')
     setPixels(null)
@@ -58,6 +86,7 @@ export function PlanktonDrawer({
         ? { ...definition, sprite: draft }
         : { ...definition, wordSprite: draft }
     if (await onPublish(replacement)) {
+      setFlow((previous) => previous + 1)
       setBefore(before ?? definition)
       setPixels(null)
       setError('')
@@ -69,6 +98,7 @@ export function PlanktonDrawer({
       open={open}
       onOpenChange={(value) => {
         if (value) {
+          setFlow(0)
           setPixels(null)
           setBefore(null)
           setError('')
@@ -134,6 +164,7 @@ export function PlanktonDrawer({
                   </small>
                 </div>
                 <div className="trace-edit-content">
+                  {pulse(0)}
                   <div
                     className="trace-pixels"
                     aria-label="Trace pixel editor"
@@ -154,7 +185,8 @@ export function PlanktonDrawer({
                                 ? ink(definition, tileKind)
                                 : undefined,
                           }}
-                          onClick={() =>
+                          onClick={() => {
+                            setFlow(0)
                             setPixels(
                               draft.map((line, index) =>
                                 index === y
@@ -170,7 +202,7 @@ export function PlanktonDrawer({
                                   : line
                               )
                             )
-                          }
+                          }}
                         />
                       ))
                     )}
@@ -188,6 +220,7 @@ export function PlanktonDrawer({
                             disabled={busy}
                             aria-pressed={tileKind === type}
                             onClick={() => {
+                              setFlow(0)
                               setKind(type)
                               setPixels(null)
                             }}
@@ -218,6 +251,7 @@ export function PlanktonDrawer({
                 <div className="trace-connector">
                   <ArrowDown aria-hidden="true" />
                   <span>replace vocabulary Slot</span>
+                  {packet(0.2)}
                 </div>
                 <div className="trace-title">
                   <span>2</span>
@@ -225,6 +259,7 @@ export function PlanktonDrawer({
                   <small>key: {definition.id}</small>
                 </div>
                 <div className="trace-binding">
+                  {pulse(0.65)}
                   {before && (
                     <>
                       <span className="trace-before">{picture(before)}</span>
@@ -239,6 +274,7 @@ export function PlanktonDrawer({
                 <div className="trace-connector">
                   <ArrowDown aria-hidden="true" />
                   <span>contribute definition</span>
+                  {packet(0.85)}
                 </div>
                 <div className="trace-title">
                   <span>3</span>
@@ -248,6 +284,7 @@ export function PlanktonDrawer({
                   <small>{definitions.length} entries</small>
                 </div>
                 <div className="trace-facet" aria-label="Installed definitions">
+                  {pulse(1.3)}
                   {definitions.map((item) => (
                     <span
                       key={item.id}
@@ -267,6 +304,7 @@ export function PlanktonDrawer({
                 <div className="trace-connector">
                   <ArrowDown aria-hidden="true" />
                   <span>live observation → game</span>
+                  {packet(1.5)}
                 </div>
                 <div className="trace-title">
                   <span>4</span>
@@ -287,6 +325,7 @@ export function PlanktonDrawer({
                       aspectRatio: `${bounds.width}/${bounds.height}`,
                     }}
                   >
+                    {pulse(1.95)}
                     {Array.from(
                       { length: bounds.width * bounds.height },
                       (_, index) => (
@@ -344,6 +383,7 @@ export function PlanktonDrawer({
               disabled={busy}
               onClick={async () => {
                 if (await onPublish(before)) {
+                  setFlow(0)
                   setBefore(null)
                   setPixels(null)
                 }
