@@ -661,6 +661,43 @@ describe('the living vocabulary', () => {
     }
   })
 
+  it('does not resurrect deleted vocabulary through undo and retains unrelated movement history', async () => {
+    const runtime = await openGame()
+    try {
+      runtime.game.step({ x: 1, y: 0 })
+      await runtime.publish(
+        compileProperty({ id: 'DIE', color: '#ffffff', action: 'destroy' })
+      )
+      runtime.game.place({
+        id: 'temporary',
+        kind: 'word',
+        type: 'DIE',
+        x: 5,
+        y: 8,
+      })
+      runtime.game.remove('temporary')
+      await runtime.deleteDefinition('DIE')
+      runtime.game.undo()
+      expect(runtime.game.board.tiles.some((tile) => tile.type === 'DIE')).toBe(
+        false
+      )
+      expect(
+        runtime.definitions.value.some((definition) => definition.id === 'DIE')
+      ).toBe(false)
+      expect(
+        runtime.game.board.tiles.find((tile) => tile.id === 'player')?.x
+      ).toBe(4)
+      runtime.game.undo()
+      runtime.game.undo()
+      expect(
+        runtime.game.board.tiles.find((tile) => tile.id === 'player')?.x
+      ).toBe(3)
+      expect(runtime.game.board.status).toBe('playing')
+    } finally {
+      await runtime.dispose()
+    }
+  })
+
   it('deletes an unused vocabulary item without allowing removal of a placed definition', async () => {
     const runtime = await openGame()
     try {

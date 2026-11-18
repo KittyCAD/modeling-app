@@ -194,6 +194,7 @@ export async function openGame() {
       const excluded = new Set(deleted).add(id)
       await registry.replace(startingContent, vocabulary(authored, excluded))
       deleted = excluded
+      board.removeDefinitionFromHistory(id)
     },
     async publishAction(action: Action) {
       const next = [...customActions.filter((a) => a.id !== action.id), action]

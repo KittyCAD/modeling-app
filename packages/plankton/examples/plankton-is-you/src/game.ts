@@ -146,6 +146,12 @@ export class Game {
         ...this.evaluate(previous.tiles),
       }
   }
+  removeDefinitionFromHistory(id: string) {
+    this.history = this.history.map((board) => ({
+      ...board,
+      tiles: board.tiles.filter((tile) => tile.type !== id),
+    }))
+  }
   inside(point: Point) {
     return (
       point.x >= 0 &&
