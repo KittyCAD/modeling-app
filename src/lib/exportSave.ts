@@ -7,19 +7,15 @@ import type { FileOperationsRegistryService } from '@src/registry/contracts/file
 import JSZip from 'jszip'
 import toast from 'react-hot-toast'
 
-export const saveExportFile = async (
+type ExportFile = ModelingAppFile | { name: string; contents: ArrayBuffer }
+
+const save_ = async (
   fileOperations: FileOperationsRegistryService,
-  file: { name: string; contents: number[] | Blob; filterName?: string },
+  file: ExportFile,
   toastId: string
 ) => {
   try {
     if (window.electron) {
-      const readBytes = async () =>
-        new Uint8Array(
-          file.contents instanceof Blob
-            ? await file.contents.arrayBuffer()
-            : file.contents
-        )
       const extension = file.name.split('.').pop() || null
       let extensions: string[] = []
       if (extension !== null) {
@@ -38,7 +34,7 @@ export const saveExportFile = async (
         await ensureDirectory(fileOperations, downloadDir)
         await fileOperations.writeFile(
           fsZds.join(downloadDir, file.name),
-          await readBytes()
+          new Uint8Array(file.contents)
         )
         toast.success(EXPORT_TOAST_MESSAGES.SUCCESS + ' [TEST]', {
           id: toastId,
@@ -53,7 +49,7 @@ export const saveExportFile = async (
         defaultPath: file.name,
         filters: [
           {
-            name: file.filterName ?? 'model',
+            name: 'model',
             extensions: extensions,
           },
         ],
@@ -67,7 +63,10 @@ export const saveExportFile = async (
       }
 
       // Write the file.
-      await fileOperations.writeFile(filePathMeta.filePath, await readBytes())
+      await fileOperations.writeFile(
+        filePathMeta.filePath,
+        new Uint8Array(file.contents)
+      )
       toast.success(EXPORT_TOAST_MESSAGES.SUCCESS, { id: toastId })
     } else {
       // Download the file to the user's computer.
@@ -75,10 +74,7 @@ export const saveExportFile = async (
       // Or the destination they choose.
       // Iterate over the files.
       // Create a new blob.
-      const blob =
-        file.contents instanceof Blob
-          ? file.contents
-          : new Blob([new Uint8Array(file.contents)])
+      const blob = new Blob([new Uint8Array(file.contents)])
       // Save the file.
       await browserSaveFile(blob, file.name, toastId)
     }
@@ -98,7 +94,7 @@ export async function exportSave({
   toastId,
 }: {
   fileOperations: FileOperationsRegistryService
-  files: ModelingAppFile[]
+  files: ExportFile[]
   fileName: string
   toastId: string
 }) {
@@ -108,7 +104,7 @@ export async function exportSave({
       zip.file(file.name, new Uint8Array(file.contents), { binary: true })
     }
     return zip.generateAsync({ type: 'array' }).then((contents) => {
-      return saveExportFile(
+      return save_(
         fileOperations,
         { name: `${fileName || 'output'}.zip`, contents },
         toastId
@@ -116,6 +112,6 @@ export async function exportSave({
     })
   } else {
     files[0].name = fileName || files[0].name
-    return saveExportFile(fileOperations, files[0], toastId)
+    return save_(fileOperations, files[0], toastId)
   }
 }

@@ -91,7 +91,7 @@ describe('createProjectZipArchive', () => {
     }
 
     expect(archive.fileName).toBe('web-project.zip')
-    const zip = await JSZip.loadAsync(await archive.blob.arrayBuffer())
+    const zip = await JSZip.loadAsync(archive.contents)
 
     await expect(
       zip.file('web-project/main.kcl')?.async('string')
@@ -138,7 +138,7 @@ describe('createProjectZipArchive', () => {
 
     expect(save).toHaveBeenCalledWith({
       defaultPath: 'Human Project.zip',
-      filters: [{ name: 'ZIP archive', extensions: ['zip'] }],
+      filters: [{ name: 'model', extensions: ['zip'] }],
     })
     const zip = await JSZip.loadAsync(await fsZds.readFile(filePath))
 

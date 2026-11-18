@@ -572,7 +572,7 @@ export function createApplicationCommands({
     },
   }
 
-  const exportProjectArchiveCommand: Command = {
+  const exportProjectZipCommand: Command = {
     ...EXPORT_PROJECT_ARCHIVE_COMMAND,
     scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
     displayName: EXPORT_PROJECT_ARCHIVE_LABEL,
@@ -593,7 +593,7 @@ export function createApplicationCommands({
 
   return [
     addKCLFileToProject,
-    exportProjectArchiveCommand,
+    exportProjectZipCommand,
     ...(isDesktop() ? [checkForUpdatesCommand] : []),
     resetLayoutCommand,
     setLayoutCommand,
