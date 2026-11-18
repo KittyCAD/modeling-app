@@ -1,6 +1,7 @@
 import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
 import {
+  getOperationTreeNodeKey,
   isOperationTreeBranch,
   type OperationTreeNode,
 } from '@src/lib/featureTree/featureTreeOperationTree'
@@ -40,6 +41,18 @@ export function getBodyTreeNodeKey(node: BodyTreeNode): string {
   if (isArray(node)) return `group-${getFeatureKey(node[0])}`
   if ('body' in node) return node.body.expansionKey
   return getFeatureKey('parent' in node ? node.parent : node)
+}
+
+export function getBodyTreeNodeRenderKey(
+  node: BodyTreeNode,
+  siblingIndex: number
+): string {
+  if (!isArray(node) && 'body' in node) return node.body.expansionKey
+  // Live operations have placeholder paths but still need unique sibling keys.
+  return getOperationTreeNodeKey(
+    !isArray(node) && 'parent' in node ? node.parent : node,
+    siblingIndex
+  )
 }
 
 function definitionRange(artifact: Artifact): SourceRange | undefined {

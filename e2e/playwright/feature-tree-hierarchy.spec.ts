@@ -16,8 +16,8 @@ test(
     )
     await homePage.goToModelingScene()
     await scene.settled()
-    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await toolbar.openFeatureTreePane()
+    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await toolbar.closePane(DefaultLayoutPaneID.Code)
     await expect(page.getByTestId('feature-tree-body')).toHaveCount(6)
     // Only the six body rows and three standard planes are visible initially.

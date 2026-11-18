@@ -103,6 +103,7 @@ import { BodyItem } from '@src/lib/featureTree/BodiesPane'
 import {
   buildBodyOperationTree,
   getBodyTreeNodeKey,
+  getBodyTreeNodeRenderKey,
   type BodyTreeNode,
   type BodyOperationTreeBranch,
 } from '@src/lib/featureTree/featureTreeBodyTree'
@@ -322,9 +323,9 @@ export const FeatureTreePaneContents = memo(() => {
     )
   }
 
-  const renderOperation = (node: BodyTreeNode) => (
+  const renderOperation = (node: BodyTreeNode, index: number) => (
     <OperationTreeNodeItem
-      key={getBodyTreeNodeKey(node)}
+      key={getBodyTreeNodeRenderKey(node, index)}
       node={node}
       expansionKey={getBodyTreeNodeKey(node)}
       code={operationsCode}
@@ -485,7 +486,7 @@ function BodyBranchGroup({
         className="border-l b-4 ml-6"
         data-testid="feature-tree-body-features"
       >
-        {childItems.map((node) => {
+        {childItems.map((node, index) => {
           const operation = isArray(node) ? node[0] : node
           const isModuleOwned =
             operation && 'sourceRange' in operation
@@ -493,7 +494,7 @@ function BodyBranchGroup({
               : props.isModuleOwned
           return (
             <OperationTreeNodeItem
-              key={getBodyTreeNodeKey(node)}
+              key={getBodyTreeNodeRenderKey(node, index)}
               node={node}
               {...props}
               expansionKey={`${props.expansionKey}/${getBodyTreeNodeKey(node)}`}
@@ -740,10 +741,10 @@ function OperationBranchGroup({
       </div>
       <Disclosure.Panel>
         <div className="border-l b-4 ml-6">
-          {childItems.map((node) => {
+          {childItems.map((node, index) => {
             return (
               <OperationTreeNodeItem
-                key={getBodyTreeNodeKey(node)}
+                key={getBodyTreeNodeRenderKey(node, index)}
                 node={node}
                 expansionKey={`${expansionKey}/${getBodyTreeNodeKey(node)}`}
                 code={code}
