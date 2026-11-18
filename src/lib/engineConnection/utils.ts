@@ -19,7 +19,7 @@ export type ModelTypes = OkModelingCmdResponse['type']
 
 /** Query evaluated geometry, retaining the SDK's discriminated response type. */
 export async function queryModelingCommand(
-  engine: ConnectionManager,
+  engine: Pick<ConnectionManager, 'sendSceneCommand'>,
   cmd: ModelingCmd
 ) {
   try {

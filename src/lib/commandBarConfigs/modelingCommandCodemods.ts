@@ -1,4 +1,8 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import {
+  getDimensionDetails,
+  resolveDimensionSelections,
+} from '@src/lib/gdtDimension'
 import { validateSolidEdgeSelections } from '@src/lang/modifyAst/validateSolidEdgeSelections'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
@@ -308,7 +312,32 @@ const distanceCodemod = defineModelingCodemod<
     }
     // Edit selections are display-only; preserve the original arguments and omissions.
     if (args.nodeToEdit) return addDistanceGdt(addCodemodArgs(args, context))
-    const objects = args.objects
+    const objects = await resolveDimensionSelections(
+      args.objects,
+      kclManager.engineCommandManager
+    )
+    if (isErr(objects)) return objects
+    const { dimensionFunction, geometry } = await getDimensionDetails(
+      objects,
+      kclManager.engineCommandManager,
+      kclManager.artifactGraph
+    )
+    if (dimensionFunction !== 'distance') {
+      const data = await withDefaultGdtFrameDefaults({
+        data: { ...args, objects },
+        engineCommandManager: kclManager.engineCommandManager,
+        ast,
+        sourceCode: kclManager.code,
+        outputUnit: kclManager.fileSettings.defaultLengthUnit,
+        wasmInstance,
+        circularGeometry: geometry,
+        variables: kclManager.variables,
+      })
+      return addDistanceGdt({
+        ...addCodemodArgs(data, context),
+        dimensionFunction,
+      })
+    }
     const targets = getEdgeSelections(objects)
     const mode = getDistanceMeasurementMode(
       targets.map((selection) => ({

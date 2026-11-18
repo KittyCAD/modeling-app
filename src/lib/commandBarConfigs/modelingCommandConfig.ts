@@ -2138,7 +2138,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Distance': {
-    displayName: 'GD&T Distance',
+    displayName: 'GD&T Dimension',
     icon: 'dimension',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2158,6 +2158,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               'segment',
               'sweepEdge',
               'enginePrimitiveEdge',
+              'edgeCutEdge',
+              'enginePrimitiveFace',
             ],
             multiple: true,
             required: true,
