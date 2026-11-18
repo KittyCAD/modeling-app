@@ -1652,17 +1652,18 @@ describe('CATIA button transitions', () => {
       )
       for (const [x, y, expected] of [
         [450, 300, 'rotate'],
-        [300, 300, 'rotate'],
-        [600, 300, 'rotate'],
-        [450, 200, 'rotate'],
-        [450, 400, 'rotate'],
+        [90, 300, 'rotate'],
+        [810, 300, 'rotate'],
+        [450, 60, 'rotate'],
+        [450, 540, 'rotate'],
+        [720, 300, 'rotate'],
         [400, 250, 'rotate'],
-        [300, 200, 'rotatetrackball'],
-        [600, 400, 'rotatetrackball'],
-        [299, 300, 'rotatetrackball'],
-        [601, 300, 'rotatetrackball'],
-        [450, 199, 'rotatetrackball'],
-        [450, 401, 'rotatetrackball'],
+        [90, 60, 'rotatetrackball'],
+        [810, 540, 'rotatetrackball'],
+        [89, 300, 'rotatetrackball'],
+        [811, 300, 'rotatetrackball'],
+        [450, 59, 'rotatetrackball'],
+        [450, 541, 'rotatetrackball'],
       ] as const) {
         expect(
           controls.getInteractionType(
@@ -1686,7 +1687,7 @@ describe('CATIA button transitions', () => {
     { width: 600, height: 300, left: 0, top: 0 },
     { width: 300, height: 600, left: 75, top: 140 },
   ])(
-    'uses an oval inside the central-third bounds for a $width x $height scene',
+    'uses an oval spanning 80% of each dimension for a $width x $height scene',
     ({ width, height, left, top }) => {
       const { controls, canvas } = setup()
       vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue(
@@ -1694,12 +1695,12 @@ describe('CATIA button transitions', () => {
       )
       for (const [x, y, expected] of [
         [0.5, 0.5, 'rotate'],
-        [0.4, 0.4, 'rotate'],
-        [0.35, 0.35, 'rotatetrackball'],
-        [0.65, 0.65, 'rotatetrackball'],
-        [1 / 3, 1 / 3, 'rotatetrackball'],
-        [2 / 3, 2 / 3, 'rotatetrackball'],
-        [0.25, 0.5, 'rotatetrackball'],
+        [0.2, 0.5, 'rotate'],
+        [0.75, 0.75, 'rotate'],
+        [0.79, 0.79, 'rotatetrackball'],
+        [0.1, 0.1, 'rotatetrackball'],
+        [0.9, 0.9, 'rotatetrackball'],
+        [0.05, 0.5, 'rotatetrackball'],
       ] as const) {
         expect(
           controls.getInteractionType(
@@ -1715,7 +1716,7 @@ describe('CATIA button transitions', () => {
     controls.onMouseDown(pointer('pointerdown', 4, 1, 128, 128))
     controlKey('keydown')
     controls.onMouseMove(pointer('pointermove', 4, -1, 140, 128, true))
-    controls.onMouseMove(pointer('pointermove', 4, -1, 90, 90, true))
+    controls.onMouseMove(pointer('pointermove', 4, -1, 201, 201, true))
     controls.onMouseMove(pointer('pointermove', 4, -1, 128, 140, true))
     controls.onMouseUp(pointer('pointerup', 0, 1, 128, 140, true))
     expect(dragCommands(send)).toEqual([
@@ -1729,10 +1730,10 @@ describe('CATIA button transitions', () => {
 
   it('uses the cursor position when a side button starts edge rotation', () => {
     const { controls, send } = setup()
-    controls.onMouseDown(pointer('pointerdown', 4, 1, 220, 128))
-    controls.onMouseMove(pointer('pointermove', 6, 2, 220, 128))
-    controls.onMouseMove(pointer('pointermove', 6, -1, 220, 140))
-    controls.onMouseUp(pointer('pointerup', 0, 1, 220, 140))
+    controls.onMouseDown(pointer('pointerdown', 4, 1, 248, 128))
+    controls.onMouseMove(pointer('pointermove', 6, 2, 248, 128))
+    controls.onMouseMove(pointer('pointermove', 6, -1, 248, 140))
+    controls.onMouseUp(pointer('pointerup', 0, 1, 248, 140))
     expect(dragCommands(send).at(-1)).toEqual({
       type: 'camera_drag_end',
       interaction: 'rotatetrackball',
@@ -1754,10 +1755,10 @@ describe('CATIA button transitions', () => {
       const rotation = controls.camera.quaternion.clone()
       const target = controls.target.clone()
       const distance = controls.camera.position.distanceTo(target)
-      controls.onMouseDown(pointer('pointerdown', 4, 1, 220, 110))
+      controls.onMouseDown(pointer('pointerdown', 4, 1, 248, 110))
       controlKey('keydown')
-      controls.onMouseMove(pointer('pointermove', 4, -1, 220, 140, true))
-      controls.onMouseUp(pointer('pointerup', 0, 1, 220, 140, true))
+      controls.onMouseMove(pointer('pointermove', 4, -1, 248, 140, true))
+      controls.onMouseUp(pointer('pointerup', 0, 1, 248, 140, true))
       expect(controls.camera.quaternion.equals(rotation)).toBe(false)
       expect(controls.target.equals(target)).toBe(true)
       expect(controls.camera.position.distanceTo(target)).toBeCloseTo(distance)
@@ -1773,10 +1774,10 @@ describe('CATIA button transitions', () => {
     const { controls, send } = setup()
     controls.syncDirection = 'clientToEngine'
     const rotation = controls.camera.quaternion.clone()
-    controls.onMouseDown(pointer('pointerdown', 4, 1, 220, 110))
+    controls.onMouseDown(pointer('pointerdown', 4, 1, 248, 110))
     controlKey('keydown')
-    controls.onMouseMove(pointer('pointermove', 4, -1, 220, 140, true))
-    controls.onMouseUp(pointer('pointerup', 0, 1, 220, 140, true))
+    controls.onMouseMove(pointer('pointermove', 4, -1, 248, 140, true))
+    controls.onMouseUp(pointer('pointerup', 0, 1, 248, 140, true))
     vi.advanceTimersToNextFrame()
     expect(controls.camera.quaternion.equals(rotation)).toBe(false)
     expect(sentCommandTypes(send)).toContain('default_camera_look_at')
@@ -1796,7 +1797,7 @@ describe('CATIA button transitions', () => {
         controls.getInteractionType(pointer('pointermove', 2, -1, 128, 128))
       ).toBe(preference === 'trackball' ? 'rotatetrackball' : 'rotate')
       expect(
-        controls.getInteractionType(pointer('pointermove', 2, -1, 220, 128))
+        controls.getInteractionType(pointer('pointermove', 2, -1, 248, 128))
       ).toBe(preference === 'trackball' ? 'rotatetrackball' : 'rotate')
     }
   )

@@ -62,6 +62,8 @@ import {
   type UnreliableSubscription,
 } from '@src/lib/engineConnection/utils'
 
+// The central CATIA oval spans 80% of the displayed scene in each dimension.
+const CATIA_ORBIT_RADIUS_FRACTION = 0.4
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const EXPECTED_WORLD_COORD_SYSTEM = 'right_handed_up_z'
 
@@ -2057,8 +2059,8 @@ export class CameraControls {
       const inCenter =
         width > 0 &&
         height > 0 &&
-        ((x - width / 2) / (width / 6)) ** 2 +
-          ((y - height / 2) / (height / 6)) ** 2 <=
+        ((x - width / 2) / (width * CATIA_ORBIT_RADIUS_FRACTION)) ** 2 +
+          ((y - height / 2) / (height * CATIA_ORBIT_RADIUS_FRACTION)) ** 2 <=
           1
       return inCenter ? 'rotate' : 'rotatetrackball'
     }
