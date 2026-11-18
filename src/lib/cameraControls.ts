@@ -129,6 +129,8 @@ export interface MouseGuard {
   pan: MouseGuardHandler
   zoom: MouseGuardZoomHandler
   rotate: MouseGuardHandler
+  /** CATIA chooses spherical or trackball rotation from the cursor position. */
+  orbitMode?: 'catia'
   /** Resolves button transitions using the preceding event in this pointer drag. */
   resolveDrag?: (
     event: MouseDragInput,
@@ -245,6 +247,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     },
   },
   CATIA: {
+    orbitMode: 'catia',
     pan: {
       description: 'Middle click drag',
       callback: (e) => e.buttons === 4 && noModifiersPressed(e),

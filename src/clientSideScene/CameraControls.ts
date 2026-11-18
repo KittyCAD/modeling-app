@@ -697,11 +697,14 @@ export class CameraControls {
     )
   }
 
-  private enabledMouseDragInteraction(interaction: MouseDragInteraction) {
+  private enabledMouseDragInteraction(
+    interaction: MouseDragInteraction,
+    point: ScreenPoint
+  ) {
     if (interaction === 'pan' && !this.enablePan) return 'none'
     if (interaction === 'rotate' && !this.enableRotate) return 'none'
     if (interaction === 'zoom' && !this.enableZoom) return 'none'
-    return this.mapOrbitInteraction(interaction)
+    return this.mapOrbitInteraction(interaction, point)
   }
 
   private updateMouseDrag(
@@ -718,13 +721,19 @@ export class CameraControls {
       ctrlKey: input.ctrlKey,
     }
     const interaction = this.enabledMouseDragInteraction(
-      this.mouseDragState.interaction
+      this.mouseDragState.interaction,
+      point
     )
     if (previous === 'rotate' || this.mouseDragState.interaction === 'rotate') {
       this.wasDragging = true
     }
-    if (this.mouseDragState.interaction !== previous) {
+    if (
+      this.mouseDragState.interaction !== previous ||
+      interaction !== this.activeDragInteraction
+    ) {
       this.moveFrame.flush()
+    }
+    if (this.mouseDragState.interaction !== previous) {
       this.setDragAnchor(point)
     }
     if (interaction === 'none') {
@@ -812,7 +821,10 @@ export class CameraControls {
     } else {
       // The client owns the camera, either with engine synchronization
       // for sketch mode or without it for local rendering.
-      if (this.effectiveCameraMode === 'local') {
+      if (
+        this.effectiveCameraMode === 'local' ||
+        interaction === 'rotatetrackball'
+      ) {
         if (interaction === 'rotate') {
           orbitLocalCamera(
             this.camera,
@@ -2010,7 +2022,8 @@ export class CameraControls {
       !('pointerType' in event && event.pointerType === 'touch')
     ) {
       return this.enabledMouseDragInteraction(
-        this.interactionGuards.resolveDrag(event, this.mouseDragState)
+        this.interactionGuards.resolveDrag(event, this.mouseDragState),
+        event
       )
     }
     // We just need to send any start value to the engine for touch.
@@ -2025,12 +2038,31 @@ export class CameraControls {
             this.enableRotate,
             this.enableZoom
           )
-    return this.mapOrbitInteraction(initialInteractionType)
+    return this.mapOrbitInteraction(initialInteractionType, event)
   }
 
   private mapOrbitInteraction(
-    initialInteractionType: MouseDragInteraction
+    initialInteractionType: MouseDragInteraction,
+    point: ScreenPoint
   ): CameraDragInteractionType | 'none' {
+    if (
+      initialInteractionType === 'rotate' &&
+      this.interactionGuards.orbitMode === 'catia'
+    ) {
+      const rect = this.domElement.getBoundingClientRect()
+      const width = rect.width || this.domElement.clientWidth
+      const height = rect.height || this.domElement.clientHeight
+      const x = point.clientX - rect.left
+      const y = point.clientY - rect.top
+      const inCenter =
+        width > 0 &&
+        height > 0 &&
+        x >= width / 3 &&
+        x <= (2 * width) / 3 &&
+        y >= height / 3 &&
+        y <= (2 * height) / 3
+      return inCenter ? 'rotate' : 'rotatetrackball'
+    }
     if (
       initialInteractionType === 'rotate' &&
       this.getSettings?.().modeling.cameraOrbit.current === 'trackball'

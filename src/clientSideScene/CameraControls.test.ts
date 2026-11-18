@@ -1639,16 +1639,67 @@ describe('CATIA button transitions', () => {
     }
   )
 
-  it('uses the selected trackball orbit for Middle-before-Ctrl rotation', () => {
+  it.each(['spherical', 'trackball'] as const)(
+    'selects CATIA orbit from cursor position despite a saved %s preference',
+    (preference) => {
+      const { controls, canvas } = setup()
+      controls.getSettings = () =>
+        ({ modeling: { cameraOrbit: { current: preference } } }) as ReturnType<
+          CameraControls['getSettings']
+        >
+      vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue(
+        new DOMRect(100, 50, 900, 600)
+      )
+      for (const [x, y, expected] of [
+        [450, 300, 'rotate'],
+        [300, 200, 'rotate'],
+        [600, 400, 'rotate'],
+        [299, 300, 'rotatetrackball'],
+        [601, 300, 'rotatetrackball'],
+        [450, 199, 'rotatetrackball'],
+        [450, 401, 'rotatetrackball'],
+      ] as const) {
+        expect(
+          controls.getInteractionType(
+            pointer('pointermove', 6, -1, x + 100, y + 50)
+          )
+        ).toBe(expected)
+      }
+      vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue(
+        new DOMRect(40, 80, 300, 150)
+      )
+      expect(
+        controls.getInteractionType(pointer('pointermove', 6, -1, 190, 155))
+      ).toBe('rotate')
+      expect(
+        controls.getInteractionType(pointer('pointermove', 6, -1, 320, 155))
+      ).toBe('rotatetrackball')
+    }
+  )
+
+  it('switches orbit as the cursor crosses the center third and flushes each engine interaction', () => {
     const { controls, send } = setup()
-    controls.getSettings = () =>
-      ({ modeling: { cameraOrbit: { current: 'trackball' } } }) as ReturnType<
-        CameraControls['getSettings']
-      >
-    controls.onMouseDown(pointer('pointerdown', 4, 1))
+    controls.onMouseDown(pointer('pointerdown', 4, 1, 128, 128))
     controlKey('keydown')
-    controls.onMouseMove(pointer('pointermove', 4, -1, 120, 100, true))
-    controls.onMouseUp(pointer('pointerup', 0, 1, 120, 100, true))
+    controls.onMouseMove(pointer('pointermove', 4, -1, 140, 128, true))
+    controls.onMouseMove(pointer('pointermove', 4, -1, 220, 128, true))
+    controls.onMouseMove(pointer('pointermove', 4, -1, 128, 140, true))
+    controls.onMouseUp(pointer('pointerup', 0, 1, 128, 140, true))
+    expect(dragCommands(send)).toEqual([
+      { type: 'camera_drag_start', interaction: 'pan' },
+      { type: 'camera_drag_move', interaction: 'rotate' },
+      { type: 'camera_drag_move', interaction: 'rotatetrackball' },
+      { type: 'camera_drag_move', interaction: 'rotate' },
+      { type: 'camera_drag_end', interaction: 'rotate' },
+    ])
+  })
+
+  it('uses the cursor position when a side button starts edge rotation', () => {
+    const { controls, send } = setup()
+    controls.onMouseDown(pointer('pointerdown', 4, 1, 220, 128))
+    controls.onMouseMove(pointer('pointermove', 6, 2, 220, 128))
+    controls.onMouseMove(pointer('pointermove', 6, -1, 220, 140))
+    controls.onMouseUp(pointer('pointerup', 0, 1, 220, 140))
     expect(dragCommands(send).at(-1)).toEqual({
       type: 'camera_drag_end',
       interaction: 'rotatetrackball',
@@ -1661,6 +1712,61 @@ describe('CATIA button transitions', () => {
       )
     ).toBe(true)
   })
+
+  it.each(['perspective', 'orthographic'] as const)(
+    'turns the local %s camera with cursor-selected trackball rotation',
+    (projection) => {
+      const { controls } = setup(true)
+      if (projection === 'orthographic') controls.useOrthographicCamera()
+      const rotation = controls.camera.quaternion.clone()
+      const target = controls.target.clone()
+      const distance = controls.camera.position.distanceTo(target)
+      controls.onMouseDown(pointer('pointerdown', 4, 1, 220, 110))
+      controlKey('keydown')
+      controls.onMouseMove(pointer('pointermove', 4, -1, 220, 140, true))
+      controls.onMouseUp(pointer('pointerup', 0, 1, 220, 140, true))
+      expect(controls.camera.quaternion.equals(rotation)).toBe(false)
+      expect(controls.target.equals(target)).toBe(true)
+      expect(controls.camera.position.distanceTo(target)).toBeCloseTo(distance)
+      const relativeRotation = rotation
+        .clone()
+        .invert()
+        .multiply(controls.camera.quaternion)
+      expect(Math.abs(relativeRotation.z)).toBeGreaterThan(0.001)
+    }
+  )
+
+  it('synchronizes cursor-selected trackball rotation while the client owns the streamed sketch camera', () => {
+    const { controls, send } = setup()
+    controls.syncDirection = 'clientToEngine'
+    const rotation = controls.camera.quaternion.clone()
+    controls.onMouseDown(pointer('pointerdown', 4, 1, 220, 110))
+    controlKey('keydown')
+    controls.onMouseMove(pointer('pointermove', 4, -1, 220, 140, true))
+    controls.onMouseUp(pointer('pointerup', 0, 1, 220, 140, true))
+    vi.advanceTimersToNextFrame()
+    expect(controls.camera.quaternion.equals(rotation)).toBe(false)
+    expect(sentCommandTypes(send)).toContain('default_camera_look_at')
+    expect(sentCommandTypes(send)).not.toContain('camera_drag_move')
+  })
+
+  it.each(['spherical', 'trackball'] as const)(
+    'keeps the %s Camera Orbit preference for other mouse schemes',
+    (preference) => {
+      const { controls } = setup()
+      controls.interactionGuards = cameraMouseDragGuards.Zoo
+      controls.getSettings = () =>
+        ({ modeling: { cameraOrbit: { current: preference } } }) as ReturnType<
+          CameraControls['getSettings']
+        >
+      expect(
+        controls.getInteractionType(pointer('pointermove', 2, -1, 128, 128))
+      ).toBe(preference === 'trackball' ? 'rotatetrackball' : 'rotate')
+      expect(
+        controls.getInteractionType(pointer('pointermove', 2, -1, 220, 128))
+      ).toBe(preference === 'trackball' ? 'rotatetrackball' : 'rotate')
+    }
+  )
 
   it.each(['perspective', 'orthographic'] as const)(
     'applies Ctrl zoom and rotation to the local %s camera',

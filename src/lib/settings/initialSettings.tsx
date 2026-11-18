@@ -425,7 +425,10 @@ function createCoreSettings() {
       cameraOrbit: new Setting<CameraOrbitType>({
         defaultValue: 'spherical',
         hideOnLevel: 'project',
-        description: 'What methodology to use for orbiting the camera.',
+        description:
+          'Choose spherical or trackball orbit. CATIA overrides this setting: spherical in the center third of the scene, trackball near the edges.',
+        isEnabled: (context) =>
+          context.modeling.mouseControls.current !== 'CATIA',
         validate: (v) => ['spherical', 'trackball'].includes(v),
         commandConfig: {
           inputType: 'options',
