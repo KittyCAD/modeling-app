@@ -21,6 +21,7 @@ export function registerViewportNavigation(
       id: 'engine-scene.viewport-navigation',
       providesServices: [
         provideService(viewportNavigationService, {
+          recoveryHint: navigation.recoveryHint,
           isModelOutOfView: navigation.isModelOutOfView,
           recenter: async () => {
             if (registry.optional(viewportNavigationService) === registered) {

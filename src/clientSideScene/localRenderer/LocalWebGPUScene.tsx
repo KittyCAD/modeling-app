@@ -86,16 +86,21 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
     rendererRef.current = renderer
     const sceneInfra = kclManager.sceneInfra
     sceneInfra.localRenderer = renderer
+    const navigationAbort = new AbortController()
     const unregisterNavigation = registerViewportNavigation(registry, {
       isModelOutOfView: renderer.isModelOutOfView,
+      recoveryHint: renderer.recoveryHint,
       recenter: () =>
         sceneInfra.camControls.zoomToFit({
           padding: 0.1,
           bounds: renderer.getModelBounds(),
+          duration: 150,
+          signal: navigationAbort.signal,
         }),
     })
 
     return () => {
+      navigationAbort.abort()
       unregisterNavigation()
       if (rendererRef.current === renderer) {
         rendererRef.current = null

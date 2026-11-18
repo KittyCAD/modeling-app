@@ -1,3 +1,6 @@
+import { recenterHint } from '@src/clientSideScene/localRenderer/recenterHint'
+import type { RecenterHint } from '@src/registry/contracts/viewportNavigation'
+import { ModelVisibilityMask } from '@src/clientSideScene/localRenderer/ModelVisibilityMask'
 import type {
   EntityReference,
   EntityType,
@@ -27,7 +30,6 @@ import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import { IntegerIdPicker } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
 import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
 import { SelectionHighlightRenderer } from '@src/clientSideScene/localRenderer/SelectionHighlightRenderer'
-import { modelViewportCoverage } from '@src/clientSideScene/localRenderer/modelViewportCoverage'
 import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
 import { artifactToEntityRef } from '@src/lang/queryAst'
@@ -173,6 +175,7 @@ export interface LocalRendererProps {
 
 export class LocalRenderer {
   readonly isModelOutOfView = signal(false)
+  readonly recoveryHint = signal<RecenterHint>({ kind: 'neutral' })
   private readonly container: HTMLDivElement
   private readonly kclManager: KclManager
   private readonly settings: RendererSettings
@@ -185,6 +188,8 @@ export class LocalRenderer {
   private readonly modelBounds = new Box3()
   private modelVisibilityTimeout: ReturnType<typeof setTimeout> | undefined
   private modelWasOutOfView = false
+  private modelVisibilityVersion = 0
+  private modelVisibilityMask: ModelVisibilityMask | null = null
   private readonly gltfLoader = new GLTFLoader()
   // Shared by all model materials, so a new color doesn't rebuild their shaders.
   private readonly backfaceColor = uniform(new Color())
@@ -690,8 +695,8 @@ export class LocalRenderer {
       gpu.envMapLoader.dispose()
       gpu.renderer.domElement.remove()
       // The renderer frees its resources asynchronously, so the device has to outlive that.
-      gpu.renderer
-        .dispose()
+      Promise.resolve(this.modelVisibilityMask?.dispose())
+        .then(() => gpu.renderer.dispose())
         .then(() => gpu.device?.destroy())
         .catch(reportRejection)
     }
@@ -1041,6 +1046,7 @@ export class LocalRenderer {
   }
 
   private readonly scheduleModelVisibilityCheck = () => {
+    this.modelVisibilityVersion++
     clearTimeout(this.modelVisibilityTimeout)
     this.modelVisibilityTimeout = undefined
     this.isModelOutOfView.value = false
@@ -1049,19 +1055,21 @@ export class LocalRenderer {
     this.modelVisibilityTimeout = setTimeout(() => {
       this.modelVisibilityTimeout = undefined
       if (this.kclManager.sceneInfra.camControls.isDragging) return
-      this.updateModelVisibility()
+      this.updateModelVisibility().catch(reportRejection)
     }, MODEL_VISIBILITY_IDLE_MS)
   }
 
-  private updateModelVisibility() {
+  private async updateModelVisibility() {
+    const version = this.modelVisibilityVersion
     const outOfView = this.isModelOutOfView
-    const coverage = this.camera
-      ? modelViewportCoverage(this.modelBounds, this.camera)
-      : undefined
+    if (!this.camera || !this.modelVisibilityMask) return
+    const coverage = await this.modelVisibilityMask.coverage(this.camera)
+    if (this.disposed || version !== this.modelVisibilityVersion) return
     // A little hysteresis prevents flickering at the three-percent boundary.
     this.modelWasOutOfView =
       coverage !== undefined &&
       coverage <= (this.modelWasOutOfView ? 0.04 : 0.03)
+    this.recoveryHint.value = recenterHint(this.modelBounds, this.camera)
     outOfView.value = this.modelWasOutOfView
   }
 
@@ -1097,6 +1105,8 @@ export class LocalRenderer {
 
   private clearModel() {
     const { gpu } = this
+    this.modelVisibilityVersion++
+    this.modelVisibilityMask?.setModel(null)
     clearTimeout(this.modelVisibilityTimeout)
     this.modelVisibilityTimeout = undefined
     this.modelWasOutOfView = false
@@ -1194,6 +1204,7 @@ export class LocalRenderer {
     planeRenderer.addTo(scene)
     const integerIdPicker = new IntegerIdPicker(renderer)
     integerIdPicker.setEdgesVisible(shouldHighlightEdges)
+    this.modelVisibilityMask = new ModelVisibilityMask(renderer)
     this.gpu = {
       renderer,
       device: device ?? null,
@@ -1392,6 +1403,7 @@ export class LocalRenderer {
       this.rebuildSelectionTargets()
       const bounds = new Box3().setFromObject(gltf.scene)
       this.modelBounds.copy(bounds)
+      this.modelVisibilityMask?.setModel(gltf.scene)
       this.scheduleModelVisibilityCheck()
       this.updateAmbientOcclusionScale(bounds)
       this.resetCameraIfPending()

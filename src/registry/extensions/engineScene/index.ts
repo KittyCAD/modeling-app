@@ -235,16 +235,14 @@ const modelingDialogViewExtension = defineEngineSceneViewExtension({
 
 const recenterViewExtension = defineEngineSceneViewExtension({
   id: 'engine-scene.recenter',
-  zone: 'bottom',
+  zone: 'bottom-right',
   order: 19,
   Component: EngineSceneRecenterViewExtension,
-  // Keep the view controls together at the right edge even when Recenter is hidden.
-  wrapperClassName: 'ml-auto self-center',
 })
 
 const gizmoViewExtension = defineEngineSceneViewExtension({
   id: 'engine-scene.gizmo',
-  zone: 'bottom',
+  zone: 'bottom-right',
   order: 20,
   Component: EngineSceneGizmoViewExtension,
 })

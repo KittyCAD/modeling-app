@@ -1,5 +1,6 @@
 import { Registry } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
+import type { RecenterHint } from '@src/registry/contracts/viewportNavigation'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import {
@@ -28,15 +29,26 @@ it('shows Recenter only for a lost model and delegates to the viewport service',
   render(<RecenterViewControl />)
   expect(screen.queryByRole('button', { name: 'Recenter' })).toBeNull()
   const isModelOutOfView = signal(false)
+  const recoveryHint = signal<RecenterHint>({ kind: 'direction', angle: 90 })
   const recenter = vi.fn(async () => {})
   act(() => {
-    registerViewportNavigation(registry, { isModelOutOfView, recenter })
+    registerViewportNavigation(registry, {
+      isModelOutOfView,
+      recoveryHint,
+      recenter,
+    })
   })
   expect(screen.queryByRole('button', { name: 'Recenter' })).toBeNull()
   act(() => {
     isModelOutOfView.value = true
   })
-  fireEvent.click(screen.getByRole('button', { name: 'Recenter' }))
+  const button = screen.getByRole('button', { name: 'Recenter' })
+  expect(button).toHaveAttribute('title', 'Model is offscreen')
+  act(() => {
+    recoveryHint.value = { kind: 'zoom-out' }
+  })
+  expect(button).toHaveAttribute('title', 'Zoom out to find the model')
+  fireEvent.click(button)
   expect(recenter).toHaveBeenCalledOnce()
   act(() => {
     isModelOutOfView.value = false
