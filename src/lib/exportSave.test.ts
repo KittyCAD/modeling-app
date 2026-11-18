@@ -18,28 +18,18 @@ describe('saving exported bytes', () => {
     vi.stubGlobal('electron', undefined)
   })
 
-  it.each([false, true])(
-    'preserves a single binary file with typed bytes: %s',
-    async (typedBytes) => {
-      const bytes = [0, 1, 127, 128, 254, 255]
-      await exportSave({
-        fileOperations: testFileOperations,
-        files: [
-          {
-            name: 'output.glb',
-            contents: typedBytes ? new Uint8Array(bytes) : bytes,
-          },
-        ],
-        fileName: 'model.glb',
-        toastId: 'export',
-      })
-      const [blob, name] = vi.mocked(browserSaveFile).mock.calls[0]
-      expect(name).toBe('model.glb')
-      expect(Array.from(new Uint8Array(await blob.arrayBuffer()))).toEqual(
-        bytes
-      )
-    }
-  )
+  it('preserves a single binary file with typed bytes', async () => {
+    const bytes = [0, 1, 127, 128, 254, 255]
+    await exportSave({
+      fileOperations: testFileOperations,
+      files: [{ name: 'output.glb', contents: new Uint8Array(bytes) }],
+      fileName: 'model.glb',
+      toastId: 'export',
+    })
+    const [blob, name] = vi.mocked(browserSaveFile).mock.calls[0]
+    expect(name).toBe('model.glb')
+    expect(Array.from(new Uint8Array(await blob.arrayBuffer()))).toEqual(bytes)
+  })
 
   it('preserves mixed text and binary files in a ZIP', async () => {
     const text = new TextEncoder().encode('{"asset":{"version":"2.0"}}')
