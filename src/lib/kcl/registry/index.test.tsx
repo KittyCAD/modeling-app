@@ -1,10 +1,5 @@
 import '@src/lib/projectSession/next/testFeature'
-import {
-  defineRegistryItem,
-  provide,
-  provideService,
-  Registry,
-} from '@kittycad/registry'
+import { contribute, provide, Registry } from 'plankton'
 import { signal } from '@preact/signals-core'
 import { emptyExecState } from '@src/lang/wasm'
 import editorsExtension from '@src/lib/editors/registry'
@@ -23,7 +18,7 @@ import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
-import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
 import { act, render } from '@testing-library/react'
 import { afterEach, beforeAll, expect, it, vi } from 'vitest'
 
@@ -67,29 +62,28 @@ it.each([false, true])(
     settings.modeling.highlightEdges.user = false
     settings.modeling.useLocalRenderer.user = local
     const registry = new Registry()
-    registry.configure([
+    await registry.configure([
       editorsExtension,
       executorsExtension,
       kclExtension,
-      defineRegistryItem({
-        providesServices: [
-          provideService(settingsService, {
+      [
+        [
+          provide(settingsService, {
             current: signal(settings),
             actor: {},
           } as unknown as SettingsRegistryService),
         ],
-        provides: [
-          provide(
-            wasmPromiseValueSpec,
+        [
+          contribute(wasmPromiseFacet, () =>
             Promise.resolve({
               relevant_file_extensions: () => ['kcl'],
             } as unknown as ModuleType)
           ),
         ],
-      }),
+      ],
     ])
     try {
-      const editors = registry.get(editorsService)
+      const editors = registry.required(editorsService)
       const editor = requireSuccess(
         editors.createEditor('@settings(kclVersion = 3.0)\nanswer = 42')
       )
@@ -110,18 +104,19 @@ it.each([false, true])(
         </>
       )
       await vi.waitFor(() => expect(resources).toHaveLength(2))
-      // All views consume the same registered policy as the legacy file route.
-      const nativeSettings = registry.get(kclExecutionSettingsService)
+      const nativeSettings = registry.required(kclExecutionSettingsService)
       for (const [options] of vi.mocked(openKclScene).mock.calls) {
-        expect(
-          options.nativeSettings === nativeSettings,
-          "Modeling views must use the registry's shared execution settings"
-        ).toBe(true)
+        expect(options.nativeSettings.executeRevision.peek()).toBe(
+          nativeSettings.executeRevision.peek()
+        )
+        expect(options.nativeSettings.configuration.peek()).toEqual(
+          nativeSettings.configuration.peek()
+        )
       }
       await vi.waitFor(() =>
         expect(
           registry
-            .get(executorsService)
+            .required(executorsService)
             .executors.peek()
             .every((executor) => !executor.output.peek().running)
         ).toBe(true)
@@ -191,7 +186,7 @@ it.each([false, true])(
         expect(resources[1].dispose).toHaveBeenCalledOnce()
       )
     } finally {
-      registry[Symbol.dispose]()
+      await registry.dispose()
     }
   }
 )

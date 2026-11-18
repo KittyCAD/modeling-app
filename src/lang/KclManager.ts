@@ -3694,7 +3694,7 @@ export class KclManager extends File {
     return safeLSGetItem(PERSIST_CODE_KEY) ?? undefined
   }
   /**
-   * @deprecated Prefer registering shortcuts through `keymapValueSpec`.
+   * @deprecated Prefer registering shortcuts through `keymapFacet`.
    */
   registerHotkey(hotkey: string, callback: () => void) {
     this._hotkeys[hotkey] = callback

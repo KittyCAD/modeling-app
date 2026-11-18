@@ -28,7 +28,7 @@ function setup() {
     ),
     writeFile: vi.fn(async () => {}),
   }
-  const projects = createProjectSessionService(() => storage)
+  const projects = createProjectSessionService(storage)
   projects.openProject(project('/model'))
   const documents = signal<readonly Pick<Editor, 'src' | 'contents'>[]>([])
   const sources = createProjectSources(
