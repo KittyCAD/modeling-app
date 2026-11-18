@@ -6,14 +6,12 @@ import { Spinner } from '@src/components/Spinner'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
 import { useSingletons } from '@src/lib/boot'
+import { PROJECT_THUMBNAIL_SIZE } from '@src/lib/screenshot'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 // The default planes are shown or hidden about 200 ms after an execution, so
 // the thumbnail waits for them, like the streamed one does.
 const THUMBNAIL_DELAY_MS = 500
-// The projects API keeps an uploaded thumbnail only at exactly this size, and
-// renders its own with the engine otherwise.
-const THUMBNAIL_SIZE = { width: 1280, height: 720 }
 // How often the pending command count is read, as the status bar's tooltip does.
 const PENDING_COMMAND_POLL_MS = 100
 
@@ -67,7 +65,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
       if (isNewModel && renderer && captureThumbnail) {
         setTimeout(() => {
           if (rendererRef.current !== renderer) return
-          renderer.readFrame(captureThumbnail, THUMBNAIL_SIZE)
+          renderer.readFrame(captureThumbnail, PROJECT_THUMBNAIL_SIZE)
         }, THUMBNAIL_DELAY_MS)
       }
     },
