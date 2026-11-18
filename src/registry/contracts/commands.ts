@@ -300,7 +300,9 @@ function compareActiveScopeOrder(
     : a.scope.localeCompare(b.scope)
 }
 export const commandsContract = contract({
-  contextualCommandsService: service<ContextualCommandsService>('commands.contextual'),
+  contextualCommandsService: service<ContextualCommandsService>(
+    'commands.contextual'
+  ),
   commandScopeService: service<CommandScopeService>('command.scope-service'),
   commandScopesFacet: new Facet<CommandScope, CommandScope[]>(
     'commands.scopes',
@@ -314,7 +316,8 @@ export const commandsContract = contract({
 })
 
 export const {
-  contextualCommandsService,  commandScopeService,
+  contextualCommandsService,
+  commandScopeService,
   commandScopesFacet,
   commandSystemService,
   commandsFacet,

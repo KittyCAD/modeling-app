@@ -186,15 +186,25 @@ describe('commands extension', () => {
     })
     const activeScopes = signal<readonly string[]>([])
     await registry.configure([
-      createCommandsExtension(defineFactory({create:()=>({exports:{manager:new MachineManager()}})})),
+      createCommandsExtension(
+        defineFactory({
+          create: () => ({ exports: { manager: new MachineManager() } }),
+        })
+      ),
       provideWasmPromise(() => Promise.resolve({} as ModuleType)),
       provideCommand(command('default')),
       provide(commandScopeService, {
         activeScopes,
-        applyScope: (scope) => {activeScopes.value=[...activeScopes.value,scope]},
-        removeScope: (scope) => {activeScopes.value=activeScopes.value.filter(value=>value!==scope)},
-        getCurrentScopes:()=>activeScopes.value,
-        focusScope:()=>({onFocus:()=>{},onBlur:()=>{}}),
+        applyScope: (scope) => {
+          activeScopes.value = [...activeScopes.value, scope]
+        },
+        removeScope: (scope) => {
+          activeScopes.value = activeScopes.value.filter(
+            (value) => value !== scope
+          )
+        },
+        getCurrentScopes: () => activeScopes.value,
+        focusScope: () => ({ onFocus: () => {}, onBlur: () => {} }),
       }),
     ])
     const service = registry.required(commandSystemService)
