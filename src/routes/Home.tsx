@@ -652,7 +652,7 @@ const Home = () => {
                     return next
                   })
                 }
-                className="text-xs border-primary/10"
+                className="py-1 text-xs border-primary/10"
               >
                 {showHiddenLibraries
                   ? 'Hide hidden libraries'
