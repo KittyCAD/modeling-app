@@ -9,15 +9,9 @@ import {
   service,
   slot,
 } from 'plankton'
-import { builtInActions, builtInOutcomes } from './actions'
+import { builtInActions } from './actions'
 import { bushPuzzle } from './content'
-import {
-  type Action,
-  type Definition,
-  Game,
-  type Outcome,
-  type Puzzle,
-} from './game'
+import { type Action, type Definition, Game, type Puzzle } from './game'
 
 export const gameContract = contract({
   definitions: new Facet(
@@ -25,7 +19,6 @@ export const gameContract = contract({
     (values: readonly Definition[]) => values
   ),
   actions: new Facet('game.actions', (values: readonly Action[]) => values),
-  outcomes: new Facet('game.outcomes', (values: readonly Outcome[]) => values),
   session: service<Game>('game.session'),
   puzzles: new Facet('game.puzzles', (values: readonly Puzzle[]) => values),
 })
@@ -58,18 +51,13 @@ export async function openGame() {
   const actions = builtInActions.map((action) =>
     contribute(gameContract.actions, () => action, { key: action.id })
   )
-  const outcomes = builtInOutcomes.map((outcome) =>
-    contribute(gameContract.outcomes, () => outcome, { key: outcome.id })
-  )
   const session = factory({
     create: (_dependencies, scope) => {
       const definitions = scope.observe(gameContract.definitions)
       const actions = scope.observe(gameContract.actions)
-      const outcomes = scope.observe(gameContract.outcomes)
       const game = new Game(initialPuzzle, {
         definitions: () => definitions.value,
         actions: () => actions.value,
-        outcomes: () => outcomes.value,
       })
       return {
         exports: game,
@@ -82,7 +70,6 @@ export async function openGame() {
     starterPuzzles,
     startingContent,
     actions,
-    outcomes,
     authoredActions,
     session,
   ])
@@ -106,7 +93,6 @@ export async function openGame() {
     game: board,
     registry,
     actions: registry.observe(gameContract.actions),
-    outcomes: registry.observe(gameContract.outcomes),
     definitions: registry.observe(gameContract.definitions),
     puzzles: registry.observe(gameContract.puzzles),
     async publish(definition: Definition) {

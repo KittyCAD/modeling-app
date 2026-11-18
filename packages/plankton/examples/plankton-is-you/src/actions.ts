@@ -1,4 +1,4 @@
-import type { Action, Outcome, Point } from './game'
+import type { Action, Point } from './game'
 
 export const builtInActions: readonly Action[] = [
   {
@@ -20,31 +20,18 @@ export const builtInActions: readonly Action[] = [
     wins: true,
   },
   {
+    id: 'lose',
+    label: 'Lose on contact',
+    description: 'Any controlled entity touching this entity loses the game.',
+    loses: true,
+  },
+  {
     id: 'destroy',
     label: 'Destroy self',
     description: 'Remove this entity at the end of each turn.',
     afterTurn: (subject, turn) => turn.destroy(subject.id),
   },
 ]
-export const builtInOutcomes: readonly Outcome[] = [
-  {
-    id: 'no-you',
-    label: 'Lose when YOU is disconnected',
-    description: 'No entity has an active player-control action.',
-    evaluate: ({ controlled }) =>
-      controlled.length === 0 ? 'lost' : undefined,
-  },
-  {
-    id: 'touch-win',
-    label: 'Win when YOU touches WIN',
-    description: 'Includes a controlled entity that is itself WIN.',
-    evaluate: ({ controlled, winning }) =>
-      controlled.some((t) => winning.some((w) => w.x === t.x && w.y === t.y))
-        ? 'won'
-        : undefined,
-  },
-]
-
 /** Runtime recipes compose turn capabilities into ordinary Action contributions. */
 export type ActionRecipe = {
   id: string

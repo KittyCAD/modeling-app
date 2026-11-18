@@ -65,12 +65,11 @@ self-destruction. It does not execute arbitrary text as JavaScript.
 
 ## Plankton contracts
 
-`registry.ts` defines Facets for definitions, actions, starter puzzles, and
-outcomes. Built-ins and runtime content use real `contribute(...)` Bindings.
+`registry.ts` defines Facets for definitions, actions, and starter puzzles. Built-ins and runtime content use real `contribute(...)` Bindings.
 Static content is an array of Bindings; no Factory is needed for each word.
 
 A session Factory owns the board, exposes it through a Service, and observes the
-three live behavior inputs. Its `start` evaluates the initial outcome after
+two live behavior inputs. Its `start` evaluates the initial outcome after
 publication. Definition and action Slots can be replaced while that Factory and
 its dependencies survive. Replacements are awaited while the UI disables input.
 Registry disposal runs on Vite hot replacement; React removes input listeners.
@@ -106,22 +105,27 @@ that captures injected resources and owns their cleanup.
 
 ## Outcomes and turn order
 
-Outcome policies are independent extensions in the `outcomes` Facet. The initial
-policies are visible in the tray:
+Win and loss are fixed game rules, evaluated after actions finish:
 
-- Lose when no entity has player control, including when YOU is disconnected or
-  every controlled entity is destroyed.
-- Win when a controlled entity shares a cell with a winning entity, including an
-  entity that is both YOU and WIN.
+- Lose when zero entities have active player control. This includes disconnected
+  YOU sentences, destruction of the last YOU entity, and a connected `BUSH IS YOU`
+  rule when no bushes exist. Another surviving YOU entity keeps play going.
+  The loss message is **No YOU entities remain**.
+- **Lose on contact** is an available action. Give a property word this action,
+  then use a sentence such as `LAVA IS DANGER`. Any YOU entity touching a LAVA
+  entity loses the game, even if another YOU entity survives. This action does
+  not destroy entities. Its message is **YOU touched a losing entity**.
+- YOU touches WIN → win.
+- YOU is WIN → win.
 
-The board status is `playing`, `won`, or `lost`. Loss takes priority if policies
-conflict. There are no time-based turns. A turn resolves in this order:
+The board status is `playing`, `won`, or `lost`; a loss records its reason. Loss
+takes priority over victory if the same turn satisfies both. There are no time-based turns. A turn resolves in this order:
 
 1. Read the starting rules for input and blocking.
 2. Move controlled entities and push words.
 3. Read the resulting rules and schedule each entity/action pair once.
 4. Execute turn actions in entity/contribution order.
-5. Read the final rules and evaluate all outcome policies.
+5. Read the final rules and apply the fixed win/loss rules.
 
 A destroyed YOU cannot win by briefly overlapping WIN before destruction. Won or
 lost boards stop turns but remain editable. Removing/placing a tile evaluates the

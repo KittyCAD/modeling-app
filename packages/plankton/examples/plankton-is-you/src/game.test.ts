@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { builtInActions, builtInOutcomes, compileAction } from './actions'
+import { builtInActions, compileAction } from './actions'
 import { bushPuzzle, compileProperty, initialDefinitions } from './content'
 import {
   type Definition,
@@ -14,8 +14,17 @@ function createGame(puzzle: Puzzle, definitions: () => readonly Definition[]) {
   return new Game(puzzle, {
     definitions,
     actions: () => builtInActions,
-    outcomes: () => builtInOutcomes,
   })
+}
+
+function sentence(noun: string, property: string, y: number): Tile[] {
+  return [noun, 'IS', property].map((type, x) => ({
+    id: `${noun}-${property}-${x}`,
+    kind: 'word',
+    type,
+    x,
+    y,
+  }))
 }
 
 const dieWord: Tile = {
@@ -422,6 +431,136 @@ describe('the living vocabulary', () => {
     expect(game.board.tiles.find((t) => t.id === 'p')?.x).toBe(4)
   })
 
+  it.each(['PLNK', 'BUSH'])(
+    'loses when %s IS YOU is connected but has no matching entity',
+    (noun) => {
+      const game = createGame(
+        {
+          ...bushPuzzle,
+          placements: [
+            ...sentence(noun, 'YOU', 0),
+            { id: 'other', kind: 'entity', type: 'FLAG', x: 5, y: 5 },
+          ],
+        },
+        () => initialDefinitions
+      )
+      game.settle()
+      expect(readRules(game.board.tiles, initialDefinitions)).toContainEqual({
+        noun,
+        property: 'YOU',
+      })
+      expect(game.board).toMatchObject({ status: 'lost', reason: 'no-you' })
+    }
+  )
+
+  it('keeps playing when one YOU sentence disconnects but another remains active', () => {
+    const game = createGame(
+      {
+        ...bushPuzzle,
+        placements: [
+          ...sentence('PLNK', 'YOU', 0),
+          ...sentence('BUSH', 'YOU', 1),
+          { id: 'p', kind: 'entity', type: 'PLNK', x: 3, y: 5 },
+          { id: 'b', kind: 'entity', type: 'BUSH', x: 6, y: 5 },
+        ],
+      },
+      () => initialDefinitions
+    )
+    game.remove('PLNK-YOU-2')
+    expect(game.board.status).toBe('playing')
+    game.step({ x: 1, y: 0 })
+    expect(game.board.tiles.find((tile) => tile.id === 'p')?.x).toBe(3)
+    expect(game.board.tiles.find((tile) => tile.id === 'b')?.x).toBe(7)
+  })
+
+  it('keeps playing when one YOU entity is destroyed and loses after the last one is removed', () => {
+    const definitions = [
+      ...initialDefinitions,
+      compileProperty({ id: 'DIE', color: '#ffffff', action: 'destroy' }),
+    ]
+    const game = createGame(
+      {
+        ...bushPuzzle,
+        placements: [
+          ...sentence('PLNK', 'YOU', 0),
+          ...sentence('BUSH', 'YOU', 1),
+          ...sentence('PLNK', 'DIE', 2),
+          { id: 'p', kind: 'entity', type: 'PLNK', x: 3, y: 5 },
+          { id: 'b', kind: 'entity', type: 'BUSH', x: 6, y: 5 },
+        ],
+      },
+      () => definitions
+    )
+    game.step({ x: 1, y: 0 })
+    expect(game.board.tiles.some((tile) => tile.id === 'p')).toBe(false)
+    expect(game.board.status).toBe('playing')
+    game.step({ x: 1, y: 0 })
+    expect(game.board.tiles.find((tile) => tile.id === 'b')?.x).toBe(8)
+    game.remove('b')
+    expect(game.board).toMatchObject({ status: 'lost', reason: 'no-you' })
+    game.undo()
+    expect(game.board.status).toBe('playing')
+  })
+
+  it.each([
+    { active: true, expected: 'lost' },
+    { active: false, expected: 'playing' },
+  ])(
+    'Lose on contact requires an active property rule: $active',
+    ({ active, expected }) => {
+      const definitions = [
+        ...initialDefinitions,
+        compileProperty({ id: 'DANGER', color: '#ee927d', action: 'lose' }),
+      ]
+      const game = createGame(
+        {
+          ...bushPuzzle,
+          placements: [
+            ...sentence('PLNK', 'YOU', 0),
+            ...(active ? sentence('BUSH', 'DANGER', 1) : []),
+            { id: 'p', kind: 'entity', type: 'PLNK', x: 3, y: 5 },
+            { id: 'spare', kind: 'entity', type: 'PLNK', x: 0, y: 5 },
+            { id: 'hazard', kind: 'entity', type: 'BUSH', x: 4, y: 5 },
+          ],
+        },
+        () => definitions
+      )
+      game.step({ x: 1, y: 0 })
+      expect(game.board.status).toBe(expected)
+      expect(game.board.tiles.find((tile) => tile.id === 'p')).toMatchObject({
+        x: 4,
+        y: 5,
+      })
+      expect(game.board.tiles.some((tile) => tile.id === 'spare')).toBe(true)
+      if (active) expect(game.board).toMatchObject({ reason: 'contact' })
+      game.undo()
+      expect(game.board.status).toBe('playing')
+      expect(game.board.tiles.find((tile) => tile.id === 'p')?.x).toBe(3)
+    }
+  )
+
+  it('loses when YOU touches a tile that is both winning and losing', () => {
+    const definitions = [
+      ...initialDefinitions,
+      compileProperty({ id: 'DANGER', color: '#ee927d', action: 'lose' }),
+    ]
+    const game = createGame(
+      {
+        ...bushPuzzle,
+        placements: [
+          ...sentence('PLNK', 'YOU', 0),
+          ...sentence('FLAG', 'WIN', 1),
+          ...sentence('FLAG', 'DANGER', 2),
+          { id: 'p', kind: 'entity', type: 'PLNK', x: 3, y: 5 },
+          { id: 'flag', kind: 'entity', type: 'FLAG', x: 4, y: 5 },
+        ],
+      },
+      () => definitions
+    )
+    game.step({ x: 1, y: 0 })
+    expect(game.board).toMatchObject({ status: 'lost', reason: 'contact' })
+  })
+
   it('can repair a disconnected YOU sentence while editing a lost board', () => {
     const game = createGame(bushPuzzle, () => initialDefinitions)
     game.remove('word-3-1')
@@ -459,7 +598,11 @@ describe('the living vocabulary', () => {
       () => definitions
     )
     game.step({ x: 1, y: 0 })
-    expect(game.board).toMatchObject({ status: 'lost' })
+    expect(game.board).toMatchObject({ status: 'lost', reason: 'no-you' })
+    expect(readRules(game.board.tiles, definitions)).toContainEqual({
+      noun: 'PLNK',
+      property: 'YOU',
+    })
     expect(game.board.tiles.some((t) => t.id === 'p')).toBe(false)
     game.undo()
     expect(game.board).toMatchObject({ status: 'playing' })

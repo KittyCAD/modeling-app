@@ -504,3 +504,10 @@ svg {
   background: #151113b8;
   font-size: 30px;
 }
+.victory.loss span {
+  font-family: "DM Sans", sans-serif;
+  font-size: clamp(14px, 3vw, 25px);
+  letter-spacing: 0;
+  max-width: 65%;
+  text-align: center;
+}

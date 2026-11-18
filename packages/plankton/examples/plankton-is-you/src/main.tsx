@@ -111,6 +111,12 @@ function App({ runtime }: { runtime: Runtime }) {
   const definitions = runtime.definitions.value,
     actions = runtime.actions.value
   const rules = readRules(game.board.tiles, definitions)
+  const lossMessage =
+    game.board.status === 'lost'
+      ? game.board.reason === 'contact'
+        ? 'YOU touched a losing entity'
+        : 'No YOU entities remain'
+      : ''
   const inspectedTile = game.board.tiles.find(
     (tile) => tile.id === draft?.tileId
   )
@@ -380,7 +386,7 @@ function App({ runtime }: { runtime: Runtime }) {
             className={`victory ${game.board.status === 'lost' ? 'loss' : ''}`}
             role="status"
           >
-            <span>{game.board.status === 'lost' ? 'NO YOU' : 'WIN'}</span>
+            <span>{game.board.status === 'lost' ? lossMessage : 'WIN'}</span>
             {game.board.status === 'lost' && (
               <button onClick={undo} aria-label="Undo loss">
                 <Undo2 size={22} />
@@ -795,17 +801,16 @@ function App({ runtime }: { runtime: Runtime }) {
               <h2>Outcome</h2>
               <p>
                 {game.board.status === 'lost'
-                  ? 'Lost · no controlled entity'
+                  ? lossMessage
                   : game.board.status === 'won'
                     ? 'Won'
                     : 'Playing'}
               </p>
               <ul>
-                {runtime.outcomes.value.map((outcome) => (
-                  <li key={outcome.id} title={outcome.description}>
-                    {outcome.label}
-                  </li>
-                ))}
+                <li>No YOU entities remain → lose.</li>
+                <li>YOU touches a losing entity → lose.</li>
+                <li>YOU touches WIN → win.</li>
+                <li>YOU is WIN → win.</li>
               </ul>
             </section>
             <footer>

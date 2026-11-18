@@ -42,21 +42,9 @@ export type Action = {
   controls?: boolean
   blocks?: boolean
   wins?: boolean
+  loses?: boolean
   afterTurn?: (subject: Readonly<Tile>, turn: Turn) => void
 }
-export type OutcomeContext = {
-  tiles: readonly Tile[]
-  controlled: readonly Tile[]
-  winning: readonly Tile[]
-  rules: readonly Rule[]
-}
-export type Outcome = {
-  id: string
-  label: string
-  description: string
-  evaluate(context: OutcomeContext): 'won' | 'lost' | undefined
-}
-
 /** A starting setup specifies bounds, installed definitions, and tile instances. */
 export type Puzzle = {
   id: string
@@ -67,15 +55,16 @@ export type Puzzle = {
   placements: readonly Tile[]
 }
 export type Rule = { noun: string; property: string }
+type Resolution =
+  | { status: 'playing' | 'won' }
+  | { status: 'lost'; reason: 'no-you' | 'contact' }
 export type Board = {
   tiles: readonly Tile[]
   turns: number
-  status: 'playing' | 'won' | 'lost'
-}
+} & Resolution
 export type Vocabulary = {
   definitions(): readonly Definition[]
   actions(): readonly Action[]
-  outcomes(): readonly Outcome[]
 }
 const sameCell = (a: Point, b: Point) => a.x === b.x && a.y === b.y
 
@@ -147,7 +136,7 @@ export class Game {
   }
   private commit(tiles: readonly Tile[], turns = this.board.turns) {
     this.history.push(this.board)
-    this.board = { tiles, turns, status: this.evaluate(tiles) }
+    this.board = { tiles, turns, ...this.evaluate(tiles) }
   }
   private matching(
     tiles: readonly Tile[],
@@ -159,7 +148,6 @@ export class Game {
       (d): d is PropertyDefinition => d.kind === 'property'
     )
     return {
-      rules,
       has: (tile: Tile, predicate: (action: Action) => boolean) =>
         tile.kind === 'entity' &&
         properties.some(
@@ -169,27 +157,31 @@ export class Game {
         ),
     }
   }
-  private evaluate(tiles: readonly Tile[]): Board['status'] {
-    const { rules, has } = this.matching(
+  private evaluate(tiles: readonly Tile[]): Resolution {
+    const { has } = this.matching(
       tiles,
       this.vocabulary.definitions(),
       this.vocabulary.actions()
     )
-    const context: OutcomeContext = {
-      tiles,
-      rules,
-      controlled: tiles.filter((t) => has(t, (a) => !!a.controls)),
-      winning: tiles.filter((t) => has(t, (a) => !!a.wins)),
-    }
-    const outcomes = this.vocabulary
-      .outcomes()
-      .map((outcome) => outcome.evaluate(context))
-    if (outcomes.includes('lost')) return 'lost'
-    return outcomes.includes('won') ? 'won' : 'playing'
+    const controlled = tiles.filter((tile) =>
+      has(tile, (action) => !!action.controls)
+    )
+    if (controlled.length === 0) return { status: 'lost', reason: 'no-you' }
+    const touches = (predicate: (action: Action) => boolean) =>
+      controlled.some((you) =>
+        tiles.some((tile) => sameCell(you, tile) && has(tile, predicate))
+      )
+    if (touches((action) => !!action.loses))
+      return { status: 'lost', reason: 'contact' }
+    return { status: touches((action) => !!action.wins) ? 'won' : 'playing' }
   }
   /** Resume reevaluates rules after paused vocabulary edits without adding a turn. */
   settle() {
-    this.board = { ...this.board, status: this.evaluate(this.board.tiles) }
+    this.board = {
+      tiles: this.board.tiles,
+      turns: this.board.turns,
+      ...this.evaluate(this.board.tiles),
+    }
   }
   place(tile: Tile) {
     if (
