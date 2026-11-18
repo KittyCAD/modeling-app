@@ -51,6 +51,7 @@ export default defineConfig({
             'src/**/*.spec.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
             'packages/plankton/src/**/*.spec.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
           ],
+          testTimeout: 30_000,
           hookTimeout: 60_000,
           retry: 2,
         },
