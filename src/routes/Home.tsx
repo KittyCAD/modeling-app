@@ -639,6 +639,7 @@ const Home = () => {
           }
           library={selectedProjectLibrary}
           hiddenLibraryToggle={
+            !libraryId &&
             projectLibraries.some((library) => library.hiddenByDefault) ? (
               <ActionButton
                 Element="button"
