@@ -156,7 +156,7 @@ export const modelingFileRole = (
         },
       },
       {
-        label: 'Import STEP as Editable KCL… (Experimental)',
+        label: 'Convert File to Editable KCL… (Experimental)',
         id: 'File.Import STEP as editable KCL',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
