@@ -20,7 +20,9 @@ The registry contribution connects three parts:
    settings invalidate the previous run. External storage updates enter through
    the project/editor services before they become execution input.
 3. **Present.** `KclScene` attaches the scene and displays its streamed or local
-   rendering. Switching tabs or remounting React attaches the existing session.
+   rendering. Switching tabs or remounting React attaches the existing session. The local
+   renderer asks that retained scene whether initial camera framing is still
+   needed, so a presentation remount preserves the camera.
 
 The [executor guide](../executors/README.md) describes scheduling and output.
 [Scene settings](scene/README.md#kcl-refresh-policy) explains how a
@@ -67,7 +69,9 @@ leave camera controls and the streamed connection unchanged. Execution, native
 export, and scene rebuilds share a queue so disposal can wait for borrowed native
 memory.
 The renderer choice is captured when the scene opens; reopen the Modeling view
-after changing it.
+after changing it. Each executor's refresh revision uses that captured choice,
+so an already-open streamed view still receives streamed rebuilds even if the
+preference now selects local rendering for new views.
 
 The [scene boundary](scene/README.md) describes the shared host and legacy
 adapters. Zoo-web-view remains the intended presentation integration; the

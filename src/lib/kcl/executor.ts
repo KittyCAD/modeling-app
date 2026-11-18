@@ -15,15 +15,17 @@ import * as Scope from 'effect/Scope'
  * `getSession` reuses a session for the same `Executor`; its Effect finalizer calls
  * `session.dispose` when that executor closes, independently of React mounts.
  */
-export function createKclExecution(
-  createSession: (executor: Executor) => KclSession,
+export function createKclExecution<
+  Session extends Pick<KclSession, 'execute' | 'dispose'>,
+>(
+  createSession: (executor: Executor) => Session,
   loadSources: (
     contents: string,
     context: ExecutorRunContext
   ) => Promise<KclSourceSnapshot | Error>,
-  revision?: ReadonlySignal<unknown>
+  revision?: ReadonlySignal<unknown> | ((session: Session) => unknown)
 ) {
-  const sessions = new WeakMap<Executor, KclSession>()
+  const sessions = new WeakMap<Executor, Session>()
   const getSession = (executor: Executor) => {
     const existing = sessions.get(executor)
     if (existing) return existing
@@ -36,7 +38,10 @@ export function createKclExecution(
   }
   const capability = defineExecutorCapability({
     id: 'kcl.execution',
-    revision,
+    revision:
+      typeof revision === 'function'
+        ? (executor: Executor) => revision(getSession(executor))
+        : revision,
     matches: ({ languageId }) => languageId === 'kcl',
     async execute(contents: string, context: ExecutorRunContext) {
       const sources = await loadSources(contents, context)

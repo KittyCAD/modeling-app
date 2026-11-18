@@ -5,9 +5,10 @@ import type { Editor } from '@src/lib/editors/registry/contract'
 import { createExecutor } from '@src/lib/executors/executor'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { createKclExecution } from '@src/lib/kcl/executor'
-import { createKclSession, type KclSession } from '@src/lib/kcl/session'
-import type { KclSceneResource } from '@src/lib/kcl/scene'
+import type { KclSession } from '@src/lib/kcl/session'
+import { createKclSession } from '@src/lib/kcl/session'
 import { beforeAll, expect, it, vi } from 'vitest'
+import { createTestKclScene } from '@src/lib/kcl/testFixtures'
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
@@ -31,14 +32,15 @@ function editor() {
 it('reruns unchanged entrypoints when imported inputs change, and isolates executor lifetimes', async () => {
   const source = editor()
   const dependency = signal('21')
-  const sessions: KclSession[] = []
+
   const execution = createKclExecution(
     () => {
       const session = {
-        execute: vi.fn(async () => ({ result: emptyExecState() })),
+        execute: vi.fn<KclSession['execute']>(async () => ({
+          result: emptyExecState(),
+        })),
         dispose: vi.fn(),
-      } as unknown as KclSession
-      sessions.push(session)
+      }
       return session
     },
     async (contents, context) => ({
@@ -93,23 +95,7 @@ it.each(['focus', 'manual'] as const)(
         disconnect() {}
       }
     )
-    const makeScene = () =>
-      ({
-        element: document.createElement('div'),
-        presentation: 'local',
-        preferences: {
-          camera: signal({}),
-          appearance: signal({}),
-          localRenderer: signal({}),
-        },
-        isConnected: () => true,
-        runtime: { execute: vi.fn(async () => emptyExecState()) },
-        resize: async () => {},
-        applySettings: async () => {},
-        resume: () => {},
-        frameModel: async () => {},
-        dispose: async () => {},
-      }) as unknown as KclSceneResource
+    const makeScene = () => createTestKclScene('local')
     const initial = makeScene(),
       fresh = makeScene()
     let disconnect: (error: Error) => void = () => {}

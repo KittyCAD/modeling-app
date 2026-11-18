@@ -21,8 +21,8 @@ export interface ExecutorCapability<
   /** Key used by `ExecutorOutput.data` and `.errors`; duplicate IDs overwrite summary entries, while typed `output.get` uses object identity. */
   id: string
   matches: EditorMatcher
-  /** Dependencies beyond editor text. `createExecutor` compares successive values with `Object.is`, so producers must publish a new value when those inputs change. */
-  revision?: ReadonlySignal<unknown>
+  /** Dependencies beyond editor text. `createExecutor` compares successive values with `Object.is`, so producers must publish a new value when those inputs change. A reader can select inputs owned by the specific executor. */
+  revision?: ReadonlySignal<unknown> | ((executor: Executor) => unknown)
   execute: (
     contents: string,
     context: ExecutorRunContext
