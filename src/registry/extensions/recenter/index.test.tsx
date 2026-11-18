@@ -8,16 +8,25 @@ import {
   viewportNavigationRuntimeSlot,
 } from '@src/registry/extensions/engineScene/viewportNavigationRuntimeExtension'
 
-let registry: Registry
-vi.mock('@src/lib/boot', () => ({
-  useApp: () => ({ registry }),
-}))
+import { engineSceneViewExtensionsFacet } from '@src/registry/contracts/engineScene'
+import { createElement } from 'react'
+import recenterExtension from '.'
 
-import { RecenterViewControl } from '@src/registry/extensions/engineScene/RecenterViewControl'
+let registry: Registry
+
+function renderControl() {
+  const [view] = registry.get(engineSceneViewExtensionsFacet)
+  expect(view).toMatchObject({
+    id: 'engine-scene.recenter',
+    zone: 'bottom-right',
+    order: 19,
+  })
+  render(createElement(view.Component))
+}
 
 beforeEach(async () => {
   registry = new Registry()
-  await registry.configure([viewportNavigationRuntimeSlot])
+  await registry.configure([viewportNavigationRuntimeSlot, recenterExtension])
 })
 
 afterEach(async () => {
@@ -26,7 +35,7 @@ afterEach(async () => {
 })
 
 it('shows Recenter only for a lost model and delegates to the viewport service', async () => {
-  render(<RecenterViewControl />)
+  renderControl()
   expect(screen.queryByRole('button', { name: 'Recenter' })).toBeNull()
   const isModelOutOfView = signal(false)
   const recoveryHint = signal<RecenterHint>({ kind: 'direction', angle: 90 })
@@ -42,7 +51,7 @@ it('shows Recenter only for a lost model and delegates to the viewport service',
   act(() => {
     isModelOutOfView.value = true
   })
-  const button = screen.getByRole('button', { name: 'Recenter' })
+  const button = await screen.findByRole('button', { name: 'Recenter' })
   expect(button).toHaveAttribute('title', 'Model is offscreen')
   act(() => {
     recoveryHint.value = { kind: 'zoom-out' }
@@ -62,8 +71,8 @@ it('follows replacement services and disappears when the viewport unmounts', asy
     isModelOutOfView: previousVisibility,
     recenter: vi.fn(async () => {}),
   })
-  render(<RecenterViewControl />)
-  expect(screen.getByRole('button', { name: 'Recenter' })).toBeVisible()
+  renderControl()
+  expect(await screen.findByRole('button', { name: 'Recenter' })).toBeVisible()
   const currentVisibility = signal(false)
   let unregisterCurrent = async () => {}
   await act(async () => {
@@ -76,9 +85,13 @@ it('follows replacement services and disappears when the viewport unmounts', asy
   act(() => {
     currentVisibility.value = true
   })
-  expect(screen.getByRole('button', { name: 'Recenter' })).toBeVisible()
+  expect(await screen.findByRole('button', { name: 'Recenter' })).toBeVisible()
   await act(async () => {
     await unregisterCurrent()
   })
   expect(screen.queryByRole('button', { name: 'Recenter' })).toBeNull()
+  await act(async () => {
+    await registry.configure([viewportNavigationRuntimeSlot])
+  })
+  expect(registry.get(engineSceneViewExtensionsFacet)).toEqual([])
 })

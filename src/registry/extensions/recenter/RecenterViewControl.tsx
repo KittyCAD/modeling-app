@@ -1,13 +1,16 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
-import { useApp } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
-import { viewportNavigationService } from '@src/registry/contracts/viewportNavigation'
+import type { ReadonlySignal } from '@preact/signals-core'
+import type { ViewportNavigationService } from '@src/registry/contracts/viewportNavigation'
 
-export function RecenterViewControl() {
+export function RecenterViewControl({
+  navigation: navigationSignal,
+}: {
+  navigation: ReadonlySignal<ViewportNavigationService | undefined>
+}) {
   useSignals()
-  const { registry } = useApp()
-  const navigation = registry.optional(viewportNavigationService)
+  const navigation = navigationSignal.value
   if (!navigation?.isModelOutOfView.value) return null
   const hint = navigation.recoveryHint?.value ?? { kind: 'neutral' }
   const label =

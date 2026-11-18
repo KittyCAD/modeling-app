@@ -33,7 +33,6 @@ import { physicalAnalysisService } from './physicalAnalysis/physicalAnalysisServ
 import { saveViewportScreenshot } from './saveViewportScreenshot'
 import {
   EngineSceneGizmoViewExtension,
-  EngineSceneRecenterViewExtension,
   EngineSceneModelingDialogViewExtension,
   EngineSceneToolbarViewExtension,
   SketchBackgroundOpacityViewExtension,
@@ -231,13 +230,6 @@ const modelingDialogViewExtension = defineEngineSceneViewExtension({
   order: 0,
   Component: EngineSceneModelingDialogViewExtension,
   wrapperClassName: '!pointer-events-none',
-})
-
-const recenterViewExtension = defineEngineSceneViewExtension({
-  id: 'engine-scene.recenter',
-  zone: 'bottom-right',
-  order: 19,
-  Component: EngineSceneRecenterViewExtension,
 })
 
 const gizmoViewExtension = defineEngineSceneViewExtension({
@@ -444,13 +436,6 @@ const engineSceneExtension = defineFactory({
           () => sketchConstraintsToggleViewExtension,
           {
             key: sketchConstraintsToggleViewExtension.id,
-          }
-        ),
-        contribute(
-          engineSceneViewExtensionsFacet,
-          () => recenterViewExtension,
-          {
-            key: recenterViewExtension.id,
           }
         ),
         contribute(engineSceneViewExtensionsFacet, () => gizmoViewExtension, {

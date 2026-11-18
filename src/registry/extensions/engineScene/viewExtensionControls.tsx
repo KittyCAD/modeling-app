@@ -12,10 +12,6 @@ const Gizmo = lazy(async () => {
   return { default: Gizmo }
 })
 
-const RecenterViewControl = lazy(async () => ({
-  default: (await import('./RecenterViewControl')).RecenterViewControl,
-}))
-
 const ModelingDialogViewExtension = lazy(async () => ({
   default: (await import('./ModelingDialogViewExtension'))
     .ModelingDialogViewExtension,
@@ -45,14 +41,6 @@ export function EngineSceneGizmoViewExtension() {
   return (
     <Suspense fallback={null}>
       <Gizmo />
-    </Suspense>
-  )
-}
-
-export function EngineSceneRecenterViewExtension() {
-  return (
-    <Suspense fallback={null}>
-      <RecenterViewControl />
     </Suspense>
   )
 }

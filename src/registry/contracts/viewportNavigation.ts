@@ -1,3 +1,4 @@
+import { inputs, observeService } from '@src/registry/inputs'
 import { contract, service } from 'plankton'
 import type { ReadonlySignal } from '@preact/signals-core'
 
@@ -20,3 +21,7 @@ export const viewportNavigationContract = contract({
 })
 
 export const { viewportNavigationService } = viewportNavigationContract
+
+export const observations = inputs({
+  viewportNavigationService: observeService(viewportNavigationService),
+})
