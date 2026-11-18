@@ -15,7 +15,7 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    await test.step(`Submit basic prompt`, async () => {
+    await test.step('Submit basic prompt', async () => {
       await toolbar.closePane(DefaultLayoutPaneID.Code)
       await toolbar.openPane(DefaultLayoutPaneID.TTC)
       await copilot.setMode('fast')
@@ -34,7 +34,7 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
 
       await toolbar.closePane(DefaultLayoutPaneID.TTC)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain('startSketchOn')
+      await editor.expectEditor.toContain(/\b(?:startSketchOn|sketch)\s*\(/)
       await editor.expectEditor.toContain('extrude')
       await editor.expectEditor.toContain('10')
       await scene.settled(cmdBar)
