@@ -78,6 +78,17 @@ export type IntegerIdPickResult = {
   stale: boolean
 }
 
+export type PickTiming = {
+  mode: EdgePickingMode
+  dirty: boolean
+  prepareMs: number
+  renderMs: number
+  readbackMs: number
+  resolveMs: number
+  totalMs: number
+  stale: boolean
+}
+
 export class IntegerIdPicker {
   private readonly renderer: WebGPURenderer
   private readonly scene = new Scene()
@@ -101,6 +112,8 @@ export class IntegerIdPicker {
   private version = 0
   private mode: EdgePickingMode = 'gpu-growth'
   private focusDistance: number | null = null
+  private recordPickTimings = false
+  private pickTimings: PickTiming[] = []
 
   constructor(renderer: WebGPURenderer) {
     this.renderer = renderer
@@ -306,6 +319,17 @@ export class IntegerIdPicker {
     this.invalidate()
   }
 
+  setPickTimingEnabled(enabled: boolean) {
+    this.recordPickTimings = enabled
+    this.pickTimings = []
+  }
+
+  takePickTimings() {
+    const timings = this.pickTimings
+    this.pickTimings = []
+    return timings
+  }
+
   invalidate() {
     this.dirty = true
     this.version += 1
@@ -332,6 +356,9 @@ export class IntegerIdPicker {
       return null
     }
 
+    const profiling = this.recordPickTimings
+    const startedAt = profiling ? performance.now() : 0
+    const mode = this.mode
     const target = this.ensureRenderTarget()
 
     // [x, y] are the coords in the "stream", which is the video element
@@ -375,10 +402,13 @@ export class IntegerIdPicker {
 
     const version = this.version
     const targetById = this.targetById
+    const dirty = this.dirty
+    const renderStartedAt = profiling ? performance.now() : 0
 
     if (this.dirty) {
       this.renderIdBuffer(target, camera)
     }
+    const readbackStartedAt = profiling ? performance.now() : 0
 
     const pixels = await this.renderer.readRenderTargetPixelsAsync(
       this.mode === 'gpu-growth' || this.mode === 'zoom-growth'
@@ -389,6 +419,7 @@ export class IntegerIdPicker {
       width,
       height
     )
+    const resolveStartedAt = profiling ? performance.now() : 0
     const idAt = (pixelX: number, pixelY: number) => {
       const index = this.packsIdsIntoColor
         ? ((bottom - pixelY) * width + pixelX - left) * 4
@@ -423,6 +454,20 @@ export class IntegerIdPicker {
       }
     }
     const stale = version !== this.version
+    if (profiling) {
+      const finishedAt = performance.now()
+      this.pickTimings.push({
+        mode,
+        dirty,
+        prepareMs: renderStartedAt - startedAt,
+        renderMs: readbackStartedAt - renderStartedAt,
+        readbackMs: resolveStartedAt - readbackStartedAt,
+        resolveMs: finishedAt - resolveStartedAt,
+        totalMs: finishedAt - startedAt,
+        stale,
+      })
+      if (this.pickTimings.length > 500) this.pickTimings.shift()
+    }
 
     return {
       target: stale ? null : (targetById[selectionId] ?? null),

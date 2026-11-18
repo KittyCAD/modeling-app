@@ -57,6 +57,7 @@ describe('IntegerIdPicker', () => {
     const camera = new PerspectiveCamera()
     const cursor = { x: 16, y: 16, streamWidth: 32, streamHeight: 32, camera }
 
+    picker.setPickTimingEnabled(true)
     expect((await picker.pick(cursor))?.target).toBe(edge)
     ids[16 * 32 + 16] = 3 | selectionTypeTag(EdgeTargetType.SketchLine)
     picker.invalidate()
@@ -64,7 +65,19 @@ describe('IntegerIdPicker', () => {
     ids[16 * 32 + 16] = 1
     picker.invalidate()
     expect((await picker.pick(cursor))?.target).toBe(face)
-    expect(readRenderTargetPixelsAsync).toHaveBeenCalledTimes(3)
+    expect((await picker.pick(cursor))?.target).toBe(face)
+    expect(readRenderTargetPixelsAsync).toHaveBeenCalledTimes(4)
+    const timings = picker.takePickTimings()
+    expect(timings.map(({ dirty }) => dirty)).toEqual([true, true, true, false])
+    expect(
+      timings.every(
+        ({ mode, totalMs }) => mode === 'gpu-growth' && totalMs >= 0
+      )
+    ).toBe(true)
+    expect(picker.takePickTimings()).toEqual([])
+    picker.setPickTimingEnabled(false)
+    await picker.pick(cursor)
+    expect(picker.takePickTimings()).toEqual([])
 
     picker.dispose()
     geometry.dispose()
