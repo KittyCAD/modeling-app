@@ -24,6 +24,6 @@ description: Physical properties gallows-bracket.kcl
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 16574.278267050744
+    "value": 16574.27826705075
   }
 }
