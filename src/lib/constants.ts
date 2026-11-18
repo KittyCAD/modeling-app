@@ -256,6 +256,8 @@ export const VIEW_NAMES_SEMANTIC = {
   [AxisNames.NEG_Z]: 'Bottom',
 } as const
 
+export const ZOOM_TO_FIT_PADDING = 0.1
+
 /** Plane names in KCL for operations */
 export const KCL_PLANE_XY = 'XY'
 export const KCL_PLANE_XZ = 'XZ'

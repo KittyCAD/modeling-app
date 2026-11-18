@@ -15,7 +15,7 @@ export async function openInitialProjectEditor(
   signal: AbortSignal,
   fileOperations: Pick<FileOperationsRegistryService, 'readFile'>
 ) {
-  const projects = app.registry.get(projectSessionService)
+  const projects = app.registry.required(projectSessionService)
   const project = session.project.peek()
   const files = projects.listFiles()
   const configured = project.metadata.defaultFile
@@ -27,7 +27,7 @@ export async function openInitialProjectEditor(
     files.find((file) => file.path === entrypoint) ??
     files.find((file) => fsZds.extname(file.path).toLowerCase() === '.kcl')
   if (!initial) return
-  const editors = app.registry.get(editorsService)
+  const editors = app.registry.required(editorsService)
   const editor = await loadProjectEditor(
     initial.path,
     editors,
