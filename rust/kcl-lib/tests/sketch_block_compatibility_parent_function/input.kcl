@@ -1,0 +1,16 @@
+@settings(experimentalFeatures = allow)
+
+// The parent function returns 999, while std::solver::line returns a segment.
+// Calls inside the sketch must use the solver. Calls outside must use the
+// parent function, even though both bindings are callable.
+
+fn line(start, end) {
+  return 999
+}
+
+profile = sketch(on = XY) {
+  edge = line(start = [0mm, 0mm], end = [5mm, 0mm])
+}
+parentAfter = line(start = [0mm, 0mm], end = [5mm, 0mm])
+assert(profile.edge.end.at[0], isEqualTo = 5mm)
+assert(parentAfter, isEqualTo = 999)

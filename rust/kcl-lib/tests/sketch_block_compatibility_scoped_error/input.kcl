@@ -1,0 +1,22 @@
+@settings(experimentalFeatures = allow)
+
+// The undefined name must unwind the sketch, branch, and function.
+// Program memory must contain `before`, but no `result`, `after`, or sketch locals.
+
+before = 17
+fn fromBranch() {
+  branch = if true {
+    profile = sketch(on = XY) {
+      local = 18
+      edge = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+      value = notDefinedAnywhere
+    }
+    9
+  } else {
+    8
+  }
+  return branch
+}
+
+result = fromBranch()
+after = 99

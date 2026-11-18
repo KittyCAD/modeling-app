@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing sketch_block_compatibility_argument_evaluation.kcl
+---
+KCL UndefinedValue error
+
+  × undefined value: `notDefinedAnywhere` is not defined
+   ╭─[7:31]
+ 6 │ before = 17
+ 7 │ profile = sketch(unexpected = notDefinedAnywhere, on = XY) {
+   ·                               ─────────┬────────
+   ·                                        ╰── tests/sketch_block_compatibility_argument_evaluation/input.kcl
+ 8 │   assert(false, error = "The sketch body ran before its arguments were checked")
+   ╰────

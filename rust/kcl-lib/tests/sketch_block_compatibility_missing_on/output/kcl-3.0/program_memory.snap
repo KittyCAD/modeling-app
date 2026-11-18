@@ -1,0 +1,17 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing sketch_block_compatibility_missing_on.kcl
+---
+{
+  "before": {
+    "type": "Number",
+    "value": 17.0,
+    "ty": {
+      "type": "Default",
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
+    }
+  }
+}

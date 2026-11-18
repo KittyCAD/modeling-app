@@ -4735,32 +4735,63 @@ e
         assert!(ast.in_comment(8));
     }
 
+    // Simulation tests require an error-free parse before execution. Test
+    // rejected syntax here.
     #[test]
     fn reserved_sketch_block_words() {
-        for word in SKETCH_BLOCK_RESERVED_WORDS.iter().sorted() {
-            let code = format!(
-                "sketch() {{
-  {word} = 5
-}}"
-            );
-            let result = crate::parsing::top_level_parse(code.as_str());
-            assert!(
-                !result.is_ok(),
-                "Expected a parse error for reserved sketch block word `{word}`, but got none",
-            );
+        for version in ["1.0", "2.0", "3.0"] {
+            let header = format!("@settings(kclVersion = \"{version}\")\n");
+            for word in SKETCH_BLOCK_RESERVED_WORDS.iter().sorted() {
+                let code = format!("{header}sketch(on = XY) {{\n  {word} = 5\n}}\n");
+                let result = crate::Program::parse_no_errs(&code);
+                assert!(result.is_err(), "reserved `{word}` under {version:?}: {result:?}");
+            }
         }
     }
 
     #[test]
     fn double_underscore_prefix_in_sketch_block() {
-        let code = "sketch() {
-  __foo = 5
-}";
-        let result = crate::parsing::top_level_parse(code);
-        assert!(
-            !result.is_ok(),
-            "Expected a parse error for double underscore prefix, but got none",
-        );
+        for version in ["1.0", "2.0", "3.0"] {
+            let header = format!("@settings(kclVersion = \"{version}\")\n");
+            let code = format!("{header}sketch(on = XY) {{\n  __foo = 5\n}}\n");
+            let result = crate::Program::parse_no_errs(&code);
+            assert!(
+                result.is_err(),
+                "double underscore binding under {version:?}: {result:?}"
+            );
+        }
+    }
+
+    // In KCL 3 and earlier, only the bare name `sketch` selects sketch syntax,
+    // even if a variable or function shadows it. Keep this rule when
+    // generalizing blocks.
+    #[test]
+    fn historical_sketch_call_recognition() {
+        for version in ["1.0", "2.0", "3.0"] {
+            let header = format!("@settings(kclVersion = \"{version}\", experimentalFeatures = allow)\n");
+            for code in [
+                "sketch(on = XY) {}",
+                "on = XY\nsketch(on) {}",
+                "sketch = 123\ns = sketch(on = XY) {}",
+                "fn sketch() { return 123 }\ns = sketch(on = XY) {}",
+            ] {
+                crate::Program::parse_no_errs(&format!("{header}{code}\n"))
+                    .unwrap_or_else(|e| panic!("literal sketch call under {version:?}: {code}: {e:?}"));
+            }
+            for code in [
+                "std::sketch::sketch(on = XY) {}",
+                "::sketch(on = XY) {}",
+                "draw(on = XY) {}",
+                "sketch(on = XY, on = XZ) {}",
+                "sketch(on = XY) { value = var foo }",
+            ] {
+                let result = crate::Program::parse_no_errs(&format!("{header}{code}\n"));
+                assert!(
+                    result.is_err(),
+                    "invalid sketch call under {version:?}: {code}: {result:?}"
+                );
+            }
+        }
     }
 
     #[test]

@@ -1,0 +1,22 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing sketch_block_compatibility_nested_sketch.kcl
+---
+KCL Semantic error
+
+  × semantic: Cannot execute a sketch block from within another sketch block
+    ╭─[7:10]
+  6 │ fn nestedSketch() {
+  7 │   return sketch(on = XZ) {}
+    ·          ─────────┬────────
+    ·                   ╰── tests/sketch_block_compatibility_nested_sketch/input.kcl
+  8 │ }
+  9 │ 
+ 10 │ before = 17
+ 11 │ outer = sketch(on = XY) {
+ 12 │   local = 18
+ 13 │   inner = nestedSketch()
+    ·           ───────┬──────
+    ·                  ╰── tests/sketch_block_compatibility_nested_sketch/input.kcl
+ 14 │ }
+    ╰────

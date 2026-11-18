@@ -1,0 +1,712 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing sketch_block_compatibility_scoped_error.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "before",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "raw": "17",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 17.0,
+              "suffix": "None"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "preComments": [
+          "// The undefined name must unwind the sketch, branch, and function.",
+          "// Program memory must contain `before`, but no `result`, `after`, or sketch locals.",
+          "",
+          ""
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "fromBranch",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "commentStart": 0,
+                  "declaration": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "id": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "branch",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "commentStart": 0,
+                      "cond": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "raw": "true",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": true
+                      },
+                      "digest": null,
+                      "else_ifs": [],
+                      "end": 0,
+                      "final_else": {
+                        "body": [
+                          {
+                            "commentStart": 0,
+                            "end": 0,
+                            "expression": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "raw": "8",
+                              "start": 0,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 8.0,
+                                "suffix": "None"
+                              }
+                            },
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ExpressionStatement",
+                            "type": "ExpressionStatement"
+                          }
+                        ],
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "start": 0,
+                        "type": "Program"
+                      },
+                      "moduleId": 0,
+                      "start": 0,
+                      "then_val": {
+                        "body": [
+                          {
+                            "commentStart": 0,
+                            "declaration": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "id": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "profile",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "init": {
+                                "arguments": [
+                                  {
+                                    "type": "LabeledArg",
+                                    "label": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "on",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "arg": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "XY",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    }
+                                  }
+                                ],
+                                "body": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "items": [
+                                    {
+                                      "commentStart": 0,
+                                      "declaration": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "id": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "local",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "init": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "raw": "18",
+                                          "start": 0,
+                                          "type": "Literal",
+                                          "type": "Literal",
+                                          "value": {
+                                            "value": 18.0,
+                                            "suffix": "None"
+                                          }
+                                        },
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "VariableDeclarator"
+                                      },
+                                      "end": 0,
+                                      "kind": "const",
+                                      "moduleId": 0,
+                                      "start": 0,
+                                      "type": "VariableDeclaration",
+                                      "type": "VariableDeclaration"
+                                    },
+                                    {
+                                      "commentStart": 0,
+                                      "declaration": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "id": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "edge",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "init": {
+                                          "arguments": [
+                                            {
+                                              "type": "LabeledArg",
+                                              "label": {
+                                                "commentStart": 0,
+                                                "end": 0,
+                                                "moduleId": 0,
+                                                "name": "start",
+                                                "start": 0,
+                                                "type": "Identifier"
+                                              },
+                                              "arg": {
+                                                "commentStart": 0,
+                                                "elements": [
+                                                  {
+                                                    "commentStart": 0,
+                                                    "end": 0,
+                                                    "initial": {
+                                                      "commentStart": 0,
+                                                      "end": 0,
+                                                      "moduleId": 0,
+                                                      "raw": "0mm",
+                                                      "start": 0,
+                                                      "suffix": "Mm",
+                                                      "type": "NumericLiteral",
+                                                      "value": 0.0
+                                                    },
+                                                    "moduleId": 0,
+                                                    "start": 0,
+                                                    "type": "SketchVar",
+                                                    "type": "SketchVar"
+                                                  },
+                                                  {
+                                                    "commentStart": 0,
+                                                    "end": 0,
+                                                    "initial": {
+                                                      "commentStart": 0,
+                                                      "end": 0,
+                                                      "moduleId": 0,
+                                                      "raw": "0mm",
+                                                      "start": 0,
+                                                      "suffix": "Mm",
+                                                      "type": "NumericLiteral",
+                                                      "value": 0.0
+                                                    },
+                                                    "moduleId": 0,
+                                                    "start": 0,
+                                                    "type": "SketchVar",
+                                                    "type": "SketchVar"
+                                                  }
+                                                ],
+                                                "end": 0,
+                                                "moduleId": 0,
+                                                "start": 0,
+                                                "type": "ArrayExpression",
+                                                "type": "ArrayExpression"
+                                              }
+                                            },
+                                            {
+                                              "type": "LabeledArg",
+                                              "label": {
+                                                "commentStart": 0,
+                                                "end": 0,
+                                                "moduleId": 0,
+                                                "name": "end",
+                                                "start": 0,
+                                                "type": "Identifier"
+                                              },
+                                              "arg": {
+                                                "commentStart": 0,
+                                                "elements": [
+                                                  {
+                                                    "commentStart": 0,
+                                                    "end": 0,
+                                                    "initial": {
+                                                      "commentStart": 0,
+                                                      "end": 0,
+                                                      "moduleId": 0,
+                                                      "raw": "10mm",
+                                                      "start": 0,
+                                                      "suffix": "Mm",
+                                                      "type": "NumericLiteral",
+                                                      "value": 10.0
+                                                    },
+                                                    "moduleId": 0,
+                                                    "start": 0,
+                                                    "type": "SketchVar",
+                                                    "type": "SketchVar"
+                                                  },
+                                                  {
+                                                    "commentStart": 0,
+                                                    "end": 0,
+                                                    "initial": {
+                                                      "commentStart": 0,
+                                                      "end": 0,
+                                                      "moduleId": 0,
+                                                      "raw": "0mm",
+                                                      "start": 0,
+                                                      "suffix": "Mm",
+                                                      "type": "NumericLiteral",
+                                                      "value": 0.0
+                                                    },
+                                                    "moduleId": 0,
+                                                    "start": 0,
+                                                    "type": "SketchVar",
+                                                    "type": "SketchVar"
+                                                  }
+                                                ],
+                                                "end": 0,
+                                                "moduleId": 0,
+                                                "start": 0,
+                                                "type": "ArrayExpression",
+                                                "type": "ArrayExpression"
+                                              }
+                                            }
+                                          ],
+                                          "callee": {
+                                            "abs_path": false,
+                                            "commentStart": 0,
+                                            "end": 0,
+                                            "moduleId": 0,
+                                            "name": {
+                                              "commentStart": 0,
+                                              "end": 0,
+                                              "moduleId": 0,
+                                              "name": "line",
+                                              "start": 0,
+                                              "type": "Identifier"
+                                            },
+                                            "path": [],
+                                            "start": 0,
+                                            "type": "Name"
+                                          },
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "start": 0,
+                                          "type": "CallExpressionKw",
+                                          "type": "CallExpressionKw",
+                                          "unlabeled": null
+                                        },
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "VariableDeclarator"
+                                      },
+                                      "end": 0,
+                                      "kind": "const",
+                                      "moduleId": 0,
+                                      "start": 0,
+                                      "type": "VariableDeclaration",
+                                      "type": "VariableDeclaration"
+                                    },
+                                    {
+                                      "commentStart": 0,
+                                      "declaration": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "id": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "value",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "init": {
+                                          "abs_path": false,
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": {
+                                            "commentStart": 0,
+                                            "end": 0,
+                                            "moduleId": 0,
+                                            "name": "notDefinedAnywhere",
+                                            "start": 0,
+                                            "type": "Identifier"
+                                          },
+                                          "path": [],
+                                          "start": 0,
+                                          "type": "Name",
+                                          "type": "Name"
+                                        },
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "VariableDeclarator"
+                                      },
+                                      "end": 0,
+                                      "kind": "const",
+                                      "moduleId": 0,
+                                      "start": 0,
+                                      "type": "VariableDeclaration",
+                                      "type": "VariableDeclaration"
+                                    }
+                                  ],
+                                  "moduleId": 0,
+                                  "start": 0,
+                                  "type": "Block"
+                                },
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchBlock",
+                                "type": "SketchBlock"
+                              },
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "VariableDeclarator"
+                            },
+                            "end": 0,
+                            "kind": "const",
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "VariableDeclaration",
+                            "type": "VariableDeclaration"
+                          },
+                          {
+                            "commentStart": 0,
+                            "end": 0,
+                            "expression": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "raw": "9",
+                              "start": 0,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 9.0,
+                                "suffix": "None"
+                              }
+                            },
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ExpressionStatement",
+                            "type": "ExpressionStatement"
+                          }
+                        ],
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "start": 0,
+                        "type": "Program"
+                      },
+                      "type": "IfExpression",
+                      "type": "IfExpression"
+                    },
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 0,
+                  "kind": "const",
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "argument": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "branch",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "start": 0,
+              "type": "Program"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "fromBranch",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "params": [],
+            "start": 0,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "fn",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "result",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "fromBranch",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": null
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "after",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "raw": "99",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 99.0,
+              "suffix": "None"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "innerAttrs": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "moduleId": 0,
+        "name": {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "name": "settings",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "experimentalFeatures",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "allow",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
+    "moduleId": 0,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "1": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
+    "start": 0,
+    "type": "Program"
+  }
+}

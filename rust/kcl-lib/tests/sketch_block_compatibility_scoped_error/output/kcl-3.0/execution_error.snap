@@ -1,0 +1,25 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing sketch_block_compatibility_scoped_error.kcl
+---
+KCL UndefinedValue error
+
+  × undefined value: `notDefinedAnywhere` is not defined
+    ╭─[12:15]
+ 11 │       edge = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+ 12 │       value = notDefinedAnywhere
+    ·               ─────────┬────────
+    ·                        ╰── tests/sketch_block_compatibility_scoped_error/input.kcl
+ 13 │     }
+ 14 │     9
+ 15 │   } else {
+ 16 │     8
+ 17 │   }
+ 18 │   return branch
+ 19 │ }
+ 20 │ 
+ 21 │ result = fromBranch()
+    ·          ──────┬─────
+    ·                ╰── tests/sketch_block_compatibility_scoped_error/input.kcl
+ 22 │ after = 99
+    ╰────
