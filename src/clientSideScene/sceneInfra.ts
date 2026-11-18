@@ -593,6 +593,11 @@ export class SceneInfra {
   }
 
   private processMouseMove = async (mouseEvent: MouseEvent) => {
+    if (this.camControls.isMouseCameraGesture) {
+      this.selected = null
+      this.areaSelect = null
+      return
+    }
     this.updateCurrentMouseVector(mouseEvent)
 
     const planeIntersectPoint = this.getPlaneIntersectPoint()
@@ -810,7 +815,7 @@ export class SceneInfra {
   }
 
   onMouseDown = (event: MouseEvent) => {
-    if (event.button !== 0) {
+    if (event.button !== 0 || this.camControls.isMouseCameraGesture) {
       return
     }
 
@@ -863,6 +868,11 @@ export class SceneInfra {
   }
 
   onMouseUp = async (mouseEvent: MouseEvent) => {
+    if (this.camControls.isMouseCameraGesture) {
+      this.selected = null
+      this.areaSelect = null
+      return
+    }
     if (mouseEvent.button !== 0) {
       return
     }

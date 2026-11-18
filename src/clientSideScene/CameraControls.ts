@@ -35,7 +35,7 @@ import {
   ZOOM_MAGIC_NUMBER,
 } from '@src/clientSideScene/sceneUtils'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
-import type { MouseGuard } from '@src/lib/cameraControls'
+import type { MouseDragInteraction, MouseGuard } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { Signal as LegacySignal } from '@src/lib/signal'
@@ -156,6 +156,9 @@ export class CameraControls {
   isDragging: boolean
   wasDragging: boolean
   private orbitDragUpInverted = false
+  /** Button-chord history belongs to this controller, while orbit mapping may change. */
+  private previousDragInteraction: MouseDragInteraction = 'none'
+  private activeDragInteraction: CameraDragInteractionType | 'none' = 'none'
   hoverPickingDisabled = false
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
@@ -423,6 +426,8 @@ export class CameraControls {
     this.domElement.addEventListener('pointerdown', this.onMouseDown)
     this.domElement.addEventListener('pointermove', this.onMouseMove)
     this.domElement.addEventListener('pointerup', this.onMouseUp)
+    this.domElement.addEventListener('pointercancel', this.onPointerCancel)
+    this.domElement.addEventListener('lostpointercapture', this.onPointerCancel)
     this.domElement.addEventListener('wheel', this.onMouseWheel)
     this.initTouchControls(this.enableTouchControls)
 
@@ -593,8 +598,19 @@ export class CameraControls {
     // duration of the drag, even while crossing a pole.
     this.orbitDragUpInverted =
       new Vector3(0, 1, 0).applyQuaternion(this.camera.quaternion).z < 0
-    let interaction = this.getInteractionType(event)
+    this.previousDragInteraction = 'none'
+    const interaction = this.getInteractionType(event)
+    this.previousDragInteraction =
+      this.interactionGuards.resolveDrag?.(event, 'none') ?? 'none'
+    this.startCameraDrag(event, interaction)
+  }
+
+  private startCameraDrag(
+    event: PointerEvent,
+    interaction: CameraDragInteractionType | 'none'
+  ) {
     if (interaction === 'none') return
+    this.activeDragInteraction = interaction
     this.handleStart()
 
     if (this.effectiveCameraMode === 'engineToClient') {
@@ -630,7 +646,36 @@ export class CameraControls {
     }
 
     if (this.isDragging) {
-      this.dragTo(event, this.getInteractionType(event))
+      if (this.interactionGuards.resolveDrag) {
+        const interaction = this.getInteractionType(event)
+        const previous = this.previousDragInteraction
+        this.previousDragInteraction = this.interactionGuards.resolveDrag(
+          event,
+          previous
+        )
+        if (
+          previous === 'rotate' ||
+          this.previousDragInteraction === 'rotate'
+        ) {
+          this.wasDragging = true
+        }
+        if (this.previousDragInteraction !== previous) {
+          this.moveFrame.flush()
+          this.setDragAnchor(event)
+        }
+        if (interaction === 'none') {
+          if (this.activeDragInteraction !== 'none') this.endCameraDrag(event)
+          return
+        }
+        if (this.activeDragInteraction === 'none') {
+          this.setDragAnchor(event)
+          this.startCameraDrag(event, interaction)
+        }
+        this.activeDragInteraction = interaction
+        this.dragTo(event, interaction)
+      } else {
+        this.dragTo(event, this.getInteractionType(event))
+      }
     } else {
       /**
        * If we're not in sketch mode and not dragging, we can highlight entities
@@ -763,15 +808,40 @@ export class CameraControls {
     }
   }
 
+  onPointerCancel = (event: PointerEvent) => {
+    if (this.interactionGuards.resolveDrag && this.isDragging) {
+      this.onMouseUpInner(event)
+    }
+  }
+
   onMouseUpInner = (event: PointerEvent) => {
     // Deliver the final coalesced movement before ending the engine gesture.
     this.moveFrame.flush()
     this.zoomFrame.flush()
-    this.domElement.releasePointerCapture(event.pointerId)
     this.isDragging = false
+    this.endCameraDrag(event)
+    this.previousDragInteraction = 'none'
+    if (event.type !== 'pointercancel' && event.type !== 'lostpointercapture') {
+      this.domElement.releasePointerCapture(event.pointerId)
+    }
+  }
+
+  /** Keeps compatibility mouse events from turning camera chords into sketch edits. */
+  get isMouseCameraGesture() {
+    return (
+      !!this.interactionGuards.resolveDrag &&
+      (this.previousDragInteraction !== 'none' || this.wasDragging)
+    )
+  }
+
+  private endCameraDrag(event: PointerEvent) {
+    this.moveFrame.flush()
+    const interaction = this.interactionGuards.resolveDrag
+      ? this.activeDragInteraction
+      : this.getInteractionType(event)
+    this.activeDragInteraction = 'none'
     this.handleEnd()
     if (this.effectiveCameraMode === 'engineToClient') {
-      const interaction = this.getInteractionType(event)
       if (interaction === 'none') return
       const window = this.streamToEngineWindowCoordinates({
         clientX: event.clientX,
@@ -1863,7 +1933,8 @@ export class CameraControls {
             event,
             this.enablePan,
             this.enableRotate,
-            this.enableZoom
+            this.enableZoom,
+            this.previousDragInteraction
           )
     if (
       initialInteractionType === 'rotate' &&
@@ -2101,12 +2172,23 @@ function _getInteractionType(
   event: MouseEvent | WheelEvent,
   enablePan: boolean,
   enableRotate: boolean,
-  enableZoom: boolean
+  enableZoom: boolean,
+  previousDragInteraction: MouseDragInteraction
 ): interactionType | 'none' {
   if (event instanceof WheelEvent) {
     if (enableZoom && interactionGuards.zoom.scrollCallback(event))
       return 'zoom'
   } else {
+    if (interactionGuards.resolveDrag) {
+      const interaction = interactionGuards.resolveDrag(
+        event,
+        previousDragInteraction
+      )
+      if (interaction === 'pan' && enablePan) return 'pan'
+      if (interaction === 'rotate' && enableRotate) return 'rotate'
+      if (interaction === 'zoom' && enableZoom) return 'zoom'
+      return 'none'
+    }
     if (enablePan && interactionGuards.pan.callback(event)) return 'pan'
     if (enableRotate && interactionGuards.rotate.callback(event))
       return 'rotate'

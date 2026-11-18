@@ -16,6 +16,7 @@ export type CameraSystem =
   | 'NX'
   | 'Creo'
   | 'AutoCAD'
+  | 'CATIA'
 
 // Serialized version of these system names
 type MouseControlType =
@@ -26,6 +27,7 @@ type MouseControlType =
   | 'nx'
   | 'creo'
   | 'autocad'
+  | 'catia'
 
 export const cameraSystems: CameraSystem[] = [
   'Zoo',
@@ -35,6 +37,7 @@ export const cameraSystems: CameraSystem[] = [
   'NX',
   'Creo',
   'AutoCAD',
+  'CATIA',
 ]
 
 export function mouseControlsToCameraSystem(
@@ -61,6 +64,8 @@ export function mouseControlsToCameraSystem(
     // @ts-ignore: TS2678
     case 'autocad':
       return 'AutoCAD'
+    case 'catia':
+      return 'CATIA'
     case undefined:
     default:
       return undefined
@@ -85,6 +90,8 @@ export function cameraSystemToMouseControl(
       return 'creo'
     case 'AutoCAD':
       return 'autocad'
+    case 'CATIA':
+      return 'catia'
     default:
       return undefined
   }
@@ -103,10 +110,18 @@ interface MouseGuardZoomHandler {
   lenientDragStartButton?: number
 }
 
+/** A mouse drag's action before camera orbit and sketch restrictions are applied. */
+export type MouseDragInteraction = 'pan' | 'rotate' | 'zoom' | 'none'
+
 export interface MouseGuard {
   pan: MouseGuardHandler
   zoom: MouseGuardZoomHandler
   rotate: MouseGuardHandler
+  /** Resolves button transitions using the preceding event in this pointer drag. */
+  resolveDrag?: (
+    event: MouseEvent,
+    previous: MouseDragInteraction
+  ) => MouseDragInteraction
 }
 
 export const btnName = (e: MouseEvent) => ({
@@ -215,6 +230,28 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
         const b = btnName(e)
         return (b.middle || (b.left && b.right)) && e.ctrlKey
       },
+    },
+  },
+  CATIA: {
+    pan: {
+      description: 'Middle click drag',
+      callback: (e) => e.buttons === 4 && noModifiersPressed(e),
+    },
+    rotate: {
+      description: 'Hold Middle + Left or Right click drag',
+      callback: (e) =>
+        !!(e.buttons & 4) && !!(e.buttons & 3) && noModifiersPressed(e),
+    },
+    zoom: {
+      description:
+        'Scroll or hold Middle, click and release Left or Right, then drag',
+      dragCallback: () => false,
+      scrollCallback: (e) => e.buttons === 0,
+    },
+    resolveDrag: (e, previous) => {
+      if (!(e.buttons & 4) || !noModifiersPressed(e)) return 'none'
+      if (e.buttons & 3) return 'rotate'
+      return previous === 'rotate' || previous === 'zoom' ? 'zoom' : 'pan'
     },
   },
   AutoCAD: {
