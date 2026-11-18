@@ -502,11 +502,10 @@ export class IntegerIdPicker {
           this.mode === 'original-main'
             ? (SELECTION_LINE_WIDTH_PX * bounds.width) /
               SELECTION_LINE_WIDTH_REFERENCE_VIEWPORT_PX
-            : this.mode === 'depth-offset'
-              ? SELECTION_LINE_WIDTH_PX
-              : material === this.edgeObject?.material
-                ? VISIBLE_EDGE_LINE_WIDTH_PX
-                : SELECTION_LINE_WIDTH_PX
+            : this.mode === 'gpu-growth' &&
+                material === this.edgeObject?.material
+              ? VISIBLE_EDGE_LINE_WIDTH_PX
+              : SELECTION_LINE_WIDTH_PX
       }
     })
     this.renderer.autoClear = true

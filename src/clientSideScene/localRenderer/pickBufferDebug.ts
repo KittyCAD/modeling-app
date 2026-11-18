@@ -9,7 +9,11 @@ export type PickBufferSnapshot = {
   seedPixels?: Uint8ClampedArray
 }
 
-export type EdgePickingMode = 'gpu-growth' | 'original-main' | 'depth-offset'
+export type EdgePickingMode =
+  | 'gpu-growth'
+  | 'original-main'
+  | 'fixed-24'
+  | 'depth-offset'
 
 type DebugViewState = {
   active: boolean

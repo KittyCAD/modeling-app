@@ -31,6 +31,7 @@ export function LocalPickingDebug() {
         >
           <option value="gpu-growth">GPU growth</option>
           <option value="original-main">Original main</option>
+          <option value="fixed-24">Fixed 24px</option>
           <option value="depth-offset">Depth offset</option>
         </select>
       </label>

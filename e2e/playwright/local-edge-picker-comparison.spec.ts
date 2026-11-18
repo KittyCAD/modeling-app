@@ -67,7 +67,7 @@ test.describe(
   'Local edge picker comparison',
   { tag: ['@web', '@browsers', '@localRenderer'] },
   () => {
-    for (const mode of ['original-main', 'gpu-growth'] as const) {
+    for (const mode of ['original-main', 'fixed-24', 'gpu-growth'] as const) {
       test(`two cubes from the top-front-right corner: ${mode}`, async ({
         page,
         homePage,
@@ -141,18 +141,15 @@ test.describe(
         const below = { x: topSeam.x + 1.5, y: topSeam.y + 2.6 }
         const clickBelow = clickAt(below.x, below.y)
         await clickBelow()
-        if (mode === 'original-main') {
-          test.fail(
-            true,
-            'Original main selects the adjacent face below the seam'
-          )
+        if (mode === 'original-main' || mode === 'fixed-24') {
+          test.fail(true, `${mode} selects the adjacent face below the seam`)
         }
         await toolbar.expectSelection('1 edge')
         expect(seamIds).toContain(await pickIdAt(page, below.x, below.y))
       })
     }
 
-    for (const mode of ['depth-offset', 'gpu-growth'] as const) {
+    for (const mode of ['fixed-24', 'depth-offset', 'gpu-growth'] as const) {
       test(`right cube front corner: ${mode}`, async ({
         page,
         homePage,
@@ -209,14 +206,14 @@ test.describe(
           body: await page.screenshot(),
           contentType: 'image/png',
         })
-        if (mode === 'depth-offset') {
-          test.fail(true, 'Depth offset chooses the front-face edge')
+        if (mode === 'depth-offset' || mode === 'fixed-24') {
+          test.fail(true, `${mode} chooses the front-face edge`)
         }
         expect(await pickIdAt(page, point.x, point.y)).toBe(vertical.id)
       })
     }
 
-    for (const mode of ['depth-offset', 'gpu-growth'] as const) {
+    for (const mode of ['fixed-24', 'depth-offset', 'gpu-growth'] as const) {
       test(`hidden back edge near the right cube silhouette: ${mode}`, async ({
         page,
         homePage,
@@ -274,14 +271,14 @@ test.describe(
           }),
           contentType: 'application/json',
         })
-        if (mode === 'depth-offset') {
-          test.fail(true, 'Depth offset picks the hidden back edge')
+        if (mode === 'depth-offset' || mode === 'fixed-24') {
+          test.fail(true, `${mode} picks the hidden back edge`)
         }
         expect(await pickIdAt(page, point.x, point.y)).toBe(visible.id)
       })
     }
 
-    for (const mode of ['original-main', 'gpu-growth'] as const) {
+    for (const mode of ['original-main', 'fixed-24', 'gpu-growth'] as const) {
       test(`single cube face at 240mm: ${mode}`, async ({
         page,
         homePage,
@@ -340,8 +337,8 @@ test.describe(
           body: await page.screenshot(),
           contentType: 'image/png',
         })
-        if (mode === 'gpu-growth') {
-          test.fail(true, 'Fixed 12px GPU growth covers the cube face')
+        if (mode === 'gpu-growth' || mode === 'fixed-24') {
+          test.fail(true, `${mode} covers the cube face at this point`)
         }
         await toolbar.expectSelection('1 face')
         expect(await pickIdAt(page, face.x, face.y)).toBe(face.id)
