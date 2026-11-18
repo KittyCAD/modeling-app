@@ -52,19 +52,14 @@ vi.mock('@src/lib/boot', () => ({
   }),
 }))
 
-import {
-  defineRegistryItem,
-  provideService,
-  Registry,
-} from '@kittycad/registry'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import {
   ZookeeperConversation,
   type ZookeeperConversationProps,
 } from '@src/lib/zookeeper/components/ZookeeperConversation'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type {
   Conversation,
   MlCopilotModeId,
@@ -73,24 +68,23 @@ import type {
 import {
   type EngineSceneExtensionContext,
   engineSceneRuntimeExtensionsSlot,
-  engineSceneStreamLayersValueSpec,
+  engineSceneStreamLayersFacet,
 } from '@src/registry/contracts/engineScene'
 import { viewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
 import { ZOODLE_BRUSH_SIZE_DEFAULT_PX } from '@src/registry/contracts/zoodle'
+import { factory as defineFactory, provide, Registry } from 'plankton'
 
 const captureViewportScreenshot = vi.fn<() => string>()
 
-const configureTestRegistry = () => {
+const configureTestRegistry = async () => {
   const registry = new Registry()
-  registry.configure([
-    engineSceneRuntimeExtensionsSlot.of(),
-    defineRegistryItem({
-      id: 'test-viewport-screenshot',
-      providesServices: [
-        provideService(viewportScreenshotService, {
-          capture: captureViewportScreenshot,
-        }),
-      ],
+  await registry.configure([
+    provide(viewportScreenshotService, { capture: captureViewportScreenshot }),
+    defineFactory({
+      ...engineSceneRuntimeExtensionsSlot,
+      create: () => ({
+        items: [],
+      }),
     }),
   ])
   bootMockState.registry = registry
@@ -107,8 +101,7 @@ const testEngineSceneContext = {
 const TestEngineSceneStreamLayers = () => {
   useSignals()
   const registry = bootMockState.registry as Registry
-  const layers = registry.signal(engineSceneStreamLayersValueSpec).value
-
+  const layers = registry.observe(engineSceneStreamLayersFacet).value
   return (
     <>
       {layers.map((layer) => {
@@ -137,8 +130,8 @@ const SERVER_MODE_OPTIONS: MlCopilotModeOption[] = [
 ]
 
 describe('ZookeeperConversation', () => {
-  beforeEach(() => {
-    configureTestRegistry()
+  beforeEach(async () => {
+    await configureTestRegistry()
     window.localStorage.removeItem(MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY)
     vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:image-preview')
     vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
@@ -1641,8 +1634,7 @@ describe('ZookeeperConversation', () => {
       expect(zoodleButton).toHaveAttribute('aria-pressed', 'false')
       expect(screen.getByText('Zoodle')).toBeInTheDocument()
     })
-
-    test('marks screenshot annotation button active and cancels on second click', () => {
+    test('marks screenshot annotation button active and cancels on second click', async () => {
       renderConversation()
 
       const zoodleButton = screen.getByTestId(
@@ -1653,15 +1645,17 @@ describe('ZookeeperConversation', () => {
 
       expect(zoodleButton).toHaveAttribute('aria-pressed', 'true')
       expect(
-        screen.getByTestId('viewport-annotation-overlay')
+        await screen.findByTestId('viewport-annotation-overlay')
       ).toBeInTheDocument()
 
       fireEvent.click(zoodleButton)
 
       expect(zoodleButton).toHaveAttribute('aria-pressed', 'false')
-      expect(
-        screen.queryByTestId('viewport-annotation-overlay')
-      ).not.toBeInTheDocument()
+      await waitFor(() =>
+        expect(
+          screen.queryByTestId('viewport-annotation-overlay')
+        ).not.toBeInTheDocument()
+      )
     })
 
     test('adds annotated viewport screenshot as an attachment', async () => {
@@ -1693,7 +1687,7 @@ describe('ZookeeperConversation', () => {
         )
 
         expect(
-          screen.getByTestId('viewport-annotation-overlay')
+          await screen.findByTestId('viewport-annotation-overlay')
         ).toBeInTheDocument()
         expect(
           screen.getByTestId('viewport-annotation-tool-drawOrange')
@@ -1838,7 +1832,7 @@ describe('ZookeeperConversation', () => {
         {
           clipboardData: {
             files: [],
-            getData: () => 'a'.repeat(5_000),
+            getData: () => 'a'.repeat(5000),
           },
         }
       )
@@ -1854,7 +1848,7 @@ describe('ZookeeperConversation', () => {
       renderConversation(handleProcess)
       const textarea = screen.getByTestId('ml-ephant-conversation-input')
       const prompt = 'Use these requirements.'
-      const text = 'first line\r\nsecond line\n'.padEnd(5_001, 'a')
+      const text = 'first line\r\nsecond line\n'.padEnd(5001, 'a')
       fireEvent.change(textarea, { target: { value: prompt } })
 
       const defaultAllowed = fireEvent.paste(textarea, {
@@ -1881,7 +1875,7 @@ describe('ZookeeperConversation', () => {
       const handleProcess = vi.fn()
       renderConversation(handleProcess)
       const textarea = screen.getByTestId('ml-ephant-conversation-input')
-      for (const text of ['a'.repeat(5_001), 'b'.repeat(5_001)]) {
+      for (const text of ['a'.repeat(5001), 'b'.repeat(5001)]) {
         fireEvent.paste(textarea, {
           clipboardData: { files: [], getData: () => text },
         })
