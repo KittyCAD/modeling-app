@@ -340,32 +340,15 @@ describe('modelingMachine.test.ts', () => {
     return condition()
   }
 
-  const waitForState = async ({
-    modelingMachineActor,
-    stateString,
-  }: {
-    modelingMachineActor: ActorRefFrom<typeof modelingMachine>
-    stateString: any
-  }) => {
-    // Check if already idle before setting up subscription
-    const js1 = JSON.stringify(modelingMachineActor.getSnapshot().value)
-    const js2 = JSON.stringify(stateString)
-    if (js1 === js2) {
-      return Promise.resolve()
-    }
-
-    const waitForIdlePromise = new Promise((resolve) => {
-      const subscription = modelingMachineActor.subscribe((state) => {
-        const js1 = JSON.stringify(state.value)
-        const js2 = JSON.stringify(stateString)
-        if (js1 === js2) {
-          subscription.unsubscribe()
-          resolve(undefined)
-        }
-      })
-    })
-    return waitForIdlePromise
-  }
+  const waitForSketchScene = (
+    actor: ActorRefFrom<typeof modelingMachine>,
+    signal: AbortSignal
+  ) =>
+    waitFor(
+      actor,
+      (snapshot) => snapshot.matches({ Sketch: { SketchIdle: 'scene drawn' } }),
+      { timeout: GLOBAL_TIMEOUT_FOR_MODELING_MACHINE, signal }
+    )
 
   describe('modelingMachine - XState', () => {
     describe('legacy overlay pointer retention', () => {
@@ -1255,12 +1238,13 @@ p3 = [342.51, 216.38],
       // namedConstantConstraintCases = namedConstantConstraintCases.filter((cases) => { return cases.name === 'should delete tangentialArc absolute' })
       namedConstantConstraintCases.forEach(
         ({ name, code, searchText, filter }) => {
-          it(name, async () => {
+          it(name, async ({ signal, onTestFinished }) => {
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
             kclManagerInThisFile.updateCodeEditor(code)
             const ast = assertParse(code, instanceInThisFile)
             await kclManagerInThisFile.executeAst({ ast })
+            signal.throwIfAborted()
 
             expect(kclManagerInThisFile.errors).toEqual([])
 
@@ -1294,6 +1278,9 @@ p3 = [342.51, 216.38],
             const actor = createActor(modelingMachine, {
               input: contextCopied,
             }).start()
+            onTestFinished(() => {
+              actor.stop()
+            })
 
             // Send event to transition to sketch mode
             actor.send({
@@ -1316,15 +1303,7 @@ p3 = [342.51, 216.38],
             })
             actor.send({ type: 'Enter sketch' })
 
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: 'animating to existing sketch',
-            })
-
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: { Sketch: { SketchIdle: 'set up segments' } },
-            })
+            await waitForSketchScene(actor, signal)
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
@@ -1390,13 +1369,14 @@ p3 = [342.51, 216.38],
           expectedResult,
           filter,
         }) => {
-          it(name, async () => {
+          it(name, async ({ signal, onTestFinished }) => {
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
             kclManagerInThisFile.updateCodeEditor(code)
             const ast = assertParse(code, instanceInThisFile)
 
             await kclManagerInThisFile.executeAst({ ast })
+            signal.throwIfAborted()
 
             expect(kclManagerInThisFile.errors).toEqual([])
 
@@ -1430,6 +1410,9 @@ p3 = [342.51, 216.38],
             const actor = createActor(modelingMachine, {
               input: contextCopied,
             }).start()
+            onTestFinished(() => {
+              actor.stop()
+            })
 
             // Send event to transition to sketch mode
             actor.send({
@@ -1452,15 +1435,12 @@ p3 = [342.51, 216.38],
             })
             actor.send({ type: 'Enter sketch' })
 
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: 'animating to existing sketch',
-            })
+            await waitForSketchScene(actor, signal)
 
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: { Sketch: { SketchIdle: 'set up segments' } },
-            })
+            expect(
+              kclManagerInThisFile.sceneInfra.camControls.enableRotate,
+              'Sketch orbit must be disabled before applying the constraint'
+            ).toBe(false)
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
@@ -1506,14 +1486,7 @@ p3 = [342.51, 216.38],
               },
             })
 
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: { Sketch: 'Converting to named value' },
-            })
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: { Sketch: { SketchIdle: 'scene drawn' } },
-            })
+            await waitForSketchScene(actor, signal)
             expect(kclManagerInThisFile.code).toContain(expectedResult)
           }, 10_000)
         }
@@ -1536,13 +1509,14 @@ p3 = [342.51, 216.38],
           expectedResult,
           filter,
         }) => {
-          it(name, async () => {
+          it(name, async ({ signal, onTestFinished }) => {
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
             kclManagerInThisFile.updateCodeEditor(code)
             const ast = assertParse(code, instanceInThisFile)
 
             await kclManagerInThisFile.executeAst({ ast })
+            signal.throwIfAborted()
 
             expect(kclManagerInThisFile.errors).toEqual([])
 
@@ -1576,6 +1550,9 @@ p3 = [342.51, 216.38],
             const actor = createActor(modelingMachine, {
               input: contextCopied,
             }).start()
+            onTestFinished(() => {
+              actor.stop()
+            })
             // Send event to transition to sketch mode
             actor.send({
               type: 'Set selection',
@@ -1597,20 +1574,7 @@ p3 = [342.51, 216.38],
             })
             actor.send({ type: 'Enter sketch' })
 
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: 'animating to existing sketch',
-            })
-
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: { Sketch: { SketchIdle: 'set up segments' } },
-            })
-
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: { Sketch: { SketchIdle: 'scene drawn' } },
-            })
+            await waitForSketchScene(actor, signal)
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
@@ -1669,13 +1633,14 @@ p3 = [342.51, 216.38],
           expectedResult,
           filter,
         }) => {
-          it(name, async () => {
+          it(name, async ({ signal, onTestFinished }) => {
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
             kclManagerInThisFile.updateCodeEditor(code)
             const ast = assertParse(code, instanceInThisFile)
 
             await kclManagerInThisFile.executeAst({ ast })
+            signal.throwIfAborted()
 
             expect(kclManagerInThisFile.errors).toEqual([])
 
@@ -1709,6 +1674,9 @@ p3 = [342.51, 216.38],
             const actor = createActor(modelingMachine, {
               input: contextCopied,
             }).start()
+            onTestFinished(() => {
+              actor.stop()
+            })
 
             // Send event to transition to sketch mode
             actor.send({
@@ -1731,20 +1699,7 @@ p3 = [342.51, 216.38],
             })
             actor.send({ type: 'Enter sketch' })
 
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: 'animating to existing sketch',
-            })
-
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: { Sketch: { SketchIdle: 'set up segments' } },
-            })
-
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: { Sketch: { SketchIdle: 'scene drawn' } },
-            })
+            await waitForSketchScene(actor, signal)
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,

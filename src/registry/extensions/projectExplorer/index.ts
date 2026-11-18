@@ -5,11 +5,12 @@ import {
   toProjectRelativePath,
 } from '@src/lib/paths'
 import {
-  canRevealInFileExplorer,
+  canRevealPathInFileExplorer,
   revealInFileExplorer,
 } from '@src/lib/revealInFileExplorer'
 import { reportRejection } from '@src/lib/trap'
 import { observations as commandsObservations } from '@src/registry/contracts/commands'
+import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
 import {
   type ProjectExplorerRowContextMenuItem,
   type ProjectExplorerRowContextMenuItemContext,
@@ -17,12 +18,7 @@ import {
   projectExplorerRowContextMenuItemsFacet,
 } from '@src/registry/contracts/projectExplorer'
 import { observations as wasmObservations } from '@src/registry/contracts/wasm'
-import {
-  factory as defineFactory,
-  contribute,
-  type InputOf,
-  type Factory,
-} from 'plankton'
+import { factory as defineFactory, contribute, type Factory } from 'plankton'
 const importInCurrentFileExtension: Factory = defineFactory({
   dependencies: { wasm: wasmObservations, commands: commandsObservations },
   key: 'project-explorer.import-in-current-file',
@@ -100,42 +96,45 @@ const importInCurrentFileExtension: Factory = defineFactory({
     }
   },
 })
-const _projectExplorerProjectMenuItemsContribution: InputOf<
-  typeof projectExplorerProjectMenuItemsFacet
-> = {
-  id: 'reveal-in-file-explorer.project-menu',
-  order: 100,
-  label: 'Reveal in file explorer',
-  dataTestId: 'project-sidebar-reveal-in-file-explorer',
-  isVisible: ({ projectPath }) =>
-    Boolean(projectPath) && canRevealInFileExplorer(),
-  onSelect: ({ projectPath }) => revealInFileExplorer(projectPath),
-} satisfies InputOf<typeof projectExplorerProjectMenuItemsFacet>
-const _projectExplorerRowContextMenuItemsContribution: InputOf<
-  typeof projectExplorerRowContextMenuItemsFacet
-> = {
-  id: 'reveal-in-file-explorer.row-context-menu',
-  order: 100,
-  label: 'Reveal in file explorer',
-  dataTestId: 'context-menu-reveal-in-file-explorer',
-  isVisible: ({ row }) => !row.isFake && canRevealInFileExplorer(),
-  onSelect: ({ row }) => revealInFileExplorer(row.path),
-} satisfies InputOf<typeof projectExplorerRowContextMenuItemsFacet>
-const projectExplorerExtension = [
-  importInCurrentFileExtension,
-  contribute(
-    projectExplorerProjectMenuItemsFacet,
-    () => _projectExplorerProjectMenuItemsContribution,
-    {
-      key: 'reveal-in-file-explorer.project-menu',
+const revealInFileExplorerExtension = defineFactory({
+  dependencies: { fileOperations: fileOperationsObservations },
+  key: 'project-explorer.reveal-in-file-explorer',
+  create: ({ fileOperations }) => {
+    const canRevealPath = (path: string) =>
+      canRevealPathInFileExplorer(
+        path,
+        fileOperations.fileOperationsMountsFacet.value
+      )
+
+    return {
+      items: [
+        contribute(
+          projectExplorerProjectMenuItemsFacet,
+          () => ({
+            id: 'reveal-in-file-explorer.project-menu',
+            order: 100,
+            label: 'Reveal in file explorer',
+            dataTestId: 'project-sidebar-reveal-in-file-explorer',
+            isVisible: ({ projectPath }) => canRevealPath(projectPath),
+            onSelect: ({ projectPath }) => revealInFileExplorer(projectPath),
+          }),
+          { key: 'reveal-in-file-explorer.project-menu' }
+        ),
+        contribute(
+          projectExplorerRowContextMenuItemsFacet,
+          () => ({
+            id: 'reveal-in-file-explorer.row-context-menu',
+            order: 100,
+            label: 'Reveal in file explorer',
+            dataTestId: 'context-menu-reveal-in-file-explorer',
+            isVisible: ({ row }) => !row.isFake && canRevealPath(row.path),
+            onSelect: ({ row }) => revealInFileExplorer(row.path),
+          }),
+          { key: 'reveal-in-file-explorer.row-context-menu' }
+        ),
+      ],
     }
-  ),
-  contribute(
-    projectExplorerRowContextMenuItemsFacet,
-    () => _projectExplorerRowContextMenuItemsContribution,
-    {
-      key: 'reveal-in-file-explorer.row-context-menu',
-    }
-  ),
-]
-export default projectExplorerExtension
+  },
+})
+
+export default [importInCurrentFileExtension, revealInFileExplorerExtension]

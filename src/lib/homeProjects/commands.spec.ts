@@ -4,6 +4,7 @@ import { createProjectCommands } from '@src/lib/homeProjects/commands'
 import type { CommandArgumentOption } from '@src/lib/commandTypes'
 import type { Project } from '@src/lib/project'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
+import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type {
   HomeProjectActionsService,
@@ -39,6 +40,7 @@ function createProject({
 
 function createCommandDependencies(folders: Project[] = []) {
   return {
+    getDefaultProjectUnits: (): BaseUnit => 'mm',
     projectLibraries: {
       projectDirectoryPath: '/projects',
       defaultProjectName: 'untitled',
@@ -154,6 +156,7 @@ describe('project command config', () => {
     const dependencies = createCommandDependencies()
     const commands = createProjectCommands({
       ...dependencies,
+      getDefaultProjectUnits: () => 'in',
     })
     const createCommand = commands.find(
       (command) => command.name === 'Create project'
@@ -167,10 +170,21 @@ describe('project command config', () => {
       directory: '/projects',
       name: 'my-cool-project',
       title: 'My Cool Project!',
+      initialProject: {
+        entrypointFilePath: 'main.kcl',
+        files: [
+          {
+            requestedFileName: 'main.kcl',
+            requestedData: new TextEncoder().encode(
+              '@settings(defaultLengthUnit = in, kclVersion = 3.0)\n'
+            ),
+          },
+        ],
+      },
     })
   })
 
-  it('creates projects through the selected library target', () => {
+  it('creates projects with explicit units through the selected library target', () => {
     const dependencies = createCommandDependencies()
     const library = createLibrary('client-projects', 'Client Projects')
     const createProject = {
@@ -178,6 +192,7 @@ describe('project command config', () => {
     }
     const commands = createProjectCommands({
       ...dependencies,
+      getDefaultProjectUnits: () => 'in',
       getCreateProjectLibraryTargets: () => [
         {
           library,
@@ -192,14 +207,45 @@ describe('project command config', () => {
     createCommand?.onSubmit({
       name: ' Client Gear! ',
       libraryId: library.id,
+      units: 'mm',
     })
 
     expect(createProject.run).toHaveBeenCalledWith({
       library,
       requestedProjectName: 'client-gear',
       requestedProjectTitle: 'Client Gear!',
+      initialProject: {
+        entrypointFilePath: 'main.kcl',
+        files: [
+          {
+            requestedFileName: 'main.kcl',
+            requestedData: new TextEncoder().encode(
+              '@settings(defaultLengthUnit = mm, kclVersion = 3.0)\n'
+            ),
+          },
+        ],
+      },
     })
     expect(dependencies.projectOperations.createProject).not.toHaveBeenCalled()
+  })
+
+  it('offers optional project units using the latest user default', () => {
+    const getDefaultProjectUnits = vi.fn<() => BaseUnit>(() => 'cm')
+    const commands = createProjectCommands({
+      ...createCommandDependencies(),
+      getDefaultProjectUnits,
+    })
+    const unitsArg = commands.find(
+      (command) => command.name === 'Create project'
+    )?.args?.units as unknown as {
+      required: boolean
+      defaultValue: () => BaseUnit
+    }
+
+    expect(unitsArg.required).toBe(false)
+    expect(unitsArg.defaultValue()).toBe('cm')
+    getDefaultProjectUnits.mockReturnValue('m')
+    expect(unitsArg.defaultValue()).toBe('m')
   })
 
   it('creates projects through the only library target when the picker is hidden', async () => {
@@ -232,11 +278,13 @@ describe('project command config', () => {
       name: ' Client Gear! ',
     })
 
-    expect(createProjectOperation.run).toHaveBeenCalledWith({
-      library,
-      requestedProjectName: 'client-gear',
-      requestedProjectTitle: 'Client Gear!',
-    })
+    expect(createProjectOperation.run).toHaveBeenCalledWith(
+      expect.objectContaining({
+        library,
+        requestedProjectName: 'client-gear',
+        requestedProjectTitle: 'Client Gear!',
+      })
+    )
     expect(dependencies.projectOperations.createProject).not.toHaveBeenCalled()
   })
 
