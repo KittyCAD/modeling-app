@@ -1,8 +1,14 @@
 # Plankton Is You
 
-A standalone puzzle about editing its vocabulary and behavior while it runs.
-It imports the local Plankton package, with no ZDS code, account, engine, or WASM.
-Node 22.12+ is required by the build tools.
+This runnable Plankton example lets a player change an application's vocabulary,
+behavior, and terminal rules while its current session continues. Creating DIE
+adds a word and a destruction action to a puzzle. Creating MOVE supplies another
+behavior. Editing `YOU IS NONE → LOSE` changes when that same puzzle ends.
+
+Plankton assembles the definitions and behaviors; ordinary game functions apply
+them to tiles. The sample is a standalone package with React, Radix Dialog, and
+Vite. It imports no ZDS runtime and needs no account, engine, or generated WASM.
+Node 22.12+ is required.
 
 From this directory:
 
@@ -15,6 +21,77 @@ npm run dev
 typechecks and produces `dist/`. The sample has its own dependency installation,
 lockfile, locally bundled fonts, and Vite configuration. npm installs Plankton as
 a local copy; reinstall that dependency after changing Plankton itself.
+
+## Follow the Plankton assembly
+
+The game session owns the placed tiles, facing directions, turn count, and undo
+history. [`openGame`](src/registry.ts) creates a Registry and installs one session
+Factory. Replacing content keeps that acquired Game instance alive. Closing its
+Registry ends that lifetime; Vite hot replacement calls `dispose()`. React owns
+browser input listeners. The session currently owns only in-memory state, so it
+has no resource finalizer.
+
+A Facet combines independent contributions into one input for a consumer. The
+shared `gameContract` keeps the tokens precisely typed:
+
+| Facet | Contributions | Consumer |
+| --- | --- | --- |
+| `definitions` | Entity artwork, noun words, properties, and language words | Board renderer, word parser, shared editor |
+| `actions` | Input/collision capabilities and turn callbacks | Turn engine, property-action picker |
+| `outcomeMeanings` | Selector, unary-predicate, and relation implementations | Outcome parser and interpreter |
+| `outcomeProgram` | Parsed tile rows | Terminal-rule interpreter |
+| `puzzles` | Bounds, starting definitions, and placements | Initial setup and reset |
+
+Built-ins and authored content use the same `contribute(facet, () => value)` API.
+Static registrations are arrays of Bindings; they do not need a Factory per word.
+Definition IDs are facet-local binding keys. An authored BUSH binding has `high`
+precedence, so it shadows the default BUSH contribution while all placed BUSH
+instances keep their IDs and positions. This key selects a contribution; it does
+not identify or restart a resource.
+
+Slots hold replaceable content: the vocabulary, authored actions, authored
+predicate meanings, and outcome program. `publish`, `publishAction`,
+`publishOutcomeMeaning`, and `publishOutcomeRows` compile their authoring records
+into Bindings and await `registry.replace`. A replacement publishes the new
+contribution group together and retains the session. Publishing MOVE does not
+advance a turn; the next movement or Wait resolves its new action.
+
+The session receives four live observations through `scope.observe`, then passes
+ordinary read functions into Game. Construction does not read those observations.
+Its `start` evaluates the initial outcome after publication. Later turns read the
+current definitions, actions, meanings, and program, so no permanent reference to
+an old action or predicate is captured. These are event-time reads; this example
+does not demonstrate an ongoing reactive effect or a Signal-backed Binding.
+
+A Service exposes the selected session capability to the UI. The Factory supplies
+it with `provide(gameContract.session, game)`; composition reads it through
+`registry.required`. Only one provider is installed here. Missing/conflicting
+Service providers and live provider switching are not exercised.
+
+Outcome authoring has a separate boundary before Registry mutation:
+`parseOutcomeRows` turns a complete draft into a typed program. Invalid drafts
+never reach `replace`, so the old program remains available. This demonstrates
+application-level parsing and successful atomic replacement; it does **not**
+demonstrate rollback after failed Factory acquisition.
+
+## Concepts to explore next
+
+| Concept | Current coverage | A natural extension of this game |
+| --- | --- | --- |
+| Facets, Contracts, Bindings, keys and precedence | Used by built-ins and runtime edits | Add another independently contributed starter puzzle |
+| Slots and retained Factory identity | Real edits preserve the session and board undo | Keep this as the main walkthrough |
+| Observations and startup ordering | First read in `start`, later reads during game actions | A live preview Binding that reads a Signal without replacing the graph |
+| Service selection | One provider resolved once | Swap input providers through a live Service observation |
+| Constructor dependencies and shared lifetimes | No `factory.dependencies` declarations | World playback and editor preview share one audio resource |
+| Resource startup/cleanup | Registry disposal is wired; no owned external resource | A sound Factory starts/stops work and releases its AudioContext |
+| Plugins and feature gates | Not used | Toggle a sound plugin while retaining its metadata and controls |
+| Acquisition failure and rollback | Not exercised by invalid-draft tests | Fail acquisition of a real asset/resource and retain the previous content |
+| Diagnostics | `debug` is used in tests; `inspect` has no UI | Inspect contribution origins during a development walkthrough |
+
+The most useful next addition would be a real shared resource behind an optional
+plugin: it could demonstrate dependency injection, shared identity, and cleanup
+together. Those concepts should follow an actual game feature; adding artificial
+Factories or a diagnostic dashboard would distract from the compact consumer.
 
 ## Play and edit
 
@@ -41,7 +118,9 @@ the hedge, so their words cannot be rearranged before opening the path.
 Click a placed tile to **Remove tile**; Undo restores the instance. **Delete
 definition** removes an unused vocabulary entry. First remove any placements of
 that definition, including its noun words, and any applied outcome references. Definition edits/deletions are not part
-of board undo. Reset restores the starting setup while keeping authored content;
+of board undo. Successful definition deletion also removes its tile references
+from saved board history, so Undo cannot restore unusable tiles. Unrelated
+movement history is preserved. Reset restores the starting setup while keeping authored content;
 page reload starts fresh. Placement pauses play until a cell is chosen or Escape
 is pressed.
 
@@ -63,22 +142,7 @@ have no behavior; the tray requires a currently installed action to save a new
 property. The recipe UI currently composes forward movement, reversal, and
 self-destruction. It does not execute arbitrary text as JavaScript.
 
-## Plankton contracts
-
-`registry.ts` defines Facets for definitions, actions, starter puzzles, outcome
-word meanings, and the compiled outcome program. Built-ins and runtime content
-use real `contribute(...)` Bindings.
-Static content is an array of Bindings; no Factory is needed for each word.
-
-A session Factory owns the board, exposes it through a Service, and observes the
-four live behavior inputs. Its `start` evaluates the initial outcome after
-publication. Definition, action, predicate-meaning, and outcome-program Slots can
-be replaced while that Factory and its dependencies survive. Replacements are awaited while the UI disables input.
-Registry disposal runs on Vite hot replacement; React removes input listeners.
-
-A Puzzle describes bounds, starting definitions, and placements. Starter setups
-are consumed from their Facet. Durable save/load and a full setup editor are
-future work; executable definitions are not a serialization format.
+## Action contribution example
 
 `game.ts` imports no Plankton or built-in content. Properties refer to action IDs;
 actions provide input/collision capabilities or a turn callback. Extensions can
