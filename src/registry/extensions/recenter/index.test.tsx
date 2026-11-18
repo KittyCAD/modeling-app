@@ -11,7 +11,18 @@ import {
 import { viewControlMenuItemsFacet } from '@src/registry/contracts/viewControls'
 import GizmoDropdown from '@src/components/gizmo/GizmoDropdown'
 import { createElement } from 'react'
-import recenterExtension, { RECENTER_TIP_SEEN_KEY } from '.'
+import recenterExtension, {
+  RECENTER_COMMAND_ID,
+  RECENTER_TIP_SEEN_KEY,
+} from '.'
+import {
+  commandsFacet,
+  MODE_MODELING_COMMAND_SCOPE,
+} from '@src/registry/contracts/commands'
+import {
+  keymapFacet,
+  matchKeymapKeystrokes,
+} from '@src/registry/contracts/keymap'
 
 let registry: Registry
 
@@ -69,12 +80,27 @@ it('keeps Recenter available and marks its help seen when used', async () => {
   })
   const button = await screen.findByRole('button', { name: 'Recenter' })
   expect(button).toHaveAttribute('title', 'Model is offscreen')
+  expect(button.querySelector('kbd')).toHaveTextContent('V C')
   act(() => {
     recoveryHint.value = { kind: 'zoom-out' }
   })
   expect(button).toHaveAttribute('title', 'Zoom out to find the model')
   fireEvent.click(button)
   expect(recenter).toHaveBeenCalledOnce()
+  const match = matchKeymapKeystrokes(
+    registry.get(keymapFacet),
+    [MODE_MODELING_COMMAND_SCOPE],
+    ['v', 'c']
+  )
+  expect(match.type).toBe('full')
+  if (match.type !== 'full') return
+  const command = registry
+    .get(commandsFacet)
+    .find((item) => item.id === match.item.command)
+  expect(command?.id).toBe(RECENTER_COMMAND_ID)
+  expect(command?.disabled).toBe(false)
+  await command?.onSubmit()
+  expect(recenter).toHaveBeenCalledTimes(2)
   act(() => {
     isModelOutOfView.value = false
   })

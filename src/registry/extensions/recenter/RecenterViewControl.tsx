@@ -1,4 +1,6 @@
 import { useSignals } from '@preact/signals-react/runtime'
+import usePlatform from '@src/hooks/usePlatform'
+import { keymapKeystrokesDisplay } from '@src/registry/contracts/keymap'
 import { reportRejection } from '@src/lib/trap'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { ViewControlMenuItemProps } from '@src/registry/contracts/viewControls'
@@ -8,12 +10,16 @@ export function RecenterViewControl({
   navigation: navigationSignal,
   disabled,
   highlighted,
-  onUse,
+  onRecenter,
+  shortcut,
 }: ViewControlMenuItemProps & {
   navigation: ReadonlySignal<ViewportNavigationService | undefined>
-  onUse: () => void
+  onRecenter: () => Promise<boolean>
+  shortcut: ReadonlySignal<readonly string[] | undefined>
 }) {
   useSignals()
+  const platform = usePlatform()
+  const shortcutLabel = keymapKeystrokesDisplay(shortcut.value, platform)
   const navigation = navigationSignal.value
   if (!navigation) return null
   const hint = navigation.recoveryHint?.value ?? { kind: 'neutral' }
@@ -34,8 +40,7 @@ export function RecenterViewControl({
       title={label}
       aria-label="Recenter"
       onClick={() => {
-        onUse()
-        navigation.recenter().catch(reportRejection)
+        onRecenter().catch(reportRejection)
       }}
     >
       <svg
@@ -63,7 +68,8 @@ export function RecenterViewControl({
           </>
         )}
       </svg>
-      Recenter
+      <span className="flex-1">Recenter</span>
+      {shortcutLabel && <kbd className="hotkey">{shortcutLabel}</kbd>}
     </button>
   )
 }
