@@ -10,3 +10,5 @@ target
 # ts-rs
 /kcl-error/bindings
 /kcl-lib/bindings
+
+/display-tessellation/pkg
