@@ -87,4 +87,71 @@ describe('IntegerIdPicker', () => {
     geometry.dispose()
     material.dispose()
   })
+
+  it('shows CPU-resolved IDs separately from thin seeds', async () => {
+    const ids = new Uint32Array(32 * 32).fill(1)
+    ids[16 * 32 + 20] = 2 | selectionTypeTag(EdgeTargetType.BodyEdge)
+    const renderer = {
+      backend: {},
+      autoClear: true,
+      domElement: { getBoundingClientRect: () => ({ width: 32, height: 32 }) },
+      getDrawingBufferSize: (size: Vector2) => size.set(32, 32),
+      getRenderTarget: () => null,
+      setRenderTarget: vi.fn(),
+      render: vi.fn(),
+      readRenderTargetPixelsAsync: vi.fn(
+        async (
+          target: { texture: { name: string } },
+          x: number,
+          y: number,
+          width: number,
+          height: number
+        ) => {
+          expect(target.texture.name).toBe('local-renderer-selection-ids')
+          const pixels = new Uint32Array(width * height)
+          for (let row = 0; row < height; row++) {
+            for (let column = 0; column < width; column++) {
+              pixels[row * width + column] = ids[(y + row) * 32 + x + column]
+            }
+          }
+          return pixels
+        }
+      ),
+    } as unknown as WebGPURenderer
+    const face = new Mesh()
+    const geometry = new LineSegmentsGeometry().setPositions([0, 0, 0, 1, 0, 0])
+    const material = new Line2NodeMaterial()
+    const edge = new LineSegments2(geometry, material)
+    edge.userData.type = EdgeTargetType.BodyEdge
+    const picker = new IntegerIdPicker(renderer)
+    picker.setMode('cpu-search')
+    picker.setTargets([face], null, {
+      source: edge,
+      targets: [{ object: edge, ranges: [] }],
+    })
+
+    expect(
+      (
+        await picker.pick({
+          x: 16,
+          y: 16,
+          streamWidth: 32,
+          streamHeight: 32,
+          camera: new PerspectiveCamera(),
+        })
+      )?.target
+    ).toBe(edge)
+    const snapshot = await picker.captureDebugBuffer(new PerspectiveCamera())
+    const pixel = (16 * 32 + 16) * 4
+    expect(snapshot?.seedPixels?.slice(pixel, pixel + 4)).not.toEqual(
+      snapshot?.pixels.slice(pixel, pixel + 4)
+    )
+    expect(snapshot?.seedPixels?.slice(pixel, pixel + 4)).toEqual(
+      snapshot?.seedPixels?.slice((16 * 32 + 15) * 4, (16 * 32 + 15) * 4 + 4)
+    )
+
+    picker.dispose()
+    geometry.dispose()
+    material.dispose()
+  })
 })

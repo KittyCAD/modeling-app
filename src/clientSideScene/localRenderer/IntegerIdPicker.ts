@@ -19,6 +19,7 @@ import {
   SELECTION_INDEX_ATTRIBUTE,
 } from '@src/clientSideScene/localRenderer/EdgeRenderer'
 import { EdgeGrowthPass } from '@src/clientSideScene/localRenderer/EdgeGrowthPass'
+import { LOCAL_EDGE_PICK_RADIUS_PX } from '@src/clientSideScene/localRenderer/config'
 import {
   colorizePickBuffer,
   type EdgePickingMode,
@@ -339,6 +340,29 @@ export class IntegerIdPicker {
       Math.floor((y / streamHeight) * target.height),
       target.height
     )
+    const bounds = this.renderer.domElement.getBoundingClientRect()
+    const pixelWidth = Math.max(bounds.width, 1) / target.width
+    const pixelHeight = Math.max(bounds.height, 1) / target.height
+    const radiusX = Math.ceil(LOCAL_EDGE_PICK_RADIUS_PX / pixelWidth)
+    const radiusY = Math.ceil(LOCAL_EDGE_PICK_RADIUS_PX / pixelHeight)
+    const left =
+      this.mode === 'cpu-search'
+        ? Math.max(0, readbackPixelX - radiusX)
+        : readbackPixelX
+    const top =
+      this.mode === 'cpu-search'
+        ? Math.max(0, readbackPixelY - radiusY)
+        : readbackPixelY
+    const right =
+      this.mode === 'cpu-search'
+        ? Math.min(target.width - 1, readbackPixelX + radiusX)
+        : readbackPixelX
+    const bottom =
+      this.mode === 'cpu-search'
+        ? Math.min(target.height - 1, readbackPixelY + radiusY)
+        : readbackPixelY
+    const width = right - left + 1
+    const height = bottom - top + 1
 
     const version = this.version
     const targetById = this.targetById
@@ -349,16 +373,44 @@ export class IntegerIdPicker {
 
     const pixels = await this.renderer.readRenderTargetPixelsAsync(
       this.mode === 'gpu-growth' ? (this.growthPass?.target ?? target) : target,
-      readbackPixelX,
-      this.packsIdsIntoColor
-        ? target.height - 1 - readbackPixelY
-        : readbackPixelY,
-      1,
-      1
+      left,
+      this.packsIdsIntoColor ? target.height - 1 - bottom : top,
+      width,
+      height
     )
-    const selectionId = selectionTargetId(
-      decodeSelectionId(pixels, 0, this.packsIdsIntoColor)
-    )
+    const idAt = (pixelX: number, pixelY: number) => {
+      const index = this.packsIdsIntoColor
+        ? ((bottom - pixelY) * width + pixelX - left) * 4
+        : (pixelY - top) * width + pixelX - left
+      return selectionTargetId(
+        decodeSelectionId(pixels, index, this.packsIdsIntoColor)
+      )
+    }
+    let selectionId = idAt(readbackPixelX, readbackPixelY)
+    if (this.mode === 'cpu-search') {
+      const centerType = targetById[selectionId]?.userData.type
+      if (
+        centerType !== EdgeTargetType.BodyEdge &&
+        centerType !== EdgeTargetType.SketchLine
+      ) {
+        let nearestDistance = LOCAL_EDGE_PICK_RADIUS_PX ** 2
+        for (let pixelY = top; pixelY <= bottom; pixelY++) {
+          for (let pixelX = left; pixelX <= right; pixelX++) {
+            const id = idAt(pixelX, pixelY)
+            if (targetById[id]?.userData.type !== EdgeTargetType.BodyEdge) {
+              continue
+            }
+            const distance =
+              ((pixelX - readbackPixelX) * pixelWidth) ** 2 +
+              ((pixelY - readbackPixelY) * pixelHeight) ** 2
+            if (distance < nearestDistance) {
+              nearestDistance = distance
+              selectionId = id
+            }
+          }
+        }
+      }
+    }
     const stale = version !== this.version
 
     return {
@@ -381,6 +433,36 @@ export class IntegerIdPicker {
       target.height
     )
     if (version !== this.version) return null
+    if (this.mode === 'cpu-search') {
+      const bounds = this.renderer.domElement.getBoundingClientRect()
+      const resolved = resolveCpuPickBuffer(
+        grown,
+        target.width,
+        target.height,
+        this.packsIdsIntoColor,
+        Math.max(bounds.width, 1) / target.width,
+        Math.max(bounds.height, 1) / target.height,
+        targets
+      )
+      return {
+        width: target.width,
+        height: target.height,
+        pixels: colorizePickBuffer(
+          resolved,
+          target.width,
+          target.height,
+          false,
+          targets
+        ),
+        seedPixels: colorizePickBuffer(
+          grown,
+          target.width,
+          target.height,
+          this.packsIdsIntoColor,
+          targets
+        ),
+      }
+    }
     if (this.mode !== 'gpu-growth') {
       return {
         width: target.width,
@@ -502,7 +584,7 @@ export class IntegerIdPicker {
           this.mode === 'original-main'
             ? (SELECTION_LINE_WIDTH_PX * bounds.width) /
               SELECTION_LINE_WIDTH_REFERENCE_VIEWPORT_PX
-            : this.mode === 'gpu-growth' &&
+            : (this.mode === 'gpu-growth' || this.mode === 'cpu-search') &&
                 material === this.edgeObject?.material
               ? VISIBLE_EDGE_LINE_WIDTH_PX
               : SELECTION_LINE_WIDTH_PX
@@ -530,4 +612,64 @@ function decodeSelectionId(
         ((pixels[index + 1] ?? 0) << 8) |
         ((pixels[index + 2] ?? 0) << 16)
     : Number(pixels[index] ?? 0)
+}
+
+function resolveCpuPickBuffer(
+  pixels: ArrayLike<number>,
+  width: number,
+  height: number,
+  packed: boolean,
+  pixelWidth: number,
+  pixelHeight: number,
+  targets: readonly (Mesh | null)[]
+) {
+  const ids = new Uint32Array(width * height)
+  const resolved = new Uint32Array(width * height)
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const index =
+        (packed ? (height - 1 - y) * width + x : y * width + x) *
+        (packed ? 4 : 1)
+      const id = selectionTargetId(decodeSelectionId(pixels, index, packed))
+      ids[y * width + x] = id
+      resolved[y * width + x] = id
+    }
+  }
+  const distances = new Float32Array(width * height).fill(
+    LOCAL_EDGE_PICK_RADIUS_PX ** 2
+  )
+  const radiusX = Math.ceil(LOCAL_EDGE_PICK_RADIUS_PX / pixelWidth)
+  const radiusY = Math.ceil(LOCAL_EDGE_PICK_RADIUS_PX / pixelHeight)
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const id = ids[y * width + x]
+      if (targets[id]?.userData.type !== EdgeTargetType.BodyEdge) continue
+      for (
+        let ny = Math.max(0, y - radiusY);
+        ny <= Math.min(height - 1, y + radiusY);
+        ny++
+      ) {
+        for (
+          let nx = Math.max(0, x - radiusX);
+          nx <= Math.min(width - 1, x + radiusX);
+          nx++
+        ) {
+          const index = ny * width + nx
+          const centerType = targets[ids[index]]?.userData.type
+          if (
+            centerType === EdgeTargetType.BodyEdge ||
+            centerType === EdgeTargetType.SketchLine
+          )
+            continue
+          const distance =
+            ((x - nx) * pixelWidth) ** 2 + ((y - ny) * pixelHeight) ** 2
+          if (distance < distances[index]) {
+            distances[index] = distance
+            resolved[index] = id
+          }
+        }
+      }
+    }
+  }
+  return resolved
 }

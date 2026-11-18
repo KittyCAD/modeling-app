@@ -38,6 +38,19 @@ cube1 = get10mmCube()`
 const singleCube = `${cubeDefinition}
 cube1 = get10mmCube()`
 
+const faceModes = [
+  'original-main',
+  'fixed-24',
+  'cpu-search',
+  'gpu-growth',
+] as const
+const edgeModes = [
+  'fixed-24',
+  'depth-offset',
+  'cpu-search',
+  'gpu-growth',
+] as const
+
 const pickIdAt = (page: Page, x: number, y: number) =>
   page.evaluate(
     async ({ x, y }) => {
@@ -67,7 +80,7 @@ test.describe(
   'Local edge picker comparison',
   { tag: ['@web', '@browsers', '@localRenderer'] },
   () => {
-    for (const mode of ['original-main', 'fixed-24', 'gpu-growth'] as const) {
+    for (const mode of faceModes) {
       test(`two cubes from the top-front-right corner: ${mode}`, async ({
         page,
         homePage,
@@ -149,7 +162,7 @@ test.describe(
       })
     }
 
-    for (const mode of ['fixed-24', 'depth-offset', 'gpu-growth'] as const) {
+    for (const mode of edgeModes) {
       test(`right cube front corner: ${mode}`, async ({
         page,
         homePage,
@@ -213,7 +226,7 @@ test.describe(
       })
     }
 
-    for (const mode of ['fixed-24', 'depth-offset', 'gpu-growth'] as const) {
+    for (const mode of edgeModes) {
       test(`hidden back edge near the right cube silhouette: ${mode}`, async ({
         page,
         homePage,
@@ -278,7 +291,7 @@ test.describe(
       })
     }
 
-    for (const mode of ['original-main', 'fixed-24', 'gpu-growth'] as const) {
+    for (const mode of faceModes) {
       test(`single cube face at 240mm: ${mode}`, async ({
         page,
         homePage,
@@ -337,7 +350,11 @@ test.describe(
           body: await page.screenshot(),
           contentType: 'image/png',
         })
-        if (mode === 'gpu-growth' || mode === 'fixed-24') {
+        if (
+          mode === 'gpu-growth' ||
+          mode === 'fixed-24' ||
+          mode === 'cpu-search'
+        ) {
           test.fail(true, `${mode} covers the cube face at this point`)
         }
         await toolbar.expectSelection('1 face')

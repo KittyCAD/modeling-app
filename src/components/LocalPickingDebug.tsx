@@ -33,6 +33,7 @@ export function LocalPickingDebug() {
           <option value="original-main">Original main</option>
           <option value="fixed-24">Fixed 24px</option>
           <option value="depth-offset">Depth offset</option>
+          <option value="cpu-search">CPU nearest edge</option>
         </select>
       </label>
       <button
@@ -51,13 +52,13 @@ export function LocalPickingDebug() {
       </button>
       {active && (
         <>
-          {mode === 'gpu-growth' && (
+          {(mode === 'gpu-growth' || mode === 'cpu-search') && (
             <button
               type="button"
               className="rounded bg-gray-200 px-3 py-1 text-black"
               onClick={() => setPickBufferDebugSeeds(!showingSeeds)}
             >
-              {showingSeeds ? 'Show grown IDs' : 'Show thin seeds'}
+              {showingSeeds ? 'Show resolved IDs' : 'Show thin seeds'}
             </button>
           )}
           <label>
