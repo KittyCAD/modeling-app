@@ -1,4 +1,8 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  expiredSystemCertificate,
+  validSystemCertificate,
+} from '@src/systemCertificates.fixtures'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const tlsMockState = vi.hoisted(() => ({
   useSetDefaultCACertificates: true,
@@ -31,13 +35,22 @@ describe('systemCertificates', () => {
     getCACertificates.mockReset()
     setDefaultCACertificates.mockReset()
     addCACert.mockReset()
+    // Keep time between the fixture expiry dates so tests do not age out.
+    vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2030-01-01T00:00:00Z'))
+    getCACertificates.mockImplementation((type: 'default' | 'system') => {
+      return type === 'default'
+        ? ['public-root']
+        : [expiredSystemCertificate, validSystemCertificate]
+    })
   })
 
-  it('loads system certificates into Node TLS on macOS', async () => {
-    getCACertificates.mockImplementation((type: 'default' | 'system') => {
-      return type === 'default' ? ['public-root'] : ['cert-a', 'cert-b']
-    })
+  afterEach(async () => {
+    const tlsModule = (await import('node:tls')).default
+    tlsModule.createSecureContext = createSecureContext
+    vi.restoreAllMocks()
+  })
 
+  it('loads only unexpired system certificates into Node TLS on macOS', async () => {
     const { configureSystemCertificates } = await import(
       '@src/systemCertificates'
     )
@@ -48,9 +61,30 @@ describe('systemCertificates', () => {
     expect(getCACertificates).toHaveBeenNthCalledWith(2, 'default')
     expect(setDefaultCACertificates).toHaveBeenCalledWith([
       'public-root',
-      'cert-a',
-      'cert-b',
+      validSystemCertificate,
     ])
+  })
+
+  it('skips unreadable system certificates and keeps valid certificates', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    getCACertificates.mockReturnValueOnce([
+      'invalid certificate',
+      validSystemCertificate,
+    ])
+    const { configureSystemCertificates } = await import(
+      '@src/systemCertificates'
+    )
+
+    configureSystemCertificates('win32')
+
+    expect(setDefaultCACertificates).toHaveBeenCalledWith([
+      'public-root',
+      validSystemCertificate,
+    ])
+    expect(warn).toHaveBeenCalledExactlyOnceWith(
+      'Skipping unreadable system certificate',
+      expect.any(Error)
+    )
   })
 
   it('skips unsupported platforms', async () => {
@@ -66,9 +100,6 @@ describe('systemCertificates', () => {
 
   it('falls back to patching secure contexts when setDefaultCACertificates is unavailable', async () => {
     tlsMockState.useSetDefaultCACertificates = false
-    getCACertificates.mockImplementation((type: 'default' | 'system') => {
-      return type === 'default' ? ['public-root'] : ['cert-a', 'cert-b']
-    })
     const tlsModule = (await import('node:tls')).default
 
     const { configureSystemCertificates } = await import(
@@ -78,8 +109,7 @@ describe('systemCertificates', () => {
     configureSystemCertificates('win32')
 
     tlsModule.createSecureContext()
-    expect(addCACert).toHaveBeenNthCalledWith(1, 'cert-a')
-    expect(addCACert).toHaveBeenNthCalledWith(2, 'cert-b')
+    expect(addCACert).toHaveBeenCalledExactlyOnceWith(validSystemCertificate)
 
     addCACert.mockClear()
     tlsModule.createSecureContext({

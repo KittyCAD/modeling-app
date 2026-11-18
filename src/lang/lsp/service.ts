@@ -55,14 +55,14 @@ type FileSnapshot = {
 
 type CreateLspServiceOptions = {
   getFileOperations?: () => FileReadOperations
-  getAuth: () => AuthRegistryService
-  getUserFeatures: () => UserFeaturesRegistryService
+  auth: AuthRegistryService
+  userFeatures: UserFeaturesRegistryService
 }
 
 export function createLspService({
-  getAuth,
+  auth: authProvider,
   getFileOperations,
-  getUserFeatures,
+  userFeatures: featureProvider,
 }: CreateLspServiceOptions): {
   service: LspService
   dispose: () => void
@@ -194,7 +194,7 @@ export function createLspService({
       return
     }
 
-    auth = getAuth()
+    auth = authProvider
     authSubscription = auth.actor.subscribe(() => {
       reconcileRuntime()
     })
@@ -205,7 +205,7 @@ export function createLspService({
       return userFeatures
     }
 
-    const service = getUserFeatures()
+    const service = featureProvider
     userFeatures = service
     userFeaturesSubscription = service.actor.subscribe(() => {
       reconcileRuntime()

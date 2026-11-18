@@ -19,8 +19,8 @@ This file applies to TypeScript and React development under `src/`. It supplemen
 - The app expects the Rust/Wasm bundle to exist for many integration paths. Use `npm run build:wasm` before tests that execute KCL.
 - If TypeScript starts failing on missing or stale generated Rust/Wasm bindings, especially after merging main or Rust-side stdlib changes, rerun `npm run build:wasm:dev`. That rebuilds the local Wasm package and refreshes generated bindings used by the TypeScript app.
 - Some integration and e2e flows require `VITE_ZOO_API_TOKEN` in `.env.development.local`. If a test needs the token and it is not available, ask before running it.
-- For web Playwright runs, set `TARGET=web`. The `Google Chrome` Playwright project name alone does not select the web fixture path; without `TARGET=web`, the shared fixture still tries to launch Electron.
-- On NixOS, Playwright may not find branded Chrome at its default `/opt/google/chrome/chrome` path. Use `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/run/current-system/sw/bin/google-chrome-stable` when running the `Google Chrome` project locally.
+- For web Playwright runs, set `TARGET=web`. The `chrome` Playwright project name alone does not select the web fixture path; without `TARGET=web`, the shared fixture still tries to launch Electron.
+- On NixOS, Playwright may not find branded Chrome at its default `/opt/google/chrome/chrome` path. Use `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/run/current-system/sw/bin/google-chrome-stable` when running the `chrome` project locally.
 - If desktop Playwright e2e tests fail locally because Electron cannot launch with symptoms like `bad option: --remote-debugging-port=0`, `Authorization required, but no authorization protocol specified`, or `Missing X server or $DISPLAY`, run the test with your desktop X11 session variables passed through explicitly: `env -i HOME=$HOME USER=$USER DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS XDG_SESSION_TYPE=${XDG_SESSION_TYPE:-x11} PATH=$PATH /run/current-system/sw/bin/bash -lc 'cd <repository-root>/modeling-app && npx playwright test ...'`.
 - This is mainly a Linux desktop-session issue, observed on NixOS specifically: a command can work in an interactive terminal but fail from an agent/tool-run process unless X11 auth and related session variables are forwarded.
 - For Playwright scene click debugging, `scene.makeMouseHelpers(..., { debugLabel: 'name' })` draws a labeled marker at the resolved stream coordinate without pausing the test. `debugLabel` is the marker switch; there is no separate `debug` flag for mouse helpers. Use `enablePause: true` only when an interactive pause is useful, and ask the user before adding it because `page.pause()` blocks automated runs. When asking someone to collect a click coordinate during a pause, explicitly tell them to run `enableMousePositionLogs()` in the browser console first. A useful offer is: "I can add a labeled click coordinate marker in this test and enable a pause so you can see the exact resolved click point when the test runs."
@@ -60,7 +60,7 @@ After reviewing, tell the human what should be smoke tested and whether the PR's
 
 ## Code style
 
-- Format with Biome and lint with ESLint, both covered by `make check`.
+- Check formatting, types, and lints with `make verify`. Use `make format` to apply Biome and Rust formatting changes.
 - Keep TypeScript types understandable and maintainable. Prefer explicit interfaces, straightforward unions, and local type guards over clever conditional types, heavy generics, or type-level plumbing.
 - Use type-only imports for types (`import type { Foo } ...`) because ESLint enforces `@typescript-eslint/consistent-type-imports`.
 - Use `isArray()` from `@src/lib/utils`, and any other helpful utils instead of reinventing your own.
@@ -88,25 +88,27 @@ After reviewing, tell the human what should be smoke tested and whether the PR's
 ## Tests
 
 - Vitest picks the suite from the filename: `*.test.ts(x)` is unit (`npm run test:unit`); `*.spec.ts(x)` is integration (`npm run test:integration`).
-- Unit tests must not import or need `wasm-lib`. To verify, remove `rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm` before `npm run test:unit`.
+- Unit tests must not import or need `wasm-lib`. Check this boundary in a clean checkout without built Wasm; preserve existing local build artifacts.
+- Verify browser snapshots with `npm run test:snapshots:verify`. Update expected snapshots only for intentional UI changes, inspect the diff, then verify again.
 - Prefer targeted Vitest runs while iterating, for example `npm run test:unit -- src/path/to/file.test.ts`.
 - Use property-based testing with `fast-check` for unit-testable logic with many possible permutations.
 - Component tests should prefer user-visible queries (`screen.getByRole`, `screen.getByText`) when practical. `data-testid` is fine for controls or generated content without a stable accessible label.
 - Keep mocks narrow and reset state in `beforeEach` or `afterEach` when tests touch localStorage, timers, singleton modules, or machine actors.
 - For e2e tests (Playwright), prefer writing a `@web`-tagged test unless it is specifically covering `@desktop` functionality.
+- Include the `@browsers` tag on `@web` tests that are regression tests to be run against all supported browsers.
 
 ## Common verification
 
 For a typical `src/` change, prefer the smallest useful checks first:
 
 ```sh
-make check
+make verify
 npm run test:unit -- src/path/to/file.test.ts
 ```
 
 Before a broad PR, run all tests including web e2e (headless):
 
 ```sh
-make check
+make verify
 make test
 ```

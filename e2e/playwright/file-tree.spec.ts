@@ -101,7 +101,7 @@ test(
 
 test(
   'finishes importing dropped files before enabling the explorer again',
-  { tag: ['@web', '@desktop', '@localRenderer'] },
+  { tag: ['@web', '@browsers', '@desktop', '@localRenderer'] },
   async ({ page, folderSetupFn, fs, homePage, toolbar }) => {
     const projectName = 'external-file-drop'
     const contents = 'Contents imported from a dropped file.'
@@ -206,7 +206,7 @@ test.describe(
 
 test.describe(
   'when file tree creation navigates within the same project',
-  { tag: ['@web', '@localRenderer'] },
+  { tag: ['@web', '@browsers', '@localRenderer'] },
   () => {
     test('creates a KCL file inside a folder without leaving the explorer disabled', async ({
       page,

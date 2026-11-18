@@ -130,11 +130,54 @@ Integration tests will be slower, require more dependencies, and could be flaky.
 
 ## Running tests
 
+### Verifying without updating results
+
+Use these commands to compare against existing expected results. Existing
+formatting and update commands remain available for making changes and reviewing
+their diffs.
+
+| Check | Verification command | Apply changes or update expected results |
+| --- | --- | --- |
+| Formatting, TypeScript types, and ESLint | `make verify` | `make check` |
+| Formatting only | `make format-check` | `make format` |
+| Rust tests and snapshots, from `rust/` | `just verify` | Existing snapshot update commands below and in `rust/justfile` |
+| One simulation test, from `rust/` | `just verify simulation_tests::foo_bar::` | `just overwrite-sim-test foo_bar` |
+| Generated stdlib Markdown, from `rust/` | `just verify docs::gen_std_tests::test_generate_stdlib` | `just redo-kcl-stdlib-docs-no-imgs` |
+| TypeScript bindings | `npm run bindings:verify` | `npm run bindings:update` |
+| Browser snapshots | `npm run test:snapshots:verify` | `npm run test:snapshots -- --update-snapshots` |
+
+Run commands from the repository root unless the table specifies `rust/`.
+Prepare dependencies and the Wasm build separately using the setup instructions
+above. `make verify` and `make format-check` do not install dependencies or rebuild
+generated files. `bindings:verify` regenerates the ignored bindings and compares
+them with the committed copies without replacing those copies.
+
+`just verify` accepts Cargo Nextest arguments, including test filters. It disables
+snapshot updates even when update settings are exported in the calling shell.
+Engine tests still require `ZOO_API_TOKEN`; parse-only tests and generated Markdown
+checks can run without it. Browser verification fails for missing snapshots as
+well as mismatches and can write diagnostic artifacts in the test report folders.
+
+When an expected result needs to change, use the existing update command, inspect
+the resulting diff, and rerun verification. Keep local Wasm build artifacts intact;
+use a clean checkout without built Wasm when checking that unit tests work without
+it.
+
 ### Playwright tests
 
 Prepare these system dependencies:
 
 - Set `$VITE_ZOO_API_TOKEN` from https://zoo.dev/account/developer
+
+The expensive Zookeeper replay acceptance cases are skipped by default. To run
+generated large-history, delayed-setup, and oversized-message cases serially:
+
+```bash
+npm run test:e2e:replay:acceptance
+```
+
+These cases mock Zookeeper traffic and check frontend behavior, not production
+database performance. They use disposable local projects and do not send generation prompts.
 
 #### Desktop tests (Electron on all platforms)
 
@@ -176,13 +219,6 @@ npm run playwright -- install webkit
 npm run test:e2e:web:webkit
 ```
 
-Local WebKit tests use two workers on `http://localhost:3000` and
-`http://localhost:5173`, both allowed by the development API CORS policy. The
-second origin proxies the development server, or serves the same build directly
-when using the prebuilt app. Separate origins isolate WebKit's shared OPFS
-storage. Keep both ports free in CI. Use `-- --workers=1` to compare with a serial
-run. Runs against `VERCEL_BASE_URL` remain single-worker.
-
 #### Snapshot tests (Google Chrome on Ubuntu only)
 
 If you are running Ubuntu locally, in a VM, or using GitHub Codespaces:
@@ -201,7 +237,7 @@ Alternatively, you can simply delete `e2e/playwright/snapshot-tests.spec.ts-snap
 However, if you want a debugger I recommend using VSCode and the `playwright` extension, as the above command is a cruder debugger that steps into every function call which is annoying.
 With the extension you can set a breakpoint after `waitForDefaultPlanesVisibilityChange` in order to skip app loading, then the vscode debugger's "step over" is much better for being able to stay at the right level of abstraction as you debug the code.
 
-If you want to limit to a single browser use `--project="webkit"` or `firefox`, `Google Chrome`
+If you want to limit to a single browser use `--project=chrome`, `firefox`, or `webkit`
 Or comment out browsers in `playwright.config.ts`.
 
 note chromium has encoder compat issues which is why were testing against the branded 'Google Chrome'
