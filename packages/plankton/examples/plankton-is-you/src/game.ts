@@ -173,17 +173,27 @@ export class Game {
     const properties = definitions.filter(
       (d): d is PropertyDefinition => d.kind === 'property'
     )
+    const actionsFor = (tile: Tile) =>
+      tile.kind !== 'entity'
+        ? []
+        : actions.filter((action) =>
+            properties.some(
+              (property) =>
+                property.action === action.id &&
+                rules.some(
+                  (rule) =>
+                    rule.noun === tile.type && rule.property === property.id
+                )
+            )
+          )
     return {
       rules,
+      actionsFor,
       has: (tile: Tile, predicate: (action: Action) => boolean) =>
-        tile.kind === 'entity' &&
-        properties.some(
-          (p) =>
-            rules.some((r) => r.noun === tile.type && r.property === p.id) &&
-            actions.some((a) => a.id === p.action && predicate(a))
-        ),
+        actionsFor(tile).some(predicate),
     }
   }
+
   private evaluate(tiles: readonly Tile[]): Resolution {
     const { rules, has } = this.matching(
       tiles,
@@ -269,26 +279,13 @@ export class Game {
         tryMove(player.id, direction)
       }
     }
-    const properties = definitions.filter(
-      (d): d is PropertyDefinition => d.kind === 'property'
-    )
     // Schedule from one post-input snapshot. Each entity/action pair runs once.
-    const turnRules = readRules(tiles, definitions)
-    const scheduled = tiles
-      .filter((t) => t.kind === 'entity')
-      .flatMap((subject) =>
-        actions
-          .filter((action) =>
-            properties.some(
-              (p) =>
-                p.action === action.id &&
-                turnRules.some(
-                  (r) => r.noun === subject.type && r.property === p.id
-                )
-            )
-          )
-          .map((action) => ({ id: subject.id, action }))
-      )
+    const afterInput = this.matching(tiles, definitions, actions)
+    const scheduled = tiles.flatMap((subject) =>
+      afterInput
+        .actionsFor(subject)
+        .map((action) => ({ id: subject.id, action }))
+    )
     const destroyed = new Set<string>()
     const turn: Turn = {
       move: (id, direction) => !destroyed.has(id) && tryMove(id, direction),

@@ -1,5 +1,5 @@
 import { Plus, Trash2, Undo2 } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { Fragment, type ReactNode } from 'react'
 import type { Definition } from './game'
 import type { OutcomeRow } from './outcomes'
 
@@ -47,36 +47,28 @@ export function OutcomeBoard({
       <div className="outcome-rows">
         {rows.map((row, rowIndex) => (
           <div className="outcome-row" key={row.id}>
-            {([0, 1, 2] as const).map((index) => {
+            {([0, 1, 2, 3] as const).map((index) => {
               const word = words.find((w) => w.id === row.cells[index])
               return (
-                <button
-                  key={index}
-                  aria-pressed={
-                    selected?.rowId === row.id && selected.index === index
-                  }
-                  disabled={busy}
-                  aria-label={`Outcome row ${rowIndex + 1} ${positions[index]}: ${row.cells[index] || 'empty'}`}
-                  onClick={() => onSelect({ rowId: row.id, index })}
-                >
-                  {word ? renderWord(word) : <span>_</span>}
-                </button>
+                <Fragment key={index}>
+                  {index === 3 && (
+                    <span className="outcome-arrow" aria-hidden="true">
+                      →
+                    </span>
+                  )}
+                  <button
+                    aria-pressed={
+                      selected?.rowId === row.id && selected.index === index
+                    }
+                    disabled={busy}
+                    aria-label={`Outcome row ${rowIndex + 1} ${positions[index]}: ${row.cells[index] || 'empty'}`}
+                    onClick={() => onSelect({ rowId: row.id, index })}
+                  >
+                    {word ? renderWord(word) : <span>_</span>}
+                  </button>
+                </Fragment>
               )
             })}
-            <span className="outcome-arrow" aria-hidden="true">
-              →
-            </span>
-            <button
-              disabled={busy}
-              aria-pressed={selected?.rowId === row.id && selected.index === 3}
-              aria-label={`Outcome row ${rowIndex + 1} result: ${row.cells[3] || 'empty'}`}
-              onClick={() => onSelect({ rowId: row.id, index: 3 })}
-            >
-              {(() => {
-                const word = words.find((w) => w.id === row.cells[3])
-                return word ? renderWord(word) : <span>_</span>
-              })()}
-            </button>
             <button
               className="remove-row"
               disabled={busy}

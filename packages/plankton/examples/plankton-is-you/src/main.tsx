@@ -31,29 +31,24 @@ import { openGame, type Runtime } from './registry'
 import './style.css'
 
 function Pixels({ sprite, color }: { sprite: Sprite; color: string }) {
+  const squares = sprite
+    .flatMap((row, y) =>
+      [...row].flatMap((pixel, x) =>
+        pixel === '1' ? [`M${x},${y}h1v1h-1z`] : []
+      )
+    )
+    .join('')
   return (
     <svg
       viewBox={`0 0 ${sprite[0].length} ${sprite.length}`}
       aria-hidden="true"
       shapeRendering="crispEdges"
     >
-      {sprite.flatMap((row, y) =>
-        [...row].map((pixel, x) =>
-          pixel === '1' ? (
-            <rect
-              key={`${x}-${y}`}
-              x={x}
-              y={y}
-              width="1"
-              height="1"
-              fill={color}
-            />
-          ) : null
-        )
-      )}
+      <path d={squares} fill={color} />
     </svg>
   )
 }
+
 const ink = (definition: Definition, kind: Tile['kind']) =>
   kind === 'word' && definition.wordColor
     ? definition.wordColor
@@ -66,8 +61,9 @@ const artwork = (definition: Definition, kind: Tile['kind']) =>
     : (definition.wordSprite ?? wordSprite(definition.id))
 const blank = () => Array<string>(8).fill('00000000')
 
-type DraftArtwork = {
-  kind: Tile['kind']
+type DraftData = {
+  category: Definition['kind']
+  artworkKind: Tile['kind']
   name: string
   entitySprite: Sprite
   wordSprite: Sprite
@@ -75,7 +71,7 @@ type DraftArtwork = {
   wordColor: string
   action: string
 }
-type Draft = DraftArtwork &
+type Draft = DraftData &
   (
     | { scope: 'world'; base?: Definition; tileId?: string }
     | { scope: 'outcome'; base?: Definition; cell: OutcomeCell }
@@ -89,7 +85,8 @@ function draftFor(
   return {
     scope: 'world',
     base: definition,
-    kind,
+    category: definition.kind,
+    artworkKind: kind,
     name: definition.id,
     entitySprite: definition.kind === 'entity' ? definition.sprite : blank(),
     wordSprite: artwork(definition, 'word'),
@@ -135,18 +132,17 @@ function App({ runtime }: { runtime: Runtime }) {
     (tile) => draft?.scope === 'world' && tile.id === draft.tileId
   )
   const sprite = draft
-    ? draft.kind === 'entity'
+    ? draft.artworkKind === 'entity'
       ? draft.entitySprite
       : draft.wordSprite
     : []
   const color = draft
-    ? draft.kind === 'entity'
+    ? draft.artworkKind === 'entity'
       ? draft.entityColor
       : draft.wordColor
     : '#c5ed91'
-  const noun =
-    draft?.base?.kind === 'entity' || (!draft?.base && draft?.kind === 'entity')
-  const grammar = draft?.base?.kind === 'grammar'
+  const propertyEditable =
+    draft?.category === 'property' && draft.artworkKind === 'word'
   const inUse =
     !!draft?.base &&
     (game.board.tiles.some((t) => t.type === draft.name) ||
@@ -155,7 +151,7 @@ function App({ runtime }: { runtime: Runtime }) {
       ))
 
   const selectionKey = draft
-    ? `${draft.scope}:${draft.base?.id ?? 'new'}:${draft.kind}:${draft.scope === 'outcome' ? `${draft.cell.rowId}:${draft.cell.index}` : ''}`
+    ? `${draft.scope}:${draft.base?.id ?? 'new'}:${draft.artworkKind}:${draft.scope === 'outcome' ? `${draft.cell.rowId}:${draft.cell.index}` : ''}`
     : ''
   const attachTray = useCallback(
     (node: HTMLElement | null) => {
@@ -204,7 +200,8 @@ function App({ runtime }: { runtime: Runtime }) {
         : {
             scope: 'outcome',
             cell,
-            kind: 'word',
+            category: 'word',
+            artworkKind: 'word',
             name: '',
             entitySprite: blank(),
             wordSprite: wordSprite(''),
@@ -241,7 +238,8 @@ function App({ runtime }: { runtime: Runtime }) {
   function create() {
     setDraft({
       scope: 'world',
-      kind: 'entity',
+      category: 'entity',
+      artworkKind: 'entity',
       name: '',
       entitySprite: blank(),
       wordSprite: wordSprite(''),
@@ -330,38 +328,38 @@ function App({ runtime }: { runtime: Runtime }) {
   }
   async function save() {
     if (!draft) return
+    const word = { wordSprite: draft.wordSprite, wordColor: draft.wordColor }
     let definition: Definition
-    if (grammar) {
-      definition = {
-        kind: 'grammar',
-        id: 'IS',
-        wordSprite: draft.wordSprite,
-        wordColor: draft.wordColor,
-      }
-    } else if (draft.base?.kind === 'word') {
-      definition = {
-        ...draft.base,
-        wordSprite: draft.wordSprite,
-        wordColor: draft.wordColor,
-      }
-    } else if (noun) {
-      definition = {
-        kind: 'entity',
-        id: draft.name,
-        color: draft.entityColor,
-        sprite: draft.entitySprite,
-        wordSprite: draft.wordSprite,
-        wordColor: draft.wordColor,
-      }
-    } else {
-      definition = {
-        kind: 'property',
-        id: draft.name,
-        color: draft.wordColor,
-        wordSprite: draft.wordSprite,
-        wordColor: draft.wordColor,
-        action: draft.action,
-      }
+    switch (draft.category) {
+      case 'grammar':
+        definition = { kind: 'grammar', id: 'IS', ...word }
+        break
+      case 'word':
+        definition = {
+          kind: 'word',
+          id: draft.name,
+          color: draft.entityColor,
+          ...word,
+        }
+        break
+      case 'entity':
+        definition = {
+          kind: 'entity',
+          id: draft.name,
+          color: draft.entityColor,
+          sprite: draft.entitySprite,
+          ...word,
+        }
+        break
+      case 'property':
+        definition = {
+          kind: 'property',
+          id: draft.name,
+          color: draft.wordColor,
+          action: draft.action,
+          ...word,
+        }
+        break
     }
     if (
       await change(
@@ -377,7 +375,7 @@ function App({ runtime }: { runtime: Runtime }) {
               base: definition,
               cell: draft.cell,
             }
-          : draftFor(definition, draft.kind, draft.tileId)
+          : draftFor(definition, draft.artworkKind, draft.tileId)
       )
   }
   async function saveAction() {
@@ -402,7 +400,8 @@ function App({ runtime }: { runtime: Runtime }) {
   function paint(index: number) {
     setDraft((previous) => {
       if (!previous) return previous
-      const key = previous.kind === 'entity' ? 'entitySprite' : 'wordSprite'
+      const key =
+        previous.artworkKind === 'entity' ? 'entitySprite' : 'wordSprite'
       return {
         ...previous,
         [key]: previous[key].map((row, y) =>
@@ -443,10 +442,7 @@ function App({ runtime }: { runtime: Runtime }) {
     !!draft &&
     !!draft.name &&
     !duplicate &&
-    (draft.scope === 'outcome' ||
-      noun ||
-      grammar ||
-      draft.base?.kind === 'word' ||
+    (draft.category !== 'property' ||
       actions.some((a) => a.id === draft.action))
 
   return (
@@ -611,7 +607,8 @@ function App({ runtime }: { runtime: Runtime }) {
                       key={`${definition.id}-${kind}`}
                       aria-label={`Edit ${definition.id} ${kind}`}
                       aria-pressed={
-                        draft?.base?.id === definition.id && draft.kind === kind
+                        draft?.base?.id === definition.id &&
+                        draft.artworkKind === kind
                       }
                       disabled={busy}
                       onClick={() => select(definition, kind)}
@@ -675,14 +672,25 @@ function App({ runtime }: { runtime: Runtime }) {
                     {(['entity', 'word'] as const).map((kind) => (
                       <button
                         key={kind}
-                        aria-pressed={draft.kind === kind}
+                        aria-pressed={draft.artworkKind === kind}
                         disabled={
                           busy ||
                           (kind === 'entity' &&
                             (draft.scope === 'outcome' ||
-                              (!!draft.base && draft.base.kind !== 'entity')))
+                              (draft.base && draft.category !== 'entity')))
                         }
-                        onClick={() => setDraft({ ...draft, kind })}
+                        onClick={() =>
+                          setDraft({
+                            ...draft,
+                            artworkKind: kind,
+                            category:
+                              draft.base || draft.scope === 'outcome'
+                                ? draft.category
+                                : kind === 'entity'
+                                  ? 'entity'
+                                  : 'property',
+                          })
+                        }
                       >
                         {kind}
                       </button>
@@ -743,31 +751,21 @@ function App({ runtime }: { runtime: Runtime }) {
                   Property action
                   <select
                     aria-label="Property action"
-                    disabled={
-                      draft.kind === 'entity' ||
-                      !!noun ||
-                      !!grammar ||
-                      draft.base?.kind === 'word' ||
-                      busy ||
-                      !draft.name
-                    }
-                    value={
-                      noun || grammar || draft.base?.kind === 'word'
-                        ? ''
-                        : draft.action
-                    }
+                    disabled={!propertyEditable || busy || !draft.name}
+                    value={propertyEditable ? draft.action : ''}
                     onChange={(event) =>
                       setDraft({ ...draft, action: event.target.value })
                     }
                   >
                     <option value="">
-                      {noun
-                        ? 'None · entity name'
-                        : grammar
-                          ? 'Sentence connector'
-                          : draft.base?.kind === 'word'
-                            ? 'Outcome predicate'
-                            : 'Choose an action…'}
+                      {
+                        {
+                          entity: 'None · entity name',
+                          grammar: 'Sentence connector',
+                          word: 'Outcome predicate',
+                          property: 'Choose an action…',
+                        }[draft.category]
+                      }
                     </option>
                     {actions.map((action) => (
                       <option key={action.id} value={action.id}>
@@ -796,7 +794,7 @@ function App({ runtime }: { runtime: Runtime }) {
                       onChange={(event) =>
                         setDraft({
                           ...draft,
-                          [draft.kind === 'entity'
+                          [draft.artworkKind === 'entity'
                             ? 'entityColor'
                             : 'wordColor']: event.target.value,
                         })
@@ -811,7 +809,7 @@ function App({ runtime }: { runtime: Runtime }) {
                     onClick={() =>
                       setDraft({
                         ...draft,
-                        [draft.kind === 'entity'
+                        [draft.artworkKind === 'entity'
                           ? 'entitySprite'
                           : 'wordSprite']: sprite.map((row) =>
                           '0'.repeat(row.length)
@@ -854,87 +852,81 @@ function App({ runtime }: { runtime: Runtime }) {
                     ))
                   )}
                 </div>
-                {draft.scope === 'world' &&
-                  draft.base?.kind !== 'word' &&
-                  !noun &&
-                  !grammar &&
-                  draft.kind === 'word' && (
-                    <>
-                      <p className="field-hint">
-                        {actions.find((a) => a.id === draft.action)
-                          ?.description ||
-                          'A property word applies its action through an IS sentence.'}
-                      </p>
-                      <button
-                        className="text-button"
-                        onClick={() => setActionEditor(!actionEditor)}
-                      >
-                        {actionEditor ? 'Cancel new action' : '+ New action'}
-                      </button>
-                      {actionEditor && (
-                        <fieldset className="action-author">
-                          <legend>New action</legend>
+                {draft.scope === 'world' && propertyEditable && (
+                  <>
+                    <p className="field-hint">
+                      {actions.find((a) => a.id === draft.action)
+                        ?.description ||
+                        'A property word applies its action through an IS sentence.'}
+                    </p>
+                    <button
+                      className="text-button"
+                      onClick={() => setActionEditor(!actionEditor)}
+                    >
+                      {actionEditor ? 'Cancel new action' : '+ New action'}
+                    </button>
+                    {actionEditor && (
+                      <fieldset className="action-author">
+                        <legend>New action</legend>
+                        <label>
+                          Action name
+                          <input
+                            value={actionName}
+                            maxLength={16}
+                            onChange={(event) =>
+                              setActionName(
+                                event.target.value
+                                  .toUpperCase()
+                                  .replace(/[^A-Z]/g, '')
+                              )
+                            }
+                          />
+                        </label>
+                        <label>
+                          At turn end
+                          <select
+                            aria-label="Action operation"
+                            value={operation}
+                            onChange={(event) => {
+                              const value = event.target.value
+                              if (
+                                value === 'step-forward' ||
+                                value === 'destroy-self'
+                              )
+                                setOperation(value)
+                            }}
+                          >
+                            <option value="step-forward">Step forward</option>
+                            <option value="destroy-self">Destroy self</option>
+                          </select>
+                        </label>
+                        {operation === 'step-forward' && (
                           <label>
-                            Action name
-                            <input
-                              value={actionName}
-                              maxLength={16}
-                              onChange={(event) =>
-                                setActionName(
-                                  event.target.value
-                                    .toUpperCase()
-                                    .replace(/[^A-Z]/g, '')
-                                )
-                              }
-                            />
-                          </label>
-                          <label>
-                            At turn end
+                            If blocked
                             <select
-                              aria-label="Action operation"
-                              value={operation}
+                              aria-label="If blocked"
+                              value={blocked}
                               onChange={(event) => {
                                 const value = event.target.value
-                                if (
-                                  value === 'step-forward' ||
-                                  value === 'destroy-self'
-                                )
-                                  setOperation(value)
+                                if (value === 'wait' || value === 'reverse')
+                                  setBlocked(value)
                               }}
                             >
-                              <option value="step-forward">Step forward</option>
-                              <option value="destroy-self">Destroy self</option>
+                              <option value="reverse">Reverse and retry</option>
+                              <option value="wait">Wait</option>
                             </select>
                           </label>
-                          {operation === 'step-forward' && (
-                            <label>
-                              If blocked
-                              <select
-                                aria-label="If blocked"
-                                value={blocked}
-                                onChange={(event) => {
-                                  const value = event.target.value
-                                  if (value === 'wait' || value === 'reverse')
-                                    setBlocked(value)
-                                }}
-                              >
-                                <option value="reverse">
-                                  Reverse and retry
-                                </option>
-                                <option value="wait">Wait</option>
-                              </select>
-                            </label>
-                          )}
-                          <button
-                            disabled={busy || !actionName}
-                            onClick={saveAction}
-                          >
-                            Install action
-                          </button>
-                        </fieldset>
-                      )}
-                    </>
-                  )}
+                        )}
+                        <button
+                          disabled={busy || !actionName}
+                          onClick={saveAction}
+                        >
+                          Install action
+                        </button>
+                      </fieldset>
+                    )}
+                  </>
+                )}
                 <div className="tray-actions">
                   <button
                     className="publish"
@@ -948,7 +940,10 @@ function App({ runtime }: { runtime: Runtime }) {
                       disabled={busy || !draft.base}
                       onClick={() => {
                         if (!draft.base) return
-                        setPlacement({ type: draft.base.id, kind: draft.kind })
+                        setPlacement({
+                          type: draft.base.id,
+                          kind: draft.artworkKind,
+                        })
                         setDraft({ ...draft, tileId: undefined })
                         setOpen(false)
                       }}
