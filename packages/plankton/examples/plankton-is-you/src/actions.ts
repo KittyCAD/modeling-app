@@ -1,4 +1,4 @@
-import type { Action, Point } from './game'
+import type { Action, Point, Tile } from './game'
 
 export const builtInActions: readonly Action[] = [
   {
@@ -12,6 +12,13 @@ export const builtInActions: readonly Action[] = [
     label: 'Block movement',
     description: 'Prevent entities from entering this cell.',
     blocks: true,
+  },
+  {
+    id: 'push',
+    label: 'Pushable',
+    description:
+      'Other movers push this entity one cell ahead, including through push chains.',
+    pushable: true,
   },
   {
     id: 'win',
@@ -32,34 +39,89 @@ export const builtInActions: readonly Action[] = [
     afterTurn: (subject, turn) => turn.destroy(subject.id),
   },
 ]
-/** Runtime recipes compose turn capabilities into ordinary Action contributions. */
-export type ActionRecipe = {
-  id: string
-  label: string
-  operation: 'step-forward' | 'destroy-self'
-  blocked: 'wait' | 'reverse'
+export type Participant = 'self' | 'other'
+export type PropertyCondition<Target extends Participant = Participant> = {
+  target: Target
+  property: string
+  present: boolean
+}
+export type ContactEffect =
+  | { kind: 'destroy'; target: Participant }
+  | { kind: 'block' }
+export type TurnEffect =
+  | { kind: 'destroy'; target: 'self' }
+  | { kind: 'step-forward'; blocked: 'wait' | 'reverse' }
+
+/** Recipes distinguish events and their available targets before compiling extensions. */
+export type ActionRecipe = { id: string; label: string } & (
+  | {
+      trigger: 'turn'
+      conditions: readonly PropertyCondition<'self'>[]
+      effects: readonly TurnEffect[]
+    }
+  | {
+      trigger: 'contact'
+      conditions: readonly PropertyCondition[]
+      effects: readonly ContactEffect[]
+    }
+)
+function targetTile(
+  target: Participant,
+  subject: Readonly<Tile>,
+  other: Readonly<Tile>
+) {
+  return target === 'self' ? subject : other
 }
 export function compileAction(recipe: ActionRecipe): Action {
+  if (recipe.trigger === 'contact')
+    return {
+      id: recipe.id,
+      label: recipe.label,
+      description:
+        'On attempted contact, test property conditions and apply effects before movement is resolved.',
+      onContact(subject, other, contact) {
+        if (
+          !recipe.conditions.every(
+            (condition) =>
+              contact.hasProperty(
+                targetTile(condition.target, subject, other),
+                condition.property
+              ) === condition.present
+          )
+        )
+          return
+        for (const effect of recipe.effects) {
+          if (effect.kind === 'block') contact.block()
+          else contact.destroy(targetTile(effect.target, subject, other).id)
+        }
+      },
+    }
   return {
     id: recipe.id,
     label: recipe.label,
-    description:
-      recipe.operation === 'destroy-self'
-        ? 'Destroy this entity at turn end.'
-        : `Step forward each turn; ${recipe.blocked === 'reverse' ? 'reverse and retry' : 'wait'} if blocked.`,
+    description: 'At turn end, test property conditions and apply effects.',
     afterTurn(subject, turn) {
-      if (recipe.operation === 'destroy-self') {
-        turn.destroy(subject.id)
+      if (
+        !recipe.conditions.every(
+          (condition) =>
+            turn.hasProperty(subject, condition.property) === condition.present
+        )
+      )
         return
-      }
-      const direction = subject.facing ?? { x: 1, y: 0 }
-      if (!turn.move(subject.id, direction) && recipe.blocked === 'reverse') {
-        const reverse: Point = {
-          x: direction.x === 0 ? 0 : -direction.x,
-          y: direction.y === 0 ? 0 : -direction.y,
+      for (const effect of recipe.effects) {
+        if (effect.kind === 'destroy') {
+          turn.destroy(subject.id)
+          return
         }
-        turn.face(subject.id, reverse)
-        turn.move(subject.id, reverse)
+        const direction = subject.facing ?? { x: 1, y: 0 }
+        if (!turn.move(subject.id, direction) && effect.blocked === 'reverse') {
+          const reverse: Point = {
+            x: direction.x === 0 ? 0 : -direction.x,
+            y: direction.y === 0 ? 0 : -direction.y,
+          }
+          turn.face(subject.id, reverse)
+          turn.move(subject.id, reverse)
+        }
       }
     },
   }

@@ -579,3 +579,31 @@ svg {
   border-color: #b3ce8e;
   background: #b3ce8e18;
 }
+.recipe-heading {
+  font-size: 11px;
+  color: #c1c0c3;
+  margin: 18px 0 8px;
+}
+.recipe-item {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--line);
+  padding: 8px 0;
+}
+.recipe-item select {
+  flex: 1;
+  min-width: 90px;
+  font-size: 10px;
+}
+.recipe-item button {
+  padding: 3px 6px;
+}
+.action-author .install-action {
+  display: block;
+  width: 100%;
+  margin-top: 18px;
+  background: #bddb99;
+  color: #19191b;
+}

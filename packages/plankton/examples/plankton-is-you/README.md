@@ -37,7 +37,7 @@ shared `gameContract` keeps the tokens precisely typed:
 | Facet | Contributions | Consumer |
 | --- | --- | --- |
 | `definitions` | Entity artwork, noun words, properties, and language words | Board renderer, word parser, shared editor |
-| `actions` | Input/collision capabilities and turn callbacks | Turn engine, property-action picker |
+| `actions` | Input/collision capabilities, turn callbacks, and contact callbacks | Turn engine, property-action picker |
 | `outcomeMeanings` | Selector, unary-predicate, and relation implementations | Outcome parser and interpreter |
 | `outcomeProgram` | Parsed tile rows | Terminal-rule interpreter |
 | `puzzles` | Bounds, starting definitions, and placements | Initial setup and reset |
@@ -139,14 +139,62 @@ Installing an action does not move the board. Turn callbacks run on the next
 movement/wait. Replacing an action with the same ID changes existing properties'
 behavior without replacing the game session or undo history. Unknown action IDs
 have no behavior; the tray requires a currently installed action to save a new
-property. The recipe UI currently composes forward movement, reversal, and
-self-destruction. It does not execute arbitrary text as JavaScript.
+property. The recipe UI offers turn-end and attempted-contact triggers,
+positive/negative property conditions, movement/reversal, destruction, and
+blocking effects. It does not execute arbitrary text as JavaScript.
+
+## Author DOOR, KEY, LOCK, and OPEN
+
+DOOR and KEY are ordinary runtime-authored entities. LOCK and OPEN are property
+words; their names and interaction are not special cases in the engine.
+
+1. Use **+ → Entity** to draw and create DOOR and KEY.
+2. Use **+ → Word** to create LOCK with the existing **Block movement** action.
+3. Create a new word OPEN, then choose **+ New action**. Name the action OPEN.
+4. Set **Trigger → Attempted contact**. Add the condition **Other entity → Has
+   property → LOCK**.
+5. Add two effects: **Destroy → Other entity**, then **Destroy → This entity**.
+6. **Install action**, then **Create definition** for the OPEN word.
+7. Place these ordinary sentences:
+
+   ```text
+   DOOR IS LOCK
+   KEY IS OPEN
+   KEY IS PUSH
+   ```
+
+PUSH is included in the starting vocabulary and selects the **Pushable** action.
+Place a key in front of the player and a door beyond it. Pushing the key attempts
+contact with the door before blocking is considered. The OPEN action sees LOCK,
+consumes both entities, and lets the player enter the key's vacated cell. Undo
+restores the complete turn. `KEY IS YOU` also works if direct key control is
+preferred; PUSH is needed when another entity pushes the key.
+
+Contact triggers run for either participant, so the same recipe works when a
+LOCK entity moves into a stationary OPEN entity. Conditions query active property
+sentences, not artwork or noun names. All conditions must match; each can require
+or exclude a property on this entity or the other entity. Turn-end conditions
+refer only to this entity. No conditions means the action runs unconditionally.
+
+Contact effects currently destroy either participant or block movement. Blocking
+cancels the whole movement attempt, including destruction staged earlier in the
+same attempt. PUSH supports chains of pushable entities and word tiles. A failed
+chain restores all movement and contact effects in that attempt, including a key
+and door consumed before a different obstruction was found. An entity with both
+PUSH and blocking can be pushed out of the way if its destination is available.
+Unmarked, nonblocking entities can overlap; they are not implicitly pushed.
+
+Recipes compile into ordinary Action objects and are installed through the same
+`actions` Facet and authored-content Slot as MOVE. Replacing an action ID changes
+existing property words' behavior without replacing the session or clearing undo.
+The action form installs a recipe by ID; it does not reconstruct arbitrary
+TypeScript callbacks into editable recipes.
 
 ## Action contribution example
 
 `game.ts` imports no Plankton or built-in content. Properties refer to action IDs;
-actions provide input/collision capabilities or a turn callback. Extensions can
-contribute arbitrary TypeScript callbacks through the same contract as recipes:
+actions provide input/collision capabilities, turn callbacks, or contact
+callbacks. Extensions can contribute arbitrary TypeScript callbacks through the same contract as recipes:
 
 ```ts
 contribute(gameContract.actions, () => ({
@@ -162,12 +210,21 @@ contribute(gameContract.actions, () => ({
 }), { key: 'HOP' })
 ```
 
-An action can move an entity (using ordinary blocking and word pushing), change
-its facing, or destroy it. `turn.move` returns false and rolls back its whole push
-chain when blocked. Each entity/action pair executes once per turn, even if two
-properties select the same action. Runtime recipes compile to those ordinary
-callbacks. Actions needing resources could instead be contributed by a Factory
-that captures injected resources and owns their cleanup.
+A turn action can move an entity (using ordinary blocking and pushing), change
+its facing, destroy it, or query its active properties. `turn.move` returns false
+and rolls back its whole push chain and contact effects when blocked. Each
+entity/action pair executes once per turn-end schedule, even if two properties
+select the same action. Runtime recipes compile to those ordinary callbacks.
+
+`Action.onContact(subject, other, contact)` receives attempted entity contact
+before blocking/pushing. The subject is the entity carrying the action, which may
+be stationary. The context exposes `hasProperty`, `destroy`, and `block`, plus the
+initiating mover ID and direction. Each entity/action callback runs at most once
+per encountered pair in one movement attempt, while both participants remain.
+Word tiles are pushable but do not receive entity contact callbacks. Tile-state effects are transactional; external
+side effects performed by arbitrary TypeScript callbacks are not rolled back.
+Actions needing resources could instead be contributed by a Factory that
+captures injected resources and owns their cleanup.
 
 ## Outcomes and turn order
 
@@ -242,9 +299,11 @@ order. This is a fixed interpreter policy. There are no time-based turns. A turn
 resolves in this order:
 
 1. Read the starting rules for input and blocking.
-2. Move controlled entities and push words.
+2. Move controlled entities. For each attempted entry, run contact callbacks,
+   then resolve blocking and entity/word pushes. Failed attempts roll back.
 3. Read the resulting rules and schedule each entity/action pair once.
-4. Execute turn actions in entity/contribution order.
+4. Execute turn actions in entity/contribution order. Their movement uses the
+   same contact and push resolver with the post-input rule snapshot.
 5. Read the final rules and evaluate the installed outcome program.
 
 Under the starting program, a destroyed YOU cannot win by briefly overlapping

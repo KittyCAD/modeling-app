@@ -16,6 +16,7 @@ import {
   useState,
 } from 'react'
 import { createRoot } from 'react-dom/client'
+import { ActionEditor } from './action-editor'
 import { type ActionRecipe, compileAction } from './actions'
 import {
   type Definition,
@@ -120,10 +121,6 @@ function App({ runtime }: { runtime: Runtime }) {
   const [erase, setErase] = useState(false),
     [painting, setPainting] = useState(false)
   const [actionEditor, setActionEditor] = useState(false)
-  const [actionName, setActionName] = useState('MOVE')
-  const [operation, setOperation] =
-    useState<ActionRecipe['operation']>('step-forward')
-  const [blocked, setBlocked] = useState<ActionRecipe['blocked']>('reverse')
   const definitions = runtime.definitions.value,
     actions = runtime.actions.value
   const rules = readRules(game.board.tiles, definitions)
@@ -378,17 +375,12 @@ function App({ runtime }: { runtime: Runtime }) {
           : draftFor(definition, draft.artworkKind, draft.tileId)
       )
   }
-  async function saveAction() {
-    const action = compileAction({
-      id: actionName,
-      label: actionName,
-      operation,
-      blocked,
-    })
+  async function saveAction(recipe: ActionRecipe) {
+    const action = compileAction(recipe)
     if (
       await change(
         () => runtime.publishAction(action),
-        `${actionName} action installed`
+        `${action.id} action installed`
       )
     ) {
       setDraft((previous) =>
@@ -866,64 +858,17 @@ function App({ runtime }: { runtime: Runtime }) {
                       {actionEditor ? 'Cancel new action' : '+ New action'}
                     </button>
                     {actionEditor && (
-                      <fieldset className="action-author">
-                        <legend>New action</legend>
-                        <label>
-                          Action name
-                          <input
-                            value={actionName}
-                            maxLength={16}
-                            onChange={(event) =>
-                              setActionName(
-                                event.target.value
-                                  .toUpperCase()
-                                  .replace(/[^A-Z]/g, '')
-                              )
-                            }
-                          />
-                        </label>
-                        <label>
-                          At turn end
-                          <select
-                            aria-label="Action operation"
-                            value={operation}
-                            onChange={(event) => {
-                              const value = event.target.value
-                              if (
-                                value === 'step-forward' ||
-                                value === 'destroy-self'
-                              )
-                                setOperation(value)
-                            }}
-                          >
-                            <option value="step-forward">Step forward</option>
-                            <option value="destroy-self">Destroy self</option>
-                          </select>
-                        </label>
-                        {operation === 'step-forward' && (
-                          <label>
-                            If blocked
-                            <select
-                              aria-label="If blocked"
-                              value={blocked}
-                              onChange={(event) => {
-                                const value = event.target.value
-                                if (value === 'wait' || value === 'reverse')
-                                  setBlocked(value)
-                              }}
-                            >
-                              <option value="reverse">Reverse and retry</option>
-                              <option value="wait">Wait</option>
-                            </select>
-                          </label>
+                      <ActionEditor
+                        name={draft.name}
+                        properties={definitions.filter(
+                          (
+                            definition
+                          ): definition is import('./game').PropertyDefinition =>
+                            definition.kind === 'property'
                         )}
-                        <button
-                          disabled={busy || !actionName}
-                          onClick={saveAction}
-                        >
-                          Install action
-                        </button>
-                      </fieldset>
+                        busy={busy}
+                        onInstall={saveAction}
+                      />
                     )}
                   </>
                 )}

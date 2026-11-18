@@ -1,3 +1,4 @@
+import { Movement } from './movement'
 import {
   evaluateOutcomes,
   type OutcomeMeaning,
@@ -49,6 +50,15 @@ export type Turn = {
   move(id: string, direction: Point): boolean
   face(id: string, direction: Point): void
   destroy(id: string): void
+  hasProperty(tile: Readonly<Tile>, property: string): boolean
+}
+/** Contact runs for either participant before blocking or pushing is resolved. */
+export type Contact = {
+  moverId: string
+  direction: Readonly<Point>
+  hasProperty(tile: Readonly<Tile>, property: string): boolean
+  destroy(id: string): void
+  block(): void
 }
 export type Action = {
   id: string
@@ -56,8 +66,14 @@ export type Action = {
   description: string
   controls?: boolean
   blocks?: boolean
+  pushable?: boolean
   wins?: boolean
   loses?: boolean
+  onContact?: (
+    subject: Readonly<Tile>,
+    other: Readonly<Tile>,
+    contact: Contact
+  ) => void
   afterTurn?: (subject: Readonly<Tile>, turn: Turn) => void
 }
 /** A starting setup specifies bounds, installed definitions, and tile instances. */
@@ -173,22 +189,24 @@ export class Game {
     const properties = definitions.filter(
       (d): d is PropertyDefinition => d.kind === 'property'
     )
+    const hasProperty = (tile: Readonly<Tile>, property: string) =>
+      tile.kind === 'entity' &&
+      rules.some(
+        (rule) => rule.noun === tile.type && rule.property === property
+      )
     const actionsFor = (tile: Tile) =>
       tile.kind !== 'entity'
         ? []
         : actions.filter((action) =>
             properties.some(
               (property) =>
-                property.action === action.id &&
-                rules.some(
-                  (rule) =>
-                    rule.noun === tile.type && rule.property === property.id
-                )
+                property.action === action.id && hasProperty(tile, property.id)
             )
           )
     return {
       rules,
       actionsFor,
+      hasProperty,
       has: (tile: Tile, predicate: (action: Action) => boolean) =>
         actionsFor(tile).some(predicate),
     }
@@ -246,62 +264,39 @@ export class Game {
     if (this.board.status !== 'playing') return
     const definitions = this.vocabulary.definitions(),
       actions = this.vocabulary.actions()
-    let tiles = this.board.tiles.map((t) => ({ ...t }))
-    const { has } = this.matching(tiles, definitions, actions)
-    const move = (
-      id: string,
-      direction: Point,
-      visiting = new Set<string>()
-    ): boolean => {
-      const tile = tiles.find((t) => t.id === id)
-      if (!tile || visiting.has(id)) return false
-      visiting.add(id)
-      const next = { x: tile.x + direction.x, y: tile.y + direction.y }
-      if (!this.inside(next)) return false
-      const occupants = tiles.filter((t) => sameCell(t, next) && t.id !== id)
-      if (occupants.some((t) => has(t, (a) => !!a.blocks))) return false
-      for (const occupant of occupants.filter((t) => t.kind === 'word'))
-        if (!move(occupant.id, direction, visiting)) return false
-      tile.x = next.x
-      tile.y = next.y
-      return true
-    }
-    const tryMove = (id: string, direction: Point) => {
-      const before = tiles.map((t) => ({ ...t }))
-      if (move(id, direction)) return true
-      tiles = before
-      return false
-    }
+    const initial = this.matching(this.board.tiles, definitions, actions)
+    const movement = new Movement(
+      this.board.tiles,
+      (point) => this.inside(point),
+      initial
+    )
     if (direction.x || direction.y) {
-      for (const player of tiles.filter((t) => has(t, (a) => !!a.controls))) {
-        const current = tiles.find((t) => t.id === player.id)!
-        current.facing = { ...direction }
-        tryMove(player.id, direction)
+      for (const player of movement.tiles.filter((tile) =>
+        initial.has(tile, (action) => !!action.controls)
+      )) {
+        if (!movement.tiles.some((tile) => tile.id === player.id)) continue
+        movement.face(player.id, direction)
+        movement.tryMove(player.id, direction)
       }
     }
     // Schedule from one post-input snapshot. Each entity/action pair runs once.
-    const afterInput = this.matching(tiles, definitions, actions)
-    const scheduled = tiles.flatMap((subject) =>
+    const afterInput = this.matching(movement.tiles, definitions, actions)
+    movement.matching = afterInput
+    const scheduled = movement.tiles.flatMap((subject) =>
       afterInput
         .actionsFor(subject)
         .map((action) => ({ id: subject.id, action }))
     )
-    const destroyed = new Set<string>()
     const turn: Turn = {
-      move: (id, direction) => !destroyed.has(id) && tryMove(id, direction),
-      face: (id, direction) => {
-        const tile = tiles.find((t) => t.id === id)
-        if (tile) tile.facing = { ...direction }
-      },
-      destroy: (id) => {
-        destroyed.add(id)
-        tiles = tiles.filter((t) => t.id !== id)
-      },
+      move: (id, direction) => movement.tryMove(id, direction),
+      face: (id, direction) => movement.face(id, direction),
+      destroy: (id) => movement.destroy(id),
+      hasProperty: (tile, property) => afterInput.hasProperty(tile, property),
     }
     for (const { id, action } of scheduled) {
-      const subject = tiles.find((t) => t.id === id)
+      const subject = movement.tiles.find((tile) => tile.id === id)
       if (subject) action.afterTurn?.(subject, turn)
     }
-    this.commit(tiles, this.board.turns + 1)
+    this.commit(movement.tiles, this.board.turns + 1)
   }
 }

@@ -375,8 +375,9 @@ describe('the living vocabulary', () => {
         compileAction({
           id: 'MOVE',
           label: 'Move',
-          operation: 'step-forward',
-          blocked: 'reverse',
+          trigger: 'turn',
+          conditions: [],
+          effects: [{ kind: 'step-forward', blocked: 'reverse' }],
         })
       )
       expect(runtime.game.board).toBe(board)
@@ -399,8 +400,9 @@ describe('the living vocabulary', () => {
         compileAction({
           id: 'MOVE',
           label: 'Remove',
-          operation: 'destroy-self',
-          blocked: 'wait',
+          trigger: 'turn',
+          conditions: [],
+          effects: [{ kind: 'destroy', target: 'self' }],
         })
       )
       runtime.game.step({ x: 0, y: 0 })
