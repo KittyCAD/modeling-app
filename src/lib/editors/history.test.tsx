@@ -1,21 +1,20 @@
-import { requireSuccess } from '@src/lib/editors/testViews'
 import '@src/lib/projectSession/next/testFeature'
-import { defineRegistryItem, provide, Registry } from '@kittycad/registry'
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, beforeEach, expect, it, vi } from 'vitest'
+import { EditorView } from '@src/lib/editors/EditorView'
 import editorsExtension from '@src/lib/editors/registry'
 import {
   editorsService,
-  editorViewsValueSpec,
+  editorViewsFacet,
 } from '@src/lib/editors/registry/contract'
-import { EditorView } from '@src/lib/editors/EditorView'
+import { requireSuccess } from '@src/lib/editors/testViews'
 import { defineEditorView } from '@src/lib/editors/views'
 import type { WebContentSendPayload } from '@src/menu/channels'
-
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { contribute, Registry, type InputOf } from 'plankton'
+import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 const originalElectron = window.electron
 let registry: Registry
 const menuListeners = new Set<(payload: WebContentSendPayload) => void>()
-beforeEach(() => {
+beforeEach(async () => {
   window.electron = {
     menuOn: (callback: (payload: WebContentSendPayload) => void) => {
       menuListeners.add(callback)
@@ -25,37 +24,32 @@ beforeEach(() => {
     },
   } as unknown as Window['electron']
   registry = new Registry()
-  registry.configure([
+  const _editorViewsContribution: InputOf<typeof editorViewsFacet> =
+    defineEditorView({
+      id: 'modeling',
+      label: 'Modeling',
+      matches: '*',
+      priority: 1000,
+      Component: () => (
+        <div aria-label="Model background">
+          <input aria-label="Scene text field" />
+        </div>
+      ),
+    })
+  await registry.configure([
     editorsExtension,
-    defineRegistryItem({
-      provides: [
-        provide(
-          editorViewsValueSpec,
-          defineEditorView({
-            id: 'modeling',
-            label: 'Modeling',
-            matches: '*',
-            priority: 1000,
-            Component: () => (
-              <div aria-label="Model background">
-                <input aria-label="Scene text field" />
-              </div>
-            ),
-          })
-        ),
-      ],
-    }),
+    [contribute(editorViewsFacet, () => _editorViewsContribution)],
   ])
 })
-afterEach(() => {
+afterEach(async () => {
   cleanup()
-  registry[Symbol.dispose]()
+  await registry.dispose()
   window.electron = originalElectron
   vi.restoreAllMocks()
   menuListeners.clear()
 })
 function open() {
-  const editors = registry.get(editorsService)
+  const editors = registry.required(editorsService)
   const first = requireSuccess(editors.openEditor('/first.kcl', 'first'))
   const second = requireSuccess(editors.openEditor('/second.kcl', 'second'))
   const left = requireSuccess(editors.createView(first))
@@ -68,15 +62,26 @@ function open() {
   )
   act(() =>
     second.dispatch({
-      changes: { from: second.state.doc.length, insert: ' changed' },
+      changes: {
+        from: second.state.doc.length,
+        insert: ' changed',
+      },
     })
   )
   fireEvent.pointerDown(screen.getAllByLabelText('Model background')[1])
-  return { editors, first, second, right }
+  return {
+    editors,
+    first,
+    second,
+    right,
+  }
 }
 function menu(menuLabel: 'Edit.Undo' | 'Edit.Redo') {
   act(() => {
-    for (const listener of menuListeners) listener({ menuLabel })
+    for (const listener of menuListeners)
+      listener({
+        menuLabel,
+      })
   })
 }
 it.each(['keyboard', 'menu'] as const)(
@@ -104,9 +109,14 @@ it.each(['keyboard', 'menu'] as const)(
 )
 it('leaves text field history local instead of undoing the model', () => {
   const { second } = open()
-  const input = screen.getAllByRole('textbox', { name: 'Scene text field' })[1]
+  const input = screen.getAllByRole('textbox', {
+    name: 'Scene text field',
+  })[1]
   input.focus()
-  fireEvent.keyDown(input, { key: 'z', metaKey: true })
+  fireEvent.keyDown(input, {
+    key: 'z',
+    metaKey: true,
+  })
   expect(second.contents.peek()).toBe('second changed')
   const original = Object.getOwnPropertyDescriptor(document, 'execCommand')
   const native = vi.fn(() => true)
@@ -123,7 +133,7 @@ it('leaves text field history local instead of undoing the model', () => {
     else Reflect.deleteProperty(document, 'execCommand')
   }
 })
-it('handles native Code history after switching modes and stops routing to a closed view', () => {
+it('handles native Code history after switching modes and stops routing to a closed view', async () => {
   const { editors, second, right } = open()
   act(() => {
     requireSuccess(editors.setView(right.id, 'editors.code'))
@@ -138,6 +148,6 @@ it('handles native Code history after switching modes and stops routing to a clo
   })
   menu('Edit.Undo')
   expect(second.contents.peek()).toBe('second changed')
-  registry[Symbol.dispose]()
+  await registry.dispose()
   expect(menuListeners.size).toBe(0)
 })
