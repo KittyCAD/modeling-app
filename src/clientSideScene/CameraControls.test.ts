@@ -1079,6 +1079,7 @@ describe('local sketch camera transition', () => {
       1e-8
     )
     expect(controls.target.toArray()).toEqual([200, 300, 400])
+    expect(controls.enableRotate).toBe(false)
 
     // Subsequent geometry/tool updates must not move the camera again.
     const position = controls.camera.position.clone()
