@@ -1463,6 +1463,16 @@ async function expectViewRestored(
 }
 
 describe('CATIA button transitions', () => {
+  const activeControls: CameraControls[] = []
+  afterEach(() => {
+    for (const controls of activeControls) {
+      controls.onPointerCancel(
+        new PointerEvent('pointercancel', { pointerId: 1 })
+      )
+    }
+    activeControls.length = 0
+  })
+
   function setup(local = false) {
     vi.useFakeTimers()
     const canvas = makeCanvas(256, 256)
@@ -1475,6 +1485,7 @@ describe('CATIA button transitions', () => {
     controls.camera.lookAt(controls.target)
     controls.camera.updateMatrixWorld()
     controls.interactionGuards = cameraMouseDragGuards.CATIA
+    activeControls.push(controls)
     controls.getSettings = () =>
       ({ modeling: { cameraOrbit: { current: 'spherical' } } }) as ReturnType<
         CameraControls['getSettings']
@@ -1488,13 +1499,15 @@ describe('CATIA button transitions', () => {
     buttons: number,
     button = -1,
     x = 100,
-    y = 100
+    y = 100,
+    ctrlKey = false
   ) {
     return new PointerEvent(type, {
       pointerId: 1,
       pointerType: 'mouse',
       buttons,
       button,
+      ctrlKey,
       clientX: x,
       clientY: y,
     })
@@ -1512,6 +1525,180 @@ describe('CATIA button transitions', () => {
         : []
     )
   }
+
+  function controlKey(type: 'keydown' | 'keyup', repeat = false) {
+    window.dispatchEvent(
+      new KeyboardEvent(type, {
+        key: 'Control',
+        code: 'ControlLeft',
+        ctrlKey: type === 'keydown',
+        repeat,
+      })
+    )
+  }
+
+  it('zooms when Ctrl is held before Middle, including repeated keydown events', () => {
+    const { controls, send } = setup()
+    controlKey('keydown')
+    controls.onMouseDown(pointer('pointerdown', 4, 1, 100, 100, true))
+    controlKey('keydown', true)
+    controls.onMouseMove(pointer('pointermove', 4, -1, 100, 120, true))
+    controls.onMouseUp(pointer('pointerup', 0, 1, 100, 120, true))
+    expect(dragCommands(send)).toEqual([
+      { type: 'camera_drag_start', interaction: 'zoom' },
+      { type: 'camera_drag_move', interaction: 'zoom' },
+      { type: 'camera_drag_end', interaction: 'zoom' },
+    ])
+  })
+
+  it('rotates when Ctrl is pressed after Middle without any earlier pointer movement', () => {
+    const { controls, send } = setup()
+    controls.onMouseDown(pointer('pointerdown', 4, 1))
+    controlKey('keydown')
+    controlKey('keydown', true)
+    controls.onMouseMove(pointer('pointermove', 4, -1, 120, 100, true))
+    controls.onMouseUp(pointer('pointerup', 0, 1, 120, 100, true))
+    expect(dragCommands(send)).toEqual([
+      { type: 'camera_drag_start', interaction: 'pan' },
+      { type: 'camera_drag_move', interaction: 'rotate' },
+      { type: 'camera_drag_end', interaction: 'rotate' },
+    ])
+  })
+
+  it('flushes a queued pan before Ctrl changes the next movement to rotation', () => {
+    const { controls, send } = setup()
+    controls.onMouseDown(pointer('pointerdown', 4, 1))
+    controls.onMouseMove(pointer('pointermove', 4, -1, 110))
+    controlKey('keydown')
+    controls.onMouseMove(pointer('pointermove', 4, -1, 120, 100, true))
+    controls.onMouseUp(pointer('pointerup', 0, 1, 120, 100, true))
+    expect(dragCommands(send)).toEqual([
+      { type: 'camera_drag_start', interaction: 'pan' },
+      { type: 'camera_drag_move', interaction: 'pan' },
+      { type: 'camera_drag_move', interaction: 'rotate' },
+      { type: 'camera_drag_end', interaction: 'rotate' },
+    ])
+  })
+
+  it('recognizes a Ctrl tap without movement, then switches between zoom and rotation', () => {
+    const { controls } = setup()
+    controls.onMouseDown(pointer('pointerdown', 4, 1))
+    controlKey('keydown')
+    controlKey('keyup')
+    expect(controls.getInteractionType(pointer('pointermove', 4))).toBe('zoom')
+    controlKey('keydown')
+    expect(
+      controls.getInteractionType(pointer('pointermove', 4, -1, 100, 100, true))
+    ).toBe('rotate')
+    controlKey('keyup')
+    expect(controls.getInteractionType(pointer('pointermove', 4))).toBe('zoom')
+  })
+
+  it('uses press order again after Middle is released while Ctrl stays held', () => {
+    const { controls, send } = setup()
+    controls.onMouseDown(pointer('pointerdown', 4, 1))
+    controlKey('keydown')
+    controls.onMouseMove(pointer('pointermove', 4, -1, 120, 100, true))
+    controls.onMouseUp(pointer('pointerup', 0, 1, 120, 100, true))
+    send.mockClear()
+    controls.onMouseDown(pointer('pointerdown', 4, 1, 120, 100, true))
+    controls.onMouseMove(pointer('pointermove', 4, -1, 120, 120, true))
+    controls.onMouseUp(pointer('pointerup', 0, 1, 120, 120, true))
+    expect(dragCommands(send).map((command) => command.interaction)).toEqual([
+      'zoom',
+      'zoom',
+      'zoom',
+    ])
+    send.mockClear()
+    controlKey('keyup')
+    controlKey('keydown')
+    expect(dragCommands(send)).toEqual([])
+    controls.onMouseDown(pointer('pointerdown', 4, 1))
+    expect(controls.getInteractionType(pointer('pointermove', 4))).toBe('pan')
+  })
+
+  it.each(['pointercancel', 'lostpointercapture', 'blur'])(
+    'cleans up Ctrl tracking after %s',
+    (type) => {
+      const { controls, canvas, send } = setup()
+      controls.onMouseDown(pointer('pointerdown', 4, 1))
+      controlKey('keydown')
+      if (type === 'blur') window.dispatchEvent(new Event('blur'))
+      else canvas.dispatchEvent(pointer(type, 0))
+      expect(controls.isDragging).toBe(false)
+      expect(dragCommands(send).at(-1)).toEqual({
+        type: 'camera_drag_end',
+        interaction: 'rotate',
+      })
+      send.mockClear()
+      controlKey('keyup')
+      controlKey('keydown')
+      expect(dragCommands(send)).toEqual([])
+      controls.onMouseDown(pointer('pointerdown', 4, 1))
+      expect(controls.getInteractionType(pointer('pointermove', 4))).toBe('pan')
+    }
+  )
+
+  it('uses the selected trackball orbit for Middle-before-Ctrl rotation', () => {
+    const { controls, send } = setup()
+    controls.getSettings = () =>
+      ({ modeling: { cameraOrbit: { current: 'trackball' } } }) as ReturnType<
+        CameraControls['getSettings']
+      >
+    controls.onMouseDown(pointer('pointerdown', 4, 1))
+    controlKey('keydown')
+    controls.onMouseMove(pointer('pointermove', 4, -1, 120, 100, true))
+    controls.onMouseUp(pointer('pointerup', 0, 1, 120, 100, true))
+    expect(dragCommands(send).at(-1)).toEqual({
+      type: 'camera_drag_end',
+      interaction: 'rotatetrackball',
+    })
+    expect(
+      dragCommands(send).some(
+        (command) =>
+          command.type === 'camera_drag_move' &&
+          command.interaction === 'rotatetrackball'
+      )
+    ).toBe(true)
+  })
+
+  it.each(['perspective', 'orthographic'] as const)(
+    'applies Ctrl zoom and rotation to the local %s camera',
+    (projection) => {
+      const { controls } = setup(true)
+      if (projection === 'orthographic') controls.useOrthographicCamera()
+      const zoomMeasure = () =>
+        controls.camera instanceof OrthographicCamera
+          ? controls.camera.zoom
+          : controls.camera.position.distanceTo(controls.target)
+      const zoom = zoomMeasure()
+      controls.onMouseDown(pointer('pointerdown', 4, 1, 100, 100, true))
+      controls.onMouseMove(pointer('pointermove', 4, -1, 100, 120, true))
+      controls.onMouseUp(pointer('pointerup', 0, 1, 100, 120, true))
+      expect(zoomMeasure()).not.toBeCloseTo(zoom)
+      controls.onMouseDown(pointer('pointerdown', 4, 1, 100, 120))
+      controlKey('keydown')
+      const rotation = controls.camera.quaternion.clone()
+      controls.onMouseMove(pointer('pointermove', 4, -1, 120, 120, true))
+      expect(controls.camera.quaternion.equals(rotation)).toBe(false)
+      controls.onMouseUp(pointer('pointerup', 0, 1, 120, 120, true))
+    }
+  )
+
+  it('respects rotation and zoom restrictions for Ctrl gestures', () => {
+    const { controls } = setup()
+    controls.enableRotate = false
+    controls.onMouseDown(pointer('pointerdown', 4, 1))
+    controlKey('keydown')
+    expect(
+      controls.getInteractionType(pointer('pointermove', 4, -1, 100, 100, true))
+    ).toBe('none')
+    expect(controls.isMouseCameraGesture).toBe(true)
+    controlKey('keyup')
+    expect(controls.getInteractionType(pointer('pointermove', 4))).toBe('zoom')
+    controls.enableZoom = false
+    expect(controls.getInteractionType(pointer('pointermove', 4))).toBe('none')
+  })
 
   it.each([
     { side: 'left', button: 0, mask: 1 },

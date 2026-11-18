@@ -113,14 +113,26 @@ interface MouseGuardZoomHandler {
 /** A mouse drag's action before camera orbit and sketch restrictions are applied. */
 export type MouseDragInteraction = 'pan' | 'rotate' | 'zoom' | 'none'
 
+export type MouseDragInput = Pick<
+  MouseEvent,
+  'buttons' | 'ctrlKey' | 'shiftKey' | 'altKey' | 'metaKey'
+>
+
+/** Prior held inputs distinguish Ctrl-first zoom from Middle-first rotation. */
+export interface MouseDragState {
+  interaction: MouseDragInteraction
+  buttons: number
+  ctrlKey: boolean
+}
+
 export interface MouseGuard {
   pan: MouseGuardHandler
   zoom: MouseGuardZoomHandler
   rotate: MouseGuardHandler
   /** Resolves button transitions using the preceding event in this pointer drag. */
   resolveDrag?: (
-    event: MouseEvent,
-    previous: MouseDragInteraction
+    event: MouseDragInput,
+    previous: MouseDragState
   ) => MouseDragInteraction
 }
 
@@ -238,20 +250,28 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
       callback: (e) => e.buttons === 4 && noModifiersPressed(e),
     },
     rotate: {
-      description: 'Hold Middle + Left or Right click drag',
+      description: 'Hold Middle, then Ctrl or Left or Right, and drag',
       callback: (e) =>
         !!(e.buttons & 4) && !!(e.buttons & 3) && noModifiersPressed(e),
     },
     zoom: {
       description:
-        'Scroll or hold Middle, click and release Left or Right, then drag',
+        'Hold Ctrl, then Middle, and drag; or hold Middle, click and release Left or Right, then drag; or scroll',
       dragCallback: () => false,
       scrollCallback: (e) => e.buttons === 0,
     },
     resolveDrag: (e, previous) => {
-      if (!(e.buttons & 4) || !noModifiersPressed(e)) return 'none'
+      if (!(e.buttons & 4) || e.shiftKey || e.altKey || e.metaKey) return 'none'
       if (e.buttons & 3) return 'rotate'
-      return previous === 'rotate' || previous === 'zoom' ? 'zoom' : 'pan'
+      if (e.ctrlKey) {
+        if (!(previous.buttons & 4)) return 'zoom'
+        if (!previous.ctrlKey) return 'rotate'
+        return previous.interaction === 'zoom' ? 'zoom' : 'rotate'
+      }
+      return previous.interaction === 'rotate' ||
+        previous.interaction === 'zoom'
+        ? 'zoom'
+        : 'pan'
     },
   },
   AutoCAD: {
