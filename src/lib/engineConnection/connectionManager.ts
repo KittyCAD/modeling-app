@@ -659,7 +659,7 @@ export class ConnectionManager extends EventTarget {
         ? ''
         : `&video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}`
       return withKittycadWebSocketURL(
-        `?geometry_only=true&webrtc=false${resolution}${versionQuery}&response_compression=zstd`
+        `?geometry_only=true&webrtc=false${resolution}${versionQuery}`
       )
     }
     let additionalSettings = `&post_effect=${this.settings.viewportRendering}`
@@ -667,7 +667,7 @@ export class ConnectionManager extends EventTarget {
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
     additionalSettings += versionQuery
     const url = withKittycadWebSocketURL(
-      `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}&response_compression=zstd`
+      `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )
     return url
   }

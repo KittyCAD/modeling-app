@@ -2781,6 +2781,15 @@ impl ExecutorContext {
         &self,
         format: kittycad_modeling_cmds::format::OutputFormat3d,
     ) -> Result<Vec<kittycad_modeling_cmds::websocket::RawFile>, KclError> {
+        self.export_with_compression(format, None).await
+    }
+
+    /// Export with response compression understood by the calling client.
+    pub async fn export_with_compression(
+        &self,
+        format: kittycad_modeling_cmds::format::OutputFormat3d,
+        compression: Option<kittycad_modeling_cmds::shared::CompressionType>,
+    ) -> Result<Vec<kittycad_modeling_cmds::websocket::RawFile>, KclError> {
         let resp = self
             .engine
             .send_modeling_cmd(
@@ -2790,6 +2799,7 @@ impl ExecutorContext {
                 &kittycad_modeling_cmds::ModelingCmd::Export(
                     kittycad_modeling_cmds::Export::builder()
                         .entity_ids(vec![])
+                        .maybe_compression(compression)
                         .format(format)
                         .build(),
                 ),
