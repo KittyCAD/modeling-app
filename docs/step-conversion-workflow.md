@@ -35,8 +35,10 @@ are surfaced in the start notice and errors.
 
 - `src/lib/stepConversion.test.ts` checks serialization, source persistence
   failures, interrupted-job recovery, explicit retry, account isolation, token
-  refresh, result storage failure, native import boundaries using the real KCL
-  parser, and JSON/MessagePack socket completion/error/cancellation.
+  refresh, stale-load isolation, result storage failure, and JSON/MessagePack
+  socket completion/error/cancellation. `src/lib/stepConversion.spec.ts` checks
+  native import boundaries against the real built KCL parser in the integration
+  job; unit jobs do not require a WASM build.
 - `src/components/StepConversions.test.tsx` checks pre-start notices, cancellation,
   all four statuses, retry confirmation, opening in the original project,
   preserving user edits, and recovery from disk-write failure.
@@ -47,6 +49,9 @@ are surfaced in the start notice and errors.
 - A local Chrome check exercised the real IndexedDB adapter across page reload:
   source bytes remained intact, completed output survived, interrupted work did
   not auto-run, explicit retry completed once, and another account saw no jobs.
+- The isolated rendered component check exercised the credit/retry dialogs and
+  saved/opened output through the real browser OPFS adapter. This does not replace
+  the engine-connected desktop scenario.
 
 Run the focused suite with:
 
@@ -54,9 +59,12 @@ Run the focused suite with:
 npx vitest run --project unit src/lib/stepConversion.test.ts \
   src/components/StepConversions.test.tsx src/hooks/useStepFilePicker.test.tsx \
   src/lib/stepToKcl.test.ts
+npx vitest run --project integration --retry 0 src/lib/stepConversion.spec.ts
 ```
 
 Geometry reconstruction, measured repair, and two successful independent edits
 are evaluated separately by the fixed development set in
 [text-to-cad #4710](https://github.com/KittyCAD/text-to-cad/pull/4710).
 Passing UI tests does not establish those geometry acceptance criteria.
+The inherited pin to backend preview PR #4196 was removed from the shared
+development environment. Preview overrides belong in local configuration.

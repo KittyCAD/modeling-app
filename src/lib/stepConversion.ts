@@ -160,6 +160,7 @@ export class StepConversionQueue {
     this.publish()
     if (!ownerId || !token) return
     const loaded = await this.storage.load(ownerId)
+    if (generation !== this.generation) return
     // A closed app cannot attest whether a remote turn finished. Never restart
     // paid inference automatically; keep the source for an explicit retry.
     const jobs = loaded.map(
@@ -173,7 +174,19 @@ export class StepConversionQueue {
             }
           : job
     )
-    for (const job of jobs) await this.storage.put(job)
+    for (let index = 0; index < jobs.length; index++) {
+      if (generation !== this.generation) return
+      if (jobs[index].status === loaded[index].status) continue
+      try {
+        await this.storage.put(jobs[index])
+      } catch {
+        jobs[index] = {
+          ...jobs[index],
+          error:
+            'Conversion was interrupted and recovery status could not be saved. Check available storage before retrying.',
+        }
+      }
+    }
     if (generation !== this.generation) return
     this.jobs = jobs
     this.loaded = true

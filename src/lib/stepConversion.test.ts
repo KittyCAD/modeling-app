@@ -1,4 +1,3 @@
-import { readFileSync } from 'node:fs'
 import { encode } from '@msgpack/msgpack'
 import {
   type ConversionStorage,
@@ -7,14 +6,12 @@ import {
   runStepConversion,
   validateConversionFiles,
 } from '@src/lib/stepConversion'
-import { validateNativeConversion } from '@src/lib/stepConversion'
-import { getModule, reloadModule } from '@src/lib/wasm_lib_wrapper'
-import { afterEach, beforeAll, describe, expect, test, vi } from 'vitest'
+import { afterEach, describe, expect, test, vi } from 'vitest'
 
-beforeAll(async () => {
-  await reloadModule()
-  getModule().initSync({ module: readFileSync('public/kcl_wasm_lib_bg.wasm') })
-})
+// The unit job deliberately has no built WASM. Real parser coverage is in .spec.ts.
+vi.mock('@src/lib/wasm_lib_wrapper', () => ({
+  getModule: () => ({ parse_wasm: () => [{ body: [] }, []] }),
+}))
 
 function deferred<T>() {
   let resolve!: (value: T) => void
@@ -51,6 +48,36 @@ function memory(initial: StepConversion[] = []): ConversionStorage {
 }
 
 describe('application-owned STEP conversion queue', () => {
+  test('recovery storage failure does not hide already saved results', async () => {
+    const storage = memory([
+      job('running'),
+      { ...job('completed'), id: 'finished', files: result.files },
+    ])
+    vi.mocked(storage.put).mockRejectedValue(new Error('Storage unavailable'))
+    const queue = new StepConversionQueue(storage, vi.fn())
+    await queue.configure('owner', 'token')
+    expect(queue.getSnapshot()[0]).toMatchObject({
+      status: 'failed',
+      error: expect.stringContaining('storage'),
+    })
+    expect(queue.getSnapshot()[1]).toMatchObject({
+      status: 'completed',
+      files: result.files,
+    })
+    expect(storage.put).toHaveBeenCalledTimes(1)
+  })
+  test('a stale account load cannot overwrite recovered work', async () => {
+    const oldLoad = deferred<StepConversion[]>()
+    const storage = memory([job('completed')])
+    vi.mocked(storage.load).mockReturnValueOnce(oldLoad.promise)
+    const queue = new StepConversionQueue(storage, vi.fn())
+    const pending = queue.configure('owner', 'token')
+    await queue.configure('owner', 'token')
+    oldLoad.resolve([job('running')])
+    await pending
+    expect(queue.getSnapshot()[0].status).toBe('completed')
+    expect((await storage.load('owner'))[0].status).toBe('completed')
+  })
   test('serializes jobs and completes even with no subscribed pane', async () => {
     const first = deferred<typeof result>()
     const runner = vi
@@ -190,21 +217,6 @@ describe('application-owned STEP conversion queue', () => {
 })
 
 describe('conversion output boundary', () => {
-  test('rejects imported geometry, missing modules, and external imports using the KCL parser', () => {
-    for (const code of [
-      'import "source.step" as part',
-      'import "missing.kcl" as part',
-      'import "../external.kcl" as part',
-    ]) {
-      expect(() => validateNativeConversion({ 'main.kcl': code })).toThrow()
-    }
-    expect(() =>
-      validateNativeConversion({
-        'main.kcl': 'import "parts/main.kcl" as bore',
-        'parts/main.kcl': 'export diameter = 4mm',
-      })
-    ).not.toThrow()
-  })
   test.each([
     '../escape.kcl',
     '/absolute.kcl',

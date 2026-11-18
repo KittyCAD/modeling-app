@@ -25,6 +25,7 @@ vi.mock('@src/lib/boot', () => ({
   }),
 }))
 vi.mock('react-router-dom', () => ({ useNavigate: () => mocks.navigate }))
+vi.mock('@src/lib/wasm_lib_wrapper', () => ({ getModule: vi.fn() }))
 vi.mock('react-hot-toast', () => ({ default: { error: mocks.error } }))
 vi.mock('@src/lib/fs-zds', () => ({
   default: {
