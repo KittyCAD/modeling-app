@@ -9,6 +9,7 @@ layout: manual
 ### Functions
 
 * [**std**](/docs/kcl-std/modules/std)
+  * [`airfoil`](/docs/kcl-std/functions/std-airfoil) Experimental
   * [`assert`](/docs/kcl-std/functions/std-assert)
   * [`assertIs`](/docs/kcl-std/functions/std-assertIs)
   * [`clone`](/docs/kcl-std/functions/std-clone)
@@ -90,6 +91,8 @@ layout: manual
   * [`tan`](/docs/kcl-std/functions/std-math-tan)
 * [**std::operation**](/docs/kcl-std/modules/std-operation)
   * [`operation::facing`](/docs/kcl-std/functions/std-operation-facing) Experimental
+* [**std::rail**](/docs/kcl-std/modules/std-rail)
+  * [`rail::tSlot`](/docs/kcl-std/functions/std-rail-tSlot)
 * [**std::runtime**](/docs/kcl-std/modules/std-runtime) Experimental
   * [`exit`](/docs/kcl-std/functions/std-runtime-exit) Experimental
 * [**std::sketch**](/docs/kcl-std/modules/std-sketch)
@@ -190,6 +193,8 @@ layout: manual
   * [`solver::tangent`](/docs/kcl-std/functions/std-solver-tangent)
   * [`solver::vertical`](/docs/kcl-std/functions/std-solver-vertical)
   * [`solver::verticalDistance`](/docs/kcl-std/functions/std-solver-verticalDistance)
+* [**std::sprocket**](/docs/kcl-std/modules/std-sprocket)
+  * [`sprocket::rollerChain`](/docs/kcl-std/functions/std-sprocket-rollerChain)
 * [**std::string**](/docs/kcl-std/modules/std-string)
   * [`string::isEqual`](/docs/kcl-std/functions/std-string-isEqual)
   * [`string::lowercase`](/docs/kcl-std/functions/std-string-lowercase)
