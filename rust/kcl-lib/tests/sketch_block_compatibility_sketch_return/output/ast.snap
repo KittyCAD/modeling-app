@@ -352,13 +352,6 @@ description: Result of parsing sketch_block_compatibility_sketch_return.kcl
         "end": 0,
         "kind": "fn",
         "moduleId": 0,
-        "preComments": [
-          "// In KCL 3, the sketch's return makes the function return 42. KCL 1/2 return 0.",
-          "// After unwinding, another call must succeed, equality must produce a boolean,",
-          "// and a new sketch and offsetPlane must execute.",
-          "",
-          ""
-        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -875,58 +868,6 @@ description: Result of parsing sketch_block_compatibility_sketch_return.kcl
     ],
     "commentStart": 0,
     "end": 0,
-    "innerAttrs": [
-      {
-        "commentStart": 0,
-        "end": 0,
-        "moduleId": 0,
-        "name": {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "name": "settings",
-          "start": 0,
-          "type": "Identifier"
-        },
-        "properties": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "key": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "experimentalFeatures",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "moduleId": 0,
-            "start": 0,
-            "type": "ObjectProperty",
-            "value": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "allow",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
-          }
-        ],
-        "start": 0,
-        "type": "Annotation"
-      }
-    ],
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
@@ -943,7 +884,54 @@ description: Result of parsing sketch_block_compatibility_sketch_return.kcl
           }
         ]
       },
-      "startNodes": []
+      "startNodes": [
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "In KCL 3, the sketch's return makes the function return 42. KCL 1/2 return 0.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "After unwinding, another call must succeed, equality must produce a boolean,",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "and a new sketch and offsetPlane must execute.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
     },
     "start": 0,
     "type": "Program"

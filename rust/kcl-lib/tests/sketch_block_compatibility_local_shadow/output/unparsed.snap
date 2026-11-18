@@ -2,8 +2,6 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing sketch_block_compatibility_local_shadow.kcl
 ---
-@settings(experimentalFeatures = allow)
-
 // Local bindings in a sketch shadow solver exports. A return in a nested
 // ordinary function must leave the sketch running.
 

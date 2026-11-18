@@ -477,13 +477,6 @@ description: Result of parsing sketch_block_compatibility_scoped_return.kcl
         "end": 0,
         "kind": "fn",
         "moduleId": 0,
-        "preComments": [
-          "// In KCL 3, returning from the sketch must exit the enclosing if and function.",
-          "// KCL 1/2 finish the branch with 9. Later expressions and sketches must run",
-          "// in every version.",
-          "",
-          ""
-        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1000,58 +993,6 @@ description: Result of parsing sketch_block_compatibility_scoped_return.kcl
     ],
     "commentStart": 0,
     "end": 0,
-    "innerAttrs": [
-      {
-        "commentStart": 0,
-        "end": 0,
-        "moduleId": 0,
-        "name": {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "name": "settings",
-          "start": 0,
-          "type": "Identifier"
-        },
-        "properties": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "key": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "experimentalFeatures",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "moduleId": 0,
-            "start": 0,
-            "type": "ObjectProperty",
-            "value": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "allow",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
-          }
-        ],
-        "start": 0,
-        "type": "Annotation"
-      }
-    ],
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
@@ -1068,7 +1009,54 @@ description: Result of parsing sketch_block_compatibility_scoped_return.kcl
           }
         ]
       },
-      "startNodes": []
+      "startNodes": [
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "In KCL 3, returning from the sketch must exit the enclosing if and function.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "KCL 1/2 finish the branch with 9. Later expressions and sketches must run",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "in every version.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
     },
     "start": 0,
     "type": "Program"

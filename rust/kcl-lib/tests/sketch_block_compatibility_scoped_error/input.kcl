@@ -1,5 +1,3 @@
-@settings(experimentalFeatures = allow)
-
 // The undefined name must unwind the sketch, branch, and function.
 // Program memory must contain `before`, but no `result`, `after`, or sketch locals.
 

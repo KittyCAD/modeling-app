@@ -1,5 +1,3 @@
-@settings(experimentalFeatures = allow)
-
 // The parent function returns 999, while std::solver::line returns a segment.
 // Calls inside the sketch must use the solver. Calls outside must use the
 // parent function, even though both bindings are callable.

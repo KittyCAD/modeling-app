@@ -1,5 +1,3 @@
-@settings(experimentalFeatures = allow)
-
 // Local bindings in a sketch shadow solver exports. A return in a nested
 // ordinary function must leave the sketch running.
 

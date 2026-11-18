@@ -1,5 +1,3 @@
-@settings(experimentalFeatures = allow)
-
 // In KCL 3, the sketch's return makes the function return 42. KCL 1/2 return 0.
 // After unwinding, another call must succeed, equality must produce a boolean,
 // and a new sketch and offsetPlane must execute.

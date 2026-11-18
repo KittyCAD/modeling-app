@@ -6,10 +6,10 @@ KCL Semantic error
 
   × semantic: The `sketch` function expected its `on` argument to be Sketch or
   │ Plane or Face but it's actually of type number
-   ╭─[6:23]
- 5 │ before = 17
- 6 │ profile = sketch(on = 123) {
+   ╭─[4:23]
+ 3 │ before = 17
+ 4 │ profile = sketch(on = 123) {
    ·                       ─┬─
    ·                        ╰── tests/sketch_block_compatibility_invalid_on/input.kcl
- 7 │   assert(false, error = "The sketch body ran with an invalid on argument")
+ 5 │   assert(false, error = "The sketch body ran with an invalid on argument")
    ╰────

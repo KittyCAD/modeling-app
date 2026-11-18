@@ -2,8 +2,6 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing sketch_block_compatibility_nested_sketch.kcl
 ---
-@settings(experimentalFeatures = allow)
-
 // Call through a function to check that the interpreter rejects nested sketch
 // execution even when the sketch blocks are not nested in the source.
 

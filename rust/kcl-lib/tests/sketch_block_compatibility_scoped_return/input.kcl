@@ -1,5 +1,3 @@
-@settings(experimentalFeatures = allow)
-
 // In KCL 3, returning from the sketch must exit the enclosing if and function.
 // KCL 1/2 finish the branch with 9. Later expressions and sketches must run
 // in every version.

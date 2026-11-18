@@ -196,10 +196,10 @@ description: Variables in memory after executing sketch_block_compatibility_scop
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 555,
-                    "end": 559,
+                    "commentStart": 514,
+                    "end": 518,
                     "moduleId": 0,
-                    "start": 555,
+                    "start": 514,
                     "type": "TagDeclarator",
                     "value": "edge"
                   },

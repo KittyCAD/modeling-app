@@ -199,10 +199,10 @@ description: Variables in memory after executing sketch_block_compatibility_pare
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 324,
-                    "end": 328,
+                    "commentStart": 283,
+                    "end": 287,
                     "moduleId": 0,
-                    "start": 324,
+                    "start": 283,
                     "type": "TagDeclarator",
                     "value": "edge"
                   },

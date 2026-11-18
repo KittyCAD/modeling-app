@@ -38,13 +38,6 @@ description: Result of parsing sketch_block_compatibility_parent_variable.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
-        "preComments": [
-          "// In KCL 3 and earlier, the solver's line wins over the parent's non-callable",
-          "// `line` binding. The sketch can still read parentValue, and the call must leave",
-          "// the parent's bindings unchanged.",
-          "",
-          ""
-        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -539,59 +532,58 @@ description: Result of parsing sketch_block_compatibility_parent_variable.kcl
     ],
     "commentStart": 0,
     "end": 0,
-    "innerAttrs": [
-      {
-        "commentStart": 0,
-        "end": 0,
-        "moduleId": 0,
-        "name": {
+    "moduleId": 0,
+    "nonCodeMeta": {
+      "nonCodeNodes": {},
+      "startNodes": [
+        {
           "commentStart": 0,
           "end": 0,
           "moduleId": 0,
-          "name": "settings",
           "start": 0,
-          "type": "Identifier"
-        },
-        "properties": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "key": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "experimentalFeatures",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "moduleId": 0,
-            "start": 0,
-            "type": "ObjectProperty",
-            "value": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "allow",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "In KCL 3 and earlier, the solver's line wins over the parent's non-callable",
+            "style": "line"
           }
-        ],
-        "start": 0,
-        "type": "Annotation"
-      }
-    ],
-    "moduleId": 0,
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "`line` binding. The sketch can still read parentValue, and the call must leave",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "the parent's bindings unchanged.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
+    },
     "start": 0,
     "type": "Program"
   }

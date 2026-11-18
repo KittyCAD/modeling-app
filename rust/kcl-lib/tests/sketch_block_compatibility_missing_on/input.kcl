@@ -1,5 +1,3 @@
-@settings(experimentalFeatures = allow)
-
 // This input must parse, then fail on the missing `on` argument.
 // The body assertion catches execution before argument validation.
 

@@ -95,13 +95,6 @@ description: Result of parsing sketch_block_compatibility_parent_function.kcl
         "end": 0,
         "kind": "fn",
         "moduleId": 0,
-        "preComments": [
-          "// The parent function returns 999, while std::solver::line returns a segment.",
-          "// Calls inside the sketch must use the solver. Calls outside must use the",
-          "// parent function, even though both bindings are callable.",
-          "",
-          ""
-        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -730,58 +723,6 @@ description: Result of parsing sketch_block_compatibility_parent_function.kcl
     ],
     "commentStart": 0,
     "end": 0,
-    "innerAttrs": [
-      {
-        "commentStart": 0,
-        "end": 0,
-        "moduleId": 0,
-        "name": {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "name": "settings",
-          "start": 0,
-          "type": "Identifier"
-        },
-        "properties": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "key": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "experimentalFeatures",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "moduleId": 0,
-            "start": 0,
-            "type": "ObjectProperty",
-            "value": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "allow",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
-          }
-        ],
-        "start": 0,
-        "type": "Annotation"
-      }
-    ],
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
@@ -798,7 +739,54 @@ description: Result of parsing sketch_block_compatibility_parent_function.kcl
           }
         ]
       },
-      "startNodes": []
+      "startNodes": [
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "The parent function returns 999, while std::solver::line returns a segment.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Calls inside the sketch must use the solver. Calls outside must use the",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "parent function, even though both bindings are callable.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
     },
     "start": 0,
     "type": "Program"

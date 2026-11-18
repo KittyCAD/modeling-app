@@ -38,12 +38,6 @@ description: Result of parsing sketch_block_compatibility_local_shadow.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
-        "preComments": [
-          "// Local bindings in a sketch shadow solver exports. A return in a nested",
-          "// ordinary function must leave the sketch running.",
-          "",
-          ""
-        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1110,59 +1104,46 @@ description: Result of parsing sketch_block_compatibility_local_shadow.kcl
     ],
     "commentStart": 0,
     "end": 0,
-    "innerAttrs": [
-      {
-        "commentStart": 0,
-        "end": 0,
-        "moduleId": 0,
-        "name": {
+    "moduleId": 0,
+    "nonCodeMeta": {
+      "nonCodeNodes": {},
+      "startNodes": [
+        {
           "commentStart": 0,
           "end": 0,
           "moduleId": 0,
-          "name": "settings",
           "start": 0,
-          "type": "Identifier"
-        },
-        "properties": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "key": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "experimentalFeatures",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "moduleId": 0,
-            "start": 0,
-            "type": "ObjectProperty",
-            "value": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "allow",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Local bindings in a sketch shadow solver exports. A return in a nested",
+            "style": "line"
           }
-        ],
-        "start": 0,
-        "type": "Annotation"
-      }
-    ],
-    "moduleId": 0,
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "ordinary function must leave the sketch running.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
+    },
     "start": 0,
     "type": "Program"
   }
