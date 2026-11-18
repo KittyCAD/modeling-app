@@ -25,7 +25,12 @@ import { createRegionMeshes } from '@src/clientSideScene/localRenderer/sketchReg
 import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import { IntegerIdPicker } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
-import { PickBufferDebugView } from '@src/clientSideScene/localRenderer/pickBufferDebug'
+import {
+  type EdgePickingMode,
+  getPickBufferDebugState,
+  PickBufferDebugView,
+  setPickBufferDebugMode,
+} from '@src/clientSideScene/localRenderer/pickBufferDebug'
 import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
 import { SelectionHighlightRenderer } from '@src/clientSideScene/localRenderer/SelectionHighlightRenderer'
 import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
@@ -949,6 +954,13 @@ export class LocalRenderer {
     this.refreshPickBufferDebug()
   }
 
+  setEdgePickingMode(mode: EdgePickingMode) {
+    setPickBufferDebugMode(mode)
+    this.gpu?.integerIdPicker.setMode(mode)
+    this.clearHover()
+    this.refreshPickBufferDebug()
+  }
+
   closePickBufferDebug() {
     this.pickBufferDebugGeneration++
     this.pickBufferDebugView?.dispose()
@@ -1313,6 +1325,7 @@ export class LocalRenderer {
     const planeRenderer = new PlaneRenderer(theme)
     planeRenderer.addTo(scene)
     const integerIdPicker = new IntegerIdPicker(renderer)
+    integerIdPicker.setMode(getPickBufferDebugState().mode)
     integerIdPicker.setEdgesVisible(shouldHighlightEdges)
     this.gpu = {
       renderer,

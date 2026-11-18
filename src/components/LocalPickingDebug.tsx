@@ -1,4 +1,5 @@
 import {
+  type EdgePickingMode,
   getPickBufferDebugState,
   setPickBufferDebugOpacity,
   setPickBufferDebugSeeds,
@@ -10,7 +11,7 @@ import { useSyncExternalStore } from 'react'
 
 export function LocalPickingDebug() {
   const { kclManager } = useSingletons()
-  const { active, showingSeeds, opacity } = useSyncExternalStore(
+  const { active, showingSeeds, opacity, mode } = useSyncExternalStore(
     subscribePickBufferDebug,
     getPickBufferDebugState
   )
@@ -19,6 +20,20 @@ export function LocalPickingDebug() {
   return (
     <section className="flex flex-col gap-2 py-2">
       <span>Local picking IDs</span>
+      <label>
+        Edge picking mode
+        <select
+          value={mode}
+          disabled={!renderer}
+          onChange={(event) =>
+            renderer?.setEdgePickingMode(event.target.value as EdgePickingMode)
+          }
+        >
+          <option value="gpu-growth">GPU growth</option>
+          <option value="original-main">Original main</option>
+          <option value="depth-offset">Depth offset</option>
+        </select>
+      </label>
       <button
         type="button"
         className="rounded bg-gray-200 px-3 py-1 text-black"
@@ -35,13 +50,15 @@ export function LocalPickingDebug() {
       </button>
       {active && (
         <>
-          <button
-            type="button"
-            className="rounded bg-gray-200 px-3 py-1 text-black"
-            onClick={() => setPickBufferDebugSeeds(!showingSeeds)}
-          >
-            {showingSeeds ? 'Show grown IDs' : 'Show thin seeds'}
-          </button>
+          {mode === 'gpu-growth' && (
+            <button
+              type="button"
+              className="rounded bg-gray-200 px-3 py-1 text-black"
+              onClick={() => setPickBufferDebugSeeds(!showingSeeds)}
+            >
+              {showingSeeds ? 'Show grown IDs' : 'Show thin seeds'}
+            </button>
+          )}
           <label>
             Picking IDs opacity: {opacity}%
             <input

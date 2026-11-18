@@ -9,10 +9,13 @@ export type PickBufferSnapshot = {
   seedPixels?: Uint8ClampedArray
 }
 
+export type EdgePickingMode = 'gpu-growth' | 'original-main' | 'depth-offset'
+
 type DebugViewState = {
   active: boolean
   showingSeeds: boolean
   opacity: number
+  mode: EdgePickingMode
 }
 
 let debugView: PickBufferDebugView | null = null
@@ -20,6 +23,7 @@ let debugViewState: DebugViewState = {
   active: false,
   showingSeeds: false,
   opacity: 100,
+  mode: 'gpu-growth',
 }
 const listeners = new Set<() => void>()
 
@@ -29,6 +33,10 @@ export const subscribePickBufferDebug = (listener: () => void) => {
 }
 
 export const getPickBufferDebugState = () => debugViewState
+
+export function setPickBufferDebugMode(mode: EdgePickingMode) {
+  updateState({ ...debugViewState, mode })
+}
 
 function updateState(state: DebugViewState) {
   debugViewState = state

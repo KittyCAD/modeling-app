@@ -7,6 +7,7 @@ import {
   NearestFilter,
   NoBlending,
   type Object3D,
+  OrthographicCamera,
   RedIntegerFormat,
   Scene,
   UnsignedIntType,
@@ -20,6 +21,7 @@ import {
 import { EdgeGrowthPass } from '@src/clientSideScene/localRenderer/EdgeGrowthPass'
 import {
   colorizePickBuffer,
+  type EdgePickingMode,
   type PickBufferSnapshot,
 } from '@src/clientSideScene/localRenderer/pickBufferDebug'
 import {
@@ -29,13 +31,18 @@ import {
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
 import {
   attribute,
+  cameraFar,
+  cameraNear,
   float,
   outputStruct,
+  positionView,
   select,
   uint,
   uniform,
   varying,
   vec4,
+  viewZToOrthographicDepth,
+  viewZToPerspectiveDepth,
 } from 'three/tsl'
 import {
   Line2NodeMaterial,
@@ -48,6 +55,8 @@ import {
 
 // Uses a material to draw the selection lines with this width
 const SELECTION_LINE_WIDTH_PX = 24
+const SELECTION_LINE_WIDTH_REFERENCE_VIEWPORT_PX = 2048
+const EDGE_PICK_DEPTH_OFFSET_METERS = 0.002
 
 // This is the line width for the draw buffer, not the radius used for edge
 // selection. The radius is used to search for these lines
@@ -72,6 +81,12 @@ export class IntegerIdPicker {
   private readonly materials = new Set<Material>()
   private readonly sourceByProxy = new Map<Mesh, Mesh>()
   private targetById: Array<Mesh | null> = [null]
+  private currentTargets: {
+    targets: Mesh[]
+    occluder: Object3D | null
+    edges?: LineTargets
+    sketchLines?: LineTargets
+  } | null = null
   private renderTarget: RenderTarget | null = null
 
   private growthPass: EdgeGrowthPass | null = null
@@ -80,6 +95,7 @@ export class IntegerIdPicker {
   private edgesVisible = true
   private dirty = true
   private version = 0
+  private mode: EdgePickingMode = 'gpu-growth'
 
   constructor(renderer: WebGPURenderer) {
     this.renderer = renderer
@@ -113,6 +129,7 @@ export class IntegerIdPicker {
     sketchLines?: LineTargets
   ) {
     this.clearModel()
+    this.currentTargets = { targets, occluder, edges, sketchLines }
     // All meshes share two materials (with and without the region offset), so
     // the ID shader is built once, not per face. The ID is set per proxy mesh,
     // as it is drawn.
@@ -218,6 +235,20 @@ export class IntegerIdPicker {
     material.polygonOffset = true
     material.polygonOffsetFactor = -2
     material.polygonOffsetUnits = -2
+    if (
+      this.mode === 'depth-offset' &&
+      targetType === EdgeTargetType.BodyEdge
+    ) {
+      const biasedViewZ = positionView.z.add(EDGE_PICK_DEPTH_OFFSET_METERS)
+      const isOrthographic = uniform(false).onRenderUpdate(
+        ({ camera }) => camera instanceof OrthographicCamera
+      )
+      material.depthNode = select(
+        isOrthographic,
+        viewZToOrthographicDepth(biasedViewZ, cameraNear, cameraFar),
+        viewZToPerspectiveDepth(biasedViewZ, cameraNear, cameraFar)
+      )
+    }
     const selectionIndex = attribute(
       SELECTION_INDEX_ATTRIBUTE,
       'uint'
@@ -247,6 +278,22 @@ export class IntegerIdPicker {
       this.edgeObject.visible = visible
     }
     this.invalidate()
+  }
+
+  setMode(mode: EdgePickingMode) {
+    if (this.mode === mode) return
+    this.mode = mode
+    const current = this.currentTargets
+    if (current) {
+      this.setTargets(
+        current.targets,
+        current.occluder,
+        current.edges,
+        current.sketchLines
+      )
+    } else {
+      this.invalidate()
+    }
   }
 
   invalidate() {
@@ -301,7 +348,7 @@ export class IntegerIdPicker {
     }
 
     const pixels = await this.renderer.readRenderTargetPixelsAsync(
-      this.growthPass?.target ?? target,
+      this.mode === 'gpu-growth' ? (this.growthPass?.target ?? target) : target,
       readbackPixelX,
       this.packsIdsIntoColor
         ? target.height - 1 - readbackPixelY
@@ -327,13 +374,26 @@ export class IntegerIdPicker {
     const version = this.version
     const targets = this.targetById
     const grown = await this.renderer.readRenderTargetPixelsAsync(
-      this.growthPass?.target ?? target,
+      this.mode === 'gpu-growth' ? (this.growthPass?.target ?? target) : target,
       0,
       0,
       target.width,
       target.height
     )
     if (version !== this.version) return null
+    if (this.mode !== 'gpu-growth') {
+      return {
+        width: target.width,
+        height: target.height,
+        pixels: colorizePickBuffer(
+          grown,
+          target.width,
+          target.height,
+          this.packsIdsIntoColor,
+          targets
+        ),
+      }
+    }
     const seeds = await this.renderer.readRenderTargetPixelsAsync(
       target,
       0,
@@ -363,6 +423,7 @@ export class IntegerIdPicker {
   }
 
   clearModel() {
+    this.currentTargets = null
     this.sourceByProxy.clear()
     this.scene.clear()
     this.edgeObject = null
@@ -434,11 +495,24 @@ export class IntegerIdPicker {
     }
     const previousTarget = this.renderer.getRenderTarget()
     const previousAutoClear = this.renderer.autoClear
+    const bounds = this.renderer.domElement.getBoundingClientRect()
+    this.materials.forEach((material) => {
+      if (material instanceof Line2NodeMaterial) {
+        material.linewidth =
+          this.mode === 'original-main'
+            ? (SELECTION_LINE_WIDTH_PX * bounds.width) /
+              SELECTION_LINE_WIDTH_REFERENCE_VIEWPORT_PX
+            : this.mode === 'depth-offset'
+              ? SELECTION_LINE_WIDTH_PX
+              : material === this.edgeObject?.material
+                ? VISIBLE_EDGE_LINE_WIDTH_PX
+                : SELECTION_LINE_WIDTH_PX
+      }
+    })
     this.renderer.autoClear = true
     this.renderer.setRenderTarget(target)
     this.renderer.render(this.scene, camera)
-    if (this.growthPass) {
-      const bounds = this.renderer.domElement.getBoundingClientRect()
+    if (this.mode === 'gpu-growth' && this.growthPass) {
       this.growthPass.render(bounds.width, bounds.height)
     }
     this.renderer.setRenderTarget(previousTarget)
