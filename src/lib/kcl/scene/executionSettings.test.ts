@@ -10,7 +10,9 @@ import {
 } from '@src/lib/kcl/scene/executionSettingsContract'
 import kclExtension from '@src/lib/kcl/registry'
 import { editorLanguagesFacet } from '@src/lib/editors/registry/contract'
-import { expect, it } from 'vitest'
+import { expect, it, vi } from 'vitest'
+vi.mock('@src/lib/kcl/scene', () => ({ openKclScene: vi.fn() }))
+vi.mock('@src/lib/kcl/KclScene', () => ({ KclScene: () => null }))
 
 it('follows core KCL inputs and effective values rather than hidden overrides', () => {
   const settings = createSettings()

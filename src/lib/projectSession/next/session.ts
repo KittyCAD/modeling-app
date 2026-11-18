@@ -53,7 +53,7 @@ function createSession(
   const readBytes = async (relativePath: string) => {
     const path = filePath(relativePath)
     if (path instanceof Error) return Promise.reject(path)
-    return storage().readFile(path)
+    return storage.readFile(path)
   }
 
   return {

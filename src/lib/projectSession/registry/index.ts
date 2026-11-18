@@ -27,4 +27,7 @@ export const createProjectSessionExtension = (
     id
   )
 
-export default [createProjectSessionExtension(), withProjectShellFeature(projectSourcesExtension, 'project-sources')]
+export default [
+  createProjectSessionExtension(),
+  withProjectShellFeature(projectSourcesExtension, 'project-sources'),
+]
