@@ -461,7 +461,7 @@ impl EngineManager {
         let mut batch = batch_context.batch.write().await;
         self.validate_session(batch_context, source_range)?;
         batch.push((req, source_range));
-        self.stats().commands_batched.fetch_add(1, Relaxed);
+        self.stats().record_command(source_range, cmd);
 
         Ok(())
     }
@@ -482,9 +482,11 @@ impl EngineManager {
         for cmd in cmds {
             extended_cmds.push((WebSocketRequest::ModelingCmdReq(cmd.clone()), source_range));
         }
-        self.stats().commands_batched.fetch_add(extended_cmds.len(), Relaxed);
         let mut batch = batch_context.batch.write().await;
         self.validate_session(batch_context, source_range)?;
+        for cmd in cmds {
+            self.stats().record_command(source_range, &cmd.cmd);
+        }
         batch.extend(extended_cmds);
 
         Ok(())
@@ -510,7 +512,7 @@ impl EngineManager {
         let mut batch_end = batch_context.batch_end.write().await;
         self.validate_session(batch_context, source_range)?;
         batch_end.insert(id, (req, source_range));
-        self.stats().commands_batched.fetch_add(1, Relaxed);
+        self.stats().record_command(source_range, cmd);
         Ok(())
     }
 
@@ -533,7 +535,7 @@ impl EngineManager {
             }),
             source_range,
         ));
-        self.stats().commands_batched.fetch_add(1, Relaxed);
+        self.stats().record_command(source_range, cmd);
 
         // Flush the batch queue.
         self.run_batch(batch_context, requests, source_range).await

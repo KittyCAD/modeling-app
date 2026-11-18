@@ -159,12 +159,10 @@ impl Context {
             }
         };
         let mut settings: kcl_lib::ExecutorSettings = config.into();
+        // Mock plans must use the live mode too, including its cached settings.
+        settings.geometry_only = self.engine_manager.geometry_only();
         let mut ctx = match mode {
-            ExecutionMode::Engine => {
-                // The mode can change on reconnect, so read it from the live connection.
-                settings.geometry_only = self.engine_manager.geometry_only();
-                self.executor.clone()
-            }
+            ExecutionMode::Engine => self.executor.clone(),
             ExecutionMode::Mock => self.mock_executor.clone(),
         };
         settings.enable_ssao &= !settings.geometry_only;
@@ -308,6 +306,28 @@ impl Context {
             ..Default::default()
         };
         ctx.run_mock(&program, &mock_config).await
+    }
+
+    /// Estimate source milestones without changing the live execution scene.
+    #[wasm_bindgen(js_name = estimateCommandPlan)]
+    pub async fn estimate_command_plan(
+        &self,
+        program_ast_json: &str,
+        path: Option<String>,
+        settings: &str,
+    ) -> Result<String, JsValue> {
+        let program: Program =
+            serde_json::from_str(program_ast_json).map_err(|error| JsValue::from_str(&error.to_string()))?;
+        let program = program.fill_node_paths();
+        let (_owner, ctx) = self
+            .executor_for_operation(settings, path.as_deref(), ExecutionMode::Mock)
+            .await
+            .map_err(|error| JsValue::from_str(&error.error.to_string()))?;
+        let plan = ctx
+            .estimate_command_plan(&program)
+            .await
+            .map_err(|error| JsValue::from_str(&error.error.to_string()))?;
+        serde_json::to_string(&plan).map_err(|error| JsValue::from_str(&error.to_string()))
     }
 
     /// Export a scene to a file.

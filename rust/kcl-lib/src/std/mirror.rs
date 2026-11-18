@@ -57,6 +57,22 @@ async fn inner_mirror_3d(
     let unmapped_mirrored_bodies = bodies.clone();
 
     if args.ctx.no_engine_commands().await {
+        if let MirrorAcross3d::Plane(plane) = &across
+            && plane.is_uninitialized()
+            && exec_state.scene_object_id_by_artifact_id(plane.id.into()).is_none()
+        {
+            args.ctx
+                .engine
+                .stats()
+                .record_mock_command(args.source_range, "make_plane");
+        }
+        args.ctx
+            .engine
+            .stats()
+            .record_mock_command(args.source_range, "entity_mirror_across");
+        for body in &bodies {
+            crate::std::clone::record_mock_clone_queries(Some(body), body.id, body.topology_id(), &args);
+        }
         let mut unmapped_mirrored_bodies = unmapped_mirrored_bodies;
         for mirrored_body in &mut unmapped_mirrored_bodies {
             let id = exec_state.next_uuid();
@@ -208,6 +224,14 @@ async fn inner_mirror_2d(
     let mut starting_sketches = sketches.clone();
 
     if args.ctx.no_engine_commands().await {
+        let command = match &axis {
+            Axis2dOrEdgeReference::Axis { .. } => Some("entity_mirror"),
+            Axis2dOrEdgeReference::Edge(_) => Some("entity_mirror_across_edge"),
+            Axis2dOrEdgeReference::EdgeSpecifier(_) => None,
+        };
+        if let Some(command) = command {
+            args.ctx.engine.stats().record_mock_command(args.source_range, command);
+        }
         // Currently, frontend doesn't know if mirror2d will close the sketch or not.
         // Track that information.
         for sketch in starting_sketches.iter_mut() {

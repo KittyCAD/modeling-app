@@ -1,3 +1,4 @@
+import type { CommandProgressPlan } from '@rust/kcl-lib/bindings/CommandProgressPlan'
 import type { WebSocketResponse } from '@kittycad/lib'
 
 import { encode as msgpackEncode } from '@msgpack/msgpack'
@@ -216,6 +217,21 @@ export default class RustContext {
       )
       return Promise.reject(err)
     }
+  }
+
+  async estimateCommandPlan(
+    node: Node<Program>,
+    settings: DeepPartial<Configuration>,
+    path?: string
+  ): Promise<CommandProgressPlan> {
+    const instance = await this._checkContextInstance()
+    return JSON.parse(
+      await instance.estimateCommandPlan(
+        JSON.stringify(node),
+        path,
+        JSON.stringify(settings)
+      )
+    ) as CommandProgressPlan
   }
 
   /** Execute a program with in mock mode. */

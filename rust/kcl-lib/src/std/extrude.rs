@@ -1041,6 +1041,10 @@ pub(crate) async fn after_surface_creation(
         .await?;
 
     let (face_id, edge_id) = if args.ctx.no_engine_commands().await {
+        args.ctx
+            .engine
+            .stats()
+            .record_mock_command(args.source_range, "entity_get_all_child_uuids");
         (exec_state.next_uuid(), exec_state.next_uuid())
     } else {
         // Get the body entity ids.
