@@ -3,7 +3,7 @@ import type { Page } from '@playwright/test'
 import type { IntegerIdPicker } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
 import type { Camera } from 'three'
 
-const twoCubes = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+const cubeDefinition = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 fn get10mmCube() {
   sketch001 = sketch(on = XY) {
@@ -28,10 +28,14 @@ fn get10mmCube() {
   extrude001 = extrude(region001, length = 10mm)
 
   return extrude001
-}
+}`
 
+const twoCubes = `${cubeDefinition}
 cube0 = get10mmCube()
   |> translate(x = 10, y = 0, z = 0)
+cube1 = get10mmCube()`
+
+const singleCube = `${cubeDefinition}
 cube1 = get10mmCube()`
 
 const pickIdAt = (page: Page, x: number, y: number) =>
@@ -274,6 +278,74 @@ test.describe(
           test.fail(true, 'Depth offset picks the hidden back edge')
         }
         expect(await pickIdAt(page, point.x, point.y)).toBe(visible.id)
+      })
+    }
+
+    for (const mode of ['original-main', 'gpu-growth'] as const) {
+      test(`single cube face at 240mm: ${mode}`, async ({
+        page,
+        homePage,
+        editor,
+        scene,
+        toolbar,
+      }, testInfo) => {
+        await page.setBodyDimensions({ width: 1200, height: 800 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', singleCube)
+        )
+        const offset = 240 / Math.sqrt(3)
+        await scene.moveCameraTo(
+          { x: 5 + offset, y: 5 - offset, z: 5 + offset },
+          { x: 5, y: 5, z: 5 }
+        )
+        await scene.settled()
+        await page.evaluate(() => {
+          window.app.singletons.kclManager.sceneInfra.localRenderer?.setEdgePickingMode(
+            'original-main'
+          )
+        })
+        const face = await page.evaluate(async () => {
+          const view = window.app.singletons.kclManager.sceneInfra.localRenderer
+          return (await view?.getPickableModelFacePoint()) ?? null
+        })
+        if (!face) throw new Error('Original main has no pickable cube face')
+        await page.evaluate((mode) => {
+          window.app.singletons.kclManager.sceneInfra.localRenderer?.setEdgePickingMode(
+            mode
+          )
+        }, mode)
+        const anyFace = await page.evaluate(async () => {
+          const view = window.app.singletons.kclManager.sceneInfra.localRenderer
+          return (await view?.getPickableModelFacePoint()) ?? null
+        })
+        await testInfo.attach('far-zoom-face', {
+          body: JSON.stringify({
+            face,
+            anyFace,
+            picked: await pickIdAt(page, face.x, face.y),
+          }),
+          contentType: 'application/json',
+        })
+        const bounds = await scene.streamWrapper.boundingBox()
+        if (!bounds) throw new Error('No stream to click')
+        const [clickFace] = scene.makeMouseHelpers(
+          (face.x - bounds.x) / bounds.width,
+          (face.y - bounds.y) / bounds.height,
+          { format: 'ratio', debugLabel: 'far-zoom face' }
+        )
+        await clickFace()
+        await testInfo.attach('far-zoom-cube', {
+          body: await page.screenshot(),
+          contentType: 'image/png',
+        })
+        if (mode === 'gpu-growth') {
+          test.fail(true, 'Fixed 12px GPU growth covers the cube face')
+        }
+        await toolbar.expectSelection('1 face')
+        expect(await pickIdAt(page, face.x, face.y)).toBe(face.id)
+        expect(anyFace).not.toBeNull()
       })
     }
   }
