@@ -1,6 +1,7 @@
 import {
   DefaultLayoutPaneID,
   DefaultLayoutToolbarID,
+  exportProjectArchiveAction,
 } from '@src/lib/layout/configs/default'
 import {
   ActionType,
@@ -80,6 +81,7 @@ export const zookeeperFocusConfig: Layout = {
           icon: 'floppyDiskArrow',
           actionType: ActionType.Export,
         },
+        exportProjectArchiveAction,
         {
           id: 'make',
           label: 'Make part',

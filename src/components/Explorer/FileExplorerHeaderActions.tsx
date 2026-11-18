@@ -1,5 +1,6 @@
 import { ActionButton } from '@src/components/ActionButton'
 import Tooltip from '@src/components/Tooltip'
+import { EXPORT_PROJECT_ARCHIVE_LABEL } from '@src/lib/constants'
 
 /**
  * The set of action buttons that are displayed in the file explorer header
@@ -72,6 +73,7 @@ export const FileExplorerHeaderActions = ({
         <ActionButton
           Element="button"
           data-testid="download-project-zip"
+          aria-label={EXPORT_PROJECT_ARCHIVE_LABEL}
           iconStart={{
             icon: 'download',
             iconClassName: '!text-current',
@@ -80,7 +82,9 @@ export const FileExplorerHeaderActions = ({
           className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
           onClick={onDownloadProject}
         >
-          <Tooltip position="bottom-right">Download project files</Tooltip>
+          <Tooltip position="bottom-right">
+            {EXPORT_PROJECT_ARCHIVE_LABEL}
+          </Tooltip>
         </ActionButton>
       )}
 

@@ -51,6 +51,7 @@ export type AreaTypeDefinition = {
 
 export enum ActionType {
   Export = 'export',
+  ExportProjectArchive = 'exportProjectArchive',
   AddFile = 'addFileToProject',
   Make = 'make',
   CommandBar = 'openCommandBar',

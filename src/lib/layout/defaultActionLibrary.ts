@@ -3,10 +3,11 @@ import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { selectCommand } from '@src/lib/commandUtils'
+import { EXPORT_PROJECT_ARCHIVE_COMMAND } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { isMobile } from '@src/lib/isMobile'
 import { layoutActionLibraryFacet } from '@src/lib/layout/registry/contract'
-import type { ActionLibrary } from '@src/lib/layout/types'
+import { ActionType, type ActionLibrary } from '@src/lib/layout/types'
 import { useMemo } from 'react'
 
 export const useDefaultActionLibrary = () => {
@@ -34,6 +35,10 @@ export const useDefaultActionLibrary = () => {
           shortcut: 'Ctrl + Shift + E',
           execute: () =>
             selectCommand(commands, { name: 'Export', groupId: 'modeling' }),
+        },
+        [ActionType.ExportProjectArchive]: {
+          execute: () =>
+            selectCommand(commands, EXPORT_PROJECT_ARCHIVE_COMMAND),
         },
         addFileToProject: {
           useHidden: () => false,

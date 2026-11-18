@@ -955,7 +955,7 @@ export const doExport = async (
 
     const exportMenuButton = page
       .getByTestId('project-sidebar-menu')
-      .getByRole('button', { name: 'Export' })
+      .getByText('Export', { exact: true })
     await expect(exportMenuButton).toBeVisible()
     await exportMenuButton.click()
   } else if (exportFrom === 'sidebarButton') {

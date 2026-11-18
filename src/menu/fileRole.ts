@@ -1,5 +1,6 @@
 import type { BrowserWindow } from 'electron'
 
+import { EXPORT_PROJECT_ARCHIVE_LABEL } from '@src/lib/constants'
 import { sendMenuAction } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
 import { isMac } from '@src/menu/utils'
@@ -126,6 +127,11 @@ export const modelingFileRole = (
         label: 'Export',
         id: 'File.Export current part',
         click: sendMenuAction(mainWindow, 'File.Export current part'),
+      },
+      {
+        label: EXPORT_PROJECT_ARCHIVE_LABEL,
+        id: 'File.Export project archive',
+        click: sendMenuAction(mainWindow, 'File.Export project archive'),
       },
       { type: 'separator' },
       {

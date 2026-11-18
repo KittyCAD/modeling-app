@@ -3,6 +3,7 @@ import { LAYOUT_SAVE_THROTTLE } from '@src/lib/constants'
 import {
   DefaultLayoutToolbarID,
   defaultLayoutConfig,
+  exportProjectArchiveAction,
   featureTreePaneConfig,
   isDefaultLayoutPaneID,
   namedViewsPaneConfig,
@@ -23,13 +24,13 @@ import type {
   Side,
   PaneOpenBehavior,
 } from '@src/lib/layout/types'
-import { AreaType, LayoutType } from '@src/lib/layout/types'
+import { ActionType, AreaType, LayoutType } from '@src/lib/layout/types'
 import { isErr } from '@src/lib/trap'
-import { capitaliseFC, throttle } from '@src/lib/utils'
+import { capitaliseFC, isArray, throttle } from '@src/lib/utils'
 import type React from 'react'
 
 /** Most recent layout system version */
-export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v4'
+export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v5'
 
 export const defaultLayout = defaultLayoutConfig
 
@@ -1115,6 +1116,41 @@ function getLayoutMigrations(): LayoutMigrationMap {
                       ],
                     }
                   : layout,
+            ],
+          },
+        ],
+      },
+    ],
+    [
+      'v4',
+      {
+        newVersion: 'v5',
+        transformationSets: [
+          {
+            matcher: (layout) => layout.type === LayoutType.Panes,
+            transformations: [
+              (layout) => {
+                if (
+                  layout.type !== LayoutType.Panes ||
+                  !isArray(layout.actions)
+                ) {
+                  return layout
+                }
+                const index = layout.actions.findIndex(
+                  (action) => action?.actionType === ActionType.Export
+                )
+                if (
+                  index >= 0 &&
+                  !layout.actions.some(
+                    (action) => action?.id === exportProjectArchiveAction.id
+                  )
+                ) {
+                  layout.actions.splice(index + 1, 0, {
+                    ...exportProjectArchiveAction,
+                  })
+                }
+                return layout
+              },
             ],
           },
         ],

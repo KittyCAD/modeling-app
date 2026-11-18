@@ -16,6 +16,7 @@ import {
   applyLayoutMigrationMap,
   applyPaneOpenBehavior,
   closeAllPanes,
+  LATEST_LAYOUT_VERSION,
   parseLayoutWithMigrations,
   setOpenPanes,
 } from '@src/lib/layout/utils'
@@ -391,7 +392,7 @@ describe('Layout utils', () => {
 
       expect(migrated).not.toBeInstanceOf(Error)
       // Migrations chain, so a v2 layout lands on the latest version.
-      expect(migrated).toHaveProperty('version', 'v4')
+      expect(migrated).toHaveProperty('version', LATEST_LAYOUT_VERSION)
       expect(migrated).toHaveProperty('layout.type', LayoutType.Splits)
       expect(migrated).toHaveProperty(
         'layout.children[0].areaType',
@@ -419,7 +420,7 @@ describe('Layout utils', () => {
       })
 
       expect(migrated).not.toBeInstanceOf(Error)
-      expect(migrated).toHaveProperty('version', 'v4')
+      expect(migrated).toHaveProperty('version', LATEST_LAYOUT_VERSION)
       expect(migrated).toHaveProperty(
         'layout.children[1].areaType',
         AreaType.NamedViews
@@ -428,7 +429,7 @@ describe('Layout utils', () => {
       expect(migrated).toHaveProperty('layout.activeIndices', [0])
     })
 
-    it('leaves a pane bar that already has the switcher alone', () => {
+    it('adds the archive button beside Export without changing saved panes', () => {
       const migrated = parseLayoutWithMigrations({
         version: 'v4',
         layout: {
@@ -443,12 +444,30 @@ describe('Layout utils', () => {
             structuredClone(featureTreePaneConfig),
             structuredClone(namedViewsPaneConfig),
           ],
+          actions: [
+            {
+              id: 'export',
+              label: 'Export',
+              icon: 'floppyDiskArrow',
+              actionType: 'export',
+            },
+            {
+              id: 'make',
+              label: 'Make part',
+              icon: 'printer3d',
+              actionType: 'make',
+            },
+          ],
         },
       })
 
-      expect(migrated).not.toBeInstanceOf(Error)
-      expect(migrated).toHaveProperty('version', 'v4')
+      expect(migrated).toHaveProperty('version', LATEST_LAYOUT_VERSION)
       expect(migrated).toHaveProperty('layout.children.length', 2)
+      expect(migrated).toHaveProperty('layout.actions', [
+        expect.objectContaining({ id: 'export' }),
+        expect.objectContaining({ id: 'export-project-archive' }),
+        expect.objectContaining({ id: 'make' }),
+      ])
     })
 
     it('gives the switcher an icon of its own, not the feature tree pane one', () => {

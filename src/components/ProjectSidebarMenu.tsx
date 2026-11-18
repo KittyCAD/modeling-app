@@ -9,7 +9,11 @@ import usePlatform from '@src/hooks/usePlatform'
 import type { App } from '@src/lib/app'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { selectCommand } from '@src/lib/commandUtils'
-import { APP_NAME } from '@src/lib/constants'
+import {
+  APP_NAME,
+  EXPORT_PROJECT_ARCHIVE_COMMAND,
+  EXPORT_PROJECT_ARCHIVE_LABEL,
+} from '@src/lib/constants'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { getProjectRelativeFilePath, PATHS } from '@src/lib/paths'
@@ -222,10 +226,6 @@ function ProjectMenuPopover({
   ).value
 
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
-  const exportProjectZipCommandInfo = {
-    name: 'export-project-zip',
-    groupId: 'application',
-  }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
   const findCommand = useCallback(
     (obj: { name: string; groupId: string }) =>
@@ -401,13 +401,12 @@ function ProjectMenuPopover({
         {
           id: 'download-project-zip',
           Element: 'button' as const,
-          className: isDesktop() ? 'hidden' : '',
           children: (
             <>
               <span className={projectMenuItemLabelClassName}>
-                Download project files
+                {EXPORT_PROJECT_ARCHIVE_LABEL}
               </span>
-              {!findCommand(exportProjectZipCommandInfo) && (
+              {!findCommand(EXPORT_PROJECT_ARCHIVE_COMMAND) && (
                 <Tooltip
                   position="right"
                   wrapperClassName="!max-w-none min-w-fit"
@@ -417,8 +416,9 @@ function ProjectMenuPopover({
               )}
             </>
           ),
-          disabled: !findCommand(exportProjectZipCommandInfo),
-          onClick: () => selectCommand(commands, exportProjectZipCommandInfo),
+          disabled: !findCommand(EXPORT_PROJECT_ARCHIVE_COMMAND),
+          onClick: () =>
+            selectCommand(commands, EXPORT_PROJECT_ARCHIVE_COMMAND),
         },
         {
           id: 'make',

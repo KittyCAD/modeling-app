@@ -204,6 +204,12 @@ export const EXECUTE_AST_INTERRUPT_ERROR_MESSAGE = JSON.stringify(
 )
 
 /** The messages that appear for exporting toasts */
+export const EXPORT_PROJECT_ARCHIVE_LABEL = 'Export project archive (.zip)'
+export const EXPORT_PROJECT_ARCHIVE_COMMAND = {
+  name: 'export-project-zip',
+  groupId: 'application',
+}
+
 export const EXPORT_TOAST_MESSAGES = {
   START: 'Exporting...',
   CHOOSE_LOCATION:

@@ -1,3 +1,4 @@
+import { EXPORT_PROJECT_ARCHIVE_LABEL } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { isMobile } from '@src/lib/isMobile'
 import {
@@ -9,6 +10,13 @@ import {
   type PaneChild,
   type PaneLayout,
 } from '@src/lib/layout/types'
+
+export const exportProjectArchiveAction: Action = {
+  id: 'export-project-archive',
+  label: EXPORT_PROJECT_ARCHIVE_LABEL,
+  icon: 'download',
+  actionType: ActionType.ExportProjectArchive,
+}
 
 /** Temporary ID for getting the left toolbar of the layout */
 export enum DefaultLayoutToolbarID {
@@ -161,6 +169,7 @@ const primaryPane: Layout = {
       icon: 'floppyDiskArrow',
       actionType: ActionType.Export,
     },
+    exportProjectArchiveAction,
     {
       id: 'make',
       label: 'Make part',

@@ -1,11 +1,15 @@
-import { createProjectZipArchive } from '@src/lib/exportProjectZip'
+import { tmpdir } from 'node:os'
+import {
+  createProjectZipArchive,
+  exportProjectZip,
+} from '@src/lib/exportProjectZip'
 import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { buildTheWorldNode } from '@src/unitTestUtils'
 import JSZip from 'jszip'
-import { afterEach, beforeAll, describe, expect, it } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
 const createdProjectPaths: string[] = []
 let wasmInstance: ModuleType
@@ -47,7 +51,10 @@ describe('createProjectZipArchive', () => {
   })
 
   it('zips every project file and uses the current editor contents for the active file', async () => {
-    const projectPath = `/tmp/export-project-zip-${crypto.randomUUID()}`
+    const projectPath = fsZds.join(
+      tmpdir(),
+      `export-project-zip-${crypto.randomUUID()}`
+    )
     createdProjectPaths.push(projectPath)
 
     await fsZds.mkdir(fsZds.join(projectPath, 'parts'), { recursive: true })
@@ -100,8 +107,11 @@ describe('createProjectZipArchive', () => {
     ).resolves.toBe('default_file = "main.kcl"')
   })
 
-  it('uses the project title for the ZIP name and root when it differs from the folder name', async () => {
-    const projectPath = `/tmp/export-project-zip-${crypto.randomUUID()}`
+  it('saves a project archive through the desktop file picker', async () => {
+    const projectPath = fsZds.join(
+      tmpdir(),
+      `export-project-zip-${crypto.randomUUID()}`
+    )
     createdProjectPaths.push(projectPath)
 
     await fsZds.mkdir(projectPath, { recursive: true })
@@ -110,21 +120,27 @@ describe('createProjectZipArchive', () => {
       new TextEncoder().encode('disk = true')
     )
 
-    const archive = await createProjectZipArchive({
-      fileOperations: testFileOperations,
-      project: makeProject(projectPath, {
-        name: '550e8400-e29b-41d4-a716-446655440000',
-        title: 'Human Project',
-      }),
-      wasmInstance,
-    })
-
-    if (archive instanceof Error) {
-      throw archive
+    const filePath = fsZds.join(projectPath, 'saved.zip')
+    const save = vi.fn().mockResolvedValue({ canceled: false, filePath })
+    vi.stubGlobal('electron', { save, process: { env: {} } })
+    try {
+      await exportProjectZip({
+        fileOperations: testFileOperations,
+        project: makeProject(projectPath, {
+          name: '550e8400-e29b-41d4-a716-446655440000',
+          title: 'Human Project',
+        }),
+        wasmInstance,
+      })
+    } finally {
+      vi.unstubAllGlobals()
     }
 
-    expect(archive.fileName).toBe('Human Project.zip')
-    const zip = await JSZip.loadAsync(await archive.blob.arrayBuffer())
+    expect(save).toHaveBeenCalledWith({
+      defaultPath: 'Human Project.zip',
+      filters: [{ name: 'ZIP archive', extensions: ['zip'] }],
+    })
+    const zip = await JSZip.loadAsync(await fsZds.readFile(filePath))
 
     await expect(
       zip.file('Human Project/main.kcl')?.async('string')

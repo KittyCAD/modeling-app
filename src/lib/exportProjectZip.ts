@@ -1,4 +1,4 @@
-import { browserSaveFile } from '@src/lib/browserSaveFile'
+import { saveExportFile } from '@src/lib/exportSave'
 import {
   EXPORT_TOAST_MESSAGES,
   PROJECT_SETTINGS_FILE_NAME,
@@ -50,7 +50,15 @@ export async function exportProjectZip({
     return
   }
 
-  await browserSaveFile(archive.blob, archive.fileName, toastId)
+  await saveExportFile(
+    fileOperations,
+    {
+      name: archive.fileName,
+      contents: archive.blob,
+      filterName: 'ZIP archive',
+    },
+    toastId
+  )
 }
 
 export async function createProjectZipArchive({

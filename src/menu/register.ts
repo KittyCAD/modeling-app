@@ -1,6 +1,6 @@
 import { selectCommand } from '@src/lib/commandUtils'
 import type { KclManager } from '@src/lang/KclManager'
-import { AxisNames } from '@src/lib/constants'
+import { AxisNames, EXPORT_PROJECT_ARCHIVE_COMMAND } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
@@ -144,6 +144,8 @@ export function modelingMenuCallbackMostActions({
         groupId: 'modeling',
         name: 'Export',
       })
+    } else if (data.menuLabel === 'File.Export project archive') {
+      selectCommand(commandBarActor, EXPORT_PROJECT_ARCHIVE_COMMAND)
     } else if (data.menuLabel === 'File.Create new file') {
       // NO OP. A safe command bar create new file is not implemented yet.
     } else if (data.menuLabel === 'Edit.Edit parameter') {
