@@ -12,6 +12,8 @@ import {
 import { type CSSProperties, useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ActionEditor } from './action-editor'
+import { PlanktonDrawer } from './plankton-drawer'
+import { Pixels, artwork, ink } from './tile-art'
 import { type ActionRecipe, compileAction } from './actions'
 import {
   type Definition,
@@ -26,35 +28,6 @@ import { wordSprite } from './pixels'
 import { openGame, type Runtime } from './registry'
 import './style.css'
 
-function Pixels({ sprite, color }: { sprite: Sprite; color: string }) {
-  const squares = sprite
-    .flatMap((row, y) =>
-      [...row].flatMap((pixel, x) =>
-        pixel === '1' ? [`M${x},${y}h1v1h-1z`] : []
-      )
-    )
-    .join('')
-  return (
-    <svg
-      viewBox={`0 0 ${sprite[0].length} ${sprite.length}`}
-      aria-hidden="true"
-      shapeRendering="crispEdges"
-    >
-      <path d={squares} fill={color} />
-    </svg>
-  )
-}
-
-const ink = (definition: Definition, kind: Tile['kind']) =>
-  kind === 'word' && definition.wordColor
-    ? definition.wordColor
-    : 'color' in definition
-      ? definition.color
-      : '#ded9cf'
-const artwork = (definition: Definition, kind: Tile['kind']) =>
-  kind === 'entity' && definition.kind === 'entity'
-    ? definition.sprite
-    : (definition.wordSprite ?? wordSprite(definition.id))
 const blank = () => Array<string>(8).fill('00000000')
 
 type DraftData = {
@@ -101,6 +74,8 @@ function App({ runtime }: { runtime: Runtime }) {
   const [open, setOpen] = useState(false),
     [peek, setPeek] = useState(false),
     [busy, setBusy] = useState(false)
+  const [guideOpen, setGuideOpen] = useState(false)
+  const [guidePeek, setGuidePeek] = useState(false)
   const [notice, setNotice] = useState('')
   const [placement, setPlacement] = useState<{
     type: string
@@ -254,7 +229,7 @@ function App({ runtime }: { runtime: Runtime }) {
     world.current?.focus()
   }
   function step(direction: Point) {
-    if (open || busy || placement) return
+    if (open || guideOpen || busy || placement) return
     game.step(direction)
     refresh()
   }
@@ -262,6 +237,7 @@ function App({ runtime }: { runtime: Runtime }) {
     const keydown = (event: KeyboardEvent) => {
       if (
         open ||
+        guideOpen ||
         busy ||
         event.target instanceof HTMLInputElement ||
         event.target instanceof HTMLSelectElement
@@ -291,8 +267,10 @@ function App({ runtime }: { runtime: Runtime }) {
       }
     }
     const release = () => setPainting(false)
-    const proximity = (event: PointerEvent) =>
+    const proximity = (event: PointerEvent) => {
       setPeek(event.clientX > window.innerWidth - 64)
+      setGuidePeek(event.clientX < 64)
+    }
     window.addEventListener('keydown', keydown)
     window.addEventListener('pointerup', release)
     window.addEventListener('pointermove', proximity)
@@ -301,7 +279,7 @@ function App({ runtime }: { runtime: Runtime }) {
       window.removeEventListener('pointerup', release)
       window.removeEventListener('pointermove', proximity)
     }
-  }, [game, open, busy, placement])
+  }, [game, open, guideOpen, busy, placement])
   async function change(work: () => Promise<void>, message: string) {
     setBusy(true)
     try {
@@ -455,7 +433,7 @@ function App({ runtime }: { runtime: Runtime }) {
               <button
                 key={index}
                 className="cell"
-                disabled={busy || open}
+                disabled={busy || open || guideOpen}
                 aria-label={`Column ${x + 1}, row ${y + 1}: ${tiles.map((t) => t.type).join(', ') || 'empty'}`}
                 onClick={() => boardClick(x, y)}
               >
@@ -495,6 +473,23 @@ function App({ runtime }: { runtime: Runtime }) {
           </div>
         )}
       </div>
+      <PlanktonDrawer
+        runtime={runtime}
+        open={guideOpen}
+        peek={guidePeek}
+        onOpenChange={(value) => {
+          setGuideOpen(value)
+          setGuidePeek(false)
+        }}
+        onEdit={(definition, kind) => {
+          setDraft(draftFor(definition, kind))
+          setActionEditor(false)
+          setErase(false)
+          setNotice('')
+          setGuideOpen(false)
+          setOpen(true)
+        }}
+      />
       <Dialog.Root
         open={open}
         onOpenChange={(value) => {

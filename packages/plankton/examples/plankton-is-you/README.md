@@ -99,6 +99,12 @@ The world fits its fixed bounds in a letterboxed viewport. Move with arrows or
 WASD, wait with Space, and undo with Z. Click any tile, or approach the right edge
 and click the revealed editor handle. Editing pauses player input.
 
+Approach the left edge to open **Plankton**, a visual explanation of the live
+composition. Select vocabulary tiles to inspect their definitions and action
+links, see the Facets collecting installed contributions, and follow how Slot
+replacement preserves the session Factory. **Edit** jumps to the selected word
+in the right editor. The explanation also pauses play.
+
 The editor shows pixel-rendered live rules first, then installed vocabulary.
 Vocabulary and Outcomes stay in the main panel. Selecting a tile opens a separate
 tray to its left: entity/word artwork, name, ink, pixel canvas, and property action.

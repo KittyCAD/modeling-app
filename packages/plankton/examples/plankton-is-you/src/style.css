@@ -625,3 +625,218 @@ svg {
   background: #bddb99;
   color: #19191b;
 }
+
+.plankton-edge {
+  left: 0;
+  right: auto;
+  width: 112px;
+  transform: translateX(-106px);
+  border-left: 0;
+  border-right: 1px solid #626267;
+}
+.plankton-drawer {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: min(470px, 100vw);
+  overflow-y: auto;
+  padding: 24px;
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  z-index: 4;
+  animation: lesson-in 0.16s ease-out;
+}
+.plankton-drawer header,
+.lesson-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.plankton-drawer header svg {
+  width: 18px;
+  height: 18px;
+}
+.plankton-drawer header button {
+  display: flex;
+  border: 0;
+  padding: 5px;
+}
+.lesson-eyebrow {
+  color: var(--muted);
+  font-size: 10px;
+}
+.plankton-drawer h2 {
+  font-size: 23px;
+  font-weight: 500;
+  margin: 20px 0 10px;
+}
+.plankton-drawer p {
+  color: #c2c1c5;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.plankton-lesson {
+  border-top: 1px solid var(--line);
+  margin-top: 26px;
+  padding-top: 5px;
+}
+.plankton-lesson h2 {
+  font-size: 15px;
+}
+.plankton-lesson h2 > span {
+  color: #bddb99;
+  font-size: 10px;
+  margin-right: 8px;
+}
+.lesson-vocabulary {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin: 16px 0;
+}
+.lesson-vocabulary button {
+  padding: 6px;
+  aspect-ratio: 1;
+}
+.lesson-vocabulary svg,
+.lesson-tile svg {
+  width: 100%;
+  height: 100%;
+}
+.lesson-vocabulary [aria-pressed="true"] {
+  border-color: #bddb99;
+  background: #bddb9918;
+}
+.lesson-tile {
+  display: inline-flex;
+  width: 43px;
+  height: 43px;
+  padding: 5px;
+  border: 1px solid var(--line);
+  background: #111113;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.lesson-definition,
+.lesson-owner {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+.lesson-flow strong {
+  font-size: 12px;
+  font-weight: 500;
+}
+.lesson-flow small {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 5px;
+}
+.lesson-flow > svg {
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.plankton-drawer code {
+  font-size: 10px;
+  color: #b1cba4;
+  overflow-wrap: anywhere;
+}
+.lesson-edit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 11px;
+}
+.lesson-edit svg {
+  width: 14px;
+  height: 14px;
+}
+.lesson-action {
+  border-left: 2px solid #bddb99;
+  padding-left: 10px;
+}
+.lesson-stack {
+  display: flex;
+}
+.lesson-stack .lesson-tile {
+  width: 30px;
+  height: 36px;
+}
+.lesson-container {
+  border: 1px dashed #6b735f;
+  padding: 12px 8px;
+  text-align: center;
+}
+.lesson-consumer {
+  font-size: 10px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.lesson-totals {
+  display: flex;
+  justify-content: space-around;
+  padding: 16px 0;
+  border-block: 1px solid var(--line);
+  font-size: 21px;
+  color: #bddb99;
+  text-align: center;
+}
+.lesson-totals small {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.lesson-outcomes {
+  display: grid;
+  gap: 5px;
+}
+.lesson-outcome,
+.lesson-outcome > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.lesson-arrow {
+  color: var(--muted);
+  padding-inline: 4px;
+}
+.lesson-owner > .lesson-eyebrow {
+  display: block;
+  margin-bottom: 14px;
+}
+.lesson-return {
+  width: 100%;
+  margin-top: 24px;
+}
+@keyframes lesson-in {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@media (pointer: coarse) {
+  .plankton-edge {
+    transform: translateX(-80px);
+  }
+}
+@media (max-width: 380px) {
+  .plankton-drawer {
+    padding: 18px;
+  }
+  .lesson-assembly {
+    gap: 5px;
+  }
+  .lesson-stack .lesson-tile {
+    width: 24px;
+  }
+  .lesson-vocabulary {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
