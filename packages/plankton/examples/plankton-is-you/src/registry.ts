@@ -9,14 +9,23 @@ import {
   service,
   slot,
 } from 'plankton'
+import { builtInActions, builtInOutcomes } from './actions'
 import { bushPuzzle } from './content'
-import { type Definition, Game, type Puzzle } from './game'
+import {
+  type Action,
+  type Definition,
+  Game,
+  type Outcome,
+  type Puzzle,
+} from './game'
 
 export const gameContract = contract({
   definitions: new Facet(
     'game.definitions',
     (values: readonly Definition[]) => values
   ),
+  actions: new Facet('game.actions', (values: readonly Action[]) => values),
+  outcomes: new Facet('game.outcomes', (values: readonly Outcome[]) => values),
   session: service<Game>('game.session'),
   puzzles: new Facet('game.puzzles', (values: readonly Puzzle[]) => values),
 })
@@ -45,25 +54,59 @@ export async function openGame() {
     throw new Error('At least one starter puzzle is required')
   }
   const startingContent = slot(compileDefinitions(initialPuzzle.definitions))
-  const authoredContent = slot([])
+  const authoredActions = slot([])
+  const actions = builtInActions.map((action) =>
+    contribute(gameContract.actions, () => action, { key: action.id })
+  )
+  const outcomes = builtInOutcomes.map((outcome) =>
+    contribute(gameContract.outcomes, () => outcome, { key: outcome.id })
+  )
   const session = factory({
     create: (_dependencies, scope) => {
       const definitions = scope.observe(gameContract.definitions)
-      const game = new Game(initialPuzzle, () => definitions.value)
-      return { exports: game, items: [provide(gameContract.session, game)] }
+      const actions = scope.observe(gameContract.actions)
+      const outcomes = scope.observe(gameContract.outcomes)
+      const game = new Game(initialPuzzle, {
+        definitions: () => definitions.value,
+        actions: () => actions.value,
+        outcomes: () => outcomes.value,
+      })
+      return {
+        exports: game,
+        items: [provide(gameContract.session, game)],
+        start: () => game.settle(),
+      }
     },
   })
   await registry.configure([
     starterPuzzles,
     startingContent,
-    authoredContent,
+    actions,
+    outcomes,
+    authoredActions,
     session,
   ])
   const board = registry.required(gameContract.session)
   let authored: readonly Definition[] = []
+  let customActions: readonly Action[] = []
+  let deleted = new Set<string>()
+  const vocabulary = (
+    definitions: readonly Definition[],
+    excluded: ReadonlySet<string>
+  ) => [
+    compileDefinitions(
+      board.puzzle.definitions.filter((d) => !excluded.has(d.id))
+    ),
+    compileDefinitions(
+      definitions.filter((d) => !excluded.has(d.id)),
+      true
+    ),
+  ]
   return {
     game: board,
     registry,
+    actions: registry.observe(gameContract.actions),
+    outcomes: registry.observe(gameContract.outcomes),
     definitions: registry.observe(gameContract.definitions),
     puzzles: registry.observe(gameContract.puzzles),
     async publish(definition: Definition) {
@@ -71,17 +114,42 @@ export async function openGame() {
         ...authored.filter((d) => d.id !== definition.id),
         definition,
       ]
-      await registry.replace(authoredContent, compileDefinitions(next, true))
+      const excluded = new Set(deleted)
+      excluded.delete(definition.id)
+      await registry.replace(startingContent, vocabulary(next, excluded))
       authored = next
+      deleted = excluded
+    },
+    async deleteDefinition(id: string) {
+      if (board.board.tiles.some((tile) => tile.type === id))
+        throw new Error('Remove placed tiles before deleting their definition')
+      const excluded = new Set(deleted).add(id)
+      await registry.replace(startingContent, vocabulary(authored, excluded))
+      deleted = excluded
+    },
+    async publishAction(action: Action) {
+      const next = [...customActions.filter((a) => a.id !== action.id), action]
+      await registry.replace(
+        authoredActions,
+        next.map((a) =>
+          contribute(gameContract.actions, () => a, {
+            key: a.id,
+            precedence: 'high',
+          })
+        )
+      )
+      customActions = next
     },
     async loadPuzzle(id: string) {
       const puzzle = registry.get(gameContract.puzzles).find((p) => p.id === id)
       if (!puzzle) throw new Error(`Unknown puzzle: ${id}`)
-      await registry.replace(
-        startingContent,
-        compileDefinitions(puzzle.definitions)
-      )
+      await registry.replace(startingContent, [
+        compileDefinitions(puzzle.definitions),
+        compileDefinitions(authored, true),
+      ])
+      deleted = new Set()
       board.load(puzzle)
+      board.settle()
     },
     dispose: () => registry.dispose(),
   }

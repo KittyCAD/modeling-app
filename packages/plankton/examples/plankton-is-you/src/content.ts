@@ -47,9 +47,9 @@ export const initialDefinitions: readonly Definition[] = [
     ],
   },
   { kind: 'grammar', id: 'IS' },
-  { kind: 'property', id: 'YOU', color: '#c5ed91', controls: true },
-  { kind: 'property', id: 'WIN', color: '#f6cf75', wins: true },
-  { kind: 'property', id: 'STOP', color: '#7eae9a', blocks: true },
+  { kind: 'property', id: 'YOU', color: '#c5ed91', action: 'control' },
+  { kind: 'property', id: 'WIN', color: '#f6cf75', action: 'win' },
+  { kind: 'property', id: 'STOP', color: '#7eae9a', action: 'block' },
 ]
 const word = (type: string, x: number, y: number): Tile => ({
   id: `word-${x}-${y}`,
@@ -98,19 +98,12 @@ export const bushPuzzle: Puzzle = {
   ],
 }
 
-/** Authoring recipes compile to the same property contributions as built-ins. */
+/** A property connects its word to an action supplied by an independent extension. */
 export type PropertyRecipe = {
   id: string
   color: string
-  action: 'destroy-self' | 'block-movement'
+  action: string
 }
 export function compileProperty(recipe: PropertyRecipe): PropertyDefinition {
-  return recipe.action === 'destroy-self'
-    ? {
-        kind: 'property',
-        id: recipe.id,
-        color: recipe.color,
-        afterTurn: (subject, turn) => turn.destroy(subject.id),
-      }
-    : { kind: 'property', id: recipe.id, color: recipe.color, blocks: true }
+  return { kind: 'property', ...recipe }
 }

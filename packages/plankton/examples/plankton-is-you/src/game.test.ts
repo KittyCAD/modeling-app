@@ -1,7 +1,22 @@
 import { describe, expect, it } from 'vitest'
+import { builtInActions, builtInOutcomes, compileAction } from './actions'
 import { bushPuzzle, compileProperty, initialDefinitions } from './content'
-import { Game, readRules, type Tile } from './game'
+import {
+  type Definition,
+  Game,
+  type Puzzle,
+  readRules,
+  type Tile,
+} from './game'
 import { gameContract, openGame } from './registry'
+
+function createGame(puzzle: Puzzle, definitions: () => readonly Definition[]) {
+  return new Game(puzzle, {
+    definitions,
+    actions: () => builtInActions,
+    outcomes: () => builtInOutcomes,
+  })
+}
 
 const dieWord: Tile = {
   id: 'authored-word',
@@ -21,10 +36,10 @@ describe('the living vocabulary', () => {
       ).toEqual(['through-the-hedge'])
       for (let i = 0; i < 8; i++) game.step({ x: 1, y: 0 })
       expect(game.board.tiles.find((t) => t.id === 'player')?.x).toBe(6)
-      expect(game.board.won).toBe(false)
+      expect(game.board.status).not.toBe('won')
       const boardBeforePublish = game.board
       await runtime.publish(
-        compileProperty({ id: 'DIE', color: '#ee927d', action: 'destroy-self' })
+        compileProperty({ id: 'DIE', color: '#ee927d', action: 'destroy' })
       )
       expect(game.board).toBe(boardBeforePublish)
       expect(runtime.definitions.value.some((d) => d.id === 'DIE')).toBe(true)
@@ -34,9 +49,9 @@ describe('the living vocabulary', () => {
         game.board.tiles.filter((t) => t.kind === 'entity' && t.type === 'BUSH')
       ).toEqual([])
       for (let i = 0; i < 4; i++) game.step({ x: 1, y: 0 })
-      expect(game.board.won).toBe(true)
+      expect(game.board.status).toBe('won')
       game.undo()
-      expect(game.board.won).toBe(false)
+      expect(game.board.status).not.toBe('won')
       expect(game.board.tiles.find((t) => t.id === 'player')?.x).toBe(9)
     } finally {
       await runtime.dispose()
@@ -85,7 +100,7 @@ describe('the living vocabulary', () => {
         game.board.tiles.filter((t) => t.kind === 'entity' && t.type === 'BUSH')
       ).toHaveLength(17)
       await runtime.publish(
-        compileProperty({ id: 'DIE', color: '#ee927d', action: 'destroy-self' })
+        compileProperty({ id: 'DIE', color: '#ee927d', action: 'destroy' })
       )
       game.step({ x: 0, y: 0 })
       expect(game.board.tiles.some((t) => t.id === dieWord.id)).toBe(true)
@@ -108,7 +123,7 @@ describe('the living vocabulary', () => {
     expect(readRules(vertical, initialDefinitions)).toEqual([
       { noun: 'PLNK', property: 'YOU' },
     ])
-    const game = new Game(
+    const game = createGame(
       {
         ...bushPuzzle,
         placements: [
@@ -127,7 +142,7 @@ describe('the living vocabulary', () => {
       x: 4,
       y: 5,
     })
-    const sentenceGame = new Game(
+    const sentenceGame = createGame(
       {
         ...bushPuzzle,
         placements: [
@@ -147,7 +162,7 @@ describe('the living vocabulary', () => {
   })
 
   it('rolls back a whole word chain when the last word cannot move', () => {
-    const game = new Game(
+    const game = createGame(
       {
         ...bushPuzzle,
         bounds: { width: 6, height: 6 },
@@ -164,7 +179,9 @@ describe('the living vocabulary', () => {
     )
     const before = game.board.tiles
     game.step({ x: 1, y: 0 })
-    expect(game.board.tiles).toEqual(before)
+    expect(game.board.tiles.map(({ id, x, y }) => ({ id, x, y }))).toEqual(
+      before.map(({ id, x, y }) => ({ id, x, y }))
+    )
   })
 
   it('wins when a pushed word makes the controlled entity itself WIN', () => {
@@ -176,7 +193,7 @@ describe('the living vocabulary', () => {
         x: x + 1,
         y,
       }))
-    const game = new Game(
+    const game = createGame(
       {
         ...bushPuzzle,
         placements: [
@@ -188,19 +205,19 @@ describe('the living vocabulary', () => {
       },
       () => initialDefinitions
     )
-    expect(game.board.won).toBe(false)
+    expect(game.board.status).not.toBe('won')
     game.step({ x: 0, y: -1 })
-    expect(game.board.won).toBe(true)
+    expect(game.board.status).toBe('won')
     expect(game.board.tiles.find((t) => t.id === 'player')).toMatchObject({
       x: 3,
       y: 4,
     })
     game.undo()
-    expect(game.board.won).toBe(false)
+    expect(game.board.status).not.toBe('won')
   })
 
   it('does not win from WIN alone without a controlled entity', () => {
-    const game = new Game(
+    const game = createGame(
       {
         ...bushPuzzle,
         placements: [
@@ -219,7 +236,7 @@ describe('the living vocabulary', () => {
       () => initialDefinitions
     )
     game.step({ x: 0, y: 0 })
-    expect(game.board.won).toBe(false)
+    expect(game.board.status).not.toBe('won')
   })
 
   it('encloses the control sentence and keeps STOP and WIN beyond the hedge', () => {
@@ -301,10 +318,198 @@ describe('the living vocabulary', () => {
     }
   })
 
+  it('installs MOVE at runtime, reverses at bounds, and follows action replacement', async () => {
+    const runtime = await openGame()
+    try {
+      await runtime.publish(
+        compileProperty({ id: 'MOVE', color: '#ffffff', action: 'MOVE' })
+      )
+      runtime.game.load({
+        ...bushPuzzle,
+        bounds: { width: 6, height: 4 },
+        placements: [
+          ...['PLNK', 'IS', 'YOU'].map(
+            (type, x): Tile => ({ id: `you-${x}`, kind: 'word', type, x, y: 0 })
+          ),
+          ...['BUSH', 'IS', 'MOVE'].map(
+            (type, x): Tile => ({
+              id: `move-${x}`,
+              kind: 'word',
+              type,
+              x,
+              y: 1,
+            })
+          ),
+          { id: 'p', kind: 'entity', type: 'PLNK', x: 0, y: 3 },
+          { id: 'b', kind: 'entity', type: 'BUSH', x: 4, y: 3 },
+        ],
+      })
+      runtime.game.step({ x: 0, y: 0 })
+      expect(runtime.game.board.tiles.find((t) => t.id === 'b')?.x).toBe(4)
+      const board = runtime.game.board
+      await runtime.publishAction(
+        compileAction({
+          id: 'MOVE',
+          label: 'Move',
+          operation: 'step-forward',
+          blocked: 'reverse',
+        })
+      )
+      expect(runtime.game.board).toBe(board)
+      await runtime.publish(
+        compileProperty({ id: 'GO', color: '#ffffff', action: 'MOVE' })
+      )
+      for (const [x, type] of ['BUSH', 'IS', 'GO'].entries()) {
+        runtime.game.place({ id: `alias-${x}`, kind: 'word', type, x, y: 2 })
+      }
+      runtime.game.step({ x: 0, y: 0 })
+      expect(runtime.game.board.tiles.find((t) => t.id === 'b')?.x).toBe(5)
+      runtime.game.step({ x: 0, y: 0 })
+      expect(runtime.game.board.tiles.find((t) => t.id === 'b')).toMatchObject({
+        x: 4,
+        facing: { x: -1, y: 0 },
+      })
+      runtime.game.step({ x: 0, y: 0 })
+      expect(runtime.game.board.tiles.find((t) => t.id === 'b')?.x).toBe(3)
+      await runtime.publishAction(
+        compileAction({
+          id: 'MOVE',
+          label: 'Remove',
+          operation: 'destroy-self',
+          blocked: 'wait',
+        })
+      )
+      runtime.game.step({ x: 0, y: 0 })
+      expect(runtime.game.board.tiles.some((t) => t.id === 'b')).toBe(false)
+      runtime.game.undo()
+      expect(runtime.game.board.tiles.find((t) => t.id === 'b')?.x).toBe(3)
+      expect(runtime.actions.value.filter((a) => a.id === 'MOVE')).toHaveLength(
+        1
+      )
+    } finally {
+      await runtime.dispose()
+    }
+  })
+
+  it('loses when movement disconnects YOU and undo restores control', () => {
+    const game = createGame(
+      {
+        ...bushPuzzle,
+        placements: [
+          ...['PLNK', 'IS', 'YOU'].map(
+            (type, x): Tile => ({
+              id: `you-${x}`,
+              kind: 'word',
+              type,
+              x: x + 1,
+              y: 2,
+            })
+          ),
+          { id: 'p', kind: 'entity', type: 'PLNK', x: 3, y: 3 },
+        ],
+      },
+      () => initialDefinitions
+    )
+    game.step({ x: 0, y: -1 })
+    expect(game.board.status).toBe('lost')
+    expect(game.board.status).not.toBe('won')
+    const lostBoard = game.board
+    game.step({ x: 1, y: 0 })
+    expect(game.board).toBe(lostBoard)
+    game.undo()
+    expect(game.board.status).not.toBe('lost')
+    game.step({ x: 1, y: 0 })
+    expect(game.board.tiles.find((t) => t.id === 'p')?.x).toBe(4)
+  })
+
+  it('can repair a disconnected YOU sentence while editing a lost board', () => {
+    const game = createGame(bushPuzzle, () => initialDefinitions)
+    game.remove('word-3-1')
+    expect(game.board.status).toBe('lost')
+    game.place({ id: 'repair', kind: 'word', type: 'YOU', x: 3, y: 1 })
+    expect(game.board.status).not.toBe('lost')
+    game.undo()
+    expect(game.board.status).toBe('lost')
+    game.undo()
+    expect(game.board.status).not.toBe('lost')
+  })
+
+  it('checks outcomes after destruction, so a destroyed YOU cannot win', () => {
+    const definitions = [
+      ...initialDefinitions,
+      compileProperty({ id: 'DIE', color: '#ffffff', action: 'destroy' }),
+    ]
+    const game = createGame(
+      {
+        ...bushPuzzle,
+        placements: [
+          ...['PLNK', 'IS', 'YOU'].map(
+            (type, x): Tile => ({ id: `you-${x}`, kind: 'word', type, x, y: 0 })
+          ),
+          ...['PLNK', 'IS', 'DIE'].map(
+            (type, x): Tile => ({ id: `die-${x}`, kind: 'word', type, x, y: 1 })
+          ),
+          ...['FLAG', 'IS', 'WIN'].map(
+            (type, x): Tile => ({ id: `win-${x}`, kind: 'word', type, x, y: 2 })
+          ),
+          { id: 'p', kind: 'entity', type: 'PLNK', x: 3, y: 5 },
+          { id: 'f', kind: 'entity', type: 'FLAG', x: 4, y: 5 },
+        ],
+      },
+      () => definitions
+    )
+    game.step({ x: 1, y: 0 })
+    expect(game.board).toMatchObject({ status: 'lost' })
+    expect(game.board.tiles.some((t) => t.id === 'p')).toBe(false)
+    game.undo()
+    expect(game.board).toMatchObject({ status: 'playing' })
+  })
+
+  it('reevaluates loss when a live action provider removes player control', async () => {
+    const runtime = await openGame()
+    try {
+      const before = runtime.game.board
+      await runtime.publishAction({
+        id: 'control',
+        label: 'Disconnected',
+        description: 'No controls',
+      })
+      expect(runtime.game.board).toBe(before)
+      runtime.game.settle()
+      expect(runtime.game.board.status).toBe('lost')
+      await runtime.publishAction(
+        builtInActions.find((a) => a.id === 'control')!
+      )
+      runtime.game.settle()
+      expect(runtime.game.board.status).toBe('playing')
+      expect(runtime.game.board.turns).toBe(0)
+    } finally {
+      await runtime.dispose()
+    }
+  })
+
+  it('deletes an unused vocabulary item without allowing removal of a placed definition', async () => {
+    const runtime = await openGame()
+    try {
+      await expect(runtime.deleteDefinition('PLNK')).rejects.toThrow(
+        'Remove placed tiles'
+      )
+      await runtime.publish(
+        compileProperty({ id: 'DIE', color: '#ffffff', action: 'destroy' })
+      )
+      await runtime.deleteDefinition('DIE')
+      expect(runtime.definitions.value.some((d) => d.id === 'DIE')).toBe(false)
+      await runtime.publish({ ...initialDefinitions[0], wordColor: '#ff0000' })
+      expect(runtime.definitions.value.some((d) => d.id === 'DIE')).toBe(false)
+    } finally {
+      await runtime.dispose()
+    }
+  })
+
   it.each(['player', 'word-3-1'])(
     'removes only the selected tile and restores it with undo: %s',
     (id) => {
-      const game = new Game(bushPuzzle, () => initialDefinitions)
+      const game = createGame(bushPuzzle, () => initialDefinitions)
       const before = game.board
       game.remove(id)
       expect(game.board.tiles.some((tile) => tile.id === id)).toBe(false)
@@ -316,7 +521,7 @@ describe('the living vocabulary', () => {
   )
 
   it('keeps other tiles in the same cell when removing a tile', () => {
-    const game = new Game(
+    const game = createGame(
       {
         ...bushPuzzle,
         placements: [
@@ -341,7 +546,7 @@ describe('the living vocabulary', () => {
   })
 
   it('does not consume an undo step when removing a tile that is already gone', () => {
-    const game = new Game(bushPuzzle, () => initialDefinitions)
+    const game = createGame(bushPuzzle, () => initialDefinitions)
     game.remove('player')
     game.remove('player')
     game.undo()
@@ -358,7 +563,7 @@ describe('the living vocabulary', () => {
   ])(
     'keeps tiles inside the fixed bounds after repeated moves in direction %j',
     (direction) => {
-      const game = new Game(bushPuzzle, () => initialDefinitions)
+      const game = createGame(bushPuzzle, () => initialDefinitions)
       for (let i = 0; i < 30; i++) game.step(direction)
       expect(
         game.board.tiles.every(

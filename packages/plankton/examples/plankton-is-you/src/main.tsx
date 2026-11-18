@@ -1,8 +1,16 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import { ChevronLeft, Eraser, Play, RotateCcw, Undo2 } from 'lucide-react'
+import {
+  ChevronLeft,
+  Eraser,
+  Play,
+  Plus,
+  RotateCcw,
+  Trash2,
+  Undo2,
+} from 'lucide-react'
 import { type CSSProperties, useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { compileProperty, type PropertyRecipe } from './content'
+import { type ActionRecipe, compileAction } from './actions'
 import {
   type Definition,
   type Point,
@@ -11,7 +19,7 @@ import {
   type Tile,
 } from './game'
 import { wordSprite } from './pixels'
-import { gameContract, openGame, type Runtime } from './registry'
+import { openGame, type Runtime } from './registry'
 import './style.css'
 
 function Pixels({ sprite, color }: { sprite: Sprite; color: string }) {
@@ -44,55 +52,111 @@ const ink = (definition: Definition, kind: Tile['kind']) =>
     : 'color' in definition
       ? definition.color
       : '#ded9cf'
-const drawing = (definition: Definition, kind: Tile['kind']) =>
+const artwork = (definition: Definition, kind: Tile['kind']) =>
   kind === 'entity' && definition.kind === 'entity'
     ? definition.sprite
     : (definition.wordSprite ?? wordSprite(definition.id))
-type Selection = { definition: Definition; kind: Tile['kind']; tileId?: string }
+const blank = () => Array<string>(8).fill('00000000')
+
+type Draft = {
+  base?: Definition
+  kind: Tile['kind']
+  name: string
+  entitySprite: Sprite
+  wordSprite: Sprite
+  entityColor: string
+  wordColor: string
+  action: string
+  tileId?: string
+}
+function draftFor(
+  definition: Definition,
+  kind: Tile['kind'],
+  tileId?: string
+): Draft {
+  return {
+    base: definition,
+    kind,
+    name: definition.id,
+    entitySprite: definition.kind === 'entity' ? definition.sprite : blank(),
+    wordSprite: artwork(definition, 'word'),
+    entityColor: ink(definition, 'entity'),
+    wordColor: ink(definition, 'word'),
+    action: definition.kind === 'property' ? definition.action : '',
+    tileId,
+  }
+}
 
 function App({ runtime }: { runtime: Runtime }) {
   const { game } = runtime
   const world = useRef<HTMLDivElement>(null)
-  const [, render] = useState(0)
-  const refresh = () => render((n) => n + 1)
-  const [open, setOpen] = useState(false)
-  const [peek, setPeek] = useState(false)
-  const [busy, setBusy] = useState(false)
+  const [, render] = useState(0),
+    refresh = () => render((n) => n + 1)
+  const [open, setOpen] = useState(false),
+    [peek, setPeek] = useState(false),
+    [busy, setBusy] = useState(false)
   const [notice, setNotice] = useState('')
   const [placement, setPlacement] = useState<{
     type: string
     kind: Tile['kind']
   } | null>(null)
-  const definitions = runtime.definitions.value
+  const [draft, setDraft] = useState<Draft | null>(null)
+  const [erase, setErase] = useState(false),
+    [painting, setPainting] = useState(false)
+  const [actionEditor, setActionEditor] = useState(false)
+  const [actionName, setActionName] = useState('MOVE')
+  const [operation, setOperation] =
+    useState<ActionRecipe['operation']>('step-forward')
+  const [blocked, setBlocked] = useState<ActionRecipe['blocked']>('reverse')
+  const definitions = runtime.definitions.value,
+    actions = runtime.actions.value
   const rules = readRules(game.board.tiles, definitions)
-  const [selection, setSelection] = useState<Selection>({
-    definition: definitions.find((d) => d.id === 'BUSH')!,
-    kind: 'entity',
-  })
-  const [sprite, setSprite] = useState<Sprite>(() =>
-    drawing(selection.definition, selection.kind)
-  )
-  const [color, setColor] = useState(ink(selection.definition, selection.kind))
-  const [name, setName] = useState(selection.definition.id)
-  const [erase, setErase] = useState(false)
-  const [painting, setPainting] = useState(false)
-  const [tab, setTab] = useState<'pixels' | 'behavior' | 'extensions'>('pixels')
-  const [propertyName, setPropertyName] = useState('DIE')
-  const [action, setAction] = useState<PropertyRecipe['action'] | ''>('')
-  const [propertyColor, setPropertyColor] = useState('#ee927d')
-
   const inspectedTile = game.board.tiles.find(
-    (tile) => tile.id === selection.tileId
+    (tile) => tile.id === draft?.tileId
   )
+  const sprite = draft
+    ? draft.kind === 'entity'
+      ? draft.entitySprite
+      : draft.wordSprite
+    : []
+  const color = draft
+    ? draft.kind === 'entity'
+      ? draft.entityColor
+      : draft.wordColor
+    : '#c5ed91'
+  const noun =
+    draft?.base?.kind === 'entity' || (!draft?.base && draft?.kind === 'entity')
+  const grammar = draft?.base?.kind === 'grammar'
+  const inUse =
+    !!draft?.base && game.board.tiles.some((t) => t.type === draft.name)
 
   function select(definition: Definition, kind: Tile['kind'], tileId?: string) {
-    setSelection({ definition, kind, tileId })
-    setName(definition.id)
-    setSprite(drawing(definition, kind))
-    setColor(ink(definition, kind))
-    setTab('pixels')
+    setDraft(draftFor(definition, kind, tileId))
+    setActionEditor(false)
+    setErase(false)
+    setNotice('')
+  }
+  function create() {
+    setDraft({
+      kind: 'entity',
+      name: '',
+      entitySprite: blank(),
+      wordSprite: wordSprite(''),
+      entityColor: '#c5ed91',
+      wordColor: '#c5ed91',
+      action: '',
+    })
+    setActionEditor(false)
+    setNotice('')
+  }
+  function undo() {
+    game.undo()
+    setNotice('Undone')
+    refresh()
   }
   function resume() {
+    game.settle()
+    refresh()
     setPlacement(null)
     setOpen(false)
     setPeek(false)
@@ -128,11 +192,8 @@ function App({ runtime }: { runtime: Runtime }) {
         d: { x: 1, y: 0 },
         ' ': { x: 0, y: 0 },
       }
-      if (event.key === 'z') {
-        game.undo()
-        setNotice('Undone')
-        refresh()
-      } else if (directions[event.key]) {
+      if (event.key === 'z') undo()
+      else if (directions[event.key]) {
         event.preventDefault()
         game.step(directions[event.key])
         refresh()
@@ -150,51 +211,91 @@ function App({ runtime }: { runtime: Runtime }) {
       window.removeEventListener('pointermove', proximity)
     }
   }, [game, open, busy, placement])
-
-  async function publish(definition: Definition) {
+  async function change(work: () => Promise<void>, message: string) {
     setBusy(true)
     try {
-      await runtime.publish(definition)
-      setNotice(`${definition.id} published`)
+      await work()
+      setNotice(message)
       refresh()
       return true
     } catch (error) {
-      setNotice(String(error))
+      setNotice(error instanceof Error ? error.message : String(error))
       return false
     } finally {
       setBusy(false)
     }
   }
-  async function publishPixels() {
-    const current = definitions.find((d) => d.id === name)
+  async function save() {
+    if (!draft) return
     let definition: Definition
-    if (selection.kind === 'entity') {
-      if (current && current.kind !== 'entity') return
+    if (grammar) {
+      definition = {
+        kind: 'grammar',
+        id: 'IS',
+        wordSprite: draft.wordSprite,
+        wordColor: draft.wordColor,
+      }
+    } else if (noun) {
       definition = {
         kind: 'entity',
-        id: name,
-        color,
-        sprite: [...sprite],
-        wordSprite: current?.wordSprite,
-        wordColor: current?.wordColor,
+        id: draft.name,
+        color: draft.entityColor,
+        sprite: draft.entitySprite,
+        wordSprite: draft.wordSprite,
+        wordColor: draft.wordColor,
       }
     } else {
-      if (!current) return
-      definition = { ...current, wordSprite: [...sprite], wordColor: color }
+      definition = {
+        kind: 'property',
+        id: draft.name,
+        color: draft.wordColor,
+        wordSprite: draft.wordSprite,
+        wordColor: draft.wordColor,
+        action: draft.action,
+      }
     }
-    if (await publish(definition))
-      select(definition, selection.kind, selection.tileId)
-  }
-  function paint(index: number) {
-    setSprite((previous) =>
-      previous.map((row, y) =>
-        [...row]
-          .map((pixel, x) =>
-            y * row.length + x === index ? (erase ? '0' : '1') : pixel
-          )
-          .join('')
+    if (
+      await change(
+        () => runtime.publish(definition),
+        `${definition.id} published`
       )
     )
+      setDraft(draftFor(definition, draft.kind, draft.tileId))
+  }
+  async function saveAction() {
+    const action = compileAction({
+      id: actionName,
+      label: actionName,
+      operation,
+      blocked,
+    })
+    if (
+      await change(
+        () => runtime.publishAction(action),
+        `${actionName} action installed`
+      )
+    ) {
+      setDraft((previous) =>
+        previous ? { ...previous, action: action.id } : previous
+      )
+      setActionEditor(false)
+    }
+  }
+  function paint(index: number) {
+    setDraft((previous) => {
+      if (!previous) return previous
+      const key = previous.kind === 'entity' ? 'entitySprite' : 'wordSprite'
+      return {
+        ...previous,
+        [key]: previous[key].map((row, y) =>
+          [...row]
+            .map((pixel, x) =>
+              y * row.length + x === index ? (erase ? '0' : '1') : pixel
+            )
+            .join('')
+        ),
+      }
+    })
   }
   function boardClick(x: number, y: number) {
     if (busy) return
@@ -204,26 +305,27 @@ function App({ runtime }: { runtime: Runtime }) {
       world.current?.focus()
       refresh()
     } else {
-      const tile = game.board.tiles.find((t) => t.x === x && t.y === y)
-      const definition = definitions.find((d) => d.id === tile?.type)
+      const tile = game.board.tiles.find((t) => t.x === x && t.y === y),
+        definition = definitions.find((d) => d.id === tile?.type)
       if (tile && definition) select(definition, tile.kind, tile.id)
-      else setSelection((previous) => ({ ...previous, tileId: undefined }))
+      else
+        setDraft((previous) =>
+          previous ? { ...previous, tileId: undefined } : null
+        )
       setOpen(true)
     }
   }
   async function reset() {
-    setBusy(true)
-    try {
-      await runtime.loadPuzzle(game.puzzle.id)
+    if (await change(() => runtime.loadPuzzle(game.puzzle.id), 'Puzzle reset'))
       setPlacement(null)
-      setNotice('Puzzle reset')
-      refresh()
-    } catch (error) {
-      setNotice(String(error))
-    } finally {
-      setBusy(false)
-    }
   }
+  const duplicate =
+    !!draft && !draft.base && definitions.some((d) => d.id === draft.name)
+  const canSave =
+    !!draft &&
+    !!draft.name &&
+    !duplicate &&
+    (noun || grammar || actions.some((a) => a.id === draft.action))
 
   return (
     <main className="stage">
@@ -244,8 +346,8 @@ function App({ runtime }: { runtime: Runtime }) {
           { length: game.puzzle.bounds.width * game.puzzle.bounds.height },
           (_, index) => {
             const x = index % game.puzzle.bounds.width,
-              y = Math.floor(index / game.puzzle.bounds.width)
-            const tiles = game.board.tiles.filter((t) => t.x === x && t.y === y)
+              y = Math.floor(index / game.puzzle.bounds.width),
+              tiles = game.board.tiles.filter((t) => t.x === x && t.y === y)
             return (
               <button
                 key={index}
@@ -260,7 +362,7 @@ function App({ runtime }: { runtime: Runtime }) {
                     <span key={tile.id} className={`tile ${tile.kind}`}>
                       {definition ? (
                         <Pixels
-                          sprite={drawing(definition, tile.kind)}
+                          sprite={artwork(definition, tile.kind)}
                           color={ink(definition, tile.kind)}
                         />
                       ) : (
@@ -273,9 +375,17 @@ function App({ runtime }: { runtime: Runtime }) {
             )
           }
         )}
-        {game.board.won && (
-          <div className="victory" role="status">
-            <span>WIN</span>
+        {(game.board.status === 'won' || game.board.status === 'lost') && (
+          <div
+            className={`victory ${game.board.status === 'lost' ? 'loss' : ''}`}
+            role="status"
+          >
+            <span>{game.board.status === 'lost' ? 'NO YOU' : 'WIN'}</span>
+            {game.board.status === 'lost' && (
+              <button onClick={undo} aria-label="Undo loss">
+                <Undo2 size={22} />
+              </button>
+            )}
             <button onClick={reset} aria-label="Play again">
               <RotateCcw size={22} />
             </button>
@@ -285,6 +395,10 @@ function App({ runtime }: { runtime: Runtime }) {
       <Dialog.Root
         open={open}
         onOpenChange={(value) => {
+          if (!value) {
+            game.settle()
+            refresh()
+          }
           setOpen(value)
           setPeek(false)
         }}
@@ -315,11 +429,7 @@ function App({ runtime }: { runtime: Runtime }) {
                   aria-label="Undo"
                   title="Undo"
                   disabled={busy}
-                  onClick={() => {
-                    game.undo()
-                    setNotice('Undone')
-                    refresh()
-                  }}
+                  onClick={undo}
                 >
                   <Undo2 size={17} />
                 </button>
@@ -331,40 +441,42 @@ function App({ runtime }: { runtime: Runtime }) {
                 >
                   <RotateCcw size={16} />
                 </button>
-                <Dialog.Close asChild>
-                  <button
-                    aria-label="Resume play"
-                    title="Resume play"
-                    onClick={() => setPlacement(null)}
-                  >
-                    <Play size={17} />
-                  </button>
-                </Dialog.Close>
+                <button
+                  aria-label="Resume play"
+                  title="Resume play"
+                  onClick={resume}
+                >
+                  <Play size={17} />
+                </button>
               </div>
             </header>
             <Dialog.Description className="editor-description">
               Paused · {game.puzzle.title}
             </Dialog.Description>
-            {inspectedTile && (
-              <div className="inspected-tile">
-                <span>
-                  {inspectedTile.type} · {inspectedTile.x + 1},{' '}
-                  {inspectedTile.y + 1}
-                </span>
-                <button
-                  disabled={busy}
-                  onClick={() => {
-                    game.remove(inspectedTile.id)
-                    setNotice(
-                      `${inspectedTile.type} removed · Undo restores it`
-                    )
-                    refresh()
-                  }}
-                >
-                  Remove tile
-                </button>
-              </div>
-            )}
+            <section className="rules">
+              <h2>Live rules</h2>
+              <ul>
+                {rules.map((rule, index) => (
+                  <li
+                    key={`${rule.noun}-${rule.property}-${index}`}
+                    aria-label={`${rule.noun} IS ${rule.property}`}
+                  >
+                    {[rule.noun, 'IS', rule.property].map((id, i) => {
+                      const definition = definitions.find((d) => d.id === id)
+                      return definition ? (
+                        <span key={`${id}-${i}`}>
+                          <Pixels
+                            sprite={artwork(definition, 'word')}
+                            color={ink(definition, 'word')}
+                          />
+                        </span>
+                      ) : null
+                    })}
+                  </li>
+                ))}
+              </ul>
+              {rules.length === 0 && <p>No active sentences.</p>}
+            </section>
             <section>
               <h2>Installed vocabulary</h2>
               <div className="vocabulary">
@@ -377,82 +489,96 @@ function App({ runtime }: { runtime: Runtime }) {
                       key={`${definition.id}-${kind}`}
                       aria-label={`Edit ${definition.id} ${kind}`}
                       aria-pressed={
-                        selection.definition.id === definition.id &&
-                        selection.kind === kind
+                        draft?.base?.id === definition.id && draft.kind === kind
                       }
+                      disabled={busy}
                       onClick={() => select(definition, kind)}
                     >
                       <Pixels
-                        sprite={drawing(definition, kind)}
+                        sprite={artwork(definition, kind)}
                         color={ink(definition, kind)}
                       />
                       <small>{kind}</small>
                     </button>
                   ))
                 )}
-              </div>
-            </section>
-            <section className="rules">
-              <h2>Live rules</h2>
-              <div>
-                {rules.map((rule, index) => (
-                  <span key={`${rule.noun}-${rule.property}-${index}`}>
-                    {rule.noun} IS {rule.property}
-                  </span>
-                ))}
-              </div>
-            </section>
-            <nav aria-label="Definition editor">
-              {(['pixels', 'behavior', 'extensions'] as const).map((item) => (
                 <button
-                  key={item}
-                  aria-pressed={tab === item}
-                  onClick={() => setTab(item)}
+                  className="new-item"
+                  aria-label="New vocabulary item"
+                  aria-pressed={!!draft && !draft.base}
+                  onClick={create}
                 >
-                  {item === 'behavior'
-                    ? 'New property'
-                    : item === 'extensions'
-                      ? 'Extensions'
-                      : 'Pixels'}
+                  <Plus size={22} />
+                  <small>New</small>
                 </button>
-              ))}
-            </nav>
-            {tab === 'pixels' && (
-              <section className="pixel-section">
-                <div className="selection-heading">
-                  <h2>
-                    {selection.definition.id} · {selection.kind}
-                  </h2>
-                  <button
-                    className="place-button"
-                    disabled={busy}
-                    onClick={() => {
-                      setSelection((previous) => ({
-                        ...previous,
-                        tileId: undefined,
-                      }))
-                      setPlacement({
-                        type: selection.definition.id,
-                        kind: selection.kind,
-                      })
-                      setOpen(false)
-                    }}
-                  >
-                    Place tile
-                  </button>
+              </div>
+            </section>
+            {draft ? (
+              <section className="tray">
+                <div className="tray-heading">
+                  <h2>{draft.base ? draft.name : 'New'}</h2>
+                  <div className="kind-toggle" aria-label="Tile kind">
+                    {(['entity', 'word'] as const).map((kind) => (
+                      <button
+                        key={kind}
+                        aria-pressed={draft.kind === kind}
+                        disabled={
+                          busy ||
+                          (kind === 'entity' &&
+                            !!draft.base &&
+                            draft.base.kind !== 'entity')
+                        }
+                        onClick={() => setDraft({ ...draft, kind })}
+                      >
+                        {kind}
+                      </button>
+                    ))}
+                  </div>
                 </div>
                 <label>
                   Name
                   <input
-                    value={name}
-                    readOnly={selection.kind === 'word'}
+                    value={draft.name}
+                    readOnly={!!draft.base}
                     maxLength={8}
-                    onChange={(event) =>
-                      setName(
-                        event.target.value.toUpperCase().replace(/[^A-Z]/g, '')
-                      )
-                    }
+                    onChange={(event) => {
+                      const name = event.target.value
+                        .toUpperCase()
+                        .replace(/[^A-Z]/g, '')
+                      setDraft({ ...draft, name, wordSprite: wordSprite(name) })
+                    }}
                   />
+                </label>
+                {duplicate && (
+                  <p className="field-hint">
+                    That name is already installed. Select its tile to edit it.
+                  </p>
+                )}
+                <label>
+                  Property action
+                  <select
+                    aria-label="Property action"
+                    disabled={
+                      draft.kind === 'entity' || !!noun || !!grammar || busy
+                    }
+                    value={noun || grammar ? '' : draft.action}
+                    onChange={(event) =>
+                      setDraft({ ...draft, action: event.target.value })
+                    }
+                  >
+                    <option value="">
+                      {noun
+                        ? 'None · entity name'
+                        : grammar
+                          ? 'Sentence connector'
+                          : 'Choose an action…'}
+                    </option>
+                    {actions.map((action) => (
+                      <option key={action.id} value={action.id}>
+                        {action.label}
+                      </option>
+                    ))}
+                  </select>
                 </label>
                 <div className="paint-tools">
                   <label>
@@ -460,7 +586,14 @@ function App({ runtime }: { runtime: Runtime }) {
                     <input
                       type="color"
                       value={color}
-                      onChange={(event) => setColor(event.target.value)}
+                      onChange={(event) =>
+                        setDraft({
+                          ...draft,
+                          [draft.kind === 'entity'
+                            ? 'entityColor'
+                            : 'wordColor']: event.target.value,
+                        })
+                      }
                     />
                   </label>
                   <button aria-pressed={erase} onClick={() => setErase(!erase)}>
@@ -469,7 +602,14 @@ function App({ runtime }: { runtime: Runtime }) {
                   </button>
                   <button
                     onClick={() =>
-                      setSprite(sprite.map((row) => '0'.repeat(row.length)))
+                      setDraft({
+                        ...draft,
+                        [draft.kind === 'entity'
+                          ? 'entitySprite'
+                          : 'wordSprite']: sprite.map((row) =>
+                          '0'.repeat(row.length)
+                        ),
+                      })
                     }
                   >
                     Clear
@@ -507,127 +647,177 @@ function App({ runtime }: { runtime: Runtime }) {
                     ))
                   )}
                 </div>
-                <button
-                  className="publish"
-                  disabled={
-                    busy ||
-                    !name ||
-                    (selection.kind === 'entity' &&
-                      definitions.some(
-                        (d) => d.id === name && d.kind !== 'entity'
-                      ))
-                  }
-                  onClick={publishPixels}
-                >
-                  Publish pixels
-                </button>
-              </section>
-            )}
-            {tab === 'behavior' && (
-              <section>
-                <label>
-                  Word
-                  <input
-                    value={propertyName}
-                    maxLength={8}
-                    onChange={(event) =>
-                      setPropertyName(
-                        event.target.value.toUpperCase().replace(/[^A-Z]/g, '')
-                      )
-                    }
-                  />
-                </label>
-                <label>
-                  Action
-                  <select
-                    aria-label="Action"
-                    value={action}
-                    onChange={(event) => {
-                      const value = event.target.value
-                      if (
-                        value === '' ||
-                        value === 'destroy-self' ||
-                        value === 'block-movement'
-                      )
-                        setAction(value)
+                {!noun && !grammar && draft.kind === 'word' && (
+                  <>
+                    <p className="field-hint">
+                      {actions.find((a) => a.id === draft.action)
+                        ?.description ||
+                        'A property word applies its action through an IS sentence.'}
+                    </p>
+                    <button
+                      className="text-button"
+                      onClick={() => setActionEditor(!actionEditor)}
+                    >
+                      {actionEditor ? 'Cancel new action' : '+ New action'}
+                    </button>
+                    {actionEditor && (
+                      <fieldset className="action-author">
+                        <legend>New action</legend>
+                        <label>
+                          Action name
+                          <input
+                            value={actionName}
+                            maxLength={16}
+                            onChange={(event) =>
+                              setActionName(
+                                event.target.value
+                                  .toUpperCase()
+                                  .replace(/[^A-Z]/g, '')
+                              )
+                            }
+                          />
+                        </label>
+                        <label>
+                          At turn end
+                          <select
+                            aria-label="Action operation"
+                            value={operation}
+                            onChange={(event) => {
+                              const value = event.target.value
+                              if (
+                                value === 'step-forward' ||
+                                value === 'destroy-self'
+                              )
+                                setOperation(value)
+                            }}
+                          >
+                            <option value="step-forward">Step forward</option>
+                            <option value="destroy-self">Destroy self</option>
+                          </select>
+                        </label>
+                        {operation === 'step-forward' && (
+                          <label>
+                            If blocked
+                            <select
+                              aria-label="If blocked"
+                              value={blocked}
+                              onChange={(event) => {
+                                const value = event.target.value
+                                if (value === 'wait' || value === 'reverse')
+                                  setBlocked(value)
+                              }}
+                            >
+                              <option value="reverse">Reverse and retry</option>
+                              <option value="wait">Wait</option>
+                            </select>
+                          </label>
+                        )}
+                        <button
+                          disabled={busy || !actionName}
+                          onClick={saveAction}
+                        >
+                          Install action
+                        </button>
+                      </fieldset>
+                    )}
+                  </>
+                )}
+                <div className="tray-actions">
+                  <button
+                    className="publish"
+                    disabled={busy || !canSave}
+                    onClick={save}
+                  >
+                    {draft.base ? 'Save definition' : 'Create definition'}
+                  </button>
+                  <button
+                    disabled={busy || !draft.base}
+                    onClick={() => {
+                      if (!draft.base) return
+                      setPlacement({ type: draft.base.id, kind: draft.kind })
+                      setDraft({ ...draft, tileId: undefined })
+                      setOpen(false)
                     }}
                   >
-                    <option value="">Choose…</option>
-                    <option value="destroy-self">
-                      At turn end: destroy this entity
-                    </option>
-                    <option value="block-movement">
-                      Block movement into this entity
-                    </option>
-                  </select>
-                </label>
-                <label className="color-field">
-                  Ink
-                  <input
-                    type="color"
-                    value={propertyColor}
-                    onChange={(event) => setPropertyColor(event.target.value)}
-                  />
-                </label>
-                <button
-                  className="publish"
-                  disabled={
-                    busy ||
-                    !action ||
-                    !propertyName ||
-                    definitions.some(
-                      (d) => d.id === propertyName && d.kind !== 'property'
-                    )
-                  }
-                  onClick={async () => {
-                    if (!action) return
-                    const previous = definitions.find(
-                      (d) => d.id === propertyName
-                    )
-                    const definition = {
-                      ...compileProperty({
-                        id: propertyName,
-                        color: propertyColor,
-                        action,
-                      }),
-                      wordSprite:
-                        previous?.wordSprite ?? wordSprite(propertyName),
-                      wordColor: previous?.wordColor,
-                    }
-                    if (await publish(definition)) select(definition, 'word')
-                  }}
-                >
-                  Publish property
-                </button>
+                    Place tile
+                  </button>
+                </div>
+                <div className="delete-actions">
+                  {inspectedTile && (
+                    <button
+                      disabled={busy}
+                      onClick={() => {
+                        game.remove(inspectedTile.id)
+                        setNotice(
+                          `${inspectedTile.type} removed · Undo restores it`
+                        )
+                        refresh()
+                      }}
+                    >
+                      <Trash2 size={13} />
+                      Remove tile
+                    </button>
+                  )}
+                  {draft.base && (
+                    <button
+                      disabled={busy || inUse}
+                      title={
+                        inUse
+                          ? 'Remove placed tiles before deleting their definition'
+                          : undefined
+                      }
+                      onClick={async () => {
+                        if (
+                          await change(
+                            () => runtime.deleteDefinition(draft.base!.id),
+                            `${draft.name} definition deleted`
+                          )
+                        )
+                          setDraft(null)
+                      }}
+                    >
+                      <Trash2 size={13} />
+                      Delete definition
+                    </button>
+                  )}
+                </div>
+                {inUse && (
+                  <p className="field-hint">
+                    Delete definition becomes available after its placed tiles
+                    are removed.
+                  </p>
+                )}
               </section>
+            ) : (
+              <p className="field-hint">Select a tile, or + to create one.</p>
             )}
-            {tab === 'extensions' && (
-              <section className="extensions">
-                <pre>{`contribute(gameContract.definitions,\n  () => definition,\n  { key: definition.id }\n)\n\nawait registry.replace(\n  authoredContent,\n  compileDefinitions(draft, true)\n)`}</pre>
-                {definitions.map((definition) => (
-                  <div key={definition.id}>
-                    <span>{definition.id}</span>
-                    <small>
-                      {runtime.registry
-                        .debug(gameContract.definitions)
-                        .value.find((item) => item.key === definition.id)
-                        ?.precedence === 'high'
-                        ? 'authored'
-                        : 'built-in'}
-                    </small>
-                  </div>
+            <section className="outcomes">
+              <h2>Outcome</h2>
+              <p>
+                {game.board.status === 'lost'
+                  ? 'Lost · no controlled entity'
+                  : game.board.status === 'won'
+                    ? 'Won'
+                    : 'Playing'}
+              </p>
+              <ul>
+                {runtime.outcomes.value.map((outcome) => (
+                  <li key={outcome.id} title={outcome.description}>
+                    {outcome.label}
+                  </li>
                 ))}
-              </section>
-            )}
+              </ul>
+            </section>
             <footer>
               <p role="status">{notice}</p>
               <small>
                 Arrows / WASD · Space waits · Z undoes
                 <br />
-                Place tile pauses play until placement or Esc.
+                Place tile pauses until placement or Esc.
               </small>
               <button className="resume" onClick={resume}>
-                <Play size={14} /> Resume play
+                <Play size={14} />
+                Resume play
               </button>
             </footer>
           </Dialog.Content>

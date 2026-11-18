@@ -1,5 +1,10 @@
 export type Point = { x: number; y: number }
-export type Tile = Point & { id: string; kind: 'entity' | 'word'; type: string }
+export type Tile = Point & {
+  id: string
+  kind: 'entity' | 'word'
+  type: string
+  facing?: Point
+}
 export type Sprite = readonly string[]
 export type EntityDefinition = {
   kind: 'entity'
@@ -10,24 +15,49 @@ export type EntityDefinition = {
   wordColor?: string
 }
 
-/** Properties supply the turn engine with capabilities and optional turn effects. */
+/** A property names a contributed action; its artwork does not determine behavior. */
 export type PropertyDefinition = {
   kind: 'property'
   id: string
   color: string
   wordSprite?: Sprite
   wordColor?: string
-  controls?: boolean
-  blocks?: boolean
-  wins?: boolean
-  afterTurn?: (subject: Tile, turn: { destroy: (id: string) => void }) => void
+  action: string
 }
 export type Definition =
   | EntityDefinition
   | PropertyDefinition
   | { kind: 'grammar'; id: 'IS'; wordSprite?: Sprite; wordColor?: string }
 
-/** A portable starting setup, independent of the live session and its undo history. */
+/** Actions operate through turn capabilities, without owning the board or registry. */
+export type Turn = {
+  move(id: string, direction: Point): boolean
+  face(id: string, direction: Point): void
+  destroy(id: string): void
+}
+export type Action = {
+  id: string
+  label: string
+  description: string
+  controls?: boolean
+  blocks?: boolean
+  wins?: boolean
+  afterTurn?: (subject: Readonly<Tile>, turn: Turn) => void
+}
+export type OutcomeContext = {
+  tiles: readonly Tile[]
+  controlled: readonly Tile[]
+  winning: readonly Tile[]
+  rules: readonly Rule[]
+}
+export type Outcome = {
+  id: string
+  label: string
+  description: string
+  evaluate(context: OutcomeContext): 'won' | 'lost' | undefined
+}
+
+/** A starting setup specifies bounds, installed definitions, and tile instances. */
 export type Puzzle = {
   id: string
   title: string
@@ -37,7 +67,16 @@ export type Puzzle = {
   placements: readonly Tile[]
 }
 export type Rule = { noun: string; property: string }
-export type Board = { tiles: readonly Tile[]; turns: number; won: boolean }
+export type Board = {
+  tiles: readonly Tile[]
+  turns: number
+  status: 'playing' | 'won' | 'lost'
+}
+export type Vocabulary = {
+  definitions(): readonly Definition[]
+  actions(): readonly Action[]
+  outcomes(): readonly Outcome[]
+}
 const sameCell = (a: Point, b: Point) => a.x === b.x && a.y === b.y
 
 export function readRules(
@@ -72,18 +111,18 @@ export function readRules(
   return rules
 }
 
-/** Board state survives vocabulary replacement; only explicit load/reset replaces it. */
+/** Vocabulary changes never replace the session or its board history. */
 export class Game {
   board: Board
   private history: Board[] = []
   constructor(
     public puzzle: Puzzle,
-    private readonly definitions: () => readonly Definition[]
+    private readonly vocabulary: Vocabulary
   ) {
     this.board = {
       tiles: puzzle.placements.map((t) => ({ ...t })),
       turns: 0,
-      won: false,
+      status: 'playing',
     }
   }
   load(puzzle: Puzzle) {
@@ -91,7 +130,7 @@ export class Game {
     this.board = {
       tiles: puzzle.placements.map((t) => ({ ...t })),
       turns: 0,
-      won: false,
+      status: 'playing',
     }
     this.history = []
   }
@@ -106,105 +145,142 @@ export class Game {
       point.y < this.puzzle.bounds.height
     )
   }
-  place(tile: Tile) {
-    if (
-      !this.inside(tile) ||
-      !this.definitions().some((d) => d.id === tile.type)
-    )
-      return
+  private commit(tiles: readonly Tile[], turns = this.board.turns) {
     this.history.push(this.board)
-    this.board = {
-      ...this.board,
-      won: false,
-      tiles: [
-        ...this.board.tiles.filter(
-          (t) => !(sameCell(t, tile) && t.kind === tile.kind)
-        ),
-        tile,
-      ],
-    }
+    this.board = { tiles, turns, status: this.evaluate(tiles) }
   }
-  remove(id: string) {
-    if (!this.board.tiles.some((tile) => tile.id === id)) return
-    this.history.push(this.board)
-    this.board = {
-      ...this.board,
-      won: false,
-      tiles: this.board.tiles.filter((tile) => tile.id !== id),
-    }
-  }
-  step(direction: Point) {
-    if (this.board.won) return
-    const definitions = this.definitions()
-    const rules = readRules(this.board.tiles, definitions)
+  private matching(
+    tiles: readonly Tile[],
+    definitions: readonly Definition[],
+    actions: readonly Action[]
+  ) {
+    const rules = readRules(tiles, definitions)
     const properties = definitions.filter(
       (d): d is PropertyDefinition => d.kind === 'property'
     )
-    const has = (tile: Tile, predicate: (p: PropertyDefinition) => boolean) =>
-      tile.kind === 'entity' &&
-      properties.some(
-        (p) =>
-          predicate(p) &&
-          rules.some((r) => r.noun === tile.type && r.property === p.id)
-      )
+    return {
+      rules,
+      has: (tile: Tile, predicate: (action: Action) => boolean) =>
+        tile.kind === 'entity' &&
+        properties.some(
+          (p) =>
+            rules.some((r) => r.noun === tile.type && r.property === p.id) &&
+            actions.some((a) => a.id === p.action && predicate(a))
+        ),
+    }
+  }
+  private evaluate(tiles: readonly Tile[]): Board['status'] {
+    const { rules, has } = this.matching(
+      tiles,
+      this.vocabulary.definitions(),
+      this.vocabulary.actions()
+    )
+    const context: OutcomeContext = {
+      tiles,
+      rules,
+      controlled: tiles.filter((t) => has(t, (a) => !!a.controls)),
+      winning: tiles.filter((t) => has(t, (a) => !!a.wins)),
+    }
+    const outcomes = this.vocabulary
+      .outcomes()
+      .map((outcome) => outcome.evaluate(context))
+    if (outcomes.includes('lost')) return 'lost'
+    return outcomes.includes('won') ? 'won' : 'playing'
+  }
+  /** Resume reevaluates rules after paused vocabulary edits without adding a turn. */
+  settle() {
+    this.board = { ...this.board, status: this.evaluate(this.board.tiles) }
+  }
+  place(tile: Tile) {
+    if (
+      !this.inside(tile) ||
+      !this.vocabulary.definitions().some((d) => d.id === tile.type)
+    )
+      return
+    this.commit([
+      ...this.board.tiles.filter(
+        (t) => !(sameCell(t, tile) && t.kind === tile.kind)
+      ),
+      tile,
+    ])
+  }
+  remove(id: string) {
+    if (!this.board.tiles.some((tile) => tile.id === id)) return
+    this.commit(this.board.tiles.filter((tile) => tile.id !== id))
+  }
+  step(direction: Point) {
+    if (this.board.status !== 'playing') return
+    const definitions = this.vocabulary.definitions(),
+      actions = this.vocabulary.actions()
     let tiles = this.board.tiles.map((t) => ({ ...t }))
-    const move = (id: string, visiting = new Set<string>()): boolean => {
+    const { has } = this.matching(tiles, definitions, actions)
+    const move = (
+      id: string,
+      direction: Point,
+      visiting = new Set<string>()
+    ): boolean => {
       const tile = tiles.find((t) => t.id === id)
       if (!tile || visiting.has(id)) return false
       visiting.add(id)
       const next = { x: tile.x + direction.x, y: tile.y + direction.y }
       if (!this.inside(next)) return false
       const occupants = tiles.filter((t) => sameCell(t, next) && t.id !== id)
-      if (occupants.some((t) => has(t, (p) => !!p.blocks))) return false
-      for (const occupant of occupants.filter((t) => t.kind === 'word')) {
-        if (!move(occupant.id, visiting)) return false
-      }
+      if (occupants.some((t) => has(t, (a) => !!a.blocks))) return false
+      for (const occupant of occupants.filter((t) => t.kind === 'word'))
+        if (!move(occupant.id, direction, visiting)) return false
       tile.x = next.x
       tile.y = next.y
       return true
     }
+    const tryMove = (id: string, direction: Point) => {
+      const before = tiles.map((t) => ({ ...t }))
+      if (move(id, direction)) return true
+      tiles = before
+      return false
+    }
     if (direction.x || direction.y) {
-      for (const player of tiles.filter((t) => has(t, (p) => !!p.controls))) {
-        const before = tiles.map((t) => ({ ...t }))
-        if (!move(player.id)) tiles = before
+      for (const player of tiles.filter((t) => has(t, (a) => !!a.controls))) {
+        const current = tiles.find((t) => t.id === player.id)!
+        current.facing = { ...direction }
+        tryMove(player.id, direction)
       }
     }
-    // Rules settle after movement. Effects collect removals before publishing a turn.
-    const settledRules = readRules(tiles, definitions)
-    const destroyed = new Set<string>()
-    for (const tile of tiles.filter((t) => t.kind === 'entity')) {
-      for (const property of properties) {
-        if (
-          settledRules.some(
-            (r) => r.noun === tile.type && r.property === property.id
-          )
-        )
-          property.afterTurn?.(tile, { destroy: (id) => destroyed.add(id) })
-      }
-    }
-    tiles = tiles.filter((t) => !destroyed.has(t.id))
-    const settledHas = (
-      tile: Tile,
-      predicate: (p: PropertyDefinition) => boolean
-    ) =>
-      tile.kind === 'entity' &&
-      properties.some(
-        (p) =>
-          predicate(p) &&
-          settledRules.some((r) => r.noun === tile.type && r.property === p.id)
-      )
-    const won = tiles.some(
-      (t) =>
-        settledHas(t, (p) => !!p.controls) &&
-        (settledHas(t, (p) => !!p.wins) ||
-          tiles.some(
-            (other) =>
-              other.id !== t.id &&
-              sameCell(t, other) &&
-              settledHas(other, (p) => !!p.wins)
-          ))
+    const properties = definitions.filter(
+      (d): d is PropertyDefinition => d.kind === 'property'
     )
-    this.history.push(this.board)
-    this.board = { tiles, turns: this.board.turns + 1, won }
+    // Schedule from one post-input snapshot. Each entity/action pair runs once.
+    const turnRules = readRules(tiles, definitions)
+    const scheduled = tiles
+      .filter((t) => t.kind === 'entity')
+      .flatMap((subject) =>
+        actions
+          .filter((action) =>
+            properties.some(
+              (p) =>
+                p.action === action.id &&
+                turnRules.some(
+                  (r) => r.noun === subject.type && r.property === p.id
+                )
+            )
+          )
+          .map((action) => ({ id: subject.id, action }))
+      )
+    const destroyed = new Set<string>()
+    const turn: Turn = {
+      move: (id, direction) => !destroyed.has(id) && tryMove(id, direction),
+      face: (id, direction) => {
+        const tile = tiles.find((t) => t.id === id)
+        if (tile) tile.facing = { ...direction }
+      },
+      destroy: (id) => {
+        destroyed.add(id)
+        tiles = tiles.filter((t) => t.id !== id)
+      },
+    }
+    for (const { id, action } of scheduled) {
+      const subject = tiles.find((t) => t.id === id)
+      if (subject) action.afterTurn?.(subject, turn)
+    }
+    this.commit(tiles, this.board.turns + 1)
   }
 }
