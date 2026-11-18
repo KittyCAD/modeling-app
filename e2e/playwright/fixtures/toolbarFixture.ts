@@ -409,7 +409,7 @@ export class ToolbarFixture {
     return this.featureTreePane.getByTestId('operation-group-caret').nth(index)
   }
 
-  /** Reveal body histories when a test requests a feature; opening the pane stays collapsed. */
+  /** Reveal any collapsed body histories when a test requests a feature. */
   async expandFeatureTreeBodies() {
     const collapsed = this.featureTreePane.locator(
       '[data-testid="feature-tree-body"] > button[aria-expanded="false"], [data-module-branch] > button[aria-expanded="false"]'

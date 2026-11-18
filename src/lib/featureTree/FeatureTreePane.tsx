@@ -456,6 +456,7 @@ function BodyBranchGroup({
   return (
     <FeatureTreeDisclosure
       expansionKey={props.expansionKey}
+      defaultOpen={index === 0}
       as="div"
       data-testid="feature-tree-body-branch"
     >

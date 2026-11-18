@@ -20,7 +20,16 @@ test(
     await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await toolbar.closePane(DefaultLayoutPaneID.Code)
     await expect(page.getByTestId('feature-tree-body')).toHaveCount(6)
-    // Only the six body rows and three standard planes are visible initially.
+    const bodyToggles = page.getByRole('button', {
+      name: 'Toggle body features',
+      exact: true,
+    })
+    await expect(bodyToggles.first()).toHaveAttribute('aria-expanded', 'true')
+    for (const toggle of (await bodyToggles.all()).slice(1)) {
+      await expect(toggle).toHaveAttribute('aria-expanded', 'false')
+    }
+    await bodyToggles.first().click()
+    // With bodies collapsed, only six body rows and three planes remain.
     await expect(
       toolbar.featureTreePane.getByTestId('feature-tree-operation-item')
     ).toHaveCount(9)
@@ -82,11 +91,16 @@ test(
     const panelId = await importToggle.getAttribute('aria-controls')
     const part = page.locator(`[id="${panelId}"]`)
     await expect(part.getByTestId('feature-tree-body')).toHaveCount(3)
-    for (const toggle of await part
-      .getByRole('button', { name: 'Toggle body features', exact: true })
-      .all()) {
-      await expect(toggle).toHaveAttribute('aria-expanded', 'false')
-      await toggle.click()
+    for (const [index, toggle] of (
+      await part
+        .getByRole('button', { name: 'Toggle body features', exact: true })
+        .all()
+    ).entries()) {
+      await expect(toggle).toHaveAttribute(
+        'aria-expanded',
+        index === 0 ? 'true' : 'false'
+      )
+      if (index !== 0) await toggle.click()
     }
     const booleanBody = part.getByTestId('feature-tree-body-branch').filter({
       has: page.getByRole('button', { name: 'Subtract', exact: true }),
@@ -135,8 +149,7 @@ body001 = extrude(region001, length = 5mm)`
       name: 'Toggle body features',
       exact: true,
     })
-    await expect(toggle).toHaveAttribute('aria-expanded', 'false')
-    await toggle.click()
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true')
     const sketchToggle = branch.getByTestId('operation-group-caret').first()
     await expect(sketchToggle).toHaveAttribute('aria-expanded', 'false')
     await sketchToggle.click()

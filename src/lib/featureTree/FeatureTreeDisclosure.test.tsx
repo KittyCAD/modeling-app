@@ -21,7 +21,11 @@ function Tree({
         <Disclosure.Button>Part</Disclosure.Button>
         <Disclosure.Panel>
           {showBody && (
-            <FeatureTreeDisclosure key={bodyId} expansionKey="part/body-0">
+            <FeatureTreeDisclosure
+              key={bodyId}
+              expansionKey="part/body-0"
+              defaultOpen
+            >
               <Disclosure.Button>Body 1</Disclosure.Button>
               <Disclosure.Panel>
                 <FeatureTreeDisclosure expansionKey="part/body-0/sketch">
@@ -42,7 +46,7 @@ function toggle(name: string) {
 }
 
 describe('Feature Tree expansion', () => {
-  it('starts imported parts, bodies and sketch groups collapsed and expands each independently', () => {
+  it('starts the first body open while imported parts and sketch groups stay collapsed', () => {
     render(<Tree />)
     expect(screen.getByRole('button', { name: 'Part' })).toHaveAttribute(
       'aria-expanded',
@@ -54,9 +58,8 @@ describe('Feature Tree expansion', () => {
     toggle('Part')
     expect(screen.getByRole('button', { name: 'Body 1' })).toHaveAttribute(
       'aria-expanded',
-      'false'
+      'true'
     )
-    toggle('Body 1')
     expect(screen.getByRole('button', { name: 'Sketch' })).toHaveAttribute(
       'aria-expanded',
       'false'
@@ -72,7 +75,6 @@ describe('Feature Tree expansion', () => {
   it('restores expanded bodies and features after sketch execution removes and recreates the body', () => {
     const view = render(<Tree />)
     toggle('Part')
-    toggle('Body 1')
     toggle('Sketch')
     view.rerender(<Tree showBody={false} />)
     view.rerender(<Tree bodyId="rebuilt-body" />)
@@ -80,24 +82,30 @@ describe('Feature Tree expansion', () => {
   })
 
   it('remembers explicit collapsed choices when the parent is reopened', () => {
-    render(<Tree />)
+    const view = render(<Tree />)
     toggle('Part')
+    toggle('Sketch')
+    toggle('Sketch')
     toggle('Body 1')
-    toggle('Sketch')
-    toggle('Sketch')
     toggle('Part')
     toggle('Part')
     expect(screen.getByRole('button', { name: 'Body 1' })).toHaveAttribute(
       'aria-expanded',
-      'true'
+      'false'
     )
+    view.rerender(<Tree bodyId="rebuilt-body" />)
+    expect(screen.getByRole('button', { name: 'Body 1' })).toHaveAttribute(
+      'aria-expanded',
+      'false'
+    )
+    toggle('Body 1')
     expect(screen.getByRole('button', { name: 'Sketch' })).toHaveAttribute(
       'aria-expanded',
       'false'
     )
   })
 
-  it('starts collapsed when switching files', () => {
+  it('resets the first body to open when switching files', () => {
     const view = render(<Tree />)
     toggle('Part')
     toggle('Body 1')
@@ -109,5 +117,10 @@ describe('Feature Tree expansion', () => {
     expect(
       screen.queryByRole('button', { name: 'Body 1' })
     ).not.toBeInTheDocument()
+    toggle('Part')
+    expect(screen.getByRole('button', { name: 'Body 1' })).toHaveAttribute(
+      'aria-expanded',
+      'true'
+    )
   })
 })
