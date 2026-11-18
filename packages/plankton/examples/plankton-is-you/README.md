@@ -100,8 +100,12 @@ WASD, wait with Space, and undo with Z. Click any tile, or approach the right ed
 and click the revealed editor handle. Editing pauses player input.
 
 The editor shows pixel-rendered live rules first, then installed vocabulary.
-Selecting a tile opens one tray: entity/word artwork, name, ink, pixel canvas, and
-property action. An entity also supplies its noun word; toggle between the two
+Vocabulary and Outcomes stay in the main panel. Selecting a tile opens a separate
+tray to its left: entity/word artwork, name, ink, pixel canvas, and property action.
+Close the tray or click the selected vocabulary icon again to clear the selection.
+On narrow screens the tray covers the main panel until closed.
+
+An entity also supplies its noun word; toggle between the two
 artworks. Property words such as YOU have no entity artwork. The plus at the end
 of the vocabulary creates a new entity or word.
 

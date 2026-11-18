@@ -7,14 +7,9 @@ import {
   RotateCcw,
   Trash2,
   Undo2,
+  X,
 } from 'lucide-react'
-import {
-  type CSSProperties,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import { type CSSProperties, useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ActionEditor } from './action-editor'
 import { type ActionRecipe, compileAction } from './actions'
@@ -147,16 +142,6 @@ function App({ runtime }: { runtime: Runtime }) {
         row.cells.includes(draft.name)
       ))
 
-  const selectionKey = draft
-    ? `${draft.scope}:${draft.base?.id ?? 'new'}:${draft.artworkKind}:${draft.scope === 'outcome' ? `${draft.cell.rowId}:${draft.cell.index}` : ''}`
-    : ''
-  const attachTray = useCallback(
-    (node: HTMLElement | null) => {
-      if (node && selectionKey) node.scrollIntoView({ block: 'start' })
-    },
-    [selectionKey]
-  )
-
   const outcomeDirty =
     JSON.stringify(outcomeRows) !==
     JSON.stringify(runtime.outcomeProgram.value.rows)
@@ -223,6 +208,14 @@ function App({ runtime }: { runtime: Runtime }) {
   }
 
   function select(definition: Definition, kind: Tile['kind'], tileId?: string) {
+    if (
+      !tileId &&
+      draft?.base?.id === definition.id &&
+      draft.artworkKind === kind
+    ) {
+      setDraft(null)
+      return
+    }
     if (draft?.scope === 'outcome' && kind === 'word' && !tileId) {
       selectOutcome(draft.cell, definition.id)
       return
@@ -526,132 +519,155 @@ function App({ runtime }: { runtime: Runtime }) {
         <Dialog.Portal>
           <Dialog.Overlay className="editor-overlay" />
           <Dialog.Content
-            className="editor"
+            className={`editor${draft ? ' has-selection' : ''}`}
             onCloseAutoFocus={(event) => {
               event.preventDefault()
               world.current?.focus()
             }}
           >
-            <header>
-              <Dialog.Title>Editor</Dialog.Title>
-              <div className="editor-actions">
-                <button
-                  aria-label="Undo"
-                  title="Undo"
-                  disabled={busy}
-                  onClick={undo}
-                >
-                  <Undo2 size={17} />
-                </button>
-                <button
-                  aria-label="Reset puzzle"
-                  title="Reset"
-                  disabled={busy}
-                  onClick={reset}
-                >
-                  <RotateCcw size={16} />
-                </button>
-                <button
-                  aria-label="Resume play"
-                  title="Resume play"
-                  onClick={resume}
-                >
-                  <Play size={17} />
-                </button>
-              </div>
-            </header>
-            <Dialog.Description className="editor-description">
-              Paused · {game.puzzle.title}
-            </Dialog.Description>
-            <section className="rules">
-              <h2>Live rules</h2>
-              <ul>
-                {rules.map((rule, index) => (
-                  <li
-                    key={`${rule.noun}-${rule.property}-${index}`}
-                    aria-label={`${rule.noun} IS ${rule.property}`}
+            <div className="editor-main">
+              <header>
+                <Dialog.Title>Editor</Dialog.Title>
+                <div className="editor-actions">
+                  <button
+                    aria-label="Undo"
+                    title="Undo"
+                    disabled={busy}
+                    onClick={undo}
                   >
-                    {[rule.noun, 'IS', rule.property].map((id, i) => {
-                      const definition = definitions.find((d) => d.id === id)
-                      return definition ? (
-                        <span key={`${id}-${i}`}>
-                          <Pixels
-                            sprite={artwork(definition, 'word')}
-                            color={ink(definition, 'word')}
-                          />
-                        </span>
-                      ) : null
-                    })}
-                  </li>
-                ))}
-              </ul>
-              {rules.length === 0 && <p>No active sentences.</p>}
-            </section>
-            <section>
-              <h2>Installed vocabulary</h2>
-              <div className="vocabulary">
-                {definitions.flatMap((definition) =>
-                  (definition.kind === 'entity'
-                    ? (['entity', 'word'] as const)
-                    : (['word'] as const)
-                  ).map((kind) => (
-                    <button
-                      key={`${definition.id}-${kind}`}
-                      aria-label={`Edit ${definition.id} ${kind}`}
-                      aria-pressed={
-                        draft?.base?.id === definition.id &&
-                        draft.artworkKind === kind
-                      }
-                      disabled={busy}
-                      onClick={() => select(definition, kind)}
+                    <Undo2 size={17} />
+                  </button>
+                  <button
+                    aria-label="Reset puzzle"
+                    title="Reset"
+                    disabled={busy}
+                    onClick={reset}
+                  >
+                    <RotateCcw size={16} />
+                  </button>
+                  <button
+                    aria-label="Resume play"
+                    title="Resume play"
+                    onClick={resume}
+                  >
+                    <Play size={17} />
+                  </button>
+                </div>
+              </header>
+              <Dialog.Description className="editor-description">
+                Paused · {game.puzzle.title}
+              </Dialog.Description>
+              <section className="rules">
+                <h2>Live rules</h2>
+                <ul>
+                  {rules.map((rule, index) => (
+                    <li
+                      key={`${rule.noun}-${rule.property}-${index}`}
+                      aria-label={`${rule.noun} IS ${rule.property}`}
                     >
-                      <Pixels
-                        sprite={artwork(definition, kind)}
-                        color={ink(definition, kind)}
-                      />
-                      <small>{kind}</small>
-                    </button>
-                  ))
+                      {[rule.noun, 'IS', rule.property].map((id, i) => {
+                        const definition = definitions.find((d) => d.id === id)
+                        return definition ? (
+                          <span key={`${id}-${i}`}>
+                            <Pixels
+                              sprite={artwork(definition, 'word')}
+                              color={ink(definition, 'word')}
+                            />
+                          </span>
+                        ) : null
+                      })}
+                    </li>
+                  ))}
+                </ul>
+                {rules.length === 0 && <p>No active sentences.</p>}
+              </section>
+              <section>
+                <h2>Installed vocabulary</h2>
+                <div className="vocabulary">
+                  {definitions.flatMap((definition) =>
+                    (definition.kind === 'entity'
+                      ? (['entity', 'word'] as const)
+                      : (['word'] as const)
+                    ).map((kind) => (
+                      <button
+                        key={`${definition.id}-${kind}`}
+                        aria-label={`Edit ${definition.id} ${kind}`}
+                        aria-pressed={
+                          draft?.base?.id === definition.id &&
+                          draft.artworkKind === kind
+                        }
+                        disabled={busy}
+                        onClick={() => select(definition, kind)}
+                      >
+                        <Pixels
+                          sprite={artwork(definition, kind)}
+                          color={ink(definition, kind)}
+                        />
+                        <small>{kind}</small>
+                      </button>
+                    ))
+                  )}
+                  <button
+                    className="new-item"
+                    aria-label="New vocabulary item"
+                    aria-pressed={!!draft && !draft.base}
+                    onClick={create}
+                  >
+                    <Plus size={22} />
+                    <small>New</small>
+                  </button>
+                </div>
+              </section>
+              <OutcomeBoard
+                rows={outcomeRows}
+                words={definitions}
+                busy={busy}
+                dirty={outcomeDirty}
+                canUndo={outcomeHistory.length > 0}
+                renderWord={(word) => (
+                  <Pixels
+                    sprite={artwork(word, 'word')}
+                    color={ink(word, 'word')}
+                  />
                 )}
-                <button
-                  className="new-item"
-                  aria-label="New vocabulary item"
-                  aria-pressed={!!draft && !draft.base}
-                  onClick={create}
-                >
-                  <Plus size={22} />
-                  <small>New</small>
+                selected={draft?.scope === 'outcome' ? draft.cell : undefined}
+                onSelect={(cell) => selectOutcome(cell)}
+                onChange={editOutcomeRows}
+                onApply={applyOutcomes}
+                onUndo={() => {
+                  const previous = outcomeHistory.at(-1)
+                  if (previous) {
+                    setOutcomeRows(previous)
+                    setOutcomeHistory(outcomeHistory.slice(0, -1))
+                    setDraft(null)
+                  }
+                }}
+                onRestore={() => editOutcomeRows(startingOutcomeRows)}
+              />
+              <footer>
+                <p role="status">{notice}</p>
+                <small>
+                  Arrows / WASD · Space waits · Z undoes
+                  <br />
+                  Place tile pauses until placement or Esc.
+                </small>
+                <button className="resume" onClick={resume}>
+                  <Play size={14} />
+                  Resume play
                 </button>
-              </div>
-            </section>
-            <OutcomeBoard
-              rows={outcomeRows}
-              words={definitions}
-              busy={busy}
-              dirty={outcomeDirty}
-              canUndo={outcomeHistory.length > 0}
-              renderWord={(word) => (
-                <Pixels
-                  sprite={artwork(word, 'word')}
-                  color={ink(word, 'word')}
-                />
-              )}
-              selected={draft?.scope === 'outcome' ? draft.cell : undefined}
-              onSelect={(cell) => selectOutcome(cell)}
-              onChange={editOutcomeRows}
-              onApply={applyOutcomes}
-              onUndo={() => {
-                const previous = outcomeHistory.at(-1)
-                if (previous) {
-                  setOutcomeRows(previous)
-                  setOutcomeHistory(outcomeHistory.slice(0, -1))
-                  setDraft(null)
-                }
-              }}
-              onRestore={() => editOutcomeRows(startingOutcomeRows)}
-            />
-            {draft ? (
-              <section className="tray" ref={attachTray}>
+              </footer>
+            </div>
+            {draft && (
+              <section className="tray" aria-label="Vocabulary details">
+                <div className="details-heading">
+                  <h2>Vocabulary details</h2>
+                  <button
+                    aria-label="Close vocabulary details"
+                    onClick={() => setDraft(null)}
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
                 <div className="tray-heading">
                   <h2>
                     {draft.scope === 'outcome'
@@ -710,7 +726,11 @@ function App({ runtime }: { runtime: Runtime }) {
                       const name = event.target.value
                         .toUpperCase()
                         .replace(/[^A-Z]/g, '')
-                      setDraft({ ...draft, name, wordSprite: wordSprite(name) })
+                      setDraft({
+                        ...draft,
+                        name,
+                        wordSprite: wordSprite(name),
+                      })
                     }}
                   />
                 </label>
@@ -955,31 +975,7 @@ function App({ runtime }: { runtime: Runtime }) {
                   </p>
                 )}
               </section>
-            ) : (
-              <p className="field-hint">Select a tile, or + to create one.</p>
             )}
-            <section className="outcomes">
-              <h2>Outcome</h2>
-              <p>
-                {game.board.status === 'lost'
-                  ? lossMessage
-                  : game.board.status === 'won'
-                    ? 'Won'
-                    : 'Playing'}
-              </p>
-            </section>
-            <footer>
-              <p role="status">{notice}</p>
-              <small>
-                Arrows / WASD · Space waits · Z undoes
-                <br />
-                Place tile pauses until placement or Esc.
-              </small>
-              <button className="resume" onClick={resume}>
-                <Play size={14} />
-                Resume play
-              </button>
-            </footer>
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
