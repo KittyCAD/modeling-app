@@ -1,360 +1,279 @@
-import type * as CameraControlsModule from '@src/clientSideScene/CameraControls'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type * as WasmUtilsModule from '@src/lang/wasmUtils'
+import type { KclManager } from '@src/lang/KclManager'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import {
-  createLocalName,
   createLiteral,
+  createLocalName,
   createVariableDeclaration,
 } from '@src/lang/create'
-import { executeAstMock } from '@src/lang/executeAstMock'
-import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
-import { artifactToEntityRef, getNodeFromPath } from '@src/lang/queryAst'
+import { deleteSegmentOrProfileFromPipeExpression } from '@src/lang/modifyAst'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
-import { assertParse, recast, type CallExpressionKw } from '@src/lang/wasm'
-import type * as WasmUtilsModule from '@src/lang/wasmUtils'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import {
+  assertParse,
+  recast,
+  type CallExpressionKw,
+  type Expr,
+  type Program,
+} from '@src/lang/wasm'
+import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { isErr } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { modelingMachine } from '@src/machines/modelingMachine'
 import { legacySketchCases } from '@src/machines/modelingMachine.legacySketch.fixtures'
-import { generateModelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
-import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import type { MockInstance } from 'vitest'
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  onTestFinished,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest'
+import type { SketchDetails } from '@src/machines/modelingSharedTypes'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
+import { createActor, toPromise } from 'xstate'
 import fc from 'fast-check'
-import { createActor, waitFor, type ActorRefFrom } from 'xstate'
+import { join } from 'path'
 
-// Camera acknowledgement/animation belongs to CameraControls' tests. Everything
-// that computes edits, resolves selections, or rebuilds sketch geometry is real.
-vi.mock('@src/clientSideScene/CameraControls', async (importOriginal) => ({
-  ...(await importOriginal<typeof CameraControlsModule>()),
-  enterSketchModeAndSyncCamera: vi.fn().mockResolvedValue(undefined),
-}))
-
-// Registry imports also request Wasm through the browser loader. Use the same
-// real blob from disk so this file has no dependency on a running dev server.
+// Registry imports can request the browser Wasm loader. Load the same real blob
+// from disk; these tests use parsing and AST editing only, never KCL execution.
 vi.mock('@src/lang/wasmUtils', async (importOriginal) => ({
   ...(await importOriginal<typeof WasmUtilsModule>()),
   initialiseWasm: async () => {
-    const { loadWasm } = await import('@src/unitTestUtils')
-    return loadWasm()
+    const [{ loadAndInitialiseWasmInstance }, path] = await Promise.all([
+      import('@src/lang/wasmUtilsNode'),
+      import('path'),
+    ])
+    return loadAndInitialiseWasmInstance(
+      path.join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    )
   },
 }))
 
-let world: Awaited<ReturnType<typeof buildTheWorldAndNoEngineConnection>>
-let sendSceneCommand: MockInstance<ConnectionManager['sendSceneCommand']>
+// A future actor change must not silently turn these into execution tests.
+vi.mock('@src/lang/executeAstMock', () => ({
+  executeAstMock: () => {
+    throw new Error('AST tests must not execute KCL')
+  },
+  evaluateExpression: () => {
+    throw new Error('AST tests must not evaluate KCL')
+  },
+}))
+
+let instance: ModuleType
 beforeAll(async () => {
-  world = await buildTheWorldAndNoEngineConnection()
-  sendSceneCommand = vi
-    .spyOn(world.engineCommandManager, 'sendSceneCommand')
-    .mockImplementation(() => {
-      throw new Error('Legacy sketch edits must not send engine commands')
-    })
-})
-afterEach(() => {
-  expect(sendSceneCommand).not.toHaveBeenCalled()
-})
-afterAll(() => {
-  vi.restoreAllMocks()
-  world.commandBarActor.stop()
-  world.settingsActor.stop()
+  instance = await loadAndInitialiseWasmInstance(
+    join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+  )
 })
 
 const cases = Object.values(legacySketchCases)
-const waitForSketch = (actor: ActorRefFrom<typeof modelingMachine>) =>
-  waitFor(actor, (s) => s.matches({ Sketch: { SketchIdle: 'scene drawn' } }), {
-    timeout: 5000,
-  })
 
-async function prepareSketch(code: string, searchText: string) {
-  const { instance, rustContext } = world
+function parseSegment(code: string, searchText: string) {
   const ast = assertParse(code, instance)
-  const execution = await executeAstMock({
-    ast,
-    rustContext,
-    usePrevMemory: false,
-  })
-  expect(execution.errors).toEqual([])
-  const index = code.indexOf(searchText)
-  const artifact = [...execution.execState.artifactGraph.values()].find(
-    (a) =>
-      a.type === 'segment' &&
-      a.codeRef.range[0] <= index &&
-      index <= a.codeRef.range[1]
-  )
-  if (!artifact || !('codeRef' in artifact))
-    throw new Error(`Missing segment: ${searchText}`)
+  const start = code.indexOf(searchText)
+  if (start < 0) throw new Error(`Missing source: ${searchText}`)
+  const path = getNodePathFromSourceRange(ast, [
+    start,
+    start + searchText.length,
+    0,
+  ])
   const call = getNodeFromPath<Node<CallExpressionKw>>(
     ast,
-    artifact.codeRef!.pathToNode,
+    path,
     instance,
     'CallExpressionKw'
   )
   if (isErr(call)) throw call
-  return {
-    ast,
-    artifact,
-    call: call.node,
-    variables: execution.execState.variables,
-  }
+  return { ast, call: call.node, path: call.shallowPath }
 }
 
-async function enterSketch(code: string, searchText: string) {
-  const { instance, kclManager } = world
-  const { ast, artifact: originalArtifact } = await prepareSketch(
-    code,
-    searchText
+function statementPath(ast: Node<Program>, name: string) {
+  const statement = ast.body.find(
+    (item) =>
+      item.type === 'VariableDeclaration' && item.declaration.id.name === name
   )
-  kclManager.updateCodeEditor(code)
-  expect(await kclManager.executeAstMock(ast)).toBeNull()
-  const artifact = [...kclManager.artifactGraph.values()].find(
-    (a) =>
-      a.type === 'segment' &&
-      JSON.stringify(a.codeRef.pathToNode) ===
-        JSON.stringify(originalArtifact.codeRef!.pathToNode)
+  if (!statement) throw new Error(`Missing declaration: ${name}`)
+  return getNodePathFromSourceRange(ast, [statement.start, statement.end, 0])
+}
+
+async function applyNamedDimension(
+  code: string,
+  searchText: string,
+  constraintIndex: number,
+  filter?: string,
+  value = 20
+) {
+  const { ast, call, path } = parseSegment(code, searchText)
+  const constraint = getConstraintInfoKw(call, code, path, filter)[
+    constraintIndex
+  ]
+  const sketchPath = statementPath(ast, 'profile001')
+  const planePath = statementPath(ast, 'sketch001')
+  const sketchDetails: SketchDetails = {
+    sketchEntryNodePath: sketchPath,
+    sketchNodePaths: [sketchPath],
+    planeNodePath: planePath,
+    zAxis: [0, 0, 1],
+    yAxis: [0, 1, 0],
+    origin: [0, 0, 0],
+  }
+  let persistedCode = ''
+  let editedAst = ast
+  // The scene boundary intentionally does not execute or rebuild geometry.
+  // The production actor still computes the AST, reference paths, and selections.
+  const sceneEdit = vi.fn<SceneEntities['updateAstAndRejigSketch']>(
+    async (_entry, _sketches, _plane, nextAst) => {
+      if (isErr(nextAst)) throw nextAst
+      editedAst = nextAst
+      return { newAst: nextAst }
+    }
   )
-  if (!artifact || !('codeRef' in artifact))
-    throw new Error('Missing reparsed segment')
-  const canonicalCode = recast(kclManager.ast, instance)
-  if (isErr(canonicalCode)) throw canonicalCode
-  kclManager.updateCodeEditor(canonicalCode)
-  const actor = createActor(modelingMachine, {
-    input: generateModelingMachineDefaultContext({
-      ...world,
+  const kclManager = {
+    ast,
+    artifactGraph: new Map(),
+    sceneEntitiesManager: { updateAstAndRejigSketch: sceneEdit },
+    updateEditorWithAstAndWriteToFile: async (nextAst: Node<Program>) => {
+      const code = recast(nextAst, instance)
+      if (isErr(code)) throw code
+      persistedCode = code
+    },
+  } as unknown as KclManager
+  const implementation =
+    modelingMachine.implementations.actors['Apply named value constraint']
+  const logic = 'src' in implementation ? implementation.src : implementation
+  const actor = createActor(logic, {
+    input: {
+      kclManager,
       wasmInstance: instance,
-    }),
-  }).start()
-  actor.send({
-    type: 'Set selection',
-    data: {
-      selectionType: 'mirrorCodeMirrorSelections',
-      selection: {
-        graphSelections: [
-          {
-            entityRef: artifactToEntityRef(artifact.type, artifact.id),
-            codeRef: artifact.codeRef,
-          },
-        ],
-        otherSelections: [],
+      sketchDetails,
+      selectionRanges: { graphSelections: [], otherSelections: [] },
+      data: {
+        currentValue: {
+          valueText: constraint.value,
+          pathToNode: constraint.pathToNode,
+          variableName: 'test_variable',
+        },
+        namedValue: {
+          valueText: String(value),
+          valueCalculated: String(value),
+          variableName: 'test_variable',
+          insertIndex: 0,
+          variableDeclarationAst: createVariableDeclaration(
+            'test_variable',
+            createLiteral(value, instance)
+          ),
+          variableIdentifierAst: createLocalName('test_variable'),
+          valueAst: createLiteral(value, instance),
+        },
       },
     },
   })
-  actor.send({ type: 'Enter sketch' })
   try {
-    await waitForSketch(actor)
-  } catch (error) {
+    const done = toPromise(actor)
+    actor.start()
+    const result = await done
+    return { code: persistedCode, ast: editedAst, result }
+  } finally {
     actor.stop()
-    throw error
   }
-  const call = getNodeFromPath<Node<CallExpressionKw>>(
-    kclManager.ast,
-    artifact.codeRef!.pathToNode,
-    instance,
-    'CallExpressionKw'
-  )
-  if (isErr(call)) {
-    actor.stop()
-    throw call
-  }
-  return { actor, ast: kclManager.ast, artifact, call: call.node }
 }
 
-async function expectExecutableCode() {
-  const { instance, kclManager, rustContext } = world
-  const result = await executeAstMock({
-    ast: assertParse(kclManager.code, instance),
-    rustContext,
-    usePrevMemory: false,
-  })
-  expect(result.errors).toEqual([])
-  return result.execState
-}
-
-describe('legacy sketch edits without an engine connection', () => {
+describe('naming legacy dimensions without executing KCL', () => {
   it.each(cases.flatMap((c) => c.namedConstantConstraint))(
     '$name',
     async ({ code, searchText, constraintIndex, expectedResult, filter }) => {
-      const { actor, artifact, call } = await enterSketch(code, searchText)
-      onTestFinished(() => {
-        actor.stop()
-      })
-      const { instance, kclManager } = world
-      const constraint = getConstraintInfoKw(
-        call,
-        world.kclManager.code,
-        artifact.codeRef!.pathToNode,
-        filter
-      )[constraintIndex]
-      actor.send({
-        type: 'Constrain with named value',
-        data: {
-          currentValue: {
-            valueText: constraint.value,
-            pathToNode: constraint.pathToNode,
-            variableName: 'test_variable',
-          },
-          namedValue: {
-            valueText: '20',
-            variableName: 'test_variable',
-            insertIndex: 0,
-            valueCalculated: '20',
-            variableDeclarationAst: createVariableDeclaration(
-              'test_variable',
-              createLiteral(20, instance)
-            ),
-            variableIdentifierAst: createLocalName('test_variable'),
-            valueAst: createLiteral(20, instance),
-          },
-        },
-      })
-      await waitForSketch(actor)
-      expect(kclManager.code).toContain(expectedResult)
-      expect(kclManager.code).toContain('test_variable = 20')
-      await expectExecutableCode()
-    }
-  )
-
-  it.each(cases.flatMap((c) => c.removeIndividualConstraintsCases))(
-    '$name',
-    async ({ code, searchText, constraintIndex, expectedResult, filter }) => {
-      const { artifact, ast, call, variables } = await prepareSketch(
+      const edited = await applyNamedDimension(
         code,
-        searchText
-      )
-      const { instance } = world
-      const constraint = getConstraintInfoKw(
-        call,
-        code,
-        artifact.codeRef!.pathToNode,
+        searchText,
+        constraintIndex,
         filter
-      )[constraintIndex]
-      if (!constraint.argPosition)
-        throw new Error('Missing constraint argument')
-      const result = removeSingleConstraintInfo(
-        constraint.pathToNode,
-        constraint.argPosition,
-        ast,
-        variables,
-        removeSingleConstraint,
-        transformAstSketchLines,
-        instance
       )
-      if (!result) throw new Error('Constraint removal failed')
-      const edited = recast(result.modifiedAst, instance)
-      if (isErr(edited)) throw edited
-      expect(edited).toContain(expectedResult)
-      const execution = await executeAstMock({
-        ast: assertParse(edited, instance),
-        rustContext: world.rustContext,
-        usePrevMemory: false,
+      expect(edited.code).toContain(expectedResult)
+      expect(edited.code).toContain('test_variable = 20')
+      assertParse(edited.code, instance)
+      const selectedPath =
+        edited.result.selection.graphSelections[0]?.codeRef?.pathToNode
+      if (!selectedPath)
+        throw new Error('Missing selection after naming the dimension')
+      const selected = getNodeFromPath<Expr>(edited.ast, selectedPath, instance)
+      if (isErr(selected)) throw selected
+      expect(selected.node).toMatchObject({
+        type: 'Name',
+        name: { name: 'test_variable' },
       })
-      expect(execution.errors).toEqual([])
-    }
-  )
-
-  it.each(cases.flatMap((c) => c.removeAllConstraintsCases))(
-    '$name',
-    async ({ code, searchText, expectedResult }) => {
-      const { actor, artifact } = await enterSketch(code, searchText)
-      onTestFinished(() => {
-        actor.stop()
-      })
-      actor.send({
-        type: 'Constrain remove constraints',
-        data: artifact.codeRef!.pathToNode,
-      })
-      await waitForSketch(actor)
-      expect(world.kclManager.code).toContain(expectedResult)
-      await expectExecutableCode()
-    }
-  )
-
-  it.each(cases.flatMap((c) => c.deleteSegment))(
-    '$name',
-    async ({ code, searchText, filter }) => {
-      const { actor, artifact, call } = await enterSketch(code, searchText)
-      onTestFinished(() => {
-        actor.stop()
-      })
-      const constraint = getConstraintInfoKw(
-        call,
-        world.kclManager.code,
-        artifact.codeRef!.pathToNode,
-        filter
-      )[0]
-      actor.send({ type: 'Delete segments', data: [constraint.pathToNode] })
-      // Deletion is currently a fire-and-forget action; wait for its persisted edit.
-      await vi.waitFor(
-        () => expect(world.kclManager.code).not.toContain(searchText),
-        { timeout: 5000 }
+      const sketch = getNodeFromPath(
+        edited.ast,
+        edited.result.updatedSketchEntryNodePath,
+        instance,
+        'VariableDeclaration'
       )
-      await expectExecutableCode()
+      if (isErr(sketch)) throw sketch
+      expect(sketch.node).toMatchObject({
+        declaration: { id: { name: 'profile001' } },
+      })
     }
   )
-})
 
-describe('removing legacy dimensions', () => {
-  it('preserves the endpoint and unrelated code for relative and absolute lines', async () => {
+  it('changes only the selected coordinate and keeps the inserted dimension numeric', async () => {
     await fc.assert(
       fc.asyncProperty(
-        fc
-          .record({
-            x: fc.integer({ min: -500, max: 500 }),
-            y: fc.integer({ min: -500, max: 500 }),
-            originX: fc.integer({ min: -500, max: 500 }),
-            originY: fc.integer({ min: -500, max: 500 }),
-            absolute: fc.boolean(),
-          })
-          .filter(({ x, y, originX, originY, absolute }) =>
-            absolute ? x !== originX || y !== originY : x !== 0 || y !== 0
-          ),
-        async ({ x, y, originX, originY, absolute }) => {
-          const target = `line(${absolute ? 'endAbsolute' : 'end'} = [dimensionX, dimensionY])`
-          const code = `@settings(kclVersion = 1.0, defaultLengthUnit = mm)
-dimensionX = ${x}
-dimensionY = ${y}
+        fc.record({
+          x: fc.integer({ min: -500, max: 500 }),
+          y: fc.integer({ min: -500, max: 500 }),
+          value: fc.integer({ min: -500, max: 500 }),
+          axis: fc.constantFrom(0, 1),
+          absolute: fc.boolean(),
+        }),
+        async ({ x, y, value, axis, absolute }) => {
+          const argument = absolute ? 'endAbsolute' : 'end'
+          const target = `line(${argument} = [${x}, ${y}])`
+          const code = `@settings(kclVersion = 1.0)
 untouched = 123
 sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [${originX}, ${originY}])
+profile001 = startProfile(sketch001, at = [0, 0])
   |> ${target}
+  |> line(end = [7, 11])
 `
-          const { actor, artifact } = await enterSketch(code, target)
-          try {
-            actor.send({
-              type: 'Constrain remove constraints',
-              data: artifact.codeRef!.pathToNode,
-            })
-            await waitForSketch(actor)
-            expect(world.kclManager.code).not.toContain(target)
-            expect(world.kclManager.code).toContain(`dimensionX = ${x}`)
-            expect(world.kclManager.code).toContain(`dimensionY = ${y}`)
-            expect(world.kclManager.code).toContain('untouched = 123')
-            const state = await expectExecutableCode()
-            const profile = state.variables.profile001
-            if (profile?.type !== 'Sketch')
-              throw new Error('Missing edited sketch')
-            const segment = profile.value.paths[0]
-            expect(segment.from).toEqual([originX, originY])
-            expect(segment.to).toEqual(
-              absolute ? [x, y] : [originX + x, originY + y]
-            )
-          } finally {
-            actor.stop()
-          }
+          const edited = await applyNamedDimension(
+            code,
+            target,
+            axis,
+            undefined,
+            value
+          )
+          const expected = `test_variable = ${value}\n${code.replace(target, `line(${argument} = [${axis === 0 ? 'test_variable' : x}, ${axis === 1 ? 'test_variable' : y}])`)}`
+          expect(edited.code).toBe(
+            recast(assertParse(expected, instance), instance)
+          )
         }
       ),
       { numRuns: 50 }
     )
-  }, 30_000)
+  })
+})
+
+describe('deleting independent legacy segments without executing KCL', () => {
+  it.each(cases.flatMap((c) => c.deleteSegment))(
+    '$name',
+    ({ code, searchText }) => {
+      const { ast, path } = parseSegment(code, searchText)
+      const original = structuredClone(ast)
+      const edited = deleteSegmentOrProfileFromPipeExpression(
+        [],
+        ast,
+        {},
+        code,
+        [path],
+        getConstraintInfoKw,
+        removeSingleConstraint,
+        transformAstSketchLines,
+        instance
+      )
+      if (isErr(edited)) throw edited
+      const expected = code.replace(`|> ${searchText}\n`, '')
+      expect(recast(edited, instance)).toBe(
+        recast(assertParse(expected, instance), instance)
+      )
+      expect(ast).toEqual(original)
+    }
+  )
 })

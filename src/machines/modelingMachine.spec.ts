@@ -1,19 +1,39 @@
-/** Machine and swept-face integration tests. Legacy sketch edits run offline
- * in modelingMachine.legacySketch.spec.ts. */
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { STRAIGHT_SEGMENT } from '@src/clientSideScene/sceneConstants'
+import {
+  createLocalName,
+  createLiteral,
+  createVariableDeclaration,
+} from '@src/lang/create'
 import type { KclManager } from '@src/lang/KclManager'
+import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
+import { artifactToEntityRef, getNodeFromPath } from '@src/lang/queryAst'
 import { getWallCodeRef } from '@src/lang/std/artifactGraph'
-import { type Artifact, type ArtifactGraph, assertParse } from '@src/lang/wasm'
+import { getConstraintInfoKw } from '@src/lang/std/sketch'
+import {
+  removeSingleConstraint,
+  transformAstSketchLines,
+} from '@src/lang/std/sketchcombos'
+/** Engine-backed machine coverage. Execution-free AST contracts are tested in
+ * modelingMachine.legacySketch.spec.ts. */
+import {
+  type Artifact,
+  type ArtifactGraph,
+  assertParse,
+  type CallExpressionKw,
+  recast,
+} from '@src/lang/wasm'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { getAstAndArtifactGraph } from '@src/lib/testHelpers'
 import { StepSchema } from '@src/lib/stepSchema'
-import { isErr } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import { legacySketchCases as cases } from '@src/machines/modelingMachine.legacySketch.fixtures'
 import {
   modelingMachine,
   positionLocalSketchSolveCamera,
@@ -38,7 +58,13 @@ import toast from 'react-hot-toast'
 import { Group } from 'three'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { vi } from 'vitest'
-import { createActor, fromPromise, toPromise, waitFor } from 'xstate'
+import {
+  type ActorRefFrom,
+  createActor,
+  fromPromise,
+  toPromise,
+  waitFor,
+} from 'xstate'
 
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
 
@@ -314,6 +340,16 @@ describe('modelingMachine.test.ts', () => {
     return condition()
   }
 
+  const waitForSketchScene = (
+    actor: ActorRefFrom<typeof modelingMachine>,
+    signal: AbortSignal
+  ) =>
+    waitFor(
+      actor,
+      (snapshot) => snapshot.matches({ Sketch: { SketchIdle: 'scene drawn' } }),
+      { timeout: GLOBAL_TIMEOUT_FOR_MODELING_MACHINE, signal }
+    )
+
   describe('modelingMachine - XState', () => {
     describe('legacy overlay pointer retention', () => {
       function createOverlayActor() {
@@ -453,7 +489,525 @@ describe('modelingMachine.test.ts', () => {
       })
     })
 
-    // Legacy segment editing matrices run offline in modelingMachine.legacySketch.spec.ts.
+    // test: all of these pass.
+    describe('Deleting segment with three dot menu', () => {
+      useEngineWorld()
+
+      let namedConstantConstraintCases = Object.values(cases).flatMap(
+        (caseGroup) => caseGroup.deleteSegment
+      )
+      // namedConstantConstraintCases = namedConstantConstraintCases.filter((cases) => { return cases.name === 'should delete tangentialArc absolute' })
+      namedConstantConstraintCases.forEach(
+        ({ name, code, searchText, filter }) => {
+          it(name, async ({ signal, onTestFinished }) => {
+            const indexOfInterest = code.indexOf(searchText)
+            // You need to update this!!
+            kclManagerInThisFile.updateCodeEditor(code)
+            const ast = assertParse(code, instanceInThisFile)
+            await kclManagerInThisFile.executeAst({ ast })
+            signal.throwIfAborted()
+
+            expect(kclManagerInThisFile.errors).toEqual([])
+
+            // segment artifact with that source range
+            const artifact = [...kclManagerInThisFile.artifactGraph].find(
+              ([_, artifact]) =>
+                artifact?.type === 'segment' &&
+                artifact.codeRef.range[0] <= indexOfInterest &&
+                indexOfInterest <= artifact.codeRef.range[1]
+            )?.[1]
+            if (!artifact || !('codeRef' in artifact)) {
+              throw new Error(
+                'Artifact not found or invalid artifact structure'
+              )
+            }
+
+            const contextCopied = generateModelingMachineDefaultContext({
+              kclManager: kclManagerInThisFile,
+              rustContext: rustContextInThisFile,
+              wasmInstance: instanceInThisFile,
+              engineCommandManager: engineCommandManagerInThisFile,
+              commandBarActor: commandBarActorInThisFile,
+              machineManager: machineManagerInThisFile,
+            })
+
+            contextCopied.engineCommandManager = engineCommandManagerInThisFile
+            contextCopied.wasmInstance = instanceInThisFile
+            contextCopied.rustContext = rustContextInThisFile
+            contextCopied.commandBarActor = commandBarActorInThisFile
+
+            const actor = createActor(modelingMachine, {
+              input: contextCopied,
+            }).start()
+            onTestFinished(() => {
+              actor.stop()
+            })
+
+            // Send event to transition to sketch mode
+            actor.send({
+              type: 'Set selection',
+              data: {
+                selectionType: 'mirrorCodeMirrorSelections',
+                selection: {
+                  graphSelections: [
+                    {
+                      entityRef: artifactToEntityRef(
+                        artifact.type,
+                        artifact.id
+                      ),
+                      codeRef: artifact.codeRef,
+                    },
+                  ],
+                  otherSelections: [],
+                },
+              },
+            })
+            actor.send({ type: 'Enter sketch' })
+
+            await waitForSketchScene(actor, signal)
+
+            const callExp = getNodeFromPath<Node<CallExpressionKw>>(
+              kclManagerInThisFile.ast,
+              artifact.codeRef!.pathToNode,
+              instanceInThisFile,
+              'CallExpressionKw'
+            )
+            if (err(callExp)) {
+              throw new Error('Failed to get CallExpressionKw node')
+            }
+            const constraintInfo = getConstraintInfoKw(
+              callExp.node,
+              kclManagerInThisFile.code,
+              artifact.codeRef!.pathToNode,
+              filter
+            )
+            const constraint = constraintInfo[0]
+
+            // Now that we're in sketchIdle state, test the "Constrain with named value" event
+            actor.send({
+              type: 'Delete segments',
+              data: [constraint.pathToNode],
+            })
+
+            // Wait for the state to change in response to the constraint
+            await waitForCondition(() => {
+              const snapshot = actor.getSnapshot()
+              // Check if we've transitioned to a different state
+              return (
+                JSON.stringify(snapshot.value) !==
+                JSON.stringify({
+                  Sketch: { SketchIdle: 'set up segments' },
+                })
+              )
+            }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
+
+            const startTime = Date.now()
+            while (
+              kclManagerInThisFile.code.includes(searchText) &&
+              Date.now() - startTime < GLOBAL_TIMEOUT_FOR_MODELING_MACHINE
+            ) {
+              await new Promise((resolve) => setTimeout(resolve, 100))
+            }
+
+            expect(kclManagerInThisFile.code).not.toContain(searchText)
+          }, 10_000)
+        }
+      )
+    })
+    // test: all of these pass
+    describe('Adding segment overlay constraints', () => {
+      useEngineWorld()
+
+      let namedConstantConstraintCases = Object.values(cases).flatMap(
+        (caseGroup) => caseGroup.namedConstantConstraint
+      )
+      namedConstantConstraintCases.forEach(
+        ({
+          name,
+          code,
+          searchText,
+          constraintIndex,
+          expectedResult,
+          filter,
+        }) => {
+          it(name, async ({ signal, onTestFinished }) => {
+            const indexOfInterest = code.indexOf(searchText)
+            // You need to update this!!
+            kclManagerInThisFile.updateCodeEditor(code)
+            const ast = assertParse(code, instanceInThisFile)
+
+            await kclManagerInThisFile.executeAst({ ast })
+            signal.throwIfAborted()
+
+            expect(kclManagerInThisFile.errors).toEqual([])
+
+            // segment artifact with that source range
+            const artifact = [...kclManagerInThisFile.artifactGraph].find(
+              ([_, artifact]) =>
+                artifact?.type === 'segment' &&
+                artifact.codeRef.range[0] <= indexOfInterest &&
+                indexOfInterest <= artifact.codeRef.range[1]
+            )?.[1]
+            if (!artifact || !('codeRef' in artifact)) {
+              throw new Error(
+                'Artifact not found or invalid artifact structure'
+              )
+            }
+
+            const contextCopied = generateModelingMachineDefaultContext({
+              kclManager: kclManagerInThisFile,
+              rustContext: rustContextInThisFile,
+              wasmInstance: instanceInThisFile,
+              engineCommandManager: engineCommandManagerInThisFile,
+              commandBarActor: commandBarActorInThisFile,
+              machineManager: machineManagerInThisFile,
+            })
+
+            contextCopied.engineCommandManager = engineCommandManagerInThisFile
+            contextCopied.wasmInstance = instanceInThisFile
+            contextCopied.rustContext = rustContextInThisFile
+            contextCopied.commandBarActor = commandBarActorInThisFile
+
+            const actor = createActor(modelingMachine, {
+              input: contextCopied,
+            }).start()
+            onTestFinished(() => {
+              actor.stop()
+            })
+
+            // Send event to transition to sketch mode
+            actor.send({
+              type: 'Set selection',
+              data: {
+                selectionType: 'mirrorCodeMirrorSelections',
+                selection: {
+                  graphSelections: [
+                    {
+                      entityRef: artifactToEntityRef(
+                        artifact.type,
+                        artifact.id
+                      ),
+                      codeRef: artifact.codeRef,
+                    },
+                  ],
+                  otherSelections: [],
+                },
+              },
+            })
+            actor.send({ type: 'Enter sketch' })
+
+            await waitForSketchScene(actor, signal)
+
+            expect(
+              kclManagerInThisFile.sceneInfra.camControls.enableRotate,
+              'Sketch orbit must be disabled before applying the constraint'
+            ).toBe(false)
+
+            const callExp = getNodeFromPath<Node<CallExpressionKw>>(
+              kclManagerInThisFile.ast,
+              artifact.codeRef!.pathToNode,
+              instanceInThisFile,
+              'CallExpressionKw'
+            )
+            if (err(callExp)) {
+              throw new Error('Failed to get CallExpressionKw node')
+            }
+            const constraintInfo = getConstraintInfoKw(
+              callExp.node,
+              kclManagerInThisFile.code,
+              artifact.codeRef!.pathToNode,
+              filter
+            )
+            const constraint = constraintInfo[constraintIndex]
+
+            // Now that we're in sketchIdle state, test the "Constrain with named value" event
+            actor.send({
+              type: 'Constrain with named value',
+              data: {
+                currentValue: {
+                  valueText: constraint.value,
+                  pathToNode: constraint.pathToNode,
+                  variableName: 'test_variable',
+                },
+                // Use type assertion to mock the complex type
+                namedValue: {
+                  valueText: '20',
+                  variableName: 'test_variable',
+                  insertIndex: 0,
+                  valueCalculated: '20',
+                  variableDeclarationAst: createVariableDeclaration(
+                    'test_variable',
+                    createLiteral(20, instanceInThisFile)
+                  ),
+                  variableIdentifierAst: createLocalName('test_variable'),
+                  valueAst: createLiteral(20, instanceInThisFile),
+                },
+              },
+            })
+
+            await waitForSketchScene(actor, signal)
+            expect(kclManagerInThisFile.code).toContain(expectedResult)
+          }, 10_000)
+        }
+      )
+    })
+    // test: all tests pass
+    describe('removing individual constraints with segment overlay events', () => {
+      useEngineWorld()
+
+      const removeIndividualConstraintsCases = Object.values(cases).flatMap(
+        (caseGroup) => caseGroup.removeIndividualConstraintsCases
+      )
+
+      removeIndividualConstraintsCases.forEach(
+        ({
+          name,
+          code,
+          searchText,
+          constraintIndex,
+          expectedResult,
+          filter,
+        }) => {
+          it(name, async ({ signal, onTestFinished }) => {
+            const indexOfInterest = code.indexOf(searchText)
+            // You need to update this!!
+            kclManagerInThisFile.updateCodeEditor(code)
+            const ast = assertParse(code, instanceInThisFile)
+
+            await kclManagerInThisFile.executeAst({ ast })
+            signal.throwIfAborted()
+
+            expect(kclManagerInThisFile.errors).toEqual([])
+
+            // segment artifact with that source range
+            const artifact = [...kclManagerInThisFile.artifactGraph].find(
+              ([_, artifact]) =>
+                artifact?.type === 'segment' &&
+                artifact.codeRef.range[0] <= indexOfInterest &&
+                indexOfInterest <= artifact.codeRef.range[1]
+            )?.[1]
+            if (!artifact || !('codeRef' in artifact)) {
+              throw new Error(
+                'Artifact not found or invalid artifact structure'
+              )
+            }
+
+            const contextCopied = generateModelingMachineDefaultContext({
+              kclManager: kclManagerInThisFile,
+              rustContext: rustContextInThisFile,
+              wasmInstance: instanceInThisFile,
+              engineCommandManager: engineCommandManagerInThisFile,
+              commandBarActor: commandBarActorInThisFile,
+              machineManager: machineManagerInThisFile,
+            })
+
+            contextCopied.engineCommandManager = engineCommandManagerInThisFile
+            contextCopied.wasmInstance = instanceInThisFile
+            contextCopied.rustContext = rustContextInThisFile
+            contextCopied.commandBarActor = commandBarActorInThisFile
+
+            const actor = createActor(modelingMachine, {
+              input: contextCopied,
+            }).start()
+            onTestFinished(() => {
+              actor.stop()
+            })
+            // Send event to transition to sketch mode
+            actor.send({
+              type: 'Set selection',
+              data: {
+                selectionType: 'mirrorCodeMirrorSelections',
+                selection: {
+                  graphSelections: [
+                    {
+                      entityRef: artifactToEntityRef(
+                        artifact.type,
+                        artifact.id
+                      ),
+                      codeRef: artifact.codeRef,
+                    },
+                  ],
+                  otherSelections: [],
+                },
+              },
+            })
+            actor.send({ type: 'Enter sketch' })
+
+            await waitForSketchScene(actor, signal)
+
+            const callExp = getNodeFromPath<Node<CallExpressionKw>>(
+              kclManagerInThisFile.ast,
+              artifact.codeRef!.pathToNode,
+              instanceInThisFile,
+              'CallExpressionKw'
+            )
+            if (err(callExp)) {
+              throw new Error('Failed to get CallExpressionKw node')
+            }
+            const constraintInfo = getConstraintInfoKw(
+              callExp.node,
+              kclManagerInThisFile.code,
+              artifact.codeRef!.pathToNode,
+              filter
+            )
+            const constraint = constraintInfo[constraintIndex]
+            if (!constraint.argPosition) {
+              throw new Error(
+                `Constraint at index ${constraintIndex} does not have argPosition`
+              )
+            }
+
+            const mod = removeSingleConstraintInfo(
+              constraint.pathToNode,
+              constraint.argPosition,
+              ast,
+              kclManagerInThisFile.variables,
+              removeSingleConstraint,
+              transformAstSketchLines,
+              instanceInThisFile
+            )
+            if (!mod) {
+              throw new Error('Failed to remove constraint info')
+            }
+            const codeRecast = recast(mod.modifiedAst, instanceInThisFile)
+
+            expect(codeRecast).toContain(expectedResult)
+          }, 10_000)
+        }
+      )
+    })
+    describe('Removing segment overlay constraints', () => {
+      useEngineWorld()
+
+      const removeAllConstraintsCases = Object.values(cases).flatMap(
+        (caseGroup) => caseGroup.removeAllConstraintsCases
+      )
+
+      removeAllConstraintsCases.forEach(
+        ({
+          name,
+          code,
+          searchText,
+          constraintIndex,
+          expectedResult,
+          filter,
+        }) => {
+          it(name, async ({ signal, onTestFinished }) => {
+            const indexOfInterest = code.indexOf(searchText)
+            // You need to update this!!
+            kclManagerInThisFile.updateCodeEditor(code)
+            const ast = assertParse(code, instanceInThisFile)
+
+            await kclManagerInThisFile.executeAst({ ast })
+            signal.throwIfAborted()
+
+            expect(kclManagerInThisFile.errors).toEqual([])
+
+            // segment artifact with that source range
+            const artifact = [...kclManagerInThisFile.artifactGraph].find(
+              ([_, artifact]) =>
+                artifact?.type === 'segment' &&
+                artifact.codeRef.range[0] <= indexOfInterest &&
+                indexOfInterest <= artifact.codeRef.range[1]
+            )?.[1]
+            if (!artifact || !('codeRef' in artifact)) {
+              throw new Error(
+                'Artifact not found or invalid artifact structure'
+              )
+            }
+
+            const contextCopied = generateModelingMachineDefaultContext({
+              kclManager: kclManagerInThisFile,
+              rustContext: rustContextInThisFile,
+              wasmInstance: instanceInThisFile,
+              engineCommandManager: engineCommandManagerInThisFile,
+              commandBarActor: commandBarActorInThisFile,
+              machineManager: machineManagerInThisFile,
+            })
+
+            contextCopied.engineCommandManager = engineCommandManagerInThisFile
+            contextCopied.wasmInstance = instanceInThisFile
+            contextCopied.rustContext = rustContextInThisFile
+            contextCopied.commandBarActor = commandBarActorInThisFile
+
+            const actor = createActor(modelingMachine, {
+              input: contextCopied,
+            }).start()
+            onTestFinished(() => {
+              actor.stop()
+            })
+
+            // Send event to transition to sketch mode
+            actor.send({
+              type: 'Set selection',
+              data: {
+                selectionType: 'mirrorCodeMirrorSelections',
+                selection: {
+                  graphSelections: [
+                    {
+                      entityRef: artifactToEntityRef(
+                        artifact.type,
+                        artifact.id
+                      ),
+                      codeRef: artifact.codeRef,
+                    },
+                  ],
+                  otherSelections: [],
+                },
+              },
+            })
+            actor.send({ type: 'Enter sketch' })
+
+            await waitForSketchScene(actor, signal)
+
+            const callExp = getNodeFromPath<Node<CallExpressionKw>>(
+              kclManagerInThisFile.ast,
+              artifact.codeRef!.pathToNode,
+              instanceInThisFile,
+              'CallExpressionKw'
+            )
+            if (err(callExp)) {
+              throw new Error('Failed to get CallExpressionKw node')
+            }
+
+            // Now that we're in sketchIdle state, test the "Constrain with named value" event
+            actor.send({
+              type: 'Constrain remove constraints',
+              data: artifact.codeRef!.pathToNode,
+            })
+
+            // Wait for the state to change in response to the constraint
+            await waitForCondition(() => {
+              const snapshot = actor.getSnapshot()
+              // Check if we've transitioned to a different state
+              return (
+                JSON.stringify(snapshot.value) !==
+                JSON.stringify({
+                  Sketch: { SketchIdle: 'set up segments' },
+                })
+              )
+            }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
+
+            await waitForCondition(() => {
+              const snapshot = actor.getSnapshot()
+              // Check if we've transitioned to a different state
+              return (
+                JSON.stringify(snapshot.value) !==
+                JSON.stringify({ Sketch: 'Constrain remove constraints' })
+              )
+            }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
+            const startTime = Date.now()
+            while (
+              !kclManagerInThisFile.code.includes(expectedResult) &&
+              Date.now() - startTime < GLOBAL_TIMEOUT_FOR_MODELING_MACHINE
+            ) {
+              await new Promise((resolve) => setTimeout(resolve, 100))
+            }
+            expect(kclManagerInThisFile.code).toContain(expectedResult)
+          }, 10_000)
+        }
+      )
+    })
 
     describe('selection synchronization', () => {
       it('synchronizes default plane selection with the engine and editor', () => {
