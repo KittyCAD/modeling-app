@@ -14,6 +14,38 @@ const initialized = init({ module_or_path: wasmUrl }).then(
 )
 let latest: TessellationRequest | undefined
 let running = false
+type BodyMesh = {
+  positions: Float32Array
+  normals: Float32Array
+  faceCount: number
+  coarse: boolean
+}
+const bodyCache = new Map<string, BodyMesh>()
+const cacheLimit = 32 * 1024 * 1024
+let cacheBytes = 0
+
+function cacheBody(key: string, mesh: BodyMesh) {
+  const bytes =
+    key.length * 2 + mesh.positions.byteLength + mesh.normals.byteLength
+  if (bytes > cacheLimit) return
+  const previous = bodyCache.get(key)
+  if (previous)
+    cacheBytes -=
+      key.length * 2 +
+      previous.positions.byteLength +
+      previous.normals.byteLength
+  bodyCache.delete(key)
+  bodyCache.set(key, mesh)
+  cacheBytes += bytes
+  while (cacheBytes > cacheLimit) {
+    const oldest = bodyCache.entries().next().value
+    if (!oldest) break
+    const [key, mesh] = oldest
+    bodyCache.delete(key)
+    cacheBytes -=
+      key.length * 2 + mesh.positions.byteLength + mesh.normals.byteLength
+  }
+}
 
 self.onmessage = (event: MessageEvent<TessellationRequest>) => {
   latest = event.data
@@ -32,7 +64,7 @@ async function drain() {
       latest = undefined
       return
     }
-    while (latest) {
+    requests: while (latest) {
       const request = latest
       latest = undefined
       let mesh: ReturnType<typeof tessellate_snapshot> | undefined
@@ -79,62 +111,89 @@ async function drain() {
               } satisfies NativeBrepSnapshot)
             )
           : [request.snapshot]
-        const chunks: { positions: Float32Array; normals: Float32Array }[] = []
-        let faceCount = 0
+        const keys = snapshots.map(
+          (snapshot) => `${request.refinement}:${snapshot}`
+        )
+        const currentKeys = new Set(keys)
+        for (const [key, mesh] of bodyCache) {
+          if (currentKeys.has(key)) continue
+          bodyCache.delete(key)
+          cacheBytes -=
+            key.length * 2 + mesh.positions.byteLength + mesh.normals.byteLength
+        }
+        const chunks: BodyMesh[] = []
         let length = 0
-        let failed = false
-        for (const coarse of [false, true]) {
-          chunks.length = 0
-          faceCount = 0
-          length = 0
-          let tessellationError: string | undefined
+        const tessellateBody = (index: number, coarse: boolean): BodyMesh => {
           try {
-            for (const snapshot of snapshots) {
-              mesh = tessellate_snapshot(
-                snapshot,
-                request.refinement,
-                coarse
-                  ? 0
-                  : Math.floor(150_000 / Math.max(1, snapshots.length)),
-                coarse ? 2 : 5,
-                coarse ? 16 : 32
-              )
-              const positions = mesh.positions()
-              const normals = mesh.normals()
-              const faces: unknown[] = JSON.parse(mesh.faces())
-              faceCount += faces.length
-              length += positions.length
-              mesh.free()
-              mesh = undefined
-              if (length > 200_000 * 9) {
-                tessellationError = 'Scene preview triangle budget exceeded'
-                break
-              }
-              chunks.push({ positions, normals })
+            mesh = tessellate_snapshot(
+              snapshots[index],
+              request.refinement,
+              coarse ? 0 : Math.floor(150_000 / Math.max(1, snapshots.length)),
+              coarse ? 2 : 5,
+              coarse ? 16 : 32,
+              coarse
+                ? undefined
+                : Math.floor(200_000 / Math.max(1, snapshots.length))
+            )
+            return {
+              positions: mesh.positions(),
+              normals: mesh.normals(),
+              faceCount: (JSON.parse(mesh.faces()) as unknown[]).length,
+              coarse,
             }
-          } catch (error) {
+          } finally {
             mesh?.free()
             mesh = undefined
-            tessellationError =
-              error instanceof Error ? error.message : String(error)
           }
-          if (!tessellationError) break
-          if (
-            coarse ||
-            !tessellationError.toLowerCase().includes('triangle budget')
-          ) {
-            self.postMessage({ id: request.id, error: tessellationError })
-            failed = true
-            break
-          }
-          // Retry the full assembly at lower detail instead of retaining an
-          // incomplete old snapshot when smoothing exceeds the scene budget.
         }
-        if (failed) continue
+        for (let i = 0; i < snapshots.length; i++) {
+          let chunk = bodyCache.get(keys[i])
+          if (!chunk) {
+            try {
+              chunk = tessellateBody(i, false)
+            } catch (error) {
+              if (!String(error).toLowerCase().includes('triangle budget')) {
+                self.postMessage({
+                  id: request.id,
+                  error: error instanceof Error ? error.message : String(error),
+                })
+                continue requests
+              }
+              chunk = tessellateBody(i, true)
+            }
+          }
+          chunks.push(chunk)
+          cacheBody(keys[i], chunk)
+          length += chunk.positions.length
+          while (length > 200_000 * 9) {
+            let largest = -1
+            for (let j = 0; j < chunks.length; j++) {
+              if (
+                !chunks[j].coarse &&
+                (largest === -1 ||
+                  chunks[j].positions.length > chunks[largest].positions.length)
+              )
+                largest = j
+            }
+            if (largest === -1) {
+              self.postMessage({
+                id: request.id,
+                error: 'Scene preview triangle budget exceeded',
+              })
+              continue requests
+            }
+            const coarse = tessellateBody(largest, true)
+            length += coarse.positions.length - chunks[largest].positions.length
+            chunks[largest] = coarse
+            cacheBody(keys[largest], coarse)
+          }
+        }
         const positions = new Float32Array(length)
         const normals = new Float32Array(length)
         let offset = 0
+        let faceCount = 0
         for (const chunk of chunks) {
+          faceCount += chunk.faceCount
           positions.set(chunk.positions, offset)
           normals.set(chunk.normals, offset)
           offset += chunk.positions.length

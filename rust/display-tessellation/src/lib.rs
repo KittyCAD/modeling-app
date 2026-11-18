@@ -475,6 +475,7 @@ fn surface_cuts(surface: &Surface) -> Result<[Vec<f64>; 2], String> {
 struct SurfaceSamples<'a> {
     surface: &'a Surface,
     cuts: [Vec<f64>; 2],
+    triangle_budget: usize,
     vertices: std::collections::HashMap<[u64; 2], (Point, Option<Point>)>,
 }
 
@@ -501,7 +502,7 @@ fn triangle(
     circumference_intervals: u32,
     out: &mut Mesh,
 ) -> Result<(), String> {
-    if out.positions.len() / 9 >= 200_000 {
+    if out.positions.len() / 9 >= samples.triangle_budget {
         return Err("Display triangle budget exceeded".into());
     }
     if depth > 0 {
@@ -617,7 +618,7 @@ pub fn tessellate(snapshot: &Snapshot, refinement: u32) -> Result<Mesh, String> 
 }
 
 fn tessellate_with_budget(snapshot: &Snapshot, refinement: u32, smoothing_budget: usize) -> Result<Mesh, String> {
-    tessellate_limited(snapshot, refinement, smoothing_budget, 5, 32)
+    tessellate_limited(snapshot, refinement, smoothing_budget, 5, 32, 200_000)
 }
 
 fn tessellate_limited(
@@ -626,6 +627,7 @@ fn tessellate_limited(
     smoothing_budget: usize,
     max_subdivision: u32,
     circumference_intervals: u32,
+    triangle_budget: usize,
 ) -> Result<Mesh, String> {
     if snapshot.version != VERSION || refinement > 5 || snapshot.brep.faces.len() > 10_000 {
         return Err("Unsupported snapshot version or tessellation budget".into());
@@ -712,6 +714,7 @@ fn tessellate_limited(
         let mut samples = SurfaceSamples {
             surface,
             cuts: surface_cuts(surface)?,
+            triangle_budget,
             vertices: std::collections::HashMap::new(),
         };
         for t in indices.as_chunks::<3>().0 {
@@ -767,6 +770,7 @@ mod wasm {
         smoothing_budget: Option<u32>,
         max_subdivision: Option<u32>,
         circumference_intervals: Option<u32>,
+        triangle_budget: Option<u32>,
     ) -> Result<DisplayMesh, JsValue> {
         let snapshot: Snapshot = serde_json::from_str(json).map_err(|e| JsValue::from_str(&e.to_string()))?;
         tessellate_limited(
@@ -775,6 +779,7 @@ mod wasm {
             smoothing_budget.unwrap_or(150_000) as usize,
             max_subdivision.unwrap_or(5),
             circumference_intervals.unwrap_or(32),
+            triangle_budget.unwrap_or(200_000).min(200_000) as usize,
         )
         .map(|mesh| DisplayMesh { mesh })
         .map_err(|e| JsValue::from_str(&e))
@@ -837,7 +842,7 @@ mod tests {
                 nurbs.knot_vector.rotate_left(7);
             }
             for (budget, depth, circumference) in [(150_000, 5, 32), (0, 2, 16)] {
-                let mesh = tessellate_limited(&input, 0, budget, depth, circumference).unwrap();
+                let mesh = tessellate_limited(&input, 0, budget, depth, circumference, 200_000).unwrap();
                 for corner in [[1.0, 0.0, 0.0], [1.0, 0.0, 1.0], [0.0, 0.0, 1.0]] {
                     let distance = mesh
                         .positions
@@ -857,7 +862,7 @@ mod tests {
     fn redundant_straight_knots_do_not_multiply_preview_geometry() {
         let mut input = sample();
         input.brep.faces.remove(0);
-        let base = tessellate_limited(&input, 0, 0, 2, 16).unwrap();
+        let base = tessellate_limited(&input, 0, 0, 2, 16, 200_000).unwrap();
         let Surface::Nurbs { nurbs } = &mut input.brep.surfaces[1] else {
             panic!("Expected NURBS")
         };
@@ -881,7 +886,7 @@ mod tests {
         nurbs.knot_vector.extend([0.0, 0.0]);
         nurbs.knot_vector.extend((1..64).map(|i| i as f64 / 64.0));
         nurbs.knot_vector.extend([1.0, 1.0]);
-        let mesh = tessellate_limited(&input, 0, 0, 2, 16).unwrap();
+        let mesh = tessellate_limited(&input, 0, 0, 2, 16, 200_000).unwrap();
         assert!(!mesh.positions.is_empty());
         assert!(
             mesh.positions.len() <= base.positions.len() * 2,
@@ -1153,8 +1158,8 @@ mod tests {
         assert!(mesh.positions.as_chunks::<3>().0.iter().any(|p| p[0] < -0.99));
         assert!(mesh.positions.as_chunks::<3>().0.iter().any(|p| p[1] < -0.99));
         // Exercise the exact budget fallback that previously produced a square.
-        let coarse = tessellate_limited(&input, 0, 0, 2, 32).unwrap();
-        let tight = tessellate_limited(&input, 0, 0, 2, 16).unwrap();
+        let coarse = tessellate_limited(&input, 0, 0, 2, 32, 200_000).unwrap();
+        let tight = tessellate_limited(&input, 0, 0, 2, 16, 200_000).unwrap();
         assert!(!coarse.positions.is_empty(), "Fallback must retain the cylinder");
         assert!(
             !tight.positions.is_empty(),
@@ -1199,6 +1204,10 @@ mod tests {
     #[test]
     fn smoothing_budget_can_be_shared_without_discarding_curved_faces() {
         let input = sample();
+        assert_eq!(
+            tessellate_limited(&input, 0, 150_000, 5, 32, 1).unwrap_err(),
+            "Display triangle budget exceeded"
+        );
         let coarse = tessellate_with_budget(&input, 0, 0).unwrap();
         let smooth = tessellate_with_budget(&input, 0, 150_000).unwrap();
         assert_eq!(coarse.faces.len(), smooth.faces.len());

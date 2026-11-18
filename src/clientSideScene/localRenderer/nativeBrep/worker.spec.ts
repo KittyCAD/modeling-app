@@ -105,8 +105,7 @@ describe('native B-rep worker', () => {
     expect(failedFree).toHaveBeenCalledTimes(1)
   })
 
-  it('retries every body at coarse quality without retaining the partial first attempt', async () => {
-    const partialFree = vi.fn()
+  it('retries only the body that exceeds its tessellation budget', async () => {
     const firstFree = vi.fn()
     const secondFree = vi.fn()
     const makeMesh = (x: number, release: ReturnType<typeof vi.fn>) => ({
@@ -116,11 +115,10 @@ describe('native B-rep worker', () => {
       free: release,
     })
     mocks.tessellate
-      .mockReturnValueOnce(makeMesh(99, partialFree))
+      .mockReturnValueOnce(makeMesh(1, firstFree))
       .mockImplementationOnce(() => {
         throw new Error('Display triangle budget exceeded')
       })
-      .mockReturnValueOnce(makeMesh(1, firstFree))
       .mockReturnValueOnce(makeMesh(4, secondFree))
     const bodies = [
       { id: 'one', brep },
@@ -149,14 +147,101 @@ describe('native B-rep worker', () => {
     const calls = mocks.tessellate.mock.calls
     expect(calls.map(([snapshot]) => JSON.parse(snapshot))).toEqual([
       ...packed,
-      ...packed,
+      packed[1],
     ])
-    for (let i = 0; i < bodies.length; i++) {
-      expect(calls[i + bodies.length][2]).toBeLessThan(calls[i][2])
-    }
-    for (const release of [partialFree, firstFree, secondFree]) {
+    expect(calls[2][2]).toBe(0)
+    for (const release of [firstFree, secondFree]) {
       expect(release).toHaveBeenCalledTimes(1)
     }
+  })
+
+  it('reuses unchanged geometry, remeshes changes under the same body ID, and keeps cached buffers untransformed', async () => {
+    const send = async (id: number, changed: boolean, refinement = 0) => {
+      scope.onmessage?.({
+        data: {
+          id,
+          refinement,
+          snapshot: JSON.stringify({
+            version: 1,
+            coordinateSystem: 'z-up',
+            bodies: [
+              { id: 'one', brep },
+              { id: 'two', brep: { ...brep, loops: changed ? [{}] : [] } },
+            ],
+          }),
+        },
+      } as MessageEvent)
+      await vi.waitFor(() =>
+        expect(scope.postMessage).toHaveBeenCalledTimes(id)
+      )
+    }
+    await send(1, false)
+    expect(mocks.tessellate).toHaveBeenCalledTimes(1)
+    await send(2, true)
+    expect(mocks.tessellate).toHaveBeenCalledTimes(2)
+    for (const [response, options] of scope.postMessage.mock.calls) {
+      expect(Array.from(response.positions)).toEqual([1, 3, -2, 1, 3, -2])
+      expect(Array.from(response.normals)).toEqual([0, 0, -1, 0, 0, -1])
+      expect(options.transfer).toEqual([
+        response.positions.buffer,
+        response.normals.buffer,
+      ])
+    }
+    await send(3, true, 1)
+    expect(mocks.tessellate).toHaveBeenCalledTimes(4)
+    expect(free).toHaveBeenCalledTimes(4)
+    scope.onmessage?.({
+      data: {
+        id: 4,
+        snapshot: JSON.stringify({
+          version: 1,
+          coordinateSystem: 'z-up',
+          bodies: [],
+        }),
+        refinement: 1,
+      },
+    } as MessageEvent)
+    await vi.waitFor(() => expect(scope.postMessage).toHaveBeenCalledTimes(4))
+    await send(5, true, 1)
+    expect(mocks.tessellate).toHaveBeenCalledTimes(6)
+  })
+
+  it('coarsens the largest body to fit the scene without remeshing the others', async () => {
+    const makeMesh = (triangles: number) => ({
+      positions: () => new Float32Array(triangles * 9),
+      normals: () => new Float32Array(triangles * 9),
+      faces: () => '[{}]',
+      free,
+    })
+    mocks.tessellate
+      .mockReturnValueOnce(makeMesh(120_000))
+      .mockReturnValueOnce(makeMesh(90_000))
+      .mockReturnValueOnce(makeMesh(60_000))
+    scope.onmessage?.({
+      data: {
+        id: 1,
+        refinement: 0,
+        snapshot: JSON.stringify({
+          version: 1,
+          coordinateSystem: 'z-up',
+          bodies: [
+            { id: 'one', brep },
+            { id: 'two', brep: { ...brep, loops: [{}] } },
+          ],
+        }),
+      },
+    } as MessageEvent)
+    await vi.waitFor(() => expect(scope.postMessage).toHaveBeenCalledOnce())
+    expect(scope.postMessage.mock.calls[0][0].positions).toHaveLength(
+      150_000 * 9
+    )
+    expect(scope.postMessage.mock.calls[0][0].faceCount).toBe(2)
+    expect(mocks.tessellate).toHaveBeenCalledTimes(3)
+    expect(mocks.tessellate.mock.calls[2][0]).toBe(
+      mocks.tessellate.mock.calls[0][0]
+    )
+    expect(mocks.tessellate.mock.calls[2][2]).toBe(0)
+    expect(free).toHaveBeenCalledTimes(3)
   })
 
   it.each([
