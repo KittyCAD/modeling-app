@@ -219,6 +219,7 @@ fn substitute_sketch_var(
         KclValue::GdtAnnotation { .. } => Ok(value),
         KclValue::CameraView { .. } => Ok(value),
         KclValue::NamedView { .. } => Ok(value),
+        KclValue::Sheet { .. } => Ok(value),
         KclValue::Plane { .. } => Ok(value),
         KclValue::Face { .. } => Ok(value),
         KclValue::Segment {

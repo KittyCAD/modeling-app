@@ -1,0 +1,87 @@
+/// Drawing sheets with physical dimensions and a selected orientation.
+///
+/// This module requires KCL 4.0-preview or later.
+
+@no_std
+@settings(kclVersion = "4.0-preview", defaultLengthUnit = mm, experimentalFeatures = allow)
+
+/// Standard paper sizes. Each variant specifies the short side followed by the long side.
+@(added_in = "4.0")
+export type SheetSize {
+  /// ANSI A: 8.5 inches by 11 inches.
+  | AnsiA
+  /// ANSI B: 11 inches by 17 inches.
+  | AnsiB
+  /// ANSI C: 17 inches by 22 inches.
+  | AnsiC
+  /// ANSI D: 22 inches by 34 inches.
+  | AnsiD
+  /// ANSI E: 34 inches by 44 inches.
+  | AnsiE
+  /// ISO A0: 841 millimeters by 1189 millimeters.
+  | IsoA0
+  /// ISO A1: 594 millimeters by 841 millimeters.
+  | IsoA1
+  /// ISO A2: 420 millimeters by 594 millimeters.
+  | IsoA2
+  /// ISO A3: 297 millimeters by 420 millimeters.
+  | IsoA3
+  /// ISO A4: 210 millimeters by 297 millimeters.
+  | IsoA4
+}
+
+/// Determines which side length defines the width of a drawing sheet.
+@(added_in = "4.0")
+export type SheetOrientation {
+  /// Use the long side as the width.
+  | Landscape
+  /// Use the short side as the width.
+  | Portrait
+}
+
+/// An opaque drawing sheet. Square sheets retain their selected orientation.
+@(impl = std_rust, added_in = "4.0")
+export type Sheet
+
+/// Create a drawing sheet from a standard paper size.
+///
+/// ```kcl,norun
+/// @settings(kclVersion = "4.0-preview")
+/// sheet = drawing::createSheet(
+///   size = drawing::SheetSize::IsoA4,
+///   orientation = drawing::SheetOrientation::Portrait,
+/// )
+/// ```
+@(impl = std_rust, added_in = "4.0", feature_tree = false)
+export fn createSheet(
+  /// The standard paper size.
+  size: SheetSize,
+  /// The orientation of the sheet.
+  orientation: SheetOrientation,
+): Sheet {}
+
+/// Create a drawing sheet from two side lengths and a name.
+///
+/// Both lengths must be finite and positive.
+/// The selected orientation determines which side is the width of the resulting sheet.
+///
+/// ```kcl,norun
+/// @settings(kclVersion = "4.0-preview")
+/// sheet = drawing::createCustomSheet(
+///   width = 200mm,
+///   height = 300mm,
+///   orientation = drawing::SheetOrientation::Landscape,
+///   name = "Assembly detail",
+/// )
+/// ```
+@(impl = std_rust, added_in = "4.0", feature_tree = false)
+export fn createCustomSheet(
+  /// The width of the paper before applying the orientation.
+  width: number(Length),
+  /// The height of the paper before applying the orientation.
+  height: number(Length),
+  /// The orientation of the sheet.
+  orientation: SheetOrientation,
+  /// A human-readable name that must be nonblank after trimming whitespace.
+  name: string,
+): Sheet {}

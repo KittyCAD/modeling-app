@@ -1532,6 +1532,108 @@ export default {
       }
     ]
   },
+  "drawing::createCustomSheet": {
+    "name": "createCustomSheet",
+    "preferredName": "drawing::createCustomSheet",
+    "qualName": "std::drawing::createCustomSheet",
+    "moduleName": "drawing",
+    "returnType": "Sheet",
+    "addedIn": "4.0",
+    "summary": "Create a drawing sheet from two side lengths and a name.",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": false,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "width",
+        "ty": "number(Length)",
+        "docs": "The width of the paper before applying the orientation.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "height",
+        "ty": "number(Length)",
+        "docs": "The height of the paper before applying the orientation.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "orientation",
+        "ty": "SheetOrientation",
+        "docs": "The orientation of the sheet.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "name",
+        "ty": "string",
+        "docs": "A human-readable name that must be nonblank after trimming whitespace.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
+  "drawing::createSheet": {
+    "name": "createSheet",
+    "preferredName": "drawing::createSheet",
+    "qualName": "std::drawing::createSheet",
+    "moduleName": "drawing",
+    "returnType": "Sheet",
+    "addedIn": "4.0",
+    "summary": "Create a drawing sheet from a standard paper size.",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": false,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "size",
+        "ty": "SheetSize",
+        "docs": "The standard paper size.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "orientation",
+        "ty": "SheetOrientation",
+        "docs": "The orientation of the sheet.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
   "edgeId": {
     "name": "edgeId",
     "preferredName": "edgeId",
@@ -11470,6 +11572,22 @@ export default {
 } as const
 
 export const STD_LIB_ENUMS = {
+  "drawing::SheetOrientation": [
+    "Landscape",
+    "Portrait"
+  ],
+  "drawing::SheetSize": [
+    "AnsiA",
+    "AnsiB",
+    "AnsiC",
+    "AnsiD",
+    "AnsiE",
+    "IsoA0",
+    "IsoA1",
+    "IsoA2",
+    "IsoA3",
+    "IsoA4"
+  ],
   "view::Orientation": [
     "Front",
     "Back",
