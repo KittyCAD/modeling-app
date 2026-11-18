@@ -1,17 +1,19 @@
 import { signal } from '@preact/signals-core'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import * as trap from '@src/lib/trap'
 import { getModule, type ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandSystemService } from '@src/registry/contracts/commands'
+import { fileOperationsMountsFacet } from '@src/registry/contracts/fileOperations'
 import {
-  type ProjectExplorerRowContextMenuItemContext,
   projectExplorerProjectMenuItemsFacet,
   projectExplorerRowContextMenuItemsFacet,
 } from '@src/registry/contracts/projectExplorer'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import projectExplorerExtension from '@src/registry/extensions/projectExplorer'
 import {
+  contribute,
   factory as defineFactory,
   provide,
   Registry,
@@ -47,12 +49,13 @@ describe('project explorer extension', () => {
   afterEach(async () => {
     await registry.dispose()
     vi.restoreAllMocks()
+    vi.unstubAllGlobals()
   })
 
   const context = (
-    name = 'cube.step'
-  ): ProjectExplorerRowContextMenuItemContext => {
-    const projectPath = fsZds.join(fsZds.sep, 'projects', 'assembly')
+    name = 'cube.step',
+    projectPath = fsZds.join(fsZds.sep, 'projects', 'assembly')
+  ) => {
     const mainPath = fsZds.join(projectPath, 'main.kcl')
     const project: Project = {
       name: 'assembly',
@@ -128,6 +131,33 @@ describe('project explorer extension', () => {
       'import-in-current-file',
       'reveal-in-file-explorer.row-context-menu',
     ])
+  })
+
+  it('hides both reveal actions for cloud projects on desktop', async () => {
+    vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Electron')
+    vi.stubGlobal('electron', { showInFolder: vi.fn() })
+    const root = fsZds.join(fsZds.sep, '__zoo_cloud__')
+    await registry.configure([
+      projectExplorerExtension,
+      contribute(fileOperationsMountsFacet, () => ({
+        root,
+        operations: testFileOperations,
+      })),
+    ])
+    const [projectReveal] = registry.get(projectExplorerProjectMenuItemsFacet)
+    const rowReveal = registry
+      .get(projectExplorerRowContextMenuItemsFacet)
+      .find((item) => item.id === 'reveal-in-file-explorer.row-context-menu')
+    const cloud = context('cube.step', fsZds.join(root, 'assembly'))
+
+    expect(
+      projectReveal?.isVisible?.({
+        project: cloud.project,
+        projectPath: cloud.project.path,
+      })
+    ).toBe(false)
+    expect(rowReveal?.isVisible?.(cloud)).toBe(false)
+    expect(rowReveal?.isVisible?.(context())).toBe(true)
   })
 
   it.each([
