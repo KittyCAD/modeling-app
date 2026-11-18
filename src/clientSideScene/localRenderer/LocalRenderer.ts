@@ -1063,6 +1063,105 @@ export class LocalRenderer {
     return entities
   }
 
+  // Find an interior point on a model face that the picker can click
+  async getPickableModelFacePoint() {
+    const camera = this.camera
+    const canvas = this.gpu?.renderer.domElement
+    const picker = this.gpu?.integerIdPicker
+    if (
+      !camera ||
+      !canvas ||
+      !picker ||
+      !this.currentModel ||
+      !this.isLoadedSceneCurrent() ||
+      this.kclManager.isExecuting
+    )
+      return null
+
+    camera.updateMatrixWorld(true)
+
+    // Get the triangles for every model face mesh, sort by the largest, keep
+    // 8. These are most likely going to be clear of any edge's picking area.
+    this.currentModel.updateWorldMatrix(true, true)
+    const faces = [...this.targetsByEntityId].flatMap(([id, meshes]) =>
+      meshes
+        .filter((mesh) => mesh.userData.bodyMeshIndex !== undefined)
+        .map((mesh) => {
+          const positions = mesh.geometry.getAttribute('position')
+          const index = mesh.geometry.index
+          const triangles: { point: Vector3; area: number }[] = []
+          if (positions) {
+            for (let i = 0; i + 2 < (index?.count ?? positions.count); i += 3) {
+              const vertex = (offset: number) =>
+                new Vector3()
+                  .fromBufferAttribute(
+                    positions,
+                    index ? index.getX(i + offset) : i + offset
+                  )
+                  .applyMatrix4(mesh.matrixWorld)
+              const a = vertex(0)
+              const b = vertex(1)
+              const c = vertex(2)
+              const area = b.clone().sub(a).cross(c.clone().sub(a)).length()
+              if (area > 0) {
+                triangles.push({
+                  point: a.add(b).add(c).divideScalar(3),
+                  area,
+                })
+              }
+            }
+          }
+          triangles.sort((a, b) => b.area - a.area)
+          return { id, mesh, triangles: triangles.slice(0, 8) }
+        })
+    )
+    faces.sort(
+      (a, b) => (b.triangles[0]?.area ?? 0) - (a.triangles[0]?.area ?? 0)
+    )
+
+    // Check nearby CSS coordaintes using the picker to see if it is clickable.
+    // A projected point may still be trumped by an edge.
+    const rect = canvas.getBoundingClientRect()
+    // used to test if this search is stale due to new KCL
+    const version = this.executionVersion
+    for (const { id, mesh, triangles } of faces) {
+      for (const { point } of triangles) {
+        // Project the centroid of each triangle
+        const projected = projectEntityPoint(point, camera, rect)
+        if (!projected) continue
+        // Test the four CSS pixels around the centroid
+        for (const x of [Math.floor(projected.x), Math.ceil(projected.x)]) {
+          for (const y of [Math.floor(projected.y), Math.ceil(projected.y)]) {
+            if (
+              x < rect.left ||
+              x >= rect.right ||
+              y < rect.top ||
+              y >= rect.bottom
+            )
+              continue
+            // Test if the picker can pick this pixel
+            const result = await picker.pick({
+              x: x - rect.left,
+              y: y - rect.top,
+              streamWidth: rect.width,
+              streamHeight: rect.height,
+              camera,
+            })
+            // abandon if stale
+            if (
+              this.disposed ||
+              version !== this.executionVersion ||
+              result?.stale
+            )
+              return null
+            if (result?.target === mesh) return { id, x, y }
+          }
+        }
+      }
+    }
+    return null
+  }
+
   /**
    * Draws a frame and lends out the canvas. It can only be read during the
    * call: WebGPU and WebGL canvases read back blank in a later task.

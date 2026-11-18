@@ -145,15 +145,39 @@ export class SceneFixture {
       return view.getProjectedEntities()
     })
 
-  findEdge = (
-    index: number,
-    options?: { timeout?: number; visible?: boolean }
-  ) => this.findEntity('edge', index, options)
-
-  findFace = (
-    index: number,
-    options?: { timeout?: number; visible?: boolean }
-  ) => this.findEntity('face', index, options)
+  /**
+   * Find a model face's interior point that the picker actually selects.
+   * Edge picking may mask a face's projected representative point.
+   */
+  findPickableModelFace = async () => {
+    const lookup = () =>
+      this.page.evaluate(async () => {
+        const view = window.app.singletons.kclManager.sceneInfra.localRenderer
+        return (await view?.getPickableModelFacePoint()) ?? null
+      })
+    let previous: Awaited<ReturnType<typeof lookup>> = null
+    await expect
+      .poll(async () => {
+        const next = await lookup()
+        const stable =
+          next !== null &&
+          previous?.id === next.id &&
+          previous.x === next.x &&
+          previous.y === next.y
+        previous = next
+        return stable
+      })
+      .toBe(true)
+    const point = await lookup()
+    if (!point) throw new Error('No pickable model face found')
+    const bounds = await this.streamWrapper.boundingBox()
+    if (!bounds) throw new Error('No stream to click')
+    return this.makeMouseHelpers(
+      (point.x - bounds.x) / bounds.width,
+      (point.y - bounds.y) / bounds.height,
+      { format: 'ratio' }
+    )
+  }
 
   /**
    * Both modes share the same mouse actions; only the selection point differs.
