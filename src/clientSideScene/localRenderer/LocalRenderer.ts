@@ -3,6 +3,7 @@ import type {
   EntityType,
   OkModelingCmdResponse,
 } from '@kittycad/lib'
+import type { TessellationResponse } from '@src/clientSideScene/localRenderer/nativeBrep/protocol'
 import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
 import {
   LOCAL_WEBGPU_GTAO_SAMPLES,
@@ -29,6 +30,7 @@ import { SelectionHighlightRenderer } from '@src/clientSideScene/localRenderer/S
 import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
 import { artifactToEntityRef } from '@src/lang/queryAst'
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { DprDetector } from '@src/lib/DprDetector'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
@@ -39,6 +41,7 @@ import { isArray, isNonNullable, uuidv4 } from '@src/lib/utils'
 import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
 import {
   Box3,
+  BufferAttribute,
   BufferGeometry,
   type Camera,
   Color,
@@ -47,6 +50,7 @@ import {
   Material,
   MathUtils,
   Mesh,
+  MeshStandardMaterial,
   NeutralToneMapping,
   type Object3D,
   OrthographicCamera,
@@ -212,11 +216,28 @@ export class LocalRenderer {
   private readonly disposers: (() => void)[] = []
   private animationFrameId = -1
   private currentModel: Object3D | null = null
+  private pickingSuspendedForPreview = false
+  private nativeFinalCaptureVersion: number | null = null
+  private nativePreviewWorker: Worker | null = null
+  private nativePreviewBusy = false
+  private nativeFinalExportFailed = false
+  private nativePreviewUnavailable = false
+  private nativePreviewFailures = 0
+  private nativePreviewTimeout: ReturnType<typeof setTimeout> | undefined
+  private nativePreviewNotice: HTMLDivElement | null = null
+  private nativePreviewRevision = 0
+  private executionPreviewModel: Object3D | null = null
+  private pendingExecutionPreview: EngineCommand | null = null
+  private executionPreviewTimer: ReturnType<typeof setTimeout> | undefined
+  private executionPreviewInFlight = false
+  private nextExecutionPreviewAt = 0
   private readonly gltfLoader = new GLTFLoader()
   // Shared by all model materials, so a new color doesn't rebuild their shaders.
   private readonly backfaceColor = uniform(new Color())
   /** Bumped when an execution starts. Async work started before it is stale. */
   private executionVersion = 0
+  private activeFilePath: string
+  private failedPreviewVersion: number | null = null
   /** The engine scene generation of the model on screen, once it has loaded. */
   private loadedSceneGeneration: number | null = null
   /** A camera reset waiting for the next model. The first model always gets one. */
@@ -250,6 +271,7 @@ export class LocalRenderer {
   ) {
     this.container = container
     this.kclManager = kclManager
+    this.activeFilePath = kclManager.path
     this.settings = {
       theme: props.theme,
       enableSSAO: props.enableSSAO,
@@ -262,13 +284,43 @@ export class LocalRenderer {
     this.backfaceColor.value.set(props.backfaceColor)
     this.gltfLoader.register(() => backfaceColorPlugin(this.backfaceColor))
 
+    kclManager.engineCommandManager.executionBatchPreview =
+      this.captureExecutionPreview
+    this.disposers.push(() => {
+      if (
+        kclManager.engineCommandManager.executionBatchPreview ===
+        this.captureExecutionPreview
+      ) {
+        kclManager.engineCommandManager.executionBatchPreview = undefined
+      }
+    })
+
+    this.disposers.push(() => this.stopNativePreviewWorker())
     this.container.style.opacity = '0'
     kclManager.addEventListener(
       KclManagerEvents.ExecutionDone,
       this.onExecutionDone
     )
+    kclManager.addEventListener(
+      KclManagerEvents.FileChanged,
+      this.onFileChanged
+    )
     const dprDetector = new DprDetector(this.updateLocalCamera)
     this.disposers.push(
+      () =>
+        kclManager.removeEventListener(
+          KclManagerEvents.FileChanged,
+          this.onFileChanged
+        ),
+      kclManager.diagnosticsSignal.subscribe((diagnostics) => {
+        if (
+          !kclManager.isExecuting &&
+          diagnostics.some((diagnostic) => diagnostic.severity === 'error')
+        ) {
+          this.failedPreviewVersion = this.executionVersion
+          this.settleFailedPreview()
+        }
+      }),
       () =>
         kclManager.removeEventListener(
           KclManagerEvents.ExecutionDone,
@@ -278,7 +330,17 @@ export class LocalRenderer {
         if (isExecuting) {
           // A new execution invalidates exports, GLB parses, picks and engine
           // queries still in flight.
+          this.cancelDeferredPreview()
+          this.failedPreviewVersion = null
+          this.nativeFinalExportFailed = false
+          this.pickingSuspendedForPreview = false
           this.executionVersion += 1
+          this.stopNativePreviewWorker()
+          this.nativePreviewUnavailable = false
+          this.nativePreviewFailures = 0
+          this.executionPreviewInFlight = false
+          this.clearExecutionPreview()
+          this.nextExecutionPreviewAt = performance.now() + 50
           this.clearHover()
         }
       }),
@@ -534,6 +596,7 @@ export class LocalRenderer {
       const controls = this.kclManager.sceneInfra.camControls
       if (
         !this.settings.pickingEnabled ||
+        this.pickingSuspendedForPreview ||
         this.kclManager.isExecuting ||
         // The old model stays on screen until the new one has loaded,
         // but don't allow hover/picking if the new model is already downloading.
@@ -560,6 +623,7 @@ export class LocalRenderer {
       if (
         this.disposed ||
         !this.settings.pickingEnabled ||
+        this.pickingSuspendedForPreview ||
         this.kclManager.isExecuting ||
         executionVersion !== this.executionVersion ||
         result?.stale ||
@@ -642,8 +706,9 @@ export class LocalRenderer {
   isLoadedSceneCurrent() {
     const { execState, engineSceneGenerationSignal } = this.kclManager
     return (
+      this.activeFilePath === this.kclManager.path &&
       this.loadedSceneGeneration ===
-      (execState.engineSceneGeneration ?? engineSceneGenerationSignal.peek())
+        (execState.engineSceneGeneration ?? engineSceneGenerationSignal.peek())
     )
   }
 
@@ -688,6 +753,7 @@ export class LocalRenderer {
   }
 
   dispose() {
+    this.cancelDeferredPreview()
     if (this.disposed) {
       return
     }
@@ -1093,7 +1159,12 @@ export class LocalRenderer {
    */
   getFitBounds(): Box3 | undefined {
     const bounds = this.gpu?.planeRenderer.getVisibleBounds() ?? new Box3()
-    if (this.currentModel) {
+    if (this.executionPreviewModel) {
+      bounds.union(
+        gltfToEngineBounds(new Box3().setFromObject(this.executionPreviewModel))
+      )
+    }
+    if (this.currentModel && !this.executionPreviewModel) {
       bounds.union(
         gltfToEngineBounds(new Box3().setFromObject(this.currentModel))
       )
@@ -1113,7 +1184,251 @@ export class LocalRenderer {
     return bounds.isEmpty() ? undefined : gltfToEngineBounds(bounds)
   }
 
+  private clearExecutionPreview() {
+    this.nativePreviewNotice?.remove()
+    this.nativePreviewNotice = null
+    delete this.container.dataset.executionPreview
+    if (this.executionPreviewModel) {
+      this.gpu?.scene.remove(this.executionPreviewModel)
+      disposeObject3D(this.executionPreviewModel)
+      this.executionPreviewModel = null
+    }
+    if (this.currentModel) this.currentModel.visible = true
+    this.invalidateBaseRender()
+  }
+
+  private cancelDeferredPreview() {
+    clearTimeout(this.executionPreviewTimer)
+    this.executionPreviewTimer = undefined
+    this.pendingExecutionPreview = null
+  }
+
+  private deferExecutionPreview() {
+    if (this.executionPreviewTimer !== undefined) return
+    const version = this.executionVersion
+    this.executionPreviewTimer = setTimeout(
+      () => {
+        this.executionPreviewTimer = undefined
+        const pending = this.pendingExecutionPreview
+        if (
+          this.disposed ||
+          version !== this.executionVersion ||
+          !this.kclManager.isExecuting
+        ) {
+          this.pendingExecutionPreview = null
+          return
+        }
+        if (pending) void this.captureExecutionPreview(pending)
+      },
+      Math.max(50, this.nextExecutionPreviewAt - performance.now())
+    )
+  }
+
+  private readonly captureExecutionPreview = async (command: EngineCommand) => {
+    const commands =
+      command.type === 'modeling_cmd_batch_req'
+        ? command.requests.map((request) => request.cmd)
+        : command.type === 'modeling_cmd_req'
+          ? [command.cmd]
+          : []
+    if (
+      !commands.some((cmd) =>
+        /^(extrude|revolve|loft|sweep|boolean_|surface_blend|import_files|solid3d_(fillet|cut|shell|join)|entity_(linear_pattern|circular_pattern|mirror|clone))/.test(
+          cmd.type
+        )
+      )
+    )
+      return
+    if (
+      !this.gpu ||
+      this.disposed ||
+      !this.kclManager.isExecuting ||
+      this.executionPreviewInFlight ||
+      this.nativePreviewBusy ||
+      this.nativePreviewUnavailable ||
+      performance.now() < this.nextExecutionPreviewAt
+    ) {
+      if (
+        !this.disposed &&
+        this.kclManager.isExecuting &&
+        !this.nativePreviewUnavailable
+      ) {
+        this.pendingExecutionPreview = command
+        this.deferExecutionPreview()
+      }
+      return
+    }
+
+    this.cancelDeferredPreview()
+    const version = this.executionVersion
+    const isCurrent = () =>
+      !this.disposed &&
+      version === this.executionVersion &&
+      (this.kclManager.isExecuting || this.failedPreviewVersion === version) &&
+      !this.kclManager.engineCommandManager.executionIsStale
+    const startedAt = performance.now()
+    this.executionPreviewInFlight = true
+    try {
+      const id = uuidv4()
+      const [response] = await this.kclManager.engineCommandManager.sendCommand(
+        id,
+        {
+          command: {
+            type: 'modeling_cmd_req',
+            cmd_id: id,
+            cmd: {
+              type: 'export',
+              entity_ids: [],
+              format: { type: 'native_brep' },
+            },
+          },
+          range: [0, 0, 0],
+          idToRangeMap: {},
+        },
+        true
+      )
+      if (
+        !isCurrent() ||
+        !('resp' in response) ||
+        response.resp.type !== 'export'
+      )
+        return
+      const file = response.resp.data.files.find((file) =>
+        file.name.endsWith('.brep.json')
+      )
+      if (!file) {
+        this.nativePreviewUnavailable = true
+        console.warn(
+          '[Native B-rep preview] Engine did not return a native B-rep export.'
+        )
+        return
+      }
+      const bytes = new Uint8Array(file.contents)
+      const snapshot = new TextDecoder().decode(bytes)
+      this.submitNativePreview(snapshot, version)
+    } catch (error) {
+      if (isCurrent()) this.failNativePreview(error, version)
+    } finally {
+      if (version === this.executionVersion) {
+        this.executionPreviewInFlight = false
+        this.nextExecutionPreviewAt =
+          performance.now() +
+          Math.max(50, Math.min(500, performance.now() - startedAt))
+      }
+    }
+  }
+
+  private submitNativePreview(
+    snapshot: string,
+    version: number,
+    final = false
+  ) {
+    try {
+      this.nativePreviewWorker ??= new Worker(
+        new URL('./nativeBrep/worker.ts', import.meta.url),
+        { type: 'module' }
+      )
+    } catch (error) {
+      this.failNativePreview(error, version)
+      return
+    }
+    const revision = ++this.nativePreviewRevision
+    const worker = this.nativePreviewWorker
+    this.nativePreviewBusy = true
+    worker.onmessage = (event: MessageEvent<TessellationResponse>) => {
+      if (worker !== this.nativePreviewWorker) return
+      const result = event.data
+      if (result.id !== this.nativePreviewRevision) return
+      this.nativePreviewBusy = false
+      clearTimeout(this.nativePreviewTimeout)
+      if (
+        this.disposed ||
+        version !== this.executionVersion ||
+        (!this.kclManager.isExecuting &&
+          !final &&
+          this.failedPreviewVersion !== version) ||
+        (final && this.isLoadedSceneCurrent())
+      )
+        return
+      if ('error' in result) {
+        this.failNativePreview(result.error, version)
+        return
+      }
+      if (!result.positions.length) {
+        if (final) this.stopNativePreviewWorker()
+        if (this.failedPreviewVersion === version) this.settleFailedPreview()
+        return
+      }
+      this.nativePreviewFailures = 0
+      if (final) this.stopNativePreviewWorker()
+      const geometry = new BufferGeometry()
+      geometry.setAttribute(
+        'position',
+        new BufferAttribute(result.positions, 3)
+      )
+      geometry.setAttribute('normal', new BufferAttribute(result.normals, 3))
+      const model = new Mesh(
+        geometry,
+        new MeshStandardMaterial({ color: '#9da7b0', side: DoubleSide })
+      )
+      this.clearExecutionPreview()
+      this.executionPreviewModel = model
+      this.container.dataset.executionPreview = 'true'
+      if (this.currentModel) this.currentModel.visible = false
+      this.gpu?.scene.add(model)
+      this.updateAmbientOcclusionScale(new Box3().setFromObject(model))
+      this.invalidateBaseRender()
+      if (final) {
+        this.loadedSceneGeneration = null
+        this.pickingSuspendedForPreview = true
+        this.showNativePreviewNotice(
+          this.nativeFinalExportFailed
+            ? 'Preview only · final model unavailable'
+            : 'Preview · updating model…'
+        )
+      }
+      if (this.failedPreviewVersion === version) this.settleFailedPreview()
+    }
+    worker.onerror = (event) => {
+      if (worker !== this.nativePreviewWorker) return
+      this.failNativePreview(event.message, version)
+    }
+    clearTimeout(this.nativePreviewTimeout)
+    this.nativePreviewTimeout = setTimeout(() => {
+      if (worker === this.nativePreviewWorker)
+        this.failNativePreview('Tessellation timed out', version)
+    }, 30_000)
+    try {
+      worker.postMessage({ id: revision, snapshot, refinement: 0 })
+    } catch (error) {
+      this.failNativePreview(error, version)
+    }
+  }
+
+  private stopNativePreviewWorker() {
+    clearTimeout(this.nativePreviewTimeout)
+    this.nativePreviewTimeout = undefined
+    const worker = this.nativePreviewWorker
+    this.nativePreviewWorker = null
+    this.nativePreviewBusy = false
+    if (worker) {
+      worker.onmessage = null
+      worker.onerror = null
+      worker.terminate()
+    }
+  }
+
+  private failNativePreview(error: unknown, version: number) {
+    this.stopNativePreviewWorker()
+    if (version !== this.executionVersion || this.disposed) return
+    this.nativePreviewFailures += 1
+    this.nativePreviewUnavailable = this.nativePreviewFailures >= 3
+    console.warn('[Native B-rep preview] Snapshot skipped', error)
+    if (this.failedPreviewVersion === version) this.settleFailedPreview()
+  }
+
   private clearModel() {
+    this.clearExecutionPreview()
     const { gpu } = this
     this.loadedSceneGeneration = null
     this.engineEntityReferences.clear()
@@ -1287,10 +1602,46 @@ export class LocalRenderer {
       kclManager.execState.engineSceneGeneration !== null &&
       !kclManager.hasErrors()
     ) {
-      void this.refreshModel().catch(reportRejection)
+      void this.refreshNativeModel().catch(reportRejection)
     } else if (!kclManager.isExecuting) {
-      this.onModelLoadSettled?.()
+      if (kclManager.hasErrors()) {
+        this.failedPreviewVersion = this.executionVersion
+        this.settleFailedPreview()
+        if (kclManager.execState.engineSceneGeneration !== null) {
+          void this.refreshNativeModel(true).catch(reportRejection)
+        }
+      } else this.onModelLoadSettled?.()
     }
+  }
+
+  private readonly onFileChanged = () => {
+    if (this.activeFilePath === this.kclManager.path) return
+    this.activeFilePath = this.kclManager.path
+    this.executionVersion += 1
+    this.failedPreviewVersion = null
+    this.cancelDeferredPreview()
+    this.stopNativePreviewWorker()
+    this.clearModel()
+  }
+
+  private settleFailedPreview() {
+    if (this.failedPreviewVersion !== this.executionVersion || this.disposed)
+      return
+    this.pickingSuspendedForPreview = true
+    this.gpu?.integerIdPicker.clearModel()
+    this.gpu?.selectionHighlightRenderer.clearModel()
+    this.clearHover()
+    this.showNativePreviewNotice(
+      this.executionPreviewModel
+        ? 'Build failed · partial preview'
+        : this.currentModel
+          ? 'Build failed · previous successful model'
+          : 'Build failed · no preview available'
+    )
+    this.nativePreviewNotice?.setAttribute('role', 'status')
+    this.nativePreviewNotice?.style.setProperty('border', '1px solid #bf6666')
+    this.invalidateBaseRender()
+    this.onModelLoadSettled?.()
   }
 
   private readonly onExecutionDone = (event: Event) => {
@@ -1298,47 +1649,133 @@ export class LocalRenderer {
 
     const { detail } = event as CustomEvent<KclExecutionDoneDetail>
     if (!detail.successful) {
-      if (!this.isLoadedSceneCurrent()) {
-        // The failed run replaced the scene, so its old geometry is stale.
-        this.clearModel()
-        this.gpu?.planeRenderer.updateOffsetPlanes(
-          this.kclManager.artifactGraph
-        )
+      this.cancelDeferredPreview()
+      if (detail.isInterrupted) {
+        this.failedPreviewVersion = null
+        this.clearExecutionPreview()
+        if (!this.isLoadedSceneCurrent()) this.clearModel()
+        this.onModelLoadSettled?.()
+        return
       }
-      this.rebuildSelectionTargets()
-      this.syncPlaneScale()
-      this.onModelLoadSettled?.()
+      this.failedPreviewVersion = this.executionVersion
+      this.settleFailedPreview()
+      if (!this.executionPreviewModel && this.gpu) {
+        void this.refreshNativeModel(true).catch(reportRejection)
+      }
       return
     }
 
     // A cache hit leaves the engine scene as it was, so keep the loaded model.
     if (this.isLoadedSceneCurrent()) {
+      this.rebuildSelectionTargets()
       this.onModelLoadSettled?.()
       return
     }
 
     // Before initialization finishes, initialize() loads the completed scene.
     if (this.gpu) {
-      void this.refreshModel().catch(reportRejection)
+      void this.refreshNativeModel().catch(reportRejection)
+    }
+  }
+
+  private showNativePreviewNotice(text: string) {
+    const notice = document.createElement('div')
+    notice.textContent = text
+    notice.style.cssText =
+      'position:absolute;bottom:12px;left:12px;padding:6px 10px;background:#222c;color:white;border-radius:4px;pointer-events:none;font:12px system-ui'
+    this.nativePreviewNotice?.remove()
+    this.nativePreviewNotice = notice
+    this.container.append(notice)
+  }
+
+  private async refreshNativeModel(failed = false) {
+    if (this.nativeFinalCaptureVersion === this.executionVersion) return
+    this.nativeFinalCaptureVersion = this.executionVersion
+    this.cancelDeferredPreview()
+    const version = this.executionVersion
+    const isCurrent = () =>
+      !this.disposed &&
+      version === this.executionVersion &&
+      !this.kclManager.isExecuting
+    const id = uuidv4()
+    let finalModelStarted = false
+    try {
+      const responsePromise = this.kclManager.engineCommandManager.sendCommand(
+        id,
+        {
+          command: {
+            type: 'modeling_cmd_req',
+            cmd_id: id,
+            cmd: {
+              type: 'export',
+              entity_ids: [],
+              format: { type: 'native_brep' },
+            },
+          },
+          range: [0, 0, 0],
+          idToRangeMap: {},
+        },
+        true
+      )
+      if (!failed) {
+        finalModelStarted = true
+        void this.refreshModel().catch(reportRejection)
+      }
+      const [response] = await responsePromise
+      if (!isCurrent()) return
+      const file =
+        'resp' in response && response.resp.type === 'export'
+          ? response.resp.data.files.find((file) =>
+              file.name.endsWith('.brep.json')
+            )
+          : undefined
+      if (!file) {
+        console.warn('[Native B-rep preview] Final preview unavailable')
+        return
+      }
+      if (!failed && this.isLoadedSceneCurrent()) return
+      // The worker has one pending slot for this final snapshot. Queue it behind
+      // any active mesh without delaying the final GLB export on worker completion.
+      if (!isCurrent()) return
+      const bytes = new Uint8Array(file.contents)
+      const snapshot = new TextDecoder().decode(bytes)
+      this.submitNativePreview(snapshot, version, true)
+    } catch (error) {
+      if (isCurrent())
+        console.warn('[Native B-rep preview] Final preview failed', error)
+    } finally {
+      if (this.nativeFinalCaptureVersion === version)
+        this.nativeFinalCaptureVersion = null
+      if (isCurrent()) {
+        if (failed) {
+          this.settleFailedPreview()
+        } else if (!finalModelStarted) {
+          if (!this.isLoadedSceneCurrent()) await this.refreshModel()
+          else this.onModelLoadSettled?.()
+        }
+      }
     }
   }
 
   private async refreshModel() {
-    // Loads only start between executions, so two loads never overlap without
-    // an execution starting in between.
     const version = this.executionVersion
 
     // Read the signal instead of execState, because the signal updates
     // together with the artifact graph this load reads.
     const sceneGeneration = this.kclManager.engineSceneGenerationSignal.peek()
 
-    const isCurrent = () => !this.disposed && version === this.executionVersion
+    const isCurrent = () =>
+      !this.disposed &&
+      version === this.executionVersion &&
+      this.failedPreviewVersion !== version
     // Reference planes do not depend on a successful GLB export.
     this.gpu?.planeRenderer.updateOffsetPlanes(this.kclManager.artifactGraph)
     this.syncPlaneScale()
     // An empty execution has no GLB to export, but must clear the old model.
     if (this.kclManager.artifactGraph.size === 0) {
+      this.stopNativePreviewWorker()
       this.clearModel()
+      this.pickingSuspendedForPreview = false
       this.loadedSceneGeneration = sceneGeneration
       this.rebuildSelectionTargets()
       this.resetCameraIfPending()
@@ -1384,6 +1821,7 @@ export class LocalRenderer {
         return
       }
 
+      this.stopNativePreviewWorker()
       this.clearModel()
 
       assignFaceUuids(gltf)
@@ -1407,6 +1845,7 @@ export class LocalRenderer {
       this.updateAmbientOcclusionScale(bounds)
       this.resetCameraIfPending()
       this.invalidateBaseRender()
+      this.pickingSuspendedForPreview = false
       this.loadedSceneGeneration = sceneGeneration
       this.onModelLoadSettled?.(true)
     } catch (error) {
@@ -1415,7 +1854,17 @@ export class LocalRenderer {
   }
 
   private handleModelLoadError(error: unknown) {
-    this.clearModel()
+    this.nativeFinalExportFailed = true
+    if (this.executionPreviewModel) {
+      this.loadedSceneGeneration = null
+      this.pickingSuspendedForPreview = true
+      this.gpu?.integerIdPicker.clearModel()
+      this.gpu?.selectionHighlightRenderer.clearModel()
+      this.showNativePreviewNotice('Preview only · final model unavailable')
+      this.invalidateBaseRender()
+    } else {
+      this.clearModel()
+    }
     this.rebuildSelectionTargets()
     console.error('[LocalRenderer] GLB model load failed', error)
     reportRejection(error)

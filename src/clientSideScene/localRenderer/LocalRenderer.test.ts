@@ -1,14 +1,18 @@
 import type { EntityType } from '@kittycad/lib'
 import { signal } from '@preact/signals-core'
+import type { TessellationResponse } from '@src/clientSideScene/localRenderer/nativeBrep/protocol'
 import type { KclManager } from '@src/lang/KclManager'
 import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import { Signal } from '@src/lib/signal'
 import { defaultSelectionFilter } from '@src/lib/selectionFilterUtils'
 import { Themes } from '@src/lib/theme'
 import {
+  BoxGeometry,
   Group,
   Mesh,
+  type Object3D,
   type OrthographicCamera,
   PerspectiveCamera,
   Scene,
@@ -19,7 +23,10 @@ import { MeshStandardNodeMaterial } from 'three/webgpu'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lang/KclManager', () => ({
-  KclManagerEvents: { ExecutionDone: 'execution-done' },
+  KclManagerEvents: {
+    ExecutionDone: 'execution-done',
+    FileChanged: 'file-changed',
+  },
 }))
 vi.mock('@src/lib/debugger', () => ({ EngineDebugger: { addLog: vi.fn() } }))
 vi.mock('@src/lib/settings/settingsUtils', () => ({
@@ -41,6 +48,13 @@ type RendererInternals = {
   scheduleRender(): void
   gpu: FakeGpu | null
   currentModel: Group | null
+  executionPreviewModel: Object3D | null
+  nextExecutionPreviewAt: number
+  pickingSuspendedForPreview: boolean
+  nativePreviewBusy: boolean
+  nativePreviewUnavailable: boolean
+  nativePreviewNotice: HTMLDivElement | null
+  captureExecutionPreview: (command: EngineCommand) => Promise<void>
   loadedSceneGeneration: number | null
   rebuildSelectionTargets(): void
   camera: PerspectiveCamera | OrthographicCamera | null
@@ -109,6 +123,8 @@ function fixture(
   )
 ) {
   const manager = Object.assign(new EventTarget(), {
+    path: '/model.kcl',
+    diagnosticsSignal: signal<{ severity: string }[]>([]),
     artifactGraph: new Map([['triangle', { type: 'sweep' }]]),
     engineSceneGenerationSignal: signal(0),
     execState: { engineSceneGeneration: null },
@@ -118,7 +134,15 @@ function fixture(
       return this.isExecutingSignal.value
     },
     systemDeps: { settings: {} },
-    engineCommandManager: { sendSceneCommand: vi.fn() },
+    engineCommandManager: {
+      sendSceneCommand: vi.fn(),
+      sendCommand: vi
+        .fn()
+        .mockResolvedValue([
+          { success: true, resp: { type: 'export', data: { files: [] } } },
+        ]),
+      executionIsStale: false,
+    },
     rustContext: {
       defaultPlanes: { xy: 'plane-xy', yz: 'plane-yz', xz: 'plane-xz' },
       export: vi
@@ -137,6 +161,9 @@ function fixture(
         onCameraChange: vi.fn(),
       },
     },
+  })
+  Object.defineProperty(manager, 'isExecuting', {
+    get: () => manager.isExecutingSignal.value,
   })
   manager.sceneInfra.camControls.camera.position.set(100, -100, 100)
   const onModelLoadSettled = vi.fn()
@@ -168,6 +195,36 @@ function fixture(
   return { renderer, state, gpu, manager, done, onModelLoadSettled }
 }
 
+function stubPreviewWorker() {
+  const worker = {
+    postMessage: vi.fn(),
+    terminate: vi.fn(),
+    onerror: null,
+    onmessage: null as
+      | ((event: MessageEvent<TessellationResponse>) => void)
+      | null,
+  }
+  vi.stubGlobal(
+    'Worker',
+    vi.fn(function () {
+      return worker
+    })
+  )
+  return worker
+}
+
+function nativeExportResponse() {
+  return [
+    {
+      success: true,
+      resp: {
+        type: 'export',
+        data: { files: [{ name: 'preview.brep.json', contents: [123, 125] }] },
+      },
+    },
+  ]
+}
+
 describe('local GLB loading', () => {
   beforeEach(() => {
     const prototype = LocalRenderer.prototype as unknown as RendererInternals
@@ -179,7 +236,11 @@ describe('local GLB loading', () => {
     // clear the camera reset mock.
     vi.mocked(resetCameraPosition).mockClear()
   })
-  afterEach(() => vi.restoreAllMocks())
+  afterEach(() => {
+    vi.restoreAllMocks()
+    vi.unstubAllGlobals()
+    vi.useRealTimers()
+  })
 
   function planeFixture(id = 'plane-xy') {
     const f = fixture()
@@ -420,6 +481,506 @@ describe('local GLB loading', () => {
     f.renderer.dispose()
   })
 
+  const previewCheckpoint: EngineCommand = {
+    type: 'modeling_cmd_req',
+    cmd_id: 'extrude',
+    cmd: { type: 'extrude', target: 'profile', distance: 5 },
+  }
+
+  it('captures geometry changes in a mixed batch but ignores selection commands', async () => {
+    const worker = stubPreviewWorker()
+    const f = fixture()
+    f.manager.isExecutingSignal.value = true
+    f.state.nextExecutionPreviewAt = 0
+    f.manager.engineCommandManager.sendCommand.mockResolvedValue(
+      nativeExportResponse()
+    )
+    const selection: EngineCommand = {
+      type: 'modeling_cmd_req',
+      cmd_id: 'select',
+      cmd: { type: 'select_clear' },
+    }
+    await f.state.captureExecutionPreview(selection)
+    expect(f.manager.engineCommandManager.sendCommand).not.toHaveBeenCalled()
+    await f.state.captureExecutionPreview({
+      type: 'modeling_cmd_batch_req',
+      batch_id: 'mixed',
+      requests: [
+        { cmd_id: selection.cmd_id, cmd: selection.cmd },
+        { cmd_id: previewCheckpoint.cmd_id, cmd: previewCheckpoint.cmd },
+      ],
+      responses: true,
+    })
+    expect(f.manager.engineCommandManager.sendCommand).toHaveBeenCalledOnce()
+    expect(worker.postMessage).toHaveBeenCalledOnce()
+    f.renderer.dispose()
+  })
+
+  it('preserves a useful preview when later meshes are empty until final GLB loads', async () => {
+    const worker = stubPreviewWorker()
+    const f = fixture()
+    f.manager.isExecutingSignal.value = true
+    f.manager.engineCommandManager.sendCommand.mockResolvedValue(
+      nativeExportResponse()
+    )
+    const finalExport = Promise.withResolvers<ModelingAppFile[]>()
+    f.manager.rustContext.export.mockReturnValue(finalExport.promise)
+    const complete = (empty: boolean) =>
+      worker.onmessage?.({
+        data: {
+          id: worker.postMessage.mock.lastCall?.[0].id,
+          positions: empty
+            ? new Float32Array()
+            : new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
+          normals: new Float32Array(empty ? 0 : 9),
+          faceCount: empty ? 0 : 1,
+        },
+      } as MessageEvent<TessellationResponse>)
+    f.state.nextExecutionPreviewAt = 0
+    await f.state.captureExecutionPreview(previewCheckpoint)
+    complete(false)
+    const preview = f.state.executionPreviewModel
+    expect(preview).not.toBeNull()
+    f.state.nextExecutionPreviewAt = 0
+    await f.state.captureExecutionPreview(previewCheckpoint)
+    complete(true)
+    expect(f.state.executionPreviewModel).toBe(preview)
+    expect(f.state.nativePreviewBusy).toBe(false)
+    f.done()
+    await vi.waitFor(() => expect(worker.postMessage).toHaveBeenCalledTimes(3))
+    complete(true)
+    expect(f.state.executionPreviewModel).toBe(preview)
+    expect(f.onModelLoadSettled).not.toHaveBeenCalled()
+    finalExport.resolve([triangleGlb()])
+    await vi.waitFor(() => expect(f.renderer.isLoadedSceneCurrent()).toBe(true))
+    expect(f.state.executionPreviewModel).toBeNull()
+    expect(f.onModelLoadSettled).toHaveBeenCalledOnce()
+    f.renderer.dispose()
+  })
+
+  it('starts final GLB export while the worker finishes its current mesh and queues the final snapshot', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const worker = stubPreviewWorker()
+    const f = fixture()
+    f.manager.isExecutingSignal.value = true
+    f.state.nextExecutionPreviewAt = 0
+    f.manager.engineCommandManager.sendCommand.mockResolvedValue(
+      nativeExportResponse()
+    )
+    const finalExport = Promise.withResolvers<ModelingAppFile[] | undefined>()
+    f.manager.rustContext.export.mockReturnValue(finalExport.promise)
+    await f.state.captureExecutionPreview(previewCheckpoint)
+    expect(f.state.nativePreviewBusy).toBe(true)
+    f.manager.isExecutingSignal.value = false
+    f.done()
+    await vi.waitFor(() =>
+      expect(f.manager.rustContext.export).toHaveBeenCalledOnce()
+    )
+    expect(worker.postMessage).toHaveBeenCalledTimes(2)
+    const previous = worker.postMessage.mock.calls[0][0].id as number
+    const final = worker.postMessage.mock.calls[1][0].id as number
+    worker.onmessage?.({
+      data: { id: previous, error: 'Old job finished' },
+    } as MessageEvent<TessellationResponse>)
+    expect(f.state.nativePreviewBusy).toBe(true)
+    worker.onmessage?.({
+      data: { id: final, error: 'Expected fixture failure' },
+    } as MessageEvent<TessellationResponse>)
+    expect(f.state.nativePreviewBusy).toBe(false)
+    finalExport.resolve([triangleGlb()])
+    await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+    f.renderer.dispose()
+  })
+
+  it('starts final GLB export before the final native response and skips a snapshot arriving after GLB', async () => {
+    const f = fixture()
+    const native = Promise.withResolvers<unknown[]>()
+    f.manager.engineCommandManager.sendCommand.mockReturnValue(native.promise)
+    f.done()
+    expect(f.manager.rustContext.export).toHaveBeenCalledOnce()
+    await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+    native.resolve(nativeExportResponse())
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(f.manager.rustContext.export).toHaveBeenCalledOnce()
+    expect(f.state.executionPreviewModel).toBeNull()
+    expect(f.renderer.isLoadedSceneCurrent()).toBe(true)
+    f.renderer.dispose()
+  })
+
+  it('keeps the native preview until final GLB replaces it and rejects late worker results', async () => {
+    const worker = stubPreviewWorker()
+    const f = fixture()
+    const finalExport = Promise.withResolvers<ModelingAppFile[] | undefined>()
+    f.manager.rustContext.export.mockReturnValue(finalExport.promise)
+    f.manager.engineCommandManager.sendCommand.mockResolvedValue(
+      nativeExportResponse()
+    )
+    f.done()
+    await vi.waitFor(() => expect(worker.postMessage).toHaveBeenCalledOnce())
+    const result = {
+      data: {
+        id: worker.postMessage.mock.calls[0][0].id,
+        positions: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
+        normals: new Float32Array(9),
+        faceCount: 1,
+      },
+    } as MessageEvent<TessellationResponse>
+    f.manager.sceneInfra.camControls.isDragging = true
+    const onmessage = worker.onmessage
+    if (!onmessage) throw new Error('Missing worker callback')
+    onmessage(result)
+    expect(resetCameraPosition).not.toHaveBeenCalled()
+    expect(f.manager.rustContext.export).toHaveBeenCalledOnce()
+    expect(f.state.executionPreviewModel).not.toBeNull()
+    expect(f.state.nativePreviewNotice?.textContent).toBe(
+      'Preview · updating model…'
+    )
+    expect(f.onModelLoadSettled).not.toHaveBeenCalled()
+    expect(f.renderer.isLoadedSceneCurrent()).toBe(false)
+    finalExport.resolve([triangleGlb()])
+    await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+    expect(f.state.executionPreviewModel).toBeNull()
+    expect(f.state.nativePreviewNotice).toBeNull()
+    expect(resetCameraPosition).toHaveBeenCalledExactlyOnceWith({
+      sceneInfra: f.manager.sceneInfra,
+      settingsActor: f.manager.systemDeps.settings,
+    })
+    expect(f.onModelLoadSettled).toHaveBeenCalledWith(true)
+    onmessage(result)
+    expect(f.state.executionPreviewModel).toBeNull()
+    f.renderer.dispose()
+  })
+
+  it('retains an explicitly labelled native preview when final export fails, without making it selectable', async () => {
+    vi.stubGlobal(
+      'Worker',
+      vi.fn(() => ({ terminate: vi.fn() }))
+    )
+    const f = fixture()
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const preview = new Group()
+    f.state.executionPreviewModel = preview
+    f.gpu.scene.add(preview)
+    f.manager.engineCommandManager.sendCommand.mockRejectedValueOnce(
+      new Error('Native snapshot unavailable')
+    )
+    f.manager.rustContext.export.mockResolvedValueOnce(undefined)
+    f.done()
+    await vi.waitFor(() => expect(f.state.nativePreviewNotice).not.toBeNull())
+    expect(f.state.executionPreviewModel).toBe(preview)
+    expect(f.state.nativePreviewNotice?.textContent).toContain('Preview only')
+    expect(f.renderer.isLoadedSceneCurrent()).toBe(false)
+    expect(f.onModelLoadSettled).toHaveBeenCalledWith()
+    f.manager.isExecutingSignal.value = true
+    expect(f.state.nativePreviewNotice).toBeNull()
+    expect(f.state.executionPreviewModel).toBeNull()
+    f.renderer.dispose()
+  })
+
+  it('coalesces deferred native checkpoints and cancels them on disposal', async () => {
+    vi.useFakeTimers()
+    const f = fixture()
+    try {
+      f.manager.isExecutingSignal.value = true
+      f.state.nextExecutionPreviewAt = performance.now() + 100
+      f.manager.engineCommandManager.sendCommand.mockResolvedValue([
+        { success: true, resp: { type: 'export', data: { files: [] } } },
+      ])
+      vi.spyOn(console, 'warn').mockImplementation(() => {})
+      await f.state.captureExecutionPreview(previewCheckpoint)
+      await f.state.captureExecutionPreview(previewCheckpoint)
+      expect(f.manager.engineCommandManager.sendCommand).not.toHaveBeenCalled()
+      await vi.advanceTimersByTimeAsync(150)
+      expect(f.manager.engineCommandManager.sendCommand).toHaveBeenCalledTimes(
+        1
+      )
+      f.state.nativePreviewUnavailable = false
+      f.state.nextExecutionPreviewAt = performance.now() + 100
+      await f.state.captureExecutionPreview(previewCheckpoint)
+      f.renderer.dispose()
+      await vi.advanceTimersByTimeAsync(150)
+      expect(f.manager.engineCommandManager.sendCommand).toHaveBeenCalledTimes(
+        1
+      )
+    } finally {
+      f.renderer.dispose()
+      vi.useRealTimers()
+    }
+  })
+
+  it('bounds the native worker queue without blocking execution, captures beyond two previews, and drops stale results', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const worker = stubPreviewWorker()
+    const f = fixture()
+    expect(
+      (f.manager as unknown as KclManager).engineCommandManager
+        .executionBatchPreview
+    ).toBe(f.state.captureExecutionPreview)
+    f.manager.isExecutingSignal.value = true
+    const snapshot = new TextEncoder().encode('{"version":1,"bodies":[]}')
+    f.manager.engineCommandManager.sendCommand.mockResolvedValue([
+      {
+        success: true,
+        resp: {
+          type: 'export',
+          data: {
+            files: [
+              { name: 'preview.brep.json', contents: Array.from(snapshot) },
+            ],
+          },
+        },
+      },
+    ])
+    for (let i = 0; i < 3; i++) {
+      f.state.nextExecutionPreviewAt = 0
+      await f.state.captureExecutionPreview(previewCheckpoint)
+      if (i === 0) {
+        f.state.nextExecutionPreviewAt = 0
+        await f.state.captureExecutionPreview(previewCheckpoint)
+        expect(worker.postMessage).toHaveBeenCalledTimes(1)
+      }
+      const previous = f.state.executionPreviewModel
+      worker.onmessage?.({
+        data: {
+          id: worker.postMessage.mock.calls[i][0].id,
+          positions: new Float32Array([i, 0, 0, i + 1, 0, 0, i, 1, 0]),
+          normals: new Float32Array(9),
+          faceCount: 1,
+        },
+      } as MessageEvent<TessellationResponse>)
+      expect(f.state.executionPreviewModel).not.toBeNull()
+      expect(f.state.executionPreviewModel).not.toBe(previous)
+    }
+    expect(worker.postMessage).toHaveBeenCalledTimes(3)
+    expect(
+      f.manager.engineCommandManager.sendCommand.mock.calls[0][1].command.cmd
+    ).toMatchObject({ format: { type: 'native_brep' } })
+    const id = worker.postMessage.mock.calls[2][0].id as number
+    const onmessage = worker.onmessage
+    if (!onmessage) throw new Error('Missing worker callback')
+    f.manager.isExecutingSignal.value = false
+    f.manager.isExecutingSignal.value = true
+    onmessage({
+      data: {
+        id,
+        positions: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
+        normals: new Float32Array(9),
+        faceCount: 1,
+      },
+    } as MessageEvent<TessellationResponse>)
+    expect(f.state.executionPreviewModel).toBeNull()
+    f.renderer.dispose()
+    expect(worker.terminate).toHaveBeenCalledOnce()
+  })
+
+  it('recovers worker failures with bounded retries and releases hung work', async () => {
+    vi.useFakeTimers()
+    const workers: {
+      postMessage: ReturnType<typeof vi.fn>
+      terminate: ReturnType<typeof vi.fn>
+      onmessage: ((event: MessageEvent<TessellationResponse>) => void) | null
+      onerror: ((event: { message: string }) => void) | null
+    }[] = []
+    vi.stubGlobal(
+      'Worker',
+      vi.fn(function () {
+        const worker = {
+          postMessage: vi.fn(),
+          terminate: vi.fn(),
+          onmessage: null,
+          onerror: null,
+        }
+        workers.push(worker)
+        return worker
+      })
+    )
+    const f = fixture()
+    f.manager.engineCommandManager.sendCommand.mockResolvedValue([
+      {
+        resp: {
+          type: 'export',
+          data: {
+            files: [{ name: 'preview.brep.json', contents: [123, 125] }],
+          },
+        },
+      },
+    ])
+    f.manager.isExecutingSignal.value = true
+    expect(workers).toHaveLength(0)
+    for (let i = 0; i < 3; i++) {
+      f.state.nextExecutionPreviewAt = 0
+      await f.state.captureExecutionPreview(previewCheckpoint)
+      if (i === 0) await vi.advanceTimersByTimeAsync(30_000)
+      else workers[i].onerror?.({ message: 'Worker failed to load' })
+      expect(workers[i].terminate).toHaveBeenCalledOnce()
+      expect(f.state.nativePreviewBusy).toBe(false)
+    }
+    expect(f.state.nativePreviewUnavailable).toBe(true)
+    f.manager.isExecutingSignal.value = false
+    f.manager.isExecutingSignal.value = true
+    expect(f.state.nativePreviewUnavailable).toBe(false)
+    f.state.nextExecutionPreviewAt = 0
+    await f.state.captureExecutionPreview(previewCheckpoint)
+    expect(workers).toHaveLength(4)
+    f.renderer.dispose()
+    expect(workers[3].terminate).toHaveBeenCalledOnce()
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it('does not let an old capture release the next execution capture', async () => {
+    const f = fixture()
+    let finishOld!: (response: unknown[]) => void
+    let finishNew!: (response: unknown[]) => void
+    f.manager.engineCommandManager.sendCommand
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            finishOld = resolve
+          })
+      )
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            finishNew = resolve
+          })
+      )
+    f.manager.isExecutingSignal.value = true
+    f.state.nextExecutionPreviewAt = 0
+    const oldCapture = f.state.captureExecutionPreview(previewCheckpoint)
+    f.manager.isExecutingSignal.value = false
+    f.manager.isExecutingSignal.value = true
+    f.state.nextExecutionPreviewAt = 0
+    const newCapture = f.state.captureExecutionPreview(previewCheckpoint)
+    finishOld([{}])
+    await oldCapture
+    await f.state.captureExecutionPreview(previewCheckpoint)
+    expect(f.manager.engineCommandManager.sendCommand).toHaveBeenCalledTimes(2)
+    finishNew([{}])
+    await newCapture
+    f.renderer.dispose()
+  })
+
+  it.each(['constructor', 'postMessage'])(
+    'recovers a synchronous worker %s failure without blocking final export',
+    async (failure) => {
+      const worker = {
+        postMessage: vi.fn(() => {
+          throw new Error('Cannot post')
+        }),
+        terminate: vi.fn(),
+      }
+      vi.stubGlobal(
+        'Worker',
+        vi.fn(() => {
+          if (failure === 'constructor') throw new Error('Cannot start worker')
+          return worker
+        })
+      )
+      const f = fixture()
+      f.manager.isExecutingSignal.value = true
+      f.manager.engineCommandManager.sendCommand.mockResolvedValue([
+        {
+          resp: {
+            type: 'export',
+            data: {
+              files: [{ name: 'preview.brep.json', contents: [123, 125] }],
+            },
+          },
+        },
+      ])
+      f.state.nextExecutionPreviewAt = 0
+      await expect(
+        f.state.captureExecutionPreview(previewCheckpoint)
+      ).resolves.toBeUndefined()
+      expect(f.state.nativePreviewBusy).toBe(false)
+      f.done()
+      await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+      expect(f.manager.rustContext.export).toHaveBeenCalledOnce()
+      f.renderer.dispose()
+    }
+  )
+
+  it('releases geometry and materials once across repeated previews', () => {
+    const worker = stubPreviewWorker()
+    const f = fixture()
+    f.manager.isExecutingSignal.value = true
+    const internals = f.renderer as unknown as {
+      submitNativePreview(snapshot: string, version: number): void
+      executionVersion: number
+    }
+    const disposals: ReturnType<typeof vi.spyOn>[] = []
+    for (let i = 0; i < 3; i++) {
+      internals.submitNativePreview('{}', internals.executionVersion)
+      worker.onmessage?.({
+        data: {
+          id: worker.postMessage.mock.lastCall?.[0].id,
+          positions: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
+          normals: new Float32Array([0, 0, 1, 0, 0, 1, 0, 0, 1]),
+          faceCount: 1,
+        },
+      } as MessageEvent<TessellationResponse>)
+      const model = f.state.executionPreviewModel as Mesh
+      disposals.push(vi.spyOn(model.geometry, 'dispose'))
+      disposals.push(
+        vi.spyOn(model.material as MeshStandardNodeMaterial, 'dispose')
+      )
+    }
+    f.renderer.dispose()
+    for (const dispose of disposals) expect(dispose).toHaveBeenCalledOnce()
+    expect(worker.terminate).toHaveBeenCalledOnce()
+  })
+
+  it('retains the committed model while a preview is displayed, then replaces both with the final scene', async () => {
+    const worker = stubPreviewWorker()
+    const f = fixture()
+    f.done()
+    await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+    const committed = f.state.currentModel
+    f.onModelLoadSettled.mockClear()
+    f.manager.isExecutingSignal.value = true
+    f.state.nextExecutionPreviewAt = 0
+    f.manager.engineCommandManager.sendCommand.mockResolvedValue(
+      nativeExportResponse()
+    )
+    await f.state.captureExecutionPreview(previewCheckpoint)
+    worker.onmessage?.({
+      data: {
+        id: worker.postMessage.mock.lastCall?.[0].id,
+        positions: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
+        normals: new Float32Array(9),
+        faceCount: 1,
+      },
+    } as MessageEvent<TessellationResponse>)
+    const preview = f.state.executionPreviewModel
+    expect(preview).not.toBeNull()
+    expect(f.state.currentModel).toBe(committed)
+    expect(committed?.visible).toBe(false)
+    expect(f.onModelLoadSettled).not.toHaveBeenCalled()
+    expect(f.renderer.isLoadedSceneCurrent()).toBe(true)
+    f.done()
+    expect(f.state.executionPreviewModel).toBe(preview)
+    await vi.waitFor(() => expect(f.state.executionPreviewModel).toBeNull())
+    expect(f.state.currentModel).not.toBe(committed)
+    expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
+    f.renderer.dispose()
+  })
+
+  it('discards a preview response from an older execution', async () => {
+    const f = fixture()
+    const response = Promise.withResolvers<unknown>()
+    f.manager.engineCommandManager.sendCommand.mockReturnValue(response.promise)
+    f.manager.isExecutingSignal.value = true
+    f.state.nextExecutionPreviewAt = 0
+    const capture = f.state.captureExecutionPreview(previewCheckpoint)
+    f.manager.isExecutingSignal.value = false
+    f.manager.isExecutingSignal.value = true
+    response.resolve(nativeExportResponse())
+    await capture
+    expect(f.state.executionPreviewModel).toBeNull()
+    expect(f.state.currentModel).toBeNull()
+    f.renderer.dispose()
+  })
+
   it('keeps the loaded model when an execution leaves the scene unchanged', async () => {
     const f = fixture()
     f.done()
@@ -505,6 +1066,130 @@ describe('local GLB loading', () => {
     }
   )
 
+  it('keeps the failed run preview unselectable and clears it on a file switch', () => {
+    const f = fixture()
+    f.manager.isExecutingSignal.value = true
+    const preview = new Mesh(new BoxGeometry())
+    f.state.executionPreviewModel = preview
+    f.gpu.scene.add(preview)
+    f.done(false)
+    expect(f.state.executionPreviewModel).toBe(preview)
+    expect(f.state.nativePreviewNotice?.textContent).toBe(
+      'Build failed · partial preview'
+    )
+    expect(f.state.pickingSuspendedForPreview).toBe(true)
+    f.renderer.setPickingEnabled(true)
+    expect(f.state.pickingSuspendedForPreview).toBe(true)
+    expect(f.manager.rustContext.export).not.toHaveBeenCalled()
+    f.manager.path = '/another-file.kcl'
+    f.manager.dispatchEvent(new CustomEvent('file-changed'))
+    expect(f.state.executionPreviewModel).toBeNull()
+    expect(f.state.currentModel).toBeNull()
+    expect(f.state.nativePreviewNotice).toBeNull()
+    f.manager.diagnosticsSignal.value = [{ severity: 'error' }]
+    expect(f.state.nativePreviewNotice?.textContent).toBe(
+      'Build failed · no preview available'
+    )
+    f.renderer.dispose()
+  })
+
+  it('does not install an in-flight final model after a same-file parse error', async () => {
+    const f = fixture()
+    const exported = Promise.withResolvers<ModelingAppFile[]>()
+    f.manager.rustContext.export.mockReturnValue(exported.promise)
+    const refresh = (
+      f.renderer as unknown as { refreshModel(): Promise<void> }
+    ).refreshModel()
+    f.manager.diagnosticsSignal.value = [{ severity: 'error' }]
+    expect(f.state.pickingSuspendedForPreview).toBe(true)
+    exported.resolve([triangleGlb()])
+    await refresh
+    expect(f.state.currentModel).toBeNull()
+    expect(f.state.pickingSuspendedForPreview).toBe(true)
+    expect(f.state.nativePreviewNotice?.textContent).toContain('Build failed')
+    f.renderer.dispose()
+  })
+
+  it('retains the same-file model on a parse error, but not when identical text belongs to another file', async () => {
+    const f = fixture()
+    f.done()
+    await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+    const previous = f.state.currentModel
+    f.manager.diagnosticsSignal.value = [{ severity: 'error' }]
+    expect(f.state.currentModel).toBe(previous)
+    expect(f.state.nativePreviewNotice?.textContent).toBe(
+      'Build failed · previous successful model'
+    )
+    f.manager.path = '/new-file.kcl'
+    f.manager.dispatchEvent(new CustomEvent('file-changed'))
+    expect(f.state.currentModel).toBeNull()
+    f.renderer.dispose()
+  })
+
+  it('restores picking after undoing a parse error to a cached model', async () => {
+    const f = fixture()
+    f.done()
+    await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+    const previous = f.state.currentModel
+    const { integerIdPicker: picker, selectionHighlightRenderer: highlights } =
+      f.gpu
+    picker.setTargets.mockClear()
+    picker.clearModel.mockClear()
+    highlights.setTargets.mockClear()
+    highlights.clearModel.mockClear()
+
+    f.manager.diagnosticsSignal.value = [{ severity: 'error' }]
+    expect(picker.clearModel).toHaveBeenCalled()
+    expect(highlights.clearModel).toHaveBeenCalled()
+    f.manager.isExecutingSignal.value = true
+    f.manager.diagnosticsSignal.value = []
+    f.done(true, false)
+
+    expect(f.state.currentModel).toBe(previous)
+    expect(f.manager.rustContext.export).toHaveBeenCalledOnce()
+    expect(f.state.pickingSuspendedForPreview).toBe(false)
+    expect(picker.setTargets).toHaveBeenCalledOnce()
+    expect(highlights.setTargets).toHaveBeenCalledOnce()
+    f.renderer.dispose()
+  })
+
+  it('captures surviving geometry for an early failure without requesting final GLTF', async () => {
+    const worker = stubPreviewWorker()
+    const f = fixture()
+    f.manager.engineCommandManager.sendCommand.mockResolvedValue(
+      nativeExportResponse()
+    )
+    f.done(false)
+    await vi.waitFor(() => expect(worker.postMessage).toHaveBeenCalledOnce())
+    const onmessage = worker.onmessage
+    if (!onmessage) throw new Error('Missing worker callback')
+    onmessage({
+      data: {
+        id: worker.postMessage.mock.calls[0][0].id,
+        positions: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
+        normals: new Float32Array(9),
+        faceCount: 1,
+      },
+    } as MessageEvent<TessellationResponse>)
+    expect(f.state.executionPreviewModel).not.toBeNull()
+    expect(f.state.nativePreviewNotice?.textContent).toBe(
+      'Build failed · partial preview'
+    )
+    expect(f.state.pickingSuspendedForPreview).toBe(true)
+    expect(f.manager.rustContext.export).not.toHaveBeenCalled()
+    f.manager.path = '/other.kcl'
+    f.manager.dispatchEvent(new CustomEvent('file-changed'))
+    onmessage({
+      data: {
+        id: worker.postMessage.mock.calls[0][0].id,
+        positions: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
+        normals: new Float32Array(9),
+      },
+    } as MessageEvent<TessellationResponse>)
+    expect(f.state.executionPreviewModel).toBeNull()
+    f.renderer.dispose()
+  })
+
   it('does not export failed executions and settles failed exports without retrying', async () => {
     const f = fixture()
     f.done(false)
@@ -512,6 +1197,7 @@ describe('local GLB loading', () => {
     expect(f.onModelLoadSettled).toHaveBeenCalledOnce()
     const errorLog = vi.spyOn(console, 'error').mockImplementation(() => {})
     f.manager.rustContext.export.mockResolvedValueOnce(undefined)
+    f.manager.isExecutingSignal.value = true
     f.done()
     await vi.waitFor(() => expect(errorLog).toHaveBeenCalledOnce())
     expect(f.manager.rustContext.export).toHaveBeenCalledOnce()
