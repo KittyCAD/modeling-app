@@ -1,6 +1,9 @@
-import type { PropsOf } from '@headlessui/react/dist/types'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { useSignals } from '@preact/signals-react/runtime'
-import { ContextMenuItem } from '@src/components/ContextMenu'
+import {
+  ContextMenuDivider,
+  ContextMenuItem,
+} from '@src/components/ContextMenu'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
@@ -9,21 +12,21 @@ import { toUtf16 } from '@src/lang/errors'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
   type Artifact,
+  type CodeRef,
   getBodiesFromArtifactGraph,
   getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
 import { type ArtifactGraph, getAllOperations } from '@src/lang/wasm'
+import { engineIdForArtifact } from '@src/lang/std/kclNamedViews'
 import { useSingletons } from '@src/lib/boot'
-import { sendSelectionEvent } from '@src/lib/featureTree'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import {
-  type HideOperation,
   getHideOpByArtifactId,
   onDelete,
   onHide,
   onUnhide,
 } from '@src/lib/operations'
-import { err } from '@src/lib/trap'
+import { err, reportRejection } from '@src/lib/trap'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import toast from 'react-hot-toast'
 
@@ -36,31 +39,6 @@ export function BodiesPane(props: AreaTypeComponentProps) {
   const artifactGraph = execState.artifactGraph
   const operations = getAllOperations(execState.operations)
   const bodies = getBodiesFromArtifactGraph(artifactGraph)
-  const bodiesWithProps: Map<string, PropsOf<typeof BodyItem>> = new Map()
-
-  if (operations) {
-    let i = 0
-    for (let [id, artifact] of bodies || new Map()) {
-      const patternIndex =
-        artifact.type === 'pattern'
-          ? Math.max(0, artifact.copyIds.indexOf(id) + 1)
-          : undefined
-      const hideOperation =
-        getHideOpByArtifactId(operations, id) ??
-        (artifact.type === 'pattern' && patternIndex === 0
-          ? getHideOpByArtifactId(operations, artifact.sourceId)
-          : undefined)
-      bodiesWithProps.set(id, {
-        artifact,
-        artifactGraph,
-        label: `Body ${i + 1}`,
-        hideOperation,
-        engineEntityId: artifact.type === 'pattern' ? id : undefined,
-        patternIndex,
-      })
-      i++
-    }
-  }
 
   return (
     <LayoutPanel
@@ -73,41 +51,39 @@ export function BodiesPane(props: AreaTypeComponentProps) {
         icon="model"
         title={props.layout.label}
       />
-      {bodies && <BodiesList bodies={bodiesWithProps} />}
+      <section className="overflow-auto mr-1 pb-8">
+        <ul>
+          {Array.from(bodies, ([id, artifact], index) => (
+            <li key={id || index}>
+              <BodyItem
+                id={id}
+                label={`Body ${index + 1}`}
+                artifact={artifact}
+                artifactGraph={artifactGraph}
+                operations={operations}
+              />
+            </li>
+          ))}
+        </ul>
+      </section>
     </LayoutPanel>
   )
 }
 
-function BodiesList({
-  bodies,
-}: {
-  bodies: Map<string, PropsOf<typeof BodyItem>>
-}) {
-  return (
-    <section className="overflow-auto mr-1 pb-8">
-      <ul>
-        {Array.from(bodies.entries()).map(([id, props], i) => (
-          <BodyItem key={id || i} {...props} />
-        ))}
-      </ul>
-    </section>
-  )
-}
-
-function BodyItem({
+export function BodyItem({
   label,
   artifact,
   artifactGraph,
-  hideOperation,
-  engineEntityId,
-  patternIndex,
+  id = artifact.id,
+  operations,
+  disabled = false,
 }: {
   label: string
   artifact: SolidArtifact
   artifactGraph: ArtifactGraph
-  hideOperation?: HideOperation
-  engineEntityId?: string
-  patternIndex?: number
+  id?: string
+  operations: Operation[]
+  disabled?: boolean
 }) {
   const { kclManager } = useSingletons()
   const {
@@ -116,15 +92,49 @@ function BodyItem({
     send: modelingSend,
   } = useModelingContext()
 
+  const engineEntityId = artifact.type === 'pattern' ? id : undefined
+  const patternIndex =
+    artifact.type === 'pattern'
+      ? Math.max(0, artifact.copyIds.indexOf(id) + 1)
+      : undefined
+  const hideOperation =
+    getHideOpByArtifactId(operations, id) ??
+    (artifact.type === 'pattern' && patternIndex === 0
+      ? getHideOpByArtifactId(operations, artifact.sourceId)
+      : undefined)
   const sourceRange = sourceRangeFromRust(artifact.codeRef.range)
-  const codeRef = getCodeRefsByArtifactId(artifact.id, artifactGraph)?.[0] ?? {
+  const artifactCodeRef = getCodeRefsByArtifactId(
+    artifact.id,
+    artifactGraph
+  )?.[0] ?? {
     range: sourceRange,
     pathToNode: [],
   }
+  const codeRef: CodeRef = {
+    ...artifactCodeRef,
+    range: [
+      toUtf16(artifactCodeRef.range[0], kclManager.code),
+      toUtf16(artifactCodeRef.range[1], kclManager.code),
+      artifactCodeRef.range[2],
+    ],
+  }
+  const sourceArtifact = engineEntityId
+    ? artifactGraph.get(engineEntityId)
+    : artifact
+  const bodyEngineId = engineIdForArtifact({
+    id: engineEntityId ?? artifact.id,
+    artifact:
+      sourceArtifact?.type === 'sweep' ||
+      sourceArtifact?.type === 'compositeSolid'
+        ? sourceArtifact
+        : artifact,
+    artifactGraph,
+  })
   const selection: Selection = {
     artifact,
     codeRef,
-    ...(engineEntityId ? { engineEntityId } : {}),
+    entityRef: { type: 'solid3d', solid3d_id: bodyEngineId },
+    engineEntityId: bodyEngineId,
     ...(patternIndex !== undefined ? { patternIndex } : {}),
   }
   const selections: Selections = {
@@ -132,87 +142,105 @@ function BodyItem({
     otherSelections: [],
   }
 
-  const isSelected = engineEntityId
-    ? modelingContext.selectionRanges.graphSelections.some(
-        (selection) => selection.engineEntityId === engineEntityId
-      )
-    : kclManager.editorState.selection.main.from >=
-        toUtf16(sourceRange[0], kclManager.code) &&
-      kclManager.editorState.selection.main.to <=
-        toUtf16(sourceRange[1], kclManager.code)
+  const isSelected = modelingContext.selectionRanges.graphSelections.some(
+    (selection) =>
+      selection.engineEntityId === bodyEngineId ||
+      (selection.entityRef?.type === 'solid3d' &&
+        selection.entityRef.solid3d_id === bodyEngineId)
+  )
   const onSelect = () => {
-    if (engineEntityId) {
-      modelingSend({
-        type: 'Set selection',
-        data: {
-          selectionType: 'singleCodeCursor',
-          selection,
-        },
-      })
-      return
-    }
-
-    sendSelectionEvent({
-      sourceRange,
-      kclManager,
-      modelingSend,
+    modelingSend({
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection,
+      },
     })
   }
   const handleDelete = () => {
-    onSelect()
     onDelete({
       modelingActor,
       objects: selections,
     })
   }
+  const centerBody = () => {
+    modelingSend({
+      type: 'Set selection',
+      data: { selectionType: 'completeSelection', selection: selections },
+    })
+    kclManager.sceneInfra.camControls
+      .zoomToFit({ padding: 0.2, selection: true })
+      .catch(reportRejection)
+  }
+  const toggleVisibility = () => {
+    if (hideOperation === undefined) {
+      onHide({
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        modelingActor,
+        objects: selections,
+      })
+    } else {
+      onUnhide({ hideOperation, targetArtifact: artifact, kclManager })
+        .then((result) => {
+          if (err(result)) {
+            toast.error(result.message || 'Error while unhiding.')
+          }
+        })
+        .catch((e) => {
+          toast.error(e.message || 'Error while unhiding.')
+        })
+    }
+  }
 
   return (
-    <li className="px-1 py-0.5 group/visibilityToggle">
+    <div className="min-w-0">
       <RowItemWithIconMenuAndToggle
         icon="body"
+        disabled={disabled}
         onClick={onSelect}
-        onContextMenu={() => onSelect()}
+        onContextMenu={() => {
+          if (!isSelected && !disabled) onSelect()
+        }}
         isSelected={isSelected}
-        menuItems={[
-          <ContextMenuItem
-            onClick={handleDelete}
-            data-testid="context-menu-delete"
-          >
-            Delete
-          </ContextMenuItem>,
-        ]}
+        aria-pressed={isSelected}
+        className={`font-medium ${hideOperation && !isSelected ? 'text-2' : ''}`}
+        menuItems={
+          disabled
+            ? undefined
+            : [
+                <ContextMenuItem
+                  key="center"
+                  onClick={centerBody}
+                  disabled={hideOperation !== undefined}
+                >
+                  Center on body
+                </ContextMenuItem>,
+                <ContextMenuItem key="visibility" onClick={toggleVisibility}>
+                  {hideOperation ? 'Show body' : 'Hide body'}
+                </ContextMenuItem>,
+                <ContextMenuDivider key="divider" />,
+                <ContextMenuItem
+                  key="delete"
+                  onClick={handleDelete}
+                  data-testid="context-menu-delete"
+                >
+                  Delete body
+                </ContextMenuItem>,
+              ]
+        }
         Toggle={
-          <VisibilityToggle
-            visible={hideOperation === undefined}
-            onVisibilityChange={() => {
-              if (hideOperation === undefined) {
-                onHide({
-                  ast: kclManager.ast,
-                  artifactGraph: kclManager.artifactGraph,
-                  modelingActor,
-                  objects: selections,
-                })
-              } else {
-                onUnhide({
-                  hideOperation,
-                  targetArtifact: artifact,
-                  kclManager,
-                })
-                  .then((result) => {
-                    if (err(result)) {
-                      toast.error(result.message || 'Error while unhiding.')
-                    }
-                  })
-                  .catch((e) => {
-                    toast.error(e.message || 'Error while unhiding.')
-                  })
-              }
-            }}
-          />
+          disabled ? undefined : (
+            <VisibilityToggle
+              label={label}
+              visible={hideOperation === undefined}
+              onVisibilityChange={toggleVisibility}
+            />
+          )
         }
       >
         {label}
       </RowItemWithIconMenuAndToggle>
-    </li>
+    </div>
   )
 }

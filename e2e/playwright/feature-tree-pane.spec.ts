@@ -202,6 +202,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
       await scene.settled()
       await toolbar.openFeatureTreePane()
 
+      await toolbar.expandFeatureTreeBodies()
       const cylinderOperation = toolbar.featureTreePane
         .getByRole('button', { name: /test/i })
         .first()
@@ -271,10 +272,10 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
         await toolbar.openFeatureTreePane()
       })
 
-      const bodiesPane = page.locator('#bodies-list-pane')
+      const bodiesPane = page.getByTestId('feature-tree-body')
 
       await test.step('Verify both bodies are hidden', async () => {
-        await expect(bodiesPane).toBeVisible({ timeout: 15_000 })
+        await expect(bodiesPane).toHaveCount(2, { timeout: 15_000 })
         const bodyToggles = bodiesPane.getByTestId(
           'feature-tree-visibility-toggle'
         )
@@ -313,7 +314,10 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
       })
 
       await test.step('Hide cylinder again from the bodies pane', async () => {
-        const bodyRow = bodiesPane.getByRole('button', { name: 'Body 1' })
+        const bodyRow = bodiesPane.getByRole('button', {
+          name: 'Body 1',
+          exact: true,
+        })
         const bodyToggle = bodyRow
           .locator('..')
           .getByTestId('feature-tree-visibility-toggle')

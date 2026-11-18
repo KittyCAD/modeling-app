@@ -138,7 +138,9 @@ export class ToolbarFixture {
     if (!isFtOpen) {
       await this.openFeatureTreePane()
     }
-    await this.page.getByRole('button', { name: plane }).click()
+    await this.page
+      .getByRole('button', { name: new RegExp(`^${plane}`) })
+      .click()
     if (!isFtOpen) {
       await this.closeFeatureTreePane()
     }
@@ -369,10 +371,16 @@ export class ToolbarFixture {
   async getFeatureTreeOperation(operationName: string, operationIndex: number) {
     await this.openFeatureTreePane()
     await expect(this.featureTreePane).toBeVisible()
+    await this.expandFeatureTreeBodies()
     return this.featureTreePane
       .getByRole('button', {
         name: operationName,
       })
+      .and(
+        this.page.locator(
+          ':not([data-testid="feature-tree-visibility-toggle"])'
+        )
+      )
       .nth(operationIndex)
   }
 
@@ -397,7 +405,16 @@ export class ToolbarFixture {
   async getFeatureTreeOperationGroupCaret(index: number) {
     await this.openFeatureTreePane()
     await expect(this.featureTreePane).toBeVisible()
+    await this.expandFeatureTreeBodies()
     return this.featureTreePane.getByTestId('operation-group-caret').nth(index)
+  }
+
+  /** Reveal any collapsed body histories when a test requests a feature. */
+  async expandFeatureTreeBodies() {
+    const collapsed = this.featureTreePane.locator(
+      '[data-testid="feature-tree-body"] > button[aria-expanded="false"], [data-module-branch] > button[aria-expanded="false"]'
+    )
+    while (await collapsed.count()) await collapsed.first().click()
   }
 
   getDefaultPlaneVisibilityButton(plane: 'XY' | 'XZ' | 'YZ' = 'XY') {

@@ -2169,6 +2169,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await test.step('Remove extrude from feature tree', async () => {
         await toolbar.openFeatureTreePane()
+        await toolbar.expandFeatureTreeBodies()
         const extrudeOp = toolbar.featureTreePane
           .getByRole('button', { name: /^(Extrude|extrude001)$/ })
           .first()

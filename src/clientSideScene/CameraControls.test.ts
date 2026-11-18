@@ -13,6 +13,7 @@ import {
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { getDimensions } from '@src/lib/engineConnection/utils'
 import {
+  Box3,
   Group,
   OrthographicCamera,
   PerspectiveCamera,
@@ -76,6 +77,122 @@ function sentCommandTypes(
 }
 
 describe('local canvas spherical orbit', () => {
+  it.each(['perspective', 'orthographic'] as const)(
+    'fits small and large selected bodies in %s without changing direction',
+    async (projection) => {
+      const manager = makeConnectionManager({ width: 1024, height: 768 })
+      const pending = promiseFactory<Box3>()
+      const small = new Box3(new Vector3(10, 20, 30), new Vector3(30, 40, 50))
+      const large = new Box3(
+        new Vector3(-1000, -1000, -1000),
+        new Vector3(1000, 1000, 1000)
+      )
+      const scene = {
+        getFitBounds: vi.fn(() => large),
+        getSelectionBounds: vi
+          .fn<() => Promise<Box3>>()
+          .mockReturnValueOnce(pending.promise)
+          .mockResolvedValue(large),
+      }
+      const controls = new CameraControls(
+        makeCanvas(1024, 768),
+        manager,
+        unusedSettings,
+        () => scene
+      )
+      controls.localCameraMode = true
+      if (projection === 'orthographic') controls.useOrthographicCamera()
+      controls.camera.position.set(0, -1000, 0)
+      controls.camera.lookAt(controls.target)
+      const direction = controls.camera.quaternion.clone()
+      const fitted = controls.zoomToFit({ padding: 0.2, selection: true })
+      expect(controls.camera.position.toArray()).toEqual([0, -1000, 0])
+      pending.resolve(small)
+      await fitted
+      expect(controls.target.toArray()).toEqual([20, 30, 40])
+      const smallDistance = controls.camera.position.distanceTo(controls.target)
+      const smallZoom = controls.camera.zoom
+      expect(smallDistance).toBeLessThan(1000)
+      await controls.zoomToFit({ padding: 0.2, selection: true })
+      expect(
+        controls.camera.position.distanceTo(controls.target)
+      ).toBeGreaterThan(smallDistance * 90)
+      expect(controls.target.toArray()).toEqual([0, 0, 0])
+      if (projection === 'orthographic')
+        expect(controls.camera.zoom).toBeLessThan(smallZoom)
+      expect(controls.camera.quaternion.angleTo(direction)).toBeCloseTo(0)
+      expect(scene.getFitBounds).not.toHaveBeenCalled()
+    }
+  )
+
+  it.each([{ objectIds: ['body-id'] }, { objectIds: [] }])(
+    'fits only the engine selection $objectIds, never the whole model when empty',
+    async ({ objectIds }) => {
+      const manager = makeConnectionManager({ width: 1024, height: 768 })
+      const send = vi.spyOn(manager, 'sendSceneCommand')
+      send.mockResolvedValue(
+        cameraResponse({ type: 'select_get', data: { entity_ids: objectIds } })
+      )
+      const controls = new CameraControls(
+        makeCanvas(1024, 768),
+        manager,
+        unusedSettings
+      )
+      send.mockClear()
+      await controls.zoomToFit({ padding: 0.2, selection: true })
+      expect(sentCommandTypes(send)).toEqual(
+        objectIds.length ? ['select_get', 'zoom_to_fit'] : ['select_get']
+      )
+      if (objectIds.length)
+        expect(send).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            cmd: {
+              type: 'zoom_to_fit',
+              object_ids: objectIds,
+              padding: 0.2,
+              animated: false,
+            },
+          })
+        )
+      send.mockClear()
+      await controls.zoomToFit({ padding: 0.2 })
+      expect(send).toHaveBeenCalledExactlyOnceWith(
+        expect.objectContaining({
+          cmd: {
+            type: 'zoom_to_fit',
+            object_ids: [],
+            padding: 0.2,
+            animated: false,
+          },
+        })
+      )
+    }
+  )
+
+  it('centers only after the selected body bounds are resolved', async () => {
+    const manager = makeConnectionManager({ width: 1024, height: 768 })
+    const pending = promiseFactory<Box3>()
+    const scene = {
+      getFitBounds: () => undefined,
+      getSelectionBounds: () => pending.promise,
+    }
+    const controls = new CameraControls(
+      makeCanvas(1024, 768),
+      manager,
+      unusedSettings,
+      () => scene
+    )
+    controls.localCameraMode = true
+    controls.target.set(0, 0, 0)
+    controls.camera.position.set(0, -100, 0)
+    const centered = controls.centerOnSelection()
+    expect(controls.target.toArray()).toEqual([0, 0, 0])
+    pending.resolve(new Box3(new Vector3(10, 20, 30), new Vector3(30, 40, 50)))
+    await centered
+    expect(controls.target.toArray()).toEqual([20, 30, 40])
+    expect(controls.camera.position.toArray()).toEqual([20, -70, 40])
+  })
+
   function setup(local = true) {
     const canvas = makeCanvas(1024, 768)
     canvas.setPointerCapture = vi.fn()

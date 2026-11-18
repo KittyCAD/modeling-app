@@ -65,7 +65,11 @@ test('harness waits for usable modeling content', async ({
         const body = page
           .getByRole('button', { name: 'Toggle body features', exact: true })
           .first()
-        if (await body.isVisible()) await body.click()
+        if (
+          (await body.isVisible()) &&
+          (await body.getAttribute('aria-expanded')) === 'false'
+        )
+          await body.click()
       }
       // Delay the real content without replacing its UI or event handlers.
       const style = await page.addStyleTag({

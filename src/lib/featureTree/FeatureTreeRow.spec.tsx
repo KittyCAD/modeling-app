@@ -3,7 +3,9 @@ import {
   VariableTooltipContents,
 } from '@src/lib/featureTree/FeatureTreePane'
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
+vi.mock('@src/lib/boot', () => ({ useApp: vi.fn(), useSingletons: vi.fn() }))
 
 /** The recorded value a row shows after its variable name. */
 function stringValue(value: string) {
@@ -65,7 +67,7 @@ describe('rows beside a named view', () => {
     expect(screen.getByTestId('value-detail').textContent).toBe('A')
   })
 
-  it('leaves an operation with no recorded value as it was', () => {
+  it('shows the variable name without a repeated feature type', () => {
     render(
       <OperationItemWrapper
         icon="extrude"
@@ -77,7 +79,51 @@ describe('rows beside a named view', () => {
 
     expect(screen.getByText('plate')).toBeTruthy()
     expect(screen.queryByText('Extrude')).toBeNull()
+    expect(screen.getByRole('button', { name: 'plate' })).not.toHaveAttribute(
+      'title'
+    )
+    expect(screen.getByRole('button', { name: 'plate' })).not.toHaveAttribute(
+      'aria-description'
+    )
     expect(screen.queryByTestId('value-detail')).toBeNull()
+  })
+
+  it('keeps same-named plane and sketch labels free of type captions', () => {
+    render(
+      <>
+        <OperationItemWrapper
+          icon="plane"
+          name="Offset Plane"
+          type="StdLibCall"
+          variableName="intakeSketch"
+        />
+        <OperationItemWrapper
+          icon="sketch"
+          name="Sketch"
+          type="GroupBegin"
+          variableName="intakeSketch"
+        />
+      </>
+    )
+    expect(
+      screen.getAllByRole('button', { name: 'intakeSketch' })
+    ).toHaveLength(2)
+    expect(screen.queryByText('Offset Plane')).toBeNull()
+    expect(screen.queryByText('Sketch')).toBeNull()
+  })
+
+  it('leaves patternTransform presentation alone', () => {
+    render(
+      <OperationItemWrapper
+        icon="questionMark"
+        name="patternTransform"
+        type="StdLibCall"
+      />
+    )
+    expect(
+      screen.getByRole('button', { name: 'patternTransform' })
+    ).not.toHaveAttribute('aria-description')
+    expect(screen.getAllByText('patternTransform')).toHaveLength(1)
   })
 })
 
