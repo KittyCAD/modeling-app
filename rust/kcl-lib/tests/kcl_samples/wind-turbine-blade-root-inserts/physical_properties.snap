@@ -24,6 +24,6 @@ description: Physical properties wind-turbine-blade-root-inserts.kcl
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 2166508.2298419997
+    "value": 2166508.2298419946
   }
 }
