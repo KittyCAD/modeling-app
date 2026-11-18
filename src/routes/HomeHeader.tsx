@@ -32,7 +32,6 @@ interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
   readWriteProjectDir: ReadWriteProjectState
   projectSearchKeybinding?: string
   libraryHomeSummary?: ReactNode
-  hiddenLibraryToggle?: ReactNode
   showFreeCloudProjectTrainingDisclosure?: boolean
 }
 
@@ -48,7 +47,6 @@ export function HomeHeader({
   readWriteProjectDir,
   projectSearchKeybinding,
   libraryHomeSummary,
-  hiddenLibraryToggle,
   showFreeCloudProjectTrainingDisclosure = false,
   ...rest
 }: HomeHeaderProps) {
@@ -100,7 +98,6 @@ export function HomeHeader({
           </div>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-          {hiddenLibraryToggle}
           {onRefresh && (
             <ActionButton
               Element="button"

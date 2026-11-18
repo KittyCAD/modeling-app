@@ -337,8 +337,6 @@ const Home = () => {
   const homeSidebarItems = registry.observe(homeSidebarItemsFacet).value
   const settingsValues = settings.useSettings()
   const [searchParams, setSearchParams] = useSearchParams()
-  const showHiddenLibraries =
-    searchParams.get('show_hidden_libraries') === 'true'
   const projectLibraryTypes = registry.observe(projectLibraryTypesFacet).value
   const projectLibraries = projectLibrariesFromSettings(
     settingsValues.app.libraries.current,
@@ -357,7 +355,7 @@ const Home = () => {
     .join('|')
   const homeProjectActions = registry.required(homeProjectActionsService)
   const visibleProjectLibraries = projectLibraries.filter(
-    (library) => showHiddenLibraries || !library.hiddenByDefault
+    (library) => !library.hiddenByDefault
   )
   const session = registry.required(projectSession)
   const { libraryId } = useParams()
@@ -638,28 +636,6 @@ const Home = () => {
                 : 'Project Libraries'
           }
           library={selectedProjectLibrary}
-          hiddenLibraryToggle={
-            !libraryId &&
-            projectLibraries.some((library) => library.hiddenByDefault) ? (
-              <ActionButton
-                Element="button"
-                onClick={() =>
-                  setSearchParams((previous) => {
-                    const next = new URLSearchParams(previous)
-                    if (showHiddenLibraries)
-                      next.delete('show_hidden_libraries')
-                    else next.set('show_hidden_libraries', 'true')
-                    return next
-                  })
-                }
-                className="py-1 text-xs border-primary/10"
-              >
-                {showHiddenLibraries
-                  ? 'Hide hidden libraries'
-                  : 'Show hidden libraries'}
-              </ActionButton>
-            ) : undefined
-          }
           showLibraryBackLink={Boolean(routeSelectedProjectLibrary)}
           libraryHomeSummary={
             selectedProjectLibrary ? (
