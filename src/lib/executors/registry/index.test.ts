@@ -79,10 +79,15 @@ describe('executors extension', () => {
   it('reruns unchanged text when additional inputs change', async () => {
     const revision = signal(1)
     const execute = vi.fn(() => ({ imported: revision.peek() }))
-    contribute({ id: 'imports', matches: '*', revision, execute })
+    await installCapabilities({
+      id: 'imports',
+      matches: '*',
+      revision,
+      execute,
+    })
     const editor = openEditor()
     const executor = requireSuccess(
-      registry.get(executorsService).createExecutor(editor)
+      registry.required(executorsService).createExecutor(editor)
     )
     await settled(executor)
     expect(executor.output.peek().data.imports).toEqual({ imported: 1 })

@@ -70,7 +70,8 @@ export const projectSessionContract = contract({
   projectSourcesService: service<ProjectSourcesService>('project-sources'),
   projectSessionService: service<ProjectSessionService>('project-session-next'),
 })
-export const { projectSessionService, projectSourcesService } = projectSessionContract
+export const { projectSessionService, projectSourcesService } =
+  projectSessionContract
 
 export const observations = inputs({
   projectSourcesService: observeService(projectSourcesService),

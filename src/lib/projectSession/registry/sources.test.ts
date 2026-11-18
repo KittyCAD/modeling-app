@@ -1,9 +1,5 @@
 import '@src/lib/projectSession/next/testFeature'
-import {
-  Registry,
-  defineRegistryItem,
-  provideService,
-} from '@kittycad/registry'
+import { Registry, provide } from 'plankton'
 import editorsExtension from '@src/lib/editors/registry'
 import { editorsService } from '@src/lib/editors/registry/contract'
 import { requireSuccess } from '@src/lib/editors/testViews'
@@ -24,21 +20,21 @@ beforeAll(async () => {
 it('composes one project source provider and reads unsaved editor documents through it', async () => {
   const readFile = vi.fn(async () => new TextEncoder().encode('stored module'))
   const registry = new Registry()
-  registry.configure([
+  await registry.configure([
     editorsExtension,
     projectExtension,
     sourcesExtension,
-    defineRegistryItem({
-      providesServices: [
-        provideService(fileOperationsService, {
+    [
+      [
+        provide(fileOperationsService, {
           ...testFileOperations,
           readFile,
         }),
       ],
-    }),
+    ],
   ])
   try {
-    registry.get(projectSessionService).openProject({
+    registry.required(projectSessionService).openProject({
       contents: {
         name: 'model',
         path: '/model',
@@ -52,10 +48,10 @@ it('composes one project source provider and reads unsaved editor documents thro
     })
     const editor = requireSuccess(
       registry
-        .get(editorsService)
+        .required(editorsService)
         .openEditor('/model/module.kcl', 'unsaved module')
     )
-    const sources = registry.get(projectSourcesService)
+    const sources = registry.required(projectSourcesService)
     const request = {
       document: { src: '/model/main.kcl', contents: 'working entrypoint' },
       unnamedPath: 'draft.txt',
@@ -85,6 +81,6 @@ it('composes one project source provider and reads unsaved editor documents thro
     )
     expect(readFile).not.toHaveBeenCalled()
   } finally {
-    registry[Symbol.dispose]()
+    await registry.dispose()
   }
 })
