@@ -2048,7 +2048,7 @@ description: Result of parsing sketch_block_compatibility_engine_restriction.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "The legacy startSketchOn call must fail inside a sketch block because it",
+            "value": "The extrude call must fail inside a sketch block because it sends engine",
             "style": "line"
           }
         },
@@ -2060,7 +2060,7 @@ description: Result of parsing sketch_block_compatibility_engine_restriction.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "sends engine commands. Solver segment constructors remain valid there.",
+            "value": "commands. Solver segment constructors remain valid there.",
             "style": "line"
           }
         },

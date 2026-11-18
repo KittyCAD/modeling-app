@@ -1,5 +1,5 @@
-// The legacy startSketchOn call must fail inside a sketch block because it
-// sends engine commands. Solver segment constructors remain valid there.
+// The extrude call must fail inside a sketch block because it sends engine
+// commands. Solver segment constructors remain valid there.
 
 square = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])

@@ -83,10 +83,10 @@ description: Variables in memory after executing sketch_block_compatibility_engi
             0.0
           ],
           "tag": {
-            "commentStart": 180,
-            "end": 185,
+            "commentStart": 167,
+            "end": 172,
             "moduleId": 0,
-            "start": 180,
+            "start": 167,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -107,10 +107,10 @@ description: Variables in memory after executing sketch_block_compatibility_engi
             0.0
           ],
           "tag": {
-            "commentStart": 249,
-            "end": 254,
+            "commentStart": 236,
+            "end": 241,
             "moduleId": 0,
-            "start": 249,
+            "start": 236,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -131,10 +131,10 @@ description: Variables in memory after executing sketch_block_compatibility_engi
             1.0
           ],
           "tag": {
-            "commentStart": 318,
-            "end": 323,
+            "commentStart": 305,
+            "end": 310,
             "moduleId": 0,
-            "start": 318,
+            "start": 305,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -155,10 +155,10 @@ description: Variables in memory after executing sketch_block_compatibility_engi
             1.0
           ],
           "tag": {
-            "commentStart": 387,
-            "end": 392,
+            "commentStart": 374,
+            "end": 379,
             "moduleId": 0,
-            "start": 387,
+            "start": 374,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -775,10 +775,10 @@ description: Variables in memory after executing sketch_block_compatibility_engi
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 180,
-                    "end": 185,
+                    "commentStart": 167,
+                    "end": 172,
                     "moduleId": 0,
-                    "start": 180,
+                    "start": 167,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -799,10 +799,10 @@ description: Variables in memory after executing sketch_block_compatibility_engi
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 249,
-                    "end": 254,
+                    "commentStart": 236,
+                    "end": 241,
                     "moduleId": 0,
-                    "start": 249,
+                    "start": 236,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -823,10 +823,10 @@ description: Variables in memory after executing sketch_block_compatibility_engi
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 318,
-                    "end": 323,
+                    "commentStart": 305,
+                    "end": 310,
                     "moduleId": 0,
-                    "start": 318,
+                    "start": 305,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -847,10 +847,10 @@ description: Variables in memory after executing sketch_block_compatibility_engi
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 387,
-                    "end": 392,
+                    "commentStart": 374,
+                    "end": 379,
                     "moduleId": 0,
-                    "start": 387,
+                    "start": 374,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
