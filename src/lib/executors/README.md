@@ -11,7 +11,9 @@ retaining resources. `executionContext` passes that error to the mode binding.
 An executor is independent of editor focus and React mounts. Consumers may create
 one explicitly, or use `executionContext(capability, getExecutors)` as a typed
 provider for `defineEditorView`. The provider returns an executor and a `result`
-signal with that capability's data, error, and run state.
+signal with that capability's data, error, and run state. A context with data or
+an error is ready even while another capability is pending; `output.running`
+continues to describe the executor as a whole.
 
 Modes using `executionContext` acquire leases on the same editor's executor.
 Switching modes preserves its results and resources. Separate editor instances
@@ -29,3 +31,9 @@ view disposes the document and interrupts its executors.
 executor without editing the document or rerunning sibling executors. Scene
 recovery uses it after acquiring a fresh connection, so normal source loading and
 error publication handle the retry. Calls after disposal are ignored.
+
+The Plankton assembly contributes computations through `executorCapabilityFacet`
+and publishes `executorsService` from a factory that owns executor cleanup.
+Capability contributions and the selected project session are observed inputs;
+replacing contributions keeps the service and its editors alive while executor
+runs follow the new matching computations.

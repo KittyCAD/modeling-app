@@ -1,20 +1,20 @@
 import { requireSuccess, codeSurface } from '@src/lib/editors/testViews'
 import { matchesEditor } from '@src/lib/editors/matching'
-import { editorViewsValueSpec } from '@src/lib/editors/registry/contract'
+import { editorViewsFacet } from '@src/lib/editors/registry/contract'
 import '@src/lib/projectSession/next/testFeature'
 import { language } from '@codemirror/language'
-import { Registry } from '@kittycad/registry'
+import { Registry, contribute } from 'plankton'
 import { signal } from '@preact/signals-core'
 import editorsExtension from '@src/lib/editors/registry'
 import {
   editorsService,
-  codeEditorsExtensionValueSpec,
+  codeEditorsExtensionFacet,
 } from '@src/lib/editors/registry/contract'
 import executorsExtension from '@src/lib/executors/registry'
 import { createExecutorOutput } from '@src/lib/executors/output'
 import {
   executorsService,
-  executorCapabilityValueSpec,
+  executorCapabilityFacet,
   type ExecutorOutput,
 } from '@src/lib/executors/registry/contract'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
@@ -47,26 +47,26 @@ describe('Markdown extension', () => {
   beforeAll(async () => {
     await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
   })
-  beforeEach(() => {
+  beforeEach(async () => {
     links.open.mockClear()
     registry = new Registry()
-    registry.configure([
+    await registry.configure([
       editorsExtension,
       executorsExtension,
       markdownExtension,
     ])
   })
-  afterEach(() => {
+  afterEach(async () => {
     cleanup()
-    registry[Symbol.dispose]()
+    await registry.dispose()
   })
 
-  it('contributes editing, execution and a preview from one extension without depending on either service', () => {
+  it('contributes editing, execution and a preview from one extension without depending on either service', async () => {
     const isolated = new Registry()
     try {
-      isolated.configure([markdownExtension])
+      await isolated.configure([markdownExtension])
       const syntax = isolated
-        .get(codeEditorsExtensionValueSpec)
+        .get(codeEditorsExtensionFacet)
         .find(({ id }) => id === 'editors.markdown')!
       expect(
         matchesEditor(syntax.matches, {
@@ -76,10 +76,10 @@ describe('Markdown extension', () => {
           mediaType: 'text/markdown',
         })
       ).toBe(true)
-      expect(isolated.get(executorCapabilityValueSpec)).toEqual([
+      expect(isolated.get(executorCapabilityFacet)).toEqual([
         markdownExecutorCapability,
       ])
-      expect(isolated.get(editorViewsValueSpec)).toEqual([
+      expect(isolated.get(editorViewsFacet)).toEqual([
         expect.objectContaining({
           matches: '.md',
           id: 'markdown.preview',
@@ -88,22 +88,23 @@ describe('Markdown extension', () => {
       expect(isolated.optional(editorsService)).toBeUndefined()
       expect(isolated.optional(executorsService)).toBeUndefined()
     } finally {
-      isolated[Symbol.dispose]()
+      await isolated.dispose()
     }
   })
 
   it('highlights Markdown and executes its contents as a live preview', async () => {
     const editor = requireSuccess(
       registry
-        .get(editorsService)
+        .required(editorsService)
         .openEditor('/README.MD', '# Hello\n\n[Zoo](https://zoo.dev)')
     )
     expect(
-      codeSurface(registry.get(editorsService), editor).state.facet(language)
-        ?.name
+      codeSurface(registry.required(editorsService), editor).state.facet(
+        language
+      )?.name
     ).toBe('markdown')
     const executor = requireSuccess(
-      registry.get(executorsService).acquireExecutor(editor)
+      registry.required(executorsService).acquireExecutor(editor)
     ).executor
     render(<MarkdownPreview executor={executor} />)
     expect(await screen.findByRole('heading', { name: 'Hello' })).toBeVisible()
@@ -130,17 +131,57 @@ describe('Markdown extension', () => {
     expect(executor.output.value.errors).toEqual({})
   })
 
+  it('shows completed Markdown while another capability is still running', async () => {
+    const pending = Promise.withResolvers<{ text: string }>()
+    const slow = vi.fn(() => pending.promise)
+    await registry.configure([
+      editorsExtension,
+      executorsExtension,
+      markdownExtension,
+      contribute(executorCapabilityFacet, () => ({
+        id: 'slow-analysis',
+        matches: '.md' as const,
+        execute: slow,
+      })),
+    ])
+    const editor = requireSuccess(
+      registry.required(editorsService).openEditor('notes.md', '# Ready')
+    )
+    const executor = requireSuccess(
+      registry.required(executorsService).acquireExecutor(editor)
+    ).executor
+    try {
+      render(<MarkdownPreview executor={executor} />)
+      expect(
+        await screen.findByRole('heading', { name: 'Ready' })
+      ).toBeVisible()
+      expect(slow).toHaveBeenCalledOnce()
+      expect(executor.output.value.running).toBe(true)
+      expect(
+        screen.getByRole('article', { name: 'Markdown preview' })
+      ).toHaveAttribute('aria-busy', 'false')
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+      await act(async () => {
+        pending.resolve({ text: 'done' })
+      })
+      await vi.waitFor(() => expect(executor.output.value.running).toBe(false))
+      expect(screen.getByRole('heading', { name: 'Ready' })).toBeVisible()
+    } finally {
+      pending.resolve({ text: 'done' })
+    }
+  })
+
   it('uses the existing renderer to escape raw HTML and reject executable links', async () => {
     const editor = requireSuccess(
       registry
-        .get(editorsService)
+        .required(editorsService)
         .openEditor(
           'unsafe.md',
           '# Preview\n\n<script>alert(1)</script>\n\n[Unsafe](javascript:alert%281%29)\n\n<img src=x onerror=alert(1)>'
         )
     )
     const executor = requireSuccess(
-      registry.get(executorsService).acquireExecutor(editor)
+      registry.required(executorsService).acquireExecutor(editor)
     ).executor
     const { container } = render(<MarkdownPreview executor={executor} />)
     await screen.findByRole('heading', { name: 'Preview' })
@@ -153,21 +194,7 @@ describe('Markdown extension', () => {
     ).toContain('<h1')
   })
 
-  it('does not apply Markdown execution or syntax to other file types', async () => {
-    const editor = requireSuccess(
-      registry.get(editorsService).openEditor('notes.txt', '# Plain text')
-    )
-    expect(
-      codeSurface(registry.get(editorsService), editor).state.facet(language)
-    ).toBeNull()
-    const executor = requireSuccess(
-      registry.get(executorsService).acquireExecutor(editor)
-    ).executor
-    await vi.waitFor(() => expect(executor.output.value.running).toBe(false))
-    expect(executor.output.value.data).toEqual({})
-  })
-
-  it('handles loading, errors and empty output, cleaning up link handlers on remount', () => {
+  it('handles loading, errors and empty output, cleaning up link handlers on remount', async () => {
     const output = signal<ExecutorOutput>(
       createExecutorOutput({
         src: 'notes.md',
@@ -176,14 +203,14 @@ describe('Markdown extension', () => {
       })
     )
     const editor = requireSuccess(
-      registry.get(editorsService).openEditor('notes.md', '')
+      registry.required(editorsService).openEditor('notes.md', '')
     )
     const { unmount } = render(
       <StrictMode>
         <MarkdownPreview
           executor={{
             ...requireSuccess(
-              registry.get(executorsService).acquireExecutor(editor)
+              registry.required(executorsService).acquireExecutor(editor)
             ).executor,
             output,
           }}

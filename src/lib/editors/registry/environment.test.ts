@@ -1,3 +1,4 @@
+import executorsExtension from '@src/lib/executors/registry'
 import { signal } from '@preact/signals-core'
 import savingExtension from '@src/lib/save/registry'
 import { editorSaveService } from '@src/lib/save/registry/contract'

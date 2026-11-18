@@ -1,9 +1,6 @@
 import type { EditorMatcher } from '@src/lib/editors/matching'
-import {
-  appendValueSpec,
-  defineContract,
-  defineService,
-} from '@kittycad/registry'
+import { contract, Facet, service } from 'plankton'
+import { inputs, observe, observeService } from '@src/registry/inputs'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { Editor } from '@src/lib/editors/registry/contract'
 import type { Scope } from 'effect/Scope'
@@ -80,12 +77,17 @@ export interface ExecutorsService {
   closeExecutor: (id: symbol) => void
 }
 
-export const executorsContract = defineContract({
-  executorsService: defineService<ExecutorsService>('executors.service'),
-  executorCapabilityValueSpec: appendValueSpec<ExecutorCapability>(
-    'executors.capabilities'
+export const executorsContract = contract({
+  executorsService: service<ExecutorsService>('executors.service'),
+  executorCapabilityFacet: new Facet(
+    'executors.capabilities',
+    (values: readonly ExecutorCapability[]) => values
   ),
 })
 
-export const { executorsService, executorCapabilityValueSpec } =
-  executorsContract
+export const { executorsService, executorCapabilityFacet } = executorsContract
+
+export const observations = inputs({
+  executorsService: observeService(executorsService),
+  executorCapabilityFacet: observe(executorCapabilityFacet),
+})

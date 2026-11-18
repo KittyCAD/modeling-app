@@ -1,15 +1,15 @@
 import { requireSuccess } from '@src/lib/editors/testViews'
 import '@src/lib/projectSession/next/testFeature'
-import { defineRegistryItem, provide, Registry } from '@kittycad/registry'
+import { contribute, Registry } from 'plankton'
 import editorsExtension from '@src/lib/editors/registry'
 import {
   editorsService,
-  editorLanguagesValueSpec,
+  editorLanguagesFacet,
 } from '@src/lib/editors/registry/contract'
 import executorsExtension from '@src/lib/executors/registry'
 import {
   defineExecutorCapability,
-  executorCapabilityValueSpec,
+  executorCapabilityFacet,
   executorsService,
 } from '@src/lib/executors/registry/contract'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
@@ -20,9 +20,9 @@ beforeAll(async () => {
   await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
 })
 let registry: Registry | undefined
-afterEach(() => {
+afterEach(async () => {
   cleanup()
-  registry?.[Symbol.dispose]()
+  await registry?.dispose()
 })
 vi.mock('@src/lib/paths', () => ({ PATHS: { INDEX: '/' } }))
 
@@ -44,19 +44,17 @@ it('interrupts a run when its contents stop matching and rematches on same-type 
     execute,
   })
   registry = new Registry()
-  registry.configure([
+  await registry.configure([
     editorsExtension,
     executorsExtension,
-    defineRegistryItem({
-      provides: [provide(executorCapabilityValueSpec, capability)],
-    }),
+    [contribute(executorCapabilityFacet, () => capability)],
   ])
-  const editors = registry.get(editorsService)
+  const editors = registry.required(editorsService)
   const editor = requireSuccess(
     editors.openEditor('/project/settings.toml', 'disabled')
   )
   const executor = requireSuccess(
-    registry.get(executorsService).createExecutor(editor)
+    registry.required(executorsService).createExecutor(editor)
   )
   expect(executor.output.value.running).toBe(false)
   editor.dispatch({
@@ -87,24 +85,22 @@ it('rematches an unnamed editor when its language is chosen and cleared', async 
     execute: (contents) => ({ rendered: contents.toUpperCase() }),
   })
   registry = new Registry()
-  registry.configure([
+  await registry.configure([
     editorsExtension,
     executorsExtension,
-    defineRegistryItem({
-      provides: [
-        provide(editorLanguagesValueSpec, {
-          id: 'markdown',
-          matches: '.md',
-          mediaType: 'text/markdown',
-        }),
-        provide(executorCapabilityValueSpec, capability),
-      ],
-    }),
+    [
+      contribute(editorLanguagesFacet, () => ({
+        id: 'markdown',
+        matches: '.md' as const,
+        mediaType: 'text/markdown',
+      })),
+      contribute(executorCapabilityFacet, () => capability),
+    ],
   ])
-  const editors = registry.get(editorsService)
+  const editors = registry.required(editorsService)
   const editor = requireSuccess(editors.createEditor('draft'))
   const executor = requireSuccess(
-    registry.get(executorsService).createExecutor(editor)
+    registry.required(executorsService).createExecutor(editor)
   )
   expect(executor.output.value.get(capability)).toBeUndefined()
   editors.setLanguage(editor.id, 'markdown')

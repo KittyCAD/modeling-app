@@ -20,7 +20,10 @@ export function executionContext<C extends ExecutorCapability>(
       return {
         data: output.get(capability),
         error: output.errors[capability.id],
-        running: output.running,
+        running:
+          output.running &&
+          output.get(capability) === undefined &&
+          output.errors[capability.id] === undefined,
         src: output.src,
         contents: output.contents,
       }

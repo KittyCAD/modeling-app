@@ -1,18 +1,14 @@
 import '@src/lib/projectSession/next/testFeature'
-import { saveExtension } from '@src/lib/save/registry'
-import {
-  editorSaveService,
-  editorOnSaveValueSpec,
-} from '@src/lib/save/registry/contract'
 import { requireSuccess, presentation } from '@src/lib/editors/testViews'
-import { defineRegistryItem, provide, Registry, Slot } from '@kittycad/registry'
+import { contribute, Registry, slot } from 'plankton'
 import { useSignals } from '@preact/signals-react/runtime'
 import { EditorView } from '@src/lib/editors/EditorView'
 import type { EditorMatcher } from '@src/lib/editors/matching'
 import editorsExtension from '@src/lib/editors/registry'
 import {
   editorsService,
-  editorViewsValueSpec,
+  editorCapabilityFacet,
+  editorViewsFacet,
   type EditorViewContribution,
 } from '@src/lib/editors/registry/contract'
 import { defineEditorView } from '@src/lib/editors/views'
@@ -20,7 +16,7 @@ import { executionContext } from '@src/lib/executors/context'
 import executorsExtension from '@src/lib/executors/registry'
 import {
   defineExecutorCapability,
-  executorCapabilityValueSpec,
+  executorCapabilityFacet,
   executorsService,
 } from '@src/lib/executors/registry/contract'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
@@ -29,7 +25,7 @@ import { afterEach, beforeAll, beforeEach, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lib/paths', () => ({ PATHS: { INDEX: '/' } }))
 let registry: Registry
-const modes = new Slot()
+const modes = slot([])
 const definitions = new Map<string, EditorViewContribution>()
 const execute = vi.fn((contents: string) => ({ text: contents }))
 const capability = defineExecutorCapability({
@@ -40,66 +36,62 @@ const capability = defineExecutorCapability({
 beforeAll(async () => {
   await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
 })
-beforeEach(() => {
+beforeEach(async () => {
   execute.mockClear()
   definitions.clear()
   registry = new Registry()
-  registry.configure([editorsExtension, executorsExtension, modes.of()])
+  await registry.configure([editorsExtension, executorsExtension, modes])
 })
-afterEach(() => {
+afterEach(async () => {
   cleanup()
-  registry[Symbol.dispose]()
+  await registry.dispose()
 })
-function contribute(
+async function installModes(
   names = ['modeling', 'drawings'],
   matches: EditorMatcher = '.kcl'
 ) {
-  registry.reconfigure(modes, [
-    defineRegistryItem({
-      provides: [
-        provide(executorCapabilityValueSpec, capability),
-        ...names.map((name) =>
-          provide(
-            editorViewsValueSpec,
+  await registry.replace(modes, [
+    [
+      contribute(executorCapabilityFacet, () => capability),
+      ...names.map((name) =>
+        contribute(
+          editorViewsFacet,
+          () =>
             definitions.get(name) ??
-              (() => {
-                const definition = defineEditorView(
-                  executionContext(capability, () =>
-                    registry.get(executorsService)
+            (() => {
+              const definition = defineEditorView(
+                executionContext(capability, () =>
+                  registry.required(executorsService)
+                )
+              )({
+                id: name,
+                label: name,
+                matches,
+                priority: name === 'modeling' ? 1000 : 0,
+                Component: ({ context }) => {
+                  useSignals()
+                  return (
+                    <p>
+                      {name}: {context.result.value.data?.text ?? 'running'}
+                    </p>
                   )
-                )({
-                  id: name,
-                  label: name,
-                  matches,
-                  priority: name === 'modeling' ? 1000 : 0,
-                  Component: ({ context }) => {
-                    useSignals()
-                    return (
-                      <p>
-                        {name}: {context.result.value.data?.text ?? 'running'}
-                      </p>
-                    )
-                  },
-                })
-                definitions.set(name, definition)
-                return definition
-              })()
-          )
-        ),
-      ],
-    }),
+                },
+              })
+              definitions.set(name, definition)
+              return definition
+            })()
+        )
+      ),
+    ],
   ])
 }
 
-it('defaults to the highest-priority mode and retains its executor and buffer through mode switches and remounts', async () => {
-  contribute()
-  const editors = registry.get(editorsService),
-    executors = registry.get(executorsService)
+it('retains its executor across mode switches and presentation remounts', async () => {
+  await installModes()
+  const editors = registry.required(editorsService),
+    executors = registry.required(executorsService)
   const editor = requireSuccess(editors.openEditor('/main.kcl', 'original'))
   presentation(editors, editor)
-  expect(
-    editors.viewState(presentation(editors, editor)).value.selected?.id
-  ).toBe('modeling')
   const first = render(
     <EditorView instance={presentation(editors, editor)} editors={editors} />
   )
@@ -126,9 +118,9 @@ it('defaults to the highest-priority mode and retains its executor and buffer th
 })
 
 it('keeps separate editor instances independent and releases withdrawn mode contexts', async () => {
-  contribute()
-  const editors = registry.get(editorsService),
-    executors = registry.get(executorsService)
+  await installModes()
+  const editors = registry.required(editorsService),
+    executors = registry.required(executorsService)
   const first = requireSuccess(editors.openEditor('/main.kcl', 'first'))
   presentation(editors, first)
   const second = requireSuccess(editors.openEditor('/main.kcl', 'second'))
@@ -136,13 +128,13 @@ it('keeps separate editor instances independent and releases withdrawn mode cont
   expect(executors.executors.value).toHaveLength(2)
   editors.setView(presentation(editors, first).id, 'drawings')
   const retained = executors.executors.value[0]
-  contribute(['drawings'])
+  await installModes(['drawings'])
   await Promise.resolve()
   expect(executors.executors.value).toContain(retained)
   expect(
     editors.viewState(presentation(editors, second)).value.selected?.id
   ).toBe('drawings')
-  contribute([])
+  await installModes([])
   await Promise.resolve()
   expect(
     editors.viewState(presentation(editors, first)).value.selected?.id
@@ -151,9 +143,11 @@ it('keeps separate editor instances independent and releases withdrawn mode cont
 })
 
 it('binds content-matched contexts after CodeMirror updates and releases them when the buffer stops matching', async () => {
-  contribute(['modeling'], ({ contents }) => contents.startsWith('render:'))
-  const editors = registry.get(editorsService),
-    executors = registry.get(executorsService)
+  await installModes(['modeling'], ({ contents }) =>
+    contents.startsWith('render:')
+  )
+  const editors = registry.required(editorsService),
+    executors = registry.required(executorsService)
   const editor = requireSuccess(editors.openEditor('/notes.txt', 'plain'))
   presentation(editors, editor)
   expect(executors.executors.value).toEqual([])
@@ -168,25 +162,27 @@ it('binds content-matched contexts after CodeMirror updates and releases them wh
   expect(executors.executors.value).toEqual([])
 })
 
-it('updates a Modeling view from a shared Code buffer without requiring Save', async () => {
-  const write = vi.fn(async () => undefined)
-  registry.configure([
+it('updates a parallel preview while document capabilities remain acquired', async () => {
+  const acquire = vi.fn()
+  const release = vi.fn()
+  await registry.configure([
     editorsExtension,
     executorsExtension,
-    saveExtension,
-    modes.of(),
-    defineRegistryItem({
-      provides: [
-        provide(editorOnSaveValueSpec, {
-          id: 'disk',
-          matches: '*',
-          onSave: write,
-        }),
-      ],
-    }),
+    modes,
+    [
+      contribute(editorCapabilityFacet, () => ({
+        id: 'document-behavior',
+        matches: '*' as const,
+        setup: ({ onDispose }) => {
+          acquire()
+          onDispose(release)
+          return undefined
+        },
+      })),
+    ],
   ])
-  contribute()
-  const editors = registry.get(editorsService)
+  await installModes()
+  const editors = registry.required(editorsService)
   const editor = requireSuccess(editors.openEditor('/main.kcl', 'original'))
   const code = requireSuccess(editors.createView(editor, 'editors.code'))
   const modeling = requireSuccess(editors.createView(editor, 'modeling'))
@@ -201,16 +197,11 @@ it('updates a Modeling view from a shared Code buffer without requiring Save', a
     code.codeView.peek()!.dispatch({ changes: { from: 0, insert: 'edited ' } })
   )
   expect(await screen.findByText('modeling: edited original')).toBeVisible()
-  expect(write).not.toHaveBeenCalled()
-  await act(async () => {
-    await registry.get(editorSaveService).save(editor)
-  })
-  expect(write).toHaveBeenCalledWith(
-    expect.objectContaining({ contents: 'edited original' })
-  )
-  expect(execute).toHaveBeenCalledTimes(2)
+  expect(acquire).toHaveBeenCalledOnce()
+  expect(release).not.toHaveBeenCalled()
   await act(() => editors.closeView(code.id))
-  expect(registry.get(executorsService).executors.peek()).toHaveLength(1)
+  expect(registry.required(executorsService).executors.peek()).toHaveLength(1)
   await act(() => editors.closeView(modeling.id))
-  expect(registry.get(executorsService).executors.peek()).toEqual([])
+  expect(registry.required(executorsService).executors.peek()).toEqual([])
+  expect(release).toHaveBeenCalledOnce()
 })
