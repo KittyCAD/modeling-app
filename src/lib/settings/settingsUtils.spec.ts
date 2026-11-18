@@ -451,7 +451,7 @@ describe('project settings serialization regression', () => {
             defaultProjectName: 'plugin-template',
           },
           modeling: {
-            mouseControls: 'OnShape',
+            mouseControls: 'Onshape',
             gizmoType: 'axis',
             enableTouchControls: false,
             useLocalRenderer: false,
@@ -537,7 +537,7 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.debug?.showPanel).toBe(true)
     expect(parsedPayload.debug?.showModelingMachineState).toBe(true)
     expect(parsedPayload.projects?.defaultProjectName).toBe('plugin-template')
-    expect(parsedPayload.modeling?.mouseControls).toBe('OnShape')
+    expect(parsedPayload.modeling?.mouseControls).toBe('Onshape')
     expect(parsedPayload.modeling?.gizmoType).toBe('axis')
     expect(parsedPayload.modeling?.enableTouchControls).toBe(false)
     expect(parsedPayload.modeling?.showSketchGrid).toBe(true)

@@ -10,9 +10,9 @@ const noModifiersPressed = (e: MouseEvent) =>
 
 export type CameraSystem =
   | 'Zoo'
-  | 'OnShape'
+  | 'Onshape'
   | 'Trackpad Friendly'
-  | 'Solidworks'
+  | 'SolidWorks'
   | 'NX'
   | 'Creo'
   | 'AutoCAD'
@@ -29,9 +29,9 @@ type MouseControlType =
 
 export const cameraSystems: CameraSystem[] = [
   'Zoo',
-  'OnShape',
+  'Onshape',
   'Trackpad Friendly',
-  'Solidworks',
+  'SolidWorks',
   'NX',
   'Creo',
   'AutoCAD',
@@ -48,11 +48,11 @@ export function mouseControlsToCameraSystem(
     // TODO: understand why the values come back without underscores and fix the root cause
     // @ts-ignore: TS2678
     case 'onshape':
-      return 'OnShape'
+      return 'Onshape'
     case 'trackpad_friendly':
       return 'Trackpad Friendly'
     case 'solidworks':
-      return 'Solidworks'
+      return 'SolidWorks'
     case 'nx':
       return 'NX'
     case 'creo':
@@ -73,11 +73,11 @@ export function cameraSystemToMouseControl(
   switch (cameraSystem) {
     case 'Zoo':
       return 'zoo'
-    case 'OnShape':
+    case 'Onshape':
       return 'onshape'
     case 'Trackpad Friendly':
       return 'trackpad_friendly'
-    case 'Solidworks':
+    case 'SolidWorks':
       return 'solidworks'
     case 'NX':
       return 'nx'
@@ -133,7 +133,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
       callback: (e) => btnName(e).right && noModifiersPressed(e),
     },
   },
-  OnShape: {
+  Onshape: {
     pan: {
       description: 'Ctrl + Right click drag or middle click drag',
       callback: (e) =>
@@ -168,7 +168,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
       lenientDragStartButton: 0,
     },
   },
-  Solidworks: {
+  SolidWorks: {
     pan: {
       description: 'Ctrl + Right click drag',
       callback: (e) => btnName(e).right && e.ctrlKey,
