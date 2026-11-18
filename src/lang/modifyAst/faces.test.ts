@@ -26,6 +26,7 @@ import {
   resolveToCodeRef,
 } from '@src/lang/queryAst'
 import type { ArtifactGraph, CallExpressionKw } from '@src/lang/wasm'
+import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import fc from 'fast-check'
@@ -33,7 +34,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lib/commandBarConfigs/modelingCommandStdLib', () => ({
   modelingStdLibCall: vi.fn(),
-  modelingStdLibCommandName: vi.fn(() => 'offsetPlane'),
+  modelingStdLibCommandName: vi.fn(),
 }))
 
 const codeRef: CodeRef = {
@@ -301,6 +302,7 @@ describe('face body references', () => {
       source: 'tool',
       face: 'wall',
     })
+    vi.mocked(modelingStdLibCommandName).mockReturnValueOnce('offsetPlane')
     const result = addOffsetPlane({
       ast,
       artifactGraph: graph,
