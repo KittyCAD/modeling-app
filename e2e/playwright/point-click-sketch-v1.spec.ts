@@ -636,7 +636,10 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
           0
         )
         await operationButton.dblclick({ button: 'left' })
-        await expect(modelingDialog.input('radius')).toHaveText('5')
+        // Migrating legacy edge tags reruns KCL before the dialog opens.
+        await expect(modelingDialog.input('radius')).toHaveText('5', {
+          timeout: 15_000,
+        })
         await modelingDialog.input('radius').fill('20')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
