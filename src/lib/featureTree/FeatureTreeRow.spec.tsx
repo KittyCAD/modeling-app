@@ -67,7 +67,7 @@ describe('rows beside a named view', () => {
     expect(screen.getByTestId('value-detail').textContent).toBe('A')
   })
 
-  it('shows a named feature type without changing its accessible name', () => {
+  it('shows the variable name without a repeated feature type', () => {
     render(
       <OperationItemWrapper
         icon="extrude"
@@ -78,18 +78,17 @@ describe('rows beside a named view', () => {
     )
 
     expect(screen.getByText('plate')).toBeTruthy()
-    expect(screen.getByText('Extrude')).toBeTruthy()
-    expect(
-      screen.getByRole('button', { name: 'plate' })
-    ).toHaveAccessibleDescription('Extrude')
-    expect(screen.getByRole('button', { name: 'plate' })).toHaveAttribute(
-      'title',
-      'plate (Extrude)'
+    expect(screen.queryByText('Extrude')).toBeNull()
+    expect(screen.getByRole('button', { name: 'plate' })).not.toHaveAttribute(
+      'title'
+    )
+    expect(screen.getByRole('button', { name: 'plate' })).not.toHaveAttribute(
+      'aria-description'
     )
     expect(screen.queryByTestId('value-detail')).toBeNull()
   })
 
-  it('distinguishes a plane and sketch sharing the same variable name', () => {
+  it('keeps same-named plane and sketch labels free of type captions', () => {
     render(
       <>
         <OperationItemWrapper
@@ -107,17 +106,10 @@ describe('rows beside a named view', () => {
       </>
     )
     expect(
-      screen.getByRole('button', {
-        name: 'intakeSketch',
-        description: /Offset Plane/,
-      })
-    ).toBeTruthy()
-    expect(
-      screen.getByRole('button', {
-        name: 'intakeSketch',
-        description: /\(Sketch\)/,
-      })
-    ).toBeTruthy()
+      screen.getAllByRole('button', { name: 'intakeSketch' })
+    ).toHaveLength(2)
+    expect(screen.queryByText('Offset Plane')).toBeNull()
+    expect(screen.queryByText('Sketch')).toBeNull()
   })
 
   it('leaves patternTransform presentation alone', () => {

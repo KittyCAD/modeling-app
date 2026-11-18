@@ -163,7 +163,7 @@ body001 = extrude(region001, length = 5mm)`
 )
 
 test(
-  'body context menu deletes only the selected body',
+  'body context menu fits and deletes only the selected body',
   { tag: ['@web', '@localRenderer'] },
   async ({ page, homePage, scene, editor, toolbar }, testInfo) => {
     await page.setBodyDimensions({ width: 1440, height: 1000 })
@@ -184,6 +184,12 @@ keptBody = clone(body001)
     await toolbar.openFeatureTreePane()
     await expect(page.getByTestId('feature-tree-body')).toHaveCount(2)
     await resetView(scene)
+    const cameraDistance = () =>
+      page.evaluate(() => {
+        const controls = window.app.singletons.kclManager.sceneInfra.camControls
+        return controls.camera.position.distanceTo(controls.target)
+      })
+    const modelDistance = await cameraDistance()
     const source = page.getByRole('button', { name: 'Body 1', exact: true })
     await source.click()
     const bodyId = await page.evaluate(() => {
@@ -233,6 +239,7 @@ keptBody = clone(body001)
         )
       )
       .toBeCloseTo(5)
+    await expect.poll(cameraDistance).toBeLessThan(modelDistance * 0.8)
     await source.click({ button: 'right' })
     await expect(page.getByTestId('context-menu-delete')).toBeVisible()
     await testInfo.attach('body-before-delete', {

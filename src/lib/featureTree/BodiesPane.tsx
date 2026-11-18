@@ -27,7 +27,7 @@ import {
   onHide,
   onUnhide,
 } from '@src/lib/operations'
-import { err } from '@src/lib/trap'
+import { err, reportRejection } from '@src/lib/trap'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import toast from 'react-hot-toast'
 
@@ -190,7 +190,9 @@ export function BodyItem({
       type: 'Set selection',
       data: { selectionType: 'completeSelection', selection: selections },
     })
-    modelingSend({ type: 'Center camera on selection' })
+    kclManager.sceneInfra.camControls
+      .zoomToFit({ padding: 0.2, selection: true })
+      .catch(reportRejection)
   }
   const toggleVisibility = () => {
     if (hideOperation === undefined) {

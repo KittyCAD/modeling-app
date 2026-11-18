@@ -138,7 +138,9 @@ export class ToolbarFixture {
     if (!isFtOpen) {
       await this.openFeatureTreePane()
     }
-    await this.page.getByRole('button', { name: plane }).click()
+    await this.page
+      .getByRole('button', { name: new RegExp(`^${plane}`) })
+      .click()
     if (!isFtOpen) {
       await this.closeFeatureTreePane()
     }
@@ -374,6 +376,11 @@ export class ToolbarFixture {
       .getByRole('button', {
         name: operationName,
       })
+      .and(
+        this.page.locator(
+          ':not([data-testid="feature-tree-visibility-toggle"])'
+        )
+      )
       .nth(operationIndex)
   }
 

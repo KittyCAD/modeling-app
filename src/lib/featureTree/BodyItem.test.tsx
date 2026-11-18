@@ -10,18 +10,18 @@ const state = vi.hoisted(() => {
   const graphSelections: Selection[] = []
   return {
     send: vi.fn<
-      (
-        event:
-          | {
-              type: 'Set selection'
-              data: SetSelections
-            }
-          | { type: 'Center camera on selection' }
-      ) => void
+      (event: { type: 'Set selection'; data: SetSelections }) => void
     >(),
     legacySelection: vi.fn(),
     graphSelections,
-    manager: { code: ' '.repeat(200), ast: {}, artifactGraph: new Map() },
+    manager: {
+      code: ' '.repeat(200),
+      ast: {},
+      artifactGraph: new Map(),
+      sceneInfra: {
+        camControls: { zoomToFit: vi.fn().mockResolvedValue(undefined) },
+      },
+    },
   }
 })
 vi.mock('@src/lib/boot', () => ({
@@ -148,8 +148,16 @@ describe('body row scene selection', () => {
           },
         },
       },
-      { type: 'Center camera on selection' },
     ])
+    expect(state.manager.sceneInfra.camControls.zoomToFit).toHaveBeenCalledWith(
+      {
+        padding: 0.2,
+        selection: true,
+      }
+    )
+    expect(state.send.mock.invocationCallOrder[0]).toBeLessThan(
+      state.manager.sceneInfra.camControls.zoomToFit.mock.invocationCallOrder[0]
+    )
   })
 
   it('uses the same body for the eye and context-menu Hide, then Delete', () => {

@@ -856,30 +856,14 @@ export const OperationItemWrapper = memo(
     isSelected?: boolean
     size?: 'default' | 'sm'
   } & OpValueProps) => {
-    const typeLabel =
-      variableName &&
-      !valueDetail &&
-      variableName !== name &&
-      icon !== 'questionMark' &&
-      (type === 'StdLibCall' || (type === 'GroupBegin' && name === 'Sketch'))
-        ? name
-        : undefined
     return (
       <RowItemWithIconMenuAndToggle
         {...props}
         icon={icon}
         size={size}
         className={className}
-        aria-label={typeLabel ? variableName : props['aria-label']}
-        aria-description={typeLabel}
-        title={typeLabel ? `${variableName} (${typeLabel})` : props.title}
         LabelSecondary={
           <>
-            {typeLabel ? (
-              <span aria-hidden="true" className="text-2 text-xs shrink-0">
-                {typeLabel}
-              </span>
-            ) : null}
             {valueDetail ? (
               <>
                 {variableName ? (
@@ -906,11 +890,7 @@ export const OperationItemWrapper = memo(
           visibilityToggle ? (
             <VisibilityToggle
               {...visibilityToggle}
-              label={
-                typeLabel
-                  ? `${variableName} (${typeLabel})`
-                  : (variableName ?? name)
-              }
+              label={variableName ?? name}
             />
           ) : null
         }
