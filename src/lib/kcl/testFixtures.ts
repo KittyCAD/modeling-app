@@ -12,7 +12,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
-import { onTestFinished, vi } from 'vitest'
+import { expect, onTestFinished, vi } from 'vitest'
 import { createActor } from 'xstate'
 
 /** Unstarted actors supply real settings contracts without persistence or native initialization. */
@@ -52,6 +52,18 @@ export function createTestSettings() {
 
 export function createTestKclRuntime() {
   return {
+    nativeContextHost: {
+      create: async () =>
+        Promise.reject(
+          new Error('Native editing requires the machine integration fixture')
+        ),
+      run: async (work) => work(),
+      deliverResponse: async (work) => work(),
+    },
+    borrowModel: () =>
+      new Error('Native editing requires the machine integration fixture'),
+    endSketch: vi.fn(async () => {}),
+    sources: signal<KclRuntime['sources']['value']>(undefined),
     ast: signal<KclRuntime['ast']['value']>(null),
     fileSettings: signal<KclRuntime['fileSettings']['value']>({}),
     executionRevision: signal(0),
@@ -82,6 +94,16 @@ export function createTestKclScene(
   )
   onTestFinished(selection.dispose)
   return {
+    get sceneInfra(): KclSceneResource['sceneInfra'] {
+      return expect.fail(
+        'Scene interaction requires the machine integration fixture'
+      )
+    },
+    get machineInput(): KclSceneResource['machineInput'] {
+      return expect.fail(
+        'Scene interaction requires the machine integration fixture'
+      )
+    },
     selection,
     commands: {
       sendSceneCommand: vi.fn<KclSceneResource['commands']['sendSceneCommand']>(

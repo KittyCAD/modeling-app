@@ -1,3 +1,4 @@
+import { inputs, observe } from '@src/registry/inputs'
 import type { ContextualCommandsService } from '@src/lib/commands/contextual'
 import type { MachineModelingHost } from '@src/lib/kcl/machine/host'
 import type {
@@ -8,7 +9,7 @@ import type { ModelingInteractionViewDefinition } from '@src/lib/kcl/interaction
 import type { SelectionSource } from '@src/lib/kcl/selection'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import type { Signal } from '@preact/signals-core'
-import { appendValueSpec, defineContract } from '@kittycad/registry'
+import { Facet, contract } from 'plankton'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { ComponentType } from 'react'
 import type { Executor } from '@src/lib/executors/registry/contract'
@@ -44,20 +45,28 @@ export interface ModelingStatusItem {
   order: number
   Component: ComponentType<{ context: ModelingViewContext }>
 }
-export const modelingViewContract = defineContract({
-  modelingInteractionsValueSpec: appendValueSpec<ModelingInteractionDefinition>(
-    'modeling-view.interactions'
-  ),
-  modelingInteractionViewsValueSpec:
-    appendValueSpec<ModelingInteractionViewDefinition>(
-      'modeling-view.interaction-views'
-    ),
-  modelingStatusItemsValueSpec: appendValueSpec<ModelingStatusItem>(
-    'modeling-view.status-items'
-  ),
+export const modelingViewContract = contract({
+  modelingInteractionsFacet: new Facet<
+    ModelingInteractionDefinition,
+    readonly ModelingInteractionDefinition[]
+  >('modeling-view.interactions', (values) => values),
+  modelingInteractionViewsFacet: new Facet<
+    ModelingInteractionViewDefinition,
+    readonly ModelingInteractionViewDefinition[]
+  >('modeling-view.interaction-views', (values) => values),
+  modelingStatusItemsFacet: new Facet<
+    ModelingStatusItem,
+    readonly ModelingStatusItem[]
+  >('modeling-view.status-items', (values) => values),
 })
 export const {
-  modelingStatusItemsValueSpec,
-  modelingInteractionsValueSpec,
-  modelingInteractionViewsValueSpec,
+  modelingStatusItemsFacet,
+  modelingInteractionsFacet,
+  modelingInteractionViewsFacet,
 } = modelingViewContract
+
+export const observations = inputs({
+  modelingInteractionViewsFacet: observe(modelingInteractionViewsFacet),
+  modelingInteractionsFacet: observe(modelingInteractionsFacet),
+  modelingStatusItemsFacet: observe(modelingStatusItemsFacet),
+})

@@ -1,16 +1,10 @@
-import {
-  Registry,
-  defineRegistryItem,
-  provideService,
-  provide,
-} from '@kittycad/registry'
-import { commandsExtension } from '@src/registry/extensions/commands'
+import { Registry, factory, contribute } from 'plankton'
+import { createCommandsExtension } from '@src/registry/extensions/commands'
 import {
   commandSystemService,
   contextualCommandsService,
 } from '@src/registry/contracts/commands'
-import { machineManagerService } from '@src/registry/contracts/machineManager'
-import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
@@ -58,26 +52,25 @@ import {
 import { createKeymapTree } from '@src/registry/contracts/keymap'
 import type { KclSceneResource } from '@src/lib/kcl/scene'
 
-function commandEnvironment(wasm: ModuleType, manager: MachineManager) {
+async function commandEnvironment(wasm: ModuleType, manager: MachineManager) {
   const registry = new Registry()
-  registry.configure([
-    commandsExtension,
-    defineRegistryItem({
-      providesServices: [provideService(machineManagerService, { manager })],
-      provides: [provide(wasmPromiseValueSpec, Promise.resolve(wasm))],
-    }),
+  await registry.configure([
+    createCommandsExtension(
+      factory({ create: () => ({ exports: { manager } }) })
+    ),
+    [[contribute(wasmPromiseFacet, () => Promise.resolve(wasm))]],
   ])
   return {
-    commands: registry.get(commandSystemService),
-    contextualCommands: registry.get(contextualCommandsService),
-    dispose: () => registry[Symbol.dispose](),
+    commands: registry.required(commandSystemService),
+    contextualCommands: registry.required(contextualCommandsService),
+    dispose: async () => await registry.dispose(),
   }
 }
 
 async function fixture(
   presentation: ScenePresentation = 'streamed',
   code = '@settings(kclVersion = 3.0)\nanswer = 42',
-  sharedCommands?: ReturnType<typeof commandEnvironment>
+  sharedCommands?: Awaited<ReturnType<typeof commandEnvironment>>
 ) {
   await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
   const world = await buildTheWorldAndNoEngineConnection()
@@ -217,7 +210,8 @@ async function fixture(
   view.context.wasm = Promise.resolve(world.instance)
   const invalidated = vi.fn(async () => {})
   const commandEnv =
-    sharedCommands ?? commandEnvironment(world.instance, world.machineManager)
+    sharedCommands ??
+    (await commandEnvironment(world.instance, world.machineManager))
   const deps = {
     commands: commandEnv.commands,
     contextualCommands: commandEnv.contextualCommands,
@@ -248,7 +242,7 @@ async function fixture(
     commandEnv,
     dispose: async () => {
       await result.dispose()
-      if (!sharedCommands) commandEnv.dispose()
+      if (!sharedCommands) await commandEnv.dispose()
       picking.dispose()
       await native.dispose()
       preferences.dispose()

@@ -1,3 +1,11 @@
+import {
+  keymapService,
+  createKeymapTree,
+  createEmptyPersistedKeymap,
+} from '@src/registry/contracts/keymap'
+import { userFeaturesExtension } from '@src/registry/extensions/userFeatures'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { commandsExtension } from '@src/registry/extensions/commands'
 import { signal } from '@preact/signals-core'
 import '@src/lib/projectSession/next/testFeature'
@@ -69,6 +77,23 @@ it.each([false, true])(
       executorsExtension,
       commandsExtension,
       kclExtension,
+      userFeaturesExtension,
+      provide(fileOperationsService, testFileOperations),
+      provide(keymapService, {
+        keymap: signal(createKeymapTree([])),
+        persistedKeymap: signal(createEmptyPersistedKeymap()),
+        partialMatch: signal(false),
+        applyScope: vi.fn(),
+        removeScope: vi.fn(),
+        getCurrentScopes: () => [],
+        savePersistedKeymap: async () => {},
+        addUserBinding: async () => {},
+        removeUserBinding: async () => {},
+        unbind: async () => {},
+        suspendListening: () => () => {},
+        handleKeyDown: () => false,
+        focusScope: () => ({ onFocus: () => {}, onBlur: () => {} }),
+      }),
       [
         [provide(settingsService, settingsProvider)],
         [contribute(wasmPromiseFacet, () => new Promise<ModuleType>(() => {}))],
