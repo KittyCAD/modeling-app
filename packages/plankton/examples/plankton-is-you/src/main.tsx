@@ -8,7 +8,13 @@ import {
   Trash2,
   Undo2,
 } from 'lucide-react'
-import { type CSSProperties, useEffect, useRef, useState } from 'react'
+import {
+  type CSSProperties,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { createRoot } from 'react-dom/client'
 import { type ActionRecipe, compileAction } from './actions'
 import {
@@ -18,6 +24,12 @@ import {
   type Sprite,
   type Tile,
 } from './game'
+import { OutcomeBoard, type OutcomeCell } from './outcome-board'
+import {
+  type OutcomeRow,
+  type OutcomeWord,
+  startingOutcomeRows,
+} from './outcomes'
 import { wordSprite } from './pixels'
 import { openGame, type Runtime } from './registry'
 import './style.css'
@@ -58,8 +70,7 @@ const artwork = (definition: Definition, kind: Tile['kind']) =>
     : (definition.wordSprite ?? wordSprite(definition.id))
 const blank = () => Array<string>(8).fill('00000000')
 
-type Draft = {
-  base?: Definition
+type DraftArtwork = {
   kind: Tile['kind']
   name: string
   entitySprite: Sprite
@@ -67,14 +78,20 @@ type Draft = {
   entityColor: string
   wordColor: string
   action: string
-  tileId?: string
 }
+type Draft = DraftArtwork &
+  (
+    | { scope: 'world'; base?: Definition; tileId?: string }
+    | { scope: 'outcome'; base: OutcomeWord; cell: OutcomeCell }
+  )
+
 function draftFor(
   definition: Definition,
   kind: Tile['kind'],
   tileId?: string
 ): Draft {
   return {
+    scope: 'world',
     base: definition,
     kind,
     name: definition.id,
@@ -101,6 +118,12 @@ function App({ runtime }: { runtime: Runtime }) {
     kind: Tile['kind']
   } | null>(null)
   const [draft, setDraft] = useState<Draft | null>(null)
+  const [outcomeRows, setOutcomeRows] = useState<readonly OutcomeRow[]>(
+    runtime.outcomeProgram.value.rows
+  )
+  const [outcomeHistory, setOutcomeHistory] = useState<
+    (readonly OutcomeRow[])[]
+  >([])
   const [erase, setErase] = useState(false),
     [painting, setPainting] = useState(false)
   const [actionEditor, setActionEditor] = useState(false)
@@ -111,14 +134,9 @@ function App({ runtime }: { runtime: Runtime }) {
   const definitions = runtime.definitions.value,
     actions = runtime.actions.value
   const rules = readRules(game.board.tiles, definitions)
-  const lossMessage =
-    game.board.status === 'lost'
-      ? game.board.reason === 'contact'
-        ? 'YOU touched a losing entity'
-        : 'No YOU entities remain'
-      : ''
+  const lossMessage = game.board.status === 'lost' ? game.board.message : ''
   const inspectedTile = game.board.tiles.find(
-    (tile) => tile.id === draft?.tileId
+    (tile) => draft?.scope === 'world' && tile.id === draft.tileId
   )
   const sprite = draft
     ? draft.kind === 'entity'
@@ -134,7 +152,82 @@ function App({ runtime }: { runtime: Runtime }) {
     draft?.base?.kind === 'entity' || (!draft?.base && draft?.kind === 'entity')
   const grammar = draft?.base?.kind === 'grammar'
   const inUse =
-    !!draft?.base && game.board.tiles.some((t) => t.type === draft.name)
+    draft?.scope === 'world' &&
+    !!draft.base &&
+    game.board.tiles.some((t) => t.type === draft.name)
+
+  const selectionKey = draft
+    ? `${draft.scope}:${draft.base?.id ?? 'new'}:${draft.kind}:${draft.scope === 'outcome' ? `${draft.cell.rowId}:${draft.cell.index}` : ''}`
+    : ''
+  const attachTray = useCallback(
+    (node: HTMLElement | null) => {
+      if (node && selectionKey) node.scrollIntoView({ block: 'start' })
+    },
+    [selectionKey]
+  )
+
+  const outcomeDirty =
+    JSON.stringify(outcomeRows) !==
+    JSON.stringify(runtime.outcomeProgram.value.rows)
+  const outcomeArt = (word: OutcomeWord) =>
+    word.wordSprite ??
+    definitions.find((d) => d.id === word.id)?.wordSprite ??
+    wordSprite(word.id)
+  function editOutcomeRows(rows: readonly OutcomeRow[]) {
+    setOutcomeHistory((previous) => [...previous, outcomeRows])
+    setOutcomeRows(rows)
+    if (
+      draft?.scope === 'outcome' &&
+      !rows.some((row) => row.id === draft.cell.rowId)
+    )
+      setDraft(null)
+  }
+  function replaceOutcomeCell(cell: OutcomeCell, value: string) {
+    editOutcomeRows(
+      outcomeRows.map((row) => {
+        if (row.id !== cell.rowId) return row
+        const cells: [string, string, string, string] = [...row.cells]
+        cells[cell.index] = value
+        return { ...row, cells }
+      })
+    )
+  }
+  function selectOutcome(cell: OutcomeCell, replacement?: string) {
+    const current = outcomeRows.find((row) => row.id === cell.rowId)?.cells[
+      cell.index
+    ]
+    const fallback = ['YOU', 'IS', 'NONE', 'LOSE'][cell.index]
+    const id = replacement ?? current ?? fallback
+    const word =
+      runtime.outcomeWords.value.find((w) => w.id === id) ??
+      runtime.outcomeWords.value.find((w) => w.id === fallback)!
+    if (replacement !== undefined || !current) replaceOutcomeCell(cell, word.id)
+    setDraft({
+      scope: 'outcome',
+      base: word,
+      cell,
+      kind: 'word',
+      name: word.id,
+      entitySprite: blank(),
+      wordSprite: outcomeArt(word),
+      entityColor: word.color,
+      wordColor: word.color,
+      action: '',
+    })
+    setActionEditor(false)
+    setNotice('')
+  }
+  async function applyOutcomes() {
+    if (
+      await change(
+        () => runtime.publishOutcomeRows(outcomeRows),
+        'Outcome program applied'
+      )
+    ) {
+      game.settle()
+      refresh()
+    }
+  }
 
   function select(definition: Definition, kind: Tile['kind'], tileId?: string) {
     setDraft(draftFor(definition, kind, tileId))
@@ -144,6 +237,7 @@ function App({ runtime }: { runtime: Runtime }) {
   }
   function create() {
     setDraft({
+      scope: 'world',
       kind: 'entity',
       name: '',
       entitySprite: blank(),
@@ -233,6 +327,21 @@ function App({ runtime }: { runtime: Runtime }) {
   }
   async function save() {
     if (!draft) return
+    if (draft.scope === 'outcome') {
+      const word = {
+        ...draft.base,
+        wordSprite: draft.wordSprite,
+        color: draft.wordColor,
+      }
+      if (
+        await change(
+          () => runtime.publishOutcomeWord(word),
+          `${word.id} outcome artwork saved`
+        )
+      )
+        setDraft({ ...draft, base: word })
+      return
+    }
     let definition: Definition
     if (grammar) {
       definition = {
@@ -331,7 +440,10 @@ function App({ runtime }: { runtime: Runtime }) {
     !!draft &&
     !!draft.name &&
     !duplicate &&
-    (noun || grammar || actions.some((a) => a.id === draft.action))
+    (draft.scope === 'outcome' ||
+      noun ||
+      grammar ||
+      actions.some((a) => a.id === draft.action))
 
   return (
     <main className="stage">
@@ -519,10 +631,39 @@ function App({ runtime }: { runtime: Runtime }) {
                 </button>
               </div>
             </section>
+            <OutcomeBoard
+              rows={outcomeRows}
+              words={runtime.outcomeWords.value}
+              busy={busy}
+              dirty={outcomeDirty}
+              canUndo={outcomeHistory.length > 0}
+              renderWord={(word) => (
+                <Pixels sprite={outcomeArt(word)} color={word.color} />
+              )}
+              selected={draft?.scope === 'outcome' ? draft.cell : undefined}
+              onSelect={(cell) => selectOutcome(cell)}
+              onChange={editOutcomeRows}
+              onApply={applyOutcomes}
+              onUndo={() => {
+                const previous = outcomeHistory.at(-1)
+                if (previous) {
+                  setOutcomeRows(previous)
+                  setOutcomeHistory(outcomeHistory.slice(0, -1))
+                  setDraft(null)
+                }
+              }}
+              onRestore={() => editOutcomeRows(startingOutcomeRows)}
+            />
             {draft ? (
-              <section className="tray">
+              <section className="tray" ref={attachTray}>
                 <div className="tray-heading">
-                  <h2>{draft.base ? draft.name : 'New'}</h2>
+                  <h2>
+                    {draft.scope === 'outcome'
+                      ? `Outcome · ${draft.name}`
+                      : draft.base
+                        ? draft.name
+                        : 'New'}
+                  </h2>
                   <div className="kind-toggle" aria-label="Tile kind">
                     {(['entity', 'word'] as const).map((kind) => (
                       <button
@@ -560,32 +701,66 @@ function App({ runtime }: { runtime: Runtime }) {
                     That name is already installed. Select its tile to edit it.
                   </p>
                 )}
-                <label>
-                  Property action
-                  <select
-                    aria-label="Property action"
-                    disabled={
-                      draft.kind === 'entity' || !!noun || !!grammar || busy
-                    }
-                    value={noun || grammar ? '' : draft.action}
-                    onChange={(event) =>
-                      setDraft({ ...draft, action: event.target.value })
-                    }
-                  >
-                    <option value="">
-                      {noun
-                        ? 'None · entity name'
-                        : grammar
-                          ? 'Sentence connector'
-                          : 'Choose an action…'}
-                    </option>
-                    {actions.map((action) => (
-                      <option key={action.id} value={action.id}>
-                        {action.label}
+                {draft.scope === 'outcome' ? (
+                  <>
+                    <label>
+                      Outcome tile
+                      <select
+                        aria-label="Outcome tile"
+                        value={draft.base.id}
+                        disabled={busy}
+                        onChange={(event) =>
+                          selectOutcome(draft.cell, event.target.value)
+                        }
+                      >
+                        {runtime.outcomeWords.value
+                          .filter((word) =>
+                            draft.cell.index === 0
+                              ? word.kind === 'selector'
+                              : draft.cell.index === 1
+                                ? word.kind === 'relation'
+                                : draft.cell.index === 3
+                                  ? word.id === 'WIN' || word.id === 'LOSE'
+                                  : word.kind === 'selector' ||
+                                    word.kind === 'unary'
+                          )
+                          .map((word) => (
+                            <option key={word.id} value={word.id}>
+                              {word.id}
+                            </option>
+                          ))}
+                      </select>
+                    </label>
+                    <p className="field-hint">{draft.base.description}</p>
+                  </>
+                ) : (
+                  <label>
+                    Property action
+                    <select
+                      aria-label="Property action"
+                      disabled={
+                        draft.kind === 'entity' || !!noun || !!grammar || busy
+                      }
+                      value={noun || grammar ? '' : draft.action}
+                      onChange={(event) =>
+                        setDraft({ ...draft, action: event.target.value })
+                      }
+                    >
+                      <option value="">
+                        {noun
+                          ? 'None · entity name'
+                          : grammar
+                            ? 'Sentence connector'
+                            : 'Choose an action…'}
                       </option>
-                    ))}
-                  </select>
-                </label>
+                      {actions.map((action) => (
+                        <option key={action.id} value={action.id}>
+                          {action.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
                 <div className="paint-tools">
                   <label>
                     Ink
@@ -653,102 +828,125 @@ function App({ runtime }: { runtime: Runtime }) {
                     ))
                   )}
                 </div>
-                {!noun && !grammar && draft.kind === 'word' && (
-                  <>
-                    <p className="field-hint">
-                      {actions.find((a) => a.id === draft.action)
-                        ?.description ||
-                        'A property word applies its action through an IS sentence.'}
-                    </p>
-                    <button
-                      className="text-button"
-                      onClick={() => setActionEditor(!actionEditor)}
-                    >
-                      {actionEditor ? 'Cancel new action' : '+ New action'}
-                    </button>
-                    {actionEditor && (
-                      <fieldset className="action-author">
-                        <legend>New action</legend>
-                        <label>
-                          Action name
-                          <input
-                            value={actionName}
-                            maxLength={16}
-                            onChange={(event) =>
-                              setActionName(
-                                event.target.value
-                                  .toUpperCase()
-                                  .replace(/[^A-Z]/g, '')
-                              )
-                            }
-                          />
-                        </label>
-                        <label>
-                          At turn end
-                          <select
-                            aria-label="Action operation"
-                            value={operation}
-                            onChange={(event) => {
-                              const value = event.target.value
-                              if (
-                                value === 'step-forward' ||
-                                value === 'destroy-self'
-                              )
-                                setOperation(value)
-                            }}
-                          >
-                            <option value="step-forward">Step forward</option>
-                            <option value="destroy-self">Destroy self</option>
-                          </select>
-                        </label>
-                        {operation === 'step-forward' && (
+                {draft.scope === 'world' &&
+                  !noun &&
+                  !grammar &&
+                  draft.kind === 'word' && (
+                    <>
+                      <p className="field-hint">
+                        {actions.find((a) => a.id === draft.action)
+                          ?.description ||
+                          'A property word applies its action through an IS sentence.'}
+                      </p>
+                      <button
+                        className="text-button"
+                        onClick={() => setActionEditor(!actionEditor)}
+                      >
+                        {actionEditor ? 'Cancel new action' : '+ New action'}
+                      </button>
+                      {actionEditor && (
+                        <fieldset className="action-author">
+                          <legend>New action</legend>
                           <label>
-                            If blocked
+                            Action name
+                            <input
+                              value={actionName}
+                              maxLength={16}
+                              onChange={(event) =>
+                                setActionName(
+                                  event.target.value
+                                    .toUpperCase()
+                                    .replace(/[^A-Z]/g, '')
+                                )
+                              }
+                            />
+                          </label>
+                          <label>
+                            At turn end
                             <select
-                              aria-label="If blocked"
-                              value={blocked}
+                              aria-label="Action operation"
+                              value={operation}
                               onChange={(event) => {
                                 const value = event.target.value
-                                if (value === 'wait' || value === 'reverse')
-                                  setBlocked(value)
+                                if (
+                                  value === 'step-forward' ||
+                                  value === 'destroy-self'
+                                )
+                                  setOperation(value)
                               }}
                             >
-                              <option value="reverse">Reverse and retry</option>
-                              <option value="wait">Wait</option>
+                              <option value="step-forward">Step forward</option>
+                              <option value="destroy-self">Destroy self</option>
                             </select>
                           </label>
-                        )}
-                        <button
-                          disabled={busy || !actionName}
-                          onClick={saveAction}
-                        >
-                          Install action
-                        </button>
-                      </fieldset>
-                    )}
-                  </>
-                )}
+                          {operation === 'step-forward' && (
+                            <label>
+                              If blocked
+                              <select
+                                aria-label="If blocked"
+                                value={blocked}
+                                onChange={(event) => {
+                                  const value = event.target.value
+                                  if (value === 'wait' || value === 'reverse')
+                                    setBlocked(value)
+                                }}
+                              >
+                                <option value="reverse">
+                                  Reverse and retry
+                                </option>
+                                <option value="wait">Wait</option>
+                              </select>
+                            </label>
+                          )}
+                          <button
+                            disabled={busy || !actionName}
+                            onClick={saveAction}
+                          >
+                            Install action
+                          </button>
+                        </fieldset>
+                      )}
+                    </>
+                  )}
                 <div className="tray-actions">
                   <button
                     className="publish"
                     disabled={busy || !canSave}
                     onClick={save}
                   >
-                    {draft.base ? 'Save definition' : 'Create definition'}
+                    {draft.scope === 'outcome'
+                      ? 'Save outcome artwork'
+                      : draft.base
+                        ? 'Save definition'
+                        : 'Create definition'}
                   </button>
-                  <button
-                    disabled={busy || !draft.base}
-                    onClick={() => {
-                      if (!draft.base) return
-                      setPlacement({ type: draft.base.id, kind: draft.kind })
-                      setDraft({ ...draft, tileId: undefined })
-                      setOpen(false)
-                    }}
-                  >
-                    Place tile
-                  </button>
+                  {draft.scope === 'world' && (
+                    <button
+                      disabled={busy || !draft.base}
+                      onClick={() => {
+                        if (!draft.base) return
+                        setPlacement({ type: draft.base.id, kind: draft.kind })
+                        setDraft({ ...draft, tileId: undefined })
+                        setOpen(false)
+                      }}
+                    >
+                      Place tile
+                    </button>
+                  )}
                 </div>
                 <div className="delete-actions">
+                  {draft.scope === 'outcome' && (
+                    <button
+                      disabled={busy}
+                      onClick={() => {
+                        replaceOutcomeCell(draft.cell, '')
+                        setDraft(null)
+                      }}
+                    >
+                      <Trash2 size={13} />
+                      Remove outcome tile
+                    </button>
+                  )}
                   {inspectedTile && (
                     <button
                       disabled={busy}
@@ -764,7 +962,7 @@ function App({ runtime }: { runtime: Runtime }) {
                       Remove tile
                     </button>
                   )}
-                  {draft.base && (
+                  {draft.scope === 'world' && draft.base && (
                     <button
                       disabled={busy || inUse}
                       title={
@@ -806,12 +1004,6 @@ function App({ runtime }: { runtime: Runtime }) {
                     ? 'Won'
                     : 'Playing'}
               </p>
-              <ul>
-                <li>No YOU entities remain → lose.</li>
-                <li>YOU touches a losing entity → lose.</li>
-                <li>YOU touches WIN → win.</li>
-                <li>YOU is WIN → win.</li>
-              </ul>
             </section>
             <footer>
               <p role="status">{notice}</p>

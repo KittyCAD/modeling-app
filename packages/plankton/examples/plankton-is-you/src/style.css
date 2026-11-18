@@ -511,3 +511,71 @@ svg {
   max-width: 65%;
   text-align: center;
 }
+.outcome-board {
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+.outcome-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.outcome-heading h2 {
+  margin: 0;
+}
+.outcome-heading button {
+  font-size: 10px;
+  padding: 6px 8px;
+}
+.outcome-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 44px)) 16px minmax(0, 44px) 24px;
+  gap: 5px;
+  align-items: center;
+  margin: 6px 0;
+}
+.outcome-row > button {
+  aspect-ratio: 1;
+  padding: 2px;
+  min-width: 0;
+}
+.outcome-row > button > svg {
+  width: 100%;
+  height: 100%;
+}
+.outcome-arrow {
+  text-align: center;
+  color: var(--muted);
+}
+.outcome-row .remove-row {
+  border: 0;
+  width: 24px;
+  height: 24px;
+  padding: 5px;
+  color: #d7a38f;
+}
+.outcome-tools {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.outcome-tools button {
+  font-size: 10px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 5px 6px;
+}
+.outcome-tools svg {
+  width: 13px;
+  height: 13px;
+}
+.tray {
+  scroll-margin-top: 18px;
+}
+.outcome-row [aria-pressed="true"] {
+  border-color: #b3ce8e;
+  background: #b3ce8e18;
+}

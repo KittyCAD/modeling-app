@@ -1,3 +1,10 @@
+import {
+  evaluateOutcomes,
+  type OutcomeProgram,
+  type OutcomeWord,
+  type Resolution,
+} from './outcomes'
+
 export type Point = { x: number; y: number }
 export type Tile = Point & {
   id: string
@@ -55,9 +62,6 @@ export type Puzzle = {
   placements: readonly Tile[]
 }
 export type Rule = { noun: string; property: string }
-type Resolution =
-  | { status: 'playing' | 'won' }
-  | { status: 'lost'; reason: 'no-you' | 'contact' }
 export type Board = {
   tiles: readonly Tile[]
   turns: number
@@ -65,6 +69,8 @@ export type Board = {
 export type Vocabulary = {
   definitions(): readonly Definition[]
   actions(): readonly Action[]
+  outcomeWords(): readonly OutcomeWord[]
+  outcomeProgram(): OutcomeProgram
 }
 const sameCell = (a: Point, b: Point) => a.x === b.x && a.y === b.y
 
@@ -124,7 +130,13 @@ export class Game {
     this.history = []
   }
   undo() {
-    this.board = this.history.pop() ?? this.board
+    const previous = this.history.pop()
+    if (previous)
+      this.board = {
+        tiles: previous.tiles,
+        turns: previous.turns,
+        ...this.evaluate(previous.tiles),
+      }
   }
   inside(point: Point) {
     return (
@@ -163,17 +175,17 @@ export class Game {
       this.vocabulary.definitions(),
       this.vocabulary.actions()
     )
-    const controlled = tiles.filter((tile) =>
-      has(tile, (action) => !!action.controls)
+    return evaluateOutcomes(
+      this.vocabulary.outcomeProgram(),
+      this.vocabulary.outcomeWords(),
+      {
+        controlled: tiles.filter((tile) =>
+          has(tile, (action) => !!action.controls)
+        ),
+        winning: tiles.filter((tile) => has(tile, (action) => !!action.wins)),
+        losing: tiles.filter((tile) => has(tile, (action) => !!action.loses)),
+      }
     )
-    if (controlled.length === 0) return { status: 'lost', reason: 'no-you' }
-    const touches = (predicate: (action: Action) => boolean) =>
-      controlled.some((you) =>
-        tiles.some((tile) => sameCell(you, tile) && has(tile, predicate))
-      )
-    if (touches((action) => !!action.loses))
-      return { status: 'lost', reason: 'contact' }
-    return { status: touches((action) => !!action.wins) ? 'won' : 'playing' }
   }
   /** Resume reevaluates rules after paused vocabulary edits without adding a turn. */
   settle() {

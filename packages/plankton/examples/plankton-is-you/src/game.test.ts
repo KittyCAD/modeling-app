@@ -8,12 +8,19 @@ import {
   readRules,
   type Tile,
 } from './game'
+import { outcomeWords, parseOutcomeRows, startingOutcomeRows } from './outcomes'
 import { gameContract, openGame } from './registry'
 
 function createGame(puzzle: Puzzle, definitions: () => readonly Definition[]) {
   return new Game(puzzle, {
     definitions,
     actions: () => builtInActions,
+    outcomeWords: () => outcomeWords,
+    outcomeProgram: () => {
+      const parsed = parseOutcomeRows(startingOutcomeRows, outcomeWords)
+      if (!parsed.ok) throw new Error(parsed.errors.join('; '))
+      return parsed.program
+    },
   })
 }
 
@@ -449,7 +456,10 @@ describe('the living vocabulary', () => {
         noun,
         property: 'YOU',
       })
-      expect(game.board).toMatchObject({ status: 'lost', reason: 'no-you' })
+      expect(game.board).toMatchObject({
+        status: 'lost',
+        message: 'No YOU entities remain',
+      })
     }
   )
 
@@ -497,7 +507,10 @@ describe('the living vocabulary', () => {
     game.step({ x: 1, y: 0 })
     expect(game.board.tiles.find((tile) => tile.id === 'b')?.x).toBe(8)
     game.remove('b')
-    expect(game.board).toMatchObject({ status: 'lost', reason: 'no-you' })
+    expect(game.board).toMatchObject({
+      status: 'lost',
+      message: 'No YOU entities remain',
+    })
     game.undo()
     expect(game.board.status).toBe('playing')
   })
@@ -532,7 +545,10 @@ describe('the living vocabulary', () => {
         y: 5,
       })
       expect(game.board.tiles.some((tile) => tile.id === 'spare')).toBe(true)
-      if (active) expect(game.board).toMatchObject({ reason: 'contact' })
+      if (active)
+        expect(game.board).toMatchObject({
+          message: 'YOU touched a losing entity',
+        })
       game.undo()
       expect(game.board.status).toBe('playing')
       expect(game.board.tiles.find((tile) => tile.id === 'p')?.x).toBe(3)
@@ -558,7 +574,10 @@ describe('the living vocabulary', () => {
       () => definitions
     )
     game.step({ x: 1, y: 0 })
-    expect(game.board).toMatchObject({ status: 'lost', reason: 'contact' })
+    expect(game.board).toMatchObject({
+      status: 'lost',
+      message: 'YOU touched a losing entity',
+    })
   })
 
   it('can repair a disconnected YOU sentence while editing a lost board', () => {
@@ -598,7 +617,10 @@ describe('the living vocabulary', () => {
       () => definitions
     )
     game.step({ x: 1, y: 0 })
-    expect(game.board).toMatchObject({ status: 'lost', reason: 'no-you' })
+    expect(game.board).toMatchObject({
+      status: 'lost',
+      message: 'No YOU entities remain',
+    })
     expect(readRules(game.board.tiles, definitions)).toContainEqual({
       noun: 'PLNK',
       property: 'YOU',

@@ -65,13 +65,15 @@ self-destruction. It does not execute arbitrary text as JavaScript.
 
 ## Plankton contracts
 
-`registry.ts` defines Facets for definitions, actions, and starter puzzles. Built-ins and runtime content use real `contribute(...)` Bindings.
+`registry.ts` defines Facets for definitions, actions, starter puzzles, outcome
+word meanings, and the compiled outcome program. Built-ins and runtime content
+use real `contribute(...)` Bindings.
 Static content is an array of Bindings; no Factory is needed for each word.
 
 A session Factory owns the board, exposes it through a Service, and observes the
-two live behavior inputs. Its `start` evaluates the initial outcome after
-publication. Definition and action Slots can be replaced while that Factory and
-its dependencies survive. Replacements are awaited while the UI disables input.
+four live behavior inputs. Its `start` evaluates the initial outcome after
+publication. Definition, action, outcome-artwork, and outcome-program Slots can
+be replaced while that Factory and its dependencies survive. Replacements are awaited while the UI disables input.
 Registry disposal runs on Vite hot replacement; React removes input listeners.
 
 A Puzzle describes bounds, starting definitions, and placements. Starter setups
@@ -105,33 +107,77 @@ that captures injected resources and owns their cleanup.
 
 ## Outcomes and turn order
 
-Win and loss are fixed game rules, evaluated after actions finish:
+The editor has a separate outcome board with four starting tile rows:
 
-- Lose when zero entities have active player control. This includes disconnected
-  YOU sentences, destruction of the last YOU entity, and a connected `BUSH IS YOU`
-  rule when no bushes exist. Another surviving YOU entity keeps play going.
-  The loss message is **No YOU entities remain**.
-- **Lose on contact** is an available action. Give a property word this action,
-  then use a sentence such as `LAVA IS DANGER`. Any YOU entity touching a LAVA
-  entity loses the game, even if another YOU entity survives. This action does
-  not destroy entities. Its message is **YOU touched a losing entity**.
-- YOU touches WIN → win.
-- YOU is WIN → win.
+```text
+YOU IS NONE    → LOSE
+YOU TOUCH WIN  → WIN
+YOU IS WIN     → WIN
+YOU TOUCH LOSE → LOSE
+```
 
-The board status is `playing`, `won`, or `lost`; a loss records its reason. Loss
-takes priority over victory if the same turn satisfies both. There are no time-based turns. A turn resolves in this order:
+The arrow is fixed editor layout. Select a cell to open the shared word tray,
+choose another outcome word, or paint its pixels. Artwork is shared by all uses
+of that word in the outcome board. The ordinary puzzle and outcome vocabularies
+have separate meanings; matching word names initially reuse puzzle word artwork.
+An outcome word's artwork can be overridden independently.
+
+Add or remove rows, remove individual tiles, undo draft edits, or restore the
+four defaults. **Apply outcomes** parses the whole draft before replacing the
+installed program. Incomplete or ill-typed rows report an error and leave the
+running program intact. Removing an entire row is valid. An empty program is
+also valid and never ends play. Draft edits survive closing the drawer; only
+applied rows affect the game. Reset reloads the puzzle under the currently
+installed outcome program. Page reload restores all defaults.
+
+The `outcomeWords` Facet receives six real word contributions:
+
+- YOU, WIN, and LOSE select controlled, winning, and losing entities respectively.
+- NONE is a unary predicate that tests whether its selected set is empty.
+- IS is a relation predicate that tests shared entity identity. In `IS NONE`, it
+  also serves as the grammar's connector to the unary predicate.
+- TOUCH is a relation predicate that tests distinct entities sharing a cell.
+
+`YOU IS NONE` therefore covers disconnected YOU sentences, destruction of the
+last YOU entity, and a connected `BUSH IS YOU` sentence with no bushes. Another
+surviving YOU entity keeps the selection nonempty. Its loss message is
+**No YOU entities remain**.
+
+**Lose on contact** remains an available action. A sentence such as
+`LAVA IS DANGER`, with DANGER using that action, adds lava to the LOSE selection.
+The fourth outcome row then ends play when YOU touches lava, even if another YOU
+survives. The action does not destroy entities. Its default predicate message is
+**YOU touched a losing entity**. Removing that outcome row removes this loss
+condition while preserving the action and property.
+
+`parseOutcomeRows` converts tile choices into a typed program of selector and
+predicate IDs. It captures no predicate callback. Each evaluation resolves those
+IDs from live contributions, so replacing NONE, IS, or TOUCH changes existing
+rows without recompiling them. Missing or mismatched meanings make a dependent
+rule inactive. Predicate callbacks are TypeScript extensions; the tray edits
+artwork and sentence choices, not executable JavaScript.
+
+The `outcomeProgram` Facet holds that parsed data, installed through its own Slot.
+Changing the program preserves the session, tile positions, turn count, and board
+undo history. Undo restores board contents and reevaluates them using the current
+program. Outcome draft undo is separate and requires Apply to affect play.
+
+The board status is `playing`, `won`, or `lost`; a loss includes its matching row
+and predicate message. LOSE results take priority over WIN regardless of row
+order. This is a fixed interpreter policy. There are no time-based turns. A turn
+resolves in this order:
 
 1. Read the starting rules for input and blocking.
 2. Move controlled entities and push words.
 3. Read the resulting rules and schedule each entity/action pair once.
 4. Execute turn actions in entity/contribution order.
-5. Read the final rules and apply the fixed win/loss rules.
+5. Read the final rules and evaluate the installed outcome program.
 
-A destroyed YOU cannot win by briefly overlapping WIN before destruction. Won or
-lost boards stop turns but remain editable. Removing/placing a tile evaluates the
+Under the starting program, a destroyed YOU cannot win by briefly overlapping
+WIN before destruction. Won or lost boards stop turns but remain editable. Removing/placing a tile evaluates the
 outcome immediately; closing the editor reevaluates after vocabulary changes.
-Undo restores the previous board, including its outcome and facing. It preserves
-the currently installed definitions and actions.
+Undo restores the previous tiles and facing, then reevaluates the outcome. It
+preserves the currently installed definitions and actions.
 
 The placement tools are a sandbox and can bypass the intended puzzle. Noun
 transformations, arbitrary runtime JavaScript, and persistent storage remain
