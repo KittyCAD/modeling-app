@@ -15,6 +15,7 @@ export type EdgePickingMode =
   | 'fixed-24'
   | 'depth-offset'
   | 'cpu-search'
+  | 'zoom-growth'
 
 type DebugViewState = {
   active: boolean

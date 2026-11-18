@@ -5,9 +5,11 @@ import {
   isSketchLine,
 } from '@src/clientSideScene/localRenderer/selectionId'
 import {
+  type Camera,
   NearestFilter,
   NoBlending,
   NoColorSpace,
+  PerspectiveCamera,
   RedIntegerFormat,
   UnsignedByteType,
   UnsignedIntType,
@@ -60,6 +62,7 @@ export class EdgeGrowthPass {
   private readonly radiusY = uniform(0, 'int')
   private readonly pixelWidth = uniform(1)
   private readonly pixelHeight = uniform(1)
+  private readonly radiusSquared = uniform(LOCAL_EDGE_PICK_RADIUS_PX ** 2)
 
   constructor(
     private readonly renderer: WebGPURenderer,
@@ -145,7 +148,7 @@ export class EdgeGrowthPass {
       const centerId = rawSample(point)
       const bestId = centerId.toVar()
       // Avoid a square root by just keeping distance squared
-      const bestDistance = float(LOCAL_EDGE_PICK_RADIUS_PX ** 2).toVar()
+      const bestDistance = this.radiusSquared.toVar()
       // Don't search for an edge if a sketch line is at the center
       If(isSketchLine(centerId).not(), () => {
         Loop(
@@ -201,18 +204,21 @@ export class EdgeGrowthPass {
     this.target.setSize(width, height)
   }
 
-  render(cssWidth: number, cssHeight: number) {
+  render(
+    cssWidth: number,
+    cssHeight: number,
+    radius = LOCAL_EDGE_PICK_RADIUS_PX
+  ) {
     // The radius is specified in CSS pixels, but texture loads use drawing-
     // buffer pixels. Convert between them for this render.
     this.pixelWidth.value = Math.max(cssWidth, 1) / this.raw.width
     this.pixelHeight.value = Math.max(cssHeight, 1) / this.raw.height
+    this.radiusSquared.value = radius ** 2
     this.radiusX.value = Math.min(
       255,
-      Math.ceil(LOCAL_EDGE_PICK_RADIUS_PX / this.pixelWidth.value)
+      Math.ceil(radius / this.pixelWidth.value)
     )
-    this.radiusY.value = Math.ceil(
-      LOCAL_EDGE_PICK_RADIUS_PX / this.pixelHeight.value
-    )
+    this.radiusY.value = Math.ceil(radius / this.pixelHeight.value)
     this.renderer.setRenderTarget(this.horizontalTarget)
     this.quad.material = this.horizontalMaterial
     this.quad.render(this.renderer)
@@ -227,4 +233,18 @@ export class EdgeGrowthPass {
     this.horizontalMaterial.dispose()
     this.grownMaterial.dispose()
   }
+}
+
+export function projectedEdgePickRadius(
+  camera: Camera,
+  focusDistance: number,
+  cssHeight: number
+) {
+  const projectedMillimeter =
+    (0.001 * Math.max(cssHeight, 1) * camera.projectionMatrix.elements[5]) /
+    (2 *
+      (camera instanceof PerspectiveCamera
+        ? Math.max(focusDistance, 0.001)
+        : 1))
+  return Math.max(2, Math.min(LOCAL_EDGE_PICK_RADIUS_PX, projectedMillimeter))
 }

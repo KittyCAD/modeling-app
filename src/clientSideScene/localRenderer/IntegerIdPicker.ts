@@ -18,7 +18,10 @@ import {
   EdgeTargetType,
   SELECTION_INDEX_ATTRIBUTE,
 } from '@src/clientSideScene/localRenderer/EdgeRenderer'
-import { EdgeGrowthPass } from '@src/clientSideScene/localRenderer/EdgeGrowthPass'
+import {
+  EdgeGrowthPass,
+  projectedEdgePickRadius,
+} from '@src/clientSideScene/localRenderer/EdgeGrowthPass'
 import { LOCAL_EDGE_PICK_RADIUS_PX } from '@src/clientSideScene/localRenderer/config'
 import {
   colorizePickBuffer,
@@ -97,6 +100,7 @@ export class IntegerIdPicker {
   private dirty = true
   private version = 0
   private mode: EdgePickingMode = 'gpu-growth'
+  private focusDistance: number | null = null
 
   constructor(renderer: WebGPURenderer) {
     this.renderer = renderer
@@ -297,6 +301,11 @@ export class IntegerIdPicker {
     }
   }
 
+  setFocusDistance(distance: number) {
+    this.focusDistance = distance
+    this.invalidate()
+  }
+
   invalidate() {
     this.dirty = true
     this.version += 1
@@ -372,7 +381,9 @@ export class IntegerIdPicker {
     }
 
     const pixels = await this.renderer.readRenderTargetPixelsAsync(
-      this.mode === 'gpu-growth' ? (this.growthPass?.target ?? target) : target,
+      this.mode === 'gpu-growth' || this.mode === 'zoom-growth'
+        ? (this.growthPass?.target ?? target)
+        : target,
       left,
       this.packsIdsIntoColor ? target.height - 1 - bottom : top,
       width,
@@ -426,7 +437,9 @@ export class IntegerIdPicker {
     const version = this.version
     const targets = this.targetById
     const grown = await this.renderer.readRenderTargetPixelsAsync(
-      this.mode === 'gpu-growth' ? (this.growthPass?.target ?? target) : target,
+      this.mode === 'gpu-growth' || this.mode === 'zoom-growth'
+        ? (this.growthPass?.target ?? target)
+        : target,
       0,
       0,
       target.width,
@@ -463,7 +476,7 @@ export class IntegerIdPicker {
         ),
       }
     }
-    if (this.mode !== 'gpu-growth') {
+    if (this.mode !== 'gpu-growth' && this.mode !== 'zoom-growth') {
       return {
         width: target.width,
         height: target.height,
@@ -584,7 +597,9 @@ export class IntegerIdPicker {
           this.mode === 'original-main'
             ? (SELECTION_LINE_WIDTH_PX * bounds.width) /
               SELECTION_LINE_WIDTH_REFERENCE_VIEWPORT_PX
-            : (this.mode === 'gpu-growth' || this.mode === 'cpu-search') &&
+            : (this.mode === 'gpu-growth' ||
+                  this.mode === 'zoom-growth' ||
+                  this.mode === 'cpu-search') &&
                 material === this.edgeObject?.material
               ? VISIBLE_EDGE_LINE_WIDTH_PX
               : SELECTION_LINE_WIDTH_PX
@@ -593,8 +608,17 @@ export class IntegerIdPicker {
     this.renderer.autoClear = true
     this.renderer.setRenderTarget(target)
     this.renderer.render(this.scene, camera)
-    if (this.mode === 'gpu-growth' && this.growthPass) {
-      this.growthPass.render(bounds.width, bounds.height)
+    if (
+      (this.mode === 'gpu-growth' || this.mode === 'zoom-growth') &&
+      this.growthPass
+    ) {
+      this.growthPass.render(
+        bounds.width,
+        bounds.height,
+        this.mode === 'zoom-growth' && this.focusDistance !== null
+          ? projectedEdgePickRadius(camera, this.focusDistance, bounds.height)
+          : LOCAL_EDGE_PICK_RADIUS_PX
+      )
     }
     this.renderer.setRenderTarget(previousTarget)
     this.renderer.autoClear = previousAutoClear

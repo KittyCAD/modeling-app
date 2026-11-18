@@ -777,7 +777,9 @@ export class LocalRenderer {
     this.camera.lookAt(target)
     this.camera.updateProjectionMatrix()
     this.camera.updateMatrixWorld(true)
-    this.gpu?.integerIdPicker.invalidate()
+    this.gpu?.integerIdPicker.setFocusDistance(
+      this.camera.position.distanceTo(target)
+    )
     this.invalidateBaseRender()
   }
 

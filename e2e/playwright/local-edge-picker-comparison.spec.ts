@@ -43,12 +43,14 @@ const faceModes = [
   'fixed-24',
   'cpu-search',
   'gpu-growth',
+  'zoom-growth',
 ] as const
 const edgeModes = [
   'fixed-24',
   'depth-offset',
   'cpu-search',
   'gpu-growth',
+  'zoom-growth',
 ] as const
 
 const pickIdAt = (page: Page, x: number, y: number) =>

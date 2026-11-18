@@ -34,6 +34,7 @@ export function LocalPickingDebug() {
           <option value="fixed-24">Fixed 24px</option>
           <option value="depth-offset">Depth offset</option>
           <option value="cpu-search">CPU nearest edge</option>
+          <option value="zoom-growth">Zoom-adjusted GPU growth</option>
         </select>
       </label>
       <button
@@ -52,7 +53,9 @@ export function LocalPickingDebug() {
       </button>
       {active && (
         <>
-          {(mode === 'gpu-growth' || mode === 'cpu-search') && (
+          {(mode === 'gpu-growth' ||
+            mode === 'cpu-search' ||
+            mode === 'zoom-growth') && (
             <button
               type="button"
               className="rounded bg-gray-200 px-3 py-1 text-black"
