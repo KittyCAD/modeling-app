@@ -29,10 +29,10 @@ export function CloudProjectStatus({
       window.removeEventListener('offline', update)
     }
   }, [])
-  const id = registry.signal(projectSessionService).value?.currentProject.value
+  const id = registry.optional(projectSessionService)?.currentProject.value
     ?.storage?.projectId
-  const cloud = registry.signal(cloudStorageService).value
-  const pathname = registry.signal(routerService).value?.location.value.pathname
+  const cloud = registry.optional(cloudStorageService)
+  const pathname = registry.optional(routerService)?.location.value.pathname
   if (
     !id ||
     !cloud ||

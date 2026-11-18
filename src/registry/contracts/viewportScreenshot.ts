@@ -1,14 +1,16 @@
-import { defineContract, defineService } from '@kittycad/registry'
-
+import { inputs, observeService } from '@src/registry/inputs'
+import { contract, service } from 'plankton'
 export interface ViewportScreenshotService {
   /** A PNG data URL of the modeling viewport, or '' when it is not ready. */
   capture(): string
 }
-
-export const viewportScreenshotContract = defineContract({
-  viewportScreenshotService: defineService<ViewportScreenshotService>(
+export const viewportScreenshotContract = contract({
+  viewportScreenshotService: service<ViewportScreenshotService>(
     'viewport-screenshot'
   ),
 })
-
 export const { viewportScreenshotService } = viewportScreenshotContract
+
+export const observations = inputs({
+  viewportScreenshotService: observeService(viewportScreenshotService),
+})
