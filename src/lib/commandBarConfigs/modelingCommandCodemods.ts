@@ -3,7 +3,6 @@ import {
   getDimensionDetails,
   resolveDimensionSelections,
 } from '@src/lib/gdtDimension'
-import { getCircularFrameGeometryForEntity } from '@src/lib/gdtCircularFrame'
 import { validateSolidEdgeSelections } from '@src/lang/modifyAst/validateSolidEdgeSelections'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
@@ -91,7 +90,6 @@ import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/mod
 import {
   withDefaultGdtFrameDefaults,
   getDistanceFrameDefaults,
-  getEngineEntityIdsForGdtSelections,
 } from '@src/lib/gdtFramePosition'
 import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -319,26 +317,12 @@ const distanceCodemod = defineModelingCodemod<
       kclManager.engineCommandManager
     )
     if (isErr(objects)) return objects
-    const { dimensionFunction, geometry: filletGeometry } =
-      await getDimensionDetails(
-        objects,
-        kclManager.engineCommandManager,
-        kclManager.artifactGraph
-      )
+    const { dimensionFunction, geometry } = await getDimensionDetails(
+      objects,
+      kclManager.engineCommandManager,
+      kclManager.artifactGraph
+    )
     if (dimensionFunction !== 'distance') {
-      const id = getEngineEntityIdsForGdtSelections(objects)[0]
-      const picked =
-        objects.graphSelections[0] ??
-        objects.otherSelections.find(isEnginePrimitiveSelection)
-      const geometry =
-        filletGeometry ??
-        (id && picked
-          ? await getCircularFrameGeometryForEntity(
-              kclManager.engineCommandManager,
-              id,
-              isEdgeSelection(picked)
-            )
-          : undefined)
       const data = await withDefaultGdtFrameDefaults({
         data: { ...args, objects },
         engineCommandManager: kclManager.engineCommandManager,

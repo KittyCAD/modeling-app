@@ -2,7 +2,7 @@ import type { Point3d } from '@kittycad/lib'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
   getCircularFrameGeometry,
-  getCircularFrameGeometryForEntity,
+  getCircularFaceBoundaries,
   getCircularFramePosition,
 } from '@src/lib/gdtCircularFrame'
 import { describe, expect, it, vi } from 'vitest'
@@ -112,13 +112,8 @@ describe('circular dimension frame defaults', () => {
         } as Awaited<ReturnType<ConnectionManager['sendSceneCommand']>>
       })
     expect(
-      (
-        await getCircularFrameGeometryForEntity(
-          { sendSceneCommand },
-          'cylinder',
-          false
-        )
-      )?.framePlane
+      (await getCircularFaceBoundaries({ sendSceneCommand }, 'cylinder'))?.[0]
+        ?.framePlane
     ).toBe('YZ')
     expect(
       sendSceneCommand.mock.calls.filter(

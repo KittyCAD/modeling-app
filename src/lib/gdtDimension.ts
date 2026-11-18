@@ -2,8 +2,9 @@ import type { ModelingCmd, Point3d } from '@kittycad/lib'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
   getCircularFaceBoundaries,
-  getCircularCurveGeometry,
   getCircularFrameGeometry,
+  type CircularFaceBoundary,
+  type CircularFrameGeometry,
 } from '@src/lib/gdtCircularFrame'
 import {
   getFilletProfileGeometry,
@@ -16,62 +17,9 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 
 export type DimensionFunction = 'distance' | 'diameter' | 'radius'
 
-export async function getDimensionDetails(
-  selections: Selections,
-  engine: Pick<ConnectionManager, 'sendSceneCommand'>,
-  graph: ArtifactGraph
-) {
-  if (
-    selections.graphSelections.length + selections.otherSelections.length ===
-    1
-  ) {
-    const selected = selections.graphSelections[0],
-      primitive = selections.otherSelections[0]
-    const id =
-      selected?.engineEntityId ??
-      (selected?.entityRef?.type === 'face'
-        ? selected.entityRef.face_id
-        : selected?.artifact?.id) ??
-      (typeof primitive === 'object' &&
-      'type' in primitive &&
-      primitive.type === 'enginePrimitive'
-        ? primitive.entityId
-        : undefined)
-    const fillet = [selected?.artifact, id ? graph.get(id) : undefined].some(
-      (a) => a?.type === 'edgeCut' && a.subType === 'fillet'
-    )
-    if (
-      id &&
-      fillet &&
-      selected?.entityRef?.type !== 'edge' &&
-      selected?.artifact?.type !== 'edgeCutEdge'
-    ) {
-      const boundaries = await getCircularFaceBoundaries(engine, id)
-      const profile = getFilletProfileGeometry(boundaries)
-      if (profile)
-        return {
-          dimensionFunction: 'radius' as const,
-          geometry: await getFilletProfileFrameGeometry(
-            engine,
-            id,
-            profile,
-            boundaries
-          ),
-        }
-      const measurement = await getDimensionFunction(selections, engine)
-      return {
-        dimensionFunction:
-          measurement === 'distance'
-            ? ('distance' as const)
-            : ('radius' as const),
-        geometry: boundaries[0],
-      }
-    }
-  }
-  return {
-    dimensionFunction: await getDimensionFunction(selections, engine),
-    geometry: undefined,
-  }
+interface DimensionDetails {
+  dimensionFunction: DimensionFunction
+  geometry?: CircularFrameGeometry
 }
 
 /** Recover current topology only when the selected edge lacks a live reference. */
@@ -160,10 +108,6 @@ const cross = (a: Point3d, b: Point3d): Point3d => ({
   z: a.x * b.y - a.y * b.x,
 })
 
-export function isCircularArc(points: Point3d[]): boolean {
-  return Boolean(getCircularFrameGeometry(points))
-}
-
 /** Verify circular cross sections and an axial surface tangent.
  * The tangent rejects spheres with two symmetric, equal-radius sections.
  */
@@ -229,15 +173,16 @@ export function classifyCylindricalFace(
 }
 
 /** Only a single circular entity changes the existing distance workflow. */
-export async function getDimensionFunction(
+export async function getDimensionDetails(
   selections: Selections,
-  engine: Pick<ConnectionManager, 'sendSceneCommand'>
-): Promise<DimensionFunction> {
+  engine: Pick<ConnectionManager, 'sendSceneCommand'>,
+  graph: ArtifactGraph
+): Promise<DimensionDetails> {
   if (
     selections.graphSelections.length + selections.otherSelections.length !==
     1
   )
-    return 'distance'
+    return { dimensionFunction: 'distance' }
   const selected = selections.graphSelections[0]
   const primitive = selections.otherSelections[0]
   let id =
@@ -259,7 +204,28 @@ export async function getDimensionFunction(
     id = primitive.entityId
     face = primitive.primitiveType === 'face'
   }
-  if (!id) return 'distance'
+  if (!id) return { dimensionFunction: 'distance' }
+  const fillet =
+    selected?.entityRef?.type !== 'edge' &&
+    selected?.artifact?.type !== 'edgeCutEdge' &&
+    [selected?.artifact, graph.get(id)].some(
+      (a) => a?.type === 'edgeCut' && a.subType === 'fillet'
+    )
+  let boundaries: CircularFaceBoundary[] | undefined
+  if (fillet) {
+    boundaries = (await getCircularFaceBoundaries(engine, id)) ?? []
+    const profile = getFilletProfileGeometry(boundaries)
+    if (profile)
+      return {
+        dimensionFunction: 'radius',
+        geometry: await getFilletProfileFrameGeometry(
+          engine,
+          id,
+          profile,
+          boundaries
+        ),
+      }
+  }
   const query = (cmd: ModelingCmd) => queryModelingCommand(engine, cmd)
   if (!face) {
     const type = await query({ type: 'curve_get_type', curve_id: id })
@@ -267,25 +233,29 @@ export async function getDimensionFunction(
       type?.type !== 'curve_get_type' ||
       !['arc', 'nurbs'].includes(type.data.curve_type)
     )
-      return 'distance'
-    if (type.data.curve_type === 'nurbs') {
-      const controls = await query({
-        type: 'curve_get_control_points',
-        curve_id: id,
-      })
-      if (
-        controls?.type !== 'curve_get_control_points' ||
-        !isCircularArc(controls.data.control_points)
-      )
-        return 'distance'
-    }
+      return { dimensionFunction: 'distance' }
+    const controls = await query({
+      type: 'curve_get_control_points',
+      curve_id: id,
+    })
+    const geometry =
+      controls?.type === 'curve_get_control_points'
+        ? getCircularFrameGeometry(controls.data.control_points)
+        : undefined
+    if (type.data.curve_type === 'nurbs' && !geometry)
+      return { dimensionFunction: 'distance' }
     const endpoints = await query({
       type: 'curve_get_end_points',
       curve_id: id,
     })
-    if (endpoints?.type !== 'curve_get_end_points') return 'distance'
+    if (endpoints?.type !== 'curve_get_end_points')
+      return { dimensionFunction: 'distance' }
     const { start, end } = endpoints.data
-    return length(subtract(start, end)) <= 1e-6 ? 'diameter' : 'radius'
+    return {
+      dimensionFunction:
+        !fillet && length(subtract(start, end)) <= 1e-6 ? 'diameter' : 'radius',
+      geometry: boundaries?.[0] ?? geometry,
+    }
   }
   // Evaluate circular sections in either native surface parameter direction.
   for (const swap of [false, true]) {
@@ -313,7 +283,8 @@ export async function getDimensionFunction(
       object_id: id,
       uv: { x: 0.25, y: 0.25 },
     })
-    if (gradient?.type !== 'face_get_gradient') return 'distance'
+    if (gradient?.type !== 'face_get_gradient')
+      return { dimensionFunction: 'distance' }
     if (
       classifyCylindricalFace(
         sections[0],
@@ -323,35 +294,13 @@ export async function getDimensionFunction(
     )
       continue
     // Native UV coordinates are not the trimmed domain. Use boundary closure.
-    const parent = await query({ type: 'entity_get_parent_id', entity_id: id })
-    if (parent?.type !== 'entity_get_parent_id') return 'distance'
-    const children = await query({
-      type: 'entity_get_all_child_uuids',
-      entity_id: parent.data.entity_id,
-    })
-    if (children?.type !== 'entity_get_all_child_uuids') return 'distance'
-    const closed = await Promise.all(
-      children.data.entity_ids.map(async (edgeId) => {
-        const type = await query({ type: 'get_entity_type', entity_id: edgeId })
-        if (
-          type?.type !== 'get_entity_type' ||
-          type.data.entity_type !== 'edge'
-        )
-          return false
-        const adjacent = await query({
-          type: 'solid3d_get_all_edge_faces',
-          object_id: parent.data.entity_id,
-          edge_id: edgeId,
-        })
-        if (
-          adjacent?.type !== 'solid3d_get_all_edge_faces' ||
-          !adjacent.data.faces.includes(id)
-        )
-          return false
-        return Boolean((await getCircularCurveGeometry(engine, edgeId))?.closed)
-      })
-    )
-    return closed.some(Boolean) ? 'diameter' : 'radius'
+    boundaries ??= await getCircularFaceBoundaries(engine, id)
+    if (!boundaries) return { dimensionFunction: 'distance' }
+    return {
+      dimensionFunction:
+        !fillet && boundaries.some((rim) => rim.closed) ? 'diameter' : 'radius',
+      geometry: boundaries[0],
+    }
   }
-  return 'distance'
+  return { dimensionFunction: 'distance' }
 }

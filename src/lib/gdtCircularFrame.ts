@@ -121,67 +121,44 @@ export async function getCircularCurveGeometry(
   }
 }
 
-/** Use the rim's circular plane, rather than a cylinder's varying face normal. */
-export async function getCircularFrameGeometryForEntity(
-  engine: Pick<ConnectionManager, 'sendSceneCommand'>,
-  id: string,
-  isEdge: boolean
-): Promise<CircularFrameGeometry | undefined> {
-  return isEdge
-    ? getCircularCurveGeometry(engine, id)
-    : (await getCircularFaceBoundaries(engine, id))[0]
-}
-
 export async function getCircularFaceBoundaries(
   engine: Pick<ConnectionManager, 'sendSceneCommand'>,
   id: string
-): Promise<CircularFaceBoundary[]> {
+): Promise<CircularFaceBoundary[] | undefined> {
   const query = (cmd: ModelingCmd) => queryModelingCommand(engine, cmd)
-  const curve = async (edgeId: string) => {
-    return getCircularCurveGeometry(engine, edgeId)
-  }
-  try {
-    const parent = await query({ type: 'entity_get_parent_id', entity_id: id })
-    if (parent?.type !== 'entity_get_parent_id') return []
-    const body = parent.data.entity_id
-    const children = await query({
-      type: 'entity_get_all_child_uuids',
-      entity_id: body,
-    })
-    if (children?.type !== 'entity_get_all_child_uuids') return []
-    const rims = await Promise.all(
-      children.data.entity_ids.map(async (edgeId) => {
-        const type = await query({ type: 'get_entity_type', entity_id: edgeId })
-        if (
-          type?.type !== 'get_entity_type' ||
-          type.data.entity_type !== 'edge'
-        )
-          return undefined
-        const adjacent = await query({
-          type: 'solid3d_get_all_edge_faces',
-          object_id: body,
-          edge_id: edgeId,
-        })
-        if (
-          adjacent?.type !== 'solid3d_get_all_edge_faces' ||
-          !adjacent.data.faces.includes(id)
-        )
-          return undefined
-        const geometry = await curve(edgeId)
-        return (
-          geometry && {
-            ...geometry,
-            seam: adjacent.data.faces.every((face) => face === id),
-          }
-        )
+  const parent = await query({ type: 'entity_get_parent_id', entity_id: id })
+  if (parent?.type !== 'entity_get_parent_id') return undefined
+  const body = parent.data.entity_id
+  const children = await query({
+    type: 'entity_get_all_child_uuids',
+    entity_id: body,
+  })
+  if (children?.type !== 'entity_get_all_child_uuids') return undefined
+  const rims = await Promise.all(
+    children.data.entity_ids.map(async (edgeId) => {
+      const type = await query({ type: 'get_entity_type', entity_id: edgeId })
+      if (type?.type !== 'get_entity_type' || type.data.entity_type !== 'edge')
+        return undefined
+      const adjacent = await query({
+        type: 'solid3d_get_all_edge_faces',
+        object_id: body,
+        edge_id: edgeId,
       })
-    )
-    return rims.filter(
-      (rim): rim is NonNullable<typeof rim> => rim !== undefined
-    )
-  } catch {
-    return []
-  }
+      if (
+        adjacent?.type !== 'solid3d_get_all_edge_faces' ||
+        !adjacent.data.faces.includes(id)
+      )
+        return undefined
+      const geometry = await getCircularCurveGeometry(engine, edgeId)
+      return (
+        geometry && {
+          ...geometry,
+          seam: adjacent.data.faces.every((face) => face === id),
+        }
+      )
+    })
+  )
+  return rims.filter((rim): rim is NonNullable<typeof rim> => rim !== undefined)
 }
 
 /** Offsets are relative to the leader. Keep them pointing away from the center,

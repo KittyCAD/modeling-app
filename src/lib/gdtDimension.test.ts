@@ -1,12 +1,19 @@
 import { describe, expect, it, vi } from 'vitest'
 import {
   classifyCylindricalFace,
-  getDimensionFunction,
-  isCircularArc,
+  getDimensionDetails,
   resolveDimensionSelections,
 } from '@src/lib/gdtDimension'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+
+async function getDimensionFunction(
+  selections: Selections,
+  engine: Pick<ConnectionManager, 'sendSceneCommand'>
+) {
+  return (await getDimensionDetails(selections, engine, new Map()))
+    .dimensionFunction
+}
 
 describe('circular dimension topology', () => {
   it('recovers an indexed edge by primitive index without dropping its face disambiguators', async () => {
@@ -81,22 +88,6 @@ describe('circular dimension classification', () => {
     expect(
       classifyCylindricalFace(section(-5), section(5), { x: 0, y: 0, z: 10 })
     ).toBe('diameter')
-  })
-  it('recognizes rational circular arc control polygons and rejects ellipses', () => {
-    expect(
-      isCircularArc([
-        { x: 5, y: 0, z: 0 },
-        { x: 5, y: 5, z: 0 },
-        { x: 0, y: 5, z: 0 },
-      ])
-    ).toBe(true)
-    expect(
-      isCircularArc([
-        { x: 5, y: 0, z: 0 },
-        { x: 5, y: 8, z: 0 },
-        { x: 0, y: 8, z: 0 },
-      ])
-    ).toBe(false)
   })
   it('uses diameter for a full cylinder and radius for a partial cylinder', () => {
     expect(classifyCylindricalFace(section(0), section(12))).toBe('diameter')
@@ -234,17 +225,20 @@ describe('Dimension selection routing', () => {
     expect(await getDimensionFunction(selections, engine)).toBe('distance')
   })
   it.each([
-    ['diameter', false],
-    ['radius', true],
+    ['diameter', false, ''],
+    ['radius', true, ''],
+    ['distance', false, 'entity_get_parent_id'],
+    ['distance', false, 'entity_get_all_child_uuids'],
   ] as const)(
-    'classifies an imported face as %s with swapped parameters=%s',
-    async (expected, swap) => {
+    'classifies an imported face as %s with swapped parameters=%s and failing query=%s',
+    async (expected, swap, failingQuery) => {
       const sendSceneCommand = vi
         .fn<ConnectionManager['sendSceneCommand']>()
         .mockImplementation(async (command) => {
           if (command.type !== 'modeling_cmd_req')
             throw new Error('Unexpected command')
           const cmd = command.cmd
+          if (cmd.type === failingQuery) throw new Error('Offline')
           if (cmd.type !== 'face_get_position') {
             const responses = {
               face_get_gradient: {
