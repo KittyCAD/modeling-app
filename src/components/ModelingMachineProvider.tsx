@@ -1,3 +1,5 @@
+import { useSignals } from '@preact/signals-react/runtime'
+import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { ModelingMachineContext } from '@src/machines/modelingMachineContext'
 export { ModelingMachineContext } from '@src/machines/modelingMachineContext'
 import { useAppState } from '@src/AppState'
@@ -28,9 +30,7 @@ import { MODE_MODELING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { useMachine } from '@xstate/react'
 import type React from 'react'
-import type { MutableRefObject } from 'react'
-import { createContext, use, useEffect, useMemo, useRef } from 'react'
-import type { Actor, ContextFrom, Prop, StateFrom } from 'xstate'
+import { use, useEffect, useMemo, useRef } from 'react'
 
 const MODELING_COMMAND_SCOPES = [MODE_MODELING_COMMAND_SCOPE] as const
 
