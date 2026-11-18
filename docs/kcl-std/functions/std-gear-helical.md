@@ -16,6 +16,7 @@ gear::helical(
   pressureAngle: number(Angle),
   helixAngle: number(Angle),
   gearHeight: number(Length),
+  profileShift?: number(_),
 ): Solid
 ```
 
@@ -31,6 +32,7 @@ Use `translate()` and `rotate()` to move it around once it's created.
 | `pressureAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 | `helixAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 | `gearHeight` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
+| `profileShift` | [`number(_)`](/docs/kcl-std/types/std-types-number) | A number. | No |
 
 ### Returns
 
@@ -50,6 +52,7 @@ gearBody = gear::helical(
   pressureAngle = 20deg,
   helixAngle = 35deg,
   gearHeight = 7,
+  profileShift = 0,
 )
 
 ```
@@ -99,6 +102,7 @@ gearBody = gear::helical(
   pressureAngle = 20deg,
   helixAngle = 35deg,
   gearHeight,
+  profileShift = 0,
 )
 // Create a keyhole solid, then cut it out from the gear
 // body to create the final gear with a keyhole.
