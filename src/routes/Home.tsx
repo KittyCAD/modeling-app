@@ -84,6 +84,7 @@ import {
   type ProjectLibraryDragController,
   type ProjectLibraryDropTargetProps,
   ProjectLibraryHomeSummarySlot,
+  ProjectLibraryHomeContextMenuSlot,
   ProjectLibraryPreviewRow,
 } from '@src/routes/HomeProjectCards'
 import {
@@ -645,6 +646,18 @@ const Home = () => {
                 projectLibraryTypes={projectLibraryTypes}
               />
             ) : undefined
+          }
+          libraryContextMenu={
+            selectedProjectLibrary
+              ? (menuTargetElement) => (
+                  <ProjectLibraryHomeContextMenuSlot
+                    library={selectedProjectLibrary}
+                    projects={scopedHomeProjectEntries}
+                    projectLibraryTypes={projectLibraryTypes}
+                    menuTargetElement={menuTargetElement}
+                  />
+                )
+              : undefined
           }
           setQuery={setQuery}
           sort={sort}

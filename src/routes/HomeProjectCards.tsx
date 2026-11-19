@@ -15,7 +15,7 @@ import type {
 } from '@src/registry/contracts/homeProjects'
 import type { ProjectLibraryTypeContribution } from '@src/registry/contracts/projectLibraries'
 import { getProjectLibraryIconName } from '@src/routes/projectLibraryIcons'
-import type { HTMLProps } from 'react'
+import { useRef, type HTMLProps, type RefObject } from 'react'
 import { Link } from 'react-router-dom'
 
 const PROJECT_LIBRARY_PREVIEW_LIMIT = 6
@@ -77,6 +77,27 @@ export function ProjectLibraryHomeSummarySlot({
   ) : null
 }
 
+export function ProjectLibraryHomeContextMenuSlot({
+  library,
+  projects,
+  menuTargetElement,
+  projectLibraryTypes,
+}: {
+  library: ProjectLibrary
+  projects: readonly HomeProjectEntry[]
+  menuTargetElement: RefObject<HTMLElement | null>
+  projectLibraryTypes?: ReadonlyMap<string, ProjectLibraryTypeContribution>
+}) {
+  const Menu = projectLibraryTypes?.get(library.type)?.homeContextMenu
+  return Menu ? (
+    <Menu
+      library={library}
+      projects={projects}
+      menuTargetElement={menuTargetElement}
+    />
+  ) : null
+}
+
 export function ProjectLibraryPreviewRow({
   library,
   projects,
@@ -91,6 +112,7 @@ export function ProjectLibraryPreviewRow({
   projectLibraryDrag,
   projectLibraryTypes,
 }: ProjectLibraryPreviewRowProps) {
+  const menuTargetElement = useRef<HTMLDivElement>(null)
   const previewProjects =
     query.length > 0
       ? projects
@@ -112,7 +134,10 @@ export function ProjectLibraryPreviewRow({
       aria-label={`${library.title} library`}
       {...libraryDropTargetProps}
     >
-      <div className="group flex items-center gap-3 rounded-sm border border-transparent p-1 hover:border-primary/30 hover:bg-primary/5">
+      <div
+        ref={menuTargetElement}
+        className="group flex items-center gap-3 rounded-sm border border-transparent p-1 hover:border-primary/30 hover:bg-primary/5"
+      >
         <Link
           to={getProjectLibraryRoute(library)}
           className="flex min-w-0 flex-1 items-center gap-3 !no-underline"
@@ -142,6 +167,12 @@ export function ProjectLibraryPreviewRow({
         <ProjectLibraryHomeSummarySlot
           library={library}
           projects={libraryProjects}
+          projectLibraryTypes={projectLibraryTypes}
+        />
+        <ProjectLibraryHomeContextMenuSlot
+          library={library}
+          projects={libraryProjects}
+          menuTargetElement={menuTargetElement}
           projectLibraryTypes={projectLibraryTypes}
         />
         <Link
