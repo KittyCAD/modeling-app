@@ -315,10 +315,10 @@ export class LocalRenderer {
     return Object.values(this.settings.defaultPlaneVisibility).some(Boolean)
   }
 
-  private getPlaneTarget(id: string | null): Mesh | null {
+  private getPlaneTargets(id: string | null): Mesh[] | null {
     if (!id) return null
     const plane = this.gpu?.planeRenderer.planes.get(id)
-    return plane?.group.visible ? plane.mesh : null
+    return plane?.group.visible ? plane.meshes : null
   }
 
   private getSelectedTargets() {
@@ -326,7 +326,7 @@ export class LocalRenderer {
       .flatMap(
         (id) =>
           this.bodyFacesById.get(id) ??
-          this.getPlaneTarget(id) ??
+          this.getPlaneTargets(id) ??
           this.targetsByEntityId.get(id)
       )
       .filter(isNonNullable)
@@ -349,11 +349,16 @@ export class LocalRenderer {
     this.scheduleRender()
   }
 
-  // What hovering the target highlights: its whole body with a body filter,
-  // otherwise all the meshes of its face, or just the target for edges and planes.
+  // What hovering the target highlights: all quadrants of a plane, its whole
+  // body with a body filter, otherwise all the meshes of its face, or just the
+  // target for edges.
   private getHoverTargets(target: Mesh | null, filter: readonly EntityType[]) {
     if (!target) {
       return []
+    }
+    const planeTargets = this.getPlaneTargets(target.name)
+    if (planeTargets) {
+      return planeTargets
     }
     if (getBodySelectionType(filter)) {
       return this.getBodyFaces(target)
@@ -368,9 +373,8 @@ export class LocalRenderer {
     const { planeRenderer, edgeRenderer, sketchLineRenderer } = gpu
     planeRenderer.updateDefaultPlanes(this.kclManager.rustContext.defaultPlanes)
     planeRenderer.setDefaultVisibility(this.settings.defaultPlaneVisibility)
-    const targets = Array.from(
-      planeRenderer.planes.values(),
-      ({ mesh }) => mesh
+    const targets = Array.from(planeRenderer.planes.values()).flatMap(
+      ({ meshes }) => meshes
     )
 
     // Rebuild lookups
