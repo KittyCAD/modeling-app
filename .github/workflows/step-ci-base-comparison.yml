@@ -16,7 +16,7 @@ jobs:
       matrix:
         include:
           - revision: candidate
-            sha: d6f1846b28ecc845d2439ab2ae82b75f20db983d
+            sha: 867454d23f5441eb13618877ba623732ee0f0289
     steps:
       - uses: actions/checkout@v6
         with:
@@ -34,6 +34,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: rust
+          cache-on-failure: true
       - name: Run candidate Rust tests
         env:
           ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
@@ -64,6 +65,8 @@ jobs:
             test(=simulation_tests::kcl_samples::kcl_test_execute_sprocket) or
             test(=simulation_tests::kcl_samples::kcl_test_execute_teapot) or
             test(=simulation_tests::kcl_samples::kcl_test_execute_tooling_nest_block) or
+            test(=simulation_tests::kcl_samples::parse_tooling_nest_block) or
+            test(=simulation_tests::kcl_samples::unparse_tooling_nest_block) or
             test(=simulation_tests::kcl_samples::kcl_test_execute_usb_c) or
             test(=simulation_tests::kcl_samples::kcl_test_execute_utility_sink) or
             test(=simulation_tests::mike_stress_test::kcl_test_execute) or
@@ -113,6 +116,8 @@ jobs:
             test(=simulation_tests::kcl_samples::kcl_test_execute_sprocket) or
             test(=simulation_tests::kcl_samples::kcl_test_execute_teapot) or
             test(=simulation_tests::kcl_samples::kcl_test_execute_tooling_nest_block) or
+            test(=simulation_tests::kcl_samples::parse_tooling_nest_block) or
+            test(=simulation_tests::kcl_samples::unparse_tooling_nest_block) or
             test(=simulation_tests::kcl_samples::kcl_test_execute_usb_c) or
             test(=simulation_tests::kcl_samples::kcl_test_execute_utility_sink) or
             test(=simulation_tests::mike_stress_test::kcl_test_execute) or
@@ -149,3 +154,75 @@ jobs:
             candidate-snapshots.patch
             candidate-snapshots.tar.gz
             test-results/
+  desktop:
+    name: Desktop failures (${{ matrix.revision }})
+    runs-on: namespace-profile-ubuntu-8-cores
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - revision: candidate
+            sha: 867454d23f5441eb13618877ba623732ee0f0289
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ matrix.sha }}
+          persist-credentials: false
+      - name: Verify WASM source identities against artifact build
+        run: |
+          git rev-parse HEAD
+          test "$(git rev-parse HEAD:rust/kcl-lib/src)" = e2626d490ec57a3c00c16c1aa308b8bb4bc0ecb1
+          test "$(git rev-parse HEAD:rust/kcl-lib/std)" = b2e785f5cc2b04c75c01dc29aa0adad13fae8de8
+          test "$(git rev-parse HEAD:rust/kcl-wasm-lib)" = 354a48cd8d11239382feefd56d8f488474820c32
+          test "$(git rev-parse HEAD:rust/kcl-lib/Cargo.toml)" = 7aeb8b6eacc88448932a58093e463f31cee78ca1
+          test "$(git rev-parse HEAD:rust/Cargo.toml)" = d1b52d5ee909ef9936dfa6b91e7ba4d709e6c8d1
+          test "$(git rev-parse HEAD:rust/Cargo.lock)" = ad4ce85eac3811f2a4f030875994bc9ba3440742
+      - uses: actions/download-artifact@v8
+        with:
+          github-token: ${{ github.token }}
+          run-id: 44548232352
+          name: prepared-wasm
+          path: prepared-wasm
+      - uses: actions/download-artifact@v8
+        with:
+          github-token: ${{ github.token }}
+          run-id: 44548232352
+          name: prepared-ts-rs-bindings
+          path: rust/kcl-lib/bindings
+      - name: Install identical WASM from verified Rust tree
+        run: |
+          mkdir -p rust/kcl-wasm-lib/pkg
+          cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg/
+          cp prepared-wasm/kcl_wasm_lib_bg.wasm public/
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright/
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+      - run: npm run playwright install --with-deps
+      - run: npm run tronb:vite:dev
+      - name: Run candidate desktop tests
+        env:
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+          FAIL_ON_CONSOLE_ERRORS: true
+          TARGET: desktop
+          E2E_WORKERS: 1
+        shell: bash
+        run: |
+          set -o pipefail
+          xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:desktop -- --grep='Core dump hotkey|Flip Surface point-and-click|bad model has inline error #3251|can extrude sketch regions' --workers=1 --retries=0 2>&1 | tee comparison-desktop.log
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: desktop-${{ matrix.revision }}
+          path: |
+            comparison-desktop.log
+            test-results/
+            playwright-report/
+          include-hidden-files: true
+
