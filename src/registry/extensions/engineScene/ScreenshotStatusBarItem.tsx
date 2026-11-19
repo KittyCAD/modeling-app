@@ -16,7 +16,7 @@ export function ScreenshotStatusBarItem() {
       onClick={() => {
         saveViewportScreenshot(
           fileOperations,
-          registry.get(viewportScreenshotService)
+          registry.required(viewportScreenshotService)
         ).catch(reportRejection)
       }}
     >

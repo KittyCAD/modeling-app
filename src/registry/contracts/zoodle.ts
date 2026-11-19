@@ -1,7 +1,6 @@
-import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
 import { TRIM_PREVIEW_LINE_COLOR } from '@src/lib/constants'
-
+import { contract, service } from 'plankton'
 export const ZOODLE_BRUSH_SIZE_MIN_PX = 1
 export const ZOODLE_BRUSH_SIZE_DEFAULT_PX = 2
 export const ZOODLE_BRUSH_SIZE_MAX_PX = 12
@@ -69,9 +68,8 @@ export interface ZoodleService {
   equipTool(toolKey: ZoodleToolKey): void
   setBrushSize(brushSize: number): void
 }
-
-export const zoodleContract = defineContract({
-  zoodleService: defineService<ZoodleService>('zoodle'),
+export const zoodleContract = contract({
+  zoodleService: service<ZoodleService>('zoodle'),
 })
 
 export const { zoodleService } = zoodleContract

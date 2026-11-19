@@ -1,10 +1,10 @@
-import { cleanup, render } from '@testing-library/react'
-import { afterEach, expect, it } from 'vitest'
 import {
-  EngineSceneViewExtensionOverlay,
   type EngineSceneExtensionContext,
   type EngineSceneViewExtension,
+  EngineSceneViewExtensionOverlay,
 } from '@src/registry/contracts/engineScene'
+import { cleanup, render } from '@testing-library/react'
+import { afterEach, expect, it } from 'vitest'
 
 afterEach(cleanup)
 
