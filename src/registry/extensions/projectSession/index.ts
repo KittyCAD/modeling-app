@@ -35,7 +35,7 @@ import {
   provide,
   type InputOf,
 } from 'plankton'
-import { computed, signal } from '@preact/signals-core'
+import { computed, effect, signal } from '@preact/signals-core'
 import {
   observations as projectStorageObservations,
   type ProjectStorage,
@@ -448,6 +448,27 @@ export const projectSessionExtension = defineFactory({
         ),
         provide(projectSession, serviceImpl),
       ],
+      start: () =>
+        effect(() => {
+          const actor = settingsInputs.settingsService.current.value?.actor
+          if (!actor) return
+
+          const initial = actor.getSnapshot()
+          let showAllFiles = initial.matches('idle')
+            ? initial.context.app.showAllFiles.current
+            : undefined
+          const subscription = actor.subscribe((snapshot) => {
+            // The project scan reads the setting from disk.
+            if (!snapshot.matches('idle')) return
+
+            const nextShowAllFiles = snapshot.context.app.showAllFiles.current
+            if (nextShowAllFiles === showAllFiles) return
+
+            showAllFiles = nextShowAllFiles
+            void serviceImpl.refreshProject().catch(reportRejection)
+          })
+          return () => subscription.unsubscribe()
+        }),
       dispose: () => {
         for (const stop of watchers.values()) stop()
         watchers.clear()
