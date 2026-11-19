@@ -389,6 +389,12 @@ it.each(['local', 'streamed'] as const)(
       done()
       const original = scene.selection.model.peek()
       expect(original).not.toBeNull()
+      model.events.dispatchEvent(
+        new CustomEvent(SceneExecutionEvents.ExecutionDone, {
+          detail: { successful: 'invalid payload' },
+        })
+      )
+      expect(scene.selection.model.peek()).toBe(original)
       const dialog = scene.selection.beginPicking({ arguments: [] })
       if (dialog instanceof Error) return expect.fail(dialog.message)
       model.executing.value = true

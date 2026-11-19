@@ -164,8 +164,8 @@ export function createSceneSelection(
     })
   }
   return {
-    model: model as ReadonlySignal<SelectionModel | null>,
-    selected: selected as ReadonlySignal<readonly SceneSelection[]>,
+    model: computed(() => model.value),
+    selected: computed(() => selected.value),
     displayed,
     filter,
     pickingEnabled,

@@ -8,6 +8,7 @@ import {
   sceneSelectionAdapter,
   attachSceneSelectionInput,
 } from '@src/lib/scene/selectionAdapter'
+import { isRecord } from '@src/lib/utils'
 import { defaultSelectionFilter } from '@src/lib/selectionFilterUtils'
 
 /** Bind shared picking to one runtime; execution invalidates geometry IDs and successful completion supplies a new target. */
@@ -30,7 +31,9 @@ export function createKclSceneSelection(
     if (model.executing.value) selection.invalidate()
   })
   const executionDone = (event: Event) => {
-    const detail = (event as CustomEvent<{ successful: boolean }>).detail
+    if (!(event instanceof CustomEvent)) return
+    const detail: unknown = event.detail
+    if (!isRecord(detail) || typeof detail.successful !== 'boolean') return
     if (!model.executing.peek() && detail.successful && !model.failed.peek())
       selection.setModel({ sceneId, executionId: Symbol('execution') })
     else selection.invalidate()
