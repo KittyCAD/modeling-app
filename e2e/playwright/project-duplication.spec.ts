@@ -25,7 +25,7 @@ const test = web ? browserTest : appTest
 type Kind = 'local' | 'cloud'
 const originalId = '12902000-0000-4000-8000-000000000099'
 const originalCode = '@settings(kclVersion = 3.0)\n// original\n'
-const editedCode = '@settings(kclVersion = 3.0)\n// edited during clone\n'
+const editedCode = '@settings(kclVersion = 3.0)\n// edited during duplication\n'
 const originalToml = `${projectToml('Original')}\n[settings.meta]\nid = "${originalId}"\n[zookeeper."dev.zoo.dev"]\nconversation_ids = ["previous-conversation"]\n[custom]\nkeep = "yes"\n`
 
 async function prepare(
@@ -33,7 +33,8 @@ async function prepare(
   destination: Kind,
   context: BrowserContext,
   page: Page,
-  info: TestInfo
+  info: TestInfo,
+  sameLibrary = false
 ) {
   await mockClientErrorReports(context)
   const remote = await mockCloudStorage(context, {
@@ -53,18 +54,24 @@ async function prepare(
   const localSource = {
     type: 'directory' as const,
     title: 'Source',
-    path: web ? '/documents/clone-source' : info.outputPath('clone-source'),
+    path: web
+      ? '/documents/duplicate-source'
+      : info.outputPath('duplicate-source'),
   }
   const localDestination = {
     type: 'directory' as const,
     title: 'Destination',
     path: web
-      ? '/documents/clone-destination'
-      : info.outputPath('clone-destination'),
+      ? '/documents/duplicate-destination'
+      : info.outputPath('duplicate-destination'),
   }
   const cloud = getDefaultCloudProjectLibrarySetting()
   const sourceLibrary = source === 'local' ? localSource : cloud
-  const destinationLibrary = destination === 'local' ? localDestination : cloud
+  const destinationLibrary = sameLibrary
+    ? sourceLibrary
+    : destination === 'local'
+      ? localDestination
+      : cloud
   const root = await page.evaluate(
     ({ source, localPath, id }) =>
       source === 'local'
@@ -92,24 +99,28 @@ async function prepare(
       destinationPath: localDestination.path,
     }
   )
-  await selectProjectLibraries(page, [sourceLibrary, destinationLibrary])
-  await openProjectLibrary(page, sourceLibrary.title)
+  await selectProjectLibraries(
+    page,
+    sameLibrary ? [sourceLibrary] : [sourceLibrary, destinationLibrary]
+  )
+  if (sameLibrary && source === 'cloud') {
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+      sourceLibrary.title
+    )
+  } else {
+    await openProjectLibrary(page, sourceLibrary.title)
+  }
   const card = page
     .getByTestId('project-link')
     .filter({ has: page.getByText('Original', { exact: true }) })
   await expect(card).toBeVisible()
-  const clone = async () => {
+  const duplicate = async () => {
     await card.click({ button: 'right' })
-    await page.getByTestId('project-card-context-clone-to-library').click()
-    await expect(
-      page
-        .locator(
-          '[data-testid="command-bar-continue"], [data-testid="command-bar-submit"]'
-        )
-        .first()
-    ).toBeVisible()
+    await page.getByTestId('project-card-context-duplicate').click()
+    await page
+      .getByRole('option', { name: destinationLibrary.title, exact: true })
+      .click()
     const next = page.getByTestId('command-bar-continue')
-    if (await next.isVisible()) await next.click()
     await expect(page.getByText('The original', { exact: false })).toBeVisible()
     await expect(page.getByTestId('header-arg-value')).toHaveText([
       'Original',
@@ -139,7 +150,7 @@ async function prepare(
   return {
     remote,
     root,
-    clone,
+    duplicate,
     readSource,
     openProject: async (projectPath: string) => {
       const filePath = await page.evaluate(
@@ -149,20 +160,22 @@ async function prepare(
       await navigate(`/file/${encodeURIComponent(filePath)}`)
       await page.locator('.cm-content').first().waitFor({ state: 'visible' })
     },
-    destinationDirectory: localDestination.path,
-    renameCloneRoundTrip: async () => {
+    destinationDirectory: sameLibrary
+      ? localSource.path
+      : localDestination.path,
+    renameDuplicateRoundTrip: async () => {
       await navigate('/home')
       await waitForAppLoad(page)
       await expect(page.getByTestId('home-header')).toBeVisible()
       await openProjectLibrary(page, destinationLibrary.title)
       let title = 'Original'
-      for (const nextTitle of ['Renamed clone', 'Original']) {
-        const clonedCard = page.getByTestId('project-link').filter({
+      for (const nextTitle of ['Renamed duplicate', 'Original']) {
+        const duplicatedCard = page.getByTestId('project-link').filter({
           has: page.getByText(title, { exact: true }),
         })
-        await expect(clonedCard).toHaveCount(1)
-        await expect(clonedCard).toBeVisible()
-        await clonedCard.click({ button: 'right' })
+        await expect(duplicatedCard).toHaveCount(1)
+        await expect(duplicatedCard).toBeVisible()
+        await duplicatedCard.click({ button: 'right' })
         await page.getByTestId('project-card-context-rename').click()
         await page.getByTestId('project-rename-input').fill(nextTitle)
         await page.getByTestId('project-rename-input').press('Enter')
@@ -184,7 +197,7 @@ for (const [source, destination] of [
   ['cloud', 'local'],
 ] as const) {
   test(
-    `clones ${source} to ${destination} as an independent project and keeps the source`,
+    `duplicates ${source} to ${destination} as an independent project and keeps the source`,
     { tag: ['@web', '@desktop'] },
     async ({ context, page }, info) => {
       const storage = await prepare(source, destination, context, page, info)
@@ -199,7 +212,7 @@ for (const [source, destination] of [
           await route.fallback()
         })
       try {
-        await storage.clone()
+        await storage.duplicate()
         if (destination === 'cloud') {
           await started.promise
           await installPausedClock(page)
@@ -233,7 +246,7 @@ for (const [source, destination] of [
         )
         await expect(
           page.getByText(
-            `Created a clone of "Original" in "${destination === 'cloud' ? 'Personal Cloud' : 'Destination'}".`,
+            `Created a duplicate of "Original" in "${destination === 'cloud' ? 'Personal Cloud' : 'Destination'}".`,
             { exact: true }
           )
         ).toBeVisible()
@@ -261,10 +274,12 @@ for (const [source, destination] of [
         await expect(page.locator('.cm-content').first()).toContainText(
           '// original'
         )
-        await storage.renameCloneRoundTrip()
+        await storage.renameDuplicateRoundTrip()
         await storage.openProject(storage.root)
         await expect(page.locator('.cm-content').first()).toContainText(
-          destination === 'cloud' ? '// edited during clone' : '// original'
+          destination === 'cloud'
+            ? '// edited during duplication'
+            : '// original'
         )
       } finally {
         release.resolve(undefined)
@@ -273,8 +288,64 @@ for (const [source, destination] of [
   )
 }
 
+for (const kind of ['local', 'cloud'] as const) {
+  test(
+    `duplicates within the same ${kind} library through the destination picker`,
+    { tag: ['@web', '@desktop'] },
+    async ({ context, page }, info) => {
+      const storage = await prepare(kind, kind, context, page, info, true)
+      const before =
+        kind === 'local'
+          ? await page.evaluate(
+              (root) => window.app.fileOperations.readDirectory(root),
+              storage.destinationDirectory
+            )
+          : []
+      await storage.duplicate()
+      await expect(
+        page.getByText(
+          `Created a duplicate of "Original" in "${kind === 'local' ? 'Source' : 'Personal Cloud'}".`,
+          { exact: true }
+        )
+      ).toBeVisible()
+      await expect(page.getByTestId('command-bar-wrapper')).toBeHidden()
+      expect(await storage.readSource('main.kcl')).toBe(originalCode)
+      expect(await storage.readSource('project.toml')).toBe(originalToml)
+      const createdDirectories =
+        kind === 'local'
+          ? (
+              await page.evaluate(
+                (root) => window.app.fileOperations.readDirectory(root),
+                storage.destinationDirectory
+              )
+            ).filter((name) => !before.includes(name))
+          : []
+      if (kind === 'local') expect(createdDirectories).toHaveLength(1)
+      const target =
+        kind === 'local'
+          ? `${storage.destinationDirectory}/${createdDirectories[0]}`
+          : `/__zoo_cloud__/${storage.remote.creates[0].id}`
+      expect(target).not.toBe(storage.root)
+      await storage.openProject(target)
+      await expect(page.locator('.cm-content').first()).toContainText(
+        '// original'
+      )
+      const toml = await page.evaluate(
+        async (root) =>
+          new TextDecoder().decode(
+            await window.app.fileOperations.readFile(`${root}/project.toml`)
+          ),
+        target
+      )
+      expect(toml).not.toContain(originalId)
+      expect(toml).not.toContain('previous-conversation')
+      expect(toml).toContain('keep = "yes"')
+    }
+  )
+}
+
 test(
-  'a failed seven-second cloud clone preserves the source and its later edits',
+  'a failed seven-second cloud duplication preserves the source and its later edits',
   { tag: ['@web', '@desktop'] },
   async ({ context, page }, info) => {
     const storage = await prepare('local', 'cloud', context, page, info)
@@ -293,7 +364,7 @@ test(
       })
     })
     try {
-      await storage.clone()
+      await storage.duplicate()
       await started.promise
       await installPausedClock(page)
       await page.clock.runFor(7_000)
@@ -307,14 +378,14 @@ test(
       await expect(
         page
           .getByRole('status')
-          .filter({ hasText: 'Failed to execute command: Clone project' })
+          .filter({ hasText: 'Failed to execute command: Duplicate project' })
       ).toBeVisible()
       expect(storage.remote.projects).toHaveLength(0)
       expect(await storage.readSource('main.kcl')).toBe(editedCode)
       expect(await storage.readSource('project.toml')).toBe(originalToml)
       await storage.openProject(storage.root)
       await expect(page.locator('.cm-content').first()).toContainText(
-        '// edited during clone'
+        '// edited during duplication'
       )
     } finally {
       release.resolve(undefined)

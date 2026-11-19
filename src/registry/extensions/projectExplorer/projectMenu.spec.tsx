@@ -4,7 +4,19 @@ import type { Project } from '@src/lib/project'
 import { createProjectForTest } from '@src/lib/projectTestUtils'
 import getDesktopAppExtension from '@src/registry/extensions/getDesktopApp'
 import { fireEvent, render, screen } from '@testing-library/react'
-import { Registry } from 'plankton'
+import { contribute, provide, Registry, type InputOf } from 'plankton'
+import { signal } from '@preact/signals-core'
+import homeProjectsExtension from '@src/registry/extensions/homeProjects'
+import { homeProjectEntriesFacet } from '@src/registry/contracts/homeProjects'
+import { projectLibraryTypesFacet } from '@src/registry/contracts/projectLibraries'
+import {
+  settingsService,
+  type SettingsRegistryService,
+} from '@src/registry/contracts/settings'
+import {
+  commandSystemService,
+  type CommandSystemService,
+} from '@src/registry/contracts/commands'
 import type { ReactNode } from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { afterEach, describe, expect, test, vi } from 'vitest'
@@ -45,7 +57,6 @@ function renderWithRouter(children: ReactNode) {
 }
 async function createProjectMenuApp() {
   const registry = new Registry()
-  await registry.configure([projectExplorerExtension, getDesktopAppExtension])
   const commandsActor = createActor(
     createMachine({
       context: {
@@ -53,15 +64,56 @@ async function createProjectMenuApp() {
       },
     })
   ).start()
+  const commands = { actor: commandsActor, send: vi.fn() }
+  await registry.configure([
+    projectExplorerExtension,
+    getDesktopAppExtension,
+    homeProjectsExtension,
+    contribute(
+      homeProjectEntriesFacet,
+      () =>
+        ({
+          id: 'current-project',
+          name: projectWellFormed.name,
+          title: projectWellFormed.title,
+          source: 'local',
+          status: 'local',
+          localProjectPath: projectWellFormed.path,
+          readWriteAccess: true,
+          libraryId: 'default-project-directory',
+        }) satisfies InputOf<typeof homeProjectEntriesFacet>
+    ),
+    contribute(projectLibraryTypesFacet, () => ({
+      type: 'directory',
+      title: 'Directory',
+      operations: {
+        cloneProjectFrom: { run: async () => undefined },
+        cloneProjectTo: { run: async () => undefined },
+      },
+    })),
+    provide(settingsService, {
+      current: signal({
+        app: {
+          libraries: {
+            current: [
+              {
+                type: 'directory',
+                title: 'Local projects',
+                path: '/some/path',
+              },
+            ],
+          },
+        },
+      }),
+    } as unknown as SettingsRegistryService),
+    provide(commandSystemService, commands as unknown as CommandSystemService),
+  ])
   return {
     app: {
       machineManager: {
         machines: [],
       },
-      commands: {
-        actor: commandsActor,
-        send: vi.fn(),
-      },
+      commands,
       projectOperations: {
         duplicateProject: vi.fn(async () => ({
           path: '/projects/duplicated',
@@ -127,26 +179,23 @@ describe('project explorer project menu', () => {
       await dispose()
     }
   })
-  test('duplicates the current project', async () => {
+  test('opens one Duplicate action with the current project preselected', async () => {
     const { app, dispose } = await createProjectMenuApp()
     try {
       renderWithRouter(
         <ProjectSidebarMenu app={app} enableMenu project={projectWellFormed} />
       )
       fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
-      const duplicateButton = (
-        await screen.findByTestId('project-sidebar-duplicate-project')
-      ).closest('button')
-      expect(duplicateButton).not.toBeNull()
-      if (!duplicateButton) {
-        return
-      }
-      fireEvent.click(duplicateButton)
-      expect(app.projectOperations.duplicateProject).toHaveBeenCalledWith(
-        projectWellFormed,
-        projectWellFormed.title,
-        undefined
-      )
+      fireEvent.click(screen.getByRole('button', { name: 'Duplicate project' }))
+      expect(app.commands.send).toHaveBeenCalledWith({
+        type: 'Find and select command',
+        data: {
+          groupId: 'projects',
+          name: 'Duplicate project',
+          argDefaultValues: { project: 'current-project' },
+        },
+      })
+      expect(app.projectOperations.duplicateProject).not.toHaveBeenCalled()
     } finally {
       await dispose()
     }

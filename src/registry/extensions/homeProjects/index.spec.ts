@@ -2,6 +2,7 @@ import { signal } from '@preact/signals-core'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
+  projectLibraryFromSetting,
   DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_LOCAL_PATH,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE,
@@ -16,6 +17,10 @@ import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
+import {
+  projectSession,
+  type ProjectSessionService,
+} from '@src/registry/contracts/projectSession'
 import homeProjectsExtension from '@src/registry/extensions/homeProjects'
 import { contribute, type InputOf, provide, Registry } from 'plankton'
 import { describe, expect, it, vi } from 'vitest'
@@ -110,4 +115,121 @@ describe('home project actions', () => {
       await registry.dispose()
     }
   })
+  it('offers the source library alongside other compatible destinations', async () => {
+    const destination = projectLibraryFromSetting({
+      ...library,
+      source: 'other-server',
+      title: 'Other library',
+    })
+    const registry = new Registry()
+    const settings = signal({
+      app: { libraries: { current: [destination, library] } },
+    })
+    const source = {
+      localProjectPath: '/source/project',
+      localProjectName: 'Bracket',
+    }
+    const copy = vi.fn(async () => ({ defaultFile: '/source/copy/main.kcl' }))
+    await registry.configure([
+      homeProjectsExtension,
+      contribute(projectLibraryTypesFacet, () => ({
+        type: library.type,
+        title: library.title,
+        operations: {
+          cloneProjectFrom: { run: async () => source },
+          cloneProjectTo: { run: copy },
+        },
+      })),
+      provide(settingsService, {
+        current: settings,
+        get: () => settings.value,
+      } as unknown as SettingsRegistryService),
+    ])
+    try {
+      const actions = registry.required(homeProjectActionsService)
+      expect(
+        actions
+          .getDuplicateToLibraryTargets(project)
+          .map((target) => target.library.id)
+      ).toEqual([destination.id, library.id])
+      await actions.duplicateToLibrary(project, library.id)
+      expect(copy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          library: expect.objectContaining(library),
+          sourceLibrary: expect.objectContaining(library),
+          project,
+          source,
+        })
+      )
+    } finally {
+      await registry.dispose()
+    }
+  })
+  it.each([true, false])(
+    'flushes the open editor before copying and stops when saving fails: %s',
+    async (saved) => {
+      const registry = new Registry()
+      const entry = { ...project, projectPath: '/source/project' }
+      const settings = signal({ app: { libraries: { current: [library] } } })
+      const gate = Promise.withResolvers<boolean>()
+      let storedCode = 'previous contents'
+      let copiedCode: string | undefined
+      const flushWriteToFile = vi.fn(async () => {
+        const success = await gate.promise
+        if (success) storedCode = 'latest editor contents'
+        return success
+      })
+      await registry.configure([
+        homeProjectsExtension,
+        contribute(projectLibraryTypesFacet, () => ({
+          type: library.type,
+          title: library.title,
+          operations: {
+            cloneProjectFrom: {
+              run: async () => ({
+                localProjectPath: '/source/project',
+                localProjectName: 'Bracket',
+              }),
+            },
+            cloneProjectTo: {
+              run: async () => {
+                copiedCode = storedCode
+                return undefined
+              },
+            },
+          },
+        })),
+        provide(settingsService, {
+          current: settings,
+          get: () => settings.value,
+        } as unknown as SettingsRegistryService),
+        provide(projectSession, {
+          project: signal({
+            path: entry.projectPath,
+            executingEditor: signal({ flushWriteToFile }),
+          }),
+        } as unknown as ProjectSessionService),
+      ])
+      try {
+        const copying = registry
+          .required(homeProjectActionsService)
+          .duplicateToLibrary(entry, library.id)
+        expect(copiedCode).toBeUndefined()
+        expect(flushWriteToFile).toHaveBeenCalledOnce()
+        gate.resolve(saved)
+        if (saved) {
+          await copying
+          expect(copiedCode).toBe('latest editor contents')
+        } else {
+          await expect(copying).rejects.toThrow(
+            'Save the project before duplicating it'
+          )
+          expect(copiedCode).toBeUndefined()
+        }
+      } finally {
+        gate.resolve(false)
+        await registry.dispose()
+      }
+    }
+  )
 })
