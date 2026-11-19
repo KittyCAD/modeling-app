@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { LocalRenderer } from '@src/clientSideScene/localRenderer/LocalRenderer'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 vi.mock('@src/lib/desktop', () => ({ writeProjectThumbnailFile: vi.fn() }))
@@ -87,10 +86,10 @@ it.each(['streamed', 'local'] as const)(
       new DOMRect(0, 0, 40, 30)
     )
     const video = document.createElement('video')
-    const drawImage = vi.fn()
-    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({
-      drawImage,
-    } as unknown as CanvasRenderingContext2D)
+    const context = canvas.getContext('2d')
+    if (!context) throw new Error('The canvas fixture requires a 2D context')
+    const drawImage = vi.spyOn(context, 'drawImage')
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(context)
     vi.spyOn(HTMLCanvasElement.prototype, 'toDataURL').mockReturnValue(
       'data:image/png;base64,c2NlbmU='
     )
@@ -102,7 +101,7 @@ it.each(['streamed', 'local'] as const)(
     const source =
       presentation === 'local'
         ? {
-            localRenderer: localRenderer as unknown as LocalRenderer,
+            localRenderer,
           }
         : { canvas, video }
     expect(captureViewportScreenshot(source)).toBe(
