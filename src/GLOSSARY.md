@@ -142,7 +142,7 @@ A contribution of CodeMirror behavior to each matching Code surface, such as syn
 
 A contributed component that displays an editor's buffer. An editor can offer several matching modes; each view instance retains its own selected mode. Switching modes preserves the editor's identity, contents, and history. The Code mode supplies the CodeMirror editing interface.
 
-**Also called:** editor view, in the contribution API; contributed surface, in implementation comments. Qualify these names because view also refers to CodeMirror's `EditorView`.
+**Also called:** editor presentation mode; editor view, in the contribution API; contributed surface, in implementation comments. Qualify these names because view also refers to CodeMirror's `EditorView`.
 
 **Related:** [Editor](#editor) supplies the buffer; [Editors pane](#editors-pane) presents the mode chooser; [Code Editor](#code-editor) describes the familiar editing Area; [Workbench](#workbench) describes a broader Workspace configuration.
 
@@ -191,3 +191,13 @@ A contributed status component displayed beside an editor's tab label. The compo
 **Related:** [Editors pane](#editors-pane) renders indicators; [Editor](#editor) supplies their context. An indicator reports information independently of the control used to select an [Editor mode](#editor-mode).
 
 **Search anchors:** `EditorTabIndicator`, `editorTabIndicatorValueSpec` in the [editors contract](lib/editors/registry/contract.ts).
+
+## Modeling interaction state
+
+The current activity within a Modeling presentation, such as inspecting a model or editing a sketch. It determines which modeling tools and interactions are available without selecting a different editor presentation mode.
+
+**Related:** [Editor mode](#editor-mode) chooses a presentation of the document; a [Sketch editing session](#sketch-editing-session) is a sustained modeling interaction.
+
+## Sketch editing session
+
+A period of editing one selected sketch, including its sketch plane, geometry, constraints, and active sketch tools. Entering or leaving sketch editing changes the modeling interaction state while retaining the same document.

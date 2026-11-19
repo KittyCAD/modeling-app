@@ -64,6 +64,7 @@ describe('engine connection setup', () => {
       const setStreamIsReady = vi.fn()
       await createOnEngineConnectionOpened({
         connection,
+        isCurrent: () => true,
         settings: {
           theme: Themes.Light,
           viewportRendering: 'ssao',
