@@ -1,3 +1,8 @@
+import { commandKey } from '@src/lib/commandUtils'
+import {
+  EXPORT_PROJECT_ARCHIVE_COMMAND,
+  EXPORT_PROJECT_ARCHIVE_LABEL,
+} from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { getDeleteKeys } from '@src/lib/utils'
 import {
@@ -143,6 +148,13 @@ export const defaultKeymap: KeymapDocument = {
       command: APP_COMMAND_IDS.search.focusProjects,
       hidden: true,
       userBindingCommand: APP_COMMAND_IDS.search.focusProjects,
+    },
+    {
+      id: 'project.export-archive',
+      title: EXPORT_PROJECT_ARCHIVE_LABEL,
+      when: [...FILE_KEYMAP_SCOPES, CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['mod+shift+s'],
+      command: commandKey(EXPORT_PROJECT_ARCHIVE_COMMAND),
     },
     {
       id: 'editor.undo',

@@ -8,7 +8,7 @@ import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
 import type { App } from '@src/lib/app'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
-import { selectCommand } from '@src/lib/commandUtils'
+import { commandKey, selectCommand } from '@src/lib/commandUtils'
 import {
   APP_NAME,
   EXPORT_MODEL_LABEL,
@@ -204,15 +204,27 @@ function ProjectMenuPopover({
   const platform = usePlatform()
   const navigate = useNavigate()
   const keymap = app.registry.optional(keymapService)
+  const keymapScopes = app.registry.observe(keymapScopesFacet).value
+  const currentScopes = keymap?.getCurrentScopes() ?? []
   const projectSettingsKeybinding = keymapKeystrokesDisplay(
     keymap
       ? findKeymapItemForCommand(
           keymap.keymap.value,
           'zds.settings.open',
-          keymap.getCurrentScopes(),
-          app.registry.observe(keymapScopesFacet).value
+          currentScopes,
+          keymapScopes
         )?.keystrokes
       : [`mod+${isDesktop() ? '' : 'shift'}+,`],
+    platform
+  )
+  const projectArchiveKeybinding = keymapKeystrokesDisplay(
+    keymap &&
+      findKeymapItemForCommand(
+        keymap.keymap.value,
+        commandKey(EXPORT_PROJECT_ARCHIVE_COMMAND),
+        currentScopes,
+        keymapScopes
+      )?.keystrokes,
     platform
   )
   const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
@@ -409,6 +421,11 @@ function ProjectMenuPopover({
               <span className={projectMenuItemLabelClassName}>
                 {EXPORT_PROJECT_ARCHIVE_LABEL}
               </span>
+              {projectArchiveKeybinding && (
+                <kbd className={projectMenuItemHotkeyClassName}>
+                  {projectArchiveKeybinding}
+                </kbd>
+              )}
               {!findCommand(EXPORT_PROJECT_ARCHIVE_COMMAND) && (
                 <Tooltip
                   position="right"
@@ -509,6 +526,7 @@ function ProjectMenuPopover({
       filePath,
       machineCount,
       navigate,
+      projectArchiveKeybinding,
       projectSettingsKeybinding,
       settings.actor,
     ]
@@ -541,7 +559,7 @@ function ProjectMenuPopover({
       />
       <Popover.Panel
         data-testid="project-sidebar-menu"
-        className={`z-10 absolute top-full left-0 mt-1 pb-1 w-52 bg-chalkboard-10 dark:bg-chalkboard-90
+        className={`z-10 absolute top-full left-0 mt-1 pb-1 w-64 bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
           shadow-lg`}
       >
