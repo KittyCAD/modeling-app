@@ -1,9 +1,14 @@
-import { beforeAll, describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it, onTestFinished } from 'vitest'
+import { waitFor } from 'xstate'
+import { join, sep } from 'path'
 import { App } from '@src/lib/app'
 import { File } from '@src/lang/KclManager'
 import type { Project } from '@src/lib/project'
 import { loadWasm } from '@src/unitTestUtils'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+
+const projectPath = join(sep, 'some-dir', 'test')
+const mainPath = join(projectPath, 'main.kcl')
 
 const mockProject: Project = {
   name: 'test',
@@ -18,12 +23,12 @@ const mockProject: Project = {
     size: 100,
     type: null,
   },
-  path: '/some-dir/test',
+  path: projectPath,
   readWriteAccess: true,
   children: [
     {
       name: 'main.kcl',
-      path: '/some-dir/test/main.kcl',
+      path: mainPath,
       children: [],
     },
   ],
@@ -46,6 +51,25 @@ describe('project system', () => {
       wasmPromise: loadWasm(),
     })
 
+    onTestFinished(() => {
+      app.closeProject()
+      app.auth.actor.stop()
+      app.billing.actor.stop()
+      app.commands.actor.stop()
+      app.settings.actor.stop()
+      app.systemIOActor.stop()
+      app.machineManager.stop()
+      app.layout.saveEffectUnsubscribeFn()
+    })
+
+    // Authentication starts with the app. Let it settle before the test's
+    // environment is torn down, otherwise its pending logs outlive the worker.
+    await waitFor(
+      app.auth.actor,
+      (state) => !state.matches('checkIfLoggedIn'),
+      { timeout: 10_000 }
+    )
+
     const project = await app.openProject(mockProject)
 
     expect(app.project).toBeDefined()
@@ -53,7 +77,7 @@ describe('project system', () => {
     expect(app.project?.executingFileEntry.value.name).toEqual('')
 
     await project.openEditor(mockProject.children![0].path)
-    expect(app.project?.executingPath).toEqual('/some-dir/test/main.kcl')
+    expect(app.project?.executingPath).toEqual(mainPath)
     expect(app.project?.executingFileEntry.value.name).toEqual('main.kcl')
 
     app.closeProject()
