@@ -228,13 +228,8 @@ fillet001 = ${call}`
       expect(newCode).toContain('radius = radius001')
     })
 
-    it(
-      'should add a fillet to the post-subtract body when selecting the original box edge',
-      {
-        timeout: 30_000,
-      },
-      async () => {
-        const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+    it('should add a fillet to the post-subtract body when selecting the original box edge', async () => {
+      const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 boxLength = 100
 boxWidth = 100
@@ -333,91 +328,87 @@ part = subtract(boxSolid, tools = [cutoutCutter])
 
 hide([boxProfile, bottomProfile, lowerWallProfile, upperWallProfile, topProfile])`
 
-        const { artifactGraph, ast } = await getAstAndArtifactGraph(
-          code,
-          instanceInThisFile,
-          kclManagerInThisFile
-        )
-        const boxSolidStart = code.indexOf('boxSolid = extrude')
-        const boxSolidEnd = code.indexOf('bottomPlane =')
-        const boxSweep = [...artifactGraph.values()].find(
-          (artifact) =>
-            artifact.type === 'sweep' &&
-            artifact.codeRef.range[0] >= boxSolidStart &&
-            artifact.codeRef.range[0] < boxSolidEnd
-        )
-        if (!boxSweep) {
-          throw new Error('boxSolid sweep artifact not found')
-        }
-
-        const topEdgeStart = code.indexOf('topEdge = line')
-        const topEdgeRange = topLevelRange(
-          topEdgeStart,
-          code.indexOf('\n', topEdgeStart)
-        )
-        const topWall = [...artifactGraph.values()].find((artifact) => {
-          if (artifact.type !== 'wall' || artifact.sweepId !== boxSweep.id) {
-            return false
-          }
-          const segment = getOriginalSegmentArtifact(
-            artifact.segId,
-            artifactGraph
-          )
-          return segment && isOverlap(segment.codeRef.range, topEdgeRange)
-        })
-        const endCap = [...artifactGraph.values()].find(
-          (artifact) =>
-            artifact.type === 'cap' &&
-            artifact.sweepId === boxSweep.id &&
-            artifact.subType === 'end'
-        )
-        if (!topWall || topWall.type !== 'wall' || !endCap) {
-          throw new Error('boxSolid top edge wall and end cap not found')
-        }
-        const codeRef = getCodeRefsByArtifactId(
-          topWall.segId,
-          artifactGraph
-        )?.[0]
-        if (!codeRef)
-          throw new Error('boxSolid top edge code reference not found')
-
-        const radius = (await stringToKclExpression(
-          '1',
-          rustContextInThisFile
-        )) as KclCommandValue
-        const result = addFillet({
-          ast,
-          artifactGraph,
-          selection: {
-            graphSelections: [
-              {
-                entityRef: {
-                  type: 'edge',
-                  side_faces: [topWall.id, endCap.id],
-                },
-                codeRef,
-              },
-            ],
-            otherSelections: [],
-          },
-          radius,
-          wasmInstance: instanceInThisFile,
-        })
-        if (err(result)) {
-          throw result
-        }
-
-        const newCode = recast(result.modifiedAst, instanceInThisFile)
-        if (err(newCode)) throw newCode
-        expect(newCode).toMatch(
-          /fillet001 = fillet\(\s*part,\s*edges = \[\s*\{\s*sideFaces = \[/
-        )
-        expect(newCode).toContain('boxRegion.tags.topEdge')
-        expect(newCode).toContain('radius = 1')
-        await kclManagerInThisFile.executeAst({ ast: result.modifiedAst })
-        expect(kclManagerInThisFile.errors).toEqual([])
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const boxSolidStart = code.indexOf('boxSolid = extrude')
+      const boxSolidEnd = code.indexOf('bottomPlane =')
+      const boxSweep = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'sweep' &&
+          artifact.codeRef.range[0] >= boxSolidStart &&
+          artifact.codeRef.range[0] < boxSolidEnd
+      )
+      if (!boxSweep) {
+        throw new Error('boxSolid sweep artifact not found')
       }
-    )
+
+      const topEdgeStart = code.indexOf('topEdge = line')
+      const topEdgeRange = topLevelRange(
+        topEdgeStart,
+        code.indexOf('\n', topEdgeStart)
+      )
+      const topWall = [...artifactGraph.values()].find((artifact) => {
+        if (artifact.type !== 'wall' || artifact.sweepId !== boxSweep.id) {
+          return false
+        }
+        const segment = getOriginalSegmentArtifact(
+          artifact.segId,
+          artifactGraph
+        )
+        return segment && isOverlap(segment.codeRef.range, topEdgeRange)
+      })
+      const endCap = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'cap' &&
+          artifact.sweepId === boxSweep.id &&
+          artifact.subType === 'end'
+      )
+      if (!topWall || topWall.type !== 'wall' || !endCap) {
+        throw new Error('boxSolid top edge wall and end cap not found')
+      }
+      const codeRef = getCodeRefsByArtifactId(topWall.segId, artifactGraph)?.[0]
+      if (!codeRef)
+        throw new Error('boxSolid top edge code reference not found')
+
+      const radius = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection: {
+          graphSelections: [
+            {
+              entityRef: {
+                type: 'edge',
+                side_faces: [topWall.id, endCap.id],
+              },
+              codeRef,
+            },
+          ],
+          otherSelections: [],
+        },
+        radius,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toMatch(
+        /fillet001 = fillet\(\s*part,\s*edges = \[\s*\{\s*sideFaces = \[/
+      )
+      expect(newCode).toContain('boxRegion.tags.topEdge')
+      expect(newCode).toContain('radius = 1')
+      await kclManagerInThisFile.executeAst({ ast: result.modifiedAst })
+      expect(kclManagerInThisFile.errors).toEqual([])
+    })
 
     it('should add a fillet call using engine primitive edge indices', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
@@ -2389,7 +2380,7 @@ extrude001 = extrude(sketch001, length = -15)`
             instanceInThisFile,
             kclManagerInThisFile
           )
-        }, 10_000)
+        })
         it(`should delete a standalone assigned ${edgeTreatmentType} from a single segment`, async () => {
           const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -2417,7 +2408,7 @@ extrude001 = extrude(sketch001, length = -15)`
             instanceInThisFile,
             kclManagerInThisFile
           )
-        }, 10_000)
+        })
         it(`should delete a standalone ${edgeTreatmentType} without assignment from a single segment`, async () => {
           const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -2445,7 +2436,7 @@ extrude001 = extrude(sketch001, length = -15)`
             instanceInThisFile,
             kclManagerInThisFile
           )
-        }, 10_000)
+        })
         // getOppositeEdge and getNextAdjacentEdge cases
         it(`should delete a piped ${edgeTreatmentType} tagged with getOppositeEdge`, async () => {
           const code = `sketch001 = startSketchOn(XY)
@@ -2474,7 +2465,7 @@ extrude001 = extrude(sketch001, length = -15)`
             instanceInThisFile,
             kclManagerInThisFile
           )
-        }, 10_000)
+        })
         it(`should delete a non-piped ${edgeTreatmentType} tagged with getNextAdjacentEdge`, async () => {
           const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -2502,7 +2493,7 @@ extrude001 = extrude(sketch001, length = -15)`
             instanceInThisFile,
             kclManagerInThisFile
           )
-        }, 10_000)
+        })
         // cases with several edge treatments
         it(`should delete a piped ${edgeTreatmentType} from a body with multiple treatments`, async () => {
           const code = `sketch001 = startSketchOn(XY)
@@ -2536,7 +2527,7 @@ chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
             instanceInThisFile,
             kclManagerInThisFile
           )
-        }, 10_000)
+        })
         it(`should delete a non-piped ${edgeTreatmentType} from a body with multiple treatments`, async () => {
           const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -2570,7 +2561,7 @@ chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
             instanceInThisFile,
             kclManagerInThisFile
           )
-        }, 10_000)
+        })
         // KCL 3.0 copies of the two multiple-treatment cases above. Under
         // KCL 3.0, fillets and chamfers execute immediately, so each edge
         // lookup is hoisted above the first cut that could consume its edge.
@@ -2616,7 +2607,7 @@ chamfer001 = chamfer(extrude001, length = 5, tags = [seg01OppositeEdge])`
             instanceInThisFile,
             kclManagerInThisFile
           )
-        }, 10_000)
+        })
         it(`should delete a non-piped ${edgeTreatmentType} from a body with multiple treatments under KCL 3.0`, async () => {
           const code = `@settings(kclVersion = "3.0-preview")
 
@@ -2660,7 +2651,7 @@ chamfer001 = chamfer(extrude001, length = 5, tags = [seg01OppositeEdge])`
             instanceInThisFile,
             kclManagerInThisFile
           )
-        }, 10_000)
+        })
         // Revolve-specific test
         it(`should delete a ${edgeTreatmentType} from a revolved C-shape with rectangular profile`, async () => {
           const code = `sketch001 = startSketchOn(XY)
@@ -2699,7 +2690,7 @@ revolve001 = revolve(
             instanceInThisFile,
             kclManagerInThisFile
           )
-        }, 10_000)
+        })
         // Test deletion of geometrically impossible edge treatment
         it(`should delete a ${edgeTreatmentType} with geometrically impossible value from a revolved shape`, async () => {
           const code = `sketch001 = startSketchOn(XY)
@@ -2774,7 +2765,7 @@ revolve001 = revolve(
           // recast and check
           const newCode = recast(result, instanceInThisFile)
           expect(newCode).toContain(expectedCode)
-        }, 10_000)
+        })
         // Test deletion of geometrically impossible edge treatment (piped case)
         it(`should delete a piped ${edgeTreatmentType} with geometrically impossible value from a revolved shape`, async () => {
           const code = `sketch001 = startSketchOn(XY)
@@ -2840,7 +2831,7 @@ revolve001 = revolve(`
           // recast and check
           const newCode = recast(result, instanceInThisFile)
           expect(newCode).toContain(expectedCode)
-        }, 10_000)
+        })
       })
     }
   )

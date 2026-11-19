@@ -24,7 +24,7 @@ type ProjectStorage = Pick<
  */
 function createSession(
   project: Project,
-  storage: () => ProjectStorage,
+  storage: ProjectStorage,
   lifetime: AbortSignal
 ): MutableProjectSession {
   const root = project.contents.path
@@ -57,14 +57,14 @@ function createSession(
       read: async (relativePath) => {
         const path = filePath(relativePath)
         if (path instanceof Error) return Promise.reject(path)
-        const bytes = await storage().readFile(path)
+        const bytes = await storage.readFile(path)
         return new TextDecoder().decode(bytes)
       },
       write: async (relativePath, contents) => {
         if (!canWrite) return Promise.reject(new Error('Project is read-only'))
         const path = filePath(relativePath)
         if (path instanceof Error) return Promise.reject(path)
-        await storage().writeFile(path, contents)
+        await storage.writeFile(path, contents)
       },
     },
   }
@@ -73,10 +73,10 @@ function createSession(
 /**
  * Select project data without acquiring editor resources or changing the legacy session.
  * Replacing or clearing the selection leaves captured sessions usable against their original root.
- * Storage is resolved lazily so registering the service performs no filesystem work.
+ * File capabilities are captured at construction; reads and writes happen only on request.
  */
 export function createProjectSessionService(
-  storage: () => ProjectStorage
+  storage: ProjectStorage
 ): ProjectSessionService {
   const currentSession = signal<MutableProjectSession | undefined>(undefined)
   let lifetime: AbortController | undefined
@@ -105,6 +105,18 @@ export function createProjectSessionService(
         previous?.abort()
       })
       return next
+    },
+    updateProject: (session, project) => {
+      const current = currentSession.peek()
+      if (current !== session || current.signal.aborted)
+        return new Error('The project opening is no longer active')
+      const previous = current.project.peek()
+      if (
+        previous.contents.path !== project.contents.path ||
+        previous.storage?.projectId !== project.storage?.projectId
+      )
+        return new Error('A snapshot cannot change the project identity')
+      current.project.value = project
     },
     updateMetadata: (session, metadata) => {
       const current = currentSession.peek()

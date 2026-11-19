@@ -1,5 +1,6 @@
 import { expect, test } from '@e2e/playwright/base-test'
 import { ModelingDialogFixture } from '@e2e/playwright/fixtures/modelingDialogFixture'
+import { browserTestUtilsPath } from '@e2e/playwright/lib/browserTestUtilsPath'
 import type { Page } from '@playwright/test'
 import type * as ModelingDialogFields from '@e2e/playwright/lib/modelingDialogFieldTestUtils'
 
@@ -17,14 +18,16 @@ async function openDialog(page: Page, contents = '') {
 for (const initial of ['', '5']) {
   test(
     `replaces and clears ${initial ? 'prefilled' : 'empty optional'} CodeMirror fields`,
-    { tag: '@web' },
+    { tag: ['@web', '@browsers'] },
     async ({ page }) => {
       const dialog = await openDialog(page)
-      const editor = await page.evaluateHandle(async (initial) => {
-        const modulePath = '/e2e/playwright/lib/modelingDialogFieldTestUtils.ts'
-        const fields: typeof ModelingDialogFields = await import(modulePath)
-        return fields.createModelingDialogField(initial)
-      }, initial)
+      const editor = await page.evaluateHandle(
+        async ({ initial, modulePath }) => {
+          const fields: typeof ModelingDialogFields = await import(modulePath)
+          return fields.createModelingDialogField(initial)
+        },
+        { initial, modulePath: browserTestUtilsPath }
+      )
       for (const value of ['12', '[1mm, 2mm, 3mm]', '"named value"', '', '3']) {
         await dialog.fillInput('Length', value)
         await expect
@@ -37,7 +40,7 @@ for (const initial of ['', '5']) {
 
 test(
   'updates native color and text fields through input events',
-  { tag: '@web' },
+  { tag: ['@web', '@browsers'] },
   async ({ page }) => {
     const dialog = await openDialog(
       page,

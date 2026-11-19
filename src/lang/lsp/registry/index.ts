@@ -1,29 +1,37 @@
-import { fileOperationsService } from '@src/registry/contracts/fileOperations'
-import {
-  defineRegistryItem,
-  defineRegistryItemFactory,
-  provideService,
-} from '@kittycad/registry'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { createLspService } from '@src/lang/lsp/service'
-import { authService } from '@src/registry/contracts/auth'
-import { userFeaturesService } from '@src/registry/contracts/userFeatures'
-
-export const lspExtension = defineRegistryItemFactory((ctx) => {
-  const lsp = createLspService({
-    getFileOperations: () => ctx.services.get(fileOperationsService),
-    getAuth: () => ctx.services.get(authService),
-    getUserFeatures: () => ctx.services.get(userFeaturesService),
+import type { AuthRegistryService } from '@src/registry/contracts/auth'
+import { authExtension } from '@src/registry/extensions/auth'
+import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
+import type { UserFeaturesRegistryService } from '@src/registry/contracts/userFeatures'
+import { userFeaturesExtension } from '@src/registry/extensions/userFeatures'
+import { factory as defineFactory, provide, type Factory } from 'plankton'
+export const createLspExtension = ({
+  auth = authExtension,
+  userFeatures = userFeaturesExtension,
+}: {
+  auth?: Factory<AuthRegistryService>
+  userFeatures?: Factory<UserFeaturesRegistryService>
+} = {}) =>
+  defineFactory({
+    dependencies: {
+      fileOperations: fileOperationsObservations,
+      auth,
+      userFeatures,
+    },
+    key: 'lsp-extension',
+    create: ({ fileOperations: fileOperationsInputs, auth, userFeatures }) => {
+      const lsp = createLspService({
+        getFileOperations: () =>
+          fileOperationsInputs.fileOperationsService.required(),
+        auth,
+        userFeatures,
+      })
+      return {
+        items: [provide(lspService, lsp.service)],
+        dispose: lsp.dispose,
+      }
+    },
   })
-
-  return {
-    id: 'lsp-extension',
-    providesServices: [provideService(lspService, lsp.service)],
-    dispose: lsp.dispose,
-  }
-}, 'lsp-extension')
-
-export default defineRegistryItem({
-  id: 'lsp',
-  uses: [lspExtension],
-})
+export const lspExtension = createLspExtension()
+export default [lspExtension]
