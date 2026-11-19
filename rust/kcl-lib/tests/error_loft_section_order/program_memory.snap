@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Variables in memory after executing error_large_fillet_radius.kcl
+description: Variables in memory after executing error_loft_section_order.kcl
 ---
 {
   "__sketch_1_on": {

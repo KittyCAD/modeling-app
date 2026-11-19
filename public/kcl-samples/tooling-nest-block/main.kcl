@@ -47,12 +47,11 @@ fn nest(cubeFace, xPos, yPos, nestSize) {
            getOppositeEdge(seg01)
          ],
        )
-  subtract(cubeExtrude, tools = [nestFn])
-  return {  }
+  return nestFn
 }
 
 // Model each nest on the top face
-nest(
+nest001 = nest(
   cubeFace = END,
   xPos = 0.5,
   yPos = 0.5,
@@ -60,19 +59,19 @@ nest(
 )
 
 // Model each nest on side 1
-nest(
+nest002 = nest(
   cubeFace = rectangleSegmentA001,
   xPos = 0.65,
   yPos = 0.5,
   nestSize = size02,
 )
-nest(
+nest003 = nest(
   cubeFace = rectangleSegmentA001,
   xPos = 0.25,
   yPos = 0.25,
   nestSize = size03,
 )
-nest(
+nest004 = nest(
   cubeFace = rectangleSegmentA001,
   xPos = 0.25,
   yPos = 0.75,
@@ -80,25 +79,25 @@ nest(
 )
 
 // Model each nest on side 2
-nest(
+nest005 = nest(
   cubeFace = rectangleSegmentB001,
   xPos = 0.7,
   yPos = 0.3,
   nestSize = size04,
 )
-nest(
+nest006 = nest(
   cubeFace = rectangleSegmentB001,
   xPos = 0.25,
   yPos = 0.3,
   nestSize = size05,
 )
-nest(
+nest007 = nest(
   cubeFace = rectangleSegmentB001,
   xPos = 0.25,
   yPos = 0.7,
   nestSize = size05,
 )
-nest(
+nest008 = nest(
   cubeFace = rectangleSegmentB001,
   xPos = 0.7,
   yPos = 0.7,
@@ -106,7 +105,7 @@ nest(
 )
 
 // Model each nest on side 3
-nest(
+nest009 = nest(
   cubeFace = rectangleSegmentC001,
   xPos = -0.5,
   yPos = 0.5,
@@ -114,49 +113,49 @@ nest(
 )
 
 // Model each nest on side 4
-nest(
+nest010 = nest(
   cubeFace = rectangleSegmentD001,
   xPos = -0.2,
   yPos = 0.2,
   nestSize = size15,
 )
-nest(
+nest011 = nest(
   cubeFace = rectangleSegmentD001,
   xPos = -0.2,
   yPos = 0.5,
   nestSize = size14,
 )
-nest(
+nest012 = nest(
   cubeFace = rectangleSegmentD001,
   xPos = -0.2,
   yPos = 0.8,
   nestSize = size13,
 )
-nest(
+nest013 = nest(
   cubeFace = rectangleSegmentD001,
   xPos = -0.8,
   yPos = 0.2,
   nestSize = size12,
 )
-nest(
+nest014 = nest(
   cubeFace = rectangleSegmentD001,
   xPos = -0.8,
   yPos = 0.5,
   nestSize = size10,
 )
-nest(
+nest015 = nest(
   cubeFace = rectangleSegmentD001,
   xPos = -0.8,
   yPos = 0.8,
   nestSize = size08,
 )
-nest(
+nest016 = nest(
   cubeFace = rectangleSegmentD001,
   xPos = -0.5,
   yPos = 0.33,
   nestSize = size09,
 )
-nest(
+nest017 = nest(
   cubeFace = rectangleSegmentD001,
   xPos = -0.5,
   yPos = 0.67,
@@ -164,9 +163,12 @@ nest(
 )
 
 // Model each nest on the bottom face
-nest(
+nest018 = nest(
   cubeFace = START,
   xPos = -0.5,
   yPos = 0.5,
   nestSize = size07,
 )
+
+// Apply all rounded cutters together; each cut consumes its target solid.
+subtract(cubeExtrude, tools = [nest001, nest002, nest003, nest004, nest005, nest006, nest007, nest008, nest009, nest010, nest011, nest012, nest013, nest014, nest015, nest016, nest017, nest018])

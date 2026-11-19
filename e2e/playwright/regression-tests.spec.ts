@@ -29,7 +29,7 @@ test.describe('Regression tests', { tag: '@desktop' }, () => {
     const code = await fsp.readFile(
       path.join(
         process.cwd(),
-        'rust/kcl-lib/tests/error_large_fillet_radius/input.kcl'
+        'rust/kcl-lib/tests/error_loft_section_order/input.kcl'
       ),
       'utf-8'
     )
@@ -46,7 +46,7 @@ test.describe('Regression tests', { tag: '@desktop' }, () => {
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Edge cut failed').first()).toBeVisible()
+    await expect(page.getByText('All loft sections must be coplanar').first()).toBeVisible()
     // Ensure we didn't nest the json.
     await expect(page.getByText('ApiError')).not.toBeVisible()
   })

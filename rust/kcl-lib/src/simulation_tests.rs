@@ -5016,8 +5016,8 @@ mod tangent_arc_arc_math_only {
         super::execute(TEST_NAME, true).await
     }
 }
-mod error_large_fillet_radius {
-    const TEST_NAME: &str = "error_large_fillet_radius";
+mod error_loft_section_order {
+    const TEST_NAME: &str = "error_loft_section_order";
 
     /// Test parsing KCL.
     #[test]

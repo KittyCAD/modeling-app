@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Error from executing error_large_fillet_radius.kcl
+description: Error from executing error_loft_section_order.kcl
 ---
 KCL Engine error
 
@@ -9,5 +9,5 @@ KCL Engine error
  20 │ extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)
  21 │ fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [region001.tags.line1, capEnd001]), radius = 5)
     ·             ───────────────────────────────────────────────┬───────────────────────────────────────────────
-    ·                                                            ╰── tests/error_large_fillet_radius/input.kcl
+    ·                                                            ╰── tests/error_loft_section_order/input.kcl
     ╰────

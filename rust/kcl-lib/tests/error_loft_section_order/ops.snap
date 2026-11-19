@@ -1,9 +1,9 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Operations executed error_large_fillet_radius.kcl
+description: Operations executed error_loft_section_order.kcl
 ---
 {
-  "rust/kcl-lib/tests/error_large_fillet_radius/input.kcl": [
+  "rust/kcl-lib/tests/error_loft_section_order/input.kcl": [
     {
       "type": "GroupBegin",
       "group": {
