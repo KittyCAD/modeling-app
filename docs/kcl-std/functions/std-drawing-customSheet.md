@@ -1,5 +1,5 @@
 ---
-title: "drawing::createCustomSheet"
+title: "drawing::customSheet"
 subtitle: "Function in std::drawing"
 excerpt: "Create a drawing sheet from two side lengths and a name."
 layout: manual
@@ -10,7 +10,7 @@ Create a drawing sheet from two side lengths and a name.
 **Added in KCL 4.0.**
 
 ```kcl
-drawing::createCustomSheet(
+drawing::customSheet(
   width: number(Length),
   height: number(Length),
   orientation: SheetOrientation,
@@ -40,7 +40,7 @@ The selected orientation determines which side is the width of the resulting she
 ```kcl
 @settings(kclVersion = "4.0-preview")
 
-sheet = drawing::createCustomSheet(
+sheet = drawing::customSheet(
   width = 200mm,
   height = 300mm,
   orientation = drawing::SheetOrientation::Landscape,

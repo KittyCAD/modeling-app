@@ -1,5 +1,5 @@
 ---
-title: "drawing::createSheet"
+title: "drawing::standardSheet"
 subtitle: "Function in std::drawing"
 excerpt: "Create a drawing sheet from a standard paper size."
 layout: manual
@@ -10,7 +10,7 @@ Create a drawing sheet from a standard paper size.
 **Added in KCL 4.0.**
 
 ```kcl
-drawing::createSheet(
+drawing::standardSheet(
   size: SheetSize,
   orientation: SheetOrientation,
 ): Sheet
@@ -35,7 +35,7 @@ drawing::createSheet(
 ```kcl
 @settings(kclVersion = "4.0-preview")
 
-sheet = drawing::createSheet(size = drawing::SheetSize::IsoA4, orientation = drawing::SheetOrientation::Portrait)
+sheet = drawing::standardSheet(size = drawing::SheetSize::IsoA4, orientation = drawing::SheetOrientation::Portrait)
 
 ```
 

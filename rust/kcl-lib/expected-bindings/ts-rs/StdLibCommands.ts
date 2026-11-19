@@ -1532,10 +1532,10 @@ export default {
       }
     ]
   },
-  "drawing::createCustomSheet": {
-    "name": "createCustomSheet",
-    "preferredName": "drawing::createCustomSheet",
-    "qualName": "std::drawing::createCustomSheet",
+  "drawing::customSheet": {
+    "name": "customSheet",
+    "preferredName": "drawing::customSheet",
+    "qualName": "std::drawing::customSheet",
     "moduleName": "drawing",
     "returnType": "Sheet",
     "addedIn": "4.0",
@@ -1595,10 +1595,10 @@ export default {
       }
     ]
   },
-  "drawing::createSheet": {
-    "name": "createSheet",
-    "preferredName": "drawing::createSheet",
-    "qualName": "std::drawing::createSheet",
+  "drawing::standardSheet": {
+    "name": "standardSheet",
+    "preferredName": "drawing::standardSheet",
+    "qualName": "std::drawing::standardSheet",
     "moduleName": "drawing",
     "returnType": "Sheet",
     "addedIn": "4.0",

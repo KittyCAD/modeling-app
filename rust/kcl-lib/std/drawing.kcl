@@ -47,13 +47,13 @@ export type Sheet
 ///
 /// ```kcl,norun
 /// @settings(kclVersion = "4.0-preview")
-/// sheet = drawing::createSheet(
+/// sheet = drawing::standardSheet(
 ///   size = drawing::SheetSize::IsoA4,
 ///   orientation = drawing::SheetOrientation::Portrait,
 /// )
 /// ```
 @(impl = std_rust, added_in = "4.0", feature_tree = false)
-export fn createSheet(
+export fn standardSheet(
   /// The standard paper size.
   size: SheetSize,
   /// The orientation of the sheet.
@@ -67,7 +67,7 @@ export fn createSheet(
 ///
 /// ```kcl,norun
 /// @settings(kclVersion = "4.0-preview")
-/// sheet = drawing::createCustomSheet(
+/// sheet = drawing::customSheet(
 ///   width = 200mm,
 ///   height = 300mm,
 ///   orientation = drawing::SheetOrientation::Landscape,
@@ -75,7 +75,7 @@ export fn createSheet(
 /// )
 /// ```
 @(impl = std_rust, added_in = "4.0", feature_tree = false)
-export fn createCustomSheet(
+export fn customSheet(
   /// The width of the paper before applying the orientation.
   width: number(Length),
   /// The height of the paper before applying the orientation.

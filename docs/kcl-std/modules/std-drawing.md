@@ -13,8 +13,8 @@ This module requires KCL 4.0-preview or later.
 
 ## Functions and constants
 
-* [`drawing::createCustomSheet`](/docs/kcl-std/functions/std-drawing-createCustomSheet)
-* [`drawing::createSheet`](/docs/kcl-std/functions/std-drawing-createSheet)
+* [`drawing::customSheet`](/docs/kcl-std/functions/std-drawing-customSheet)
+* [`drawing::standardSheet`](/docs/kcl-std/functions/std-drawing-standardSheet)
 
 ## Types
 

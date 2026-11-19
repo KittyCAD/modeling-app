@@ -916,13 +916,13 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> Result<(crate::std::StdFn, St
             |e, a| Box::pin(crate::std::view::named(e, a).map(|r| r.map(KclValue::normal))),
             StdFnProps::default("std::view::named"),
         ),
-        ("drawing", "createSheet") => (
+        ("drawing", "standardSheet") => (
             |e, a| Box::pin(crate::std::drawing::create_sheet(e, a).map(|r| r.map(KclValue::normal))),
-            StdFnProps::default("std::drawing::createSheet"),
+            StdFnProps::default("std::drawing::standardSheet"),
         ),
-        ("drawing", "createCustomSheet") => (
+        ("drawing", "customSheet") => (
             |e, a| Box::pin(crate::std::drawing::create_custom_sheet(e, a).map(|r| r.map(KclValue::normal))),
-            StdFnProps::default("std::drawing::createCustomSheet"),
+            StdFnProps::default("std::drawing::customSheet"),
         ),
         (module, fn_name) => {
             return Err(KclError::internal(format!(

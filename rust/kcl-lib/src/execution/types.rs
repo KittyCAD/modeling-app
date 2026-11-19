@@ -18,6 +18,7 @@ use crate::errors::KclErrorDetails;
 use crate::exec::PlaneKind;
 use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
+use crate::execution::KclVersion;
 use crate::execution::Plane;
 use crate::execution::PlaneInfo;
 use crate::execution::Point3d;
@@ -354,7 +355,7 @@ impl RuntimeType {
             Type::Primitive(pt) => {
                 if matches!(pt, AstPrimitiveType::Never)
                     && !matches!(exec_state.mod_local.path, ModulePath::Std { .. })
-                    && !exec_state.entry_point_version_is_v3_or_higher()
+                    && !exec_state.entry_point_version_at_least(KclVersion::V3Preview)
                 {
                     return Err(crate::parsing::never_type_error(
                         source_range,

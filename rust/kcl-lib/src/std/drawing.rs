@@ -306,7 +306,7 @@ mod tests {
             for orientation in ["Portrait", "Landscape"] {
                 writeln!(
                     code,
-                    "{preset:?}{orientation} = drawing::createSheet(size = drawing::SheetSize::{preset:?}, orientation = drawing::SheetOrientation::{orientation})"
+                    "{preset:?}{orientation} = drawing::standardSheet(size = drawing::SheetSize::{preset:?}, orientation = drawing::SheetOrientation::{orientation})"
                 )
                 .unwrap();
             }
@@ -331,8 +331,8 @@ mod tests {
     async fn custom_size_retains_its_kind_when_it_matches_a_preset() {
         let outcome = execute(&format!(
             r#"{PREVIEW}
-standard = drawing::createSheet(size = drawing::SheetSize::IsoA4, orientation = drawing::SheetOrientation::Landscape)
-custom = drawing::createCustomSheet(width = 210mm, height = 297mm, orientation = drawing::SheetOrientation::Landscape, name = "ISO A4")
+standard = drawing::standardSheet(size = drawing::SheetSize::IsoA4, orientation = drawing::SheetOrientation::Landscape)
+custom = drawing::customSheet(width = 210mm, height = 297mm, orientation = drawing::SheetOrientation::Landscape, name = "ISO A4")
 "#
         ))
         .await
@@ -398,10 +398,10 @@ custom = drawing::createCustomSheet(width = 210mm, height = 297mm, orientation =
         let large_height = 2e306;
         let outcome = execute(&format!(
             r#"@settings(kclVersion = "4.0-preview", defaultLengthUnit = cm)
-portrait = drawing::createCustomSheet(width = 2inch, height = 12mm, orientation = {PORTRAIT}, name = " Poster ")
-landscape = drawing::createCustomSheet(width = 0.5cm, height = 10mm, orientation = drawing::SheetOrientation::Landscape, name = "Detail")
-square = drawing::createCustomSheet(width = 3, height = 30mm, orientation = drawing::SheetOrientation::Landscape, name = "Square")
-large = drawing::createCustomSheet(width = {large_width:.0}cm, height = {large_height:.0}m, orientation = {PORTRAIT}, name = "Large")
+portrait = drawing::customSheet(width = 2inch, height = 12mm, orientation = {PORTRAIT}, name = " Poster ")
+landscape = drawing::customSheet(width = 0.5cm, height = 10mm, orientation = drawing::SheetOrientation::Landscape, name = "Detail")
+square = drawing::customSheet(width = 3, height = 30mm, orientation = drawing::SheetOrientation::Landscape, name = "Square")
+large = drawing::customSheet(width = {large_width:.0}cm, height = {large_height:.0}m, orientation = {PORTRAIT}, name = "Large")
 fn acceptSheet(@value: drawing::Sheet): drawing::Sheet {{ return value }}
 typed = acceptSheet(square)
 "#
@@ -471,7 +471,7 @@ typed = acceptSheet(square)
         ];
         for (width, height, name, expected) in cases {
             let code = format!(
-                "{PREVIEW}sheet = drawing::createCustomSheet(width = {width}, height = {height}, orientation = {PORTRAIT}, name = {name})"
+                "{PREVIEW}sheet = drawing::customSheet(width = {width}, height = {height}, orientation = {PORTRAIT}, name = {name})"
             );
             let error = execute(&code).await.unwrap_err();
             assert!(error.message().contains(expected), "{code}\n{error}");
@@ -481,13 +481,16 @@ typed = acceptSheet(square)
     #[tokio::test]
     async fn requires_constructor_arguments() {
         let calls = [
-            ("drawing::createSheet(size = drawing::SheetSize::IsoA4)", "orientation"),
             (
-                r#"drawing::createCustomSheet(width = 1mm, height = 2mm, name = "Detail")"#,
+                "drawing::standardSheet(size = drawing::SheetSize::IsoA4)",
                 "orientation",
             ),
             (
-                "drawing::createCustomSheet(width = 1mm, height = 2mm, orientation = drawing::SheetOrientation::Portrait)",
+                r#"drawing::customSheet(width = 1mm, height = 2mm, name = "Detail")"#,
+                "orientation",
+            ),
+            (
+                "drawing::customSheet(width = 1mm, height = 2mm, orientation = drawing::SheetOrientation::Portrait)",
                 "name",
             ),
         ];
@@ -512,14 +515,34 @@ typed = acceptSheet(square)
         let compatible = "@settings(kclVersion = 3.0)\nvalue = 2mm";
         execute(compatible).await.unwrap();
 
-        for constructor in ["createSheet", "createCustomSheet"] {
-            let code = format!("@settings(kclVersion = 3.0)\nvalue = drawing::{constructor}()");
+        for body in [
+            "value = drawing",
+            "value = drawing::SheetOrientation::Portrait",
+            "value = drawing::standardSheet()",
+            "value = drawing::customSheet()",
+            "fn acceptSheet(@value: drawing::Sheet) { return value }",
+        ] {
+            let code = format!("@settings(kclVersion = 3.0)\n{body}");
             let error = execute(&code).await.unwrap_err();
-            assert!(error.message().contains(constructor), "{code}\n{error}");
+            assert!(error.message().contains("added in KCL 4.0"), "{code}\n{error}");
         }
+    }
 
-        let code = "@settings(kclVersion = 3.0)\nfn acceptSheet(@value: drawing::Sheet) { return value }";
+    #[tokio::test]
+    async fn explicit_drawing_import_requires_kcl_four() {
+        let code = "@settings(kclVersion = 3.0, experimentalFeatures = allow)\nimport \"std::drawing\"";
         let error = execute(code).await.unwrap_err();
-        assert!(error.message().contains("added in KCL 4.0"), "{error}");
+        assert_eq!(
+            error.message(),
+            "The `std::drawing` module requires KCL 4.0-preview, but this program uses KCL 3.0."
+        );
+
+        let code = r#"@no_std
+@settings(kclVersion = "4.0-preview", experimentalFeatures = allow)
+import "std::drawing"
+sheet = drawing::standardSheet(size = drawing::SheetSize::IsoA4, orientation = drawing::SheetOrientation::Portrait)
+"#;
+        let outcome = execute(code).await.unwrap();
+        assert_eq!(sheet(&outcome, "sheet").orientation(), SheetOrientation::Portrait);
     }
 }
