@@ -10,7 +10,14 @@ import {
   createVariableDeclaration,
 } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import {
+  afterAll,
+  expect,
+  beforeEach,
+  describe,
+  it,
+  onTestFinished,
+} from 'vitest'
 import { modelingMachine } from '@src/machines/modelingMachine'
 import { type ActorRefFrom, createActor, fromPromise } from 'xstate'
 import { vi } from 'vitest'
@@ -174,6 +181,7 @@ describe('modelingMachine.test.ts', () => {
         const actor = createActor(modelingMachine, {
           input: contextCopied,
         }).start()
+        onTestFinished(() => actor.stop())
         const state = actor.getSnapshot().value
 
         // The machine should start in the idle state
@@ -967,6 +975,7 @@ p3 = [342.51, 216.38],
             const actor = createActor(modelingMachine, {
               input: contextCopied,
             }).start()
+            onTestFinished(() => actor.stop())
 
             // Send event to transition to sketch mode
             actor.send({
@@ -1098,6 +1107,7 @@ p3 = [342.51, 216.38],
             const actor = createActor(modelingMachine, {
               input: contextCopied,
             }).start()
+            onTestFinished(() => actor.stop())
 
             // Send event to transition to sketch mode
             actor.send({
@@ -1161,12 +1171,12 @@ p3 = [342.51, 216.38],
                   valueCalculated: '20',
                   variableDeclarationAst: createVariableDeclaration(
                     'test_variable',
-                    createLiteral('20', instanceInThisFile)
+                    createLiteral(20, instanceInThisFile)
                   ),
                   variableIdentifierAst: createIdentifier(
                     'test_variable'
                   ) as any,
-                  valueAst: createLiteral('20', instanceInThisFile),
+                  valueAst: createLiteral(20, instanceInThisFile),
                 },
               },
             })
@@ -1180,6 +1190,8 @@ p3 = [342.51, 216.38],
               stateString: { Sketch: { SketchIdle: 'scene drawn' } },
             })
             expect(kclManagerInThisFile.code).toContain(expectedResult)
+            expect(kclManagerInThisFile.code).toContain('test_variable = 20')
+            expect(kclManagerInThisFile.errors).toEqual([])
           }, 10_000)
         }
       )
@@ -1239,6 +1251,7 @@ p3 = [342.51, 216.38],
             const actor = createActor(modelingMachine, {
               input: contextCopied,
             }).start()
+            onTestFinished(() => actor.stop())
             // Send event to transition to sketch mode
             actor.send({
               type: 'Set selection',
@@ -1367,6 +1380,7 @@ p3 = [342.51, 216.38],
             const actor = createActor(modelingMachine, {
               input: contextCopied,
             }).start()
+            onTestFinished(() => actor.stop())
 
             // Send event to transition to sketch mode
             actor.send({
@@ -1489,6 +1503,7 @@ sketch001 = sketch(on = YZ) {
         context.projectRef = { current: {} as any }
 
         const actor = createActor(modelingMachine, { input: context }).start()
+        onTestFinished(() => actor.stop())
 
         actor.send({ type: 'Enter sketch' })
         actor.send({
@@ -1553,6 +1568,7 @@ sketch001 = sketch(on = YZ) {
       })
 
       const actor = createActor(machine, { input: context }).start()
+      onTestFinished(() => actor.stop())
 
       actor.send({ type: 'Enter sketch' })
       actor.send({
