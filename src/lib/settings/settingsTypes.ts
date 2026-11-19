@@ -1,40 +1,39 @@
-import type { Feature, UnitAngle, UnitLength } from '@kittycad/lib'
-import type { Registry } from '@kittycad/registry'
-
+import type {
+  Feature,
+  PostEffectType,
+  UnitAngle,
+  UnitLength,
+} from '@kittycad/lib'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
-
 import type { CommandArgumentConfig } from '@src/lib/commandTypes'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type { Themes } from '@src/lib/theme'
-import type { AtLeast, PathValue, Paths } from '@src/lib/types'
 import type { Setting } from '@src/lib/settings/Setting'
-
+import type { Themes } from '@src/lib/theme'
+import type { AtLeast, Paths, PathValue } from '@src/lib/types'
+import type { Registry } from 'plankton'
 export type RgbaColor = {
   r: number
   g: number
   b: number
   a: number
 }
-
 export interface SettingsViaQueryString {
   theme: Themes
   highlightEdges: boolean
-  enableSSAO: boolean
+  viewportRendering: PostEffectType
   showScaleGrid: boolean
   cameraProjection: CameraProjectionType
   cameraOrbit: CameraOrbitType
   backfaceColor: string
 }
-
 export const baseUnits = {
   imperial: ['in', 'ft', 'yd'],
   metric: ['mm', 'cm', 'm'],
 } as const
-
 export type BaseUnit = UnitLength
-
 export const baseUnitsUnion = Object.values(baseUnits).flatMap((v) => v)
 export const baseUnitLabels = {
   in: 'Inches',
@@ -44,15 +43,18 @@ export const baseUnitLabels = {
   cm: 'Centimeters',
   m: 'Meters',
 } as const
-
 export const warningLevels: WarningLevel[] = [
-  { type: 'Allow' },
-  { type: 'Warn' },
-  { type: 'Deny' },
+  {
+    type: 'Allow',
+  },
+  {
+    type: 'Warn',
+  },
+  {
+    type: 'Deny',
+  },
 ]
-
 export type Toggle = 'On' | 'Off'
-
 export type SettingsPaths = Exclude<Paths<SettingsType, 1>, keyof SettingsType>
 type SetEvent<T extends SettingsPaths> = {
   type: `set.${T}`
@@ -61,9 +63,7 @@ type SetEvent<T extends SettingsPaths> = {
     value: PathValue<SettingsType, T>['default']
   }
 }
-
 export type SetEventTypes = SetEvent<SettingsPaths>
-
 export type WildcardSetEvent<T extends SettingsPaths = SettingsPaths> = {
   type: `*`
   data: {
@@ -72,7 +72,6 @@ export type WildcardSetEvent<T extends SettingsPaths = SettingsPaths> = {
     value: PathValue<SettingsType, T>['default']
   }
 }
-
 export type DynamicBooleanSetEvent = {
   type: `set.${'modeling' | 'plugins'}.${string}`
   data: {
@@ -83,7 +82,6 @@ export type DynamicBooleanSetEvent = {
 
 /** Platform values for hiding settings */
 export type HideOnPlatformValue = 'web' | 'desktop' | 'both'
-
 export interface SettingComponentProps<T = unknown> {
   value: T
   updateValue: (newValue: T) => void
@@ -93,7 +91,6 @@ export interface SettingComponentProps<T = unknown> {
   settingsContext: SettingsType
   registry: Registry
 }
-
 export interface SettingProps<T = unknown> {
   /**
    * The default value of the setting, used if no user or project value is set
@@ -123,8 +120,8 @@ export interface SettingProps<T = unknown> {
    * ```
    */
   validate: (v: T) => boolean
-
   isEnabled?: (settings: any) => boolean // TODO any not too nice
+  hideWhenDisabled?: boolean
   /**
    * A command argument configuration for the setting.
    * If this is provided, the setting will appear in the command bar.
@@ -163,6 +160,15 @@ export interface SettingProps<T = unknown> {
    * setting will not be able to be edited directly by the user.
    */
   Component?: React.ComponentType<SettingComponentProps<T>>
+  /**
+   * For settings that are only read when an engine session starts. Returns
+   * true while the given value is not the one the live session is using, so
+   * the settings panel can offer a restart.
+   */
+  restartRequired?: (
+    value: T,
+    engineCommandManager: ConnectionManager
+  ) => boolean
 }
 
 /** The levels available to set settings at.
@@ -181,7 +187,6 @@ type RecursiveSettingsPayloads<T> = {
     ? U
     : Partial<RecursiveSettingsPayloads<T[P]>>
 }
-
 export type SaveSettingsPayload = RecursiveSettingsPayloads<SettingsType>
 
 /**

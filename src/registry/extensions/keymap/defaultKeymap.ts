@@ -1,4 +1,3 @@
-import { defineRegistryItem, provide } from '@kittycad/registry'
 import { isDesktop } from '@src/lib/isDesktop'
 import { getDeleteKeys } from '@src/lib/utils'
 import {
@@ -6,16 +5,17 @@ import {
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   HOME_KEYMAP_SCOPE,
   type KeymapDocument,
+  keymapFacet,
   MODE_MODELING_KEYMAP_SCOPE,
-  MODELING_DIALOG_FOCUSED_KEYMAP_SCOPE,
-  MODE_SKETCHING_KEYMAP_SCOPE,
   MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+  MODE_SKETCHING_KEYMAP_SCOPE,
+  MODELING_DIALOG_FOCUSED_KEYMAP_SCOPE,
   PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
-  keymapValueSpec,
 } from '@src/registry/contracts/keymap'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommandIds'
+import { contribute } from 'plankton'
 
 const BASE_KEYMAP_SOURCE = 'Base'
 const FILE_KEYMAP_SCOPES = [
@@ -242,14 +242,14 @@ export const defaultKeymap: KeymapDocument = {
     },
     {
       id: 'project-explorer.arrow-up',
-      title: 'Move project explorer selection up',
+      title: 'Clone project explorer selection up',
       when: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
       keystrokes: ['arrowup'],
       command: PROJECT_EXPLORER_COMMAND_IDS.arrowUp,
     },
     {
       id: 'project-explorer.arrow-down',
-      title: 'Move project explorer selection down',
+      title: 'Clone project explorer selection down',
       when: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
       keystrokes: ['arrowdown'],
       command: PROJECT_EXPLORER_COMMAND_IDS.arrowDown,
@@ -336,6 +336,13 @@ export const defaultKeymap: KeymapDocument = {
       title: 'Zoom to fit',
       when: [MODE_MODELING_KEYMAP_SCOPE],
       keystrokes: ['v', 'f'],
+      command: 'standardViews:Zoom to fit',
+    },
+    {
+      id: 'view.zoom-to-fit-with-modifier',
+      title: 'Zoom to fit',
+      when: FILE_KEYMAP_SCOPES,
+      keystrokes: ['mod+alt+f'],
       command: 'standardViews:Zoom to fit',
     },
     {
@@ -428,91 +435,6 @@ export const defaultKeymap: KeymapDocument = {
       when: [MODE_MODELING_KEYMAP_SCOPE],
       keystrokes: ['m'],
       command: 'modeling:Mirror 3D',
-    },
-    {
-      id: 'toolbar.sketch-no-face.cancel',
-      title: 'Cancel Sketch',
-      when: [MODE_SKETCH_NO_FACE_KEYMAP_SCOPE],
-      keystrokes: ['escape'],
-      command: TOOLBAR_COMMAND_IDS.sketching.exit,
-    },
-    ...createExitSketchBindings({
-      id: 'toolbar.sketch-legacy.exit',
-      scope: MODE_SKETCHING_KEYMAP_SCOPE,
-      command: TOOLBAR_COMMAND_IDS.sketching.exit,
-      hidden: true,
-      userBindingCommand: TOOLBAR_COMMAND_IDS.sketchSolve.exit,
-    }),
-    {
-      id: 'toolbar.sketch-legacy.cancel-tool',
-      title: 'Cancel sketch tool',
-      when: [MODE_SKETCHING_KEYMAP_SCOPE],
-      keystrokes: ['escape'],
-      command: TOOLBAR_COMMAND_IDS.sketching.cancelTool,
-      hidden: true,
-      userBindingCommand: TOOLBAR_COMMAND_IDS.sketchSolve.cancel,
-    },
-    {
-      id: 'toolbar.sketch-legacy.line',
-      title: 'Line',
-      when: [MODE_SKETCHING_KEYMAP_SCOPE],
-      keystrokes: ['l'],
-      command: TOOLBAR_COMMAND_IDS.sketching.line,
-      hidden: true,
-      userBindingCommand: TOOLBAR_COMMAND_IDS.sketchSolve.line,
-    },
-    {
-      id: 'toolbar.sketch-legacy.three-point-arc',
-      title: 'Three-Point Arc',
-      when: [MODE_SKETCHING_KEYMAP_SCOPE],
-      keystrokes: ['t'],
-      command: TOOLBAR_COMMAND_IDS.sketching.threePointArc,
-      hidden: true,
-      userBindingCommand: TOOLBAR_COMMAND_IDS.sketchSolve.threePointArc,
-    },
-    {
-      id: 'toolbar.sketch-legacy.tangential-arc',
-      title: 'Tangential Arc',
-      when: [MODE_SKETCHING_KEYMAP_SCOPE],
-      keystrokes: ['a'],
-      command: TOOLBAR_COMMAND_IDS.sketching.tangentialArc,
-      hidden: true,
-      userBindingCommand: TOOLBAR_COMMAND_IDS.sketchSolve.tangentialArc,
-    },
-    {
-      id: 'toolbar.sketch-legacy.circle-center',
-      title: 'Center Circle',
-      when: [MODE_SKETCHING_KEYMAP_SCOPE],
-      keystrokes: ['c'],
-      command: TOOLBAR_COMMAND_IDS.sketching.circleCenter,
-      hidden: true,
-      userBindingCommand: TOOLBAR_COMMAND_IDS.sketchSolve.circleCenter,
-    },
-    {
-      id: 'toolbar.sketch-legacy.circle-three-points',
-      title: '3-Point Circle',
-      when: [MODE_SKETCHING_KEYMAP_SCOPE],
-      keystrokes: ['alt+c'],
-      command: TOOLBAR_COMMAND_IDS.sketching.circleThreePoints,
-      hidden: true,
-    },
-    {
-      id: 'toolbar.sketch-legacy.corner-rectangle',
-      title: 'Corner Rectangle',
-      when: [MODE_SKETCHING_KEYMAP_SCOPE],
-      keystrokes: ['r'],
-      command: TOOLBAR_COMMAND_IDS.sketching.cornerRectangle,
-      hidden: true,
-      userBindingCommand: TOOLBAR_COMMAND_IDS.sketchSolve.cornerRectangle,
-    },
-    {
-      id: 'toolbar.sketch-legacy.center-rectangle',
-      title: 'Center Rectangle',
-      when: [MODE_SKETCHING_KEYMAP_SCOPE],
-      keystrokes: ['alt+r'],
-      command: TOOLBAR_COMMAND_IDS.sketching.centerRectangle,
-      hidden: true,
-      userBindingCommand: TOOLBAR_COMMAND_IDS.sketchSolve.centerRectangle,
     },
     ...createExitSketchBindings({
       id: 'toolbar.sketch.exit',
@@ -696,10 +618,8 @@ export const defaultKeymap: KeymapDocument = {
     },
   ],
 }
-
-export const defaultKeymapItem = defineRegistryItem({
-  id: 'default-keymap',
-  provides: [
-    provide(keymapValueSpec, defaultKeymap, { key: defaultKeymap.source }),
-  ],
-})
+export const defaultKeymapItem = [
+  contribute(keymapFacet, () => defaultKeymap, {
+    key: defaultKeymap.source,
+  }),
+]

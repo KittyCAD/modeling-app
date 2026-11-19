@@ -67,7 +67,9 @@ function isExpectedCollision(
 ) {
   return (
     error._tag === 'FileAlreadyExists' &&
-    (operation === 'create-directory' || operation === 'create-file')
+    (operation === 'create-directory' ||
+      operation === 'create-file' ||
+      operation === 'rename')
   )
 }
 

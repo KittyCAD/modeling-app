@@ -1,35 +1,35 @@
+import { useSignals } from '@preact/signals-react/runtime'
+import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { useAppState } from '@src/AppState'
-import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
+import { enterSketchModeAndSyncCamera } from '@src/clientSideScene/CameraControls'
+import { SKETCH_GROUP_SEGMENTS } from '@src/clientSideScene/sceneUtils'
 import { useMenuListener } from '@src/hooks/useMenu'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { useSketchModeMenuEnableDisable } from '@src/hooks/useSketchModeMenuEnableDisable'
 import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
-import { reportRejection } from '@src/lib/trap'
-import type React from 'react'
-import { createContext, use, useEffect, useMemo, useRef } from 'react'
-import type { MutableRefObject } from 'react'
-import type { Actor, ContextFrom, Prop, StateFrom } from 'xstate'
-
-import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import { modelingStdLibCommandSummary } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
-import type { Project } from '@src/lib/project'
-import type { modelingMachine } from '@src/machines/modelingMachine'
-
-import { useSignals } from '@preact/signals-react/runtime'
-import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
-import { DefaultLayoutPaneID } from '@src/lib/layout'
-import {
-  modelingMachineStateToToolbarModeName,
-  toolbarModeNameToKeymapScope,
-} from '@src/lib/toolbar'
-import type { WebContentSendPayload } from '@src/menu/channels'
 import {
   EngineConnectionEvents,
   EngineConnectionStateType,
 } from '@src/lib/engineConnection/utils'
+import { DefaultLayoutPaneID } from '@src/lib/layout'
+import type { Project } from '@src/lib/project'
+import {
+  modelingMachineStateToToolbarModeName,
+  toolbarModeNameToKeymapScope,
+} from '@src/lib/toolbar'
+import { reportRejection } from '@src/lib/trap'
+import { modelingMachine } from '@src/machines/modelingMachine'
+import type { WebContentSendPayload } from '@src/menu/channels'
 import { MODE_MODELING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import { keymapService } from '@src/registry/contracts/keymap'
+import { useMachine } from '@xstate/react'
+import type React from 'react'
+import type { MutableRefObject } from 'react'
+import { createContext, use, useEffect, useMemo, useRef } from 'react'
+import type { Actor, ContextFrom, Prop, StateFrom } from 'xstate'
 
 const MODELING_COMMAND_SCOPES = [MODE_MODELING_COMMAND_SCOPE] as const
 
@@ -49,21 +49,14 @@ export const ModelingMachineProvider = ({
   children: React.ReactNode
 }) => {
   useSignals()
-  const { settings, layout, registry } = useApp()
+  const { machineManager, commands, settings, layout, project, registry } =
+    useApp()
   const { kclManager } = useSingletons()
-  const modelingActor =
-    kclManager.modelingActor ?? use(kclManager.modelingActorPromise)
-  const modelingState =
-    kclManager.modelingStateSignal.value ?? modelingActor.getSnapshot()
-  const modelingSend = useMemo(
-    () => modelingActor.send.bind(modelingActor),
-    [modelingActor]
-  )
-  const theProject = kclManager.modelingProjectRef
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const settingsValues = settings.useSettings()
   const {
     app: { allowOrbitInSketchMode },
-    modeling: { cameraOrbit },
+    modeling: { defaultUnit, cameraProjection, cameraOrbit },
   } = settingsValues
   const machineApiEnabled = settingsValues.app.machineApi.current
   const commandBarConfig = useMemo(() => {
@@ -75,7 +68,48 @@ export const ModelingMachineProvider = ({
     return configWithoutMake
   }, [machineApiEnabled])
   const previousCameraOrbit = useRef<CameraOrbitType | null>(null)
+  const theProject = useRef<Project | undefined>(
+    project?.projectIORefSignal.value
+  )
+  const file = project?.executingFileEntry.value
+  theProject.current = project?.projectIORefSignal.value
+
   const streamRef = useRef<HTMLDivElement>(null)
+
+  // Settings machine setup
+  // const retrievedSettings = useRef(
+  // localStorage?.getItem(MODELING_PERSIST_KEY) || '{}'
+  // )
+
+  // What should we persist from modeling state? Nothing?
+  // const persistedSettings = Object.assign(
+  //   settingsMachine.initialState.context,
+  //   JSON.parse(retrievedSettings.current) as Partial<
+  //     (typeof settingsMachine)['context']
+  //   >
+  // )
+
+  const [modelingState, modelingSend, modelingActor] = useMachine(
+    modelingMachine,
+    {
+      input: {
+        machineManager,
+        engineCommandManager: kclManager.engineCommandManager,
+        kclManager,
+        rustContext: kclManager.rustContext,
+        commandBarActor: commands.actor,
+        fileName: file?.name,
+        projectRef: theProject,
+        // React Suspense will await this
+        wasmInstance,
+        store: {
+          cameraProjection,
+          defaultUnit,
+        },
+      },
+      // devTools: true,
+    }
+  )
 
   // Register file menu actions based off modeling send
   const cb = (data: WebContentSendPayload) => {
@@ -107,8 +141,7 @@ export const ModelingMachineProvider = ({
     modelingMachineStateToToolbarModeName(modelingState)
   const toolbarModeKeymapScope =
     toolbarModeNameToKeymapScope[toolbarConfigurationName]
-  const keymap = registry.get(keymapService)
-
+  const keymap = registry.required(keymapService)
   useEffect(() => {
     keymap.applyScope(toolbarModeKeymapScope)
     return () => {
@@ -186,6 +219,19 @@ export const ModelingMachineProvider = ({
     }
   }, [modelingActor])
 
+  // Give the state back to the kclManager.
+  useEffect(() => {
+    kclManager.modelingSend = modelingSend
+  }, [modelingSend, kclManager])
+
+  useEffect(() => {
+    kclManager.modelingState = modelingState
+  }, [modelingState, kclManager])
+
+  useEffect(() => {
+    kclManager.selectionRanges = modelingState.context.selectionRanges
+  }, [modelingState.context.selectionRanges, kclManager])
+
   // When changing camera modes reset the camera to the default orientation to correct
   // the up vector otherwise the conconical orientation for the camera modes will be
   // wrong
@@ -237,11 +283,19 @@ export const ModelingMachineProvider = ({
     if (!allowOrbitInSketchMode.current) {
       const targetId = modelingState.context.sketchDetails?.animateTargetId
       if (inSketchMode && targetId) {
-        letEngineAnimateAndSyncCamAfter(
+        enterSketchModeAndSyncCamera(
           kclManager.engineCommandManager,
-          targetId
+          targetId,
+          kclManager.sceneInfra.camControls,
+          modelingState.context.sketchDetails?.animateTargetIsFace
         )
-          .then(() => {})
+          .then(() =>
+            kclManager.sceneInfra.camControls.transitionToSketch(
+              kclManager.sceneInfra.scene.children.find(
+                (object) => object.userData.type === SKETCH_GROUP_SEGMENTS
+              ) ?? kclManager.sceneEntitiesManager.intersectionPlane
+            )
+          )
           .catch((e) => {
             console.error(
               'failed to sync engine and client scene after disabling allow orbit in sketch mode'
@@ -287,7 +341,7 @@ export const ModelingMachineProvider = ({
       }}
     >
       {/* TODO #818: maybe pass reff down to children/app.ts or render app.tsx directly?
-      since realistically it won't ever have generic children that isn't app.tsx */}
+        since realistically it won't ever have generic children that isn't app.tsx */}
       <div className="h-screen overflow-hidden select-none" ref={streamRef}>
         {children}
       </div>

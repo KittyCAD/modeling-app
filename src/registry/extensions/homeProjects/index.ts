@@ -1,118 +1,49 @@
+import { withHomeProjectActionStatus } from '@src/lib/homeProjectActions'
+import { selectCommand } from '@src/lib/commandUtils'
+import { observations as projectSessionObservations } from '@src/registry/contracts/projectSession'
 import {
-  defineRegistryItem,
-  defineRegistryItemFactory,
+  factory as defineFactory,
   provide,
-  provideService,
-} from '@kittycad/registry'
+  contribute,
+  type InputOf,
+} from 'plankton'
 import { computed } from '@preact/signals-core'
-import { getCloudProjectLibraryMaterializationDirectoryPath } from '@src/lib/cloudSync/paths'
-import { getProjectInfo } from '@src/lib/desktop'
 import {
+  findHomeProjectByPath,
   getHomeProjectDisplayName,
   homeProjectDisplayNameExists,
 } from '@src/lib/homeProjects'
 import { separateProjectsSharingProjectId } from '@src/lib/projectIdentity'
 import {
-  CLOUD_PROJECT_LIBRARY_TYPE,
-  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   type ProjectLibrary,
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
 import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
+import { observations as commandsObservations } from '@src/registry/contracts/commands'
+import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
 import {
-  type CloudProjectRelationship,
-  type CloudProjectRelationshipRealization,
-  cloudProjectRelationshipsService,
-  cloudSyncService,
-} from '@src/registry/contracts/cloudSync'
-import { commandSystemService } from '@src/registry/contracts/commands'
-import { fileOperationsService } from '@src/registry/contracts/fileOperations'
-import {
+  observations as homeProjectsObservations,
   type HomeProjectActionsService,
-  type HomeProjectDuplicateRealization,
   type HomeProjectEntry,
   type HomeProjectEntryContribution,
-  type HomeProjectMoveToLibraryTarget,
+  type HomeProjectCloneToLibraryTarget,
   homeProjectActionsService,
-  homeProjectEntriesValueSpec,
+  homeProjectEntriesFacet,
 } from '@src/registry/contracts/homeProjects'
-import { projectExplorerProjectMenuItemsValueSpec } from '@src/registry/contracts/projectExplorer'
+import { projectExplorerProjectMenuItemsFacet } from '@src/registry/contracts/projectExplorer'
 import {
+  observations as projectLibrariesObservations,
   getProjectLibraryOperation,
   type ProjectLibraryRealization,
-  type ProjectLibraryRelationshipMembershipPolicy,
   type ProjectLibraryTypeOperations,
-  projectLibraryRealizationsValueSpec,
-  projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
-import { settingsService } from '@src/registry/contracts/settings'
-import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import { observations as settingsObservations } from '@src/registry/contracts/settings'
 import toast from 'react-hot-toast'
 import { NIL as uuidNIL } from 'uuid'
-
-function homeProjectStatusFromRealization(
-  realization: ProjectLibraryRealization
-): HomeProjectEntryContribution['status'] {
-  if (realization.conflict) {
-    return 'conflicted'
-  }
-  if (realization.cloudProjectId) {
-    return 'synced'
-  }
-  return 'local'
-}
-
-/**
- * Delete semantics come from the operation-owning library type, not Home's
- * identity model. Cloud-library realizations delete the remote project; directory
- * realizations with cloud metadata delete only the local folder.
- */
-function realizationDeletesRemoteOnDelete(
-  realization: ProjectLibraryRealization | undefined
-) {
-  return Boolean(
-    realization?.cloudProjectId &&
-      realization.libraryRefs.some(
-        (library) => library.type === CLOUD_PROJECT_LIBRARY_TYPE
-      )
-  )
-}
-
-/**
- * Converts a local realization into a Home card without relationship actions.
- * Cloud ID observations alone do not give Home relationship identity.
- */
-function homeProjectEntryFromRealization(
-  realization: ProjectLibraryRealization,
-  duplicateProjectIdPaths: readonly string[] | undefined
-): HomeProjectEntryContribution {
-  return {
-    source: 'local',
-    status: homeProjectStatusFromRealization(realization),
-    libraryIds: realization.libraryIds,
-    name: realization.name,
-    title: realization.title,
-    localProjectPath: realization.localProjectPath,
-    localProjectName: realization.localProjectName,
-    remoteProjectId: realization.cloudProjectId,
-    deleteRemoteOnDelete: realizationDeletesRemoteOnDelete(realization),
-    modified: realization.modified,
-    defaultFile: realization.defaultFile,
-    kclFileCount: realization.kclFileCount,
-    directoryCount: realization.directoryCount,
-    readWriteAccess: realization.readWriteAccess,
-    thumbnail: realization.thumbnail,
-    conflict: realization.conflict,
-    syncFailure: realization.syncFailure,
-    duplicateProjectIdPaths,
-  }
-}
-
 function duplicateProjectIdPathsByLocalPath(
   realizations: readonly ProjectLibraryRealization[]
 ) {
   const projectPathsById = new Map<string, Set<string>>()
-
   for (const realization of realizations) {
     if (!realization.projectId || realization.projectId === uuidNIL) {
       continue
@@ -122,7 +53,6 @@ function duplicateProjectIdPathsByLocalPath(
     projectPaths.add(realization.localProjectPath)
     projectPathsById.set(realization.projectId, projectPaths)
   }
-
   const duplicatePathsByLocalPath = new Map<string, string[]>()
   for (const projectPathSet of projectPathsById.values()) {
     if (projectPathSet.size < 2) {
@@ -136,722 +66,442 @@ function duplicateProjectIdPathsByLocalPath(
       )
     }
   }
-
   return duplicatePathsByLocalPath
 }
-
-/** Local library membership is copied from relationship realizations. */
-function libraryIdsFromRelationship(
-  relationship: CloudProjectRelationship
-): readonly string[] {
-  const libraryIds = relationship.localRealizations.flatMap(
-    ({ realization }) => realization.libraryIds
-  )
-  return Array.from(new Set(libraryIds))
-}
-
-function homeProjectNameFromCloudRelationship({
-  canonical,
-  relationship,
-}: {
-  canonical?: ProjectLibraryRealization
-  relationship: CloudProjectRelationship
-}) {
-  return (
-    canonical?.name ??
-    relationship.remoteProject?.title ??
-    relationship.remoteProjectId
-  )
-}
-
-function homeProjectTitleFromCloudRelationship({
-  canonical,
-  relationship,
-}: {
-  canonical?: ProjectLibraryRealization
-  relationship: CloudProjectRelationship
-}) {
-  return canonical?.title ?? relationship.remoteProject?.title
-}
-
-function homeProjectDuplicateRealizationFromRelationship(
-  relationship: CloudProjectRelationship,
-  duplicate: CloudProjectRelationshipRealization
-): HomeProjectDuplicateRealization {
-  return {
-    remoteProjectId: relationship.remoteProjectId,
-    canonicalProjectPath:
-      relationship.canonicalRealization?.realization.localProjectPath,
-    localProjectPath: duplicate.realization.localProjectPath,
-    localProjectName: duplicate.realization.localProjectName,
-    title: duplicate.realization.title,
-    libraryIds: duplicate.realization.libraryIds,
-    libraryTitles: duplicate.realization.libraryRefs.map(
-      (library) => library.title
-    ),
-    duplicateRisk: duplicate.duplicateRisk,
-    autoCleanupEligible: duplicate.autoCleanupEligible,
-  }
-}
-
-/**
- * Converts one explicit cloud relationship into one Home card. Home can choose
- * display fallbacks, badges, and actions from the relationship, but it must not
- * merge arbitrary provider entries or decide which local folders are duplicates.
- */
-function homeProjectEntryFromCloudRelationship(
-  relationship: CloudProjectRelationship,
-  duplicateProjectIdPaths: readonly string[] | undefined
-): HomeProjectEntryContribution {
-  const canonical = relationship.canonicalRealization?.realization
-  const duplicateRealizations = relationship.duplicateRealizations.map(
-    (duplicate) =>
-      homeProjectDuplicateRealizationFromRelationship(relationship, duplicate)
-  )
-  const relationshipLibraryIds = libraryIdsFromRelationship(relationship)
-  const source = canonical ? 'local' : 'remote'
-  const thumbnail = canonical?.thumbnail
-    ? canonical.thumbnail
-    : relationship.remoteThumbnailUrl
-      ? {
-          type: 'remote' as const,
-          url: relationship.remoteThumbnailUrl,
-        }
-      : undefined
-
-  return {
-    id: relationship.id,
-    cloudRelationshipId: relationship.id,
-    source,
-    status: relationship.conflict
-      ? 'conflicted'
-      : canonical
-        ? 'synced'
-        : 'cloud-only',
-    libraryIds:
-      relationshipLibraryIds.length > 0
-        ? relationshipLibraryIds
-        : [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
-    name: homeProjectNameFromCloudRelationship({ canonical, relationship }),
-    title: homeProjectTitleFromCloudRelationship({ canonical, relationship }),
-    localProjectPath: canonical?.localProjectPath,
-    localProjectName: canonical?.localProjectName,
-    remoteProjectId: relationship.remoteProjectId,
-    deleteRemoteOnDelete: Boolean(
-      relationship.remoteProjectId &&
-        (!canonical || realizationDeletesRemoteOnDelete(canonical))
-    ),
-    modified: relationship.modified ?? canonical?.modified,
-    defaultFile: canonical?.defaultFile,
-    kclFileCount: canonical?.kclFileCount,
-    directoryCount: canonical?.directoryCount,
-    readWriteAccess: canonical?.readWriteAccess ?? true,
-    thumbnail,
-    conflict: relationship.conflict ?? canonical?.conflict,
-    syncFailure: relationship.syncFailure ?? canonical?.syncFailure,
-    duplicateRealizations:
-      duplicateRealizations.length > 0 ? duplicateRealizations : undefined,
-    duplicateProjectIdPaths,
-  }
-}
-
-/**
- * Builds Home project cards from explicit inputs:
- * - one card for each cloud relationship;
- * - org-owned projects are excluded from Personal Cloud, preserving explicit
- *   copies in other libraries at their own local paths;
- * - one local-only card for each realization not claimed by a relationship.
- */
 export function deriveHomeProjectEntryContributions({
   realizations,
-  cloudRelationships,
-  relationshipMembershipPolicies = [],
 }: {
   realizations: readonly ProjectLibraryRealization[]
-  cloudRelationships: readonly CloudProjectRelationship[]
-  relationshipMembershipPolicies?: readonly ProjectLibraryRelationshipMembershipPolicy[]
 }): HomeProjectEntryContribution[] {
-  const duplicateProjectIdPaths =
-    duplicateProjectIdPathsByLocalPath(realizations)
-  const relationshipLocalPaths = new Set(
-    cloudRelationships.flatMap((relationship) =>
-      relationship.localRealizations.map(
-        ({ realization }) => realization.localProjectPath
-      )
-    )
-  )
-  const relationshipMembershipPoliciesByLibraryId = new Map<
-    string,
-    ProjectLibraryRelationshipMembershipPolicy[]
-  >()
-  for (const policy of relationshipMembershipPolicies) {
-    const policies =
-      relationshipMembershipPoliciesByLibraryId.get(policy.libraryId) ?? []
-    policies.push(policy)
-    relationshipMembershipPoliciesByLibraryId.set(policy.libraryId, policies)
-  }
-  const relationshipEntries = cloudRelationships.flatMap((relationship) => {
-    const canonicalPath =
-      relationship.canonicalRealization?.realization.localProjectPath
-    const entry = homeProjectEntryFromCloudRelationship(
-      relationship,
-      canonicalPath ? duplicateProjectIdPaths.get(canonicalPath) : undefined
-    )
-    const includedPolicyLibraryIds = new Set(
-      Array.from(relationshipMembershipPoliciesByLibraryId)
-        .filter(([, policies]) =>
-          policies.every((policy) => policy.includes({ relationship }))
-        )
-        .map(([libraryId]) => libraryId)
-    )
-    const originalLibraryIds = entry.libraryIds ?? []
-    const projectedLibraryIds = Array.from(
-      new Set([
-        ...originalLibraryIds.filter(
-          (libraryId) =>
-            !relationshipMembershipPoliciesByLibraryId.has(libraryId)
-        ),
-        ...includedPolicyLibraryIds,
-      ])
-    )
-    const removedObservedMembership = originalLibraryIds.some(
-      (libraryId) =>
-        relationshipMembershipPoliciesByLibraryId.has(libraryId) &&
-        !includedPolicyLibraryIds.has(libraryId)
-    )
-
-    if (!removedObservedMembership) {
-      return projectedLibraryIds.length > 0
-        ? [{ ...entry, libraryIds: projectedLibraryIds }]
-        : []
-    }
-
-    // When policy removes a relationship's observed library, keep its other
-    // local realizations at their own paths. Their actions must not target the
-    // hidden canonical realization owned by the filtered library.
-    const policyRelationshipEntries = projectedLibraryIds.filter(
-      (libraryId) => !originalLibraryIds.includes(libraryId)
-    )
-    const localEntries = relationship.localRealizations.flatMap(
-      ({ realization }) => {
-        const libraryIds = realization.libraryIds.filter(
-          (libraryId) =>
-            !relationshipMembershipPoliciesByLibraryId.has(libraryId) ||
-            includedPolicyLibraryIds.has(libraryId)
-        )
-        if (libraryIds.length === 0) {
-          return []
-        }
-        const isCanonical = realization.localProjectPath === canonicalPath
-        return [
-          homeProjectEntryFromRealization(
-            {
-              ...realization,
-              cloudProjectId: relationship.remoteProjectId,
-              libraryIds,
-              libraryRefs: realization.libraryRefs.filter(({ id }) =>
-                libraryIds.includes(id)
-              ),
-              conflict: isCanonical ? entry.conflict : realization.conflict,
-              syncFailure: isCanonical
-                ? entry.syncFailure
-                : realization.syncFailure,
-            },
-            duplicateProjectIdPaths.get(realization.localProjectPath)
-          ),
-        ]
-      }
-    )
-
-    return [
-      ...(policyRelationshipEntries.length > 0
-        ? [{ ...entry, libraryIds: policyRelationshipEntries }]
-        : []),
-      ...localEntries,
-    ]
-  })
-  const localOnlyEntries = realizations
-    .filter(
-      (realization) => !relationshipLocalPaths.has(realization.localProjectPath)
-    )
-    .map((realization) =>
-      homeProjectEntryFromRealization(
-        realization,
-        duplicateProjectIdPaths.get(realization.localProjectPath)
-      )
-    )
-
-  return [...relationshipEntries, ...localOnlyEntries]
+  const duplicatePaths = duplicateProjectIdPathsByLocalPath(realizations)
+  return realizations.map((project) => ({
+    duplicateProjectIdPaths: duplicatePaths.get(project.localProjectPath),
+    id: `local:${project.localProjectPath}`,
+    source: 'local',
+    status: 'local',
+    libraryIds: project.libraryIds,
+    name: project.name,
+    title: project.title,
+    localProjectPath: project.localProjectPath,
+    localProjectName: project.localProjectName,
+    defaultFile: project.defaultFile,
+    modified: project.modified,
+    kclFileCount: project.kclFileCount,
+    directoryCount: project.directoryCount,
+    readWriteAccess: project.readWriteAccess,
+    thumbnail: project.thumbnail,
+    deleteRemoteOnDelete: false,
+  }))
 }
-
-/**
- * UI adapter for Home project commands. Storage behavior stays with project
- * library operations, and cloud duplicate cleanup stays with cloudSync.
- */
-const homeProjectActions = defineRegistryItemFactory((ctx) => {
-  const settings = ctx.services.signal(settingsService)
-  const cloudSync = ctx.services.signal(cloudSyncService)
-
-  const getWasmPromise = () =>
-    ctx.valueSpecs.get(wasmPromiseValueSpec) ??
-    new Error('Missing WASM promise registry value.')
-
-  /**
-   * Selects the first configured library containing the Home card that supports
-   * the requested operation. Multi-library membership is explicit on the card.
-   */
-  const getProjectOperation = <
-    OperationName extends keyof ProjectLibraryTypeOperations,
-  >(
-    project: HomeProjectEntry,
-    operationName: OperationName
-  ):
-    | {
-        library: ProjectLibrary
-        operation: NonNullable<ProjectLibraryTypeOperations[OperationName]>
-      }
-    | undefined => {
-    const projectLibraryIds = new Set(project.libraryIds ?? [])
-    if (projectLibraryIds.size === 0) {
-      return undefined
-    }
-
-    const libraryTypes = ctx.valueSpecs.get(projectLibraryTypesValueSpec)
-    for (const library of getConfiguredProjectLibraries()) {
-      if (!projectLibraryIds.has(library.id)) {
-        continue
-      }
-
-      const operation = getProjectLibraryOperation(
-        libraryTypes.get(library.type),
-        library,
-        operationName
-      )
-      if (!operation) {
-        continue
-      }
-
-      return {
-        library,
-        operation,
-      }
-    }
-
-    return undefined
-  }
-
-  const getProjectLibraries = (project: HomeProjectEntry) => {
-    const projectLibraryIds = new Set(project.libraryIds ?? [])
-    if (projectLibraryIds.size === 0) {
-      return []
-    }
-
-    return getConfiguredProjectLibraries().filter((library) =>
-      projectLibraryIds.has(library.id)
+const homeProjectActions = defineFactory({
+  dependencies: {
+    settings: settingsObservations,
+    projectLibraries: projectLibrariesObservations,
+    homeProjects: homeProjectsObservations,
+    projectSession: projectSessionObservations,
+    fileOperations: fileOperationsObservations,
+  },
+  key: 'home-projects.actions',
+  create: ({
+    settings: settingsInputs,
+    projectLibraries: projectLibrariesInputs,
+    homeProjects: homeProjectsInputs,
+    projectSession: projectSessionInputs,
+    fileOperations: fileOperationsInputs,
+  }) => {
+    const settings = computed(
+      () => settingsInputs.settingsService.current.value
     )
-  }
 
-  const getConfiguredProjectLibraries = () => {
-    const currentSettings = settings.value?.current.value
-    return currentSettings
-      ? projectLibrariesFromSettings(currentSettings.app.libraries.current)
-      : []
-  }
-
-  const getMoveToLibraryTargets = (
-    project: HomeProjectEntry
-  ): HomeProjectMoveToLibraryTarget[] => {
-    const projectLibraryIds = new Set(project.libraryIds ?? [])
-    const libraryTypes = ctx.valueSpecs.get(projectLibraryTypesValueSpec)
-    const libraries = getConfiguredProjectLibraries()
-    const targets: HomeProjectMoveToLibraryTarget[] = []
-    const targetLibraryIds = new Set<string>()
-
-    for (const sourceLibrary of getProjectLibraries(project)) {
-      const moveFrom = getProjectLibraryOperation(
-        libraryTypes.get(sourceLibrary.type),
-        sourceLibrary,
-        'moveProjectFrom'
-      )
-      if (
-        !moveFrom ||
-        moveFrom.canMoveProject?.({ library: sourceLibrary, project }) === false
-      ) {
-        continue
+    /**
+     * Selects the first configured library containing the Home card that supports
+     * the requested operation. Multi-library membership is explicit on the card.
+     */
+    const getProjectOperation = <
+      OperationName extends keyof ProjectLibraryTypeOperations,
+    >(
+      project: HomeProjectEntry,
+      operationName: OperationName
+    ):
+      | {
+          library: ProjectLibrary
+          operation: NonNullable<ProjectLibraryTypeOperations[OperationName]>
+        }
+      | undefined => {
+      const projectLibraryIds = new Set(project.libraryIds ?? [])
+      if (projectLibraryIds.size === 0) {
+        return undefined
       }
-
-      for (const library of libraries) {
-        if (
-          projectLibraryIds.has(library.id) ||
-          targetLibraryIds.has(library.id)
-        ) {
+      const libraryTypes = projectLibrariesInputs.projectLibraryTypesFacet.value
+      for (const library of getConfiguredProjectLibraries()) {
+        if (!projectLibraryIds.has(library.id)) {
           continue
         }
-
-        const moveTo = getProjectLibraryOperation(
+        const operation = getProjectLibraryOperation(
           libraryTypes.get(library.type),
           library,
-          'moveProjectTo'
+          operationName
+        )
+        if (!operation) {
+          continue
+        }
+        return {
+          library,
+          operation,
+        }
+      }
+      return undefined
+    }
+    const getProjectLibraries = (project: HomeProjectEntry) => {
+      const projectLibraryIds = new Set(project.libraryIds ?? [])
+      if (projectLibraryIds.size === 0) {
+        return []
+      }
+      return getConfiguredProjectLibraries().filter((library) =>
+        projectLibraryIds.has(library.id)
+      )
+    }
+    const getConfiguredProjectLibraries = () => {
+      const currentSettings = settings.value?.current.value
+      return currentSettings
+        ? projectLibrariesFromSettings(currentSettings.app.libraries.current)
+        : []
+    }
+    const getCloneToLibraryTargets = (
+      project: HomeProjectEntry
+    ): HomeProjectCloneToLibraryTarget[] => {
+      const projectLibraryIds = new Set(project.libraryIds ?? [])
+      const libraryTypes = projectLibrariesInputs.projectLibraryTypesFacet.value
+      const libraries = getConfiguredProjectLibraries()
+      const targets: HomeProjectCloneToLibraryTarget[] = []
+      const targetLibraryIds = new Set<string>()
+      for (const sourceLibrary of getProjectLibraries(project)) {
+        const cloneFrom = getProjectLibraryOperation(
+          libraryTypes.get(sourceLibrary.type),
+          sourceLibrary,
+          'cloneProjectFrom'
         )
         if (
-          !moveTo ||
-          moveTo.canReceiveProject?.({
-            library,
-            sourceLibrary,
+          !cloneFrom ||
+          cloneFrom.canCloneProject?.({
+            library: sourceLibrary,
             project,
           }) === false
         ) {
           continue
         }
-
-        targets.push({
-          library,
-          sourceLibrary,
-        })
-        targetLibraryIds.add(library.id)
+        for (const library of libraries) {
+          if (
+            projectLibraryIds.has(library.id) ||
+            targetLibraryIds.has(library.id)
+          ) {
+            continue
+          }
+          const cloneTo = getProjectLibraryOperation(
+            libraryTypes.get(library.type),
+            library,
+            'cloneProjectTo'
+          )
+          if (
+            !cloneTo ||
+            cloneTo.canReceiveProject?.({
+              library,
+              sourceLibrary,
+              project,
+            }) === false
+          ) {
+            continue
+          }
+          targets.push({
+            library,
+            sourceLibrary,
+          })
+          targetLibraryIds.add(library.id)
+        }
       }
+      return targets
     }
-
-    return targets
-  }
-
-  const getMoveToLibraryTarget = (
-    project: HomeProjectEntry,
-    targetLibraryId: string
-  ) =>
-    getMoveToLibraryTargets(project).find(
-      (target) => target.library.id === targetLibraryId
-    )
-
-  const serviceImpl: HomeProjectActionsService = {
-    watchRemoteThumbnail: (remoteProjectId) =>
-      ctx.services
-        .optional(cloudProjectRelationshipsService)
-        ?.watchRemoteThumbnail(remoteProjectId),
-    canOpen: (project) =>
-      Boolean(
-        (project.readWriteAccess &&
-          project.defaultFile &&
-          getProjectOperation(project, 'openProject')) ||
-          project.remoteProjectId
-      ),
-    canDuplicate: (project) =>
-      Boolean(
-        ((project.localProjectName && project.localProjectPath) ||
-          project.remoteProjectId) &&
-          getProjectOperation(project, 'duplicateProject')
-      ),
-    // A local materialization is not required: cloud library operations can act
-    // on a remote-only project directly. Each library type's operation guards
-    // its own local-vs-remote handling, so the shared capability check only
-    // needs write access plus a registered operation.
-    canRename: (project) =>
-      Boolean(
-        project.readWriteAccess && getProjectOperation(project, 'renameProject')
-      ),
-    canDelete: (project) =>
-      Boolean(
-        project.readWriteAccess && getProjectOperation(project, 'deleteProject')
-      ),
-    canMoveToLibrary: (project) => getMoveToLibraryTargets(project).length > 0,
-    canReviewDuplicateRealizations: (project) =>
-      Boolean(project.duplicateRealizations?.length),
-    canSeparateProjectCopies: (project) =>
-      Boolean(
-        project.readWriteAccess &&
-          project.localProjectPath &&
-          project.duplicateProjectIdPaths?.length
-      ),
-    open: async (project) => {
-      const openProject = getProjectOperation(project, 'openProject')
-      if (openProject && project.readWriteAccess && project.defaultFile) {
-        return openProject.operation.run({
-          library: openProject.library,
+    const getCloneToLibraryTarget = (
+      project: HomeProjectEntry,
+      targetLibraryId: string
+    ) =>
+      getCloneToLibraryTargets(project).find(
+        (target) => target.library.id === targetLibraryId
+      )
+    const serviceImpl: Omit<HomeProjectActionsService, 'pendingActions'> = {
+      watchRemoteThumbnail: (id) =>
+        homeProjectsInputs.homeProjectEntriesFacet.value
+          .find((entry) => entry.remoteProjectId === id)
+          ?.watchThumbnail?.(),
+      canOpen: (project) =>
+        Boolean(
+          (project.readWriteAccess &&
+            project.defaultFile &&
+            getProjectOperation(project, 'openProject')) ||
+            project.remoteProjectId
+        ),
+      canDuplicate: (project) =>
+        Boolean(
+          ((project.localProjectName && project.localProjectPath) ||
+            project.remoteProjectId) &&
+            getProjectOperation(project, 'duplicateProject')
+        ),
+      // A local materialization is not required: cloud library operations can act
+      // on a remote-only project directly. Each library type's operation guards
+      // its own local-vs-remote handling, so the shared capability check only
+      // needs write access plus a registered operation.
+      canRename: (project) =>
+        Boolean(
+          project.readWriteAccess &&
+            getProjectOperation(project, 'renameProject')
+        ),
+      canDelete: (project) =>
+        Boolean(
+          project.readWriteAccess &&
+            getProjectOperation(project, 'deleteProject')
+        ),
+      canCloneToLibrary: (project) =>
+        getCloneToLibraryTargets(project).length > 0,
+      canReviewDuplicateRealizations: (project) => false,
+      canSeparateProjectCopies: (project) =>
+        Boolean(
+          project.readWriteAccess &&
+            project.localProjectPath &&
+            project.duplicateProjectIdPaths?.length
+        ),
+      open: async (project) => {
+        const target = getProjectOperation(project, 'openProject')
+        return target?.operation.run({
+          library: target.library,
           project,
         })
-      }
-
-      if (!project.remoteProjectId) {
-        return undefined
-      }
-
-      if (!openProject) {
-        return undefined
-      }
-
-      const targetProjectDirectoryPath =
-        await getCloudProjectLibraryMaterializationDirectoryPath(
-          openProject.library
+      },
+      duplicate: async (project) => {
+        const duplicateProject = getProjectOperation(
+          project,
+          'duplicateProject'
         )
-      const syncedProject = await cloudSync.value?.ensureProjectLocallySynced(
-        project.remoteProjectId,
-        targetProjectDirectoryPath
-      )
-      if (!syncedProject) {
-        return undefined
-      }
-
-      const wasmInstancePromise = getWasmPromise()
-      if (wasmInstancePromise instanceof Error) {
-        return Promise.reject(wasmInstancePromise)
-      }
-
-      const projectInfo = await getProjectInfo(
-        ctx.services.get(fileOperationsService),
-        syncedProject.projectPath,
-        await wasmInstancePromise
-      )
-      return { defaultFile: projectInfo.default_file }
-    },
-    duplicate: async (project) => {
-      const duplicateProject = getProjectOperation(project, 'duplicateProject')
-      if (!serviceImpl.canDuplicate(project) || !duplicateProject) {
-        return
-      }
-
-      const result = await duplicateProject.operation.run({
-        library: duplicateProject.library,
-        project,
-      })
-      if (result) {
-        toast.success(result.message)
-      }
-    },
-    rename: async (project, requestedName, options) => {
-      const renameProject = getProjectOperation(project, 'renameProject')
-      if (!serviceImpl.canRename(project) || !renameProject) {
-        return
-      }
-
-      if (
-        homeProjectDisplayNameExists({
-          entries: ctx.valueSpecs.get(homeProjectEntriesValueSpec),
-          requestedName,
-          projectId: project.id,
-        })
-      ) {
-        const message = `Project with title "${requestedName}" already exists`
-        if (options?.notify !== false) {
-          toast.error(message)
+        if (!serviceImpl.canDuplicate(project) || !duplicateProject) {
+          return
         }
-        return Promise.reject(new Error(message))
-      }
-
-      await renameProject.operation.run({
-        library: renameProject.library,
-        project,
-        requestedName,
-      })
-      if (options?.notify !== false) {
-        toast.success(
-          `Successfully renamed "${getHomeProjectDisplayName(project)}" to "${requestedName}"`
+        const result = await duplicateProject.operation.run({
+          library: duplicateProject.library,
+          project,
+        })
+        if (result) {
+          toast.success(result.message)
+        }
+      },
+      rename: async (project, requestedName, options) => {
+        const renameProject = getProjectOperation(project, 'renameProject')
+        if (!serviceImpl.canRename(project) || !renameProject) {
+          return
+        }
+        if (
+          homeProjectDisplayNameExists({
+            entries: homeProjectsInputs.homeProjectEntriesFacet.value,
+            requestedName,
+            projectId: project.id,
+          })
+        ) {
+          const message = `Project with title "${requestedName}" already exists`
+          return Promise.reject(new Error(message))
+        }
+        await renameProject.operation.run({
+          library: renameProject.library,
+          project,
+          requestedName,
+        })
+        const session = projectSessionInputs.projectSession.current.value
+        if (
+          session &&
+          project.localProjectPath &&
+          session.project.peek()?.path === project.localProjectPath
         )
-      }
-    },
-    delete: async (project) => {
-      const deleteProject = getProjectOperation(project, 'deleteProject')
-      if (!serviceImpl.canDelete(project) || !deleteProject) {
-        return
-      }
-
-      await deleteProject.operation.run({
-        library: deleteProject.library,
-        project,
-      })
-      toast.success(
-        `Successfully deleted "${getHomeProjectDisplayName(project)}"`
-      )
-    },
-    getMoveToLibraryTargets,
-    moveToLibrary: async (project, targetLibraryId) => {
-      const target = getMoveToLibraryTarget(project, targetLibraryId)
-      if (!target) {
-        return undefined
-      }
-
-      const libraryTypes = ctx.valueSpecs.get(projectLibraryTypesValueSpec)
-      const moveFrom = getProjectLibraryOperation(
-        libraryTypes.get(target.sourceLibrary.type),
-        target.sourceLibrary,
-        'moveProjectFrom'
-      )
-      const moveTo = getProjectLibraryOperation(
-        libraryTypes.get(target.library.type),
-        target.library,
-        'moveProjectTo'
-      )
-      if (!moveFrom || !moveTo) {
-        return undefined
-      }
-
-      const source = await moveFrom.run({
-        library: target.sourceLibrary,
-        project,
-        targetLibrary: target.library,
-      })
-      if (!source) {
-        return undefined
-      }
-
-      const result = await moveTo.run({
-        library: target.library,
-        sourceLibrary: target.sourceLibrary,
-        project,
-        source,
-      })
-      toast.success(
-        `Moved "${getHomeProjectDisplayName(project)}" to "${target.library.title}".`
-      )
-
-      return result?.defaultFile
-        ? {
-            defaultFile: result.defaultFile,
-            localProjectPath: result.localProjectPath,
-          }
-        : undefined
-    },
-    deleteDuplicateRealizations: async (project, duplicateProjectPaths) => {
-      if (!project.remoteProjectId || duplicateProjectPaths.length === 0) {
-        return
-      }
-
-      await cloudSync.value?.deleteDuplicateProjectRealizations({
-        remoteProjectId: project.remoteProjectId,
-        canonicalProjectPath: project.localProjectPath,
-        duplicateProjectPaths,
-      })
-      invalidateProjectLibraryRealizations()
-      toast.success('Deleted duplicate project copies.')
-    },
-    separateProjectCopies: async (project, keepProjectPath) => {
-      if (!serviceImpl.canSeparateProjectCopies(project)) {
-        return
-      }
-
-      const projectPaths = [
-        project.localProjectPath,
-        ...(project.duplicateProjectIdPaths ?? []),
-      ].filter((projectPath): projectPath is string => Boolean(projectPath))
-      await separateProjectsSharingProjectId({
-        fileOperations: ctx.services.get(fileOperationsService),
-        projectPaths,
-        keepProjectPath,
-      })
-      invalidateProjectLibraryRealizations()
-      toast.success(
-        keepProjectPath
-          ? 'Separated project copies. The selected project kept its Zookeeper history.'
-          : 'Separated project copies and cleared their Zookeeper history.'
-      )
-    },
-  }
-
-  return {
-    id: 'home-projects.actions',
-    providesServices: [provideService(homeProjectActionsService, serviceImpl)],
-  }
-}, 'home-projects.actions')
+          await session.refreshProject()
+        if (options?.notify !== false) {
+          toast.success(
+            `Successfully renamed "${getHomeProjectDisplayName(project)}" to "${requestedName}"`
+          )
+        }
+      },
+      delete: async (project) => {
+        const deleteProject = getProjectOperation(project, 'deleteProject')
+        if (!serviceImpl.canDelete(project) || !deleteProject) {
+          return
+        }
+        await deleteProject.operation.run({
+          library: deleteProject.library,
+          project,
+        })
+        toast.success(
+          `Successfully deleted "${getHomeProjectDisplayName(project)}"`
+        )
+      },
+      getCloneToLibraryTargets,
+      cloneToLibrary: async (project, targetLibraryId, options) => {
+        const target = getCloneToLibraryTarget(project, targetLibraryId)
+        if (!target) {
+          return undefined
+        }
+        const libraryTypes =
+          projectLibrariesInputs.projectLibraryTypesFacet.value
+        const cloneFrom = getProjectLibraryOperation(
+          libraryTypes.get(target.sourceLibrary.type),
+          target.sourceLibrary,
+          'cloneProjectFrom'
+        )
+        const cloneTo = getProjectLibraryOperation(
+          libraryTypes.get(target.library.type),
+          target.library,
+          'cloneProjectTo'
+        )
+        if (!cloneFrom || !cloneTo) {
+          return undefined
+        }
+        const source = await cloneFrom.run({
+          library: target.sourceLibrary,
+          project,
+          targetLibrary: target.library,
+        })
+        if (!source) {
+          return undefined
+        }
+        const result = await cloneTo.run({
+          library: target.library,
+          sourceLibrary: target.sourceLibrary,
+          project,
+          source,
+          requestedProjectTitle: options?.title,
+        })
+        toast.success(
+          `Created a clone of "${getHomeProjectDisplayName(project)}" in "${target.library.title}".`
+        )
+        return result?.defaultFile
+          ? {
+              defaultFile: result.defaultFile,
+              localProjectPath: result.localProjectPath,
+            }
+          : undefined
+      },
+      deleteDuplicateRealizations: async () =>
+        Promise.reject(
+          new Error('Historical cloud mirrors cannot be modified.')
+        ),
+      separateProjectCopies: async (project, keepProjectPath) => {
+        if (!serviceImpl.canSeparateProjectCopies(project)) {
+          return
+        }
+        const projectPaths = [
+          project.localProjectPath,
+          ...(project.duplicateProjectIdPaths ?? []),
+        ].filter((projectPath): projectPath is string => Boolean(projectPath))
+        await separateProjectsSharingProjectId({
+          fileOperations: fileOperationsInputs.fileOperationsService.required(),
+          projectPaths,
+          keepProjectPath,
+        })
+        invalidateProjectLibraryRealizations()
+        toast.success(
+          keepProjectPath
+            ? 'Separated project copies. The selected project kept its Zookeeper history.'
+            : 'Separated project copies and cleared their Zookeeper history.'
+        )
+      },
+    }
+    return {
+      items: [
+        provide(
+          homeProjectActionsService,
+          withHomeProjectActionStatus(serviceImpl)
+        ),
+      ],
+    }
+  },
+})
 
 /**
  * Sole Home entry producer for project cards. External extensions contribute
  * local realizations, and cloudSync publishes explicit relationships through
  * its singleton service. Home derives view models from those domain models.
  */
-const homeProjectEntryViewModels = defineRegistryItemFactory((ctx) => {
-  const projectLibraryRealizations = ctx.valueSpecs.signal(
-    projectLibraryRealizationsValueSpec
-  )
-  const cloudProjectRelationships = ctx.services.signal(
-    cloudProjectRelationshipsService
-  )
-  const projectLibraryTypes = ctx.valueSpecs.signal(
-    projectLibraryTypesValueSpec
-  )
-  const entries = computed(() =>
-    deriveHomeProjectEntryContributions({
-      realizations: projectLibraryRealizations.value,
-      cloudRelationships:
-        cloudProjectRelationships.value?.relationships.value ?? [],
-      relationshipMembershipPolicies: Array.from(
-        projectLibraryTypes.value.values()
-      ).flatMap(
-        (libraryType) => libraryType.relationshipMembershipPolicies ?? []
-      ),
-    })
-  )
-
-  return {
-    id: 'home-projects.view-models',
-    provides: [
-      provide(homeProjectEntriesValueSpec, entries, {
-        key: 'home-projects.view-models',
-      }),
-    ],
-  }
-}, 'home-projects.view-models')
-
-function findHomeProjectEntryByProjectPath(
-  entries: readonly HomeProjectEntry[],
-  projectPath: string
-) {
-  return entries.find((entry) => entry.localProjectPath === projectPath)
-}
-
-const moveProjectToLibraryProjectMenuItem = defineRegistryItemFactory((ctx) => {
-  const findProject = (projectPath: string) =>
-    findHomeProjectEntryByProjectPath(
-      ctx.valueSpecs.get(homeProjectEntriesValueSpec),
-      projectPath
+const homeProjectEntryViewModels = defineFactory({
+  dependencies: {
+    projectLibraries: projectLibrariesObservations,
+  },
+  key: 'home-projects.view-models',
+  create: ({ projectLibraries: projectLibrariesInputs }) => {
+    const realizations = projectLibrariesInputs.projectLibraryRealizationsFacet
+    const entries = computed(() =>
+      deriveHomeProjectEntryContributions({
+        realizations: realizations.value,
+      })
     )
-
-  return {
-    id: 'home-projects.move-to-library-project-menu-item',
-    provides: [
-      provide(
-        projectExplorerProjectMenuItemsValueSpec,
-        {
-          id: 'home-projects.move-to-library-project-menu-item',
-          order: 10,
-          label: 'Move project',
-          dataTestId: 'project-sidebar-move-to-library',
-          isVisible: ({ projectPath }) => {
-            const project = findProject(projectPath)
-            const actions = ctx.services.optional(homeProjectActionsService)
-
-            return Boolean(project && actions?.canMoveToLibrary(project))
-          },
-          onSelect: ({ projectPath }) => {
-            const project = findProject(projectPath)
-            const commandSystem = ctx.services.optional(commandSystemService)
-            if (!project || !commandSystem) {
-              return
-            }
-
-            commandSystem.send({
-              type: 'Find and select command',
-              data: {
-                groupId: 'projects',
-                name: 'Move project',
-                argDefaultValues: {
-                  project: project.id,
-                },
-              },
-            })
-          },
-        },
-        { key: 'home-projects.move-to-library-project-menu-item' }
-      ),
-    ],
-  }
-}, 'home-projects.move-to-library-project-menu-item')
-
-const homeProjectsExtension = defineRegistryItem({
-  id: 'home-projects',
-  uses: [
-    homeProjectActions,
-    homeProjectEntryViewModels,
-    moveProjectToLibraryProjectMenuItem,
-  ],
+    return {
+      items: [
+        contribute(homeProjectEntriesFacet, () => entries.value, {
+          key: 'home-projects.view-models',
+        }),
+      ],
+    }
+  },
 })
-
+const cloneProjectToLibraryProjectMenuItem = defineFactory({
+  dependencies: {
+    homeProjects: homeProjectsObservations,
+    commands: commandsObservations,
+  },
+  key: 'home-projects.clone-to-library-project-menu-item',
+  create: ({ homeProjects: homeProjectsInputs, commands: commandsInputs }) => {
+    const findProject = (projectPath: string) =>
+      findHomeProjectByPath(
+        homeProjectsInputs.homeProjectEntriesFacet.value,
+        projectPath
+      )
+    const _projectExplorerProjectMenuItemsContribution: InputOf<
+      typeof projectExplorerProjectMenuItemsFacet
+    > = {
+      id: 'home-projects.clone-to-library-project-menu-item',
+      order: 10,
+      label: 'Clone project',
+      dataTestId: 'project-sidebar-clone-to-library',
+      isVisible: ({ projectPath }) => {
+        const project = findProject(projectPath)
+        const actions =
+          homeProjectsInputs.homeProjectActionsService.current.value
+        return Boolean(project && actions?.canCloneToLibrary(project))
+      },
+      onSelect: ({ projectPath }) => {
+        const project = findProject(projectPath)
+        const commandSystem = commandsInputs.commandSystemService.current.value
+        if (!project || !commandSystem) {
+          return
+        }
+        selectCommand(commandSystem, {
+          groupId: 'projects',
+          name: 'Clone project',
+          argDefaultValues: {
+            project: project.id,
+          },
+        })
+      },
+    }
+    return {
+      items: [
+        contribute(
+          projectExplorerProjectMenuItemsFacet,
+          () => _projectExplorerProjectMenuItemsContribution,
+          {
+            key: 'home-projects.clone-to-library-project-menu-item',
+          }
+        ),
+      ],
+    }
+  },
+})
+const homeProjectsExtension = [
+  homeProjectActions,
+  homeProjectEntryViewModels,
+  cloneProjectToLibraryProjectMenuItem,
+]
 export default homeProjectsExtension

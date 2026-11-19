@@ -456,7 +456,7 @@ impl FunctionSource {
                 .stack()
                 .get(memory::RETURN_NAME, self.ast.as_source_range())
                 .ok()
-                .map(KclValue::continue_)
+                .map(KclValue::normal)
         })
     }
 
@@ -533,7 +533,7 @@ impl FunctionSource {
                     // the `never` contract.
                     return Ok(Some(value));
                 } else {
-                    // `Continue` and `Return` both complete this function
+                    // `Normal` and `Return` both complete this function
                     // normally.
                     Ok(Some(value.into_value()))
                 }
@@ -551,7 +551,7 @@ impl FunctionSource {
             }
         }
 
-        coerce_result_type(result, self, exec_state).map(|r| r.map(KclValue::continue_))
+        coerce_result_type(result, self, exec_state).map(|r| r.map(KclValue::normal))
     }
 }
 
@@ -1559,6 +1559,7 @@ mod test {
                 execution_callbacks: Default::default(),
                 machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
                 configure_engine_render: true,
+                needs_oit: Default::default(),
             };
             let mut exec_state = ExecState::new(&exec_ctxt);
             exec_state.mod_local.stack = Stack::new_for_tests();
@@ -2763,6 +2764,7 @@ plane = startSketchOn(XY)
             execution_callbacks: Default::default(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             configure_engine_render: true,
+            needs_oit: Default::default(),
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
         exec_state.set_deprecation_version_override(Some("2.0"));

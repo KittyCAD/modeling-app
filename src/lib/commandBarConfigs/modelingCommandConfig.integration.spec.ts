@@ -86,6 +86,49 @@ function bodyTypeRequiredForCommand(
     : bodyTypeArg.required
 }
 
+describe('STEP schema export options', () => {
+  function schemaArgument() {
+    const config = modelingMachineCommandConfig.Export
+    if (
+      !config ||
+      isArray(config) ||
+      config.args?.schema?.inputType !== 'options'
+    ) {
+      throw new Error('Export should expose schema options')
+    }
+    return config.args.schema
+  }
+
+  it('defaults to AP242 and offers all three STEP schemas', () => {
+    const schema = schemaArgument()
+    const options =
+      typeof schema.options === 'function'
+        ? schema.options({ argumentsToSubmit: { type: 'step' } })
+        : schema.options
+
+    expect(schema.defaultValue).toBe('ap242')
+    expect(options.map((option) => option.value)).toEqual([
+      'ap203',
+      'ap214',
+      'ap242',
+    ])
+    expect(options.find((option) => option.isCurrent)?.value).toBe('ap242')
+  })
+
+  it.each(['step', 'gltf', 'obj', 'stl', 'ply', 'fbx', undefined])(
+    'shows the schema selector only when the format is STEP (%s)',
+    (type) => {
+      const schema = schemaArgument()
+      if (typeof schema.hidden !== 'function') {
+        throw new Error('Export schema visibility should depend on the format')
+      }
+      expect(
+        schema.hidden({ argumentsToSubmit: { type, schema: 'ap214' } })
+      ).toBe(type !== 'step')
+    }
+  )
+})
+
 describe('GDT Datum Default Name', () => {
   it('should work with command bar when datum A already exists', async () => {
     // Test command bar integration with existing datum
@@ -606,7 +649,7 @@ describe('stdlib command arg derivation', () => {
 
     expect(args.target).toEqual(cameraArgs.target)
     expect(args.target.documentation).toBeTruthy()
-    expect(args).not.toHaveProperty('camera')
+    expect(args).toHaveProperty('camera')
   })
 
   it('only derives docs for fields backed by a single stdlib argument', () => {

@@ -1,5 +1,5 @@
-import { defineContract, defineValueSpec } from '@kittycad/registry'
 import type { App } from '@src/lib/app'
+import { contract, Facet } from 'plankton'
 import type { ComponentType } from 'react'
 
 export interface AppHeaderItemProps {
@@ -15,13 +15,11 @@ export interface AppHeaderItem {
 
 const sortByOrderProperty = (inputs: readonly AppHeaderItem[]) =>
   inputs.toSorted((a, b) => (a.order || 0) - (b.order || 0))
-
-export const appHeaderContract = defineContract({
-  appHeaderItemsValueSpec: defineValueSpec<AppHeaderItem, AppHeaderItem[]>({
-    name: 'app-header-items',
-    defaultValue: [],
-    combine: sortByOrderProperty,
-  }),
+export const appHeaderContract = contract({
+  appHeaderItemsFacet: new Facet<AppHeaderItem, AppHeaderItem[]>(
+    'app-header-items',
+    (inputs) => (inputs.length ? sortByOrderProperty(inputs) : [])
+  ),
 })
 
-export const { appHeaderItemsValueSpec } = appHeaderContract
+export const { appHeaderItemsFacet } = appHeaderContract

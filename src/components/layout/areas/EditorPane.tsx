@@ -13,9 +13,12 @@ import {
 } from '@codemirror/view'
 import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
+import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
+import { RouteProviderContext } from '@src/components/RouteProvider'
+import { Spinner } from '@src/components/Spinner'
 import {
   editorMarkdownHighlight,
   editorTheme,
@@ -31,24 +34,29 @@ import {
   scheduleActiveTextFileWrite,
 } from '@src/lib/activeTextFile'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { selectCommand } from '@src/lib/commandUtils'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import {
+  isExtensionARelevantExtension,
+  toProjectRelativePath,
+} from '@src/lib/paths'
 import { getResolvedTheme } from '@src/lib/theme'
 import { reportRejection, trap } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
-  keymapScopesValueSpec,
+  keymapScopesFacet,
   keymapService,
 } from '@src/registry/contracts/keymap'
+import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
-import { useEffect, useRef } from 'react'
+import { use, useContext, useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import styles from './KclEditorMenu.module.css'
 
 type Singletons = ReturnType<typeof useSingletons>
-
 export const editorShortcutMeta = {
   formatCode: {
     defaultKeys: ['alt+shift+f'],
@@ -57,7 +65,6 @@ export const editorShortcutMeta = {
     defaultKeys: ['ctrl+shift+c'],
   },
 }
-
 export const EditorPane = (props: AreaTypeComponentProps) => {
   return (
     <LayoutPanel
@@ -76,12 +83,28 @@ export const EditorPane = (props: AreaTypeComponentProps) => {
     </LayoutPanel>
   )
 }
-
 export const EditorPaneContents = () => {
   useSignals()
   const { kclManager } = useSingletons()
+  const app = useApp()
+  const project = app.projectSignal.value
+  const readOnly = project
+    ? !app.projectSession.storageFor(project.path).writeAvailability.value
+        .writable
+    : false
+  const editorPath = kclManager.path
   const activeTextFile = activeTextFileSignal.value
+  const { isFileLoading } = useContext(RouteProviderContext)
+  const loading = isFileLoading || activeTextFile?.status === 'loading'
   const editorParent = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    kclManager.editorView.dispatch({
+      effects: kclManager.storageReadOnlyCompartment.reconfigure([
+        EditorState.readOnly.of(readOnly),
+        EditorView.editable.of(!readOnly),
+      ]),
+    })
+  }, [kclManager, editorPath, readOnly])
 
   // When this pane unmounts (e.g. the Code pane is closed), stop showing the
   // text file so a KCL file is shown again the next time it opens.
@@ -90,29 +113,38 @@ export const EditorPaneContents = () => {
       clearActiveTextFile()
     }
   }, [])
-
   useEffect(() => {
     if (activeTextFile) {
       return
     }
     editorParent.current?.appendChild(kclManager.editorView.dom)
   }, [activeTextFile, kclManager.editorView.dom])
-
-  if (activeTextFile) {
-    return <TextFileEditor activeTextFile={activeTextFile} />
-  }
-
   return (
-    <div className="relative h-full">
-      <div
-        id="code-mirror-override"
-        className="absolute inset-0 pr-1"
-        ref={editorParent}
-      />
+    <div className="relative h-full" aria-busy={loading}>
+      <div className="h-full" inert={loading}>
+        {activeTextFile ? (
+          <TextFileEditor activeTextFile={activeTextFile} readOnly={readOnly} />
+        ) : (
+          <div
+            id="code-mirror-override"
+            className="absolute inset-0 pr-1"
+            ref={editorParent}
+          />
+        )}
+      </div>
+      {loading && (
+        <div
+          role="status"
+          aria-label="Loading file"
+          className="absolute inset-0 flex items-center justify-center bg-chalkboard-10/80 dark:bg-chalkboard-100/80"
+        >
+          <Spinner aria-hidden="true" />
+          <span className="sr-only">Loading file</span>
+        </div>
+      )}
     </div>
   )
 }
-
 const textFileEditorTheme = EditorView.theme({
   '&': {
     height: '100%',
@@ -135,6 +167,7 @@ const textFileEditorTheme = EditorView.theme({
 
 /** Compartment so theme changes reconfigure in place instead of recreating the view. */
 const textThemeCompartment = new Compartment()
+const textReadOnlyCompartment = new Compartment()
 
 /**
  * Keep the visual theme and syntax colors in one compartment so they update
@@ -159,18 +192,28 @@ function textEditorThemeExtensions(theme: 'light' | 'dark', path: string) {
  */
 function TextFileEditor({
   activeTextFile,
+  readOnly,
 }: {
   activeTextFile: ActiveTextFile
+  readOnly: boolean
 }) {
-  const { fileOperations, settings } = useApp()
+  useSignals()
+  const app = useApp()
+  const {
+    commands,
+    fileOperations,
+    settings,
+    registry,
+    project,
+    projectSession,
+  } = app
   const settingsValues = settings.useSettings()
   const resolvedTheme = getResolvedTheme(settingsValues.app.theme.current)
   const editorParent = useRef<HTMLDivElement>(null)
   const viewRef = useRef<EditorView | null>(null)
 
-  // Create/destroy the editor only when the FILE changes (path/status) — never
-  // on keystroke or theme change, which would reset cursor/scroll and could
-  // drop un-flushed edits.
+  // Recreate on file loads or authoritative text replacement. Loaded text stays
+  // unchanged during typing, so keystrokes and theme changes preserve the editor.
   useEffect(() => {
     if (!editorParent.current || activeTextFile.status !== 'ready') {
       return
@@ -178,11 +221,19 @@ function TextFileEditor({
     const path = activeTextFile.path
     const normalizedPath = path.toLowerCase()
     const lineSeparator = activeTextFile.text.match(/\r\n|\r|\n/)?.[0]
-
     const view = new EditorView({
       state: EditorState.create({
         doc: activeTextFile.text,
         extensions: [
+          textReadOnlyCompartment.of([]),
+          EditorState.transactionFilter.of((transaction) =>
+            transaction.docChanged &&
+            !app.projectSession
+              .storageFor(activeTextFile.path)
+              .writeAvailability.peek().writable
+              ? []
+              : transaction
+          ),
           textThemeCompartment.of(
             textEditorThemeExtensions(resolvedTheme, path)
           ),
@@ -198,6 +249,7 @@ function TextFileEditor({
           keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
           EditorView.updateListener.of((update) => {
             if (update.docChanged) {
+              projectSession.editorChanged(path)
               scheduleActiveTextFileWrite(
                 fileOperations,
                 path,
@@ -210,7 +262,6 @@ function TextFileEditor({
       parent: editorParent.current,
     })
     viewRef.current = view
-
     return () => {
       view.destroy()
       viewRef.current = null
@@ -220,7 +271,7 @@ function TextFileEditor({
     // resolvedTheme is intentionally omitted: theme changes are handled by the
     // compartment effect below so the editor isn't recreated on every toggle.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTextFile.path, activeTextFile.status])
+  }, [activeTextFile.path, activeTextFile.status, activeTextFile.text])
 
   // Reconfigure the theme in place — no recreation, no lost edits.
   useEffect(() => {
@@ -230,23 +281,68 @@ function TextFileEditor({
       ),
     })
   }, [resolvedTheme, activeTextFile.path])
-
+  useEffect(() => {
+    viewRef.current?.dispatch({
+      effects: textReadOnlyCompartment.reconfigure([
+        EditorState.readOnly.of(readOnly),
+        EditorView.editable.of(!readOnly),
+      ]),
+    })
+  }, [
+    readOnly,
+    activeTextFile.path,
+    activeTextFile.status,
+    activeTextFile.text,
+  ])
   if (activeTextFile.status === 'loading') {
-    return (
-      <div className="h-full p-3 text-sm text-chalkboard-70 dark:text-chalkboard-30">
-        Loading {activeTextFile.name}...
-      </div>
-    )
+    return null
   }
-
   if (activeTextFile.status === 'error') {
+    const currentProject = project?.projectIORefSignal.value
+    const currentFile = project?.executingFileEntry.value
+    const wasmPromise = registry.observe(wasmPromiseFacet).value
+    const wasm = wasmPromise ? use(wasmPromise) : undefined
+    const canImport =
+      currentProject?.readWriteAccess &&
+      currentFile &&
+      currentFile.path !== activeTextFile.path &&
+      wasm &&
+      isExtensionARelevantExtension(activeTextFile.path, [
+        'kcl',
+        ...wasm.import_file_extensions(),
+      ])
     return (
-      <div className="h-full p-3 text-sm text-destroy-80">
-        Failed to open {activeTextFile.name}: {activeTextFile.error}
+      <div className="h-full p-3 text-sm">
+        <p className="text-destroy-80">
+          Failed to open {activeTextFile.name}: {activeTextFile.error}
+        </p>
+        {canImport && (
+          <ActionButton
+            Element="button"
+            className="mt-3 py-2"
+            tabIndex={0}
+            onClick={() => {
+              commands.send({
+                type: 'Find and select command',
+                data: {
+                  name: 'Import',
+                  groupId: 'code',
+                  argDefaultValues: {
+                    path: toProjectRelativePath(
+                      currentProject.path,
+                      activeTextFile.path
+                    ),
+                  },
+                },
+              })
+            }}
+          >
+            Import in current file
+          </ActionButton>
+        )}
       </div>
     )
   }
-
   return (
     <div className="relative h-full">
       <div
@@ -257,18 +353,15 @@ function TextFileEditor({
     </div>
   )
 }
-
 function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
   if (!kclManager.codeSignal.value) {
     toast.error('No code available to copy.')
     return
   }
-
   if (!globalThis?.navigator?.clipboard?.writeText) {
     toast.error('Clipboard functionality not available in your browser.')
     return
   }
-
   navigator.clipboard
     .writeText(kclManager.codeSignal.value)
     .then(() => toast.success(`Copied current file's code to clipboard.`))
@@ -276,7 +369,6 @@ function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
       trap(new Error(`Failed to copy code to clipboard: ${e.message}`))
     )
 }
-
 export const KclEditorMenu = () => {
   useSignals()
   // The KCL-specific menu items (format, convert to variable, KCL docs, add KCL
@@ -286,7 +378,6 @@ export const KclEditorMenu = () => {
   }
   return <KclEditorKclMenu />
 }
-
 const KclEditorKclMenu = () => {
   useSignals()
   const app = useApp()
@@ -295,7 +386,7 @@ const KclEditorKclMenu = () => {
   const platform = usePlatform()
   const settingsActor = settings.actor
   const keymap = app.registry.optional(keymapService)
-  const keymapScopes = app.registry.signal(keymapScopesValueSpec).value
+  const keymapScopes = app.registry.observe(keymapScopesFacet).value
   const currentScopes = keymap?.getCurrentScopes()
   const keybindingDisplay = (
     command: string,
@@ -322,7 +413,6 @@ const KclEditorKclMenu = () => {
   )
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
     useConvertToVariable(kclManager)
-
   return (
     <HeaderMenu>
       <Menu.Item>
@@ -386,15 +476,12 @@ const KclEditorKclMenu = () => {
           onClick={() => {
             const currentProject =
               settingsActor.getSnapshot().context.currentProject
-            commands.send({
-              type: 'Find and select command',
-              data: {
-                name: 'add-kcl-file-to-project',
-                groupId: 'application',
-                argDefaultValues: {
-                  method: 'existingProject',
-                  projectName: currentProject?.name,
-                },
+            selectCommand(commands, {
+              name: 'add-kcl-file-to-project',
+              groupId: 'application',
+              argDefaultValues: {
+                method: 'existingProject',
+                projectName: currentProject?.name,
               },
             })
           }}

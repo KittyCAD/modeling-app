@@ -8,7 +8,19 @@ on:
   schedule:
     - cron: 0 * * * * # hourly
   workflow_call:
+    inputs:
+      grep:
+        description: Custom Playwright filter (--grep=<regex>) to run just a subset of tests.
+        type: string
+        required: false
+        default: ""
   workflow_dispatch:
+    inputs:
+      grep:
+        description: Custom Playwright filter (--grep=<regex>) to run just a subset of tests.
+        type: string
+        required: false
+        default: ""
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -21,6 +33,7 @@ permissions:
 
 jobs:
   track-setup:
+    if: ${{ !inputs.grep }}
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - uses: actions/checkout@v7.0.1
@@ -63,11 +76,76 @@ jobs:
     secrets:
       TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
 
-  snapshots:
+  build-web:
+    name: Build web E2E app
     needs: [build-wasm]
+    if: ${{ !cancelled() && needs.build-wasm.result == 'success' && !inputs.grep }}
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
+    steps:
+      - uses: actions/create-github-app-token@v3
+        id: app-token
+        with:
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - uses: actions/checkout@v7.0.1
+        with:
+          repository: kittycad/modeling-app # required for 'workflow_call'
+          token: ${{ steps.app-token.outputs.token }}
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-wasm
+          path: prepared-wasm
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-ts-rs-bindings
+          path: prepared-ts-rs-bindings
+
+      - name: Copy prepared Wasm
+        run: |
+          ls -R prepared-wasm
+          cp prepared-wasm/kcl_wasm_lib_bg.wasm public
+          mkdir rust/kcl-wasm-lib/pkg
+          cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
+
+      # build:wasm generates these ignored ts-rs files in rust/kcl-lib/bindings.
+      # Restore them here because StdLibCommands is imported as a runtime value.
+      - name: Copy prepared ts-rs bindings
+        run: |
+          ls -R prepared-ts-rs-bindings
+          mkdir rust/kcl-lib/bindings
+          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
+
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web app
+        run: npm run build:e2e:web
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: prepared-web-app
+          path: build/
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: true
+
+  snapshots:
     name: e2e:snapshots
-    runs-on: namespace-profile-macos-8-cores
+    needs: [build-web]
     if: github.repository == 'kittycad/modeling-app'
+    runs-on: namespace-profile-macos-8-cores
+
+    env:
+      E2E_USE_PREBUILT_APP: '1'
 
     steps:
       - uses: actions/create-github-app-token@v3
@@ -91,6 +169,11 @@ jobs:
         with:
           name: prepared-ts-rs-bindings
           path: prepared-ts-rs-bindings
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-web-app
+          path: build
 
       - name: Copy prepared Wasm
         run: |
@@ -209,29 +292,41 @@ jobs:
           CI_STEP: teardown
 
   web:
-    needs: [build-wasm]
+    name: e2e:web (${{ matrix.config.label }}, shard ${{ matrix.shardIndex }})
+    needs: [build-web]
+    if: ${{ !cancelled() && needs.build-web.result == 'success' && !inputs.grep }}
+    runs-on: ${{ matrix.config.os }}
+    continue-on-error: ${{ matrix.config.optional == true && github.repository != 'kittycad/modeling-app' }}
+    env:
+      E2E_USE_PREBUILT_APP: '1'
+      OS_NAME: ${{ contains(matrix.config.os, 'ubuntu') && 'ubuntu' || (contains(matrix.config.os, 'windows') && 'windows' || 'macos') }}
     strategy:
       fail-fast: false
       matrix:
-        shardIndex: [1, 2]
-        shardTotal: [2]
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
         config:
           - os: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
-            label: ubuntu
-            test_script: test:e2e:web
+            label: chrome
+            test_command: npm run test:e2e:web
             playwright_cache_path: ~/.cache/ms-playwright
-          - os: namespace-profile-macos-8-cores
-            label: macos
-            test_script: test:e2e:web:webkit
-            playwright_cache_path: ~/Library/Caches/ms-playwright
-          - os: namespace-profile-windows-8-cores
-            label: windows
-            test_script: test:e2e:web
-            playwright_cache_path: ~/AppData/Local/ms-playwright
-    runs-on: ${{ matrix.config.os }}
-    name: e2e:web (${{ matrix.config.label }}, shard ${{ matrix.shardIndex }})
-    env:
-      OS_NAME: ${{ contains(matrix.config.os, 'ubuntu') && 'ubuntu' || (contains(matrix.config.os, 'windows') && 'windows' || 'macos') }}
+        include:
+          # TODO: Enable Firefox testing on CI
+          # - shardIndex: 1
+          #   shardTotal: 1
+          #   config:
+          #     os: namespace-profile-ubuntu-8-cores
+          #     label: firefox
+          #     test_command: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:web:firefox
+          #     playwright_cache_path: ~/.cache/ms-playwright
+          - shardIndex: 1
+            shardTotal: 1
+            config:
+              os: namespace-profile-macos-8-cores
+              label: webkit
+              test_command: npm run test:e2e:web:webkit
+              playwright_cache_path: ~/Library/Caches/ms-playwright
+              optional: true # WebKit coverage is non-blocking for external callers
 
     steps:
       - uses: actions/create-github-app-token@v3
@@ -255,6 +350,11 @@ jobs:
         with:
           name: prepared-ts-rs-bindings
           path: prepared-ts-rs-bindings
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-web-app
+          path: build
 
       - name: Copy prepared Wasm
         run: |
@@ -295,7 +395,7 @@ jobs:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
           OS_NAME: ${{ env.OS_NAME }}
 
-      - run: npm run ${{ matrix.config.test_script }} -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+      - run: ${{ matrix.config.test_command }} -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
@@ -328,14 +428,19 @@ jobs:
           CI_STEP: teardown
 
   desktop:
+    name: e2e:desktop (${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}, shard ${{ matrix.shardIndex }})
     needs: [build-wasm]
+    if: ${{ !cancelled() && needs.build-wasm.result == 'success' && !inputs.grep }}
+    runs-on: ${{ matrix.os }}
+    env:
+      OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
     strategy:
       fail-fast: false
       matrix:
         os:
           - namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
-        shardIndex: [1, 2, 3, 4, 5, 6, 7, 8]
-        shardTotal: [8]
+        shardIndex: [1, 2, 3, 4, 5, 6, 7]
+        shardTotal: [7]
         playwright_cache_path:
           - ~/.cache/ms-playwright
         include:
@@ -347,10 +452,6 @@ jobs:
             shardIndex: 1
             shardTotal: 1
             playwright_cache_path: ~/AppData/Local/ms-playwright
-    runs-on: ${{ matrix.os }}
-    name: e2e:desktop (${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}, shard ${{ matrix.shardIndex }})
-    env:
-      OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
 
     steps:
       - uses: actions/checkout@v7.0.1
@@ -473,8 +574,8 @@ jobs:
 
   vercel:
     name: e2e:web (vercel)
-    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     if: github.repository == 'kittycad/modeling-app' && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref_name == 'main'))
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
 
     steps:
       - uses: actions/checkout@v7.0.1
@@ -543,6 +644,86 @@ jobs:
         if: ${{ !cancelled() && (success() || failure()) }}
         with:
           name: playwright-report-vercel-${{ github.sha }}
+          path: playwright-report/
+          include-hidden-files: true
+          retention-days: 30
+          overwrite: true
+
+  custom:
+    name: e2e:web (custom)
+    if: ${{ inputs.grep }}
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
+
+    env:
+      E2E_USE_PREBUILT_APP: '1'
+
+    steps:
+      - uses: actions/create-github-app-token@v3
+        id: app-token
+        with:
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - uses: actions/checkout@v7.0.1
+        with:
+          repository: kittycad/modeling-app # required for 'workflow_call'
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Use correct Rust toolchain
+        shell: bash
+        run: |
+          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+
+      - name: Install Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        with:
+          cache: false
+          rustflags: '' # use .cargo/config.toml
+
+      - name: Install Wasm pack
+        uses: taiki-e/install-action@c30ba1cbe2face7f695d394a2c95af204d417b29
+        with:
+          tool: wasm-pack
+
+      - name: Build Wasm
+        shell: bash
+        run: ./scripts/build-wasm.sh
+
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web app
+        run: npm run build:e2e:web
+
+      - name: Download browser cache
+        uses: actions/cache@v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+
+      - name: Install browsers
+        run: npm run playwright install --with-deps
+
+      - run: npm run test:e2e:web -- --grep=${{ inputs.grep }}
+        env:
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:web
+          TARGET: web
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() && (success() || failure()) }}
+        with:
+          name: playwright-report-custom-${{ github.sha }}
           path: playwright-report/
           include-hidden-files: true
           retention-days: 30

@@ -1,9 +1,3 @@
-import {
-  type RegistryLike,
-  defineRegistryItem,
-  provide,
-  provideService,
-} from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import { ViewportAnnotationOverlay } from '@src/components/ViewportAnnotationOverlay'
 import { clamp } from '@src/lib/utils'
@@ -11,20 +5,20 @@ import {
   defineEngineSceneStreamClassName,
   defineEngineSceneStreamLayer,
   engineSceneRuntimeExtensionsSlot,
-  engineSceneStreamClassNamesValueSpec,
-  engineSceneStreamLayersValueSpec,
+  engineSceneStreamClassNamesFacet,
+  engineSceneStreamLayersFacet,
 } from '@src/registry/contracts/engineScene'
 import {
+  defaultZoodleToolKey,
   ZOODLE_BRUSH_SIZE_DEFAULT_PX,
   ZOODLE_BRUSH_SIZE_MAX_PX,
   ZOODLE_BRUSH_SIZE_MIN_PX,
   type ZoodleService,
   type ZoodleToolKey,
-  defaultZoodleToolKey,
   zoodleService,
   zoodleToolDefinitions,
 } from '@src/registry/contracts/zoodle'
-
+import { contribute, provide, type Registry } from 'plankton'
 export interface ZoodleRuntimeExtensionSession {
   imageDataUrl: string
   onCancel: () => void
@@ -35,7 +29,7 @@ const zoodleStreamStackClassName = defineEngineSceneStreamClassName({
   id: 'zookeeper.zoodle.stream-stack',
   order: 100,
   className:
-    'inset-4 z-20 rounded-lg transition-all duration-150 ease-out before:content-[""] before:absolute before:-inset-4 before:bg-ml-green',
+    'inset-4 z-20 rounded-lg before:content-[""] before:absolute before:-inset-4 before:bg-ml-green',
 })
 
 const clampZoodleBrushSize = (brushSize: number) => {
@@ -84,36 +78,32 @@ export function createZoodleRuntimeExtension(
       />
     ),
   })
-
-  return defineRegistryItem({
-    id: 'zookeeper.zoodle.runtime-extension',
-    provides: [
-      provide(
-        engineSceneStreamClassNamesValueSpec,
-        zoodleStreamStackClassName,
-        {
-          key: zoodleStreamStackClassName.id,
-        }
-      ),
-      provide(engineSceneStreamLayersValueSpec, zoodleAnnotationLayer, {
-        key: zoodleAnnotationLayer.id,
-      }),
-    ],
-    providesServices: [provideService(zoodleService, zoodle)],
-  })
+  return [
+    contribute(
+      engineSceneStreamClassNamesFacet,
+      () => zoodleStreamStackClassName,
+      {
+        key: zoodleStreamStackClassName.id,
+      }
+    ),
+    contribute(engineSceneStreamLayersFacet, () => zoodleAnnotationLayer, {
+      key: zoodleAnnotationLayer.id,
+    }),
+    provide(zoodleService, zoodle),
+  ]
 }
 
 export function activateZoodleRuntimeExtension(
-  registry: Pick<RegistryLike, 'reconfigure'>,
+  registry: Pick<Registry, 'replace'>,
   session: ZoodleRuntimeExtensionSession
 ) {
-  registry.reconfigure(engineSceneRuntimeExtensionsSlot, [
+  return registry.replace(engineSceneRuntimeExtensionsSlot, [
     createZoodleRuntimeExtension(session),
   ])
 }
 
 export function deactivateZoodleRuntimeExtension(
-  registry: Pick<RegistryLike, 'reconfigure'>
+  registry: Pick<Registry, 'replace'>
 ) {
-  registry.reconfigure(engineSceneRuntimeExtensionsSlot, [])
+  return registry.replace(engineSceneRuntimeExtensionsSlot, [])
 }

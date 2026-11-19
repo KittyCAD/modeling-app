@@ -125,3 +125,30 @@ export const modelingEditRole = (
     ],
   }
 }
+
+/** Editor documents own history even when their active mode has no editable DOM. */
+export const editorEditRole = (
+  mainWindow: BrowserWindow
+): ZooMenuItemConstructorOptions => ({
+  label: 'Edit',
+  submenu: [
+    {
+      label: 'Undo',
+      id: 'Edit.Undo',
+      accelerator: 'CmdOrCtrl+Z',
+      click: sendMenuAction(mainWindow, 'Edit.Undo'),
+    },
+    {
+      label: 'Redo',
+      id: 'Edit.Redo',
+      accelerator: 'Shift+CmdOrCtrl+Z',
+      click: sendMenuAction(mainWindow, 'Edit.Redo'),
+    },
+    { type: 'separator' },
+    { role: 'cut' },
+    { role: 'copy' },
+    { role: 'paste' },
+    { type: 'separator' },
+    { role: 'selectAll' },
+  ],
+})

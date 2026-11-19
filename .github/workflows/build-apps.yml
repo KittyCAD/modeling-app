@@ -119,6 +119,9 @@ jobs:
     name: build-apps (${{ matrix.platform }})
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
+      # The build runs out of memory with Node's default ~2GB heap on
+      # the macOS and Windows runners.
+      NODE_OPTIONS: --max-old-space-size=4096
     steps:
       - uses: actions/checkout@v7.0.1
 

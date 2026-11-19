@@ -13,8 +13,8 @@ description: Lints chamfers_referencing_other_chamfers_v3.kcl
     },
     "description": "chamfer uses 'tags'; prefer edges",
     "pos": [
-      1570,
-      1768,
+      1560,
+      1758,
       0
     ],
     "overridden": false,
@@ -30,8 +30,8 @@ description: Lints chamfers_referencing_other_chamfers_v3.kcl
     },
     "description": "chamfer uses 'tags'; prefer edges",
     "pos": [
-      1774,
-      1920,
+      1764,
+      1910,
       0
     ],
     "overridden": false,
@@ -47,8 +47,8 @@ description: Lints chamfers_referencing_other_chamfers_v3.kcl
     },
     "description": "chamfer uses 'tags'; prefer edges",
     "pos": [
-      1926,
-      2076,
+      1916,
+      2066,
       0
     ],
     "overridden": false,

@@ -110,7 +110,8 @@ export const browserSaveFile = async (
       // Fail silently if the user has simply canceled the dialog.
       if (name === 'AbortError') {
         toast.dismiss(toastId)
-      } else if (name === 'NotAllowedError') {
+      } else if (name === 'NotAllowedError' || name === 'SecurityError') {
+        // Slow exports can outlive the user activation required by the picker.
         saveWithDownloadLink(blob, suggestedName, toastId)
       } else {
         console.error(name, err)

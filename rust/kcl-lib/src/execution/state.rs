@@ -61,6 +61,7 @@ use crate::modules::ModulePath;
 use crate::modules::ModulePathExt as _;
 use crate::modules::ModuleRepr;
 use crate::modules::ModuleSource;
+use crate::named_views::ResolvedViewBatch;
 use crate::parsing::ast::types::Annotation;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::NodeRef;
@@ -114,6 +115,8 @@ pub(super) struct GlobalState {
     pub entry_point_kcl_version: Option<KclVersion>,
     /// Global artifacts that represent the entire program.
     pub artifacts: ArtifactState,
+    /// Resolved views from successful execution.
+    pub(super) named_views: Option<ResolvedViewBatch>,
     /// Artifacts for only the root module.
     pub root_module_artifacts: ModuleArtifactState,
     /// The segments that were edited that triggered this execution.
@@ -154,6 +157,24 @@ pub struct NotYetAdded {
 pub(crate) struct ScopedNotYetAdded {
     pub item: NotYetAdded,
     pub exported: bool,
+}
+
+pub(super) fn collect_execution_issues(
+    mut issues: Vec<CompilationIssue>,
+    named_views: Option<&ResolvedViewBatch>,
+) -> Vec<CompilationIssue> {
+    if let Some(views) = named_views {
+        issues.extend(views.failures().iter().map(|failure| {
+            CompilationIssue::err(
+                failure.source_range,
+                format!(
+                    "Could not resolve named view {:?} in module {}: {}",
+                    failure.name, failure.module_id, failure.error
+                ),
+            )
+        }));
+    }
+    issues
 }
 
 impl GlobalState {
@@ -533,6 +554,19 @@ pub(crate) struct SketchBlockState {
 }
 
 impl ExecState {
+    /// Returns calculated views from the latest successful actual execution.
+    pub fn named_views(&self) -> Option<&ResolvedViewBatch> {
+        self.global.named_views.as_ref()
+    }
+
+    pub(super) fn resolve_named_views(&mut self) {
+        self.global.named_views = Some(crate::named_views::resolve_all(
+            &self.global.artifacts.graph,
+            &self.global.operations_by_module().map,
+            &self.global.filenames(),
+        ));
+    }
+
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
             execution_callbacks: exec_context.execution_callbacks.clone(),
@@ -796,17 +830,21 @@ impl ExecState {
             .into_iter()
             .map(|(key, value)| (key, KclValueView::from(value)))
             .collect();
+        let filenames = self.global.filenames();
+        let operations = self.global.operations_by_module();
+        let issues = collect_execution_issues(self.global.issues, self.global.named_views.as_ref());
         Ok(ExecOutcome {
             variables,
-            filenames: self.global.filenames(),
+            filenames,
             engine_scene_generation: ctx.cache.engine_scene_generation().await,
-            operations: self.global.operations_by_module(),
+            operations,
             artifact_graph: self.global.artifacts.graph,
+            named_views: self.global.named_views,
             scene_objects: self.global.root_module_artifacts.scene_objects,
             source_range_to_object: self.global.root_module_artifacts.source_range_to_object,
             var_solutions: self.global.root_module_artifacts.var_solutions,
             refactor_metadata: self.global.root_module_artifacts.refactor_metadata.clone(),
-            issues: self.global.issues,
+            issues,
             source_files: self.global.id_to_source,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
             #[cfg(test)]
@@ -1711,6 +1749,7 @@ impl GlobalState {
             module_infos: Default::default(),
             never_type_ranges: Default::default(),
             artifacts: Default::default(),
+            named_views: None,
             root_module_artifacts: Default::default(),
             mod_loader: Default::default(),
             issues: Default::default(),
