@@ -1,4 +1,5 @@
 import { type PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import type { Page } from '@playwright/test'
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { TEST_SETTINGS } from '@e2e/playwright/storageStates'
@@ -54,6 +55,39 @@ test.afterEach(async ({ page }) => {
 
 test.setTimeout(60_000)
 
+const settleSnapshotScene = async (
+  page: Page,
+  scene: SceneFixture,
+  cmdBar: CmdBarFixture
+) => {
+  await scene.settled(cmdBar)
+
+  // Engine execution and LSP highlighting finish independently. A stable image
+  // of unhighlighted code is not a fully loaded editor.
+  const editor = page.locator('.cm-content')
+  if (await editor.isVisible()) {
+    if ((await editor.innerText()).trim()) {
+      await expect
+        .poll(
+          () =>
+            editor
+              .locator('.cm-line > span')
+              .evaluateAll((spans) =>
+                spans.some(
+                  (span) =>
+                    span.textContent?.trim() &&
+                    span.parentElement &&
+                    getComputedStyle(span).color !==
+                      getComputedStyle(span.parentElement).color
+                )
+              ),
+          { message: 'KCL syntax highlighting is ready', timeout: 15_000 }
+        )
+        .toBe(true)
+    }
+  }
+}
+
 const extrudeDefaultPlane = async (
   page: any,
   cmdBar: CmdBarFixture,
@@ -86,7 +120,7 @@ const extrudeDefaultPlane = async (
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
 
-  await scene.settled(cmdBar)
+  await settleSnapshotScene(page, scene, cmdBar)
 
   await expect(page).toHaveScreenshot({
     maxDiffPixels: 100,
@@ -130,7 +164,7 @@ test(
   { tag: '@snapshot' },
   async ({ page, toolbar, editor, scene, cmdBar }) => {
     await page.setViewportSize({ width: 1200, height: 500 })
-    await scene.settled(cmdBar)
+    await settleSnapshotScene(page, scene, cmdBar)
 
     // Start a sketch
     await toolbar.startSketchOnDefaultPlane('Front plane')
@@ -190,7 +224,7 @@ profile001 = startProfile(sketch001, at = [-5, -5])
       })
 
       const u = await getUtils(page)
-      await scene.settled(cmdBar)
+      await settleSnapshotScene(page, scene, cmdBar)
 
       await toolbar.editSketch(0)
 
@@ -203,7 +237,7 @@ profile001 = startProfile(sketch001, at = [-5, -5])
       // exit sketch
       await u.doAndWaitForImageDiff(() => toolbar.exitSketch(), 200)
 
-      await scene.settled(cmdBar)
+      await settleSnapshotScene(page, scene, cmdBar)
 
       // second screen shot should look almost identical, i.e. scale should be the same.
       await expect(page).toHaveScreenshot({
@@ -249,7 +283,7 @@ profile001 = startProfile(sketch001, at = [-5, -5])
         )
       })
       const u = await getUtils(page)
-      await scene.settled(cmdBar)
+      await settleSnapshotScene(page, scene, cmdBar)
 
       await toolbar.editSketch(0)
 
@@ -262,7 +296,7 @@ profile001 = startProfile(sketch001, at = [-5, -5])
       // exit sketch
       await u.doAndWaitForImageDiff(() => toolbar.exitSketch(), 200)
 
-      await scene.settled(cmdBar)
+      await settleSnapshotScene(page, scene, cmdBar)
 
       // second screen shot should look almost identical, i.e. scale should be the same.
       await expect(page).toHaveScreenshot({
@@ -300,7 +334,7 @@ part002 = startSketchOn(part001, face = seg01)
     })
 
     await page.setViewportSize({ width: 1200, height: 500 })
-    await scene.settled(cmdBar)
+    await settleSnapshotScene(page, scene, cmdBar)
 
     // Wait for the second extrusion to appear
     // TODO: Find a way to truly know that the objects have finished
@@ -351,7 +385,7 @@ test(
 
     await page.setViewportSize({ width: 1200, height: 500 })
 
-    await scene.settled(cmdBar)
+    await settleSnapshotScene(page, scene, cmdBar)
 
     // Wait for the second extrusion to appear
     // TODO: Find a way to truly know that the objects have finished
@@ -388,7 +422,7 @@ test(
 
     await page.setViewportSize({ width: 1200, height: 500 })
 
-    await scene.settled(cmdBar)
+    await settleSnapshotScene(page, scene, cmdBar)
 
     // Wait for the second extrusion to appear
     // TODO: Find a way to truly know that the objects have finished
@@ -413,7 +447,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
 
     await page.setViewportSize({ width: 1200, height: 500 })
 
-    await scene.settled(cmdBar)
+    await settleSnapshotScene(page, scene, cmdBar)
 
     await u.closeKclCodePanel()
     // TODO: Find a way to truly know that the objects have finished
@@ -472,7 +506,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
 
     await page.setViewportSize({ width: 1200, height: 500 })
 
-    await scene.settled(cmdBar)
+    await settleSnapshotScene(page, scene, cmdBar)
 
     await u.closeKclCodePanel()
     // TODO: Find a way to truly know that the objects have finished
@@ -512,7 +546,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
     const stream = page.getByTestId('stream')
 
     await page.setViewportSize({ width: 1200, height: 500 })
-    await scene.settled(cmdBar)
+    await settleSnapshotScene(page, scene, cmdBar)
 
     await u.closeKclCodePanel()
     // TODO: Find a way to truly know that the objects have finished
@@ -565,7 +599,7 @@ sweepSketch = startSketchOn(XY)
     })
 
     await page.setViewportSize({ width: 1200, height: 1000 })
-    await scene.settled(cmdBar)
+    await settleSnapshotScene(page, scene, cmdBar)
 
     await expect(page, 'expect small color widget').toHaveScreenshot({
       maxDiffPixels: 100,
@@ -610,7 +644,7 @@ sweepSketch = startSketchOn(XY)
     })
 
     await page.setViewportSize({ width: 1200, height: 1000 })
-    await scene.settled(cmdBar)
+    await settleSnapshotScene(page, scene, cmdBar)
 
     await expect(page, 'expect small color widget').toHaveScreenshot({
       maxDiffPixels: 100,
@@ -658,7 +692,7 @@ sweepSketch = startSketchOn(XY)
 
     await page.setViewportSize({ width: 1200, height: 1000 })
 
-    await scene.settled(cmdBar)
+    await settleSnapshotScene(page, scene, cmdBar)
 
     await expect(page.locator('.cm-css-color-picker-wrapper')).toBeVisible()
 
