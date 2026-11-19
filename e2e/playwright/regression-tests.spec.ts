@@ -23,10 +23,6 @@ test.describe('TAB sample tests', { tag: '@web' }, () => {
     expect(Math.random()).toBeGreaterThan(0.0)
   })
 
-  test('new bad', async () => {
-    expect(Math.random()).toBeGreaterThan(1.0)
-  })
-
   test('new flaky', async () => {
     expect(Math.random()).toBeGreaterThan(0.75)
   })
@@ -58,7 +54,7 @@ test.describe('Regression tests', { tag: '@web' }, () => {
         } else if (index > 0) {
           await toolbar.openFile(fileName)
         }
-        await expect(page).toHaveURL(new RegExp(`${fileName}$ broken`))
+        await expect(page).toHaveURL(new RegExp(`${fileName}$`))
         await scene.settled()
         await toolbar.startSketchPlaneSelection()
         const [clickPlane] = scene.makeMouseHelpers(0.5, 0.6, {
