@@ -282,8 +282,14 @@ export class Connection extends EventTarget {
         case 'sdp_answer':
         case 'modeling_batch':
         case 'metrics_request':
-        case 'reconnect':
           break
+        case 'reconnect':
+          this.tearDownManager({
+            route: 'backend-shutdown',
+            initiatedBy: 'api',
+            reconnectRequested: true,
+          })
+          return
       }
       if (!this.handleMessage) {
         console.warn('unable to process message, handleMessage is missing')
