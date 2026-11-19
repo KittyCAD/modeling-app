@@ -424,6 +424,23 @@ export class SceneFixture {
     await u.closeDebugPanel()
 
     if (!expectError) {
+      // A file switch schedules execution after a debounce. An older
+      // execution-done log and an enabled toolbar can both precede that run.
+      await expect
+        .poll(
+          () =>
+            this.page.evaluate(() => {
+              const manager = window.kclManager
+              return (
+                !manager.isExecuting &&
+                manager.executeIsStale === null &&
+                manager.lastSuccessfulCode === manager.code &&
+                manager.errors.length === 0
+              )
+            }),
+          { timeout: 15_000 }
+        )
+        .toBe(true)
       await expect(this.startEditSketchBtn).not.toBeDisabled({
         timeout: 15_000,
       })
