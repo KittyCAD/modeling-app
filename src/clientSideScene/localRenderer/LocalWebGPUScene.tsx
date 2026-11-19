@@ -6,6 +6,7 @@ import { Spinner } from '@src/components/Spinner'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
 import { useSingletons } from '@src/lib/boot'
+import { PROJECT_THUMBNAIL_SIZE } from '@src/lib/screenshot'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 // The default planes are shown or hidden about 200 ms after an execution, so
@@ -64,7 +65,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
       if (isNewModel && renderer && captureThumbnail) {
         setTimeout(() => {
           if (rendererRef.current !== renderer) return
-          renderer.readFrame(captureThumbnail)
+          renderer.readFrame(captureThumbnail, PROJECT_THUMBNAIL_SIZE)
         }, THUMBNAIL_DELAY_MS)
       }
     },

@@ -65,6 +65,7 @@ export type CommandBarContext = CommandBarInput & {
   selectedCommand?: Command
   currentArgument?: CommandArgument<unknown> & { name: string }
   argumentsToSubmit: { [x: string]: unknown }
+  argumentDrafts: Record<string, string | undefined>
   reviewValidationError?: string
   reviewValidationDetails?: CommandReviewValidationDetails
   machineManager: MachineManager
@@ -113,6 +114,7 @@ export type CommandBarMachineEvent =
     }
   | { type: 'Set userFeatures'; data: UserFeaturesService }
   | { type: 'Submit argument'; data: { [x: string]: unknown } }
+  | { type: 'Update argument draft'; data: { name: string; value: string } }
   | {
       type: 'xstate.done.actor.validateSingleArgument'
       output: { [x: string]: unknown }
@@ -150,6 +152,14 @@ export const commandBarMachine = setup({
   },
   actions: {
     enqueueValidArgsToSubmit: assign({
+      argumentDrafts: ({ context, event }) => {
+        if (event.type !== 'xstate.done.actor.validateSingleArgument') {
+          return context.argumentDrafts
+        }
+        const [argName] = Object.keys(event.output)
+        const { [argName]: _, ...drafts } = context.argumentDrafts
+        return drafts
+      },
       argumentsToSubmit: ({ context, event }) => {
         if (event.type !== 'xstate.done.actor.validateSingleArgument') return {}
         const [argName, argData] = Object.entries(event.output)[0]
@@ -212,6 +222,7 @@ export const commandBarMachine = setup({
     }),
     'Clear selected command': assign({
       selectedCommand: undefined,
+      argumentDrafts: {},
       reviewValidationError: undefined,
       reviewValidationDetails: undefined,
     }),
@@ -292,6 +303,12 @@ export const commandBarMachine = setup({
       currentArgument: undefined,
     }),
     'Remove argument': assign({
+      argumentDrafts: ({ context, event }) => {
+        if (event.type !== 'Remove argument') return context.argumentDrafts
+        const argToRemove = Object.values(event.data)[0]
+        const { [argToRemove.name]: _, ...drafts } = context.argumentDrafts
+        return drafts
+      },
       argumentsToSubmit: ({ context, event }) => {
         if (event.type !== 'Remove argument') return context.argumentsToSubmit
         const argToRemove = Object.values(event.data)[0]
@@ -315,6 +332,7 @@ export const commandBarMachine = setup({
       selectedCommand: undefined,
       currentArgument: undefined,
       argumentsToSubmit: {},
+      argumentDrafts: {},
       reviewValidationError: undefined,
       reviewValidationDetails: undefined,
     }),
@@ -337,6 +355,7 @@ export const commandBarMachine = setup({
       },
     }),
     'Initialize arguments to submit': assign({
+      argumentDrafts: {},
       argumentsToSubmit: ({ context, event }) => {
         if (
           event.type !== 'Select command' &&
@@ -375,6 +394,20 @@ export const commandBarMachine = setup({
           ...context.argumentsToSubmit,
           ...event.data.argumentsToSubmit,
         }
+      },
+    }),
+    'Update argument draft': assign({
+      argumentDrafts: ({ context, event }) => {
+        assertEvent(event, 'Update argument draft')
+        return {
+          ...context.argumentDrafts,
+          [event.data.name]: event.data.value,
+        }
+      },
+      argumentsToSubmit: ({ context, event }) => {
+        assertEvent(event, 'Update argument draft')
+        const { [event.data.name]: _, ...args } = context.argumentsToSubmit
+        return args
       },
     }),
     'Clear review validation error': assign({
@@ -677,6 +710,7 @@ export const commandBarMachine = setup({
       codeBasedSelections: [],
     },
     argumentsToSubmit: {},
+    argumentDrafts: {},
     reviewValidationError: undefined,
     reviewValidationDetails: undefined,
   }),
@@ -731,6 +765,9 @@ export const commandBarMachine = setup({
       states: {
         'Awaiting input': {
           on: {
+            'Update argument draft': {
+              actions: 'Update argument draft',
+            },
             'Submit argument': {
               target: 'Validating',
             },

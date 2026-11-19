@@ -1336,8 +1336,7 @@ appearance(extrude001, color = "#00FF00")`
         rustContextInThisFile
       )
       expect(newCode).toContain(expectedNewCode)
-    }, 30_000)
-
+    })
     it('should edit a call in pipe if og selection was in pipe', async () => {
       const code = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)

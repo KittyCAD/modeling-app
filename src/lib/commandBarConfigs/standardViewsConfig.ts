@@ -1,8 +1,11 @@
 import type { KclManager } from '@src/lang/KclManager'
 import type { Command } from '@src/lib/commandTypes'
-import { AxisNames } from '@src/lib/constants'
+import { AxisNames, ZOOM_TO_FIT_PADDING } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
-import { MODE_MODELING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
+import {
+  FILE_COMMAND_SCOPES,
+  MODE_MODELING_COMMAND_SCOPE,
+} from '@src/registry/contracts/commands'
 
 export function createStandardViewsCommands(kclManager: KclManager) {
   const { sceneInfra } = kclManager
@@ -95,7 +98,7 @@ export function createStandardViewsCommands(kclManager: KclManager) {
   }
 
   const zoomToFitCommand: Command = {
-    scopes: [MODE_MODELING_COMMAND_SCOPE],
+    scopes: FILE_COMMAND_SCOPES,
     name: 'Zoom to fit',
     displayName: `Zoom to fit`,
     description: 'Fits the model in the camera view',
@@ -103,7 +106,9 @@ export function createStandardViewsCommands(kclManager: KclManager) {
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
-      sceneInfra.camControls.zoomToFit({ padding: 0.1 }).catch(reportRejection)
+      sceneInfra.camControls
+        .zoomToFit({ padding: ZOOM_TO_FIT_PADDING })
+        .catch(reportRejection)
     },
   }
 

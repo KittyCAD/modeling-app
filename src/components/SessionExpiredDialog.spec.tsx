@@ -1,4 +1,3 @@
-import { defineRegistryItem, Registry } from '@kittycad/registry'
 import { SessionExpiredDialogHostContent } from '@src/components/SessionExpiredDialog'
 import { SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
@@ -17,6 +16,7 @@ import {
 import authRegistryItem from '@src/registry/extensions/auth'
 import SignIn from '@src/routes/SignIn'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { Registry } from 'plankton'
 import { useMemo, useState } from 'react'
 import { createMemoryRouter, Outlet, RouterProvider } from 'react-router-dom'
 import { afterEach, describe, expect, test, vi } from 'vitest'
@@ -134,9 +134,8 @@ function AuthShell() {
     </>
   )
 }
-
-afterEach(() => {
-  registry?.[Symbol.dispose]()
+afterEach(async () => {
+  await registry?.dispose()
   registry = undefined
   clearSessionExpiredNotice()
   expireFakeAuthSession = undefined
@@ -175,20 +174,14 @@ describe('SessionExpiredDialog', () => {
       })
     )
     registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-session-expired-dialog-listener',
-        provides: [
-          provideAuthSessionExpiredListener(
-            'test-session-expired-dialog-listener',
-            () => expireFakeAuthSession?.()
-          ),
-        ],
-      }),
+    await registry.configure([
+      provideAuthSessionExpiredListener(
+        'test-session-expired-dialog-listener',
+        () => expireFakeAuthSession?.()
+      ),
       authRegistryItem,
     ])
-    registry.get(authService)
-
+    registry.required(authService)
     const router = createMemoryRouter(
       [
         {

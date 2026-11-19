@@ -24,7 +24,7 @@ type ProjectStorage = Pick<
  */
 function createSession(
   project: Project,
-  storage: () => ProjectStorage,
+  storage: ProjectStorage,
   lifetime: AbortSignal
 ): MutableProjectSession {
   const root = project.contents.path
@@ -57,14 +57,14 @@ function createSession(
       read: async (relativePath) => {
         const path = filePath(relativePath)
         if (path instanceof Error) return Promise.reject(path)
-        const bytes = await storage().readFile(path)
+        const bytes = await storage.readFile(path)
         return new TextDecoder().decode(bytes)
       },
       write: async (relativePath, contents) => {
         if (!canWrite) return Promise.reject(new Error('Project is read-only'))
         const path = filePath(relativePath)
         if (path instanceof Error) return Promise.reject(path)
-        await storage().writeFile(path, contents)
+        await storage.writeFile(path, contents)
       },
     },
   }
@@ -73,10 +73,10 @@ function createSession(
 /**
  * Select project data without acquiring editor resources or changing the legacy session.
  * Replacing or clearing the selection leaves captured sessions usable against their original root.
- * Storage is resolved lazily so registering the service performs no filesystem work.
+ * File capabilities are captured at construction; reads and writes happen only on request.
  */
 export function createProjectSessionService(
-  storage: () => ProjectStorage
+  storage: ProjectStorage
 ): ProjectSessionService {
   const currentSession = signal<MutableProjectSession | undefined>(undefined)
   let lifetime: AbortController | undefined
