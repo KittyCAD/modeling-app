@@ -199,9 +199,19 @@ export class Connection extends EventTarget {
     )
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'
-    this.websocket.addEventListener('close', () => this.stopPingPong(), {
-      once: true,
-    })
+    this.websocket.addEventListener(
+      'close',
+      (event) => {
+        this.stopPingPong()
+        this.tearDownManager({
+          route: 'websocket-closed',
+          initiatedBy: 'unknown',
+          code: event.code.toString(),
+          reason: event.reason,
+        })
+      },
+      { once: true }
+    )
     const authenticated = () => {
       if (this.pingIntervalId === undefined) this.startPingPong()
       callback('auth success')
