@@ -215,6 +215,101 @@ describe('GD&T frame defaults', () => {
     ])
   })
 
+  it('resolves Face API ids, preferring clicked entities and deduplicating faces', () => {
+    const selections: Selections = {
+      graphSelections: [
+        { entityRef: { type: 'face', face_id: 'face-1' } },
+        {
+          entityRef: { type: 'face', face_id: 'face-1' },
+          engineEntityId: 'clicked-face',
+          artifact: testArtifact({ type: 'cap', id: 'old-face' }),
+        },
+        { entityRef: { type: 'face', face_id: 'face-1' } },
+        {
+          entityRef: { type: 'edge', side_faces: ['face-1'] },
+          engineEntityId: 'clicked-edge',
+        },
+      ],
+      otherSelections: [],
+    }
+
+    expect(getEngineEntityIdsForGdtSelections(selections)).toEqual([
+      'face-1',
+      'clicked-face',
+      'clicked-edge',
+    ])
+    expect(getPlanarFaceEntityIdsForGdtSelections(selections)).toEqual([
+      'face-1',
+      'clicked-face',
+    ])
+  })
+
+  it.each([
+    { scale: 1, fontSize: 0.8167, normalAvailable: true },
+    { scale: 1000, fontSize: 816.6667, normalAvailable: true },
+    { scale: 1, fontSize: 0.8167, normalAvailable: false },
+    { scale: 1000, fontSize: 816.6667, normalAvailable: false },
+  ])(
+    'places Face API annotations at scale $scale with normal available: $normalAvailable',
+    async ({ scale, fontSize, normalAvailable }) => {
+      formatNumberLiteral.mockReturnValue(`${fontSize}mm`)
+      const sendSceneCommand = vi.fn().mockImplementation(async ({ cmd }) => ({
+        success: true,
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response: {
+              type: cmd.type,
+              data:
+                cmd.type === 'face_is_planar'
+                  ? normalAvailable
+                    ? { z_axis: { x: 0, y: 0, z: -1 } }
+                    : {}
+                  : {
+                      center: { x: 0, y: 0, z: 0 },
+                      dimensions: {
+                        x: 10 * scale,
+                        y: 20 * scale,
+                        z: cmd.entity_ids.length === 0 ? 5 * scale : 0,
+                      },
+                    },
+            },
+          },
+        },
+      }))
+      const data: ModelingCommandSchema['GDT Datum'] = {
+        name: 'A',
+        faces: {
+          graphSelections: [
+            { entityRef: { type: 'face', face_id: 'cap-end' } },
+          ],
+          otherSelections: [],
+        },
+      }
+
+      const result = await withDefaultGdtFrameDefaults({
+        data,
+        engineCommandManager: {
+          sendSceneCommand,
+        } as unknown as ConnectionManager,
+        outputUnit: 'mm',
+        wasmInstance,
+      })
+
+      expect(sendSceneCommand.mock.calls.map(([{ cmd }]) => cmd)).toEqual([
+        { type: 'face_is_planar', object_id: 'cap-end' },
+        { type: 'bounding_box', entity_ids: ['cap-end'], output_unit: 'mm' },
+        { type: 'bounding_box', entity_ids: [], output_unit: 'mm' },
+      ])
+      expect(result.framePlane).toBe('XZ')
+      expect(result.framePosition?.valueText).toBe(
+        `[${15 * scale}, ${(normalAvailable ? -15 : 15) * scale}]`
+      )
+      expect(result.fontSize?.valueText).toBe(`${fontSize}mm`)
+      expect(formatNumberLiteral).toHaveBeenCalledWith(fontSize, '"Mm"', 4)
+    }
+  )
+
   it('fills omitted framePosition from the selected bounding box and fontSize from the model bounding box', async () => {
     formatNumberLiteral.mockReturnValue('5.25cm')
     const sendSceneCommand = vi
@@ -606,14 +701,17 @@ describe('GD&T frame defaults', () => {
 
   it('preserves explicit frame defaults and fontSize', async () => {
     const sendSceneCommand = vi.fn()
-    const framePosition = testFramePosition()
+    const framePosition = kclValue('[0mm, 0mm]')
     const fontSize = kclValue('2mm')
     const data = {
       name: 'A',
       framePosition,
       framePlane: 'YZ',
       fontSize,
-      faces: { graphSelections: [], otherSelections: [] },
+      faces: {
+        graphSelections: [{ entityRef: { type: 'face', face_id: 'cap-end' } }],
+        otherSelections: [],
+      },
     } as ModelingCommandSchema['GDT Datum']
 
     const result = await withDefaultGdtFrameDefaults({
