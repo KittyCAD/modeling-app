@@ -28,5 +28,11 @@ Projects over these limits can use a Directory library in the desktop app. Cloud
 support beyond this budget would require a different loading strategy rather than
 removing the decompression bounds.
 
-Boundary tests use small configurable byte budgets and empty files for the entry
-limit, so they do not need gigabyte-sized fixtures.
+Project creation and updates apply the same 1 GiB total file-content budget and
+10,000-file cap before copying files into multipart Blobs or sending a request.
+All project files count, including project.toml, previews, and empty files. Uploads
+send raw files, so there is no compressed ZIP size to check on that path; multipart
+metadata is not included in the project-content budget.
+
+Boundary tests use small configurable ZIP byte budgets, shared upload buffers,
+and empty files for the entry limit, so they do not need gigabyte-sized fixtures.
