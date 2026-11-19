@@ -3912,11 +3912,26 @@ pub(crate) async fn execute_trim_operations_simple(
                     }
                 };
 
-                // Batch the original edit with constraint migration. Solving it first
-                // can move still-constrained endpoints before their constraints move.
                 let original_segment_edit = ExistingSegmentCtor {
                     id: *segment_id,
                     ctor: edited_ctor,
+                };
+                // Dimensional and fixed constraints can move existing geometry on
+                // intermediate solves. Preserve their established solve order.
+                // Coincidence-only sketches can combine this edit with migration.
+                let preserve_intermediate_solve = current_scene_graph_delta.new_graph.objects.iter().any(|object| {
+                    matches!(&object.kind, crate::frontend::api::ObjectKind::Constraint { constraint }
+                        if !matches!(constraint, Constraint::Coincident(_)))
+                });
+                let (pre_constraint_delta, segment_edits) = if preserve_intermediate_solve {
+                    let (_, delta) = frontend
+                        .edit_segments(ctx, version, sketch_id, vec![original_segment_edit])
+                        .await
+                        .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))?;
+                    invalidates_ids = invalidates_ids || delta.invalidates_ids;
+                    (delta, Vec::new())
+                } else {
+                    (add_scene_graph_delta, vec![original_segment_edit])
                 };
                 let left_side_endpoint_point_id = original_segment_end_point_id
                     .ok_or_else(|| "Original segment is missing an end point for split".to_string())?;
@@ -3966,7 +3981,7 @@ pub(crate) async fn execute_trim_operations_simple(
 
                 let mut intersection_point_id: Option<ObjectId> = None;
                 if matches!(&**right_side, TrimTermination::Intersection { .. }) {
-                    let intersecting_seg = add_scene_graph_delta
+                    let intersecting_seg = pre_constraint_delta
                         .new_graph
                         .objects
                         .iter()
@@ -3983,13 +3998,13 @@ pub(crate) async fn execute_trim_operations_simple(
                                         crate::frontend::trim::get_position_coords_for_line(
                                             seg,
                                             crate::frontend::trim::LineEndpoint::Start,
-                                            &add_scene_graph_delta.new_graph.objects,
+                                            &pre_constraint_delta.new_graph.objects,
                                             default_unit,
                                         ),
                                         crate::frontend::trim::get_position_coords_for_line(
                                             seg,
                                             crate::frontend::trim::LineEndpoint::End,
-                                            &add_scene_graph_delta.new_graph.objects,
+                                            &pre_constraint_delta.new_graph.objects,
                                             default_unit,
                                         ),
                                     ) {
@@ -4021,13 +4036,13 @@ pub(crate) async fn execute_trim_operations_simple(
                                         crate::frontend::trim::get_position_coords_from_arc(
                                             seg,
                                             crate::frontend::trim::ArcPoint::Start,
-                                            &add_scene_graph_delta.new_graph.objects,
+                                            &pre_constraint_delta.new_graph.objects,
                                             default_unit,
                                         ),
                                         crate::frontend::trim::get_position_coords_from_arc(
                                             seg,
                                             crate::frontend::trim::ArcPoint::End,
-                                            &add_scene_graph_delta.new_graph.objects,
+                                            &pre_constraint_delta.new_graph.objects,
                                             default_unit,
                                         ),
                                     ) {
@@ -4128,7 +4143,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 if let (Some(original_start_id), Some(original_end_id)) =
                     (original_segment_start_point_id, original_segment_end_point_id)
                 {
-                    for obj in &add_scene_graph_delta.new_graph.objects {
+                    for obj in &pre_constraint_delta.new_graph.objects {
                         let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
                             continue;
                         };
@@ -4207,7 +4222,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 }
 
                 // Re-add angle constraints (Parallel, Perpendicular, Horizontal, Vertical)
-                for obj in &add_scene_graph_delta.new_graph.objects {
+                for obj in &pre_constraint_delta.new_graph.objects {
                     let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
                         continue;
                     };
@@ -4278,7 +4293,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         ctx,
                         version,
                         sketch_id,
-                        vec![original_segment_edit],
+                        segment_edits,
                         batch_constraints,
                         constraint_object_ids,
                         crate::frontend::sketch::NewSegmentInfo {
