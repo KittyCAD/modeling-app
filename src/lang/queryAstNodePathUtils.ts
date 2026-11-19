@@ -1,3 +1,4 @@
+import type { Block } from '@rust/kcl-lib/bindings/Block'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
@@ -21,6 +22,7 @@ import type {
 function moreNodePathFromSourceRange(
   node: Node<
     | Expr
+    | Block
     | ImportStatement
     | ExpressionStatement
     | VariableDeclaration
@@ -74,7 +76,11 @@ function moreNodePathFromSourceRange(
           return moreNodePathFromSourceRange(arg, sourceRange, path)
         }
       }
-      return path
+    }
+    const block = _node.block
+    if (block && block.start <= start && block.end >= end) {
+      path.push(['block', 'CallExpressionKw'])
+      return moreNodePathFromSourceRange(block, sourceRange, path)
     }
     return path
   }
@@ -284,16 +290,18 @@ function moreNodePathFromSourceRange(
     // Handle body (similar to FunctionExpression)
     if (body.start <= start && body.end >= end) {
       path.push(['body', 'SketchBlock'])
-      const bodyItems = body.items
-      for (let i = 0; i < bodyItems.length; i++) {
-        const item = bodyItems[i]
-        if (item.start <= start && item.end >= end) {
-          path.push(['items', 'Block'])
-          path.push([i, 'index'])
-          return moreNodePathFromSourceRange(item, sourceRange, path)
-        }
+      return moreNodePathFromSourceRange(body, sourceRange, path)
+    }
+    return path
+  }
+
+  if (_node.type === 'Block') {
+    for (const [index, item] of _node.items.entries()) {
+      if (item.start <= start && item.end >= end) {
+        path.push(['items', 'Block'])
+        path.push([index, 'index'])
+        return moreNodePathFromSourceRange(item, sourceRange, path)
       }
-      return path
     }
     return path
   }

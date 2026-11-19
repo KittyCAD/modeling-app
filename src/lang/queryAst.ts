@@ -333,6 +333,9 @@ export function traverse(
         ])
       )
     }
+    if (node.block) {
+      _traverse(node.block, [...pathToNode, ['block', 'CallExpressionKw']])
+    }
   } else if (node.type === 'BinaryExpression') {
     _traverse(node.left, [...pathToNode, ['left', 'BinaryExpression']])
     _traverse(node.right, [...pathToNode, ['right', 'BinaryExpression']])

@@ -2119,6 +2119,7 @@ impl FrontendState {
             }],
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         // Look up existing sketch.
@@ -2256,6 +2257,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         // Look up existing sketch.
@@ -2398,6 +2400,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         // Look up existing sketch.
@@ -2527,6 +2530,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         // Look up existing sketch.
@@ -2652,6 +2656,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         let sketch_object = self.scene_graph.objects.get(sketch.0).ok_or_else(|| {
@@ -3808,6 +3813,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
         let value = ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
             value: ast::LiteralValue::Number {
@@ -3949,6 +3955,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
         let value = ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
             value: ast::LiteralValue::Number {
@@ -4234,6 +4241,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
         let constraint_ast = ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(ast::BinaryExpression {
             left: call_ast,
@@ -4518,6 +4526,7 @@ impl FrontendState {
             arguments: Default::default(),
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         let (sketch_block_ref, _) = self.mutate_ast(
@@ -4609,6 +4618,7 @@ impl FrontendState {
             arguments: Default::default(),
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         // Add the constraint to the AST of the sketch block.
@@ -5675,6 +5685,7 @@ fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr 
         }],
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -5695,6 +5706,7 @@ fn create_face_id_ast(solid_expr: ast::Expr, index: usize) -> ast::Expr {
         }],
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7095,6 +7107,7 @@ pub(crate) fn create_coincident_ast(exprs: impl IntoIterator<Item = ast::Expr>) 
         arguments: Default::default(),
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7106,6 +7119,7 @@ pub(crate) fn create_horizontal_ast(line_expr: ast::Expr) -> ast::Expr {
         arguments: Default::default(),
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7117,6 +7131,7 @@ pub(crate) fn create_vertical_ast(line_expr: ast::Expr) -> ast::Expr {
         arguments: Default::default(),
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7184,6 +7199,7 @@ fn create_fixed_point_constraint_ast(point_expr: ast::Expr, position: Point2d<Nu
             arguments: Default::default(),
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         },
     ))))
 }
@@ -7203,6 +7219,7 @@ pub(crate) fn create_equal_length_ast(line_exprs: Vec<ast::Expr>) -> ast::Expr {
         arguments: Default::default(),
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7220,6 +7237,7 @@ pub(crate) fn create_equal_radius_ast(segment_exprs: Vec<ast::Expr>) -> ast::Exp
         arguments: Default::default(),
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7237,6 +7255,7 @@ pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> 
         arguments: Default::default(),
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7258,6 +7277,7 @@ pub(crate) fn create_symmetric_ast(input_exprs: Vec<ast::Expr>, axis_expr: ast::
         arguments,
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7274,6 +7294,7 @@ pub(crate) fn create_midpoint_ast(segment_expr: ast::Expr, point_expr: ast::Expr
         arguments,
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 

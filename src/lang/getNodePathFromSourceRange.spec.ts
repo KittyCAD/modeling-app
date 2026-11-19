@@ -1,9 +1,15 @@
 import { join } from 'path'
-import { getNodeFromPath } from '@src/lang/queryAst'
+import { getNodeFromPath, traverse } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { topLevelRange } from '@src/lang/util'
-import { type Name, type Parameter, assertParse } from '@src/lang/wasm'
+import {
+  type Name,
+  type Parameter,
+  type PathToNode,
+  assertParse,
+  rustImplPathToNode,
+} from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { err } from '@src/lib/trap'
 import { describe, expect, it } from 'vitest'
@@ -11,6 +17,41 @@ const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 
 describe('getNodePathFromSourceRange', () => {
   describe('testing getNodePathFromSourceRange', () => {
+    it('resolves a selection inside an attached call block', async () => {
+      const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
+      const code = 'draw(1)\nsketch(on = XY) {\n  width = 4mm\n}'
+      const ast = assertParse(code, instance)
+      const sketch = ast.body.pop()
+      const statement = ast.body[0]
+      if (
+        sketch?.type !== 'ExpressionStatement' ||
+        sketch.expression.type !== 'SketchBlock' ||
+        statement.type !== 'ExpressionStatement' ||
+        statement.expression.type !== 'CallExpressionKw'
+      ) {
+        throw new Error('Expected an ordinary call followed by a sketch')
+      }
+      statement.end = sketch.end
+      statement.expression.end = sketch.end
+      statement.expression.block = sketch.expression.body
+
+      const start = code.indexOf('4mm')
+      const range = topLevelRange(start, start + 3)
+      const path = getNodePathFromSourceRange(ast, range)
+      const selected = getNodeFromPath(ast, path, instance)
+      if (err(selected)) throw selected
+      expect(selected.node).toMatchObject({ type: 'Literal', raw: '4mm' })
+
+      expect(await rustImplPathToNode(ast, range, instance)).toEqual(path)
+      const visited: PathToNode[] = []
+      traverse(ast, {
+        enter(node, nodePath) {
+          if (node === selected.node) visited.push(nodePath)
+        },
+      })
+      expect(visited).toEqual([path])
+    })
+
     it('test it gets the right path for a `lineTo` CallExpression within a SketchExpression', async () => {
       const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
       const code = `

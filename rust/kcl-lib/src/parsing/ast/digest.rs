@@ -622,6 +622,9 @@ impl Node<CallExpressionKw> {
             }
             hasher.update(argument.arg.compute_digest());
         }
+        if let Some(block) = &mut slf.block {
+            hasher.update(block.compute_digest());
+        }
     });
 }
 

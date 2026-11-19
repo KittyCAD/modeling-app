@@ -2792,6 +2792,11 @@ pub struct CallExpressionKw {
 
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
     pub non_code_meta: NonCodeMeta,
+
+    // The parser leaves this unset while sketches use SketchBlock.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub block: Option<BoxNode<Block>>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -2835,6 +2840,7 @@ impl CallExpressionKw {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })
     }
 
@@ -2866,6 +2872,9 @@ impl CallExpressionKw {
         for arg in &mut self.arguments {
             arg.arg.replace_value(source_range, new_value.clone());
         }
+        if let Some(block) = &mut self.block {
+            block.replace_value(source_range, new_value);
+        }
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -2880,6 +2889,9 @@ impl CallExpressionKw {
 
         for arg in &mut self.arguments {
             arg.arg.rename_identifiers(old_name, new_name, excluded);
+        }
+        if let Some(block) = &mut self.block {
+            block.rename_identifiers(old_name, new_name, excluded);
         }
     }
 }
