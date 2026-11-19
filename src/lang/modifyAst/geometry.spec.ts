@@ -5,7 +5,10 @@ import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import { addHelix, getAxisExpression } from '@src/lang/modifyAst/geometry'
 import { addExtrude, addRevolve } from '@src/lang/modifyAst/sweeps'
 import { artifactToEntityRef, getSketchSegmentName } from '@src/lang/queryAst'
-import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import {
+  codeRefFromRange,
+  getOriginalSegmentArtifact,
+} from '@src/lang/std/artifactGraph'
 import {
   type Artifact,
   type ArtifactGraph,
@@ -23,7 +26,6 @@ import {
   enginelessExecutor,
   getAstAndArtifactGraph,
   getKclCommandValue,
-  getWalls,
   runNewAstAndCountSweeps,
 } from '@src/lib/testHelpers'
 import { err, isErr } from '@src/lib/trap'
@@ -819,8 +821,10 @@ helix001 = helix(
 )`)
     })
 
-    it('should add a standalone call on extruded edge selection using face API axis', async () => {
-      const code = `sketch001 = sketch(on = XZ) {
+    it.each([
+      {
+        sketchType: 'sketch block',
+        code: `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 100mm])
   line2 = line(start = [var 0mm, var 100mm], end = [var 100mm, var 0mm])
   coincident([line1.end, line2.start])
@@ -829,60 +833,83 @@ helix001 = helix(
   vertical(line1)
 }
 region001 = region(segments = [sketch001.line1, sketch001.line2])
-extrude001 = extrude(region001, length = 100, tagEnd = $capEnd001)`
-      const { ast, artifactGraph } = await getAstAndArtifactGraph(
-        code,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const segment = [...artifactGraph.values()].find(
-        (n) => n.type === 'segment'
-      )
-      const wall = getWalls(artifactGraph, 1).graphSelections[0]
-      const endCap = [...artifactGraph.values()].find(
-        (n) => n.type === 'cap' && n.subType === 'end'
-      )
-      const edge: Selections = {
-        graphSelections: [
-          {
-            entityRef: {
-              type: 'edge',
-              side_faces: [wall.artifact!.id, endCap!.id],
+extrude001 = extrude(region001, length = 100, tagEnd = $capEnd001)`,
+        wallRef: 'region001.tags.line1',
+        wallSegment: 'line(start = [var 0mm, var 0mm]',
+      },
+      {
+        sketchType: 'sketch v1',
+        code: `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = 100)
+  |> line(endAbsolute = [100, 0])
+  |> close()
+extrude001 = extrude(profile001, length = 100)`,
+        wallRef: 'seg01',
+        wallSegment: 'yLine(length = 100)',
+      },
+    ])(
+      'should add a helix around an extruded $sketchType edge',
+      async ({ code, wallRef, wallSegment }) => {
+        const { ast, artifactGraph } = await getAstAndArtifactGraph(
+          code,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        const artifacts = [...artifactGraph.values()]
+        const wall = artifacts.find((artifact) => {
+          if (artifact.type !== 'wall') return false
+          const segment = getOriginalSegmentArtifact(
+            artifact.segId,
+            artifactGraph
+          )
+          if (!segment) return false
+          const [start, end] = segment.codeRef.range
+          return code.slice(start, end).startsWith(wallSegment)
+        })
+        const endCap = artifacts.find(
+          (n) => n.type === 'cap' && n.subType === 'end'
+        )
+        if (!wall || !endCap) throw new Error('Helix axis faces not found')
+        const edge: Selections = {
+          graphSelections: [
+            {
+              entityRef: {
+                type: 'edge',
+                side_faces: [wall.id, endCap.id],
+              },
             },
-            codeRef: segment!.codeRef,
-          },
-        ],
-        otherSelections: [],
+          ],
+          otherSelections: [],
+        }
+        const result = addHelix({
+          ast,
+          artifactGraph,
+          edge,
+          revolutions: (await stringToKclExpression(
+            '20',
+            rustContextInThisFile
+          )) as KclCommandValue,
+          angleStart: (await stringToKclExpression(
+            '0',
+            rustContextInThisFile
+          )) as KclCommandValue,
+          radius: (await stringToKclExpression(
+            '1',
+            rustContextInThisFile
+          )) as KclCommandValue,
+          wasmInstance: instanceInThisFile,
+        })
+        if (err(result)) throw result
+        const newCode = recast(result.modifiedAst, instanceInThisFile)
+        if (err(newCode)) throw newCode
+        expect(newCode).toContain('tagEnd = $capEnd001')
+        expect(newCode.replace(/\s+/g, '')).toContain(
+          `helix001=helix(axis={sideFaces=[${wallRef},capEnd001]},revolutions=20,angleStart=0,radius=1,)`
+        )
+        await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
       }
-      const result = addHelix({
-        ast,
-        artifactGraph,
-        edge,
-        revolutions: (await stringToKclExpression(
-          '20',
-          rustContextInThisFile
-        )) as KclCommandValue,
-        angleStart: (await stringToKclExpression(
-          '0',
-          rustContextInThisFile
-        )) as KclCommandValue,
-        radius: (await stringToKclExpression(
-          '1',
-          rustContextInThisFile
-        )) as KclCommandValue,
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(`helix001 = helix(
-  axis = {
-    sideFaces = [region001.tags.line1, capEnd001]
-  },
-  revolutions = 20,
-  angleStart = 0,
-  radius = 1,
-)`)
-    })
+    )
 
     const cylinderExtrude = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 100)

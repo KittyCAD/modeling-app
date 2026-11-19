@@ -908,7 +908,7 @@ extrude001 = extrude(profile001, length = 2, symmetric = false)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
-    it('should add an extrude call with bodyType "surface"', async () => {
+    it('should add a tagged surface extrude from a sketch v1 profile', async () => {
       const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
         circleProfileCode,
         instanceInThisFile,
@@ -924,6 +924,7 @@ extrude001 = extrude(profile001, length = 2, symmetric = false)`)
         sketches,
         length,
         bodyType: 'SURFACE',
+        tagEnd: 'myEndTag',
         artifactGraph,
         wasmInstance: instanceInThisFile,
       })
@@ -931,7 +932,12 @@ extrude001 = extrude(profile001, length = 2, symmetric = false)`)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleProfileCode)
       expect(newCode).toContain(
-        `extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)`
+        `extrude001 = extrude(
+  profile001,
+  length = 1,
+  tagEnd = $myEndTag,
+  bodyType = SURFACE,
+)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
@@ -1999,7 +2005,47 @@ profile003 = startProfile(sketch002, at = [0, 0])
 )`)
     })
 
-    // Note: helix sweep will be done in e2e since helix artifacts aren't created by the engineless executor
+    it('should sweep a sketch v1 profile along a helix', async () => {
+      const code = `helix001 = helix(
+  axis = X,
+  radius = 1,
+  length = 10,
+  revolutions = 10,
+  angleStart = 0,
+  ccw = false,
+)
+sketch001 = startSketchOn(XZ)
+profile001 = circle(sketch001, center = [0, -1], radius = 0.1)`
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const helix = [...artifactGraph.values()].find((a) => a.type === 'helix')
+      if (!helix) throw new Error('Helix artifact not found')
+
+      const result = addSweep({
+        ast,
+        artifactGraph,
+        sketches,
+        path: createSelectionFromArtifacts([helix], artifactGraph),
+        bodyType: 'SURFACE',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+        `sweep001 = sweep(
+  profile001,
+  path = helix001,
+  bodyType = SURFACE,
+  version = 2,
+  translateProfileToPath = false,
+  orientProfilePerpendicular = false,
+)`
+      )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
 
     const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
@@ -2300,8 +2346,13 @@ mixedLoft = loft(
     })
 
     it('should add a basic loft call with surface bodyType', async () => {
+      const code = `sketch001 = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 30)
+plane001 = offsetPlane(XZ, offset = 50)
+sketch002 = startSketchOn(plane001)
+  |> circle(center = [0, 0], radius = 20)`
       const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
-        twoCirclesCode,
+        code,
         instanceInThisFile,
         kclManagerInThisFile
       )
@@ -2315,9 +2366,9 @@ mixedLoft = loft(
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(twoCirclesCode)
+      expect(newCode).toContain(code)
       expect(newCode).toContain(
-        `loft001 = loft([profile001, profile002], bodyType = SURFACE)`
+        `loft001 = loft([sketch001, sketch002], bodyType = SURFACE)`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -2779,6 +2830,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
         sketches,
         angle,
         edge,
+        bodyType: 'SURFACE',
         wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
@@ -2786,7 +2838,12 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(code)
       expect(newCode).toContain(
-        `revolve001 = revolve(sketch002, angle = 20, axis = rectangleSegmentA001`
+        `revolve001 = revolve(
+  sketch002,
+  angle = 20,
+  axis = rectangleSegmentA001,
+  bodyType = SURFACE,
+)`
       )
     })
 

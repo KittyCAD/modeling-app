@@ -2301,60 +2301,11 @@ surface001 = extrude(
       'refactors revolve with deprecated axis (axis = getOppositeEdge) to edgeRef',
       { timeout: 30_000 },
       async () => {
-        const ast = assertParse(
-          KCL_REVOLVE_GET_OPPOSITE_EDGE,
-          instanceInThisFile
+        const refactored = await runIntegrationRefactor(
+          KCL_REVOLVE_GET_OPPOSITE_EDGE
         )
-        // Ensure AST has a revolve call we can find (body items with init = revolve(...))
-        const revolveDecl = ast.body.find(
-          (item) =>
-            item.type === 'VariableDeclaration' &&
-            item.declaration.init.type === 'CallExpressionKw' &&
-            item.declaration.init.callee.name.name === 'revolve'
-        )
-        expect(
-          revolveDecl,
-          'AST should contain a VariableDeclaration with revolve(...) init'
-        ).toBeDefined()
-        const axisArg =
-          revolveDecl?.type === 'VariableDeclaration' &&
-          revolveDecl.declaration.init.type === 'CallExpressionKw'
-            ? revolveDecl.declaration.init.arguments.find(
-                (a) => a.label?.name === 'axis'
-              )
-            : undefined
-        expect(axisArg, 'revolve call should have axis argument').toBeDefined()
-        expect(
-          axisArg?.arg.type === 'CallExpressionKw'
-            ? axisArg.arg.callee.name.name
-            : undefined,
-          'axis should be getOppositeEdge(...)'
-        ).toBe('getOppositeEdge')
-
-        await kclManagerInThisFile.executeAst({ ast })
-        const execState = kclManagerInThisFile.execState
-        if ((execState.edgeRefactorMetadata?.length ?? 0) < 1) {
-          expect(execState.artifactGraph.size).toBeGreaterThanOrEqual(0)
-          return
-        }
-        expect(execState.artifactGraph.size).toBeGreaterThan(0)
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
-        expect(err(refactored)).toBe(false)
-        if (err(refactored)) throw refactored
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
         const n = norm(refactored)
-        expect(n).toContain('revolve(')
-        // Refactor may not apply in all environments (path/mutation persistence); skip instead of fail
-        if (!n.includes('axis')) {
-          return // skip remainder: refactor did not produce axis
-        }
-        expect(n).toContain('axis')
         expect(n).not.toContain('axis = getOppositeEdge')
         // The engine now returns the minimal reference: these side faces are sufficient.
         const revolveLineWithAxis =
@@ -2370,27 +2321,14 @@ surface001 = extrude(
       'refactors helix with deprecated axis (axis = getOppositeEdge) to axis with edge reference payload',
       { timeout: 30_000 },
       async () => {
-        const ast = assertParse(KCL_HELIX_GET_OPPOSITE_EDGE, instanceInThisFile)
-        await kclManagerInThisFile.executeAst({ ast })
-        const execState = kclManagerInThisFile.execState
-        if ((execState.edgeRefactorMetadata?.length ?? 0) < 1) {
-          expect(execState.artifactGraph.size).toBeGreaterThanOrEqual(0)
-          return
-        }
-        expect(execState.artifactGraph.size).toBeGreaterThan(0)
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
+        const refactored = await runIntegrationRefactor(
+          KCL_HELIX_GET_OPPOSITE_EDGE
         )
-        expect(err(refactored)).toBe(false)
-        if (err(refactored)) throw refactored
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
         const n = norm(refactored)
-        expect(n).toContain('helix(')
-        expect(n).toContain('axis')
+        expect(n).toMatch(
+          /axis = \{ sideFaces = \[(?:seg01, capEnd001|capEnd001, seg01)\] \}/
+        )
         expect(n).not.toContain('axis = getOppositeEdge')
       }
     )
