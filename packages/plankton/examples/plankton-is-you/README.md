@@ -1,14 +1,22 @@
 # Plankton Is You
 
-This runnable Plankton example lets a player change an application's vocabulary,
-behavior, and terminal rules while its current session continues. Creating DIE
-adds a word and a destruction action to a puzzle. Creating MOVE supplies another
-behavior. Editing `YOU IS NONE → LOSE` changes when that same puzzle ends.
+A small rule-pushing game where the player can invent the vocabulary and behaviors
+needed to solve the puzzle. Draw a new tile, give a property word an action, or
+rewrite the conditions for winning. Each edit changes the running world while
+preserving the game session and its movement history.
 
-Plankton assembles the definitions and behaviors; ordinary game functions apply
-them to tiles. The sample is a standalone package with React, Radix Dialog, and
-Vite. It imports no ZDS runtime and needs no account, engine, or generated WASM.
-Node 22.12+ is required.
+The example demonstrates how Plankton assembles an application from independent
+contributions. Its built-in content and runtime-authored content use the same
+extension contracts. A property word refers to a separately contributed action;
+an outcome row refers to separately contributed selectors and predicates. Those
+relationships let the player extend both the game's vocabulary and what that
+vocabulary can express.
+
+## Run it
+
+This is a standalone React/Vite package with its own dependencies, lockfile, and
+locally bundled fonts. It requires Node 22.12+ and does not start Design Studio,
+the modeling engine, or generated Wasm.
 
 From this directory:
 
@@ -17,249 +25,155 @@ npm ci
 npm run dev
 ```
 
-`npm test` runs the domain and real Registry integration checks. `npm run build`
-typechecks and produces `dist/`. The sample has its own dependency installation,
-lockfile, locally bundled fonts, and Vite configuration. npm installs Plankton as
-a local copy; reinstall that dependency after changing Plankton itself.
+Move with arrows or WASD, wait with Space, and undo with Z. Words form board rules
+left-to-right or top-to-bottom, such as `PLNK IS YOU` and `BUSH IS STOP`.
 
-## Follow the Plankton assembly
+Approach the right edge and click **Editor** to pause and author content. The
+installed vocabulary and outcome board share one palette of pixel tiles. Selecting
+an item opens its details tray; close the tray or select the same item again to
+clear the selection. The left **Plankton** drawer maps the live contributions and
+lets the reader expand the relationships described below.
 
-The game session owns the placed tiles, facing directions, turn count, and undo
-history. [`openGame`](src/registry.ts) creates a Registry and installs one session
-Factory. Replacing content keeps that acquired Game instance alive. Closing its
-Registry ends that lifetime; Vite hot replacement calls `dispose()`. React owns
-browser input listeners. The session currently owns only in-memory state, so it
-has no resource finalizer.
+`npm test` runs the game and real Registry integration tests. `npm run build`
+typechecks the example and produces `dist/`. npm installs Plankton as a local copy;
+reinstall that dependency after changing the parent package.
 
-A Facet combines independent contributions into one input for a consumer. The
-shared `gameContract` keeps the tokens precisely typed:
+## One session, replaceable contributions
 
-| Facet | Contributions | Consumer |
+The **game session** is the running `Game` instance: its board, placed tile IDs,
+facing directions, turn count, and undo history. [`openGame`](src/registry.ts)
+creates it through one Plankton **Factory**, which manages that instance's
+lifetime. The Factory provides a **Service**, `game.session`, so the app can obtain
+the running game. Disposing the Registry ends the session's lifetime; the Vite
+integration does this on module replacement.
+
+Content lives in separate **Slots**, each holding a replaceable group of
+extensions. Saving a definition, installing an action, or applying an outcome
+program replaces the corresponding Slot's children. The session Factory remains
+installed, so those operations do not reconstruct the board or erase its history.
+
+The session follows content through **observations** of four Facets. A **Facet**
+collects contributions under a shared contract and combines them into a value the
+consumer can read. The game reads its current definitions, actions, meanings, and
+outcome program when resolving a turn or reevaluating the board. An already placed
+tile therefore picks up changed artwork or behavior through its definition ID.
+
+The session receives observations during construction and first reads them in its
+`start` callback, after publication. Later reads happen in game operations. Its
+in-memory state needs no external resource cleanup; the example keeps the owned
+session alive while replacing its inputs.
+
+## Extension points that use other extension points
+
+The shared [`gameContract`](src/registry.ts) defines five Facets and the session
+Service. Their values describe different parts of the game:
+
+| Facet | What extensions contribute | How the contribution uses other content |
 | --- | --- | --- |
-| `definitions` | Entity artwork, noun words, properties, and language words | Board renderer, word parser, shared editor |
-| `actions` | Input/collision capabilities, turn callbacks, and contact callbacks | Turn engine, property-action picker |
-| `outcomeMeanings` | Entity/word selectors, unary predicates, and relations | Outcome parser and interpreter |
-| `outcomeProgram` | Parsed tile rows | Terminal-rule interpreter |
-| `puzzles` | Bounds, starting definitions, and placements | Initial setup and reset |
+| `puzzles` | A setup with fixed bounds, starting definitions, and placements | The selected puzzle supplies the initial vocabulary and board. |
+| `definitions` | Entity sprites, noun words, property words, and language words | A property definition names an action from `actions`; each definition also contributes a physical-word selector to `outcomeMeanings`. |
+| `actions` | Movement/outcome capabilities, turn callbacks, or contact callbacks | Callbacks can query active properties and use the game's movement and contact operations. |
+| `outcomeMeanings` | Entity/word selectors, unary predicates, and binary relations | These meanings interpret the vocabulary used by outcome rows. |
+| `outcomeProgram` | A parsed collection of outcome rows | Rows refer to selectors and predicates by ID and role, resolving their current implementations during evaluation. |
 
-Built-ins and authored content use the same `contribute(facet, () => value)` API.
-Static registrations are arrays of Bindings; they do not need a Factory per word.
-Definition IDs are facet-local binding keys. An authored BUSH binding has `high`
-precedence, so it shadows the default BUSH contribution while all placed BUSH
-instances keep their IDs and positions. This key selects a contribution; it does
-not identify or restart a resource.
+A **definition** supplies a tile type's artwork and classification. An entity
+supplies both an entity sprite and its noun word. A **property** is a word whose
+action applies to entities through a board sentence. For example:
 
-Slots hold replaceable content: the vocabulary, authored actions, authored
-predicate meanings, and outcome program. `publish`, `publishAction`,
-`publishOutcomeMeaning`, and `publishOutcomeRows` compile their authoring records
-into Bindings and await `registry.replace`. A replacement publishes the new
-contribution group together and retains the session. Publishing MOVE does not
-advance a turn; the next movement or Wait resolves its new action.
+```text
+BUSH IS DIE
+        │
+        └─ DIE property → action ID → action contribution
+```
 
-The session receives four live observations through `scope.observe`, then passes
-ordinary read functions into Game. Construction does not read those observations.
-Its `start` evaluates the initial outcome after publication. Later turns read the
-current definitions, actions, meanings, and program, so no permanent reference to
-an old action or predicate is captured. These are event-time reads; this example
-does not demonstrate an ongoing reactive effect or a Signal-backed Binding.
+Changing DIE's action changes what the existing sentence does. Replacing an action
+under the same ID changes every property that uses it. Outcome programs have the
+same separation: the player edits rows, while extensions supply what their words
+mean. Editing a sentence and replacing its predicate are distinct operations.
 
-A Service exposes the selected session capability to the UI. The Factory supplies
-it with `provide(gameContract.session, game)`; composition reads it through
-`registry.required`. Only one provider is installed here. Missing/conflicting
-Service providers and live provider switching are not exercised.
+### How edits become extensions
 
-Outcome authoring has a separate boundary before Registry mutation:
-`parseOutcomeRows` turns a complete draft into a typed program. Invalid drafts
-never reach `replace`, so the old program remains available. This demonstrates
-application-level parsing and successful atomic replacement; it does **not**
-demonstrate rollback after failed Factory acquisition.
+A **Binding** publishes a contribution through
+`contribute(facet, () => value)`. Static arrays group the built-ins without creating
+a Factory for each definition or action. Runtime authoring compiles records into
+Bindings and installs them with the same API.
 
-## Concepts to explore next
+Binding keys select contributions within one Facet. Authored definitions use
+`high` precedence and the definition's ID as their key, overriding the built-in
+entry while placed instances keep their IDs and positions. Outcome meanings use
+role-qualified keys, such as `relation:IS` and `word-selector:IS`, so the IS
+predicate and selection of physical IS words can be replaced independently.
 
-| Concept | Current coverage | A natural extension of this game |
-| --- | --- | --- |
-| Facets, Contracts, Bindings, keys and precedence | Used by built-ins and runtime edits | Add another independently contributed starter puzzle |
-| Slots and retained Factory identity | Real edits preserve the session and board undo | Keep this as the main walkthrough |
-| Observations and startup ordering | First read in `start`, later reads during game actions | A live preview Binding that reads a Signal without replacing the graph |
-| Service selection | One provider resolved once | Swap input providers through a live Service observation |
-| Constructor dependencies and shared lifetimes | No `factory.dependencies` declarations | World playback and editor preview share one audio resource |
-| Resource startup/cleanup | Registry disposal is wired; no owned external resource | A sound Factory starts/stops work and releases its AudioContext |
-| Plugins and feature gates | Not used | Toggle a sound plugin while retaining its metadata and controls |
-| Acquisition failure and rollback | Not exercised by invalid-draft tests | Fail acquisition of a real asset/resource and retain the previous content |
-| Diagnostics | `debug` is used in tests; `inspect` has no UI | Inspect contribution origins during a development walkthrough |
+The publishing methods in `registry.ts` await `registry.replace` before updating
+their authoring records. New contributions become visible together; subsequent
+game operations read the updated Facets. Publishing content itself advances no
+turn. Vocabulary edits are reevaluated when the editor closes, and applying an
+outcome program reevaluates immediately.
 
-The most useful next addition would be a real shared resource behind an optional
-plugin: it could demonstrate dependency injection, shared identity, and cleanup
-together. Those concepts should follow an actual game feature; adding artificial
-Factories or a diagnostic dashboard would distract from the compact consumer.
+## Try the extension model
 
-## Play and edit
+### Give a new word an existing action: DIE
 
-The world fits its fixed bounds in a letterboxed viewport. Move with arrows or
-WASD, wait with Space, and undo with Z. Approach the right edge and click the
-revealed editor handle. Board clicks do nothing during play. Editing pauses
-player input.
+The starter puzzle separates the player from the flag with a hedge. Its control
+and winning sentences are protected so the intended solution is to author a way
+through the bushes.
 
-Approach the left edge to open **Plankton**, an expandable map of the running
-composition. Follow a puzzle's starting definitions, a property word's action,
-or an outcome word's predicate meaning into the Facets they use. Slots show
-which contributions can be replaced; the session Factory shows its provided
-Service and observed Facets. Word entries link to the ordinary editor.
-Opening either drawer pauses player input.
-
-Both drawers share one Radix Dialog shell. Native selects share a typed choice
-component, tile views share one renderer, and `react-hotkeys-hook` handles game
-shortcuts and form-input filtering. Native disclosure elements keep the concept
-map small; it has no separate editor, board renderer, or animation state.
-
-The editor shows pixel-rendered live rules first, then installed vocabulary.
-Vocabulary and Outcomes stay in the main panel. Selecting a tile opens a separate
-tray to its left: entity/word artwork, name, ink, pixel canvas, and property action.
-Close the tray or click the selected vocabulary icon again to clear the selection.
-On narrow screens the tray covers the main panel until closed.
-
-An entity also supplies its noun word; toggle between the two
-artworks. Property words such as YOU have no entity artwork. The plus at the end
-of the vocabulary creates a new entity or word.
-
-To solve the bush puzzle:
-
-1. Choose **+ → Word**, name it DIE, and select **Destroy self** as its action.
-2. Paint its word pixels if desired, then **Create definition**.
+1. In the Editor, choose **+ → Word**, name it DIE, and select **Destroy self**.
+2. Paint the word if desired, then **Create definition**.
 3. Choose **Place tile**, paint the empty cell after the bottom `BUSH IS` sentence,
    and accept with the checkmark.
 4. Move or wait. The bushes disappear; reach the flag.
 
-`PLNK IS YOU` is enclosed by bushes. `BUSH IS STOP` and `FLAG IS WIN` start beyond
-the hedge, so their words cannot be rearranged before opening the path.
+This creates a property definition referring to an existing action. Entity and
+word artwork can both be edited, including the built-ins, and every view uses the
+same installed definitions.
 
-**Place tile** opens a persistent placement session with four tools on the right
-edge. Both sidebars hide, and the board leaves room for the tools:
+### Contribute a new action: MOVE
 
-- **Add** opens a palette of installed entities and words. Choose a brush, then
-  click or drag to replace every tile in each visited cell with that one tile.
-- **Delete** clears every tile in clicked or dragged cells.
-- **Accept** commits the entire session as one board edit. Z undoes it all.
-- **Cancel**, or Escape, discards the session. Escape closes an open palette first.
+1. Create a word named MOVE and choose **+ New action**.
+2. Set **Trigger → At turn end**, **At turn end → Step forward**, and
+   **If blocked → Reverse and retry**.
+3. **Install action**, then **Create definition** for the word.
+4. Place MOVE after `BUSH IS` and accept. Move or wait to advance the bushes.
 
-The draft renders immediately but does not change the Game, advance turns, or
-resolve outcomes until accepted. Fast drags fill cells between pointer samples.
-Words and entities in a stack are both replaced or deleted. Accepting an unchanged
-draft adds no undo entry. The palette uses Radix Popover; painting and draft state
-remain ordinary functions and React state, outside the Plankton registry.
+An **action recipe** describes a trigger, property conditions, and effects. The
+recipe compiler produces ordinary `Action` callbacks and publishes them through
+the actions Facet. The turn engine needs no branch for the name MOVE. Installing
+another action with the same ID replaces its behavior without replacing the
+session.
 
-**Delete definition** removes an unused vocabulary entry. First clear its placed
-entities and words with the Delete tool and remove any applied outcome references.
-Definition edits/deletions are not part of board undo. Successful definition
-deletion also removes its tile references from saved history, so Undo cannot
-restore unusable tiles. Unrelated movement history is preserved. Reset restores
-the starting setup while keeping authored content; page reload starts fresh.
+The form supports turn-end movement or self-destruction, and attempted-contact
+effects that destroy either participant or block movement. Conditions require or
+exclude properties on this entity, or on the other participant for contact
+triggers. Extensions written in TypeScript can contribute other callbacks through
+that same contract; the form does not execute JavaScript text or reconstruct
+arbitrary callbacks into editable recipes.
 
-## Author MOVE while playing
+### Compose entities and actions: DOOR, KEY, LOCK, OPEN
 
-1. Choose **+ → Word**, and name it MOVE.
-2. Choose **+ New action** in the tray. Name the action MOVE.
-3. Set **At turn end → Step forward** and **If blocked → Reverse and retry**.
-4. **Install action**, then **Create definition**. The property refers to the
-   independently contributed action by ID.
-5. Place its word after `BUSH IS`. Each bush steps in its facing direction every
-   turn, reversing and retrying if blocked. Entities initially face right; player
-   movement changes facing. Waiting also advances autonomous actions.
+1. Create DOOR and KEY as entities.
+2. Create LOCK as a property word using **Block movement**.
+3. Create OPEN as a word with a new **Attempted contact** action.
+4. Add **Other entity → Has property → LOCK**, then effects **Destroy → Other
+   entity** and **Destroy → This entity**. Install the action and create the word.
+5. Place `DOOR IS LOCK`, `KEY IS OPEN`, and `KEY IS PUSH`, then put a key in front
+   of the player and a door beyond it.
 
-Installing an action does not move the board. Turn callbacks run on the next
-movement/wait. Replacing an action with the same ID changes existing properties'
-behavior without replacing the game session or undo history. Unknown action IDs
-have no behavior; the tray requires a currently installed action to save a new
-property. The recipe UI offers turn-end and attempted-contact triggers,
-positive/negative property conditions, movement/reversal, destruction, and
-blocking effects. It does not execute arbitrary text as JavaScript.
+Pushing the key attempts contact with the door before resolving blocking. The
+OPEN callback sees LOCK, consumes both participants, and leaves the cell free.
+PUSH is a built-in contribution; DOOR, KEY, LOCK, and OPEN use ordinary authored
+definitions and recipes. Their names have no special handling in the engine.
 
-## Author DOOR, KEY, LOCK, and OPEN
+Movement, push chains, and contact effects are staged together. A failed push
+restores the whole attempt, including any key/door destruction. Undo restores a
+successful interaction as one turn. Word tiles are always pushable; entity contact
+actions run for entity pairs. Unmarked, nonblocking entities may share cells.
 
-DOOR and KEY are ordinary runtime-authored entities. LOCK and OPEN are property
-words; their names and interaction are not special cases in the engine.
+## Edit the outcome language
 
-1. Use **+ → Entity** to draw and create DOOR and KEY.
-2. Use **+ → Word** to create LOCK with the existing **Block movement** action.
-3. Create a new word OPEN, then choose **+ New action**. Name the action OPEN.
-4. Set **Trigger → Attempted contact**. Add the condition **Other entity → Has
-   property → LOCK**.
-5. Add two effects: **Destroy → Other entity**, then **Destroy → This entity**.
-6. **Install action**, then **Create definition** for the OPEN word.
-7. Place these ordinary sentences:
-
-   ```text
-   DOOR IS LOCK
-   KEY IS OPEN
-   KEY IS PUSH
-   ```
-
-PUSH is included in the starting vocabulary and selects the **Pushable** action.
-Place a key in front of the player and a door beyond it. Pushing the key attempts
-contact with the door before blocking is considered. The OPEN action sees LOCK,
-consumes both entities, and lets the player enter the key's vacated cell. Undo
-restores the complete turn. `KEY IS YOU` also works if direct key control is
-preferred; PUSH is needed when another entity pushes the key.
-
-Contact triggers run for either participant, so the same recipe works when a
-LOCK entity moves into a stationary OPEN entity. Conditions query active property
-sentences, not artwork or noun names. All conditions must match; each can require
-or exclude a property on this entity or the other entity. Turn-end conditions
-refer only to this entity. No conditions means the action runs unconditionally.
-
-Contact effects currently destroy either participant or block movement. Blocking
-cancels the whole movement attempt, including destruction staged earlier in the
-same attempt. PUSH supports chains of pushable entities and word tiles. A failed
-chain restores all movement and contact effects in that attempt, including a key
-and door consumed before a different obstruction was found. An entity with both
-PUSH and blocking can be pushed out of the way if its destination is available.
-Unmarked, nonblocking entities can overlap; they are not implicitly pushed.
-
-Recipes compile into ordinary Action objects and are installed through the same
-`actions` Facet and authored-content Slot as MOVE. Replacing an action ID changes
-existing property words' behavior without replacing the session or clearing undo.
-The action form installs a recipe by ID; it does not reconstruct arbitrary
-TypeScript callbacks into editable recipes.
-
-## Action contribution example
-
-`game.ts` imports no Plankton or built-in content. Properties refer to action IDs;
-actions provide input/collision capabilities, turn callbacks, or contact
-callbacks. Extensions can contribute arbitrary TypeScript callbacks through the same contract as recipes:
-
-```ts
-contribute(gameContract.actions, () => ({
-  id: 'HOP',
-  label: 'Hop',
-  description: 'Attempt two forward steps at turn end.',
-  afterTurn(subject, turn) {
-    const direction = subject.facing ?? { x: 1, y: 0 }
-    if (turn.move(subject.id, direction)) {
-      turn.move(subject.id, direction)
-    }
-  },
-}), { key: 'HOP' })
-```
-
-A turn action can move an entity (using ordinary blocking and pushing), change
-its facing, destroy it, or query its active properties. `turn.move` returns false
-and rolls back its whole push chain and contact effects when blocked. Each
-entity/action pair executes once per turn-end schedule, even if two properties
-select the same action. Runtime recipes compile to those ordinary callbacks.
-
-`Action.onContact(subject, other, contact)` receives attempted entity contact
-before blocking/pushing. The subject is the entity carrying the action, which may
-be stationary. The context exposes `hasProperty`, `destroy`, and `block`, plus the
-initiating mover ID and direction. Each entity/action callback runs at most once
-per encountered pair in one movement attempt, while both participants remain.
-Word tiles are pushable but do not receive entity contact callbacks. Tile-state effects are transactional; external
-side effects performed by arbitrary TypeScript callbacks are not rolled back.
-Actions needing resources could instead be contributed by a Factory that
-captures injected resources and owns their cleanup.
-
-## Outcomes and turn order
-
-The editor has a separate outcome board with four starting tile rows:
+An **outcome program** is a collection of rows with three condition cells and a
+result, separate from the sentences placed on the playable board. The four
+starting rows are:
 
 ```text
 YOU IS NONE    → LOSE
@@ -268,98 +182,80 @@ YOU IS WIN     → WIN
 YOU TOUCH LOSE → LOSE
 ```
 
-The arrow is fixed editor layout. There is one installed vocabulary: NONE and
-TOUCH are ordinary word definitions, and LOSE is a property word using the
-Lose on contact action. They appear alongside PLNK, FLAG, BUSH, IS, YOU, WIN,
-and STOP, and can be placed on the playable board like other word tiles.
+YOU selects controlled entities; WIN and LOSE select entities carrying winning or
+losing actions. NONE tests an empty selection. IS tests shared tile identity or
+connects a subject to NONE. TOUCH tests whether two distinct selected tiles share
+a cell. These executable meanings are contributions to `outcomeMeanings`.
 
-New outcome rows start as `_ _ _ → _`. Select a cell, then choose any word from
-Installed vocabulary or the tray's Outcome tile dropdown. **Done editing cell**
-returns to ordinary definition editing. Outcome rows render the same definitions
-and artwork as the palette, puzzle, and shared tray; saving pixels updates every
-use of that word. The grammar is checked when applying the complete draft rather
-than restricting the picker to a second vocabulary.
+Other noun words select their entities, and property words select entities with
+that property. Physical word selection is also contributed for every definition:
+`BUSH TOUCH IS → WIN` selects BUSH entities and physical IS word tiles. IS keeps
+its relation meaning when used in the middle cell.
 
-Add or remove rows, remove individual tiles, undo draft edits, or restore the
-four defaults. **Apply outcomes** parses the whole draft before replacing the
-installed program. Incomplete or ill-typed rows report errors directly below the
-outcome table and leave the running program intact. Removing an entire row is valid. An empty program is
-also valid and never ends play. Draft edits survive closing the drawer; only
-applied rows affect the game. Reset reloads the puzzle under the currently
-installed outcome program. Page reload restores all defaults.
+For a noun or property word, select its subject or target cell and choose
+**Outcome selection → Word tiles** to use the physical word instead of its entity
+meaning. The row displays a small `word` badge. This distinction preserves the
+normal `YOU IS NONE` loss even while a physical YOU word remains on the board.
 
-The `outcomeMeanings` Facet supplies executable language meanings without
-duplicating word definitions or artwork:
+Add a row, select its cells, and choose tiles from the vocabulary or the tray's
+**Outcome tile** dropdown. Rows and selector choices can be undone or restored to
+the defaults before applying. **Apply outcomes** parses the entire draft before
+replacing the program Slot. Errors appear directly below the table, and an invalid
+draft leaves the installed program intact. This is an application parsing
+boundary; these tests do not exercise failed Factory acquisition.
 
-- YOU, WIN, and LOSE select controlled, winning, and losing entities respectively.
-- NONE is a unary predicate that tests whether its selected set is empty.
-- IS is a relation predicate that tests shared tile identity. In `IS NONE`, it
-  also serves as the grammar's connector to the unary predicate.
-- TOUCH is a relation predicate that tests distinct selected tiles sharing a cell.
-- Other entity nouns select their matching entities automatically. Other property
-  words select entities described by that property, including authored words.
+Evaluation resolves the saved selector/predicate references against live meanings.
+Replacing a predicate extension changes an applied row without recompiling it.
+LOSE takes precedence over WIN when both match. An empty program never ends play;
+won and lost boards remain editable. Under the defaults, losing every YOU entity
+reports **No YOU entities remain**.
 
-Every definition also contributes a physical-word selector to `outcomeMeanings`.
-These bindings use role-qualified keys such as `word-selector:IS` and
-`relation:IS`, so replacing the IS relation does not replace IS word selection.
-Nouns and property words keep their default entity selections. Words that only
-have predicate meanings, such as IS, TOUCH, and NONE, select their physical word
-tiles when used as subjects or targets. Thus `BUSH TOUCH IS → WIN` wins when a
-BUSH entity and an IS word share a cell. TOUCH means sharing a cell, not adjacency;
-normal pushing and STOP rules still determine whether tiles can reach it.
+## Paint board setups
 
-Select a subject or target cell and choose **Outcome selection → Word tiles**
-to select the physical word even when it also names entities or a property.
-That choice is saved in the row and shown by a small `word` badge. For example,
-selecting YOU word tiles does not select the player. Selecting NONE word tiles
-in the target position of IS uses identity rather than its emptiness predicate.
-Word selection extensions follow definition installation and removal, including
-runtime-authored words. The ordinary YOU selection remains entity-only.
+**Place tile** enters a paused placement mode. Both sidebars hide and leave room
+for four tools on the right edge:
 
-`YOU IS NONE` therefore covers disconnected YOU sentences, destruction of the
-last YOU entity, and a connected `BUSH IS YOU` sentence with no bushes. Another
-surviving YOU entity keeps the selection nonempty. Its loss message is
-**No YOU entities remain**.
+- **Add** opens a palette of installed entities and words. Click or drag to replace
+  every tile in a visited cell with the equipped tile.
+- **Delete** clears whole cells, including mixed entity/word stacks.
+- **Accept** commits the draft as one board edit; Z undoes the complete batch.
+- **Cancel**, or Escape, discards it. Escape closes an open palette first.
 
-**Lose on contact** remains an available action. A sentence such as
-`LAVA IS DANGER`, with DANGER using that action, adds lava to the LOSE selection.
-The fourth outcome row then ends play when YOU touches lava, even if another YOU
-survives. The action does not destroy entities. Its default predicate message is
-**YOU touched a losing entity**. Removing that outcome row removes this loss
-condition while preserving the action and property.
+Draft painting changes the preview without changing the running Game or resolving
+outcomes. Accept evaluates the completed board without advancing a turn. The brush
+fills gaps between pointer samples and projects captured drags onto boundary cells
+when the pointer moves outside the board.
 
-`parseOutcomeRows` converts tile choices into a typed program of selector
-references (ID and role) and predicate IDs. It captures no predicate callback. Each evaluation resolves those
-IDs from live contributions, so replacing NONE, IS, or TOUCH changes existing
-rows without recompiling them. Meanings are resolved only for currently
-installed vocabulary entries. Missing or mismatched meanings make a dependent
-rule inactive. Predicate callbacks are TypeScript extensions; the tray edits
-artwork and sentence choices, not executable JavaScript.
+Board edits and vocabulary edits have different histories. Definition edits are
+not part of board undo. Deleting an unused definition also removes its historical
+tile references so Undo cannot restore tiles with no definition. Clear its placed
+tiles and applied outcome references before deleting it. Reset restores the
+starting board with authored content still installed; page reload starts fresh.
+There is no persistent storage in this example.
 
-The `outcomeProgram` Facet holds that parsed data, installed through its own Slot.
-Changing the program preserves the session, tile positions, turn count, and board
-undo history. Undo restores board contents and reevaluates them using the current
-program. Outcome draft undo is separate and requires Apply to affect play.
+## Where to read the code
 
-The board status is `playing`, `won`, or `lost`; a loss includes its matching row
-and predicate message. LOSE results take priority over WIN regardless of row
-order. This is a fixed interpreter policy. There are no time-based turns. A turn
-resolves in this order:
+| File | Responsibility |
+| --- | --- |
+| [`src/registry.ts`](src/registry.ts) | Contracts, contributions, Slots, session acquisition, and publishing edits. |
+| [`src/content.ts`](src/content.ts) | Starter puzzle, vocabulary, and property-definition compilation. |
+| [`src/actions.ts`](src/actions.ts) | Built-in actions and runtime recipe compilation. |
+| [`src/outcomes.ts`](src/outcomes.ts) | Selector/predicate contracts, row parsing, and outcome evaluation. |
+| [`src/game.ts`](src/game.ts), [`src/movement.ts`](src/movement.ts) | Board history, turn order, and transactional movement/contact behavior. |
+| [`src/main.tsx`](src/main.tsx), [`src/board-edit.ts`](src/board-edit.ts) | UI authoring state and immutable placement drafts. |
 
-1. Read the starting rules for input and blocking.
-2. Move controlled entities. For each attempted entry, run contact callbacks,
-   then resolve blocking and entity/word pushes. Failed attempts roll back.
-3. Read the resulting rules and schedule each entity/action pair once.
-4. Execute turn actions in entity/contribution order. Their movement uses the
-   same contact and push resolver with the post-input rule snapshot.
-5. Read the final rules and evaluate the installed outcome program.
+The game engine receives ordinary functions for reading its vocabulary. It imports
+no Plankton APIs; `registry.ts` adapts the extension system to those functions.
+React, Radix, and the shared UI components handle browser interaction. Keeping
+those responsibilities separate makes the assembly contract readable without
+turning movement or painting into a second extension framework.
 
-Under the starting program, a destroyed YOU cannot win by briefly overlapping
-WIN before destruction. Won or lost boards stop turns but remain editable. Removing/placing a tile evaluates the
-outcome immediately; closing the editor reevaluates after vocabulary changes.
-Undo restores the previous tiles and facing, then reevaluates the outcome. It
-preserves the currently installed definitions and actions.
+## Plankton concepts beyond this example
 
-The placement tools are a sandbox and can bypass the intended puzzle. Noun
-transformations, arbitrary runtime JavaScript, and persistent storage remain
-outside this slice.
+The demo exercises Facets, Contracts, Bindings, keys/precedence, Slots, retained
+Factory identity, observations, and one Service provider. It does not acquire a
+shared external resource through constructor dependencies, switch live Service
+providers, or install plugins and feature gates. Its sources return contribution
+records rather than following changing Signals, and its diagnostics remain in
+tests. A game feature such as shared audio would give resource ownership, startup,
+cleanup, and acquisition-failure recovery a concrete use to demonstrate next.
