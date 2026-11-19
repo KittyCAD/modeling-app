@@ -31,6 +31,41 @@ it('follows core KCL inputs and effective values rather than hidden overrides', 
   ).toBe(false)
 })
 
+it.each(['streamed', 'local'] as const)(
+  'uses effective default units in the native configuration and refreshes %s execution',
+  (renderer) => {
+    const settings = createSettings()
+    settings.modeling.defaultUnit.user = 'mm'
+    const snapshots = createTestKclExecutionSettings(() => settings)
+    const revision = snapshots.revision(() => renderer === 'local')
+    const millimeters = revision.peek()
+    const rebuild = snapshots.rebuildRevision.peek()
+    expect(snapshots.configuration.peek().settings?.modeling?.base_unit).toBe(
+      'mm'
+    )
+
+    settings.modeling.defaultUnit.project = 'in'
+    const inches = revision.peek()
+    expect(inches).not.toBe(millimeters)
+    expect(snapshots.configuration.peek().settings?.modeling?.base_unit).toBe(
+      'in'
+    )
+
+    settings.modeling.defaultUnit.user = 'ft'
+    expect(revision.peek()).toBe(inches)
+    expect(snapshots.configuration.peek().settings?.modeling?.base_unit).toBe(
+      'in'
+    )
+
+    settings.modeling.defaultUnit.project = undefined
+    expect(revision.peek()).not.toBe(inches)
+    expect(snapshots.configuration.peek().settings?.modeling?.base_unit).toBe(
+      'ft'
+    )
+    expect(snapshots.rebuildRevision.peek()).toBe(rebuild)
+  }
+)
+
 it('preserves revisions across equivalent settings replacements and tracks the replacement', () => {
   const settings = signal(createSettings())
   const snapshots = createTestKclExecutionSettings(() => settings.value)

@@ -62,6 +62,29 @@ it('keeps inactive baselines current and batches refresh inputs for the active s
   }
 })
 
+it.each(['streamed', 'local'] as const)(
+  'reexecutes the active %s scene only when its effective default unit changes',
+  (renderer) => {
+    const state = observer()
+    try {
+      state.settings.modeling.defaultUnit.user = 'mm'
+      state.local.value = renderer === 'local'
+      state.active.value = true
+      expect(state.execute).not.toHaveBeenCalled()
+
+      state.settings.modeling.defaultUnit.project = 'in'
+      expect(state.execute).toHaveBeenCalledOnce()
+      state.settings.modeling.defaultUnit.user = 'ft'
+      expect(state.execute).toHaveBeenCalledOnce()
+      state.settings.modeling.defaultUnit.project = undefined
+      expect(state.execute).toHaveBeenCalledTimes(2)
+      expect(state.rebuild).not.toHaveBeenCalled()
+    } finally {
+      state.dispose()
+    }
+  }
+)
+
 it('waits for a streamed rebuild before newer settings execute and ignores replaced owners', async () => {
   const state = observer()
   const pending = Promise.withResolvers<undefined>()
