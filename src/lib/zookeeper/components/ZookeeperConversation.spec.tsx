@@ -1271,7 +1271,10 @@ describe('ZookeeperConversation', () => {
         ],
       }
 
-      render(
+      const renderConversation = (
+        conversation: Conversation,
+        isProcessing: boolean
+      ) => (
         <ZookeeperConversation
           isLoading={false}
           conversation={conversation}
@@ -1281,25 +1284,31 @@ describe('ZookeeperConversation', () => {
           onCancel={() => {}}
           needsReconnect={false}
           disabled={false}
-          hasPromptCompleted={false}
+          hasPromptCompleted={!isProcessing}
           contexts={[]}
-          isProcessing={true}
+          isProcessing={isProcessing}
           queue={[]}
           onRemoveFromQueue={() => {}}
           onSteer={() => {}}
         />
       )
 
+      const { rerender } = render(renderConversation(conversation, true))
+
       if (infoText === 'Temporary connection issue. Retrying automatically…') {
         expect(
           screen.getByTestId('ml-response-retry-status')
         ).toHaveTextContent(infoText)
+        expect(
+          screen.queryByTestId('ml-response-info-chat-bubble')
+        ).not.toBeInTheDocument()
       } else {
-        expect(screen.queryByText(infoText)).not.toBeInTheDocument()
+        expect(
+          within(screen.getByTestId('ml-response-info-chat-bubble')).getByText(
+            infoText
+          )
+        ).toBeInTheDocument()
       }
-      expect(
-        screen.queryByTestId('ml-response-info-chat-bubble')
-      ).not.toBeInTheDocument()
       expect(
         screen.getByTestId('ml-response-chat-bubble-thinking')
       ).toBeInTheDocument()
@@ -1311,6 +1320,23 @@ describe('ZookeeperConversation', () => {
       })
       expect(screen.getByText('Collapse')).toBeInTheDocument()
       expect(screen.queryByText('See reasoning')).not.toBeInTheDocument()
+
+      if (
+        infoText === 'Manual edits detected since the last Zookeeper state.'
+      ) {
+        const completedConversation: Conversation = {
+          ...conversation,
+          exchanges: conversation.exchanges.map((exchange) => ({
+            ...exchange,
+            responses: [
+              ...exchange.responses,
+              { end_of_stream: { whole_response: 'Rendered.' } },
+            ],
+          })),
+        }
+        rerender(renderConversation(completedConversation, false))
+        expect(screen.queryByText(infoText)).not.toBeInTheDocument()
+      }
     }
   )
 

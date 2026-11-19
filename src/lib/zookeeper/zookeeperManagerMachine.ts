@@ -559,6 +559,57 @@ export const getZookeeperAttachmentKey = (
 ): string =>
   `${attachmentRef.prompt_id}:${attachmentRef.seq}:${attachmentRef.index}`
 
+export const MANUAL_EDIT_NOTICE_TEXT =
+  'Manual edits detected since the last Zookeeper state.'
+
+interface ManualEditNoticeFiles {
+  projectId?: string
+  files: Record<string, readonly number[]>
+}
+
+const isManualEditSourceFile = (path: string) => /\.(kcl|md|csv)$/i.test(path)
+
+function manualEditNoticeFiles(
+  request: Exchange['request']
+): ManualEditNoticeFiles | undefined {
+  if (!isMlCopilotUserRequest(request) || !request.current_files) return
+  const files = Object.fromEntries(
+    Object.entries(request.current_files).filter(([path]) =>
+      isManualEditSourceFile(path)
+    )
+  )
+  if (Object.keys(files).length === 0) return
+  return { projectId: request.project_id, files }
+}
+
+function sameManualEditNoticeFiles(
+  previous: ManualEditNoticeFiles | undefined,
+  current: ManualEditNoticeFiles
+): boolean {
+  return (
+    previous !== undefined &&
+    previous.projectId === current.projectId &&
+    Object.keys(previous.files).length === Object.keys(current.files).length &&
+    Object.entries(current.files).every(([path, bytes]) => {
+      const previousBytes = previous.files[path]
+      return (
+        previousBytes?.length === bytes.length &&
+        bytes.every((byte, index) => previousBytes[index] === byte)
+      )
+    })
+  )
+}
+
+function retainUnchangedManualEditNotice(
+  previous: ManualEditNoticeFiles | undefined,
+  request: Exchange['request']
+): ManualEditNoticeFiles | undefined {
+  const current = manualEditNoticeFiles(request)
+  return current && sameManualEditNoticeFiles(previous, current)
+    ? previous
+    : undefined
+}
+
 export interface ZookeeperManagerContext {
   apiToken: string
   ws?: WebSocket
@@ -575,6 +626,7 @@ export interface ZookeeperManagerContext {
   replayPageRequestId?: string
   replayPageError?: string
   lastMessageId?: number
+  lastManualEditNoticeFiles?: ManualEditNoticeFiles
   cloudProjectChange?: CloudProjectToolChange
   lastMessageType?: TypeVariant<MlCopilotServerMessage>
   fileFocusedOnInEditor?: FileEntry
@@ -612,6 +664,7 @@ export const zookeeperDefaultContext = (args: {
   replayPageError: undefined,
   cachedSetup: undefined,
   lastMessageId: undefined,
+  lastManualEditNoticeFiles: undefined,
   lastMessageType: undefined,
   fileFocusedOnInEditor: undefined,
   projectNameCurrentlyOpened: undefined,
@@ -1115,6 +1168,37 @@ export const zookeeperManagerMachine = setup({
         return { attachmentFetches }
       }
 
+      let lastManualEditNoticeFiles = context.lastManualEditNoticeFiles
+      if (
+        'info' in event.response &&
+        event.response.info.text.startsWith(MANUAL_EDIT_NOTICE_TEXT)
+      ) {
+        const files = manualEditNoticeFiles(
+          context.conversation?.exchanges.at(-1)?.request
+        )
+        // The backend can repeat this notice after answer-only turns because its
+        // baseline advances only when Zookeeper changes files. Until that changes,
+        // suppress notices already shown for these exact source files. Trust the
+        // server when the snapshot is unknown; edits and reconnects invalidate it.
+        if (
+          files &&
+          sameManualEditNoticeFiles(lastManualEditNoticeFiles, files)
+        ) {
+          return {}
+        }
+        lastManualEditNoticeFiles = files
+      } else if (
+        ('tool_output' in event.response &&
+          (event.response.tool_output.result.type === 'edit_kcl_code' ||
+            event.response.tool_output.result.type === 'text_to_cad')) ||
+        ('files' in event.response &&
+          event.response.files.files.some((file) =>
+            isManualEditSourceFile(file.name)
+          ))
+      ) {
+        lastManualEditNoticeFiles = undefined
+      }
+
       const lastMessageId = (context.lastMessageId ?? -1) + 1
       const responseComplete = isResponseComplete(event.response)
 
@@ -1204,6 +1288,7 @@ export const zookeeperManagerMachine = setup({
         conversation,
         lastMessageId,
         lastMessageType,
+        lastManualEditNoticeFiles,
         awaitingResponse: responseComplete ? false : context.awaitingResponse,
         pendingBackendShutdown: responseComplete
           ? false
@@ -1407,6 +1492,7 @@ export const zookeeperManagerMachine = setup({
         accessDeniedCode: undefined,
         closeReason: undefined,
         lastMessageId: undefined,
+        lastManualEditNoticeFiles: undefined,
         lastMessageType: undefined,
         conversation: undefined,
         useLegacyReplay: false,
@@ -2303,6 +2389,10 @@ export const zookeeperManagerMachine = setup({
         const exchanges = appendReceivedUser(previous, event.request)
         if (exchanges === previous) return {}
         return {
+          lastManualEditNoticeFiles: retainUnchangedManualEditNotice(
+            context.lastManualEditNoticeFiles,
+            event.request
+          ),
           conversation: { ...context.conversation, exchanges },
           awaitingResponse: true,
           attachmentsLoadedForCurrentPrompt: true,
@@ -2341,7 +2431,10 @@ export const zookeeperManagerMachine = setup({
       }),
     },
     [ZookeeperManagerTransitions.CloudProjectChanged]: {
-      actions: assign(({ event }) => ({ cloudProjectChange: event.change })),
+      actions: assign(({ event }) => ({
+        cloudProjectChange: event.change,
+        lastManualEditNoticeFiles: undefined,
+      })),
     },
     [ZookeeperManagerTransitions.AuthTokenChanged]: {
       actions: ['assignApiToken'],
@@ -2529,6 +2622,7 @@ export const zookeeperManagerMachine = setup({
           target: ZookeeperManagerStates.Ready,
           actions: [
             assign({
+              lastManualEditNoticeFiles: undefined,
               awaitingResponse({ event }) {
                 return event.output.awaitingResponse ?? false
               },
@@ -2634,6 +2728,11 @@ export const zookeeperManagerMachine = setup({
                       const { exchange, ...updates } = event.output
                       return {
                         ...updates,
+                        lastManualEditNoticeFiles:
+                          retainUnchangedManualEditNotice(
+                            context.lastManualEditNoticeFiles,
+                            exchange.request
+                          ),
                         // Edit acknowledgements can compact earlier exchanges
                         // while this prompt is being prepared.
                         conversation: {
@@ -2727,6 +2826,7 @@ export const zookeeperManagerMachine = setup({
               replayPageError: undefined,
               cachedSetup: undefined,
               lastMessageId: undefined,
+              lastManualEditNoticeFiles: undefined,
               lastMessageType: undefined,
               awaitingResponse: false,
               attachmentsLoadedForCurrentPrompt: true,
