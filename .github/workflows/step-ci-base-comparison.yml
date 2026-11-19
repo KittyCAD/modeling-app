@@ -15,17 +15,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - revision: exact-base
-            sha: 567989c16e0873687f2e89cb11951d635d523869
-            wasm_run: 44405393037
-          - revision: candidate
-            sha: 19df7b96f3bf1d00ef7214ae21e11002536804aa
-            wasm_run: 44577814983
-          - revision: candidate-old-wait
-            sha: 19df7b96f3bf1d00ef7214ae21e11002536804aa
-            wasm_run: 44577814983
-          - revision: candidate-readiness
-            sha: 2ca48d32010845b764653e7dfe80590b6d6d53ef
+          - revision: candidate-final
+            sha: 3ab8ad3b5150dc15ac24b2e997d0ef52bb5d451b
             wasm_run: 44577814983
     steps:
       - uses: actions/checkout@v6
@@ -33,9 +24,6 @@ jobs:
           ref: ${{ matrix.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Restore old helper for diagnostic control
-        if: matrix.revision == 'candidate-old-wait'
-        run: git show c65ba1836cb072cb8bad51f052a9a95045019d7d:e2e/playwright/test-utils.ts > e2e/playwright/test-utils.ts
       - name: Record exact inputs
         run: |
           git rev-parse HEAD HEAD:rust
@@ -77,11 +65,27 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          npm run test:snapshots -- --update-snapshots=none 2>&1 | tee comparison-snapshots.log
+          status=0
+          for attempt in 1 2; do
+            echo "Snapshot validation $attempt"
+            npm run test:snapshots -- --update-snapshots=none --output="test-results-$attempt" 2>&1 | tee -a comparison-snapshots.log || status=1
+          done
+          exit "$status"
+      - name: Build desktop app
+        run: npm run tronb:vite:dev
+      - name: Repeat both assembly selection paths without retries
+        env:
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+          TARGET: desktop
+        shell: bash
+        run: |
+          set -o pipefail
+          xvfb-run -a npx playwright test --config=playwright.electron.config.ts e2e/playwright/point-click-assemblies.spec.ts --grep='Insert the bracket part into an assembly and transform it' --workers=1 --repeat-each=2 --retries=0 2>&1 | tee comparison-assembly.log
       - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: snapshots-${{ matrix.revision }}
           path: |
             comparison-snapshots.log
-            test-results/
+            comparison-assembly.log
+            test-results*/
