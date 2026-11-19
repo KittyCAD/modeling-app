@@ -34,10 +34,9 @@ cubeSketch = startSketchOn(XY)
 cubeExtrude = extrude(cubeSketch, length = sideLength)
 
 // Write a function to create a hemispherical nest in a given cube side
-fn nest(cubeFace, xPos, yPos, nestSize) {
+fn nest(nestPlane, xPos, yPos, nestSize) {
   // Round a separate cutter before subtracting it so its edge references
   // remain valid throughout the fillet operation.
-  nestPlane = offsetPlane(planeOf(cubeExtrude, face = cubeFace), offset = 0)
   nestFn = startSketchOn(nestPlane)
     |> circle(center = [xPos * sideLength, yPos * sideLength], radius = nestSize, tag = $seg01)
     |> extrude(length = -nestSize)
@@ -52,7 +51,7 @@ fn nest(cubeFace, xPos, yPos, nestSize) {
 
 // Model each nest on the top face
 nest001 = nest(
-  cubeFace = END,
+  nestPlane = offsetPlane(XY, offset = sideLength),
   xPos = 0.5,
   yPos = 0.5,
   nestSize = size01,
@@ -60,19 +59,19 @@ nest001 = nest(
 
 // Model each nest on side 1
 nest002 = nest(
-  cubeFace = rectangleSegmentA001,
+  nestPlane = XZ,
   xPos = 0.65,
   yPos = 0.5,
   nestSize = size02,
 )
 nest003 = nest(
-  cubeFace = rectangleSegmentA001,
+  nestPlane = XZ,
   xPos = 0.25,
   yPos = 0.25,
   nestSize = size03,
 )
 nest004 = nest(
-  cubeFace = rectangleSegmentA001,
+  nestPlane = XZ,
   xPos = 0.25,
   yPos = 0.75,
   nestSize = size03,
@@ -80,25 +79,25 @@ nest004 = nest(
 
 // Model each nest on side 2
 nest005 = nest(
-  cubeFace = rectangleSegmentB001,
+  nestPlane = offsetPlane(YZ, offset = sideLength),
   xPos = 0.7,
   yPos = 0.3,
   nestSize = size04,
 )
 nest006 = nest(
-  cubeFace = rectangleSegmentB001,
+  nestPlane = offsetPlane(YZ, offset = sideLength),
   xPos = 0.25,
   yPos = 0.3,
   nestSize = size05,
 )
 nest007 = nest(
-  cubeFace = rectangleSegmentB001,
+  nestPlane = offsetPlane(YZ, offset = sideLength),
   xPos = 0.25,
   yPos = 0.7,
   nestSize = size05,
 )
 nest008 = nest(
-  cubeFace = rectangleSegmentB001,
+  nestPlane = offsetPlane(YZ, offset = sideLength),
   xPos = 0.7,
   yPos = 0.7,
   nestSize = size05,
@@ -106,7 +105,7 @@ nest008 = nest(
 
 // Model each nest on side 3
 nest009 = nest(
-  cubeFace = rectangleSegmentC001,
+  nestPlane = offsetPlane(-XZ, offset = sideLength),
   xPos = -0.5,
   yPos = 0.5,
   nestSize = size06,
@@ -114,49 +113,49 @@ nest009 = nest(
 
 // Model each nest on side 4
 nest010 = nest(
-  cubeFace = rectangleSegmentD001,
+  nestPlane = -YZ,
   xPos = -0.2,
   yPos = 0.2,
   nestSize = size15,
 )
 nest011 = nest(
-  cubeFace = rectangleSegmentD001,
+  nestPlane = -YZ,
   xPos = -0.2,
   yPos = 0.5,
   nestSize = size14,
 )
 nest012 = nest(
-  cubeFace = rectangleSegmentD001,
+  nestPlane = -YZ,
   xPos = -0.2,
   yPos = 0.8,
   nestSize = size13,
 )
 nest013 = nest(
-  cubeFace = rectangleSegmentD001,
+  nestPlane = -YZ,
   xPos = -0.8,
   yPos = 0.2,
   nestSize = size12,
 )
 nest014 = nest(
-  cubeFace = rectangleSegmentD001,
+  nestPlane = -YZ,
   xPos = -0.8,
   yPos = 0.5,
   nestSize = size10,
 )
 nest015 = nest(
-  cubeFace = rectangleSegmentD001,
+  nestPlane = -YZ,
   xPos = -0.8,
   yPos = 0.8,
   nestSize = size08,
 )
 nest016 = nest(
-  cubeFace = rectangleSegmentD001,
+  nestPlane = -YZ,
   xPos = -0.5,
   yPos = 0.33,
   nestSize = size09,
 )
 nest017 = nest(
-  cubeFace = rectangleSegmentD001,
+  nestPlane = -YZ,
   xPos = -0.5,
   yPos = 0.67,
   nestSize = size11,
@@ -164,7 +163,7 @@ nest017 = nest(
 
 // Model each nest on the bottom face
 nest018 = nest(
-  cubeFace = START,
+  nestPlane = -XY,
   xPos = -0.5,
   yPos = 0.5,
   nestSize = size07,
