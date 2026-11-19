@@ -16,7 +16,7 @@ jobs:
       matrix:
         include:
           - revision: candidate
-            sha: e4d63b35c13ec4473f2a8c0709d66147875699a1
+            sha: c65ba1836cb072cb8bad51f052a9a95045019d7d
     steps:
       - uses: actions/checkout@v6
         with:
@@ -41,6 +41,7 @@ jobs:
           ZOO_HOST: https://api.dev.zoo.dev
           RUST_MIN_STACK: 10485760000
           RUST_FILTER: >-
+            test(frontend::trim::) or
             test(simulation_tests::error_loft_section_order::) or
             test(=simulation_tests::kcl_samples::kcl_test_execute_tooling_nest_block) or
             test(=simulation_tests::kcl_samples::parse_tooling_nest_block) or
@@ -61,6 +62,7 @@ jobs:
           EXPECTORATE: overwrite
           TWENTY_TWENTY: update
           RUST_FILTER: >-
+            test(frontend::trim::) or
             test(simulation_tests::error_loft_section_order::) or
             test(=simulation_tests::kcl_samples::kcl_test_execute_tooling_nest_block) or
             test(=simulation_tests::kcl_samples::parse_tooling_nest_block) or
@@ -85,151 +87,44 @@ jobs:
             candidate-snapshots.patch
             candidate-snapshots.tar.gz
             test-results/
-  desktop:
-    name: Desktop failures (${{ matrix.revision }})
+  python-base:
+    name: Python tests (exact base, supported interpreter)
     runs-on: namespace-profile-ubuntu-8-cores
-    timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - revision: candidate
-            sha: e4d63b35c13ec4473f2a8c0709d66147875699a1
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ matrix.sha }}
+          ref: 567989c16e0873687f2e89cb11951d635d523869
           persist-credentials: false
-      - name: Verify WASM source identities against artifact build
-        run: |
+      - run: |
           git rev-parse HEAD
-          # Only the cfg(test) simulation module differs from the artifact build.
-          test "$(git cat-file -p HEAD:rust/kcl-lib/src | sed '/simulation_tests.rs$/d' | git hash-object --stdin)" = c7aa6a500a39da8d91149c8daff2221ce7e790e3
-          test "$(git rev-parse HEAD:rust/kcl-lib/std)" = b2e785f5cc2b04c75c01dc29aa0adad13fae8de8
-          test "$(git rev-parse HEAD:rust/kcl-wasm-lib)" = 354a48cd8d11239382feefd56d8f488474820c32
-          test "$(git rev-parse HEAD:rust/kcl-lib/Cargo.toml)" = 7aeb8b6eacc88448932a58093e463f31cee78ca1
-          test "$(git rev-parse HEAD:rust/Cargo.toml)" = d1b52d5ee909ef9936dfa6b91e7ba4d709e6c8d1
-          test "$(git rev-parse HEAD:rust/Cargo.lock)" = ad4ce85eac3811f2a4f030875994bc9ba3440742
-      - uses: actions/download-artifact@v8
+          cp rust/rust-toolchain.toml ./rust-toolchain.toml
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          github-token: ${{ github.token }}
-          run-id: 44548232352
-          name: prepared-wasm
-          path: prepared-wasm
-      - uses: actions/download-artifact@v8
+          cache: false
+          rustflags: ''
+      - uses: Swatinem/rust-cache@v2
         with:
-          github-token: ${{ github.token }}
-          run-id: 44548232352
-          name: prepared-ts-rs-bindings
-          path: rust/kcl-lib/bindings
-      - name: Install identical WASM from verified Rust tree
-        run: |
-          mkdir -p rust/kcl-wasm-lib/pkg
-          cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg/
-          cp prepared-wasm/kcl_wasm_lib_bg.wasm public/
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - run: npm ci
-      - uses: actions/cache@v5
-        with:
-          path: ~/.cache/ms-playwright/
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
-      - run: npm run playwright install --with-deps
-      - run: npm run tronb:vite:dev
-      - name: Run candidate desktop tests
+          workspaces: rust
+          cache-on-failure: true
+      - uses: astral-sh/setup-uv@v7
+      - name: Run original Python suite
         env:
-          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
-          FAIL_ON_CONSOLE_ERRORS: true
-          TARGET: desktop
-          E2E_WORKERS: 1
+          UV_PYTHON: '3.13'
+          ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+          ZOO_HOST: https://api.dev.zoo.dev
         shell: bash
         run: |
           set -o pipefail
-          xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:desktop -- --grep='Flip Surface point-and-click|bad model has inline error #3251|can extrude sketch regions' --workers=1 --retries=0 2>&1 | tee comparison-desktop.log
+          cd rust/kcl-python-bindings
+          uv python install 3.13
+          uv venv --python 3.13
+          uv pip install '.[test]'
+          uv run --no-sync pytest tests/tests.py --junitxml=test-results/junit.xml 2>&1 | tee ../../comparison-python-base.log
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: desktop-${{ matrix.revision }}
+          name: python-base
           path: |
-            comparison-desktop.log
-            test-results/
-            playwright-report/
-          include-hidden-files: true
-
-  integration:
-    name: Trim performance (${{ matrix.revision }})
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - revision: two-cores
-            runner: namespace-profile-ubuntu-2-cores
-            sha: e4d63b35c13ec4473f2a8c0709d66147875699a1
-            wasm_run: 44548232352
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ matrix.sha }}
-          persist-credentials: false
-      - name: Record exact inputs
-        run: git rev-parse HEAD HEAD:rust HEAD:src/machines/sketchSolve/tools/trimToolImpl.spec.ts HEAD:vitest.config.ts
-      - uses: actions/download-artifact@v8
-        with:
-          github-token: ${{ github.token }}
-          run-id: ${{ matrix.wasm_run }}
-          name: prepared-wasm
-          path: prepared-wasm
-      - uses: actions/download-artifact@v8
-        with:
-          github-token: ${{ github.token }}
-          run-id: ${{ matrix.wasm_run }}
-          name: prepared-ts-rs-bindings
-          path: rust/kcl-lib/bindings
-      - name: Install WASM
-        run: |
-          mkdir -p rust/kcl-wasm-lib/pkg
-          cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg/
-          cp prepared-wasm/kcl_wasm_lib_bg.wasm public/
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - run: npm ci
-      - name: Instrument trim phases without changing assertions
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path('src/machines/sketchSolve/tools/trimToolImpl.spec.ts')
-          s=p.read_text()
-          s=s.replace('  const setProgramOutcome =', '  const setupStart = performance.now()\n  const setProgramOutcome =')
-          s=s.replace("  if (setProgramOutcome.type !== 'Success')", "  console.log('[phase] set-program', kclCode.length, performance.now() - setupStart)\n  if (setProgramOutcome.type !== 'Success')")
-          s=s.replace('    await onAreaSelectEndHandler(trimPoints)', "    const trimStart = performance.now()\n    await onAreaSelectEndHandler(trimPoints)\n    console.log('[phase] trim-loop', kclCode.length, performance.now() - trimStart)")
-          s="import { Session } from 'node:inspector'\nimport { writeFileSync } from 'node:fs'\n"+s
-          s=s.replace('    const trimStart = performance.now()', "    const profiler = new Session()\n    profiler.connect()\n    await new Promise<void>((resolve, reject) => profiler.post('Profiler.enable', err => err ? reject(err) : resolve()))\n    await new Promise<void>((resolve, reject) => profiler.post('Profiler.start', err => err ? reject(err) : resolve()))\n    const trimStart = performance.now()")
-          s=s.replace("    console.log('[phase] trim-loop'", "    await new Promise<void>((resolve, reject) => profiler.post('Profiler.stop', (err, result) => { if (err) { reject(err); return }; writeFileSync('trim-' + kclCode.length + '.cpuprofile', JSON.stringify(result.profile)); resolve() }))\n    profiler.disconnect()\n    console.log('[phase] trim-loop'")
-          p.write_text(s)
-          PY
-      - name: Run unchanged trim and project tests
-        env:
-          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
-        shell: bash
-        run: |
-          set -o pipefail
-          status=0
-          for attempt in 1; do
-            xvfb-run -a npm run test:integration -- src/machines/sketchSolve/tools/trimToolImpl.spec.ts src/lib/app.spec.ts --sequence.seed=15271 --retry=0 --pool=forks 2>&1 | tee -a comparison-integration.log || status=1
-          done
-          exit "$status"
-      - uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: integration-${{ matrix.revision }}
-          path: |
-            comparison-integration.log
-            *.cpuprofile
-            test-results/
+            comparison-python-base.log
+            rust/kcl-python-bindings/test-results/
