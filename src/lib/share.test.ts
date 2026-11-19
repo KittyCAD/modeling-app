@@ -242,8 +242,10 @@ describe('publishCurrentProject', () => {
       '/projects/bracket',
       expect.any(Array),
       {
-        description: 'A mounting bracket.',
-        category_ids: ['category-a', 'category-b'],
+        publicationMetadata: {
+          description: 'A mounting bracket.',
+          category_ids: ['category-a', 'category-b'],
+        },
       }
     )
     const files = mockState.createProject.mock
