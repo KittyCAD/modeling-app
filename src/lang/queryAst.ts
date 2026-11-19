@@ -25,7 +25,7 @@ import {
   getSegmentArtifactForEdgeCut,
   getSegmentForEdgeCut,
   getSweepEdgeCodeRef,
-  getSweepFromSuspectedSweepSurface,
+  getBodyFromSurface,
 } from '@src/lang/std/artifactGraph'
 import { getArgForEnd, sketchLineHelperMapKw } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
@@ -1445,7 +1445,22 @@ export function getVariableExprsFromSelection(
           ? resolvedForSegment.artifact
           : null
     const edgeCutCodeRef = s.codeRef ?? resolvedForSegment?.codeRef
-    if (selectedEdgeCut && edgeCutCodeRef) {
+    const edgeCutOwner = selectedEdgeCut?.bodyId
+      ? artifactGraph.get(selectedEdgeCut.bodyId)
+      : undefined
+    const edgeCutBodyWasConsumed =
+      edgeCutOwner?.type === 'path'
+        ? Boolean(edgeCutOwner.compositeSolidId)
+        : (edgeCutOwner?.type === 'sweep' ||
+            edgeCutOwner?.type === 'compositeSolid') &&
+          edgeCutOwner.consumed
+    // A treatment's defining variable can be stale after a Boolean. When
+    // requested, resolve its current body through the normal ownership traversal.
+    if (
+      selectedEdgeCut &&
+      edgeCutCodeRef &&
+      !(lastChildLookup && edgeCutBodyWasConsumed)
+    ) {
       const edgeCutVariable = getNodeFromPath<VariableDeclaration>(
         ast,
         edgeCutCodeRef.pathToNode,
@@ -1532,15 +1547,15 @@ export function getVariableExprsFromSelection(
         artifact.type === 'wall' ||
         artifact.type === 'edgeCut')
     ) {
-      const sweep = getSweepFromSuspectedSweepSurface(
-        artifact.id,
-        artifactGraph
-      )
-      if (!err(sweep) && sweep.codeRef) {
-        pathToNodeForVariable = sweep.codeRef.pathToNode
-        const sweepArtifact = artifactGraph.get(sweep.id)
-        if (sweepArtifact?.type === 'sweep') {
-          artifactForLastChildLookup = sweepArtifact
+      const owningBody = getBodyFromSurface(artifact.id, artifactGraph)
+      if (!err(owningBody) && owningBody.codeRef) {
+        pathToNodeForVariable = owningBody.codeRef.pathToNode
+        const bodyArtifact = artifactGraph.get(owningBody.id)
+        if (
+          bodyArtifact?.type === 'sweep' ||
+          bodyArtifact?.type === 'compositeSolid'
+        ) {
+          artifactForLastChildLookup = bodyArtifact
         }
       }
     }
@@ -2601,7 +2616,7 @@ export function findAllChildrenAndOrderByPlaceInCode(
     return artifactsWithCodeRefs
   }
 
-  const pushToSomething = (
+  const pushRelatedArtifactIds = (
     resultId: string,
     childrenIdOrIds: string | string[] | null | undefined
   ) => {
@@ -2620,33 +2635,61 @@ export function findAllChildrenAndOrderByPlaceInCode(
     const currentId = stack.pop()!
     if (result.has(currentId)) continue
     const current = artifactGraph.get(currentId)
-    if (current?.type === 'path') {
-      pushToSomething(currentId, current.sweepId)
-      pushToSomething(currentId, current.segIds)
-      pushToSomething(currentId, current.compositeSolidId)
-      pushToSomething(currentId, current.patternIds)
-    } else if (current?.type === 'sweep') {
-      pushToSomething(currentId, current.surfaceIds)
-      pushToSomething(currentId, current.pathId)
-      pushToSomething(currentId, current.patternIds)
-    } else if (current?.type === 'wall' || current?.type === 'cap') {
-      pushToSomething(currentId, current?.pathIds)
-    } else if (current?.type === 'segment') {
-      pushToSomething(currentId, current.edgeCutId)
-      pushToSomething(currentId, current.surfaceId)
-    } else if (current?.type === 'edgeCut') {
-      pushToSomething(currentId, current.surfaceId)
-    } else if (current?.type === 'startSketchOnPlane') {
-      pushToSomething(currentId, current.planeId)
-    } else if (current?.type === 'plane') {
-      pushToSomething(currentId, current.pathIds)
-    } else if (current?.type === 'compositeSolid') {
-      pushToSomething(currentId, current.compositeSolidId)
-      pushToSomething(currentId, current.patternIds)
-    } else if (current?.type === 'pattern') {
-      pushToSomething(currentId, current.copyIds)
-      pushToSomething(currentId, current.copyFaceIds)
-      pushToSomething(currentId, current.copyEdgeIds)
+    switch (current?.type) {
+      case 'path':
+        pushRelatedArtifactIds(currentId, current.sweepId)
+        pushRelatedArtifactIds(currentId, current.segIds)
+        pushRelatedArtifactIds(currentId, current.compositeSolidId)
+        pushRelatedArtifactIds(currentId, current.patternIds)
+        break
+      case 'sweep':
+        pushRelatedArtifactIds(currentId, current.surfaceIds)
+        pushRelatedArtifactIds(currentId, current.pathId)
+        pushRelatedArtifactIds(currentId, current.patternIds)
+        break
+      case 'wall':
+      case 'cap':
+        pushRelatedArtifactIds(currentId, current.pathIds)
+        break
+      case 'segment':
+        pushRelatedArtifactIds(currentId, current.edgeCutId)
+        pushRelatedArtifactIds(currentId, current.surfaceId)
+        break
+      case 'edgeCut':
+        pushRelatedArtifactIds(currentId, current.bodyId)
+        pushRelatedArtifactIds(currentId, current.surfaceId)
+        break
+      case 'startSketchOnPlane':
+        pushRelatedArtifactIds(currentId, current.planeId)
+        break
+      case 'plane':
+        pushRelatedArtifactIds(currentId, current.pathIds)
+        break
+      case 'compositeSolid':
+        pushRelatedArtifactIds(currentId, current.compositeSolidId)
+        pushRelatedArtifactIds(currentId, current.patternIds)
+        break
+      case 'pattern':
+        pushRelatedArtifactIds(currentId, current.copyIds)
+        pushRelatedArtifactIds(currentId, current.copyFaceIds)
+        pushRelatedArtifactIds(currentId, current.copyEdgeIds)
+        break
+      // These artifacts have no related IDs followed by this traversal.
+      case 'solid2d':
+      case 'primitiveFace':
+      case 'primitiveEdge':
+      case 'planeOfFace':
+      case 'startSketchOnFace':
+      case 'sketchBlock':
+      case 'sketchBlockConstraint':
+      case 'sweepEdge':
+      case 'edgeCutEdge':
+      case 'helix':
+      case 'importedGeometry':
+      case 'gdtAnnotation':
+      case 'namedView':
+      case undefined:
+        break
     }
     result.add(currentId)
   }

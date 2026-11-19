@@ -243,7 +243,7 @@ impl ArtifactMermaidExt for Artifact {
             Artifact::Wall(a) => vec![a.seg_id, a.sweep_id],
             Artifact::Cap(a) => vec![a.sweep_id],
             Artifact::SweepEdge(a) => vec![a.seg_id, a.sweep_id],
-            Artifact::EdgeCut(a) => a.consumed_edge_id.into_iter().collect(),
+            Artifact::EdgeCut(a) => a.body_id.into_iter().chain(a.consumed_edge_id).collect(),
             Artifact::EdgeCutEdge(a) => vec![a.edge_cut_id],
             Artifact::Helix(a) => a.axis_id.map(|id| vec![id]).unwrap_or_default(),
             Artifact::ImportedGeometry(_) => Vec::new(),
@@ -376,7 +376,7 @@ impl ArtifactMermaidExt for Artifact {
             }
             Artifact::EdgeCut(a) => {
                 // Note: Don't include these since they're parents:
-                // consumed_edge_id.
+                // body_id, consumed_edge_id.
                 let mut ids = Vec::new();
                 ids.extend(&a.edge_ids);
                 if let Some(surface_id) = a.surface_id {
@@ -1192,6 +1192,59 @@ impl ArtifactGraphMermaidExt for ArtifactGraph {
         }
 
         Ok(())
+    }
+}
+
+#[test]
+fn treatment_flowchart_links_owning_body_and_preserves_consumed_edge() {
+    for sub_type in [EdgeCutSubType::Chamfer, EdgeCutSubType::Fillet] {
+        for has_body in [false, true] {
+            for has_consumed_edge in [false, true] {
+                let body_id = ArtifactId::new(Uuid::new_v4());
+                let edge_id = ArtifactId::new(Uuid::new_v4());
+                let cut_id = ArtifactId::new(Uuid::new_v4());
+                let code_ref = CodeRef::placeholder(SourceRange::synthetic());
+                let body = Artifact::CompositeSolid(CompositeSolid {
+                    id: body_id,
+                    consumed: false,
+                    sub_type: CompositeSolidSubType::Subtract,
+                    output_index: None,
+                    solid_ids: Vec::new(),
+                    tool_ids: Vec::new(),
+                    code_ref: code_ref.clone(),
+                    composite_solid_id: None,
+                    pattern_ids: Vec::new(),
+                });
+                let edge = Artifact::SweepEdge(SweepEdge {
+                    id: edge_id,
+                    sub_type: SweepEdgeSubType::Adjacent,
+                    seg_id: ArtifactId::new(Uuid::new_v4()),
+                    cmd_id: Uuid::new_v4(),
+                    index: 0,
+                    sweep_id: body_id,
+                    common_surface_ids: Vec::new(),
+                });
+                let cut = Artifact::EdgeCut(EdgeCut {
+                    id: cut_id,
+                    body_id: has_body.then_some(body_id),
+                    sub_type,
+                    source_selector_index: None,
+                    consumed_edge_id: has_consumed_edge.then_some(edge_id),
+                    edge_ids: Vec::new(),
+                    surface_id: None,
+                    code_ref,
+                });
+                let graph = ArtifactGraph::from_parts(
+                    IndexMap::from_iter([(body_id, body), (edge_id, edge), (cut_id, cut)]),
+                    3,
+                );
+                let diagram = graph.to_mermaid_flowchart().unwrap();
+                // Node IDs follow insertion order. Ownership and legacy edge
+                // links must each survive the full renderer independently.
+                assert_eq!(diagram.contains("  1 <--x 3\n"), has_body, "{diagram}");
+                assert_eq!(diagram.contains("  2 <--x 3\n"), has_consumed_edge, "{diagram}");
+            }
+        }
     }
 }
 
