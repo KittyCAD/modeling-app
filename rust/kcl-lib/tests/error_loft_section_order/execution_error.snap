@@ -4,10 +4,34 @@ description: Error from executing error_loft_section_order.kcl
 ---
 KCL Engine error
 
-  × engine: Edge cut failed
-    ╭─[21:13]
- 20 │ extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)
- 21 │ fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [region001.tags.line1, capEnd001]), radius = 5)
-    ·             ───────────────────────────────────────────────┬───────────────────────────────────────────────
-    ·                                                            ╰── tests/error_loft_section_order/input.kcl
+  × engine: All loft sections must be coplanar when section sketches are not
+  │ equivalent
+    ╭─[16:1]
+ 15 │      
+ 16 │ ╭──▶ loft(
+ 17 │ ││     [
+ 18 │ ││       sketch003.arc1,
+ 19 │ ││       sketch002.arc1,
+ 20 │ ││       sketch001.arc1
+ 21 │ ││     ],
+ 22 │ ││     bodyType = SURFACE,
+ 23 │ ├──▶ )
+    · ╰───── tests/error_loft_section_order/input.kcl
+    · ╰───── tests/error_loft_section_order/input.kcl
     ╰────
+  ╰─▶ KCL Engine error
+      
+        × engine: All loft sections must be coplanar when section sketches are
+        │ not equivalent
+          ╭─[16:1]
+       15 │
+       16 │ ╭─▶ loft(
+       17 │ │     [
+       18 │ │       sketch003.arc1,
+       19 │ │       sketch002.arc1,
+       20 │ │       sketch001.arc1
+       21 │ │     ],
+       22 │ │     bodyType = SURFACE,
+       23 │ ├─▶ )
+          · ╰──── tests/error_loft_section_order/input.kcl
+          ╰────

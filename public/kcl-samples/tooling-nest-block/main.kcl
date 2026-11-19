@@ -170,5 +170,22 @@ nest018 = nest(
   nestSize = size07,
 )
 
-// Apply all rounded cutters together; each cut consumes its target solid.
-subtract(cubeExtrude, tools = [nest001, nest002, nest003, nest004, nest005, nest006, nest007, nest008, nest009, nest010, nest011, nest012, nest013, nest014, nest015, nest016, nest017, nest018])
+// Each subtraction consumes its target; pass the resulting solid to the next cut.
+cut001 = subtract(cubeExtrude, tools = [nest001])
+cut002 = subtract(cut001, tools = [nest002])
+cut003 = subtract(cut002, tools = [nest003])
+cut004 = subtract(cut003, tools = [nest004])
+cut005 = subtract(cut004, tools = [nest005])
+cut006 = subtract(cut005, tools = [nest006])
+cut007 = subtract(cut006, tools = [nest007])
+cut008 = subtract(cut007, tools = [nest008])
+cut009 = subtract(cut008, tools = [nest009])
+cut010 = subtract(cut009, tools = [nest010])
+cut011 = subtract(cut010, tools = [nest011])
+cut012 = subtract(cut011, tools = [nest012])
+cut013 = subtract(cut012, tools = [nest013])
+cut014 = subtract(cut013, tools = [nest014])
+cut015 = subtract(cut014, tools = [nest015])
+cut016 = subtract(cut015, tools = [nest016])
+cut017 = subtract(cut016, tools = [nest017])
+cut018 = subtract(cut017, tools = [nest018])
