@@ -245,6 +245,58 @@ describe('solid face depth priority', () => {
     }
   })
 
+  it.each([false, true])(
+    'does not accumulate offsets from separate bosses on one plate (%s)',
+    (reverse) => {
+      const root = new Group()
+      const shared = new MeshStandardNodeMaterial()
+      const plate = new Mesh(new CircleGeometry(0.5, 64), shared)
+      const rear = new Mesh(new CircleGeometry(0.49, 64), shared)
+      plate.userData.bodyMeshIndex = 0
+      rear.userData.bodyMeshIndex = 1
+      rear.position.z = -0.0001
+      const bosses = []
+      for (let x = 0; x < 10; x++) {
+        for (let y = 0; y < 10; y++) {
+          const boss = new Mesh(new CircleGeometry(0.01, 32), shared)
+          boss.rotation.x = Math.PI
+          boss.position.set(-0.27 + x * 0.06, -0.27 + y * 0.06, 0)
+          boss.userData.bodyMeshIndex = 2 + bosses.length
+          bosses.push(boss)
+        }
+      }
+      const faces = [plate, rear, ...bosses]
+      root.add(...(reverse ? faces.reverse() : faces))
+      applyFaceDepthBias(root)
+      expect(plate.material.polygonOffsetUnits).toBe(16)
+      expect(rear.material).toBe(shared)
+      for (const boss of bosses) expect(boss.material).toBe(shared)
+    }
+  )
+
+  it('preserves priority through overlapping chains while reusing ranks for separate faces', () => {
+    const root = new Group()
+    const shared = new MeshStandardNodeMaterial()
+    // Equal areas use body order: the left and right faces do not overlap,
+    // while the middle overlaps both, and the largest overlaps all three.
+    const faces = [
+      new Mesh(new PlaneGeometry(1, 1), shared),
+      new Mesh(new PlaneGeometry(1, 1), shared),
+      new Mesh(new PlaneGeometry(1, 1), shared),
+      new Mesh(new PlaneGeometry(4, 4), shared),
+    ]
+    faces[0].position.x = -0.75
+    faces[1].position.x = 0.75
+    for (const [index, face] of faces.entries()) {
+      face.userData.bodyMeshIndex = 3 - index
+      root.add(face)
+    }
+    applyFaceDepthBias(root)
+    expect(faces.map((face) => face.material.polygonOffsetUnits)).toEqual([
+      0, 0, 16, 32,
+    ])
+  })
+
   it('does not connect a chain of tiles that only share edges', () => {
     const root = new Group()
     const material = new MeshStandardNodeMaterial()

@@ -233,10 +233,15 @@ function* faceDepthBiasSteps(
     }
     yield
   }
-  // Coplanar but distant faces cannot compete for pixels. Split each plane
-  // into components of overlapping bounds before assigning any depth ranks.
-  const overlappingGroups: PlanarFace[][] = []
+  // Only direct overlaps constrain a face's rank. Separate small faces on one
+  // large face can share a rank instead of pushing it back once per face.
+  const ranks = new Map<Mesh, number>()
+  const comparePriority = (a: PlanarFace, b: PlanarFace) =>
+    a.area - b.area ||
+    b.mesh.userData.bodyMeshIndex - a.mesh.userData.bodyMeshIndex
   for (const group of groups) {
+    group.sort(comparePriority)
+    const predecessors: number[][] = group.map(() => [])
     const bounds = new Box3()
     for (const face of group) bounds.union(face.bounds)
     const size = bounds.getSize(new Vector3())
@@ -252,23 +257,16 @@ function* faceDepthBiasSteps(
       size[projectionAxes[0]] >= size[projectionAxes[1]]
         ? projectionAxes[0]
         : projectionAxes[1]
-    const sorted = [...group].sort(
-      (a, b) => a.bounds.min[axis] - b.bounds.min[axis]
-    )
-    const parent = sorted.map((_, index) => index)
-    const find = (index: number): number => {
-      while (parent[index] !== index) {
-        parent[index] = parent[parent[index]]
-        index = parent[index]
-      }
-      return index
-    }
+    const sorted = group
+      .map((_, index) => index)
+      .sort((a, b) => group[a].bounds.min[axis] - group[b].bounds.min[axis])
     const active: number[] = []
     for (let i = 0; i < sorted.length; i++) {
-      const currentBounds = sorted[i].bounds
+      const current = sorted[i]
+      const currentBounds = group[current].bounds
       for (let j = active.length - 1; j >= 0; j--) {
         const previous = active[j]
-        if (sorted[previous].bounds.max[axis] < currentBounds.min[axis]) {
+        if (group[previous].bounds.max[axis] < currentBounds.min[axis]) {
           active.splice(j, 1)
         } else if (
           // Plane distance was checked above using analytic data when present.
@@ -277,52 +275,35 @@ function* faceDepthBiasSteps(
           projectionAxes.every(
             (axis) =>
               Math.min(
-                sorted[i].bounds.max[axis],
-                sorted[previous].bounds.max[axis]
+                currentBounds.max[axis],
+                group[previous].bounds.max[axis]
               ) -
                 Math.max(
-                  sorted[i].bounds.min[axis],
-                  sorted[previous].bounds.min[axis]
+                  currentBounds.min[axis],
+                  group[previous].bounds.min[axis]
                 ) >
               PLANAR_VERTEX_TOLERANCE
           )
         ) {
-          parent[find(i)] = find(previous)
+          const first = Math.min(current, previous)
+          const second = Math.max(current, previous)
+          if (comparePriority(group[first], group[second]) !== 0)
+            predecessors[second].push(first)
         }
         yield
       }
-      active.push(i)
+      active.push(current)
       yield
     }
-    const components = new Map<number, PlanarFace[]>()
-    for (let i = 0; i < sorted.length; i++) {
-      const root = find(i)
-      const component = components.get(root) ?? []
-      component.push(sorted[i])
-      components.set(root, component)
-    }
-    overlappingGroups.push(...components.values())
-  }
-  const ranks = new Map<Mesh, number>()
-  for (const group of overlappingGroups) {
-    group.sort(
-      (a, b) =>
-        a.area - b.area ||
-        b.mesh.userData.bodyMeshIndex - a.mesh.userData.bodyMeshIndex
-    )
-    let rank = 0
-    let previous: PlanarFace | undefined
-    for (const face of group) {
-      if (
-        previous &&
-        (previous.area !== face.area ||
-          previous.mesh.userData.bodyMeshIndex !==
-            face.mesh.userData.bodyMeshIndex)
-      )
-        rank++
-      // Leave singleton groups and their winning face's materials unchanged.
-      if (rank > 0) ranks.set(face.mesh, rank)
-      previous = face
+    for (let i = 0; i < group.length; i++) {
+      let rank = 0
+      for (const previous of predecessors[i]) {
+        rank = Math.max(rank, (ranks.get(group[previous].mesh) ?? 0) + 1)
+        yield
+      }
+      // Leave singleton groups and their winning faces' materials unchanged.
+      if (rank > 0) ranks.set(group[i].mesh, rank)
+      yield
     }
   }
   if (ranks.size === 0) return false

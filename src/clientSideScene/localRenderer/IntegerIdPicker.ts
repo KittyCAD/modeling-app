@@ -119,14 +119,16 @@ export class IntegerIdPicker {
       const sourceMaterial = isArray(source.material)
         ? source.material[0]
         : source.material
+      // Reference planes use -1. Keep regions ahead of their support planes,
+      // and lines ahead of regions, even when the source offsets are copied.
       const region = source.userData.isSketchRegion === true
       const factor = region
-        ? -1
+        ? -2
         : sourceMaterial.polygonOffset
           ? sourceMaterial.polygonOffsetFactor
           : 0
       const units = region
-        ? -1
+        ? -2
         : sourceMaterial.polygonOffset
           ? sourceMaterial.polygonOffsetUnits
           : 0
@@ -200,8 +202,8 @@ export class IntegerIdPicker {
     material.toneMapped = false
     // In front of sketch regions too, which are offset in front of faces.
     material.polygonOffset = true
-    material.polygonOffsetFactor = -2
-    material.polygonOffsetUnits = -2
+    material.polygonOffsetFactor = -3
+    material.polygonOffsetUnits = -3
     const selectionIndex = attribute(
       SELECTION_INDEX_ATTRIBUTE,
       'uint'
