@@ -1,23 +1,20 @@
-name: STEP modeling test comparison
+name: STEP remaining blocker comparison
 on:
   push:
-    branches: [codex/step-modeling-control-20261119]
+    branches: [codex/step-blocker-control-20261119]
   workflow_dispatch:
 permissions:
   contents: read
   actions: read
 jobs:
   modeling:
-    name: Modeling tests (${{ matrix.revision }})
+    name: Full integration (${{ matrix.revision }})
     runs-on: namespace-profile-ubuntu-2-cores
     timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
         include:
-          - revision: exact-base
-            sha: 567989c16e0873687f2e89cb11951d635d523869
-            wasm_run: 44405393037
           - revision: unchanged-head
             sha: ac859c5e48f10737dc0cac059e55a5b449347318
             wasm_run: 44598041052
@@ -57,22 +54,63 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Run original failure seed and a second shuffle without retries
+      - name: Replay full integration failure seed without retries
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
         shell: bash
         run: |
           set -o pipefail
-          status=0
-          for seed in 1795116936566 15271; do
-            echo "Modeling validation seed $seed"
-            npm run test:integration -- --retry=0 --sequence.seed="$seed" --reporter=default --reporter=json --outputFile="comparison-$seed.json" src/machines/modelingMachine.spec.ts 2>&1 | tee -a comparison-modeling.log || status=1
-          done
-          exit "$status"
+          npm run test:integration -- --retry=0 --sequence.seed=1795116936566 --reporter=default --reporter=json --outputFile=comparison-integration.json 2>&1 | tee comparison-integration.log
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: modeling-${{ matrix.revision }}
+          name: integration-${{ matrix.revision }}
           path: |
-            comparison-modeling.log
+            comparison-integration.log
             comparison-*.json
+  export:
+    name: macOS export exact base
+    runs-on: namespace-profile-macos-8-cores
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: 567989c16e0873687f2e89cb11951d635d523869
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/download-artifact@v8
+        with:
+          github-token: ${{ github.token }}
+          run-id: 44405393037
+          name: prepared-wasm
+          path: prepared-wasm
+      - name: Install matching WASM
+        run: |
+          mkdir -p rust/kcl-wasm-lib/pkg
+          cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg/
+          cp prepared-wasm/kcl_wasm_lib_bg.wasm public/
+          git rev-parse HEAD HEAD:rust
+          shasum -a 256 public/kcl_wasm_lib_bg.wasm
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run playwright install --with-deps
+      - run: npm run tronb:vite:dev
+      - name: Original first export test with unchanged assertions
+        env:
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+          TARGET: desktop
+          E2E_WORKERS: '1'
+          FAIL_ON_CONSOLE_ERRORS: true
+        run: |
+          set -o pipefail
+          npm run test:e2e:desktop -- --grep='export works on the first try' --retries=0 2>&1 | tee comparison-export.log
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: export-exact-base
+          path: |
+            comparison-export.log
+            test-results/
