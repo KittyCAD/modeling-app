@@ -35,7 +35,10 @@ cubeExtrude = extrude(cubeSketch, length = sideLength)
 
 // Write a function to create a hemispherical nest in a given cube side
 fn nest(cubeFace, xPos, yPos, nestSize) {
-  nestFn = startSketchOn(cubeExtrude, face = cubeFace)
+  // Round a separate cutter before subtracting it so its edge references
+  // remain valid throughout the fillet operation.
+  nestPlane = offsetPlane(planeOf(cubeExtrude, face = cubeFace), offset = 0)
+  nestFn = startSketchOn(nestPlane)
     |> circle(center = [xPos * sideLength, yPos * sideLength], radius = nestSize, tag = $seg01)
     |> extrude(length = -nestSize)
     |> fillet(
@@ -44,6 +47,7 @@ fn nest(cubeFace, xPos, yPos, nestSize) {
            getOppositeEdge(seg01)
          ],
        )
+  subtract(cubeExtrude, tools = [nestFn])
   return {  }
 }
 
