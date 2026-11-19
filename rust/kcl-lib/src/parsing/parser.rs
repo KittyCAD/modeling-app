@@ -3155,11 +3155,13 @@ fn binary_expression_tokens_with_min(
 /// Reuse the parsed operand when no binary operator follows. Backtracking and
 /// parsing it again duplicates work recursively for nested calls and arrays.
 fn binary_expression_or_operand(i: &mut TokenSlice) -> ModalResult<Expr> {
+    let starts_with_parenthesis = i.first().is_some_and(|token| token.value == "(");
     let tokens = binary_expression_tokens_with_min(i, 0)?;
     if let [BinaryExpressionToken::Operand(part)] = tokens.as_slice() {
-        // A standalone type annotation belongs to expression_but_not_pipe.
-        // Leave it on the original path so it cannot consume a second annotation.
-        if matches!(part, BinaryPart::AscribedExpression(_)) {
+        // Parentheses can introduce a function parameter list. Preserve the
+        // original function/error path, and leave standalone type annotations
+        // to expression_but_not_pipe so it cannot consume a second annotation.
+        if starts_with_parenthesis || matches!(part, BinaryPart::AscribedExpression(_)) {
             return Err(ErrMode::Backtrack(ContextError::default()));
         }
         return Ok(part.into());
