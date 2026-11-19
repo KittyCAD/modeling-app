@@ -236,3 +236,50 @@ hide(profile)
     await expect(ssao).not.toBeChecked()
   }
 )
+
+test(
+  'local renderer keeps the dark background with SSAO on',
+  { tag: ['@web', '@localRenderer'] },
+  async ({ page, folderSetupFn, fs, homePage, scene }) => {
+    // With SSAO on, the background was white in dark mode. The web fixture's
+    // seeded settings are not read, so set both explicitly.
+    await page.evaluate(() => {
+      const settings = window.app.settings.actor
+      settings.send({
+        type: 'set.app.theme',
+        data: { level: 'user', value: 'dark' },
+      })
+      settings.send({
+        type: 'set.modeling.enableSSAO',
+        data: { level: 'user', value: true },
+      })
+    })
+    await page.waitForFunction(() =>
+      window.app.settings.actor.getSnapshot().matches('idle')
+    )
+    await folderSetupFn(async (dir) => {
+      const project = await fs.join(dir, 'local-ssao-background')
+      await fs.mkdir(project, { recursive: true })
+      await fs.writeFile(
+        await fs.join(project, 'main.kcl'),
+        new TextEncoder().encode(`@settings(kclVersion = 3.0, defaultLengthUnit = mm)
+profile = sketch(on = XY) {
+  rim = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([rim.center, ORIGIN])
+  horizontal([rim.start, rim.center])
+  radius(rim) == 10mm
+}
+disk = region(point = [0, 0], sketch = profile)
+cylinder = extrude(disk, length = 10)
+hide(profile)
+`)
+      )
+    })
+
+    await homePage.openProject('local-ssao-background')
+    await scene.settled()
+    await scene.expectPixelColor([30, 30, 30], { x: 0.9, y: 0.3 }, 10, {
+      format: 'ratio',
+    })
+  }
+)

@@ -53,7 +53,7 @@ import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDi
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
-  keymapScopesValueSpec,
+  keymapScopesFacet,
   keymapService,
 } from '@src/registry/contracts/keymap'
 import { projectSession } from '@src/registry/contracts/projectSession'
@@ -93,13 +93,13 @@ const Toolbar_ = memo(
         ? commandKey(command)
         : undefined
     })
-    const keymap = app.registry.get(keymapService)
+    const keymap = app.registry.required(keymapService)
     const keymapTree = keymap.keymap.value
     const { kclManager } = useSingletons()
     const platform = usePlatform()
     const executionService =
-      app.registry.signal(projectSession).value?.executingEditor.value
-    const keymapScopes = app.registry.signal(keymapScopesValueSpec).value
+      app.registry.optional(projectSession)?.executingEditor.value
+    const keymapScopes = app.registry.observe(keymapScopesFacet).value
     const toolbarConfig = useToolbarConfig()
     const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
@@ -232,13 +232,7 @@ const Toolbar_ = memo(
         keepSelection: false,
       }),
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-      [
-        props.state,
-        props.send,
-        sketchPathId,
-
-        kclManager.editorView.hasFocus,
-      ]
+      [props.state, props.send, sketchPathId, kclManager.editorView.hasFocus]
     )
 
     const tooltipContentClassName = !showRichContent
@@ -431,15 +425,11 @@ const Toolbar_ = memo(
         data-current-mode={toolbarConfigurationName}
         data-testid="toolbar"
         data-onboarding-id="toolbar"
-        className={`toolbar z-[19] max-w-full whitespace-nowrap px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm ${
-          disableSketchToolbar ? 'opacity-50' : ''
-        }`}
+        className={`toolbar z-[19] max-w-full whitespace-nowrap px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm ${disableSketchToolbar ? 'opacity-50' : ''}`}
       >
         <ul
           ref={toolbarButtonsRef}
-          className={`has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex flex-wrap gap-1.5 items-center ${
-            disableSketchToolbar ? 'pointer-events-none' : ''
-          }`}
+          className={`has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex flex-wrap gap-1.5 items-center ${disableSketchToolbar ? 'pointer-events-none' : ''}`}
         >
           {/* A menu item will either be a vertical line break, a button with a dropdown, or a single button */}
           {currentModeItems.map((maybeIconConfig, i) => {

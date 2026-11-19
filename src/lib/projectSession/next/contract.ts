@@ -1,7 +1,8 @@
-import { defineContract, defineService } from '@kittycad/registry'
+import { inputs, observeService } from '@src/registry/inputs'
 import type { ReadonlySignal } from '@preact/signals-core'
-import type { Project } from '@src/lib/projectSession/next/types'
 import type { FileEntry } from '@src/lib/project'
+import type { Project } from '@src/lib/projectSession/next/types'
+import { contract, service } from 'plankton'
 
 /** File capabilities captured for one project opening; paths are project-relative. */
 export interface ProjectFiles {
@@ -28,6 +29,11 @@ export interface ProjectSessionService {
   /** Flatten the current project's file tree, excluding directories; no filesystem I/O. */
   listFiles: () => readonly FileEntry[]
   openProject: (project: Project) => OpenProjectSession
+  /** Adopt fresh project data for this opening, preserving its root and storage identity. */
+  updateProject: (
+    session: OpenProjectSession,
+    project: Project
+  ) => Error | undefined
   /** Refresh descriptive metadata for the captured opening; closed/replaced openings are ignored. */
   updateMetadata: (
     session: OpenProjectSession,
@@ -36,11 +42,11 @@ export interface ProjectSessionService {
   /** Clear the selection; captured sessions remain usable. */
   closeProject: () => void
 }
-
-export const projectSessionContract = defineContract({
-  projectSessionService: defineService<ProjectSessionService>(
-    'project-session-next'
-  ),
+export const projectSessionContract = contract({
+  projectSessionService: service<ProjectSessionService>('project-session-next'),
 })
-
 export const { projectSessionService } = projectSessionContract
+
+export const observations = inputs({
+  projectSessionService: observeService(projectSessionService),
+})
