@@ -2594,7 +2594,7 @@ fn return_stmt(i: &mut TokenSlice) -> ModalResult<Node<ReturnStatement>> {
 
 fn expression_but_not_pipe(i: &mut TokenSlice) -> ModalResult<Expr> {
     let mut expr = alt((
-        binary_expression.map(Box::new).map(Expr::BinaryExpression),
+        binary_expression_or_operand,
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
         expr_allowed_in_pipe_expr,
     ))
@@ -3127,9 +3127,16 @@ fn unary_expression(i: &mut TokenSlice) -> ModalResult<Node<UnaryExpression>> {
 /// Why not?
 /// Because this is designed to be used with .take() within the `binary_expression` parser.
 fn binary_expression_tokens(i: &mut TokenSlice) -> ModalResult<Vec<BinaryExpressionToken>> {
+    binary_expression_tokens_with_min(i, 1)
+}
+
+fn binary_expression_tokens_with_min(
+    i: &mut TokenSlice,
+    minimum_operators: usize,
+) -> ModalResult<Vec<BinaryExpressionToken>> {
     let first = operand.parse_next(i).map(BinaryExpressionToken::from)?;
     let remaining: Vec<_> = repeat(
-        1..,
+        minimum_operators..,
         (
             preceded(opt(whitespace), binary_operator).map(BinaryExpressionToken::from),
             preceded(opt(whitespace), operand).map(BinaryExpressionToken::from),
@@ -3143,6 +3150,26 @@ fn binary_expression_tokens(i: &mut TokenSlice) -> ModalResult<Vec<BinaryExpress
     out.push(first);
     out.extend(remaining.into_iter().flat_map(|(a, b)| [a, b]));
     Ok(out)
+}
+
+/// Reuse the parsed operand when no binary operator follows. Backtracking and
+/// parsing it again duplicates work recursively for nested calls and arrays.
+fn binary_expression_or_operand(i: &mut TokenSlice) -> ModalResult<Expr> {
+    let starts_with_parenthesis = i.first().is_some_and(|token| token.value == "(");
+    let tokens = binary_expression_tokens_with_min(i, 0)?;
+    if let [BinaryExpressionToken::Operand(part)] = tokens.as_slice() {
+        // Parentheses can introduce a function parameter list. Preserve the
+        // original function/error path, and leave standalone type annotations
+        // to expression_but_not_pipe so it cannot consume a second annotation.
+        if starts_with_parenthesis || matches!(part, BinaryPart::AscribedExpression(_)) {
+            return Err(ErrMode::Backtrack(ContextError::default()));
+        }
+        return Ok(part.into());
+    }
+    super::math::parse(tokens)
+        .map(Box::new)
+        .map(Expr::BinaryExpression)
+        .map_err(|e| ErrMode::Backtrack(e.into()))
 }
 
 /// Parse an infix binary expression.
@@ -5824,6 +5851,39 @@ export fn cos(num: number(rad)): number(_) {}"#;
     fn error_type_ascription() {
         let (_, errs) = assert_no_fatal("a + b: number");
         assert!(errs.is_empty());
+    }
+
+    #[test]
+    fn standalone_operand_keeps_type_ascription_boundaries() {
+        for source in ["x = 1: number", "x = (1: number): number"] {
+            assert!(crate::parsing::top_level_parse(source).is_ok(), "{source}");
+        }
+        assert!(!crate::parsing::top_level_parse("x = 1: number: number").is_ok());
+    }
+
+    #[test]
+    fn reused_operands_match_the_original_expression_ast() {
+        for source in [
+            "-3mm",
+            "[var 1mm, var -2mm]",
+            "line(start = [var 1mm, var -2mm], end = [var 3mm, var 4mm])",
+            "f(a = [1, [2, 3]], b = g(4))",
+            "(1 + 2) * 3 - 4 / 2",
+            "if true { 1 } else { 2 }",
+        ] {
+            let tokens = crate::parsing::token::lex(source, ModuleId::default()).unwrap();
+            let expected = in_ctx(|| {
+                alt((
+                    binary_expression.map(Box::new).map(Expr::BinaryExpression),
+                    unary_expression.map(Box::new).map(Expr::UnaryExpression),
+                    expr_allowed_in_pipe_expr,
+                ))
+                .parse(tokens.as_slice())
+            })
+            .unwrap();
+            let actual = in_ctx(|| binary_expression_or_operand.parse(tokens.as_slice())).unwrap();
+            assert_eq!(actual, expected, "{source}");
+        }
     }
 
     #[test]
