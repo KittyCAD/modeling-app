@@ -7,6 +7,7 @@ import {
   type CloudApiError,
   createRemoteProject,
   createRemoteProjectLibrary,
+  deleteRemoteProjectLibrary,
   getCurrentOrganization,
   downloadRemoteProjectArchive,
   getRemoteProject,
@@ -66,6 +67,36 @@ function projectResponse(projectId: string, revision: string) {
 }
 
 describe('cloud upload HTTP contract (mocked fetch)', () => {
+  test('deletes a library using its encoded revision and surfaces conflicts', async () => {
+    const fetchMock = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(null, { status: 204 }))
+      .mockResolvedValueOnce(
+        Response.json({ message: 'Library is not empty' }, { status: 409 })
+      )
+    vi.stubGlobal('fetch', fetchMock)
+    const config = {
+      enabled: true,
+      token: 'account-token',
+      baseUrl: 'https://api.test',
+    }
+    const revision = 'revision +/&'
+    await deleteRemoteProjectLibrary(config, 'library', revision)
+    const [url, init] = fetchMock.mock.calls[0]
+    const parsed = new URL(String(url))
+    expect(parsed.origin + parsed.pathname).toBe(
+      'https://api.test/user/project-libraries/library'
+    )
+    expect(parsed.searchParams.get('expected_revision')).toBe(revision)
+    expect(init?.method).toBe('DELETE')
+    expect(new Headers(init?.headers).get('Authorization')).toBe(
+      'Bearer account-token'
+    )
+    await expect(
+      deleteRemoteProjectLibrary(config, 'library', revision)
+    ).rejects.toMatchObject({ status: 409 })
+  })
+
   test('creates a cloud library with explicit ownership and the current credentials', async () => {
     const fetchMock = vi.fn<typeof fetch>(async () =>
       Response.json({ id: 'library', name: 'Designs', source: 'zds' })

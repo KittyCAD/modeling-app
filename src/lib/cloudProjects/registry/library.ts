@@ -1,7 +1,14 @@
 import { computed, effect, signal } from '@preact/signals-core'
+import { useSignals } from '@preact/signals-react/runtime'
 import type { UserOrgInfo } from '@kittycad/lib'
 import { createElement } from 'react'
 import { CloudLibraryCreateButton } from '@src/lib/cloudProjects/CloudLibraryCreateButton'
+import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
+import {
+  canDeleteCloudLibrary,
+  createCloudLibraryDeleteCommand,
+  DELETE_CLOUD_LIBRARY_COMMAND,
+} from '@src/lib/cloudProjects/libraryDeletion'
 import {
   createCloudProjectCommands,
   CREATE_CLOUD_LIBRARY_COMMAND,
@@ -13,6 +20,8 @@ import {
   listRemoteProjectLibraries,
   getCurrentOrganization,
   createRemoteProjectLibrary,
+  deleteRemoteProjectLibrary,
+  type RemoteProjectLibrary,
 } from '@src/lib/cloudProjects/runtime/api'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -55,6 +64,7 @@ import {
 import {
   projectLibrarySettingDefaultPoliciesFacet,
   projectLibraryTypesFacet,
+  type ProjectLibraryHomeContextMenuProps,
 } from '@src/registry/contracts/projectLibraries'
 import { observations as routerObservations } from '@src/registry/contracts/router'
 import { runtimeService } from '@src/registry/contracts/runtime'
@@ -97,7 +107,8 @@ export default defineFactory({
     const auth = authInputs.authService.current
     const router = routerInputs.routerService.current
     const runtime = runtimeInput.current
-    const libraries = signal<ReturnType<typeof apiProjectLibraries>>([])
+    const remoteLibraries = signal<RemoteProjectLibrary[]>([])
+    const libraries = computed(() => apiProjectLibraries(remoteLibraries.value))
     const organization = signal<UserOrgInfo | undefined>(undefined)
     const refreshCatalog = signal(0)
     const libraryIds = computed(() => [
@@ -108,10 +119,18 @@ export default defineFactory({
     const settledAccount = signal<
       | {
           id: string | undefined
+          projectsLoaded: boolean
         }
       | undefined
     >(undefined)
     let disposed = false
+    const finishProjectListing = (
+      id: string | undefined,
+      projectsLoaded: boolean
+    ) => {
+      if (!disposed && auth.peek()?.user.peek()?.id === id)
+        settledAccount.value = { id, projectsLoaded }
+    }
     const entries = computed<readonly HomeProjectEntryContribution[]>(() => {
       if (!auth.value?.isLoggedIn.value) return []
       const thumbnails = cloud().thumbnails.value
@@ -200,10 +219,13 @@ export default defineFactory({
               return new Error('Sign in to refresh cloud projects.')
             const storage = cloud()
             if (storage.projectsLoading.peek()) return
+            const accountId = auth.peek()?.user.peek()?.id
             refreshCatalog.value += 1
             try {
               await storage.listProjects()
+              finishProjectListing(accountId, true)
             } catch (cause) {
+              finishProjectListing(accountId, false)
               return new Error('Could not refresh projects. Try again.', {
                 cause,
               })
@@ -341,6 +363,75 @@ export default defineFactory({
           refreshCatalog.value += 1
         },
       })[0]
+    const deletionEnabled = () =>
+      Boolean(
+        auth.value?.isLoggedIn.value &&
+          !isOffline() &&
+          settledAccount.value &&
+          settledAccount.value.projectsLoaded &&
+          settledAccount.value.id === auth.value.user.value?.id &&
+          !cloud().projectsLoading.value
+      )
+    const deleteLibraryCommand = () =>
+      createCloudLibraryDeleteCommand({
+        enabled: deletionEnabled,
+        libraries: () => remoteLibraries.value,
+        projects: () => cloud().projects.value,
+        deleteLibrary: async (id, revision) => {
+          await deleteRemoteProjectLibrary(
+            {
+              enabled: true,
+              token: auth.peek()?.token.peek(),
+              baseUrl: runtime.peek()?.current.peek().apiBaseUrl,
+            },
+            id,
+            revision
+          )
+          refreshCatalog.value += 1
+          const currentRouter = router.peek()
+          if (
+            currentRouter?.location.peek().pathname ===
+            `${PATHS.LIBRARY}/${encodeURIComponent(apiProjectLibraryId(id))}`
+          )
+            void currentRouter.navigate(PATHS.HOME)
+        },
+      })
+    const CloudLibraryHomeContextMenu = ({
+      library,
+      menuTargetElement,
+    }: ProjectLibraryHomeContextMenuProps) => {
+      useSignals()
+      const remote = remoteLibraries.value.find(
+        (remote) => remote.id === getApiProjectLibraryId(library)
+      )
+      if (
+        !deletionEnabled() ||
+        !remote ||
+        !canDeleteCloudLibrary(remote, cloud().projects.value)
+      )
+        return null
+      const onDelete = () => {
+        const commands = commandsInputs.commandSystemService.current.value
+        if (commands)
+          selectCommand(commands, {
+            groupId: 'projects',
+            name: DELETE_CLOUD_LIBRARY_COMMAND,
+            argDefaultValues: { library: remote.id },
+          })
+      }
+      return createElement(ContextMenu, {
+        menuTargetElement,
+        items: [
+          createElement(ContextMenuItem, {
+            key: 'delete-library',
+            icon: 'trash',
+            'data-testid': 'project-library-context-delete',
+            onClick: onDelete,
+            children: 'Delete library',
+          }),
+        ],
+      })
+    }
     const NewLibraryButton = ({ className }: HomeSidebarItemProps) =>
       createElement(CloudLibraryCreateButton, {
         className,
@@ -369,7 +460,7 @@ export default defineFactory({
           const nextScope = JSON.stringify([token, account, baseUrl, loggedIn])
           if (scope !== nextScope) {
             scope = nextScope
-            libraries.value = []
+            remoteLibraries.value = []
             organization.value = undefined
           }
           if (!loggedIn || !token) return
@@ -378,7 +469,7 @@ export default defineFactory({
           void listRemoteProjectLibraries(config, controller.signal)
             .then((result) => {
               if (!controller.signal.aborted && !disposed)
-                libraries.value = apiProjectLibraries(result)
+                remoteLibraries.value = result
             })
             .catch((error: unknown) => {
               if (!controller.signal.aborted && !disposed)
@@ -410,10 +501,10 @@ export default defineFactory({
           if (storage.projectsLoading.peek()) return
           void storage
             .listProjects()
-            .catch(reportRejection)
-            .finally(() => {
-              if (!disposed && auth.peek()?.user.peek()?.id === accountId)
-                settledAccount.value = { id: accountId }
+            .then(() => finishProjectListing(accountId, true))
+            .catch((error: unknown) => {
+              reportRejection(error)
+              finishProjectListing(accountId, false)
             })
         })
         return () => {
@@ -425,6 +516,9 @@ export default defineFactory({
       items: [
         contribute(commandsFacet, newLibraryCommand, {
           key: 'cloud-projects.create-library',
+        }),
+        contribute(commandsFacet, deleteLibraryCommand, {
+          key: 'cloud-projects.delete-library',
         }),
         contribute(homeSidebarItemsFacet, () => ({
           id: 'cloud-projects.create-library',
@@ -466,6 +560,7 @@ export default defineFactory({
         contribute(projectLibraryTypesFacet, () => ({
           ..._projectLibraryTypesContribution,
           libraries: libraries.value,
+          homeContextMenu: CloudLibraryHomeContextMenu,
         })),
       ],
       dispose: () => {

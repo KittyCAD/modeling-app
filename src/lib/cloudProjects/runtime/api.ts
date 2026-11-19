@@ -109,6 +109,7 @@ export interface RemoteProjectLibrary {
   org_id?: string
   user_id?: string
   can_manage?: boolean
+  revision?: string
 }
 
 export async function getCurrentOrganization(
@@ -136,6 +137,20 @@ export function createRemoteProjectLibrary(
     projects.create_project_library({
       client,
       body: { name: name.trim(), scope, source: 'zds' },
+    })
+  )
+}
+
+export function deleteRemoteProjectLibrary(
+  config: CloudApiConfig,
+  id: string,
+  expectedRevision: string
+) {
+  return cloudCall(config, (client) =>
+    projects.delete_project_library({
+      client,
+      id,
+      expected_revision: expectedRevision,
     })
   )
 }
