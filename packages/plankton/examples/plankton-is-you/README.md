@@ -96,8 +96,9 @@ Factories or a diagnostic dashboard would distract from the compact consumer.
 ## Play and edit
 
 The world fits its fixed bounds in a letterboxed viewport. Move with arrows or
-WASD, wait with Space, and undo with Z. Click any tile, or approach the right edge
-and click the revealed editor handle. Editing pauses player input.
+WASD, wait with Space, and undo with Z. Approach the right edge and click the
+revealed editor handle. Board clicks do nothing during play. Editing pauses
+player input.
 
 Approach the left edge to open **Plankton**, an expandable map of the running
 composition. Follow a puzzle's starting definitions, a property word's action,
@@ -125,20 +126,34 @@ To solve the bush puzzle:
 
 1. Choose **+ → Word**, name it DIE, and select **Destroy self** as its action.
 2. Paint its word pixels if desired, then **Create definition**.
-3. **Place tile** in the ordinary empty cell after the bottom `BUSH IS` sentence.
+3. Choose **Place tile**, paint the empty cell after the bottom `BUSH IS` sentence,
+   and accept with the checkmark.
 4. Move or wait. The bushes disappear; reach the flag.
 
 `PLNK IS YOU` is enclosed by bushes. `BUSH IS STOP` and `FLAG IS WIN` start beyond
 the hedge, so their words cannot be rearranged before opening the path.
 
-Click a placed tile to **Remove tile**; Undo restores the instance. **Delete
-definition** removes an unused vocabulary entry. First remove any placements of
-that definition, including its noun words, and any applied outcome references. Definition edits/deletions are not part
-of board undo. Successful definition deletion also removes its tile references
-from saved board history, so Undo cannot restore unusable tiles. Unrelated
-movement history is preserved. Reset restores the starting setup while keeping authored content;
-page reload starts fresh. Placement pauses play until a cell is chosen or Escape
-is pressed.
+**Place tile** opens a persistent placement session with four tools on the right
+edge. Both sidebars hide, and the board leaves room for the tools:
+
+- **Add** opens a palette of installed entities and words. Choose a brush, then
+  click or drag to replace every tile in each visited cell with that one tile.
+- **Delete** clears every tile in clicked or dragged cells.
+- **Accept** commits the entire session as one board edit. Z undoes it all.
+- **Cancel**, or Escape, discards the session. Escape closes an open palette first.
+
+The draft renders immediately but does not change the Game, advance turns, or
+resolve outcomes until accepted. Fast drags fill cells between pointer samples.
+Words and entities in a stack are both replaced or deleted. Accepting an unchanged
+draft adds no undo entry. The palette uses Radix Popover; painting and draft state
+remain ordinary functions and React state, outside the Plankton registry.
+
+**Delete definition** removes an unused vocabulary entry. First clear its placed
+entities and words with the Delete tool and remove any applied outcome references.
+Definition edits/deletions are not part of board undo. Successful definition
+deletion also removes its tile references from saved history, so Undo cannot
+restore unusable tiles. Unrelated movement history is preserved. Reset restores
+the starting setup while keeping authored content; page reload starts fresh.
 
 ## Author MOVE while playing
 

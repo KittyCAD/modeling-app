@@ -244,6 +244,15 @@ export class Game {
       ...this.evaluate(this.board.tiles),
     }
   }
+  /** A placement session publishes one board edit, so Undo restores the whole batch. */
+  edit(tiles: readonly Tile[]) {
+    if (
+      tiles.length === this.board.tiles.length &&
+      tiles.every((tile, index) => tile === this.board.tiles[index])
+    )
+      return
+    this.commit([...tiles])
+  }
   place(tile: Tile) {
     if (
       !this.inside(tile) ||

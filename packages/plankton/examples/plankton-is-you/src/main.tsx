@@ -1,7 +1,15 @@
 import { Eraser, Play, Plus, RotateCcw, Trash2, Undo2, X } from 'lucide-react'
-import { type CSSProperties, useEffect, useRef, useState } from 'react'
+import {
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { createRoot } from 'react-dom/client'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { type Brush, paintBoard } from './board-edit'
+import { PlacementTools } from './placement-tools'
 import { ActionEditor } from './action-editor'
 import { Drawer, IconButton, Select } from './ui'
 import { PlanktonDrawer } from './plankton-drawer'
@@ -50,15 +58,11 @@ type DraftData = {
 }
 type Draft = DraftData &
   (
-    | { scope: 'world'; base?: Definition; tileId?: string }
+    | { scope: 'world'; base?: Definition }
     | { scope: 'outcome'; base?: Definition; cell: OutcomeCell }
   )
 
-function draftFor(
-  definition: Definition,
-  kind: Tile['kind'],
-  tileId?: string
-): Draft {
+function draftFor(definition: Definition, kind: Tile['kind']): Draft {
   return {
     scope: 'world',
     base: definition,
@@ -70,7 +74,6 @@ function draftFor(
     entityColor: ink(definition, 'entity'),
     wordColor: ink(definition, 'word'),
     action: definition.kind === 'property' ? definition.action : '',
-    tileId,
   }
 }
 
@@ -87,9 +90,12 @@ function App({ runtime }: { runtime: Runtime }) {
   const [notice, setNotice] = useState('')
   const [outcomeErrors, setOutcomeErrors] = useState<readonly string[]>([])
   const [placement, setPlacement] = useState<{
-    type: string
-    kind: Tile['kind']
+    brush: Brush
+    tool: 'add' | 'delete'
+    tiles: readonly Tile[]
   } | null>(null)
+  const stroke = useRef<{ pointerId: number; last: Point | null } | null>(null)
+  const boardTiles = placement?.tiles ?? game.board.tiles
   const [draft, setDraft] = useState<Draft | null>(null)
   const [outcomeRows, setOutcomeRows] = useState<readonly OutcomeRow[]>(
     runtime.outcomeProgram.value.rows
@@ -104,9 +110,6 @@ function App({ runtime }: { runtime: Runtime }) {
     actions = runtime.actions.value
   const rules = readRules(game.board.tiles, definitions)
   const lossMessage = game.board.status === 'lost' ? game.board.message : ''
-  const inspectedTile = game.board.tiles.find(
-    (tile) => draft?.scope === 'world' && tile.id === draft.tileId
-  )
   const sprite = draft
     ? draft.artworkKind === 'entity'
       ? draft.entitySprite
@@ -217,20 +220,16 @@ function App({ runtime }: { runtime: Runtime }) {
     }
   }
 
-  function select(definition: Definition, kind: Tile['kind'], tileId?: string) {
-    if (
-      !tileId &&
-      draft?.base?.id === definition.id &&
-      draft.artworkKind === kind
-    ) {
+  function select(definition: Definition, kind: Tile['kind']) {
+    if (draft?.base?.id === definition.id && draft.artworkKind === kind) {
       setDraft(null)
       return
     }
-    if (draft?.scope === 'outcome' && kind === 'word' && !tileId) {
+    if (draft?.scope === 'outcome' && kind === 'word') {
       selectOutcome(draft.cell, definition.id)
       return
     }
-    setDraft(draftFor(definition, kind, tileId))
+    setDraft(draftFor(definition, kind))
     setActionEditor(false)
     setErase(false)
     setNotice('')
@@ -269,13 +268,8 @@ function App({ runtime }: { runtime: Runtime }) {
     refresh()
   }
   useHotkeys(
-    'up,w,down,s,left,a,right,d,space,z,escape',
+    'up,w,down,s,left,a,right,d,space,z',
     (event) => {
-      if (event.key === 'Escape') {
-        setPlacement(null)
-        return
-      }
-      if (placement) return
       if (event.key === 'z') undo()
       else {
         const direction = directions[event.key]
@@ -285,7 +279,10 @@ function App({ runtime }: { runtime: Runtime }) {
         }
       }
     },
-    { enabled: !open && !guideOpen && !busy, preventDefault: true },
+    {
+      enabled: !open && !guideOpen && !busy && !placement,
+      preventDefault: true,
+    },
     [game, placement]
   )
   useEffect(() => {
@@ -368,7 +365,7 @@ function App({ runtime }: { runtime: Runtime }) {
               base: definition,
               cell: draft.cell,
             }
-          : draftFor(definition, draft.artworkKind, draft.tileId)
+          : draftFor(definition, draft.artworkKind)
       )
   }
   async function saveAction(recipe: ActionRecipe) {
@@ -402,23 +399,57 @@ function App({ runtime }: { runtime: Runtime }) {
       }
     })
   }
-  function boardClick(x: number, y: number) {
-    if (busy) return
-    if (placement) {
-      game.place({ ...placement, x, y, id: crypto.randomUUID() })
-      setPlacement(null)
-      world.current?.focus()
-      refresh()
-    } else {
-      const tile = game.board.tiles.find((t) => t.x === x && t.y === y),
-        definition = definitions.find((d) => d.id === tile?.type)
-      if (tile && definition) select(definition, tile.kind, tile.id)
-      else
-        setDraft((previous) =>
-          previous ? { ...previous, tileId: undefined } : null
-        )
-      setOpen(true)
+  function paintCells(from: Point, to = from) {
+    setPlacement((current) => {
+      if (!current) return current
+      const tiles = paintBoard(
+        current.tiles,
+        from,
+        to,
+        current.tool === 'add' ? current.brush : null
+      )
+      return tiles === current.tiles ? current : { ...current, tiles }
+    })
+  }
+  function finishPlacement(accept: boolean) {
+    if (!placement) return
+    if (accept) {
+      game.edit(placement.tiles)
+      setNotice('Board edits applied · Z undoes')
     }
+    stroke.current = null
+    setPlacement(null)
+    world.current?.focus()
+    refresh()
+  }
+  function boardPointer(
+    event: ReactPointerEvent<HTMLDivElement>,
+    start: boolean
+  ) {
+    if (
+      !placement ||
+      (start
+        ? event.button !== 0
+        : stroke.current?.pointerId !== event.pointerId)
+    )
+      return
+    event.preventDefault()
+    if (start) {
+      event.currentTarget.setPointerCapture(event.pointerId)
+      stroke.current = { pointerId: event.pointerId, last: null }
+    }
+    const rect = event.currentTarget.getBoundingClientRect()
+    const { width, height } = game.puzzle.bounds
+    const x = Math.floor(((event.clientX - rect.left) * width) / rect.width)
+    const y = Math.floor(((event.clientY - rect.top) * height) / rect.height)
+    const point = {
+      x: Math.max(0, Math.min(width - 1, x)),
+      y: Math.max(0, Math.min(height - 1, y)),
+    }
+    paintCells(stroke.current?.last ?? point, point)
+    if (stroke.current)
+      stroke.current.last =
+        x >= 0 && x < width && y >= 0 && y < height ? point : null
   }
   async function reset() {
     if (await change(() => runtime.loadPuzzle(game.puzzle.id), 'Puzzle reset'))
@@ -434,7 +465,7 @@ function App({ runtime }: { runtime: Runtime }) {
       actions.some((a) => a.id === draft.action))
 
   return (
-    <main className="stage">
+    <main className={`stage ${placement ? 'placement-mode' : ''}`}>
       <div
         ref={world}
         tabIndex={-1}
@@ -447,20 +478,33 @@ function App({ runtime }: { runtime: Runtime }) {
           } as CSSProperties
         }
         aria-label="Puzzle board"
+        onPointerDown={(event) => boardPointer(event, true)}
+        onPointerMove={(event) => boardPointer(event, false)}
+        onPointerUp={() => {
+          stroke.current = null
+        }}
+        onPointerCancel={() => {
+          stroke.current = null
+        }}
+        onLostPointerCapture={() => {
+          stroke.current = null
+        }}
       >
         {Array.from(
           { length: game.puzzle.bounds.width * game.puzzle.bounds.height },
           (_, index) => {
             const x = index % game.puzzle.bounds.width,
               y = Math.floor(index / game.puzzle.bounds.width),
-              tiles = game.board.tiles.filter((t) => t.x === x && t.y === y)
+              tiles = boardTiles.filter((t) => t.x === x && t.y === y)
             return (
               <button
                 key={index}
                 className="cell"
-                disabled={busy || open || guideOpen}
+                disabled={busy || open || guideOpen || !placement}
                 aria-label={`Column ${x + 1}, row ${y + 1}: ${tiles.map((t) => t.type).join(', ') || 'empty'}`}
-                onClick={() => boardClick(x, y)}
+                onClick={(event) => {
+                  if (event.detail === 0 && placement) paintCells({ x, y })
+                }}
               >
                 {tiles.map((tile) => {
                   const definition = definitions.find((d) => d.id === tile.type)
@@ -478,514 +522,527 @@ function App({ runtime }: { runtime: Runtime }) {
             )
           }
         )}
-        {(game.board.status === 'won' || game.board.status === 'lost') && (
-          <div
-            className={`victory ${game.board.status === 'lost' ? 'loss' : ''}`}
-            role="status"
-          >
-            <span>{game.board.status === 'lost' ? lossMessage : 'WIN'}</span>
-            {game.board.status === 'lost' && (
-              <button onClick={undo} aria-label="Undo loss">
-                <Undo2 size={22} />
+        {!placement &&
+          (game.board.status === 'won' || game.board.status === 'lost') && (
+            <div
+              className={`victory ${game.board.status === 'lost' ? 'loss' : ''}`}
+              role="status"
+            >
+              <span>{game.board.status === 'lost' ? lossMessage : 'WIN'}</span>
+              {game.board.status === 'lost' && (
+                <button onClick={undo} aria-label="Undo loss">
+                  <Undo2 size={22} />
+                </button>
+              )}
+              <button onClick={reset} aria-label="Play again">
+                <RotateCcw size={22} />
               </button>
-            )}
-            <button onClick={reset} aria-label="Play again">
-              <RotateCcw size={22} />
-            </button>
-          </div>
-        )}
+            </div>
+          )}
       </div>
-      <PlanktonDrawer
-        runtime={runtime}
-        open={guideOpen}
-        peek={guidePeek}
-        onOpenChange={(value) => {
-          setGuideOpen(value)
-          setGuidePeek(false)
-        }}
-        onEdit={(definition, kind) => {
-          setDraft(draftFor(definition, kind))
-          setActionEditor(false)
-          setErase(false)
-          setNotice('')
-          setGuideOpen(false)
-          setOpen(true)
-        }}
-      />
-      <Drawer
-        side="right"
-        title="Editor"
-        label="Open editor"
-        description={`Paused · ${game.puzzle.title}`}
-        open={open}
-        peek={peek}
-        onOpenChange={(value) => {
-          if (!value) {
-            game.settle()
-            refresh()
+      {placement ? (
+        <PlacementTools
+          definitions={definitions}
+          brush={placement.brush}
+          tool={placement.tool}
+          onBrush={(brush) =>
+            setPlacement({ ...placement, brush, tool: 'add' })
           }
-          setOpen(value)
-          setPeek(false)
-        }}
-        onCloseAutoFocus={(event) => {
-          event.preventDefault()
-          world.current?.focus()
-        }}
-        actions={
-          <>
-            <IconButton
-              icon={Undo2}
-              label="Undo"
-              disabled={busy}
-              onClick={undo}
-            />
-            <IconButton
-              icon={RotateCcw}
-              label="Reset puzzle"
-              disabled={busy}
-              onClick={reset}
-            />
-            <IconButton icon={Play} label="Resume play" onClick={resume} />
-          </>
-        }
-        details={
-          draft && (
-            <section className="tray" aria-label="Vocabulary details">
-              <div className="details-heading">
-                <h2>Vocabulary details</h2>
+          onTool={(tool) => setPlacement({ ...placement, tool })}
+          onAccept={() => finishPlacement(true)}
+          onCancel={() => finishPlacement(false)}
+        />
+      ) : (
+        <>
+          <PlanktonDrawer
+            runtime={runtime}
+            open={guideOpen}
+            peek={guidePeek}
+            onOpenChange={(value) => {
+              setGuideOpen(value)
+              setGuidePeek(false)
+            }}
+            onEdit={(definition, kind) => {
+              setDraft(draftFor(definition, kind))
+              setActionEditor(false)
+              setErase(false)
+              setNotice('')
+              setGuideOpen(false)
+              setOpen(true)
+            }}
+          />
+          <Drawer
+            side="right"
+            title="Editor"
+            label="Open editor"
+            description={`Paused · ${game.puzzle.title}`}
+            open={open}
+            peek={peek}
+            onOpenChange={(value) => {
+              if (!value) {
+                game.settle()
+                refresh()
+              }
+              setOpen(value)
+              setPeek(false)
+            }}
+            onCloseAutoFocus={(event) => {
+              event.preventDefault()
+              world.current?.focus()
+            }}
+            actions={
+              <>
                 <IconButton
-                  icon={X}
-                  label="Close vocabulary details"
-                  onClick={() => setDraft(null)}
+                  icon={Undo2}
+                  label="Undo"
+                  disabled={busy}
+                  onClick={undo}
                 />
-              </div>
-              <div className="tray-heading">
-                <h2>
-                  {draft.scope === 'outcome'
-                    ? `Outcome · ${draft.name || 'empty'}`
-                    : draft.base
-                      ? draft.name
-                      : 'New'}
-                </h2>
-                <div className="kind-toggle" aria-label="Tile kind">
-                  {(['entity', 'word'] as const).map((kind) => (
+                <IconButton
+                  icon={RotateCcw}
+                  label="Reset puzzle"
+                  disabled={busy}
+                  onClick={reset}
+                />
+                <IconButton icon={Play} label="Resume play" onClick={resume} />
+              </>
+            }
+            details={
+              draft && (
+                <section className="tray" aria-label="Vocabulary details">
+                  <div className="details-heading">
+                    <h2>Vocabulary details</h2>
+                    <IconButton
+                      icon={X}
+                      label="Close vocabulary details"
+                      onClick={() => setDraft(null)}
+                    />
+                  </div>
+                  <div className="tray-heading">
+                    <h2>
+                      {draft.scope === 'outcome'
+                        ? `Outcome · ${draft.name || 'empty'}`
+                        : draft.base
+                          ? draft.name
+                          : 'New'}
+                    </h2>
+                    <div className="kind-toggle" aria-label="Tile kind">
+                      {(['entity', 'word'] as const).map((kind) => (
+                        <button
+                          key={kind}
+                          aria-pressed={draft.artworkKind === kind}
+                          disabled={
+                            busy ||
+                            (kind === 'entity' &&
+                              (draft.scope === 'outcome' ||
+                                (draft.base && draft.category !== 'entity')))
+                          }
+                          onClick={() =>
+                            setDraft({
+                              ...draft,
+                              artworkKind: kind,
+                              category:
+                                draft.base || draft.scope === 'outcome'
+                                  ? draft.category
+                                  : kind === 'entity'
+                                    ? 'entity'
+                                    : 'property',
+                            })
+                          }
+                        >
+                          {kind}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {draft.scope === 'outcome' && (
                     <button
-                      key={kind}
-                      aria-pressed={draft.artworkKind === kind}
-                      disabled={
-                        busy ||
-                        (kind === 'entity' &&
-                          (draft.scope === 'outcome' ||
-                            (draft.base && draft.category !== 'entity')))
+                      className="text-button"
+                      onClick={() => {
+                        if (draft.base) setDraft(draftFor(draft.base, 'word'))
+                        else setDraft(null)
+                      }}
+                    >
+                      Done editing cell
+                    </button>
+                  )}
+                  <label>
+                    Name
+                    <input
+                      value={draft.name}
+                      readOnly={!!draft.base || draft.scope === 'outcome'}
+                      maxLength={8}
+                      onChange={(event) => {
+                        const name = event.target.value
+                          .toUpperCase()
+                          .replace(/[^A-Z]/g, '')
+                        setDraft({
+                          ...draft,
+                          name,
+                          wordSprite: wordSprite(name),
+                        })
+                      }}
+                    />
+                  </label>
+                  {duplicate && (
+                    <p className="field-hint">
+                      That name is already installed. Select its tile to edit
+                      it.
+                    </p>
+                  )}
+                  {draft.scope === 'outcome' && (
+                    <Select
+                      label="Outcome tile"
+                      value={draft.base?.id ?? ''}
+                      disabled={busy}
+                      options={[
+                        ['', '_'],
+                        ...definitions.map(
+                          (definition) =>
+                            [definition.id, definition.id] as const
+                        ),
+                      ]}
+                      onChange={(value) => selectOutcome(draft.cell, value)}
+                    />
+                  )}
+                  {draft.scope === 'outcome' &&
+                    (draft.cell.index === 0 || draft.cell.index === 2) && (
+                      <>
+                        <Select
+                          label="Outcome selection"
+                          value={
+                            outcomeRows
+                              .find((row) => row.id === draft.cell.rowId)
+                              ?.wordTiles?.includes(draft.cell.index)
+                              ? 'word'
+                              : 'default'
+                          }
+                          options={[
+                            ['default', 'Default meaning'],
+                            ['word', 'Word tiles'],
+                          ]}
+                          disabled={busy}
+                          onChange={(value) =>
+                            selectOutcomeTiles(draft.cell, value === 'word')
+                          }
+                        />
+                        <p className="field-hint">
+                          Word tiles selects the physical word, rather than
+                          entities described by it.
+                        </p>
+                      </>
+                    )}
+                  <Select
+                    label="Property action"
+                    disabled={!propertyEditable || busy || !draft.name}
+                    value={propertyEditable ? draft.action : ''}
+                    options={[
+                      [
+                        '',
+                        {
+                          entity: 'None · entity name',
+                          grammar: 'Sentence connector',
+                          word: 'Outcome predicate',
+                          property: 'Choose an action…',
+                        }[draft.category],
+                      ],
+                      ...actions.map(
+                        (action) => [action.id, action.label] as const
+                      ),
+                    ]}
+                    onChange={(action) => setDraft({ ...draft, action })}
+                  />
+                  {runtime.outcomeMeanings.value.find(
+                    (meaning) => meaning.id === draft.name
+                  )?.description && (
+                    <p className="field-hint">
+                      {
+                        runtime.outcomeMeanings.value.find(
+                          (meaning) => meaning.id === draft.name
+                        )?.description
                       }
+                    </p>
+                  )}
+                  <div className="paint-tools">
+                    <label>
+                      Ink
+                      <input
+                        type="color"
+                        value={color}
+                        onChange={(event) =>
+                          setDraft({
+                            ...draft,
+                            [draft.artworkKind === 'entity'
+                              ? 'entityColor'
+                              : 'wordColor']: event.target.value,
+                          })
+                        }
+                      />
+                    </label>
+                    <button
+                      aria-pressed={erase}
+                      onClick={() => setErase(!erase)}
+                    >
+                      <Eraser size={15} />
+                      Erase
+                    </button>
+                    <button
                       onClick={() =>
                         setDraft({
                           ...draft,
-                          artworkKind: kind,
-                          category:
-                            draft.base || draft.scope === 'outcome'
-                              ? draft.category
-                              : kind === 'entity'
-                                ? 'entity'
-                                : 'property',
+                          [draft.artworkKind === 'entity'
+                            ? 'entitySprite'
+                            : 'wordSprite']: sprite.map((row) =>
+                            '0'.repeat(row.length)
+                          ),
                         })
                       }
                     >
-                      {kind}
+                      Clear
                     </button>
-                  ))}
-                </div>
-              </div>
-              {draft.scope === 'outcome' && (
-                <button
-                  className="text-button"
-                  onClick={() => {
-                    if (draft.base) setDraft(draftFor(draft.base, 'word'))
-                    else setDraft(null)
-                  }}
-                >
-                  Done editing cell
-                </button>
-              )}
-              <label>
-                Name
-                <input
-                  value={draft.name}
-                  readOnly={!!draft.base || draft.scope === 'outcome'}
-                  maxLength={8}
-                  onChange={(event) => {
-                    const name = event.target.value
-                      .toUpperCase()
-                      .replace(/[^A-Z]/g, '')
-                    setDraft({
-                      ...draft,
-                      name,
-                      wordSprite: wordSprite(name),
-                    })
-                  }}
-                />
-              </label>
-              {duplicate && (
-                <p className="field-hint">
-                  That name is already installed. Select its tile to edit it.
-                </p>
-              )}
-              {draft.scope === 'outcome' && (
-                <Select
-                  label="Outcome tile"
-                  value={draft.base?.id ?? ''}
-                  disabled={busy}
-                  options={[
-                    ['', '_'],
-                    ...definitions.map(
-                      (definition) => [definition.id, definition.id] as const
-                    ),
-                  ]}
-                  onChange={(value) => selectOutcome(draft.cell, value)}
-                />
-              )}
-              {draft.scope === 'outcome' &&
-                (draft.cell.index === 0 || draft.cell.index === 2) && (
-                  <>
-                    <Select
-                      label="Outcome selection"
-                      value={
-                        outcomeRows
-                          .find((row) => row.id === draft.cell.rowId)
-                          ?.wordTiles?.includes(draft.cell.index)
-                          ? 'word'
-                          : 'default'
-                      }
-                      options={[
-                        ['default', 'Default meaning'],
-                        ['word', 'Word tiles'],
-                      ]}
-                      disabled={busy}
-                      onChange={(value) =>
-                        selectOutcomeTiles(draft.cell, value === 'word')
-                      }
-                    />
-                    <p className="field-hint">
-                      Word tiles selects the physical word, rather than entities
-                      described by it.
-                    </p>
-                  </>
-                )}
-              <Select
-                label="Property action"
-                disabled={!propertyEditable || busy || !draft.name}
-                value={propertyEditable ? draft.action : ''}
-                options={[
-                  [
-                    '',
-                    {
-                      entity: 'None · entity name',
-                      grammar: 'Sentence connector',
-                      word: 'Outcome predicate',
-                      property: 'Choose an action…',
-                    }[draft.category],
-                  ],
-                  ...actions.map(
-                    (action) => [action.id, action.label] as const
-                  ),
-                ]}
-                onChange={(action) => setDraft({ ...draft, action })}
-              />
-              {runtime.outcomeMeanings.value.find(
-                (meaning) => meaning.id === draft.name
-              )?.description && (
-                <p className="field-hint">
-                  {
-                    runtime.outcomeMeanings.value.find(
-                      (meaning) => meaning.id === draft.name
-                    )?.description
-                  }
-                </p>
-              )}
-              <div className="paint-tools">
-                <label>
-                  Ink
-                  <input
-                    type="color"
-                    value={color}
-                    onChange={(event) =>
-                      setDraft({
-                        ...draft,
-                        [draft.artworkKind === 'entity'
-                          ? 'entityColor'
-                          : 'wordColor']: event.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <button aria-pressed={erase} onClick={() => setErase(!erase)}>
-                  <Eraser size={15} />
-                  Erase
-                </button>
-                <button
-                  onClick={() =>
-                    setDraft({
-                      ...draft,
-                      [draft.artworkKind === 'entity'
-                        ? 'entitySprite'
-                        : 'wordSprite']: sprite.map((row) =>
-                        '0'.repeat(row.length)
-                      ),
-                    })
-                  }
-                >
-                  Clear
-                </button>
-              </div>
-              <div
-                className="pixel-editor"
-                style={{
-                  gridTemplateColumns: `repeat(${sprite[0].length},1fr)`,
-                }}
-                onPointerCancel={() => setPainting(false)}
-              >
-                {sprite.flatMap((row, y) =>
-                  [...row].map((pixel, x) => (
+                  </div>
+                  <div
+                    className="pixel-editor"
+                    style={{
+                      gridTemplateColumns: `repeat(${sprite[0].length},1fr)`,
+                    }}
+                    onPointerCancel={() => setPainting(false)}
+                  >
+                    {sprite.flatMap((row, y) =>
+                      [...row].map((pixel, x) => (
+                        <button
+                          key={`${x}-${y}`}
+                          aria-label={`Pixel ${x + 1}, ${y + 1}`}
+                          aria-pressed={pixel === '1'}
+                          style={{
+                            background: pixel === '1' ? color : undefined,
+                          }}
+                          onPointerDown={(event) => {
+                            event.preventDefault()
+                            setPainting(true)
+                            paint(y * row.length + x)
+                          }}
+                          onPointerEnter={(event) => {
+                            if (painting && event.buttons === 1)
+                              paint(y * row.length + x)
+                          }}
+                          onClick={(event) => {
+                            if (event.detail === 0) paint(y * row.length + x)
+                          }}
+                        />
+                      ))
+                    )}
+                  </div>
+                  {draft.scope === 'world' && propertyEditable && (
+                    <>
+                      <p className="field-hint">
+                        {actions.find((a) => a.id === draft.action)
+                          ?.description ||
+                          'A property word applies its action through an IS sentence.'}
+                      </p>
+                      <button
+                        className="text-button"
+                        onClick={() => setActionEditor(!actionEditor)}
+                      >
+                        {actionEditor ? 'Cancel new action' : '+ New action'}
+                      </button>
+                      {actionEditor && (
+                        <ActionEditor
+                          name={draft.name}
+                          properties={definitions.filter(
+                            (
+                              definition
+                            ): definition is import('./game').PropertyDefinition =>
+                              definition.kind === 'property'
+                          )}
+                          busy={busy}
+                          onInstall={saveAction}
+                        />
+                      )}
+                    </>
+                  )}
+                  <div className="tray-actions">
                     <button
-                      key={`${x}-${y}`}
-                      aria-label={`Pixel ${x + 1}, ${y + 1}`}
-                      aria-pressed={pixel === '1'}
-                      style={{
-                        background: pixel === '1' ? color : undefined,
-                      }}
-                      onPointerDown={(event) => {
-                        event.preventDefault()
-                        setPainting(true)
-                        paint(y * row.length + x)
-                      }}
-                      onPointerEnter={(event) => {
-                        if (painting && event.buttons === 1)
-                          paint(y * row.length + x)
-                      }}
-                      onClick={(event) => {
-                        if (event.detail === 0) paint(y * row.length + x)
-                      }}
-                    />
+                      className="publish"
+                      disabled={busy || !canSave}
+                      onClick={save}
+                    >
+                      {draft.base ? 'Save definition' : 'Create definition'}
+                    </button>
+                    {draft.scope === 'world' && (
+                      <button
+                        disabled={busy || !draft.base}
+                        onClick={() => {
+                          if (!draft.base) return
+                          setPlacement({
+                            brush: {
+                              type: draft.base.id,
+                              kind: draft.artworkKind,
+                            },
+                            tool: 'add',
+                            tiles: game.board.tiles,
+                          })
+                          setPeek(false)
+                          setGuidePeek(false)
+                          setOpen(false)
+                        }}
+                      >
+                        Place tile
+                      </button>
+                    )}
+                  </div>
+                  <div className="delete-actions">
+                    {draft.scope === 'outcome' && (
+                      <button
+                        disabled={busy}
+                        onClick={() => {
+                          replaceOutcomeCell(draft.cell, '')
+                          setDraft(null)
+                        }}
+                      >
+                        <Trash2 size={13} />
+                        Remove outcome tile
+                      </button>
+                    )}
+                    {draft.base && (
+                      <button
+                        disabled={busy || inUse}
+                        title={
+                          inUse
+                            ? 'Remove placed tiles and applied outcome references before deleting their definition'
+                            : undefined
+                        }
+                        onClick={async () => {
+                          if (
+                            await change(
+                              () => runtime.deleteDefinition(draft.base!.id),
+                              `${draft.name} definition deleted`
+                            )
+                          )
+                            setDraft(null)
+                        }}
+                      >
+                        <Trash2 size={13} />
+                        Delete definition
+                      </button>
+                    )}
+                  </div>
+                  {inUse && (
+                    <p className="field-hint">
+                      Delete definition becomes available after its placed tiles
+                      and applied outcome references are removed.
+                    </p>
+                  )}
+                </section>
+              )
+            }
+          >
+            <section className="rules">
+              <h2>Live rules</h2>
+              <ul>
+                {rules.map((rule, index) => (
+                  <li
+                    key={`${rule.noun}-${rule.property}-${index}`}
+                    aria-label={`${rule.noun} IS ${rule.property}`}
+                  >
+                    {[rule.noun, 'IS', rule.property].map((id, i) => {
+                      const definition = definitions.find((d) => d.id === id)
+                      return definition ? (
+                        <span key={`${id}-${i}`}>
+                          <TileArt definition={definition} kind={'word'} />
+                        </span>
+                      ) : null
+                    })}
+                  </li>
+                ))}
+              </ul>
+              {rules.length === 0 && <p>No active sentences.</p>}
+            </section>
+            <section>
+              <h2>Installed vocabulary</h2>
+              <div className="vocabulary">
+                {definitions.flatMap((definition) =>
+                  (definition.kind === 'entity'
+                    ? (['entity', 'word'] as const)
+                    : (['word'] as const)
+                  ).map((kind) => (
+                    <button
+                      key={`${definition.id}-${kind}`}
+                      aria-label={`Edit ${definition.id} ${kind}`}
+                      aria-pressed={
+                        draft?.base?.id === definition.id &&
+                        draft.artworkKind === kind
+                      }
+                      disabled={busy}
+                      onClick={() => select(definition, kind)}
+                    >
+                      <TileArt definition={definition} kind={kind} />
+                      <small>{kind}</small>
+                    </button>
                   ))
                 )}
-              </div>
-              {draft.scope === 'world' && propertyEditable && (
-                <>
-                  <p className="field-hint">
-                    {actions.find((a) => a.id === draft.action)?.description ||
-                      'A property word applies its action through an IS sentence.'}
-                  </p>
-                  <button
-                    className="text-button"
-                    onClick={() => setActionEditor(!actionEditor)}
-                  >
-                    {actionEditor ? 'Cancel new action' : '+ New action'}
-                  </button>
-                  {actionEditor && (
-                    <ActionEditor
-                      name={draft.name}
-                      properties={definitions.filter(
-                        (
-                          definition
-                        ): definition is import('./game').PropertyDefinition =>
-                          definition.kind === 'property'
-                      )}
-                      busy={busy}
-                      onInstall={saveAction}
-                    />
-                  )}
-                </>
-              )}
-              <div className="tray-actions">
                 <button
-                  className="publish"
-                  disabled={busy || !canSave}
-                  onClick={save}
+                  className="new-item"
+                  aria-label="New vocabulary item"
+                  aria-pressed={!!draft && !draft.base}
+                  onClick={create}
                 >
-                  {draft.base ? 'Save definition' : 'Create definition'}
+                  <Plus size={22} />
+                  <small>New</small>
                 </button>
-                {draft.scope === 'world' && (
-                  <button
-                    disabled={busy || !draft.base}
-                    onClick={() => {
-                      if (!draft.base) return
-                      setPlacement({
-                        type: draft.base.id,
-                        kind: draft.artworkKind,
-                      })
-                      setDraft({ ...draft, tileId: undefined })
-                      setOpen(false)
-                    }}
-                  >
-                    Place tile
-                  </button>
-                )}
               </div>
-              <div className="delete-actions">
-                {draft.scope === 'outcome' && (
-                  <button
-                    disabled={busy}
-                    onClick={() => {
-                      replaceOutcomeCell(draft.cell, '')
-                      setDraft(null)
-                    }}
-                  >
-                    <Trash2 size={13} />
-                    Remove outcome tile
-                  </button>
-                )}
-                {inspectedTile && (
-                  <button
-                    disabled={busy}
-                    onClick={() => {
-                      game.remove(inspectedTile.id)
-                      setNotice(
-                        `${inspectedTile.type} removed · Undo restores it`
-                      )
-                      refresh()
-                    }}
-                  >
-                    <Trash2 size={13} />
-                    Remove tile
-                  </button>
-                )}
-                {draft.base && (
-                  <button
-                    disabled={busy || inUse}
-                    title={
-                      inUse
-                        ? 'Remove placed tiles and applied outcome references before deleting their definition'
-                        : undefined
-                    }
-                    onClick={async () => {
-                      if (
-                        await change(
-                          () => runtime.deleteDefinition(draft.base!.id),
-                          `${draft.name} definition deleted`
-                        )
-                      )
-                        setDraft(null)
-                    }}
-                  >
-                    <Trash2 size={13} />
-                    Delete definition
-                  </button>
-                )}
-              </div>
-              {inUse && (
-                <p className="field-hint">
-                  Delete definition becomes available after its placed tiles and
-                  applied outcome references are removed.
-                </p>
-              )}
             </section>
-          )
-        }
-      >
-        <section className="rules">
-          <h2>Live rules</h2>
-          <ul>
-            {rules.map((rule, index) => (
-              <li
-                key={`${rule.noun}-${rule.property}-${index}`}
-                aria-label={`${rule.noun} IS ${rule.property}`}
-              >
-                {[rule.noun, 'IS', rule.property].map((id, i) => {
-                  const definition = definitions.find((d) => d.id === id)
-                  return definition ? (
-                    <span key={`${id}-${i}`}>
-                      <TileArt definition={definition} kind={'word'} />
-                    </span>
-                  ) : null
-                })}
-              </li>
+            <OutcomeBoard
+              rows={outcomeRows}
+              errors={outcomeErrors}
+              words={definitions}
+              busy={busy}
+              dirty={outcomeDirty}
+              canUndo={outcomeHistory.length > 0}
+              renderWord={(word) => <TileArt definition={word} />}
+              selected={draft?.scope === 'outcome' ? draft.cell : undefined}
+              onSelect={(cell) => selectOutcome(cell)}
+              onChange={editOutcomeRows}
+              onApply={applyOutcomes}
+              onUndo={() => {
+                const previous = outcomeHistory.at(-1)
+                if (previous) {
+                  setOutcomeErrors([])
+                  setOutcomeRows(previous)
+                  setOutcomeHistory(outcomeHistory.slice(0, -1))
+                  setDraft(null)
+                }
+              }}
+              onRestore={() => editOutcomeRows(startingOutcomeRows)}
+            />
+            <footer>
+              <p role="status">{notice}</p>
+              <small>
+                Arrows / WASD · Space waits · Z undoes
+                <br />
+                Place tile opens board painting. Accept commits; Esc cancels.
+              </small>
+              <button className="resume" onClick={resume}>
+                <Play size={14} />
+                Resume play
+              </button>
+            </footer>
+          </Drawer>
+          <div className="touch-controls" aria-label="Movement controls">
+            {[
+              { x: -1, y: 0, label: 'Left' },
+              { x: 0, y: -1, label: 'Up' },
+              { x: 0, y: 0, label: 'Wait' },
+              { x: 0, y: 1, label: 'Down' },
+              { x: 1, y: 0, label: 'Right' },
+            ].map((direction) => (
+              <button key={direction.label} onClick={() => step(direction)}>
+                {direction.label}
+              </button>
             ))}
-          </ul>
-          {rules.length === 0 && <p>No active sentences.</p>}
-        </section>
-        <section>
-          <h2>Installed vocabulary</h2>
-          <div className="vocabulary">
-            {definitions.flatMap((definition) =>
-              (definition.kind === 'entity'
-                ? (['entity', 'word'] as const)
-                : (['word'] as const)
-              ).map((kind) => (
-                <button
-                  key={`${definition.id}-${kind}`}
-                  aria-label={`Edit ${definition.id} ${kind}`}
-                  aria-pressed={
-                    draft?.base?.id === definition.id &&
-                    draft.artworkKind === kind
-                  }
-                  disabled={busy}
-                  onClick={() => select(definition, kind)}
-                >
-                  <TileArt definition={definition} kind={kind} />
-                  <small>{kind}</small>
-                </button>
-              ))
-            )}
-            <button
-              className="new-item"
-              aria-label="New vocabulary item"
-              aria-pressed={!!draft && !draft.base}
-              onClick={create}
-            >
-              <Plus size={22} />
-              <small>New</small>
-            </button>
           </div>
-        </section>
-        <OutcomeBoard
-          rows={outcomeRows}
-          errors={outcomeErrors}
-          words={definitions}
-          busy={busy}
-          dirty={outcomeDirty}
-          canUndo={outcomeHistory.length > 0}
-          renderWord={(word) => <TileArt definition={word} />}
-          selected={draft?.scope === 'outcome' ? draft.cell : undefined}
-          onSelect={(cell) => selectOutcome(cell)}
-          onChange={editOutcomeRows}
-          onApply={applyOutcomes}
-          onUndo={() => {
-            const previous = outcomeHistory.at(-1)
-            if (previous) {
-              setOutcomeErrors([])
-              setOutcomeRows(previous)
-              setOutcomeHistory(outcomeHistory.slice(0, -1))
-              setDraft(null)
-            }
-          }}
-          onRestore={() => editOutcomeRows(startingOutcomeRows)}
-        />
-        <footer>
-          <p role="status">{notice}</p>
-          <small>
-            Arrows / WASD · Space waits · Z undoes
-            <br />
-            Place tile pauses until placement or Esc.
-          </small>
-          <button className="resume" onClick={resume}>
-            <Play size={14} />
-            Resume play
-          </button>
-        </footer>
-      </Drawer>
-      <div className="touch-controls" aria-label="Movement controls">
-        {[
-          { x: -1, y: 0, label: 'Left' },
-          { x: 0, y: -1, label: 'Up' },
-          { x: 0, y: 0, label: 'Wait' },
-          { x: 0, y: 1, label: 'Down' },
-          { x: 1, y: 0, label: 'Right' },
-        ].map((direction) => (
-          <button key={direction.label} onClick={() => step(direction)}>
-            {direction.label}
-          </button>
-        ))}
-      </div>
+        </>
+      )}
     </main>
   )
 }

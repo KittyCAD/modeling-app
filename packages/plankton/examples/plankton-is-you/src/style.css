@@ -852,3 +852,85 @@ svg {
   text-shadow: none;
   -webkit-text-stroke: 0;
 }
+
+.placement-mode {
+  padding-right: 64px;
+}
+.placement-mode .world {
+  width: min(calc(100vw - 64px), calc(100dvh * var(--ratio)));
+  touch-action: none;
+  user-select: none;
+}
+.placement-tools {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-right: 0;
+  border-radius: 8px 0 0 8px;
+  background: var(--panel);
+  z-index: 3;
+}
+.placement-tools button {
+  position: relative;
+  width: 46px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  padding: 8px;
+}
+.placement-tools button > svg {
+  width: 24px;
+  height: 24px;
+}
+.placement-tools button:first-child[aria-label^="Add"] {
+  height: 60px;
+}
+.placement-tools button[aria-pressed="true"] {
+  border-color: #c5ed91;
+  background: #c5ed9124;
+}
+.placement-tools small {
+  font-size: 9px;
+  line-height: 1;
+}
+.placement-tools .brush-plus {
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  width: 12px;
+  height: 12px;
+}
+.placement-tools [aria-label="Accept board edits"] {
+  color: #c5ed91;
+}
+.placement-tools [aria-label="Cancel board edits"] {
+  color: #ee927d;
+}
+.placement-palette {
+  width: min(300px, calc(100vw - 84px));
+  max-height: min(70dvh, 560px);
+  overflow-y: auto;
+  padding: 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: 4px 5px 0 #08080a;
+  z-index: 5;
+}
+.placement-palette h2 {
+  font-family: "Luckiest Guy", fantasy;
+  font-size: 17px;
+  font-weight: 400;
+  color: #d5e8b5;
+  text-shadow: 2px 3px 0 #08080a;
+  margin: 0 0 12px;
+}
+
+.placement-palette .vocabulary {
+  grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
+}
