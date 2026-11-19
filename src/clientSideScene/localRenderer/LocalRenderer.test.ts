@@ -1,7 +1,8 @@
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { sceneSelectionAdapter } from '@src/lib/scene/selectionAdapter'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { EntityType } from '@kittycad/lib'
+import type { EntityType, WebSocketResponse } from '@kittycad/lib'
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
 import { legacyLocalRendererHost } from '@src/clientSideScene/localRenderer/legacyHost'
@@ -286,6 +287,173 @@ describe('local GLB loading', () => {
         ).toHaveBeenLastCalledWith([target])
       )
     } finally {
+      f.renderer.dispose()
+    }
+  })
+
+  it.each<EntityType>(['solid3d', 'object'])(
+    'restores a retained body highlight with the %s filter without picking again',
+    async (filter) => {
+      const f = fixture(new PerspectiveCamera(), ['body-b'])
+      f.manager.selectionFilter.value = [filter]
+      f.manager.engineCommandManager.sendSceneCommand.mockImplementation(
+        async (
+          request: EngineCommand
+        ): Promise<WebSocketResponse | undefined> => {
+          if (request.type !== 'modeling_cmd_req') return undefined
+          const command = request.cmd
+          if (command.type === 'select_get')
+            return {
+              success: true,
+              request_id: request.cmd_id,
+              resp: {
+                type: 'modeling',
+                data: {
+                  modeling_response: {
+                    type: 'select_get',
+                    data: { entity_ids: ['body-b'] },
+                  },
+                },
+              },
+            }
+          if (command.type === 'query_entity_type')
+            return {
+              success: true,
+              request_id: request.cmd_id,
+              resp: {
+                type: 'modeling',
+                data: {
+                  modeling_response: {
+                    type: 'query_entity_type',
+                    data: {
+                      reference: {
+                        type: 'face',
+                        face_id: command.entity_id,
+                        topology_fallback: {
+                          parent_id:
+                            command.entity_id === 'face-a'
+                              ? 'body-a'
+                              : 'body-b',
+                          primitive_index: 0,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            }
+          return undefined
+        }
+      )
+      const model = new Group()
+      const firstBody = new Mesh()
+      firstBody.userData = { faceUuid: 'face-a', bodyMeshIndex: 0 }
+      const selectedBody = [new Mesh(), new Mesh()]
+      selectedBody[0].userData = { faceUuid: 'face-b1', bodyMeshIndex: 1 }
+      selectedBody[1].userData = { faceUuid: 'face-b2', bodyMeshIndex: 1 }
+      model.add(firstBody, ...selectedBody)
+      f.state.currentModel = model
+      f.state.loadedSceneGeneration =
+        f.manager.engineSceneGenerationSignal.value
+      f.state.rebuildSelectionTargets()
+      try {
+        await vi.waitFor(() =>
+          expect(
+            f.gpu.selectionHighlightRenderer.setSelection
+          ).toHaveBeenLastCalledWith(selectedBody)
+        )
+        expect(f.gpu.integerIdPicker.pick).not.toHaveBeenCalled()
+      } finally {
+        f.renderer.dispose()
+      }
+    }
+  )
+
+  it('does not apply a delayed body lookup to a replacement model', async () => {
+    const f = fixture(new PerspectiveCamera(), ['body'])
+    const pending = Promise.withResolvers<WebSocketResponse>()
+    const queried = Promise.withResolvers<undefined>()
+    const response = (face: string): WebSocketResponse => ({
+      success: true,
+      request_id: 'body-query',
+      resp: {
+        type: 'modeling',
+        data: {
+          modeling_response: {
+            type: 'query_entity_type',
+            data: {
+              reference: {
+                type: 'face',
+                face_id: face,
+                topology_fallback: { parent_id: 'body', primitive_index: 0 },
+              },
+            },
+          },
+        },
+      },
+    })
+    f.manager.engineCommandManager.sendSceneCommand.mockImplementation(
+      async (
+        request: EngineCommand
+      ): Promise<WebSocketResponse | undefined> => {
+        if (request.type !== 'modeling_cmd_req') return undefined
+        if (request.cmd.type === 'select_get')
+          return {
+            success: true,
+            request_id: request.cmd_id,
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'select_get',
+                  data: { entity_ids: ['body'] },
+                },
+              },
+            },
+          }
+        if (request.cmd.type === 'query_entity_type') {
+          if (request.cmd.entity_id === 'old-face') {
+            queried.resolve(undefined)
+            return pending.promise
+          }
+          return response('new-face')
+        }
+        return undefined
+      }
+    )
+    const install = (id: string) => {
+      const model = new Group()
+      const face = new Mesh()
+      face.userData = { faceUuid: id, bodyMeshIndex: 0 }
+      model.add(face)
+      f.state.currentModel = model
+      f.state.loadedSceneGeneration =
+        f.manager.engineSceneGenerationSignal.value
+      f.state.rebuildSelectionTargets()
+      return face
+    }
+    try {
+      const old = install('old-face')
+      await queried.promise
+      const current = install('new-face')
+      await vi.waitFor(() =>
+        expect(
+          f.gpu.selectionHighlightRenderer.setSelection
+        ).toHaveBeenLastCalledWith([current])
+      )
+      pending.resolve(response('old-face'))
+      await pending.promise
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(
+        f.gpu.selectionHighlightRenderer.setSelection
+      ).toHaveBeenLastCalledWith([current])
+      expect(
+        f.gpu.selectionHighlightRenderer.setSelection.mock.calls.some(
+          ([targets]) => targets.includes(old)
+        )
+      ).toBe(false)
+    } finally {
+      pending.resolve(response('old-face'))
       f.renderer.dispose()
     }
   })
