@@ -7,59 +7,78 @@ permissions:
   contents: read
   actions: read
 jobs:
-  rust:
-    name: Rust failures (${{ matrix.revision }})
+  desktop:
+    name: Desktop failures (${{ matrix.revision }})
     runs-on: namespace-profile-ubuntu-8-cores
-    timeout-minutes: 40
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
         include:
           - revision: candidate
-            sha: 3fcceff75930593a03678e82e66493535babc6dd
+            sha: dd690349000bfd7cc2dc6c3e771a4fd2a56a97da
+            wasm_run: 44561735280
+            rust_tree: 4961ec36f069912e771549100236d87ff38090a3
     steps:
       - uses: actions/checkout@v6
         with:
           ref: ${{ matrix.sha }}
           persist-credentials: false
-      - name: Record exact inputs
+      - name: Apply the scoped Debug readiness check
         run: |
-          git rev-parse HEAD HEAD:rust HEAD:public/kcl-samples
-          cp rust/rust-toolchain.toml ./rust-toolchain.toml
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          cache: false
-          rustflags: ''
-      - uses: taiki-e/install-action@nextest
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: rust
-          cache-on-failure: true
-      - name: Initialize generated bindings without concurrent file writers
+          git fetch --depth=1 origin df131b459e3c40c892f2b22e92a35b0f54a7b5d2
+          git show FETCH_HEAD:e2e/playwright/test-utils.ts > e2e/playwright/test-utils.ts
+          git hash-object e2e/playwright/test-utils.ts
+          git diff --stat
+      - name: Verify WASM source identity
         run: |
-          cd rust
-          cargo test -p kcl-lib --features artifact-graph export_bindings -- --test-threads=1
-      - name: Run candidate Rust tests
+          git rev-parse HEAD HEAD:rust
+          test "$(git rev-parse HEAD:rust)" = '${{ matrix.rust_tree }}'
+      - uses: actions/download-artifact@v8
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ matrix.wasm_run }}
+          name: prepared-wasm
+          path: prepared-wasm
+      - uses: actions/download-artifact@v8
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ matrix.wasm_run }}
+          name: prepared-ts-rs-bindings
+          path: rust/kcl-lib/bindings
+      - name: Install identical WASM from verified Rust tree
+        run: |
+          mkdir -p rust/kcl-wasm-lib/pkg
+          cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg/
+          cp prepared-wasm/kcl_wasm_lib_bg.wasm public/
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright/
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+      - run: npm run playwright install --with-deps
+      - run: npm run tronb:vite:dev
+      - name: Run candidate desktop tests
         env:
-          ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
-          ZOO_HOST: https://api.dev.zoo.dev
-          RUST_MIN_STACK: 10485760000
-          RUST_FILTER: >-
-            test(frontend::) or
-            test(simulation_tests::error_loft_section_order::) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_tooling_nest_block) or
-            test(=simulation_tests::kcl_samples::parse_tooling_nest_block) or
-            test(=simulation_tests::kcl_samples::unparse_tooling_nest_block)
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+          FAIL_ON_CONSOLE_ERRORS: true
+          TARGET: desktop
+          E2E_WORKERS: 1
         shell: bash
         run: |
           set -o pipefail
-          cd rust
-          cargo nextest run --workspace --features artifact-graph --profile ci --no-fail-fast --retries 1 -E "$RUST_FILTER" 2>&1 | tee ../comparison-rust.log
+          xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:desktop -- --grep='Insert the bracket part into an assembly and transform it' --workers=1 --retries=0 2>&1 | tee comparison-desktop.log
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: rust-candidate
+          name: desktop-${{ matrix.revision }}
           path: |
-            comparison-rust.log
+            comparison-desktop.log
             test-results/
+            playwright-report/
+          include-hidden-files: true
 
