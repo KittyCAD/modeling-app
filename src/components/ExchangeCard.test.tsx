@@ -143,37 +143,28 @@ describe('ExchangeCard replay attachments', () => {
     expect(onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
   })
 
-  test('keeps the full activity inside a completed card above the final answer', () => {
+  test('keeps native activity inside a completed card above the final answer', () => {
     render(
       <ExchangeCard
         {...exchangeProps}
         request={{ type: 'user', content: 'Inspect the project' }}
         responses={[
           {
-            reasoning: {
-              type: 'markdown',
-              content:
-                ZOOKEEPER_ACTIVITY_PREFIX +
-                JSON.stringify({
-                  kind: 'commentary',
-                  text: 'Checking the project.',
-                }),
+            activity: {
+              kind: 'commentary',
+              text: 'Checking the project.',
             },
           },
           {
-            reasoning: {
-              type: 'markdown',
-              content:
-                ZOOKEEPER_ACTIVITY_PREFIX +
-                JSON.stringify({
-                  kind: 'tool',
-                  call_id: 'call-1',
-                  name: 'read_project_file',
-                  status: 'completed',
-                  label: 'Read main.kcl',
-                }),
+            activity: {
+              kind: 'tool',
+              call_id: 'call-1',
+              name: 'read_project_file',
+              status: 'completed',
+              label: 'Read main.kcl',
             },
           },
+          { activity: { kind: 'unknown' } },
           {
             end_of_stream: {
               whole_response: 'The project is ready.',
@@ -199,12 +190,31 @@ describe('ExchangeCard replay attachments', () => {
 
     fireEvent.click(activityToggle)
     expect(screen.getByText('Read main.kcl')).toBeVisible()
+    expect(screen.queryByText(/viewed activity/i)).not.toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: /Hide activity/ })
     ).toHaveAttribute('aria-expanded', 'true')
     expect(screen.getByTestId('ml-response-thinking-view')).toHaveTextContent(
       'Checking the project.'
     )
+  })
+
+  test('does not show an activity card for a null payload', () => {
+    render(
+      <ExchangeCard
+        {...exchangeProps}
+        responses={[
+          { activity: null },
+          { end_of_stream: { whole_response: 'Done.' } },
+        ]}
+        deltasAggregated="Done."
+      />
+    )
+
+    expect(screen.getByText('Done.')).toBeVisible()
+    expect(
+      screen.queryByTestId('zookeeper-activity-card')
+    ).not.toBeInTheDocument()
   })
 
   test('starts running activity collapsed with commentary inside the card', () => {

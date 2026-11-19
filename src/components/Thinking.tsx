@@ -27,6 +27,7 @@ import {
 import {
   collectActivityItems,
   legacyAttachmentWarningText,
+  parseZookeeperActivity,
   type ActivityItem,
   type ZookeeperActivity,
 } from '@src/lib/zookeeper/activityMessages'
@@ -1085,6 +1086,7 @@ export const Thinking = (
   const reasoningThoughts =
     props.thoughts?.filter((x: MlCopilotServerMessage) => {
       return (
+        ('activity' in x && parseZookeeperActivity(x) !== undefined) ||
         'reasoning' in x ||
         ('files' in x &&
           x.files.files.some((file) => !isExportDownloadFile(file)))

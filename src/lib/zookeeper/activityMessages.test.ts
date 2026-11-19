@@ -6,18 +6,22 @@ import {
 } from '@src/lib/zookeeper/activityMessages'
 import { describe, expect, test } from 'vitest'
 
-const message = (payload: object): MlCopilotServerMessage => ({
-  reasoning: {
-    type: 'markdown',
-    content: ZOOKEEPER_ACTIVITY_PREFIX + JSON.stringify(payload),
-  },
-})
+const message = (payload: object, native: boolean): MlCopilotServerMessage =>
+  native
+    ? { activity: payload }
+    : {
+        reasoning: {
+          type: 'markdown',
+          content: ZOOKEEPER_ACTIVITY_PREFIX + JSON.stringify(payload),
+        },
+      }
 
 describe('Zookeeper activity messages', () => {
-  test('keeps commentary in order and merges tool completion into its start row', () => {
+  test.each([false, true])('merges tool updates (native: %s)', (native) => {
+    const activity = (payload: object) => message(payload, native)
     const items = collectActivityItems([
-      message({ kind: 'commentary', text: 'Checking the project.' }),
-      message({
+      activity({ kind: 'commentary', text: 'Checking the project.' }),
+      activity({
         kind: 'tool',
         call_id: 'call-1',
         name: 'read_project_file',
@@ -25,8 +29,8 @@ describe('Zookeeper activity messages', () => {
         label: 'Read main.kcl',
         arguments: '{"path":"main.kcl"}',
       }),
-      message({ kind: 'commentary', text: 'The file exists.' }),
-      message({
+      activity({ kind: 'commentary', text: 'The file exists.' }),
+      activity({
         kind: 'tool',
         call_id: 'call-1',
         name: 'read_project_file',
@@ -34,6 +38,7 @@ describe('Zookeeper activity messages', () => {
         output: 'File contents',
         ok: true,
       }),
+      activity({ kind: 'warning', text: 'One attachment was ignored.' }),
     ])
 
     expect(items).toEqual([
@@ -47,6 +52,7 @@ describe('Zookeeper activity messages', () => {
         ok: true,
       },
       { kind: 'commentary', text: 'The file exists.' },
+      { kind: 'warning', text: 'One attachment was ignored.' },
     ])
   })
 

@@ -36,15 +36,17 @@ export const legacyAttachmentWarningText = (
 export const parseZookeeperActivity = (
   message: MlCopilotServerMessage
 ): ZookeeperActivity | undefined => {
-  if ('reasoning' in message === false || message.reasoning.type !== 'markdown')
-    return undefined
-  const content = message.reasoning.content
-  if (!content.startsWith(ZOOKEEPER_ACTIVITY_PREFIX)) return undefined
-
   try {
-    const value: unknown = JSON.parse(
-      content.slice(ZOOKEEPER_ACTIVITY_PREFIX.length)
-    )
+    let value: unknown
+    if ('activity' in message) {
+      value = message.activity
+    } else {
+      if (!('reasoning' in message) || message.reasoning.type !== 'markdown')
+        return undefined
+      const content = message.reasoning.content
+      if (!content.startsWith(ZOOKEEPER_ACTIVITY_PREFIX)) return undefined
+      value = JSON.parse(content.slice(ZOOKEEPER_ACTIVITY_PREFIX.length))
+    }
     if (typeof value !== 'object' || value === null) return undefined
     if ('kind' in value && value.kind === 'commentary') {
       return 'text' in value && typeof value.text === 'string'

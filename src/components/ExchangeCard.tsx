@@ -546,6 +546,8 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
     manualEditsDetected ||
     props.responses.some(
       (response) =>
+        ('activity' in response &&
+          parseZookeeperActivity(response) !== undefined) ||
         'reasoning' in response ||
         ('files' in response &&
           response.files.files.some((file) => !isExportDownloadFile(file)))

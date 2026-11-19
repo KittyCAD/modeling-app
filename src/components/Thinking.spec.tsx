@@ -448,10 +448,7 @@ describe('FilesSnapshot', () => {
 
 describe('Thinking', () => {
   const activity = (payload: object): MlCopilotServerMessage => ({
-    reasoning: {
-      type: 'markdown',
-      content: ZOOKEEPER_ACTIVITY_PREFIX + JSON.stringify(payload),
-    },
+    activity: payload,
   })
 
   test('shows a single tool without an empty disclosure', () => {

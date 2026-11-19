@@ -1392,10 +1392,7 @@ describe('ZookeeperConversation', () => {
 
   test('follows new activity rows until the reader scrolls away', () => {
     const activity = (payload: object) => ({
-      reasoning: {
-        type: 'markdown' as const,
-        content: ZOOKEEPER_ACTIVITY_PREFIX + JSON.stringify(payload),
-      },
+      activity: payload,
     })
     const responses = [
       activity({ kind: 'commentary', text: 'Checking the project.' }),

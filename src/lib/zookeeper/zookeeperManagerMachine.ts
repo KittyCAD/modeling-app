@@ -801,7 +801,14 @@ export const ZookeeperConversationToMarkdown = (
       }
     }
     for (const response of exchange.responses) {
-      if ('reasoning' in response) {
+      const activity = parseZookeeperActivity(response)
+      let content: string | undefined
+      if (activity) {
+        content =
+          activity.kind === 'tool'
+            ? activity.label || activity.name.replaceAll('_', ' ')
+            : activity.text
+      } else if ('reasoning' in response) {
         if ('content' in response.reasoning) {
           if (
             [
@@ -813,17 +820,7 @@ export const ZookeeperConversationToMarkdown = (
               'deleted_project_file',
             ].includes(response.reasoning.type) === false
           ) {
-            const activity = parseZookeeperActivity(response)
-            const content = activity
-              ? activity.kind === 'tool'
-                ? activity.label || activity.name.replaceAll('_', ' ')
-                : activity.text
-              : response.reasoning.content
-            const contentWithoutCode = content.replace(
-              /```[\s\S]*?```/gm,
-              '~~Code redacted~~'
-            )
-            reason += `${contentWithoutCode}\n\n`
+            content = response.reasoning.content
           }
         } else if ('error' in response.reasoning) {
           reason += `**${response.reasoning.error}**\n\n`
@@ -837,6 +834,9 @@ export const ZookeeperConversationToMarkdown = (
             reason += `* ${step.filepath_to_edit}: ${step.edit_instructions}\n\n`
           }
         }
+      }
+      if (content !== undefined) {
+        reason += `${content.replace(/```[\s\S]*?```/gm, '~~Code redacted~~')}\n\n`
       }
       if ('error' in response) {
         reason += `**${response.error.detail}**\n\n`
