@@ -2473,15 +2473,8 @@ impl FrontendState {
             // The interpreter is returning all var solutions from the sketch
             // block we're editing.
             let mut new_ast = self.program.ast.clone();
-            for (var_range, value) in &outcome.var_solutions {
-                let rounded = value.round(3);
-                mutate_ast_node_by_source_range(
-                    &mut new_ast,
-                    *var_range,
-                    AstMutateCommand::EditVarInitialValue { value: rounded },
-                )
+            update_var_initial_values(&mut new_ast, &outcome.var_solutions)
                 .map_err(|err| KclErrorWithOutputs::from_error_outcome(err, outcome.clone()))?;
-            }
             source_from_ast(&new_ast)
         };
 
@@ -4139,6 +4132,62 @@ fn get_or_insert_ast_reference(
     Ok(create_member_expression(var_expr, property))
 }
 
+/// Apply solver values in one traversal. Looking up each variable separately
+/// walks the whole sketch and collects its defined names once per coordinate.
+#[cfg(feature = "artifact-graph")]
+fn update_var_initial_values(
+    ast: &mut ast::Node<ast::Program>,
+    solutions: &[(SourceRange, Number)],
+) -> Result<(), KclError> {
+    struct UpdateValues {
+        pending: HashMap<SourceRange, Number>,
+    }
+
+    impl Visitor for UpdateValues {
+        type Break = KclError;
+        type Continue = ();
+
+        fn visit(&mut self, node: NodeMut<'_>) -> TraversalReturn<Self::Break, Self::Continue> {
+            if let NodeMut::NumericLiteral(literal) = node
+                && let Some(value) = self.pending.remove(&SourceRange::from(&*literal))
+            {
+                let rounded = value.round(3);
+                let Ok(updated) = to_source_number(rounded) else {
+                    return TraversalReturn::new_break(KclError::refactor(format!(
+                        "Could not convert number to AST literal: {rounded:?}"
+                    )));
+                };
+                *literal = ast::Node::no_src(updated);
+            }
+            TraversalReturn::new_continue(())
+        }
+
+        fn finish(&mut self, _node: NodeMut<'_>) {}
+    }
+
+    let mut visitor = UpdateValues {
+        pending: HashMap::with_capacity(solutions.len()),
+    };
+    for &(range, value) in solutions {
+        if visitor.pending.insert(range, value).is_some() {
+            return Err(KclError::refactor(format!(
+                "Duplicate sketch variable source range: {range:?}"
+            )));
+        }
+    }
+    if visitor.pending.is_empty() {
+        return Ok(());
+    }
+    if let ControlFlow::Break(error) = dfs_mut(ast, &mut visitor) {
+        return Err(error);
+    }
+    // Report missing ranges in the original solution order, independent of hashing.
+    if let Some((range, _)) = solutions.iter().find(|(range, _)| visitor.pending.contains_key(range)) {
+        return Err(KclError::refactor(format!("Source range not found: {range:?}")));
+    }
+    Ok(())
+}
+
 fn mutate_ast_node_by_source_range(
     ast: &mut ast::Node<ast::Program>,
     source_range: SourceRange,
@@ -4205,7 +4254,7 @@ enum AstMutateCommand {
     EditCallUnlabeled {
         arg: ast::Expr,
     },
-    #[cfg(feature = "artifact-graph")]
+    #[cfg(all(feature = "artifact-graph", test))]
     EditVarInitialValue {
         value: Number,
     },
@@ -4637,7 +4686,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
-        #[cfg(feature = "artifact-graph")]
+        #[cfg(all(feature = "artifact-graph", test))]
         AstMutateCommand::EditVarInitialValue { value } => {
             if let NodeMut::NumericLiteral(numeric_literal) = node {
                 // Update the initial value.
@@ -5125,6 +5174,57 @@ mod tests {
     use crate::front::Tangent;
     use crate::frontend::sketch::Vertical;
     use crate::pretty::NumericSuffix;
+
+    #[test]
+    fn test_update_var_initial_values_matches_individual_edits() {
+        let source =
+            "sketch(on = XY) { point(at = [var 1mm, var -2in]) }\nsketch(on = YZ) { point(at = [var 3mm, 99mm]) }";
+        let mut ast = Program::parse_no_errs(source).unwrap().ast;
+        let mut expected = ast.clone();
+        let solutions = [
+            ("1mm", -1.23456, NumericSuffix::Mm),
+            ("-2in", 4.56789, NumericSuffix::Inch),
+            ("3mm", -0.00001, NumericSuffix::Mm),
+        ]
+        .into_iter()
+        .map(|(literal, value, units)| {
+            let start = source.find(literal).unwrap();
+            (
+                SourceRange::new(start, start + literal.len(), Default::default()),
+                Number { value, units },
+            )
+        })
+        .collect::<Vec<_>>();
+        for &(range, value) in &solutions {
+            mutate_ast_node_by_source_range(
+                &mut expected,
+                range,
+                AstMutateCommand::EditVarInitialValue { value: value.round(3) },
+            )
+            .unwrap();
+        }
+        update_var_initial_values(&mut ast, &solutions).unwrap();
+        assert_eq!(source_from_ast(&ast), source_from_ast(&expected));
+        assert!(source_from_ast(&ast).contains("99mm"));
+    }
+
+    #[test]
+    fn test_update_var_initial_values_rejects_missing_and_duplicate_ranges() {
+        let source = "sketch(on = XY) { point(at = [var 1mm, var 2mm]) }";
+        let ast = Program::parse_no_errs(source).unwrap().ast;
+        let start = source.find("1mm").unwrap();
+        let range = SourceRange::new(start, start + 3, Default::default());
+        let value = Number {
+            value: 3.0,
+            units: NumericSuffix::Mm,
+        };
+        assert!(update_var_initial_values(&mut ast.clone(), &[(range, value), (range, value)]).is_err());
+        let missing = SourceRange::new(source.len() + 1, source.len() + 4, Default::default());
+        assert!(update_var_initial_values(&mut ast.clone(), &[(missing, value)]).is_err());
+        let mut unchanged = ast.clone();
+        update_var_initial_values(&mut unchanged, &[]).unwrap();
+        assert_eq!(source_from_ast(&unchanged), source_from_ast(&ast));
+    }
 
     fn find_first_sketch_object(scene_graph: &SceneGraph) -> Option<&Object> {
         for object in &scene_graph.objects {
