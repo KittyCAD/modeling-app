@@ -1504,7 +1504,10 @@ it('releases camera input and engine subscriptions when a scene closes', () => {
   const controls = new CameraControls(canvas, manager, unusedSettings)
   controls.localCameraMode = true
   vi.spyOn(controls, 'getInteractionType').mockReturnValue('zoom')
+  controls.camera.position.set(0, 0, 100)
+  const initial = controls.camera.position.clone()
   canvas.dispatchEvent(new WheelEvent('wheel', { deltaY: 100 }))
+  expect(controls.camera.position.distanceTo(initial)).toBeGreaterThan(0)
   const previous = controls.camera.position.clone()
   controls.dispose()
   controls.dispose()
