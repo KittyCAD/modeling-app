@@ -1,5 +1,5 @@
-import { cleanup, render, screen } from '@testing-library/react'
-import { PerspectiveCamera, Scene } from 'three'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { PerspectiveCamera, Scene, Vector3 } from 'three'
 import type * as Three from 'three'
 import { Signal } from '@src/lib/signal'
 import { afterEach, expect, it, vi } from 'vitest'
@@ -9,7 +9,10 @@ const mocks = vi.hoisted(() => ({
   style: 'cube',
   renderers: new Map<
     HTMLCanvasElement,
-    { dispose: () => void; render: () => void }
+    {
+      dispose: () => void
+      render: (scene: Three.Scene, camera: Three.Camera) => void
+    }
   >(),
 }))
 
@@ -57,7 +60,10 @@ vi.mock('three', async () => {
       forceContextLoss = vi.fn()
       setSize = vi.fn()
       setPixelRatio = vi.fn()
-      render = vi.fn()
+      render = vi.fn((scene: Three.Scene, camera: Three.Camera) => {
+        scene.updateMatrixWorld()
+        camera.updateMatrixWorld()
+      })
       constructor({ canvas }: { canvas: HTMLCanvasElement }) {
         expect(mocks.renderers.has(canvas)).toBe(false)
         mocks.renderers.set(canvas, this)
@@ -136,3 +142,92 @@ it.each(['cube', 'axis'])(
     expect(currentRenderer?.dispose).toHaveBeenCalledTimes(1)
   }
 )
+
+function renderAxisGizmo() {
+  mocks.style = 'axis'
+  const scene = createScene()
+  const camera = scene.camControls.camera
+  camera.position.set(1, 1, 1)
+  camera.up.set(0, 0, 1)
+  camera.lookAt(0, 0, 0)
+  const updateCameraToAxis = vi.fn().mockResolvedValue(undefined)
+  mocks.editor = {
+    sceneInfra: {
+      ...scene,
+      camControls: { ...scene.camControls, updateCameraToAxis },
+    },
+  }
+  render(<Gizmo />)
+  const gizmo = screen.getByLabelText('View orientation gizmo')
+  const canvas = gizmo.querySelector('canvas')!
+  vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue({
+    x: 0,
+    y: 0,
+    left: 0,
+    top: 0,
+    right: 80,
+    bottom: 80,
+    width: 80,
+    height: 80,
+    toJSON: () => ({}),
+  })
+  return {
+    gizmo,
+    canvas,
+    camera,
+    cameraChange: scene.camControls.cameraChange,
+    updateCameraToAxis,
+  }
+}
+
+function axisPointerPosition(
+  camera: PerspectiveCamera,
+  direction: readonly [number, number, number]
+) {
+  const point = new Vector3(...direction)
+    .multiplyScalar(0.35)
+    .applyQuaternion(camera.quaternion.clone().invert())
+  return {
+    clientX: (point.x + 0.5) * 80,
+    clientY: (0.5 - point.y) * 80,
+  }
+}
+
+it.each([
+  ['front', [0, -1, 0], '-y'],
+  ['back', [0, 1, 0], 'y'],
+  ['left', [-1, 0, 0], '-x'],
+  ['right', [1, 0, 0], 'x'],
+  ['top', [0, 0, 1], 'z'],
+  ['bottom', [0, 0, -1], '-z'],
+] as const)(
+  'picks %s from the click position without a preceding mousemove',
+  (_, direction, axis) => {
+    const { gizmo, camera, updateCameraToAxis } = renderAxisGizmo()
+    fireEvent.click(gizmo, axisPointerPosition(camera, direction))
+    expect(updateCameraToAxis).toHaveBeenCalledExactlyOnceWith(axis)
+  }
+)
+
+it('refreshes hover and picking when the camera turns under a stationary pointer', () => {
+  const { gizmo, canvas, camera, cameraChange, updateCameraToAxis } =
+    renderAxisGizmo()
+  const pointer = axisPointerPosition(camera, [1, 0, 0])
+  fireEvent.mouseMove(gizmo, pointer)
+  camera.rotateZ(Math.PI)
+  cameraChange.dispatch()
+  const renderedScene = vi.mocked(mocks.renderers.get(canvas)!.render).mock
+    .lastCall![0]
+  expect(renderedScene.getObjectByName('-x')!.scale.x).toBeGreaterThan(
+    renderedScene.getObjectByName('x')!.scale.x
+  )
+  fireEvent.click(gizmo, pointer)
+  expect(updateCameraToAxis).toHaveBeenCalledExactlyOnceWith('-x')
+})
+
+it('does not reuse the hovered axis when clicking empty space', () => {
+  const { gizmo, camera, updateCameraToAxis } = renderAxisGizmo()
+  fireEvent.mouseMove(gizmo, axisPointerPosition(camera, [1, 0, 0]))
+  fireEvent.click(gizmo, { clientX: 40, clientY: 40 })
+  expect(updateCameraToAxis).not.toHaveBeenCalled()
+})

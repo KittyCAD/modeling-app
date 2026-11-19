@@ -5,49 +5,50 @@ import type { Locator } from '@playwright/test'
 import { uuidv4 } from '@src/lib/utils'
 import { PNG } from 'pngjs'
 
-// Local camera changes can leave the gizmo between orientations. Locate its
-// visible coloured axis head, reflecting through the origin for negative axes,
-// so the click follows the control while the expected camera pose stays fixed.
-// TODO: After https://github.com/KittyCAD/modeling-app/pull/14856 lands,
-// verify fixed-position clicks and remove this helper and the PNG import.
+// Wait for a drawn axis head before choosing the single click target.
+// Negative heads are gray, so reflect the colored positive head about the center.
 async function localAxisPosition(
   gizmo: Locator,
   axis: 'x' | 'y' | 'z',
   negative: boolean
 ) {
-  const image = PNG.sync.read(await gizmo.screenshot({ scale: 'css' }))
-  const center = { x: image.width / 2, y: image.height / 2 }
-  const pixels: { x: number; y: number }[] = []
-  for (let y = 0; y < image.height; y++) {
-    for (let x = 0; x < image.width; x++) {
-      const i = (y * image.width + x) * 4
-      const [r, g, b] = image.data.subarray(i, i + 3)
-      // Axis heads are filled; exclude their thin stems near the origin.
-      const isHead =
-        axis === 'x'
-          ? r > 220 && g < 150 && b < 150
-          : axis === 'y'
-            ? g > 200 && r < 150 && b < 150
-            : b > 210 && r < 150 && g < 180
-      if (
-        isHead &&
-        Math.hypot(x - center.x, y - center.y) > image.width * 0.2
-      ) {
-        pixels.push({ x, y })
+  let position = { x: 0, y: 0 }
+  await expect(async () => {
+    const image = PNG.sync.read(await gizmo.screenshot({ scale: 'css' }))
+    const center = { x: image.width / 2, y: image.height / 2 }
+    const pixels: { x: number; y: number }[] = []
+    for (let y = 0; y < image.height; y++) {
+      for (let x = 0; x < image.width; x++) {
+        const i = (y * image.width + x) * 4
+        const [r, g, b] = image.data.subarray(i, i + 3)
+        // Axis heads are filled; exclude their thin stems near the origin.
+        const isHead =
+          axis === 'x'
+            ? r > 220 && g < 150 && b < 150
+            : axis === 'y'
+              ? g > 200 && r < 150 && b < 150
+              : b > 210 && r < 150 && g < 180
+        if (
+          isHead &&
+          Math.hypot(x - center.x, y - center.y) > image.width * 0.2
+        ) {
+          pixels.push({ x, y })
+        }
       }
     }
-  }
-  expect(
-    pixels.length,
-    `the positive ${axis.toUpperCase()} gizmo head must be visible`
-  ).toBeGreaterThan(0)
-  const positive = {
-    x: pixels.reduce((sum, point) => sum + point.x, 0) / pixels.length,
-    y: pixels.reduce((sum, point) => sum + point.y, 0) / pixels.length,
-  }
-  return negative
-    ? { x: center.x * 2 - positive.x, y: center.y * 2 - positive.y }
-    : positive
+    expect(
+      pixels.length,
+      `the positive ${axis.toUpperCase()} gizmo head must be visible`
+    ).toBeGreaterThan(0)
+    const positive = {
+      x: pixels.reduce((sum, point) => sum + point.x, 0) / pixels.length,
+      y: pixels.reduce((sum, point) => sum + point.y, 0) / pixels.length,
+    }
+    position = negative
+      ? { x: center.x * 2 - positive.x, y: center.y * 2 - positive.y }
+      : positive
+  }).toPass({ timeout: 5_000 })
+  return position
 }
 
 test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
@@ -176,12 +177,14 @@ test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
         if (rendererTag === '@streamRenderer') await u.clearCommandLogs()
         const gizmo = page.locator('[aria-label*=gizmo]')
         await expect(gizmo).toBeVisible()
+        const clickTarget =
+          rendererTag === '@localRenderer' ? gizmo.locator('canvas') : gizmo
         const clickPosition =
           rendererTag === '@localRenderer'
-            ? await localAxisPosition(gizmo, axis, negative)
+            ? await localAxisPosition(clickTarget, axis, negative)
             : gizmoClickPosition
-        await gizmo.hover({ position: clickPosition })
-        await gizmo.click({ position: clickPosition })
+        await clickTarget.hover({ position: clickPosition })
+        await clickTarget.click({ position: clickPosition })
         await page.mouse.move(0, 0)
 
         if (rendererTag === '@streamRenderer') {
