@@ -35,22 +35,32 @@ jobs:
         with:
           workspaces: rust
           cache-on-failure: true
+      - name: Measure native trim phases
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('rust/kcl-lib/src/frontend.rs')
+          s = p.read_text()
+          start = s.index('    async fn execute_after_edit(')
+          end = s.index('\n    async fn ', start + 10)
+          body = s[start:end]
+          body = body.replace('        // Convert to string source', '        let phase_start = std::time::Instant::now();\n        // Convert to string source', 1)
+          body = body.replace('        let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;', '        let phase_parse = phase_start.elapsed();\n        let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;\n        let phase_solve = phase_start.elapsed();')
+          body = body.replace('        let src_delta = SourceDelta', '        let phase_feedback = phase_start.elapsed();\n        eprintln!("TRIM_PHASE delete={} vars={} parse={:?} solve={:?} feedback={:?}", is_delete, outcome.var_solutions.len(), phase_parse, phase_solve - phase_parse, phase_feedback - phase_solve);\n        let src_delta = SourceDelta')
+          assert 'TRIM_PHASE' in body
+          p.write_text(s[:start] + body + s[end:])
+          PY
       - name: Run candidate Rust tests
         env:
           ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           ZOO_HOST: https://api.dev.zoo.dev
           RUST_MIN_STACK: 10485760000
-          RUST_FILTER: >-
-            test(frontend::) or
-            test(simulation_tests::error_loft_section_order::) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_tooling_nest_block) or
-            test(=simulation_tests::kcl_samples::parse_tooling_nest_block) or
-            test(=simulation_tests::kcl_samples::unparse_tooling_nest_block)
+          RUST_FILTER: test(=frontend::trim::tests::test_stress_complex_trim_line_through_many_segments)
         shell: bash
         run: |
           set -o pipefail
           cd rust
-          cargo nextest run --workspace --features artifact-graph --profile ci --no-fail-fast --retries 1 -E "$RUST_FILTER" 2>&1 | tee ../comparison-rust.log
+          cargo nextest run --workspace --features artifact-graph --profile ci --no-fail-fast --retries 0 --success-output immediate -E "$RUST_FILTER" 2>&1 | tee ../comparison-rust.log
       - uses: actions/upload-artifact@v7
         if: always()
         with:
@@ -59,101 +69,3 @@ jobs:
             comparison-rust.log
             test-results/
 
-  wasm:
-    name: Build candidate WASM
-    runs-on: namespace-profile-ubuntu-8-cores
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: 2d31cd1e34e585f16cff9ec96bddf058d7868852
-          persist-credentials: false
-      - run: |
-          git rev-parse HEAD HEAD:rust
-          cp rust/rust-toolchain.toml ./rust-toolchain.toml
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - run: npm ci
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          cache: false
-          rustflags: ''
-      - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
-        with:
-          tool: wasm-pack
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: rust
-          cache-on-failure: true
-      - run: npm run build:wasm
-      - uses: actions/upload-artifact@v7
-        with:
-          name: prepared-wasm
-          path: rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
-      - uses: actions/upload-artifact@v7
-        with:
-          name: prepared-ts-rs-bindings
-          path: rust/kcl-lib/bindings/*
-
-  integration:
-    needs: wasm
-    name: Trim performance (${{ matrix.revision }})
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - revision: two-cores
-            runner: namespace-profile-ubuntu-2-cores
-            sha: 2d31cd1e34e585f16cff9ec96bddf058d7868852
-            wasm_run: ${{ github.run_id }}
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ matrix.sha }}
-          persist-credentials: false
-      - name: Record exact inputs
-        run: git rev-parse HEAD HEAD:rust HEAD:src/machines/sketchSolve/tools/trimToolImpl.spec.ts HEAD:vitest.config.ts
-      - uses: actions/download-artifact@v8
-        with:
-          github-token: ${{ github.token }}
-          run-id: ${{ matrix.wasm_run }}
-          name: prepared-wasm
-          path: prepared-wasm
-      - uses: actions/download-artifact@v8
-        with:
-          github-token: ${{ github.token }}
-          run-id: ${{ matrix.wasm_run }}
-          name: prepared-ts-rs-bindings
-          path: rust/kcl-lib/bindings
-      - name: Install WASM
-        run: |
-          mkdir -p rust/kcl-wasm-lib/pkg
-          cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg/
-          cp prepared-wasm/kcl_wasm_lib_bg.wasm public/
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - run: npm ci
-      - name: Run unchanged trim and project tests
-        env:
-          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
-        shell: bash
-        run: |
-          set -o pipefail
-          status=0
-          for attempt in 1 2 3; do
-            xvfb-run -a npm run test:integration -- src/machines/sketchSolve/tools/trimToolImpl.spec.ts src/lib/app.spec.ts --sequence.seed=15271 --retry=0 --pool=forks 2>&1 | tee -a comparison-integration.log || status=1
-          done
-          exit "$status"
-      - uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: integration-${{ matrix.revision }}
-          path: |
-            comparison-integration.log
-            test-results/
