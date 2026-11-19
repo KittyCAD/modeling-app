@@ -1,6 +1,9 @@
 import type { BrowserWindow } from 'electron'
 
-import { EXPORT_PROJECT_ARCHIVE_LABEL } from '@src/lib/constants'
+import {
+  EXPORT_MODEL_LABEL,
+  EXPORT_PROJECT_ARCHIVE_LABEL,
+} from '@src/lib/constants'
 import { sendMenuAction } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
 import { isMac } from '@src/menu/utils'
@@ -124,7 +127,7 @@ export const modelingFileRole = (
         click: sendMenuAction(mainWindow, 'File.Add file to project'),
       },
       {
-        label: 'Export',
+        label: EXPORT_MODEL_LABEL,
         id: 'File.Export current part',
         click: sendMenuAction(mainWindow, 'File.Export current part'),
       },

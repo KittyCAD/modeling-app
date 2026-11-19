@@ -519,7 +519,9 @@ extrude001 = extrude(region001, length = 10mm)`
       await homePage.goToModelingScene()
       await scene.settled()
       await cmdBar.openCmdBar()
-      await cmdBar.cmdOptions.getByText('Export', { exact: true }).click()
+      await cmdBar.cmdOptions
+        .getByText('Export 3D model', { exact: true })
+        .click()
       await expect
         .poll(() => cmdBar.getState())
         .toMatchObject({ stage: 'arguments', currentArgKey: 'type' })

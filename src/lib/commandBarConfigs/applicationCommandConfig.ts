@@ -6,6 +6,7 @@ import type { App } from '@src/lib/app'
 import type { Command } from '@src/lib/commandTypes'
 import {
   EXPORT_PROJECT_ARCHIVE_COMMAND,
+  EXPORT_PROJECT_ARCHIVE_ICON,
   EXPORT_PROJECT_ARCHIVE_LABEL,
 } from '@src/lib/constants'
 import {
@@ -578,7 +579,7 @@ export function createApplicationCommands({
     displayName: EXPORT_PROJECT_ARCHIVE_LABEL,
     description: 'Save the entire project as a ZIP archive.',
     needsReview: false,
-    icon: 'download',
+    icon: EXPORT_PROJECT_ARCHIVE_ICON,
     onSubmit: () => {
       const project = app.project
       return exportProjectZip({

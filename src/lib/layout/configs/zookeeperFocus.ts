@@ -1,6 +1,7 @@
 import {
   DefaultLayoutPaneID,
   DefaultLayoutToolbarID,
+  exportModelAction,
   exportProjectArchiveAction,
 } from '@src/lib/layout/configs/default'
 import {
@@ -75,12 +76,7 @@ export const zookeeperFocusConfig: Layout = {
           icon: 'importFile',
           actionType: ActionType.AddFile,
         },
-        {
-          id: 'export',
-          label: 'Export',
-          icon: 'floppyDiskArrow',
-          actionType: ActionType.Export,
-        },
+        exportModelAction,
         exportProjectArchiveAction,
         {
           id: 'make',

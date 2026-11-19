@@ -63,6 +63,8 @@ export type ActionLibrary = Record<ActionTypeId, ActionTypeDefinition>
 
 export type ActionTypeDefinition = {
   execute: () => void
+  label?: string
+  icon?: CustomIconName
   /** A custom hook for the Action to detect if it should be enabled */
   useDisabled?: () => string | undefined
   shortcut?: string

@@ -3,7 +3,13 @@ import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { selectCommand } from '@src/lib/commandUtils'
-import { EXPORT_PROJECT_ARCHIVE_COMMAND } from '@src/lib/constants'
+import {
+  EXPORT_MODEL_ICON,
+  EXPORT_MODEL_LABEL,
+  EXPORT_PROJECT_ARCHIVE_COMMAND,
+  EXPORT_PROJECT_ARCHIVE_ICON,
+  EXPORT_PROJECT_ARCHIVE_LABEL,
+} from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { isMobile } from '@src/lib/isMobile'
 import { layoutActionLibraryFacet } from '@src/lib/layout/registry/contract'
@@ -23,6 +29,8 @@ export const useDefaultActionLibrary = () => {
     () =>
       Object.freeze({
         export: {
+          label: EXPORT_MODEL_LABEL,
+          icon: EXPORT_MODEL_ICON,
           useHidden: () => false,
           useDisabled: () => {
             const engineIsReady = useReliesOnEngine(
@@ -37,6 +45,8 @@ export const useDefaultActionLibrary = () => {
             selectCommand(commands, { name: 'Export', groupId: 'modeling' }),
         },
         [ActionType.ExportProjectArchive]: {
+          label: EXPORT_PROJECT_ARCHIVE_LABEL,
+          icon: EXPORT_PROJECT_ARCHIVE_ICON,
           execute: () =>
             selectCommand(commands, EXPORT_PROJECT_ARCHIVE_COMMAND),
         },

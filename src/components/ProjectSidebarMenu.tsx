@@ -11,6 +11,7 @@ import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBa
 import { selectCommand } from '@src/lib/commandUtils'
 import {
   APP_NAME,
+  EXPORT_MODEL_LABEL,
   EXPORT_PROJECT_ARCHIVE_COMMAND,
   EXPORT_PROJECT_ARCHIVE_LABEL,
 } from '@src/lib/constants'
@@ -381,7 +382,9 @@ function ProjectMenuPopover({
           Element: 'button' as const,
           children: (
             <>
-              <span className={projectMenuItemLabelClassName}>Export</span>
+              <span className={projectMenuItemLabelClassName}>
+                {EXPORT_MODEL_LABEL}
+              </span>
               <kbd className={projectMenuItemHotkeyClassName}>
                 {hotkeyDisplay('ctrl+shift+e', platform)}
               </kbd>

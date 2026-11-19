@@ -30,6 +30,8 @@ import type {
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  EXPORT_MODEL_ICON,
+  EXPORT_MODEL_LABEL,
   KCL_AXIS_X,
   KCL_AXIS_Y,
   KCL_AXIS_Z,
@@ -466,9 +468,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   ],
   Export: {
+    displayName: EXPORT_MODEL_LABEL,
     forceCommandBar: true,
     description: 'Export the current model.',
-    icon: 'floppyDiskArrow',
+    icon: EXPORT_MODEL_ICON,
     needsReview: true,
     args: {
       type: {
