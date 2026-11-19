@@ -1812,7 +1812,7 @@ sketch001 = sketch(on = XZ) {
     await test.step('Expect extrusion', async () => {
       await scene.settled(cmdBar)
       await editor.expectEditor.toContain(
-        'region(point = [0.025mm, -1.9875mm], sketch = sketch001)'
+        'region(point = [0.025mm, -1.98995mm], sketch = sketch001)'
       )
       await editor.expectEditor.toContain(
         'extrude001 = extrude(region001, length = 5)'
@@ -1913,7 +1913,7 @@ sketch001 = sketch(on = XZ) {
     await test.step('Expect extrusion uses inches for region point', async () => {
       await scene.settled(cmdBar)
       await editor.expectEditor.toContain(
-        'region(point = [0.0009843in, -0.078248in], sketch = sketch001)'
+        'region(point = [0.0009843in, -0.0783445in], sketch = sketch001)'
       )
       await editor.expectEditor.toContain(
         'extrude001 = extrude(region001, length = 5)'

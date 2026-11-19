@@ -23,41 +23,30 @@ test.describe('Regression tests', { tag: '@desktop' }, () => {
     homePage,
     scene,
   }) => {
-    // because the model has `line([0,0]..` it is valid code, but the model is invalid
-    // regression test for https://github.com/KittyCAD/modeling-app/issues/3251
-    // Since the bad model also found as issue with the artifact graph, which in tern blocked the editor diognostics
-    // const u = await getUtils(page)
-    await context.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch2 = startSketchOn(XY)
-  sketch001 = startSketchOn(XY)
-    |> startProfile(at = [-0, -0])
-    |> line(end = [0, 0])
-    |> line(end = [-4.84, -5.29])
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()`
-      )
-    })
+    // The engine now accepts the original duplicate-vertex profile. Keep the
+    // regression for #3251: an engine failure and its partial artifact graph
+    // must still produce an inline diagnostic. This fillet exceeds the solid.
+    const code = await fsp.readFile(
+      path.join(
+        process.cwd(),
+        'rust/kcl-lib/tests/error_large_fillet_radius/input.kcl'
+      ),
+      'utf-8'
+    )
+    await context.addInitScript((code) => {
+      localStorage.setItem('persistCode', code)
+    }, code)
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
-    // await u.waitForPageLoad()
-
-    // error in guter
+    // Error in the gutter.
     await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    // this is a cryptic error message, fact that all the lines are co-linear from the `line([0,0])` is the issue why
-    // the close doesn't work
-    // when https://github.com/KittyCAD/modeling-app/issues/3268 is closed
-    // this test will need updating
-    const crypticErrorText = `Cannot close a path that is non-planar or with duplicate vertices.
-Internal engine error on request`
-    await expect(page.getByText(crypticErrorText).first()).toBeVisible()
+    await expect(page.getByText('Edge cut failed').first()).toBeVisible()
     // Ensure we didn't nest the json.
     await expect(page.getByText('ApiError')).not.toBeVisible()
   })
