@@ -39,6 +39,7 @@ import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { reportRejection, trap } from '@src/lib/trap'
 import { isArray, isNonNullable, uuidv4 } from '@src/lib/utils'
 import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
+import toast from 'react-hot-toast'
 import {
   Box3,
   BufferGeometry,
@@ -92,6 +93,8 @@ import type {
 } from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
 
 const ENGINE_MILLIMETERS_TO_GLTF_METERS = 1 / 1000
+
+const MODEL_LOAD_ERROR_TOAST_ID = 'local-renderer-model-load-error'
 
 // If the filter selects whole bodies, returns which kind: 'solid3d' (the "Bodies"
 // filter) or 'object' (set by commands, also allows planes and regions).
@@ -1399,6 +1402,7 @@ export class LocalRenderer {
       this.resetCameraIfPending()
       this.invalidateBaseRender()
       this.loadedSceneGeneration = sceneGeneration
+      toast.dismiss(MODEL_LOAD_ERROR_TOAST_ID)
       this.onModelLoadSettled?.(true)
     } catch (error) {
       if (isCurrent()) this.handleModelLoadError(error)
@@ -1410,6 +1414,9 @@ export class LocalRenderer {
     this.rebuildSelectionTargets()
     console.error('[LocalRenderer] GLB model load failed', error)
     reportRejection(error)
+    toast.error('Failed to load the model for display.', {
+      id: MODEL_LOAD_ERROR_TOAST_ID,
+    })
     this.onModelLoadSettled?.()
   }
 
