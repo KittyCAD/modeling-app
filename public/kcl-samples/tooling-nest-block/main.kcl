@@ -40,12 +40,7 @@ fn nest(nestPlane, xPos, yPos, nestSize) {
   nestFn = startSketchOn(nestPlane)
     |> circle(center = [xPos * sideLength, yPos * sideLength], radius = nestSize, tag = $seg01)
     |> extrude(length = -nestSize)
-    |> fillet(
-         radius = nestSize * .99,
-         tags = [
-           getOppositeEdge(seg01)
-         ],
-       )
+    |> fillet(radius = nestSize * .99, tags = [getOppositeEdge(seg01)])
   return nestFn
 }
 
