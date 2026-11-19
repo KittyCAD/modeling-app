@@ -38,7 +38,13 @@ jobs:
       - name: Build profiling WASM with function names
         run: |
           sed -i s/--release/--profiling/ scripts/build-wasm.sh
+          cat >> rust/kcl-wasm-lib/Cargo.toml <<'TOML'
+
+          [package.metadata.wasm-pack.profile.profiling]
+          wasm-opt = ['-O', '-g']
+          TOML
           npm run build:wasm
+          node --input-type=module -e "import fs from 'node:fs'; import assert from 'node:assert/strict'; const m = new WebAssembly.Module(fs.readFileSync('public/kcl_wasm_lib_bg.wasm')); const names = WebAssembly.Module.customSections(m, 'name'); assert(names.length > 0, 'profiling WASM must retain function names'); console.log('name-section bytes', names[0].byteLength);"
       - uses: actions/upload-artifact@v7
         with:
           name: prepared-wasm
