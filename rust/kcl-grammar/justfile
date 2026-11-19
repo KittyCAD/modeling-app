@@ -1,0 +1,22 @@
+default:
+    @just --list
+
+# Generate and build the recognizer.
+build:
+    cargo build -p kcl-grammar --locked
+
+# Run the membership tests.
+test:
+    cargo nextest run -p kcl-grammar --locked --retries 0 --test membership
+
+# Check all crate targets.
+check:
+    cargo check -p kcl-grammar --all-targets --locked
+
+# Format the Rust source.
+fmt:
+    cargo +nightly fmt -p kcl-grammar
+
+# Check the crate with the workspace lint settings.
+lint:
+    cargo clippy -p kcl-grammar --all-targets --all-features --locked -- -D warnings

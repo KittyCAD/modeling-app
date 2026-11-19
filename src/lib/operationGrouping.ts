@@ -76,6 +76,14 @@ export function groupNestedOperations(
   allOperations: Operation[],
   shouldGroup: (groupBegin: GroupBeginOperation) => boolean
 ): NestedOpList {
+  if (
+    !opList.some(
+      (item) =>
+        !isArray(item) && item.type === 'GroupBegin' && shouldGroup(item)
+    )
+  ) {
+    return [...opList]
+  }
   const groupOperationsByKey = new Map<string, Operation[]>()
   const keyByGroupBegin = new Map<GroupBeginOperation, string>()
   const seenSignatureCounts = new Map<string, number>()

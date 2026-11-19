@@ -7,8 +7,8 @@ import {
   addChamfer,
   addFillet,
   deleteEdgeTreatment,
-  retrieveEdgeSelectionsFromOpArgs,
-  retrieveEdgeSelectionsFromSingleEdgeRef,
+  retrieveEdgeSelectionsFromLegacyOpArgs,
+  retrieveEdgeSelectionFromOpValue,
 } from '@src/lang/modifyAst/edges'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -66,7 +66,7 @@ beforeEach(async () => {
   }
 
   const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine({ webrtc: false, pool: 'cpu' })
+    await buildTheWorldAndConnectToEngine({ webrtc: false, geometryOnly: true })
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   rustContextInThisFile = rustContext
@@ -1169,7 +1169,7 @@ ${extrudedTriangle}`
       ) {
         throw new Error('Legacy fillet operation or tags argument not found')
       }
-      const selection = retrieveEdgeSelectionsFromOpArgs(
+      const selection = retrieveEdgeSelectionsFromLegacyOpArgs(
         operation.unlabeledArg,
         operation.labeledArgs.tags,
         artifactGraph,
@@ -1229,7 +1229,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       ) {
         throw new Error('Legacy fillet operation or tags argument not found')
       }
-      const selection = retrieveEdgeSelectionsFromOpArgs(
+      const selection = retrieveEdgeSelectionsFromLegacyOpArgs(
         operation.unlabeledArg,
         operation.labeledArgs.tags,
         artifactGraph,
@@ -2095,7 +2095,7 @@ ${extrudedTriangle}`
     })
   })
 
-  describe('Testing retrieveEdgeSelectionsFromOpArgs', () => {
+  describe('Testing retrieveEdgeSelectionsFromLegacyOpArgs', () => {
     it.each([
       { command: 'fillet', parameter: 'radius' },
       { command: 'chamfer', parameter: 'length' },
@@ -2140,7 +2140,7 @@ ${command}001 = ${command}(extrude001, tags = [getOppositeEdge(seg01)], ${parame
           throw new Error('Legacy edge source segment not found')
         }
 
-        const selection = retrieveEdgeSelectionsFromOpArgs(
+        const selection = retrieveEdgeSelectionsFromLegacyOpArgs(
           operation.unlabeledArg,
           tagsArg,
           artifactGraph,
@@ -2202,40 +2202,36 @@ ${command}001 = ${command}(extrude001, tags = [getOppositeEdge(seg01)], ${parame
       expect(commonFaces).toHaveLength(2)
       const endFaceIds = [crypto.randomUUID(), crypto.randomUUID()]
 
-      const selections = retrieveEdgeSelectionsFromSingleEdgeRef(
+      const selection = retrieveEdgeSelectionFromOpValue(
         {
+          type: 'Object',
           value: {
-            type: 'Object',
-            value: {
-              sideFaces: {
-                type: 'Array',
-                value: commonFaces.map((face) => ({
-                  type: 'Uuid' as const,
-                  value: face.id,
-                })),
-              },
-              endFaces: {
-                type: 'Array',
-                value: endFaceIds.map((value) => ({
-                  type: 'Uuid' as const,
-                  value,
-                })),
-              },
-              index: {
-                type: 'Number',
-                value: 3,
-                ty: { type: 'Unknown' },
-              },
+            sideFaces: {
+              type: 'Array',
+              value: commonFaces.map((face) => ({
+                type: 'Uuid' as const,
+                value: face.id,
+              })),
+            },
+            endFaces: {
+              type: 'Array',
+              value: endFaceIds.map((value) => ({
+                type: 'Uuid' as const,
+                value,
+              })),
+            },
+            index: {
+              type: 'Number',
+              value: 3,
+              ty: { type: 'Unknown' },
             },
           },
-          sourceRange: topLevelRange(0, 0),
         },
         artifactGraph
       )
-      if (err(selections)) throw selections
+      if (err(selection)) throw selection
 
-      expect(selections.graphSelections).toHaveLength(1)
-      expect(selections.graphSelections[0].entityRef).toEqual({
+      expect(selection.entityRef).toEqual({
         type: 'edge',
         side_faces: commonFaces.map((face) => face.id),
         end_faces: endFaceIds,
@@ -2285,7 +2281,7 @@ chamfer001 = chamfer(
         throw new Error('Chamfer operation not found')
       }
 
-      const selections = retrieveEdgeSelectionsFromOpArgs(
+      const selections = retrieveEdgeSelectionsFromLegacyOpArgs(
         op.unlabeledArg,
         op.labeledArgs.tags,
         artifactGraph,

@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from 'vitest'
+import { validateGdtText } from '@src/lib/gdtTextValidation'
 import { createActor } from 'xstate'
 import toast from 'react-hot-toast'
 
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Command } from '@src/lib/commandTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { validateGdtText } from '@src/lib/gdtTextValidation'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
@@ -194,6 +194,80 @@ describe('commandBarMachine', () => {
       errorToast.mockRestore()
     }
   })
+  it('retains text drafts across argument switches without submitting stale values', async () => {
+    const command = {
+      scopes: GLOBAL_COMMAND_SCOPES,
+      name: 'Test command',
+      groupId: 'test',
+      needsReview: false,
+      onSubmit: vi.fn(),
+      args: {
+        name: { inputType: 'string', required: true, defaultValue: 'untitled' },
+        units: {
+          inputType: 'options',
+          required: true,
+          options: [{ name: 'Millimeters', value: 'mm' }],
+        },
+      },
+    } satisfies Command
+    const actor = createActor(commandBarMachine, {
+      input: {
+        commands: [command],
+        wasmInstancePromise: Promise.resolve({} as ModuleType),
+        machineManager: {} as MachineManager,
+      },
+    }).start()
+    const select = () =>
+      actor.send({
+        type: 'Find and select command',
+        data: { name: command.name, groupId: command.groupId },
+      })
+    try {
+      select()
+      actor.send({ type: 'Submit argument', data: { name: 'old-title' } })
+      await vi.waitFor(() =>
+        expect(actor.getSnapshot().context.currentArgument?.name).toBe('units')
+      )
+      actor.send({
+        type: 'Change current argument',
+        data: { arg: { ...command.args.name, name: 'name' } },
+      })
+      actor.send({
+        type: 'Update argument draft',
+        data: { name: 'name', value: 'my-project' },
+      })
+      actor.send({
+        type: 'Change current argument',
+        data: { arg: { ...command.args.units, name: 'units' } },
+      })
+      actor.send({ type: 'Submit argument', data: { units: 'mm' } })
+      await vi.waitFor(() =>
+        expect(actor.getSnapshot().context.currentArgument?.name).toBe('name')
+      )
+      expect(actor.getSnapshot().context.argumentDrafts.name).toBe('my-project')
+      expect(actor.getSnapshot().context.argumentsToSubmit.name).toBeUndefined()
+      expect(command.onSubmit).not.toHaveBeenCalled()
+
+      actor.send({ type: 'Submit argument', data: { name: 'my-project' } })
+      await vi.waitFor(() =>
+        expect(command.onSubmit).toHaveBeenCalledExactlyOnceWith({
+          name: 'my-project',
+          units: 'mm',
+        })
+      )
+      select()
+      actor.send({
+        type: 'Update argument draft',
+        data: { name: 'name', value: 'discarded' },
+      })
+      actor.send({ type: 'Close' })
+      select()
+      expect(actor.getSnapshot().context.argumentDrafts).toEqual({})
+    } finally {
+      actor.stop()
+    }
+  })
+
   it('preserves hidden default values that are not declared command args', () => {
     const command = {
       scopes: GLOBAL_COMMAND_SCOPES,
@@ -341,6 +415,7 @@ describe('commandBarMachine', () => {
     }
 
     it('keeps argument and codemod validation failures editable', async () => {
+      const toastError = vi.spyOn(toast, 'error').mockReturnValue('error')
       const validation = vi.fn(async ({ data }: { data: unknown }) =>
         data === 'duplicate' ? 'This variable name is already in use.' : true
       )
@@ -373,6 +448,9 @@ describe('commandBarMachine', () => {
         expect(validation).toHaveBeenCalledWith(
           expect.objectContaining({ data: 'duplicate' })
         )
+        expect(actor.getSnapshot().context.reviewValidationError).toBe(
+          'This variable name is already in use.'
+        )
 
         submit('invalid geometry')
         await vi.waitFor(() => {
@@ -382,6 +460,15 @@ describe('commandBarMachine', () => {
           )
         })
         expect(command.onSubmit).not.toHaveBeenCalled()
+        expect(toastError).not.toHaveBeenCalled()
+
+        actor.send({ type: 'Dialog draft changed' })
+        expect(
+          actor.getSnapshot().context.reviewValidationError
+        ).toBeUndefined()
+        expect(
+          actor.getSnapshot().context.reviewValidationDetails
+        ).toBeUndefined()
 
         submit('unique')
         await vi.waitFor(() =>
@@ -391,6 +478,7 @@ describe('commandBarMachine', () => {
         )
       } finally {
         actor.stop()
+        toastError.mockRestore()
       }
     })
 
@@ -446,6 +534,8 @@ describe('commandBarMachine', () => {
         expect(
           actor.getSnapshot().matches('Checking Arguments for Dialog')
         ).toBe(true)
+        actor.send({ type: 'Dialog draft changed' })
+        expect(actor.getSnapshot().matches('Gathering arguments')).toBe(true)
         actor.send({
           type: 'Find and select command',
           data: {

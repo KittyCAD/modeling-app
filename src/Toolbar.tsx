@@ -3,7 +3,6 @@ import { useAppState } from '@src/AppState'
 import { ActionButton } from '@src/components/ActionButton'
 import { ActionButtonDropdown } from '@src/components/ActionButtonDropdown'
 import { ActionButtonRecentDropdown } from '@src/components/ActionButtonRecentDropdown'
-import { LegacySketchModeBanner } from '@src/components/Announcements'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip, {
   RICH_TOOLTIP_SURFACE_CLASS_NAME,
@@ -51,13 +50,13 @@ import { isArray, type Platform } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getSymmetricToolSelectionStep } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
-  keymapScopesValueSpec,
+  keymapScopesFacet,
   keymapService,
 } from '@src/registry/contracts/keymap'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { useSelector } from '@xstate/react'
 import { memo, use, useCallback, useMemo, useRef, useState } from 'react'
@@ -94,12 +93,13 @@ const Toolbar_ = memo(
         ? commandKey(command)
         : undefined
     })
-    const keymap = app.registry.get(keymapService)
+    const keymap = app.registry.required(keymapService)
     const keymapTree = keymap.keymap.value
     const { kclManager } = useSingletons()
     const platform = usePlatform()
-    const executionService = app.registry.signal(executingEditorService).value
-    const keymapScopes = app.registry.signal(keymapScopesValueSpec).value
+    const executionService =
+      app.registry.optional(projectSession)?.executingEditor.value
+    const keymapScopes = app.registry.observe(keymapScopesFacet).value
     const toolbarConfig = useToolbarConfig()
     const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
@@ -156,8 +156,15 @@ const Toolbar_ = memo(
       )?.keystrokes ?? [UNRENDERED_EXECUTE_HOTKEY],
       platform
     )
+    const sketchSolveIsExiting = useSelector(
+      props.state.children.sketchSolveMachine,
+      (snapshot) =>
+        isSketchSolveSnapshot(snapshot) &&
+        (snapshot.matches('exiting with cleanup') ||
+          snapshot.matches('exiting'))
+    )
     const disableSketchToolbar =
-      isSketchToolbarTransitioning(props.state) &&
+      (isSketchToolbarTransitioning(props.state) || sketchSolveIsExiting) &&
       (toolbarConfigurationName === 'sketching' ||
         toolbarConfigurationName === 'sketchSolve')
 
@@ -225,13 +232,7 @@ const Toolbar_ = memo(
         keepSelection: false,
       }),
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-      [
-        props.state,
-        props.send,
-        sketchPathId,
-
-        kclManager.editorView.hasFocus,
-      ]
+      [props.state, props.send, sketchPathId, kclManager.editorView.hasFocus]
     )
 
     const tooltipContentClassName = !showRichContent
@@ -424,15 +425,11 @@ const Toolbar_ = memo(
         data-current-mode={toolbarConfigurationName}
         data-testid="toolbar"
         data-onboarding-id="toolbar"
-        className={`toolbar z-[19] max-w-full whitespace-nowrap px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm ${
-          disableSketchToolbar ? 'opacity-50' : ''
-        }`}
+        className={`toolbar z-[19] max-w-full whitespace-nowrap px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm ${disableSketchToolbar ? 'opacity-50' : ''}`}
       >
         <ul
           ref={toolbarButtonsRef}
-          className={`has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex flex-wrap gap-1.5 items-center ${
-            disableSketchToolbar ? 'pointer-events-none' : ''
-          }`}
+          className={`has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex flex-wrap gap-1.5 items-center ${disableSketchToolbar ? 'pointer-events-none' : ''}`}
         >
           {/* A menu item will either be a vertical line break, a button with a dropdown, or a single button */}
           {currentModeItems.map((maybeIconConfig, i) => {
@@ -812,9 +809,6 @@ const Toolbar_ = memo(
               <p className="text-xs">{symmetricToolPrompt}</p>
             </div>
           )}
-          {props.state.context.store.useSketchSolveMode?.current === true &&
-            modelingMachineStateToToolbarModeName(props.state) ===
-              'sketching' && <LegacySketchModeBanner />}
         </div>
       </menu>
     )

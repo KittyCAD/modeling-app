@@ -1,32 +1,28 @@
-import {
-  defineRegistryItem,
-  pluginsValueSpec,
-  provideService,
-  Registry,
-} from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
+import type { ZDSProject } from '@src/lib/projectSession'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
-  commandsValueSpec,
+  commandsFacet,
   FILE_COMMAND_SCOPES,
   MODE_MODELING_COMMAND_SCOPE,
 } from '@src/registry/contracts/commands'
 import {
   type EngineSceneExtensionContext,
-  engineSceneStreamClassNamesValueSpec,
-  engineSceneStreamLayersValueSpec,
-  engineSceneViewExtensionsValueSpec,
+  engineSceneStreamClassNamesFacet,
+  engineSceneStreamLayersFacet,
+  engineSceneViewExtensionsFacet,
   mergeEngineSceneClassNames,
   resolveEngineSceneViewExtensions,
 } from '@src/registry/contracts/engineScene'
-import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
-import { keymapValueSpec } from '@src/registry/contracts/keymap'
-import { settingsValueSpec } from '@src/registry/contracts/settings'
+import { keymapFacet } from '@src/registry/contracts/keymap'
+import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
+import { projectSession } from '@src/registry/contracts/projectSession'
+import { settingsFacet } from '@src/registry/contracts/settings'
 import {
-  statusBarGlobalItemsValueSpec,
-  statusBarLocalItemsValueSpec,
+  statusBarGlobalItemsFacet,
+  statusBarLocalItemsFacet,
 } from '@src/registry/contracts/statusBar'
+import { plugins, provide, Registry } from 'plankton'
 import { describe, expect, it, vi } from 'vitest'
 import type { StateFrom } from 'xstate'
 import engineSceneExtension, { ENGINE_SCENE_COMMAND_IDS } from '.'
@@ -46,21 +42,53 @@ vi.mock('@src/components/UnitsMenu', () => ({
   UnitsMenu: () => null,
 }))
 
-function createExecutingEditorService(
+function createProjectSession(
   isExecuting = signal(false),
   showExperimentalFeaturesStatusBarItem = signal(true),
   selectionStatusLabel = signal('No selection')
-): ExecutingEditorService {
+): ProjectSessionService {
+  const project = signal<ZDSProject | undefined>(undefined)
+  const libraryId = signal<string | undefined>(undefined)
   return {
-    code: signal(''),
-    hasEditsSinceLastExecution: signal(false),
-    isExecuting,
-    executionElapsedMs: signal<number | null>(null),
-    selectionStatusLabel,
-    showExperimentalFeaturesStatusBarItem,
-    getPendingCommandCount: vi.fn(() => 0),
-    executeCode: vi.fn(),
-    updateCode: vi.fn(),
+    storageFor: vi.fn(),
+    retrySave: vi.fn(async () => undefined),
+    deleteEntry: vi.fn(async () => undefined),
+    applyStorageSnapshot: vi.fn(async () => {}),
+    editorChanged: vi.fn(),
+    writeThumbnail: vi.fn(async () => {}),
+    refreshProject: vi.fn(async () => undefined),
+    openFile: vi.fn(async () => undefined),
+    rename: vi.fn(async () => undefined),
+    textFileIO: {
+      read: vi.fn(async () => ''),
+      write: vi.fn(async () => {}),
+      watch: vi.fn(),
+      unwatch: vi.fn(),
+    },
+    project,
+    currentProjectLibraryId: libraryId,
+    getProject: () => project.value,
+    setProject: (next) => {
+      project.value = next
+    },
+    clearProject: () => {
+      project.value = undefined
+    },
+    getCurrentProjectLibraryId: () => libraryId.value,
+    setCurrentProjectLibraryId: (next) => {
+      libraryId.value = next
+    },
+    executingEditor: signal({
+      code: signal(''),
+      hasEditsSinceLastExecution: signal(false),
+      isExecuting,
+      executionElapsedMs: signal<number | null>(null),
+      selectionStatusLabel,
+      showExperimentalFeaturesStatusBarItem,
+      getPendingCommandCount: vi.fn(() => 0),
+      executeCode: vi.fn(),
+      updateCode: vi.fn(),
+    }),
   }
 }
 
@@ -88,37 +116,27 @@ function createEngineSceneViewExtensionContext(
 }
 
 describe('engineScene extension', () => {
-  it('bundles the execution indicator without a plugin or setting', () => {
+  it('bundles the execution indicator without a plugin or setting', async () => {
     const registry = new Registry()
-    registry.configure([engineSceneExtension])
-
+    await registry.configure([engineSceneExtension])
     const executionIndicatorPlugin = registry
-      .get(pluginsValueSpec)
+      .get(plugins)
       .find((plugin) => plugin.id === 'execution-indicator')
 
     expect(executionIndicatorPlugin).toBeUndefined()
     expect(
-      registry.get(settingsValueSpec).modeling?.executionIndicator
+      registry.get(settingsFacet).modeling?.executionIndicator
     ).toBeUndefined()
   })
-
-  it('contributes ordered engine scene status bar items', () => {
+  it('contributes ordered engine scene status bar items', async () => {
     const registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-executing-editor-service',
-        providesServices: [
-          provideService(
-            executingEditorService,
-            createExecutingEditorService()
-          ),
-        ],
-      }),
+    await registry.configure([
+      [provide(projectSession, createProjectSession())],
       engineSceneExtension,
     ])
 
     expect(
-      registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
+      registry.get(statusBarLocalItemsFacet).map((item) => item.id)
     ).toEqual([
       'measure',
       'physical-analysis',
@@ -128,56 +146,48 @@ describe('engineScene extension', () => {
       'experimental-features',
     ])
     expect(
-      registry.get(statusBarLocalItemsValueSpec).map((item) => item.scopes)
+      registry.get(statusBarLocalItemsFacet).map((item) => item.scopes)
     ).toEqual([['file'], ['file'], ['file'], ['file'], ['file'], ['file']])
-    expect(registry.get(statusBarGlobalItemsValueSpec)).toMatchObject([
+    expect(registry.get(statusBarGlobalItemsFacet)).toMatchObject([
       {
         id: 'capture-screenshot',
         scopes: ['file'],
       },
     ])
   })
-
-  it('updates the selection status item when its label changes', () => {
+  it('updates the selection status item when its label changes', async () => {
     const registry = new Registry()
     const selectionStatusLabel = signal('No selection')
-    const executionService = createExecutingEditorService(
+    const executionService = createProjectSession(
       undefined,
       undefined,
       selectionStatusLabel
     )
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-executing-editor-service',
-        providesServices: [
-          provideService(executingEditorService, executionService),
-        ],
-      }),
+    await registry.configure([
+      [provide(projectSession, executionService)],
       engineSceneExtension,
     ])
 
-    const before = registry.get(statusBarLocalItemsValueSpec)
+    const before = registry.get(statusBarLocalItemsFacet)
     selectionStatusLabel.value = '1 edge'
-    const after = registry.get(statusBarLocalItemsValueSpec)
+    const after = registry.get(statusBarLocalItemsFacet)
 
     expect(after).not.toBe(before)
     expect(after.find((item) => item.id === 'selection')).not.toBe(
       before.find((item) => item.id === 'selection')
     )
   })
-
-  it('contributes a command and modeling keybinding to open the measure tool', () => {
+  it('contributes a command and modeling keybinding to open the measure tool', async () => {
     measurementToolService.close()
     const registry = new Registry()
-    registry.configure([engineSceneExtension])
-
+    await registry.configure([engineSceneExtension])
     const command = registry
-      .get(commandsValueSpec)
+      .get(commandsFacet)
       .find(
         (candidate) => candidate.id === ENGINE_SCENE_COMMAND_IDS.openMeasureTool
       )
     const keymapItem = registry
-      .get(keymapValueSpec)
+      .get(keymapFacet)
       .items.find((item) => item.id === 'engine-scene.measure.open')
 
     expect(command).toMatchObject({
@@ -199,20 +209,18 @@ describe('engineScene extension', () => {
 
     measurementToolService.close()
   })
-
-  it('contributes a command and modeling keybinding to open the physical analysis tool', () => {
+  it('contributes a command and modeling keybinding to open the physical analysis tool', async () => {
     physicalAnalysisService.close()
     const registry = new Registry()
-    registry.configure([engineSceneExtension])
-
+    await registry.configure([engineSceneExtension])
     const command = registry
-      .get(commandsValueSpec)
+      .get(commandsFacet)
       .find(
         (candidate) =>
           candidate.id === ENGINE_SCENE_COMMAND_IDS.openPhysicalAnalysisTool
       )
     const keymapItem = registry
-      .get(keymapValueSpec)
+      .get(keymapFacet)
       .items.find((item) => item.id === 'engine-scene.physical-analysis.open')
 
     expect(command).toMatchObject({
@@ -234,13 +242,11 @@ describe('engineScene extension', () => {
 
     physicalAnalysisService.close()
   })
-
-  it('contributes the capture screenshot command', () => {
+  it('contributes the capture screenshot command', async () => {
     const registry = new Registry()
-    registry.configure([engineSceneExtension])
-
+    await registry.configure([engineSceneExtension])
     const command = registry
-      .get(commandsValueSpec)
+      .get(commandsFacet)
       .find(
         (candidate) =>
           candidate.id === ENGINE_SCENE_COMMAND_IDS.captureScreenshot
@@ -256,28 +262,24 @@ describe('engineScene extension', () => {
     })
     expect(command?.hideFromSearch).not.toBe(true)
   })
-
-  it('hides the experimental features item when file settings deny it', () => {
+  it('hides the experimental features item when file settings deny it', async () => {
     const showExperimentalFeaturesStatusBarItem = signal(false)
     const registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-executing-editor-service',
-        providesServices: [
-          provideService(
-            executingEditorService,
-            createExecutingEditorService(
-              signal(false),
-              showExperimentalFeaturesStatusBarItem
-            )
-          ),
-        ],
-      }),
+    await registry.configure([
+      [
+        provide(
+          projectSession,
+          createProjectSession(
+            signal(false),
+            showExperimentalFeaturesStatusBarItem
+          )
+        ),
+      ],
       engineSceneExtension,
     ])
 
     expect(
-      registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
+      registry.get(statusBarLocalItemsFacet).map((item) => item.id)
     ).toEqual([
       'measure',
       'physical-analysis',
@@ -289,7 +291,7 @@ describe('engineScene extension', () => {
     showExperimentalFeaturesStatusBarItem.value = true
 
     expect(
-      registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
+      registry.get(statusBarLocalItemsFacet).map((item) => item.id)
     ).toEqual([
       'measure',
       'physical-analysis',
@@ -299,37 +301,33 @@ describe('engineScene extension', () => {
       'experimental-features',
     ])
   })
-
-  it('contributes engine scene view extensions by zone', () => {
+  it('contributes engine scene view extensions by zone', async () => {
     const registry = new Registry()
-    registry.configure([engineSceneExtension])
-
+    await registry.configure([engineSceneExtension])
     expect(
-      registry.get(engineSceneViewExtensionsValueSpec).map((extension) => ({
+      registry.get(engineSceneViewExtensionsFacet).map((extension) => ({
         id: extension.id,
         zone: extension.zone,
       }))
     ).toEqual([
       { id: 'engine-scene.toolbar', zone: 'top' },
-      { id: 'engine-scene.sketch-background-opacity', zone: 'bottom-left' },
-      { id: 'engine-scene.sketch-constraints-toggle', zone: 'bottom-left' },
-      { id: 'engine-scene.gizmo', zone: 'bottom-right' },
+      { id: 'engine-scene.sketch-background-opacity', zone: 'bottom' },
+      { id: 'engine-scene.sketch-constraints-toggle', zone: 'bottom' },
+      { id: 'engine-scene.gizmo', zone: 'bottom' },
       { id: 'engine-scene.modeling-dialog', zone: 'overlay' },
     ])
   })
-
-  it('contributes the default engine stream class name', () => {
+  it('contributes the default engine stream class name', async () => {
     const registry = new Registry()
-    registry.configure([engineSceneExtension])
-
-    expect(registry.get(engineSceneStreamClassNamesValueSpec)).toEqual([
+    await registry.configure([engineSceneExtension])
+    expect(registry.get(engineSceneStreamClassNamesFacet)).toEqual([
       {
         id: 'engine-scene.stream-default',
         order: 0,
         className: 'absolute inset-x-[-4px] inset-y-[-4px] z-0',
       },
     ])
-    expect(registry.get(engineSceneStreamLayersValueSpec)).toEqual([])
+    expect(registry.get(engineSceneStreamLayersFacet)).toEqual([])
   })
 
   it('merges later stream class name conflicts over earlier ones', () => {
@@ -363,11 +361,10 @@ describe('engineScene extension', () => {
       ])
     ).toBe('absolute z-0 inset-x-0 inset-y-4')
   })
-
-  it('registers sketch-only view extensions from modeling state', () => {
+  it('registers sketch-only view extensions from modeling state', async () => {
     const registry = new Registry()
-    registry.configure([engineSceneExtension])
-    const extensions = registry.get(engineSceneViewExtensionsValueSpec)
+    await registry.configure([engineSceneExtension])
+    const extensions = registry.get(engineSceneViewExtensionsFacet)
 
     expect(
       resolveEngineSceneViewExtensions(

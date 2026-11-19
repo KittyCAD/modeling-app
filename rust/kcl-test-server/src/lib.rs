@@ -6,18 +6,21 @@ use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 
-use hyper::Body;
+use http_body_util::BodyExt;
+use http_body_util::Full;
 use hyper::Error;
 use hyper::Response;
-use hyper::Server;
 use hyper::body::Bytes;
+use hyper::body::Incoming;
 use hyper::header::CONTENT_TYPE;
-use hyper::service::make_service_fn;
+use hyper::server::conn::http1;
 use hyper::service::service_fn;
+use hyper_util::rt::TokioIo;
 use kcl_lib::ExecState;
 use kcl_lib::ExecutorContext;
 use kcl_lib::Program;
 use kcl_lib::test_server::RequestBody;
+use tokio::net::TcpListener;
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;
 use tokio::task::JoinHandle;
@@ -59,7 +62,7 @@ struct WorkerReq {
     /// A KCL program, in UTF-8.
     body: Bytes,
     /// A channel to send the HTTP response back.
-    resp: oneshot::Sender<Response<Body>>,
+    resp: oneshot::Sender<Response<Full<Bytes>>>,
 }
 
 /// Each worker has a connection to the engine, and accepts
@@ -102,37 +105,29 @@ pub async fn start_server(args: ServerArgs) -> anyhow::Result<()> {
         workers,
         req_num: 0.into(),
     });
-    // In hyper, a `MakeService` is basically your server.
-    // It makes a `Service` for each connection, which manages the connection.
-    let make_service = make_service_fn(
-        // This closure is run for each connection.
-        move |_conn_info| {
-            // eprintln!("Connected to a client");
-            let state = state.clone();
-            async move {
-                // This is the `Service` which handles the connection.
-                // `service_fn` converts a function which returns a Response
-                // into a `Service`.
-                Ok::<_, Error>(service_fn(move |req| {
-                    // eprintln!("Received a request");
-                    let state = state.clone();
-                    async move { handle_request(req, state).await }
-                }))
-            }
-        },
-    );
-    let server = Server::bind(&listen_on).serve(make_service);
+    let listener = TcpListener::bind(listen_on).await?;
     println!("Listening on {listen_on}");
     println!("PID is {}", std::process::id());
-    if let Err(e) = server.await {
-        eprintln!("Server error: {e}");
-        return Err(e.into());
+    loop {
+        let (stream, _) = listener.accept().await?;
+        let state = state.clone();
+        tokio::spawn(async move {
+            let service = service_fn(move |req| handle_request(req, state.clone()));
+            if let Err(error) = http1::Builder::new()
+                .serve_connection(TokioIo::new(stream), service)
+                .await
+            {
+                eprintln!("Connection error: {error}");
+            }
+        });
     }
-    Ok(())
 }
 
-async fn handle_request(req: hyper::Request<Body>, state3: Arc<ServerState>) -> Result<Response<Body>, Error> {
-    let body = hyper::body::to_bytes(req.into_body()).await?;
+async fn handle_request(
+    req: hyper::Request<Incoming>,
+    state3: Arc<ServerState>,
+) -> Result<Response<Full<Bytes>>, Error> {
+    let body = req.into_body().collect().await?.to_bytes();
 
     // Round robin requests between each available worker.
     let req_num = state3.req_num.fetch_add(1, Ordering::Relaxed);
@@ -154,7 +149,7 @@ async fn snapshot_endpoint(
     body: Bytes,
     state: &mut Option<(kcl_lib::KclVersion, ExecutorContext)>,
     engine_addr: Option<String>,
-) -> Response<Body> {
+) -> Response<Full<Bytes>> {
     let body = match serde_json::from_slice::<RequestBody>(body.as_ref()) {
         Ok(bd) => bd,
         Err(e) => return bad_request(format!("Invalid request JSON: {e}")),
@@ -211,26 +206,26 @@ async fn snapshot_endpoint(
     timer.abort();
     eprintln!("\tServing response");
     let png_bytes = snapshot.contents.0;
-    let mut resp = Response::new(Body::from(png_bytes));
+    let mut resp = Response::new(Full::new(Bytes::from(png_bytes)));
     resp.headers_mut().insert(CONTENT_TYPE, "image/png".parse().unwrap());
     resp
 }
 
-fn bad_request(msg: String) -> Response<Body> {
+fn bad_request(msg: String) -> Response<Full<Bytes>> {
     eprintln!("\tBad request");
-    let mut resp = Response::new(Body::from(msg));
+    let mut resp = Response::new(Full::new(Bytes::from(msg)));
     *resp.status_mut() = hyper::StatusCode::BAD_REQUEST;
     resp
 }
 
-fn bad_gateway(msg: String) -> Response<Body> {
+fn bad_gateway(msg: String) -> Response<Full<Bytes>> {
     eprintln!("\tBad gateway");
-    let mut resp = Response::new(Body::from(msg));
+    let mut resp = Response::new(Full::new(Bytes::from(msg)));
     *resp.status_mut() = hyper::StatusCode::BAD_GATEWAY;
     resp
 }
 
-fn kcl_err(err: impl std::fmt::Display) -> Response<Body> {
+fn kcl_err(err: impl std::fmt::Display) -> Response<Full<Bytes>> {
     eprintln!("\tBad KCL");
     bad_gateway(format!("{err}"))
 }

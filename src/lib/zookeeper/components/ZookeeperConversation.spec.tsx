@@ -1,3 +1,16 @@
+import { S } from '@src/machines/utils'
+import { useSelector } from '@xstate/react'
+import { createActor, waitFor as waitForActor } from 'xstate'
+import {
+  ControllableSetupWebSocket,
+  encodeReplayMessage,
+} from '@src/lib/zookeeper/testUtils'
+import {
+  zookeeperManagerMachine,
+  hasBeenInterruptedOnLast,
+  ZookeeperManagerTransitions,
+  ZookeeperManagerStates,
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import {
   act,
   fireEvent,
@@ -40,23 +53,14 @@ vi.mock('@src/lib/boot', () => ({
   }),
 }))
 
-vi.mock('@src/lib/screenshot', async (importOriginal) => {
-  const original = await importOriginal<typeof ScreenshotModule>()
-
-  return {
-    ...original,
-    takeViewportScreenshot: vi.fn(),
-  }
-})
-
-import { Registry } from '@kittycad/registry'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
-import { ZookeeperConversation } from '@src/lib/zookeeper/components/ZookeeperConversation'
-import { takeViewportScreenshot } from '@src/lib/screenshot'
-import type * as ScreenshotModule from '@src/lib/screenshot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import {
+  ZookeeperConversation,
+  type ZookeeperConversationProps,
+} from '@src/lib/zookeeper/components/ZookeeperConversation'
 import type {
   Conversation,
   MlCopilotModeId,
@@ -65,13 +69,25 @@ import type {
 import {
   type EngineSceneExtensionContext,
   engineSceneRuntimeExtensionsSlot,
-  engineSceneStreamLayersValueSpec,
+  engineSceneStreamLayersFacet,
 } from '@src/registry/contracts/engineScene'
+import { viewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
 import { ZOODLE_BRUSH_SIZE_DEFAULT_PX } from '@src/registry/contracts/zoodle'
+import { factory as defineFactory, provide, Registry } from 'plankton'
 
-const configureTestRegistry = () => {
+const captureViewportScreenshot = vi.fn<() => string>()
+
+const configureTestRegistry = async () => {
   const registry = new Registry()
-  registry.configure([engineSceneRuntimeExtensionsSlot.of()])
+  await registry.configure([
+    provide(viewportScreenshotService, { capture: captureViewportScreenshot }),
+    defineFactory({
+      ...engineSceneRuntimeExtensionsSlot,
+      create: () => ({
+        items: [],
+      }),
+    }),
+  ])
   bootMockState.registry = registry
   return registry
 }
@@ -86,8 +102,7 @@ const testEngineSceneContext = {
 const TestEngineSceneStreamLayers = () => {
   useSignals()
   const registry = bootMockState.registry as Registry
-  const layers = registry.signal(engineSceneStreamLayersValueSpec).value
-
+  const layers = registry.observe(engineSceneStreamLayersFacet).value
   return (
     <>
       {layers.map((layer) => {
@@ -116,9 +131,449 @@ const SERVER_MODE_OPTIONS: MlCopilotModeOption[] = [
 ]
 
 describe('ZookeeperConversation', () => {
-  beforeEach(() => {
-    configureTestRegistry()
+  beforeEach(async () => {
+    await configureTestRegistry()
     window.localStorage.removeItem(MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY)
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:image-preview')
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
+  })
+
+  afterEach(() => vi.restoreAllMocks())
+
+  test('loads older messages without moving the visible exchange or resetting its card', () => {
+    const latest: Conversation['exchanges'][number] = {
+      request: { type: 'user', content: 'Latest question' },
+      responses: [],
+      deltasAggregated: '',
+    }
+    const conversation: Conversation = { exchanges: [latest] }
+    const onLoadOlderMessages = vi.fn()
+    const props: ZookeeperConversationProps = {
+      isLoading: false,
+      conversation,
+      contexts: [],
+      onProcess: vi.fn(),
+      onCancel: vi.fn(),
+      onClickClearChat: vi.fn(),
+      onReconnect: vi.fn(),
+      needsReconnect: false,
+      hasPromptCompleted: true,
+      isProcessing: false,
+      queue: [],
+      onRemoveFromQueue: vi.fn(),
+      onSteer: vi.fn(),
+      canLoadOlderMessages: true,
+      onLoadOlderMessages,
+    }
+    const { container, rerender } = render(<ZookeeperConversation {...props} />)
+    const originalCard = container.querySelector('[data-zookeeper-exchange]')
+    const scroll = originalCard?.parentElement
+    if (!originalCard || !scroll)
+      throw new Error('Missing conversation scroll container')
+    let top = 100
+    vi.spyOn(scroll, 'getBoundingClientRect').mockImplementation(
+      () => new DOMRect(0, 0, 100, 500)
+    )
+    vi.spyOn(originalCard, 'getBoundingClientRect').mockImplementation(
+      () => new DOMRect(0, top, 100, 100)
+    )
+    scroll.scrollTop = 30
+    fireEvent.click(screen.getByRole('button', { name: 'Load older messages' }))
+    expect(onLoadOlderMessages).toHaveBeenCalledOnce()
+    rerender(<ZookeeperConversation {...props} isLoadingOlderMessages />)
+    expect(
+      screen.getByRole('button', { name: 'Loading older messages...' })
+    ).toBeDisabled()
+    top = 340
+    const expanded: Conversation = {
+      exchanges: [
+        { ...latest, request: { type: 'user', content: 'Older question' } },
+        latest,
+      ],
+    }
+    rerender(<ZookeeperConversation {...props} conversation={expanded} />)
+    expect(scroll.scrollTop).toBe(270)
+    expect(container.querySelectorAll('[data-zookeeper-exchange]')[1]).toBe(
+      originalCard
+    )
+    expect(
+      screen.getByRole('button', { name: 'Load older messages' })
+    ).toBeEnabled()
+    rerender(
+      <ZookeeperConversation
+        {...props}
+        conversation={expanded}
+        olderMessagesError="Please try again"
+      />
+    )
+    expect(screen.getByRole('alert')).toHaveTextContent('Please try again')
+    expect(
+      screen.getByRole('button', { name: 'Load older messages' })
+    ).toBeEnabled()
+    rerender(
+      <ZookeeperConversation
+        {...props}
+        conversation={expanded}
+        canLoadOlderMessages={false}
+      />
+    )
+    expect(
+      screen.queryByRole('button', { name: 'Load older messages' })
+    ).not.toBeInTheDocument()
+  })
+
+  test('offers reconnection when older history cannot be retried', () => {
+    const onReconnect = vi.fn()
+    render(
+      <ZookeeperConversation
+        isLoading={false}
+        conversation={{ exchanges: [] }}
+        contexts={[]}
+        olderMessagesError="Loading older messages timed out. Please reconnect."
+        onProcess={vi.fn()}
+        onCancel={vi.fn()}
+        onClickClearChat={vi.fn()}
+        onReconnect={onReconnect}
+        needsReconnect={false}
+        hasPromptCompleted
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={vi.fn()}
+        onSteer={vi.fn()}
+      />
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Reconnect' }))
+    expect(onReconnect).toHaveBeenCalledOnce()
+  })
+
+  test('connects with pagination, loads older history from the UI, and replaces cursors on reconnect', async () => {
+    ControllableSetupWebSocket.instances = []
+    vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+    const actor = createActor(zookeeperManagerMachine, {
+      input: { apiToken: 'test-token' },
+    }).start()
+    const messages = (content: string) =>
+      [
+        { type: 'user', content },
+        { end_of_stream: { whole_response: `${content} answer` } },
+      ].map(encodeReplayMessage)
+    const connect = () =>
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        conversationId: 'conversation-id',
+        refParentSend: (event) => actor.send(event),
+      })
+    const View = () => {
+      const context = useSelector(actor, (snapshot) => snapshot.context)
+      return (
+        <ZookeeperConversation
+          isLoading={!context.conversation}
+          conversation={context.conversation}
+          contexts={[]}
+          canLoadOlderMessages={Boolean(context.replayNextCursor)}
+          isLoadingOlderMessages={Boolean(context.replayPageRequestId)}
+          olderMessagesError={context.replayPageError}
+          onLoadOlderMessages={() =>
+            actor.send({ type: ZookeeperManagerTransitions.ReplayPageFetch })
+          }
+          onProcess={vi.fn()}
+          onCancel={vi.fn()}
+          onClickClearChat={vi.fn()}
+          onReconnect={connect}
+          needsReconnect={context.abruptlyClosed}
+          hasPromptCompleted={!context.awaitingResponse}
+          isProcessing={context.awaitingResponse}
+          queue={[]}
+          onRemoveFromQueue={vi.fn()}
+          onSteer={vi.fn()}
+        />
+      )
+    }
+    const { unmount } = render(<View />)
+    try {
+      act(connect)
+      const socket = ControllableSetupWebSocket.instances[0]
+      expect(new URL(socket.url).searchParams.get('replay_pagination')).toBe(
+        'true'
+      )
+      act(() => socket.open())
+      await waitFor(() =>
+        expect(socket.sentPayloads).toContain(
+          JSON.stringify({ type: 'list_modes' })
+        )
+      )
+      act(() => {
+        socket.receive(
+          {
+            replay_page: {
+              conversation_id: 'conversation-id',
+              messages: messages('Latest question'),
+              next_cursor: 'older-cursor',
+            },
+          },
+          'msgpack'
+        )
+        socket.receive({
+          conversation_id: { conversation_id: 'conversation-id' },
+        })
+      })
+      await screen.findByText('Latest question')
+      expect(screen.queryByText('Older question')).not.toBeInTheDocument()
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Load older messages' })
+      )
+      expect(
+        screen.getByRole('button', { name: 'Loading older messages...' })
+      ).toBeDisabled()
+      const requestId = actor.getSnapshot().context.replayPageRequestId
+      expect(JSON.parse(socket.sentPayloads.at(-1) ?? '')).toMatchObject({
+        type: 'fetch_replay_page',
+        cursor: 'older-cursor',
+        request_id: requestId,
+      })
+      act(() =>
+        socket.receive(
+          {
+            replay_page: {
+              request_id: requestId,
+              conversation_id: 'conversation-id',
+              messages: messages('Older question'),
+            },
+          },
+          'msgpack'
+        )
+      )
+      await screen.findByText('Older question')
+      expect(screen.getByText('Latest question')).toBeVisible()
+      expect(
+        screen.queryByRole('button', { name: 'Load older messages' })
+      ).not.toBeInTheDocument()
+      act(() => socket.closeWithCode(1006))
+      await waitForActor(actor, (state) => state.matches(S.Await))
+      act(connect)
+      const replacement = ControllableSetupWebSocket.instances.at(-1)
+      if (!replacement || replacement === socket)
+        throw new Error('Missing replacement connection')
+      act(() => replacement.open())
+      await waitFor(() =>
+        expect(replacement.sentPayloads).toContain(
+          JSON.stringify({ type: 'list_modes' })
+        )
+      )
+      act(() => {
+        socket.receive(
+          {
+            replay_page: {
+              request_id: requestId,
+              conversation_id: 'conversation-id',
+              messages: messages('Stale history'),
+              next_cursor: 'stale-cursor',
+            },
+          },
+          'msgpack'
+        )
+        replacement.receive(
+          {
+            replay_page: {
+              conversation_id: 'conversation-id',
+              messages: messages('Latest question'),
+              next_cursor: 'new-cursor',
+            },
+          },
+          'msgpack'
+        )
+        replacement.receive({
+          conversation_id: { conversation_id: 'conversation-id' },
+        })
+      })
+      await waitForActor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+      expect(actor.getSnapshot().context.replayNextCursor).toBe('new-cursor')
+      expect(screen.queryByText('Stale history')).not.toBeInTheDocument()
+      expect(screen.queryByText('Older question')).not.toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Load older messages' })
+      ).toBeEnabled()
+    } finally {
+      unmount()
+      actor.stop()
+      vi.unstubAllGlobals()
+    }
+  })
+
+  // Synthetic ordering from the Slack report; the production replay tail has
+  // not been captured: https://kittycadworkspace.slack.com/archives/C06L2RHP9SL/p1794959500968199
+  test('offers recovery after reopening a completed reply with late old-run output', async () => {
+    ControllableSetupWebSocket.instances = []
+    vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+    const createManager = () =>
+      createActor(zookeeperManagerMachine, {
+        input: { apiToken: 'test-token' },
+      }).start()
+    let actor = createManager()
+    const request = { type: 'user', content: 'Make a bracket' }
+    const completion = {
+      end_of_stream: { whole_response: 'Resumed request complete.' },
+    }
+    const lateEdit = {
+      tool_output: {
+        result: {
+          type: 'edit_kcl_code',
+          status_code: 200,
+          outputs: { 'main.kcl': '@settings(kclVersion = 3.0)\nsize = 25\n' },
+        },
+      },
+    }
+    const connect = async (messages: unknown[]) => {
+      act(() =>
+        actor.send({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          conversationId: 'conversation-id',
+          refParentSend: (event) => actor.send(event),
+        })
+      )
+      const socket = ControllableSetupWebSocket.instances.at(-1)!
+      act(() => socket.open())
+      await waitFor(() =>
+        expect(socket.sentPayloads).toContain(
+          JSON.stringify({ type: 'list_modes' })
+        )
+      )
+      act(() => {
+        socket.receive(
+          {
+            replay_page: {
+              conversation_id: 'conversation-id',
+              messages: messages.map(encodeReplayMessage),
+            },
+          },
+          'msgpack'
+        )
+        socket.receive({
+          conversation_id: { conversation_id: 'conversation-id' },
+        })
+      })
+      await waitForActor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+      return socket
+    }
+    const onResumeInterruptedTurn = vi.fn(() =>
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'demo',
+        projectFiles: [],
+      })
+    )
+    // Match the pane's actor-derived composer and recovery props. Use a fresh
+    // actor on reopen so no live connection state can mask the saved history.
+    const View = () => {
+      const snapshot = useSelector(actor, (state) => state)
+      const interrupted =
+        snapshot.matches(ZookeeperManagerStates.WaitForContinueCheck) &&
+        hasBeenInterruptedOnLast(snapshot.context.conversation?.exchanges ?? [])
+      return (
+        <ZookeeperConversation
+          isLoading={!snapshot.context.conversation}
+          conversation={snapshot.context.conversation}
+          contexts={[]}
+          onProcess={vi.fn()}
+          onCancel={vi.fn()}
+          onClickClearChat={vi.fn()}
+          onReconnect={vi.fn()}
+          needsReconnect={snapshot.context.abruptlyClosed}
+          disabled={snapshot.context.abruptlyClosed || interrupted}
+          hasPromptCompleted={
+            !snapshot.context.awaitingResponse && !interrupted
+          }
+          isProcessing={snapshot.context.awaitingResponse}
+          interruptedTurnAwaitingResume={interrupted}
+          onResumeInterruptedTurn={onResumeInterruptedTurn}
+          queue={[]}
+          onRemoveFromQueue={vi.fn()}
+          onSteer={vi.fn()}
+        />
+      )
+    }
+    let view = render(<View />)
+    try {
+      const socket = await connect([request])
+      act(() =>
+        actor.send({
+          type: ZookeeperManagerStates.ContinueCheck,
+          projectName: 'demo',
+          projectFiles: [],
+        })
+      )
+      await waitForActor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+      act(() => {
+        socket.receive(completion)
+        socket.receive(lateEdit)
+      })
+      expect(
+        actor.getSnapshot().context.conversation?.exchanges.at(-1)?.responses
+      ).toEqual([completion, lateEdit])
+      expect(
+        hasBeenInterruptedOnLast(
+          actor.getSnapshot().context.conversation?.exchanges ?? []
+        )
+      ).toBe(true)
+
+      expect(
+        screen.getByTestId('ml-ephant-conversation-input-button')
+      ).toBeEnabled()
+
+      view.unmount()
+      actor.stop()
+      actor = createManager()
+      view = render(<View />)
+      const reopenedSocket = await connect([request, completion, lateEdit])
+      await screen.findByText('Resumed request complete.')
+      expect(actor.getSnapshot().context.awaitingResponse).toBe(false)
+      expect(
+        screen.getByTestId('ml-ephant-conversation-input-button')
+      ).toBeDisabled()
+      expect(
+        screen.queryByTestId('ml-ephant-conversation-cancel-button')
+      ).not.toBeInTheDocument()
+      // Send is blocked by the unfinished tail, so an explicit recovery action
+      // must remain available even though this exchange has an earlier answer.
+      const resumeButton = screen.getByRole('button', {
+        name: 'Resume interrupted request',
+      })
+      expect(resumeButton).toBeEnabled()
+      fireEvent.click(resumeButton)
+      expect(onResumeInterruptedTurn).toHaveBeenCalledOnce()
+      await waitForActor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+      act(() =>
+        reopenedSocket.receive({
+          end_of_stream: { whole_response: 'Unfinished work recovered.' },
+        })
+      )
+      expect(
+        actor
+          .getSnapshot()
+          .context.conversation?.exchanges.at(-1)
+          ?.responses.at(-1)
+      ).toEqual({
+        end_of_stream: { whole_response: 'Unfinished work recovered.' },
+      })
+      expect(
+        screen.queryByRole('button', { name: 'Resume interrupted request' })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.getByTestId('ml-ephant-conversation-input-button')
+      ).toBeEnabled()
+    } finally {
+      view.unmount()
+      actor.stop()
+      vi.unstubAllGlobals()
+    }
   })
 
   test('shows recovery actions after conversation loading gives up', () => {
@@ -193,7 +648,7 @@ describe('ZookeeperConversation', () => {
     expect(screen.getByRole('alert')).not.toHaveTextContent('a last resort')
   })
 
-  test('requires confirmation before resuming an interrupted request', () => {
+  test('shows manual fallback only when an interrupted request is not resuming', () => {
     const onResumeInterruptedTurn = vi.fn()
     const interruptedConversation: Conversation = {
       exchanges: [
@@ -214,29 +669,31 @@ describe('ZookeeperConversation', () => {
       ],
     }
 
-    render(
-      <ZookeeperConversation
-        isLoading={false}
-        conversation={interruptedConversation}
-        interruptedTurnAwaitingResume={true}
-        onResumeInterruptedTurn={onResumeInterruptedTurn}
-        onProcess={() => {}}
-        onClickClearChat={() => {}}
-        onReconnect={() => {}}
-        onCancel={() => {}}
-        needsReconnect={false}
-        contexts={[]}
-        disabled={true}
-        hasPromptCompleted={false}
-        isProcessing={false}
-        queue={[]}
-        onRemoveFromQueue={() => {}}
-        onSteer={() => {}}
-      />
+    const conversationProps = {
+      isLoading: false,
+      conversation: interruptedConversation,
+      interruptedTurnAwaitingResume: true,
+      onResumeInterruptedTurn,
+      onProcess: () => {},
+      onClickClearChat: () => {},
+      onReconnect: () => {},
+      onCancel: () => {},
+      needsReconnect: false,
+      contexts: [],
+      disabled: true,
+      hasPromptCompleted: false,
+      isProcessing: false,
+      queue: [],
+      onRemoveFromQueue: () => {},
+      onSteer: () => {},
+    }
+
+    const { rerender } = render(
+      <ZookeeperConversation {...conversationProps} />
     )
 
     expect(screen.getByRole('status')).toHaveTextContent(
-      'Zookeeper stopped before finishing this request.'
+      'This request was interrupted before it finished.'
     )
     const resumeButton = screen.getByRole('button', {
       name: 'Resume interrupted request',
@@ -246,6 +703,20 @@ describe('ZookeeperConversation', () => {
     expect(
       screen.getByTestId('ml-ephant-conversation-input-button')
     ).toBeDisabled()
+
+    rerender(
+      <ZookeeperConversation
+        {...conversationProps}
+        isResumingInterruptedTurn={true}
+      />
+    )
+
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Resuming your request...'
+    )
+    expect(
+      screen.queryByRole('button', { name: 'Resume interrupted request' })
+    ).not.toBeInTheDocument()
   })
 
   test('shows billing recovery without offering to clear the chat', () => {
@@ -823,14 +1294,12 @@ describe('ZookeeperConversation', () => {
         expect(
           screen.getByTestId('ml-response-retry-status')
         ).toHaveTextContent(infoText)
-        expect(
-          screen.queryByTestId('ml-response-info-chat-bubble')
-        ).not.toBeInTheDocument()
       } else {
-        expect(
-          screen.getByTestId('ml-response-info-chat-bubble')
-        ).toHaveTextContent(infoText)
+        expect(screen.queryByText(infoText)).not.toBeInTheDocument()
       }
+      expect(
+        screen.queryByTestId('ml-response-info-chat-bubble')
+      ).not.toBeInTheDocument()
       expect(
         screen.getByTestId('ml-response-chat-bubble-thinking')
       ).toBeInTheDocument()
@@ -993,7 +1462,7 @@ describe('ZookeeperConversation', () => {
       within(requestBubble).queryByText('Attachments')
     ).not.toBeInTheDocument()
     expect(within(attachments).getByText('Attachments')).toBeInTheDocument()
-    expect(within(attachments).getByText('front-view.png')).toBeInTheDocument()
+    expect(within(attachments).getByTitle('front-view.png')).toBeInTheDocument()
     expect(
       within(attachments).getByText('requirements.pdf')
     ).toBeInTheDocument()
@@ -1052,23 +1521,23 @@ describe('ZookeeperConversation', () => {
 
     const attachments = screen.getByTestId('ml-request-chat-bubble-attachments')
 
-    expect(within(attachments).getByText('front-view.png')).toBeInTheDocument()
+    expect(within(attachments).getByTitle('front-view.png')).toBeInTheDocument()
     expect(
       within(attachments).getByText('requirements.pdf')
     ).toBeInTheDocument()
     expect(
-      within(attachments).queryByText('side-view.jpg')
+      within(attachments).queryByTitle('side-view.jpg')
     ).not.toBeInTheDocument()
 
     fireEvent.click(within(attachments).getByText('+ more'))
 
-    expect(within(attachments).getByText('side-view.jpg')).toBeInTheDocument()
+    expect(within(attachments).getByTitle('side-view.jpg')).toBeInTheDocument()
     expect(within(attachments).getByText('- collapse')).toBeInTheDocument()
 
     fireEvent.click(within(attachments).getByText('- collapse'))
 
     expect(
-      within(attachments).queryByText('side-view.jpg')
+      within(attachments).queryByTitle('side-view.jpg')
     ).not.toBeInTheDocument()
     expect(within(attachments).getByText('+ more')).toBeInTheDocument()
   })
@@ -1315,7 +1784,7 @@ describe('ZookeeperConversation', () => {
 
     beforeEach(() => {
       vi.clearAllMocks()
-      vi.mocked(takeViewportScreenshot).mockReturnValue(
+      captureViewportScreenshot.mockReturnValue(
         'data:image/png;base64,aGVsbG8='
       )
     })
@@ -1340,8 +1809,7 @@ describe('ZookeeperConversation', () => {
       expect(zoodleButton).toHaveAttribute('aria-pressed', 'false')
       expect(screen.getByText('Zoodle')).toBeInTheDocument()
     })
-
-    test('marks screenshot annotation button active and cancels on second click', () => {
+    test('marks screenshot annotation button active and cancels on second click', async () => {
       renderConversation()
 
       const zoodleButton = screen.getByTestId(
@@ -1352,18 +1820,21 @@ describe('ZookeeperConversation', () => {
 
       expect(zoodleButton).toHaveAttribute('aria-pressed', 'true')
       expect(
-        screen.getByTestId('viewport-annotation-overlay')
+        await screen.findByTestId('viewport-annotation-overlay')
       ).toBeInTheDocument()
 
       fireEvent.click(zoodleButton)
 
       expect(zoodleButton).toHaveAttribute('aria-pressed', 'false')
-      expect(
-        screen.queryByTestId('viewport-annotation-overlay')
-      ).not.toBeInTheDocument()
+      await waitFor(() =>
+        expect(
+          screen.queryByTestId('viewport-annotation-overlay')
+        ).not.toBeInTheDocument()
+      )
     })
 
     test('adds annotated viewport screenshot as an attachment', async () => {
+      const handleProcess = vi.fn()
       const OriginalImage = globalThis.Image
       class MockImage {
         onload: (() => void) | null = null
@@ -1384,14 +1855,14 @@ describe('ZookeeperConversation', () => {
         .mockImplementation(() => {})
       globalThis.Image = MockImage as typeof Image
       try {
-        renderConversation()
+        renderConversation(handleProcess)
 
         fireEvent.click(
           screen.getByTestId('ml-ephant-annotate-screenshot-button')
         )
 
         expect(
-          screen.getByTestId('viewport-annotation-overlay')
+          await screen.findByTestId('viewport-annotation-overlay')
         ).toBeInTheDocument()
         expect(
           screen.getByTestId('viewport-annotation-tool-drawOrange')
@@ -1431,8 +1902,14 @@ describe('ZookeeperConversation', () => {
         fireEvent.click(sendButton)
 
         expect(
-          await screen.findByText('annotated-viewport-screenshot.png')
+          await screen.findByRole('img', { name: 'Attachment preview' })
         ).toBeInTheDocument()
+        fireEvent.click(
+          screen.getByTestId('ml-ephant-conversation-input-button')
+        )
+        expect(handleProcess.mock.calls[0][2][0].name).toMatch(
+          /^annotated-viewport-screenshot-[0-9a-f-]{36}\.png$/
+        )
       } finally {
         drawImageSpy.mockRestore()
         globalThis.Image = OriginalImage
@@ -1459,7 +1936,9 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(await screen.findByText('test-image.png')).toBeInTheDocument()
+      expect(
+        await screen.findByRole('img', { name: 'Attachment preview' })
+      ).toBeInTheDocument()
     })
 
     test('shows attached files when files are pasted', async () => {
@@ -1480,6 +1959,131 @@ describe('ZookeeperConversation', () => {
       expect(await screen.findByText('document.pdf')).toBeInTheDocument()
     })
 
+    test('gives pasted images unique names across prompts without changing their contents', async () => {
+      const handleProcess = vi.fn()
+      renderConversation(handleProcess)
+      const textarea = screen.getByTestId('ml-ephant-conversation-input')
+      const file = createMockFile('reference.png', 'image/png', 100)
+
+      for (let i = 0; i < 2; i++) {
+        fireEvent.paste(textarea, { clipboardData: { files: [file] } })
+        fireEvent.click(
+          screen.getByTestId('ml-ephant-conversation-input-button')
+        )
+      }
+
+      const first: File = handleProcess.mock.calls[0][2][0]
+      const second: File = handleProcess.mock.calls[1][2][0]
+      expect(first.name).toMatch(/^image-[0-9a-f-]{36}\.png$/)
+      expect(first.name).not.toBe(second.name)
+      expect(first.type).toBe(file.type)
+      expect(await first.text()).toBe(await file.text())
+    })
+
+    test('gives viewport screenshots unique names across prompts', () => {
+      const handleProcess = vi.fn()
+      renderConversation(handleProcess)
+
+      for (let i = 0; i < 2; i++) {
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Capture viewport screenshot' })
+        )
+        fireEvent.click(
+          screen.getByTestId('ml-ephant-conversation-input-button')
+        )
+      }
+
+      const first: File = handleProcess.mock.calls[0][2][0]
+      const second: File = handleProcess.mock.calls[1][2][0]
+      expect(first.name).toMatch(/^viewport-screenshot-[0-9a-f-]{36}\.png$/)
+      expect(first.name).not.toBe(second.name)
+    })
+
+    test('allows native text paste at the 5,000-character limit', () => {
+      renderConversation()
+
+      const defaultAllowed = fireEvent.paste(
+        screen.getByTestId('ml-ephant-conversation-input'),
+        {
+          clipboardData: {
+            files: [],
+            getData: () => 'a'.repeat(5000),
+          },
+        }
+      )
+
+      expect(defaultAllowed).toBe(true)
+      expect(
+        screen.queryByRole('button', { name: /^Remove pasted-text-/ })
+      ).not.toBeInTheDocument()
+    })
+
+    test('sends a paste over the limit as an attachment alongside the existing prompt', async () => {
+      const handleProcess = vi.fn()
+      renderConversation(handleProcess)
+      const textarea = screen.getByTestId('ml-ephant-conversation-input')
+      const prompt = 'Use these requirements.'
+      const text = 'first line\r\nsecond line\n'.padEnd(5001, 'a')
+      fireEvent.change(textarea, { target: { value: prompt } })
+
+      const defaultAllowed = fireEvent.paste(textarea, {
+        clipboardData: { files: [], getData: () => text },
+      })
+
+      expect(defaultAllowed).toBe(false)
+      expect(textarea).toHaveValue(prompt)
+      const preview = await screen.findByText(/^first line second line /)
+      expect(preview.textContent.length).toBeLessThan(256)
+
+      fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+
+      expect(handleProcess).toHaveBeenCalledWith(prompt, undefined, [
+        expect.any(File),
+      ])
+      const file: File = handleProcess.mock.calls[0][2][0]
+      expect(file.name).toMatch(/^pasted-text-[0-9a-f-]{36}\.txt$/)
+      expect(file.type).toBe('text/plain')
+      expect(await file.text()).toBe(text)
+    })
+
+    test('gives large pastes unique filenames across submissions and allows an empty prompt', () => {
+      const handleProcess = vi.fn()
+      renderConversation(handleProcess)
+      const textarea = screen.getByTestId('ml-ephant-conversation-input')
+      for (const text of ['a'.repeat(5001), 'b'.repeat(5001)]) {
+        fireEvent.paste(textarea, {
+          clipboardData: { files: [], getData: () => text },
+        })
+        fireEvent.click(
+          screen.getByTestId('ml-ephant-conversation-input-button')
+        )
+      }
+
+      expect(handleProcess).toHaveBeenCalledTimes(2)
+      const firstFile: File = handleProcess.mock.calls[0][2][0]
+      const secondFile: File = handleProcess.mock.calls[1][2][0]
+      expect(firstFile.name).not.toBe(secondFile.name)
+    })
+
+    test('previews a composer attachment without sending it', async () => {
+      const handleProcess = vi.fn()
+      renderConversation(handleProcess)
+      const textarea = screen.getByTestId('ml-ephant-conversation-input')
+      const text = 'Reference '.padEnd(10_001, 'a')
+      fireEvent.paste(textarea, {
+        clipboardData: { files: [], getData: () => text },
+      })
+
+      fireEvent.click(await screen.findByText(/^Reference /))
+      const dialog = screen.getByRole('dialog', { name: 'Text preview' })
+      await within(dialog).findByText(text)
+      expect(handleProcess).not.toHaveBeenCalled()
+      fireEvent.click(
+        within(dialog).getByRole('button', { name: 'Close preview' })
+      )
+      expect(screen.getByText(/^Reference /)).toBeInTheDocument()
+    })
+
     test('allows removing attached files', async () => {
       renderConversation()
 
@@ -1496,19 +2100,23 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(await screen.findByText('removable.png')).toBeInTheDocument()
+      expect(
+        await screen.findByRole('img', { name: 'Attachment preview' })
+      ).toBeInTheDocument()
 
       const removeButton = screen.getByRole('button', {
-        name: /Remove removable.png/i,
+        name: 'Remove image 1',
       })
       fireEvent.click(removeButton)
 
-      expect(screen.queryByText('removable.png')).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('img', { name: 'Attachment preview' })
+      ).not.toBeInTheDocument()
     })
 
-    test('sends attachments with prompt on submit', async () => {
+    test('sends dropped and picked attachments with their original filenames', async () => {
       const handleProcess = vi.fn()
-      renderConversation(handleProcess)
+      const { container } = renderConversation(handleProcess)
 
       const dropContainer = screen
         .getByTestId('ml-ephant-conversation-input')
@@ -1516,6 +2124,7 @@ describe('ZookeeperConversation', () => {
       const textarea = screen.getByTestId('ml-ephant-conversation-input')
 
       const imageFile = createMockFile('attachment.png', 'image/png')
+      const pickedFile = createMockFile('picked.png', 'image/png')
 
       fireEvent.drop(dropContainer, {
         dataTransfer: {
@@ -1523,19 +2132,21 @@ describe('ZookeeperConversation', () => {
           types: ['Files'],
         },
       })
+      fireEvent.change(container.querySelector('input[type="file"]')!, {
+        target: { files: [pickedFile] },
+      })
 
-      expect(await screen.findByText('attachment.png')).toBeInTheDocument()
+      expect(
+        await screen.findAllByRole('img', { name: 'Attachment preview' })
+      ).toHaveLength(2)
 
       fireEvent.input(textarea, { target: { textContent: 'Test prompt' } })
       fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
 
-      expect(handleProcess).toHaveBeenCalledWith(
-        'Test prompt',
-        undefined,
-        expect.arrayContaining([
-          expect.objectContaining({ name: 'attachment.png' }),
-        ])
-      )
+      expect(handleProcess).toHaveBeenCalledWith('Test prompt', undefined, [
+        expect.objectContaining({ name: imageFile.name }),
+        expect.objectContaining({ name: pickedFile.name }),
+      ])
     })
 
     test('clears attachments after submit', async () => {
@@ -1556,12 +2167,16 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(await screen.findByText('will-clear.png')).toBeInTheDocument()
+      expect(
+        await screen.findByRole('img', { name: 'Attachment preview' })
+      ).toBeInTheDocument()
 
       fireEvent.input(textarea, { target: { textContent: 'Test prompt' } })
       fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
 
-      expect(screen.queryByText('will-clear.png')).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('img', { name: 'Attachment preview' })
+      ).not.toBeInTheDocument()
     })
 
     test('does not accept files when disabled', () => {
@@ -1580,7 +2195,9 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(screen.queryByText('disabled-test.png')).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('img', { name: 'Attachment preview' })
+      ).not.toBeInTheDocument()
     })
 
     test('does not accept paste when disabled', () => {
@@ -1596,7 +2213,9 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(screen.queryByText('disabled-paste.png')).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('img', { name: 'Attachment preview' })
+      ).not.toBeInTheDocument()
     })
 
     test('deduplicates files with same name and size', async () => {
@@ -1606,8 +2225,8 @@ describe('ZookeeperConversation', () => {
         .getByTestId('ml-ephant-conversation-input')
         .closest('div')!
 
-      const file1 = createMockFile('duplicate.png', 'image/png', 100)
-      const file2 = createMockFile('duplicate.png', 'image/png', 100)
+      const file1 = createMockFile('duplicate.pdf', 'application/pdf', 100)
+      const file2 = createMockFile('duplicate.pdf', 'application/pdf', 100)
 
       fireEvent.drop(dropContainer, {
         dataTransfer: {
@@ -1616,7 +2235,7 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(await screen.findByText('duplicate.png')).toBeInTheDocument()
+      expect(await screen.findByText('duplicate.pdf')).toBeInTheDocument()
 
       fireEvent.drop(dropContainer, {
         dataTransfer: {
@@ -1626,7 +2245,7 @@ describe('ZookeeperConversation', () => {
       })
 
       // Should still only have one instance
-      const attachments = screen.getAllByText('duplicate.png')
+      const attachments = screen.getAllByText('duplicate.pdf')
       expect(attachments).toHaveLength(1)
     })
 
@@ -1649,7 +2268,9 @@ describe('ZookeeperConversation', () => {
         },
       })
 
-      expect(await screen.findByText('image.png')).toBeInTheDocument()
+      expect(
+        await screen.findByRole('img', { name: 'Attachment preview' })
+      ).toBeInTheDocument()
       expect(screen.getByText('doc.pdf')).toBeInTheDocument()
       expect(screen.getByText('drawing.dxf')).toBeInTheDocument()
       expect(screen.getByText('script.js')).toBeInTheDocument()

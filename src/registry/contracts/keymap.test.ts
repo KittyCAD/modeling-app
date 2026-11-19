@@ -2,16 +2,16 @@ import {
   BASE_KEYMAP_SCOPE,
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
-  type KeymapItem,
-  type KeymapScope,
-  MODE_MODELING_KEYMAP_SCOPE,
-  MODE_SKETCHING_KEYMAP_SCOPE,
-  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
   createKeymapItemsFromContributions,
   createKeymapTree,
   createKeymapTreeFromContributions,
   findKeymapItemForCommand,
+  type KeymapItem,
+  type KeymapScope,
   keymapKeystrokesDisplay,
+  MODE_MODELING_KEYMAP_SCOPE,
+  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+  MODE_SKETCHING_KEYMAP_SCOPE,
   matchKeymapKeystrokes,
   normalizeEventKey,
   normalizeKeymapChord,
@@ -446,80 +446,6 @@ describe('keymap contract', () => {
         keystrokes: ['mod+p'],
         source: 'User',
         when: undefined,
-      },
-    })
-  })
-
-  it('uses persisted overrides for linked hidden keybindings', () => {
-    const legacyItem = createKeymapItem({
-      id: 'toolbar.sketch-legacy.line',
-      command: 'zds.toolbar.sketchLegacy.line',
-      keystrokes: ['l'],
-      when: [MODE_SKETCHING_KEYMAP_SCOPE],
-      hidden: true,
-      userBindingCommand: 'zds.toolbar.sketch.line',
-    })
-    const item = createKeymapItem({
-      id: 'toolbar.sketch.line',
-      command: 'zds.toolbar.sketch.line',
-      keystrokes: ['l'],
-      when: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-    })
-    const tree = createKeymapTree(
-      resolveKeymapItems([legacyItem, item], {
-        version: 2,
-        bindings: [
-          {
-            command: 'zds.toolbar.sketch.line',
-            keystrokes: ['shift+q'],
-            when: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-          },
-        ],
-      })
-    )
-    const scopeMetadata = [
-      createContextScope(MODE_SKETCHING_KEYMAP_SCOPE, 200),
-      createContextScope(MODE_SKETCH_SOLVE_KEYMAP_SCOPE, 220),
-    ]
-
-    expect(
-      matchKeymapKeystrokes(
-        tree,
-        [MODE_SKETCHING_KEYMAP_SCOPE],
-        ['l'],
-        scopeMetadata
-      )
-    ).toEqual({ type: 'none' })
-    expect(
-      matchKeymapKeystrokes(
-        tree,
-        [MODE_SKETCHING_KEYMAP_SCOPE],
-        ['shift+q'],
-        scopeMetadata
-      )
-    ).toEqual({
-      type: 'full',
-      item: {
-        ...legacyItem,
-        keystrokes: ['shift+q'],
-        when: [MODE_SKETCHING_KEYMAP_SCOPE],
-        source: 'User',
-      },
-    })
-    expect(
-      matchKeymapKeystrokes(
-        tree,
-        [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-        ['shift+q'],
-        scopeMetadata
-      )
-    ).toEqual({
-      type: 'full',
-      item: {
-        ...item,
-        keystrokes: ['shift+q'],
-        when: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-        source: 'User',
       },
     })
   })

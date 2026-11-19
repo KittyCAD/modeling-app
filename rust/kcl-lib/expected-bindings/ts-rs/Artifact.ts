@@ -37,6 +37,12 @@ target: ArtifactPoint3d | null,
 distance: number | null, projection: ArtifactProjection, };
 
 /**
+ * API-owned RGBA color with channels from 0 to 1, equivalent to the engine
+ * color, avoiding a kcl-api dependency on kittycad-modeling-cmds.
+ */
+export type ArtifactColor = { r: number, g: number, b: number, a: number, };
+
+/**
  * A command that may create or update artifacts on the TS side.  Because
  * engine commands are batched, we don't have the response yet when these are
  * created.
@@ -278,7 +284,24 @@ copyEdgeIds: Array<ArtifactId>, codeRef: CodeRef, };
 
 export type PatternSubType = "circular" | "linear" | "transform";
 
-export type Plane = { id: ArtifactId, pathIds: Array<ArtifactId>, codeRef: CodeRef, };
+export type Plane = { id: ArtifactId, pathIds: Array<ArtifactId>, codeRef: CodeRef, 
+/**
+ * The evaluated transform from plane creation. Origin is in millimeters;
+ * axes are unitless. Absent for planes only referenced by sketch commands.
+ */
+planeInfo?: ArtifactPlaneInfo | null, 
+/**
+ * The unscaled plane size in millimeters, before view-dependent scaling.
+ */
+size?: number | null, 
+/**
+ * Visibility after plane creation and subsequent ObjectVisible commands.
+ */
+hidden?: boolean, 
+/**
+ * The color from the last PlaneSetColor command, if any.
+ */
+color?: ArtifactColor | null, };
 
 export type PlaneOfFace = { id: ArtifactId, faceId: ArtifactId, codeRef: CodeRef, };
 

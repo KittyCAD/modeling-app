@@ -1,27 +1,22 @@
-import { Slot, defineContract, defineValueSpec } from '@kittycad/registry'
 import type { modelingMachine } from '@src/machines/modelingMachine'
+import { contract, Facet, slot } from 'plankton'
 import type { ComponentType, Dispatch, SetStateAction } from 'react'
 import { twMerge } from 'tailwind-merge'
 import type { EventFrom, StateFrom } from 'xstate'
+import styles from './engineScene.module.css'
 
 export const engineSceneViewExtensionZones = [
-  'top-left',
   'top',
-  'top-right',
   'left',
   'center',
   'right',
-  'bottom-left',
   'bottom',
-  'bottom-right',
   'overlay',
 ] as const
 
 export type EngineSceneViewExtensionZone =
   (typeof engineSceneViewExtensionZones)[number]
-
-export const engineSceneRuntimeExtensionsSlot = new Slot()
-
+export const engineSceneRuntimeExtensionsSlot = slot([], Symbol())
 export type EngineSceneExtensionContext = {
   modelingState: StateFrom<typeof modelingMachine>
   modelingSend: (event: EventFrom<typeof modelingMachine>) => void
@@ -65,8 +60,11 @@ const sortByZoneAndOrder = (
     (a, b) =>
       zoneOrder[a.zone] - zoneOrder[b.zone] || (a.order ?? 0) - (b.order ?? 0)
   )
-
-const sortByOrder = <T extends { order?: number }>(
+const sortByOrder = <
+  T extends {
+    order?: number
+  },
+>(
   inputs: readonly T[]
 ): readonly T[] => inputs.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0))
 
@@ -85,38 +83,31 @@ export const defineEngineSceneStreamClassName = <
 export const defineEngineSceneStreamLayer = <T extends EngineSceneStreamLayer>(
   layer: T
 ): T => layer
-
-export const engineSceneContract = defineContract({
-  engineSceneViewExtensionsValueSpec: defineValueSpec<
+export const engineSceneContract = contract({
+  engineSceneViewExtensionsFacet: new Facet<
     EngineSceneViewExtension,
     readonly EngineSceneViewExtension[]
-  >({
-    name: 'engine-scene.view-extensions',
-    defaultValue: [],
-    combine: sortByZoneAndOrder,
-  }),
-  engineSceneStreamClassNamesValueSpec: defineValueSpec<
+  >('engine-scene.view-extensions', (inputs) =>
+    inputs.length ? sortByZoneAndOrder(inputs) : []
+  ),
+  engineSceneStreamClassNamesFacet: new Facet<
     EngineSceneStreamClassName,
     readonly EngineSceneStreamClassName[]
-  >({
-    name: 'engine-scene.stream-class-names',
-    defaultValue: [],
-    combine: sortByOrder,
-  }),
-  engineSceneStreamLayersValueSpec: defineValueSpec<
+  >('engine-scene.stream-class-names', (inputs) =>
+    inputs.length ? sortByOrder(inputs) : []
+  ),
+  engineSceneStreamLayersFacet: new Facet<
     EngineSceneStreamLayer,
     readonly EngineSceneStreamLayer[]
-  >({
-    name: 'engine-scene.stream-layers',
-    defaultValue: [],
-    combine: sortByOrder,
-  }),
+  >('engine-scene.stream-layers', (inputs) =>
+    inputs.length ? sortByOrder(inputs) : []
+  ),
 })
 
 export const {
-  engineSceneViewExtensionsValueSpec,
-  engineSceneStreamClassNamesValueSpec,
-  engineSceneStreamLayersValueSpec,
+  engineSceneViewExtensionsFacet,
+  engineSceneStreamClassNamesFacet,
+  engineSceneStreamLayersFacet,
 } = engineSceneContract
 
 export function resolveEngineSceneViewExtensions(
@@ -128,18 +119,13 @@ export function resolveEngineSceneViewExtensions(
   )
 }
 
+// Edge zones size themselves; side rails fill the grid row between them.
 const zoneClassNames: Record<EngineSceneViewExtensionZone, string> = {
-  'top-left': 'absolute top-2 left-2 flex items-start justify-start gap-2',
-  top: 'absolute top-0 left-2 right-2 flex items-start justify-center gap-2',
-  'top-right': 'absolute top-2 right-2 flex items-start justify-end gap-2',
-  left: 'absolute left-2 top-1/2 -translate-y-1/2 flex flex-col items-start justify-center gap-2',
+  top: `${styles.top} flex items-start justify-center gap-2`,
+  left: `${styles.left} my-2 flex flex-col items-start justify-start gap-2`,
   center: 'absolute inset-2 flex flex-col items-center justify-center gap-2',
-  right:
-    'absolute right-2 top-1/2 -translate-y-1/2 flex flex-col items-end justify-center gap-2',
-  'bottom-left': 'absolute bottom-2 left-2 flex items-end justify-start gap-2',
-  bottom:
-    'absolute bottom-2 left-2 right-2 flex items-end justify-center gap-2',
-  'bottom-right': 'absolute bottom-2 right-2 flex items-end justify-end gap-3',
+  right: `${styles.right} my-2 flex flex-col items-end justify-center gap-2`,
+  bottom: `${styles.bottom} m-2 flex items-end gap-2`,
   overlay: 'absolute inset-0',
 }
 
@@ -158,7 +144,7 @@ export function EngineSceneViewExtensionOverlay({
 
   return (
     <div
-      className="absolute inset-0 z-10 pointer-events-none"
+      className={`${styles.zones} absolute inset-0 z-10 pointer-events-none`}
       aria-hidden={registeredExtensions.length === 0}
     >
       {engineSceneViewExtensionZones.map((zone) => {

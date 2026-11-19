@@ -1,7 +1,7 @@
-import { type RegistryItem, Slot } from '@kittycad/registry'
+import { type Extension, slot } from 'plankton'
 
 type RegistryItemModule = {
-  default?: RegistryItem
+  default?: Extension
   order?: number
 }
 
@@ -17,10 +17,7 @@ const bundledRegistryItemModules: Record<string, RegistryItemModule> =
       eager: true,
     }
   )
-
-export const appRegistryServicesSlot = new Slot()
-export const appRegistryOverridesSlot = new Slot()
-
+export const appRegistryOverridesSlot = slot([], Symbol())
 const bundledRegistryItemKindOrder = (path: string) =>
   path.includes('/plugins/') ? 1 : 0
 
@@ -28,7 +25,7 @@ const bundledRegistryItemKindOrder = (path: string) =>
 //
 // Extensions are always-on app infrastructure. Plugins are user-visible,
 // runtime-toggleable bundles that may depend on extension contracts.
-export const coreRegistryItems: RegistryItem[] = Object.entries(
+export const coreRegistryItems: Extension[] = Object.entries(
   bundledRegistryItemModules
 )
   .map(([path, mod]) => ({
@@ -44,4 +41,4 @@ export const coreRegistryItems: RegistryItem[] = Object.entries(
       a.order - b.order ||
       a.path.localeCompare(b.path)
   )
-  .map((entry) => entry.item as RegistryItem)
+  .map((entry) => entry.item as Extension)

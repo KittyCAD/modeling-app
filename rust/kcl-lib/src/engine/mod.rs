@@ -23,6 +23,7 @@ use tokio::sync::RwLock;
 use uuid::Uuid;
 
 use crate::SourceRange;
+use crate::engine::engine_manager::EngineSessionId;
 use crate::execution::PlaneInfo;
 use crate::execution::Point3d;
 use crate::unit_conversion::ToKcmc;
@@ -99,6 +100,8 @@ lazy_static::lazy_static! {
 pub struct EngineBatchContext {
     batch: Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>,
     batch_end: Arc<RwLock<IndexMap<Uuid, (WebSocketRequest, SourceRange)>>>,
+    // The lease belongs to this execution handle, not its shared queue storage.
+    expected_session: Option<EngineSessionId>,
 }
 
 impl Default for EngineBatchContext {
@@ -112,7 +115,29 @@ impl EngineBatchContext {
         Self {
             batch: Arc::new(RwLock::new(Vec::new())),
             batch_end: Arc::new(RwLock::new(IndexMap::new())),
+            expected_session: None,
         }
+    }
+
+    /// Bind an execution's queues to the engine session it started against.
+    pub fn for_session(session: EngineSessionId) -> Self {
+        Self {
+            expected_session: Some(session),
+            ..Self::new()
+        }
+    }
+
+    /// Independent queues for imported modules and execution boundaries keep
+    /// the original execution's lease, including after transport replacement.
+    pub fn fresh(&self) -> Self {
+        Self {
+            expected_session: self.expected_session.clone(),
+            ..Self::new()
+        }
+    }
+
+    pub(crate) fn expected_session(&self) -> Option<&EngineSessionId> {
+        self.expected_session.as_ref()
     }
 
     pub async fn is_empty(&self) -> bool {
@@ -124,16 +149,8 @@ impl EngineBatchContext {
         self.batch_end.write().await.clear();
     }
 
-    async fn push(&self, req: WebSocketRequest, source_range: SourceRange) {
-        self.batch.write().await.push((req, source_range));
-    }
-
     async fn extend(&self, requests: Vec<(WebSocketRequest, SourceRange)>) {
         self.batch.write().await.extend(requests);
-    }
-
-    async fn insert_end(&self, id: Uuid, req: WebSocketRequest, source_range: SourceRange) {
-        self.batch_end.write().await.insert(id, (req, source_range));
     }
 
     pub(crate) async fn move_batch_end_to_batch(&self, ids: Vec<Uuid>) {
@@ -178,14 +195,32 @@ impl Clone for EngineStats {
 /// Create a new zoo api client.
 #[cfg(not(target_arch = "wasm32"))]
 pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> anyhow::Result<kittycad::Client> {
+    zoo_client().maybe_token(token).maybe_engine_addr(engine_addr).build()
+}
+
+/// Create an API client with additional default headers for HTTP and WebSocket requests.
+#[cfg(not(target_arch = "wasm32"))]
+#[bon::builder(finish_fn = build)]
+pub fn zoo_client(
+    token: Option<String>,
+    engine_addr: Option<String>,
+    headers: Option<std::collections::BTreeMap<String, String>>,
+) -> anyhow::Result<kittycad::Client> {
     let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
+    let mut default_headers = http::HeaderMap::new();
+    default_headers.insert(http::header::USER_AGENT, http::HeaderValue::from_static(user_agent));
+    for (name, value) in headers.unwrap_or_default() {
+        let mut value = http::HeaderValue::try_from(value)?;
+        value.set_sensitive(true);
+        default_headers.insert(http::HeaderName::try_from(name)?, value);
+    }
     let http_client = reqwest::Client::builder()
-        .user_agent(user_agent)
+        .default_headers(default_headers.clone())
         // For file conversions we need this to be long.
         .timeout(std::time::Duration::from_secs(600))
         .connect_timeout(std::time::Duration::from_secs(60));
     let ws_client = reqwest::Client::builder()
-        .user_agent(user_agent)
+        .default_headers(default_headers)
         // For file conversions we need this to be long.
         .timeout(std::time::Duration::from_secs(600))
         .connect_timeout(std::time::Duration::from_secs(60))
@@ -223,6 +258,11 @@ pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> any
     if let Some(addr) = engine_addr {
         client.set_base_url(addr);
     } else if let Ok(addr) = std::env::var("ZOO_HOST") {
+        if !(addr.starts_with("http://") || addr.starts_with("https://")) {
+            anyhow::bail!(
+                "ZOO_HOST should probably start with http:// (for local engines) or https:// (for cloud engines)"
+            )
+        }
         if let Ok(kittycad_host) = kittycad_host_env
             && kittycad_host != addr
         {

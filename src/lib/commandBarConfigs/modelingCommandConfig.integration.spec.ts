@@ -16,9 +16,15 @@ import {
   modelingStdLibCommandUsesExperimentalFeatures,
   type StdLibCommandDriftConfig,
   stdLibCommandArgs,
+  stdLibCommandSources,
   stdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
-import { STD_LIB_COMMANDS } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
+import {
+  STD_LIB_COMMANDS,
+  STD_LIB_ENUMS,
+  stdLibEnumOptions,
+  type StdLibCommandArg,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import type {
   CommandArgumentConfig,
   KclCommandValue,
@@ -40,7 +46,13 @@ import type {
   Selections,
 } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+import { createActor } from 'xstate'
+import { commandBarMachine } from '@src/machines/commandBarMachine'
+import type { MachineManager } from '@src/lib/MachineManager'
+import type { Command } from '@src/lib/commandTypes'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 
 function selectionsForArtifact(artifact?: Artifact): Selections {
   return {
@@ -80,6 +92,49 @@ function bodyTypeRequiredForCommand(
     ? bodyTypeArg.required({ argumentsToSubmit })
     : bodyTypeArg.required
 }
+
+describe('STEP schema export options', () => {
+  function schemaArgument() {
+    const config = modelingMachineCommandConfig.Export
+    if (
+      !config ||
+      isArray(config) ||
+      config.args?.schema?.inputType !== 'options'
+    ) {
+      throw new Error('Export should expose schema options')
+    }
+    return config.args.schema
+  }
+
+  it('defaults to AP242 and offers all three STEP schemas', () => {
+    const schema = schemaArgument()
+    const options =
+      typeof schema.options === 'function'
+        ? schema.options({ argumentsToSubmit: { type: 'step' } })
+        : schema.options
+
+    expect(schema.defaultValue).toBe('ap242')
+    expect(options.map((option) => option.value)).toEqual([
+      'ap203',
+      'ap214',
+      'ap242',
+    ])
+    expect(options.find((option) => option.isCurrent)?.value).toBe('ap242')
+  })
+
+  it.each(['step', 'gltf', 'obj', 'stl', 'ply', 'fbx', undefined])(
+    'shows the schema selector only when the format is STEP (%s)',
+    (type) => {
+      const schema = schemaArgument()
+      if (typeof schema.hidden !== 'function') {
+        throw new Error('Export schema visibility should depend on the format')
+      }
+      expect(
+        schema.hidden({ argumentsToSubmit: { type, schema: 'ap214' } })
+      ).toBe(type !== 'step')
+    }
+  )
+})
 
 describe('GDT Datum Default Name', () => {
   it('should work with command bar when datum A already exists', async () => {
@@ -132,6 +187,106 @@ describe('GDT text input validation', () => {
         expect(
           await arg.validation({ data, context: {} as CommandBarContext })
         ).toBe(true)
+      }
+    }
+  )
+})
+
+describe('GDT dialog text validation', () => {
+  it.each([
+    ['GDT Note', 'note'],
+    ['GDT Annotation', 'annotation'],
+    ['GDT Datum', 'name'],
+  ] as const)(
+    'keeps invalid %s text editable and submits the corrected draft',
+    async (commandName, argName) => {
+      const config = modelingMachineCommandConfig[commandName]
+      if (!config || isArray(config)) throw new Error('Expected GDT config')
+      const arg = Object.entries(config.args ?? {}).find(
+        ([name]) => name === argName
+      )?.[1]
+      if (!arg || (arg.inputType !== 'text' && arg.inputType !== 'string'))
+        throw new Error('Expected GDT text argument')
+      const onSubmit = vi.fn()
+      const command = {
+        name: commandName,
+        groupId: 'modeling',
+        scopes: GLOBAL_COMMAND_SCOPES,
+        useModelingDialog: true,
+        needsReview: false,
+        onSubmit,
+        args: {
+          [argName]: {
+            inputType: arg.inputType,
+            validation: arg.validation,
+            required: true,
+            hidden: false,
+          },
+          framePlane: { inputType: 'string', required: false },
+        },
+      } satisfies Command
+      const actor = createActor(commandBarMachine, {
+        input: {
+          commands: [command],
+          wasmInstancePromise: Promise.resolve({} as ModuleType),
+          machineManager: {} as MachineManager,
+        },
+      }).start()
+      try {
+        // Existing text must be checked even when editing only another field.
+        actor.send({
+          type: 'Find and select command',
+          data: {
+            name: command.name,
+            groupId: command.groupId,
+            argDefaultValues: {
+              [argName]: 'Use "datum A"',
+              nodeToEdit: [1, 2],
+            },
+          },
+        })
+        for (const text of [
+          'Use "datum A"',
+          'C:\\parts',
+          'line\nbreak',
+          'tab\there',
+        ]) {
+          actor.send({
+            type: 'Submit command from dialog',
+            data: { argumentsToSubmit: { [argName]: text, framePlane: 'XZ' } },
+          })
+          await vi.waitFor(() => {
+            expect(actor.getSnapshot().matches('Gathering arguments')).toBe(
+              true
+            )
+            expect(actor.getSnapshot().context.reviewValidationError).toEqual(
+              expect.any(String)
+            )
+          })
+          expect(actor.getSnapshot().context.argumentsToSubmit[argName]).toBe(
+            text
+          )
+          expect(onSubmit).not.toHaveBeenCalled()
+          actor.send({ type: 'Dialog draft changed' })
+        }
+        actor.send({
+          type: 'Submit command from dialog',
+          data: {
+            argumentsToSubmit: {
+              [argName]: "Use the part's datum",
+              framePlane: 'XZ',
+            },
+          },
+        })
+        await vi.waitFor(() =>
+          expect(onSubmit).toHaveBeenCalledExactlyOnceWith({
+            [argName]: "Use the part's datum",
+            framePlane: 'XZ',
+            nodeToEdit: [1, 2],
+          })
+        )
+      } finally {
+        actor.stop()
       }
     }
   )
@@ -602,14 +757,46 @@ function pointAndClickStdLibArgs(config: StdLibCommandDriftConfig) {
   const omitted = new Set<string>(config.omittedStdLibArgs ?? [])
   const includedDeprecated = new Set<string>(config.deprecatedStdLibArgs ?? [])
 
-  return STD_LIB_COMMANDS[config.stdLibName].args
+  return stdLibCommandArgsForConfig(config)
     .filter(
       (arg) => !isDeprecatedStdLibArg(arg) || includedDeprecated.has(arg.name)
     )
     .filter((arg) => !omitted.has(arg.name))
 }
 
+function stdLibCommandArgsForConfig(config: StdLibCommandDriftConfig) {
+  return stdLibCommandSources(config).flatMap<StdLibCommandArg>(
+    (command) => command.args
+  )
+}
+
 describe('stdlib command arg derivation', () => {
+  it('derives enum options while keeping UI defaults and labels', () => {
+    const values = STD_LIB_ENUMS['view::Visibility']
+    const options = stdLibEnumOptions(values, 'Hide', { Hide: 'Hide all' })
+
+    expect(options.map(({ value }) => value)).toEqual(['Hide', 'Show'])
+    expect(options[0]).toEqual({
+      name: 'Hide all',
+      value: 'Hide',
+      isCurrent: true,
+    })
+    expect(options[1].name).toBe('Show')
+  })
+
+  it('derives nested camera arguments from their stdlib source', () => {
+    const args =
+      modelingStdLibCommandArgs<ModelingCommandSchema['Named View']>(
+        'Named View'
+      )
+    const cameraArgs =
+      stdLibCommandArgs<Record<string, unknown>>('view::oriented')
+
+    expect(args.target).toEqual(cameraArgs.target)
+    expect(args.target.documentation).toBeTruthy()
+    expect(args).toHaveProperty('camera')
+  })
+
   it('only derives docs for fields backed by a single stdlib argument', () => {
     const args = stdLibCommandArgs<Record<string, unknown>>('gdt::position', {
       argAliases: { faces: 'objects', edges: 'objects', tolerance: 'value' },
@@ -734,7 +921,7 @@ describe('modeling command stdlib drift', () => {
         const omitted = new Set<string>(config.omittedStdLibArgs ?? [])
         const included = new Set<string>(config.deprecatedStdLibArgs ?? [])
 
-        return STD_LIB_COMMANDS[config.stdLibName].args
+        return stdLibCommandArgsForConfig(config)
           .filter((arg) => !arg.special && isDeprecatedStdLibArg(arg))
           .filter((arg) => !omitted.has(arg.name) && !included.has(arg.name))
           .map((arg) => `${commandName} (${config.stdLibName}).${arg.name}`)
@@ -751,7 +938,7 @@ describe('modeling command stdlib drift', () => {
     )) {
       const config = driftConfig as StdLibCommandDriftConfig
       const stdLibArgNames = new Set<string>(
-        STD_LIB_COMMANDS[config.stdLibName].args.map((arg) => arg.name)
+        stdLibCommandArgsForConfig(config).map((arg) => arg.name)
       )
       const includedDeprecated = new Set<string>(
         config.deprecatedStdLibArgs ?? []
@@ -781,7 +968,7 @@ describe('modeling command stdlib drift', () => {
 
       expect(
         (config.deprecatedStdLibArgs ?? []).filter((argName) => {
-          const arg = STD_LIB_COMMANDS[config.stdLibName].args.find(
+          const arg = stdLibCommandArgsForConfig(config).find(
             (candidate) => candidate.name === argName
           )
           return arg && !isDeprecatedStdLibArg(arg)

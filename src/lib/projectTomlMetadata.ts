@@ -129,6 +129,24 @@ export function getProjectDefaultFileFromProjectTomlContents(contents: string) {
   return defaultFile ? normalizeProjectTomlPath(defaultFile) : undefined
 }
 
+/** Parse descriptive metadata without creating configuration or applying app settings. */
+export function readProjectMetadataFromToml(
+  contents: string
+): { title?: string; defaultFile?: string } | Error {
+  const table = parseProjectToml(contents)
+  if (!table) return new Error('Unable to parse project.toml')
+  if (table.title !== undefined && typeof table.title !== 'string') {
+    return new Error('Project title in project.toml must be a string')
+  }
+  const defaultFile = getNonEmptyString(table.default_file)
+  return {
+    title: getNonEmptyString(table.title),
+    ...(defaultFile
+      ? { defaultFile: normalizeProjectTomlPath(defaultFile) }
+      : {}),
+  }
+}
+
 export function getProjectTitleFromProjectTomlContents(contents: string) {
   const table = parseProjectToml(contents)
   if (!table) {

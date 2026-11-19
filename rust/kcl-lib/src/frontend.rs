@@ -581,7 +581,13 @@ impl FrontendState {
                 new_graph: self.scene_graph_for_ui(),
                 new_objects: Vec::new(),
                 invalidates_ids: true,
-                exec_outcome: checkpoint.exec_outcome,
+                // Restoring leaves the engine as it is, so report its current
+                // generation rather than the one stored with the checkpoint.
+                exec_outcome: ExecOutcome {
+                    engine_scene_generation: cache.engine_scene_generation().await,
+                    named_views: None,
+                    ..checkpoint.exec_outcome
+                },
             },
         })
     }
@@ -2067,6 +2073,7 @@ impl FrontendState {
             filenames,
             source_files,
             default_planes,
+            engine_scene_generation,
             ..
         } = err;
 
@@ -2077,7 +2084,10 @@ impl FrontendState {
             #[cfg(test)]
             test_program_memory: Default::default(),
             filenames,
-            from_cache: false,
+            // Errors from run_with_caching always carry the generation, and
+            // update_state_after_exec doesn't read it anyway. TODO: return a
+            // narrower type than ExecOutcome so this doesn't need to be filled in?
+            engine_scene_generation: engine_scene_generation.unwrap_or_default(),
             operations,
             artifact_graph,
             scene_objects,
@@ -2085,6 +2095,7 @@ impl FrontendState {
             var_solutions,
             refactor_metadata,
             issues: non_fatal,
+            named_views: None,
             source_files,
             default_planes,
         })
@@ -7799,13 +7810,15 @@ sketch(on = XY) {
         let other = ExecutorContext::new_mock(None).await;
         let program = Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
         let outcome = ctx.run_with_caching(program).await.unwrap();
+        assert!(outcome.named_views.is_some());
         let checkpoint = frontend.create_sketch_checkpoint(&ctx.cache, outcome).await.unwrap();
         ctx.cache.clear_mem_cache().await;
         assert!(ctx.cache.read_old_memory_var("x").await.is_none());
-        frontend
+        let restored = frontend
             .restore_sketch_checkpoint(&ctx.cache, checkpoint)
             .await
             .unwrap();
+        assert!(restored.scene_graph_delta.exec_outcome.named_views.is_none());
         assert!(ctx.cache.read_old_memory_var("x").await.is_some());
         assert!(other.cache.read_old_memory_var("x").await.is_none());
         ctx.close().await;
@@ -9320,13 +9333,14 @@ cylinder = startSketchOn(XY)
             test_program_memory: Default::default(),
             operations: Default::default(),
             artifact_graph: Default::default(),
+            named_views: None,
             scene_objects: Default::default(),
             source_range_to_object: Default::default(),
             var_solutions: Default::default(),
             refactor_metadata: Default::default(),
             issues: Default::default(),
             filenames: Default::default(),
-            from_cache: false,
+            engine_scene_generation: 0,
             source_files: Default::default(),
             default_planes: Default::default(),
         };
@@ -9477,13 +9491,14 @@ sketch(on = XY) {
             test_program_memory: Default::default(),
             operations: Default::default(),
             artifact_graph: Default::default(),
+            named_views: None,
             scene_objects: Default::default(),
             source_range_to_object: Default::default(),
             var_solutions,
             refactor_metadata: Default::default(),
             issues: Default::default(),
             filenames: Default::default(),
-            from_cache: false,
+            engine_scene_generation: 0,
             source_files: Default::default(),
             default_planes: Default::default(),
         }

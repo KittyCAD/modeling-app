@@ -1,10 +1,11 @@
-import { defineContract, defineService } from '@kittycad/registry'
+import { inputs, observeService } from '@src/registry/inputs'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type {
   BillingActor,
   BillingContext,
   billingMachine,
 } from '@src/lib/billing/machine'
+import { contract, service } from 'plankton'
 import type { SnapshotFrom } from 'xstate'
 
 export type BillingRegistryService = {
@@ -14,9 +15,12 @@ export type BillingRegistryService = {
   context: ReadonlySignal<BillingContext>
   useContext: () => BillingContext
 }
-
-export const billingContract = defineContract({
-  billingService: defineService<BillingRegistryService>('billing.service'),
+export const billingContract = contract({
+  billingService: service<BillingRegistryService>('billing.service'),
 })
 
 export const { billingService } = billingContract
+
+export const observations = inputs({
+  billingService: observeService(billingService),
+})

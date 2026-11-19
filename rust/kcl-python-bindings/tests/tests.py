@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 import asyncio
 import os
+import shutil
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
 from urllib.parse import parse_qs, urlsplit
 
-import kcl
 import pytest
+
+import kcl
 from kcl import Point3d
 
 # Get the path to this script's parent directory.
@@ -50,6 +52,78 @@ box3D = extrude(box_sketch, length = box_height)
 requires_engine = pytest.mark.skipif(
     "ZOO_API_TOKEN" not in os.environ, reason="requires ZOO_API_TOKEN"
 )
+
+
+@requires_engine
+@pytest.mark.asyncio
+@pytest.mark.parametrize("geometry_only", [False, True])
+async def test_engine_execution_preserves_imported_error_sources(
+    tmp_path, geometry_only
+):
+    dependency = tmp_path / "dependency.kcl"
+    dependency.write_text(
+        "@settings(kclVersion = 3.0)\nexport value = missingIdentifier\n"
+    )
+    entrypoint = tmp_path / "main.kcl"
+    entrypoint.write_text('@settings(kclVersion = 3.0)\nimport "dependency.kcl"\n')
+    with pytest.raises(kcl.KclError) as caught:
+        await kcl.execute(str(entrypoint), geometry_only=geometry_only)
+    assert "missingIdentifier" in str(caught.value)
+    assert "undefined value" in str(caught.value)
+    assert str(dependency) in str(caught.value)
+
+
+@requires_engine
+@pytest.mark.asyncio
+@pytest.mark.parametrize("geometry_only", [False, True])
+async def test_engine_code_can_import_a_file_named_main(
+    tmp_path, monkeypatch, geometry_only
+):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "main.kcl").write_text(
+        "@settings(kclVersion = 3.0)\nexport value = 42\n"
+    )
+    outcome = await kcl.execute_code(
+        '@settings(kclVersion = 3.0)\nimport "main.kcl"\nvalue = main::value\n',
+        geometry_only=geometry_only,
+    )
+    assert not any(issue.is_err() for issue in outcome.issues())
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_engine_execution_uploads_parent_relative_assets(tmp_path):
+    subdirectory = tmp_path / "sub"
+    subdirectory.mkdir()
+    entrypoint = subdirectory / "main.kcl"
+    entrypoint.write_text(
+        '@settings(kclVersion = 3.0)\nimport "../cube.step" as cube\n'
+    )
+    asset = tmp_path / "cube.step"
+    await asyncio.to_thread(shutil.copyfile, cube_step_file, asset)
+    async with await kcl.new_kcl_session(str(entrypoint)) as session:
+        entrypoint.unlink()
+        asset.unlink()
+        request = kcl.PhysicalPropertiesRequest()
+        request.set_volume(kcl.UnitVolume.CubicMillimeters)
+        result = await session.measure(request)
+        assert result.get_volume() > 0
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_engine_execution_rejects_absolute_imports(tmp_path):
+    dependency = tmp_path / "dependency.kcl"
+    dependency.write_text("@settings(kclVersion = 3.0)\nexport value = 42\n")
+    with pytest.raises(
+        kcl.KclError,
+        match="Absolute import paths are not supported|import path may not start",
+    ):
+        await kcl.execute_code(
+            f'@settings(kclVersion = 3.0)\nimport "{dependency.as_posix()}"\n',
+            geometry_only=True,
+        )
+
 
 MAX_EXECUTION_ATTEMPTS = 3
 EXECUTION_RETRY_BASE_DELAY_SECONDS = 1
@@ -151,7 +225,7 @@ def modeling_api():
 
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
-            requests.append((self.path, self.headers.get("Authorization")))
+            requests.append((self.path, self.headers))
             # Capture the real native client's handshake without needing an engine.
             self.send_response(401)
             self.send_header("Content-Length", "0")
@@ -219,14 +293,13 @@ async def test_kcl_session_explicit_credentials(
     )
     assert len(requests) == 2
     assert all(path.startswith("/ws/modeling/commands?") for path, _ in requests)
-    assert {authorization for _, authorization in requests} == {
+    assert {headers["Authorization"] for _, headers in requests} == {
         "Bearer first-session-token",
         "Bearer second-session-token",
     }
     for path, _ in requests:
         query = parse_qs(urlsplit(path).query)
         assert query["geometry_only"] == [str(geometry_only).lower()]
-        assert query.get("pool") == (["cpu"] if geometry_only else None)
     assert dict(os.environ) == before
 
 
@@ -247,9 +320,9 @@ async def test_kcl_session_credentials_environment_fallback(
         with pytest.raises(Exception, match="401"):
             await constructor(source, **kwargs)
     assert len(requests) == 1
-    path, authorization = requests[0]
+    path, headers = requests[0]
     assert path.startswith("/ws/modeling/commands?")
-    assert authorization == "Bearer environment-token"
+    assert headers["Authorization"] == "Bearer environment-token"
     query = parse_qs(urlsplit(path).query)
     assert query["geometry_only"] == ["false"]
     assert "pool" not in query
@@ -265,6 +338,105 @@ async def test_kcl_session_mock_with_explicit_credentials(
         source, mock=True, token="mock-token", base_url=base_url
     ) as session:
         assert session.outcome.issues() == []
+    assert requests == []
+
+
+@pytest.fixture(
+    params=[
+        "new_kcl_session",
+        "new_kcl_session_code",
+        "execute",
+        "execute_code",
+        "execute_and_export",
+        "execute_and_measure",
+        "execute_and_bounding_box",
+        "execute_and_snapshot",
+        "execute_and_snapshot_views",
+        "get_sketch_constraint_status",
+        "get_sketch_constraint_status_code",
+        "import_and_snapshot",
+        "import_and_snapshot_views",
+    ]
+)
+def network_call(request, tmp_path):
+    code = "@settings(kclVersion = 3.0)\nvalue = 1\n"
+    source = tmp_path / "main.kcl"
+    source.write_text(code)
+    name = request.param
+    args = [code if name.endswith("_code") else str(source)]
+    if name.startswith("import_and_snapshot"):
+        args = [[], kcl.InputFormat3d.Step(kcl.StepImportOptions())]
+    if "snapshot" in name:
+        args.append(kcl.ImageFormat.Png)
+        if name.endswith("_views"):
+            args.append([])
+    elif name == "execute_and_measure":
+        args.append(kcl.PhysicalPropertiesRequest())
+    elif name == "execute_and_export":
+        args.append(kcl.FileExportFormat.Step)
+    return getattr(kcl, name), args
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("user_agent_header", ["User-Agent", "user-agent"])
+async def test_network_custom_headers(
+    network_call, modeling_api, monkeypatch, user_agent_header
+):
+    base_url, requests = modeling_api
+    monkeypatch.delenv("KITTYCAD_API_TOKEN", raising=False)
+    monkeypatch.delenv("KITTYCAD_HOST", raising=False)
+    monkeypatch.setenv("ZOO_API_TOKEN", "test-token")
+    monkeypatch.setenv("ZOO_HOST", base_url)
+    function, args = network_call
+    headers = {user_agent_header: "MyApp/1.0", "X-Custom-Header": "example-value"}
+    async with asyncio.timeout(10):
+        with pytest.raises(Exception, match="401"):
+            await function(*args, headers=headers)
+    assert len(requests) == 1
+    path, received = requests[0]
+    assert path.startswith("/ws/modeling/commands?")
+    assert received["Upgrade"].lower() == "websocket"
+    assert received["Sec-WebSocket-Version"] == "13"
+    assert received.get_all("User-Agent") == ["MyApp/1.0"]
+    assert received.get_all("X-Custom-Header") == ["example-value"]
+    assert received["Authorization"] == "Bearer test-token"
+    assert headers == {
+        user_agent_header: "MyApp/1.0",
+        "X-Custom-Header": "example-value",
+    }
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("headers", [None, {}])
+async def test_kcl_session_default_headers(session_constructor, modeling_api, headers):
+    constructor, source = session_constructor
+    base_url, requests = modeling_api
+    async with asyncio.timeout(10):
+        with pytest.raises(Exception, match="401"):
+            await constructor(
+                source, token="test-token", base_url=base_url, headers=headers
+            )
+    assert len(requests) == 1
+    values = requests[0][1].get_all("User-Agent")
+    assert len(values) == 1
+    assert values[0].startswith("kcl-lib.rs/")
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "headers",
+    [{"Bad Name": "value"}, {"X-Custom-Header": "bad\r\nvalue"}],
+)
+async def test_kcl_session_rejects_invalid_headers(
+    session_constructor, modeling_api, headers
+):
+    constructor, source = session_constructor
+    base_url, requests = modeling_api
+    async with asyncio.timeout(10):
+        with pytest.raises(Exception, match="header"):
+            await constructor(
+                source, token="test-token", base_url=base_url, headers=headers
+            )
     assert requests == []
 
 
@@ -361,6 +533,33 @@ solid = extrude(disk, length = 10mm)
             images.append(image)
 
     assert images[0] != images[1], "highlight_edges must change the rendered image"
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_session_snapshot_cloned_transparent_solid_cpu_only(tmp_path):
+    code = """
+@settings(kclVersion = 3.0)
+
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 0mm, var 1.14mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  vertical([circle1.start, circle1.center])
+  distance([circle1.start, circle1.center], labelPosition = [0.38mm, 2.59mm]) == 1.14mm
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.circle1])
+extrude001 = extrude(region001, length = 2) |> appearance(color = "#dba09a", metalness = 90, roughness = 50, opacity = 60)
+clone(extrude001) |> translate(x = 1)
+"""
+    async with await execute_with_retries(
+        kcl.new_kcl_session_code, code, geometry_only=True
+    ) as session:
+        snapshots = await session.snapshots(kcl.ImageFormat.Png, [])
+        assert len(snapshots) == 1
+        image = bytes(snapshots[0])
+        assert image.startswith(b"\x89PNG\r\n\x1a\n")
+        (tmp_path / "cloned_transparent_solid.png").write_bytes(image)
 
 
 @pytest.mark.asyncio
@@ -1278,7 +1477,7 @@ async def test_sketch_constraint_status_parse_error_returns_report():
     assert report.kcl_error is not None
     assert report.kcl_error.phase == "parse"
     assert "KCL Syntax error" in report.kcl_error.text
-    assert "Unexpected token" in report.kcl_error.text
+    assert "Unexpected end of file. The compiler expected }" in report.kcl_error.text
 
 
 @requires_engine

@@ -40,10 +40,10 @@ description: Variables in memory after executing get_opposite_edge_after_fillet_
             0.0
           ],
           "tag": {
-            "commentStart": 589,
-            "end": 595,
+            "commentStart": 579,
+            "end": 585,
             "moduleId": 0,
-            "start": 589,
+            "start": 579,
             "type": "TagDeclarator",
             "value": "seg01"
           },

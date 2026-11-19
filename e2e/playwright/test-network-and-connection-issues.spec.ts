@@ -5,7 +5,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
   test(
     'simulate network down and network little widget',
-    { tag: '@skipLocalEngine' },
+    { tag: ['@skipLocalEngine', '@localRenderer'] },
     async ({ page, homePage, toolbar, scene, cmdBar }) => {
       const networkToggleConnectedText = page.getByText(
         'Network health (Strong)'
@@ -93,7 +93,7 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
 
   test(
     'Paused stream freezes view frame, unpause reconnect is seamless to user',
-    { tag: '@skipLocalEngine' },
+    { tag: ['@skipLocalEngine', '@streamRenderer'] },
     async ({ page, homePage, scene, cmdBar, toolbar, tronApp }) => {
       const networkToggle = page.getByTestId(/network-toggle/)
       const networkToggleConnectedText = page.getByText(
@@ -126,6 +126,30 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])
       await test.step('Go to modeling scene', async () => {
         await homePage.goToModelingScene()
         await scene.settled()
+        // Frame the profile itself before testing whether its stream frame freezes.
+        await page.evaluate(async () => {
+          const manager = window.app.singletons.kclManager
+          const profiles = [...manager.artifactGraph.values()]
+            .filter((a) => a.type === 'path')
+            .map((a) => a.id)
+          if (profiles.length !== 1)
+            throw new Error('Expected one profile to frame')
+          await window.engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: crypto.randomUUID(),
+            cmd: {
+              type: 'zoom_to_fit',
+              object_ids: profiles,
+              padding: 0.1,
+              animated: false,
+            },
+          })
+        })
+        await scene.expectPixelColor(
+          TEST_COLORS.GREY,
+          { x: dim.width / 2 + dim.width / 100, y: dim.height / 2 },
+          15
+        )
       })
 
       await test.step('Verify pausing behavior', async () => {

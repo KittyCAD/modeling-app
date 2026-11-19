@@ -1,5 +1,6 @@
 import { ActionButton } from '@src/components/ActionButton'
 import type { Feature } from '@kittycad/lib'
+import { SettingRestartButton } from '@src/components/Settings/SettingRestartButton'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { useApp } from '@src/lib/boot'
@@ -10,6 +11,7 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import {
   canRevealInFileExplorer,
+  canRevealPathInFileExplorer,
   revealInFileExplorer,
 } from '@src/lib/revealInFileExplorer'
 import type { Setting } from '@src/lib/settings/Setting'
@@ -25,6 +27,7 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { capitaliseFC, toSync } from '@src/lib/utils'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
+import { fileOperationsMountsFacet } from '@src/registry/contracts/fileOperations'
 import {
   acceptOnboarding,
   reportOnboardingStartFailure,
@@ -72,6 +75,13 @@ export const AllSettingsFields = forwardRef(
 
       return projectPath
     }, [location.pathname, isFileSettings])
+    const canRevealSettingsFolder =
+      searchParamTab === 'project'
+        ? canRevealPathInFileExplorer(
+            projectPath,
+            app.registry.get(fileOperationsMountsFacet)
+          )
+        : canRevealInFileExplorer()
 
     function restartOnboarding() {
       return acceptOnboarding({
@@ -89,7 +99,12 @@ export const AllSettingsFields = forwardRef(
               // Filter out categories that don't have any non-hidden settings
               Object.values(categorySettings).some(
                 (setting) =>
-                  !shouldHideSetting(setting, searchParamTab, hasFeature)
+                  !shouldHideSetting(
+                    setting,
+                    searchParamTab,
+                    context,
+                    hasFeature
+                  )
               )
             )
             .map(([category, categorySettings]) => (
@@ -102,7 +117,12 @@ export const AllSettingsFields = forwardRef(
                 </h2>
                 {Object.entries(categorySettings)
                   .filter((item: [string, Setting<unknown>]) =>
-                    shouldShowSettingInput(item[1], searchParamTab, hasFeature)
+                    shouldShowSettingInput(
+                      item[1],
+                      searchParamTab,
+                      context,
+                      hasFeature
+                    )
                   )
                   .map(([settingName, s]) => {
                     const setting = s as Setting
@@ -110,7 +130,9 @@ export const AllSettingsFields = forwardRef(
                       setting[setting.getParentLevel(searchParamTab)]
                     return (
                       <SettingsSection
-                        title={formatSettingsLabel(settingName)}
+                        title={
+                          setting.title ?? formatSettingsLabel(settingName)
+                        }
                         id={settingName}
                         className={
                           location.hash === `#${settingName}`
@@ -144,6 +166,7 @@ export const AllSettingsFields = forwardRef(
                           settingsLevel={searchParamTab}
                           setting={setting}
                         />
+                        <SettingRestartButton setting={setting} />
                       </SettingsSection>
                     )
                   })}
@@ -188,7 +211,7 @@ export const AllSettingsFields = forwardRef(
                   `}
           >
             <div className="flex flex-col items-start gap-4">
-              {canRevealInFileExplorer() && (
+              {canRevealSettingsFolder && (
                 <ActionButton
                   Element="button"
                   onClick={toSync(async () => {

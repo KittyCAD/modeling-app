@@ -4,10 +4,6 @@ import { AppHeader } from '@src/components/AppHeader'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import {
-  checkOpenedProjectPresence,
-  getZookeeperProjectReloadBehavior,
-} from '@src/components/openedProjectUtils'
-import {
   defaultGlobalStatusBarItems,
   defaultLocalStatusBarItems,
 } from '@src/components/StatusBar/defaultStatusBarItems'
@@ -35,22 +31,17 @@ import { PATHS } from '@src/lib/paths'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
-
-import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
-import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import {
   filterStatusBarItemsForScopes,
-  statusBarGlobalItemsValueSpec,
-  statusBarLocalItemsValueSpec,
+  statusBarGlobalItemsFacet,
+  statusBarLocalItemsFacet,
 } from '@src/registry/contracts/statusBar'
 import { useApplyRememberedOnboardingWorkflow } from '@src/routes/Onboarding/utils'
-import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import ModalContainer from 'react-modal-promise'
-// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: project navigation and onboarding query detection (useLocation, useNavigate, useSearchParams).
-import { useLocation, useNavigate } from 'react-router-dom'
-
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: project navigation and onboarding query detection (useLocation, useSearchParams).
+import { useLocation } from 'react-router-dom'
 export function OpenedProject() {
   useSignals()
   const app = useApp()
@@ -61,124 +52,41 @@ export function OpenedProject() {
       )
     }
   }, [app.fileOperations])
-  const { auth, billing, settings, layout, project, systemIOActor, registry } =
-    app
+  const { auth, billing, settings, layout, project, registry } = app
   const { kclManager } = useSingletons()
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
-  const { state: modelingState, send: modelingSend } = useModelingContext()
+  const { state: modelingState } = useModelingContext()
   useQueryParamEffects()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const location = useLocation()
-  const navigate = useNavigate()
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
-  const lastOperation = useLastOperation()
-  const projects = useFolders()
-  const lsp = registry.get(lspService)
+  const lsp = registry.required(lspService)
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
-
   const projectName = project?.name || null
   const projectPath = project?.path || null
-
-  const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
-
-  // Handle our project folder disappearing (Go back to Projects listing)
-  useEffect(() => {
-    if (
-      systemIOState !== SystemIOMachineStates.idle ||
-      !projectPath ||
-      !projects
-    ) {
-      return
-    }
-
-    if (
-      [
-        SystemIOMachineStates.creatingProject,
-        SystemIOMachineStates.renamingProject,
-        SystemIOMachineStates.importFileFromURL,
-      ].includes(lastOperation)
-    ) {
-      return
-    }
-
-    let cancelled = false
-    void checkOpenedProjectPresence({
-      fileOperations: app.fileOperations,
-      projectPath,
-      projects,
-    }).then((presence) => {
-      if (cancelled) {
-        return
-      }
-      if (presence.type === 'error') {
-        reportRejection(presence.error)
-        return
-      }
-      if (presence.type === 'missing') {
-        void navigate(PATHS.HOME)
-      }
-    })
-
-    return () => {
-      cancelled = true
-    }
-  }, [
-    app.fileOperations,
-    lastOperation,
-    navigate,
-    projectPath,
-    projects,
-    systemIOState,
-  ])
-
-  // ZOOKEEPER BEHAVIOR EXCEPTION
-  // Only fires on state changes, to deal with Zookeeper control.
-  useEffect(() => {
-    if (systemIOState !== 'idle') {
-      return
-    }
-    if (
-      kclManager.zookeeperManagerMachineBulkManipulatingFileSystem === false
-    ) {
-      return
-    }
-    const reloadBehavior = getZookeeperProjectReloadBehavior(modelingState)
-    kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = false
-
-    if (reloadBehavior === 'exit-sketch-solve') {
-      toast(
-        'Zookeeper updated the project while sketch mode was active. Exiting sketch mode to reload safely.'
-      )
-      modelingSend({ type: 'Exit sketch' })
-      return
-    }
-
-    kclManager.scheduleCurrentCodeExecution(
-      reloadBehavior === 'execute-and-reset-camera'
-    )
-  }, [systemIOState, kclManager, modelingState, modelingSend])
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
     lsp.onProjectOpen(
-      { name: projectName, path: projectPath },
+      {
+        name: projectName,
+        path: projectPath,
+      },
       project?.executingPath ? project.executingFileEntry.value : null
     )
   }, [lsp, projectName, projectPath, project])
-
   useHotKeyListener(kclManager)
-
   const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
   const registryGlobalStatusBarItems = filterStatusBarItemsForScopes(
-    registry.signal(statusBarGlobalItemsValueSpec).value,
+    registry.observe(statusBarGlobalItemsFacet).value,
     ['file']
   )
   const registryLocalStatusBarItems = filterStatusBarItemsForScopes(
-    registry.signal(statusBarLocalItemsValueSpec).value,
+    registry.observe(statusBarLocalItemsFacet).value,
     ['file']
   )
   const executingPath = project?.executingPathSignal.value?.value
@@ -189,16 +97,16 @@ export function OpenedProject() {
   const onboardingStatus =
     settingsValues.app.onboardingStatus.current ||
     settingsValues.app.onboardingStatus.default
-
   useApplyRememberedOnboardingWorkflow(location.pathname, onboardingStatus)
-
   useEngineConnectionSubscriptions()
-
   useEffect(() => {
     // Not too useful for regular flows but on modeling view refresh,
     // fetch the token count. The regular flow is the count is initialized
     // by the Projects view.
-    billing.send({ type: BillingTransition.Update, apiToken: authToken })
+    billing.send({
+      type: BillingTransition.Update,
+      apiToken: authToken,
+    })
 
     // Tell engineStream to wait for dependencies to start streaming.
     // When leaving the modeling scene, cut the engine stream.
@@ -244,7 +152,6 @@ export function OpenedProject() {
         .catch(reportRejection)
     }
   }, [])
-
   const undoRedoButtons = useMemo(
     () => (
       <UndoRedoButtons
@@ -255,7 +162,6 @@ export function OpenedProject() {
     ),
     [kclManager]
   )
-
   const notifications: boolean[] = Object.values(defaultAreaLibrary).map(
     (x) => {
       if ('useNotifications' in x) {
@@ -265,13 +171,11 @@ export function OpenedProject() {
       return false
     }
   )
-
   return (
     <div className="h-screen flex flex-col overflow-hidden select-none">
       <div className="relative flex flex-1 flex-col">
         <div className="relative flex items-center flex-col">
           <AppHeader
-            className="transition-opacity transition-duration-75"
             project={project?.projectIORefSignal.value}
             file={project?.executingFileEntry.value}
             enableMenu={true}
@@ -279,7 +183,7 @@ export function OpenedProject() {
             projectMenuChildren={undoRedoButtons}
           />
         </div>
-        <ModalContainer />
+        <ModalContainer enterTimeout={0} exitTimeout={0} />
         <section className="pointer-events-auto flex-1">
           <LayoutRootNode
             layout={layout.signal.value || defaultLayout}
@@ -287,6 +191,7 @@ export function OpenedProject() {
             setLayout={layout.set}
             areaLibrary={defaultAreaLibrary}
             actionLibrary={defaultActionLibrary}
+            paneOpenBehavior={settingsValues.layout.paneOpenBehavior.current}
             showDebugPanel={settingsValues.debug.showPanel.current}
             notifications={notifications}
             artifactGraph={kclManager.artifactGraph}

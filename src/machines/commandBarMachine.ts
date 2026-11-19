@@ -65,6 +65,7 @@ export type CommandBarContext = CommandBarInput & {
   selectedCommand?: Command
   currentArgument?: CommandArgument<unknown> & { name: string }
   argumentsToSubmit: { [x: string]: unknown }
+  argumentDrafts: Record<string, string | undefined>
   reviewValidationError?: string
   reviewValidationDetails?: CommandReviewValidationDetails
   machineManager: MachineManager
@@ -90,6 +91,7 @@ export type CommandBarMachineEvent =
         argumentsToSubmit: Record<string, unknown>
       }
     }
+  | { type: 'Dialog draft changed' }
   | {
       type: 'Add argument'
       data: { argument: CommandArgumentWithName<unknown> }
@@ -112,6 +114,7 @@ export type CommandBarMachineEvent =
     }
   | { type: 'Set userFeatures'; data: UserFeaturesService }
   | { type: 'Submit argument'; data: { [x: string]: unknown } }
+  | { type: 'Update argument draft'; data: { name: string; value: string } }
   | {
       type: 'xstate.done.actor.validateSingleArgument'
       output: { [x: string]: unknown }
@@ -149,6 +152,14 @@ export const commandBarMachine = setup({
   },
   actions: {
     enqueueValidArgsToSubmit: assign({
+      argumentDrafts: ({ context, event }) => {
+        if (event.type !== 'xstate.done.actor.validateSingleArgument') {
+          return context.argumentDrafts
+        }
+        const [argName] = Object.keys(event.output)
+        const { [argName]: _, ...drafts } = context.argumentDrafts
+        return drafts
+      },
       argumentsToSubmit: ({ context, event }) => {
         if (event.type !== 'xstate.done.actor.validateSingleArgument') return {}
         const [argName, argData] = Object.entries(event.output)[0]
@@ -211,6 +222,7 @@ export const commandBarMachine = setup({
     }),
     'Clear selected command': assign({
       selectedCommand: undefined,
+      argumentDrafts: {},
       reviewValidationError: undefined,
       reviewValidationDetails: undefined,
     }),
@@ -291,6 +303,12 @@ export const commandBarMachine = setup({
       currentArgument: undefined,
     }),
     'Remove argument': assign({
+      argumentDrafts: ({ context, event }) => {
+        if (event.type !== 'Remove argument') return context.argumentDrafts
+        const argToRemove = Object.values(event.data)[0]
+        const { [argToRemove.name]: _, ...drafts } = context.argumentDrafts
+        return drafts
+      },
       argumentsToSubmit: ({ context, event }) => {
         if (event.type !== 'Remove argument') return context.argumentsToSubmit
         const argToRemove = Object.values(event.data)[0]
@@ -314,6 +332,7 @@ export const commandBarMachine = setup({
       selectedCommand: undefined,
       currentArgument: undefined,
       argumentsToSubmit: {},
+      argumentDrafts: {},
       reviewValidationError: undefined,
       reviewValidationDetails: undefined,
     }),
@@ -336,6 +355,7 @@ export const commandBarMachine = setup({
       },
     }),
     'Initialize arguments to submit': assign({
+      argumentDrafts: {},
       argumentsToSubmit: ({ context, event }) => {
         if (
           event.type !== 'Select command' &&
@@ -376,36 +396,37 @@ export const commandBarMachine = setup({
         }
       },
     }),
-    'Notify review validation error': ({ event }) => {
-      if (
-        event.type !== 'xstate.done.actor.validateArguments' ||
-        !event.output.reviewValidationError
-      ) {
-        return
-      }
-      toast.error(event.output.reviewValidationError)
-    },
-    'Notify argument validation error': ({ event }) => {
-      if (event.type !== 'xstate.error.actor.validateArguments') {
-        return
-      }
-      const argName =
-        event.error &&
-        typeof event.error === 'object' &&
-        'arg' in event.error &&
-        event.error.arg &&
-        typeof event.error.arg === 'object' &&
-        'name' in event.error.arg
-          ? String(event.error.arg.name)
-          : undefined
-      const message =
-        event.error instanceof Error
-          ? event.error.message
-          : argName
+    'Update argument draft': assign({
+      argumentDrafts: ({ context, event }) => {
+        assertEvent(event, 'Update argument draft')
+        return {
+          ...context.argumentDrafts,
+          [event.data.name]: event.data.value,
+        }
+      },
+      argumentsToSubmit: ({ context, event }) => {
+        assertEvent(event, 'Update argument draft')
+        const { [event.data.name]: _, ...args } = context.argumentsToSubmit
+        return args
+      },
+    }),
+    'Clear review validation error': assign({
+      reviewValidationError: undefined,
+      reviewValidationDetails: undefined,
+    }),
+    'Set argument validation error': assign({
+      reviewValidationError: ({ event }) => {
+        if (event.type !== 'xstate.error.actor.validateArguments') return
+        const argName = event.error?.arg?.name
+        return (
+          event.error?.message ||
+          (argName
             ? `Unable to validate "${argName}".`
-            : 'Unable to validate command arguments.'
-      toast.error(message)
-    },
+            : 'Unable to validate command arguments.')
+        )
+      },
+      reviewValidationDetails: undefined,
+    }),
   },
   guards: {
     'Command needs review': ({ context }) =>
@@ -717,6 +738,7 @@ export const commandBarMachine = setup({
       codeBasedSelections: [],
     },
     argumentsToSubmit: {},
+    argumentDrafts: {},
     reviewValidationError: undefined,
     reviewValidationDetails: undefined,
   }),
@@ -771,6 +793,9 @@ export const commandBarMachine = setup({
       states: {
         'Awaiting input': {
           on: {
+            'Update argument draft': {
+              actions: 'Update argument draft',
+            },
             'Submit argument': {
               target: 'Validating',
             },
@@ -877,10 +902,7 @@ export const commandBarMachine = setup({
           {
             target: 'Gathering arguments',
             guard: 'Has review validation error',
-            actions: [
-              'Set review validation error',
-              'Notify review validation error',
-            ],
+            actions: ['Set review validation error'],
           },
           {
             target: 'Closed',
@@ -890,7 +912,7 @@ export const commandBarMachine = setup({
         onError: [
           {
             target: 'Gathering arguments',
-            actions: ['Notify argument validation error'],
+            actions: ['Set argument validation error'],
           },
         ],
       },
@@ -921,6 +943,11 @@ export const commandBarMachine = setup({
       guard: 'Command uses dialog',
       target: '.Checking Arguments for Dialog',
       actions: ['Set arguments to submit', 'Clear current argument'],
+    },
+    'Dialog draft changed': {
+      guard: 'Command uses dialog',
+      target: '.Gathering arguments',
+      actions: ['Clear review validation error'],
     },
     'Add commands': {
       actions: [

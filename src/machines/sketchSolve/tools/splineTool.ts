@@ -1046,6 +1046,7 @@ export const machine = setup({
         )
 
         try {
+          await rustContext.prepareForSketchInsertion()
           let result = await rustContext.addSegment(
             0,
             sketchId,

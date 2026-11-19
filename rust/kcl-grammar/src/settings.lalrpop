@@ -1,0 +1,67 @@
+grammar<'input>;
+
+use kcl_syntax::syntax_kind::SyntaxKind;
+
+extern {
+    type Location = usize;
+    type Error = std::convert::Infallible;
+
+    enum (SyntaxKind, &'input str) {
+        "@" => (SyntaxKind::At, _),
+        // Match the annotation spelling before the general word pattern.
+        "settings" => (SyntaxKind::Word, "settings"),
+        "(" => (SyntaxKind::OpenParen, _),
+        ")" => (SyntaxKind::CloseParen, _),
+        "," => (SyntaxKind::Comma, _),
+        "=" => (SyntaxKind::Eq, _),
+        "true" => (SyntaxKind::TrueKw, _),
+        "false" => (SyntaxKind::FalseKw, _),
+        WHITESPACE => (SyntaxKind::Whitespace, _),
+        WORD => (SyntaxKind::Word, _),
+        NUMBER => (SyntaxKind::Number, _),
+        STRING => (SyntaxKind::String, _),
+    }
+}
+
+pub Start: () = Settings;
+
+// Whitespace is significant between the annotation name and its parentheses.
+Settings: () = WHITESPACE? "@" "settings" Properties? WHITESPACE?;
+
+Properties: () = "(" WHITESPACE? PropertyList ")";
+
+// The legacy annotation parser permits a trailing comma in an empty list.
+PropertyList: () = {
+    => (),
+    "," WHITESPACE?,
+    Property WHITESPACE? PropertyTail,
+};
+
+PropertyTail: () = {
+    => (),
+    "," WHITESPACE? PropertyAfterComma,
+};
+
+PropertyAfterComma: () = {
+    => (),
+    Property WHITESPACE? PropertyTail,
+};
+
+Property: () = Identifier WHITESPACE? "=" WHITESPACE? Value;
+
+Value: () = {
+    Identifier,
+    Number,
+    String,
+    "true",
+    "false",
+};
+
+Identifier: () = {
+    WORD,
+    "settings",
+};
+
+Number: () = NUMBER;
+
+String: () = STRING;
