@@ -840,6 +840,60 @@ describe('project command config', () => {
     expect(libraryArg.defaultValue(context)).toBe(sourceLibrary.id)
   })
 
+  it('opens the editable copy when duplicating the current read-only cloud project', async () => {
+    const sourceLibrary = createLibrary('dataset', 'Dataset', 'cloud')
+    const targetLibrary = createLibrary(
+      'cloud-personal',
+      'Personal Cloud',
+      'cloud'
+    )
+    const project: HomeProjectEntry = {
+      id: 'remote:model',
+      name: 'model',
+      title: 'Model',
+      source: 'remote',
+      status: 'cloud-only',
+      libraryIds: [sourceLibrary.id],
+      remoteProjectId: 'model',
+      projectPath: '/__zoo_cloud__/model',
+      readWriteAccess: false,
+    }
+    const actions = createHomeProjectActions({
+      canDuplicateToLibrary: () => true,
+      getDuplicateToLibraryTargets: () => [
+        { sourceLibrary, library: targetLibrary },
+      ],
+      duplicateToLibrary: async () => ({
+        defaultFile: '/__zoo_cloud__/copy/main.kcl',
+      }),
+    })
+    const commands = createProjectCommands({
+      ...createCommandDependencies(),
+      getCurrentProjectPath: () => project.projectPath,
+      getProjectLibraries: () => [sourceLibrary, targetLibrary],
+      getHomeProjectActions: () => actions,
+      getHomeProjectEntries: () => [project],
+    })
+    const duplicate = commands.find(
+      (command) => command.name === 'Duplicate project'
+    )
+    if (!duplicate) throw new Error('Duplicate project command is missing')
+    const previousHash = window.location.hash
+    window.location.hash =
+      '#/file/' + encodeURIComponent(`${project.projectPath}/main.kcl`)
+    try {
+      await duplicate.onSubmit({
+        project: project.id,
+        library: targetLibrary.id,
+      })
+      expect(window.location.hash).toBe(
+        '#/file/%2F__zoo_cloud__%2Fcopy%2Fmain.kcl'
+      )
+    } finally {
+      window.location.hash = previousHash
+    }
+  })
+
   it('defaults home project rename titles from the selected entry', () => {
     const homeProject = createHomeProject({
       id: 'local:/client-projects/bracket',

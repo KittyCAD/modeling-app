@@ -41,11 +41,12 @@ async function prepare(
     startEmpty: source !== 'cloud',
   })
   remote.project.title = 'Original'
-  remote.project.files = {
+  const sourceFiles = {
     'main.kcl': originalCode,
     'project.toml': originalToml,
     'parts/note.md': 'nested bytes',
   }
+  remote.project.files = sourceFiles
   if (web) await setup(context, page, info)
   const navigate = (route: string) => navigateToAppRoute(page, route)
   await navigate('/home')
@@ -94,7 +95,7 @@ async function prepare(
     },
     {
       root,
-      files: remote.project.files,
+      files: sourceFiles,
       source,
       destinationPath: localDestination.path,
     }
