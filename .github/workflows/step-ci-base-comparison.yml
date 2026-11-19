@@ -16,7 +16,7 @@ jobs:
       matrix:
         include:
           - revision: candidate
-            sha: a2081084c3913575170eb9a9706022e3e74fba11
+            sha: 2d31cd1e34e585f16cff9ec96bddf058d7868852
     steps:
       - uses: actions/checkout@v6
         with:
@@ -66,7 +66,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: a2081084c3913575170eb9a9706022e3e74fba11
+          ref: 2d31cd1e34e585f16cff9ec96bddf058d7868852
           persist-credentials: false
       - run: |
           git rev-parse HEAD HEAD:rust
@@ -108,7 +108,7 @@ jobs:
         include:
           - revision: two-cores
             runner: namespace-profile-ubuntu-2-cores
-            sha: a2081084c3913575170eb9a9706022e3e74fba11
+            sha: 2d31cd1e34e585f16cff9ec96bddf058d7868852
             wasm_run: ${{ github.run_id }}
     steps:
       - uses: actions/checkout@v6
