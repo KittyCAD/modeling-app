@@ -131,16 +131,7 @@ test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
           await u.expectCmdLog('[data-message-type="execution-done"]')
         }
         if (rendererTag === '@localRenderer') {
-          await scene.settled()
-          // Finish execution before replacing the model's initial camera fit.
-          await page.waitForFunction(() => {
-            const editor = window.app.project?.executingEditor.value
-            return (
-              editor &&
-              !editor.isExecutingSignal.value &&
-              editor.artifactGraph.size > 0
-            )
-          })
+          await scene.waitForModelReady()
           await scene.moveCameraTo(
             { x: 3000, y: 3000, z: 3000 },
             { x: 800, y: -152, z: 26 }
