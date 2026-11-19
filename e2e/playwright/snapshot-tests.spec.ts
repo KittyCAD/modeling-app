@@ -85,6 +85,17 @@ const settleSnapshotScene = async (
         )
         .toBe(true)
     }
+
+    // Re-measure the gutter after the fonts used by the loaded document arrive.
+    await page.evaluate(async () => {
+      await document.fonts.ready
+      await new Promise<void>((resolve) => {
+        window.kclManager.editorView.requestMeasure({
+          read: () => null,
+          write: () => resolve(),
+        })
+      })
+    })
   }
 }
 
