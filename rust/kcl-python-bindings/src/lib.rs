@@ -162,6 +162,8 @@ async fn new_context_state(
     }
     // Must turn on SSAO, without it, transparent images will look opaque.
     settings.enable_ssao = true;
+    // Large assemblies can spend longer than the idle timeout in the engine.
+    settings.heartbeats = Some(5);
     let ctx = if mock {
         ExecutorContext::new_mock(Some(settings)).await
     } else {

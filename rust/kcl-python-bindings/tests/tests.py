@@ -75,7 +75,7 @@ async def test_kcl_execute():
 async def test_kcl_parse_with_exception():
     # Read from a file.
     with pytest.raises(Exception, match=r"lksjndflsskjfnak;jfna##") as exc_info:
-        await kcl.parse(os.path.join(files_dir, "parse_file_error"))
+        await kcl.parse(os.path.join(files_dir, "parse_file_error", "thing.kcl"))
     e = exc_info.value
     assert e is not None
     assert len(str(e)) > 0
@@ -329,8 +329,9 @@ async def test_kcl_execute_and_measure():
     com = response.get_center_of_mass()
     print(com.x, com.y, com.z)
     assert com.x == pytest.approx(0.01788371801376342, rel=0, abs=1e-5)
-    assert com.y == pytest.approx(0.24748362600803375, rel=0, abs=1e-5)
-    assert com.z == pytest.approx(-0.0216667298227548, rel=0, abs=1e-5)
+    # Physical properties are reported in the model's Z-up coordinates.
+    assert com.y == pytest.approx(0.0216667298227548, rel=0, abs=1e-5)
+    assert com.z == pytest.approx(0.24748362600803375, rel=0, abs=1e-5)
     assert response.get_center_of_mass_unit() == kcl.UnitLength.Centimeters
 
 

@@ -142,6 +142,11 @@ jobs:
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           rustflags: '' # Use .cargo/config.toml
+          cache: false
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+          cache-on-failure: true
       - uses: taiki-e/install-action@just
       - name: Track start
         run: .github/ci-cd-scripts/track-step.sh
