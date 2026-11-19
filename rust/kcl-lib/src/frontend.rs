@@ -5183,7 +5183,7 @@ mod tests {
         let mut expected = ast.clone();
         let solutions = [
             ("1mm", -1.23456, NumericSuffix::Mm),
-            ("-2in", 4.56789, NumericSuffix::In),
+            ("-2in", 4.56789, NumericSuffix::Inch),
             ("3mm", -0.00001, NumericSuffix::Mm),
         ]
         .into_iter()
