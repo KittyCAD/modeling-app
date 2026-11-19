@@ -95,13 +95,13 @@ export function Drawer({
         >
           {left ? (
             <>
-              <span>Plankton</span>
+              <span className="edge-label">Plankton</span>
               <ChevronRight size={18} />
             </>
           ) : (
             <>
               <ChevronLeft size={18} />
-              <span>Editor</span>
+              <span className="edge-label">Editor</span>
             </>
           )}
         </button>
