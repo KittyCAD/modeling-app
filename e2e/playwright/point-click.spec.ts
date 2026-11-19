@@ -927,8 +927,8 @@ extrude001 = extrude(region001, length = -12)`
 }
 hide(sketch001)
 region001 = region(segments = [sketch001.circle1])
-extrude001 = extrude(region001, length = 100)
-fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.circle1)])`
+extrude001 = extrude(region001, length = 100, tagEnd = $capEnd001)
+fillet001 = fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.circle1, capEnd001] }])`
       await test.step(`Initial test setup`, async () => {
         await page.setBodyDimensions({ width: 1000, height: 500 })
         await homePage.goToModelingScene()

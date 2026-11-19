@@ -80,7 +80,6 @@ import {
 import {
   MeshStandardNodeMaterial,
   type Node,
-  NodeUpdateType,
   type PassNode,
   RenderPipeline,
   WebGPURenderer,
@@ -879,7 +878,20 @@ export class LocalRenderer {
       this.baseRenderDirty
     )
     if (baseRendered) {
-      if (!this.settings.enableSSAO) {
+      // Thumbnails are drawn without SSAO. Its scene, AO and denoise passes
+      // draw into textures that three.js redraws only once per animation
+      // frame. A thumbnail is drawn in the same frame as the viewport, but at
+      // another size and with a wider camera, so SSAO would reuse the
+      // viewport's textures: the thumbnail would show the viewport's view
+      // stretched to its own size.
+      // Making the passes redraw on every render does not work: the scene pass
+      // then also redraws inside the AO pass's own render, which clears to
+      // opaque white, and the viewport background turns white. Starting a new
+      // animation frame for the thumbnail works, but only through three.js's
+      // private renderer._nodes which felt wrong to call.
+      // Simplest solution: draw thumbnails without SSAO. If this becomes a problem
+      // revisit the above options.
+      if (!this.settings.enableSSAO || size) {
         renderer.render(scene, camera)
       } else {
         if (this.ambientOcclusionPipeline?.camera !== camera) {
@@ -923,14 +935,6 @@ export class LocalRenderer {
             ? (denoisePass.noiseNode as unknown as { value: Texture }).value
             : null
           this.configureAmbientOcclusion(aoPass, denoisePass)
-          // These passes draw once per animation frame by default. A thumbnail
-          // draws twice in one, at another size and camera, so each render has
-          // to run them again.
-          for (const passNode of [scenePass, aoPass, denoisePass]) {
-            if (passNode) {
-              passNode.updateBeforeType = NodeUpdateType.RENDER
-            }
-          }
 
           const pipeline = new RenderPipeline(renderer)
           pipeline.outputColorTransform = false
