@@ -26,7 +26,6 @@ export import "std::turns"
 export import "std::sweep"
 export import "std::appearance"
 export import "std::vector"
-export import "std::operation"
 export import "std::hole"
 @(experimental = true)
 export import "std::gear"
@@ -159,7 +158,7 @@ export CW = "cw": string
 ///     |> sweep(path = helixPath)
 /// ```
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,no3d,gpu,legacySketch
 /// // Create a helix on a cylinder.
 ///
 /// part001 = startSketchOn(XY)

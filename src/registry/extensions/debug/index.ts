@@ -1,11 +1,12 @@
-import { defineRegistryItemFactory } from '@kittycad/registry'
-import { EngineDebugger, type Debugger } from '@src/lib/debugger'
+import { type Debugger, EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import type RustContext from '@src/lib/rustContext'
-import { rustContextService } from '@src/lib/rustContext/registry/contract'
+import { observations as rustContextObservations } from '@src/lib/rustContext/registry/contract'
 import { reportRejection } from '@src/lib/trap'
 import { engineStreamZoomToFit } from '@src/lib/utils'
-import { engineConnectionService } from '@src/registry/contracts/engineConnection'
+
+import { factory as defineFactory, type Factory } from 'plankton'
+import { observations as engineConnectionObservations } from '@src/lib/engineConnection/registry/contract'
 
 declare global {
   interface Window {
@@ -68,89 +69,102 @@ function exposeGlobals(target: Window, properties: PropertyDescriptorMap) {
     if (currentState.entries.length === 0) installations.delete(target)
   }
 }
+export default defineFactory({
+  dependencies: {
+    engineConnection: engineConnectionObservations,
+    rustContext: rustContextObservations,
+  },
+  key: 'debug',
+  create: ({
+    engineConnection: engineConnectionInputs,
+    rustContext: rustContextInputs,
+  }) => {
+    if (typeof window === 'undefined')
+      return {
+        items: [],
+      }
+    const target = window
+    const document = target.document
+    let disposed = false
+    let logging = false
+    let filletEnabled = false
+    const stopMousePositionLogs = () => {
+      document.removeEventListener('click', logMousePosition, true)
+      logging = false
+    }
+    function logMousePosition(event: MouseEvent) {
+      const stream = document.querySelector('[data-testid="stream"]')
+      const width = document.documentElement.clientWidth
+      const height = document.documentElement.clientHeight
+      if (!stream || width <= 0 || height <= 0) return
+      const bounds = stream.getBoundingClientRect()
+      if (bounds.width <= 0 || bounds.height <= 0) return
+      const x = (event.clientX - bounds.left) / bounds.width
+      const y = (event.clientY - bounds.top) / bounds.height
+      console.log(
+        `[mouse→e2e] makeMouseHelpers(${x.toFixed(4)}, ${y.toFixed(4)}, { format: 'ratio' })`
+      )
+      console.log(
+        `[mouse→e2e] makeMouseHelpers(${Math.round(x * width)}, ${Math.round(y * height)}, { steps: 20, format: 'pixels' })`
+      )
+    }
 
-export default defineRegistryItemFactory((ctx) => {
-  if (typeof window === 'undefined') return { id: 'debug' }
-  const target = window
-  const document = target.document
-  let disposed = false
-  let logging = false
-  let filletEnabled = false
-  const stopMousePositionLogs = () => {
-    document.removeEventListener('click', logMousePosition, true)
-    logging = false
-  }
-  function logMousePosition(event: MouseEvent) {
-    const stream = document.querySelector('[data-testid="stream"]')
-    const width = document.documentElement.clientWidth
-    const height = document.documentElement.clientHeight
-    if (!stream || width <= 0 || height <= 0) return
-    const bounds = stream.getBoundingClientRect()
-    if (bounds.width <= 0 || bounds.height <= 0) return
-    const x = (event.clientX - bounds.left) / bounds.width
-    const y = (event.clientY - bounds.top) / bounds.height
-    console.log(
-      `[mouse→e2e] makeMouseHelpers(${x.toFixed(4)}, ${y.toFixed(4)}, { format: 'ratio' })`
-    )
-    console.log(
-      `[mouse→e2e] makeMouseHelpers(${Math.round(x * width)}, ${Math.round(y * height)}, { steps: 20, format: 'pixels' })`
-    )
-  }
+    // Accessors resolve services after registry construction and follow replacements.
+    const restoreGlobals = exposeGlobals(target, {
+      engineCommandManager: {
+        configurable: true,
+        get: () =>
+          engineConnectionInputs.engineConnectionService.required().manager,
+      },
+      rustContext: {
+        configurable: true,
+        get: () => rustContextInputs.rustContextService.required().context,
+      },
+      engineDebugger: { configurable: true, value: EngineDebugger },
+      enableMousePositionLogs: {
+        configurable: true,
+        value: () => {
+          if (disposed) return stopMousePositionLogs
+          if (!logging) {
+            document.addEventListener('click', logMousePosition, true)
+            logging = true
+          }
+          return stopMousePositionLogs
+        },
+      },
+      enableFillet: {
+        configurable: true,
+        value: () => {
+          if (!disposed) filletEnabled = true
+        },
+      },
+      _enableFillet: {
+        configurable: true,
+        get: () => filletEnabled,
+        set: (value: boolean) => {
+          filletEnabled = value
+        },
+      },
+      zoomToFit: {
+        configurable: true,
+        value: () => {
+          if (disposed) return
+          engineStreamZoomToFit({
+            engineCommandManager:
+              engineConnectionInputs.engineConnectionService.required().manager,
+            padding: 0.2,
+          }).catch(reportRejection)
+        },
+      },
+    })
 
-  // Accessors resolve services after registry construction and follow replacements.
-  const restoreGlobals = exposeGlobals(target, {
-    engineCommandManager: {
-      configurable: true,
-      get: () => ctx.services.get(engineConnectionService).manager,
-    },
-    rustContext: {
-      configurable: true,
-      get: () => ctx.services.get(rustContextService).context,
-    },
-    engineDebugger: { configurable: true, value: EngineDebugger },
-    enableMousePositionLogs: {
-      configurable: true,
-      value: () => {
-        if (disposed) return stopMousePositionLogs
-        if (!logging) {
-          document.addEventListener('click', logMousePosition, true)
-          logging = true
-        }
-        return stopMousePositionLogs
+    return {
+      items: [],
+      dispose: () => {
+        disposed = true
+        stopMousePositionLogs()
+        restoreGlobals()
       },
-    },
-    enableFillet: {
-      configurable: true,
-      value: () => {
-        if (!disposed) filletEnabled = true
-      },
-    },
-    _enableFillet: {
-      configurable: true,
-      get: () => filletEnabled,
-      set: (value: boolean) => {
-        filletEnabled = value
-      },
-    },
-    zoomToFit: {
-      configurable: true,
-      value: () => {
-        if (disposed) return
-        engineStreamZoomToFit({
-          engineCommandManager: ctx.services.get(engineConnectionService)
-            .manager,
-          padding: 0.2,
-        }).catch(reportRejection)
-      },
-    },
-  })
-
-  return {
-    id: 'debug',
-    dispose: () => {
-      disposed = true
-      stopMousePositionLogs()
-      restoreGlobals()
-    },
-  }
-}, 'debug')
+    }
+  },
+}) satisfies Factory

@@ -561,6 +561,13 @@ export class SceneFixture {
       } else {
         await moveCamera()
       }
+      // Plane picking also uses the frontend camera in stream mode. Read back
+      // the engine pose so picking and front/back orientation match the image.
+      await sendSceneCommand(this.page, {
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: { type: 'default_camera_get_settings' },
+      })
       return
     }
     // Initial model loading fits the local camera; let it finish before
@@ -594,10 +601,22 @@ export class SceneFixture {
     )
   }
 
-  /** Forces a refresh of the camera position and target displayed
-   *  in the debug panel and then returns the values of the fields
+  /** Read the active renderer camera, using the debug panel
+   *  precision of two decimal places in both modes.
    */
   async getCameraInfo() {
+    if (await this.usesLocalRenderer()) {
+      return this.page.evaluate(async () => {
+        // Drag/scroll deltas are applied by the camera's next animation frame.
+        await new Promise<void>((resolve) =>
+          requestAnimationFrame(() => resolve())
+        )
+        const { position, target } =
+          window.app.singletons.kclManager.sceneInfra.camControls
+            .reactCameraProperties
+        return { position, target }
+      })
+    }
     await openAndClearDebugPanel(this.page)
     await sendCustomCmd(this.page, {
       type: 'modeling_cmd_req',
@@ -625,6 +644,27 @@ export class SceneFixture {
       position,
       target,
     }
+  }
+
+  waitForCameraDrag = async (phase: 'start' | 'end') => {
+    if (await this.usesLocalRenderer()) {
+      await expect
+        .poll(() =>
+          this.page.evaluate(
+            () =>
+              window.app.singletons.kclManager.sceneInfra.camControls.isDragging
+          )
+        )
+        .toBe(phase === 'start')
+      return
+    }
+    await this.page.waitForFunction(
+      (type) =>
+        window.engineCommandManager.commandLogs.some(
+          (log) => log.type === 'receive-reliable' && log.cmd_type === type
+        ),
+      `camera_drag_${phase}`
+    )
   }
 
   connectionEstablished = async () => {
@@ -667,6 +707,28 @@ export class SceneFixture {
           this.page.evaluate(() => window.engineCommandManager.geometryOnly)
         )
         .toBe(this.expectedLocalRenderer)
+    }
+  }
+
+  /** Wait for a non-empty model to finish execution and initial camera fitting. */
+  waitForModelReady = async () => {
+    await this.settled()
+    await this.page.waitForFunction(
+      () => {
+        const editor = window.app.project?.executingEditor.value
+        return (
+          editor &&
+          !editor.isExecutingSignal.value &&
+          editor.artifactGraph.size > 0
+        )
+      },
+      undefined,
+      { timeout: 30_000 }
+    )
+    if (await this.usesLocalRenderer()) {
+      await expect(this.page.getByTestId('local-renderer-loading')).toBeHidden({
+        timeout: 30_000,
+      })
     }
   }
 

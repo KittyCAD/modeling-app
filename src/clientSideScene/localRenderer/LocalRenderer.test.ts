@@ -47,7 +47,7 @@ type RendererInternals = {
   currentModel: Group | null
   loadedSceneGeneration: number | null
   rebuildSelectionTargets(): void
-  previewCamera: PerspectiveCamera | OrthographicCamera | null
+  camera: PerspectiveCamera | OrthographicCamera | null
   handleLocalSelectionCommand: LocalSelectionCommandHandler
   syncSelectionFromEngine(): Promise<void>
   baseRenderDirty: boolean
@@ -233,7 +233,7 @@ describe('local GLB loading', () => {
     if (!target) throw new Error('Missing plane mesh')
     picker.pick.mockResolvedValue({ target, stale: false })
     const setDefaultVisibility = vi.spyOn(planes, 'setDefaultVisibility')
-    f.state.previewCamera = new PerspectiveCamera()
+    f.state.camera = new PerspectiveCamera()
     f.state.pointerOverCanvas = true
     f.renderer.setPickingEnabled(true)
     const pick = (click = false) =>
@@ -414,7 +414,7 @@ describe('local GLB loading', () => {
     camera.position.set(0, 30, 0)
     camera.up.set(0, 0, -1)
     camera.lookAt(0, 0, 0)
-    f.state.previewCamera = camera
+    f.state.camera = camera
     // scheduleRender is mocked: the pointer event arrives before the queued
     // animation frame can prepare the camera used by the visible render.
     f.picker.pick.mockImplementationOnce(async () => {

@@ -48,6 +48,7 @@ export type FileSystemOperation =
   | 'rename'
   | 'stat'
   | 'write-file'
+  | 'validate-mutation'
 
 interface FileSystemErrorDetails {
   readonly operation: FileSystemOperation
@@ -97,6 +98,10 @@ export type FileSystemError =
  * service built above this capability.
  */
 export interface FileSystemService {
+  readonly isSameEntry?: (
+    source: string,
+    destination: string
+  ) => Effect.Effect<boolean, FileSystemError>
   readonly stat: (
     path: string,
     options?: StatOptions
@@ -246,6 +251,7 @@ function toFileStat(stat: BackingFileStat): FileStat {
  * responsible for selecting the platform backing.
  */
 export function makeFileSystem(backing: IZooDesignStudioFS): FileSystemService {
+  const isSameEntry = backing.isSameEntry
   const stat = (path: string, options?: StatOptions) =>
     tryBacking('stat', path, () =>
       options ? backing.stat(path, options) : backing.stat(path)
@@ -284,6 +290,17 @@ export function makeFileSystem(backing: IZooDesignStudioFS): FileSystemService {
     ).pipe(Effect.asVoid)
 
   const service: FileSystemService = {
+    ...(isSameEntry
+      ? {
+          isSameEntry: (source: string, destination: string) =>
+            tryBacking(
+              'stat',
+              source,
+              () => isSameEntry(source, destination),
+              destination
+            ),
+        }
+      : {}),
     stat,
     canReadWrite,
     exists,

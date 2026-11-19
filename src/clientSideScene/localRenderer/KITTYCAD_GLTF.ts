@@ -18,6 +18,8 @@ export type KITTYCAD_GLTF = GLTF & {
 export type KITTYCAD_GLTF_SKETCH_SEGMENT = {
   edge: number
   segmentId?: string
+  sketchId?: string
+  holeIndex?: number
 }
 
 // A closed region of a sketch, bounded by B-rep loops. The plane is in glTF

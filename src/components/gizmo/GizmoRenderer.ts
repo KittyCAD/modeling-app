@@ -454,7 +454,7 @@ export default class GizmoRenderer {
     const targetQuat = orientationQuaternionForName(pickedName)
     if (targetQuat) {
       this.sceneInfra.camControls.hoverPickingDisabled = true
-      animateCameraToQuaternion(targetQuat, this.sceneInfra)
+      setCameraToQuaternion(targetQuat, this.sceneInfra)
         .catch(reportRejection)
         .finally(() => {
           this.sceneInfra.camControls.hoverPickingDisabled = false
@@ -626,7 +626,7 @@ function orientationQuaternionForName(name: string): Quaternion | null {
   return q.setFromRotationMatrix(m)
 }
 
-async function animateCameraToQuaternion(
+async function setCameraToQuaternion(
   targetQuat: Quaternion,
   sceneInfra: SceneInfra
 ) {
@@ -636,16 +636,13 @@ async function animateCameraToQuaternion(
   }
   camControls.enableRotate = false
   try {
-    sceneInfra.animate()
-    await camControls.tweenCameraToQuaternion(
+    await camControls.setCameraToQuaternion(
       targetQuat,
-      camControls.target.clone(),
-      500
+      camControls.target.clone()
     )
   } catch (e) {
     console.warn(e)
   } finally {
-    sceneInfra.stop()
     camControls.enableRotate = true
     if (!camControls.localCameraMode) {
       camControls.syncDirection = 'engineToClient'

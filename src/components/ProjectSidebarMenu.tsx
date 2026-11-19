@@ -8,18 +8,19 @@ import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
 import type { App } from '@src/lib/app'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
+import { selectCommand } from '@src/lib/commandUtils'
 import { APP_NAME } from '@src/lib/constants'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { getProjectRelativeFilePath, PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
-  keymapScopesValueSpec,
+  keymapScopesFacet,
   keymapService,
 } from '@src/registry/contracts/keymap'
 import {
@@ -27,8 +28,8 @@ import {
   type ProjectExplorerProjectBreadcrumbBadgeContext,
   type ProjectExplorerProjectMenuItem,
   type ProjectExplorerProjectMenuItemContext,
-  projectExplorerProjectBreadcrumbBadgesValueSpec,
-  projectExplorerProjectMenuItemsValueSpec,
+  projectExplorerProjectBreadcrumbBadgesFacet,
+  projectExplorerProjectMenuItemsFacet,
 } from '@src/registry/contracts/projectExplorer'
 import { useSelector } from '@xstate/react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -70,7 +71,12 @@ type ProjectBreadcrumbBadgeItem = {
 
 function isContributedProjectMenuItem(
   item: Exclude<ProjectMenuItem, null>
-): item is Extract<Exclude<ProjectMenuItem, null>, { kind: 'contributed' }> {
+): item is Extract<
+  Exclude<ProjectMenuItem, null>,
+  {
+    kind: 'contributed'
+  }
+> {
   return (
     typeof item === 'object' && 'kind' in item && item.kind === 'contributed'
   )
@@ -78,7 +84,12 @@ function isContributedProjectMenuItem(
 
 function isProjectMenuBreak(
   item: Exclude<ProjectMenuItem, null>
-): item is Extract<Exclude<ProjectMenuItem, null>, { kind: 'break' }> {
+): item is Extract<
+  Exclude<ProjectMenuItem, null>,
+  {
+    kind: 'break'
+  }
+> {
   return typeof item === 'object' && 'kind' in item && item.kind === 'break'
 }
 
@@ -194,7 +205,7 @@ function ProjectMenuPopover({
           keymap.keymap.value,
           'zds.settings.open',
           keymap.getCurrentScopes(),
-          app.registry.signal(keymapScopesValueSpec).value
+          app.registry.observe(keymapScopesFacet).value
         )?.keystrokes
       : [`mod+${isDesktop() ? '' : 'shift'}+,`],
     platform
@@ -203,11 +214,11 @@ function ProjectMenuPopover({
     state.context.commands
   const commandList = useSelector(commands.actor, commandsSelector)
   const projectPath = project?.path
-  const contributedProjectMenuItems = app.registry.signal(
-    projectExplorerProjectMenuItemsValueSpec
+  const contributedProjectMenuItems = app.registry.observe(
+    projectExplorerProjectMenuItemsFacet
   ).value
-  const contributedProjectBreadcrumbBadges = app.registry.signal(
-    projectExplorerProjectBreadcrumbBadgesValueSpec
+  const contributedProjectBreadcrumbBadges = app.registry.observe(
+    projectExplorerProjectBreadcrumbBadgesFacet
   ).value
 
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
@@ -278,15 +289,24 @@ function ProjectMenuPopover({
                 </span>
               ),
               onClick: () => {
-                app.systemIOActor.send({
-                  type: SystemIOMachineEvents.duplicateProject,
-                  data: {
-                    projectName: project.name,
-                    projectPath: project.path,
-                    requestedProjectName: getProjectDisplayName(project),
-                    ...getCurrentFileForDuplicate(),
-                  },
-                })
+                const editor = getCurrentFileForDuplicate()
+                app.projectOperations
+                  .duplicateProject(
+                    project,
+                    getProjectDisplayName(project),
+                    editor.currentFilePath
+                      ? {
+                          path: editor.currentFilePath,
+                          contents: editor.currentFileContents ?? '',
+                        }
+                      : undefined
+                  )
+                  .then((created) =>
+                    app.projectSession.openFile(created.path, {
+                      projectPath: created.path,
+                    })
+                  )
+                  .catch(reportRejection)
               },
             }
           : null,
@@ -376,11 +396,7 @@ function ProjectMenuPopover({
             </>
           ),
           disabled: !findCommand(exportCommandInfo),
-          onClick: () =>
-            commands.send({
-              type: 'Find and select command',
-              data: exportCommandInfo,
-            }),
+          onClick: () => selectCommand(commands, exportCommandInfo),
         },
         {
           id: 'download-project-zip',
@@ -402,11 +418,7 @@ function ProjectMenuPopover({
             </>
           ),
           disabled: !findCommand(exportProjectZipCommandInfo),
-          onClick: () =>
-            commands.send({
-              type: 'Find and select command',
-              data: exportProjectZipCommandInfo,
-            }),
+          onClick: () => selectCommand(commands, exportProjectZipCommandInfo),
         },
         {
           id: 'make',
@@ -429,10 +441,7 @@ function ProjectMenuPopover({
           ),
           disabled: !findCommand(makeCommandInfo) || machineCount === 0,
           onClick: () => {
-            commands.send({
-              type: 'Find and select command',
-              data: makeCommandInfo,
-            })
+            selectCommand(commands, makeCommandInfo)
           },
         },
         { kind: 'break', id: 'before-go-home' },
@@ -491,7 +500,8 @@ function ProjectMenuPopover({
       getCurrentFileForDuplicate,
       contributedProjectMenuItems,
       commands.actor,
-      app.systemIOActor,
+      app.projectOperations,
+      app.projectSession,
       file,
       filePath,
       machineCount,

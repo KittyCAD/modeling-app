@@ -719,6 +719,16 @@ export async function getUtils(page: Page, test_?: typeof test) {
         await page.getByTestId('create-file-button').click()
         await page.getByTestId('file-rename-field').fill(name)
         await page.keyboard.press('Enter')
+        await expect
+          .poll(() =>
+            page.evaluate((name) => {
+              const current = window.app.project?.executingPath
+              const basename = current ? window.fsZds.basename(current) : ''
+              return basename === name || basename === `${name}.kcl`
+            }, name)
+          )
+          .toBe(true)
+        await expect(page.locator(editorSelector)).toBeEditable()
       })
     },
 
@@ -1435,7 +1445,9 @@ export async function createProject({
 
 export async function goToHomePageFromModeling(page: Page) {
   await page.getByTestId('app-logo').click()
-  await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+  await expect(
+    page.getByRole('heading', { name: 'Project Libraries' })
+  ).toBeVisible()
 }
 
 export function executorInputPath(fileName: string): string {

@@ -21,8 +21,10 @@ export class Setting<T = unknown> {
   public Component: SettingProps<T>['Component']
   public restartRequired: SettingProps<T>['restartRequired']
   public description?: string
+  public title?: string
   private validate: (v: T) => boolean
   public readonly isEnabled: (c: SettingsType) => boolean
+  public hideWhenDisabled: SettingProps<T>['hideWhenDisabled']
   private _default: Signal<T>
   private _user: Signal<T | undefined> = signal(undefined)
   private _project: Signal<T | undefined> = signal(undefined)
@@ -43,6 +45,8 @@ export class Setting<T = unknown> {
     this._default = signal(props.defaultValue)
     this.validate = props.validate
     this.isEnabled = props.isEnabled || (() => true)
+    this.hideWhenDisabled = props.hideWhenDisabled
+    this.title = props.title
     this.description = props.description
     this.hideOnLevel = props.hideOnLevel
     this.hideOnPlatform = props.hideOnPlatform

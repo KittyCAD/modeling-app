@@ -1,6 +1,6 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { ExchangeCard } from '@src/components/ExchangeCard'
-import { describe, expect, test, vi } from 'vitest'
+import { afterEach, describe, expect, test, vi } from 'vitest'
 
 describe('ExchangeCard replay attachments', () => {
   const attachmentRef = {
@@ -139,5 +139,46 @@ describe('ExchangeCard replay attachments', () => {
 
     expect(onFetchAttachment).toHaveBeenCalledOnce()
     expect(onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
+  })
+})
+
+describe('ExchangeCard reasoning after replay', () => {
+  afterEach(() => {
+    vi.clearAllTimers()
+    vi.useRealTimers()
+  })
+
+  test.each([
+    { info: { text: 'Message canceled by user.' } },
+    { error: { detail: 'Request failed.' } },
+  ])('stops reasoning for a terminal notice: %j', (notice) => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-07-15T12:01:00.000Z'))
+    render(
+      <ExchangeCard
+        request={{ type: 'user', content: 'Add a hole' }}
+        responses={[
+          { reasoning: { type: 'text', content: 'Checking constraints' } },
+          notice,
+        ]}
+        deltasAggregated=""
+        startedAt={new Date('2026-07-15T12:00:00.000Z')}
+        isLastResponse={true}
+        onClickClearChat={() => {}}
+      />
+    )
+
+    expect(screen.getByText('See reasoning')).toBeInTheDocument()
+    expect(screen.queryByTestId('thinking-immediate')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByText('See reasoning'))
+    expect(screen.getByText('Checking constraints')).toBeInTheDocument()
+    expect(screen.queryByText(/Reasoned for/)).not.toBeInTheDocument()
+
+    act(() => {
+      vi.advanceTimersByTime(120_000)
+    })
+
+    expect(screen.queryByText(/Reasoned for/)).not.toBeInTheDocument()
+    expect(vi.getTimerCount()).toBe(0)
   })
 })

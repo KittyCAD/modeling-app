@@ -585,6 +585,7 @@ impl FrontendState {
                 // generation rather than the one stored with the checkpoint.
                 exec_outcome: ExecOutcome {
                     engine_scene_generation: cache.engine_scene_generation().await,
+                    named_views: None,
                     ..checkpoint.exec_outcome
                 },
             },
@@ -2094,6 +2095,7 @@ impl FrontendState {
             var_solutions,
             refactor_metadata,
             issues: non_fatal,
+            named_views: None,
             source_files,
             default_planes,
         })
@@ -7808,13 +7810,15 @@ sketch(on = XY) {
         let other = ExecutorContext::new_mock(None).await;
         let program = Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
         let outcome = ctx.run_with_caching(program).await.unwrap();
+        assert!(outcome.named_views.is_some());
         let checkpoint = frontend.create_sketch_checkpoint(&ctx.cache, outcome).await.unwrap();
         ctx.cache.clear_mem_cache().await;
         assert!(ctx.cache.read_old_memory_var("x").await.is_none());
-        frontend
+        let restored = frontend
             .restore_sketch_checkpoint(&ctx.cache, checkpoint)
             .await
             .unwrap();
+        assert!(restored.scene_graph_delta.exec_outcome.named_views.is_none());
         assert!(ctx.cache.read_old_memory_var("x").await.is_some());
         assert!(other.cache.read_old_memory_var("x").await.is_none());
         ctx.close().await;
@@ -9329,6 +9333,7 @@ cylinder = startSketchOn(XY)
             test_program_memory: Default::default(),
             operations: Default::default(),
             artifact_graph: Default::default(),
+            named_views: None,
             scene_objects: Default::default(),
             source_range_to_object: Default::default(),
             var_solutions: Default::default(),
@@ -9486,6 +9491,7 @@ sketch(on = XY) {
             test_program_memory: Default::default(),
             operations: Default::default(),
             artifact_graph: Default::default(),
+            named_views: None,
             scene_objects: Default::default(),
             source_range_to_object: Default::default(),
             var_solutions,

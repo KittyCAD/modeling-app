@@ -123,6 +123,44 @@ it('can execute parsed AST', async () => {
   expect(x.value).toEqual(1)
 })
 
+it('returns resolved views from actual execution and no batch from mock execution', async () => {
+  const ast = assertParse(
+    `@settings(kclVersion = 3.0)
+plane = offsetPlane(XY, offset = 10mm)
+front = view::named(
+  "Front",
+  camera = view::oriented(view::Orientation::Front),
+  baseline = view::Visibility::Hide,
+  except = [plane],
+)
+`,
+    instanceInThisFile
+  )
+
+  const actual = await rustContextInThisFile.execute(ast, {})
+  expect(actual.namedViews).toMatchObject({
+    namedViews: [
+      {
+        info: { name: 'Front', moduleId: 0 },
+        cameraIntent: { look: { type: 'oriented', orientation: 'front' } },
+      },
+    ],
+    failures: [],
+  })
+  expect(Object.keys(actual.namedViews?.defaultView ?? {})).toHaveLength(1)
+  expect(actual.namedViews?.namedViews[0].visibility).toEqual(
+    actual.namedViews?.defaultView
+  )
+
+  const mock = await rustContextInThisFile.executeMock(
+    ast,
+    {},
+    undefined,
+    false
+  )
+  expect(mock.namedViews).toBeNull()
+})
+
 it('applies operation callbacks to operations-by-module incrementally', () => {
   const operation = {
     type: 'VariableDeclaration',

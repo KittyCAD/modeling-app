@@ -117,6 +117,7 @@ export interface IElectronAPI {
   getAppTestProperty: (propertyName: string) => any
 
   // Helper functions to create application Menus
+  createEditorPageMenu: () => Promise<void>
   createHomePageMenu: () => Promise<any>
   createModelingPageMenu: () => Promise<any>
   createFallbackMenu: () => Promise<any>

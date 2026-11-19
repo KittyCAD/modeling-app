@@ -2,11 +2,24 @@ import toast from 'react-hot-toast'
 
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 
-export function ToastUnsupportedSelection({ toastId }: { toastId: string }) {
+export function ToastUnsupportedSelection({
+  toastId,
+  visible,
+}: {
+  toastId: string
+  visible: boolean
+}) {
   const githubIssueUrl = 'https://github.com/KittyCAD/modeling-app/issues/6368'
 
   return (
-    <div className="inset-0 z-50 grid place-content-center rounded bg-chalkboard-10 dark:bg-chalkboard-90 shadow-md p-3">
+    <div
+      className="inset-0 z-50 grid place-content-center rounded bg-chalkboard-10 dark:bg-chalkboard-90 shadow-md p-3"
+      data-toast-id={toastId}
+      data-toast-type="custom"
+      data-toast-visible={visible}
+      hidden={!visible}
+      style={{ display: visible ? 'grid' : 'none' }}
+    >
       <section>
         <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
           Some faces and edges are not currently selectable.{' '}
@@ -35,7 +48,7 @@ export function ToastUnsupportedSelection({ toastId }: { toastId: string }) {
  */
 export function showUnsupportedSelectionToast() {
   const toastId = toast.custom(
-    (t) => <ToastUnsupportedSelection toastId={t.id} />,
+    (t) => <ToastUnsupportedSelection toastId={t.id} visible={t.visible} />,
     {
       duration: 4_000,
     }
