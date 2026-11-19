@@ -633,6 +633,10 @@ function ResolvedActionButton({
   const disabledReason = resolvedAction.useDisabled?.()
   const hidden = resolvedAction.useHidden?.()
   const label = resolvedAction.label ?? action.label
+  const shortcutLabel = hotkeyDisplay(
+    resolvedAction.shortcutKeystrokes ?? resolvedAction.shortcut,
+    platform
+  )
   useHotkeys(resolvedAction.shortcut || '', () => resolvedAction.execute(), {
     scopes: ['modeling'],
     enabled: !!resolvedAction.shortcut?.length,
@@ -676,10 +680,8 @@ function ResolvedActionButton({
         >
           <div className="flex items-center gap-4">
             <span className="flex-1">{label}</span>
-            {resolvedAction?.shortcut ? (
-              <kbd className="hotkey text-xs capitalize">
-                {hotkeyDisplay(resolvedAction.shortcut, platform)}
-              </kbd>
+            {shortcutLabel ? (
+              <kbd className="hotkey text-xs capitalize">{shortcutLabel}</kbd>
             ) : null}
           </div>
           {disabledReason !== undefined && (

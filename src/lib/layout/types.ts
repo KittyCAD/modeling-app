@@ -68,6 +68,8 @@ export type ActionTypeDefinition = {
   /** A custom hook for the Action to detect if it should be enabled */
   useDisabled?: () => string | undefined
   shortcut?: string
+  /** Display a shortcut that is registered through the keymap. */
+  shortcutKeystrokes?: readonly string[]
   useHidden?: () => boolean
 }
 
