@@ -1,15 +1,15 @@
-name: STEP error scene comparison
+name: STEP face integration comparison
 on:
   push:
-    branches: [codex/step-error-readiness-20261119]
+    branches: [codex/step-face-control-20261119]
   workflow_dispatch:
 permissions:
   contents: read
   actions: read
 jobs:
-  scene:
-    name: Error scene (${{ matrix.revision }})
-    runs-on: namespace-profile-ubuntu-8-cores
+  faces:
+    name: Face integration (${{ matrix.revision }})
+    runs-on: namespace-profile-ubuntu-2-cores
     timeout-minutes: 20
     strategy:
       fail-fast: false
@@ -18,9 +18,9 @@ jobs:
           - revision: exact-base
             sha: 567989c16e0873687f2e89cb11951d635d523869
             wasm_run: 44405393037
-          - revision: corrected-fixture
+          - revision: unchanged-head
             sha: 39b6b9b4967513069685b5dc6ac76a3356535449
-            wasm_run: 44609374432
+            wasm_run: 44613765585
     steps:
       - uses: actions/checkout@v6
         with:
@@ -28,7 +28,9 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
       - name: Record exact inputs
-        run: git rev-parse HEAD HEAD:rust
+        run: |
+          git rev-parse HEAD HEAD:rust
+          git hash-object src/lang/modifyAst/faces.spec.ts
       - uses: actions/download-artifact@v8
         with:
           github-token: ${{ github.token }}
@@ -46,31 +48,27 @@ jobs:
           mkdir -p rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg/
           cp prepared-wasm/kcl_wasm_lib_bg.wasm public/
+          sha256sum public/kcl_wasm_lib_bg.wasm
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - uses: actions/cache@v5
-        with:
-          path: ~/.cache/ms-playwright/
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
-      - run: npm run playwright install --with-deps
-      - run: npm run tronb:vite:dev
-      - name: Repeat original error assertions without retries
+      - name: Repeat unchanged face assertions without retries
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
-          TARGET: desktop
-          E2E_WORKERS: '1'
-          FAIL_ON_CONSOLE_ERRORS: true
         shell: bash
         run: |
           set -o pipefail
-          xvfb-run --auto-servernum --server-args='-screen 0 1280x960x24' -- npm run test:e2e:desktop -- e2e/playwright/projects.spec.ts --grep='when code with error first loads|with errors, it should clear the scene' --repeat-each=2 --retries=0 2>&1 | tee comparison-scene.log
+          failed=0
+          for seed in 1795122405939 15271; do
+            npm run test:integration -- src/lang/modifyAst/faces.spec.ts --retry=0 --sequence.seed="$seed" --reporter=default --reporter=json --outputFile="comparison-faces-$seed.json" 2>&1 | tee "comparison-faces-$seed.log" || failed=1
+          done
+          exit "$failed"
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: scene-${{ matrix.revision }}
+          name: faces-${{ matrix.revision }}
           path: |
-            comparison-scene.log
-            test-results/
+            comparison-faces-*.log
+            comparison-faces-*.json
