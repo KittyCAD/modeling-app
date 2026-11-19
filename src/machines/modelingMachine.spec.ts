@@ -181,7 +181,9 @@ describe('modelingMachine.test.ts', () => {
         const actor = createActor(modelingMachine, {
           input: contextCopied,
         }).start()
-        onTestFinished(() => actor.stop())
+        onTestFinished(() => {
+          actor.stop()
+        })
         const state = actor.getSnapshot().value
 
         // The machine should start in the idle state
@@ -975,7 +977,9 @@ p3 = [342.51, 216.38],
             const actor = createActor(modelingMachine, {
               input: contextCopied,
             }).start()
-            onTestFinished(() => actor.stop())
+            onTestFinished(() => {
+              actor.stop()
+            })
 
             // Send event to transition to sketch mode
             actor.send({
@@ -1107,7 +1111,9 @@ p3 = [342.51, 216.38],
             const actor = createActor(modelingMachine, {
               input: contextCopied,
             }).start()
-            onTestFinished(() => actor.stop())
+            onTestFinished(() => {
+              actor.stop()
+            })
 
             // Send event to transition to sketch mode
             actor.send({
@@ -1251,7 +1257,9 @@ p3 = [342.51, 216.38],
             const actor = createActor(modelingMachine, {
               input: contextCopied,
             }).start()
-            onTestFinished(() => actor.stop())
+            onTestFinished(() => {
+              actor.stop()
+            })
             // Send event to transition to sketch mode
             actor.send({
               type: 'Set selection',
@@ -1380,7 +1388,9 @@ p3 = [342.51, 216.38],
             const actor = createActor(modelingMachine, {
               input: contextCopied,
             }).start()
-            onTestFinished(() => actor.stop())
+            onTestFinished(() => {
+              actor.stop()
+            })
 
             // Send event to transition to sketch mode
             actor.send({
@@ -1503,7 +1513,9 @@ sketch001 = sketch(on = YZ) {
         context.projectRef = { current: {} as any }
 
         const actor = createActor(modelingMachine, { input: context }).start()
-        onTestFinished(() => actor.stop())
+        onTestFinished(() => {
+          actor.stop()
+        })
 
         actor.send({ type: 'Enter sketch' })
         actor.send({
@@ -1568,7 +1580,9 @@ sketch001 = sketch(on = YZ) {
       })
 
       const actor = createActor(machine, { input: context }).start()
-      onTestFinished(() => actor.stop())
+      onTestFinished(() => {
+        actor.stop()
+      })
 
       actor.send({ type: 'Enter sketch' })
       actor.send({
