@@ -15,7 +15,8 @@
     "lucide-react": "^0.468.0",
     "plankton": "file:../..",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "react-hotkeys-hook": "^5.4.0"
   },
   "devDependencies": {
     "@types/react": "19.2.18",

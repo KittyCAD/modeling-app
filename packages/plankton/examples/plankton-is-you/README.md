@@ -99,15 +99,17 @@ The world fits its fixed bounds in a letterboxed viewport. Move with arrows or
 WASD, wait with Space, and undo with Z. Click any tile, or approach the right edge
 and click the revealed editor handle. Editing pauses player input.
 
-Approach the left edge to open **Plankton**, a visual trace of a real tile edit.
-Choose a tile, toggle pixels, and apply: its extension is replaced through the
-vocabulary Slot, the definitions Facet updates, and the running board renders the
-new artwork. After a successful Apply, a tile packet and successive highlights
-trace that update through the diagram. The session frame stays fixed, with its
-identity check visible alongside the board preview. Reduced motion skips the
-animation and shows the applied state immediately.
-**Restore original pixels** reverses the artwork edit; **Full editor** opens the
-selected artwork in the right tray. The explanation pauses player input.
+Approach the left edge to open **Plankton**, an expandable map of the running
+composition. Follow a puzzle's starting definitions, a property word's action,
+or an outcome word's predicate meaning into the Facets they use. Slots show
+which contributions can be replaced; the session Factory shows its provided
+Service and observed Facets. Word entries link to the ordinary editor.
+Opening either drawer pauses player input.
+
+Both drawers share one Radix Dialog shell. Native selects share a typed choice
+component, tile views share one renderer, and `react-hotkeys-hook` handles game
+shortcuts and form-input filtering. Native disclosure elements keep the concept
+map small; it has no separate editor, board renderer, or animation state.
 
 The editor shows pixel-rendered live rules first, then installed vocabulary.
 Vocabulary and Outcomes stay in the main panel. Selecting a tile opens a separate

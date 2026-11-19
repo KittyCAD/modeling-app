@@ -1,6 +1,12 @@
 import { useState } from 'react'
 import type { ActionRecipe, ContactEffect, PropertyCondition } from './actions'
 import type { PropertyDefinition } from './game'
+import { Select, replaceAt } from './ui'
+
+const targets = [
+  ['self', 'This entity'],
+  ['other', 'Other entity'],
+] as const
 
 export function ActionEditor({
   name,
@@ -59,23 +65,19 @@ export function ActionEditor({
           }
         />
       </label>
-      <label>
-        Trigger
-        <select
-          aria-label="Action trigger"
-          value={trigger}
-          onChange={(event) => {
-            const value = event.target.value
-            if (value === 'turn' || value === 'contact') {
-              setTrigger(value)
-              setConditions([])
-            }
-          }}
-        >
-          <option value="turn">At turn end</option>
-          <option value="contact">Attempted contact</option>
-        </select>
-      </label>
+      <Select
+        label="Trigger"
+        aria-label="Action trigger"
+        value={trigger}
+        options={[
+          ['turn', 'At turn end'],
+          ['contact', 'Attempted contact'],
+        ]}
+        onChange={(value) => {
+          setTrigger(value)
+          setConditions([])
+        }}
+      />
       {trigger === 'contact' && (
         <p className="field-hint">
           Runs for either participant before blocking or pushing. “This entity”
@@ -85,58 +87,47 @@ export function ActionEditor({
       <div className="recipe-heading">Conditions (all must match)</div>
       {conditions.map((condition, index) => (
         <div className="recipe-item" key={index}>
-          <select
+          <Select
             aria-label={`Condition ${index + 1} target`}
             value={condition.target}
-            onChange={(event) => {
-              const value = event.target.value
-              if (value === 'self' || value === 'other')
-                setConditions(
-                  conditions.map((c, i) =>
-                    i === index ? { ...c, target: value } : c
-                  )
-                )
-            }}
-          >
-            <option value="self">This entity</option>
-            {trigger === 'contact' && (
-              <option value="other">Other entity</option>
-            )}
-          </select>
-          <select
+            options={trigger === 'contact' ? targets : targets.slice(0, 1)}
+            onChange={(target) =>
+              setConditions(
+                replaceAt(conditions, index, { ...condition, target })
+              )
+            }
+          />
+          <Select
             aria-label={`Condition ${index + 1} test`}
             value={condition.present ? 'has' : 'lacks'}
-            onChange={(event) =>
+            options={[
+              ['has', 'Has property'],
+              ['lacks', 'Lacks property'],
+            ]}
+            onChange={(test) =>
               setConditions(
-                conditions.map((c, i) =>
-                  i === index
-                    ? { ...c, present: event.target.value === 'has' }
-                    : c
-                )
+                replaceAt(conditions, index, {
+                  ...condition,
+                  present: test === 'has',
+                })
               )
             }
-          >
-            <option value="has">Has property</option>
-            <option value="lacks">Lacks property</option>
-          </select>
-          <select
+          />
+          <Select
             aria-label={`Condition ${index + 1} property`}
             value={condition.property}
-            onChange={(event) =>
+            options={[
+              ['', 'Choose property…'],
+              ...properties.map(
+                (property) => [property.id, property.id] as const
+              ),
+            ]}
+            onChange={(property) =>
               setConditions(
-                conditions.map((c, i) =>
-                  i === index ? { ...c, property: event.target.value } : c
-                )
+                replaceAt(conditions, index, { ...condition, property })
               )
             }
-          >
-            <option value="">Choose property…</option>
-            {properties.map((property) => (
-              <option key={property.id} value={property.id}>
-                {property.id}
-              </option>
-            ))}
-          </select>
+          />
           <button
             aria-label={`Remove condition ${index + 1}`}
             onClick={() =>
@@ -165,79 +156,60 @@ export function ActionEditor({
       <div className="recipe-heading">Effects</div>
       {trigger === 'turn' ? (
         <>
-          <label>
-            At turn end
-            <select
-              aria-label="Action operation"
-              value={operation}
-              onChange={(event) => {
-                const value = event.target.value
-                if (value === 'step-forward' || value === 'destroy-self')
-                  setOperation(value)
-              }}
-            >
-              <option value="step-forward">Step forward</option>
-              <option value="destroy-self">Destroy self</option>
-            </select>
-          </label>
+          <Select
+            label="At turn end"
+            aria-label="Action operation"
+            value={operation}
+            options={[
+              ['step-forward', 'Step forward'],
+              ['destroy-self', 'Destroy self'],
+            ]}
+            onChange={(value) => setOperation(value)}
+          />
           {operation === 'step-forward' && (
-            <label>
-              If blocked
-              <select
-                aria-label="If blocked"
-                value={blocked}
-                onChange={(event) => {
-                  const value = event.target.value
-                  if (value === 'wait' || value === 'reverse') setBlocked(value)
-                }}
-              >
-                <option value="reverse">Reverse and retry</option>
-                <option value="wait">Wait</option>
-              </select>
-            </label>
+            <Select
+              label="If blocked"
+              value={blocked}
+              options={[
+                ['reverse', 'Reverse and retry'],
+                ['wait', 'Wait'],
+              ]}
+              onChange={(value) => setBlocked(value)}
+            />
           )}
         </>
       ) : (
         <>
           {effects.map((effect, index) => (
             <div className="recipe-item" key={index}>
-              <select
+              <Select
                 aria-label={`Effect ${index + 1} kind`}
                 value={effect.kind}
-                onChange={(event) => {
-                  const value = event.target.value
-                  if (value === 'block' || value === 'destroy')
-                    setEffects(
-                      effects.map((e, i) =>
-                        i === index
-                          ? value === 'block'
-                            ? { kind: 'block' }
-                            : { kind: 'destroy', target: 'other' }
-                          : e
-                      )
+                options={[
+                  ['destroy', 'Destroy'],
+                  ['block', 'Block movement'],
+                ]}
+                onChange={(kind) =>
+                  setEffects(
+                    replaceAt(
+                      effects,
+                      index,
+                      kind === 'block' ? { kind } : { kind, target: 'other' }
                     )
-                }}
-              >
-                <option value="destroy">Destroy</option>
-                <option value="block">Block movement</option>
-              </select>
+                  )
+                }
+              />
               {effect.kind === 'destroy' && (
-                <select
+                <Select
                   aria-label={`Effect ${index + 1} target`}
                   value={effect.target}
-                  onChange={(event) => {
-                    const value = event.target.value
-                    if (value === 'self' || value === 'other')
-                      setEffects(
-                        effects.map((e, i) =>
-                          i === index ? { kind: 'destroy', target: value } : e
-                        )
-                      )
-                  }}
-                >
-                  <option value="self">This entity</option>
-                  <option value="other">Other entity</option>
-                </select>
+                  options={targets}
+                  onChange={(target) =>
+                    setEffects(
+                      replaceAt(effects, index, { kind: 'destroy', target })
+                    )
+                  }
+                />
               )}
               <button
                 aria-label={`Remove effect ${index + 1}`}

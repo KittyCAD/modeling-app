@@ -1,19 +1,11 @@
-import * as Dialog from '@radix-ui/react-dialog'
-import {
-  ChevronLeft,
-  Eraser,
-  Play,
-  Plus,
-  RotateCcw,
-  Trash2,
-  Undo2,
-  X,
-} from 'lucide-react'
+import { Eraser, Play, Plus, RotateCcw, Trash2, Undo2, X } from 'lucide-react'
 import { type CSSProperties, useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
+import { useHotkeys } from 'react-hotkeys-hook'
 import { ActionEditor } from './action-editor'
+import { Drawer, IconButton, Select } from './ui'
 import { PlanktonDrawer } from './plankton-drawer'
-import { Pixels, artwork, ink } from './tile-art'
+import { TileArt, artwork, ink } from './tile-art'
 import { type ActionRecipe, compileAction } from './actions'
 import {
   type Definition,
@@ -28,6 +20,17 @@ import { wordSprite } from './pixels'
 import { openGame, type Runtime } from './registry'
 import './style.css'
 
+const directions: Record<string, Point> = {
+  ArrowUp: { x: 0, y: -1 },
+  w: { x: 0, y: -1 },
+  ArrowDown: { x: 0, y: 1 },
+  s: { x: 0, y: 1 },
+  ArrowLeft: { x: -1, y: 0 },
+  a: { x: -1, y: 0 },
+  ArrowRight: { x: 1, y: 0 },
+  d: { x: 1, y: 0 },
+  ' ': { x: 0, y: 0 },
+}
 const blank = () => Array<string>(8).fill('00000000')
 
 type DraftData = {
@@ -233,53 +236,39 @@ function App({ runtime }: { runtime: Runtime }) {
     game.step(direction)
     refresh()
   }
-  useEffect(() => {
-    const keydown = (event: KeyboardEvent) => {
-      if (
-        open ||
-        guideOpen ||
-        busy ||
-        event.target instanceof HTMLInputElement ||
-        event.target instanceof HTMLSelectElement
-      )
-        return
+  useHotkeys(
+    'up,w,down,s,left,a,right,d,space,z,escape',
+    (event) => {
       if (event.key === 'Escape') {
         setPlacement(null)
         return
       }
       if (placement) return
-      const directions: Record<string, Point> = {
-        ArrowUp: { x: 0, y: -1 },
-        w: { x: 0, y: -1 },
-        ArrowDown: { x: 0, y: 1 },
-        s: { x: 0, y: 1 },
-        ArrowLeft: { x: -1, y: 0 },
-        a: { x: -1, y: 0 },
-        ArrowRight: { x: 1, y: 0 },
-        d: { x: 1, y: 0 },
-        ' ': { x: 0, y: 0 },
-      }
       if (event.key === 'z') undo()
-      else if (directions[event.key]) {
-        event.preventDefault()
-        game.step(directions[event.key])
-        refresh()
+      else {
+        const direction = directions[event.key]
+        if (direction) {
+          game.step(direction)
+          refresh()
+        }
       }
-    }
+    },
+    { enabled: !open && !guideOpen && !busy, preventDefault: true },
+    [game, placement]
+  )
+  useEffect(() => {
     const release = () => setPainting(false)
     const proximity = (event: PointerEvent) => {
       setPeek(event.clientX > window.innerWidth - 64)
       setGuidePeek(event.clientX < 64)
     }
-    window.addEventListener('keydown', keydown)
     window.addEventListener('pointerup', release)
     window.addEventListener('pointermove', proximity)
     return () => {
-      window.removeEventListener('keydown', keydown)
       window.removeEventListener('pointerup', release)
       window.removeEventListener('pointermove', proximity)
     }
-  }, [game, open, guideOpen, busy, placement])
+  }, [])
   async function change(work: () => Promise<void>, message: string) {
     setBusy(true)
     try {
@@ -442,10 +431,7 @@ function App({ runtime }: { runtime: Runtime }) {
                   return (
                     <span key={tile.id} className={`tile ${tile.kind}`}>
                       {definition ? (
-                        <Pixels
-                          sprite={artwork(definition, tile.kind)}
-                          color={ink(definition, tile.kind)}
-                        />
+                        <TileArt definition={definition} kind={tile.kind} />
                       ) : (
                         '?'
                       )}
@@ -477,13 +463,6 @@ function App({ runtime }: { runtime: Runtime }) {
         runtime={runtime}
         open={guideOpen}
         peek={guidePeek}
-        busy={busy}
-        onPublish={(definition) =>
-          change(
-            () => runtime.publish(definition),
-            `${definition.id} artwork updated`
-          )
-        }
         onOpenChange={(value) => {
           setGuideOpen(value)
           setGuidePeek(false)
@@ -497,8 +476,13 @@ function App({ runtime }: { runtime: Runtime }) {
           setOpen(true)
         }}
       />
-      <Dialog.Root
+      <Drawer
+        side="right"
+        title="Editor"
+        label="Open editor"
+        description={`Paused · ${game.puzzle.title}`}
         open={open}
+        peek={peek}
         onOpenChange={(value) => {
           if (!value) {
             game.settle()
@@ -507,480 +491,423 @@ function App({ runtime }: { runtime: Runtime }) {
           setOpen(value)
           setPeek(false)
         }}
-      >
-        <Dialog.Trigger asChild>
-          <button
-            className={`editor-edge ${peek ? 'peek' : ''}`}
-            aria-label="Open editor"
-            title="Editor"
-          >
-            <ChevronLeft size={18} />
-            <span>Editor</span>
-          </button>
-        </Dialog.Trigger>
-        <Dialog.Portal>
-          <Dialog.Overlay className="editor-overlay" />
-          <Dialog.Content
-            className={`editor${draft ? ' has-selection' : ''}`}
-            onCloseAutoFocus={(event) => {
-              event.preventDefault()
-              world.current?.focus()
-            }}
-          >
-            <div className="editor-main">
-              <header>
-                <Dialog.Title>Editor</Dialog.Title>
-                <div className="editor-actions">
-                  <button
-                    aria-label="Undo"
-                    title="Undo"
-                    disabled={busy}
-                    onClick={undo}
-                  >
-                    <Undo2 size={17} />
-                  </button>
-                  <button
-                    aria-label="Reset puzzle"
-                    title="Reset"
-                    disabled={busy}
-                    onClick={reset}
-                  >
-                    <RotateCcw size={16} />
-                  </button>
-                  <button
-                    aria-label="Resume play"
-                    title="Resume play"
-                    onClick={resume}
-                  >
-                    <Play size={17} />
-                  </button>
-                </div>
-              </header>
-              <Dialog.Description className="editor-description">
-                Paused · {game.puzzle.title}
-              </Dialog.Description>
-              <section className="rules">
-                <h2>Live rules</h2>
-                <ul>
-                  {rules.map((rule, index) => (
-                    <li
-                      key={`${rule.noun}-${rule.property}-${index}`}
-                      aria-label={`${rule.noun} IS ${rule.property}`}
-                    >
-                      {[rule.noun, 'IS', rule.property].map((id, i) => {
-                        const definition = definitions.find((d) => d.id === id)
-                        return definition ? (
-                          <span key={`${id}-${i}`}>
-                            <Pixels
-                              sprite={artwork(definition, 'word')}
-                              color={ink(definition, 'word')}
-                            />
-                          </span>
-                        ) : null
-                      })}
-                    </li>
-                  ))}
-                </ul>
-                {rules.length === 0 && <p>No active sentences.</p>}
-              </section>
-              <section>
-                <h2>Installed vocabulary</h2>
-                <div className="vocabulary">
-                  {definitions.flatMap((definition) =>
-                    (definition.kind === 'entity'
-                      ? (['entity', 'word'] as const)
-                      : (['word'] as const)
-                    ).map((kind) => (
-                      <button
-                        key={`${definition.id}-${kind}`}
-                        aria-label={`Edit ${definition.id} ${kind}`}
-                        aria-pressed={
-                          draft?.base?.id === definition.id &&
-                          draft.artworkKind === kind
-                        }
-                        disabled={busy}
-                        onClick={() => select(definition, kind)}
-                      >
-                        <Pixels
-                          sprite={artwork(definition, kind)}
-                          color={ink(definition, kind)}
-                        />
-                        <small>{kind}</small>
-                      </button>
-                    ))
-                  )}
-                  <button
-                    className="new-item"
-                    aria-label="New vocabulary item"
-                    aria-pressed={!!draft && !draft.base}
-                    onClick={create}
-                  >
-                    <Plus size={22} />
-                    <small>New</small>
-                  </button>
-                </div>
-              </section>
-              <OutcomeBoard
-                rows={outcomeRows}
-                words={definitions}
-                busy={busy}
-                dirty={outcomeDirty}
-                canUndo={outcomeHistory.length > 0}
-                renderWord={(word) => (
-                  <Pixels
-                    sprite={artwork(word, 'word')}
-                    color={ink(word, 'word')}
-                  />
-                )}
-                selected={draft?.scope === 'outcome' ? draft.cell : undefined}
-                onSelect={(cell) => selectOutcome(cell)}
-                onChange={editOutcomeRows}
-                onApply={applyOutcomes}
-                onUndo={() => {
-                  const previous = outcomeHistory.at(-1)
-                  if (previous) {
-                    setOutcomeRows(previous)
-                    setOutcomeHistory(outcomeHistory.slice(0, -1))
-                    setDraft(null)
-                  }
-                }}
-                onRestore={() => editOutcomeRows(startingOutcomeRows)}
-              />
-              <footer>
-                <p role="status">{notice}</p>
-                <small>
-                  Arrows / WASD · Space waits · Z undoes
-                  <br />
-                  Place tile pauses until placement or Esc.
-                </small>
-                <button className="resume" onClick={resume}>
-                  <Play size={14} />
-                  Resume play
-                </button>
-              </footer>
-            </div>
-            {draft && (
-              <section className="tray" aria-label="Vocabulary details">
-                <div className="details-heading">
-                  <h2>Vocabulary details</h2>
-                  <button
-                    aria-label="Close vocabulary details"
-                    onClick={() => setDraft(null)}
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-                <div className="tray-heading">
-                  <h2>
-                    {draft.scope === 'outcome'
-                      ? `Outcome · ${draft.name || 'empty'}`
-                      : draft.base
-                        ? draft.name
-                        : 'New'}
-                  </h2>
-                  <div className="kind-toggle" aria-label="Tile kind">
-                    {(['entity', 'word'] as const).map((kind) => (
-                      <button
-                        key={kind}
-                        aria-pressed={draft.artworkKind === kind}
-                        disabled={
-                          busy ||
-                          (kind === 'entity' &&
-                            (draft.scope === 'outcome' ||
-                              (draft.base && draft.category !== 'entity')))
-                        }
-                        onClick={() =>
-                          setDraft({
-                            ...draft,
-                            artworkKind: kind,
-                            category:
-                              draft.base || draft.scope === 'outcome'
-                                ? draft.category
-                                : kind === 'entity'
-                                  ? 'entity'
-                                  : 'property',
-                          })
-                        }
-                      >
-                        {kind}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                {draft.scope === 'outcome' && (
-                  <button
-                    className="text-button"
-                    onClick={() => {
-                      if (draft.base) setDraft(draftFor(draft.base, 'word'))
-                      else setDraft(null)
-                    }}
-                  >
-                    Done editing cell
-                  </button>
-                )}
-                <label>
-                  Name
-                  <input
-                    value={draft.name}
-                    readOnly={!!draft.base || draft.scope === 'outcome'}
-                    maxLength={8}
-                    onChange={(event) => {
-                      const name = event.target.value
-                        .toUpperCase()
-                        .replace(/[^A-Z]/g, '')
-                      setDraft({
-                        ...draft,
-                        name,
-                        wordSprite: wordSprite(name),
-                      })
-                    }}
-                  />
-                </label>
-                {duplicate && (
-                  <p className="field-hint">
-                    That name is already installed. Select its tile to edit it.
-                  </p>
-                )}
-                {draft.scope === 'outcome' && (
-                  <label>
-                    Outcome tile
-                    <select
-                      aria-label="Outcome tile"
-                      value={draft.base?.id ?? ''}
-                      disabled={busy}
-                      onChange={(event) =>
-                        selectOutcome(draft.cell, event.target.value)
+        onCloseAutoFocus={(event) => {
+          event.preventDefault()
+          world.current?.focus()
+        }}
+        actions={
+          <>
+            <IconButton
+              icon={Undo2}
+              label="Undo"
+              disabled={busy}
+              onClick={undo}
+            />
+            <IconButton
+              icon={RotateCcw}
+              label="Reset puzzle"
+              disabled={busy}
+              onClick={reset}
+            />
+            <IconButton icon={Play} label="Resume play" onClick={resume} />
+          </>
+        }
+        details={
+          draft && (
+            <section className="tray" aria-label="Vocabulary details">
+              <div className="details-heading">
+                <h2>Vocabulary details</h2>
+                <IconButton
+                  icon={X}
+                  label="Close vocabulary details"
+                  onClick={() => setDraft(null)}
+                />
+              </div>
+              <div className="tray-heading">
+                <h2>
+                  {draft.scope === 'outcome'
+                    ? `Outcome · ${draft.name || 'empty'}`
+                    : draft.base
+                      ? draft.name
+                      : 'New'}
+                </h2>
+                <div className="kind-toggle" aria-label="Tile kind">
+                  {(['entity', 'word'] as const).map((kind) => (
+                    <button
+                      key={kind}
+                      aria-pressed={draft.artworkKind === kind}
+                      disabled={
+                        busy ||
+                        (kind === 'entity' &&
+                          (draft.scope === 'outcome' ||
+                            (draft.base && draft.category !== 'entity')))
                       }
-                    >
-                      <option value="">_</option>
-                      {definitions.map((definition) => (
-                        <option key={definition.id} value={definition.id}>
-                          {definition.id}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                )}
-                <label>
-                  Property action
-                  <select
-                    aria-label="Property action"
-                    disabled={!propertyEditable || busy || !draft.name}
-                    value={propertyEditable ? draft.action : ''}
-                    onChange={(event) =>
-                      setDraft({ ...draft, action: event.target.value })
-                    }
-                  >
-                    <option value="">
-                      {
-                        {
-                          entity: 'None · entity name',
-                          grammar: 'Sentence connector',
-                          word: 'Outcome predicate',
-                          property: 'Choose an action…',
-                        }[draft.category]
-                      }
-                    </option>
-                    {actions.map((action) => (
-                      <option key={action.id} value={action.id}>
-                        {action.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                {runtime.outcomeMeanings.value.find(
-                  (meaning) => meaning.id === draft.name
-                )?.description && (
-                  <p className="field-hint">
-                    {
-                      runtime.outcomeMeanings.value.find(
-                        (meaning) => meaning.id === draft.name
-                      )?.description
-                    }
-                  </p>
-                )}
-                <div className="paint-tools">
-                  <label>
-                    Ink
-                    <input
-                      type="color"
-                      value={color}
-                      onChange={(event) =>
+                      onClick={() =>
                         setDraft({
                           ...draft,
-                          [draft.artworkKind === 'entity'
-                            ? 'entityColor'
-                            : 'wordColor']: event.target.value,
+                          artworkKind: kind,
+                          category:
+                            draft.base || draft.scope === 'outcome'
+                              ? draft.category
+                              : kind === 'entity'
+                                ? 'entity'
+                                : 'property',
                         })
                       }
-                    />
-                  </label>
-                  <button aria-pressed={erase} onClick={() => setErase(!erase)}>
-                    <Eraser size={15} />
-                    Erase
-                  </button>
-                  <button
-                    onClick={() =>
+                    >
+                      {kind}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {draft.scope === 'outcome' && (
+                <button
+                  className="text-button"
+                  onClick={() => {
+                    if (draft.base) setDraft(draftFor(draft.base, 'word'))
+                    else setDraft(null)
+                  }}
+                >
+                  Done editing cell
+                </button>
+              )}
+              <label>
+                Name
+                <input
+                  value={draft.name}
+                  readOnly={!!draft.base || draft.scope === 'outcome'}
+                  maxLength={8}
+                  onChange={(event) => {
+                    const name = event.target.value
+                      .toUpperCase()
+                      .replace(/[^A-Z]/g, '')
+                    setDraft({
+                      ...draft,
+                      name,
+                      wordSprite: wordSprite(name),
+                    })
+                  }}
+                />
+              </label>
+              {duplicate && (
+                <p className="field-hint">
+                  That name is already installed. Select its tile to edit it.
+                </p>
+              )}
+              {draft.scope === 'outcome' && (
+                <Select
+                  label="Outcome tile"
+                  value={draft.base?.id ?? ''}
+                  disabled={busy}
+                  options={[
+                    ['', '_'],
+                    ...definitions.map(
+                      (definition) => [definition.id, definition.id] as const
+                    ),
+                  ]}
+                  onChange={(value) => selectOutcome(draft.cell, value)}
+                />
+              )}
+              <Select
+                label="Property action"
+                disabled={!propertyEditable || busy || !draft.name}
+                value={propertyEditable ? draft.action : ''}
+                options={[
+                  [
+                    '',
+                    {
+                      entity: 'None · entity name',
+                      grammar: 'Sentence connector',
+                      word: 'Outcome predicate',
+                      property: 'Choose an action…',
+                    }[draft.category],
+                  ],
+                  ...actions.map(
+                    (action) => [action.id, action.label] as const
+                  ),
+                ]}
+                onChange={(action) => setDraft({ ...draft, action })}
+              />
+              {runtime.outcomeMeanings.value.find(
+                (meaning) => meaning.id === draft.name
+              )?.description && (
+                <p className="field-hint">
+                  {
+                    runtime.outcomeMeanings.value.find(
+                      (meaning) => meaning.id === draft.name
+                    )?.description
+                  }
+                </p>
+              )}
+              <div className="paint-tools">
+                <label>
+                  Ink
+                  <input
+                    type="color"
+                    value={color}
+                    onChange={(event) =>
                       setDraft({
                         ...draft,
                         [draft.artworkKind === 'entity'
-                          ? 'entitySprite'
-                          : 'wordSprite']: sprite.map((row) =>
-                          '0'.repeat(row.length)
-                        ),
+                          ? 'entityColor'
+                          : 'wordColor']: event.target.value,
                       })
                     }
-                  >
-                    Clear
-                  </button>
-                </div>
-                <div
-                  className="pixel-editor"
-                  style={{
-                    gridTemplateColumns: `repeat(${sprite[0].length},1fr)`,
-                  }}
-                  onPointerCancel={() => setPainting(false)}
+                  />
+                </label>
+                <button aria-pressed={erase} onClick={() => setErase(!erase)}>
+                  <Eraser size={15} />
+                  Erase
+                </button>
+                <button
+                  onClick={() =>
+                    setDraft({
+                      ...draft,
+                      [draft.artworkKind === 'entity'
+                        ? 'entitySprite'
+                        : 'wordSprite']: sprite.map((row) =>
+                        '0'.repeat(row.length)
+                      ),
+                    })
+                  }
                 >
-                  {sprite.flatMap((row, y) =>
-                    [...row].map((pixel, x) => (
-                      <button
-                        key={`${x}-${y}`}
-                        aria-label={`Pixel ${x + 1}, ${y + 1}`}
-                        aria-pressed={pixel === '1'}
-                        style={{
-                          background: pixel === '1' ? color : undefined,
-                        }}
-                        onPointerDown={(event) => {
-                          event.preventDefault()
-                          setPainting(true)
+                  Clear
+                </button>
+              </div>
+              <div
+                className="pixel-editor"
+                style={{
+                  gridTemplateColumns: `repeat(${sprite[0].length},1fr)`,
+                }}
+                onPointerCancel={() => setPainting(false)}
+              >
+                {sprite.flatMap((row, y) =>
+                  [...row].map((pixel, x) => (
+                    <button
+                      key={`${x}-${y}`}
+                      aria-label={`Pixel ${x + 1}, ${y + 1}`}
+                      aria-pressed={pixel === '1'}
+                      style={{
+                        background: pixel === '1' ? color : undefined,
+                      }}
+                      onPointerDown={(event) => {
+                        event.preventDefault()
+                        setPainting(true)
+                        paint(y * row.length + x)
+                      }}
+                      onPointerEnter={(event) => {
+                        if (painting && event.buttons === 1)
                           paint(y * row.length + x)
-                        }}
-                        onPointerEnter={(event) => {
-                          if (painting && event.buttons === 1)
-                            paint(y * row.length + x)
-                        }}
-                        onClick={(event) => {
-                          if (event.detail === 0) paint(y * row.length + x)
-                        }}
-                      />
-                    ))
-                  )}
-                </div>
-                {draft.scope === 'world' && propertyEditable && (
-                  <>
-                    <p className="field-hint">
-                      {actions.find((a) => a.id === draft.action)
-                        ?.description ||
-                        'A property word applies its action through an IS sentence.'}
-                    </p>
-                    <button
-                      className="text-button"
-                      onClick={() => setActionEditor(!actionEditor)}
-                    >
-                      {actionEditor ? 'Cancel new action' : '+ New action'}
-                    </button>
-                    {actionEditor && (
-                      <ActionEditor
-                        name={draft.name}
-                        properties={definitions.filter(
-                          (
-                            definition
-                          ): definition is import('./game').PropertyDefinition =>
-                            definition.kind === 'property'
-                        )}
-                        busy={busy}
-                        onInstall={saveAction}
-                      />
-                    )}
-                  </>
+                      }}
+                      onClick={(event) => {
+                        if (event.detail === 0) paint(y * row.length + x)
+                      }}
+                    />
+                  ))
                 )}
-                <div className="tray-actions">
-                  <button
-                    className="publish"
-                    disabled={busy || !canSave}
-                    onClick={save}
-                  >
-                    {draft.base ? 'Save definition' : 'Create definition'}
-                  </button>
-                  {draft.scope === 'world' && (
-                    <button
-                      disabled={busy || !draft.base}
-                      onClick={() => {
-                        if (!draft.base) return
-                        setPlacement({
-                          type: draft.base.id,
-                          kind: draft.artworkKind,
-                        })
-                        setDraft({ ...draft, tileId: undefined })
-                        setOpen(false)
-                      }}
-                    >
-                      Place tile
-                    </button>
-                  )}
-                </div>
-                <div className="delete-actions">
-                  {draft.scope === 'outcome' && (
-                    <button
-                      disabled={busy}
-                      onClick={() => {
-                        replaceOutcomeCell(draft.cell, '')
-                        setDraft(null)
-                      }}
-                    >
-                      <Trash2 size={13} />
-                      Remove outcome tile
-                    </button>
-                  )}
-                  {inspectedTile && (
-                    <button
-                      disabled={busy}
-                      onClick={() => {
-                        game.remove(inspectedTile.id)
-                        setNotice(
-                          `${inspectedTile.type} removed · Undo restores it`
-                        )
-                        refresh()
-                      }}
-                    >
-                      <Trash2 size={13} />
-                      Remove tile
-                    </button>
-                  )}
-                  {draft.base && (
-                    <button
-                      disabled={busy || inUse}
-                      title={
-                        inUse
-                          ? 'Remove placed tiles and applied outcome references before deleting their definition'
-                          : undefined
-                      }
-                      onClick={async () => {
-                        if (
-                          await change(
-                            () => runtime.deleteDefinition(draft.base!.id),
-                            `${draft.name} definition deleted`
-                          )
-                        )
-                          setDraft(null)
-                      }}
-                    >
-                      <Trash2 size={13} />
-                      Delete definition
-                    </button>
-                  )}
-                </div>
-                {inUse && (
+              </div>
+              {draft.scope === 'world' && propertyEditable && (
+                <>
                   <p className="field-hint">
-                    Delete definition becomes available after its placed tiles
-                    and applied outcome references are removed.
+                    {actions.find((a) => a.id === draft.action)?.description ||
+                      'A property word applies its action through an IS sentence.'}
                   </p>
+                  <button
+                    className="text-button"
+                    onClick={() => setActionEditor(!actionEditor)}
+                  >
+                    {actionEditor ? 'Cancel new action' : '+ New action'}
+                  </button>
+                  {actionEditor && (
+                    <ActionEditor
+                      name={draft.name}
+                      properties={definitions.filter(
+                        (
+                          definition
+                        ): definition is import('./game').PropertyDefinition =>
+                          definition.kind === 'property'
+                      )}
+                      busy={busy}
+                      onInstall={saveAction}
+                    />
+                  )}
+                </>
+              )}
+              <div className="tray-actions">
+                <button
+                  className="publish"
+                  disabled={busy || !canSave}
+                  onClick={save}
+                >
+                  {draft.base ? 'Save definition' : 'Create definition'}
+                </button>
+                {draft.scope === 'world' && (
+                  <button
+                    disabled={busy || !draft.base}
+                    onClick={() => {
+                      if (!draft.base) return
+                      setPlacement({
+                        type: draft.base.id,
+                        kind: draft.artworkKind,
+                      })
+                      setDraft({ ...draft, tileId: undefined })
+                      setOpen(false)
+                    }}
+                  >
+                    Place tile
+                  </button>
                 )}
-              </section>
+              </div>
+              <div className="delete-actions">
+                {draft.scope === 'outcome' && (
+                  <button
+                    disabled={busy}
+                    onClick={() => {
+                      replaceOutcomeCell(draft.cell, '')
+                      setDraft(null)
+                    }}
+                  >
+                    <Trash2 size={13} />
+                    Remove outcome tile
+                  </button>
+                )}
+                {inspectedTile && (
+                  <button
+                    disabled={busy}
+                    onClick={() => {
+                      game.remove(inspectedTile.id)
+                      setNotice(
+                        `${inspectedTile.type} removed · Undo restores it`
+                      )
+                      refresh()
+                    }}
+                  >
+                    <Trash2 size={13} />
+                    Remove tile
+                  </button>
+                )}
+                {draft.base && (
+                  <button
+                    disabled={busy || inUse}
+                    title={
+                      inUse
+                        ? 'Remove placed tiles and applied outcome references before deleting their definition'
+                        : undefined
+                    }
+                    onClick={async () => {
+                      if (
+                        await change(
+                          () => runtime.deleteDefinition(draft.base!.id),
+                          `${draft.name} definition deleted`
+                        )
+                      )
+                        setDraft(null)
+                    }}
+                  >
+                    <Trash2 size={13} />
+                    Delete definition
+                  </button>
+                )}
+              </div>
+              {inUse && (
+                <p className="field-hint">
+                  Delete definition becomes available after its placed tiles and
+                  applied outcome references are removed.
+                </p>
+              )}
+            </section>
+          )
+        }
+      >
+        <section className="rules">
+          <h2>Live rules</h2>
+          <ul>
+            {rules.map((rule, index) => (
+              <li
+                key={`${rule.noun}-${rule.property}-${index}`}
+                aria-label={`${rule.noun} IS ${rule.property}`}
+              >
+                {[rule.noun, 'IS', rule.property].map((id, i) => {
+                  const definition = definitions.find((d) => d.id === id)
+                  return definition ? (
+                    <span key={`${id}-${i}`}>
+                      <TileArt definition={definition} kind={'word'} />
+                    </span>
+                  ) : null
+                })}
+              </li>
+            ))}
+          </ul>
+          {rules.length === 0 && <p>No active sentences.</p>}
+        </section>
+        <section>
+          <h2>Installed vocabulary</h2>
+          <div className="vocabulary">
+            {definitions.flatMap((definition) =>
+              (definition.kind === 'entity'
+                ? (['entity', 'word'] as const)
+                : (['word'] as const)
+              ).map((kind) => (
+                <button
+                  key={`${definition.id}-${kind}`}
+                  aria-label={`Edit ${definition.id} ${kind}`}
+                  aria-pressed={
+                    draft?.base?.id === definition.id &&
+                    draft.artworkKind === kind
+                  }
+                  disabled={busy}
+                  onClick={() => select(definition, kind)}
+                >
+                  <TileArt definition={definition} kind={kind} />
+                  <small>{kind}</small>
+                </button>
+              ))
             )}
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+            <button
+              className="new-item"
+              aria-label="New vocabulary item"
+              aria-pressed={!!draft && !draft.base}
+              onClick={create}
+            >
+              <Plus size={22} />
+              <small>New</small>
+            </button>
+          </div>
+        </section>
+        <OutcomeBoard
+          rows={outcomeRows}
+          words={definitions}
+          busy={busy}
+          dirty={outcomeDirty}
+          canUndo={outcomeHistory.length > 0}
+          renderWord={(word) => <TileArt definition={word} />}
+          selected={draft?.scope === 'outcome' ? draft.cell : undefined}
+          onSelect={(cell) => selectOutcome(cell)}
+          onChange={editOutcomeRows}
+          onApply={applyOutcomes}
+          onUndo={() => {
+            const previous = outcomeHistory.at(-1)
+            if (previous) {
+              setOutcomeRows(previous)
+              setOutcomeHistory(outcomeHistory.slice(0, -1))
+              setDraft(null)
+            }
+          }}
+          onRestore={() => editOutcomeRows(startingOutcomeRows)}
+        />
+        <footer>
+          <p role="status">{notice}</p>
+          <small>
+            Arrows / WASD · Space waits · Z undoes
+            <br />
+            Place tile pauses until placement or Esc.
+          </small>
+          <button className="resume" onClick={resume}>
+            <Play size={14} />
+            Resume play
+          </button>
+        </footer>
+      </Drawer>
       <div className="touch-controls" aria-label="Movement controls">
         {[
           { x: -1, y: 0, label: 'Left' },

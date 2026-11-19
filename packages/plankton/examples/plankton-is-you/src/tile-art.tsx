@@ -30,3 +30,15 @@ export const artwork = (definition: Definition, kind: Tile['kind']) =>
   kind === 'entity' && definition.kind === 'entity'
     ? definition.sprite
     : (definition.wordSprite ?? wordSprite(definition.id))
+
+export function TileArt({
+  definition,
+  kind = 'word',
+}: {
+  definition: Definition
+  kind?: Tile['kind']
+}) {
+  return (
+    <Pixels sprite={artwork(definition, kind)} color={ink(definition, kind)} />
+  )
+}
