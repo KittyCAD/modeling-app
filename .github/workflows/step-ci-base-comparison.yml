@@ -15,8 +15,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - revision: candidate-final
-            sha: 3ab8ad3b5150dc15ac24b2e997d0ef52bb5d451b
+          - revision: candidate-highlighting
+            sha: 63de611fa69510e76d5672ae723d4db19c83347b
             wasm_run: 44577814983
     steps:
       - uses: actions/checkout@v6
@@ -62,7 +62,6 @@ jobs:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TARGET: web
           NODE_ENV: development
-          E2E_WORKERS: 4
         shell: bash
         run: |
           set -o pipefail
@@ -72,6 +71,13 @@ jobs:
             npm run test:snapshots -- --update-snapshots=none --output="test-results-$attempt" 2>&1 | tee -a comparison-snapshots.log || status=1
           done
           exit "$status"
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: browser-${{ matrix.revision }}
+          path: |
+            comparison-snapshots.log
+            test-results*/
       - name: Build desktop app
         if: ${{ !cancelled() }}
         run: npm run tronb:vite:dev
