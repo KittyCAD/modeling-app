@@ -125,18 +125,23 @@ test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
         await homePage.goToModelingScene()
         await u.waitForPageLoad()
 
-        await page.waitForTimeout(100)
         // wait for execution done
         if (rendererTag === '@streamRenderer') {
           await u.openDebugPanel()
           await u.expectCmdLog('[data-message-type="execution-done"]')
         }
         if (rendererTag === '@localRenderer') {
-          await scene.settled()
+          await scene.waitForModelReady()
           await scene.moveCameraTo(
             { x: 3000, y: 3000, z: 3000 },
             { x: 800, y: -152, z: 26 }
           )
+          await expect
+            .poll(() => scene.getCameraInfo())
+            .toEqual({
+              position: [3000, 3000, 3000],
+              target: [800, -152, 26],
+            })
         } else {
           await u.sendCustomCmd({
             type: 'modeling_cmd_req',
@@ -176,7 +181,6 @@ test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
             ? await localAxisPosition(gizmo, axis, negative)
             : gizmoClickPosition
         await gizmo.hover({ position: clickPosition })
-        await page.waitForTimeout(100)
         await gizmo.click({ position: clickPosition })
         await page.mouse.move(0, 0)
 
