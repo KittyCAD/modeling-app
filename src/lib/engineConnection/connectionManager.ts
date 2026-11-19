@@ -412,6 +412,7 @@ export class ConnectionManager extends EventTarget {
     geometryOnly = false,
     kclVersion,
     prepareForReconnect,
+    onConnectionCreated,
   }: {
     width: number
     height: number
@@ -424,6 +425,9 @@ export class ConnectionManager extends EventTarget {
     geometryOnly?: boolean
     kclVersion?: KclVersion
     prepareForReconnect?: (signal: AbortSignal) => Promise<undefined | Error>
+    onConnectionCreated?: (
+      connection: Pick<Connection, 'id' | 'mediaStream'>
+    ) => void
   }) {
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -464,7 +468,7 @@ export class ConnectionManager extends EventTarget {
     const handleMessage = this.createMessageHandler(rustContext)
 
     const url = this.generateWebsocketURL(geometryOnly, kclVersion)
-    this.connection = new Connection({
+    const connection = new Connection({
       url,
       token,
       geometryOnly,
@@ -482,6 +486,13 @@ export class ConnectionManager extends EventTarget {
           ?.cloudProjectId,
     })
 
+    this.connection = connection
+    onConnectionCreated?.(connection)
+    if (this.connection !== connection || !this.started)
+      return Promise.reject(
+        new Error('The engine connection closed while starting')
+      )
+
     // Nothing more to do when using a lite engine initialization
     if (callbackOnUnitTestingConnection) {
       this.callbackOnUnitTestingConnection = callbackOnUnitTestingConnection
@@ -491,11 +502,11 @@ export class ConnectionManager extends EventTarget {
     // Only used for useNetworkStatus.tsx listeners, why?!
     this.dispatchEvent(
       new CustomEvent(EngineConnectionManagerEvents.EngineAvailable, {
-        detail: this.connection,
+        detail: connection,
       })
     )
 
-    this.connection.dispatchEvent(
+    connection.dispatchEvent(
       new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
         detail: {
           type: EngineConnectionStateType.Connecting,
@@ -506,18 +517,24 @@ export class ConnectionManager extends EventTarget {
       })
     )
 
-    await this.connection.connect()
+    if (this.connection !== connection || !this.started)
+      return Promise.reject(
+        new Error('The engine connection closed while starting')
+      )
+    await connection.connect()
+    if (this.connection !== connection || !this.started)
+      return Promise.reject(
+        new Error('The engine connection closed while starting')
+      )
 
     // Moved from ondatachannelopen in RTCPeerConnection.
     this.inSequence = 1
 
-    if (!geometryOnly && !this.connection.peerConnection) {
-      return Promise.reject(
-        new Error('this.connection.peerConnection is undefined')
-      )
+    if (!geometryOnly && !connection.peerConnection) {
+      return Promise.reject(new Error('connection.peerConnection is undefined'))
     }
-    if (!this.connection.websocket) {
-      return Promise.reject(new Error('this.connection.websocket is undefined'))
+    if (!connection.websocket) {
+      return Promise.reject(new Error('connection.websocket is undefined'))
     }
 
     const onEngineConnectionRestartRequest =
@@ -530,7 +547,7 @@ export class ConnectionManager extends EventTarget {
 
     const onEngineConnectionClosed = createOnEngineConnectionClosed()
     const onEngineConnectionStarted = createOnEngineConnectionStarted({
-      peerConnection: this.connection.peerConnection,
+      peerConnection: connection.peerConnection,
       getUnreliableSubscriptions: () => {
         return this.unreliableSubscriptions
       },
@@ -538,7 +555,7 @@ export class ConnectionManager extends EventTarget {
       getInSequence: () => {
         return this.inSequence
       },
-      connection: this.connection,
+      connection: connection,
       trackListener: this.trackListener.bind(this),
     })
 
@@ -547,7 +564,7 @@ export class ConnectionManager extends EventTarget {
       callback: onEngineConnectionRestartRequest,
       type: 'connection',
     })
-    this.connection.addEventListener(
+    connection.addEventListener(
       EngineConnectionEvents.RestartRequest,
       onEngineConnectionRestartRequest
     )
@@ -557,17 +574,14 @@ export class ConnectionManager extends EventTarget {
       callback: onEngineOffline,
       type: 'connection',
     })
-    this.connection.addEventListener(
-      EngineConnectionEvents.Offline,
-      onEngineOffline
-    )
+    connection.addEventListener(EngineConnectionEvents.Offline, onEngineOffline)
 
     this.trackListener(EngineConnectionEvents.Closed, {
       event: EngineConnectionEvents.Closed,
       callback: onEngineConnectionClosed,
       type: 'connection',
     })
-    this.connection.addEventListener(
+    connection.addEventListener(
       EngineConnectionEvents.Closed,
       onEngineConnectionClosed
     )
@@ -577,12 +591,12 @@ export class ConnectionManager extends EventTarget {
       callback: onEngineConnectionStarted,
       type: 'connection',
     })
-    this.connection.addEventListener(
+    connection.addEventListener(
       EngineConnectionEvents.ConnectionStarted,
       onEngineConnectionStarted
     )
 
-    this.connection.dispatchEvent(
+    connection.dispatchEvent(
       new CustomEvent(EngineConnectionEvents.ConnectionStarted, {
         // detail: this,
       })
@@ -596,13 +610,18 @@ export class ConnectionManager extends EventTarget {
       listenToDarkModeMatcher: this.listenToDarkModeMatcher.bind(this),
       // Don't think this needs the bind because it is an external set function for the callback
       camControlsCameraChange: this._camControlsCameraChange,
-      connection: this.connection,
+      connection: connection,
       setStreamIsReady,
+      isCurrent: () => this.started && this.connection === connection,
     })
 
     // Engine is ready to start sending events!
     // Gotcha: The other listenerse above need to be initialized otherwise this will halt forever.
     await onEngineConnectionOpened()
+    if (this.connection !== connection || !this.started)
+      return Promise.reject(
+        new Error('The engine connection closed while starting')
+      )
     this.setViewportRendering(this.settings.viewportRendering)
   }
 
@@ -700,7 +719,9 @@ export class ConnectionManager extends EventTarget {
       return
     }
 
-    await this.connection?.deferredConnection?.promise
+    const connection = this.connection
+    await connection?.deferredConnection?.promise
+    if (this.connection !== connection || !this.started) return
 
     const mode = this.settings.viewportRendering
     const backgroundColor = getViewportBackgroundColor(theme, mode)
@@ -736,6 +757,8 @@ export class ConnectionManager extends EventTarget {
         },
       },
     })
+
+    if (this.connection !== connection || !this.started) return
 
     // Sets the default line colors
     const opposingTheme = getOppositeTheme(getViewportTheme(theme, mode))
@@ -821,7 +844,9 @@ export class ConnectionManager extends EventTarget {
       return
     }
 
-    await this.connection.deferredConnection?.promise
+    const connection = this.connection
+    await connection.deferredConnection?.promise
+    if (this.connection !== connection || !this.started) return
 
     debugLog('start')
     await this.sendSceneCommand({
