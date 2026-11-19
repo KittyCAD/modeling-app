@@ -1,4 +1,5 @@
 import type { KclManager } from '@src/lang/KclManager'
+import { createLocalName, createVariableDeclaration } from '@src/lang/create'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
@@ -2790,7 +2791,7 @@ revolve001 = revolve(
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
-    it('should add revolve call around edge', async () => {
+    it('should add and edit a surface revolve with a sketch v1 axis', async () => {
       const code = `sketch001 = startSketchOn(XZ)
   |> startProfile(at = [-102.57, 101.72])
   |> angledLine(angle = 0, length = 202.6, tag = $rectangleSegmentA001)
@@ -2845,6 +2846,43 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
   bodyType = SURFACE,
 )`
       )
+
+      const editAngle = await getKclCommandValue(
+        '180deg',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const edited = addRevolve({
+        ast: result.modifiedAst,
+        artifactGraph,
+        sketches,
+        angle: {
+          ...editAngle,
+          variableName: 'angle001',
+          variableDeclarationAst: createVariableDeclaration(
+            'angle001',
+            editAngle.valueAst
+          ),
+          variableIdentifierAst: createLocalName('angle001'),
+          insertIndex: result.modifiedAst.body.length - 1,
+        },
+        axis: 'X',
+        bodyType: 'SURFACE',
+        nodeToEdit: result.pathToNode,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(edited)) throw edited
+
+      expect(recast(edited.modifiedAst, instanceInThisFile)).toContain(
+        `angle001 = 180deg
+revolve001 = revolve(
+  sketch002,
+  angle = angle001,
+  axis = X,
+  bodyType = SURFACE,
+)`
+      )
+      await enginelessExecutor(edited.modifiedAst, rustContextInThisFile)
     })
 
     it('should add revolve call around line segment from sketch', async () => {
