@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use ahash::AHashSet;
 use ezpz::Warning;
@@ -113,10 +114,20 @@ pub(super) fn substitute_sketch_vars(
     solution_ty: NumericType,
     analysis: Option<&FreedomAnalysis>,
 ) -> Result<HashMap<String, KclValue>, KclError> {
+    // Every solved segment refers to the same immutable sketch snapshot.
+    // Copy it once instead of copying all paths and tag geometry per variable.
+    let sketch = sketch.map(|sketch| Arc::new(sketch.clone()));
     let mut subbed = HashMap::with_capacity(variables.len());
     for (name, value) in variables {
-        let subbed_value =
-            substitute_sketch_var(value, surface, sketch_id, sketch, solve_outcome, solution_ty, analysis)?;
+        let subbed_value = substitute_sketch_var(
+            value,
+            surface,
+            sketch_id,
+            sketch.as_ref(),
+            solve_outcome,
+            solution_ty,
+            analysis,
+        )?;
         subbed.insert(name, subbed_value);
     }
     Ok(subbed)
@@ -126,7 +137,7 @@ fn substitute_sketch_var(
     value: KclValue,
     surface: &SketchSurface,
     sketch_id: Uuid,
-    sketch: Option<&Sketch>,
+    sketch: Option<&Arc<Sketch>>,
     solve_outcome: &Solved,
     solution_ty: NumericType,
     analysis: Option<&FreedomAnalysis>,
@@ -234,7 +245,7 @@ pub(super) fn substitute_sketch_var_in_segment(
     segment: UnsolvedSegment,
     surface: &SketchSurface,
     sketch_id: Uuid,
-    sketch: Option<Sketch>,
+    sketch: Option<Arc<Sketch>>,
     solve_outcome: &Solved,
     solution_ty: NumericType,
     analysis: Option<&FreedomAnalysis>,
