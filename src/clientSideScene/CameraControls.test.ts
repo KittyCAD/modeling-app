@@ -14,6 +14,7 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 import { getDimensions } from '@src/lib/engineConnection/utils'
 import fc from 'fast-check'
 import {
+  Box3,
   Group,
   OrthographicCamera,
   PerspectiveCamera,
@@ -67,6 +68,39 @@ function unusedSettings(): never {
   throw new Error('Settings are not used by viewport projection updates')
 }
 
+it.each(['perspective', 'orthographic'])(
+  'recovers a tiny displaced model despite visible planes in %s',
+  async (projection) => {
+    const model = new Box3(new Vector3(10000, 0, 0), new Vector3(10001, 1, 1))
+    const sceneBounds = model
+      .clone()
+      .union(new Box3(new Vector3(-50, -50, -50), new Vector3(50, 50, 50)))
+    const controls = new CameraControls(
+      makeCanvas(1024, 768),
+      makeConnectionManager({ width: 1024, height: 768 }),
+      unusedSettings,
+      () => ({
+        getFitBounds: () => sceneBounds,
+        getSelectionBounds: () => undefined,
+      })
+    )
+    controls.localCameraMode = true
+    if (projection === 'orthographic') controls.useOrthographicCamera()
+    await controls.zoomToFit({ padding: 0.1 })
+    const modelSize = model.getSize(new Vector3()).length()
+    expect(
+      controls.camera.position.distanceTo(controls.target) / modelSize
+    ).toBeGreaterThan(100)
+    await controls.zoomToFit({ padding: 0.1, bounds: model })
+    expect(
+      controls.camera.position.distanceTo(controls.target) / modelSize
+    ).toBeLessThan(10)
+    expect(
+      controls.target.distanceTo(model.getCenter(new Vector3()))
+    ).toBeLessThan(1e-6)
+  }
+)
+
 /** Commands issued by camera controls, including any unsupported graphics commands. */
 function sentCommandTypes(
   send: MockInstance<ConnectionManager['sendSceneCommand']>
@@ -107,6 +141,15 @@ describe('local canvas spherical orbit', () => {
       buttons: 2,
     })
   }
+
+  it('notifies navigation observers when a held drag starts and ends', () => {
+    const { controls } = setup()
+    const dragStates: boolean[] = []
+    controls.cameraInteraction.add(() => dragStates.push(controls.isDragging))
+    controls.onMouseDown(pointer(512, 100))
+    controls.onMouseUp(pointer(512, 100))
+    expect(dragStates).toEqual([true, false])
+  })
 
   it.each(['perspective', 'orthographic'] as const)(
     'continues through both poles for multiple revolutions in %s',
@@ -1460,3 +1503,93 @@ async function expectViewRestored(
   expect(restored.eye_offset).toBeCloseTo(view.eye_offset)
   expect({ ...restored, eye_offset: view.eye_offset }).toEqual(view)
 }
+
+it.each(['perspective', 'orthographic'])(
+  'animates %s Recenter toward the screen center and yields to cancellation and view commands',
+  async (projection) => {
+    vi.useFakeTimers()
+    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) =>
+      setTimeout(() => callback(performance.now()), 10)
+    )
+    vi.stubGlobal('cancelAnimationFrame', (id: number) => clearTimeout(id))
+    const { controls } = makeCameraControls()
+    controls.localCameraMode = true
+    if (projection === 'orthographic') {
+      controls.camera = new OrthographicCamera(-200, 200, 200, -200, 0.1, 10000)
+    }
+    controls.target.set(0, 0, 0)
+    controls.camera.position.set(0, 0, 1000)
+    controls.camera.lookAt(controls.target)
+    controls.camera.updateMatrixWorld(true)
+    const center = new Vector3(100, 0, 0)
+    const initialScreenX = center.clone().project(controls.camera).x
+    const bounds = new Box3(new Vector3(99, -1, -1), new Vector3(101, 1, 1))
+    const rotation = controls.camera.quaternion.clone()
+    const completed = vi.fn()
+    const animation = controls
+      .zoomToFit({
+        padding: 0.1,
+        bounds,
+        duration: 150,
+      })
+      .then(completed)
+    expect(controls.target.x).toBe(0)
+    let previousScreenX = initialScreenX
+    for (let elapsed = 10; elapsed <= 150; elapsed += 10) {
+      await vi.advanceTimersByTimeAsync(10)
+      controls.camera.updateMatrixWorld(true)
+      const screenX = center.clone().project(controls.camera).x
+      expect(screenX).toBeGreaterThanOrEqual(-0.000001)
+      expect(screenX).toBeLessThanOrEqual(previousScreenX + 0.000001)
+      if (elapsed === 70) {
+        expect(screenX).toBeGreaterThan(0)
+        expect(screenX).toBeLessThan(initialScreenX / 2)
+      }
+      if (elapsed < 150) expect(completed).not.toHaveBeenCalled()
+      previousScreenX = screenX
+    }
+    await animation
+    expect(completed).toHaveBeenCalledOnce()
+    expect(previousScreenX).toBeCloseTo(0)
+    expect(controls.target.x).toBeCloseTo(100)
+    expect(controls.camera.quaternion.equals(rotation)).toBe(true)
+    const abort = new AbortController()
+    const interrupted = controls.zoomToFit({
+      padding: 0.1,
+      bounds: new Box3(new Vector3(-101, -1, -1), new Vector3(-99, 1, 1)),
+      duration: 150,
+      signal: abort.signal,
+    })
+    await vi.advanceTimersByTimeAsync(30)
+    abort.abort()
+    const position = controls.camera.position.clone()
+    await vi.advanceTimersByTimeAsync(200)
+    await interrupted
+    expect(controls.camera.position.equals(position)).toBe(true)
+
+    for (const view of ['axis', 'cube']) {
+      const superseded = controls.zoomToFit({
+        padding: 0.1,
+        bounds,
+        duration: 150,
+      })
+      await vi.advanceTimersByTimeAsync(30)
+      if (view === 'axis') {
+        await controls.setCameraToAxis({ axis: 'x' })
+      } else {
+        await controls.setCameraToQuaternion(
+          new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2),
+          controls.target.clone()
+        )
+      }
+      const viewPosition = controls.camera.position.clone()
+      const viewTarget = controls.target.clone()
+      const viewRotation = controls.camera.quaternion.clone()
+      await vi.advanceTimersByTimeAsync(200)
+      await superseded
+      expect(controls.camera.position.equals(viewPosition)).toBe(true)
+      expect(controls.target.equals(viewTarget)).toBe(true)
+      expect(controls.camera.quaternion.equals(viewRotation)).toBe(true)
+    }
+  }
+)

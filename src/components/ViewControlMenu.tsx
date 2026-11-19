@@ -23,10 +23,12 @@ import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { reportRejection } from '@src/lib/trap'
 import { shouldLockViewControls } from '@src/components/viewControlMenuUtils'
 import toast from 'react-hot-toast'
+import { viewControlMenuItemsFacet } from '@src/registry/contracts/viewControls'
 
-export function useViewControlMenuItems() {
+export function useViewControlMenuItems(highlightedItemId?: string) {
   useSignals()
-  const { settings, layout } = useApp()
+  const { settings, layout, registry } = useApp()
+  const contributedItems = registry.observe(viewControlMenuItemsFacet).value
   const { kclManager } = useSingletons()
   const { state: modelingState, send: modelingSend } = useModelingContext()
   const planeOrFaceId = getSelectedSketchTarget(
@@ -84,6 +86,14 @@ export function useViewControlMenuItems() {
       >
         Zoom to fit
       </ContextMenuItem>,
+      ...contributedItems.map(({ id, Component }) => (
+        <div key={id} className="contents" data-view-control-item={id}>
+          <Component
+            disabled={shouldLockView}
+            highlighted={id === highlightedItemId}
+          />
+        </div>
+      )),
       <ContextMenuItem
         onClick={() => {
           resetCameraPosition({
@@ -204,6 +214,8 @@ export function useViewControlMenuItems() {
     ],
     [
       shouldLockView,
+      contributedItems,
+      highlightedItemId,
       planeOrFaceId,
       firstValidSelection,
       modelingSend,

@@ -39,6 +39,12 @@ import type { Artifact } from '@src/lang/wasm'
 type RendererInternals = {
   initialize(): Promise<void>
   scheduleRender(): void
+  updateLocalCamera(): void
+  modelVisibilityMask: {
+    coverage(): Promise<number | undefined>
+    setModel(): void
+    dispose(): Promise<void>
+  } | null
   gpu: FakeGpu | null
   currentModel: Group | null
   loadedSceneGeneration: number | null
@@ -130,6 +136,7 @@ function fixture(
       baseUnitChange: new Signal(),
       camControls: {
         camera,
+        cameraInteraction: new Signal(),
         isDragging: false,
         wasDragging: false,
         hoverPickingDisabled: false,
@@ -179,7 +186,10 @@ describe('local GLB loading', () => {
     // clear the camera reset mock.
     vi.mocked(resetCameraPosition).mockClear()
   })
-  afterEach(() => vi.restoreAllMocks())
+  afterEach(() => {
+    vi.restoreAllMocks()
+    vi.useRealTimers()
+  })
 
   function planeFixture(id = 'plane-xy') {
     const f = fixture()
@@ -417,6 +427,122 @@ describe('local GLB loading', () => {
     expect(modelBounds?.getSize(new Vector3()).length()).toBeLessThan(
       boundsWithPlanes?.getSize(new Vector3()).length() ?? 0
     )
+    f.renderer.dispose()
+  })
+
+  it('updates model visibility with hysteresis on camera changes', async () => {
+    vi.useFakeTimers()
+    const f = fixture()
+    f.state.camera = new PerspectiveCamera()
+    const coverage = vi.fn(async () => 0.25)
+    f.state.modelVisibilityMask = {
+      coverage,
+      setModel: vi.fn(),
+      dispose: vi.fn(async () => {}),
+    }
+    const lost = f.renderer.isModelOutOfView
+    expect(lost.value).toBe(false)
+    f.done()
+    await vi.waitFor(() => expect(f.renderer.isLoadedSceneCurrent()).toBe(true))
+    await vi.advanceTimersByTimeAsync(300)
+    expect(lost.value).toBe(false)
+
+    coverage.mockResolvedValue(0.0225)
+    f.state.updateLocalCamera()
+    expect(lost.value).toBe(false)
+    await vi.advanceTimersByTimeAsync(300)
+    expect(lost.value).toBe(true)
+    // Do not flicker when the model is only just above the show threshold.
+    coverage.mockResolvedValue(0.035)
+    f.state.updateLocalCamera()
+    await vi.advanceTimersByTimeAsync(300)
+    expect(lost.value).toBe(true)
+    coverage.mockResolvedValue(0.25)
+    f.state.updateLocalCamera()
+    await vi.advanceTimersByTimeAsync(300)
+    expect(lost.value).toBe(false)
+
+    f.renderer.dispose()
+  })
+
+  it('checks visibility once after navigation settles and waits for a held drag to end', async () => {
+    vi.useFakeTimers()
+    const coverage = vi.fn(async () => 0)
+    const f = fixture()
+    f.state.camera = new PerspectiveCamera()
+    f.done()
+    await vi.waitFor(() => expect(f.renderer.isLoadedSceneCurrent()).toBe(true))
+    await vi.advanceTimersByTimeAsync(300)
+    f.state.modelVisibilityMask = {
+      coverage,
+      setModel: vi.fn(),
+      dispose: vi.fn(async () => {}),
+    }
+    coverage.mockClear()
+    const controls = f.manager.sceneInfra.camControls
+    controls.camera.position.set(100000, -100000, 100000)
+
+    for (let frame = 0; frame < 60; frame++) {
+      f.state.updateLocalCamera()
+      await vi.advanceTimersByTimeAsync(16)
+    }
+    expect(coverage).not.toHaveBeenCalled()
+    expect(f.renderer.isModelOutOfView.value).toBe(false)
+    await vi.advanceTimersByTimeAsync(299 - 16)
+    expect(coverage).not.toHaveBeenCalled()
+    await vi.advanceTimersByTimeAsync(1)
+    expect(coverage).toHaveBeenCalledOnce()
+    expect(f.renderer.isModelOutOfView.value).toBe(true)
+
+    controls.isDragging = true
+    controls.cameraInteraction.dispatch()
+    expect(f.renderer.isModelOutOfView.value).toBe(false)
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(coverage).toHaveBeenCalledOnce()
+    controls.isDragging = false
+    controls.cameraInteraction.dispatch()
+    await vi.advanceTimersByTimeAsync(300)
+    expect(coverage).toHaveBeenCalledTimes(2)
+    expect(f.renderer.isModelOutOfView.value).toBe(true)
+
+    f.state.updateLocalCamera()
+    f.renderer.dispose()
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(coverage).toHaveBeenCalledTimes(2)
+    expect(f.renderer.isModelOutOfView.value).toBe(false)
+  })
+
+  it('discards a silhouette read when the camera moves before it completes', async () => {
+    vi.useFakeTimers()
+    const f = fixture()
+    f.state.camera = new PerspectiveCamera()
+    f.done()
+    await vi.waitFor(() => expect(f.renderer.isLoadedSceneCurrent()).toBe(true))
+    let finish = (_coverage: number) => {}
+    const read = vi.fn(
+      () =>
+        new Promise<number>((resolve) => {
+          finish = resolve
+        })
+    )
+    f.state.modelVisibilityMask = {
+      coverage: read,
+      setModel: vi.fn(),
+      dispose: vi.fn(async () => {}),
+    }
+    // A read from the previous pose must not reveal the recovery control.
+    f.manager.sceneInfra.camControls.camera.position.set(100, -100, 100)
+    f.state.updateLocalCamera()
+    await vi.advanceTimersByTimeAsync(300)
+    expect(read).toHaveBeenCalledOnce()
+    f.state.updateLocalCamera()
+    finish(0)
+    await vi.advanceTimersByTimeAsync(0)
+    expect(f.renderer.isModelOutOfView.value).toBe(false)
+    await vi.advanceTimersByTimeAsync(300)
+    finish(0)
+    await vi.advanceTimersByTimeAsync(0)
+    expect(f.renderer.isModelOutOfView.value).toBe(true)
     f.renderer.dispose()
   })
 

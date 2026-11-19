@@ -5,8 +5,10 @@ import {
 import { Spinner } from '@src/components/Spinner'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { PROJECT_THUMBNAIL_SIZE } from '@src/lib/screenshot'
+import { reportRejection } from '@src/lib/trap'
+import { registerViewportNavigation } from '@src/registry/extensions/engineScene/viewportNavigationRuntimeExtension'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 // The default planes are shown or hidden about 200 ms after an execution, so
@@ -32,6 +34,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   const rendererRef = useRef<LocalRenderer | null>(null)
   const latestPropsRef = useRef(props)
   const { kclManager } = useSingletons()
+  const { registry } = useApp()
   const { state } = useModelingContext()
   const pickingEnabled =
     state.matches('idle') || state.matches('Sketch no face')
@@ -83,18 +86,37 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
       onModelLoadSettled: handleModelLoadSettled,
     })
     rendererRef.current = renderer
-    kclManager.sceneInfra.localRenderer = renderer
+    const sceneInfra = kclManager.sceneInfra
+    sceneInfra.localRenderer = renderer
+    const navigationAbort = new AbortController()
+    const unregisterNavigation = registerViewportNavigation(registry, {
+      isModelOutOfView: renderer.isModelOutOfView,
+      recoveryHint: renderer.recoveryHint,
+      recenter: () =>
+        sceneInfra.camControls.zoomToFit({
+          padding: 0.1,
+          bounds: renderer.getModelBounds(),
+          duration: 150,
+          signal: navigationAbort.signal,
+        }),
+    })
+
+    unregisterNavigation.catch(reportRejection)
 
     return () => {
+      navigationAbort.abort()
+      unregisterNavigation
+        .then((unregister) => unregister())
+        .catch(reportRejection)
       if (rendererRef.current === renderer) {
         rendererRef.current = null
       }
-      if (kclManager.sceneInfra.localRenderer === renderer) {
-        kclManager.sceneInfra.localRenderer = null
+      if (sceneInfra.localRenderer === renderer) {
+        sceneInfra.localRenderer = null
       }
       renderer.dispose()
     }
-  }, [handleModelLoadSettled, kclManager])
+  }, [handleModelLoadSettled, kclManager, registry])
 
   useEffect(() => {
     rendererRef.current?.setTheme(theme)

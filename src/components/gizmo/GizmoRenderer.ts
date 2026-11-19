@@ -406,6 +406,7 @@ export default class GizmoRenderer {
   private onMouseDown = (event: MouseEvent) => {
     const btnNames = btnName(event)
     if (btnNames.right || btnNames.left) {
+      this.sceneInfra.camControls.cancelPendingUpdates()
       this.isDragging = true
       this.sceneInfra.camControls.hoverPickingDisabled = true
       this.didDrag = false

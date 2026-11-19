@@ -272,9 +272,11 @@ export class CameraControls {
 
   private handleStart = () => {
     this._isCamMovingCallback(true)
+    this.cameraInteraction.dispatch()
   }
   private handleEnd = () => {
     this._isCamMovingCallback(false)
+    this.cameraInteraction.dispatch()
   }
 
   setCam = (camProps: ReactCameraProperties) => {
@@ -351,7 +353,10 @@ export class CameraControls {
     })
   }
 
+  private cancelFitAnimation: (() => void) | undefined
+
   cancelPendingUpdates() {
+    this.cancelFitAnimation?.()
     this.moveFrame.reset()
     this.zoomFrame.reset()
     this.hoverFrame.reset()
@@ -548,6 +553,8 @@ export class CameraControls {
   }
 
   public readonly cameraChange = new LegacySignal()
+  /** Navigation starts and ends, including a drag held still before release. */
+  public readonly cameraInteraction = new LegacySignal()
 
   /**
    * The client camera and engine stream must use the same normalized viewport
@@ -583,6 +590,7 @@ export class CameraControls {
   }
 
   onMouseDown = (event: PointerEvent) => {
+    this.cancelFitAnimation?.()
     this.hoverFrame.reset()
     this.domElement.setPointerCapture(event.pointerId)
     this.isDragging = true
@@ -790,6 +798,7 @@ export class CameraControls {
   }
 
   onMouseWheel = (event: WheelEvent) => {
+    this.cancelFitAnimation?.()
     const interaction = this.getInteractionType(event)
     if (interaction === 'none') return
     event.preventDefault()
@@ -918,6 +927,7 @@ export class CameraControls {
     direction.normalize()
   }
   async setCameraProjection(projection: CameraProjectionType): Promise<void> {
+    this.cancelFitAnimation?.()
     if (projection === 'perspective') {
       await this.usePerspectiveCamera(true)
       return
@@ -1242,6 +1252,7 @@ export class CameraControls {
     vantage: Point3d
     up: Point3d
   }): Promise<void> {
+    this.cancelFitAnimation?.()
     if (this.effectiveCameraMode === 'local') {
       lookAtLocalCamera(this.camera, this.target, look, this.lastPerspectiveFov)
       this.onCameraChange()
@@ -1269,18 +1280,134 @@ export class CameraControls {
    * Frames the model without turning the camera, as the engine's zoom_to_fit
    * does. `padding` grows the model's bounds by that fraction of their size.
    */
-  async zoomToFit({ padding }: { padding: number }): Promise<void> {
+  async zoomToFit({
+    padding,
+    bounds,
+    duration = 0,
+    signal,
+  }: {
+    padding: number
+    bounds?: Box3
+    duration?: number
+    signal?: AbortSignal
+  }): Promise<void> {
+    this.cancelFitAnimation?.()
+    if (signal?.aborted) return
     if (this.effectiveCameraMode === 'local') {
-      const bounds = this.getLocalScene()?.getFitBounds()
+      bounds ??= this.getLocalScene()?.getFitBounds()
       if (bounds) {
+        const camera = this.camera
+        const destination = camera.clone()
+        const destinationTarget = this.target.clone()
         frameLocalCamera(
-          this.camera,
-          this.target,
+          destination,
+          destinationTarget,
           bounds,
           padding,
           this.lastPerspectiveFov,
           this.normalizedViewportAspect()
         )
+        if (duration > 0) {
+          const startPosition = camera.position.clone()
+          const startTarget = this.target.clone()
+          const startZoom = camera.zoom
+          const center = bounds.getCenter(new Vector3())
+          const inverseRotation = camera.quaternion.clone().invert()
+          const startOffset = center
+            .clone()
+            .sub(startPosition)
+            .applyQuaternion(inverseRotation)
+          const endOffset = center
+            .clone()
+            .sub(destination.position)
+            .applyQuaternion(inverseRotation)
+          const offset = new Vector3()
+          const linearPosition = new Vector3()
+          const started = performance.now()
+          await new Promise<void>((resolve) => {
+            let frame = 0
+            const finish = () => {
+              cancelAnimationFrame(frame)
+              signal?.removeEventListener('abort', finish)
+              if (this.cancelFitAnimation === finish)
+                this.cancelFitAnimation = undefined
+              resolve()
+            }
+            this.cancelFitAnimation = finish
+            signal?.addEventListener('abort', finish, { once: true })
+            const step = (now: number) => {
+              if (
+                this.camera !== camera ||
+                this.effectiveCameraMode !== 'local'
+              ) {
+                finish()
+                return
+              }
+              const progress = Math.min(
+                1,
+                Math.max(0, (now - started) / duration)
+              )
+              const eased = 1 - (1 - progress) ** 3
+              camera.position.lerpVectors(
+                startPosition,
+                destination.position,
+                eased
+              )
+              this.target.lerpVectors(startTarget, destinationTarget, eased)
+              camera.zoom = startZoom * (destination.zoom / startZoom) ** eased
+              linearPosition.copy(camera.position)
+              if (camera instanceof OrthographicCamera) {
+                offset.set(
+                  MathUtils.lerp(
+                    startOffset.x * startZoom,
+                    endOffset.x * destination.zoom,
+                    eased
+                  ) / camera.zoom,
+                  MathUtils.lerp(
+                    startOffset.y * startZoom,
+                    endOffset.y * destination.zoom,
+                    eased
+                  ) / camera.zoom,
+                  MathUtils.lerp(startOffset.z, endOffset.z, eased)
+                )
+              } else if (startOffset.z < 0 && endOffset.z < 0) {
+                const depth =
+                  startOffset.z * (endOffset.z / startOffset.z) ** eased
+                offset.set(
+                  MathUtils.lerp(
+                    startOffset.x / startOffset.z,
+                    endOffset.x / endOffset.z,
+                    eased
+                  ) * depth,
+                  MathUtils.lerp(
+                    startOffset.y / startOffset.z,
+                    endOffset.y / endOffset.z,
+                    eased
+                  ) * depth,
+                  depth
+                )
+              } else {
+                offset.lerpVectors(startOffset, endOffset, eased)
+              }
+              camera.position
+                .copy(center)
+                .sub(offset.applyQuaternion(camera.quaternion))
+              this.target.add(linearPosition.sub(camera.position).negate())
+              camera.up.copy(destination.up)
+              camera.updateProjectionMatrix()
+              this.onCameraChange()
+              if (progress === 1) finish()
+              else frame = requestAnimationFrame(step)
+            }
+            frame = requestAnimationFrame(step)
+          })
+          return
+        }
+        camera.position.copy(destination.position)
+        camera.up.copy(destination.up)
+        camera.zoom = destination.zoom
+        camera.updateProjectionMatrix()
+        this.target.copy(destinationTarget)
         this.onCameraChange()
       }
       return
@@ -1297,6 +1424,7 @@ export class CameraControls {
    * engine's view_isometric does.
    */
   async viewIsometric({ padding }: { padding: number }): Promise<void> {
+    this.cancelFitAnimation?.()
     if (this.effectiveCameraMode === 'local') {
       const bounds = this.getLocalScene()?.getFitBounds()
       if (bounds) {
@@ -1644,6 +1772,7 @@ export class CameraControls {
     targetPosition = new Vector3(),
     sketch?: { zoom: number; distance: number }
   ): Promise<void> {
+    this.cancelFitAnimation?.()
     if (this.effectiveCameraMode === 'engineToClient')
       console.warn(
         'setCameraToQuaternion is not designed for engineToClient syncDirection.'
@@ -2246,19 +2375,19 @@ async function sendCameraCommand(
 
 function _lookAt(position: Vector3, target: Vector3, up: Vector3): Quaternion {
   // Direction from position to target, normalized.
-  let direction = new Vector3().subVectors(target, position).normalize()
+  const direction = new Vector3().subVectors(target, position).normalize()
 
   // Calculate a new "effective" up vector that is orthogonal to the direction.
   // This step ensures that the up vector does not affect the direction the camera is looking.
-  let right = new Vector3().crossVectors(direction, up).normalize()
-  let orthogonalUp = new Vector3().crossVectors(right, direction).normalize()
+  const right = new Vector3().crossVectors(direction, up).normalize()
+  const orthogonalUp = new Vector3().crossVectors(right, direction).normalize()
 
   // Create a lookAt matrix using the position, and the recalculated orthogonal up vector.
-  let lookAtMatrix = new Matrix4()
+  const lookAtMatrix = new Matrix4()
   lookAtMatrix.lookAt(position, target, orthogonalUp)
 
   // Create a quaternion from the lookAt matrix.
-  let quaternion = new Quaternion().setFromRotationMatrix(lookAtMatrix)
+  const quaternion = new Quaternion().setFromRotationMatrix(lookAtMatrix)
 
   return quaternion
 }

@@ -27,6 +27,7 @@ import { observations as viewportScreenshotObservations } from '@src/registry/co
 import { factory as defineFactory, contribute, type Factory } from 'plankton'
 import { createElement, lazy, Suspense } from 'react'
 import executionIndicator from './executionIndicator'
+import { viewportNavigationRuntimeSlot } from './viewportNavigationRuntimeExtension'
 import { measurementToolService } from './measurementToolService'
 import { physicalAnalysisService } from './physicalAnalysis/physicalAnalysisService'
 import { saveViewportScreenshot } from './saveViewportScreenshot'
@@ -449,6 +450,7 @@ const engineSceneExtension = defineFactory({
           }
         ),
         executionIndicator,
+        viewportNavigationRuntimeSlot,
       ],
     }
   },

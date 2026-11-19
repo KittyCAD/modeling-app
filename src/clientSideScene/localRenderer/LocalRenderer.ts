@@ -1,8 +1,12 @@
+import { recenterHint } from '@src/clientSideScene/localRenderer/recenterHint'
+import type { RecenterHint } from '@src/registry/contracts/viewportNavigation'
+import { ModelVisibilityMask } from '@src/clientSideScene/localRenderer/ModelVisibilityMask'
 import type {
   EntityReference,
   EntityType,
   OkModelingCmdResponse,
 } from '@kittycad/lib'
+import { signal } from '@preact/signals-core'
 import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
 import {
   LOCAL_WEBGPU_GTAO_SAMPLES,
@@ -90,6 +94,7 @@ import type {
 } from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
 
 const ENGINE_MILLIMETERS_TO_GLTF_METERS = 1 / 1000
+const MODEL_VISIBILITY_IDLE_MS = 300
 
 // If the filter selects whole bodies, returns which kind: 'solid3d' (the "Bodies"
 // filter) or 'object' (set by commands, also allows planes and regions).
@@ -202,6 +207,8 @@ export interface LocalRendererProps {
 }
 
 export class LocalRenderer {
+  readonly isModelOutOfView = signal(false)
+  readonly recoveryHint = signal<RecenterHint>({ kind: 'neutral' })
   private readonly container: HTMLDivElement
   private readonly kclManager: KclManager
   private readonly settings: RendererSettings
@@ -211,6 +218,11 @@ export class LocalRenderer {
   private readonly disposers: (() => void)[] = []
   private animationFrameId = -1
   private currentModel: Object3D | null = null
+  private readonly modelBounds = new Box3()
+  private modelVisibilityTimeout: ReturnType<typeof setTimeout> | undefined
+  private modelWasOutOfView = false
+  private modelVisibilityVersion = 0
+  private modelVisibilityMask: ModelVisibilityMask | null = null
   private readonly gltfLoader = new GLTFLoader()
   // Shared by all model materials, so a new color doesn't rebuild their shaders.
   private readonly backfaceColor = uniform(new Color())
@@ -285,6 +297,9 @@ export class LocalRenderer {
         this.rebuildSelectionTargets()
       ),
       kclManager.sceneInfra.baseUnitChange.add(this.syncPlaneScale),
+      kclManager.sceneInfra.camControls.cameraInteraction.add(
+        this.scheduleModelVisibilityCheck
+      ),
       () => dprDetector.dispose()
     )
     void this.initialize().catch(this.handleInitializationError)
@@ -713,8 +728,8 @@ export class LocalRenderer {
       gpu.envMapLoader.dispose()
       gpu.renderer.domElement.remove()
       // The renderer frees its resources asynchronously, so the device has to outlive that.
-      gpu.renderer
-        .dispose()
+      Promise.resolve(this.modelVisibilityMask?.dispose())
+        .then(() => gpu.renderer.dispose())
         .then(() => gpu.device?.destroy())
         .catch(reportRejection)
     }
@@ -799,6 +814,7 @@ export class LocalRenderer {
     this.camera.lookAt(target)
     this.camera.updateProjectionMatrix()
     this.camera.updateMatrixWorld(true)
+    this.scheduleModelVisibilityCheck()
     this.gpu?.integerIdPicker.invalidate()
     this.invalidateBaseRender()
   }
@@ -1091,10 +1107,47 @@ export class LocalRenderer {
     this.scheduleRender()
   }
 
-  /**
-   * What zoom to fit frames, as in the engine: the loaded model and the
-   * visible planes. In the engine's world: Z up, in mm.
-   */
+  private readonly scheduleModelVisibilityCheck = () => {
+    this.modelVisibilityVersion++
+    clearTimeout(this.modelVisibilityTimeout)
+    this.modelVisibilityTimeout = undefined
+    this.isModelOutOfView.value = false
+    if (this.disposed || this.modelBounds.isEmpty()) return
+
+    this.modelVisibilityTimeout = setTimeout(() => {
+      this.modelVisibilityTimeout = undefined
+      if (this.kclManager.sceneInfra.camControls.isDragging) return
+      this.updateModelVisibility().catch(reportRejection)
+    }, MODEL_VISIBILITY_IDLE_MS)
+  }
+
+  private async updateModelVisibility() {
+    const version = this.modelVisibilityVersion
+    const outOfView = this.isModelOutOfView
+    if (!this.camera || !this.modelVisibilityMask) return
+    const coverage = await this.modelVisibilityMask.coverage(this.camera)
+    if (this.disposed || version !== this.modelVisibilityVersion) return
+    // A little hysteresis prevents flickering at the three-percent boundary.
+    this.modelWasOutOfView =
+      coverage !== undefined &&
+      coverage <= (this.modelWasOutOfView ? 0.04 : 0.03)
+    this.recoveryHint.value = recenterHint(
+      this.modelBounds,
+      this.camera,
+      Math.max(this.container.clientWidth, 1) /
+        Math.max(this.container.clientHeight, 1)
+    )
+    outOfView.value = this.modelWasOutOfView
+  }
+
+  /** Loaded model only, in the camera's world: Z up, in mm. */
+  getModelBounds(): Box3 | undefined {
+    return this.modelBounds.isEmpty()
+      ? undefined
+      : gltfToEngineBounds(this.modelBounds)
+  }
+
+  /** Standard zoom to fit includes the model and visible reference planes. */
   getFitBounds(): Box3 | undefined {
     const bounds = this.gpu?.planeRenderer.getVisibleBounds() ?? new Box3()
     if (this.currentModel) {
@@ -1119,6 +1172,13 @@ export class LocalRenderer {
 
   private clearModel() {
     const { gpu } = this
+    this.modelVisibilityVersion++
+    this.modelVisibilityMask?.setModel(null)
+    clearTimeout(this.modelVisibilityTimeout)
+    this.modelVisibilityTimeout = undefined
+    this.modelWasOutOfView = false
+    this.modelBounds.makeEmpty()
+    this.isModelOutOfView.value = false
     this.loadedSceneGeneration = null
     this.engineEntityReferences.clear()
     this.bodyFacesById.clear()
@@ -1211,6 +1271,7 @@ export class LocalRenderer {
     planeRenderer.addTo(scene)
     const integerIdPicker = new IntegerIdPicker(renderer)
     integerIdPicker.setEdgesVisible(shouldHighlightEdges)
+    this.modelVisibilityMask = new ModelVisibilityMask(renderer)
     this.gpu = {
       renderer,
       device: device ?? null,
@@ -1408,6 +1469,9 @@ export class LocalRenderer {
 
       this.rebuildSelectionTargets()
       const bounds = new Box3().setFromObject(gltf.scene)
+      this.modelBounds.copy(bounds)
+      this.modelVisibilityMask?.setModel(gltf.scene)
+      this.scheduleModelVisibilityCheck()
       this.updateAmbientOcclusionScale(bounds)
       this.resetCameraIfPending()
       this.invalidateBaseRender()
