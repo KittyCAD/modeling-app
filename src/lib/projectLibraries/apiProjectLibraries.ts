@@ -10,6 +10,12 @@ export function isApiProjectLibrary(library: { source?: string }) {
   return library.source?.startsWith(API_LIBRARY_SOURCE_PREFIX) ?? false
 }
 
+export function getApiProjectLibraryId(library: { source?: string }) {
+  return isApiProjectLibrary(library)
+    ? library.source?.slice(API_LIBRARY_SOURCE_PREFIX.length)
+    : undefined
+}
+
 export const apiProjectLibraryId = (id: string) => `cloud-library-${id}`
 
 export function apiProjectLibraries(
@@ -26,5 +32,6 @@ export function apiProjectLibraries(
       source: `${API_LIBRARY_SOURCE_PREFIX}${library.id}`,
       path: `zoo://project-libraries/${library.id}`,
       hiddenByDefault: library.source === 'factory_portal',
+      organizationId: library.org_id,
     }))
 }

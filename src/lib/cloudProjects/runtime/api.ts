@@ -1,5 +1,11 @@
 import { collectApiPages } from '@src/lib/apiPagination'
-import { ApiError, type Client, projects } from '@kittycad/lib'
+import {
+  ApiError,
+  type Client,
+  projects,
+  orgs,
+  type ProjectLibraryScope,
+} from '@kittycad/lib'
 import { createKCClient } from '@src/lib/kcClient'
 import {
   CloudStorageError,
@@ -100,6 +106,38 @@ export interface RemoteProjectLibrary {
   id: string
   name: string
   source?: string
+  org_id?: string
+  user_id?: string
+  can_manage?: boolean
+}
+
+export async function getCurrentOrganization(
+  config: CloudApiConfig,
+  signal?: AbortSignal
+) {
+  try {
+    return await cloudCall(
+      config,
+      (client) => orgs.get_user_org({ client }),
+      signal
+    )
+  } catch (error) {
+    if (error instanceof CloudApiError && error.status === 404) return undefined
+    return Promise.reject(error)
+  }
+}
+
+export function createRemoteProjectLibrary(
+  config: CloudApiConfig,
+  name: string,
+  scope: ProjectLibraryScope
+) {
+  return cloudCall(config, (client) =>
+    projects.create_project_library({
+      client,
+      body: { name: name.trim(), scope, source: 'zds' },
+    })
+  )
 }
 
 export async function listRemoteProjectLibraries(
@@ -237,14 +275,12 @@ export async function createRemoteProject(
   config: CloudApiConfig,
   projectPath: string,
   files: ProjectArchiveFile[],
-  publicationMetadata: ProjectUploadPublicationMetadata = {
-    description: '',
-    category_ids: [],
-  }
+  options: {
+    publicationMetadata?: ProjectUploadPublicationMetadata
+    libraryId?: string
+  } = {}
 ) {
-  const uploadFiles = buildProjectUploadFiles(projectPath, files, {
-    publicationMetadata,
-  })
+  const uploadFiles = buildProjectUploadFiles(projectPath, files, options)
   return cloudCall(config, (client) =>
     projects.create_project({ client, files: uploadFiles })
   )
@@ -286,6 +322,7 @@ export async function updateRemoteProject({
 
 type BuildProjectFormDataOptions = {
   fallbackTitle?: string
+  libraryId?: string
   expectedRevision?: Revision
   entrypointPath?: string
   publicationMetadata?: ProjectUploadPublicationMetadata

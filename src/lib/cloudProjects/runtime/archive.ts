@@ -23,6 +23,7 @@ import {
 
 type PrepareProjectFilesForCloudUploadOptions = {
   fallbackTitle?: string
+  libraryId?: string
   expectedRevision?: Revision
   entrypointPath?: string
   publicationMetadata?: ProjectUploadPublicationMetadata
@@ -54,6 +55,7 @@ export function prepareProjectFilesForCloudUpload(
     entrypoint_path: entrypointPath,
     project_toml_path: projectTomlPath,
   }
+  if (options.libraryId) body.library_id = options.libraryId
   if (options.expectedRevision) {
     body.expected_revision = options.expectedRevision
   }

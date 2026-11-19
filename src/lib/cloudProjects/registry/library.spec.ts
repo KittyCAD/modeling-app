@@ -72,7 +72,13 @@ it('discovers paged libraries, groups read-only projects, and drops an old accou
         next_page: null,
       })
     )
-  vi.stubGlobal('fetch', fetchMock)
+  vi.stubGlobal('fetch', (input: RequestInfo | URL, init?: RequestInit) =>
+    new URL(String(input)).pathname === '/user/org'
+      ? Promise.resolve(
+          Response.json({ message: 'No organization' }, { status: 404 })
+        )
+      : fetchMock(input, init)
+  )
   const user = signal({ id: 'first' })
   const token = signal('first-token')
   registry = new Registry()
@@ -134,7 +140,7 @@ it('discovers paged libraries, groups read-only projects, and drops an old accou
   )!
   expect(
     getProjectLibraryOperation(type, dataset, 'createProject')
-  ).toBeUndefined()
+  ).toBeDefined()
   expect(
     getProjectLibraryOperation(
       type,

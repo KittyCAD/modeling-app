@@ -1,7 +1,19 @@
 import { computed, effect, signal } from '@preact/signals-core'
+import type { UserOrgInfo } from '@kittycad/lib'
+import { createElement } from 'react'
+import { CloudLibraryCreateButton } from '@src/lib/cloudProjects/CloudLibraryCreateButton'
+import {
+  createCloudProjectCommands,
+  CREATE_CLOUD_LIBRARY_COMMAND,
+} from '@src/lib/cloudProjects/commands'
+import { selectCommand } from '@src/lib/commandUtils'
 import { newKclFile } from '@src/lang/project'
 import { observations as cloudProjectsObservations } from '@src/lib/cloudProjects/registry/contract'
-import { listRemoteProjectLibraries } from '@src/lib/cloudProjects/runtime/api'
+import {
+  listRemoteProjectLibraries,
+  getCurrentOrganization,
+  createRemoteProjectLibrary,
+} from '@src/lib/cloudProjects/runtime/api'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
@@ -19,12 +31,20 @@ import {
 import {
   apiProjectLibraries,
   apiProjectLibraryId,
-  isApiProjectLibrary,
+  getApiProjectLibraryId,
 } from '@src/lib/projectLibraries/apiProjectLibraries'
 import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
 import { collectProjectFilesForUpload } from '@src/lib/projectSession/projectFiles'
 import { isErr, reportRejection } from '@src/lib/trap'
 import { observations as authObservations } from '@src/registry/contracts/auth'
+import {
+  observations as commandsObservations,
+  commandsFacet,
+} from '@src/registry/contracts/commands'
+import {
+  homeSidebarItemsFacet,
+  type HomeSidebarItemProps,
+} from '@src/registry/contracts/homeSidebar'
 import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectEntryContribution,
@@ -56,6 +76,7 @@ export default defineFactory({
     auth: authObservations,
     router: routerObservations,
     runtime: observeService(runtimeService),
+    commands: commandsObservations,
   },
   key: 'cloud-projects-library',
   create: ({
@@ -65,6 +86,7 @@ export default defineFactory({
     auth: authInputs,
     router: routerInputs,
     runtime: runtimeInput,
+    commands: commandsInputs,
   }) => {
     const cloud = () => cloudProjectsInputs.cloudStorageService.required()
     const operations = () =>
@@ -76,6 +98,7 @@ export default defineFactory({
     const router = routerInputs.routerService.current
     const runtime = runtimeInput.current
     const libraries = signal<ReturnType<typeof apiProjectLibraries>>([])
+    const organization = signal<UserOrgInfo | undefined>(undefined)
     const refreshCatalog = signal(0)
     const libraryIds = computed(() => [
       PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
@@ -188,8 +211,8 @@ export default defineFactory({
           },
         },
         createProject: {
-          isAvailable: ({ library }) => !isApiProjectLibrary(library),
           run: async ({
+            library,
             requestedProjectTitle,
             initialKclFile,
             initialProject,
@@ -219,7 +242,8 @@ export default defineFactory({
                 ]
             const created = await cloud().createProject(
               requestedProjectTitle,
-              archive
+              archive,
+              { libraryId: getApiProjectLibraryId(library) }
             )
             return projectInfo(created.id)
           },
@@ -235,7 +259,6 @@ export default defineFactory({
           },
         },
         renameProject: {
-          isAvailable: ({ library }) => !isApiProjectLibrary(library),
           run: async ({ project, requestedName }) => {
             if (project.remoteProjectId)
               await cloud().renameProject(
@@ -245,14 +268,12 @@ export default defineFactory({
           },
         },
         deleteProject: {
-          isAvailable: ({ library }) => !isApiProjectLibrary(library),
           run: async ({ project }) => {
             if (project.remoteProjectId)
               await cloud().deleteProject(project.remoteProjectId)
           },
         },
         duplicateProject: {
-          isAvailable: ({ library }) => !isApiProjectLibrary(library),
           run: async ({ project }) => {
             if (!project.remoteProjectId) return undefined
             const title = `${getHomeProjectDisplayName(project)}-copy`
@@ -280,8 +301,7 @@ export default defineFactory({
           },
         },
         cloneProjectTo: {
-          isAvailable: ({ library }) => !isApiProjectLibrary(library),
-          run: async ({ source, project, requestedProjectTitle }) => {
+          run: async ({ library, source, project, requestedProjectTitle }) => {
             const archive =
               source.files ??
               (await collectProjectFilesForUpload({
@@ -291,7 +311,8 @@ export default defineFactory({
               }))
             const created = await cloud().createProject(
               requestedProjectTitle ?? getHomeProjectDisplayName(project),
-              archive
+              archive,
+              { libraryId: getApiProjectLibraryId(library) }
             )
             const info = await projectInfo(created.id)
             invalidateProjectLibraryRealizations()
@@ -303,6 +324,35 @@ export default defineFactory({
         },
       },
     } satisfies InputOf<typeof projectLibraryTypesFacet>
+    const newLibraryCommand = () =>
+      createCloudProjectCommands({
+        enabled: () => Boolean(auth.value?.isLoggedIn.value && !isOffline()),
+        organization: () => organization.value,
+        createLibrary: async (name, scope) => {
+          await createRemoteProjectLibrary(
+            {
+              enabled: true,
+              token: auth.peek()?.token.peek(),
+              baseUrl: runtime.peek()?.current.peek().apiBaseUrl,
+            },
+            name,
+            scope
+          )
+          refreshCatalog.value += 1
+        },
+      })[0]
+    const NewLibraryButton = ({ className }: HomeSidebarItemProps) =>
+      createElement(CloudLibraryCreateButton, {
+        className,
+        onClick: () => {
+          const commands = commandsInputs.commandSystemService.current.value
+          if (commands)
+            selectCommand(commands, {
+              groupId: 'projects',
+              name: CREATE_CLOUD_LIBRARY_COMMAND,
+            })
+        },
+      })
     return {
       start: () => {
         const onVisibilityChange = () => {
@@ -320,16 +370,24 @@ export default defineFactory({
           if (scope !== nextScope) {
             scope = nextScope
             libraries.value = []
+            organization.value = undefined
           }
           if (!loggedIn || !token) return
           const controller = new AbortController()
-          void listRemoteProjectLibraries(
-            { enabled: true, token, baseUrl },
-            controller.signal
-          )
+          const config = { enabled: true, token, baseUrl }
+          void listRemoteProjectLibraries(config, controller.signal)
             .then((result) => {
               if (!controller.signal.aborted && !disposed)
                 libraries.value = apiProjectLibraries(result)
+            })
+            .catch((error: unknown) => {
+              if (!controller.signal.aborted && !disposed)
+                reportRejection(error)
+            })
+          void getCurrentOrganization(config, controller.signal)
+            .then((result) => {
+              if (!controller.signal.aborted && !disposed)
+                organization.value = result
             })
             .catch((error: unknown) => {
               if (!controller.signal.aborted && !disposed)
@@ -365,6 +423,15 @@ export default defineFactory({
         }
       },
       items: [
+        contribute(commandsFacet, newLibraryCommand, {
+          key: 'cloud-projects.create-library',
+        }),
+        contribute(homeSidebarItemsFacet, () => ({
+          id: 'cloud-projects.create-library',
+          order: 15,
+          isVisible: () => Boolean(auth.value?.isLoggedIn.value),
+          Component: NewLibraryButton,
+        })),
         contribute(
           homeProjectSettledLibraryIdsFacet,
           () => {

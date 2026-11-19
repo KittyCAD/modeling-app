@@ -26,9 +26,11 @@ export function formatProjectLibraryPathForDisplay(
 }
 
 export function getProjectLibrarySummaryDescription(
-  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
+  library: Pick<ProjectLibrary, 'path' | 'source' | 'type' | 'organizationId'>
 ) {
   if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
+    if (library.organizationId)
+      return 'Projects in this library are shared with your organization'
     return 'Projects in this library are saved to your Zoo account'
   }
 
@@ -40,9 +42,11 @@ export function getProjectLibrarySummaryDescription(
 }
 
 export function getProjectLibraryDetailsDescription(
-  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
+  library: Pick<ProjectLibrary, 'path' | 'source' | 'type' | 'organizationId'>
 ) {
   if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
+    if (library.organizationId)
+      return 'Projects in this library belong to your organization. Editing access depends on project permissions.'
     return [
       'Projects in this library are saved to your Zoo account.',
       'Storage type and model-training controls depend on your plan.',
@@ -71,7 +75,7 @@ export function getProjectLibraryLocationLabel(
 }
 
 export function getProjectLibrarySummaryTooltip(
-  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
+  library: Pick<ProjectLibrary, 'path' | 'source' | 'type' | 'organizationId'>
 ) {
   const description = getProjectLibraryDetailsDescription(library)
   const locationLabel = getProjectLibraryLocationLabel(library)
@@ -98,6 +102,7 @@ export interface ProjectLibrary extends ProjectLibrarySetting {
   icon?: string
   order?: number
   hiddenByDefault?: boolean
+  organizationId?: string
 }
 
 export interface ProjectLibraryInitialProject {
