@@ -18,6 +18,20 @@ const bracket = fs.readFileSync(
   'utf8'
 )
 
+test.describe('TAB sample tests', { tag: '@web' }, () => {
+  test('new good', async () => {
+    expect(Math.random()).toBeGreaterThan(0.0)
+  })
+
+  test('new bad', async () => {
+    expect(Math.random()).toBeGreaterThan(1.0)
+  })
+
+  test('new flaky', async () => {
+    expect(Math.random()).toBeGreaterThan(0.75)
+  })
+})
+
 test.describe('Regression tests', { tag: '@web' }, () => {
   test('can start sketches after creating and switching KCL files', async ({
     page,
@@ -44,7 +58,7 @@ test.describe('Regression tests', { tag: '@web' }, () => {
         } else if (index > 0) {
           await toolbar.openFile(fileName)
         }
-        await expect(page).toHaveURL(new RegExp(`${fileName}$`))
+        await expect(page).toHaveURL(new RegExp(`${fileName}$ broken`))
         await scene.settled()
         await toolbar.startSketchPlaneSelection()
         const [clickPlane] = scene.makeMouseHelpers(0.5, 0.6, {
