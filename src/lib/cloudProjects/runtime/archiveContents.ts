@@ -6,8 +6,10 @@ export interface ProjectArchiveLimits {
   readonly maxEntries: number
 }
 
+// Product limit agreed in modeling-app#15208. Bound both downloaded ZIP bytes
+// and total expanded bytes because cloud projects are loaded into memory.
 export const PROJECT_ARCHIVE_LIMITS: ProjectArchiveLimits = {
-  maxBytes: 256 * 1024 * 1024,
+  maxBytes: 1024 * 1024 * 1024,
   maxEntries: 10_000,
 }
 
