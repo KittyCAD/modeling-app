@@ -454,9 +454,11 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
     await page.keyboard.press('Enter')
 
     // Check the toast appeared
-    await expect(
-      page.getByText(`Set show scale grid to "true" as a user default`)
-    ).toBeVisible()
+    const gridToast = page.getByText(
+      `Set show scale grid to "true" as a user default`
+    )
+    await expect(gridToast).toBeVisible()
+    await expect(gridToast).not.toBeVisible()
 
     await expect(stream).toHaveScreenshot({
       maxDiffPixels: 100,
