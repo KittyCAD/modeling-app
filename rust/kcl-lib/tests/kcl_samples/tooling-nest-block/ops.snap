@@ -542,6 +542,50 @@ description: Operations executed tooling-nest-block.kcl
       "sourceRange": []
     },
     {
+      "type": "StdLibCall",
+      "name": "offsetPlane",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
+          "value": {
+            "type": "Number",
+            "value": 50.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 19
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "CallKwArg",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -549,10 +593,10 @@ description: Operations executed tooling-nest-block.kcl
         "functionSourceRange": [],
         "unlabeledArg": null,
         "labeledArgs": {
-          "cubeFace": {
+          "nestPlane": {
             "value": {
-              "type": "String",
-              "value": "end"
+              "type": "Plane",
+              "artifact_id": "[uuid]"
             },
             "sourceRange": []
           },
@@ -601,7 +645,10 @@ description: Operations executed tooling-nest-block.kcl
             "index": 19
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -612,22 +659,12 @@ description: Operations executed tooling-nest-block.kcl
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "String",
-            "value": "end"
-          },
-          "sourceRange": []
-        }
-      },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -683,13 +720,6 @@ description: Operations executed tooling-nest-block.kcl
               "len": "mm",
               "angle": "degrees"
             }
-          },
-          "sourceRange": []
-        },
-        "tagStart": {
-          "value": {
-            "type": "TagDeclarator",
-            "name": "capStart001"
           },
           "sourceRange": []
         }
@@ -809,10 +839,9 @@ description: Operations executed tooling-nest-block.kcl
         "functionSourceRange": [],
         "unlabeledArg": null,
         "labeledArgs": {
-          "cubeFace": {
+          "nestPlane": {
             "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentA001",
+              "type": "Plane",
               "artifact_id": "[uuid]"
             },
             "sourceRange": []
@@ -862,7 +891,10 @@ description: Operations executed tooling-nest-block.kcl
             "index": 20
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -873,23 +905,12 @@ description: Operations executed tooling-nest-block.kcl
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "TagIdentifier",
-            "value": "rectangleSegmentA001",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        }
-      },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -945,13 +966,6 @@ description: Operations executed tooling-nest-block.kcl
               "len": "mm",
               "angle": "degrees"
             }
-          },
-          "sourceRange": []
-        },
-        "tagStart": {
-          "value": {
-            "type": "TagDeclarator",
-            "name": "capStart001"
           },
           "sourceRange": []
         }
@@ -1071,10 +1085,9 @@ description: Operations executed tooling-nest-block.kcl
         "functionSourceRange": [],
         "unlabeledArg": null,
         "labeledArgs": {
-          "cubeFace": {
+          "nestPlane": {
             "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentA001",
+              "type": "Plane",
               "artifact_id": "[uuid]"
             },
             "sourceRange": []
@@ -1124,7 +1137,10 @@ description: Operations executed tooling-nest-block.kcl
             "index": 21
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -1135,23 +1151,12 @@ description: Operations executed tooling-nest-block.kcl
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "TagIdentifier",
-            "value": "rectangleSegmentA001",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        }
-      },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -1207,13 +1212,6 @@ description: Operations executed tooling-nest-block.kcl
               "len": "mm",
               "angle": "degrees"
             }
-          },
-          "sourceRange": []
-        },
-        "tagStart": {
-          "value": {
-            "type": "TagDeclarator",
-            "name": "capStart001"
           },
           "sourceRange": []
         }
@@ -1333,10 +1331,9 @@ description: Operations executed tooling-nest-block.kcl
         "functionSourceRange": [],
         "unlabeledArg": null,
         "labeledArgs": {
-          "cubeFace": {
+          "nestPlane": {
             "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentA001",
+              "type": "Plane",
               "artifact_id": "[uuid]"
             },
             "sourceRange": []
@@ -1386,7 +1383,10 @@ description: Operations executed tooling-nest-block.kcl
             "index": 22
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -1397,23 +1397,12 @@ description: Operations executed tooling-nest-block.kcl
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "TagIdentifier",
-            "value": "rectangleSegmentA001",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        }
-      },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -1469,13 +1458,6 @@ description: Operations executed tooling-nest-block.kcl
               "len": "mm",
               "angle": "degrees"
             }
-          },
-          "sourceRange": []
-        },
-        "tagStart": {
-          "value": {
-            "type": "TagDeclarator",
-            "name": "capStart001"
           },
           "sourceRange": []
         }
@@ -1588,6 +1570,50 @@ description: Operations executed tooling-nest-block.kcl
       "type": "GroupEnd"
     },
     {
+      "type": "StdLibCall",
+      "name": "offsetPlane",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
+          "value": {
+            "type": "Number",
+            "value": 50.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 23
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "CallKwArg",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -1595,10 +1621,9 @@ description: Operations executed tooling-nest-block.kcl
         "functionSourceRange": [],
         "unlabeledArg": null,
         "labeledArgs": {
-          "cubeFace": {
+          "nestPlane": {
             "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentB001",
+              "type": "Plane",
               "artifact_id": "[uuid]"
             },
             "sourceRange": []
@@ -1648,7 +1673,10 @@ description: Operations executed tooling-nest-block.kcl
             "index": 23
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -1659,23 +1687,12 @@ description: Operations executed tooling-nest-block.kcl
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "TagIdentifier",
-            "value": "rectangleSegmentB001",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        }
-      },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -1731,13 +1748,6 @@ description: Operations executed tooling-nest-block.kcl
               "type": "Known",
               "type": "Length"
             }
-          },
-          "sourceRange": []
-        },
-        "tagStart": {
-          "value": {
-            "type": "TagDeclarator",
-            "name": "capStart001"
           },
           "sourceRange": []
         }
@@ -1850,6 +1860,50 @@ description: Operations executed tooling-nest-block.kcl
       "type": "GroupEnd"
     },
     {
+      "type": "StdLibCall",
+      "name": "offsetPlane",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
+          "value": {
+            "type": "Number",
+            "value": 50.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 24
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "CallKwArg",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -1857,10 +1911,9 @@ description: Operations executed tooling-nest-block.kcl
         "functionSourceRange": [],
         "unlabeledArg": null,
         "labeledArgs": {
-          "cubeFace": {
+          "nestPlane": {
             "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentB001",
+              "type": "Plane",
               "artifact_id": "[uuid]"
             },
             "sourceRange": []
@@ -1910,7 +1963,10 @@ description: Operations executed tooling-nest-block.kcl
             "index": 24
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -1921,23 +1977,12 @@ description: Operations executed tooling-nest-block.kcl
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "TagIdentifier",
-            "value": "rectangleSegmentB001",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        }
-      },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -1993,13 +2038,6 @@ description: Operations executed tooling-nest-block.kcl
               "type": "Known",
               "type": "Length"
             }
-          },
-          "sourceRange": []
-        },
-        "tagStart": {
-          "value": {
-            "type": "TagDeclarator",
-            "name": "capStart001"
           },
           "sourceRange": []
         }
@@ -2112,6 +2150,50 @@ description: Operations executed tooling-nest-block.kcl
       "type": "GroupEnd"
     },
     {
+      "type": "StdLibCall",
+      "name": "offsetPlane",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
+          "value": {
+            "type": "Number",
+            "value": 50.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 25
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "CallKwArg",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -2119,10 +2201,9 @@ description: Operations executed tooling-nest-block.kcl
         "functionSourceRange": [],
         "unlabeledArg": null,
         "labeledArgs": {
-          "cubeFace": {
+          "nestPlane": {
             "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentB001",
+              "type": "Plane",
               "artifact_id": "[uuid]"
             },
             "sourceRange": []
@@ -2172,7 +2253,10 @@ description: Operations executed tooling-nest-block.kcl
             "index": 25
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -2183,23 +2267,12 @@ description: Operations executed tooling-nest-block.kcl
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "TagIdentifier",
-            "value": "rectangleSegmentB001",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        }
-      },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -2255,13 +2328,6 @@ description: Operations executed tooling-nest-block.kcl
               "type": "Known",
               "type": "Length"
             }
-          },
-          "sourceRange": []
-        },
-        "tagStart": {
-          "value": {
-            "type": "TagDeclarator",
-            "name": "capStart001"
           },
           "sourceRange": []
         }
@@ -2374,6 +2440,50 @@ description: Operations executed tooling-nest-block.kcl
       "type": "GroupEnd"
     },
     {
+      "type": "StdLibCall",
+      "name": "offsetPlane",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
+          "value": {
+            "type": "Number",
+            "value": 50.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 26
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "CallKwArg",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -2381,10 +2491,9 @@ description: Operations executed tooling-nest-block.kcl
         "functionSourceRange": [],
         "unlabeledArg": null,
         "labeledArgs": {
-          "cubeFace": {
+          "nestPlane": {
             "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentB001",
+              "type": "Plane",
               "artifact_id": "[uuid]"
             },
             "sourceRange": []
@@ -2434,7 +2543,10 @@ description: Operations executed tooling-nest-block.kcl
             "index": 26
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -2445,23 +2557,12 @@ description: Operations executed tooling-nest-block.kcl
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "TagIdentifier",
-            "value": "rectangleSegmentB001",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        }
-      },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -2517,13 +2618,6 @@ description: Operations executed tooling-nest-block.kcl
               "type": "Known",
               "type": "Length"
             }
-          },
-          "sourceRange": []
-        },
-        "tagStart": {
-          "value": {
-            "type": "TagDeclarator",
-            "name": "capStart001"
           },
           "sourceRange": []
         }
@@ -2636,6 +2730,50 @@ description: Operations executed tooling-nest-block.kcl
       "type": "GroupEnd"
     },
     {
+      "type": "StdLibCall",
+      "name": "offsetPlane",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
+          "value": {
+            "type": "Number",
+            "value": 50.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 27
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "CallKwArg",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -2643,10 +2781,9 @@ description: Operations executed tooling-nest-block.kcl
         "functionSourceRange": [],
         "unlabeledArg": null,
         "labeledArgs": {
-          "cubeFace": {
+          "nestPlane": {
             "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentC001",
+              "type": "Plane",
               "artifact_id": "[uuid]"
             },
             "sourceRange": []
@@ -2696,7 +2833,10 @@ description: Operations executed tooling-nest-block.kcl
             "index": 27
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -2707,23 +2847,12 @@ description: Operations executed tooling-nest-block.kcl
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "TagIdentifier",
-            "value": "rectangleSegmentC001",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        }
-      },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -2779,13 +2908,6 @@ description: Operations executed tooling-nest-block.kcl
               "type": "Known",
               "type": "Length"
             }
-          },
-          "sourceRange": []
-        },
-        "tagStart": {
-          "value": {
-            "type": "TagDeclarator",
-            "name": "capStart001"
           },
           "sourceRange": []
         }
@@ -2905,10 +3027,9 @@ description: Operations executed tooling-nest-block.kcl
         "functionSourceRange": [],
         "unlabeledArg": null,
         "labeledArgs": {
-          "cubeFace": {
+          "nestPlane": {
             "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentD001",
+              "type": "Plane",
               "artifact_id": "[uuid]"
             },
             "sourceRange": []
@@ -2958,7 +3079,10 @@ description: Operations executed tooling-nest-block.kcl
             "index": 28
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -2969,23 +3093,12 @@ description: Operations executed tooling-nest-block.kcl
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "TagIdentifier",
-            "value": "rectangleSegmentD001",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        }
-      },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -3041,13 +3154,6 @@ description: Operations executed tooling-nest-block.kcl
               "len": "mm",
               "angle": "degrees"
             }
-          },
-          "sourceRange": []
-        },
-        "tagStart": {
-          "value": {
-            "type": "TagDeclarator",
-            "name": "capStart001"
           },
           "sourceRange": []
         }
@@ -3167,10 +3273,9 @@ description: Operations executed tooling-nest-block.kcl
         "functionSourceRange": [],
         "unlabeledArg": null,
         "labeledArgs": {
-          "cubeFace": {
+          "nestPlane": {
             "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentD001",
+              "type": "Plane",
               "artifact_id": "[uuid]"
             },
             "sourceRange": []
@@ -3220,7 +3325,10 @@ description: Operations executed tooling-nest-block.kcl
             "index": 29
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -3231,23 +3339,12 @@ description: Operations executed tooling-nest-block.kcl
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "TagIdentifier",
-            "value": "rectangleSegmentD001",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        }
-      },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -3303,13 +3400,6 @@ description: Operations executed tooling-nest-block.kcl
               "len": "mm",
               "angle": "degrees"
             }
-          },
-          "sourceRange": []
-        },
-        "tagStart": {
-          "value": {
-            "type": "TagDeclarator",
-            "name": "capStart001"
           },
           "sourceRange": []
         }
@@ -3429,10 +3519,9 @@ description: Operations executed tooling-nest-block.kcl
         "functionSourceRange": [],
         "unlabeledArg": null,
         "labeledArgs": {
-          "cubeFace": {
+          "nestPlane": {
             "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentD001",
+              "type": "Plane",
               "artifact_id": "[uuid]"
             },
             "sourceRange": []
@@ -3482,7 +3571,10 @@ description: Operations executed tooling-nest-block.kcl
             "index": 30
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -3493,23 +3585,12 @@ description: Operations executed tooling-nest-block.kcl
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "TagIdentifier",
-            "value": "rectangleSegmentD001",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        }
-      },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -3565,13 +3646,6 @@ description: Operations executed tooling-nest-block.kcl
               "len": "mm",
               "angle": "degrees"
             }
-          },
-          "sourceRange": []
-        },
-        "tagStart": {
-          "value": {
-            "type": "TagDeclarator",
-            "name": "capStart001"
           },
           "sourceRange": []
         }
@@ -3691,10 +3765,9 @@ description: Operations executed tooling-nest-block.kcl
         "functionSourceRange": [],
         "unlabeledArg": null,
         "labeledArgs": {
-          "cubeFace": {
+          "nestPlane": {
             "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentD001",
+              "type": "Plane",
               "artifact_id": "[uuid]"
             },
             "sourceRange": []
@@ -3744,7 +3817,10 @@ description: Operations executed tooling-nest-block.kcl
             "index": 31
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -3755,23 +3831,12 @@ description: Operations executed tooling-nest-block.kcl
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "TagIdentifier",
-            "value": "rectangleSegmentD001",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        }
-      },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -3827,13 +3892,6 @@ description: Operations executed tooling-nest-block.kcl
               "len": "mm",
               "angle": "degrees"
             }
-          },
-          "sourceRange": []
-        },
-        "tagStart": {
-          "value": {
-            "type": "TagDeclarator",
-            "name": "capStart001"
           },
           "sourceRange": []
         }
@@ -3953,10 +4011,9 @@ description: Operations executed tooling-nest-block.kcl
         "functionSourceRange": [],
         "unlabeledArg": null,
         "labeledArgs": {
-          "cubeFace": {
+          "nestPlane": {
             "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentD001",
+              "type": "Plane",
               "artifact_id": "[uuid]"
             },
             "sourceRange": []
@@ -4006,7 +4063,10 @@ description: Operations executed tooling-nest-block.kcl
             "index": 32
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -4017,23 +4077,12 @@ description: Operations executed tooling-nest-block.kcl
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "TagIdentifier",
-            "value": "rectangleSegmentD001",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        }
-      },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -4089,13 +4138,6 @@ description: Operations executed tooling-nest-block.kcl
               "len": "mm",
               "angle": "degrees"
             }
-          },
-          "sourceRange": []
-        },
-        "tagStart": {
-          "value": {
-            "type": "TagDeclarator",
-            "name": "capStart001"
           },
           "sourceRange": []
         }
@@ -4215,10 +4257,9 @@ description: Operations executed tooling-nest-block.kcl
         "functionSourceRange": [],
         "unlabeledArg": null,
         "labeledArgs": {
-          "cubeFace": {
+          "nestPlane": {
             "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentD001",
+              "type": "Plane",
               "artifact_id": "[uuid]"
             },
             "sourceRange": []
@@ -4268,7 +4309,10 @@ description: Operations executed tooling-nest-block.kcl
             "index": 33
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -4279,23 +4323,12 @@ description: Operations executed tooling-nest-block.kcl
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "TagIdentifier",
-            "value": "rectangleSegmentD001",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        }
-      },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -4351,13 +4384,6 @@ description: Operations executed tooling-nest-block.kcl
               "len": "mm",
               "angle": "degrees"
             }
-          },
-          "sourceRange": []
-        },
-        "tagStart": {
-          "value": {
-            "type": "TagDeclarator",
-            "name": "capStart001"
           },
           "sourceRange": []
         }
@@ -4477,10 +4503,9 @@ description: Operations executed tooling-nest-block.kcl
         "functionSourceRange": [],
         "unlabeledArg": null,
         "labeledArgs": {
-          "cubeFace": {
+          "nestPlane": {
             "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentD001",
+              "type": "Plane",
               "artifact_id": "[uuid]"
             },
             "sourceRange": []
@@ -4530,7 +4555,10 @@ description: Operations executed tooling-nest-block.kcl
             "index": 34
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -4541,23 +4569,12 @@ description: Operations executed tooling-nest-block.kcl
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "TagIdentifier",
-            "value": "rectangleSegmentD001",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        }
-      },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -4613,13 +4630,6 @@ description: Operations executed tooling-nest-block.kcl
               "len": "mm",
               "angle": "degrees"
             }
-          },
-          "sourceRange": []
-        },
-        "tagStart": {
-          "value": {
-            "type": "TagDeclarator",
-            "name": "capStart001"
           },
           "sourceRange": []
         }
@@ -4739,10 +4749,9 @@ description: Operations executed tooling-nest-block.kcl
         "functionSourceRange": [],
         "unlabeledArg": null,
         "labeledArgs": {
-          "cubeFace": {
+          "nestPlane": {
             "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentD001",
+              "type": "Plane",
               "artifact_id": "[uuid]"
             },
             "sourceRange": []
@@ -4792,7 +4801,10 @@ description: Operations executed tooling-nest-block.kcl
             "index": 35
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -4803,23 +4815,12 @@ description: Operations executed tooling-nest-block.kcl
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "TagIdentifier",
-            "value": "rectangleSegmentD001",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        }
-      },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -4875,13 +4876,6 @@ description: Operations executed tooling-nest-block.kcl
               "len": "mm",
               "angle": "degrees"
             }
-          },
-          "sourceRange": []
-        },
-        "tagStart": {
-          "value": {
-            "type": "TagDeclarator",
-            "name": "capStart001"
           },
           "sourceRange": []
         }
@@ -5001,10 +4995,10 @@ description: Operations executed tooling-nest-block.kcl
         "functionSourceRange": [],
         "unlabeledArg": null,
         "labeledArgs": {
-          "cubeFace": {
+          "nestPlane": {
             "value": {
-              "type": "String",
-              "value": "start"
+              "type": "Plane",
+              "artifact_id": "[uuid]"
             },
             "sourceRange": []
           },
@@ -5053,7 +5047,10 @@ description: Operations executed tooling-nest-block.kcl
             "index": 36
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -5064,22 +5061,12 @@ description: Operations executed tooling-nest-block.kcl
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "String",
-            "value": "start"
-          },
-          "sourceRange": []
-        }
-      },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -5135,13 +5122,6 @@ description: Operations executed tooling-nest-block.kcl
               "type": "Known",
               "type": "Length"
             }
-          },
-          "sourceRange": []
-        },
-        "tagStart": {
-          "value": {
-            "type": "TagDeclarator",
-            "name": "capStart001"
           },
           "sourceRange": []
         }
@@ -5252,6 +5232,798 @@ description: Operations executed tooling-nest-block.kcl
     },
     {
       "type": "GroupEnd"
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 37
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 38
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 39
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 40
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 41
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 42
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 43
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 44
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 45
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 46
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 47
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 48
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 49
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 50
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 51
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 52
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 53
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 54
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
     }
   ],
   "std::math": [
@@ -5352,7 +6124,7 @@ description: Operations executed tooling-nest-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 21
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5376,7 +6148,7 @@ description: Operations executed tooling-nest-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5400,7 +6172,7 @@ description: Operations executed tooling-nest-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5424,7 +6196,7 @@ description: Operations executed tooling-nest-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5448,7 +6220,7 @@ description: Operations executed tooling-nest-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5472,7 +6244,7 @@ description: Operations executed tooling-nest-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5496,7 +6268,7 @@ description: Operations executed tooling-nest-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5520,7 +6292,7 @@ description: Operations executed tooling-nest-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
