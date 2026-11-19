@@ -176,18 +176,20 @@ export function HomeHeader({
           )}
           <p className="m-0 min-w-0 flex-1 break-words text-sm text-chalkboard-80 dark:text-chalkboard-30 sm:order-1">
             {libraryDetailsDescription ? `${libraryDetailsDescription} ` : null}
-            <span className="whitespace-nowrap">
-              {libraryDetailsDescription
-                ? `${getProjectLibraryLocationLabel(library)}: `
-                : 'Loaded from '}
-              <Link
-                data-testid="project-directory-settings-link"
-                to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
-                className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
-              >
-                {formatProjectLibraryPathForDisplay(library)}
-              </Link>
-            </span>
+            {library.type !== 'cloud' && (
+              <span className="whitespace-nowrap">
+                {libraryDetailsDescription
+                  ? `${getProjectLibraryLocationLabel(library)}: `
+                  : 'Loaded from '}
+                <Link
+                  data-testid="project-directory-settings-link"
+                  to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
+                  className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
+                >
+                  {formatProjectLibraryPathForDisplay(library)}
+                </Link>
+              </span>
+            )}
             {showFreeCloudProjectTrainingDisclosure && (
               <>
                 . Zoo trains on Free user cloud projects.{' '}
