@@ -7,120 +7,37 @@ permissions:
   contents: read
   actions: read
 jobs:
-  rust:
-    name: Rust failures (${{ matrix.revision }})
+  snapshots:
+    name: Browser snapshots (${{ matrix.revision }})
     runs-on: namespace-profile-ubuntu-8-cores
-    timeout-minutes: 40
+    timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
         include:
+          - revision: exact-base
+            sha: 567989c16e0873687f2e89cb11951d635d523869
+            wasm_run: 44405393037
           - revision: candidate
-            sha: be93a2fc5735e7428a14afce7385d35699f74908
+            sha: 19df7b96f3bf1d00ef7214ae21e11002536804aa
+            wasm_run: 44577814983
+          - revision: candidate-old-wait
+            sha: 19df7b96f3bf1d00ef7214ae21e11002536804aa
+            wasm_run: 44577814983
     steps:
       - uses: actions/checkout@v6
         with:
           ref: ${{ matrix.sha }}
+          fetch-depth: 0
           persist-credentials: false
+      - name: Restore old helper for diagnostic control
+        if: matrix.revision == 'candidate-old-wait'
+        run: git show c65ba1836cb072cb8bad51f052a9a95045019d7d:e2e/playwright/test-utils.ts > e2e/playwright/test-utils.ts
       - name: Record exact inputs
         run: |
-          git rev-parse HEAD HEAD:rust HEAD:public/kcl-samples
-          cp rust/rust-toolchain.toml ./rust-toolchain.toml
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          cache: false
-          rustflags: ''
-      - uses: taiki-e/install-action@nextest
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: rust
-          cache-on-failure: true
-      - name: Validate binding exports serially
-        run: |
-          cd rust
-          cargo test -p kcl-lib --features artifact-graph export_bindings -- --test-threads=1
-      - name: Run candidate Rust tests
-        env:
-          ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
-          ZOO_HOST: https://api.dev.zoo.dev
-          RUST_MIN_STACK: 10485760000
-          RUST_FILTER: >-
-            ((test(frontend::) or test(parsing::) or test(parse) or test(region) or test(sketch_solve)) and not test(export_bindings)) or
-            test(simulation_tests::error_loft_section_order::) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_tooling_nest_block) or
-            test(=simulation_tests::kcl_samples::parse_tooling_nest_block) or
-            test(=simulation_tests::kcl_samples::unparse_tooling_nest_block)
-        shell: bash
-        run: |
-          set -o pipefail
-          cd rust
-          cargo nextest run --workspace --features artifact-graph --profile ci --no-fail-fast --retries 1 -E "$RUST_FILTER" 2>&1 | tee ../comparison-rust.log
-      - uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: rust-candidate
-          path: |
-            comparison-rust.log
-            test-results/
-
-  wasm:
-    name: Build candidate WASM
-    runs-on: namespace-profile-ubuntu-8-cores
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: be93a2fc5735e7428a14afce7385d35699f74908
-          persist-credentials: false
-      - run: |
           git rev-parse HEAD HEAD:rust
-          cp rust/rust-toolchain.toml ./rust-toolchain.toml
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - run: npm ci
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          cache: false
-          rustflags: ''
-      - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
-        with:
-          tool: wasm-pack
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: rust
-          cache-on-failure: true
-      - run: npm run build:wasm
-      - uses: actions/upload-artifact@v7
-        with:
-          name: prepared-wasm
-          path: rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
-      - uses: actions/upload-artifact@v7
-        with:
-          name: prepared-ts-rs-bindings
-          path: rust/kcl-lib/bindings/*
-
-  integration:
-    needs: wasm
-    name: Trim performance (${{ matrix.revision }})
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - revision: two-cores
-            runner: namespace-profile-ubuntu-2-cores
-            sha: be93a2fc5735e7428a14afce7385d35699f74908
-            wasm_run: ${{ github.run_id }}
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ matrix.sha }}
-          persist-credentials: false
-      - name: Record exact inputs
-        run: git rev-parse HEAD HEAD:rust HEAD:src/machines/sketchSolve/tools/trimToolImpl.spec.ts HEAD:vitest.config.ts
+          git diff -- e2e/playwright/test-utils.ts
+          git hash-object e2e/playwright/test-utils.ts e2e/playwright/snapshot-tests.spec.ts
       - uses: actions/download-artifact@v8
         with:
           github-token: ${{ github.token }}
@@ -133,31 +50,35 @@ jobs:
           run-id: ${{ matrix.wasm_run }}
           name: prepared-ts-rs-bindings
           path: rust/kcl-lib/bindings
-      - name: Install WASM
+      - name: Install matching WASM
         run: |
           mkdir -p rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg/
           cp prepared-wasm/kcl_wasm_lib_bg.wasm public/
+          sha256sum public/kcl_wasm_lib_bg.wasm
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Run unchanged trim and project tests
+      - uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright/
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+      - run: npm run playwright install --with-deps
+      - name: Run unchanged browser snapshots without updating expectations
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+          TARGET: web
+          NODE_ENV: development
         shell: bash
         run: |
           set -o pipefail
-          status=0
-          for attempt in 1 2 3; do
-            xvfb-run -a npm run test:integration -- src/machines/sketchSolve/tools/trimToolImpl.spec.ts src/lib/app.spec.ts --sequence.seed=15271 --retry=0 --pool=forks 2>&1 | tee -a comparison-integration.log || status=1
-          done
-          exit "$status"
+          npm run test:snapshots -- --update-snapshots=none 2>&1 | tee comparison-snapshots.log
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: integration-${{ matrix.revision }}
+          name: snapshots-${{ matrix.revision }}
           path: |
-            comparison-integration.log
+            comparison-snapshots.log
             test-results/
