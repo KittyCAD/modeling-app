@@ -116,7 +116,6 @@ export default function AxisGizmo() {
       const quaternion = sceneInfra.camControls.camera.quaternion
       camera.position.set(0, 0, 1).applyQuaternion(quaternion)
       camera.quaternion.copy(quaternion)
-      camera.updateMatrixWorld(true)
     }
     const mouse = new Vector2()
     mouse.x = 1 // fix initial mouse position issue
@@ -447,13 +446,9 @@ const initializeMouseEvents = (
     resetRayCast()
   }
 
-  const handleClick = (event: MouseEvent) => {
+  const handleClick = () => {
     // If orbits are disabled, skip click logic
-    if (disableOrbitRef.current) {
-      return
-    }
-    handleMouseMove(event)
-    if (!raycasterIntersect.current) {
+    if (disableOrbitRef.current || !raycasterIntersect.current) {
       return
     }
     const axisName = raycasterIntersect.current.object.name as AxisNames
