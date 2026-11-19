@@ -411,13 +411,24 @@ export class SceneFixture {
     await expect(this.startEditSketchBtn).toBeVisible()
     await expect(this.engineConnectionsSpinner).not.toBeVisible()
 
-    await cmdBar.openCmdBar()
-    await cmdBar.chooseCommand('Settings · app · show debug panel')
-    await cmdBar.selectOption({ name: 'on' }).click()
+    // Most fixtures already enable this setting. Changing it again can trigger
+    // execution and a settings toast after the scene was ready.
+    if (!(await this.page.getByTestId('debug-pane-button').isVisible())) {
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('Settings · app · show debug panel')
+      await cmdBar.selectOption({ name: 'on' }).click()
+    }
 
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
+
+    if (!expectError) {
+      await expect(this.startEditSketchBtn).not.toBeDisabled({
+        timeout: 15_000,
+      })
+    }
+    await expect(this.engineConnectionsSpinner).not.toBeVisible()
   }
 
   expectPixelColor = async (
