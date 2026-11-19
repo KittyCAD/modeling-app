@@ -612,11 +612,16 @@ export class ConnectionManager extends EventTarget {
       camControlsCameraChange: this._camControlsCameraChange,
       connection: connection,
       setStreamIsReady,
+      isCurrent: () => this.started && this.connection === connection,
     })
 
     // Engine is ready to start sending events!
     // Gotcha: The other listenerse above need to be initialized otherwise this will halt forever.
     await onEngineConnectionOpened()
+    if (this.connection !== connection || !this.started)
+      return Promise.reject(
+        new Error('The engine connection closed while starting')
+      )
     this.setViewportRendering(this.settings.viewportRendering)
   }
 
@@ -714,7 +719,9 @@ export class ConnectionManager extends EventTarget {
       return
     }
 
-    await this.connection?.deferredConnection?.promise
+    const connection = this.connection
+    await connection?.deferredConnection?.promise
+    if (this.connection !== connection || !this.started) return
 
     const mode = this.settings.viewportRendering
     const backgroundColor = getViewportBackgroundColor(theme, mode)
@@ -750,6 +757,8 @@ export class ConnectionManager extends EventTarget {
         },
       },
     })
+
+    if (this.connection !== connection || !this.started) return
 
     // Sets the default line colors
     const opposingTheme = getOppositeTheme(getViewportTheme(theme, mode))
@@ -835,7 +844,9 @@ export class ConnectionManager extends EventTarget {
       return
     }
 
-    await this.connection.deferredConnection?.promise
+    const connection = this.connection
+    await connection.deferredConnection?.promise
+    if (this.connection !== connection || !this.started) return
 
     debugLog('start')
     await this.sendSceneCommand({

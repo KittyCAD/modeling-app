@@ -261,6 +261,106 @@ describe('ConnectionManager', () => {
     }
   )
 
+  describe.each(['closed', 'replaced'] as const)(
+    'startup %s during renderer setup',
+    (action) => {
+      it.each([
+        'default_camera_set_orthographic',
+        'set_background_color',
+        'line colors',
+        'edge_lines_visible',
+        'default_camera_get_settings',
+        'backface colors',
+      ])('stops after the pending %s command', async (pauseAt) => {
+        vi.stubGlobal('WebSocket', ReconnectTestWebSocket)
+        class StartupPeerConnection extends RTCPeerConnection {
+          removeEventListener = vi.fn()
+        }
+        vi.spyOn(Connection.prototype, 'connect').mockImplementation(
+          async function (this: Connection) {
+            this.websocket = new WebSocket('ws://startup.test')
+            this.peerConnection = new StartupPeerConnection()
+          }
+        )
+        const settings = createSettings()
+        settings.modeling.cameraProjection.user = 'orthographic'
+        const manager = createConnectionManager(settings)
+        let commandHeld = false
+        const paused = Promise.withResolvers<undefined>()
+        const response = Promise.withResolvers<null>()
+        const send = vi
+          .spyOn(manager, 'sendSceneCommand')
+          .mockImplementation(async (request) => {
+            if (request.type !== 'modeling_cmd_req') return null
+            const command = request.cmd
+            const phase =
+              command.type === 'set_default_system_properties'
+                ? 'backface_color' in command
+                  ? 'backface colors'
+                  : 'line colors'
+                : command.type
+            if (phase === pauseAt && !commandHeld) {
+              commandHeld = true
+              paused.resolve(undefined)
+              return response.promise
+            }
+            return null
+          })
+        const themeListener = vi.spyOn(manager, 'listenToDarkModeMatcher')
+        const viewport = vi.spyOn(manager, 'setViewportRendering')
+        const cameraChange = vi.fn()
+        manager.camControlsCameraChange = cameraChange
+        const ready = vi.fn()
+        const sceneReady = vi.fn()
+        window.addEventListener(
+          EngineConnectionManagerEvents.SceneReady,
+          sceneReady
+        )
+        const opening = manager.start({
+          width: 512,
+          height: 512,
+          token: 'token',
+          setStreamIsReady: ready,
+        })
+        try {
+          await paused.promise
+          manager.tearDown({ route: 'service-disposed', initiatedBy: 'client' })
+          if (action === 'replaced') {
+            await manager.start({
+              width: 512,
+              height: 512,
+              token: 'replacement',
+              setStreamIsReady: vi.fn(),
+            })
+          }
+          const replacement = manager.connection
+          send.mockClear()
+          themeListener.mockClear()
+          viewport.mockClear()
+          cameraChange.mockClear()
+          sceneReady.mockClear()
+          response.resolve(null)
+          await expect(opening).rejects.toThrow('closed while starting')
+          expect(send).not.toHaveBeenCalled()
+          expect(themeListener).not.toHaveBeenCalled()
+          expect(cameraChange).not.toHaveBeenCalled()
+          expect(viewport).not.toHaveBeenCalled()
+          expect(sceneReady).not.toHaveBeenCalled()
+          expect(ready).not.toHaveBeenCalled()
+          expect(manager.connection).toBe(replacement)
+          expect(manager.started).toBe(action === 'replaced')
+        } finally {
+          response.resolve(null)
+          window.removeEventListener(
+            EngineConnectionManagerEvents.SceneReady,
+            sceneReady
+          )
+          manager.tearDown({ route: 'service-disposed', initiatedBy: 'client' })
+        }
+      })
+    }
+  )
+
   it('identifies actual connection replacement without treating scene resets as a new session', async () => {
     const manager = createConnectionManager()
     const createTransport = () =>
