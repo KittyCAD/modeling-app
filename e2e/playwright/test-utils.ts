@@ -193,7 +193,11 @@ async function openDebugPanel(page: Page) {
   await openPane(page, 'debug-pane-button')
 
   // Wait for the mounted pane; callers wait for their specific command or data.
-  await expect(page.getByTestId('debug-panel')).toBeVisible()
+  await expect(
+    page
+      .getByRole('region', { name: 'Debug', exact: true })
+      .getByTestId('debug-panel')
+  ).toBeVisible()
 }
 
 export async function closeDebugPanel(page: Page) {
