@@ -192,8 +192,12 @@ async function closeKclCodePanel(page: Page) {
 async function openDebugPanel(page: Page) {
   await openPane(page, 'debug-pane-button')
 
-  // The debug pane needs time to load everything.
-  await page.waitForTimeout(3000)
+  // Wait for the mounted pane; callers wait for their specific command or data.
+  await expect(
+    page
+      .getByRole('region', { name: 'Debug', exact: true })
+      .getByTestId('debug-panel')
+  ).toBeVisible()
 }
 
 export async function closeDebugPanel(page: Page) {
