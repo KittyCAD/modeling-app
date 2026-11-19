@@ -65,6 +65,7 @@ import {
   getHomeProjectEntriesForLibrary,
   getProjectLibraryCreateProjectOperation,
   getProjectLibraryOperation,
+  type ProjectLibraryTypeContribution,
   projectLibraryRealizationsService,
   projectLibraryTypesFacet,
 } from '@src/registry/contracts/projectLibraries'
@@ -81,6 +82,7 @@ import {
   ProjectCardList,
   type ProjectLibraryDragController,
   type ProjectLibraryDropTargetProps,
+  ProjectLibraryHomeContextMenuSlot,
   ProjectLibraryPreviewRow,
 } from '@src/routes/HomeProjectCards'
 import {
@@ -775,6 +777,18 @@ const Home = () => {
           library={selectedProjectLibrary}
           isOverview={!libraryId}
           showLibraryBackLink={Boolean(selectedProjectLibrary)}
+          libraryContextMenu={
+            selectedProjectLibrary
+              ? (menuTargetElement) => (
+                  <ProjectLibraryHomeContextMenuSlot
+                    library={selectedProjectLibrary}
+                    projects={scopedHomeProjectEntries}
+                    projectLibraryTypes={projectLibraryTypes}
+                    menuTargetElement={menuTargetElement}
+                  />
+                )
+              : undefined
+          }
           setQuery={setQuery}
           sort={sort}
           setSearchParams={setSearchParams}
@@ -822,6 +836,7 @@ const Home = () => {
               showCloudSyncUi
               onDuplicateToLibrary={duplicateProjectToLibrary}
               projectLibraryDrag={projectLibraryDrag}
+              projectLibraryTypes={projectLibraryTypes}
               librarySections={librarySections}
             />
           )}
@@ -879,6 +894,7 @@ interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
   showCloudSyncUi: boolean
   onDuplicateToLibrary: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
+  projectLibraryTypes: ReadonlyMap<string, ProjectLibraryTypeContribution>
   librarySections: readonly {
     type: ProjectLibrary['type']
     title: string
@@ -899,6 +915,7 @@ function ProjectLibraryOverview({
   showCloudSyncUi,
   onDuplicateToLibrary,
   projectLibraryDrag,
+  projectLibraryTypes,
   librarySections,
   ...rest
 }: ProjectLibraryOverviewProps) {
@@ -930,6 +947,7 @@ function ProjectLibraryOverview({
       showCloudSyncUi={showCloudSyncUi}
       onDuplicateToLibrary={onDuplicateToLibrary}
       projectLibraryDrag={projectLibraryDrag}
+      projectLibraryTypes={projectLibraryTypes}
     />
   )
   const loadingMore = !projectsLoaded ? (

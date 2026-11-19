@@ -24,7 +24,7 @@ import type {
   HomeProjectEntry,
   HomeProjectOpenResult,
 } from '@src/registry/contracts/homeProjects'
-import type { ComponentType } from 'react'
+import type { ComponentType, RefObject } from 'react'
 export type ProjectLibrarySettingDefaultContribution =
   | ProjectLibrarySetting
   | readonly ProjectLibrarySetting[]
@@ -217,6 +217,12 @@ export interface ProjectLibraryHomeDetailProps {
   registry: Registry
 }
 
+export interface ProjectLibraryHomeContextMenuProps {
+  library: ProjectLibrary
+  projects: readonly HomeProjectEntry[]
+  menuTargetElement: RefObject<HTMLElement | null>
+}
+
 /**
  * Projects discovered through a relationship provider can be assigned to a
  * library by policy instead of by their local storage path. Keeping the policy
@@ -244,6 +250,7 @@ export interface ProjectLibraryTypeContribution {
     /** Keep the overview accessible when this action is available. */
     CreateButton?: ComponentType<{ registry: Registry }>
   }
+  homeContextMenu?: ComponentType<ProjectLibraryHomeContextMenuProps>
   /** Policies assigning provider relationships to specific libraries. */
   relationshipMembershipPolicies?: readonly ProjectLibraryRelationshipMembershipPolicy[]
   operations?: ProjectLibraryTypeOperations
