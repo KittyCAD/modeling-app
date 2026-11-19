@@ -1127,7 +1127,12 @@ export class LocalRenderer {
     this.modelWasOutOfView =
       coverage !== undefined &&
       coverage <= (this.modelWasOutOfView ? 0.04 : 0.03)
-    this.recoveryHint.value = recenterHint(this.modelBounds, this.camera)
+    this.recoveryHint.value = recenterHint(
+      this.modelBounds,
+      this.camera,
+      Math.max(this.container.clientWidth, 1) /
+        Math.max(this.container.clientHeight, 1)
+    )
     outOfView.value = this.modelWasOutOfView
   }
 

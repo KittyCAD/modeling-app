@@ -10,7 +10,8 @@ import type { RecenterHint } from '@src/registry/contracts/viewportNavigation'
 /** A presentation hint only; the silhouette determines whether recovery is needed. */
 export function recenterHint(
   bounds: Box3,
-  camera: PerspectiveCamera | OrthographicCamera
+  camera: PerspectiveCamera | OrthographicCamera,
+  viewportAspect: number
 ): RecenterHint {
   if (bounds.isEmpty()) return { kind: 'neutral' }
   if (bounds.containsPoint(camera.getWorldPosition(new Vector3())))
@@ -43,7 +44,8 @@ export function recenterHint(
     center.applyMatrix4(camera.projectionMatrix)
     return {
       kind: 'direction',
-      angle: (Math.atan2(-center.y, center.x) * 180) / Math.PI || 0,
+      angle:
+        (Math.atan2(-center.y, center.x * viewportAspect) * 180) / Math.PI || 0,
     }
   }
   if (

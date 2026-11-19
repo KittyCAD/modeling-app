@@ -87,11 +87,12 @@ export function useViewControlMenuItems(highlightedItemId?: string) {
         Zoom to fit
       </ContextMenuItem>,
       ...contributedItems.map(({ id, Component }) => (
-        <Component
-          key={id}
-          disabled={shouldLockView}
-          highlighted={id === highlightedItemId}
-        />
+        <div key={id} className="contents" data-view-control-item={id}>
+          <Component
+            disabled={shouldLockView}
+            highlighted={id === highlightedItemId}
+          />
+        </div>
       )),
       <ContextMenuItem
         onClick={() => {

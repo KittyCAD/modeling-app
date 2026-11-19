@@ -1567,18 +1567,29 @@ it.each(['perspective', 'orthographic'])(
     await interrupted
     expect(controls.camera.position.equals(position)).toBe(true)
 
-    const superseded = controls.zoomToFit({
-      padding: 0.1,
-      bounds,
-      duration: 150,
-    })
-    await vi.advanceTimersByTimeAsync(30)
-    await controls.setCameraToAxis({ axis: 'x' })
-    const axisPosition = controls.camera.position.clone()
-    const axisTarget = controls.target.clone()
-    await vi.advanceTimersByTimeAsync(200)
-    await superseded
-    expect(controls.camera.position.equals(axisPosition)).toBe(true)
-    expect(controls.target.equals(axisTarget)).toBe(true)
+    for (const view of ['axis', 'cube']) {
+      const superseded = controls.zoomToFit({
+        padding: 0.1,
+        bounds,
+        duration: 150,
+      })
+      await vi.advanceTimersByTimeAsync(30)
+      if (view === 'axis') {
+        await controls.setCameraToAxis({ axis: 'x' })
+      } else {
+        await controls.setCameraToQuaternion(
+          new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2),
+          controls.target.clone()
+        )
+      }
+      const viewPosition = controls.camera.position.clone()
+      const viewTarget = controls.target.clone()
+      const viewRotation = controls.camera.quaternion.clone()
+      await vi.advanceTimersByTimeAsync(200)
+      await superseded
+      expect(controls.camera.position.equals(viewPosition)).toBe(true)
+      expect(controls.target.equals(viewTarget)).toBe(true)
+      expect(controls.camera.quaternion.equals(viewRotation)).toBe(true)
+    }
   }
 )

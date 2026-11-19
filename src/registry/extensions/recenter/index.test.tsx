@@ -31,11 +31,14 @@ vi.mock('@src/components/CustomIcon', () => ({ CustomIcon: () => null }))
 vi.mock('@src/components/ViewControlMenu', () => ({
   useViewControlMenuItems: (highlightedId?: string) =>
     registry.get(viewControlMenuItemsFacet).map(({ id, Component }) =>
-      createElement(Component, {
-        key: id,
-        disabled: false,
-        highlighted: id === highlightedId,
-      })
+      createElement(
+        'div',
+        { key: id, 'data-view-control-item': id },
+        createElement(Component, {
+          disabled: false,
+          highlighted: id === highlightedId,
+        })
+      )
     ),
 }))
 
@@ -59,6 +62,7 @@ afterEach(async () => {
   await registry.dispose()
   vi.restoreAllMocks()
   vi.useRealTimers()
+  vi.unstubAllGlobals()
 })
 
 it('keeps Recenter available and marks its help seen when used', async () => {
@@ -142,6 +146,23 @@ it('follows replacement services and disappears when the viewport unmounts', asy
 it('opens and highlights the menu only once, deferring while another menu or dialog is open', async () => {
   vi.useFakeTimers()
   vi.spyOn(document, 'hasFocus').mockReturnValue(true)
+  vi.stubGlobal('innerHeight', 400)
+  vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(
+    function (this: HTMLElement) {
+      const panel = document.querySelector<HTMLElement>(
+        '[data-testid="gizmo-view-menu"]'
+      )
+      const top = Number.parseFloat(panel?.style.top ?? '') || -11
+      if (this === panel) return new DOMRect(600, top, 224, 280)
+      if (this.tagName === 'UL') return new DOMRect(600, top + 80, 224, 198)
+      if (this.getAttribute('aria-label') === 'Recenter') {
+        const scroll = this.closest('ul')?.scrollTop ?? 0
+        return new DOMRect(600, top + 300 - scroll, 224, 30)
+      }
+      return new DOMRect(800, 280, 16, 16)
+    }
+  )
+
   const lost = signal(true)
   await registerViewportNavigation(registry, {
     isModelOutOfView: lost,
@@ -171,6 +192,19 @@ it('opens and highlights the menu only once, deferring while another menu or dia
   expect(screen.getByRole('status')).toHaveTextContent("Can't find your model?")
   expect(screen.getByRole('button', { name: 'Recenter' })).toHaveClass(
     'ring-primary'
+  )
+  const panel = screen.getByTestId('gizmo-view-menu')
+  const list = panel.querySelector('ul')
+  const action = screen.getByRole('button', { name: 'Recenter' })
+  expect(panel.getBoundingClientRect().top).toBeGreaterThanOrEqual(0)
+  expect(panel.getBoundingClientRect().bottom).toBeLessThanOrEqual(
+    window.innerHeight
+  )
+  expect(action.getBoundingClientRect().top).toBeGreaterThanOrEqual(
+    list?.getBoundingClientRect().top ?? Infinity
+  )
+  expect(action.getBoundingClientRect().bottom).toBeLessThanOrEqual(
+    list?.getBoundingClientRect().bottom ?? -Infinity
   )
   expect(localStorage.getItem(RECENTER_TIP_SEEN_KEY)).toBe('true')
   fireEvent.click(screen.getByRole('button', { name: 'Got it' }))

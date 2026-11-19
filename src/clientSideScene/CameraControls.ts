@@ -1772,6 +1772,7 @@ export class CameraControls {
     targetPosition = new Vector3(),
     sketch?: { zoom: number; distance: number }
   ): Promise<void> {
+    this.cancelFitAnimation?.()
     if (this.effectiveCameraMode === 'engineToClient')
       console.warn(
         'setCameraToQuaternion is not designed for engineToClient syncDirection.'
