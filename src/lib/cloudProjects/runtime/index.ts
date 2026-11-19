@@ -871,6 +871,11 @@ export function createCloudProjectRuntime(
         return Promise.reject(error)
       }
     },
+    getProjectAccess: async (id: string, signal: AbortSignal) => {
+      const requestConfig = config()
+      const project = await api.getRemoteProject(requestConfig, id, signal)
+      if (requestConfig.accountId === config().accountId) return project.access
+    },
     thumbnail: (project: RemoteProjectSummary) =>
       api.getRemoteProjectThumbnailUrl(config(), project),
     pathFor,
