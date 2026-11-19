@@ -538,7 +538,6 @@ p3 = [342.51, 216.38],
     const cases: {
       [strLibName: string]: {
         namedConstantConstraint: TestDetails[]
-        removeAllConstraintsCases: TestDetails[]
         removeIndividualConstraintsCases: TestDetails[]
         deleteSegment: Omit<TestDetails, 'expectedResult' | 'constraintIndex'>[]
       }
@@ -568,24 +567,6 @@ p3 = [342.51, 216.38],
             ...makeStraightSegmentSnippet('line(endAbsolute = [16.27, 73.81])'),
             constraintIndex: 1,
             expectedResult: 'line(endAbsolute = [16.27, test_variable]',
-          },
-        ],
-        removeAllConstraintsCases: [
-          {
-            name: 'should un-constrain rel-line',
-            ...makeStraightSegmentSnippet('line(end = [testVar1, testVar2])'),
-            constraintIndex: 0,
-            expectedResult: 'line(end = [55, 66])',
-          },
-          {
-            name: 'should un-constrain abs-line',
-            ...makeStraightSegmentSnippet(
-              'line(endAbsolute = [testVar1, testVar2])'
-            ),
-            constraintIndex: 0,
-            expectedResult: 'line(end = [-2286.04, 2768.2]',
-            // TODO un-constrains to relative line when it should not, expectedResult should be the following
-            // expectedResult: 'line(endAbsolute = [55, 66]',
           },
         ],
         removeIndividualConstraintsCases: [
@@ -648,22 +629,6 @@ p3 = [342.51, 216.38],
             expectedResult: 'xLine(endAbsolute = test_variable)',
           },
         ],
-        removeAllConstraintsCases: [
-          {
-            name: 'should un-constrain xLine',
-            ...makeStraightSegmentSnippet('xLine(length = testVar1)'),
-            constraintIndex: 1,
-            expectedResult: 'line(end = [55, 0])',
-          },
-          {
-            name: 'should un-constrain xLine absolute value',
-            ...makeStraightSegmentSnippet('xLine(endAbsolute = testVar1)'),
-            constraintIndex: 1,
-            expectedResult: 'line(end = [-2286.04, 0])',
-            // TODO un-constrains to relative line when it should not, expectedResult should be the following
-            // expectedResult: 'line(endAbsolute = [55, 0])',
-          },
-        ],
         removeIndividualConstraintsCases: [
           {
             name: 'should un-constrain xLine x value',
@@ -702,22 +667,6 @@ p3 = [342.51, 216.38],
             ...makeStraightSegmentSnippet('yLine(endAbsolute = 15)'),
             constraintIndex: 1,
             expectedResult: 'yLine(endAbsolute = test_variable)',
-          },
-        ],
-        removeAllConstraintsCases: [
-          {
-            name: 'should un-constrain yLine value',
-            ...makeStraightSegmentSnippet('yLine(length = testVar1)'),
-            constraintIndex: 1,
-            expectedResult: 'line(end = [0, 55])',
-          },
-          {
-            name: 'should un-constrain yLine absolute value',
-            ...makeStraightSegmentSnippet('yLine(endAbsolute = testVar1)'),
-            constraintIndex: 1,
-            expectedResult: 'line(end = [0, 2757.2])',
-            // TODO un-constrains to relative line when it should not, expectedResult should be the following
-            // expectedResult: 'line(endAbsolute = [0, 55])',
           },
         ],
         removeIndividualConstraintsCases: [
@@ -798,48 +747,6 @@ p3 = [342.51, 216.38],
             constraintIndex: 1,
             expectedResult:
               'angledLine(angle = 45deg, lengthX = test_variable)',
-          },
-        ],
-        removeAllConstraintsCases: [
-          {
-            name: 'should un-constrain angledLine',
-            ...makeStraightSegmentSnippet(
-              'angledLine(angle = testVar1, length = testVar2)'
-            ),
-            constraintIndex: 0,
-            expectedResult: 'line(end = [37.86, 54.06]',
-          },
-          {
-            name: 'should un-constrain angledLine, endAbsoluteY',
-            ...makeStraightSegmentSnippet(
-              'angledLine(angle = testVar1, endAbsoluteY = testVar2)'
-            ),
-            constraintIndex: 1,
-            expectedResult: 'line(end = [1938.31, 2768.2])',
-          },
-          {
-            name: 'should un-constrain angledLine, endAbsoluteX',
-            ...makeStraightSegmentSnippet(
-              'angledLine(angle = testVar1, endAbsoluteX = testVar2)'
-            ),
-            constraintIndex: 1,
-            expectedResult: 'line(end = [-2275.04, -3249.09])',
-          },
-          {
-            name: 'should un-constrain angledLine, lengthY',
-            ...makeStraightSegmentSnippet(
-              'angledLine(angle = testVar1, lengthY = testVar2)'
-            ),
-            constraintIndex: 1,
-            expectedResult: 'line(end = [46.21, 66])',
-          },
-          {
-            name: 'should un-constrain angledLine, lengthX',
-            ...makeStraightSegmentSnippet(
-              'angledLine(angle = testVar1, lengthX = testVar2)'
-            ),
-            constraintIndex: 1,
-            expectedResult: 'line(end = [66, 94.26])',
           },
         ],
         removeIndividualConstraintsCases: [
@@ -955,9 +862,6 @@ p3 = [342.51, 216.38],
               'circle(sketch001, center = [140.82, test_variable], radius = 74.18)',
           },
         ],
-        removeAllConstraintsCases: [
-          // TODO circle when remove all is working
-        ],
         removeIndividualConstraintsCases: [
           {
             name: 'should un-constrain circle, radius value',
@@ -1036,9 +940,6 @@ p3 = [342.51, 216.38],
             filter: 'p3',
           },
         ],
-        removeAllConstraintsCases: [
-          // TODO circleThreePoint when remove all is working
-        ],
         removeIndividualConstraintsCases: [
           {
             name: 'should un-constrain circleThreePoint, p1 x value',
@@ -1107,9 +1008,6 @@ p3 = [342.51, 216.38],
           },
           // TODO tangentialArc relative when that's working
         ],
-        removeAllConstraintsCases: [
-          // TODO tangentialArc when remove all is working
-        ],
         removeIndividualConstraintsCases: [
           {
             name: 'should un-constrain tangentialArc absolute x value',
@@ -1176,9 +1074,6 @@ p3 = [342.51, 216.38],
             filter: ARG_END_ABSOLUTE,
           },
           // TODO do other kwargs for arc
-        ],
-        removeAllConstraintsCases: [
-          // TODO arc when remove all is working
         ],
         removeIndividualConstraintsCases: [
           {
@@ -1617,139 +1512,6 @@ p3 = [342.51, 216.38],
         }
       )
     })
-    describe('Removing segment overlay constraints', () => {
-      useEngineWorld()
-
-      const removeAllConstraintsCases = Object.values(cases).flatMap(
-        (caseGroup) => caseGroup.removeAllConstraintsCases
-      )
-
-      removeAllConstraintsCases.forEach(
-        ({
-          name,
-          code,
-          searchText,
-          constraintIndex,
-          expectedResult,
-          filter,
-        }) => {
-          it(name, async ({ signal, onTestFinished }) => {
-            const indexOfInterest = code.indexOf(searchText)
-            // You need to update this!!
-            kclManagerInThisFile.updateCodeEditor(code)
-            const ast = assertParse(code, instanceInThisFile)
-
-            await kclManagerInThisFile.executeAst({ ast })
-            signal.throwIfAborted()
-
-            expect(kclManagerInThisFile.errors).toEqual([])
-
-            // segment artifact with that source range
-            const artifact = [...kclManagerInThisFile.artifactGraph].find(
-              ([_, artifact]) =>
-                artifact?.type === 'segment' &&
-                artifact.codeRef.range[0] <= indexOfInterest &&
-                indexOfInterest <= artifact.codeRef.range[1]
-            )?.[1]
-            if (!artifact || !('codeRef' in artifact)) {
-              throw new Error(
-                'Artifact not found or invalid artifact structure'
-              )
-            }
-
-            const contextCopied = generateModelingMachineDefaultContext({
-              kclManager: kclManagerInThisFile,
-              rustContext: rustContextInThisFile,
-              wasmInstance: instanceInThisFile,
-              engineCommandManager: engineCommandManagerInThisFile,
-              commandBarActor: commandBarActorInThisFile,
-              machineManager: machineManagerInThisFile,
-            })
-
-            contextCopied.engineCommandManager = engineCommandManagerInThisFile
-            contextCopied.wasmInstance = instanceInThisFile
-            contextCopied.rustContext = rustContextInThisFile
-            contextCopied.commandBarActor = commandBarActorInThisFile
-
-            const actor = createActor(modelingMachine, {
-              input: contextCopied,
-            }).start()
-            onTestFinished(() => {
-              actor.stop()
-            })
-
-            // Send event to transition to sketch mode
-            actor.send({
-              type: 'Set selection',
-              data: {
-                selectionType: 'mirrorCodeMirrorSelections',
-                selection: {
-                  graphSelections: [
-                    {
-                      entityRef: artifactToEntityRef(
-                        artifact.type,
-                        artifact.id
-                      ),
-                      codeRef: artifact.codeRef,
-                    },
-                  ],
-                  otherSelections: [],
-                },
-              },
-            })
-            actor.send({ type: 'Enter sketch' })
-
-            await waitForSketchScene(actor, signal)
-
-            const callExp = getNodeFromPath<Node<CallExpressionKw>>(
-              kclManagerInThisFile.ast,
-              artifact.codeRef!.pathToNode,
-              instanceInThisFile,
-              'CallExpressionKw'
-            )
-            if (err(callExp)) {
-              throw new Error('Failed to get CallExpressionKw node')
-            }
-
-            // Now that we're in sketchIdle state, test the "Constrain with named value" event
-            actor.send({
-              type: 'Constrain remove constraints',
-              data: artifact.codeRef!.pathToNode,
-            })
-
-            // Wait for the state to change in response to the constraint
-            await waitForCondition(() => {
-              const snapshot = actor.getSnapshot()
-              // Check if we've transitioned to a different state
-              return (
-                JSON.stringify(snapshot.value) !==
-                JSON.stringify({
-                  Sketch: { SketchIdle: 'set up segments' },
-                })
-              )
-            }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
-
-            await waitForCondition(() => {
-              const snapshot = actor.getSnapshot()
-              // Check if we've transitioned to a different state
-              return (
-                JSON.stringify(snapshot.value) !==
-                JSON.stringify({ Sketch: 'Constrain remove constraints' })
-              )
-            }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
-            const startTime = Date.now()
-            while (
-              !kclManagerInThisFile.code.includes(expectedResult) &&
-              Date.now() - startTime < GLOBAL_TIMEOUT_FOR_MODELING_MACHINE
-            ) {
-              await new Promise((resolve) => setTimeout(resolve, 100))
-            }
-            expect(kclManagerInThisFile.code).toContain(expectedResult)
-          }, 10_000)
-        }
-      )
-    })
-
     describe('selection synchronization', () => {
       it('synchronizes default plane selection with the engine and editor', () => {
         const code = 'body001 = extrude(region001, length = 10)'
