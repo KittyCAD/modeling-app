@@ -16,7 +16,7 @@ jobs:
       matrix:
         include:
           - revision: candidate
-            sha: c550ae94b4aed86e04be97a9b13dee61bd690273
+            sha: a2081084c3913575170eb9a9706022e3e74fba11
     steps:
       - uses: actions/checkout@v6
         with:
@@ -41,7 +41,7 @@ jobs:
           ZOO_HOST: https://api.dev.zoo.dev
           RUST_MIN_STACK: 10485760000
           RUST_FILTER: >-
-            test(frontend::trim::) or
+            test(frontend::) or
             test(simulation_tests::error_loft_section_order::) or
             test(=simulation_tests::kcl_samples::kcl_test_execute_tooling_nest_block) or
             test(=simulation_tests::kcl_samples::parse_tooling_nest_block) or
@@ -59,7 +59,46 @@ jobs:
             comparison-rust.log
             test-results/
 
+  wasm:
+    name: Build candidate WASM
+    runs-on: namespace-profile-ubuntu-8-cores
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: a2081084c3913575170eb9a9706022e3e74fba11
+          persist-credentials: false
+      - run: |
+          git rev-parse HEAD HEAD:rust
+          cp rust/rust-toolchain.toml ./rust-toolchain.toml
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: false
+          rustflags: ''
+      - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
+        with:
+          tool: wasm-pack
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+          cache-on-failure: true
+      - run: npm run build:wasm
+      - uses: actions/upload-artifact@v7
+        with:
+          name: prepared-wasm
+          path: rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
+      - uses: actions/upload-artifact@v7
+        with:
+          name: prepared-ts-rs-bindings
+          path: rust/kcl-lib/bindings/*
+
   integration:
+    needs: wasm
     name: Trim performance (${{ matrix.revision }})
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
@@ -69,29 +108,15 @@ jobs:
         include:
           - revision: two-cores
             runner: namespace-profile-ubuntu-2-cores
-            sha: c550ae94b4aed86e04be97a9b13dee61bd690273
-            wasm_run: 44557940519
+            sha: a2081084c3913575170eb9a9706022e3e74fba11
+            wasm_run: ${{ github.run_id }}
     steps:
       - uses: actions/checkout@v6
         with:
           ref: ${{ matrix.sha }}
           persist-credentials: false
-      - name: Record exact inputs and verify WASM source
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          git rev-parse HEAD HEAD:rust HEAD:src/machines/sketchSolve/tools/trimToolImpl.spec.ts HEAD:vitest.config.ts
-          git fetch --no-tags --depth=1 origin c65ba1836cb072cb8bad51f052a9a95045019d7d
-          git diff --exit-code c65ba1836cb072cb8bad51f052a9a95045019d7d HEAD -- rust ':!rust/kcl-lib/tests'
-          ready=false
-          for attempt in $(seq 1 40); do
-            if gh api repos/KittyCAD/modeling-app/actions/runs/${{ matrix.wasm_run }}/artifacts --jq '.artifacts[].name' | grep -qx prepared-ts-rs-bindings; then
-              ready=true
-              break
-            fi
-            sleep 15
-          done
-          test "$ready" = true
+      - name: Record exact inputs
+        run: git rev-parse HEAD HEAD:rust HEAD:src/machines/sketchSolve/tools/trimToolImpl.spec.ts HEAD:vitest.config.ts
       - uses: actions/download-artifact@v8
         with:
           github-token: ${{ github.token }}
