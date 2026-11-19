@@ -15,6 +15,7 @@ import {
   deleteRemoteProject,
   getRemoteProjectThumbnailUrl,
   listRemoteProjects,
+  shareRemoteProjectWithOrganization,
   updateRemoteProject,
 } from '@src/lib/cloudProjects/runtime/api'
 import type { ProjectArchiveFile } from '@src/lib/cloudProjects/runtime/types'
@@ -95,6 +96,29 @@ describe('cloud upload HTTP contract (mocked fetch)', () => {
     await expect(
       deleteRemoteProjectLibrary(config, 'library', revision)
     ).rejects.toMatchObject({ status: 409 })
+  })
+
+  test('transfers the existing project to the active organization without an upload', async () => {
+    const fetchMock = vi.fn<typeof fetch>(async () =>
+      projectResponse('existing-project', 'rev-1')
+    )
+    vi.stubGlobal('fetch', fetchMock)
+    await expect(
+      shareRemoteProjectWithOrganization(
+        { enabled: true, token: 'account-token', baseUrl: 'https://api.test' },
+        'existing-project'
+      )
+    ).resolves.toMatchObject({ id: 'existing-project', revision: 'rev-1' })
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    const [url, init] = fetchMock.mock.calls[0]
+    expect(url).toBe(
+      'https://api.test/user/projects/existing-project/organization'
+    )
+    expect(init?.method).toBe('PUT')
+    expect(init?.body).toBeUndefined()
+    expect(new Headers(init?.headers).get('Authorization')).toBe(
+      'Bearer account-token'
+    )
   })
 
   test('creates a cloud library with explicit ownership and the current credentials', async () => {

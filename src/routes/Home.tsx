@@ -1,3 +1,4 @@
+import { SHARE_PROJECT_WITH_ORGANIZATION_COMMAND } from '@src/lib/cloudProjects/organizationSharing'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { Announcements } from '@src/components/Announcements'
@@ -463,6 +464,12 @@ const Home = () => {
     },
     [commands, homeProjectActions]
   )
+  const shareProjectWithOrganization = (project: HomeProjectEntry) =>
+    selectCommand(commands, {
+      groupId: 'projects',
+      name: SHARE_PROJECT_WITH_ORGANIZATION_COMMAND,
+      argDefaultValues: { project: project.id },
+    })
   const projectLibraryDrag = useProjectLibraryDrag({
     projects: homeProjectEntries,
     projectActions: homeProjectActions,
@@ -813,6 +820,7 @@ const Home = () => {
             showCloudSyncUi
             showSourceStatusBadges={false}
             onCloneToLibrary={cloneProjectToLibrary}
+            onShareWithOrganization={shareProjectWithOrganization}
             projectLibraryEmptyTestId="project-library-empty"
             className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
           />
@@ -830,6 +838,7 @@ const Home = () => {
             fileOperations={app.fileOperations}
             showCloudSyncUi
             onCloneToLibrary={cloneProjectToLibrary}
+            onShareWithOrganization={shareProjectWithOrganization}
             projectLibraryDrag={projectLibraryDrag}
             projectLibraryTypes={projectLibraryTypes}
             className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
@@ -887,6 +896,7 @@ interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
   fileOperations: FileOperationsRegistryService
   showCloudSyncUi: boolean
   onCloneToLibrary: (project: HomeProjectEntry) => void
+  onShareWithOrganization?: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
   projectLibraryTypes: ReadonlyMap<string, ProjectLibraryTypeContribution>
 }
@@ -903,6 +913,7 @@ function ProjectLibraryOverview({
   fileOperations,
   showCloudSyncUi,
   onCloneToLibrary,
+  onShareWithOrganization,
   projectLibraryDrag,
   projectLibraryTypes,
   ...rest
@@ -955,6 +966,7 @@ function ProjectLibraryOverview({
                   fileOperations={fileOperations}
                   showCloudSyncUi={showCloudSyncUi}
                   onCloneToLibrary={onCloneToLibrary}
+                  onShareWithOrganization={onShareWithOrganization}
                   projectLibraryDrag={projectLibraryDrag}
                   projectLibraryTypes={projectLibraryTypes}
                 />
@@ -1020,6 +1032,7 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   fileOperations: FileOperationsRegistryService
   showCloudSyncUi: boolean
   onCloneToLibrary: (project: HomeProjectEntry) => void
+  onShareWithOrganization?: (project: HomeProjectEntry) => void
   showSourceStatusBadges?: boolean
   projectLibraryEmptyTestId?: string
 }
@@ -1035,6 +1048,7 @@ function ProjectGrid({
   fileOperations,
   showCloudSyncUi,
   onCloneToLibrary,
+  onShareWithOrganization,
   showSourceStatusBadges = true,
   projectLibraryEmptyTestId,
   ...rest
@@ -1060,6 +1074,7 @@ function ProjectGrid({
               fileOperations={fileOperations}
               showCloudSyncUi={showCloudSyncUi}
               onCloneToLibrary={onCloneToLibrary}
+              onShareWithOrganization={onShareWithOrganization}
               showSourceStatusBadges={showSourceStatusBadges}
             />
           ) : (

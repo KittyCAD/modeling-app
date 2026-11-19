@@ -182,6 +182,15 @@ export async function listRemoteProjectLibraries(
   ]
 }
 
+export function shareRemoteProjectWithOrganization(
+  config: CloudApiConfig,
+  id: string
+): Promise<RemoteProject> {
+  return cloudCall(config, (client) =>
+    projects.update_project_organization({ client, id })
+  )
+}
+
 export async function getRemoteProject(
   config: CloudApiConfig,
   projectId: string,

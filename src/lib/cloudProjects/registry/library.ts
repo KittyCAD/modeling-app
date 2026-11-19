@@ -1,6 +1,11 @@
 import { computed, effect, signal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { UserOrgInfo } from '@kittycad/lib'
+import {
+  createOrganizationSharingCommand,
+  SHARE_PROJECT_WITH_ORGANIZATION_COMMAND,
+} from '@src/lib/cloudProjects/organizationSharing'
+import { projectExplorerProjectMenuItemsFacet } from '@src/registry/contracts/projectExplorer'
 import { createElement } from 'react'
 import { CloudLibraryCreateButton } from '@src/lib/cloudProjects/CloudLibraryCreateButton'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
@@ -36,6 +41,7 @@ import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+  ORGANIZATION_CLOUD_PROJECT_LIBRARY_ID,
 } from '@src/lib/projectLibraries'
 import {
   apiProjectLibraries,
@@ -56,7 +62,7 @@ import {
 } from '@src/registry/contracts/homeSidebar'
 import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
 import {
-  type HomeProjectEntryContribution,
+  type HomeProjectEntry,
   homeProjectEntriesFacet,
   homeProjectLoadingLibraryIdsFacet,
   homeProjectSettledLibraryIdsFacet,
@@ -110,10 +116,26 @@ export default defineFactory({
     const remoteLibraries = signal<RemoteProjectLibrary[]>([])
     const libraries = computed(() => apiProjectLibraries(remoteLibraries.value))
     const organization = signal<UserOrgInfo | undefined>(undefined)
+    const contributedLibraries = computed(() => {
+      const org = organization.value
+      return org
+        ? [
+            ...libraries.value,
+            {
+              id: ORGANIZATION_CLOUD_PROJECT_LIBRARY_ID,
+              title: `${org.name ?? 'Organization'} projects`,
+              type: CLOUD_PROJECT_LIBRARY_TYPE,
+              source: '/organization',
+              path: 'zoo://organization',
+              organizationId: org.id,
+            },
+          ]
+        : libraries.value
+    })
     const refreshCatalog = signal(0)
     const libraryIds = computed(() => [
       PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-      ...libraries.value.map((library) => library.id),
+      ...contributedLibraries.value.map((library) => library.id),
     ])
     const pathname = computed(() => router.value?.location.value.pathname)
     const settledAccount = signal<
@@ -131,41 +153,43 @@ export default defineFactory({
       if (!disposed && auth.peek()?.user.peek()?.id === id)
         settledAccount.value = { id, projectsLoaded }
     }
-    const entries = computed<readonly HomeProjectEntryContribution[]>(() => {
+    const entries = computed<readonly HomeProjectEntry[]>(() => {
       if (!auth.value?.isLoggedIn.value) return []
       const thumbnails = cloud().thumbnails.value
-      return cloud()
-        .projects.value.filter(
-          (project) =>
-            project.library_id || project.access?.scope !== 'organization'
-        )
-        .map((project) => ({
-          id: `cloud:${project.id}`,
-          source: 'remote',
-          status: 'cloud-only',
-          name: project.id,
-          title: project.title ?? 'Untitled',
-          remoteProjectId: project.id,
-          projectPath: fsZds.join(cloud().root, project.id),
-          watchThumbnail: () => cloud().watchThumbnail(project.id),
-          thumbnail: thumbnails.has(project.id)
-            ? {
-                type: 'remote',
-                url: thumbnails.get(project.id)!,
-              }
-            : undefined,
-          libraryIds: [
-            project.library_id
-              ? apiProjectLibraryId(project.library_id)
+      return cloud().projects.value.map((project) => ({
+        id: `cloud:${project.id}`,
+        source: 'remote',
+        status: 'cloud-only',
+        name: project.id,
+        title: project.title ?? 'Untitled',
+        remoteProjectId: project.id,
+        canShareWithOrganization: Boolean(
+          organization.value &&
+            project.access?.scope === 'personal' &&
+            project.access.can_manage_organization
+        ),
+        projectPath: fsZds.join(cloud().root, project.id),
+        watchThumbnail: () => cloud().watchThumbnail(project.id),
+        thumbnail: thumbnails.has(project.id)
+          ? {
+              type: 'remote',
+              url: thumbnails.get(project.id)!,
+            }
+          : undefined,
+        libraryIds: [
+          project.library_id
+            ? apiProjectLibraryId(project.library_id)
+            : project.access?.scope === 'organization'
+              ? ORGANIZATION_CLOUD_PROJECT_LIBRARY_ID
               : PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-          ],
-          readWriteAccess: project.access?.can_edit ?? true,
-          deleteRemoteOnDelete: true,
-          modified:
-            typeof project.updated_at === 'string'
-              ? Date.parse(project.updated_at)
-              : undefined,
-        }))
+        ],
+        readWriteAccess: project.access?.can_edit ?? true,
+        deleteRemoteOnDelete: true,
+        modified:
+          typeof project.updated_at === 'string'
+            ? Date.parse(project.updated_at)
+            : undefined,
+      }))
     })
     const projectInfo = async (id: string) => {
       const path = await cloud().openProject(id)
@@ -233,6 +257,8 @@ export default defineFactory({
           },
         },
         createProject: {
+          isAvailable: ({ library }) =>
+            library.id !== ORGANIZATION_CLOUD_PROJECT_LIBRARY_ID,
           run: async ({
             library,
             requestedProjectTitle,
@@ -296,6 +322,8 @@ export default defineFactory({
           },
         },
         duplicateProject: {
+          isAvailable: ({ library }) =>
+            library.id !== ORGANIZATION_CLOUD_PROJECT_LIBRARY_ID,
           run: async ({ project }) => {
             if (!project.remoteProjectId) return undefined
             const title = `${getHomeProjectDisplayName(project)}-copy`
@@ -323,6 +351,8 @@ export default defineFactory({
           },
         },
         cloneProjectTo: {
+          isAvailable: ({ library }) =>
+            library.id !== ORGANIZATION_CLOUD_PROJECT_LIBRARY_ID,
           run: async ({ library, source, project, requestedProjectTitle }) => {
             const archive =
               source.files ??
@@ -514,6 +544,42 @@ export default defineFactory({
         }
       },
       items: [
+        contribute(
+          commandsFacet,
+          () =>
+            createOrganizationSharingCommand({
+              enabled: () =>
+                Boolean(auth.value?.isLoggedIn.value && !isOffline()),
+              organization: () => organization.value,
+              projects: () => entries.value,
+              shareProject: (id) => cloud().shareProjectWithOrganization(id),
+            }),
+          { key: 'cloud-projects.share-with-organization' }
+        ),
+        contribute(projectExplorerProjectMenuItemsFacet, () => ({
+          id: 'cloud-projects.share-with-organization',
+          order: 20,
+          label: 'Share with organization',
+          dataTestId: 'project-sidebar-share-with-organization',
+          isVisible: ({ projectPath }) =>
+            entries.value.some(
+              (project) =>
+                project.projectPath === projectPath &&
+                project.canShareWithOrganization
+            ),
+          onSelect: ({ projectPath }) => {
+            const project = entries.value.find(
+              (project) => project.projectPath === projectPath
+            )
+            const commands = commandsInputs.commandSystemService.current.value
+            if (project && commands)
+              selectCommand(commands, {
+                groupId: 'projects',
+                name: SHARE_PROJECT_WITH_ORGANIZATION_COMMAND,
+                argDefaultValues: { project: project.id },
+              })
+          },
+        })),
         contribute(commandsFacet, newLibraryCommand, {
           key: 'cloud-projects.create-library',
         }),
@@ -559,7 +625,7 @@ export default defineFactory({
         ),
         contribute(projectLibraryTypesFacet, () => ({
           ..._projectLibraryTypesContribution,
-          libraries: libraries.value,
+          libraries: contributedLibraries.value,
           homeContextMenu: CloudLibraryHomeContextMenu,
         })),
       ],

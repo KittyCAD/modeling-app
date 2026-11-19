@@ -26,7 +26,10 @@ import {
   runtimeService,
   type RuntimeRegistryService,
 } from '@src/registry/contracts/runtime'
-import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
+import {
+  ORGANIZATION_CLOUD_PROJECT_LIBRARY_ID,
+  projectLibrariesFromSettings,
+} from '@src/lib/projectLibraries'
 import cloudProjects from '@src/lib/cloudProjects/registry/library'
 import { afterEach, expect, it, vi } from 'vitest'
 import { act, fireEvent, render, screen } from '@testing-library/react'
@@ -198,6 +201,69 @@ it.each(['success', 'failure'] as const)(
     view.unmount()
   }
 )
+
+it('keeps shared projects visible in the organization group and only offers permitted transfers', async () => {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn<typeof fetch>(async (input) =>
+      new URL(String(input)).pathname === '/user/org'
+        ? Response.json({ id: 'org', name: 'Design team', role: 'member' })
+        : Response.json({ items: [], next_page: null })
+    )
+  )
+  registry = new Registry()
+  await registry.configure([
+    cloudProjects,
+    provide(authService, {
+      user: signal({ id: 'user' }),
+      token: signal('token'),
+      isLoggedIn: signal(true),
+    } as unknown as AuthRegistryService),
+    provide(runtimeService, {
+      current: signal({ apiBaseUrl: 'https://api.test' }),
+    } as unknown as RuntimeRegistryService),
+    provide(cloudStorageService, {
+      projects: signal([
+        {
+          id: 'own',
+          access: { scope: 'personal', can_manage_organization: true },
+        },
+        {
+          id: 'other',
+          access: { scope: 'personal', can_manage_organization: false },
+        },
+        {
+          id: 'shared',
+          access: { scope: 'organization', can_manage_organization: false },
+        },
+      ]),
+      thumbnails: signal(new Map()),
+      root: '/__zoo_cloud__',
+      saves: signal(new Map()),
+    } as unknown as CloudStorageService),
+  ])
+  await vi.waitFor(() =>
+    expect(
+      projectLibrariesFromSettings([], registry!.get(projectLibraryTypesFacet))
+    ).toContainEqual(
+      expect.objectContaining({
+        id: ORGANIZATION_CLOUD_PROJECT_LIBRARY_ID,
+        title: 'Design team projects',
+        organizationId: 'org',
+      })
+    )
+  )
+  const entries = registry.get(homeProjectEntriesFacet)
+  expect(
+    entries.find((project) => project.remoteProjectId === 'shared')?.libraryIds
+  ).toEqual([ORGANIZATION_CLOUD_PROJECT_LIBRARY_ID])
+  expect(
+    entries
+      .filter((project) => project.canShareWithOrganization)
+      .map((project) => project.remoteProjectId)
+  ).toEqual(['own'])
+})
+
 it('discovers paged libraries, groups read-only projects, and drops an old account catalog response', async () => {
   const oldRequest = Promise.withResolvers<Response>()
   const fetchMock = vi

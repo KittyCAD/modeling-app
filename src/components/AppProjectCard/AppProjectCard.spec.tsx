@@ -172,12 +172,14 @@ function renderProjectCard({
   projectActions = createProjectActions(),
   projectStatus,
   showCloudSyncUi,
+  onShareWithOrganization,
 }: {
   density?: 'default' | 'compact'
   project?: HomeProjectEntry
   projectActions?: HomeProjectActionsService
   projectStatus?: ProjectStatus
   showCloudSyncUi?: boolean
+  onShareWithOrganization?: (project: HomeProjectEntry) => void
 } = {}) {
   render(
     <BrowserRouter>
@@ -189,6 +191,7 @@ function renderProjectCard({
         fileOperations={fileOperations}
         projectStatus={projectStatus}
         showCloudSyncUi={showCloudSyncUi}
+        onShareWithOrganization={onShareWithOrganization}
       />
     </BrowserRouter>
   )
@@ -250,6 +253,26 @@ describe('ProjectCard', () => {
   })
 
   afterEach(() => vi.unstubAllGlobals())
+
+  test.each([true, false])(
+    'offers organization sharing according to project permissions (%s)',
+    (canShareWithOrganization) => {
+      const project = { ...cloudProject, canShareWithOrganization }
+      const onShareWithOrganization = vi.fn()
+      renderProjectCard({ project, onShareWithOrganization })
+      fireEvent.contextMenu(screen.getByTestId('project-link'))
+      const share = screen.queryByTestId(
+        'project-card-context-share-with-organization'
+      )
+      if (canShareWithOrganization) {
+        expect(share).not.toBeNull()
+        fireEvent.click(share!)
+        expect(onShareWithOrganization).toHaveBeenCalledExactlyOnceWith(project)
+      } else {
+        expect(share).toBeNull()
+      }
+    }
+  )
 
   test.each(['local', 'cloud'] as const)(
     'keeps the %s card busy through project opening and navigation',

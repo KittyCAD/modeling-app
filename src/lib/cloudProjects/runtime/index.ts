@@ -1092,6 +1092,39 @@ export function createCloudProjectRuntime(
       notify([{ path: result.path, eventType: 'addDir' }])
       return result
     },
+    shareProjectWithOrganization: async (id: string) => {
+      if (isOffline()) return Promise.reject(offlineError())
+      const share = async () => {
+        const requestConfig = config()
+        const remote = await api.shareRemoteProjectWithOrganization(
+          requestConfig,
+          id
+        )
+        if (requestConfig.accountId !== config().accountId)
+          return Promise.reject(
+            new Error('Cloud account changed during project operation.')
+          )
+        const project = opened.get(id)
+        if (project) {
+          project.remote = {
+            ...project.remote,
+            access: remote.access,
+            library_id: remote.library_id,
+            metadata_revision: remote.metadata_revision,
+          }
+          state(id, saves.peek().get(id) ?? { state: 'saved' })
+        }
+        listGeneration += 1
+        projectIndex.value = {
+          owner: requestConfig.accountId,
+          items: [...projects.peek().filter((item) => item.id !== id), remote],
+        }
+        return remote
+      }
+      return opened.has(id)
+        ? enqueue(id, share, { persist: false, reportSaveFailure: false })
+        : share()
+    },
     renameProject: async (id: string, title: string) => {
       await openProject(id)
       await enqueue(id, async () => {

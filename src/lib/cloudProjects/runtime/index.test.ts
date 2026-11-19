@@ -19,6 +19,7 @@ vi.mock('@src/lib/cloudProjects/runtime/api', async (original) => ({
   updateRemoteProject: vi.fn(),
   createRemoteProject: vi.fn(),
   deleteRemoteProject: vi.fn(),
+  shareRemoteProjectWithOrganization: vi.fn(),
 }))
 vi.mock('@src/lib/cloudProjects/runtime/archive', () => ({
   parseProjectArchive: vi.fn(),
@@ -93,6 +94,58 @@ describe.each([
     instances.push(fs)
     return { fs, diskWrite, diskRemove }
   }
+
+  it.each(['saved', 'failed'] as const)(
+    'preserves %s files during a transfer and ignores a pre-transfer listing',
+    async (saveState) => {
+      const { fs } = setup()
+      const before = { ...remote, library_id: 'personal-library' }
+      vi.mocked(api.getRemoteProject).mockResolvedValue(before)
+      const root = await fs.openProject('one')
+      if (saveState === 'failed') {
+        vi.mocked(api.updateRemoteProject).mockRejectedValueOnce(
+          new Error('Save failed')
+        )
+        await expect(
+          fs.writeFile(
+            paths.join(root, 'main.kcl'),
+            encoder.encode('unsaved changes')
+          )
+        ).rejects.toThrow('Save failed')
+        vi.mocked(api.updateRemoteProject).mockClear()
+      }
+      const files = await fs.snapshot('one')
+      const listing =
+        Promise.withResolvers<
+          Awaited<ReturnType<typeof api.listRemoteProjects>>
+        >()
+      vi.mocked(api.listRemoteProjects).mockReturnValue(listing.promise)
+      const request = fs.listProjects()
+      const shared = {
+        ...remote,
+        metadata_revision: 'new-metadata-revision',
+        access: {
+          scope: 'organization' as const,
+          organization_id: 'org',
+          can_edit: false,
+          can_delete: false,
+          can_manage_organization: false,
+        },
+      }
+      vi.mocked(api.shareRemoteProjectWithOrganization).mockResolvedValue(
+        shared
+      )
+      await fs.shareProjectWithOrganization('one')
+      listing.resolve([before])
+      await request
+      expect(fs.projects.value).toEqual([shared])
+      expect(fs.isReadOnlyProject('one')).toBe(true)
+      expect(fs.saves.value.get('one')?.state).toBe(saveState)
+      expect(await fs.snapshot('one')).toEqual(files)
+      expect(api.createRemoteProject).not.toHaveBeenCalled()
+      expect(api.updateRemoteProject).not.toHaveBeenCalled()
+    }
+  )
 
   it.each(['success', 'failure'] as const)(
     'reports a seven-second project list request through %s and retry',

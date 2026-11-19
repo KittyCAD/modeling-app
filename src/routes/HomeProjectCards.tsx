@@ -49,6 +49,7 @@ interface ProjectLibraryPreviewRowProps {
   projectShellEnabled?: boolean
   showCloudSyncUi: boolean
   onCloneToLibrary: (project: HomeProjectEntry) => void
+  onShareWithOrganization?: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
   projectLibraryTypes?: ReadonlyMap<string, ProjectLibraryTypeContribution>
 }
@@ -109,6 +110,7 @@ export function ProjectLibraryPreviewRow({
   projectShellEnabled = false,
   showCloudSyncUi,
   onCloneToLibrary,
+  onShareWithOrganization,
   projectLibraryDrag,
   projectLibraryTypes,
 }: ProjectLibraryPreviewRowProps) {
@@ -202,6 +204,7 @@ export function ProjectLibraryPreviewRow({
           showCloudSyncUi={showCloudSyncUi}
           showSourceStatusBadges={false}
           onCloneToLibrary={onCloneToLibrary}
+          onShareWithOrganization={onShareWithOrganization}
           projectLibraryDrag={projectLibraryDrag}
           density="compact"
           className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
@@ -226,6 +229,7 @@ interface ProjectCardListProps {
   projectShellEnabled?: boolean
   showCloudSyncUi: boolean
   onCloneToLibrary: (project: HomeProjectEntry) => void
+  onShareWithOrganization?: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
   density?: 'default' | 'compact'
   showDetails?: boolean
@@ -241,6 +245,7 @@ export function ProjectCardList({
   projectShellEnabled = false,
   showCloudSyncUi,
   onCloneToLibrary,
+  onShareWithOrganization,
   projectLibraryDrag,
   density = 'default',
   showDetails = true,
@@ -270,6 +275,7 @@ export function ProjectCardList({
             showCloudSyncUi={showCloudSyncUi}
             showSourceStatusBadges={showSourceStatusBadges}
             onCloneToLibrary={onCloneToLibrary}
+            onShareWithOrganization={onShareWithOrganization}
             {...projectDragProps}
           />
         )

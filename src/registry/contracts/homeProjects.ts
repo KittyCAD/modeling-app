@@ -54,6 +54,7 @@ export interface HomeProjectDuplicateRealization {
  * or manufacture a combined local/remote source.
  */
 export interface HomeProjectEntry {
+  canShareWithOrganization?: boolean
   id: string
   source: HomeProjectSource
   status: HomeProjectStatus
