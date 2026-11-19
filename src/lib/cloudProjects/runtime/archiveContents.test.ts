@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   PROJECT_ARCHIVE_LIMITS,
   readProjectZip,
+  validateProjectUpload,
 } from '@src/lib/cloudProjects/runtime/archiveContents'
 
 describe('project ZIP boundaries', () => {
@@ -183,5 +184,40 @@ describe('project ZIP boundaries', () => {
     ).toEqual([
       { relativePath: 'parts/café.kcl', data: new Uint8Array([0, 128, 255]) },
     ])
+  })
+})
+
+describe('project upload boundaries', () => {
+  it('accepts exactly 1 GiB of file contents and rejects one byte more', () => {
+    const data = new Uint8Array(1024 * 1024)
+    const files = Array.from({ length: 1024 }, (_, i) => ({
+      relativePath: `${i}.bin`,
+      data,
+    }))
+    expect(validateProjectUpload(files)).toBeUndefined()
+    expect(
+      validateProjectUpload([
+        ...files,
+        { relativePath: 'extra.bin', data: new Uint8Array(1) },
+      ])
+    ).toEqual(
+      expect.objectContaining({ message: expect.stringMatching(/size/) })
+    )
+  })
+
+  it('accepts 10,000 files and rejects one more, including empty files', () => {
+    const files = Array.from({ length: 10_000 }, (_, i) => ({
+      relativePath: `${i}.kcl`,
+      data: new Uint8Array(),
+    }))
+    expect(validateProjectUpload(files)).toBeUndefined()
+    expect(
+      validateProjectUpload([
+        ...files,
+        { relativePath: 'extra.kcl', data: new Uint8Array() },
+      ])
+    ).toEqual(
+      expect.objectContaining({ message: expect.stringMatching(/file count/) })
+    )
   })
 })
