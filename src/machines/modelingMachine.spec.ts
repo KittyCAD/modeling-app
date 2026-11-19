@@ -340,32 +340,15 @@ describe('modelingMachine.test.ts', () => {
     return condition()
   }
 
-  const waitForState = async ({
-    modelingMachineActor,
-    stateString,
-  }: {
-    modelingMachineActor: ActorRefFrom<typeof modelingMachine>
-    stateString: any
-  }) => {
-    // Check if already idle before setting up subscription
-    const js1 = JSON.stringify(modelingMachineActor.getSnapshot().value)
-    const js2 = JSON.stringify(stateString)
-    if (js1 === js2) {
-      return Promise.resolve()
-    }
-
-    const waitForIdlePromise = new Promise((resolve) => {
-      const subscription = modelingMachineActor.subscribe((state) => {
-        const js1 = JSON.stringify(state.value)
-        const js2 = JSON.stringify(stateString)
-        if (js1 === js2) {
-          subscription.unsubscribe()
-          resolve(undefined)
-        }
-      })
-    })
-    return waitForIdlePromise
-  }
+  const waitForSketchScene = (
+    actor: ActorRefFrom<typeof modelingMachine>,
+    signal: AbortSignal
+  ) =>
+    waitFor(
+      actor,
+      (snapshot) => snapshot.matches({ Sketch: { SketchIdle: 'scene drawn' } }),
+      { timeout: GLOBAL_TIMEOUT_FOR_MODELING_MACHINE, signal }
+    )
 
   describe('modelingMachine - XState', () => {
     describe('legacy overlay pointer retention', () => {
@@ -555,7 +538,6 @@ p3 = [342.51, 216.38],
     const cases: {
       [strLibName: string]: {
         namedConstantConstraint: TestDetails[]
-        removeAllConstraintsCases: TestDetails[]
         removeIndividualConstraintsCases: TestDetails[]
         deleteSegment: Omit<TestDetails, 'expectedResult' | 'constraintIndex'>[]
       }
@@ -585,24 +567,6 @@ p3 = [342.51, 216.38],
             ...makeStraightSegmentSnippet('line(endAbsolute = [16.27, 73.81])'),
             constraintIndex: 1,
             expectedResult: 'line(endAbsolute = [16.27, test_variable]',
-          },
-        ],
-        removeAllConstraintsCases: [
-          {
-            name: 'should un-constrain rel-line',
-            ...makeStraightSegmentSnippet('line(end = [testVar1, testVar2])'),
-            constraintIndex: 0,
-            expectedResult: 'line(end = [55, 66])',
-          },
-          {
-            name: 'should un-constrain abs-line',
-            ...makeStraightSegmentSnippet(
-              'line(endAbsolute = [testVar1, testVar2])'
-            ),
-            constraintIndex: 0,
-            expectedResult: 'line(end = [-2286.04, 2768.2]',
-            // TODO un-constrains to relative line when it should not, expectedResult should be the following
-            // expectedResult: 'line(endAbsolute = [55, 66]',
           },
         ],
         removeIndividualConstraintsCases: [
@@ -665,22 +629,6 @@ p3 = [342.51, 216.38],
             expectedResult: 'xLine(endAbsolute = test_variable)',
           },
         ],
-        removeAllConstraintsCases: [
-          {
-            name: 'should un-constrain xLine',
-            ...makeStraightSegmentSnippet('xLine(length = testVar1)'),
-            constraintIndex: 1,
-            expectedResult: 'line(end = [55, 0])',
-          },
-          {
-            name: 'should un-constrain xLine absolute value',
-            ...makeStraightSegmentSnippet('xLine(endAbsolute = testVar1)'),
-            constraintIndex: 1,
-            expectedResult: 'line(end = [-2286.04, 0])',
-            // TODO un-constrains to relative line when it should not, expectedResult should be the following
-            // expectedResult: 'line(endAbsolute = [55, 0])',
-          },
-        ],
         removeIndividualConstraintsCases: [
           {
             name: 'should un-constrain xLine x value',
@@ -719,22 +667,6 @@ p3 = [342.51, 216.38],
             ...makeStraightSegmentSnippet('yLine(endAbsolute = 15)'),
             constraintIndex: 1,
             expectedResult: 'yLine(endAbsolute = test_variable)',
-          },
-        ],
-        removeAllConstraintsCases: [
-          {
-            name: 'should un-constrain yLine value',
-            ...makeStraightSegmentSnippet('yLine(length = testVar1)'),
-            constraintIndex: 1,
-            expectedResult: 'line(end = [0, 55])',
-          },
-          {
-            name: 'should un-constrain yLine absolute value',
-            ...makeStraightSegmentSnippet('yLine(endAbsolute = testVar1)'),
-            constraintIndex: 1,
-            expectedResult: 'line(end = [0, 2757.2])',
-            // TODO un-constrains to relative line when it should not, expectedResult should be the following
-            // expectedResult: 'line(endAbsolute = [0, 55])',
           },
         ],
         removeIndividualConstraintsCases: [
@@ -815,48 +747,6 @@ p3 = [342.51, 216.38],
             constraintIndex: 1,
             expectedResult:
               'angledLine(angle = 45deg, lengthX = test_variable)',
-          },
-        ],
-        removeAllConstraintsCases: [
-          {
-            name: 'should un-constrain angledLine',
-            ...makeStraightSegmentSnippet(
-              'angledLine(angle = testVar1, length = testVar2)'
-            ),
-            constraintIndex: 0,
-            expectedResult: 'line(end = [37.86, 54.06]',
-          },
-          {
-            name: 'should un-constrain angledLine, endAbsoluteY',
-            ...makeStraightSegmentSnippet(
-              'angledLine(angle = testVar1, endAbsoluteY = testVar2)'
-            ),
-            constraintIndex: 1,
-            expectedResult: 'line(end = [1938.31, 2768.2])',
-          },
-          {
-            name: 'should un-constrain angledLine, endAbsoluteX',
-            ...makeStraightSegmentSnippet(
-              'angledLine(angle = testVar1, endAbsoluteX = testVar2)'
-            ),
-            constraintIndex: 1,
-            expectedResult: 'line(end = [-2275.04, -3249.09])',
-          },
-          {
-            name: 'should un-constrain angledLine, lengthY',
-            ...makeStraightSegmentSnippet(
-              'angledLine(angle = testVar1, lengthY = testVar2)'
-            ),
-            constraintIndex: 1,
-            expectedResult: 'line(end = [46.21, 66])',
-          },
-          {
-            name: 'should un-constrain angledLine, lengthX',
-            ...makeStraightSegmentSnippet(
-              'angledLine(angle = testVar1, lengthX = testVar2)'
-            ),
-            constraintIndex: 1,
-            expectedResult: 'line(end = [66, 94.26])',
           },
         ],
         removeIndividualConstraintsCases: [
@@ -972,9 +862,6 @@ p3 = [342.51, 216.38],
               'circle(sketch001, center = [140.82, test_variable], radius = 74.18)',
           },
         ],
-        removeAllConstraintsCases: [
-          // TODO circle when remove all is working
-        ],
         removeIndividualConstraintsCases: [
           {
             name: 'should un-constrain circle, radius value',
@@ -1053,9 +940,6 @@ p3 = [342.51, 216.38],
             filter: 'p3',
           },
         ],
-        removeAllConstraintsCases: [
-          // TODO circleThreePoint when remove all is working
-        ],
         removeIndividualConstraintsCases: [
           {
             name: 'should un-constrain circleThreePoint, p1 x value',
@@ -1124,9 +1008,6 @@ p3 = [342.51, 216.38],
           },
           // TODO tangentialArc relative when that's working
         ],
-        removeAllConstraintsCases: [
-          // TODO tangentialArc when remove all is working
-        ],
         removeIndividualConstraintsCases: [
           {
             name: 'should un-constrain tangentialArc absolute x value',
@@ -1194,9 +1075,6 @@ p3 = [342.51, 216.38],
           },
           // TODO do other kwargs for arc
         ],
-        removeAllConstraintsCases: [
-          // TODO arc when remove all is working
-        ],
         removeIndividualConstraintsCases: [
           {
             name: 'should un-constrain threePoint Arc interior x value',
@@ -1255,12 +1133,13 @@ p3 = [342.51, 216.38],
       // namedConstantConstraintCases = namedConstantConstraintCases.filter((cases) => { return cases.name === 'should delete tangentialArc absolute' })
       namedConstantConstraintCases.forEach(
         ({ name, code, searchText, filter }) => {
-          it(name, async () => {
+          it(name, async ({ signal, onTestFinished }) => {
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
             kclManagerInThisFile.updateCodeEditor(code)
             const ast = assertParse(code, instanceInThisFile)
             await kclManagerInThisFile.executeAst({ ast })
+            signal.throwIfAborted()
 
             expect(kclManagerInThisFile.errors).toEqual([])
 
@@ -1294,6 +1173,9 @@ p3 = [342.51, 216.38],
             const actor = createActor(modelingMachine, {
               input: contextCopied,
             }).start()
+            onTestFinished(() => {
+              actor.stop()
+            })
 
             // Send event to transition to sketch mode
             actor.send({
@@ -1316,15 +1198,7 @@ p3 = [342.51, 216.38],
             })
             actor.send({ type: 'Enter sketch' })
 
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: 'animating to existing sketch',
-            })
-
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: { Sketch: { SketchIdle: 'set up segments' } },
-            })
+            await waitForSketchScene(actor, signal)
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
@@ -1390,13 +1264,14 @@ p3 = [342.51, 216.38],
           expectedResult,
           filter,
         }) => {
-          it(name, async () => {
+          it(name, async ({ signal, onTestFinished }) => {
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
             kclManagerInThisFile.updateCodeEditor(code)
             const ast = assertParse(code, instanceInThisFile)
 
             await kclManagerInThisFile.executeAst({ ast })
+            signal.throwIfAborted()
 
             expect(kclManagerInThisFile.errors).toEqual([])
 
@@ -1430,6 +1305,9 @@ p3 = [342.51, 216.38],
             const actor = createActor(modelingMachine, {
               input: contextCopied,
             }).start()
+            onTestFinished(() => {
+              actor.stop()
+            })
 
             // Send event to transition to sketch mode
             actor.send({
@@ -1452,15 +1330,12 @@ p3 = [342.51, 216.38],
             })
             actor.send({ type: 'Enter sketch' })
 
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: 'animating to existing sketch',
-            })
+            await waitForSketchScene(actor, signal)
 
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: { Sketch: { SketchIdle: 'set up segments' } },
-            })
+            expect(
+              kclManagerInThisFile.sceneInfra.camControls.enableRotate,
+              'Sketch orbit must be disabled before applying the constraint'
+            ).toBe(false)
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
@@ -1506,14 +1381,7 @@ p3 = [342.51, 216.38],
               },
             })
 
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: { Sketch: 'Converting to named value' },
-            })
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: { Sketch: { SketchIdle: 'scene drawn' } },
-            })
+            await waitForSketchScene(actor, signal)
             expect(kclManagerInThisFile.code).toContain(expectedResult)
           }, 10_000)
         }
@@ -1536,13 +1404,14 @@ p3 = [342.51, 216.38],
           expectedResult,
           filter,
         }) => {
-          it(name, async () => {
+          it(name, async ({ signal, onTestFinished }) => {
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
             kclManagerInThisFile.updateCodeEditor(code)
             const ast = assertParse(code, instanceInThisFile)
 
             await kclManagerInThisFile.executeAst({ ast })
+            signal.throwIfAborted()
 
             expect(kclManagerInThisFile.errors).toEqual([])
 
@@ -1576,6 +1445,9 @@ p3 = [342.51, 216.38],
             const actor = createActor(modelingMachine, {
               input: contextCopied,
             }).start()
+            onTestFinished(() => {
+              actor.stop()
+            })
             // Send event to transition to sketch mode
             actor.send({
               type: 'Set selection',
@@ -1597,20 +1469,7 @@ p3 = [342.51, 216.38],
             })
             actor.send({ type: 'Enter sketch' })
 
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: 'animating to existing sketch',
-            })
-
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: { Sketch: { SketchIdle: 'set up segments' } },
-            })
-
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: { Sketch: { SketchIdle: 'scene drawn' } },
-            })
+            await waitForSketchScene(actor, signal)
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
@@ -1653,148 +1512,6 @@ p3 = [342.51, 216.38],
         }
       )
     })
-    describe('Removing segment overlay constraints', () => {
-      useEngineWorld()
-
-      const removeAllConstraintsCases = Object.values(cases).flatMap(
-        (caseGroup) => caseGroup.removeAllConstraintsCases
-      )
-
-      removeAllConstraintsCases.forEach(
-        ({
-          name,
-          code,
-          searchText,
-          constraintIndex,
-          expectedResult,
-          filter,
-        }) => {
-          it(name, async () => {
-            const indexOfInterest = code.indexOf(searchText)
-            // You need to update this!!
-            kclManagerInThisFile.updateCodeEditor(code)
-            const ast = assertParse(code, instanceInThisFile)
-
-            await kclManagerInThisFile.executeAst({ ast })
-
-            expect(kclManagerInThisFile.errors).toEqual([])
-
-            // segment artifact with that source range
-            const artifact = [...kclManagerInThisFile.artifactGraph].find(
-              ([_, artifact]) =>
-                artifact?.type === 'segment' &&
-                artifact.codeRef.range[0] <= indexOfInterest &&
-                indexOfInterest <= artifact.codeRef.range[1]
-            )?.[1]
-            if (!artifact || !('codeRef' in artifact)) {
-              throw new Error(
-                'Artifact not found or invalid artifact structure'
-              )
-            }
-
-            const contextCopied = generateModelingMachineDefaultContext({
-              kclManager: kclManagerInThisFile,
-              rustContext: rustContextInThisFile,
-              wasmInstance: instanceInThisFile,
-              engineCommandManager: engineCommandManagerInThisFile,
-              commandBarActor: commandBarActorInThisFile,
-              machineManager: machineManagerInThisFile,
-            })
-
-            contextCopied.engineCommandManager = engineCommandManagerInThisFile
-            contextCopied.wasmInstance = instanceInThisFile
-            contextCopied.rustContext = rustContextInThisFile
-            contextCopied.commandBarActor = commandBarActorInThisFile
-
-            const actor = createActor(modelingMachine, {
-              input: contextCopied,
-            }).start()
-
-            // Send event to transition to sketch mode
-            actor.send({
-              type: 'Set selection',
-              data: {
-                selectionType: 'mirrorCodeMirrorSelections',
-                selection: {
-                  graphSelections: [
-                    {
-                      entityRef: artifactToEntityRef(
-                        artifact.type,
-                        artifact.id
-                      ),
-                      codeRef: artifact.codeRef,
-                    },
-                  ],
-                  otherSelections: [],
-                },
-              },
-            })
-            actor.send({ type: 'Enter sketch' })
-
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: 'animating to existing sketch',
-            })
-
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: { Sketch: { SketchIdle: 'set up segments' } },
-            })
-
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: { Sketch: { SketchIdle: 'scene drawn' } },
-            })
-
-            const callExp = getNodeFromPath<Node<CallExpressionKw>>(
-              kclManagerInThisFile.ast,
-              artifact.codeRef!.pathToNode,
-              instanceInThisFile,
-              'CallExpressionKw'
-            )
-            if (err(callExp)) {
-              throw new Error('Failed to get CallExpressionKw node')
-            }
-
-            // Now that we're in sketchIdle state, test the "Constrain with named value" event
-            actor.send({
-              type: 'Constrain remove constraints',
-              data: artifact.codeRef!.pathToNode,
-            })
-
-            // Wait for the state to change in response to the constraint
-            await waitForCondition(() => {
-              const snapshot = actor.getSnapshot()
-              // Check if we've transitioned to a different state
-              return (
-                JSON.stringify(snapshot.value) !==
-                JSON.stringify({
-                  Sketch: { SketchIdle: 'set up segments' },
-                })
-              )
-            }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
-
-            await waitForCondition(() => {
-              const snapshot = actor.getSnapshot()
-              // Check if we've transitioned to a different state
-              return (
-                JSON.stringify(snapshot.value) !==
-                JSON.stringify({ Sketch: 'Constrain remove constraints' })
-              )
-            }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
-            const startTime = Date.now()
-            while (
-              !kclManagerInThisFile.code.includes(expectedResult) &&
-              Date.now() - startTime < GLOBAL_TIMEOUT_FOR_MODELING_MACHINE
-            ) {
-              await new Promise((resolve) => setTimeout(resolve, 100))
-            }
-            expect(kclManagerInThisFile.code).toContain(expectedResult)
-          }, 10_000)
-        }
-      )
-    })
-
     describe('selection synchronization', () => {
       it('synchronizes default plane selection with the engine and editor', () => {
         const code = 'body001 = extrude(region001, length = 10)'

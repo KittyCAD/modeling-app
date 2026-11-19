@@ -710,6 +710,28 @@ export class SceneFixture {
     }
   }
 
+  /** Wait for a non-empty model to finish execution and initial camera fitting. */
+  waitForModelReady = async () => {
+    await this.settled()
+    await this.page.waitForFunction(
+      () => {
+        const editor = window.app.project?.executingEditor.value
+        return (
+          editor &&
+          !editor.isExecutingSignal.value &&
+          editor.artifactGraph.size > 0
+        )
+      },
+      undefined,
+      { timeout: 30_000 }
+    )
+    if (await this.usesLocalRenderer()) {
+      await expect(this.page.getByTestId('local-renderer-loading')).toBeHidden({
+        timeout: 30_000,
+      })
+    }
+  }
+
   waitForExecutionDoneAfter = async (
     action: () => Promise<unknown>,
     { timeout = 30_000 }: { timeout?: number } = {}
