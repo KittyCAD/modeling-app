@@ -1485,7 +1485,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
     await expect(toast1).toBeVisible()
 
     const response = await supportResponse
-    expect(response.status(), 'Support form HTTP status').toBe(204)
+    expect(response.status(), await response.text()).toBe(204)
     const toast2 = page.getByText('Support ticket created successfully.')
     await expect(toast2).toBeVisible()
   })

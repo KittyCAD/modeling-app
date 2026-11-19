@@ -1,7 +1,7 @@
 // Fillet is too large and produces an engine error.
 
 sketch001 = sketch(on = XY) {
-  line1 = line(start = [-2.5mm, 0mm], end = [var 2.50mm, var 0mm])
+  line1 = line(start = [var -2.5mm, var 0mm], end = [var 2.50mm, var 0mm])
   line2 = line(start = [var 2.50mm, var 0mm], end = [var 2.50mm, var 2.5mm])
   line3 = line(start = [var 2.50mm, var 2.5mm], end = [var -2.5mm, var 2.5mm])
   line4 = line(start = [var -2.5mm, var 2.5mm], end = [var -2.5mm, var 0mm])
