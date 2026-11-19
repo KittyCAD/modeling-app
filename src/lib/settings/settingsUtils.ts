@@ -1002,6 +1002,7 @@ export async function loadAndValidateSettings(
         projectLibrarySettingDefaultPolicies?: readonly ProjectLibrarySettingDefaultPolicy[]
         extensionSettings?: ResolvedExtensionSettings
         projectPath?: string
+        projectReadOnly?: boolean
       }
     | undefined = {}
 ): Promise<AppSettings> {
@@ -1014,6 +1015,7 @@ export async function loadAndValidateSettings(
     projectLibrarySettingDefaultPolicies = [],
     extensionSettings = {},
     projectPath,
+    projectReadOnly = false,
   } = options
   // Make sure we have wasm initialized.
   const wasmInstance = await initPromise
@@ -1071,8 +1073,9 @@ export async function loadAndValidateSettings(
     }
 
     if (
-      !projectSettings.settings?.meta?.id ||
-      projectSettings.settings.meta.id === uuidNIL
+      !projectReadOnly &&
+      (!projectSettings.settings?.meta?.id ||
+        projectSettings.settings.meta.id === uuidNIL)
     ) {
       projectSettings = setProjectConfigurationId(projectSettings, v4())
       const projectTomlString = serializeProjectConfiguration(

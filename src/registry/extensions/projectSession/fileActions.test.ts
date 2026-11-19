@@ -95,6 +95,7 @@ async function setup(
         idFor: (path: string) =>
           posix.relative(cloud!.root, path).match(/^[^/]+/)?.[0] ?? '',
         saves: signal(new Map()),
+        isReadOnlyProject: () => false,
       },
       cloud
     )
@@ -319,9 +320,9 @@ describe('direct project session file actions', () => {
       expect.anything(),
       '/project',
       expect.anything(),
-      {
+      expect.objectContaining({
         createMissingEntrypoint: false,
-      }
+      })
     )
     expect(s.project.projectIORefSignal.value).toMatchObject({
       title: 'Fresh',
@@ -631,9 +632,9 @@ it('uses the provider entrypoint policy when refreshing a project', async () => 
     expect.anything(),
     '/project',
     expect.anything(),
-    {
+    expect.objectContaining({
       createMissingEntrypoint: false,
-    }
+    })
   )
   expect(s.session.project.peek()?.projectIORefSignal.peek().title).toBe(
     'Snapshot'

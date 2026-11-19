@@ -461,7 +461,12 @@ export class ZDSProject {
       this.app.fileOperations,
       this.path,
       await this.app.wasmPromise,
-      { createMissingEntrypoint: false }
+      {
+        createMissingEntrypoint: false,
+        readOnly: !this.app.projectSession
+          .storageFor(this.path)
+          .writeAvailability.peek().writable,
+      }
     )
     if (!isCurrent()) return
     const existing = new Map(this.files.map((file) => [file.path, file]))
