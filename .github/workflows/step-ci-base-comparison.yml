@@ -1,16 +1,16 @@
-name: STEP assembly base comparison
+name: STEP modeling test comparison
 on:
   push:
-    branches: [codex/step-assembly-control-20261119]
+    branches: [codex/step-modeling-control-20261119]
   workflow_dispatch:
 permissions:
   contents: read
   actions: read
 jobs:
-  assemblies:
-    name: Assembly comparison (${{ matrix.revision }})
-    runs-on: namespace-profile-ubuntu-8-cores
-    timeout-minutes: 20
+  modeling:
+    name: Modeling tests (${{ matrix.revision }})
+    runs-on: namespace-profile-ubuntu-2-cores
+    timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
@@ -18,9 +18,12 @@ jobs:
           - revision: exact-base
             sha: 567989c16e0873687f2e89cb11951d635d523869
             wasm_run: 44405393037
-          - revision: candidate
-            sha: 84a16a4373d987beaf3cf27d880532a5d1ea10d6
-            wasm_run: 44577814983
+          - revision: unchanged-head
+            sha: ac859c5e48f10737dc0cac059e55a5b449347318
+            wasm_run: 44598041052
+          - revision: fixture-fix
+            sha: fb75cf1fa79cf1d76d4b62cdb9ecdb4e3ae73a12
+            wasm_run: 44598041052
     steps:
       - uses: actions/checkout@v6
         with:
@@ -30,8 +33,7 @@ jobs:
       - name: Record exact inputs
         run: |
           git rev-parse HEAD HEAD:rust
-          git diff -- e2e/playwright/test-utils.ts
-          git hash-object e2e/playwright/test-utils.ts e2e/playwright/snapshot-tests.spec.ts
+          git hash-object src/machines/modelingMachine.spec.ts
       - uses: actions/download-artifact@v8
         with:
           github-token: ${{ github.token }}
@@ -55,24 +57,22 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - uses: actions/cache@v5
-        with:
-          path: ~/.cache/ms-playwright/
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
-      - run: npm run playwright install --with-deps
-      - run: npm run tronb:vite:dev
-      - name: Repeat both assembly selection paths without retries
+      - name: Run original failure seed and a second shuffle without retries
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
-          TARGET: desktop
         shell: bash
         run: |
           set -o pipefail
-          xvfb-run -a npx playwright test --config=playwright.electron.config.ts e2e/playwright/point-click-assemblies.spec.ts --grep='Insert the bracket part into an assembly and transform it' --workers=1 --repeat-each=2 --retries=0 2>&1 | tee comparison-assembly.log
+          status=0
+          for seed in 1795116936566 15271; do
+            echo "Modeling validation seed $seed"
+            npm run test:integration -- --retry=0 --sequence.seed="$seed" --reporter=default --reporter=json --outputFile="comparison-$seed.json" src/machines/modelingMachine.spec.ts 2>&1 | tee -a comparison-modeling.log || status=1
+          done
+          exit "$status"
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: assembly-${{ matrix.revision }}
+          name: modeling-${{ matrix.revision }}
           path: |
-            comparison-assembly.log
-            test-results/
+            comparison-modeling.log
+            comparison-*.json
