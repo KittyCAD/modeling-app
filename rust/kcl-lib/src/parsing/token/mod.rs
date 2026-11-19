@@ -236,12 +236,11 @@ impl<'a> IntoIterator for TokenSlice<'a> {
 impl<'a> Stream for TokenSlice<'a> {
     type Token = Token;
     type Slice = Self;
-    type IterOffsets = Enumerate<std::vec::IntoIter<Token>>;
+    type IterOffsets = Enumerate<std::iter::Cloned<std::slice::Iter<'a, Token>>>;
     type Checkpoint = Checkpoint;
 
     fn iter_offsets(&self) -> Self::IterOffsets {
-        #[allow(clippy::unnecessary_to_owned)]
-        self.to_vec().into_iter().enumerate()
+        self.stream.tokens[self.start..self.end].iter().cloned().enumerate()
     }
 
     fn eof_offset(&self) -> usize {
