@@ -178,7 +178,8 @@ pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Resu
         project_directory: None,
         current_file: None,
         fixed_size_grid: true,
-        heartbeats: None,
+        // Long engine commands still require connection heartbeats while awaiting a response.
+        heartbeats: Some(5),
     };
     if let Some(current_file) = current_file {
         settings.with_current_file(crate::TypedPath(current_file));
