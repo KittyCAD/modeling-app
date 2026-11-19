@@ -106,6 +106,7 @@ python-stubs:
     @echo "📝 Generating type stubs with pyo3-stubgen..."
     cargo run --bin stub_gen
     mv zoo_kcl.pyi kcl.pyi
+    uvx --from ruff==0.17.5 ruff check --fix --unsafe-fixes kcl.pyi
     @echo "✅ Type stubs generated successfully"
 
 # Verify stub files are included in wheel

@@ -1,7 +1,8 @@
-import re
 import os
-import requests
+import re
 import textwrap
+
+import requests
 
 webhook_url = os.getenv('DISCORD_WEBHOOK_URL')
 release_version = os.getenv('RELEASE_VERSION')

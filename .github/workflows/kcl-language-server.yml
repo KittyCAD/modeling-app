@@ -212,6 +212,8 @@ jobs:
         run: |
           apk add --no-cache \
             bash \
+            build-base \
+            openssl-dev \
             curl \
             git \
             clang \

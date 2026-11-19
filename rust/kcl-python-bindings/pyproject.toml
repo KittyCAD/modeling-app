@@ -4,7 +4,8 @@ build-backend = "maturin"
 
 [project]
 name = "zoo-kcl"
-requires-python = ">=3.11"
+# PyO3 0.25 supports CPython through 3.14.
+requires-python = ">=3.11,<3.15"
 classifiers = [
   "Programming Language :: Rust",
   "Programming Language :: Python :: Implementation :: CPython",

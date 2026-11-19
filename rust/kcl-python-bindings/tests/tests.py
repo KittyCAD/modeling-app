@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
+import asyncio
 import os
+from pathlib import Path
 
 import kcl
-from kcl import Point3d
-from flaky import flaky
 import pytest
+from flaky import flaky
+from kcl import Point3d
 
 # Get the path to this script's parent directory.
 files_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "files")
@@ -54,12 +56,12 @@ requires_engine = pytest.mark.skipif(
 @pytest.mark.asyncio
 async def test_kcl_execute_with_exception():
     # Read from a file.
-    try:
+    with pytest.raises(Exception, match=r"lksjndflsskjfnak;jfna##") as exc_info:
         await kcl.execute(os.path.join(files_dir, "parse_file_error"))
-    except Exception as e:
-        assert e is not None
-        assert len(str(e)) > 0
-        assert "lksjndflsskjfnak;jfna##" in str(e)
+    e = exc_info.value
+    assert e is not None
+    assert len(str(e)) > 0
+    assert "lksjndflsskjfnak;jfna##" in str(e)
 
 
 @requires_engine
@@ -72,12 +74,12 @@ async def test_kcl_execute():
 @pytest.mark.asyncio
 async def test_kcl_parse_with_exception():
     # Read from a file.
-    try:
+    with pytest.raises(Exception, match=r"lksjndflsskjfnak;jfna##") as exc_info:
         await kcl.parse(os.path.join(files_dir, "parse_file_error"))
-    except Exception as e:
-        assert e is not None
-        assert len(str(e)) > 0
-        assert "lksjndflsskjfnak;jfna##" in str(e)
+    e = exc_info.value
+    assert e is not None
+    assert len(str(e)) > 0
+    assert "lksjndflsskjfnak;jfna##" in str(e)
 
 
 @pytest.mark.asyncio
@@ -115,23 +117,22 @@ async def test_kcl_default_units_fallback_default(tmp_path):
 @pytest.mark.asyncio
 async def test_kcl_parse_code():
     # Read from a file.
-    with open(lego_file, "r") as f:
-        code = str(f.read())
-        assert code is not None
-        assert len(code) > 0
-        result = kcl.parse_code(code)
-        assert result is True
+    code = await asyncio.to_thread(Path(lego_file).read_text)
+    assert code is not None
+    assert len(code) > 0
+    result = kcl.parse_code(code)
+    assert result is True
 
 
 @pytest.mark.asyncio
 async def test_kcl_mock_execute_with_exception():
     # Read from a file.
-    try:
+    with pytest.raises(Exception, match=r"lksjndflsskjfnak;jfna##") as exc_info:
         await kcl.mock_execute(os.path.join(files_dir, "parse_file_error"))
-    except Exception as e:
-        assert e is not None
-        assert len(str(e)) > 0
-        assert "lksjndflsskjfnak;jfna##" in str(e)
+    e = exc_info.value
+    assert e is not None
+    assert len(str(e)) > 0
+    assert "lksjndflsskjfnak;jfna##" in str(e)
 
 
 @pytest.mark.asyncio
@@ -145,12 +146,12 @@ async def test_kcl_mock_execute_with_engine_exception_should_pass():
 @pytest.mark.asyncio
 async def test_kcl_execute_with_engine_exception_should_fail():
     # Read from a file.
-    try:
+    with pytest.raises(Exception, match=r"engine") as exc_info:
         await kcl.execute(engine_error_file)
-    except Exception as e:
-        assert e is not None
-        assert len(str(e)) > 0
-        assert "engine" in str(e)
+    e = exc_info.value
+    assert e is not None
+    assert len(str(e)) > 0
+    assert "engine" in str(e)
 
 
 @pytest.mark.asyncio
@@ -163,56 +164,52 @@ async def test_kcl_mock_execute():
 @pytest.mark.asyncio
 async def test_kcl_mock_execute_code():
     # Read from a file.
-    with open(lego_file, "r") as f:
-        code = str(f.read())
-        assert code is not None
-        assert len(code) > 0
-        result = await kcl.mock_execute_code(code)
-        assert result is True
+    code = await asyncio.to_thread(Path(lego_file).read_text)
+    assert code is not None
+    assert len(code) > 0
+    result = await kcl.mock_execute_code(code)
+    assert result is True
 
 
 @requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_code():
     # Read from a file.
-    with open(lego_file, "r") as f:
-        code = str(f.read())
-        assert code is not None
-        assert len(code) > 0
-        await kcl.execute_code(code)
+    code = await asyncio.to_thread(Path(lego_file).read_text)
+    assert code is not None
+    assert len(code) > 0
+    await kcl.execute_code(code)
 
 
 @requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_code_and_snapshot():
     # Read from a file.
-    with open(lego_file, "r") as f:
-        code = str(f.read())
-        assert code is not None
-        assert len(code) > 0
-        image_bytes = await kcl.execute_code_and_snapshot(code, kcl.ImageFormat.Jpeg)
-        assert image_bytes is not None
-        assert len(image_bytes) > 0
+    code = await asyncio.to_thread(Path(lego_file).read_text)
+    assert code is not None
+    assert len(code) > 0
+    image_bytes = await kcl.execute_code_and_snapshot(code, kcl.ImageFormat.Jpeg)
+    assert image_bytes is not None
+    assert len(image_bytes) > 0
 
 
 @requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_code_and_export():
     # Read from a file.
-    with open(lego_file, "r") as f:
-        code = str(f.read())
-        assert code is not None
-        assert len(code) > 0
-        files = await kcl.execute_code_and_export(code, kcl.FileExportFormat.Step)
-        assert files is not None
-        assert len(files) > 0
-        assert files[0] is not None
-        name = files[0].name
-        contents = files[0].contents
-        assert name is not None
-        assert len(name) > 0
-        assert contents is not None
-        assert len(contents) > 0
+    code = await asyncio.to_thread(Path(lego_file).read_text)
+    assert code is not None
+    assert len(code) > 0
+    files = await kcl.execute_code_and_export(code, kcl.FileExportFormat.Step)
+    assert files is not None
+    assert len(files) > 0
+    assert files[0] is not None
+    name = files[0].name
+    contents = files[0].contents
+    assert name is not None
+    assert len(name) > 0
+    assert contents is not None
+    assert len(contents) > 0
 
 
 @requires_engine
@@ -315,27 +312,26 @@ async def test_kcl_execute_and_snapshot_dir():
 @pytest.mark.asyncio
 async def test_kcl_execute_and_measure():
     # Read from a file.
-    with open(lego_file, "r") as f:
-        code = str(f.read())
-        assert code is not None
-        assert len(code) > 0
+    code = await asyncio.to_thread(Path(lego_file).read_text)
+    assert code is not None
+    assert len(code) > 0
 
-        # Send the request
-        request = kcl.PhysicalPropertiesRequest()
-        request.set_volume(kcl.UnitVolume.CubicCentimeters)
-        request.set_center_of_mass(kcl.UnitLength.Centimeters)
-        response = await kcl.execute_code_and_measure(code, request)
-        assert response is not None
+    # Send the request
+    request = kcl.PhysicalPropertiesRequest()
+    request.set_volume(kcl.UnitVolume.CubicCentimeters)
+    request.set_center_of_mass(kcl.UnitLength.Centimeters)
+    response = await kcl.execute_code_and_measure(code, request)
+    assert response is not None
 
-        # Check the response is as expected.
-        assert response.get_volume() == pytest.approx(0.94557216312, rel=0, abs=1e-5)
-        assert response.get_volume_unit() == kcl.UnitVolume.CubicCentimeters
-        com = response.get_center_of_mass()
-        print(com.x, com.y, com.z)
-        assert com.x == pytest.approx(0.01788371801376342, rel=0, abs=1e-5)
-        assert com.y == pytest.approx(0.24748362600803375, rel=0, abs=1e-5)
-        assert com.z == pytest.approx(-0.0216667298227548, rel=0, abs=1e-5)
-        assert response.get_center_of_mass_unit() == kcl.UnitLength.Centimeters
+    # Check the response is as expected.
+    assert response.get_volume() == pytest.approx(0.94557216312, rel=0, abs=1e-5)
+    assert response.get_volume_unit() == kcl.UnitVolume.CubicCentimeters
+    com = response.get_center_of_mass()
+    print(com.x, com.y, com.z)
+    assert com.x == pytest.approx(0.01788371801376342, rel=0, abs=1e-5)
+    assert com.y == pytest.approx(0.24748362600803375, rel=0, abs=1e-5)
+    assert com.z == pytest.approx(-0.0216667298227548, rel=0, abs=1e-5)
+    assert response.get_center_of_mass_unit() == kcl.UnitLength.Centimeters
 
 
 @requires_engine
@@ -435,13 +431,12 @@ async def test_kcl_execute_and_export():
 
 def test_kcl_format():
     # Read from a file.
-    with open(lego_file, "r") as f:
-        code = str(f.read())
-        assert code is not None
-        assert len(code) > 0
-        formatted_code = kcl.format(code)
-        assert formatted_code is not None
-        assert len(formatted_code) > 0
+    code = Path(lego_file).read_text()
+    assert code is not None
+    assert len(code) > 0
+    formatted_code = kcl.format(code)
+    assert formatted_code is not None
+    assert len(formatted_code) > 0
 
 
 @pytest.mark.asyncio
@@ -517,17 +512,16 @@ def test_kcl_lint_fix_no_style():
 async def test_kcl_execute_code_and_export_with_bad_units():
     bad_units_file = os.path.join(tests_dir, "bad_units_in_annotation", "input.kcl")
     # Read from a file.
-    with open(bad_units_file, "r") as f:
-        code = str(f.read())
-        assert code is not None
-        assert len(code) > 0
-        try:
-            await kcl.execute_code_and_export(code, kcl.FileExportFormat.Step)
-        except Exception as e:
-            assert e is not None
-            assert len(str(e)) > 0
-            print(e)
-            assert "[1:1]" in str(e)
+    code = await asyncio.to_thread(Path(bad_units_file).read_text)
+    assert code is not None
+    assert len(code) > 0
+    with pytest.raises(Exception, match=r"\[1:1\]") as exc_info:
+        await kcl.execute_code_and_export(code, kcl.FileExportFormat.Step)
+    e = exc_info.value
+    assert e is not None
+    assert len(str(e)) > 0
+    print(e)
+    assert "[1:1]" in str(e)
 
 
 def test_relevant_file_extensions():
