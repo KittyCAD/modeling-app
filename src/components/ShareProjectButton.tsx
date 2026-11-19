@@ -2,6 +2,7 @@ import { Popover } from '@headlessui/react'
 import type { ProjectAccessResponse } from '@kittycad/lib'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
+import { getProjectHeaderButtonClasses } from '@src/components/actionButtonStyles'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
@@ -12,7 +13,7 @@ import { PATHS } from '@src/lib/routePaths'
 import { useEffect, useId, useState } from 'react'
 import toast from 'react-hot-toast'
 
-export function ShareProjectButton({ app, className }: AppHeaderItemProps) {
+export function ShareProjectButton({ app }: AppHeaderItemProps) {
   useSignals()
   const { registry } = app
   const cloud = registry.optional(cloudStorageService)
@@ -40,11 +41,14 @@ export function ShareProjectButton({ app, className }: AppHeaderItemProps) {
     appUrl
   ).href
   return (
-    <Popover key={`${url}:${auth.user.value?.id ?? ''}`}>
+    <Popover className="flex" key={`${url}:${auth.user.value?.id ?? ''}`}>
       {({ open }) => (
         <>
-          <Popover.Button type="button" className={className}>
-            <CustomIcon name="link" className="h-4 w-4" aria-hidden="true" />
+          <Popover.Button
+            type="button"
+            className={getProjectHeaderButtonClasses()}
+          >
+            <CustomIcon name="link" className="h-5 w-5" aria-hidden="true" />
             Share
           </Popover.Button>
           {open && (
@@ -128,7 +132,11 @@ function ShareProjectDialog({
               Element="button"
               type="button"
               tabIndex={0}
-              className="shrink-0"
+              iconStart={{
+                icon: copied ? 'clipboardCheckmark' : 'clipboard',
+                bgClassName: '!bg-transparent',
+              }}
+              className="min-w-24 shrink-0 self-stretch justify-center whitespace-nowrap !rounded"
               onClick={() => void copyLink()}
             >
               {copied ? 'Copied' : 'Copy link'}
