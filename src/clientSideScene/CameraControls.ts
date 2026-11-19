@@ -35,7 +35,12 @@ import {
   ZOOM_MAGIC_NUMBER,
 } from '@src/clientSideScene/sceneUtils'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
-import type { MouseGuard } from '@src/lib/cameraControls'
+import type {
+  MouseDragInput,
+  MouseDragInteraction,
+  MouseDragState,
+  MouseGuard,
+} from '@src/lib/cameraControls'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { Signal as LegacySignal } from '@src/lib/signal'
@@ -57,6 +62,8 @@ import {
   type UnreliableSubscription,
 } from '@src/lib/engineConnection/utils'
 
+// The central CATIA oval spans 80% of the displayed scene in each dimension.
+const CATIA_ORBIT_RADIUS_FRACTION = 0.4
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const EXPECTED_WORLD_COORD_SYSTEM = 'right_handed_up_z'
 
@@ -156,6 +163,15 @@ export class CameraControls {
   isDragging: boolean
   wasDragging: boolean
   private orbitDragUpInverted = false
+  /** Button-chord history belongs to this controller, while orbit mapping may change. */
+  private mouseDragState: MouseDragState = {
+    interaction: 'none',
+    buttons: 0,
+    ctrlKey: false,
+  }
+  private lastDragPointer: PointerEvent | undefined
+  private dragKeyboardWindow: Window | undefined
+  private activeDragInteraction: CameraDragInteractionType | 'none' = 'none'
   hoverPickingDisabled = false
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
@@ -423,6 +439,8 @@ export class CameraControls {
     this.domElement.addEventListener('pointerdown', this.onMouseDown)
     this.domElement.addEventListener('pointermove', this.onMouseMove)
     this.domElement.addEventListener('pointerup', this.onMouseUp)
+    this.domElement.addEventListener('pointercancel', this.onPointerCancel)
+    this.domElement.addEventListener('lostpointercapture', this.onPointerCancel)
     this.domElement.addEventListener('wheel', this.onMouseWheel)
     this.initTouchControls(this.enableTouchControls)
 
@@ -593,8 +611,35 @@ export class CameraControls {
     // duration of the drag, even while crossing a pole.
     this.orbitDragUpInverted =
       new Vector3(0, 1, 0).applyQuaternion(this.camera.quaternion).z < 0
-    let interaction = this.getInteractionType(event)
+    this.stopDragKeyboardTracking()
+    this.mouseDragState = { interaction: 'none', buttons: 0, ctrlKey: false }
+    const interaction = this.getInteractionType(event)
+    this.mouseDragState = {
+      interaction:
+        this.interactionGuards.resolveDrag?.(event, this.mouseDragState) ??
+        'none',
+      buttons: event.buttons,
+      ctrlKey: event.ctrlKey,
+    }
+    if (this.interactionGuards.resolveDrag && event.pointerType !== 'touch') {
+      this.lastDragPointer = event
+      const ownerWindow = this.domElement.ownerDocument.defaultView
+      if (ownerWindow) {
+        this.dragKeyboardWindow = ownerWindow
+        ownerWindow.addEventListener('keydown', this.onDragControlKey)
+        ownerWindow.addEventListener('keyup', this.onDragControlKey)
+        ownerWindow.addEventListener('blur', this.onDragWindowBlur)
+      }
+    }
+    this.startCameraDrag(event, interaction)
+  }
+
+  private startCameraDrag(
+    event: ScreenPoint,
+    interaction: CameraDragInteractionType | 'none'
+  ) {
     if (interaction === 'none') return
+    this.activeDragInteraction = interaction
     this.handleStart()
 
     if (this.effectiveCameraMode === 'engineToClient') {
@@ -624,13 +669,99 @@ export class CameraControls {
     this.cameraDown = this.camera.clone()
   }
 
+  private stopDragKeyboardTracking() {
+    this.dragKeyboardWindow?.removeEventListener(
+      'keydown',
+      this.onDragControlKey
+    )
+    this.dragKeyboardWindow?.removeEventListener('keyup', this.onDragControlKey)
+    this.dragKeyboardWindow?.removeEventListener('blur', this.onDragWindowBlur)
+    this.dragKeyboardWindow = undefined
+    this.lastDragPointer = undefined
+  }
+
+  private onDragWindowBlur = () => {
+    if (this.lastDragPointer) this.onMouseUpInner(this.lastDragPointer)
+  }
+
+  private onDragControlKey = (event: KeyboardEvent) => {
+    if (event.key !== 'Control' || event.repeat || !this.lastDragPointer) return
+    this.updateMouseDrag(
+      {
+        buttons: this.mouseDragState.buttons,
+        ctrlKey: event.ctrlKey,
+        shiftKey: event.shiftKey,
+        altKey: event.altKey,
+        metaKey: event.metaKey,
+      },
+      this.lastDragPointer,
+      false
+    )
+  }
+
+  private enabledMouseDragInteraction(
+    interaction: MouseDragInteraction,
+    point: ScreenPoint
+  ) {
+    if (interaction === 'pan' && !this.enablePan) return 'none'
+    if (interaction === 'rotate' && !this.enableRotate) return 'none'
+    if (interaction === 'zoom' && !this.enableZoom) return 'none'
+    return this.mapOrbitInteraction(interaction, point)
+  }
+
+  private updateMouseDrag(
+    input: MouseDragInput,
+    point: ScreenPoint,
+    move: boolean
+  ) {
+    const resolve = this.interactionGuards.resolveDrag
+    if (!resolve) return
+    const previous = this.mouseDragState.interaction
+    this.mouseDragState = {
+      interaction: resolve(input, this.mouseDragState),
+      buttons: input.buttons,
+      ctrlKey: input.ctrlKey,
+    }
+    const interaction = this.enabledMouseDragInteraction(
+      this.mouseDragState.interaction,
+      point
+    )
+    if (previous === 'rotate' || this.mouseDragState.interaction === 'rotate') {
+      this.wasDragging = true
+    }
+    if (
+      this.mouseDragState.interaction !== previous ||
+      interaction !== this.activeDragInteraction
+    ) {
+      this.moveFrame.flush()
+    }
+    if (this.mouseDragState.interaction !== previous) {
+      this.setDragAnchor(point)
+    }
+    if (interaction === 'none') {
+      if (this.activeDragInteraction !== 'none') this.endCameraDrag(point)
+      return
+    }
+    if (this.activeDragInteraction === 'none') {
+      this.setDragAnchor(point)
+      this.startCameraDrag(point, interaction)
+    }
+    this.activeDragInteraction = interaction
+    if (move) this.dragTo(point, interaction)
+  }
+
   onMouseMove = (event: PointerEvent) => {
     if (event.pointerType === 'touch') {
       return
     }
 
     if (this.isDragging) {
-      this.dragTo(event, this.getInteractionType(event))
+      if (this.interactionGuards.resolveDrag) {
+        this.lastDragPointer = event
+        this.updateMouseDrag(event, event, true)
+      } else {
+        this.dragTo(event, this.getInteractionType(event))
+      }
     } else {
       /**
        * If we're not in sketch mode and not dragging, we can highlight entities
@@ -692,7 +823,10 @@ export class CameraControls {
     } else {
       // The client owns the camera, either with engine synchronization
       // for sketch mode or without it for local rendering.
-      if (this.effectiveCameraMode === 'local') {
+      if (
+        this.effectiveCameraMode === 'local' ||
+        interaction === 'rotatetrackball'
+      ) {
         if (interaction === 'rotate') {
           orbitLocalCamera(
             this.camera,
@@ -763,15 +897,46 @@ export class CameraControls {
     }
   }
 
+  onPointerCancel = (event: PointerEvent) => {
+    if (this.interactionGuards.resolveDrag && this.isDragging) {
+      this.onMouseUpInner(event)
+    }
+  }
+
   onMouseUpInner = (event: PointerEvent) => {
     // Deliver the final coalesced movement before ending the engine gesture.
     this.moveFrame.flush()
     this.zoomFrame.flush()
-    this.domElement.releasePointerCapture(event.pointerId)
     this.isDragging = false
+    this.endCameraDrag(
+      event,
+      this.interactionGuards.resolveDrag
+        ? this.activeDragInteraction
+        : this.getInteractionType(event)
+    )
+    this.mouseDragState = { interaction: 'none', buttons: 0, ctrlKey: false }
+    this.stopDragKeyboardTracking()
+    if (event.type !== 'pointercancel' && event.type !== 'lostpointercapture') {
+      this.domElement.releasePointerCapture(event.pointerId)
+    }
+  }
+
+  /** Keeps compatibility mouse events from turning camera chords into sketch edits. */
+  get isMouseCameraGesture() {
+    return (
+      !!this.interactionGuards.resolveDrag &&
+      (this.mouseDragState.interaction !== 'none' || this.wasDragging)
+    )
+  }
+
+  private endCameraDrag(
+    event: ScreenPoint,
+    interaction = this.activeDragInteraction
+  ) {
+    this.moveFrame.flush()
+    this.activeDragInteraction = 'none'
     this.handleEnd()
     if (this.effectiveCameraMode === 'engineToClient') {
-      const interaction = this.getInteractionType(event)
       if (interaction === 'none') return
       const window = this.streamToEngineWindowCoordinates({
         clientX: event.clientX,
@@ -1853,6 +2018,16 @@ export class CameraControls {
   getInteractionType = (
     event: PointerEvent | WheelEvent | MouseEvent
   ): CameraDragInteractionType | 'none' => {
+    if (
+      this.interactionGuards.resolveDrag &&
+      !(event instanceof WheelEvent) &&
+      !('pointerType' in event && event.pointerType === 'touch')
+    ) {
+      return this.enabledMouseDragInteraction(
+        this.interactionGuards.resolveDrag(event, this.mouseDragState),
+        event
+      )
+    }
     // We just need to send any start value to the engine for touch.
     // I chose "rotate" because it's the 1-finger gesture
     const initialInteractionType =
@@ -1865,6 +2040,30 @@ export class CameraControls {
             this.enableRotate,
             this.enableZoom
           )
+    return this.mapOrbitInteraction(initialInteractionType, event)
+  }
+
+  private mapOrbitInteraction(
+    initialInteractionType: MouseDragInteraction,
+    point: ScreenPoint
+  ): CameraDragInteractionType | 'none' {
+    if (
+      initialInteractionType === 'rotate' &&
+      this.interactionGuards.orbitMode === 'catia'
+    ) {
+      const rect = this.domElement.getBoundingClientRect()
+      const width = rect.width || this.domElement.clientWidth
+      const height = rect.height || this.domElement.clientHeight
+      const x = point.clientX - rect.left
+      const y = point.clientY - rect.top
+      const inCenter =
+        width > 0 &&
+        height > 0 &&
+        ((x - width / 2) / (width * CATIA_ORBIT_RADIUS_FRACTION)) ** 2 +
+          ((y - height / 2) / (height * CATIA_ORBIT_RADIUS_FRACTION)) ** 2 <=
+          1
+      return inCenter ? 'rotate' : 'rotatetrackball'
+    }
     if (
       initialInteractionType === 'rotate' &&
       this.getSettings?.().modeling.cameraOrbit.current === 'trackball'

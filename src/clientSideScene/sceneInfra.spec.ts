@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { cameraMouseDragGuards } from '@src/lib/cameraControls'
+
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
 function makeSceneInfraForCallbacksTest() {
@@ -101,5 +103,56 @@ describe('SceneInfra non-primary mouse buttons', () => {
     )
 
     expect(onClick).not.toHaveBeenCalled()
+  })
+})
+
+describe('CATIA sketch input', () => {
+  it('does not select, drag or click a sketch entity during a left-button camera chord', async () => {
+    const sceneInfra = makeSceneInfraForCallbacksTest()
+    const canvas = document.createElement('canvas')
+    canvas.setPointerCapture = vi.fn()
+    canvas.releasePointerCapture = vi.fn()
+    sceneInfra.camControls.domElement = canvas
+    sceneInfra.camControls.enableRotate = false
+    sceneInfra.camControls.interactionGuards = cameraMouseDragGuards.CATIA
+    const onMouseDownSelection = vi.fn(() => true)
+    const onClick = vi.fn()
+    const onDrag = vi.fn()
+    sceneInfra.setCallbacks({ onMouseDownSelection, onClick, onDrag })
+    sceneInfra.camControls.onMouseDown(
+      new PointerEvent('pointerdown', { button: 1, buttons: 4 })
+    )
+    sceneInfra.camControls.onMouseMove(
+      new PointerEvent('pointermove', { button: 0, buttons: 5 })
+    )
+    sceneInfra.onMouseDown(
+      new MouseEvent('mousedown', { button: 0, buttons: 5 })
+    )
+    await sceneInfra.onMouseMove(
+      new MouseEvent('mousemove', { buttons: 5, clientX: 100 })
+    )
+    sceneInfra.camControls.onMouseMove(
+      new PointerEvent('pointermove', { button: 0, buttons: 4 })
+    )
+    await sceneInfra.onMouseUp(
+      new MouseEvent('mouseup', { button: 0, buttons: 4 })
+    )
+    sceneInfra.camControls.onMouseMove(
+      new PointerEvent('pointermove', { button: 0, buttons: 5 })
+    )
+    sceneInfra.camControls.onMouseMove(
+      new PointerEvent('pointermove', { button: 1, buttons: 1 })
+    )
+    sceneInfra.camControls.onMouseUp(
+      new PointerEvent('pointerup', { button: 0, buttons: 0 })
+    )
+    await sceneInfra.onMouseUp(
+      new MouseEvent('mouseup', { button: 0, buttons: 0 })
+    )
+    expect(onMouseDownSelection).not.toHaveBeenCalled()
+    expect(onClick).not.toHaveBeenCalled()
+    expect(onDrag).not.toHaveBeenCalled()
+    expect(sceneInfra.selected).toBeNull()
+    expect(sceneInfra.areaSelect).toBeNull()
   })
 })

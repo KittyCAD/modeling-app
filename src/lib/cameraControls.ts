@@ -10,12 +10,13 @@ const noModifiersPressed = (e: MouseEvent) =>
 
 export type CameraSystem =
   | 'Zoo'
-  | 'OnShape'
+  | 'Onshape'
   | 'Trackpad Friendly'
-  | 'Solidworks'
+  | 'SolidWorks'
   | 'NX'
   | 'Creo'
   | 'AutoCAD'
+  | 'CATIA'
 
 // Serialized version of these system names
 type MouseControlType =
@@ -26,15 +27,17 @@ type MouseControlType =
   | 'nx'
   | 'creo'
   | 'autocad'
+  | 'catia'
 
 export const cameraSystems: CameraSystem[] = [
   'Zoo',
-  'OnShape',
+  'Onshape',
   'Trackpad Friendly',
-  'Solidworks',
+  'SolidWorks',
   'NX',
   'Creo',
   'AutoCAD',
+  'CATIA',
 ]
 
 export function mouseControlsToCameraSystem(
@@ -48,11 +51,11 @@ export function mouseControlsToCameraSystem(
     // TODO: understand why the values come back without underscores and fix the root cause
     // @ts-ignore: TS2678
     case 'onshape':
-      return 'OnShape'
+      return 'Onshape'
     case 'trackpad_friendly':
       return 'Trackpad Friendly'
     case 'solidworks':
-      return 'Solidworks'
+      return 'SolidWorks'
     case 'nx':
       return 'NX'
     case 'creo':
@@ -61,6 +64,8 @@ export function mouseControlsToCameraSystem(
     // @ts-ignore: TS2678
     case 'autocad':
       return 'AutoCAD'
+    case 'catia':
+      return 'CATIA'
     case undefined:
     default:
       return undefined
@@ -73,11 +78,11 @@ export function cameraSystemToMouseControl(
   switch (cameraSystem) {
     case 'Zoo':
       return 'zoo'
-    case 'OnShape':
+    case 'Onshape':
       return 'onshape'
     case 'Trackpad Friendly':
       return 'trackpad_friendly'
-    case 'Solidworks':
+    case 'SolidWorks':
       return 'solidworks'
     case 'NX':
       return 'nx'
@@ -85,6 +90,8 @@ export function cameraSystemToMouseControl(
       return 'creo'
     case 'AutoCAD':
       return 'autocad'
+    case 'CATIA':
+      return 'catia'
     default:
       return undefined
   }
@@ -103,10 +110,32 @@ interface MouseGuardZoomHandler {
   lenientDragStartButton?: number
 }
 
+/** A mouse drag's action before camera orbit and sketch restrictions are applied. */
+export type MouseDragInteraction = 'pan' | 'rotate' | 'zoom' | 'none'
+
+export type MouseDragInput = Pick<
+  MouseEvent,
+  'buttons' | 'ctrlKey' | 'shiftKey' | 'altKey' | 'metaKey'
+>
+
+/** Prior held inputs distinguish Ctrl-first zoom from Middle-first rotation. */
+export interface MouseDragState {
+  interaction: MouseDragInteraction
+  buttons: number
+  ctrlKey: boolean
+}
+
 export interface MouseGuard {
   pan: MouseGuardHandler
   zoom: MouseGuardZoomHandler
   rotate: MouseGuardHandler
+  /** CATIA chooses spherical or trackball rotation from the cursor position. */
+  orbitMode?: 'catia'
+  /** Resolves button transitions using the preceding event in this pointer drag. */
+  resolveDrag?: (
+    event: MouseDragInput,
+    previous: MouseDragState
+  ) => MouseDragInteraction
 }
 
 export const btnName = (e: MouseEvent) => ({
@@ -133,7 +162,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
       callback: (e) => btnName(e).right && noModifiersPressed(e),
     },
   },
-  OnShape: {
+  Onshape: {
     pan: {
       description: 'Ctrl + Right click drag or middle click drag',
       callback: (e) =>
@@ -168,7 +197,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
       lenientDragStartButton: 0,
     },
   },
-  Solidworks: {
+  SolidWorks: {
     pan: {
       description: 'Ctrl + Right click drag',
       callback: (e) => btnName(e).right && e.ctrlKey,
@@ -215,6 +244,37 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
         const b = btnName(e)
         return (b.middle || (b.left && b.right)) && e.ctrlKey
       },
+    },
+  },
+  CATIA: {
+    orbitMode: 'catia',
+    pan: {
+      description: 'Middle click drag',
+      callback: (e) => e.buttons === 4 && noModifiersPressed(e),
+    },
+    rotate: {
+      description: 'Hold Middle, then Ctrl or Left or Right, and drag',
+      callback: (e) =>
+        !!(e.buttons & 4) && !!(e.buttons & 3) && noModifiersPressed(e),
+    },
+    zoom: {
+      description:
+        'Hold Ctrl, then Middle, and drag; or hold Middle, click and release Left or Right, then drag; or scroll',
+      dragCallback: () => false,
+      scrollCallback: (e) => e.buttons === 0,
+    },
+    resolveDrag: (e, previous) => {
+      if (!(e.buttons & 4) || e.shiftKey || e.altKey || e.metaKey) return 'none'
+      if (e.buttons & 3) return 'rotate'
+      if (e.ctrlKey) {
+        if (!(previous.buttons & 4)) return 'zoom'
+        if (!previous.ctrlKey) return 'rotate'
+        return previous.interaction === 'zoom' ? 'zoom' : 'rotate'
+      }
+      return previous.interaction === 'rotate' ||
+        previous.interaction === 'zoom'
+        ? 'zoom'
+        : 'pan'
     },
   },
   AutoCAD: {
