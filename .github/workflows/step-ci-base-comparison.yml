@@ -56,7 +56,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          npm run test:integration -- --sequence.seed=15271 2>&1 | tee comparison-integration.log
+          xvfb-run -a npm run test:integration -- --sequence.seed=15271 2>&1 | tee comparison-integration.log
       - uses: actions/upload-artifact@v7
         if: always()
         with:
