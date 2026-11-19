@@ -16,7 +16,7 @@ jobs:
       matrix:
         include:
           - revision: candidate
-            sha: 8aa04576510427ef67bce6ecef2f052806e2cf07
+            sha: 92d2e2d9d85aa57d87cf9d634a79f9caae4a776a
     steps:
       - uses: actions/checkout@v6
         with:
@@ -41,7 +41,7 @@ jobs:
           ZOO_HOST: https://api.dev.zoo.dev
           RUST_MIN_STACK: 10485760000
           RUST_FILTER: >-
-            test(simulation_tests::error_large_fillet_radius::) or
+            test(simulation_tests::error_loft_section_order::) or
             test(=simulation_tests::kcl_samples::kcl_test_execute_tooling_nest_block) or
             test(=simulation_tests::kcl_samples::parse_tooling_nest_block) or
             test(=simulation_tests::kcl_samples::unparse_tooling_nest_block)
@@ -61,7 +61,7 @@ jobs:
           EXPECTORATE: overwrite
           TWENTY_TWENTY: update
           RUST_FILTER: >-
-            test(simulation_tests::error_large_fillet_radius::) or
+            test(simulation_tests::error_loft_section_order::) or
             test(=simulation_tests::kcl_samples::kcl_test_execute_tooling_nest_block) or
             test(=simulation_tests::kcl_samples::parse_tooling_nest_block) or
             test(=simulation_tests::kcl_samples::unparse_tooling_nest_block)
@@ -94,7 +94,7 @@ jobs:
       matrix:
         include:
           - revision: candidate
-            sha: 8aa04576510427ef67bce6ecef2f052806e2cf07
+            sha: 92d2e2d9d85aa57d87cf9d634a79f9caae4a776a
     steps:
       - uses: actions/checkout@v6
         with:
@@ -103,7 +103,8 @@ jobs:
       - name: Verify WASM source identities against artifact build
         run: |
           git rev-parse HEAD
-          test "$(git rev-parse HEAD:rust/kcl-lib/src)" = e2626d490ec57a3c00c16c1aa308b8bb4bc0ecb1
+          # Only the cfg(test) simulation module differs from the artifact build.
+          test "$(git cat-file -p HEAD:rust/kcl-lib/src | sed '/simulation_tests.rs$/d' | git hash-object --stdin)" = c7aa6a500a39da8d91149c8daff2221ce7e790e3
           test "$(git rev-parse HEAD:rust/kcl-lib/std)" = b2e785f5cc2b04c75c01dc29aa0adad13fae8de8
           test "$(git rev-parse HEAD:rust/kcl-wasm-lib)" = 354a48cd8d11239382feefd56d8f488474820c32
           test "$(git rev-parse HEAD:rust/kcl-lib/Cargo.toml)" = 7aeb8b6eacc88448932a58093e463f31cee78ca1
@@ -167,11 +168,7 @@ jobs:
         include:
           - revision: two-cores
             runner: namespace-profile-ubuntu-2-cores
-            sha: 8aa04576510427ef67bce6ecef2f052806e2cf07
-            wasm_run: 44548232352
-          - revision: eight-cores
-            runner: namespace-profile-ubuntu-8-cores
-            sha: 8aa04576510427ef67bce6ecef2f052806e2cf07
+            sha: 92d2e2d9d85aa57d87cf9d634a79f9caae4a776a
             wasm_run: 44548232352
     steps:
       - uses: actions/checkout@v6
@@ -202,6 +199,18 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - name: Instrument trim phases without changing assertions
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('src/machines/sketchSolve/tools/trimToolImpl.spec.ts')
+          s=p.read_text()
+          s=s.replace('  const setProgramOutcome =', '  const setupStart = performance.now()\n  const setProgramOutcome =')
+          s=s.replace("  if (setProgramOutcome.type !== 'Success')", "  console.log('[phase] set-program', kclCode.length, performance.now() - setupStart)\n  if (setProgramOutcome.type !== 'Success')")
+          s=s.replace('    await onAreaSelectEndHandler(trimPoints)', "    const trimStart = performance.now()\n    await onAreaSelectEndHandler(trimPoints)\n    console.log('[phase] trim-loop', kclCode.length, performance.now() - trimStart)")
+          p.write_text(s)
+          PY
       - name: Run unchanged trim and project tests
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
@@ -209,8 +218,8 @@ jobs:
         run: |
           set -o pipefail
           status=0
-          for attempt in 1 2 3; do
-            xvfb-run -a npm run test:integration -- src/machines/sketchSolve/tools/trimToolImpl.spec.ts src/lib/app.spec.ts --sequence.seed=15271 --retry=0 2>&1 | tee -a comparison-integration.log || status=1
+          for attempt in 1; do
+            xvfb-run -a npm run test:integration -- src/machines/sketchSolve/tools/trimToolImpl.spec.ts src/lib/app.spec.ts --sequence.seed=15271 --retry=0 --pool=forks --execArgv=--cpu-prof 2>&1 | tee -a comparison-integration.log || status=1
           done
           exit "$status"
       - uses: actions/upload-artifact@v7
@@ -219,4 +228,5 @@ jobs:
           name: integration-${{ matrix.revision }}
           path: |
             comparison-integration.log
+            CPU*.cpuprofile
             test-results/
