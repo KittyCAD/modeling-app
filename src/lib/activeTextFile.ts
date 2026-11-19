@@ -70,6 +70,16 @@ const outgoingWrites = new Map<
 const fileGenerations = new Map<string, number>()
 let pendingWriteTimeout: ReturnType<typeof setTimeout> | undefined
 
+export function getPendingActiveTextFileContents(): ReadonlyMap<
+  string,
+  string
+> {
+  const contents = new Map<string, string>()
+  for (const [path, write] of outgoingWrites) contents.set(path, write.text)
+  if (pendingWrite) contents.set(pendingWrite.path, pendingWrite.text)
+  return contents
+}
+
 /** Include debounced and failed writes when deciding whether a remote refresh is safe. */
 export function hasPendingActiveTextFileWrite(projectPath: string): boolean {
   const belongs = (path: string) =>

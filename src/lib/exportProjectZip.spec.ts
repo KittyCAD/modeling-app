@@ -1,5 +1,11 @@
 import { tmpdir } from 'node:os'
 import {
+  clearActiveTextFile,
+  flushActiveTextFileWrite,
+  openActiveTextFile,
+  scheduleActiveTextFileWrite,
+} from '@src/lib/activeTextFile'
+import {
   createProjectZipArchive,
   exportProjectZip,
 } from '@src/lib/exportProjectZip'
@@ -50,7 +56,7 @@ describe('createProjectZipArchive', () => {
     createdProjectPaths.length = 0
   })
 
-  it('zips every project file and uses the current editor contents for the active file', async () => {
+  it('zips project files with the current KCL buffer and excludes repository metadata', async () => {
     const projectPath = fsZds.join(
       tmpdir(),
       `export-project-zip-${crypto.randomUUID()}`
@@ -61,6 +67,15 @@ describe('createProjectZipArchive', () => {
     await fsZds.mkdir(fsZds.join(projectPath, '.hidden-dir'), {
       recursive: true,
     })
+    await fsZds.mkdir(fsZds.join(projectPath, '.git'))
+    await fsZds.writeFile(
+      fsZds.join(projectPath, '.git', 'HEAD'),
+      new TextEncoder().encode('ref: main')
+    )
+    await fsZds.writeFile(
+      fsZds.join(projectPath, '._meta'),
+      new TextEncoder().encode('internal metadata')
+    )
     await fsZds.writeFile(
       fsZds.join(projectPath, 'main.kcl'),
       new TextEncoder().encode('disk = true')
@@ -93,6 +108,8 @@ describe('createProjectZipArchive', () => {
     expect(archive.fileName).toBe('web-project.zip')
     const zip = await JSZip.loadAsync(archive.contents)
 
+    expect(zip.file('web-project/.git/HEAD')).toBeNull()
+    expect(zip.file('web-project/._meta')).toBeNull()
     await expect(
       zip.file('web-project/main.kcl')?.async('string')
     ).resolves.toBe('unsaved = true')
@@ -107,7 +124,7 @@ describe('createProjectZipArchive', () => {
     ).resolves.toBe('default_file = "main.kcl"')
   })
 
-  it('saves a project archive through the desktop file picker', async () => {
+  it('saves a project archive with pending text edits through the desktop file picker', async () => {
     const projectPath = fsZds.join(
       tmpdir(),
       `export-project-zip-${crypto.randomUUID()}`
@@ -119,11 +136,20 @@ describe('createProjectZipArchive', () => {
       fsZds.join(projectPath, 'main.kcl'),
       new TextEncoder().encode('disk = true')
     )
+    const readmePath = fsZds.join(projectPath, 'README.md')
+    await fsZds.writeFile(readmePath, new TextEncoder().encode('Saved README'))
+    await openActiveTextFile(testFileOperations, readmePath)
 
     const filePath = fsZds.join(projectPath, 'saved.zip')
     const save = vi.fn().mockResolvedValue({ canceled: false, filePath })
     vi.stubGlobal('electron', { save, process: { env: {} } })
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
     try {
+      scheduleActiveTextFileWrite(
+        testFileOperations,
+        readmePath,
+        'Edited README'
+      )
       await exportProjectZip({
         fileOperations: testFileOperations,
         project: makeProject(projectPath, {
@@ -133,6 +159,9 @@ describe('createProjectZipArchive', () => {
         wasmInstance,
       })
     } finally {
+      await flushActiveTextFileWrite()
+      clearActiveTextFile()
+      vi.useRealTimers()
       vi.unstubAllGlobals()
     }
 
@@ -145,5 +174,8 @@ describe('createProjectZipArchive', () => {
     await expect(
       zip.file('Human Project/main.kcl')?.async('string')
     ).resolves.toBe('disk = true')
+    await expect(
+      zip.file('Human Project/README.md')?.async('string')
+    ).resolves.toBe('Edited README')
   })
 })

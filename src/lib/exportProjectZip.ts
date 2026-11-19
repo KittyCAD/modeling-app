@@ -1,10 +1,11 @@
+import { getPendingActiveTextFileContents } from '@src/lib/activeTextFile'
+import { isExcludedProjectPath } from '@src/lib/cloudProjects/runtime/paths'
 import { exportSave } from '@src/lib/exportSave'
 import {
   EXPORT_TOAST_MESSAGES,
   PROJECT_SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
-import fsZds from '@src/lib/fs-zds'
-import { toProjectRelativePath, toWebSafePath } from '@src/lib/paths'
+import { getRelativePathIfContained, toWebSafePath } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { sanitizeProjectName } from '@src/lib/projectName'
@@ -134,6 +135,8 @@ export async function collectProjectZipEntries({
           }
         : {},
       projectContext: project,
+      fileContentsOverrides: getPendingActiveTextFileContents(),
+      exclude: isExcludedProjectPath,
       warnIfProjectExceeds64Mb: false,
       skipUnreadableFiles: false,
     })
@@ -170,14 +173,17 @@ export async function collectProjectZipEntries({
       entries.push(entry)
     }
 
+    const selectedRelativePath = selectedFilePath
+      ? getRelativePathIfContained(project.path, selectedFilePath)
+      : undefined
     if (
-      selectedFilePath &&
+      selectedRelativePath &&
       currentFileContents !== undefined &&
       !hasCurrentFile &&
-      selectedFilePath.startsWith(project.path + fsZds.sep)
+      !isExcludedProjectPath(selectedRelativePath)
     ) {
       entries.push({
-        relativePath: toProjectRelativePath(project.path, selectedFilePath),
+        relativePath: toWebSafePath(selectedRelativePath),
         data: new TextEncoder().encode(currentFileContents),
       })
     }

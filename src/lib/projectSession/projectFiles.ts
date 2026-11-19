@@ -126,6 +126,8 @@ export const collectProjectFiles = async (args: {
   fileNames: ExecState['filenames']
   projectContext?: Project
   selectedFilePath?: string
+  fileContentsOverrides?: ReadonlyMap<string, string>
+  exclude?: (path: string) => boolean
   warnIfProjectExceeds64Mb?: boolean
   skipUnreadableFiles?: boolean
 }) => {
@@ -178,6 +180,13 @@ export const collectProjectFiles = async (args: {
           selectedRelativePath
       )
     }
+    let fileContentsOverrides: Map<string, string> | undefined
+    if (args.fileContentsOverrides?.size) {
+      fileContentsOverrides = new Map()
+      for (const [path, contents] of args.fileContentsOverrides) {
+        fileContentsOverrides.set(normalizePathForComparison(path), contents)
+      }
+    }
     const execStateFileIndexForKclFile = (
       absolutePathToFileNameWithExtension: string,
       fileNameWithExtension: string
@@ -201,13 +210,15 @@ export const collectProjectFiles = async (args: {
 
       filePromises.push(
         Promise.resolve()
-          .then(() =>
-            isSelectedFilePath(absolutePathToFileNameWithExtension)
-              ? new TextEncoder().encode(args.selectedFileContents)
-              : args.fileOperations.readFile(
-                  absolutePathToFileNameWithExtension
-                )
-          )
+          .then(() => {
+            const path = absolutePathToFileNameWithExtension
+            const contents = isSelectedFilePath(path)
+              ? args.selectedFileContents
+              : fileContentsOverrides?.get(normalizePathForComparison(path))
+            return contents === undefined
+              ? args.fileOperations.readFile(path)
+              : new TextEncoder().encode(contents)
+          })
           .then((file): FileMeta => {
             uploadSize += file.byteLength
             const decoder = new TextDecoder('utf-8')
@@ -244,6 +255,7 @@ export const collectProjectFiles = async (args: {
     }
 
     await walkProjectFiles(args.fileOperations, basePath, pushFilePromise, {
+      exclude: args.exclude,
       skipMissing: args.skipUnreadableFiles !== false,
     })
     projectFiles = (await Promise.all(filePromises)).filter(isNonNullable)
