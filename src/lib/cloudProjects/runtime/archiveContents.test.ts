@@ -1,8 +1,72 @@
 import JSZip from 'jszip'
 import { describe, expect, it } from 'vitest'
-import { readProjectZip } from '@src/lib/cloudProjects/runtime/archiveContents'
+import {
+  PROJECT_ARCHIVE_LIMITS,
+  readProjectZip,
+} from '@src/lib/cloudProjects/runtime/archiveContents'
 
 describe('project ZIP boundaries', () => {
+  it('supports the agreed 1 GiB and 10,000-entry project budget', () => {
+    expect(PROJECT_ARCHIVE_LIMITS).toEqual({
+      maxBytes: 1024 * 1024 * 1024,
+      maxEntries: 10_000,
+    })
+  })
+
+  it('accepts an archive at the compressed byte limit and rejects one byte over', async () => {
+    const zip = new JSZip()
+    zip.file('main.kcl', 'cube()')
+    const archive = await zip.generateAsync({ type: 'arraybuffer' })
+    await expect(
+      readProjectZip(archive, { maxEntries: 1, maxBytes: archive.byteLength })
+    ).resolves.toEqual([
+      { relativePath: 'main.kcl', data: new TextEncoder().encode('cube()') },
+    ])
+    await expect(
+      readProjectZip(archive, {
+        maxEntries: 1,
+        maxBytes: archive.byteLength - 1,
+      })
+    ).rejects.toThrow(/size/)
+  })
+
+  it('counts expanded bytes across files and accepts exactly the byte budget', async () => {
+    const zip = new JSZip()
+    zip.file('a.kcl', 'a'.repeat(1024))
+    zip.file('b.kcl', 'b'.repeat(1024))
+    const archive = await zip.generateAsync({
+      type: 'arraybuffer',
+      compression: 'DEFLATE',
+    })
+    expect(archive.byteLength).toBeLessThan(2047)
+    await expect(
+      readProjectZip(archive, { maxEntries: 2, maxBytes: 2048 })
+    ).resolves.toEqual([
+      {
+        relativePath: 'a.kcl',
+        data: new TextEncoder().encode('a'.repeat(1024)),
+      },
+      {
+        relativePath: 'b.kcl',
+        data: new TextEncoder().encode('b'.repeat(1024)),
+      },
+    ])
+    await expect(
+      readProjectZip(archive, { maxEntries: 2, maxBytes: 2047 })
+    ).rejects.toThrow(/size/)
+  })
+
+  it('accepts 10,000 entries and rejects the next entry', async () => {
+    const zip = new JSZip()
+    for (let i = 0; i < 10_000; i++) zip.file(`${i}.kcl`, '')
+    const archive = await zip.generateAsync({ type: 'arraybuffer' })
+    await expect(readProjectZip(archive)).resolves.toHaveLength(10_000)
+    zip.file('extra.kcl', '')
+    await expect(
+      readProjectZip(await zip.generateAsync({ type: 'arraybuffer' }))
+    ).rejects.toThrow(/file count/)
+  })
+
   it.each([0, 1, 3, 21])(
     'rejects a truncated %i-byte header without a range error',
     async (length) => {
