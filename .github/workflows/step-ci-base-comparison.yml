@@ -16,7 +16,7 @@ jobs:
       matrix:
         include:
           - revision: candidate
-            sha: 4da8d651eecc5331690edef23ca78b8ef1647aa7
+            sha: 389c310e610b995ceaa35ddba9671ffa30850d97
     steps:
       - uses: actions/checkout@v6
         with:
@@ -45,7 +45,7 @@ jobs:
           ZOO_HOST: https://api.dev.zoo.dev
           RUST_MIN_STACK: 10485760000
           RUST_FILTER: >-
-            (test(frontend::) and not test(export_bindings)) or
+            ((test(frontend::) or test(parsing::)) and not test(export_bindings)) or
             test(simulation_tests::error_loft_section_order::) or
             test(=simulation_tests::kcl_samples::kcl_test_execute_tooling_nest_block) or
             test(=simulation_tests::kcl_samples::parse_tooling_nest_block) or
@@ -70,7 +70,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: 4da8d651eecc5331690edef23ca78b8ef1647aa7
+          ref: 389c310e610b995ceaa35ddba9671ffa30850d97
           persist-credentials: false
       - run: |
           git rev-parse HEAD HEAD:rust
@@ -112,7 +112,7 @@ jobs:
         include:
           - revision: two-cores
             runner: namespace-profile-ubuntu-2-cores
-            sha: 4da8d651eecc5331690edef23ca78b8ef1647aa7
+            sha: 389c310e610b995ceaa35ddba9671ffa30850d97
             wasm_run: ${{ github.run_id }}
     steps:
       - uses: actions/checkout@v6
