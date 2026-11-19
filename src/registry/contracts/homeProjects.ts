@@ -104,7 +104,7 @@ export type HomeProjectOpenResult = {
 export type HomeProjectRenameOptions = {
   notify?: boolean
 }
-export interface HomeProjectCloneToLibraryTarget {
+export interface HomeProjectDuplicateToLibraryTarget {
   library: ProjectLibrary
   sourceLibrary: ProjectLibrary
 }
@@ -113,7 +113,6 @@ export type HomeProjectAction =
   | 'Renaming'
   | 'Deleting'
   | 'Duplicating'
-  | 'Cloning'
   | 'Separating'
 export interface HomeProjectActionsService {
   readonly pendingActions: ReadonlySignal<
@@ -125,7 +124,7 @@ export interface HomeProjectActionsService {
   canDuplicate: (project: HomeProjectEntry) => boolean
   canRename: (project: HomeProjectEntry) => boolean
   canDelete: (project: HomeProjectEntry) => boolean
-  canCloneToLibrary: (project: HomeProjectEntry) => boolean
+  canDuplicateToLibrary: (project: HomeProjectEntry) => boolean
   canReviewDuplicateRealizations: (project: HomeProjectEntry) => boolean
   canSeparateProjectCopies: (project: HomeProjectEntry) => boolean
   open: (
@@ -138,10 +137,10 @@ export interface HomeProjectActionsService {
     options?: HomeProjectRenameOptions
   ) => Promise<void>
   delete: (project: HomeProjectEntry) => Promise<void>
-  getCloneToLibraryTargets: (
+  getDuplicateToLibraryTargets: (
     project: HomeProjectEntry
-  ) => readonly HomeProjectCloneToLibraryTarget[]
-  cloneToLibrary: (
+  ) => readonly HomeProjectDuplicateToLibraryTarget[]
+  duplicateToLibrary: (
     project: HomeProjectEntry,
     targetLibraryId: string,
     options?: {

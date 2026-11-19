@@ -208,7 +208,7 @@ export async function cloneProjectIntoLocalDirectory({
     undefined
   )
     return Promise.reject(
-      new Error('The clone destination must be outside the source project.')
+      new Error('The duplicate destination must be outside the source project.')
     )
   const entrypoint = defaultFile
     ? getRelativePathIfContained(sourceProjectPath, defaultFile)?.replaceAll(

@@ -595,7 +595,7 @@ function withReportedDirectoryProjectOperations(
       risk: 'destructive',
     }),
     cloneProjectTo: report(operations.cloneProjectTo, {
-      operation: 'clone project',
+      operation: 'duplicate project',
       risk: 'write',
     }),
   }
