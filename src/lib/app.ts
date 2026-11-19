@@ -453,7 +453,8 @@ export class App implements AppSubsystems {
       this.settings.actor.getSnapshot().context
     )
     const libraries = projectLibrariesFromSettings(
-      settings.app.libraries.current
+      settings.app.libraries.current,
+      libraryTypes
     )
     const targets = libraries.flatMap((library) => {
       const createProject = getProjectLibraryCreateProjectOperation(
@@ -503,7 +504,8 @@ export class App implements AppSubsystems {
                 .context.modeling.defaultUnit.getFallback('project'),
             getProjectLibraries: () =>
               projectLibrariesFromSettings(
-                this.settings.actor.getSnapshot().context.app.libraries.current
+                this.settings.actor.getSnapshot().context.app.libraries.current,
+                this.registry.get(projectLibraryTypesFacet)
               ),
             getCreateProjectLibraryTargets: this.getCreateProjectLibraryTargets,
             getHomeProjectActions: () =>

@@ -1,4 +1,5 @@
 import { withHomeProjectActionStatus } from '@src/lib/homeProjectActions'
+import { collectProjectFilesForClone } from '@src/lib/projectSession/projectFiles'
 import { selectCommand } from '@src/lib/commandUtils'
 import { observations as projectSessionObservations } from '@src/registry/contracts/projectSession'
 import {
@@ -164,7 +165,10 @@ const homeProjectActions = defineFactory({
     const getConfiguredProjectLibraries = () => {
       const currentSettings = settings.value?.current.value
       return currentSettings
-        ? projectLibrariesFromSettings(currentSettings.app.libraries.current)
+        ? projectLibrariesFromSettings(
+            currentSettings.app.libraries.current,
+            projectLibrariesInputs.projectLibraryTypesFacet.value
+          )
         : []
     }
     const getCloneToLibraryTargets = (
@@ -367,11 +371,24 @@ const homeProjectActions = defineFactory({
         if (!source) {
           return undefined
         }
+        const current =
+          projectSessionInputs.projectSession.current.value?.getProject()
+        const files = await collectProjectFilesForClone({
+          fileOperations: fileOperationsInputs.fileOperationsService.required(),
+          projectRoot: source.localProjectPath,
+          editorFiles:
+            current?.path === source.localProjectPath
+              ? [...current.editors].map(([path, editor]) => ({
+                  path: path.value,
+                  contents: editor.codeSignal.value,
+                }))
+              : [],
+        })
         const result = await cloneTo.run({
           library: target.library,
           sourceLibrary: target.sourceLibrary,
           project,
-          source,
+          source: { ...source, files },
           requestedProjectTitle: options?.title,
         })
         toast.success(

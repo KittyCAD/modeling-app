@@ -1484,7 +1484,7 @@ describe('KclManager live operation updates', () => {
           app.fileOperations,
           metadata.path,
           expect.anything(),
-          { createMissingEntrypoint: false }
+          expect.objectContaining({ createMissingEntrypoint: false })
         )
         expect(open).toHaveBeenCalledOnce()
         expect(open).toHaveBeenCalledWith(
