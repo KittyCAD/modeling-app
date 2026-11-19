@@ -68,6 +68,9 @@ jobs:
     name: e2e:snapshots
     runs-on: namespace-profile-ubuntu-8-cores
     if: github.repository == 'kittycad/modeling-app'
+    env:
+      # Each browser starts several WASM workers; serialize cases on this runner.
+      E2E_WORKERS: '1'
 
     steps:
       - uses: actions/create-github-app-token@v3
