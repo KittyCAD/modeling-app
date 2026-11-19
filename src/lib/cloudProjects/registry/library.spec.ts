@@ -1,3 +1,8 @@
+import { useApp } from '@src/lib/boot'
+import {
+  homeProjectActionsService,
+  type HomeProjectActionsService,
+} from '@src/registry/contracts/homeProjects'
 import {
   clearSessionExpiredNotice,
   sessionExpiredNotice,
@@ -24,6 +29,12 @@ import {
 import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
 import cloudProjects from '@src/lib/cloudProjects/registry/library'
 import { afterEach, expect, it, vi } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { createElement } from 'react'
+import { FileSaveStatus } from '@src/components/FileSaveStatus'
+import type { App } from '@src/lib/app'
+
+vi.mock('@src/lib/boot', () => ({ useApp: vi.fn() }))
 vi.mock('@src/lib/fs-zds', async () => ({
   default: (await import('@chainner/node-path')).posix,
 }))
@@ -35,7 +46,7 @@ afterEach(async () => {
   clearSessionExpiredNotice()
 })
 
-it('discovers paged libraries, groups projects, and drops an old account catalog response', async () => {
+it('discovers paged libraries, groups read-only projects, and drops an old account catalog response', async () => {
   const oldRequest = Promise.withResolvers<Response>()
   const fetchMock = vi
     .fn<typeof fetch>()
@@ -67,6 +78,9 @@ it('discovers paged libraries, groups projects, and drops an old account catalog
   registry = new Registry()
   await registry.configure([
     cloudProjects,
+    provide(homeProjectActionsService, {
+      canCloneToLibrary: () => true,
+    } as unknown as HomeProjectActionsService),
     provide(authService, {
       user,
       token,
@@ -87,6 +101,7 @@ it('discovers paged libraries, groups projects, and drops an old account catalog
       thumbnails: signal(new Map()),
       root: '/__zoo_cloud__',
       idFor: () => 'model',
+      isReadOnlyProject: () => true,
       saves: signal(new Map()),
     } as unknown as CloudStorageService),
   ])
@@ -120,6 +135,43 @@ it('discovers paged libraries, groups projects, and drops an old account catalog
   expect(
     getProjectLibraryOperation(type, dataset, 'createProject')
   ).toBeUndefined()
+  expect(
+    getProjectLibraryOperation(
+      type,
+      dataset,
+      'cloneProjectFrom'
+    )?.canCloneProject?.({ library: dataset, project: entries[0] })
+  ).toBe(true)
+  const send = vi.fn()
+  vi.mocked(useApp).mockReturnValue({
+    registry,
+    projectSignal: signal({
+      path: '/__zoo_cloud__/model',
+      executingEditor: signal(undefined),
+    }),
+    projectSession: {
+      storageFor: () => ({
+        writeAvailability: signal({
+          writable: false,
+          reason: 'Read-only project.',
+        }),
+      }),
+    },
+    commands: { send },
+  } as unknown as App)
+  const view = render(createElement(FileSaveStatus))
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Create an editable copy' })
+  )
+  expect(send).toHaveBeenCalledWith({
+    type: 'Find and select command',
+    data: {
+      groupId: 'projects',
+      name: 'Clone project',
+      argDefaultValues: { project: entries[0].id },
+    },
+  })
+  view.unmount()
   document.dispatchEvent(new Event('visibilitychange'))
   await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(3))
   user.value = { id: 'second' }

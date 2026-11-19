@@ -753,6 +753,7 @@ const directoryProjectLibraryType: Factory = defineFactory({
             projectDirectoryPath: library.path,
             sourceProjectPath: source.localProjectPath,
             sourceProjectName: source.localProjectName,
+            files: source.files,
             defaultFile: source.defaultFile,
             requestedProjectTitle:
               requestedProjectTitle ?? getHomeProjectDisplayName(project),
