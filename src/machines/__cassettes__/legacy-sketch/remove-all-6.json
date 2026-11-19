@@ -1,0 +1,1923 @@
+[
+  {
+    "request": {
+      "type": "modeling_cmd_req",
+      "cmd": {
+        "type": "begin_execution",
+        "enable_render": true
+      },
+      "cmd_id": "3b68551f-6582-441e-b63e-14b22ee031c2"
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "3b68551f-6582-441e-b63e-14b22ee031c2",
+        "resp": {
+          "type": "modeling",
+          "data": {
+            "modeling_response": {
+              "type": "begin_execution",
+              "data": {}
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_req",
+      "cmd": {
+        "type": "set_kcl_version",
+        "kcl_version": "1.0"
+      },
+      "cmd_id": "351bce6c-68e1-5a92-a1c1-c31042ebba32"
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "351bce6c-68e1-5a92-a1c1-c31042ebba32",
+        "resp": {
+          "type": "modeling",
+          "data": {
+            "modeling_response": {
+              "type": "set_kcl_version",
+              "data": {}
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_batch_req",
+      "requests": [
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": 1,
+              "y": 0,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 1,
+              "z": 0
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "4ee5c8fa-4b86-5fbf-b7bd-a115c55d5289"
+        },
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": 0,
+              "y": 1,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "bfd6e010-ac40-5cde-b8f1-65dd5ecc18ce"
+        },
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": 1,
+              "y": 0,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "5e6084f3-764e-5b58-a4dc-67fee9e0cfef"
+        },
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": -1,
+              "y": 0,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 1,
+              "z": 0
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "25709434-cd20-5165-8714-70fc4f8f96fc"
+        },
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": 0,
+              "y": -1,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "5fe067f7-d979-5f95-9ea2-155e1c2fb4c0"
+        },
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": -1,
+              "y": 0,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "364b40d4-898b-5fcd-a3ac-925042f14a2e"
+        }
+      ],
+      "batch_id": "506b5b40-ebbd-4222-b473-9d4ec74e6d94",
+      "responses": true
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "506b5b40-ebbd-4222-b473-9d4ec74e6d94",
+        "resp": {
+          "type": "modeling_batch",
+          "data": {
+            "responses": {
+              "bfd6e010-ac40-5cde-b8f1-65dd5ecc18ce": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "5e6084f3-764e-5b58-a4dc-67fee9e0cfef": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "364b40d4-898b-5fcd-a3ac-925042f14a2e": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "5fe067f7-d979-5f95-9ea2-155e1c2fb4c0": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "4ee5c8fa-4b86-5fbf-b7bd-a115c55d5289": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "25709434-cd20-5165-8714-70fc4f8f96fc": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_req",
+      "cmd": {
+        "type": "end_execution"
+      },
+      "cmd_id": "6db3b46e-846e-4230-b66b-0d89de0266ff"
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "6db3b46e-846e-4230-b66b-0d89de0266ff",
+        "resp": {
+          "type": "modeling",
+          "data": {
+            "modeling_response": {
+              "type": "end_execution",
+              "data": {}
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_req",
+      "cmd": {
+        "type": "begin_execution",
+        "enable_render": true
+      },
+      "cmd_id": "affe0262-cc07-4872-ab0b-8c494d3da01b"
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "affe0262-cc07-4872-ab0b-8c494d3da01b",
+        "resp": {
+          "type": "modeling",
+          "data": {
+            "modeling_response": {
+              "type": "begin_execution",
+              "data": {}
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_req",
+      "cmd": {
+        "type": "set_kcl_version",
+        "kcl_version": "1.0"
+      },
+      "cmd_id": "351bce6c-68e1-5a92-a1c1-c31042ebba32"
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "351bce6c-68e1-5a92-a1c1-c31042ebba32",
+        "resp": {
+          "type": "modeling",
+          "data": {
+            "modeling_response": {
+              "type": "set_kcl_version",
+              "data": {}
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_batch_req",
+      "requests": [
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": 1,
+              "y": 0,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 1,
+              "z": 0
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "4ee5c8fa-4b86-5fbf-b7bd-a115c55d5289"
+        },
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": 0,
+              "y": 1,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "bfd6e010-ac40-5cde-b8f1-65dd5ecc18ce"
+        },
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": 1,
+              "y": 0,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "5e6084f3-764e-5b58-a4dc-67fee9e0cfef"
+        },
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": -1,
+              "y": 0,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 1,
+              "z": 0
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "25709434-cd20-5165-8714-70fc4f8f96fc"
+        },
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": 0,
+              "y": -1,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "5fe067f7-d979-5f95-9ea2-155e1c2fb4c0"
+        },
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": -1,
+              "y": 0,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "364b40d4-898b-5fcd-a3ac-925042f14a2e"
+        }
+      ],
+      "batch_id": "16ff956b-caa4-4690-b2b8-f22791154901",
+      "responses": true
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "16ff956b-caa4-4690-b2b8-f22791154901",
+        "resp": {
+          "type": "modeling_batch",
+          "data": {
+            "responses": {
+              "364b40d4-898b-5fcd-a3ac-925042f14a2e": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "bfd6e010-ac40-5cde-b8f1-65dd5ecc18ce": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "25709434-cd20-5165-8714-70fc4f8f96fc": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "5e6084f3-764e-5b58-a4dc-67fee9e0cfef": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "4ee5c8fa-4b86-5fbf-b7bd-a115c55d5289": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "5fe067f7-d979-5f95-9ea2-155e1c2fb4c0": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_batch_req",
+      "requests": [
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": 1,
+              "y": 0,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            },
+            "size": 60,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "3c085bb9-a401-55d5-8042-5a9095193d55"
+        },
+        {
+          "cmd": {
+            "type": "enable_sketch_mode",
+            "entity_id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+            "ortho": false,
+            "animated": false,
+            "adjust_camera": false,
+            "planar_normal": {
+              "x": 0,
+              "y": -1,
+              "z": 0
+            }
+          },
+          "cmd_id": "91226189-7e64-5690-9203-67ee33a6eb03"
+        },
+        {
+          "cmd": {
+            "type": "start_path"
+          },
+          "cmd_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+        },
+        {
+          "cmd": {
+            "type": "move_path_pen",
+            "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "to": {
+              "x": 2263.04,
+              "y": -2721.2,
+              "z": 0
+            }
+          },
+          "cmd_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
+        },
+        {
+          "cmd": {
+            "type": "sketch_mode_disable"
+          },
+          "cmd_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
+        },
+        {
+          "cmd": {
+            "type": "extend_path",
+            "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "segment": {
+              "type": "line",
+              "end": {
+                "x": 78,
+                "y": 19,
+                "z": 0
+              },
+              "relative": true
+            }
+          },
+          "cmd_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+        },
+        {
+          "cmd": {
+            "type": "extend_path",
+            "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "segment": {
+              "type": "line",
+              "end": {
+                "x": 37.85604479916904,
+                "y": 54.06403492307346,
+                "z": 0
+              },
+              "relative": true
+            }
+          },
+          "cmd_id": "89316223-2ea1-5731-9c72-0492bc30fbe2"
+        },
+        {
+          "cmd": {
+            "type": "extend_path",
+            "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "segment": {
+              "type": "line",
+              "end": {
+                "x": 75.72,
+                "y": 18.41,
+                "z": 0
+              },
+              "relative": true
+            }
+          },
+          "cmd_id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
+        }
+      ],
+      "batch_id": "e6a3963f-b8b3-4cdc-bb66-1f41c826998b",
+      "responses": true
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "e6a3963f-b8b3-4cdc-bb66-1f41c826998b",
+        "resp": {
+          "type": "modeling_batch",
+          "data": {
+            "responses": {
+              "3c085bb9-a401-55d5-8042-5a9095193d55": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "8a662fcd-9569-5482-8c42-aafff7b3f8d4": {
+                "response": {
+                  "type": "extend_path",
+                  "data": {}
+                }
+              },
+              "8868de97-0e2a-52f7-8e1a-8f0671a194e3": {
+                "response": {
+                  "type": "start_path",
+                  "data": {}
+                }
+              },
+              "efd1e3b2-5268-50fd-858e-26540f8146e5": {
+                "response": {
+                  "type": "sketch_mode_disable",
+                  "data": {}
+                }
+              },
+              "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53": {
+                "response": {
+                  "type": "move_path_pen",
+                  "data": {}
+                }
+              },
+              "91226189-7e64-5690-9203-67ee33a6eb03": {
+                "response": {
+                  "type": "enable_sketch_mode",
+                  "data": {}
+                }
+              },
+              "89316223-2ea1-5731-9c72-0492bc30fbe2": {
+                "response": {
+                  "type": "extend_path",
+                  "data": {}
+                }
+              },
+              "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b": {
+                "response": {
+                  "type": "extend_path",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_req",
+      "cmd": {
+        "type": "end_execution"
+      },
+      "cmd_id": "d1d94fac-35d5-4a53-a954-96ee5c841f6c"
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "d1d94fac-35d5-4a53-a954-96ee5c841f6c",
+        "resp": {
+          "type": "modeling",
+          "data": {
+            "modeling_response": {
+              "type": "end_execution",
+              "data": {}
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_req",
+      "cmd_id": "fc5130cf-08cc-4aa6-8908-f177c633360c",
+      "cmd": {
+        "type": "set_selection_filter",
+        "filter": [
+          "face",
+          "edge",
+          "solid2d",
+          "curve",
+          "object",
+          "path",
+          "region"
+        ]
+      }
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "fc5130cf-08cc-4aa6-8908-f177c633360c",
+        "resp": {
+          "type": "modeling",
+          "data": {
+            "modeling_response": {
+              "type": "set_selection_filter",
+              "data": {}
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_batch_req",
+      "batch_id": "efb7f65b-b3e3-489e-b5ed-04349ad30913",
+      "requests": [
+        {
+          "cmd_id": "4bf94c15-d689-4a30-ae17-234e33256c25",
+          "cmd": {
+            "type": "object_visible",
+            "object_id": "4ee5c8fa-4b86-5fbf-b7bd-a115c55d5289",
+            "hidden": true
+          }
+        },
+        {
+          "cmd_id": "01c259e6-f91c-4934-bd84-4b94809fbc10",
+          "cmd": {
+            "type": "object_visible",
+            "object_id": "bfd6e010-ac40-5cde-b8f1-65dd5ecc18ce",
+            "hidden": true
+          }
+        },
+        {
+          "cmd_id": "0b6593f7-f67f-4e9f-943b-ff3f451d7c1c",
+          "cmd": {
+            "type": "object_visible",
+            "object_id": "5e6084f3-764e-5b58-a4dc-67fee9e0cfef",
+            "hidden": true
+          }
+        }
+      ],
+      "responses": true
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "efb7f65b-b3e3-489e-b5ed-04349ad30913",
+        "resp": {
+          "type": "modeling_batch",
+          "data": {
+            "responses": {
+              "01c259e6-f91c-4934-bd84-4b94809fbc10": {
+                "response": {
+                  "type": "object_visible",
+                  "data": {}
+                }
+              },
+              "0b6593f7-f67f-4e9f-943b-ff3f451d7c1c": {
+                "response": {
+                  "type": "object_visible",
+                  "data": {}
+                }
+              },
+              "4bf94c15-d689-4a30-ae17-234e33256c25": {
+                "response": {
+                  "type": "object_visible",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_req",
+      "cmd_id": "d390ef47-b4c4-4aac-8d47-a09db05c106b",
+      "cmd": {
+        "type": "enable_sketch_mode",
+        "adjust_camera": false,
+        "animated": false,
+        "ortho": true,
+        "entity_id": "3c085bb9-a401-55d5-8042-5a9095193d55"
+      }
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "d390ef47-b4c4-4aac-8d47-a09db05c106b",
+        "resp": {
+          "type": "modeling",
+          "data": {
+            "modeling_response": {
+              "type": "enable_sketch_mode",
+              "data": {}
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_req",
+      "cmd": {
+        "type": "begin_execution",
+        "enable_render": true
+      },
+      "cmd_id": "1df2f068-4dc3-4a4b-a071-dc3973da9d57"
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "1df2f068-4dc3-4a4b-a071-dc3973da9d57",
+        "resp": {
+          "type": "modeling",
+          "data": {
+            "modeling_response": {
+              "type": "begin_execution",
+              "data": {}
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_req",
+      "cmd": {
+        "type": "set_kcl_version",
+        "kcl_version": "1.0"
+      },
+      "cmd_id": "351bce6c-68e1-5a92-a1c1-c31042ebba32"
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "351bce6c-68e1-5a92-a1c1-c31042ebba32",
+        "resp": {
+          "type": "modeling",
+          "data": {
+            "modeling_response": {
+              "type": "set_kcl_version",
+              "data": {}
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_batch_req",
+      "requests": [
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": 1,
+              "y": 0,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 1,
+              "z": 0
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "4ee5c8fa-4b86-5fbf-b7bd-a115c55d5289"
+        },
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": 0,
+              "y": 1,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "bfd6e010-ac40-5cde-b8f1-65dd5ecc18ce"
+        },
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": 1,
+              "y": 0,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "5e6084f3-764e-5b58-a4dc-67fee9e0cfef"
+        },
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": -1,
+              "y": 0,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 1,
+              "z": 0
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "25709434-cd20-5165-8714-70fc4f8f96fc"
+        },
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": 0,
+              "y": -1,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "5fe067f7-d979-5f95-9ea2-155e1c2fb4c0"
+        },
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": -1,
+              "y": 0,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "364b40d4-898b-5fcd-a3ac-925042f14a2e"
+        }
+      ],
+      "batch_id": "6b275292-9561-47be-bbfb-b730a582b736",
+      "responses": true
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "6b275292-9561-47be-bbfb-b730a582b736",
+        "resp": {
+          "type": "modeling_batch",
+          "data": {
+            "responses": {
+              "5fe067f7-d979-5f95-9ea2-155e1c2fb4c0": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "364b40d4-898b-5fcd-a3ac-925042f14a2e": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "4ee5c8fa-4b86-5fbf-b7bd-a115c55d5289": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "5e6084f3-764e-5b58-a4dc-67fee9e0cfef": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "25709434-cd20-5165-8714-70fc4f8f96fc": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "bfd6e010-ac40-5cde-b8f1-65dd5ecc18ce": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_batch_req",
+      "requests": [
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": 1,
+              "y": 0,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            },
+            "size": 60,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "3c085bb9-a401-55d5-8042-5a9095193d55"
+        },
+        {
+          "cmd": {
+            "type": "enable_sketch_mode",
+            "entity_id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+            "ortho": false,
+            "animated": false,
+            "adjust_camera": false,
+            "planar_normal": {
+              "x": 0,
+              "y": -1,
+              "z": 0
+            }
+          },
+          "cmd_id": "91226189-7e64-5690-9203-67ee33a6eb03"
+        },
+        {
+          "cmd": {
+            "type": "start_path"
+          },
+          "cmd_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+        },
+        {
+          "cmd": {
+            "type": "move_path_pen",
+            "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "to": {
+              "x": 2263.04,
+              "y": -2721.2,
+              "z": 0
+            }
+          },
+          "cmd_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
+        },
+        {
+          "cmd": {
+            "type": "sketch_mode_disable"
+          },
+          "cmd_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
+        },
+        {
+          "cmd": {
+            "type": "extend_path",
+            "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "segment": {
+              "type": "line",
+              "end": {
+                "x": 78,
+                "y": 19,
+                "z": 0
+              },
+              "relative": true
+            }
+          },
+          "cmd_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+        },
+        {
+          "cmd": {
+            "type": "extend_path",
+            "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "segment": {
+              "type": "line",
+              "end": {
+                "x": 37.85604479916904,
+                "y": 54.06403492307346,
+                "z": 0
+              },
+              "relative": true
+            }
+          },
+          "cmd_id": "89316223-2ea1-5731-9c72-0492bc30fbe2"
+        },
+        {
+          "cmd": {
+            "type": "extend_path",
+            "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "segment": {
+              "type": "line",
+              "end": {
+                "x": 75.72,
+                "y": 18.41,
+                "z": 0
+              },
+              "relative": true
+            }
+          },
+          "cmd_id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
+        }
+      ],
+      "batch_id": "1fbdb782-108e-467c-8ab9-cff85598725a",
+      "responses": true
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "1fbdb782-108e-467c-8ab9-cff85598725a",
+        "resp": {
+          "type": "modeling_batch",
+          "data": {
+            "responses": {
+              "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53": {
+                "response": {
+                  "type": "move_path_pen",
+                  "data": {}
+                }
+              },
+              "8a662fcd-9569-5482-8c42-aafff7b3f8d4": {
+                "response": {
+                  "type": "extend_path",
+                  "data": {}
+                }
+              },
+              "8868de97-0e2a-52f7-8e1a-8f0671a194e3": {
+                "response": {
+                  "type": "start_path",
+                  "data": {}
+                }
+              },
+              "91226189-7e64-5690-9203-67ee33a6eb03": {
+                "response": {
+                  "type": "enable_sketch_mode",
+                  "data": {}
+                }
+              },
+              "3c085bb9-a401-55d5-8042-5a9095193d55": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b": {
+                "response": {
+                  "type": "extend_path",
+                  "data": {}
+                }
+              },
+              "89316223-2ea1-5731-9c72-0492bc30fbe2": {
+                "response": {
+                  "type": "extend_path",
+                  "data": {}
+                }
+              },
+              "efd1e3b2-5268-50fd-858e-26540f8146e5": {
+                "response": {
+                  "type": "sketch_mode_disable",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_req",
+      "cmd": {
+        "type": "end_execution"
+      },
+      "cmd_id": "eb953e34-02cc-43f7-aaac-e5c851ba99e3"
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "eb953e34-02cc-43f7-aaac-e5c851ba99e3",
+        "resp": {
+          "type": "modeling",
+          "data": {
+            "modeling_response": {
+              "type": "end_execution",
+              "data": {}
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_req",
+      "cmd": {
+        "type": "begin_execution",
+        "enable_render": true
+      },
+      "cmd_id": "20b8c926-ec57-4576-8424-1dcec37954e3"
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "20b8c926-ec57-4576-8424-1dcec37954e3",
+        "resp": {
+          "type": "modeling",
+          "data": {
+            "modeling_response": {
+              "type": "begin_execution",
+              "data": {}
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_req",
+      "cmd": {
+        "type": "set_kcl_version",
+        "kcl_version": "1.0"
+      },
+      "cmd_id": "351bce6c-68e1-5a92-a1c1-c31042ebba32"
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "351bce6c-68e1-5a92-a1c1-c31042ebba32",
+        "resp": {
+          "type": "modeling",
+          "data": {
+            "modeling_response": {
+              "type": "set_kcl_version",
+              "data": {}
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_batch_req",
+      "requests": [
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": 1,
+              "y": 0,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 1,
+              "z": 0
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "4ee5c8fa-4b86-5fbf-b7bd-a115c55d5289"
+        },
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": 0,
+              "y": 1,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "bfd6e010-ac40-5cde-b8f1-65dd5ecc18ce"
+        },
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": 1,
+              "y": 0,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "5e6084f3-764e-5b58-a4dc-67fee9e0cfef"
+        },
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": -1,
+              "y": 0,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 1,
+              "z": 0
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "25709434-cd20-5165-8714-70fc4f8f96fc"
+        },
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": 0,
+              "y": -1,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "5fe067f7-d979-5f95-9ea2-155e1c2fb4c0"
+        },
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": -1,
+              "y": 0,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            },
+            "size": 100,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "364b40d4-898b-5fcd-a3ac-925042f14a2e"
+        }
+      ],
+      "batch_id": "968c73f7-c106-4c61-9fdd-667b098dab9f",
+      "responses": true
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "968c73f7-c106-4c61-9fdd-667b098dab9f",
+        "resp": {
+          "type": "modeling_batch",
+          "data": {
+            "responses": {
+              "5fe067f7-d979-5f95-9ea2-155e1c2fb4c0": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "25709434-cd20-5165-8714-70fc4f8f96fc": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "bfd6e010-ac40-5cde-b8f1-65dd5ecc18ce": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "4ee5c8fa-4b86-5fbf-b7bd-a115c55d5289": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "5e6084f3-764e-5b58-a4dc-67fee9e0cfef": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "364b40d4-898b-5fcd-a3ac-925042f14a2e": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_batch_req",
+      "requests": [
+        {
+          "cmd": {
+            "type": "make_plane",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "x_axis": {
+              "x": 1,
+              "y": 0,
+              "z": 0
+            },
+            "y_axis": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            },
+            "size": 60,
+            "clobber": false,
+            "hide": true
+          },
+          "cmd_id": "3c085bb9-a401-55d5-8042-5a9095193d55"
+        },
+        {
+          "cmd": {
+            "type": "enable_sketch_mode",
+            "entity_id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+            "ortho": false,
+            "animated": false,
+            "adjust_camera": false,
+            "planar_normal": {
+              "x": 0,
+              "y": -1,
+              "z": 0
+            }
+          },
+          "cmd_id": "91226189-7e64-5690-9203-67ee33a6eb03"
+        },
+        {
+          "cmd": {
+            "type": "start_path"
+          },
+          "cmd_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+        },
+        {
+          "cmd": {
+            "type": "move_path_pen",
+            "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "to": {
+              "x": 2263.04,
+              "y": -2721.2,
+              "z": 0
+            }
+          },
+          "cmd_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
+        },
+        {
+          "cmd": {
+            "type": "sketch_mode_disable"
+          },
+          "cmd_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
+        },
+        {
+          "cmd": {
+            "type": "extend_path",
+            "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "segment": {
+              "type": "line",
+              "end": {
+                "x": 78,
+                "y": 19,
+                "z": 0
+              },
+              "relative": true
+            }
+          },
+          "cmd_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+        },
+        {
+          "cmd": {
+            "type": "extend_path",
+            "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "segment": {
+              "type": "line",
+              "end": {
+                "x": 37.86,
+                "y": 54.06,
+                "z": 0
+              },
+              "relative": true
+            }
+          },
+          "cmd_id": "89316223-2ea1-5731-9c72-0492bc30fbe2"
+        },
+        {
+          "cmd": {
+            "type": "extend_path",
+            "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "segment": {
+              "type": "line",
+              "end": {
+                "x": 75.72,
+                "y": 18.41,
+                "z": 0
+              },
+              "relative": true
+            }
+          },
+          "cmd_id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
+        }
+      ],
+      "batch_id": "dbeb7a44-43c7-4aa5-9a76-5a5bb6c84e44",
+      "responses": true
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "dbeb7a44-43c7-4aa5-9a76-5a5bb6c84e44",
+        "resp": {
+          "type": "modeling_batch",
+          "data": {
+            "responses": {
+              "8a662fcd-9569-5482-8c42-aafff7b3f8d4": {
+                "response": {
+                  "type": "extend_path",
+                  "data": {}
+                }
+              },
+              "8868de97-0e2a-52f7-8e1a-8f0671a194e3": {
+                "response": {
+                  "type": "start_path",
+                  "data": {}
+                }
+              },
+              "3c085bb9-a401-55d5-8042-5a9095193d55": {
+                "response": {
+                  "type": "make_plane",
+                  "data": {}
+                }
+              },
+              "efd1e3b2-5268-50fd-858e-26540f8146e5": {
+                "response": {
+                  "type": "sketch_mode_disable",
+                  "data": {}
+                }
+              },
+              "91226189-7e64-5690-9203-67ee33a6eb03": {
+                "response": {
+                  "type": "enable_sketch_mode",
+                  "data": {}
+                }
+              },
+              "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b": {
+                "response": {
+                  "type": "extend_path",
+                  "data": {}
+                }
+              },
+              "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53": {
+                "response": {
+                  "type": "move_path_pen",
+                  "data": {}
+                }
+              },
+              "89316223-2ea1-5731-9c72-0492bc30fbe2": {
+                "response": {
+                  "type": "extend_path",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_req",
+      "cmd": {
+        "type": "end_execution"
+      },
+      "cmd_id": "d5f977d2-8d8f-411c-897f-10fd338d2da3"
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "d5f977d2-8d8f-411c-897f-10fd338d2da3",
+        "resp": {
+          "type": "modeling",
+          "data": {
+            "modeling_response": {
+              "type": "end_execution",
+              "data": {}
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_req",
+      "cmd": {
+        "type": "begin_execution",
+        "enable_render": true
+      },
+      "cmd_id": "b70573f8-4572-4d94-8d76-0ba10319c80b"
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "b70573f8-4572-4d94-8d76-0ba10319c80b",
+        "resp": {
+          "type": "modeling",
+          "data": {
+            "modeling_response": {
+              "type": "begin_execution",
+              "data": {}
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_req",
+      "cmd": {
+        "type": "end_execution"
+      },
+      "cmd_id": "a31f42bf-acf0-400c-a429-84dbefa6cda6"
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "a31f42bf-acf0-400c-a429-84dbefa6cda6",
+        "resp": {
+          "type": "modeling",
+          "data": {
+            "modeling_response": {
+              "type": "end_execution",
+              "data": {}
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_req",
+      "cmd": {
+        "type": "select_clear"
+      },
+      "cmd_id": "52bd16b6-36fb-47a6-987e-3deca41fa104"
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "52bd16b6-36fb-47a6-987e-3deca41fa104",
+        "resp": {
+          "type": "modeling",
+          "data": {
+            "modeling_response": {
+              "type": "select_clear",
+              "data": {}
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_req",
+      "cmd": {
+        "type": "select_add",
+        "entities": [
+          "89316223-2ea1-5731-9c72-0492bc30fbe2"
+        ]
+      },
+      "cmd_id": "bb64e42d-30e3-4ba0-99ef-51f18b18858e"
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "bb64e42d-30e3-4ba0-99ef-51f18b18858e",
+        "resp": {
+          "type": "modeling",
+          "data": {
+            "modeling_response": {
+              "type": "select_add",
+              "data": {}
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_req",
+      "cmd": {
+        "type": "begin_execution",
+        "enable_render": true
+      },
+      "cmd_id": "d780b6f3-c0ec-45b5-98f2-12ad22dde665"
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "d780b6f3-c0ec-45b5-98f2-12ad22dde665",
+        "resp": {
+          "type": "modeling",
+          "data": {
+            "modeling_response": {
+              "type": "begin_execution",
+              "data": {}
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": {
+      "type": "modeling_cmd_req",
+      "cmd": {
+        "type": "end_execution"
+      },
+      "cmd_id": "99fc5640-594d-4f7d-80f6-05386015fdc7"
+    },
+    "responses": [
+      {
+        "success": true,
+        "request_id": "99fc5640-594d-4f7d-80f6-05386015fdc7",
+        "resp": {
+          "type": "modeling",
+          "data": {
+            "modeling_response": {
+              "type": "end_execution",
+              "data": {}
+            }
+          }
+        }
+      }
+    ]
+  }
+]

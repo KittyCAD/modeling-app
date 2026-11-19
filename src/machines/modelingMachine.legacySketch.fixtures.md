@@ -1,52 +1,64 @@
-# Legacy sketch engine cassettes
+# Legacy sketch WebSocket cassettes
 
-`modelingMachine.legacySketch.spec.ts` replays typed results from normal engine
-execution. It keeps the real modeling machine, guards, AST transformations,
-selection handling, editor updates, camera transition, and client-side sketch
-construction. Only execution results and acknowledged scene commands are supplied
-by the fixture adapter. Both Wasm execution entry points are guarded: the offline
-suite must call neither the normal engine executor nor the KCL mock executor.
-Existing production calls through `RustContext.executeMock` receive recorded data
-at that JavaScript boundary; they never enter the deprecated interpreter mode.
+`modelingMachine.legacySketch.spec.ts` runs the normal KCL Wasm interpreter,
+modeling machine, guards, AST transformations, selection handling, editor updates,
+camera transitions, and client-side sketch construction. MSW intercepts the real
+WebSocket used by ConnectionManager. Only engine wire responses are replayed;
+interpreter values, artifact graphs, source references, and default planes are
+produced by real execution. No KCL mock execution is allowed.
 
-`modelingMachine.legacySketch.engineResults.ts` currently records 144 requests
-sharing 70 distinct result payloads. Each payload contains only the variables,
-artifact relationships/source references, and default planes used by sketch
-editing. The generation helpers share captured literals; they compute no geometry.
-Replay deep-clones the payload so app code cannot modify another case's inputs.
+The old JavaScript `RustContext.executeMock` redraw facade is redirected in this
+test to normal execution of the complete current program. A truncated redraw
+statement needs its preceding bindings; the bridge rejects a statement absent
+from the current program. This exercises normal interpreter behavior rather than
+the deprecated mock interpreter. It does not test that production facade's choice
+of execution mode.
 
-Lookup includes the requested AST's source locations. A partial redraw also
-includes its surrounding program in the key, because it depends on bindings
-outside the sketch statement. Unknown requests fail, including requests whose
-formatting changed source offsets. An unknown request never falls through to a
-network request or an interpreter.
+Each example has a JSON cassette in `__cassettes__/legacy-sketch`. A startup tape
+warms interpreter initialization; each test resets its cache and engine scene
+before replay, so examples can run independently or shuffled. Requests match their
+complete payload, allowing asynchronous requests to interleave. A bijective UUID
+mapping preserves command correlation and geometry references across messages,
+including UUID keys in batch responses. Other values, including coordinates, are
+matched exactly. Missing, extra, or changed requests fail without live fallback.
 
-The eight cases in `modelingMachine.legacySketch.engine.spec.ts` compare one real
-producer result per geometry family against the cassettes. Comparisons retain
-geometry and source relationships while ignoring generated engine identifiers.
-The two swept-face cases in `modelingMachine.spec.ts` still verify actual face
-orientation, sketch creation, and reload. This is contract coverage, not a complete
-geometry-kernel test suite.
+MSW handles interception and explicit recording pass-through. Vitest file snapshots
+handle persistence and updates. The small engine-specific adapter handles UUID
+aliases, request/response correlation, and controlled response gates; unit/property
+tests cover these matching rules. Authentication/session and keepalive frames are
+synthetic during replay. Credentials and live session metadata are never saved.
+Unrelated HTTP traffic is blocked except for a fixed failed user-feature response.
+
+The 82 original examples retain named-dimension, individual-constraint removal,
+remove-all, and segment-deletion assertions. Four additional cases gate actual
+socket responses to check camera acknowledgement, geometry readiness, camera
+rejection, and persistence after rebuilding a named dimension.
+
+`modelingMachine.legacySketch.engine.spec.ts` retains eight live contracts, one per
+geometry family. They compare real geometry and source relationships with the
+previously verified expectations in `modelingMachine.legacySketch.contracts.json`,
+independently of generated IDs. The two swept-face tests in
+`modelingMachine.spec.ts` still need a real engine for face selection/orientation
+and sketch reload. Replay cannot establish current kernel correctness, live
+protocol compatibility, authentication, or WebRTC/rendering behavior.
 
 ## Updating cassettes
 
-Update only when the example programs or their runtime contract intentionally
-change. A built Wasm blob and an engine token are required to record. Recording
-uses normal execution on the real engine, including for legacy redraw requests:
-those partial statements are executed with their complete surrounding program.
-The recorder rejects a partial statement that does not belong to that program.
+Record only when example programs or their wire contract intentionally change.
+A built Wasm blob and development engine token are required. Use the same Wasm
+build for capture and replay. No interpreter results or geometry are synthesized.
 
 From the repository root:
 
 ```sh
-ZDS_RECORD_SKETCH_ENGINE_RESULTS=1 npm run test:integration -- \
-  src/machines/modelingMachine.legacySketch.spec.ts --retry=0 --maxWorkers=1
-python3 scripts/generate-legacy-sketch-engine-fixtures.py \
-  /tmp/zds-sketch-engine-results.json
-npx biome check --write --formatter-enabled=true --linter-enabled=false \
-  --assist-enabled=false src/machines/modelingMachine.legacySketch.engineResults.ts
+ZDS_RECORD_ENGINE_CASSETTES=1 npm run test:integration -- \
+  src/machines/modelingMachine.legacySketch.spec.ts \
+  --retry=0 --maxWorkers=1 --bail=1 --update
 ```
 
-Inspect the generated diff. Rerun the offline suite with recording disabled, then
-run the eight producer contracts and the two swept-face contracts against the
-engine. Ordinary test and verification commands never update the cassettes.
+Inspect the JSON diff, then rerun with recording disabled and without `--update`.
+The ordinary replay path only reads committed files. Use Vitest's `-t` option to
+refresh one example after an interrupted recording, rather than repeating the
+whole matrix. Run the eight live geometry contracts and two swept-face tests
+against the engine before accepting intentional protocol changes. Update their
+independent geometry expectations only for a separately understood semantic change.

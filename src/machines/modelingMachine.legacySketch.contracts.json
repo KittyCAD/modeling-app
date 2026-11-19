@@ -1,0 +1,3949 @@
+{
+  "line": {
+    "variables": {
+      "testVar1": {
+        "type": "Number",
+        "value": 55,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar2": {
+        "type": "Number",
+        "value": 66,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar3": {
+        "type": "Number",
+        "value": 77,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar4": {
+        "type": "Number",
+        "value": 88,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "sketch001": {
+        "type": "Plane",
+        "value": {
+          "artifactId": "plane:[68,85,0]",
+          "id": "plane:[68,85,0]",
+          "kind": "XZ",
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "units": "mm"
+          },
+          "xAxis": {
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0,
+            "y": 0,
+            "z": 1,
+            "units": null
+          },
+          "zAxis": {
+            "x": 0,
+            "y": -1,
+            "z": 0,
+            "units": null
+          }
+        }
+      },
+      "profile001": {
+        "type": "Sketch",
+        "value": {
+          "type": "Sketch",
+          "id": "path:[99,147,0]",
+          "paths": [
+            {
+              "type": "ToPoint",
+              "from": [
+                2263.04,
+                -2721.2
+              ],
+              "to": [
+                2341.04,
+                -2702.2
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "segment:[151,171,0]",
+                "sourceRange": [
+                  151,
+                  171,
+                  0
+                ]
+              }
+            },
+            {
+              "type": "ToPoint",
+              "from": [
+                2341.04,
+                -2702.2
+              ],
+              "to": [
+                2396.04,
+                -2636.2
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "segment:[175,207,0]",
+                "sourceRange": [
+                  175,
+                  207,
+                  0
+                ]
+              }
+            },
+            {
+              "type": "ToPoint",
+              "from": [
+                2396.04,
+                -2636.2
+              ],
+              "to": [
+                2471.7599999999998,
+                -2617.79
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "segment:[211,237,0]",
+                "sourceRange": [
+                  211,
+                  237,
+                  0
+                ]
+              }
+            }
+          ],
+          "on": {
+            "type": "plane",
+            "artifactId": "plane:[68,85,0]",
+            "id": "plane:[68,85,0]",
+            "kind": "XZ",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "units": "mm"
+            },
+            "xAxis": {
+              "x": 1,
+              "y": 0,
+              "z": 0,
+              "units": null
+            },
+            "yAxis": {
+              "x": 0,
+              "y": 0,
+              "z": 1,
+              "units": null
+            },
+            "zAxis": {
+              "x": 0,
+              "y": -1,
+              "z": 0,
+              "units": null
+            }
+          },
+          "start": {
+            "from": [
+              2263.04,
+              -2721.2
+            ],
+            "to": [
+              2263.04,
+              -2721.2
+            ],
+            "units": "mm",
+            "tag": null,
+            "__geoMeta": {
+              "id": "engine-id",
+              "sourceRange": [
+                99,
+                147,
+                0
+              ]
+            }
+          },
+          "artifactId": "path:[99,147,0]",
+          "originalId": "path:[99,147,0]",
+          "units": "mm",
+          "isClosed": "no"
+        }
+      }
+    },
+    "artifacts": [
+      {
+        "type": "path",
+        "id": "path:[99,147,0]",
+        "subType": "sketch",
+        "planeId": "plane:[68,85,0]",
+        "segIds": [
+          "segment:[151,171,0]",
+          "segment:[175,207,0]",
+          "segment:[211,237,0]"
+        ],
+        "consumed": false,
+        "trajectorySweepId": null,
+        "codeRef": {
+          "range": [
+            99,
+            147,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 0
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              0,
+              "index"
+            ]
+          ]
+        }
+      },
+      {
+        "type": "plane",
+        "id": "plane:[68,85,0]",
+        "pathIds": [
+          "path:[99,147,0]"
+        ],
+        "codeRef": {
+          "range": [
+            68,
+            85,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 4
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              4,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ]
+          ]
+        },
+        "planeInfo": {
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "units": "mm"
+          },
+          "xAxis": {
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0,
+            "y": 0,
+            "z": 1,
+            "units": null
+          },
+          "zAxis": {
+            "x": 0,
+            "y": -1,
+            "z": 0,
+            "units": null
+          }
+        },
+        "size": 60,
+        "hidden": true
+      },
+      {
+        "type": "segment",
+        "id": "segment:[151,171,0]",
+        "pathId": "path:[99,147,0]",
+        "edgeIds": [],
+        "codeRef": {
+          "range": [
+            151,
+            171,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 1
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              1,
+              "index"
+            ]
+          ]
+        },
+        "commonSurfaceIds": []
+      },
+      {
+        "type": "segment",
+        "id": "segment:[175,207,0]",
+        "pathId": "path:[99,147,0]",
+        "edgeIds": [],
+        "codeRef": {
+          "range": [
+            175,
+            207,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 2
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              2,
+              "index"
+            ]
+          ]
+        },
+        "commonSurfaceIds": []
+      },
+      {
+        "type": "segment",
+        "id": "segment:[211,237,0]",
+        "pathId": "path:[99,147,0]",
+        "edgeIds": [],
+        "codeRef": {
+          "range": [
+            211,
+            237,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 3
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              3,
+              "index"
+            ]
+          ]
+        },
+        "commonSurfaceIds": []
+      }
+    ],
+    "defaultPlanes": {
+      "xy": "engine-id",
+      "xz": "engine-id",
+      "yz": "engine-id",
+      "negXy": "engine-id",
+      "negXz": "engine-id",
+      "negYz": "engine-id"
+    }
+  },
+  "xLine": {
+    "variables": {
+      "testVar1": {
+        "type": "Number",
+        "value": 55,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar2": {
+        "type": "Number",
+        "value": 66,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar3": {
+        "type": "Number",
+        "value": 77,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar4": {
+        "type": "Number",
+        "value": 88,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "sketch001": {
+        "type": "Plane",
+        "value": {
+          "artifactId": "plane:[68,85,0]",
+          "id": "plane:[68,85,0]",
+          "kind": "XZ",
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "units": "mm"
+          },
+          "xAxis": {
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0,
+            "y": 0,
+            "z": 1,
+            "units": null
+          },
+          "zAxis": {
+            "x": 0,
+            "y": -1,
+            "z": 0,
+            "units": null
+          }
+        }
+      },
+      "profile001": {
+        "type": "Sketch",
+        "value": {
+          "type": "Sketch",
+          "id": "path:[99,147,0]",
+          "paths": [
+            {
+              "type": "ToPoint",
+              "from": [
+                2263.04,
+                -2721.2
+              ],
+              "to": [
+                2341.04,
+                -2702.2
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "segment:[151,171,0]",
+                "sourceRange": [
+                  151,
+                  171,
+                  0
+                ]
+              }
+            },
+            {
+              "type": "ToPoint",
+              "from": [
+                2341.04,
+                -2702.2
+              ],
+              "to": [
+                2396.04,
+                -2702.2
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "segment:[175,199,0]",
+                "sourceRange": [
+                  175,
+                  199,
+                  0
+                ]
+              }
+            },
+            {
+              "type": "ToPoint",
+              "from": [
+                2396.04,
+                -2702.2
+              ],
+              "to": [
+                2471.7599999999998,
+                -2683.79
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "segment:[203,229,0]",
+                "sourceRange": [
+                  203,
+                  229,
+                  0
+                ]
+              }
+            }
+          ],
+          "on": {
+            "type": "plane",
+            "artifactId": "plane:[68,85,0]",
+            "id": "plane:[68,85,0]",
+            "kind": "XZ",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "units": "mm"
+            },
+            "xAxis": {
+              "x": 1,
+              "y": 0,
+              "z": 0,
+              "units": null
+            },
+            "yAxis": {
+              "x": 0,
+              "y": 0,
+              "z": 1,
+              "units": null
+            },
+            "zAxis": {
+              "x": 0,
+              "y": -1,
+              "z": 0,
+              "units": null
+            }
+          },
+          "start": {
+            "from": [
+              2263.04,
+              -2721.2
+            ],
+            "to": [
+              2263.04,
+              -2721.2
+            ],
+            "units": "mm",
+            "tag": null,
+            "__geoMeta": {
+              "id": "engine-id",
+              "sourceRange": [
+                99,
+                147,
+                0
+              ]
+            }
+          },
+          "artifactId": "path:[99,147,0]",
+          "originalId": "path:[99,147,0]",
+          "units": "mm",
+          "isClosed": "no"
+        }
+      }
+    },
+    "artifacts": [
+      {
+        "type": "path",
+        "id": "path:[99,147,0]",
+        "subType": "sketch",
+        "planeId": "plane:[68,85,0]",
+        "segIds": [
+          "segment:[151,171,0]",
+          "segment:[175,199,0]",
+          "segment:[203,229,0]"
+        ],
+        "consumed": false,
+        "trajectorySweepId": null,
+        "codeRef": {
+          "range": [
+            99,
+            147,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 0
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              0,
+              "index"
+            ]
+          ]
+        }
+      },
+      {
+        "type": "plane",
+        "id": "plane:[68,85,0]",
+        "pathIds": [
+          "path:[99,147,0]"
+        ],
+        "codeRef": {
+          "range": [
+            68,
+            85,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 4
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              4,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ]
+          ]
+        },
+        "planeInfo": {
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "units": "mm"
+          },
+          "xAxis": {
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0,
+            "y": 0,
+            "z": 1,
+            "units": null
+          },
+          "zAxis": {
+            "x": 0,
+            "y": -1,
+            "z": 0,
+            "units": null
+          }
+        },
+        "size": 60,
+        "hidden": true
+      },
+      {
+        "type": "segment",
+        "id": "segment:[151,171,0]",
+        "pathId": "path:[99,147,0]",
+        "edgeIds": [],
+        "codeRef": {
+          "range": [
+            151,
+            171,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 1
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              1,
+              "index"
+            ]
+          ]
+        },
+        "commonSurfaceIds": []
+      },
+      {
+        "type": "segment",
+        "id": "segment:[175,199,0]",
+        "pathId": "path:[99,147,0]",
+        "edgeIds": [],
+        "codeRef": {
+          "range": [
+            175,
+            199,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 2
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              2,
+              "index"
+            ]
+          ]
+        },
+        "commonSurfaceIds": []
+      },
+      {
+        "type": "segment",
+        "id": "segment:[203,229,0]",
+        "pathId": "path:[99,147,0]",
+        "edgeIds": [],
+        "codeRef": {
+          "range": [
+            203,
+            229,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 3
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              3,
+              "index"
+            ]
+          ]
+        },
+        "commonSurfaceIds": []
+      }
+    ],
+    "defaultPlanes": {
+      "xy": "engine-id",
+      "xz": "engine-id",
+      "yz": "engine-id",
+      "negXy": "engine-id",
+      "negXz": "engine-id",
+      "negYz": "engine-id"
+    }
+  },
+  "yLine": {
+    "variables": {
+      "testVar1": {
+        "type": "Number",
+        "value": 55,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar2": {
+        "type": "Number",
+        "value": 66,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar3": {
+        "type": "Number",
+        "value": 77,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar4": {
+        "type": "Number",
+        "value": 88,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "sketch001": {
+        "type": "Plane",
+        "value": {
+          "artifactId": "plane:[68,85,0]",
+          "id": "plane:[68,85,0]",
+          "kind": "XZ",
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "units": "mm"
+          },
+          "xAxis": {
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0,
+            "y": 0,
+            "z": 1,
+            "units": null
+          },
+          "zAxis": {
+            "x": 0,
+            "y": -1,
+            "z": 0,
+            "units": null
+          }
+        }
+      },
+      "profile001": {
+        "type": "Sketch",
+        "value": {
+          "type": "Sketch",
+          "id": "path:[99,147,0]",
+          "paths": [
+            {
+              "type": "ToPoint",
+              "from": [
+                2263.04,
+                -2721.2
+              ],
+              "to": [
+                2341.04,
+                -2702.2
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "segment:[151,171,0]",
+                "sourceRange": [
+                  151,
+                  171,
+                  0
+                ]
+              }
+            },
+            {
+              "type": "ToPoint",
+              "from": [
+                2341.04,
+                -2702.2
+              ],
+              "to": [
+                2341.04,
+                -2647.2
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "segment:[175,199,0]",
+                "sourceRange": [
+                  175,
+                  199,
+                  0
+                ]
+              }
+            },
+            {
+              "type": "ToPoint",
+              "from": [
+                2341.04,
+                -2647.2
+              ],
+              "to": [
+                2416.7599999999998,
+                -2628.79
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "segment:[203,229,0]",
+                "sourceRange": [
+                  203,
+                  229,
+                  0
+                ]
+              }
+            }
+          ],
+          "on": {
+            "type": "plane",
+            "artifactId": "plane:[68,85,0]",
+            "id": "plane:[68,85,0]",
+            "kind": "XZ",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "units": "mm"
+            },
+            "xAxis": {
+              "x": 1,
+              "y": 0,
+              "z": 0,
+              "units": null
+            },
+            "yAxis": {
+              "x": 0,
+              "y": 0,
+              "z": 1,
+              "units": null
+            },
+            "zAxis": {
+              "x": 0,
+              "y": -1,
+              "z": 0,
+              "units": null
+            }
+          },
+          "start": {
+            "from": [
+              2263.04,
+              -2721.2
+            ],
+            "to": [
+              2263.04,
+              -2721.2
+            ],
+            "units": "mm",
+            "tag": null,
+            "__geoMeta": {
+              "id": "engine-id",
+              "sourceRange": [
+                99,
+                147,
+                0
+              ]
+            }
+          },
+          "artifactId": "path:[99,147,0]",
+          "originalId": "path:[99,147,0]",
+          "units": "mm",
+          "isClosed": "no"
+        }
+      }
+    },
+    "artifacts": [
+      {
+        "type": "path",
+        "id": "path:[99,147,0]",
+        "subType": "sketch",
+        "planeId": "plane:[68,85,0]",
+        "segIds": [
+          "segment:[151,171,0]",
+          "segment:[175,199,0]",
+          "segment:[203,229,0]"
+        ],
+        "consumed": false,
+        "trajectorySweepId": null,
+        "codeRef": {
+          "range": [
+            99,
+            147,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 0
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              0,
+              "index"
+            ]
+          ]
+        }
+      },
+      {
+        "type": "plane",
+        "id": "plane:[68,85,0]",
+        "pathIds": [
+          "path:[99,147,0]"
+        ],
+        "codeRef": {
+          "range": [
+            68,
+            85,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 4
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              4,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ]
+          ]
+        },
+        "planeInfo": {
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "units": "mm"
+          },
+          "xAxis": {
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0,
+            "y": 0,
+            "z": 1,
+            "units": null
+          },
+          "zAxis": {
+            "x": 0,
+            "y": -1,
+            "z": 0,
+            "units": null
+          }
+        },
+        "size": 60,
+        "hidden": true
+      },
+      {
+        "type": "segment",
+        "id": "segment:[151,171,0]",
+        "pathId": "path:[99,147,0]",
+        "edgeIds": [],
+        "codeRef": {
+          "range": [
+            151,
+            171,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 1
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              1,
+              "index"
+            ]
+          ]
+        },
+        "commonSurfaceIds": []
+      },
+      {
+        "type": "segment",
+        "id": "segment:[175,199,0]",
+        "pathId": "path:[99,147,0]",
+        "edgeIds": [],
+        "codeRef": {
+          "range": [
+            175,
+            199,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 2
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              2,
+              "index"
+            ]
+          ]
+        },
+        "commonSurfaceIds": []
+      },
+      {
+        "type": "segment",
+        "id": "segment:[203,229,0]",
+        "pathId": "path:[99,147,0]",
+        "edgeIds": [],
+        "codeRef": {
+          "range": [
+            203,
+            229,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 3
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              3,
+              "index"
+            ]
+          ]
+        },
+        "commonSurfaceIds": []
+      }
+    ],
+    "defaultPlanes": {
+      "xy": "engine-id",
+      "xz": "engine-id",
+      "yz": "engine-id",
+      "negXy": "engine-id",
+      "negXz": "engine-id",
+      "negYz": "engine-id"
+    }
+  },
+  "angledLine": {
+    "variables": {
+      "testVar1": {
+        "type": "Number",
+        "value": 55,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar2": {
+        "type": "Number",
+        "value": 66,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar3": {
+        "type": "Number",
+        "value": 77,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar4": {
+        "type": "Number",
+        "value": 88,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "sketch001": {
+        "type": "Plane",
+        "value": {
+          "artifactId": "plane:[68,85,0]",
+          "id": "plane:[68,85,0]",
+          "kind": "XZ",
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "units": "mm"
+          },
+          "xAxis": {
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0,
+            "y": 0,
+            "z": 1,
+            "units": null
+          },
+          "zAxis": {
+            "x": 0,
+            "y": -1,
+            "z": 0,
+            "units": null
+          }
+        }
+      },
+      "profile001": {
+        "type": "Sketch",
+        "value": {
+          "type": "Sketch",
+          "id": "path:[99,147,0]",
+          "paths": [
+            {
+              "type": "ToPoint",
+              "from": [
+                2263.04,
+                -2721.2
+              ],
+              "to": [
+                2341.04,
+                -2702.2
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "segment:[151,171,0]",
+                "sourceRange": [
+                  151,
+                  171,
+                  0
+                ]
+              }
+            },
+            {
+              "type": "ToPoint",
+              "from": [
+                2341.04,
+                -2702.2
+              ],
+              "to": [
+                2378.896044799169,
+                -2648.1359650769264
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "segment:[175,222,0]",
+                "sourceRange": [
+                  175,
+                  222,
+                  0
+                ]
+              }
+            },
+            {
+              "type": "ToPoint",
+              "from": [
+                2378.896044799169,
+                -2648.1359650769264
+              ],
+              "to": [
+                2454.616044799169,
+                -2629.7259650769265
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "segment:[226,252,0]",
+                "sourceRange": [
+                  226,
+                  252,
+                  0
+                ]
+              }
+            }
+          ],
+          "on": {
+            "type": "plane",
+            "artifactId": "plane:[68,85,0]",
+            "id": "plane:[68,85,0]",
+            "kind": "XZ",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "units": "mm"
+            },
+            "xAxis": {
+              "x": 1,
+              "y": 0,
+              "z": 0,
+              "units": null
+            },
+            "yAxis": {
+              "x": 0,
+              "y": 0,
+              "z": 1,
+              "units": null
+            },
+            "zAxis": {
+              "x": 0,
+              "y": -1,
+              "z": 0,
+              "units": null
+            }
+          },
+          "start": {
+            "from": [
+              2263.04,
+              -2721.2
+            ],
+            "to": [
+              2263.04,
+              -2721.2
+            ],
+            "units": "mm",
+            "tag": null,
+            "__geoMeta": {
+              "id": "engine-id",
+              "sourceRange": [
+                99,
+                147,
+                0
+              ]
+            }
+          },
+          "artifactId": "path:[99,147,0]",
+          "originalId": "path:[99,147,0]",
+          "units": "mm",
+          "isClosed": "no"
+        }
+      }
+    },
+    "artifacts": [
+      {
+        "type": "path",
+        "id": "path:[99,147,0]",
+        "subType": "sketch",
+        "planeId": "plane:[68,85,0]",
+        "segIds": [
+          "segment:[151,171,0]",
+          "segment:[175,222,0]",
+          "segment:[226,252,0]"
+        ],
+        "consumed": false,
+        "trajectorySweepId": null,
+        "codeRef": {
+          "range": [
+            99,
+            147,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 0
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              0,
+              "index"
+            ]
+          ]
+        }
+      },
+      {
+        "type": "plane",
+        "id": "plane:[68,85,0]",
+        "pathIds": [
+          "path:[99,147,0]"
+        ],
+        "codeRef": {
+          "range": [
+            68,
+            85,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 4
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              4,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ]
+          ]
+        },
+        "planeInfo": {
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "units": "mm"
+          },
+          "xAxis": {
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0,
+            "y": 0,
+            "z": 1,
+            "units": null
+          },
+          "zAxis": {
+            "x": 0,
+            "y": -1,
+            "z": 0,
+            "units": null
+          }
+        },
+        "size": 60,
+        "hidden": true
+      },
+      {
+        "type": "segment",
+        "id": "segment:[151,171,0]",
+        "pathId": "path:[99,147,0]",
+        "edgeIds": [],
+        "codeRef": {
+          "range": [
+            151,
+            171,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 1
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              1,
+              "index"
+            ]
+          ]
+        },
+        "commonSurfaceIds": []
+      },
+      {
+        "type": "segment",
+        "id": "segment:[175,222,0]",
+        "pathId": "path:[99,147,0]",
+        "edgeIds": [],
+        "codeRef": {
+          "range": [
+            175,
+            222,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 2
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              2,
+              "index"
+            ]
+          ]
+        },
+        "commonSurfaceIds": []
+      },
+      {
+        "type": "segment",
+        "id": "segment:[226,252,0]",
+        "pathId": "path:[99,147,0]",
+        "edgeIds": [],
+        "codeRef": {
+          "range": [
+            226,
+            252,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 3
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              3,
+              "index"
+            ]
+          ]
+        },
+        "commonSurfaceIds": []
+      }
+    ],
+    "defaultPlanes": {
+      "xy": "engine-id",
+      "xz": "engine-id",
+      "yz": "engine-id",
+      "negXy": "engine-id",
+      "negXz": "engine-id",
+      "negYz": "engine-id"
+    }
+  },
+  "circle": {
+    "variables": {
+      "testVar1": {
+        "type": "Number",
+        "value": 55,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar2": {
+        "type": "Number",
+        "value": 66,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar3": {
+        "type": "Number",
+        "value": 77,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar4": {
+        "type": "Number",
+        "value": 88,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar5": {
+        "type": "Number",
+        "value": 99,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar6": {
+        "type": "Number",
+        "value": 11,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "sketch001": {
+        "type": "Plane",
+        "value": {
+          "artifactId": "plane:[96,113,0]",
+          "id": "plane:[96,113,0]",
+          "kind": "YZ",
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "units": "mm"
+          },
+          "xAxis": {
+            "x": 0,
+            "y": 1,
+            "z": 0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0,
+            "y": 0,
+            "z": 1,
+            "units": null
+          },
+          "zAxis": {
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "units": null
+          }
+        }
+      },
+      "profile001": {
+        "type": "Sketch",
+        "value": {
+          "type": "Sketch",
+          "id": "path:[127,190,0]",
+          "paths": [
+            {
+              "type": "Circle",
+              "from": [
+                195.82,
+                183.92
+              ],
+              "to": [
+                195.82,
+                183.92
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "segment:[127,190,0]",
+                "sourceRange": [
+                  127,
+                  190,
+                  0
+                ]
+              },
+              "center": [
+                140.82,
+                183.92
+              ],
+              "radius": 55,
+              "ccw": true
+            }
+          ],
+          "on": {
+            "type": "plane",
+            "artifactId": "plane:[96,113,0]",
+            "id": "plane:[96,113,0]",
+            "kind": "YZ",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "units": "mm"
+            },
+            "xAxis": {
+              "x": 0,
+              "y": 1,
+              "z": 0,
+              "units": null
+            },
+            "yAxis": {
+              "x": 0,
+              "y": 0,
+              "z": 1,
+              "units": null
+            },
+            "zAxis": {
+              "x": 1,
+              "y": 0,
+              "z": 0,
+              "units": null
+            }
+          },
+          "start": {
+            "from": [
+              195.82,
+              183.92
+            ],
+            "to": [
+              195.82,
+              183.92
+            ],
+            "units": "mm",
+            "tag": null,
+            "__geoMeta": {
+              "id": "engine-id",
+              "sourceRange": [
+                127,
+                190,
+                0
+              ]
+            }
+          },
+          "artifactId": "path:[127,190,0]",
+          "originalId": "path:[127,190,0]",
+          "units": "mm",
+          "isClosed": "explicitly"
+        }
+      }
+    },
+    "artifacts": [
+      {
+        "type": "path",
+        "id": "path:[127,190,0]",
+        "subType": "sketch",
+        "planeId": "plane:[96,113,0]",
+        "segIds": [
+          "segment:[127,190,0]"
+        ],
+        "consumed": false,
+        "trajectorySweepId": null,
+        "solid2dId": "solid2d:",
+        "codeRef": {
+          "range": [
+            127,
+            190,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 7
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              7,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ]
+          ]
+        }
+      },
+      {
+        "type": "plane",
+        "id": "plane:[96,113,0]",
+        "pathIds": [
+          "path:[127,190,0]"
+        ],
+        "codeRef": {
+          "range": [
+            96,
+            113,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 6
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              6,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ]
+          ]
+        },
+        "planeInfo": {
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "units": "mm"
+          },
+          "xAxis": {
+            "x": 0,
+            "y": 1,
+            "z": 0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0,
+            "y": 0,
+            "z": 1,
+            "units": null
+          },
+          "zAxis": {
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "units": null
+          }
+        },
+        "size": 60,
+        "hidden": true
+      },
+      {
+        "type": "segment",
+        "id": "segment:[127,190,0]",
+        "pathId": "path:[127,190,0]",
+        "edgeIds": [],
+        "codeRef": {
+          "range": [
+            127,
+            190,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 7
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              7,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ]
+          ]
+        },
+        "commonSurfaceIds": []
+      },
+      {
+        "type": "solid2d",
+        "id": "solid2d:",
+        "pathId": "path:[127,190,0]"
+      }
+    ],
+    "defaultPlanes": {
+      "xy": "engine-id",
+      "xz": "engine-id",
+      "yz": "engine-id",
+      "negXy": "engine-id",
+      "negXz": "engine-id",
+      "negYz": "engine-id"
+    }
+  },
+  "circleThreePoint": {
+    "variables": {
+      "testVar1": {
+        "type": "Number",
+        "value": 55,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar2": {
+        "type": "Number",
+        "value": 66,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar3": {
+        "type": "Number",
+        "value": 77,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar4": {
+        "type": "Number",
+        "value": 88,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar5": {
+        "type": "Number",
+        "value": 99,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar6": {
+        "type": "Number",
+        "value": 11,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "sketch001": {
+        "type": "Plane",
+        "value": {
+          "artifactId": "plane:[96,113,0]",
+          "id": "plane:[96,113,0]",
+          "kind": "YZ",
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "units": "mm"
+          },
+          "xAxis": {
+            "x": 0,
+            "y": 1,
+            "z": 0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0,
+            "y": 0,
+            "z": 1,
+            "units": null
+          },
+          "zAxis": {
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "units": null
+          }
+        }
+      },
+      "profile001": {
+        "type": "Sketch",
+        "value": {
+          "type": "Sketch",
+          "id": "path:[127,238,0]",
+          "paths": [
+            {
+              "type": "CircleThreePoint",
+              "from": [
+                132.56478821385434,
+                50.72222222222222
+              ],
+              "to": [
+                132.56478821385434,
+                50.72222222222222
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "segment:[127,238,0]",
+                "sourceRange": [
+                  127,
+                  238,
+                  0
+                ]
+              },
+              "p1": [
+                55,
+                66
+              ],
+              "p2": [
+                77,
+                88
+              ],
+              "p3": [
+                99,
+                11
+              ]
+            }
+          ],
+          "on": {
+            "type": "plane",
+            "artifactId": "plane:[96,113,0]",
+            "id": "plane:[96,113,0]",
+            "kind": "YZ",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "units": "mm"
+            },
+            "xAxis": {
+              "x": 0,
+              "y": 1,
+              "z": 0,
+              "units": null
+            },
+            "yAxis": {
+              "x": 0,
+              "y": 0,
+              "z": 1,
+              "units": null
+            },
+            "zAxis": {
+              "x": 1,
+              "y": 0,
+              "z": 0,
+              "units": null
+            }
+          },
+          "start": {
+            "from": [
+              132.56478821385434,
+              50.72222222222222
+            ],
+            "to": [
+              132.56478821385434,
+              50.72222222222222
+            ],
+            "units": "mm",
+            "tag": null,
+            "__geoMeta": {
+              "id": "engine-id",
+              "sourceRange": [
+                127,
+                238,
+                0
+              ]
+            }
+          },
+          "artifactId": "path:[127,238,0]",
+          "originalId": "path:[127,238,0]",
+          "units": "mm",
+          "isClosed": "explicitly"
+        }
+      }
+    },
+    "artifacts": [
+      {
+        "type": "path",
+        "id": "path:[127,238,0]",
+        "subType": "sketch",
+        "planeId": "plane:[96,113,0]",
+        "segIds": [
+          "segment:[127,238,0]"
+        ],
+        "consumed": false,
+        "trajectorySweepId": null,
+        "solid2dId": "solid2d:",
+        "codeRef": {
+          "range": [
+            127,
+            238,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 7
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              7,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ]
+          ]
+        }
+      },
+      {
+        "type": "plane",
+        "id": "plane:[96,113,0]",
+        "pathIds": [
+          "path:[127,238,0]"
+        ],
+        "codeRef": {
+          "range": [
+            96,
+            113,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 6
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              6,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ]
+          ]
+        },
+        "planeInfo": {
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "units": "mm"
+          },
+          "xAxis": {
+            "x": 0,
+            "y": 1,
+            "z": 0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0,
+            "y": 0,
+            "z": 1,
+            "units": null
+          },
+          "zAxis": {
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "units": null
+          }
+        },
+        "size": 60,
+        "hidden": true
+      },
+      {
+        "type": "segment",
+        "id": "segment:[127,238,0]",
+        "pathId": "path:[127,238,0]",
+        "edgeIds": [],
+        "codeRef": {
+          "range": [
+            127,
+            238,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 7
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              7,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ]
+          ]
+        },
+        "commonSurfaceIds": []
+      },
+      {
+        "type": "solid2d",
+        "id": "solid2d:",
+        "pathId": "path:[127,238,0]"
+      }
+    ],
+    "defaultPlanes": {
+      "xy": "engine-id",
+      "xz": "engine-id",
+      "yz": "engine-id",
+      "negXy": "engine-id",
+      "negXz": "engine-id",
+      "negYz": "engine-id"
+    }
+  },
+  "tangentialArc": {
+    "variables": {
+      "testVar1": {
+        "type": "Number",
+        "value": 55,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar2": {
+        "type": "Number",
+        "value": 66,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar3": {
+        "type": "Number",
+        "value": 77,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar4": {
+        "type": "Number",
+        "value": 88,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "sketch001": {
+        "type": "Plane",
+        "value": {
+          "artifactId": "plane:[68,85,0]",
+          "id": "plane:[68,85,0]",
+          "kind": "XZ",
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "units": "mm"
+          },
+          "xAxis": {
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0,
+            "y": 0,
+            "z": 1,
+            "units": null
+          },
+          "zAxis": {
+            "x": 0,
+            "y": -1,
+            "z": 0,
+            "units": null
+          }
+        }
+      },
+      "profile001": {
+        "type": "Sketch",
+        "value": {
+          "type": "Sketch",
+          "id": "path:[99,147,0]",
+          "paths": [
+            {
+              "type": "ToPoint",
+              "from": [
+                2263.04,
+                -2721.2
+              ],
+              "to": [
+                2341.04,
+                -2702.2
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "segment:[151,171,0]",
+                "sourceRange": [
+                  151,
+                  171,
+                  0
+                ]
+              }
+            },
+            {
+              "type": "TangentialArcTo",
+              "from": [
+                2341.04,
+                -2702.2
+              ],
+              "to": [
+                55,
+                66
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "segment:[175,224,0]",
+                "sourceRange": [
+                  175,
+                  224,
+                  0
+                ]
+              },
+              "center": [
+                1868.9266869436858,
+                -764.0506095582892
+              ],
+              "ccw": true
+            },
+            {
+              "type": "ToPoint",
+              "from": [
+                55,
+                66
+              ],
+              "to": [
+                130.72,
+                84.41
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "segment:[228,254,0]",
+                "sourceRange": [
+                  228,
+                  254,
+                  0
+                ]
+              }
+            }
+          ],
+          "on": {
+            "type": "plane",
+            "artifactId": "plane:[68,85,0]",
+            "id": "plane:[68,85,0]",
+            "kind": "XZ",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "units": "mm"
+            },
+            "xAxis": {
+              "x": 1,
+              "y": 0,
+              "z": 0,
+              "units": null
+            },
+            "yAxis": {
+              "x": 0,
+              "y": 0,
+              "z": 1,
+              "units": null
+            },
+            "zAxis": {
+              "x": 0,
+              "y": -1,
+              "z": 0,
+              "units": null
+            }
+          },
+          "start": {
+            "from": [
+              2263.04,
+              -2721.2
+            ],
+            "to": [
+              2263.04,
+              -2721.2
+            ],
+            "units": "mm",
+            "tag": null,
+            "__geoMeta": {
+              "id": "engine-id",
+              "sourceRange": [
+                99,
+                147,
+                0
+              ]
+            }
+          },
+          "artifactId": "path:[99,147,0]",
+          "originalId": "path:[99,147,0]",
+          "units": "mm",
+          "isClosed": "no"
+        }
+      }
+    },
+    "artifacts": [
+      {
+        "type": "path",
+        "id": "path:[99,147,0]",
+        "subType": "sketch",
+        "planeId": "plane:[68,85,0]",
+        "segIds": [
+          "segment:[151,171,0]",
+          "segment:[175,224,0]",
+          "segment:[228,254,0]"
+        ],
+        "consumed": false,
+        "trajectorySweepId": null,
+        "codeRef": {
+          "range": [
+            99,
+            147,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 0
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              0,
+              "index"
+            ]
+          ]
+        }
+      },
+      {
+        "type": "plane",
+        "id": "plane:[68,85,0]",
+        "pathIds": [
+          "path:[99,147,0]"
+        ],
+        "codeRef": {
+          "range": [
+            68,
+            85,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 4
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              4,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ]
+          ]
+        },
+        "planeInfo": {
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "units": "mm"
+          },
+          "xAxis": {
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0,
+            "y": 0,
+            "z": 1,
+            "units": null
+          },
+          "zAxis": {
+            "x": 0,
+            "y": -1,
+            "z": 0,
+            "units": null
+          }
+        },
+        "size": 60,
+        "hidden": true
+      },
+      {
+        "type": "segment",
+        "id": "segment:[151,171,0]",
+        "pathId": "path:[99,147,0]",
+        "edgeIds": [],
+        "codeRef": {
+          "range": [
+            151,
+            171,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 1
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              1,
+              "index"
+            ]
+          ]
+        },
+        "commonSurfaceIds": []
+      },
+      {
+        "type": "segment",
+        "id": "segment:[175,224,0]",
+        "pathId": "path:[99,147,0]",
+        "edgeIds": [],
+        "codeRef": {
+          "range": [
+            175,
+            224,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 2
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              2,
+              "index"
+            ]
+          ]
+        },
+        "commonSurfaceIds": []
+      },
+      {
+        "type": "segment",
+        "id": "segment:[228,254,0]",
+        "pathId": "path:[99,147,0]",
+        "edgeIds": [],
+        "codeRef": {
+          "range": [
+            228,
+            254,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 3
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              3,
+              "index"
+            ]
+          ]
+        },
+        "commonSurfaceIds": []
+      }
+    ],
+    "defaultPlanes": {
+      "xy": "engine-id",
+      "xz": "engine-id",
+      "yz": "engine-id",
+      "negXy": "engine-id",
+      "negXz": "engine-id",
+      "negYz": "engine-id"
+    }
+  },
+  "arc": {
+    "variables": {
+      "testVar1": {
+        "type": "Number",
+        "value": 55,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar2": {
+        "type": "Number",
+        "value": 66,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar3": {
+        "type": "Number",
+        "value": 77,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "testVar4": {
+        "type": "Number",
+        "value": 88,
+        "ty": {
+          "type": "Default",
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
+        }
+      },
+      "sketch001": {
+        "type": "Plane",
+        "value": {
+          "artifactId": "plane:[68,85,0]",
+          "id": "plane:[68,85,0]",
+          "kind": "XZ",
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "units": "mm"
+          },
+          "xAxis": {
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0,
+            "y": 0,
+            "z": 1,
+            "units": null
+          },
+          "zAxis": {
+            "x": 0,
+            "y": -1,
+            "z": 0,
+            "units": null
+          }
+        }
+      },
+      "profile001": {
+        "type": "Sketch",
+        "value": {
+          "type": "Sketch",
+          "id": "path:[99,147,0]",
+          "paths": [
+            {
+              "type": "ToPoint",
+              "from": [
+                2263.04,
+                -2721.2
+              ],
+              "to": [
+                2341.04,
+                -2702.2
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "segment:[151,171,0]",
+                "sourceRange": [
+                  151,
+                  171,
+                  0
+                ]
+              }
+            },
+            {
+              "type": "ArcThreePoint",
+              "from": [
+                2341.04,
+                -2702.2
+              ],
+              "to": [
+                77,
+                88
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "segment:[175,255,0]",
+                "sourceRange": [
+                  175,
+                  255,
+                  0
+                ]
+              },
+              "p1": [
+                2341.04,
+                -2702.2
+              ],
+              "p2": [
+                55,
+                66
+              ],
+              "p3": [
+                77,
+                88
+              ]
+            },
+            {
+              "type": "ToPoint",
+              "from": [
+                77,
+                88
+              ],
+              "to": [
+                152.72,
+                106.41
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "segment:[259,285,0]",
+                "sourceRange": [
+                  259,
+                  285,
+                  0
+                ]
+              }
+            }
+          ],
+          "on": {
+            "type": "plane",
+            "artifactId": "plane:[68,85,0]",
+            "id": "plane:[68,85,0]",
+            "kind": "XZ",
+            "origin": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "units": "mm"
+            },
+            "xAxis": {
+              "x": 1,
+              "y": 0,
+              "z": 0,
+              "units": null
+            },
+            "yAxis": {
+              "x": 0,
+              "y": 0,
+              "z": 1,
+              "units": null
+            },
+            "zAxis": {
+              "x": 0,
+              "y": -1,
+              "z": 0,
+              "units": null
+            }
+          },
+          "start": {
+            "from": [
+              2263.04,
+              -2721.2
+            ],
+            "to": [
+              2263.04,
+              -2721.2
+            ],
+            "units": "mm",
+            "tag": null,
+            "__geoMeta": {
+              "id": "engine-id",
+              "sourceRange": [
+                99,
+                147,
+                0
+              ]
+            }
+          },
+          "artifactId": "path:[99,147,0]",
+          "originalId": "path:[99,147,0]",
+          "units": "mm",
+          "isClosed": "no"
+        }
+      }
+    },
+    "artifacts": [
+      {
+        "type": "path",
+        "id": "path:[99,147,0]",
+        "subType": "sketch",
+        "planeId": "plane:[68,85,0]",
+        "segIds": [
+          "segment:[151,171,0]",
+          "segment:[175,255,0]",
+          "segment:[259,285,0]"
+        ],
+        "consumed": false,
+        "trajectorySweepId": null,
+        "codeRef": {
+          "range": [
+            99,
+            147,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 0
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              0,
+              "index"
+            ]
+          ]
+        }
+      },
+      {
+        "type": "plane",
+        "id": "plane:[68,85,0]",
+        "pathIds": [
+          "path:[99,147,0]"
+        ],
+        "codeRef": {
+          "range": [
+            68,
+            85,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 4
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              4,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ]
+          ]
+        },
+        "planeInfo": {
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "units": "mm"
+          },
+          "xAxis": {
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0,
+            "y": 0,
+            "z": 1,
+            "units": null
+          },
+          "zAxis": {
+            "x": 0,
+            "y": -1,
+            "z": 0,
+            "units": null
+          }
+        },
+        "size": 60,
+        "hidden": true
+      },
+      {
+        "type": "segment",
+        "id": "segment:[151,171,0]",
+        "pathId": "path:[99,147,0]",
+        "edgeIds": [],
+        "codeRef": {
+          "range": [
+            151,
+            171,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 1
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              1,
+              "index"
+            ]
+          ]
+        },
+        "commonSurfaceIds": []
+      },
+      {
+        "type": "segment",
+        "id": "segment:[175,255,0]",
+        "pathId": "path:[99,147,0]",
+        "edgeIds": [],
+        "codeRef": {
+          "range": [
+            175,
+            255,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 2
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              2,
+              "index"
+            ]
+          ]
+        },
+        "commonSurfaceIds": []
+      },
+      {
+        "type": "segment",
+        "id": "segment:[259,285,0]",
+        "pathId": "path:[99,147,0]",
+        "edgeIds": [],
+        "codeRef": {
+          "range": [
+            259,
+            285,
+            0
+          ],
+          "nodePath": {
+            "steps": [
+              {
+                "type": "ProgramBodyItem",
+                "index": 5
+              },
+              {
+                "type": "VariableDeclarationDeclaration"
+              },
+              {
+                "type": "VariableDeclarationInit"
+              },
+              {
+                "type": "PipeBodyItem",
+                "index": 3
+              }
+            ]
+          },
+          "pathToNode": [
+            [
+              "body",
+              ""
+            ],
+            [
+              5,
+              "index"
+            ],
+            [
+              "declaration",
+              "VariableDeclaration"
+            ],
+            [
+              "init",
+              ""
+            ],
+            [
+              "body",
+              "PipeExpression"
+            ],
+            [
+              3,
+              "index"
+            ]
+          ]
+        },
+        "commonSurfaceIds": []
+      }
+    ],
+    "defaultPlanes": {
+      "xy": "engine-id",
+      "xz": "engine-id",
+      "yz": "engine-id",
+      "negXy": "engine-id",
+      "negXz": "engine-id",
+      "negYz": "engine-id"
+    }
+  }
+}

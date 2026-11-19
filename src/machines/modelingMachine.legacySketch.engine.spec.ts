@@ -1,12 +1,8 @@
 import type * as WasmUtilsModule from '@src/lang/wasmUtils'
-import { isErr } from '@src/lib/trap'
 import { assertParse } from '@src/lang/wasm'
 import { legacySketchCases } from '@src/machines/modelingMachine.legacySketch.fixtures'
-import {
-  findSketchEngineResult,
-  recordSketchEngineResult,
-  sketchEngineResultContract,
-} from '@src/machines/modelingMachine.legacySketch.runtimeFixtures'
+import { sketchEngineResultContract } from '@src/machines/modelingMachine.legacySketch.engineContract'
+import contractsExpected from '@src/machines/modelingMachine.legacySketch.contracts.json'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
@@ -55,22 +51,20 @@ const contracts = Object.entries(legacySketchCases).map(([family, cases]) => ({
 describe('legacy sketch engine-result contracts', () => {
   it.each(contracts)(
     'matches recorded $family geometry and source references',
-    async ({ code }) => {
+    async ({ code, family }) => {
       const ast = assertParse(code, world.instance)
-      const expected = findSketchEngineResult(ast)
-      if (isErr(expected)) throw expected
       world.kclManager.updateCodeEditor(code)
       await world.kclManager.executeAst({ ast })
       expect(world.kclManager.errors).toEqual([])
-      const actual = recordSketchEngineResult(
-        ast,
-        world.kclManager.execState,
-        world.instance
-      )
-      if (isErr(actual)) throw actual
-      expect(sketchEngineResultContract(actual)).toEqual(
-        sketchEngineResultContract(expected)
-      )
+      expect(
+        sketchEngineResultContract({
+          result: {
+            variables: world.kclManager.execState.variables,
+            artifacts: [...world.kclManager.execState.artifactGraph.values()],
+            defaultPlanes: world.kclManager.execState.defaultPlanes,
+          },
+        })
+      ).toEqual(contractsExpected[family as keyof typeof contractsExpected])
     },
     15_000
   )

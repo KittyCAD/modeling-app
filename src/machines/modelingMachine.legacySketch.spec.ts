@@ -1,9 +1,3 @@
-import type {
-  BatchResponse,
-  ModelingCmd,
-  OkModelingCmdResponse,
-  WebSocketResponse,
-} from '@kittycad/lib'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type * as WasmUtilsModule from '@src/lang/wasmUtils'
 import {
@@ -17,22 +11,16 @@ import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
-import {
-  assertParse,
-  recast,
-  type CallExpressionKw,
-  type Program,
-  type ExecState,
-} from '@src/lang/wasm'
+import { assertParse, recast, type CallExpressionKw } from '@src/lang/wasm'
 import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { modelingMachine } from '@src/machines/modelingMachine'
 import { legacySketchCases } from '@src/machines/modelingMachine.legacySketch.fixtures'
 import {
   beforeAll,
+  beforeEach,
   afterAll,
   afterEach,
-  onTestFinished,
   describe,
   expect,
   it,
@@ -40,24 +28,16 @@ import {
 } from 'vitest'
 import { createActor, waitFor } from 'xstate'
 
-import {
-  buildTheWorldAndNoEngineConnection,
-  buildTheWorldAndConnectToEngine,
-} from '@src/unitTestUtils'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { generateModelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
-import {
-  findSketchEngineResult,
-  recordSketchEngineResult,
-  replaySketchEngineResult,
-  sketchEngineFixtureKey,
-  type RecordedSketchEngineResult,
-} from '@src/machines/modelingMachine.legacySketch.runtimeFixtures'
-import { recordedSketchEngineResults } from '@src/machines/modelingMachine.legacySketch.engineResults'
-import { writeFile } from 'fs/promises'
+import { engineSocket } from '@src/machines/modelingMachine.engineSocket'
+import type { EngineRequest } from '@src/machines/modelingMachine.engineCassette'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import path from 'node:path'
 
 // Registry imports can request the browser Wasm loader. Load the same real blob
-// from disk; the fixture-backed app never executes KCL.
+// from disk; both recording and replay execute the normal KCL interpreter.
 vi.mock('@src/lang/wasmUtils', async (importOriginal) => ({
   ...(await importOriginal<typeof WasmUtilsModule>()),
   initialiseWasm: async () => {
@@ -72,232 +52,150 @@ vi.mock('@src/lang/wasmUtils', async (importOriginal) => ({
 }))
 
 let instance: ModuleType
-const recording = process.env.ZDS_RECORD_SKETCH_ENGINE_RESULTS === '1'
-let world: Awaited<ReturnType<typeof buildTheWorldAndNoEngineConnection>>
-let engineWorld:
-  | Awaited<ReturnType<typeof buildTheWorldAndConnectToEngine>>
-  | undefined
-const records = new Map(
-  recording ? [] : recordedSketchEngineResults.map((f) => [f.key, f])
-)
-const pending = new Map<string, Promise<RecordedSketchEngineResult>>()
-let runtimeFailures: unknown[] = []
-let defaultPlanes: ExecState['defaultPlanes'] = null
-type Gate = {
-  promise: Promise<void>
-  resolve: () => void
-  reject: (error: Error) => void
-}
-const createGate = (): Gate => {
-  const pending = Promise.withResolvers<undefined>()
-  return {
-    promise: pending.promise,
-    resolve: () => pending.resolve(undefined),
-    reject: (error) => pending.reject(error),
-  }
-}
-let cameraGate: { requested: Gate; reply: Gate } | undefined
-let resultGate:
-  | { matches: (ast: Node<Program>) => boolean; requested: Gate; reply: Gate }
-  | undefined
-
-function holdNextRuntimeResult(matches: (ast: Node<Program>) => boolean) {
-  const gate = {
-    matches,
-    requested: createGate(),
-    reply: createGate(),
-  }
-  resultGate = gate
-  return gate
-}
-
-function acknowledgeSceneCommand(command: ModelingCmd): OkModelingCmdResponse {
-  if (
-    command.type === 'enable_sketch_mode' ||
-    command.type === 'object_visible' ||
-    command.type === 'set_selection_filter' ||
-    command.type === 'select_clear' ||
-    command.type === 'select_entity'
+const recording = process.env.ZDS_RECORD_ENGINE_CASSETTES === '1'
+const socket = engineSocket(recording)
+let world: Awaited<ReturnType<typeof buildTheWorldAndConnectToEngine>>
+let cleanup: (() => void) | undefined
+let releaseResponse: (() => void) | undefined
+let realExecution: ReturnType<typeof vi.spyOn>
+let cassettePath: string
+let startupFrames: string | undefined
+const fileFor = (name: string) => {
+  const id =
+    name.match(/\b(?:name|remove-one|remove-all|delete)-\d+\b/)?.[0] ??
+    name.replace(/[^a-z0-9]+/gi, '-')
+  return path.join(
+    process.cwd(),
+    'src/machines/__cassettes__/legacy-sketch',
+    `${id}.json`
   )
-    return { type: command.type, data: {} }
-  throw new Error(`Unexpected fixture transport command: ${command.type}`)
 }
-
-async function sceneReply(
-  command: Parameters<typeof world.engineCommandManager.sendSceneCommand>[0]
-): Promise<WebSocketResponse | null> {
-  if (command.type === 'modeling_cmd_batch_req') {
-    const responses: Record<string, BatchResponse> = {}
-    for (const request of command.requests)
-      responses[request.cmd_id] = {
-        response: acknowledgeSceneCommand(request.cmd),
-      }
-    return {
-      request_id: command.batch_id,
-      success: true,
-      resp: { type: 'modeling_batch', data: { responses } },
-    }
-  }
-  if (command.type !== 'modeling_cmd_req')
-    throw new Error(`Unexpected fixture request: ${command.type}`)
-  if (command.cmd.type === 'enable_sketch_mode' && cameraGate) {
-    const gate = cameraGate
-    cameraGate = undefined
-    gate.requested.resolve()
-    await gate.reply.promise
-  }
-  return {
-    request_id: command.cmd_id,
-    success: true,
-    resp: {
-      type: 'modeling',
-      data: { modeling_response: acknowledgeSceneCommand(command.cmd) },
-    },
-  }
-}
-
 const forbiddenMockExecution = vi
   .fn<InstanceType<ModuleType['Context']>['executeMock']>()
   .mockRejectedValue(new Error('KCL mock execution is forbidden'))
-const forbiddenEngineExecution = vi
-  .fn<InstanceType<ModuleType['Context']>['execute']>()
-  .mockRejectedValue(new Error('Fixture tests must not execute KCL'))
-
-async function runtimeResult(ast: Node<Program>) {
-  if (resultGate?.matches(ast)) {
-    const gate = resultGate
-    resultGate = undefined
-    gate.requested.resolve()
-    await gate.reply.promise
-  }
-  try {
-    const hasPlane = ast.body.some(
-      (item) =>
-        item.type === 'VariableDeclaration' &&
-        item.declaration.id.name === 'sketch001'
-    )
-    const context = hasPlane ? undefined : world.kclManager.ast
-    const key = sketchEngineFixtureKey(ast, context)
-    let fixture = records.get(key)
-    if (!fixture && recording) {
-      let request = pending.get(key)
-      if (!request) {
-        request = (async () => {
-          if (!engineWorld) throw new Error('Missing recording engine')
-          // Sketch redraw requests contain only the sketch statement and rely on
-          // the current program's bindings. Record their real result by executing
-          // that complete program, never by running the mock interpreter.
-          const executable = hasPlane ? ast : world.kclManager.ast
-          if (
-            !hasPlane &&
-            !ast.body.every((item) =>
-              executable.body.some(
-                (candidate) =>
-                  JSON.stringify(candidate) === JSON.stringify(item)
-              )
-            )
-          )
-            throw new Error(
-              'Recording request does not belong to the current program'
-            )
-          const state = await engineWorld.rustContext.execute(executable, {})
-          const fixture = recordSketchEngineResult(
-            ast,
-            state,
-            instance,
-            context
-          )
-          if (isErr(fixture)) throw fixture
-          records.set(key, fixture)
-          await writeFile(
-            '/tmp/zds-sketch-engine-results.json',
-            JSON.stringify([...records.values()])
-          )
-          return fixture
-        })()
-        pending.set(key, request)
-      }
-      fixture = await request
-    }
-    const recorded = fixture ?? findSketchEngineResult(ast, context)
-    if (isErr(recorded)) throw recorded
-    const result = replaySketchEngineResult(recorded)
-    defaultPlanes = result.defaultPlanes
-    return result
-  } catch (error) {
-    runtimeFailures.push(error)
-    throw error
-  }
-}
 
 beforeAll(async () => {
-  world = await buildTheWorldAndNoEngineConnection()
+  socket.listen()
+  await socket.begin(fileFor('startup'))
+  world = await buildTheWorldAndConnectToEngine({
+    webrtc: false,
+    geometryOnly: true,
+  })
+  world.settingsActor.start()
+  world.kclManager.sceneInfra.camControls.localCameraMode = true
+  world.kclManager.sceneInfra.camControls.camera.position.set(100, 100, 100)
   instance = world.instance
+  realExecution = vi.spyOn(instance.Context.prototype, 'execute')
   vi.spyOn(instance.Context.prototype, 'executeMock').mockImplementation(
     forbiddenMockExecution
   )
-  if (!recording)
-    vi.spyOn(instance.Context.prototype, 'execute').mockImplementation(
-      forbiddenEngineExecution
-    )
-  if (recording)
-    engineWorld = await buildTheWorldAndConnectToEngine({
-      webrtc: false,
-      geometryOnly: true,
-    })
-  vi.spyOn(world.rustContext, 'defaultPlanes', 'get').mockImplementation(
-    () => defaultPlanes
+  // Legacy redraws request a truncated statement using the old JS facade.
+  // Execute its complete program normally so preceding bindings remain available.
+  vi.spyOn(world.rustContext, 'executeMock').mockImplementation(
+    async (ast, settings, filePath) => {
+      const complete = ast.body.some(
+        (item) =>
+          item.type === 'VariableDeclaration' &&
+          item.declaration.id.name === 'sketch001'
+      )
+        ? ast
+        : world.kclManager.ast
+      if (
+        !ast.body.every((item) =>
+          complete.body.some(
+            (candidate) => JSON.stringify(candidate) === JSON.stringify(item)
+          )
+        )
+      )
+        throw new Error('Redraw does not belong to the current program')
+      return world.rustContext.execute(complete, settings, filePath)
+    }
   )
-  vi.spyOn(world.rustContext, 'execute').mockImplementation(runtimeResult)
-  vi.spyOn(world.rustContext, 'executeMock').mockImplementation(runtimeResult)
-  vi.spyOn(
-    world.rustContext,
-    'waitForAllEngineModelingCommands'
-  ).mockResolvedValue(undefined)
-  vi.spyOn(world.engineCommandManager, 'start').mockRejectedValue(
-    new Error('Fixture tests must not connect')
+  await world.rustContext.execute(
+    assertParse('warmup = 1', instance),
+    jsAppSettings(world.settingsActor)
   )
-  Object.defineProperty(world.engineCommandManager, 'geometryOnly', {
-    configurable: true,
-    value: true,
-  })
-  world.engineCommandManager.started = true
-  world.sceneInfra.camControls.localCameraMode = true
-  world.sceneInfra.camControls.camera.position.set(100, 100, 100)
+  startupFrames = await socket.finish()
   vi.stubGlobal('matchMedia', () => ({ matches: true }))
-  vi.spyOn(world.engineCommandManager, 'sendSceneCommand').mockImplementation(
-    sceneReply
-  )
 }, 60_000)
 
-afterEach(() => {
-  cameraGate = undefined
-  resultGate = undefined
-  const failures = runtimeFailures
-  runtimeFailures = []
-  expect(failures).toEqual([])
-  try {
-    expect(forbiddenMockExecution).not.toHaveBeenCalled()
-    expect(forbiddenEngineExecution).not.toHaveBeenCalled()
-  } finally {
-    forbiddenMockExecution.mockClear()
-    forbiddenEngineExecution.mockClear()
+beforeEach(async ({ task, expect }) => {
+  if (recording && startupFrames) {
+    await expect(startupFrames).toMatchFileSnapshot(fileFor('startup'))
+    startupFrames = undefined
   }
+  realExecution.mockClear()
+  cassettePath = fileFor(task.name)
+  await socket.begin(cassettePath)
+  await world.rustContext.clearSceneAndBustCache(
+    jsAppSettings(world.settingsActor)
+  )
+})
+afterEach(async ({ task }) => {
+  releaseResponse?.()
+  releaseResponse = undefined
+  cleanup?.()
+  cleanup = undefined
+  const frames = await socket.finish()
+  if (recording && task.result?.state !== 'fail')
+    await expect(frames).toMatchFileSnapshot(cassettePath)
+  expect(realExecution).toHaveBeenCalled()
+  expect(forbiddenMockExecution).not.toHaveBeenCalled()
+  forbiddenMockExecution.mockClear()
 })
 afterAll(() => {
-  engineWorld?.engineCommandManager.tearDown({
+  world?.engineCommandManager.tearDown({
     route: 'user-requested',
     initiatedBy: 'client',
   })
-  world.commandBarActor.stop()
-  world.settingsActor.stop()
+  world?.commandBarActor.stop()
+  world?.settingsActor.stop()
+  socket.close()
   vi.restoreAllMocks()
   vi.unstubAllGlobals()
 })
 
+function holdResponse(matches: (request: EngineRequest) => boolean) {
+  const requested = Promise.withResolvers<undefined>()
+  const reply = Promise.withResolvers<undefined>()
+  let reject = false
+  releaseResponse = () => reply.resolve(undefined)
+  socket.intercept(async (request, response) => {
+    if (!matches(request)) return response
+    socket.intercept(undefined)
+    requested.resolve(undefined)
+    await reply.promise
+    return reject
+      ? {
+          success: false,
+          request_id: response.request_id,
+          errors: [
+            {
+              error_code: 'internal_engine',
+              message: 'Sketch mode unavailable',
+            },
+          ],
+        }
+      : response
+  })
+  return {
+    requested: requested.promise,
+    release: () => reply.resolve(undefined),
+    reject: () => {
+      reject = true
+      reply.resolve(undefined)
+    },
+  }
+}
+const cameraCommand = (request: EngineRequest) =>
+  request.type === 'modeling_cmd_req' &&
+  request.cmd.type === 'enable_sketch_mode'
+const geometryCommand = (request: EngineRequest) =>
+  request.type === 'modeling_cmd_req' && request.cmd.type === 'begin_execution'
+
 async function startSketch(code: string, searchText: string) {
   const { kclManager } = world
-  world.sceneInfra.camControls.enableRotate = true
+  world.kclManager.sceneInfra.camControls.enableRotate = true
   kclManager.updateCodeEditor(code)
   await kclManager.executeAst({ ast: assertParse(code, instance) })
   expect(kclManager.errors).toEqual([])
@@ -316,13 +214,13 @@ async function startSketch(code: string, searchText: string) {
       wasmInstance: instance,
     }),
   }).start()
-  world.sceneInfra.setSend((event) => actor.send(event))
+  world.kclManager.sceneInfra.setSend((event) => actor.send(event))
   world.engineCommandManager.modelingSend = (event) => actor.send(event)
-  onTestFinished(() => {
-    world.sceneInfra.setSend(() => {})
+  cleanup = () => {
+    world.kclManager.sceneInfra.setSend(() => {})
     world.engineCommandManager.modelingSend = () => {}
     actor.stop()
-  })
+  }
   actor.send({
     type: 'Set selection',
     data: {
@@ -352,7 +250,7 @@ async function startSketch(code: string, searchText: string) {
 async function enterSketch(code: string, searchText: string) {
   const flow = await startSketch(code, searchText)
   await waitForSketch(flow.actor)
-  expect(world.sceneInfra.camControls.enableRotate).toBe(false)
+  expect(world.kclManager.sceneInfra.camControls.enableRotate).toBe(false)
   return flow
 }
 
@@ -390,8 +288,18 @@ function namedDimensionEvent(
 }
 
 const cases = Object.values(legacySketchCases)
-describe('legacy sketch flows with recorded engine results', () => {
-  it.each(cases.flatMap((c) => c.namedConstantConstraint))(
+const numbered = <T extends { name: string }>(items: T[], operation: string) =>
+  items.map((item, index) => ({
+    ...item,
+    name: `${operation}-${index}: ${item.name}`,
+  }))
+describe('legacy sketch flows with real KCL and recorded WebSocket responses', () => {
+  it.each(
+    numbered(
+      cases.flatMap((c) => c.namedConstantConstraint),
+      'name'
+    )
+  )(
     '$name',
     async ({ code, searchText, constraintIndex, expectedResult, filter }) => {
       const { actor, artifact, call } = await enterSketch(code, searchText)
@@ -409,7 +317,12 @@ describe('legacy sketch flows with recorded engine results', () => {
     30_000
   )
 
-  it.each(cases.flatMap((c) => c.removeIndividualConstraintsCases))(
+  it.each(
+    numbered(
+      cases.flatMap((c) => c.removeIndividualConstraintsCases),
+      'remove-one'
+    )
+  )(
     '$name',
     async ({ code, searchText, constraintIndex, expectedResult, filter }) => {
       const { artifact, call } = await enterSketch(code, searchText)
@@ -435,7 +348,12 @@ describe('legacy sketch flows with recorded engine results', () => {
     30_000
   )
 
-  it.each(cases.flatMap((c) => c.removeAllConstraintsCases))(
+  it.each(
+    numbered(
+      cases.flatMap((c) => c.removeAllConstraintsCases),
+      'remove-all'
+    )
+  )(
     '$name',
     async ({ code, searchText, expectedResult }) => {
       const { actor, artifact } = await enterSketch(code, searchText)
@@ -449,7 +367,12 @@ describe('legacy sketch flows with recorded engine results', () => {
     30_000
   )
 
-  it.each(cases.flatMap((c) => c.deleteSegment))(
+  it.each(
+    numbered(
+      cases.flatMap((c) => c.deleteSegment),
+      'delete'
+    )
+  )(
     '$name',
     async ({ code, searchText, filter }) => {
       const { actor, artifact, call } = await enterSketch(code, searchText)
@@ -469,77 +392,74 @@ describe('legacy sketch flows with recorded engine results', () => {
   )
 })
 
-describe('sketch readiness with controlled engine responses', () => {
-  const example = legacySketchCases.line.namedConstantConstraint[0]
+describe(
+  'sketch readiness with controlled engine responses',
+  { timeout: 30_000 },
+  () => {
+    const example = legacySketchCases.line.namedConstantConstraint[0]
 
-  it('waits for the sketch-mode acknowledgement before drawing the sketch', async () => {
-    const gate = {
-      requested: createGate(),
-      reply: createGate(),
-    }
-    cameraGate = gate
-    const { actor } = await startSketch(example.code, example.searchText)
-    await gate.requested.promise
-    expect(actor.getSnapshot().matches('animating to existing sketch')).toBe(
-      true
-    )
-    gate.reply.resolve()
-    await waitForSketch(actor)
-    expect(world.sceneInfra.camControls.enableRotate).toBe(false)
-  })
-
-  it('does not report a ready sketch while its geometry result is pending', async () => {
-    const gate = holdNextRuntimeResult((ast) => ast.body.length === 1)
-    const { actor } = await startSketch(example.code, example.searchText)
-    await gate.requested.promise
-    expect(
-      actor.getSnapshot().matches({ Sketch: { SketchIdle: 'set up segments' } })
-    ).toBe(true)
-    gate.reply.resolve()
-    await waitForSketch(actor)
-    expect(world.sceneInfra.camControls.enableRotate).toBe(false)
-  })
-
-  it('returns to idle without editing the program when sketch mode is rejected', async () => {
-    const gate = {
-      requested: createGate(),
-      reply: createGate(),
-    }
-    cameraGate = gate
-    const { actor } = await startSketch(example.code, example.searchText)
-    await gate.requested.promise
-    gate.reply.reject(new Error('Sketch mode unavailable'))
-    await waitFor(actor, (snapshot) => snapshot.matches('idle'))
-    expect(world.kclManager.code).toBe(example.code)
-  })
-
-  it('persists the named dimension only after its rebuilt sketch is available', async () => {
-    const { actor, artifact, call } = await enterSketch(
-      example.code,
-      example.searchText
-    )
-    const previousCode = world.kclManager.code
-    const constraint = getConstraintInfoKw(
-      call,
-      world.kclManager.code,
-      artifact.codeRef!.pathToNode
-    )[0]
-    const gate = holdNextRuntimeResult((ast) =>
-      ast.body.some(
-        (item) =>
-          item.type === 'VariableDeclaration' &&
-          item.declaration.id.name === 'test_variable'
+    it('waits for the sketch-mode acknowledgement before drawing the sketch', async () => {
+      const gate = holdResponse(cameraCommand)
+      const { actor } = await startSketch(example.code, example.searchText)
+      await gate.requested
+      expect(actor.getSnapshot().matches('animating to existing sketch')).toBe(
+        true
       )
-    )
-    actor.send(namedDimensionEvent(constraint))
-    await gate.requested.promise
-    expect(
-      actor.getSnapshot().matches({ Sketch: 'Converting to named value' })
-    ).toBe(true)
-    expect(world.kclManager.code).toBe(previousCode)
-    gate.reply.resolve()
-    await waitForSketch(actor)
-    expect(world.kclManager.code).toContain(example.expectedResult)
-    expect(world.kclManager.code).toContain('test_variable = 20')
-  })
-})
+      gate.release()
+      await waitForSketch(actor)
+      expect(world.kclManager.sceneInfra.camControls.enableRotate).toBe(false)
+    })
+
+    it('does not report a ready sketch while its geometry result is pending', async () => {
+      // Arm the geometry gate only after the camera acknowledgement, so the
+      // initial evaluation completes and the redraw's real interpreter is held.
+      const camera = holdResponse(cameraCommand)
+      const { actor } = await startSketch(example.code, example.searchText)
+      await camera.requested
+      const gate = holdResponse(geometryCommand)
+      camera.release()
+      await gate.requested
+      expect(
+        actor
+          .getSnapshot()
+          .matches({ Sketch: { SketchIdle: 'set up segments' } })
+      ).toBe(true)
+      gate.release()
+      await waitForSketch(actor)
+      expect(world.kclManager.sceneInfra.camControls.enableRotate).toBe(false)
+    })
+
+    it('returns to idle without editing the program when sketch mode is rejected', async () => {
+      const gate = holdResponse(cameraCommand)
+      const { actor } = await startSketch(example.code, example.searchText)
+      await gate.requested
+      gate.reject()
+      await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+      expect(world.kclManager.code).toBe(example.code)
+    })
+
+    it('persists the named dimension only after its rebuilt sketch is available', async () => {
+      const { actor, artifact, call } = await enterSketch(
+        example.code,
+        example.searchText
+      )
+      const previousCode = world.kclManager.code
+      const constraint = getConstraintInfoKw(
+        call,
+        world.kclManager.code,
+        artifact.codeRef!.pathToNode
+      )[0]
+      const gate = holdResponse(geometryCommand)
+      actor.send(namedDimensionEvent(constraint))
+      await gate.requested
+      expect(
+        actor.getSnapshot().matches({ Sketch: 'Converting to named value' })
+      ).toBe(true)
+      expect(world.kclManager.code).toBe(previousCode)
+      gate.release()
+      await waitForSketch(actor)
+      expect(world.kclManager.code).toContain(example.expectedResult)
+      expect(world.kclManager.code).toContain('test_variable = 20')
+    })
+  }
+)
