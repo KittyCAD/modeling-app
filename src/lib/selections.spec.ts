@@ -3951,7 +3951,9 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
   })
 })
 
-test('counts a raw region reference in the selection summary', () => {
+test('counts a raw region reference in the selection summary', async () => {
+  const { instance } = await buildTheWorldAndNoEngineConnection()
+  const ast = assertParse('', instance)
   const selection: Selections = {
     graphSelections: [
       {
@@ -3961,7 +3963,7 @@ test('counts a raw region reference in the selection summary', () => {
     ],
     otherSelections: [],
   }
-  expect(getSelectionTypeDisplayText({} as any, selection, new Map())).toBe(
+  expect(getSelectionTypeDisplayText(ast, selection, new Map())).toBe(
     '1 region'
   )
 })
