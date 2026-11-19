@@ -10,6 +10,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
 import { isImageMimetype } from '@src/lib/mimeTypes'
+import { ZookeeperAttachment } from '@src/lib/zookeeper/components/ZookeeperAttachment'
 import {
   type ReactNode,
   type ReactElement,
@@ -642,7 +643,8 @@ const ImageFileItem = (props: {
         onClick={() =>
           props.url && props.onDownload(props.url, props.file.name)
         }
-        className="flex flex-row gap-2 items-center cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-90 p-2 rounded text-left w-full"
+        type="button"
+        className="flex w-full cursor-pointer flex-row items-center gap-2 rounded p-2 text-left hover:bg-2"
         title={`Click to download ${props.file.name}`}
       >
         <CustomIcon name="file" className="w-5 h-5 flex-shrink-0" />
@@ -654,13 +656,23 @@ const ImageFileItem = (props: {
 
   return (
     <div className="flex max-w-full min-w-0 flex-col gap-1">
-      <span className="max-w-full truncate text-xs text-chalkboard-70 dark:text-chalkboard-40">
-        {props.file.name}
-      </span>
-      <button
-        onClick={() => props.onDownload(props.url!, props.file.name)}
-        className="m-0 w-fit max-w-full cursor-pointer overflow-hidden rounded border border-chalkboard-30 bg-transparent p-0 text-left hover:opacity-80 dark:border-chalkboard-80"
-        title={`Click to download ${props.file.name}`}
+      <div className="flex min-w-0 items-center justify-between gap-2">
+        <span className="truncate text-xs text-2">{props.file.name}</span>
+        <button
+          type="button"
+          onClick={() =>
+            props.url && props.onDownload(props.url, props.file.name)
+          }
+          className="flex shrink-0 items-center gap-1 rounded px-2 py-1 text-xs hover:bg-2"
+          aria-label={`Download ${props.file.name}`}
+        >
+          <CustomIcon name="download" className="h-4 w-4" />
+          Download
+        </button>
+      </div>
+      <ZookeeperAttachment
+        file={props.file}
+        className="m-0 w-fit max-w-full cursor-zoom-in overflow-hidden rounded border b-4 bg-transparent p-0 text-left hover:opacity-80"
       >
         <img
           src={props.url}
@@ -668,7 +680,7 @@ const ImageFileItem = (props: {
           className="block h-auto max-w-full"
           onError={() => setImageError(true)}
         />
-      </button>
+      </ZookeeperAttachment>
     </div>
   )
 }

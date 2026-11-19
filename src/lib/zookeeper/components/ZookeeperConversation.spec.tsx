@@ -7,6 +7,7 @@ import {
 } from '@src/lib/zookeeper/testUtils'
 import {
   zookeeperManagerMachine,
+  hasBeenInterruptedOnLast,
   ZookeeperManagerTransitions,
   ZookeeperManagerStates,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
@@ -52,20 +53,15 @@ vi.mock('@src/lib/boot', () => ({
   }),
 }))
 
-import {
-  defineRegistryItem,
-  provideService,
-  Registry,
-} from '@kittycad/registry'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { ZOOKEEPER_ACTIVITY_PREFIX } from '@src/lib/zookeeper/activityMessages'
 import {
   ZookeeperConversation,
   type ZookeeperConversationProps,
 } from '@src/lib/zookeeper/components/ZookeeperConversation'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { ZOOKEEPER_ACTIVITY_PREFIX } from '@src/lib/zookeeper/activityMessages'
 import type {
   Conversation,
   MlCopilotModeId,
@@ -74,24 +70,23 @@ import type {
 import {
   type EngineSceneExtensionContext,
   engineSceneRuntimeExtensionsSlot,
-  engineSceneStreamLayersValueSpec,
+  engineSceneStreamLayersFacet,
 } from '@src/registry/contracts/engineScene'
 import { viewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
 import { ZOODLE_BRUSH_SIZE_DEFAULT_PX } from '@src/registry/contracts/zoodle'
+import { factory as defineFactory, provide, Registry } from 'plankton'
 
 const captureViewportScreenshot = vi.fn<() => string>()
 
-const configureTestRegistry = () => {
+const configureTestRegistry = async () => {
   const registry = new Registry()
-  registry.configure([
-    engineSceneRuntimeExtensionsSlot.of(),
-    defineRegistryItem({
-      id: 'test-viewport-screenshot',
-      providesServices: [
-        provideService(viewportScreenshotService, {
-          capture: captureViewportScreenshot,
-        }),
-      ],
+  await registry.configure([
+    provide(viewportScreenshotService, { capture: captureViewportScreenshot }),
+    defineFactory({
+      ...engineSceneRuntimeExtensionsSlot,
+      create: () => ({
+        items: [],
+      }),
     }),
   ])
   bootMockState.registry = registry
@@ -108,8 +103,7 @@ const testEngineSceneContext = {
 const TestEngineSceneStreamLayers = () => {
   useSignals()
   const registry = bootMockState.registry as Registry
-  const layers = registry.signal(engineSceneStreamLayersValueSpec).value
-
+  const layers = registry.observe(engineSceneStreamLayersFacet).value
   return (
     <>
       {layers.map((layer) => {
@@ -138,8 +132,8 @@ const SERVER_MODE_OPTIONS: MlCopilotModeOption[] = [
 ]
 
 describe('ZookeeperConversation', () => {
-  beforeEach(() => {
-    configureTestRegistry()
+  beforeEach(async () => {
+    await configureTestRegistry()
     window.localStorage.removeItem(MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY)
     vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:image-preview')
     vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
@@ -430,6 +424,180 @@ describe('ZookeeperConversation', () => {
       ).toBeEnabled()
     } finally {
       unmount()
+      actor.stop()
+      vi.unstubAllGlobals()
+    }
+  })
+
+  // Synthetic ordering from the Slack report; the production replay tail has
+  // not been captured: https://kittycadworkspace.slack.com/archives/C06L2RHP9SL/p1794959500968199
+  test('offers recovery after reopening a completed reply with late old-run output', async () => {
+    ControllableSetupWebSocket.instances = []
+    vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+    const createManager = () =>
+      createActor(zookeeperManagerMachine, {
+        input: { apiToken: 'test-token' },
+      }).start()
+    let actor = createManager()
+    const request = { type: 'user', content: 'Make a bracket' }
+    const completion = {
+      end_of_stream: { whole_response: 'Resumed request complete.' },
+    }
+    const lateEdit = {
+      tool_output: {
+        result: {
+          type: 'edit_kcl_code',
+          status_code: 200,
+          outputs: { 'main.kcl': '@settings(kclVersion = 3.0)\nsize = 25\n' },
+        },
+      },
+    }
+    const connect = async (messages: unknown[]) => {
+      act(() =>
+        actor.send({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          conversationId: 'conversation-id',
+          refParentSend: (event) => actor.send(event),
+        })
+      )
+      const socket = ControllableSetupWebSocket.instances.at(-1)!
+      act(() => socket.open())
+      await waitFor(() =>
+        expect(socket.sentPayloads).toContain(
+          JSON.stringify({ type: 'list_modes' })
+        )
+      )
+      act(() => {
+        socket.receive(
+          {
+            replay_page: {
+              conversation_id: 'conversation-id',
+              messages: messages.map(encodeReplayMessage),
+            },
+          },
+          'msgpack'
+        )
+        socket.receive({
+          conversation_id: { conversation_id: 'conversation-id' },
+        })
+      })
+      await waitForActor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+      return socket
+    }
+    const onResumeInterruptedTurn = vi.fn(() =>
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'demo',
+        projectFiles: [],
+      })
+    )
+    // Match the pane's actor-derived composer and recovery props. Use a fresh
+    // actor on reopen so no live connection state can mask the saved history.
+    const View = () => {
+      const snapshot = useSelector(actor, (state) => state)
+      const interrupted =
+        snapshot.matches(ZookeeperManagerStates.WaitForContinueCheck) &&
+        hasBeenInterruptedOnLast(snapshot.context.conversation?.exchanges ?? [])
+      return (
+        <ZookeeperConversation
+          isLoading={!snapshot.context.conversation}
+          conversation={snapshot.context.conversation}
+          contexts={[]}
+          onProcess={vi.fn()}
+          onCancel={vi.fn()}
+          onClickClearChat={vi.fn()}
+          onReconnect={vi.fn()}
+          needsReconnect={snapshot.context.abruptlyClosed}
+          disabled={snapshot.context.abruptlyClosed || interrupted}
+          hasPromptCompleted={
+            !snapshot.context.awaitingResponse && !interrupted
+          }
+          isProcessing={snapshot.context.awaitingResponse}
+          interruptedTurnAwaitingResume={interrupted}
+          onResumeInterruptedTurn={onResumeInterruptedTurn}
+          queue={[]}
+          onRemoveFromQueue={vi.fn()}
+          onSteer={vi.fn()}
+        />
+      )
+    }
+    let view = render(<View />)
+    try {
+      const socket = await connect([request])
+      act(() =>
+        actor.send({
+          type: ZookeeperManagerStates.ContinueCheck,
+          projectName: 'demo',
+          projectFiles: [],
+        })
+      )
+      await waitForActor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+      act(() => {
+        socket.receive(completion)
+        socket.receive(lateEdit)
+      })
+      expect(
+        actor.getSnapshot().context.conversation?.exchanges.at(-1)?.responses
+      ).toEqual([completion, lateEdit])
+      expect(
+        hasBeenInterruptedOnLast(
+          actor.getSnapshot().context.conversation?.exchanges ?? []
+        )
+      ).toBe(true)
+
+      expect(
+        screen.getByTestId('ml-ephant-conversation-input-button')
+      ).toBeEnabled()
+
+      view.unmount()
+      actor.stop()
+      actor = createManager()
+      view = render(<View />)
+      const reopenedSocket = await connect([request, completion, lateEdit])
+      await screen.findByText('Resumed request complete.')
+      expect(actor.getSnapshot().context.awaitingResponse).toBe(false)
+      expect(
+        screen.getByTestId('ml-ephant-conversation-input-button')
+      ).toBeDisabled()
+      expect(
+        screen.queryByTestId('ml-ephant-conversation-cancel-button')
+      ).not.toBeInTheDocument()
+      // Send is blocked by the unfinished tail, so an explicit recovery action
+      // must remain available even though this exchange has an earlier answer.
+      const resumeButton = screen.getByRole('button', {
+        name: 'Resume interrupted request',
+      })
+      expect(resumeButton).toBeEnabled()
+      fireEvent.click(resumeButton)
+      expect(onResumeInterruptedTurn).toHaveBeenCalledOnce()
+      await waitForActor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+      act(() =>
+        reopenedSocket.receive({
+          end_of_stream: { whole_response: 'Unfinished work recovered.' },
+        })
+      )
+      expect(
+        actor
+          .getSnapshot()
+          .context.conversation?.exchanges.at(-1)
+          ?.responses.at(-1)
+      ).toEqual({
+        end_of_stream: { whole_response: 'Unfinished work recovered.' },
+      })
+      expect(
+        screen.queryByRole('button', { name: 'Resume interrupted request' })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.getByTestId('ml-ephant-conversation-input-button')
+      ).toBeEnabled()
+    } finally {
+      view.unmount()
       actor.stop()
       vi.unstubAllGlobals()
     }
@@ -1762,8 +1930,7 @@ describe('ZookeeperConversation', () => {
       expect(zoodleButton).toHaveAttribute('aria-pressed', 'false')
       expect(screen.getByText('Zoodle')).toBeInTheDocument()
     })
-
-    test('marks screenshot annotation button active and cancels on second click', () => {
+    test('marks screenshot annotation button active and cancels on second click', async () => {
       renderConversation()
 
       const zoodleButton = screen.getByTestId(
@@ -1774,15 +1941,17 @@ describe('ZookeeperConversation', () => {
 
       expect(zoodleButton).toHaveAttribute('aria-pressed', 'true')
       expect(
-        screen.getByTestId('viewport-annotation-overlay')
+        await screen.findByTestId('viewport-annotation-overlay')
       ).toBeInTheDocument()
 
       fireEvent.click(zoodleButton)
 
       expect(zoodleButton).toHaveAttribute('aria-pressed', 'false')
-      expect(
-        screen.queryByTestId('viewport-annotation-overlay')
-      ).not.toBeInTheDocument()
+      await waitFor(() =>
+        expect(
+          screen.queryByTestId('viewport-annotation-overlay')
+        ).not.toBeInTheDocument()
+      )
     })
 
     test('adds annotated viewport screenshot as an attachment', async () => {
@@ -1814,7 +1983,7 @@ describe('ZookeeperConversation', () => {
         )
 
         expect(
-          screen.getByTestId('viewport-annotation-overlay')
+          await screen.findByTestId('viewport-annotation-overlay')
         ).toBeInTheDocument()
         expect(
           screen.getByTestId('viewport-annotation-tool-drawOrange')
@@ -1959,7 +2128,7 @@ describe('ZookeeperConversation', () => {
         {
           clipboardData: {
             files: [],
-            getData: () => 'a'.repeat(5_000),
+            getData: () => 'a'.repeat(5000),
           },
         }
       )
@@ -1975,7 +2144,7 @@ describe('ZookeeperConversation', () => {
       renderConversation(handleProcess)
       const textarea = screen.getByTestId('ml-ephant-conversation-input')
       const prompt = 'Use these requirements.'
-      const text = 'first line\r\nsecond line\n'.padEnd(5_001, 'a')
+      const text = 'first line\r\nsecond line\n'.padEnd(5001, 'a')
       fireEvent.change(textarea, { target: { value: prompt } })
 
       const defaultAllowed = fireEvent.paste(textarea, {
@@ -2002,7 +2171,7 @@ describe('ZookeeperConversation', () => {
       const handleProcess = vi.fn()
       renderConversation(handleProcess)
       const textarea = screen.getByTestId('ml-ephant-conversation-input')
-      for (const text of ['a'.repeat(5_001), 'b'.repeat(5_001)]) {
+      for (const text of ['a'.repeat(5001), 'b'.repeat(5001)]) {
         fireEvent.paste(textarea, {
           clipboardData: { files: [], getData: () => text },
         })

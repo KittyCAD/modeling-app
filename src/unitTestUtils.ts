@@ -1,5 +1,3 @@
-import { createProjectForTest } from '@src/lib/projectTestUtils'
-import { defineRegistryItem } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import env from '@src/env'
 import {
@@ -17,8 +15,9 @@ import type { CallExpressionKw, Expr } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
-import { createTextFileIO } from '@src/lib/projectSession/textFileIO'
 import { MachineManager } from '@src/lib/MachineManager'
+import { createTextFileIO } from '@src/lib/projectSession/textFileIO'
+import { createProjectForTest } from '@src/lib/projectTestUtils'
 import RustContext from '@src/lib/rustContext'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { reportRejection } from '@src/lib/trap'
@@ -75,9 +74,13 @@ export function createSettledUserFeaturesForTest(): UserFeaturesSettleService {
     actor: {
       getSnapshot: () => ({
         matches: (state) => state === UserFeaturesState.Ready,
-        context: { fetchedAt: new Date() },
+        context: {
+          fetchedAt: new Date(),
+        },
       }),
-      subscribe: () => ({ unsubscribe: () => {} }),
+      subscribe: () => ({
+        unsubscribe: () => {},
+      }),
     },
   }
 }
@@ -136,7 +139,6 @@ export async function buildTheWorldAndConnectToEngine({
     project: signal(createProjectForTest()),
     projectPath: signal('some-project'),
   })
-
   await new Promise((resolve, reject) => {
     kclManager.engineCommandManager
       .start({
@@ -152,7 +154,6 @@ export async function buildTheWorldAndConnectToEngine({
               'auth_token_invalid for the engine. Please set VITE_ZOO_API_TOKEN to the development token.'
             reject(reason)
           }
-
           if (message === 'auth success') {
             resolve(true)
             console.log('unit test connected!')
@@ -185,14 +186,10 @@ export async function loadWasm() {
   const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
   return instancePromise
 }
-
 export function createTestWasmRegistryItem(
   wasmPromise: Promise<ModuleType> = loadWasm()
 ) {
-  return defineRegistryItem({
-    id: 'test.wasm-promise',
-    provides: [provideWasmPromise(wasmPromise)],
-  })
+  return [provideWasmPromise(() => wasmPromise)]
 }
 
 /**
@@ -204,7 +201,9 @@ export function createTestWasmRegistryItem(
  */
 export async function buildTheWorldNode() {
   const instance = loadWasm()
-  return { instance }
+  return {
+    instance,
+  }
 }
 
 // Initialize all the singletons and the WASM blob but do not connect to the engine
@@ -257,9 +256,7 @@ export async function buildTheWorldAndNoEngineConnection(
     project: signal(createProjectForTest()),
     projectPath: signal('some-project'),
   })
-
   settingsActor.start()
-
   return {
     instance: await instancePromise,
     engineCommandManager: kclManager.engineCommandManager,

@@ -21,14 +21,17 @@ import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import type { HomeLoaderData } from '@src/lib/types'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
-  projectLibrarySettingDefaultPoliciesValueSpec,
-  projectLibrarySettingDefaultsValueSpec,
+  projectLibrarySettingDefaultPoliciesFacet,
+  projectLibrarySettingDefaultsFacet,
 } from '@src/registry/contracts/projectLibraries'
-import { settingsValueSpec } from '@src/registry/contracts/settings'
+import { settingsFacet } from '@src/registry/contracts/settings'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
-import { hasProjectShellFeature } from '@src/lib/projectSession/next/feature'
+import {
+  hasProjectShellFeature,
+  waitForProjectShellSettled,
+} from '@src/lib/projectSession/next/feature'
 import { waitForUserFeaturesSettled } from '@src/machines/userFeaturesMachine'
 import { readProject } from '@src/lib/projectSession/next/utils'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
@@ -43,17 +46,21 @@ function loadRouteSettings(
   projectPath?: string
 ) {
   return loadAndValidateSettings(
-    app.registry.get(fileOperationsService),
+    app.registry.required(fileOperationsService),
     wasmInstance,
     {
       defaultProjectLibraries: app.registry.get(
-        projectLibrarySettingDefaultsValueSpec
+        projectLibrarySettingDefaultsFacet
       ),
       projectLibrarySettingDefaultPolicies: app.registry.get(
-        projectLibrarySettingDefaultPoliciesValueSpec
+        projectLibrarySettingDefaultPoliciesFacet
       ),
-      extensionSettings: app.registry.get(settingsValueSpec),
+      extensionSettings: app.registry.get(settingsFacet),
       projectPath,
+      projectReadOnly: projectPath
+        ? !app.projectSession.storageFor(projectPath).writeAvailability.peek()
+            .writable
+        : false,
     }
   )
 }
@@ -78,10 +85,12 @@ export const baseLoader =
     return redirect(PATHS.HOME + routerSearch)
   }
 
-/** Settle the shared feature grant before either experimental route accesses resources. */
+/** Wait for the grant and its installed content before either route accesses resources. */
 async function canOpenProjectShell(app: App, signal: AbortSignal) {
   await waitForUserFeaturesSettled(app.userFeatures.actor, undefined, signal)
   signal.throwIfAborted()
+  if (!hasProjectShellFeature(app.userFeatures)) return false
+  await waitForProjectShellSettled(app.registry, signal)
   return hasProjectShellFeature(app.userFeatures)
 }
 
@@ -94,8 +103,8 @@ export const projectLoader =
     const id = params.id
     if (!id || id === '.' || id === '..' || /[\\/:]/.test(id))
       return Promise.reject(new Error('Expected a cloud project API ID'))
-    const projects = app.registry.get(projectSessionService)
-    const cloud = app.registry.get(cloudStorageService)
+    const projects = app.registry.required(projectSessionService)
+    const cloud = app.registry.required(cloudStorageService)
     const ownsServices = () =>
       hasProjectShellFeature(app.userFeatures) &&
       app.registry.optional(projectSessionService) === projects &&
@@ -110,7 +119,7 @@ export const projectLoader =
     const path = await cloud.openProject(id)
     request.signal.throwIfAborted()
     if (!ownsServices()) return redirect(PATHS.HOME)
-    const fileOperations = app.registry.get(fileOperationsService)
+    const fileOperations = app.registry.required(fileOperationsService)
     const library = await getProjectLibraryOwnership(
       app.settings.get().app.libraries.current,
       path
@@ -159,8 +168,8 @@ export const localLoader =
       return Promise.reject(new Error('No local directory path provided'))
 
     const assertCurrent = () => request.signal.throwIfAborted()
-    const fileOperations = app.registry.get(fileOperationsService)
-    const projectSessions = app.registry.get(projectSessionService)
+    const fileOperations = app.registry.required(fileOperationsService)
+    const projectSessions = app.registry.required(projectSessionService)
     // A grant can be revoked (and granted again) while discovery is awaiting IO.
     // Never publish through a captured service that the registry has disposed.
     const ownsSession = () =>
@@ -252,7 +261,7 @@ export const fileLoader =
       (params.id && !params.id.includes('/') && !params.id.includes('\\'))
     ) {
       await waitForCloudAuth()
-      const cloud = app.registry.get(cloudStorageService)
+      const cloud = app.registry.required(cloudStorageService)
       const location = await resolveProjectLocation(params.id, cloud.exists)
       assertCurrent()
       if (location.type === 'cloud') {
@@ -265,7 +274,7 @@ export const fileLoader =
       assertCurrent()
     }
 
-    const cloudStorage = app.registry.get(cloudStorageService)
+    const cloudStorage = app.registry.required(cloudStorageService)
     if (params.id?.startsWith(`${cloudStorage.root}${fsZds.sep}`)) {
       await waitForCloudAuth()
       const id = cloudStorage.idFor(params.id)
@@ -317,21 +326,29 @@ export const fileLoader =
 
     const { projectName, projectPath, currentFileName, currentFilePath } =
       projectPathData
+    const storage = app.projectSession.storageFor(projectPath)
+    const projectInfoOptions = {
+      createMissingEntrypoint: storage.createMissingEntrypoint,
+      readOnly: !storage.writeAvailability.peek().writable,
+    }
 
     const urlObj = new URL(routerData.request.url)
 
     if (!urlObj.pathname.endsWith('/settings')) {
       const fallbackFile = (
         await getProjectInfo(
-          app.registry.get(fileOperationsService),
+          app.registry.required(fileOperationsService),
           projectPath,
-          wasmInstance
+          wasmInstance,
+          projectInfoOptions
         )
       ).default_file
       let fileExists = true
       if (currentFilePath && fileExists) {
         try {
-          await app.registry.get(fileOperationsService).stat(currentFilePath)
+          await app.registry
+            .required(fileOperationsService)
+            .stat(currentFilePath)
         } catch (e) {
           if (isPathNotFoundError(e)) {
             fileExists = false
@@ -383,14 +400,15 @@ export const fileLoader =
     }
 
     const maybeProjectInfo = await getProjectInfo(
-      app.registry.get(fileOperationsService),
+      app.registry.required(fileOperationsService),
       projectPath,
-      wasmInstance
+      wasmInstance,
+      projectInfoOptions
     )
     assertCurrent()
 
     const project = maybeProjectInfo ?? defaultProjectData
-    const cloud = app.registry.get(cloudStorageService)
+    const cloud = app.registry.required(cloudStorageService)
     if (projectPath.startsWith(`${cloud.root}${fsZds.sep}`))
       project.cloudProjectId = cloud.idFor(projectPath)
 
