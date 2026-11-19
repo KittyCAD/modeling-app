@@ -8,6 +8,8 @@ import {
 } from '@src/lib/sessionExpired'
 import { provide, Registry } from 'plankton'
 import { signal } from '@preact/signals-core'
+import type { UserOrgInfo } from '@kittycad/lib'
+import { CREATE_CLOUD_LIBRARY_COMMAND } from '@src/lib/cloudProjects/commands'
 import {
   authService,
   type AuthRegistryService,
@@ -37,6 +39,7 @@ import {
 } from '@src/registry/contracts/projectSession'
 import {
   commandSystemService,
+  commandsFacet,
   type CommandSystemService,
 } from '@src/registry/contracts/commands'
 
@@ -80,6 +83,7 @@ it('discovers paged libraries, groups read-only projects, and drops an old accou
   vi.stubGlobal('fetch', fetchMock)
   const user = signal({ id: 'first' })
   const token = signal('first-token')
+  const organization = signal<UserOrgInfo | undefined>(undefined)
   const send = vi.fn()
   registry = new Registry()
   await registry.configure([
@@ -104,6 +108,12 @@ it('discovers paged libraries, groups read-only projects, and drops an old accou
       user,
       token,
       isLoggedIn: signal(true),
+      organization: {
+        current: organization,
+        loading: signal(false),
+        error: signal(undefined),
+        refresh: vi.fn(async () => {}),
+      },
     } as unknown as AuthRegistryService),
     provide(runtimeService, {
       current: signal({ apiBaseUrl: 'https://api.test' }),
@@ -134,6 +144,27 @@ it('discovers paged libraries, groups read-only projects, and drops an old accou
   expect(
     new Headers(fetchMock.mock.calls[0][1]?.headers).get('Authorization')
   ).toBe('Bearer first-token')
+  const createLibrary = registry
+    .get(commandsFacet)
+    .find((command) => command.name === CREATE_CLOUD_LIBRARY_COMMAND)
+  const owner = createLibrary?.args?.scope
+  if (owner?.inputType !== 'options' || typeof owner.options !== 'function')
+    throw new Error('Expected library owner options')
+  const ownerOptions = owner.options
+  const ownerNames = () =>
+    ownerOptions({ argumentsToSubmit: {} }).map((option) => option.name)
+  expect(ownerNames()).toEqual(['Personal'])
+  organization.value = {
+    id: 'organization-a',
+    name: 'Design team',
+    role: 'member',
+    created_at: '2026-11-23T00:00:00Z',
+    updated_at: '2026-11-23T00:00:00Z',
+  }
+  expect(ownerNames()).toEqual(['Personal', 'Design team'])
+  organization.value = undefined
+  expect(ownerNames()).toEqual(['Personal'])
+  expect(fetchMock).toHaveBeenCalledTimes(2)
   expect(
     libraries()
       .filter((library) => library.hiddenByDefault)
@@ -153,7 +184,7 @@ it('discovers paged libraries, groups read-only projects, and drops an old accou
   )!
   expect(
     getProjectLibraryOperation(type, dataset, 'createProject')
-  ).toBeUndefined()
+  ).toBeDefined()
   expect(
     getProjectLibraryOperation(
       type,

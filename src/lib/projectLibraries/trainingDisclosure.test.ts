@@ -16,6 +16,17 @@ function library(type: ProjectLibrary['type']): ProjectLibrary {
 }
 
 describe('shouldShowFreeCloudProjectTrainingDisclosure', () => {
+  it('does not apply the personal Free-plan disclosure to organization libraries', () => {
+    expect(
+      shouldShowFreeCloudProjectTrainingDisclosure({
+        library: {
+          ...library(CLOUD_PROJECT_LIBRARY_TYPE),
+          organizationId: 'organization',
+        },
+        hasSubscription: false,
+      })
+    ).toBe(false)
+  })
   it('shows the disclosure for Free users viewing a cloud library', () => {
     expect(
       shouldShowFreeCloudProjectTrainingDisclosure({

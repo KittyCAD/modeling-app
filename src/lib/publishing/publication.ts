@@ -252,7 +252,7 @@ async function ensureCurrentProjectUploaded(
       config,
       project.path,
       uploadFiles,
-      publicationMetadata
+      { publicationMetadata }
     )
     return { client, projectId: remote.id }
   } catch (error) {
