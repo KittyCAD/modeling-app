@@ -5,6 +5,7 @@ import {
   type Client,
   projects,
   type ProjectLibraryResponse,
+  type ProjectLibraryScope,
 } from '@kittycad/lib'
 import { createKCClient } from '@src/lib/kcClient'
 import {
@@ -99,6 +100,19 @@ export async function listRemoteProjects(
     )
   }
   return [...response]
+}
+
+export function createRemoteProjectLibrary(
+  config: CloudApiConfig,
+  name: string,
+  scope: ProjectLibraryScope
+) {
+  return cloudCall(config, (client) =>
+    projects.create_project_library({
+      client,
+      body: { name: name.trim(), scope, source: 'zds' },
+    })
+  )
 }
 
 export async function listRemoteProjectLibraries(
@@ -236,14 +250,12 @@ export async function createRemoteProject(
   config: CloudApiConfig,
   projectPath: string,
   files: ProjectArchiveFile[],
-  publicationMetadata: ProjectUploadPublicationMetadata = {
-    description: '',
-    category_ids: [],
-  }
+  options: {
+    publicationMetadata?: ProjectUploadPublicationMetadata
+    libraryId?: string
+  } = {}
 ) {
-  const uploadFiles = buildProjectUploadFiles(projectPath, files, {
-    publicationMetadata,
-  })
+  const uploadFiles = buildProjectUploadFiles(projectPath, files, options)
   return cloudCall(config, (client) =>
     projects.create_project({ client, files: uploadFiles })
   )
@@ -285,6 +297,7 @@ export async function updateRemoteProject({
 
 type BuildProjectFormDataOptions = {
   fallbackTitle?: string
+  libraryId?: string
   expectedRevision?: Revision
   entrypointPath?: string
   publicationMetadata?: ProjectUploadPublicationMetadata

@@ -25,6 +25,7 @@ export type RemoteProject = RemoteProjectSummary & {
 
 /** Metadata fields sent alongside whole-project cloud archive uploads. */
 export type ProjectUploadBody = {
+  library_id?: string
   title: string
   description: string
   category_ids: string[]

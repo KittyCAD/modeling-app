@@ -7,6 +7,7 @@ import {
 import {
   type CloudApiError,
   createRemoteProject,
+  createRemoteProjectLibrary,
   downloadRemoteProjectArchive,
   getRemoteProject,
   getRemoteProjectVersion,
@@ -116,6 +117,46 @@ describe('cloud upload HTTP contract (mocked fetch)', () => {
     }
   )
 
+  test('creates a cloud library with explicit ownership and the current credentials', async () => {
+    const fetchMock = vi.fn<typeof fetch>(async () =>
+      Response.json({ id: 'library', name: 'Designs', source: 'zds' })
+    )
+    vi.stubGlobal('fetch', fetchMock)
+    await createRemoteProjectLibrary(
+      { enabled: true, token: 'account-token', baseUrl: 'https://api.test' },
+      ' Designs ',
+      'organization'
+    )
+    const [url, init] = fetchMock.mock.calls[0]
+    expect(url).toBe('https://api.test/user/project-libraries')
+    expect(init?.method).toBe('POST')
+    expect(new Headers(init?.headers).get('Authorization')).toBe(
+      'Bearer account-token'
+    )
+    expect(JSON.parse(String(init?.body))).toEqual({
+      name: 'Designs',
+      scope: 'organization',
+      source: 'zds',
+    })
+  })
+
+  test('includes the selected cloud library when creating a project', async () => {
+    let body: Record<string, unknown> | undefined
+    vi.stubGlobal(
+      'fetch',
+      vi.fn<typeof fetch>(async (_input, init) => {
+        body = await uploadBodyFromRequest(init)
+        return projectResponse('project-created', 'rev-1')
+      })
+    )
+    await createRemoteProject(
+      { enabled: true, baseUrl: 'https://api.test' },
+      '/projects/bracket',
+      projectFiles(),
+      { libraryId: 'library-id' }
+    )
+    expect(body?.library_id).toBe('library-id')
+  })
   test.each([
     ['create', 'file count'],
     ['update', 'file count'],
@@ -183,7 +224,7 @@ describe('cloud upload HTTP contract (mocked fetch)', () => {
         },
         '/projects/bracket',
         projectFiles(),
-        publicationMetadata
+        { publicationMetadata }
       )
 
       expect(uploadedBody).toEqual({
