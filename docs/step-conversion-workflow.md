@@ -66,5 +66,21 @@ Geometry reconstruction, measured repair, and two successful independent edits
 are evaluated separately by the fixed development set in
 [text-to-cad #4710](https://github.com/KittyCAD/text-to-cad/pull/4710).
 Passing UI tests does not establish those geometry acceptance criteria.
+
+The [recorded backend milestone](https://github.com/KittyCAD/text-to-cad/actions/runs/44392922613)
+ran two exposed analytic fixtures on 2026-11-18: a bushing and an offset-hole
+plate. Each completed reconstruction, controlled-fault repair, two independent
+parameter edits, a combined edit, and restoration. Total case times were 90.884 s
+and 93.373 s, with recorded provider costs of $0.2765 and $0.2741 and 220 and 211
+reasoning tokens. These are complete backend case times, not measured ZDS UI
+latencies or billed-credit estimates.
+
+Both initial reconstructions passed. The repair inputs had deliberately injected
+diameter faults; this does not establish recovery from naturally occurring
+reconstruction errors. The independent analytic references share the OCCT kernel
+with the feedback tool. No unseen-file success rate, repeated-run latency
+percentiles, large-assembly performance, or end-to-end ZDS conversion latency has
+been established by this milestone.
+
 The inherited pin to backend preview PR #4196 was removed from the shared
 development environment. Preview overrides belong in local configuration.
