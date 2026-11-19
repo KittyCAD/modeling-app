@@ -57,6 +57,10 @@ function loadRouteSettings(
       ),
       extensionSettings: app.registry.get(settingsFacet),
       projectPath,
+      projectReadOnly: projectPath
+        ? !app.projectSession.storageFor(projectPath).writeAvailability.peek()
+            .writable
+        : false,
     }
   )
 }
@@ -322,6 +326,11 @@ export const fileLoader =
 
     const { projectName, projectPath, currentFileName, currentFilePath } =
       projectPathData
+    const storage = app.projectSession.storageFor(projectPath)
+    const projectInfoOptions = {
+      createMissingEntrypoint: storage.createMissingEntrypoint,
+      readOnly: !storage.writeAvailability.peek().writable,
+    }
 
     const urlObj = new URL(routerData.request.url)
 
@@ -330,7 +339,8 @@ export const fileLoader =
         await getProjectInfo(
           app.registry.required(fileOperationsService),
           projectPath,
-          wasmInstance
+          wasmInstance,
+          projectInfoOptions
         )
       ).default_file
       let fileExists = true
@@ -392,7 +402,8 @@ export const fileLoader =
     const maybeProjectInfo = await getProjectInfo(
       app.registry.required(fileOperationsService),
       projectPath,
-      wasmInstance
+      wasmInstance,
+      projectInfoOptions
     )
     assertCurrent()
 

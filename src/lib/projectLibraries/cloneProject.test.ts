@@ -1,5 +1,6 @@
 import { posix } from '@chainner/node-path'
 import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
+import { collectProjectFilesForClone } from '@src/lib/projectSession/projectFiles'
 import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
 import noopfs from '@src/lib/fs-zds/noopfs'
 import { cloneProjectIntoLocalDirectory } from '@src/lib/projectLibraries/operations'
@@ -45,6 +46,46 @@ async function setup() {
 }
 
 describe('independent project clones', () => {
+  it('preserves ignored attachments and unsaved edits without changing the source', async () => {
+    const { memory, scheduler } = await setup()
+    try {
+      await memory.writeFile(
+        '/source/original/.gitignore',
+        encoder.encode('attachment.bin')
+      )
+      await memory.writeFile(
+        '/source/original/attachment.bin',
+        new Uint8Array([0, 255, 4])
+      )
+      const files = await collectProjectFilesForClone({
+        fileOperations: scheduler.operations,
+        projectRoot: '/source/original',
+        editorFiles: [
+          { path: '/source/original/main.kcl', contents: 'unsaved edit' },
+        ],
+      })
+      const result = await cloneProjectIntoLocalDirectory({
+        fileOperations: scheduler.operations,
+        projectDirectoryPath: '/destination',
+        sourceProjectPath: '/source/original',
+        sourceProjectName: 'original',
+        wasmInstancePromise: {} as ModuleType,
+        files,
+      })
+      expect(
+        await memory.readFile(`${result.localProjectPath}/main.kcl`, 'utf8')
+      ).toBe('unsaved edit')
+      expect(
+        await memory.readFile(`${result.localProjectPath}/attachment.bin`)
+      ).toEqual(new Uint8Array([0, 255, 4]))
+      expect(await memory.readFile('/source/original/main.kcl', 'utf8')).toBe(
+        'captured'
+      )
+    } finally {
+      await scheduler.dispose()
+    }
+  })
+
   it('preserves generated file bytes, never overwrites a collision, and resets only destination identity', async () => {
     await fc.assert(
       fc.asyncProperty(

@@ -259,6 +259,8 @@ export const projectSessionExtension = defineFactory({
           {
             createMissingEntrypoint: storageFor(current.path)
               .createMissingEntrypoint,
+            readOnly: !storageFor(current.path).writeAvailability.peek()
+              .writable,
           }
         )
         if (project.peek() !== current || refreshGeneration !== generation)
