@@ -2090,11 +2090,10 @@ pub async fn execute_trim_loop_with_context(
 
     // We inline the loop logic here to avoid borrow checker issues with closures capturing mutable references
     // This duplicates the loop from execute_trim_loop, but allows us to access frontend and ctx directly
-    let mut current_scene_graph_delta = initial_scene_graph_delta.clone();
-    let mut last_result: Option<(crate::frontend::api::SourceDelta, crate::frontend::api::SceneGraphDelta)> = Some((
-        crate::frontend::api::SourceDelta { text: String::new() },
-        initial_scene_graph_delta.clone(),
-    ));
+    // Keep one owned scene graph; cloning its execution outputs after every
+    // edit duplicates the entire program memory and artifact graph.
+    let mut current_scene_graph_delta = initial_scene_graph_delta;
+    let mut last_source_delta = crate::frontend::api::SourceDelta { text: String::new() };
     let mut invalidates_ids = false;
     let mut start_index = 0;
     let max_iterations = 1000;
@@ -2182,7 +2181,7 @@ pub async fn execute_trim_loop_with_context(
 
                 // Execute operations
                 match execute_trim_operations_simple(
-                    strategy.clone(),
+                    strategy,
                     &current_scene_graph_delta,
                     frontend,
                     ctx,
@@ -2193,7 +2192,7 @@ pub async fn execute_trim_loop_with_context(
                 {
                     Ok((source_delta, scene_graph_delta)) => {
                         invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
-                        last_result = Some((source_delta, scene_graph_delta.clone()));
+                        last_source_delta = source_delta;
                         current_scene_graph_delta = scene_graph_delta;
                     }
                     Err(e) => {
@@ -2215,11 +2214,9 @@ pub async fn execute_trim_loop_with_context(
         return Err(format!("Reached max iterations ({})", max_iterations));
     }
 
-    let (source_delta, mut scene_graph_delta) =
-        last_result.ok_or_else(|| "No trim operations were executed".to_string())?;
-    // Set invalidates_ids if any operation invalidated IDs
-    scene_graph_delta.invalidates_ids = invalidates_ids;
-    Ok((source_delta, scene_graph_delta))
+    // Set invalidates_ids if any operation invalidated IDs.
+    current_scene_graph_delta.invalidates_ids = invalidates_ids;
+    Ok((last_source_delta, current_scene_graph_delta))
 }
 
 /// Determine the trim strategy based on the terminations found on both sides
@@ -4332,7 +4329,7 @@ pub(crate) async fn execute_trim_operations_simple(
             Ok((source_delta, scene_graph_delta)) => {
                 // Track invalidates_ids from each operation result
                 invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
-                last_result = Some((source_delta, scene_graph_delta.clone()));
+                last_result = Some((source_delta, scene_graph_delta));
             }
             Err(e) => {
                 crate::logln!("Error executing trim operation {}: {}", op_index, e);
