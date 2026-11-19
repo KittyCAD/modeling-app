@@ -140,7 +140,9 @@ test.describe(
             },
           },
         })
+        let userSettingsPath = ''
         await folderSetupFn(async (dir) => {
+          userSettingsPath = path.resolve(dir, '..', SETTINGS_FILE_NAME)
           const testProjectDir = path.join(dir, 'test')
           await Promise.all([fsp.mkdir(testProjectDir, { recursive: true })])
           await Promise.all([
@@ -164,9 +166,6 @@ test.describe(
           })
         const settingInput = page.locator('#defaultUnit').getByRole('combobox')
 
-        const resetToast = (level: SettingsLevel) =>
-          page.getByText(`${level}-level settings were reset`)
-
         await test.step(`Open the settings modal`, async () => {
           await page.getByRole('link', { name: 'Settings' }).last().click()
           await expect(
@@ -188,8 +187,17 @@ test.describe(
           await resetButton('user').scrollIntoViewIfNeeded()
           await resetButton('user').click()
 
-          await expect(resetToast('user')).toBeVisible()
-          await expect(resetToast('user')).not.toBeVisible()
+          await page.waitForFunction(() =>
+            window.app.settings.actor.getSnapshot().matches('idle')
+          )
+          await expect
+            .poll(async () => {
+              const stored = tomlToSettings(
+                await fsp.readFile(userSettingsPath, 'utf8')
+              )
+              return stored.settings?.modeling?.base_unit
+            })
+            .toBeUndefined()
 
           // Verify it is now set to the inherited default value
           await settingInput.scrollIntoViewIfNeeded()
