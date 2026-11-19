@@ -16,7 +16,7 @@ jobs:
       matrix:
         include:
           - revision: candidate
-            sha: 867454d23f5441eb13618877ba623732ee0f0289
+            sha: ca4eb5d263c3f0528f350e9af92f4e4695744b39
     steps:
       - uses: actions/checkout@v6
         with:
@@ -163,7 +163,7 @@ jobs:
       matrix:
         include:
           - revision: candidate
-            sha: 867454d23f5441eb13618877ba623732ee0f0289
+            sha: ca4eb5d263c3f0528f350e9af92f4e4695744b39
     steps:
       - uses: actions/checkout@v6
         with:
