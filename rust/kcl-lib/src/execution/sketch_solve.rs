@@ -218,6 +218,7 @@ fn substitute_sketch_var(
         KclValue::TagDeclarator(_) => Ok(value),
         KclValue::GdtAnnotation { .. } => Ok(value),
         KclValue::CameraView { .. } => Ok(value),
+        KclValue::Program { .. } => Ok(value),
         KclValue::NamedView { .. } => Ok(value),
         KclValue::Plane { .. } => Ok(value),
         KclValue::Face { .. } => Ok(value),

@@ -127,5 +127,6 @@ pub fn op_from_kcl_value(value: &KclValue) -> OpKclValue {
         KclValue::KclNone { .. } => OpKclValue::KclNone {},
         KclValue::Type { .. } => OpKclValue::Type {},
         KclValue::BoundedEdge { .. } => OpKclValue::BoundedEdge {},
+        KclValue::Program { .. } => OpKclValue::Program {},
     }
 }

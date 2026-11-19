@@ -237,5 +237,6 @@ fn collect_artifact_ids(value: &OpKclValue, ids: &mut HashSet<ArtifactId>) {
         | OpKclValue::Type { .. }
         | OpKclValue::KclNone { .. }
         | OpKclValue::BoundedEdge { .. } => {}
+        OpKclValue::Program { .. } => {}
     }
 }

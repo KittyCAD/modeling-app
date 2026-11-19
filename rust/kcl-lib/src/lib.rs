@@ -56,6 +56,7 @@ macro_rules! eprint {
 #[global_allocator]
 static ALLOC: dhat::Alloc = dhat::Alloc;
 
+pub mod cam;
 pub mod collections;
 #[cfg(test)]
 mod csg_test_fixtures;

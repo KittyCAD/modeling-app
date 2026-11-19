@@ -623,6 +623,7 @@ fn might_be_legacy_sketch(value: &KclValue) -> bool {
         KclValue::Module { .. } => false,
         KclValue::Type { .. } => false,
         KclValue::KclNone { .. } => false,
+        KclValue::Program { .. } => false,
     }
 }
 

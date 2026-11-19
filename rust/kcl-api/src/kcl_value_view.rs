@@ -70,6 +70,9 @@ pub enum KclValueView {
     CameraView {
         value: JsonValue,
     },
+    Program {
+        value: JsonValue,
+    },
     /// Named views are consumed through the artifact graph, not program memory.
     NamedView {
         value: JsonValue,

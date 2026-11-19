@@ -225,6 +225,7 @@ pub enum OpKclValue {
     Type {},
     KclNone {},
     BoundedEdge {},
+    Program {},
 }
 
 pub type OpKclObjectFields = IndexMap<String, OpKclValue>;

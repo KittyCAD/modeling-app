@@ -372,6 +372,9 @@ impl From<KclValue> for KclValueView {
             KclValue::CameraView { value } => Self::CameraView {
                 value: json_view(&value),
             },
+            KclValue::Program { value } => Self::Program {
+                value: json_view(&value),
+            },
             KclValue::NamedView { value } => Self::NamedView {
                 value: json_view(&value),
             },

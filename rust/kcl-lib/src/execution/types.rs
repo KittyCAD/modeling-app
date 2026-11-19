@@ -643,6 +643,7 @@ pub enum PrimitiveType {
     Function,
     CameraView,
     NamedView,
+    Program,
 }
 
 impl PrimitiveType {
@@ -674,6 +675,7 @@ impl PrimitiveType {
             PrimitiveType::TaggedFace => "tagged faces".to_owned(),
             PrimitiveType::CameraView => "camera views".to_owned(),
             PrimitiveType::NamedView => "named views".to_owned(),
+            PrimitiveType::Program => "program".to_owned(),
         }
     }
 
@@ -720,6 +722,7 @@ impl std::fmt::Display for PrimitiveType {
             PrimitiveType::Function => write!(f, "fn"),
             PrimitiveType::CameraView => write!(f, "CameraView"),
             PrimitiveType::NamedView => write!(f, "NamedView"),
+            PrimitiveType::Program => write!(f, "Program"),
         }
     }
 }
@@ -1595,6 +1598,10 @@ impl KclValue {
                 KclValue::CameraView { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
+            PrimitiveType::Program => match self {
+                KclValue::Program { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
             PrimitiveType::NamedView => match self {
                 KclValue::NamedView { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
@@ -2017,6 +2024,7 @@ impl KclValue {
             KclValue::KclNone { .. } => Some(RuntimeType::Primitive(PrimitiveType::None)),
             KclValue::Module { .. } | KclValue::Type { .. } => None,
             KclValue::BoundedEdge { .. } => Some(RuntimeType::Primitive(PrimitiveType::BoundedEdge)),
+            KclValue::Program { .. } => Some(RuntimeType::Primitive(PrimitiveType::Program)),
         }
     }
 

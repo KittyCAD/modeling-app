@@ -12,6 +12,7 @@ use crate::KclError;
 use crate::KclVersion;
 use crate::ModuleId;
 use crate::SourceRange;
+use crate::cam::values::Program;
 use crate::errors::KclErrorDetails;
 use crate::execution::AbstractSegment;
 use crate::execution::BoundedEdge;
@@ -200,6 +201,9 @@ pub enum KclValue {
         value: KclNone,
         #[serde(skip)]
         meta: Vec<Metadata>,
+    },
+    Program {
+        value: Box<Program>,
     },
 }
 
@@ -769,6 +773,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Type { meta, .. } => to_vec_sr(&meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(&meta),
             KclValue::BoundedEdge { meta, .. } => to_vec_sr(&meta),
+            KclValue::Program { value } => to_vec_sr(value.meta()),
         }
     }
 }
@@ -787,6 +792,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Helix { value } => to_vec_sr(&value.meta),
             KclValue::CameraView { value } => to_vec_sr(value.meta()),
+            KclValue::Program { value } => to_vec_sr(value.meta()),
             KclValue::NamedView { value } => to_vec_sr(value.meta()),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(meta),
@@ -841,6 +847,7 @@ impl KclValue {
             KclValue::Solid { value } => value.meta.clone(),
             KclValue::Helix { value } => value.meta.clone(),
             KclValue::CameraView { value } => value.meta().to_vec(),
+            KclValue::Program { value } => value.meta().to_vec(),
             KclValue::NamedView { value } => value.meta().to_vec(),
             KclValue::ImportedGeometry(x) => x.meta.clone(),
             KclValue::Function { meta, .. } => meta.clone(),
@@ -887,6 +894,7 @@ impl KclValue {
             | KclValue::Module { .. }
             | KclValue::Type { .. }
             | KclValue::BoundedEdge { .. }
+            | KclValue::Program { .. }
             | KclValue::KclNone { .. } => false,
         }
     }
@@ -903,6 +911,7 @@ impl KclValue {
             KclValue::Sketch { .. } => "a sketch".to_owned(),
             KclValue::Helix { .. } => "a helix".to_owned(),
             KclValue::CameraView { .. } => "a camera view".to_owned(),
+            KclValue::Program { .. } => "a program".to_owned(),
             KclValue::NamedView { .. } => "a named view".to_owned(),
             KclValue::ImportedGeometry(_) => "an imported geometry".to_owned(),
             KclValue::Function { .. } => "a function".to_owned(),
@@ -1430,6 +1439,7 @@ impl KclValue {
             | KclValue::Sketch { .. }
             | KclValue::Helix { .. }
             | KclValue::CameraView { .. }
+            | KclValue::Program { .. }
             | KclValue::NamedView { .. }
             | KclValue::ImportedGeometry(_)
             | KclValue::Function { .. }
