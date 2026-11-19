@@ -15,7 +15,12 @@ import {
   type Tile,
 } from './game'
 import { OutcomeBoard, type OutcomeCell } from './outcome-board'
-import { type OutcomeRow, startingOutcomeRows } from './outcomes'
+import {
+  type OutcomeRow,
+  startingOutcomeRows,
+  parseOutcomeRows,
+  resolveOutcomeVocabulary,
+} from './outcomes'
 import { wordSprite } from './pixels'
 import { openGame, type Runtime } from './registry'
 import './style.css'
@@ -80,6 +85,7 @@ function App({ runtime }: { runtime: Runtime }) {
   const [guideOpen, setGuideOpen] = useState(false)
   const [guidePeek, setGuidePeek] = useState(false)
   const [notice, setNotice] = useState('')
+  const [outcomeErrors, setOutcomeErrors] = useState<readonly string[]>([])
   const [placement, setPlacement] = useState<{
     type: string
     kind: Tile['kind']
@@ -124,6 +130,7 @@ function App({ runtime }: { runtime: Runtime }) {
     JSON.stringify(outcomeRows) !==
     JSON.stringify(runtime.outcomeProgram.value.rows)
   function editOutcomeRows(rows: readonly OutcomeRow[]) {
+    setOutcomeErrors([])
     setOutcomeHistory((previous) => [...previous, outcomeRows])
     setOutcomeRows(rows)
     if (
@@ -173,11 +180,36 @@ function App({ runtime }: { runtime: Runtime }) {
     setActionEditor(false)
     setNotice('')
   }
+  function selectOutcomeTiles(cell: OutcomeCell, wordTiles: boolean) {
+    if (cell.index !== 0 && cell.index !== 2) return
+    const index = cell.index
+    editOutcomeRows(
+      outcomeRows.map((row) => {
+        if (row.id !== cell.rowId) return row
+        const selections = (row.wordTiles ?? []).filter(
+          (position) => position !== index
+        )
+        if (wordTiles) selections.push(index)
+        return { ...row, wordTiles: selections.length ? selections : undefined }
+      })
+    )
+  }
   async function applyOutcomes() {
+    setNotice('')
+    setOutcomeErrors([])
+    const parsed = parseOutcomeRows(
+      outcomeRows,
+      resolveOutcomeVocabulary(definitions, runtime.outcomeMeanings.value)
+    )
+    if (!parsed.ok) {
+      setOutcomeErrors(parsed.errors)
+      return
+    }
     if (
       await change(
         () => runtime.publishOutcomeRows(outcomeRows),
-        'Outcome program applied'
+        'Outcome program applied',
+        (message) => setOutcomeErrors([message])
       )
     ) {
       game.settle()
@@ -269,7 +301,11 @@ function App({ runtime }: { runtime: Runtime }) {
       window.removeEventListener('pointermove', proximity)
     }
   }, [])
-  async function change(work: () => Promise<void>, message: string) {
+  async function change(
+    work: () => Promise<void>,
+    message: string,
+    onError: (message: string) => void = setNotice
+  ) {
     setBusy(true)
     try {
       await work()
@@ -277,7 +313,7 @@ function App({ runtime }: { runtime: Runtime }) {
       refresh()
       return true
     } catch (error) {
-      setNotice(error instanceof Error ? error.message : String(error))
+      onError(error instanceof Error ? error.message : String(error))
       return false
     } finally {
       setBusy(false)
@@ -608,6 +644,33 @@ function App({ runtime }: { runtime: Runtime }) {
                   onChange={(value) => selectOutcome(draft.cell, value)}
                 />
               )}
+              {draft.scope === 'outcome' &&
+                (draft.cell.index === 0 || draft.cell.index === 2) && (
+                  <>
+                    <Select
+                      label="Outcome selection"
+                      value={
+                        outcomeRows
+                          .find((row) => row.id === draft.cell.rowId)
+                          ?.wordTiles?.includes(draft.cell.index)
+                          ? 'word'
+                          : 'default'
+                      }
+                      options={[
+                        ['default', 'Default meaning'],
+                        ['word', 'Word tiles'],
+                      ]}
+                      disabled={busy}
+                      onChange={(value) =>
+                        selectOutcomeTiles(draft.cell, value === 'word')
+                      }
+                    />
+                    <p className="field-hint">
+                      Word tiles selects the physical word, rather than entities
+                      described by it.
+                    </p>
+                  </>
+                )}
               <Select
                 label="Property action"
                 disabled={!propertyEditable || busy || !draft.name}
@@ -876,6 +939,7 @@ function App({ runtime }: { runtime: Runtime }) {
         </section>
         <OutcomeBoard
           rows={outcomeRows}
+          errors={outcomeErrors}
           words={definitions}
           busy={busy}
           dirty={outcomeDirty}
@@ -888,6 +952,7 @@ function App({ runtime }: { runtime: Runtime }) {
           onUndo={() => {
             const previous = outcomeHistory.at(-1)
             if (previous) {
+              setOutcomeErrors([])
               setOutcomeRows(previous)
               setOutcomeHistory(outcomeHistory.slice(0, -1))
               setDraft(null)

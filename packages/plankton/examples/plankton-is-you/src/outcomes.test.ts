@@ -9,14 +9,16 @@ import {
   parseOutcomeRows,
   resolveOutcomeVocabulary,
   startingOutcomeRows,
+  wordTileSelector,
 } from './outcomes'
 import { gameContract, openGame } from './registry'
 
-const outcomeWords = resolveOutcomeVocabulary(
-  initialDefinitions,
-  outcomeMeanings
-)
+const outcomeWords = resolveOutcomeVocabulary(initialDefinitions, [
+  ...outcomeMeanings,
+  ...initialDefinitions.map((definition) => wordTileSelector(definition.id)),
+])
 const empty: OutcomeContext = {
+  tiles: [],
   entities: [],
   rules: [],
   controlled: [],
@@ -68,14 +70,85 @@ describe('the outcome tile language', () => {
   })
 
   it.each([
-    ['NONE', 'IS', 'NONE', 'LOSE'],
+    ['MISSING', 'IS', 'NONE', 'LOSE'],
     ['YOU', 'YOU', 'WIN', 'WIN'],
-    ['YOU', 'TOUCH', 'NONE', 'LOSE'],
+    ['YOU', 'TOUCH', 'MISSING', 'LOSE'],
     ['YOU', 'IS', '', 'LOSE'],
     ['YOU', 'IS', 'NONE', 'YOU'],
   ])('rejects an incomplete or ill-typed row: %j', (...cells) => {
     const parsed = parseOutcomeRows([{ id: 'bad', cells }], outcomeWords)
     expect(parsed.ok).toBe(false)
+  })
+
+  it.each(
+    initialDefinitions.flatMap((definition) =>
+      ([0, 2] as const).map((position) => ({ id: definition.id, position }))
+    )
+  )(
+    'can select physical $id words in outcome position $position',
+    ({ id, position }) => {
+      const word: Tile = { id: 'word', kind: 'word', type: id, x: 2, y: 2 }
+      const bush: Tile = {
+        id: 'bush',
+        kind: 'entity',
+        type: 'BUSH',
+        x: 2,
+        y: 2,
+      }
+      const row: OutcomeRow = {
+        id: 'word-contact',
+        cells:
+          position === 0
+            ? [id, 'TOUCH', 'BUSH', 'WIN']
+            : ['BUSH', 'TOUCH', id, 'WIN'],
+        wordTiles: [position],
+      }
+      const context = { ...empty, tiles: [bush, word], entities: [bush] }
+      expect(
+        evaluateOutcomes(program([row]), outcomeWords, context).status
+      ).toBe('won')
+      expect(
+        evaluateOutcomes(program([row]), outcomeWords, {
+          ...context,
+          tiles: [bush, { ...word, x: 3 }],
+        }).status
+      ).toBe('playing')
+    }
+  )
+
+  it('can use NONE as a physical word in an IS relation instead of as a unary predicate', () => {
+    const row: OutcomeRow = {
+      id: 'literal-none',
+      cells: ['NONE', 'IS', 'NONE', 'WIN'],
+      wordTiles: [0, 2],
+    }
+    const word: Tile = { id: 'none', kind: 'word', type: 'NONE', x: 1, y: 1 }
+    expect(
+      evaluateOutcomes(program([row]), outcomeWords, {
+        ...empty,
+        tiles: [word],
+      }).status
+    ).toBe('won')
+    expect(evaluateOutcomes(program([row]), outcomeWords, empty).status).toBe(
+      'playing'
+    )
+  })
+
+  it('requires two distinct physical word tiles for TOUCH', () => {
+    const row: OutcomeRow = { id: 'words', cells: ['IS', 'TOUCH', 'IS', 'WIN'] }
+    const word: Tile = { id: 'is-one', kind: 'word', type: 'IS', x: 1, y: 1 }
+    expect(
+      evaluateOutcomes(program([row]), outcomeWords, {
+        ...empty,
+        tiles: [word],
+      }).status
+    ).toBe('playing')
+    expect(
+      evaluateOutcomes(program([row]), outcomeWords, {
+        ...empty,
+        tiles: [word, { ...word, id: 'is-two' }],
+      }).status
+    ).toBe('won')
   })
 
   it('allows an empty program and predicates over a different selected set', () => {
@@ -133,6 +206,149 @@ describe('the outcome tile language', () => {
 })
 
 describe('live outcome composition', () => {
+  it('wins when a player pushes an IS word onto a bush, and undoes that win', async () => {
+    const runtime = await openGame()
+    try {
+      await runtime.publishOutcomeRows([
+        ...startingOutcomeRows,
+        { id: 'bush-is', cells: ['BUSH', 'TOUCH', 'IS', 'WIN'] },
+      ])
+      runtime.game.load({
+        ...runtime.game.puzzle,
+        placements: [
+          ...['PLNK', 'IS', 'YOU'].map(
+            (type, x): Tile => ({
+              id: `rule-${x}`,
+              kind: 'word',
+              type,
+              x,
+              y: 0,
+            })
+          ),
+          { id: 'player', kind: 'entity', type: 'PLNK', x: 1, y: 4 },
+          { id: 'loose-is', kind: 'word', type: 'IS', x: 2, y: 4 },
+          { id: 'bush', kind: 'entity', type: 'BUSH', x: 3, y: 4 },
+        ],
+      })
+      expect(runtime.game.board.status).toBe('playing')
+      runtime.game.step({ x: 1, y: 0 })
+      expect(runtime.game.board.status).toBe('won')
+      expect(
+        runtime.game.board.tiles.find((tile) => tile.id === 'loose-is')
+      ).toMatchObject({ x: 3, y: 4 })
+      runtime.game.undo()
+      expect(runtime.game.board.status).toBe('playing')
+      expect(
+        runtime.game.board.tiles.find((tile) => tile.id === 'loose-is')
+      ).toMatchObject({ x: 2, y: 4 })
+    } finally {
+      await runtime.dispose()
+    }
+  })
+
+  it('replaces IS word selection independently from its relation extension', async () => {
+    const runtime = await openGame()
+    try {
+      await runtime.publishOutcomeRows([
+        { id: 'contact', cells: ['BUSH', 'TOUCH', 'IS', 'WIN'] },
+      ])
+      runtime.game.place({
+        id: 'bush-on-is',
+        kind: 'entity',
+        type: 'BUSH',
+        x: 2,
+        y: 8,
+      })
+      expect(runtime.game.board.status).toBe('won')
+      const relation = runtime.outcomeMeanings.value.find(
+        (meaning) => meaning.id === 'IS' && meaning.kind === 'relation'
+      )
+      const words = runtime.outcomeMeanings.value.find(
+        (meaning) => meaning.id === 'IS' && meaning.kind === 'word-selector'
+      )
+      if (relation?.kind !== 'relation' || words?.kind !== 'word-selector')
+        throw new Error('Missing IS contributions')
+      await runtime.publishOutcomeMeaning({ ...relation, test: () => false })
+      runtime.game.settle()
+      expect(runtime.game.board.status).toBe('won')
+      await runtime.publishOutcomeMeaning({ ...words, select: () => [] })
+      runtime.game.settle()
+      expect(runtime.game.board.status).toBe('playing')
+      const is = runtime.definitions.value.find(
+        (definition) => definition.id === 'IS'
+      )!
+      await runtime.publish({ ...is, wordColor: '#ffffff' })
+      runtime.game.settle()
+      expect(runtime.game.board.status).toBe('playing')
+      await runtime.publishOutcomeMeaning(words)
+      runtime.game.settle()
+      expect(runtime.game.board.status).toBe('won')
+    } finally {
+      await runtime.dispose()
+    }
+  })
+
+  it('gives newly authored words selectable extensions and removes them with their definitions', async () => {
+    const runtime = await openGame()
+    try {
+      await runtime.publish({ kind: 'word', id: 'FOG', color: '#ffffff' })
+      await runtime.publishOutcomeRows([
+        { id: 'fog', cells: ['FOG', 'TOUCH', 'BUSH', 'WIN'] },
+      ])
+      runtime.game.place({
+        id: 'fog-word',
+        kind: 'word',
+        type: 'FOG',
+        x: 7,
+        y: 4,
+      })
+      expect(runtime.game.board.status).toBe('won')
+      await runtime.publishOutcomeRows([])
+      runtime.game.remove('fog-word')
+      await runtime.deleteDefinition('FOG')
+      expect(
+        runtime.outcomeMeanings.value.some((meaning) => meaning.id === 'FOG')
+      ).toBe(false)
+    } finally {
+      await runtime.dispose()
+    }
+  })
+
+  it('keeps default YOU selection separate from the physical YOU word', async () => {
+    const runtime = await openGame()
+    try {
+      runtime.game.remove('player')
+      expect(
+        runtime.game.board.tiles.some(
+          (tile) => tile.type === 'YOU' && tile.kind === 'word'
+        )
+      ).toBe(true)
+      expect(runtime.game.board).toMatchObject({
+        status: 'lost',
+        message: 'No YOU entities remain',
+      })
+      await runtime.publishOutcomeRows([
+        {
+          id: 'word-you',
+          cells: ['YOU', 'IS', 'NONE', 'LOSE'],
+          wordTiles: [0],
+        },
+      ])
+      runtime.game.settle()
+      expect(runtime.game.board.status).toBe('playing')
+      const you = runtime.game.board.tiles.find(
+        (tile) => tile.type === 'YOU' && tile.kind === 'word'
+      )!
+      runtime.game.remove(you.id)
+      expect(runtime.game.board).toMatchObject({
+        status: 'lost',
+        message: 'No YOU word tiles remain',
+      })
+    } finally {
+      await runtime.dispose()
+    }
+  })
+
   it('removes the no-YOU rule while preserving the board and its undo history', async () => {
     const runtime = await openGame()
     try {
@@ -210,7 +426,7 @@ describe('live outcome composition', () => {
       expect(
         runtime.registry
           .debug(gameContract.outcomeMeanings)
-          .value.filter((word) => word.key === 'NONE')
+          .value.filter((word) => word.key === 'unary:NONE')
       ).toHaveLength(1)
     } finally {
       await runtime.dispose()

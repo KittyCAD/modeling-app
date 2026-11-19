@@ -38,7 +38,7 @@ shared `gameContract` keeps the tokens precisely typed:
 | --- | --- | --- |
 | `definitions` | Entity artwork, noun words, properties, and language words | Board renderer, word parser, shared editor |
 | `actions` | Input/collision capabilities, turn callbacks, and contact callbacks | Turn engine, property-action picker |
-| `outcomeMeanings` | Selector, unary-predicate, and relation implementations | Outcome parser and interpreter |
+| `outcomeMeanings` | Entity/word selectors, unary predicates, and relations | Outcome parser and interpreter |
 | `outcomeProgram` | Parsed tile rows | Terminal-rule interpreter |
 | `puzzles` | Bounds, starting definitions, and placements | Initial setup and reset |
 
@@ -267,8 +267,8 @@ than restricting the picker to a second vocabulary.
 
 Add or remove rows, remove individual tiles, undo draft edits, or restore the
 four defaults. **Apply outcomes** parses the whole draft before replacing the
-installed program. Incomplete or ill-typed rows report an error and leave the
-running program intact. Removing an entire row is valid. An empty program is
+installed program. Incomplete or ill-typed rows report errors directly below the
+outcome table and leave the running program intact. Removing an entire row is valid. An empty program is
 also valid and never ends play. Draft edits survive closing the drawer; only
 applied rows affect the game. Reset reloads the puzzle under the currently
 installed outcome program. Page reload restores all defaults.
@@ -278,11 +278,28 @@ duplicating word definitions or artwork:
 
 - YOU, WIN, and LOSE select controlled, winning, and losing entities respectively.
 - NONE is a unary predicate that tests whether its selected set is empty.
-- IS is a relation predicate that tests shared entity identity. In `IS NONE`, it
+- IS is a relation predicate that tests shared tile identity. In `IS NONE`, it
   also serves as the grammar's connector to the unary predicate.
-- TOUCH is a relation predicate that tests distinct entities sharing a cell.
+- TOUCH is a relation predicate that tests distinct selected tiles sharing a cell.
 - Other entity nouns select their matching entities automatically. Other property
   words select entities described by that property, including authored words.
+
+Every definition also contributes a physical-word selector to `outcomeMeanings`.
+These bindings use role-qualified keys such as `word-selector:IS` and
+`relation:IS`, so replacing the IS relation does not replace IS word selection.
+Nouns and property words keep their default entity selections. Words that only
+have predicate meanings, such as IS, TOUCH, and NONE, select their physical word
+tiles when used as subjects or targets. Thus `BUSH TOUCH IS → WIN` wins when a
+BUSH entity and an IS word share a cell. TOUCH means sharing a cell, not adjacency;
+normal pushing and STOP rules still determine whether tiles can reach it.
+
+Select a subject or target cell and choose **Outcome selection → Word tiles**
+to select the physical word even when it also names entities or a property.
+That choice is saved in the row and shown by a small `word` badge. For example,
+selecting YOU word tiles does not select the player. Selecting NONE word tiles
+in the target position of IS uses identity rather than its emptiness predicate.
+Word selection extensions follow definition installation and removal, including
+runtime-authored words. The ordinary YOU selection remains entity-only.
 
 `YOU IS NONE` therefore covers disconnected YOU sentences, destruction of the
 last YOU entity, and a connected `BUSH IS YOU` sentence with no bushes. Another
@@ -296,8 +313,8 @@ survives. The action does not destroy entities. Its default predicate message is
 **YOU touched a losing entity**. Removing that outcome row removes this loss
 condition while preserving the action and property.
 
-`parseOutcomeRows` converts tile choices into a typed program of selector and
-predicate IDs. It captures no predicate callback. Each evaluation resolves those
+`parseOutcomeRows` converts tile choices into a typed program of selector
+references (ID and role) and predicate IDs. It captures no predicate callback. Each evaluation resolves those
 IDs from live contributions, so replacing NONE, IS, or TOUCH changes existing
 rows without recompiling them. Meanings are resolved only for currently
 installed vocabulary entries. Missing or mismatched meanings make a dependent

@@ -225,6 +225,7 @@ export class Game {
         this.vocabulary.outcomeMeanings()
       ),
       {
+        tiles,
         entities: tiles.filter((tile) => tile.kind === 'entity'),
         rules,
         controlled: tiles.filter((tile) =>

@@ -17,6 +17,8 @@ import {
   type OutcomeProgram,
   type OutcomeRow,
   outcomeMeanings,
+  outcomeMeaningKey,
+  wordTileSelector,
   parseOutcomeRows,
   resolveOutcomeVocabulary,
   startingOutcomeRows,
@@ -50,12 +52,19 @@ export const compileDefinitions = (
   definitions: readonly Definition[],
   authored = false
 ) =>
-  definitions.map((definition) =>
-    contribute(gameContract.definitions, () => definition, {
-      key: definition.id,
-      precedence: authored ? 'high' : 'default',
-    })
-  )
+  definitions.flatMap((definition) => {
+    const words = wordTileSelector(definition.id)
+    return [
+      contribute(gameContract.definitions, () => definition, {
+        key: definition.id,
+        precedence: authored ? 'high' : 'default',
+      }),
+      // Artwork edits must not shadow an independently authored word meaning.
+      contribute(gameContract.outcomeMeanings, () => words, {
+        key: outcomeMeaningKey(words),
+      }),
+    ]
+  })
 
 /** One session owns the board while slots replace its live vocabulary. */
 export async function openGame() {
@@ -71,7 +80,12 @@ export async function openGame() {
   const authoredOutcomeMeanings = slot([])
   const startingProgram = parseOutcomeRows(
     startingOutcomeRows,
-    resolveOutcomeVocabulary(initialPuzzle.definitions, outcomeMeanings)
+    resolveOutcomeVocabulary(initialPuzzle.definitions, [
+      ...outcomeMeanings,
+      ...initialPuzzle.definitions.map((definition) =>
+        wordTileSelector(definition.id)
+      ),
+    ])
   )
   if (!startingProgram.ok) throw new Error(startingProgram.errors.join('; '))
   const outcomeProgram = slot([
@@ -80,7 +94,9 @@ export async function openGame() {
     }),
   ])
   const predicateExtensions = outcomeMeanings.map((word) =>
-    contribute(gameContract.outcomeMeanings, () => word, { key: word.id })
+    contribute(gameContract.outcomeMeanings, () => word, {
+      key: outcomeMeaningKey(word),
+    })
   )
   const actions = builtInActions.map((action) =>
     contribute(gameContract.actions, () => action, { key: action.id })
@@ -156,14 +172,16 @@ export async function openGame() {
     },
     async publishOutcomeMeaning(word: OutcomeMeaning) {
       const next = [
-        ...customOutcomeMeanings.filter((w) => w.id !== word.id),
+        ...customOutcomeMeanings.filter(
+          (w) => outcomeMeaningKey(w) !== outcomeMeaningKey(word)
+        ),
         word,
       ]
       await registry.replace(
         authoredOutcomeMeanings,
         next.map((w) =>
           contribute(gameContract.outcomeMeanings, () => w, {
-            key: w.id,
+            key: outcomeMeaningKey(w),
             precedence: 'high',
           })
         )

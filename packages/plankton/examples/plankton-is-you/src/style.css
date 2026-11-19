@@ -723,3 +723,23 @@ svg {
     transform: translateX(-80px);
   }
 }
+
+.outcome-errors {
+  color: #ee927d;
+  font-size: 11px;
+  line-height: 1.6;
+  padding-left: 16px;
+  margin: 10px 0;
+}
+.outcome-row > button {
+  position: relative;
+}
+.outcome-word-kind {
+  position: absolute;
+  right: 1px;
+  bottom: 0;
+  background: var(--panel);
+  color: #c5ed91;
+  font-size: 7px;
+  line-height: 1;
+}

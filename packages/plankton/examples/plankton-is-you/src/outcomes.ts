@@ -1,6 +1,7 @@
 import type { Definition, Rule, Tile } from './game'
 
 export type OutcomeContext = {
+  tiles: readonly Tile[]
   entities: readonly Tile[]
   rules: readonly Rule[]
   controlled: readonly Tile[]
@@ -9,11 +10,14 @@ export type OutcomeContext = {
 }
 /** Each word contributes its own selection or predicate meaning, not an entire rule. */
 export type OutcomeMeaning = { id: string; description: string } & (
-  | { kind: 'selector'; select(context: OutcomeContext): readonly Tile[] }
+  | {
+      kind: 'selector' | 'word-selector'
+      select(context: OutcomeContext): readonly Tile[]
+    }
   | {
       kind: 'unary'
       test(subject: readonly Tile[]): boolean
-      message(subject: string): string
+      message(subject: string, selection: 'selector' | 'word-selector'): string
     }
   | {
       kind: 'relation'
@@ -21,8 +25,10 @@ export type OutcomeMeaning = { id: string; description: string } & (
       message(subject: string, target: string): string
     }
 )
+/** Only subject (0) and target (2) cells can explicitly select physical words. */
 export type OutcomeRow = {
   id: string
+  wordTiles?: readonly (0 | 2)[]
   cells: readonly [
     subject: string,
     relation: string,
@@ -30,9 +36,15 @@ export type OutcomeRow = {
     result: string,
   ]
 }
+type Selection = { id: string; kind: 'selector' | 'word-selector' }
 type Condition =
-  | { kind: 'unary'; subject: string; connector: string; predicate: string }
-  | { kind: 'relation'; subject: string; predicate: string; target: string }
+  | { kind: 'unary'; subject: Selection; connector: string; predicate: string }
+  | {
+      kind: 'relation'
+      subject: Selection
+      predicate: string
+      target: Selection
+    }
 export type OutcomeRule = {
   id: string
   condition: Condition
@@ -73,15 +85,16 @@ export const outcomeMeanings: readonly OutcomeMeaning[] = [
   {
     id: 'NONE',
     kind: 'unary',
-    description: 'True when the selected set of entities is empty.',
+    description: 'True when the selected set of tiles is empty.',
     test: (subject) => subject.length === 0,
-    message: (subject) => `No ${subject} entities remain`,
+    message: (subject, selection) =>
+      `No ${subject} ${selection === 'word-selector' ? 'word tiles' : 'entities'} remain`,
   },
   {
     id: 'IS',
     kind: 'relation',
     description:
-      'True when an entity belongs to both sets. Connects a subject to NONE.',
+      'True when a selected tile belongs to both sets. Connects a subject to NONE.',
     test: (subject, target) =>
       subject.some((s) => target.some((t) => t.id === s.id)),
     message: (subject, target) => `${subject} is ${target}`,
@@ -89,7 +102,7 @@ export const outcomeMeanings: readonly OutcomeMeaning[] = [
   {
     id: 'TOUCH',
     kind: 'relation',
-    description: 'True when distinct entities from the two sets share a cell.',
+    description: 'True when distinct selected tiles share a cell.',
     test: (subject, target) =>
       subject.some((s) =>
         target.some((t) => t.id !== s.id && t.x === s.x && t.y === s.y)
@@ -100,16 +113,28 @@ export const outcomeMeanings: readonly OutcomeMeaning[] = [
         : `${subject} touches ${target}`,
   },
 ]
+/** A word's physical tiles can be selected independently of its language meaning. */
+export const wordTileSelector = (id: string): OutcomeMeaning => ({
+  id,
+  kind: 'word-selector',
+  description: `All ${id} word tiles.`,
+  select: (context) =>
+    context.tiles.filter((tile) => tile.kind === 'word' && tile.type === id),
+})
+export const outcomeMeaningKey = (meaning: OutcomeMeaning) =>
+  `${meaning.kind}:${meaning.id}`
+
 /** Visible vocabulary owns artwork; contributions supply only language meanings. */
 export function resolveOutcomeVocabulary(
   definitions: readonly Definition[],
   meanings: readonly OutcomeMeaning[]
 ): readonly OutcomeMeaning[] {
   return definitions.flatMap((definition): OutcomeMeaning[] => {
-    const meaning = meanings.find((word) => word.id === definition.id)
-    if (meaning) return [meaning]
+    const contributed = meanings.filter((word) => word.id === definition.id)
+    if (contributed.some((word) => word.kind === 'selector')) return contributed
     if (definition.kind === 'entity')
       return [
+        ...contributed,
         {
           id: definition.id,
           kind: 'selector',
@@ -120,6 +145,7 @@ export function resolveOutcomeVocabulary(
       ]
     if (definition.kind === 'property')
       return [
+        ...contributed,
         {
           id: definition.id,
           kind: 'selector',
@@ -133,7 +159,7 @@ export function resolveOutcomeVocabulary(
             ),
         },
       ]
-    return []
+    return contributed
   })
 }
 
@@ -154,9 +180,24 @@ export function parseOutcomeRows(
   const ids = new Set<string>()
   rows.forEach((row, index) => {
     const [subjectId, relationId, targetId, result] = row.cells
-    const subject = words.find((w) => w.id === subjectId),
-      relation = words.find((w) => w.id === relationId),
-      target = words.find((w) => w.id === targetId)
+    const selection = (id: string, index: 0 | 2) => {
+      const meaning =
+        (!row.wordTiles?.includes(index) &&
+          words.find((word) => word.id === id && word.kind === 'selector')) ||
+        words.find((word) => word.id === id && word.kind === 'word-selector')
+      return meaning &&
+        (meaning.kind === 'selector' || meaning.kind === 'word-selector')
+        ? { id, kind: meaning.kind }
+        : undefined
+    }
+    const subject = selection(subjectId, 0)
+    const relation = words.find(
+      (word) => word.id === relationId && word.kind === 'relation'
+    )
+    const target = selection(targetId, 2)
+    const unary =
+      !row.wordTiles?.includes(2) &&
+      words.find((word) => word.id === targetId && word.kind === 'unary')
     const fail = (message: string) =>
       errors.push(`Row ${index + 1}: ${message}`)
     if (ids.has(row.id)) {
@@ -164,7 +205,7 @@ export function parseOutcomeRows(
       return
     }
     ids.add(row.id)
-    if (subject?.kind !== 'selector') {
+    if (!subject) {
       fail('choose a subject selector')
       return
     }
@@ -174,35 +215,35 @@ export function parseOutcomeRows(
     }
     if (
       (result !== 'WIN' && result !== 'LOSE') ||
-      words.find((w) => w.id === result)?.kind !== 'selector'
+      !words.some((word) => word.id === result && word.kind === 'selector')
     ) {
       fail('choose WIN or LOSE after the arrow')
       return
     }
-    if (target?.kind === 'unary' && relationId === 'IS') {
+    if (unary && relationId === 'IS') {
       rules.push({
         id: row.id,
         condition: {
           kind: 'unary',
-          subject: subjectId,
+          subject,
           connector: relationId,
           predicate: targetId,
         },
         result,
       })
-    } else if (target?.kind === 'selector') {
+    } else if (target) {
       rules.push({
         id: row.id,
         condition: {
           kind: 'relation',
-          subject: subjectId,
+          subject,
           predicate: relationId,
-          target: targetId,
+          target,
         },
         result,
       })
     } else {
-      fail('choose a selector, or use IS with a unary predicate')
+      fail('choose a selectable tile, or use IS with a unary predicate')
     }
   })
   return errors.length
@@ -210,7 +251,11 @@ export function parseOutcomeRows(
     : {
         ok: true,
         program: {
-          rows: rows.map((row) => ({ ...row, cells: [...row.cells] })),
+          rows: rows.map((row) => ({
+            ...row,
+            cells: [...row.cells],
+            wordTiles: row.wordTiles ? [...row.wordTiles] : undefined,
+          })),
           rules,
         },
       }
@@ -225,22 +270,40 @@ export function evaluateOutcomes(
   let won = false
   for (const rule of program.rules) {
     const condition = rule.condition
-    const subject = words.find((w) => w.id === condition.subject)
-    if (subject?.kind !== 'selector') continue
-    const predicate = words.find((w) => w.id === condition.predicate)
+    const select = (reference: Selection) =>
+      words.find(
+        (word) => word.id === reference.id && word.kind === reference.kind
+      )
+    const subject = select(condition.subject)
+    if (
+      !subject ||
+      (subject.kind !== 'selector' && subject.kind !== 'word-selector')
+    )
+      continue
+    const predicate = words.find(
+      (word) => word.id === condition.predicate && word.kind === condition.kind
+    )
     let matches = false,
       message = ''
     if (condition.kind === 'unary' && predicate?.kind === 'unary') {
-      if (words.find((w) => w.id === condition.connector)?.kind !== 'relation')
+      if (
+        !words.some(
+          (word) => word.id === condition.connector && word.kind === 'relation'
+        )
+      )
         continue
       matches = predicate.test(subject.select(context))
-      message = predicate.message(subject.id)
+      message = predicate.message(subject.id, subject.kind)
     } else if (
       condition.kind === 'relation' &&
       predicate?.kind === 'relation'
     ) {
-      const target = words.find((w) => w.id === condition.target)
-      if (target?.kind !== 'selector') continue
+      const target = select(condition.target)
+      if (
+        !target ||
+        (target.kind !== 'selector' && target.kind !== 'word-selector')
+      )
+        continue
       matches = predicate.test(subject.select(context), target.select(context))
       message = predicate.message(subject.id, target.id)
     }

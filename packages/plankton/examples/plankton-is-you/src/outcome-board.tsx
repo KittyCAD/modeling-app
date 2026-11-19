@@ -7,6 +7,7 @@ export type OutcomeCell = { rowId: string; index: 0 | 1 | 2 | 3 }
 const positions = ['subject', 'predicate', 'target', 'result'] as const
 export function OutcomeBoard({
   rows,
+  errors,
   words,
   busy,
   dirty,
@@ -20,6 +21,7 @@ export function OutcomeBoard({
   onRestore,
 }: {
   rows: readonly OutcomeRow[]
+  errors: readonly string[]
   words: readonly Definition[]
   busy: boolean
   dirty: boolean
@@ -61,10 +63,19 @@ export function OutcomeBoard({
                       selected?.rowId === row.id && selected.index === index
                     }
                     disabled={busy}
-                    aria-label={`Outcome row ${rowIndex + 1} ${positions[index]}: ${row.cells[index] || 'empty'}`}
+                    aria-label={`Outcome row ${rowIndex + 1} ${positions[index]}: ${row.cells[index] || 'empty'}${(index === 0 || index === 2) && row.wordTiles?.includes(index) ? ' (word tiles)' : ''}`}
                     onClick={() => onSelect({ rowId: row.id, index })}
                   >
                     {word ? renderWord(word) : <span>_</span>}
+                    {(index === 0 || index === 2) &&
+                      row.wordTiles?.includes(index) && (
+                        <small
+                          className="outcome-word-kind"
+                          title="Physical word tiles"
+                        >
+                          word
+                        </small>
+                      )}
                   </button>
                 </Fragment>
               )
@@ -80,6 +91,13 @@ export function OutcomeBoard({
           </div>
         ))}
       </div>
+      {errors.length > 0 && (
+        <ul className="outcome-errors" role="alert">
+          {errors.map((error, index) => (
+            <li key={index}>{error}</li>
+          ))}
+        </ul>
+      )}
       {rows.length === 0 && (
         <p className="field-hint">
           No outcome rows. The world can continue without YOU.
