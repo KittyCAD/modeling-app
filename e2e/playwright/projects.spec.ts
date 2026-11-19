@@ -375,7 +375,7 @@ test(
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.openProject('broken-code')
-    await scene.settled(cmdBar)
+    await scene.settled(cmdBar, { expectError: true })
 
     // Gotcha: Scroll to the text content in code mirror because CodeMirror lazy loads DOM content
     await editor.scrollToText(
