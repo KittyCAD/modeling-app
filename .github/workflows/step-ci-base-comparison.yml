@@ -1,21 +1,24 @@
-name: STEP CI base comparison
+name: STEP assembly base comparison
 on:
   push:
-    branches: [codex/step-ci-baseline-20261119]
+    branches: [codex/step-assembly-control-20261119]
   workflow_dispatch:
 permissions:
   contents: read
   actions: read
 jobs:
-  snapshots:
-    name: Browser snapshots (${{ matrix.revision }})
+  assemblies:
+    name: Assembly comparison (${{ matrix.revision }})
     runs-on: namespace-profile-ubuntu-8-cores
-    timeout-minutes: 25
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
         include:
-          - revision: candidate-serial
+          - revision: exact-base
+            sha: 567989c16e0873687f2e89cb11951d635d523869
+            wasm_run: 44405393037
+          - revision: candidate
             sha: 84a16a4373d987beaf3cf27d880532a5d1ea10d6
             wasm_run: 44577814983
     steps:
@@ -57,27 +60,19 @@ jobs:
           path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
       - run: npm run playwright install --with-deps
-      - name: Run unchanged browser snapshots without updating expectations
+      - run: npm run tronb:vite:dev
+      - name: Repeat both assembly selection paths without retries
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
-          TARGET: web
-          NODE_ENV: development
-          E2E_WORKERS: 1
+          TARGET: desktop
         shell: bash
         run: |
           set -o pipefail
-          status=0
-          for attempt in 1 2; do
-            echo "Snapshot validation $attempt"
-            npm run test:snapshots -- --update-snapshots=none --output="test-results-$attempt" 2>&1 | tee -a comparison-snapshots.log || status=1
-            mkdir -p "test-results-$attempt"
-            cp test-results/report.json "test-results-$attempt/report.json"
-          done
-          exit "$status"
+          xvfb-run -a npx playwright test --config=playwright.electron.config.ts e2e/playwright/point-click-assemblies.spec.ts --grep='Insert the bracket part into an assembly and transform it' --workers=1 --repeat-each=2 --retries=0 2>&1 | tee comparison-assembly.log
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: browser-${{ matrix.revision }}
+          name: assembly-${{ matrix.revision }}
           path: |
-            comparison-snapshots.log
-            test-results*/
+            comparison-assembly.log
+            test-results/
