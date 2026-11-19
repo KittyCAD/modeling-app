@@ -7,190 +7,40 @@ permissions:
   contents: read
   actions: read
 jobs:
-  rust:
-    name: Rust failures (${{ matrix.revision }})
-    runs-on: namespace-profile-ubuntu-8-cores
-    timeout-minutes: 40
+  integration:
+    name: Integration comparison (${{ matrix.revision }})
+    runs-on: namespace-profile-ubuntu-2-cores
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
         include:
+          - revision: base
+            sha: 567989c16e0873687f2e89cb11951d635d523869
+            wasm_run: 44405393037
           - revision: candidate
             sha: ca4eb5d263c3f0528f350e9af92f4e4695744b39
+            wasm_run: 44548232352
     steps:
       - uses: actions/checkout@v6
         with:
           ref: ${{ matrix.sha }}
           persist-credentials: false
       - name: Record exact inputs
-        run: |
-          git rev-parse HEAD HEAD:rust HEAD:public/kcl-samples
-          cp rust/rust-toolchain.toml ./rust-toolchain.toml
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          cache: false
-          rustflags: ''
-      - uses: taiki-e/install-action@nextest
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: rust
-          cache-on-failure: true
-      - name: Run candidate Rust tests
-        env:
-          ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
-          ZOO_HOST: https://api.dev.zoo.dev
-          RUST_MIN_STACK: 10485760000
-          RUST_FILTER: >-
-            test(=kcl_test_exporting_step_file) or
-            test(=kcl_test_helix_defaults) or
-            test(=kcl_test_import_obj_with_mtl) or
-            test(=cache::kcl_test_cache_multi_file_other_file_only_change) or
-            test(=docs::kcl_doc::test::kcl_test_examples_std_helix_3) or
-            test(=docs::kcl_doc::test::kcl_test_examples_std_sketch_elliptic_0) or
-            test(=docs::kcl_doc::test::kcl_test_examples_std_sketch_loft_0) or
-            test(=docs::kcl_doc::test::kcl_test_examples_std_sketch_loft_7) or
-            test(=docs::kcl_doc::test::kcl_test_examples_std_solid_chamfer_3) or
-            test(simulation_tests::revolve_on_edge_get_edge::) or
-            test(simulation_tests::error_large_fillet_radius::) or
-            test(=simulation_tests::helix_ccw::kcl_test_execute) or
-            test(=simulation_tests::holes_cube::kcl_test_execute) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_cassette) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_cold_plate) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_end_effector_gripper_fingers) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_inner_thread) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_mug) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_pipe_flange_assembly) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_prosthetic_hip) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_split_washer_spring_version) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_sprocket) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_teapot) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_tooling_nest_block) or
-            test(=simulation_tests::kcl_samples::parse_tooling_nest_block) or
-            test(=simulation_tests::kcl_samples::unparse_tooling_nest_block) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_usb_c) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_utility_sink) or
-            test(=simulation_tests::mike_stress_test::kcl_test_execute) or
-            test(=simulation_tests::multi_target_csg::kcl_test_execute) or
-            test(=simulation_tests::plane_of_chamfer::kcl_test_execute) or
-            test(=simulation_tests::scale_after_fillet::kcl_test_execute) or
-            test(=simulation_tests::subtract_regression03::kcl_test_execute) or
-            test(=simulation_tests::subtract_regression07::kcl_test_execute) or
-            test(=simulation_tests::subtract_self_multiple_tools::kcl_test_execute)
-        shell: bash
-        run: |
-          set -o pipefail
-          cd rust
-          cargo nextest run --workspace --features artifact-graph --profile ci --no-fail-fast --retries 1 -E "$RUST_FILTER" 2>&1 | tee ../comparison-rust.log
-      - name: Generate candidate snapshots for review
-        if: always()
-        env:
-          ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
-          ZOO_HOST: https://api.dev.zoo.dev
-          RUST_MIN_STACK: 10485760000
-          INSTA_UPDATE: always
-          ZOO_SIM_UPDATE: always
-          EXPECTORATE: overwrite
-          TWENTY_TWENTY: update
-          RUST_FILTER: >-
-            test(=kcl_test_exporting_step_file) or
-            test(=kcl_test_helix_defaults) or
-            test(=kcl_test_import_obj_with_mtl) or
-            test(=cache::kcl_test_cache_multi_file_other_file_only_change) or
-            test(=docs::kcl_doc::test::kcl_test_examples_std_helix_3) or
-            test(=docs::kcl_doc::test::kcl_test_examples_std_sketch_elliptic_0) or
-            test(=docs::kcl_doc::test::kcl_test_examples_std_sketch_loft_0) or
-            test(=docs::kcl_doc::test::kcl_test_examples_std_sketch_loft_7) or
-            test(=docs::kcl_doc::test::kcl_test_examples_std_solid_chamfer_3) or
-            test(simulation_tests::revolve_on_edge_get_edge::) or
-            test(simulation_tests::error_large_fillet_radius::) or
-            test(=simulation_tests::helix_ccw::kcl_test_execute) or
-            test(=simulation_tests::holes_cube::kcl_test_execute) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_cassette) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_cold_plate) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_end_effector_gripper_fingers) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_inner_thread) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_mug) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_pipe_flange_assembly) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_prosthetic_hip) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_split_washer_spring_version) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_sprocket) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_teapot) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_tooling_nest_block) or
-            test(=simulation_tests::kcl_samples::parse_tooling_nest_block) or
-            test(=simulation_tests::kcl_samples::unparse_tooling_nest_block) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_usb_c) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_utility_sink) or
-            test(=simulation_tests::mike_stress_test::kcl_test_execute) or
-            test(=simulation_tests::multi_target_csg::kcl_test_execute) or
-            test(=simulation_tests::plane_of_chamfer::kcl_test_execute) or
-            test(=simulation_tests::scale_after_fillet::kcl_test_execute) or
-            test(=simulation_tests::subtract_regression03::kcl_test_execute) or
-            test(=simulation_tests::subtract_regression07::kcl_test_execute) or
-            test(=simulation_tests::subtract_self_multiple_tools::kcl_test_execute)
-        shell: bash
-        run: |
-          set -o pipefail
-          cd rust
-          cargo nextest run --workspace --features artifact-graph --profile ci --no-fail-fast --retries 0 -E "$RUST_FILTER" 2>&1 | tee ../candidate-regeneration.log
-      - name: Regenerate stdlib documentation
-        if: always()
-        env:
-          EXPECTORATE: overwrite
-        run: |
-          cd rust
-          cargo nextest run -p kcl-lib --features artifact-graph -E 'test(docs::gen_std_tests::test_generate_stdlib)'
-      - name: Collect changed outputs for review
-        if: always()
-        run: |
-          git diff --binary HEAD -- rust/kcl-lib/tests rust/kcl-lib/e2e/executor/outputs docs/kcl-std > candidate-snapshots.patch
-          git diff --name-only -z HEAD -- rust/kcl-lib/tests rust/kcl-lib/e2e/executor/outputs docs/kcl-std | tar --null -T - -czf candidate-snapshots.tar.gz
-      - uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: rust-candidate
-          path: |
-            comparison-rust.log
-            candidate-regeneration.log
-            candidate-snapshots.patch
-            candidate-snapshots.tar.gz
-            test-results/
-  desktop:
-    name: Desktop failures (${{ matrix.revision }})
-    runs-on: namespace-profile-ubuntu-8-cores
-    timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - revision: candidate
-            sha: ca4eb5d263c3f0528f350e9af92f4e4695744b39
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ matrix.sha }}
-          persist-credentials: false
-      - name: Verify WASM source identities against artifact build
-        run: |
-          git rev-parse HEAD
-          test "$(git rev-parse HEAD:rust/kcl-lib/src)" = e2626d490ec57a3c00c16c1aa308b8bb4bc0ecb1
-          test "$(git rev-parse HEAD:rust/kcl-lib/std)" = b2e785f5cc2b04c75c01dc29aa0adad13fae8de8
-          test "$(git rev-parse HEAD:rust/kcl-wasm-lib)" = 354a48cd8d11239382feefd56d8f488474820c32
-          test "$(git rev-parse HEAD:rust/kcl-lib/Cargo.toml)" = 7aeb8b6eacc88448932a58093e463f31cee78ca1
-          test "$(git rev-parse HEAD:rust/Cargo.toml)" = d1b52d5ee909ef9936dfa6b91e7ba4d709e6c8d1
-          test "$(git rev-parse HEAD:rust/Cargo.lock)" = ad4ce85eac3811f2a4f030875994bc9ba3440742
+        run: git rev-parse HEAD HEAD:rust HEAD:src/machines/sketchSolve/tools/trimToolImpl.spec.ts HEAD:vitest.config.ts
       - uses: actions/download-artifact@v8
         with:
           github-token: ${{ github.token }}
-          run-id: 44548232352
+          run-id: ${{ matrix.wasm_run }}
           name: prepared-wasm
           path: prepared-wasm
       - uses: actions/download-artifact@v8
         with:
           github-token: ${{ github.token }}
-          run-id: 44548232352
+          run-id: ${{ matrix.wasm_run }}
           name: prepared-ts-rs-bindings
           path: rust/kcl-lib/bindings
-      - name: Install identical WASM from verified Rust tree
+      - name: Install WASM
         run: |
           mkdir -p rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg/
@@ -200,29 +50,17 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - uses: actions/cache@v5
-        with:
-          path: ~/.cache/ms-playwright/
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
-      - run: npm run playwright install --with-deps
-      - run: npm run tronb:vite:dev
-      - name: Run candidate desktop tests
+      - name: Run unchanged integration suite
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
-          FAIL_ON_CONSOLE_ERRORS: true
-          TARGET: desktop
-          E2E_WORKERS: 1
         shell: bash
         run: |
           set -o pipefail
-          xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:desktop -- --grep='Core dump hotkey|Flip Surface point-and-click|bad model has inline error #3251|can extrude sketch regions' --workers=1 --retries=0 2>&1 | tee comparison-desktop.log
+          npm run test:integration -- --sequence.seed=15271 2>&1 | tee comparison-integration.log
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: desktop-${{ matrix.revision }}
+          name: integration-${{ matrix.revision }}
           path: |
-            comparison-desktop.log
+            comparison-integration.log
             test-results/
-            playwright-report/
-          include-hidden-files: true
-
