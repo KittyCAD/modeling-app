@@ -24,6 +24,9 @@ jobs:
           - revision: candidate-old-wait
             sha: 19df7b96f3bf1d00ef7214ae21e11002536804aa
             wasm_run: 44577814983
+          - revision: candidate-readiness
+            sha: 2ca48d32010845b764653e7dfe80590b6d6d53ef
+            wasm_run: 44577814983
     steps:
       - uses: actions/checkout@v6
         with:
