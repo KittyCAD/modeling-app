@@ -85,7 +85,7 @@ export class SafeRenderer extends Renderer {
  * and properly fire openExternalBrowserIfDesktop
  */
 export function attachSafeLinkHandler(root: HTMLElement) {
-  root.addEventListener('click', (e) => {
+  const handleClick = (e: MouseEvent) => {
     const target = e.target as HTMLElement | null
     if (!target) {
       return
@@ -99,5 +99,7 @@ export function attachSafeLinkHandler(root: HTMLElement) {
     openExternalBrowserIfDesktop(anchor.href)(
       e as unknown as React.MouseEvent<HTMLAnchorElement>
     )
-  })
+  }
+  root.addEventListener('click', handleClick)
+  return () => root.removeEventListener('click', handleClick)
 }
