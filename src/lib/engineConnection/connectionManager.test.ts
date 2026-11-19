@@ -360,44 +360,59 @@ describe('ConnectionManager', () => {
       })
     }
   )
-  it('rejects pending integration commands immediately when their socket closes', async () => {
-    vi.useFakeTimers()
-    vi.stubGlobal('WebSocket', ReconnectTestWebSocket)
-    const manager = createConnectionManager()
-    await manager.start({
-      width: 256,
-      height: 256,
-      token: 'token',
-      geometryOnly: true,
-      unitTestWebrtc: false,
-      unitTestGeometryOnly: true,
-      setStreamIsReady: vi.fn(),
-      callbackOnUnitTestingConnection: vi.fn(),
-    })
-    const websocket = ReconnectTestWebSocket.instances.at(-1)
-    if (!websocket) expect.fail('Expected the integration socket')
-    const rejected = vi.fn()
-    const pending = manager.sendSceneCommand(sceneCameraBatch()).catch(rejected)
-    try {
-      expect(manager.pendingCommands).toHaveProperty('scene-batch')
-      websocket.finishClose(1006)
-      await vi.advanceTimersByTimeAsync(0)
-      expect(rejected).toHaveBeenCalledWith([
-        {
-          success: false,
-          errors: [
-            expect.objectContaining({ error_code: 'connection_problem' }),
-          ],
-        },
-      ])
-      await pending
-      expect(manager.pendingCommands).toEqual({})
-      expect(manager.started).toBe(false)
-      expect(manager.connection).toBeUndefined()
-    } finally {
-      manager.tearDown({ route: 'service-disposed', initiatedBy: 'client' })
+  it.each(['close', 'reconnect'] as const)(
+    'rejects pending integration commands immediately on %s',
+    async (interruption) => {
+      vi.useFakeTimers()
+      vi.stubGlobal('WebSocket', ReconnectTestWebSocket)
+      const manager = createConnectionManager()
+      await manager.start({
+        width: 256,
+        height: 256,
+        token: 'token',
+        geometryOnly: true,
+        unitTestWebrtc: false,
+        unitTestGeometryOnly: true,
+        setStreamIsReady: vi.fn(),
+        callbackOnUnitTestingConnection: vi.fn(),
+      })
+      const websocket = ReconnectTestWebSocket.instances.at(-1)
+      if (!websocket) expect.fail('Expected the integration socket')
+      const rejected = vi.fn()
+      const pending = manager
+        .sendSceneCommand(sceneCameraBatch())
+        .catch(rejected)
+      try {
+        expect(manager.pendingCommands).toHaveProperty('scene-batch')
+        if (interruption === 'close') websocket.finishClose(1006)
+        else
+          websocket.dispatchEvent(
+            new MessageEvent('message', {
+              data: JSON.stringify({
+                success: true,
+                request_id: null,
+                resp: { type: 'reconnect', data: {} },
+              }),
+            })
+          )
+        await vi.advanceTimersByTimeAsync(0)
+        expect(rejected).toHaveBeenCalledWith([
+          {
+            success: false,
+            errors: [
+              expect.objectContaining({ error_code: 'connection_problem' }),
+            ],
+          },
+        ])
+        await pending
+        expect(manager.pendingCommands).toEqual({})
+        expect(manager.started).toBe(false)
+        expect(manager.connection).toBeUndefined()
+      } finally {
+        manager.tearDown({ route: 'service-disposed', initiatedBy: 'client' })
+      }
     }
-  })
+  )
 
   it('ignores an integration socket closing after its owner has been replaced', async () => {
     vi.stubGlobal('WebSocket', ReconnectTestWebSocket)
