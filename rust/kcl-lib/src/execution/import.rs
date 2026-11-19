@@ -379,8 +379,7 @@ fn get_import_format_from_extension(ext: &str) -> Result<InputFormat3d> {
                 .build(),
         )),
         FileImportFormat::Rhino => Ok(InputFormat3d::Rhino(
-            kcmc::format::rhino::import::Options::builder()
-                .build(),
+            kcmc::format::rhino::import::Options::builder().build(),
         )),
         other => anyhow::bail!("Unknown format {other}"),
     }
