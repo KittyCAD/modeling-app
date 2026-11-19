@@ -658,7 +658,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "units": "mm"
       },
       "startCapId": null,
-      "endCapId": "[uuid]",
+      "endCapId": null,
       "units": "mm",
       "sectional": false
     }

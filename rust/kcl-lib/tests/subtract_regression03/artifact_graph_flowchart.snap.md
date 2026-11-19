@@ -59,9 +59,9 @@ flowchart LR
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   15[Wall]
     %% face_code_ref=Missing NodePath
-  16["Cap End"]
+  16["Cap Start"]
     %% face_code_ref=Missing NodePath
-  17["Cap Start"]
+  17["Cap End"]
     %% face_code_ref=Missing NodePath
   18["SweepEdge Opposite"]
   19["SweepEdge Adjacent"]

@@ -98,7 +98,7 @@ description: Variables in memory after executing usb-c.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": null,
+      "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false

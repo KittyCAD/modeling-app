@@ -345,7 +345,7 @@ description: Variables in memory after executing subtract_regression07.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "startCapId": null,
+      "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
       "sectional": false

@@ -138,7 +138,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   55[Wall]
     %% face_code_ref=Missing NodePath
-  56["Cap End"]
+  56["Cap Start"]
     %% face_code_ref=Missing NodePath
   57["Cap End"]
     %% face_code_ref=Missing NodePath
