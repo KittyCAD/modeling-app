@@ -16,7 +16,7 @@ jobs:
       matrix:
         include:
           - revision: candidate
-            sha: 92d2e2d9d85aa57d87cf9d634a79f9caae4a776a
+            sha: e4d63b35c13ec4473f2a8c0709d66147875699a1
     steps:
       - uses: actions/checkout@v6
         with:
@@ -94,7 +94,7 @@ jobs:
       matrix:
         include:
           - revision: candidate
-            sha: 92d2e2d9d85aa57d87cf9d634a79f9caae4a776a
+            sha: e4d63b35c13ec4473f2a8c0709d66147875699a1
     steps:
       - uses: actions/checkout@v6
         with:
@@ -168,7 +168,7 @@ jobs:
         include:
           - revision: two-cores
             runner: namespace-profile-ubuntu-2-cores
-            sha: 92d2e2d9d85aa57d87cf9d634a79f9caae4a776a
+            sha: e4d63b35c13ec4473f2a8c0709d66147875699a1
             wasm_run: 44548232352
     steps:
       - uses: actions/checkout@v6
@@ -209,6 +209,9 @@ jobs:
           s=s.replace('  const setProgramOutcome =', '  const setupStart = performance.now()\n  const setProgramOutcome =')
           s=s.replace("  if (setProgramOutcome.type !== 'Success')", "  console.log('[phase] set-program', kclCode.length, performance.now() - setupStart)\n  if (setProgramOutcome.type !== 'Success')")
           s=s.replace('    await onAreaSelectEndHandler(trimPoints)', "    const trimStart = performance.now()\n    await onAreaSelectEndHandler(trimPoints)\n    console.log('[phase] trim-loop', kclCode.length, performance.now() - trimStart)")
+          s="import { Session } from 'node:inspector'\nimport { writeFileSync } from 'node:fs'\n"+s
+          s=s.replace('    const trimStart = performance.now()', "    const profiler = new Session()\n    profiler.connect()\n    await new Promise<void>((resolve, reject) => profiler.post('Profiler.enable', err => err ? reject(err) : resolve()))\n    await new Promise<void>((resolve, reject) => profiler.post('Profiler.start', err => err ? reject(err) : resolve()))\n    const trimStart = performance.now()")
+          s=s.replace("    console.log('[phase] trim-loop'", "    await new Promise<void>((resolve, reject) => profiler.post('Profiler.stop', (err, result) => { if (err) { reject(err); return }; writeFileSync('trim-' + kclCode.length + '.cpuprofile', JSON.stringify(result.profile)); resolve() }))\n    profiler.disconnect()\n    console.log('[phase] trim-loop'")
           p.write_text(s)
           PY
       - name: Run unchanged trim and project tests
@@ -219,7 +222,7 @@ jobs:
           set -o pipefail
           status=0
           for attempt in 1; do
-            xvfb-run -a npm run test:integration -- src/machines/sketchSolve/tools/trimToolImpl.spec.ts src/lib/app.spec.ts --sequence.seed=15271 --retry=0 --pool=forks --execArgv=--cpu-prof 2>&1 | tee -a comparison-integration.log || status=1
+            xvfb-run -a npm run test:integration -- src/machines/sketchSolve/tools/trimToolImpl.spec.ts src/lib/app.spec.ts --sequence.seed=15271 --retry=0 --pool=forks 2>&1 | tee -a comparison-integration.log || status=1
           done
           exit "$status"
       - uses: actions/upload-artifact@v7
@@ -228,5 +231,5 @@ jobs:
           name: integration-${{ matrix.revision }}
           path: |
             comparison-integration.log
-            CPU*.cpuprofile
+            *.cpuprofile
             test-results/
