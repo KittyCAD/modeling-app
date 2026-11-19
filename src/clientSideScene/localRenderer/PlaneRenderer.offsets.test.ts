@@ -102,8 +102,8 @@ describe('PlaneRenderer offset planes', () => {
     const { planes, root, scene } = fixture()
     const offsetPlane = root.children[0]
     const cases: [number, number | undefined, number][] = [
-      [100, undefined, 0.1],
-      [1000, undefined, 1],
+      [100, undefined, 0.03],
+      [1000, undefined, 0.3],
       [1000, 0.1, 0.01],
       [100, 0.1, 0.01],
     ]
