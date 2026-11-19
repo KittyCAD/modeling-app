@@ -187,17 +187,13 @@ test.describe(
           await resetButton('user').scrollIntoViewIfNeeded()
           await resetButton('user').click()
 
-          await page.waitForFunction(() =>
-            window.app.settings.actor.getSnapshot().matches('idle')
-          )
-          await expect
-            .poll(async () => {
-              const stored = tomlToSettings(
-                await fsp.readFile(userSettingsPath, 'utf8')
-              )
-              return stored.settings?.modeling?.base_unit
-            })
-            .toBeUndefined()
+          await expect(async () => {
+            const stored = tomlToSettings(
+              await fsp.readFile(userSettingsPath, 'utf8')
+            )
+            expect(stored.settings).toBeDefined()
+            expect(stored.settings?.modeling?.base_unit).toBeUndefined()
+          }).toPass({ timeout: 5_000 })
 
           // Verify it is now set to the inherited default value
           await settingInput.scrollIntoViewIfNeeded()
