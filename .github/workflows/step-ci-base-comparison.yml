@@ -16,7 +16,7 @@ jobs:
       matrix:
         include:
           - revision: candidate
-            sha: c550ae94b4
+            sha: c550ae94b4aed86e04be97a9b13dee61bd690273
     steps:
       - uses: actions/checkout@v6
         with:
@@ -69,7 +69,7 @@ jobs:
         include:
           - revision: two-cores
             runner: namespace-profile-ubuntu-2-cores
-            sha: c550ae94b4
+            sha: c550ae94b4aed86e04be97a9b13dee61bd690273
             wasm_run: 44557940519
     steps:
       - uses: actions/checkout@v6
