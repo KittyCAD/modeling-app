@@ -2,6 +2,7 @@ import { join } from 'path'
 import type { NodePath } from '@rust/kcl-lib/bindings/NodePath'
 import type { OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import { addDistanceGdt } from '@src/lang/modifyAst/gdt'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import { topLevelRange } from '@src/lang/util'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
@@ -1110,6 +1111,91 @@ gdt::annotation(faces = [treatmentFace], annotation = "yoyo", fontSize = 1.54mm)
   })
 
   describe('GDT edit flow', () => {
+    it.each([undefined, '0mm', '0.1mm'])(
+      'opens Distance editing with tolerance %s',
+      async (toleranceText) => {
+        const { rustContext } = await buildTheWorldAndNoEngineConnection()
+        const code = `gdt::distance(from = first, to = second${
+          toleranceText === undefined ? '' : `, tolerance = ${toleranceText}`
+        })`
+        const operation = stdlib('gdt::distance')
+        if (operation.type !== 'StdLibCall') {
+          throw new Error('Expected operation to be a StdLibCall')
+        }
+        if (toleranceText !== undefined) {
+          operation.labeledArgs = {
+            tolerance: {
+              value: {
+                type: 'Number',
+                value: parseFloat(toleranceText),
+                ty: { type: 'Any' },
+              },
+              sourceRange: rangeOfText(code, toleranceText),
+            },
+          }
+        }
+
+        const result = await enterEditFlow({
+          operation,
+          code,
+          artifactGraph: new Map(),
+          rustContext,
+        })
+        if (isErr(result)) throw result
+        if (result.type !== 'Find and select command') {
+          throw new Error(`Expected edit flow event, got ${result.type}`)
+        }
+        const defaults = result.data
+          .argDefaultValues as ModelingCommandSchema['GDT Distance']
+        expect(result.data.name).toBe('GDT Distance')
+        expect(defaults.tolerance?.valueText).toBe(toleranceText)
+      }
+    )
+
+    it('preserves, adds, and clears Distance tolerance across edits', async () => {
+      const { instance, rustContext } =
+        await buildTheWorldAndNoEngineConnection()
+      let code = 'annotation001 = gdt::distance(from = first, to = second)'
+      const precision = await stringToKclExpression('3', rustContext)
+      if (isErr(precision) || 'errors' in precision) {
+        throw new Error('Failed to parse precision')
+      }
+
+      for (const toleranceText of [undefined, '0.1mm', undefined, '0mm']) {
+        const tolerance =
+          toleranceText === undefined
+            ? undefined
+            : await stringToKclExpression(toleranceText, rustContext)
+        if (tolerance && (isErr(tolerance) || 'errors' in tolerance)) {
+          throw new Error('Failed to parse tolerance')
+        }
+        const result = addDistanceGdt({
+          ast: assertParse(code, instance),
+          artifactGraph: new Map(),
+          nodeToEdit: [
+            ['body', ''],
+            [0, 'index'],
+            ['declaration', 'VariableDeclaration'],
+            ['init', 'VariableDeclarator'],
+          ],
+          precision,
+          tolerance,
+          wasmInstance: instance,
+        })
+        if (isErr(result)) throw result
+        const newCode = recast(result.modifiedAst, instance)
+        if (isErr(newCode)) throw newCode
+        expect(newCode).toContain('from = first, to = second')
+        expect(newCode).toContain('precision = 3')
+        if (toleranceText === undefined) {
+          expect(newCode).not.toContain('tolerance =')
+        } else {
+          expect(newCode).toContain(`tolerance = ${toleranceText}`)
+        }
+        code = newCode
+      }
+    })
+
     it.each(['gdt::straightness', 'gdt::distance'])(
       'recovers mixed UUID, tagged, and Face API edges in order for %s',
       async (operationName) => {
