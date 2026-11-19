@@ -7,62 +7,6 @@ permissions:
   contents: read
   actions: read
 jobs:
-  rust:
-    name: Rust failures (${{ matrix.revision }})
-    runs-on: namespace-profile-ubuntu-8-cores
-    timeout-minutes: 40
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - revision: candidate
-            sha: 389c310e610b995ceaa35ddba9671ffa30850d97
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ matrix.sha }}
-          persist-credentials: false
-      - name: Record exact inputs
-        run: |
-          git rev-parse HEAD HEAD:rust HEAD:public/kcl-samples
-          cp rust/rust-toolchain.toml ./rust-toolchain.toml
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          cache: false
-          rustflags: ''
-      - uses: taiki-e/install-action@nextest
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: rust
-          cache-on-failure: true
-      - name: Validate binding exports serially
-        run: |
-          cd rust
-          cargo test -p kcl-lib --features artifact-graph export_bindings -- --test-threads=1
-      - name: Run candidate Rust tests
-        env:
-          ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
-          ZOO_HOST: https://api.dev.zoo.dev
-          RUST_MIN_STACK: 10485760000
-          RUST_FILTER: >-
-            ((test(frontend::) or test(parsing::)) and not test(export_bindings)) or
-            test(simulation_tests::error_loft_section_order::) or
-            test(=simulation_tests::kcl_samples::kcl_test_execute_tooling_nest_block) or
-            test(=simulation_tests::kcl_samples::parse_tooling_nest_block) or
-            test(=simulation_tests::kcl_samples::unparse_tooling_nest_block)
-        shell: bash
-        run: |
-          set -o pipefail
-          cd rust
-          cargo nextest run --workspace --features artifact-graph --profile ci --no-fail-fast --retries 1 -E "$RUST_FILTER" 2>&1 | tee ../comparison-rust.log
-      - uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: rust-candidate
-          path: |
-            comparison-rust.log
-            test-results/
-
   wasm:
     name: Build candidate WASM
     runs-on: namespace-profile-ubuntu-8-cores
@@ -91,7 +35,10 @@ jobs:
         with:
           workspaces: rust
           cache-on-failure: true
-      - run: npm run build:wasm
+      - name: Build profiling WASM with function names
+        run: |
+          sed -i s/--release/--profiling/ scripts/build-wasm.sh
+          npm run build:wasm
       - uses: actions/upload-artifact@v7
         with:
           name: prepared-wasm
@@ -143,14 +90,29 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Run unchanged trim and project tests
+      - name: Instrument trim phases without changing assertions
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('src/machines/sketchSolve/tools/trimToolImpl.spec.ts')
+          s=p.read_text()
+          s=s.replace('  const setProgramOutcome =', '  const setupStart = performance.now()\n  const setProgramOutcome =')
+          s=s.replace("  if (setProgramOutcome.type !== 'Success')", "  console.log('[phase] set-program', kclCode.length, performance.now() - setupStart)\n  if (setProgramOutcome.type !== 'Success')")
+          s=s.replace('    await onAreaSelectEndHandler(trimPoints)', "    const trimStart = performance.now()\n    await onAreaSelectEndHandler(trimPoints)\n    console.log('[phase] trim-loop', kclCode.length, performance.now() - trimStart)")
+          s="import { Session } from 'node:inspector'\nimport { writeFileSync } from 'node:fs'\n"+s
+          s=s.replace('    const trimStart = performance.now()', "    const profiler = new Session()\n    profiler.connect()\n    await new Promise<void>((resolve, reject) => profiler.post('Profiler.enable', err => err ? reject(err) : resolve()))\n    await new Promise<void>((resolve, reject) => profiler.post('Profiler.start', err => err ? reject(err) : resolve()))\n    const trimStart = performance.now()")
+          s=s.replace("    console.log('[phase] trim-loop'", "    await new Promise<void>((resolve, reject) => profiler.post('Profiler.stop', (err, result) => { if (err) { reject(err); return }; writeFileSync('trim-' + kclCode.length + '.cpuprofile', JSON.stringify(result.profile)); resolve() }))\n    profiler.disconnect()\n    console.log('[phase] trim-loop'")
+          p.write_text(s)
+          PY
+      - name: Profile unchanged trim workload
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
         shell: bash
         run: |
           set -o pipefail
           status=0
-          for attempt in 1 2 3; do
+          for attempt in 1; do
             xvfb-run -a npm run test:integration -- src/machines/sketchSolve/tools/trimToolImpl.spec.ts src/lib/app.spec.ts --sequence.seed=15271 --retry=0 --pool=forks 2>&1 | tee -a comparison-integration.log || status=1
           done
           exit "$status"
@@ -160,4 +122,5 @@ jobs:
           name: integration-${{ matrix.revision }}
           path: |
             comparison-integration.log
+            *.cpuprofile
             test-results/
