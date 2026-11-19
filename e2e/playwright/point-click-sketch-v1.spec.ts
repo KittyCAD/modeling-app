@@ -617,8 +617,8 @@ profile001 = circle(
   radius = 100,
   tag = $seg01,
 )
-extrude001 = extrude(profile001, length = 100)
-fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
+extrude001 = extrude(profile001, length = 100, tagEnd = $capEnd001)
+fillet001 = fillet(extrude001, radius = 5, edges = [{ sideFaces = [seg01, capEnd001] }])
 `
       await test.step(`Initial test setup`, async () => {
         await page.setBodyDimensions({ width: 1000, height: 500 })
