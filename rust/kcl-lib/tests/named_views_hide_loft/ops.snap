@@ -1337,7 +1337,7 @@ description: Operations executed named_views_hide_loft.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1361,7 +1361,7 @@ description: Operations executed named_views_hide_loft.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1385,7 +1385,7 @@ description: Operations executed named_views_hide_loft.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1409,7 +1409,7 @@ description: Operations executed named_views_hide_loft.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1433,7 +1433,7 @@ description: Operations executed named_views_hide_loft.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1457,7 +1457,7 @@ description: Operations executed named_views_hide_loft.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1481,7 +1481,7 @@ description: Operations executed named_views_hide_loft.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1505,7 +1505,7 @@ description: Operations executed named_views_hide_loft.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

@@ -21,7 +21,6 @@ pub mod ids;
 pub mod loft;
 pub mod math;
 pub mod mirror;
-pub mod operation;
 pub mod patterns;
 pub mod planes;
 pub(crate) mod region_consumption;
@@ -924,10 +923,6 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> Result<(crate::std::StdFn, St
         ("drawing", "createCustomSheet") => (
             |e, a| Box::pin(crate::std::drawing::create_custom_sheet(e, a).map(|r| r.map(KclValue::normal))),
             StdFnProps::default("std::drawing::createCustomSheet"),
-        ),
-        ("operation", "facing") => (
-            |e, a| Box::pin(crate::std::operation::facing(e, a).map(|r| r.map(KclValue::normal))),
-            StdFnProps::default("std::operation::facing"),
         ),
         (module, fn_name) => {
             return Err(KclError::internal(format!(

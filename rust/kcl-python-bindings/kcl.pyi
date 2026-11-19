@@ -30,6 +30,7 @@ __all__ = [
     "Finding",
     "FindingFamily",
     "FixedLints",
+    "GltfExportExtra",
     "GltfExportOptions",
     "GltfImportOptions",
     "GltfStorage",
@@ -968,6 +969,32 @@ class FindingFamily(enum.Enum):
     Simplify = ...
     r"""
     The user has expressed something in a complex way that could be simplified.
+    """
+
+@typing.final
+class GltfExportExtra(enum.Enum):
+    r"""
+    Additional data that can be included in a glTF 2.0 export.
+    """
+    Sketches = ...
+    r"""
+    Sketch geometry and metadata.
+    """
+    Regions = ...
+    r"""
+    Sketch regions and their resolver metadata.
+    """
+    ImportedFiles = ...
+    r"""
+    Original imported files.
+    """
+    Mbd = ...
+    r"""
+    Model-based definition (MBD) annotations.
+    """
+    GeometryUuids = ...
+    r"""
+    UUIDs and source UUIDs on boundary-representation solids, edges, faces, and surfaces.
     """
 
 @typing.final

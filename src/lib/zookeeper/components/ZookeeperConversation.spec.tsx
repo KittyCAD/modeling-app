@@ -7,6 +7,7 @@ import {
 } from '@src/lib/zookeeper/testUtils'
 import {
   zookeeperManagerMachine,
+  hasBeenInterruptedOnLast,
   ZookeeperManagerTransitions,
   ZookeeperManagerStates,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
@@ -396,6 +397,180 @@ describe('ZookeeperConversation', () => {
       ).toBeEnabled()
     } finally {
       unmount()
+      actor.stop()
+      vi.unstubAllGlobals()
+    }
+  })
+
+  // Synthetic ordering from the Slack report; the production replay tail has
+  // not been captured: https://kittycadworkspace.slack.com/archives/C06L2RHP9SL/p1794959500968199
+  test('offers recovery after reopening a completed reply with late old-run output', async () => {
+    ControllableSetupWebSocket.instances = []
+    vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+    const createManager = () =>
+      createActor(zookeeperManagerMachine, {
+        input: { apiToken: 'test-token' },
+      }).start()
+    let actor = createManager()
+    const request = { type: 'user', content: 'Make a bracket' }
+    const completion = {
+      end_of_stream: { whole_response: 'Resumed request complete.' },
+    }
+    const lateEdit = {
+      tool_output: {
+        result: {
+          type: 'edit_kcl_code',
+          status_code: 200,
+          outputs: { 'main.kcl': '@settings(kclVersion = 3.0)\nsize = 25\n' },
+        },
+      },
+    }
+    const connect = async (messages: unknown[]) => {
+      act(() =>
+        actor.send({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          conversationId: 'conversation-id',
+          refParentSend: (event) => actor.send(event),
+        })
+      )
+      const socket = ControllableSetupWebSocket.instances.at(-1)!
+      act(() => socket.open())
+      await waitFor(() =>
+        expect(socket.sentPayloads).toContain(
+          JSON.stringify({ type: 'list_modes' })
+        )
+      )
+      act(() => {
+        socket.receive(
+          {
+            replay_page: {
+              conversation_id: 'conversation-id',
+              messages: messages.map(encodeReplayMessage),
+            },
+          },
+          'msgpack'
+        )
+        socket.receive({
+          conversation_id: { conversation_id: 'conversation-id' },
+        })
+      })
+      await waitForActor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+      return socket
+    }
+    const onResumeInterruptedTurn = vi.fn(() =>
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'demo',
+        projectFiles: [],
+      })
+    )
+    // Match the pane's actor-derived composer and recovery props. Use a fresh
+    // actor on reopen so no live connection state can mask the saved history.
+    const View = () => {
+      const snapshot = useSelector(actor, (state) => state)
+      const interrupted =
+        snapshot.matches(ZookeeperManagerStates.WaitForContinueCheck) &&
+        hasBeenInterruptedOnLast(snapshot.context.conversation?.exchanges ?? [])
+      return (
+        <ZookeeperConversation
+          isLoading={!snapshot.context.conversation}
+          conversation={snapshot.context.conversation}
+          contexts={[]}
+          onProcess={vi.fn()}
+          onCancel={vi.fn()}
+          onClickClearChat={vi.fn()}
+          onReconnect={vi.fn()}
+          needsReconnect={snapshot.context.abruptlyClosed}
+          disabled={snapshot.context.abruptlyClosed || interrupted}
+          hasPromptCompleted={
+            !snapshot.context.awaitingResponse && !interrupted
+          }
+          isProcessing={snapshot.context.awaitingResponse}
+          interruptedTurnAwaitingResume={interrupted}
+          onResumeInterruptedTurn={onResumeInterruptedTurn}
+          queue={[]}
+          onRemoveFromQueue={vi.fn()}
+          onSteer={vi.fn()}
+        />
+      )
+    }
+    let view = render(<View />)
+    try {
+      const socket = await connect([request])
+      act(() =>
+        actor.send({
+          type: ZookeeperManagerStates.ContinueCheck,
+          projectName: 'demo',
+          projectFiles: [],
+        })
+      )
+      await waitForActor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+      act(() => {
+        socket.receive(completion)
+        socket.receive(lateEdit)
+      })
+      expect(
+        actor.getSnapshot().context.conversation?.exchanges.at(-1)?.responses
+      ).toEqual([completion, lateEdit])
+      expect(
+        hasBeenInterruptedOnLast(
+          actor.getSnapshot().context.conversation?.exchanges ?? []
+        )
+      ).toBe(true)
+
+      expect(
+        screen.getByTestId('ml-ephant-conversation-input-button')
+      ).toBeEnabled()
+
+      view.unmount()
+      actor.stop()
+      actor = createManager()
+      view = render(<View />)
+      const reopenedSocket = await connect([request, completion, lateEdit])
+      await screen.findByText('Resumed request complete.')
+      expect(actor.getSnapshot().context.awaitingResponse).toBe(false)
+      expect(
+        screen.getByTestId('ml-ephant-conversation-input-button')
+      ).toBeDisabled()
+      expect(
+        screen.queryByTestId('ml-ephant-conversation-cancel-button')
+      ).not.toBeInTheDocument()
+      // Send is blocked by the unfinished tail, so an explicit recovery action
+      // must remain available even though this exchange has an earlier answer.
+      const resumeButton = screen.getByRole('button', {
+        name: 'Resume interrupted request',
+      })
+      expect(resumeButton).toBeEnabled()
+      fireEvent.click(resumeButton)
+      expect(onResumeInterruptedTurn).toHaveBeenCalledOnce()
+      await waitForActor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+      act(() =>
+        reopenedSocket.receive({
+          end_of_stream: { whole_response: 'Unfinished work recovered.' },
+        })
+      )
+      expect(
+        actor
+          .getSnapshot()
+          .context.conversation?.exchanges.at(-1)
+          ?.responses.at(-1)
+      ).toEqual({
+        end_of_stream: { whole_response: 'Unfinished work recovered.' },
+      })
+      expect(
+        screen.queryByRole('button', { name: 'Resume interrupted request' })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.getByTestId('ml-ephant-conversation-input-button')
+      ).toBeEnabled()
+    } finally {
+      view.unmount()
       actor.stop()
       vi.unstubAllGlobals()
     }
