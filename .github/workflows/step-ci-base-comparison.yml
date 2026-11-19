@@ -1,14 +1,14 @@
-name: STEP face integration comparison
+name: STEP transform integration comparison
 on:
   push:
-    branches: [codex/step-face-control-20261119]
+    branches: [codex/step-transform-control-20261119]
   workflow_dispatch:
 permissions:
   contents: read
   actions: read
 jobs:
-  faces:
-    name: Face integration (${{ matrix.revision }})
+  transforms:
+    name: Transform integration (${{ matrix.revision }})
     runs-on: namespace-profile-ubuntu-2-cores
     timeout-minutes: 20
     strategy:
@@ -30,7 +30,7 @@ jobs:
       - name: Record exact inputs
         run: |
           git rev-parse HEAD HEAD:rust
-          git hash-object src/lang/modifyAst/faces.spec.ts
+          git hash-object src/lang/modifyAst/transforms.spec.ts src/lib/testHelpers.ts
       - uses: actions/download-artifact@v8
         with:
           github-token: ${{ github.token }}
@@ -54,21 +54,21 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Repeat unchanged face assertions without retries
+      - name: Repeat unchanged transform assertions without retries
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
         shell: bash
         run: |
           set -o pipefail
           failed=0
-          for seed in 1795122405939 15271; do
-            npm run test:integration -- src/lang/modifyAst/faces.spec.ts --retry=0 --sequence.seed="$seed" --reporter=default --reporter=json --outputFile="comparison-faces-$seed.json" 2>&1 | tee "comparison-faces-$seed.log" || failed=1
+          for seed in 1795123223340 15271; do
+            npm run test:integration -- src/lang/modifyAst/transforms.spec.ts --retry=0 --sequence.seed="$seed" --reporter=default --reporter=json --outputFile="comparison-transforms-$seed.json" 2>&1 | tee "comparison-transforms-$seed.log" || failed=1
           done
           exit "$failed"
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: faces-${{ matrix.revision }}
+          name: transforms-${{ matrix.revision }}
           path: |
-            comparison-faces-*.log
-            comparison-faces-*.json
+            comparison-transforms-*.log
+            comparison-transforms-*.json
