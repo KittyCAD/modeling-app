@@ -2796,8 +2796,8 @@ impl ExecutorContext {
                 &self.engine_batch,
                 uuid::Uuid::new_v4(),
                 crate::SourceRange::default(),
-                &kittycad_modeling_cmds::ModelingCmd::Export(
-                    kittycad_modeling_cmds::Export::builder()
+                &kittycad_modeling_cmds::ModelingCmd::Export3d(
+                    kittycad_modeling_cmds::Export3d::builder()
                         .entity_ids(vec![])
                         .maybe_compression(compression)
                         .format(format)
