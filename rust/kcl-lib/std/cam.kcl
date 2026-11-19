@@ -1,6 +1,6 @@
 ///```kcl
 ///@settings(defaultLengthUnit = mm, kclVersion = 3.0, experimentalFeatures = allow)
-///result = cam::program("Hello World")
+///result = cam::program("Hello World", unit = mm)
 ///```
 @(impl = std_rust, experimental = true, feature_tree = false)
-export fn program(@name: string): number(_) {}
+export fn program(@name: string, unit: Unit): number(_) {}
