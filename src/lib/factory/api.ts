@@ -4,8 +4,8 @@ import {
   factory,
   payments,
   type AddressResponse,
+  type Client,
 } from '@kittycad/lib'
-import { factoryEntrypointSubmissionAvailable } from '@src/lib/factory/availability'
 import { collectApiPages } from '@src/lib/apiPagination'
 import { createKCClient } from '@src/lib/kcClient'
 import type {
@@ -151,11 +151,56 @@ export function factoryJobFiles(
         { type: 'application/json' }
       ),
     },
-    ...snapshot.files.map((file) => ({
-      name: file.relativePath,
-      data: new File([Uint8Array.from(file.data)], file.relativePath),
-    })),
+    // Factory generates a preview for the selected entry point; Studio's root preview belongs to the source project.
+    ...snapshot.files
+      .filter((file) => file.relativePath.toLowerCase() !== 'thumbnail.png')
+      .map((file) => ({
+        name: file.relativePath,
+        data: new File([Uint8Array.from(file.data)], file.relativePath),
+      })),
   ]
+}
+
+/** The dedicated route fails closed on servers that cannot select entry points. */
+async function createProjectFactoryJob(
+  client: Client,
+  files: ReturnType<typeof factoryJobFiles>
+) {
+  const body = new FormData()
+  for (const file of files) body.append(file.name, file.data, file.name)
+  const response = await (client.fetch ?? globalThis.fetch)(
+    `${client.baseUrl}/user/factory/project-jobs`,
+    {
+      method: 'POST',
+      headers: client.token ? { Authorization: `Bearer ${client.token}` } : {},
+      body,
+    }
+  )
+  const result: unknown = await response.json().catch(() => null)
+  if (!response.ok) {
+    const message =
+      result &&
+      typeof result === 'object' &&
+      'message' in result &&
+      typeof result.message === 'string'
+        ? result.message
+        : response.status === 404
+          ? 'Factory project submissions are not available on this server.'
+          : `Factory submission failed (${response.status}).`
+    return Promise.reject(new ApiError(response.status, undefined, message))
+  }
+  if (
+    !result ||
+    typeof result !== 'object' ||
+    !('id' in result) ||
+    typeof result.id !== 'string' ||
+    !('status' in result) ||
+    typeof result.status !== 'string'
+  )
+    return Promise.reject(
+      new Error('The Factory submission response was invalid.')
+    )
+  return { id: result.id, status: result.status }
 }
 
 async function write(
@@ -185,18 +230,12 @@ export function createFactoryRequests(
   const client = createKCClient(token)
   return {
     create: (part, snapshot, delivery) =>
-      !factoryEntrypointSubmissionAvailable
-        ? Promise.resolve({
-            ok: false,
-            uncertain: false,
-            message: 'Factory submissions are not available in this build.',
-          })
-        : write(() =>
-            factory.create_user_factory_job({
-              client,
-              files: factoryJobFiles(part, snapshot, delivery),
-            })
-          ),
+      write(() =>
+        createProjectFactoryJob(
+          client,
+          factoryJobFiles(part, snapshot, delivery)
+        )
+      ),
     revise: (job, part) => {
       const { entrypoint: _entrypoint, ...fields } = part
       const params = {

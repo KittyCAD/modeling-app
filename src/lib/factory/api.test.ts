@@ -3,7 +3,6 @@ import { beforeEach, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
   fetch: vi.fn<typeof fetch>(),
-  available: true,
 }))
 vi.mock('@src/lib/kcClient', () => ({
   createKCClient: () =>
@@ -14,17 +13,10 @@ vi.mock('@src/lib/kcClient', () => ({
     }),
 }))
 
-vi.mock('@src/lib/factory/availability', () => ({
-  get factoryEntrypointSubmissionAvailable() {
-    return mocks.available
-  },
-}))
-
 import { createFactoryRequests, factoryJobFiles } from '@src/lib/factory/api'
 
 beforeEach(() => {
   mocks.fetch.mockReset()
-  mocks.available = true
 })
 
 const part = {
@@ -71,6 +63,25 @@ it('serializes the chosen entry point and preserves every snapshot filename and 
   expect(new Uint8Array(await files[3].data.arrayBuffer())).toEqual(
     new Uint8Array([0, 1, 255])
   )
+})
+
+it('omits the Studio preview while retaining model dependencies for Factory to render anew', () => {
+  const files = factoryJobFiles(
+    part,
+    {
+      files: [
+        ...snapshot.files,
+        { relativePath: 'thumbnail.png', data: new Uint8Array([9]) },
+      ],
+    },
+    delivery
+  )
+  expect(files.map((file) => file.name)).toEqual([
+    'body',
+    'main.kcl',
+    'parts/bracket.kcl',
+    'data/input.csv',
+  ])
 })
 
 it('revises organization jobs through the supported endpoint without replacing their files or delivery', async () => {
@@ -140,8 +151,8 @@ it('treats transport failures as uncertain', async () => {
   if (!result.ok) expect(result.uncertain).toBe(true)
 })
 
-it('blocks creation before any write when entry point support is unavailable', async () => {
-  mocks.available = false
+it('rejects an older server without falling back to automatic entry point selection', async () => {
+  mocks.fetch.mockResolvedValueOnce(new Response('', { status: 404 }))
   const result = await createFactoryRequests('token', false).create(
     part,
     snapshot,
@@ -150,7 +161,43 @@ it('blocks creation before any write when entry point support is unavailable', a
   expect(result).toEqual({
     ok: false,
     uncertain: false,
-    message: 'Factory submissions are not available in this build.',
+    message: 'Factory project submissions are not available on this server.',
   })
-  expect(mocks.fetch).not.toHaveBeenCalled()
+  expect(mocks.fetch).toHaveBeenCalledTimes(1)
+  expect(mocks.fetch.mock.calls[0][0]).toBe(
+    'https://api.example.test/user/factory/project-jobs'
+  )
+})
+
+it('submits project jobs with the selected entry point and a complete snapshot', async () => {
+  mocks.fetch.mockResolvedValueOnce(
+    new Response(JSON.stringify({ id: 'new-job', status: 'new' }), {
+      status: 201,
+    })
+  )
+  const result = await createFactoryRequests('token', false).create(
+    part,
+    snapshot,
+    delivery
+  )
+  expect(result).toEqual({ ok: true, id: 'new-job', status: 'new' })
+  const [url, init] = mocks.fetch.mock.calls[0]
+  expect(url).toBe('https://api.example.test/user/factory/project-jobs')
+  expect(init?.method).toBe('POST')
+  expect(init?.headers).toEqual({ Authorization: 'Bearer test' })
+  const form = init?.body
+  expect(form).toBeInstanceOf(FormData)
+  if (!(form instanceof FormData)) return
+  expect([...form.keys()]).toEqual([
+    'body',
+    'main.kcl',
+    'parts/bracket.kcl',
+    'data/input.csv',
+  ])
+  const metadata = form.get('body')
+  expect(metadata).toBeInstanceOf(Blob)
+  if (!(metadata instanceof Blob)) return
+  expect(JSON.parse(await metadata.text()).entrypoint_path).toBe(
+    'parts/bracket.kcl'
+  )
 })

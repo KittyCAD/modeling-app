@@ -1,5 +1,6 @@
 import { effect } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
+import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 import { billingService } from '@src/lib/billing'
 import { FactoryButton } from '@src/lib/factory/FactoryButton'
 import { createFactoryWorkspace } from '@src/lib/factory/jobs'
@@ -8,7 +9,8 @@ import { appHeaderItemsFacet } from '@src/registry/contracts/appHeader'
 import { observations } from '@src/registry/contracts/auth'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { contribute, factory } from 'plankton'
-import { createElement } from 'react'
+import { createElement, useMemo } from 'react'
+import { createFactoryFormContext } from '@src/lib/factory/registry/projects'
 
 const workspaceOwner = factory({
   dependencies: { auth: observations },
@@ -25,6 +27,23 @@ const workspaceOwner = factory({
       useSignals()
       const project = app.projectSignal.value
       const user = app.auth.user.value
+      const token = app.auth.token.value
+      const organization =
+        app.registry.optional(billingService)?.context.value.isOrg
+      const local =
+        project?.projectIORefSignal.value.libraryType !==
+        CLOUD_PROJECT_LIBRARY_TYPE
+      const context = useMemo(
+        () =>
+          createFactoryFormContext(app, {
+            project,
+            token,
+            userId: user?.id,
+            organization,
+            local,
+          }),
+        [app, project, user?.id, token, organization, local]
+      )
       if (!project) return null
       const key = JSON.stringify([
         user?.id,
@@ -36,7 +55,7 @@ const workspaceOwner = factory({
         workspace = createFactoryWorkspace()
         workspaces.set(key, workspace)
       }
-      return createElement(FactoryButton, { key, app, workspace })
+      return createElement(FactoryButton, { key, context, workspace })
     }
     return {
       items: [
@@ -67,7 +86,7 @@ export default createZdsPlugin({
   title: 'Submit to Factory',
   description: 'Submit project entry points as manufacturing jobs.',
   items: [workspaceOwner],
-  defaultSetting: 'off',
+  defaultSetting: 'core',
   activationSetting: {
     category: 'plugins',
     settingName: 'factory',
@@ -75,7 +94,7 @@ export default createZdsPlugin({
     hideWithoutFeature: 'factory_portal',
     featurePolicy: {
       feature: 'factory_portal',
-      defaultEnabled: false,
+      defaultEnabled: true,
       disableWithoutFeature: true,
     },
   },

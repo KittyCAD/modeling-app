@@ -14,25 +14,25 @@ uncertain responses block another submission and link to Manufacturing Jobs.
 Disposal prevents late results from publishing state or starting another job.
 
 `registry/projects.ts` adapts live app capabilities at the submission boundary.
-It saves open editors, clones Directory projects through the project-library
+It supplies the form with captured account/project capabilities, saves open editors, clones Directory projects through the project-library
 contribution contract, and captures the cloud snapshot once for the batch.
 The snapshot and address revision are retained after a rejected submission.
 Revisions change specifications while retaining the already-submitted files and
 delivery selection, using POST `/user|org/factory/jobs/{id}/versions`.
 
-## API dependency: explicit entry points
+## API contract and rollout
 
-The existing Factory intake API chooses `main.kcl`, falling back to the first
-KCL file. It ignores unknown top-level JSON properties. This feature requires
-an intake change before it can ship: accept `entrypoint_path` in the JSON `body`
-part, normalize it as a project-relative path, require that it names a submitted
-KCL file, and use it for the immutable Factory Project snapshot. Omission must
-retain the current selection behavior. All jobs in a batch upload identical
-project bytes; only the entry point and per-job specifications differ.
+Creation uses POST `/user/factory/project-jobs`. Its JSON `body` part requires
+`entrypoint_path`, normalized as a project-relative path naming a submitted KCL
+file. Every job in a batch uploads identical project bytes; only the entry point
+and per-job specifications differ. Studio's generated root `thumbnail.png` is
+omitted so Factory can generate a preview for the selected entry point. The companion API branch is
+`codex/factory-entrypoint` in KittyCAD/api.
 
-Do not enable submissions against the existing API: it would manufacture the
-wrong entry point for a multi-file project. The availability guard must remain false until the companion API is deployed.
-The plugin is off by default during this rollout.
+The distinct route is intentional: an older API rejects it with 404 instead of
+silently ignoring the entry-point field and manufacturing the wrong model.
+There is no fallback to ordinary Factory intake. The existing `factory_portal`
+feature controls availability, including the plugin setting.
 
 ## Review checks
 
@@ -40,7 +40,8 @@ The plugin is off by default during this rollout.
   who cannot edit billing. Confirm the address is pinned to the correct owner.
 - Select two nested KCL entry points, set different quantities/materials/finishes
   and notes, then submit once. Inspect both immutable Factory snapshots and
-  confirm they execute different entry points with identical file bytes.
+  confirm they execute different entry points with identical model/dependency bytes.
+  Each Factory-owned manifest receives its own cloud identity.
 - Repeat from a Directory library and confirm the local source remains intact
   and exactly one cloud copy is created for the batch.
 - Close/reopen, switch projects, revise one job, and follow its website link.

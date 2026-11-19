@@ -1,13 +1,7 @@
 import { Combobox, Popover } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
-import { factoryEntrypointSubmissionAvailable } from '@src/lib/factory/availability'
-import type { App } from '@src/lib/app'
-import { billingService } from '@src/lib/billing'
 import {
-  createFactoryRequests,
   emptyShipping,
-  loadFactoryOptions,
-  saveFactoryDelivery,
   shippingFromAddress,
   type FactoryShippingForm,
 } from '@src/lib/factory/api'
@@ -19,11 +13,7 @@ import {
   type FactoryWorkspace,
   type SubmittedFactoryJob,
 } from '@src/lib/factory/jobs'
-import {
-  captureFactoryProject,
-  listFactoryEntrypoints,
-} from '@src/lib/factory/registry/projects'
-import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
+import type { FactoryCatalog, FactoryFormContext } from '@src/lib/factory/types'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import Fuse from 'fuse.js'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -38,13 +28,13 @@ const newPart = (entrypoint: string): FactoryPart => ({
   quantity: 1,
   notes: '',
 })
-type Catalog = Awaited<ReturnType<typeof loadFactoryOptions>>
+type Catalog = FactoryCatalog
 
 export function FactoryButton({
-  app,
+  context,
   workspace,
 }: {
-  app: App
+  context: FactoryFormContext
   workspace: FactoryWorkspace
 }) {
   useSignals()
@@ -57,7 +47,7 @@ export function FactoryButton({
             Submit to Factory
             {count > 0 && ` (${count})`}
           </Popover.Button>
-          <FactoryPopover app={app} workspace={workspace} open={open} />
+          <FactoryPopover context={context} workspace={workspace} open={open} />
         </>
       )}
     </Popover>
@@ -65,22 +55,16 @@ export function FactoryButton({
 }
 
 function FactoryPopover({
-  app,
+  context,
   workspace,
   open,
 }: {
-  app: App
+  context: FactoryFormContext
   workspace: FactoryWorkspace
   open: boolean
 }) {
   useSignals()
-  const token = app.auth.token.value
-  const userId = app.auth.user.value?.id
-  const billing = app.registry.optional(billingService)?.context.value
-  const organization = billing?.isOrg
-  const project = app.projectSignal.value
-  const local =
-    project?.projectIORefSignal.value.libraryType !== CLOUD_PROJECT_LIBRARY_TYPE
+  const { local, signedIn, ready, requests } = context
   const [catalog, setCatalog] = useState<Catalog>()
   const [paths, setPaths] = useState<string[]>([])
   const [selected, setSelected] = useState<string[]>([])
@@ -107,24 +91,18 @@ function FactoryPopover({
       alive.current = false
     }
   }, [])
-  const isCurrent = () =>
-    alive.current &&
-    app.projectSignal.peek() === project &&
-    app.auth.user.peek()?.id === userId &&
-    app.registry.optional(billingService)?.context.peek().isOrg === organization
+  const isCurrent = () => alive.current && context.isCurrent()
   useEffect(() => {
-    if (!open || !token || organization === undefined || catalog) return
+    if (!open || !signedIn || !ready || catalog) return
     let cancelled = false
     setLoadError('')
-    void Promise.all([
-      loadFactoryOptions(token, organization),
-      listFactoryEntrypoints(app),
-    ])
-      .then(([options, files]) => {
+    void context
+      .load()
+      .then(({ catalog, paths }) => {
         if (cancelled) return
-        setCatalog(options)
-        setPaths(files)
-        setShipping(options.shipping)
+        setCatalog(catalog)
+        setPaths(paths)
+        setShipping(catalog.shipping)
       })
       .catch((error: unknown) => {
         if (!cancelled)
@@ -137,8 +115,7 @@ function FactoryPopover({
     return () => {
       cancelled = true
     }
-  }, [app, open, token, organization, catalog, attempt])
-  const requests = createFactoryRequests(token, organization === true)
+  }, [context, open, signedIn, ready, catalog, attempt])
   const busy = preparing || workspace.pending.value
   const submit = async () => {
     if (
@@ -148,23 +125,18 @@ function FactoryPopover({
       !isCurrent()
     )
       return
-    if (!factoryEntrypointSubmissionAvailable) {
-      setError('Factory submissions are not available in this build.')
-      return
-    }
     submissionLock.current = true
     setPreparing(true)
     setError('')
     try {
-      const captured =
-        snapshot.current ?? (await captureFactoryProject(app, isCurrent))
+      const captured = snapshot.current ?? (await context.capture(isCurrent))
       snapshot.current = captured
       if (!isCurrent()) return
       const key = JSON.stringify(shipping)
       const shared =
         delivery.current?.key === key
           ? delivery.current.value
-          : await saveFactoryDelivery(token, organization === true, shipping)
+          : await context.saveDelivery(shipping)
       delivery.current = { key, value: shared }
       if (!isCurrent()) return
       const completed = await workspace.submit(
@@ -227,6 +199,7 @@ function FactoryPopover({
       static
       hidden={!open}
       className="fixed right-4 top-16 z-20 max-h-[calc(100dvh-5rem)] w-[30rem] max-w-[calc(100vw-2rem)] overflow-y-auto rounded border b-4 bg-1 p-4 text-sm text-1 shadow-2xl"
+      role="dialog"
       aria-label="Submit to Factory"
     >
       <div className="mb-4 flex items-center justify-between">
@@ -270,7 +243,7 @@ function FactoryPopover({
               }[step]
             }
           </p>
-          {!token ? (
+          {!signedIn ? (
             <p>Sign in to submit manufacturing jobs.</p>
           ) : !catalog ? (
             <div role={loadError ? 'alert' : 'status'}>
@@ -425,7 +398,7 @@ function FactoryPopover({
                     <button
                       type="button"
                       className={buttonClass}
-                      disabled={Boolean(snapshot.current)}
+                      disabled={Boolean(snapshot.current) && step === 'parts'}
                       onClick={() =>
                         setStep(
                           step === 'review'
@@ -536,8 +509,8 @@ export function PartFields({
   return (
     <div className="space-y-3">
       {(['material', 'finish'] as const).map((field) => (
-        <label key={field} className="block capitalize">
-          {field}
+        <label key={field} className="block">
+          {field === 'material' ? 'Material' : 'Finish'}
           <select
             className={inputClass}
             required
@@ -642,7 +615,7 @@ function FactoryJobEditor({
   job: SubmittedFactoryJob
   catalog: Catalog | undefined
   workspace: FactoryWorkspace
-  requests: ReturnType<typeof createFactoryRequests>
+  requests: FactoryFormContext['requests']
 }) {
   useSignals()
   const [part, setPart] = useState(job.part)
