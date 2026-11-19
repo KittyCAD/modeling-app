@@ -15,8 +15,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - revision: candidate-highlighting
-            sha: 63de611fa69510e76d5672ae723d4db19c83347b
+          - revision: candidate-serial
+            sha: 84a16a4373d987beaf3cf27d880532a5d1ea10d6
             wasm_run: 44577814983
     steps:
       - uses: actions/checkout@v6
@@ -62,6 +62,7 @@ jobs:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TARGET: web
           NODE_ENV: development
+          E2E_WORKERS: 1
         shell: bash
         run: |
           set -o pipefail
@@ -69,6 +70,8 @@ jobs:
           for attempt in 1 2; do
             echo "Snapshot validation $attempt"
             npm run test:snapshots -- --update-snapshots=none --output="test-results-$attempt" 2>&1 | tee -a comparison-snapshots.log || status=1
+            mkdir -p "test-results-$attempt"
+            cp test-results/report.json "test-results-$attempt/report.json"
           done
           exit "$status"
       - uses: actions/upload-artifact@v7
@@ -77,24 +80,4 @@ jobs:
           name: browser-${{ matrix.revision }}
           path: |
             comparison-snapshots.log
-            test-results*/
-      - name: Build desktop app
-        if: ${{ !cancelled() }}
-        run: npm run tronb:vite:dev
-      - name: Repeat both assembly selection paths without retries
-        if: ${{ !cancelled() }}
-        env:
-          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
-          TARGET: desktop
-        shell: bash
-        run: |
-          set -o pipefail
-          xvfb-run -a npx playwright test --config=playwright.electron.config.ts e2e/playwright/point-click-assemblies.spec.ts --grep='Insert the bracket part into an assembly and transform it' --workers=1 --repeat-each=2 --retries=0 2>&1 | tee comparison-assembly.log
-      - uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: snapshots-${{ matrix.revision }}
-          path: |
-            comparison-snapshots.log
-            comparison-assembly.log
             test-results*/
