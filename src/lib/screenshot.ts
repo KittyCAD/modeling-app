@@ -181,7 +181,7 @@ async function takeScreenshotOfVideoStreamCanvas(): Promise<Blob | null> {
 interface ViewportScreenshotSource {
   canvas?: HTMLCanvasElement
   video?: HTMLVideoElement
-  localRenderer?: LocalRenderer | null
+  localRenderer?: Pick<LocalRenderer, 'readFrame'> | null
   gizmoCanvas?: HTMLCanvasElement | null
 }
 
