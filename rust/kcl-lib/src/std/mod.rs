@@ -5,6 +5,7 @@ pub mod args;
 pub mod array;
 pub mod assert;
 pub mod axis_or_reference;
+pub mod cam;
 pub mod chamfer;
 pub mod clone;
 pub mod constraints;
@@ -914,6 +915,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> Result<(crate::std::StdFn, St
         ("view", "named") => (
             |e, a| Box::pin(crate::std::view::named(e, a).map(|r| r.map(KclValue::normal))),
             StdFnProps::default("std::view::named"),
+        ),
+        ("cam", "program") => (
+            |e, a| Box::pin(crate::std::cam::program(e, a).map(|r| r.map(KclValue::normal))),
+            StdFnProps::default("std::cam::program"),
         ),
         (module, fn_name) => {
             return Err(KclError::internal(format!(
