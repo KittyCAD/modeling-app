@@ -464,13 +464,15 @@ export class ConnectionManager extends EventTarget {
     const handleMessage = this.createMessageHandler(rustContext)
 
     const url = this.generateWebsocketURL(geometryOnly, kclVersion)
-    this.connection = new Connection({
+    const connection = new Connection({
       url,
       token,
       geometryOnly,
       handleOnDataChannelMessage: this.handleOnDataChannelMessage.bind(this),
       recordShutdownTrigger: this.recordShutdownTrigger.bind(this),
-      tearDownManager: this.tearDown.bind(this),
+      tearDownManager: (options) => {
+        if (this.connection === connection) this.tearDown(options)
+      },
       onReconnectRequested: this.handleReconnectRequested.bind(this),
       rejectPendingCommand: this.rejectPendingCommand.bind(this),
       callbackOnUnitTestingConnection,
@@ -481,6 +483,8 @@ export class ConnectionManager extends EventTarget {
         this.systemDeps.settingsActor.getSnapshot().context.currentProject
           ?.cloudProjectId,
     })
+
+    this.connection = connection
 
     // Nothing more to do when using a lite engine initialization
     if (callbackOnUnitTestingConnection) {
