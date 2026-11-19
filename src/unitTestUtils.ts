@@ -14,13 +14,13 @@ import { findKwArg, findKwArgAny } from '@src/lang/util'
 import type { CallExpressionKw, Expr } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import { MachineManager } from '@src/lib/MachineManager'
 import { createTextFileIO } from '@src/lib/projectSession/textFileIO'
 import { createProjectForTest } from '@src/lib/projectTestUtils'
 import RustContext from '@src/lib/rustContext'
 import { createSettings } from '@src/lib/settings/initialSettings'
-import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { settingsMachine } from '@src/machines/settingsMachine'
@@ -85,15 +85,18 @@ export function createSettledUserFeaturesForTest(): UserFeaturesSettleService {
   }
 }
 
-// Initialize all the singletons, the WASM blob, and open an engine connection
-// Most likely a lite engine connection because this function should only run in vitest
-// if this runs in vitest the engineCommandManager will run a lite connection mode.
+/**
+ * Build independent legacy managers and a native context for an integration session.
+ * The caller owns dispose(), including when a disconnected session is retired before retrying.
+ */
 export async function buildTheWorldAndConnectToEngine({
   webrtc = true,
   geometryOnly = false,
+  signal: abortSignal,
 }: {
   webrtc?: boolean
   geometryOnly?: boolean
+  signal?: AbortSignal
 } = {}) {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
   const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
@@ -139,41 +142,84 @@ export async function buildTheWorldAndConnectToEngine({
     project: signal(createProjectForTest()),
     projectPath: signal('some-project'),
   })
-  await new Promise((resolve, reject) => {
-    kclManager.engineCommandManager
-      .start({
-        token: env().VITE_ZOO_API_TOKEN || '',
-        width: 256,
-        height: 256,
-        setStreamIsReady: () => {
-          console.log('no op for a unit test')
-        },
-        callbackOnUnitTestingConnection: (message: string) => {
-          if (message === 'auth_token_invalid') {
-            const reason =
-              'auth_token_invalid for the engine. Please set VITE_ZOO_API_TOKEN to the development token.'
-            reject(reason)
-          }
-          if (message === 'auth success') {
-            resolve(true)
-            console.log('unit test connected!')
-          }
-        },
-        unitTestWebrtc: webrtc,
-        unitTestGeometryOnly: geometryOnly,
-        geometryOnly,
-        rustContext: kclManager.rustContext,
-      })
-      .catch(reportRejection)
-  })
-  return {
-    instance: await instancePromise,
-    engineCommandManager: kclManager.engineCommandManager,
-    rustContext: kclManager.rustContext,
-    kclManager,
-    commandBarActor,
-    settingsActor,
-    machineManager,
+  const dispose = () => {
+    kclManager.close()
+    engineCommandManager.tearDown({
+      route: 'service-disposed',
+      initiatedBy: 'client',
+    })
+    rustContext.destroy()
+    commandBarActor.stop()
+    settingsActor.stop()
+    machineManager.stop()
+  }
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const cleanup = () => {
+        abortSignal?.removeEventListener('abort', aborted)
+        engineCommandManager.removeEventListener(
+          EngineConnectionManagerEvents.Offline,
+          disconnected
+        )
+      }
+      const fail = (error: unknown) => {
+        cleanup()
+        reject(error)
+      }
+      const disconnected = () =>
+        fail(
+          new Error('The test engine connection closed before authentication')
+        )
+      const aborted = () =>
+        fail(new Error('Opening the test engine connection was cancelled'))
+      if (abortSignal?.aborted) {
+        aborted()
+        return
+      }
+      abortSignal?.addEventListener('abort', aborted, { once: true })
+      engineCommandManager.addEventListener(
+        EngineConnectionManagerEvents.Offline,
+        disconnected
+      )
+      void engineCommandManager
+        .start({
+          token: env().VITE_ZOO_API_TOKEN || '',
+          width: 256,
+          height: 256,
+          setStreamIsReady: () => {},
+          callbackOnUnitTestingConnection: (message: string) => {
+            if (message === 'auth_token_invalid') {
+              fail(
+                new Error(
+                  'auth_token_invalid for the engine. Please set VITE_ZOO_API_TOKEN to the development token.'
+                )
+              )
+            } else if (message === 'auth success') {
+              cleanup()
+              resolve()
+            }
+          },
+          unitTestWebrtc: webrtc,
+          unitTestGeometryOnly: geometryOnly,
+          geometryOnly,
+          rustContext,
+        })
+        .catch(fail)
+    })
+    return {
+      instance: await instancePromise,
+      engineCommandManager,
+      engineSessionId: engineCommandManager.engineSessionId,
+      rustContext,
+      kclManager,
+      commandBarActor,
+      settingsActor,
+      machineManager,
+      dispose,
+    }
+  } catch (error) {
+    dispose()
+    return Promise.reject(error)
   }
 }
 
