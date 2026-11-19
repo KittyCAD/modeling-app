@@ -75,6 +75,9 @@ and 93.373 s, with recorded provider costs of $0.2765 and $0.2741 and 220 and 21
 reasoning tokens. These are complete backend case times, not measured ZDS UI
 latencies or billed-credit estimates.
 
+The reconstruction turns took 55.051 s and 60.447 s; the repair turns took
+27.442 s and 24.607 s. The remaining case time includes independent evaluation.
+
 Both initial reconstructions passed. The repair inputs had deliberately injected
 diameter faults; this does not establish recovery from naturally occurring
 reconstruction errors. The independent analytic references share the OCCT kernel
