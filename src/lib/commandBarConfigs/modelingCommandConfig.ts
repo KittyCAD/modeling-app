@@ -542,6 +542,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             case 'step':
             case 'obj':
             case 'fbx':
+            case 'rhino':
             default:
               return []
           }
