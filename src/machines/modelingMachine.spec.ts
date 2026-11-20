@@ -1244,7 +1244,7 @@ p3 = [342.51, 216.38],
             }
 
             expect(kclManagerInThisFile.code).not.toContain(searchText)
-          }, 10_000)
+          })
         }
       )
     })
@@ -1383,7 +1383,7 @@ p3 = [342.51, 216.38],
 
             await waitForSketchScene(actor, signal)
             expect(kclManagerInThisFile.code).toContain(expectedResult)
-          }, 10_000)
+          })
         }
       )
     })
@@ -1508,7 +1508,7 @@ p3 = [342.51, 216.38],
             const codeRecast = recast(mod.modifiedAst, instanceInThisFile)
 
             expect(codeRecast).toContain(expectedResult)
-          }, 10_000)
+          })
         }
       )
     })

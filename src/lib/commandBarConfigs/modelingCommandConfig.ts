@@ -484,6 +484,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'STL', isCurrent: false, value: 'stl' },
           { name: 'STEP', isCurrent: false, value: 'step' },
           { name: 'PLY', isCurrent: false, value: 'ply' },
+          { name: '3DM', isCurrent: false, value: 'rhino' },
         ],
       },
       storage: {
@@ -544,6 +545,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             case 'step':
             case 'obj':
             case 'fbx':
+            case 'rhino':
             default:
               return []
           }

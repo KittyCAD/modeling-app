@@ -302,6 +302,15 @@ export exported = 1
       // Don't use scene.settled here
       await expect(scene.startEditSketchBtn).toBeEnabled({ timeout: 15_000 })
 
+      async function fillAndContinue(expression: string, calculated: string) {
+        await cmdBar.argumentInput.locator('[contenteditable]').fill(expression)
+        const form = page.locator('form#arg-form').filter({
+          has: page.getByText(calculated, { exact: true }),
+        })
+        await expect(form).toHaveAttribute('data-can-submit', 'true')
+        await cmdBar.continue()
+      }
+
       await test.step(`Create a parameter via command bar`, async () => {
         await cmdBar.cmdBarOpenBtn.click()
         await cmdBar.chooseCommand('create parameter')
@@ -315,10 +324,7 @@ export exported = 1
           },
           highlightedHeaderArg: 'value',
         })
-        await cmdBar.argumentInput.locator('[contenteditable]').fill(`b - 5`)
-        // TODO: we have no loading indicator for the KCL argument input calculation
-        await page.waitForTimeout(100)
-        await cmdBar.progressCmdBar()
+        await fillAndContinue('b - 5', '20')
         await cmdBar.expectState({
           stage: 'commandBarClosed',
         })
@@ -364,8 +370,7 @@ export exported = 1
           },
           highlightedHeaderArg: 'value',
         })
-        await cmdBar.argumentInput.locator('[contenteditable]').fill(newValue)
-        await cmdBar.progressCmdBar()
+        await fillAndContinue(newValue, '55')
         await cmdBar.expectState({
           stage: 'review',
           commandName: 'Edit parameter',
@@ -375,7 +380,7 @@ export exported = 1
             Value: '55',
           },
         })
-        await cmdBar.progressCmdBar()
+        await cmdBar.submit()
         await cmdBar.expectState({
           stage: 'commandBarClosed',
         })
@@ -399,10 +404,7 @@ export exported = 1
           },
           highlightedHeaderArg: 'value',
         })
-        await cmdBar.argumentInput
-          .locator('[contenteditable]')
-          .fill('45deg + 1deg')
-        await cmdBar.progressCmdBar()
+        await fillAndContinue('45deg + 1deg', '46deg')
         await cmdBar.expectState({
           stage: 'review',
           commandName: 'Edit parameter',
@@ -411,7 +413,7 @@ export exported = 1
             Value: '46deg',
           },
         })
-        await cmdBar.progressCmdBar()
+        await cmdBar.submit()
         await cmdBar.expectState({
           stage: 'commandBarClosed',
         })
@@ -435,8 +437,7 @@ export exported = 1
           },
           highlightedHeaderArg: 'value',
         })
-        await cmdBar.argumentInput.locator('[contenteditable]').fill('2')
-        await cmdBar.progressCmdBar()
+        await fillAndContinue('2', '2')
         await cmdBar.expectState({
           stage: 'review',
           commandName: 'Edit parameter',
@@ -445,7 +446,7 @@ export exported = 1
             Value: '2',
           },
         })
-        await cmdBar.progressCmdBar()
+        await cmdBar.submit()
         await cmdBar.expectState({
           stage: 'commandBarClosed',
         })
