@@ -51,8 +51,20 @@ it('waits for a visible size and retains the scene across presentation attachmen
   expect(open).toHaveBeenCalledOnce()
   expect(session.element.contains(resource.element)).toBe(true)
   session.dispose()
-  session.dispose()
-  expect(resource.dispose).toHaveBeenCalledOnce()
+})
+
+it('disposes the scene only once when cleanup repeats', async () => {
+  const resource = scene()
+  const session = createKclSession(async () => resource)
+  session.attach(container())
+  try {
+    await session.execute(snapshot, runSignal())
+    session.dispose()
+    session.dispose()
+    expect(resource.dispose).toHaveBeenCalledOnce()
+  } finally {
+    session.dispose()
+  }
 })
 
 it.each(['local', 'streamed'] as const)(
@@ -234,41 +246,49 @@ it('ignores late resize failures from a retired connection', async () => {
   session.dispose()
 })
 
-it.each(['local', 'streamed'] as const)(
-  'handles the idle timeout and camera restoration for %s scenes',
-  async (presentation) => {
-    vi.useFakeTimers()
-    const first = scene(presentation),
-      second = scene(presentation)
-    first.preferences = { ...first.preferences, idleTimeout: signal(1000) }
-    const open = vi
-      .fn<OpenKclScene>()
-      .mockResolvedValueOnce(first)
-      .mockResolvedValueOnce(second)
-    const session = createKclSession(open)
-    const parent = container()
-    session.attach(parent)
-    try {
-      await session.execute(snapshot, runSignal())
-      const pose = first.snapshotCamera()
-      await vi.advanceTimersByTimeAsync(1100)
-      if (presentation === 'local') {
-        expect(session.resource.peek()).toBe(first)
-        expect(first.dispose).not.toHaveBeenCalled()
-        return
-      }
-      expect(session.state.peek().type).toBe('idle')
-      expect(first.dispose).toHaveBeenCalledOnce()
-      parent.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
-      await vi.advanceTimersByTimeAsync(0)
-      await session.execute(snapshot, runSignal())
-      expect(second.restoreCamera).toHaveBeenCalledWith(pose)
-      expect(second.frameModel).not.toHaveBeenCalled()
-    } finally {
-      session.dispose()
-    }
+it('keeps local scenes alive past the idle timeout', async () => {
+  vi.useFakeTimers()
+  const resource = scene('local')
+  resource.preferences = { ...resource.preferences, idleTimeout: signal(1000) }
+  const session = createKclSession(async () => resource)
+  session.attach(container())
+  try {
+    await session.execute(snapshot, runSignal())
+    await vi.advanceTimersByTimeAsync(1100)
+    expect(session.resource.peek()).toBe(resource)
+    expect(resource.dispose).not.toHaveBeenCalled()
+  } finally {
+    session.dispose()
   }
-)
+})
+
+it('restores the streamed camera after resuming from idle', async () => {
+  vi.useFakeTimers()
+  const first = scene('streamed'),
+    second = scene('streamed')
+  first.preferences = { ...first.preferences, idleTimeout: signal(1000) }
+  const open = vi
+    .fn<OpenKclScene>()
+    .mockResolvedValueOnce(first)
+    .mockResolvedValueOnce(second)
+  const session = createKclSession(open)
+  const parent = container()
+  session.attach(parent)
+  try {
+    await session.execute(snapshot, runSignal())
+    const pose = first.snapshotCamera()
+    await vi.advanceTimersByTimeAsync(1100)
+    expect(session.state.peek().type).toBe('idle')
+    expect(first.dispose).toHaveBeenCalledOnce()
+    parent.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
+    await vi.advanceTimersByTimeAsync(0)
+    await session.execute(snapshot, runSignal())
+    expect(second.restoreCamera).toHaveBeenCalledWith(pose)
+    expect(second.frameModel).not.toHaveBeenCalled()
+  } finally {
+    session.dispose()
+  }
+})
 
 it('does not idle during execution or while the user is interacting', async () => {
   vi.useFakeTimers()
