@@ -1,7 +1,10 @@
-import { defineRegistryItem, provide } from '@kittycad/registry'
-import { engineSceneViewExtensionsValueSpec } from '@src/registry/contracts/engineScene'
-import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
+import {
+  defineEngineSceneViewExtension,
+  engineSceneViewExtensionsFacet,
+} from '@src/registry/contracts/engineScene'
+import { statusBarGlobalItemsFacet } from '@src/registry/contracts/statusBar'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
+import { contribute } from 'plankton'
 import { Suspense, createElement, lazy } from 'react'
 
 const SpaceMouseSceneController = lazy(async () => {
@@ -30,27 +33,25 @@ const SpaceMouseStatus = () =>
     createElement(SpaceMouseStatusBarItem)
   )
 
-const spaceMouseControls = defineRegistryItem({
-  provides: [
-    provide(engineSceneViewExtensionsValueSpec, {
-      id: 'spacemouse.controller',
-      zone: 'overlay',
-      order: 10,
-      Component: SpaceMouseSceneOverlay,
-    }),
-    provide(statusBarGlobalItemsValueSpec, {
-      id: 'spacemouse.status',
-      order: 40,
-      component: SpaceMouseStatus,
-    }),
-  ],
-})
-
 const spaceMouse = createZdsPlugin({
   id: 'spacemouse',
   title: 'SpaceMouse',
   description: '3Dconnexion SpaceMouse viewport controls.',
-  items: [spaceMouseControls],
+  items: [
+    contribute(engineSceneViewExtensionsFacet, () =>
+      defineEngineSceneViewExtension({
+        id: 'spacemouse.controller',
+        zone: 'overlay',
+        order: 10,
+        Component: SpaceMouseSceneOverlay,
+      })
+    ),
+    contribute(statusBarGlobalItemsFacet, () => ({
+      id: 'spacemouse.status',
+      order: 40,
+      component: SpaceMouseStatus,
+    })),
+  ],
   defaultSetting: 'off',
   activationSetting: {
     category: 'modeling',

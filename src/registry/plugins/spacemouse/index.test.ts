@@ -1,18 +1,18 @@
-import { Registry, pluginsValueSpec } from '@kittycad/registry'
-import { engineSceneViewExtensionsValueSpec } from '@src/registry/contracts/engineScene'
-import { settingsValueSpec } from '@src/registry/contracts/settings'
-import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
-import { zdsPluginActivationSettingsValueSpec } from '@src/registry/createZdsPlugin'
+import { engineSceneViewExtensionsFacet } from '@src/registry/contracts/engineScene'
+import { settingsFacet } from '@src/registry/contracts/settings'
+import { statusBarGlobalItemsFacet } from '@src/registry/contracts/statusBar'
+import { zdsPluginActivationSettingsFacet } from '@src/registry/createZdsPlugin'
+import { Registry, plugins } from 'plankton'
 import { describe, expect, it } from 'vitest'
 import spaceMouse from '.'
 
 describe('SpaceMouse plugin', () => {
   it('is off by default under Modeling and contributes controls only while enabled', async () => {
     const registry = new Registry()
-    registry.configure([spaceMouse])
+    await registry.configure([spaceMouse])
 
     const plugin = registry
-      .get(pluginsValueSpec)
+      .get(plugins)
       .find((plugin) => plugin.id === 'spacemouse')
     expect(plugin).toBeDefined()
 
@@ -20,38 +20,40 @@ describe('SpaceMouse plugin', () => {
       throw new Error('Expected SpaceMouse plugin')
     }
 
-    const settings = registry.get(settingsValueSpec)
+    const toggle = registry.required(plugin.service)
+    const settings = registry.get(settingsFacet)
     expect(settings.modeling.spaceMouse.createSetting().default).toBe(false)
     expect(settings.plugins?.spacemouse).toBeUndefined()
     expect(settings.modeling.spaceMouse.userToml).toMatchObject({
       sectionKey: 'plugins',
       tomlKey: 'spacemouse',
     })
-    expect(registry.get(zdsPluginActivationSettingsValueSpec)).toContainEqual(
+    expect(registry.get(zdsPluginActivationSettingsFacet)).toContainEqual(
       expect.objectContaining({
         pluginId: 'spacemouse',
         category: 'modeling',
         settingName: 'spaceMouse',
       })
     )
-    expect(registry.get(plugin.service).active.value).toBe(false)
-    expect(registry.get(engineSceneViewExtensionsValueSpec)).toEqual([])
-    expect(registry.get(statusBarGlobalItemsValueSpec)).toEqual([])
+    expect(toggle.active.value).toBe(false)
+    expect(registry.get(engineSceneViewExtensionsFacet)).toEqual([])
+    expect(registry.get(statusBarGlobalItemsFacet)).toEqual([])
 
-    await registry.get(plugin.service).enable()
+    await toggle.enable()
 
-    expect(registry.get(plugin.service).active.value).toBe(true)
+    expect(toggle.active.value).toBe(true)
     expect(
-      registry.get(engineSceneViewExtensionsValueSpec).map((item) => item.id)
+      registry.get(engineSceneViewExtensionsFacet).map((item) => item.id)
     ).toEqual(['spacemouse.controller'])
     expect(
-      registry.get(statusBarGlobalItemsValueSpec).map((item) => item.id)
+      registry.get(statusBarGlobalItemsFacet).map((item) => item.id)
     ).toEqual(['spacemouse.status'])
 
-    await registry.get(plugin.service).disable()
+    await toggle.disable()
 
-    expect(registry.get(plugin.service).active.value).toBe(false)
-    expect(registry.get(engineSceneViewExtensionsValueSpec)).toEqual([])
-    expect(registry.get(statusBarGlobalItemsValueSpec)).toEqual([])
+    expect(toggle.active.value).toBe(false)
+    expect(registry.get(engineSceneViewExtensionsFacet)).toEqual([])
+    expect(registry.get(statusBarGlobalItemsFacet)).toEqual([])
+    await registry.dispose()
   })
 })
