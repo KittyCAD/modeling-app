@@ -1,3 +1,5 @@
+import { createTestKclExecutionSettings } from '@src/lib/kcl/scene/executionSettingsTestUtils'
+import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import { signal } from '@preact/signals-core'
 import env from '@src/env'
 import {
@@ -132,6 +134,9 @@ export async function buildTheWorldAndConnectToEngine({
     }),
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
+    kclExecutionSettings: createTestKclExecutionSettings(() =>
+      getSettingsFromActorContext(settingsActor)
+    ),
     commandBar: commandBarActor,
     engineCommandManager,
     rustContext,
@@ -249,6 +254,9 @@ export async function buildTheWorldAndNoEngineConnection(
     }),
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
+    kclExecutionSettings: createTestKclExecutionSettings(() =>
+      getSettingsFromActorContext(settingsActor)
+    ),
     commandBar: commandBarActor,
     engineCommandManager,
     rustContext,

@@ -9,6 +9,7 @@ import type { App } from '@src/lib/app'
 import { FILE_EXT, PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
 import {
+  getFileRoute,
   getRouterSearchFromRequestUrl,
   PATHS,
   parseProjectRoute,
@@ -37,6 +38,8 @@ import { readProject } from '@src/lib/projectSession/next/utils'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import { openInitialProjectEditor } from '@src/lib/projectSession/next/initialEditor'
 import { isErr } from '@src/lib/trap'
+import { isDesktop } from '@src/lib/isDesktop'
+import { generateSignInUrl } from '@src/routes/utils'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
@@ -98,22 +101,31 @@ async function canOpenProjectShell(app: App, signal: AbortSignal) {
 export const projectLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async ({ request, params }) => {
-    if (!(await canOpenProjectShell(app, request.signal)))
-      return redirect(PATHS.HOME)
     const id = params.id
     if (!id || id === '.' || id === '..' || /[\\/:]/.test(id))
       return Promise.reject(new Error('Expected a cloud project API ID'))
-    const projects = app.registry.required(projectSessionService)
+    const auth = app.registry.optional(authService)
+    if (auth) {
+      const state = await waitFor(
+        auth.actor,
+        (state) => !state.matches('checkIfLoggedIn'),
+        { signal: request.signal }
+      )
+      request.signal.throwIfAborted()
+      if (!isDesktop() && state.matches('loggedOut'))
+        return redirect(generateSignInUrl(request.url))
+    }
+    const projectShellEnabled = await canOpenProjectShell(app, request.signal)
     const cloud = app.registry.required(cloudStorageService)
+    if (!projectShellEnabled)
+      return redirect(
+        getFileRoute(cloud.pathFor(id)) + new URL(request.url).search
+      )
+    const projects = app.registry.required(projectSessionService)
     const ownsServices = () =>
       hasProjectShellFeature(app.userFeatures) &&
       app.registry.optional(projectSessionService) === projects &&
       app.registry.optional(cloudStorageService) === cloud
-    const auth = app.registry.optional(authService)
-    if (auth)
-      await waitFor(auth.actor, (state) => !state.matches('checkIfLoggedIn'), {
-        signal: request.signal,
-      })
     request.signal.throwIfAborted()
     if (!ownsServices()) return redirect(PATHS.HOME)
     const path = await cloud.openProject(id)

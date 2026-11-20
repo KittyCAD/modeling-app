@@ -53,7 +53,8 @@ jobs:
         run: |
           COMMIT=$(git rev-parse --short HEAD)
           DATE=$(date +'%-y.%-m.%-d')
-          export VERSION=$DATE-main.$COMMIT
+          TIME=$(date +'%H%M')
+          export VERSION=$DATE-$TIME+$COMMIT
           npm run files:set-version
           npm run files:flip-to-staging
           npm run files:set-windows-codesign-config

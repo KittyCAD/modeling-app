@@ -9,7 +9,8 @@ import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { getDimensions } from '@src/lib/engineConnection/utils'
-import { preflightEngineVideoCodecSupport } from '@src/lib/engineConnection/videoCodecSupport'
+import { UnsupportedEngineVideoCodecError } from '@src/lib/engineConnection/videoCodecSupport'
+import { connectScene } from '@src/lib/kcl/scene/connection'
 import {
   reapplyActiveViewAfterReconnect,
   stopTrackingActiveViewCamera,
@@ -49,111 +50,47 @@ const attemptToConnectToEngine = async ({
   geometryOnly?: boolean
   prepareForReconnect: (signal: AbortSignal) => Promise<undefined | Error>
 }) => {
-  const codecError = !geometryOnly
-    ? await preflightEngineVideoCodecSupport()
-    : undefined
-  if (codecError) {
-    engineCommandManager.lastConnectionError = codecError
-    void reportClientError({
-      code: ClientErrorCode.EngineUnsupportedVideoCodec,
-      error: codecError,
-      dedupeKey: ClientErrorCode.EngineUnsupportedVideoCodec,
-      extra: {
-        browserVideoCodecs: codecError.browserCodecs,
-        engineVideoCodecs: codecError.engineCodecs,
-      },
-    })
-    return Promise.reject(codecError)
-  }
-
-  const connection = new Promise<boolean>((resolve, reject) => {
-    // zds-performance-exception: network-deadline -- Reject a connection attempt that never finishes; successful connections proceed immediately.
-    const cancelTimeout = setTimeout(() => {
-      EngineDebugger.addLog({
-        label: 'useTryConnect.tsx',
-        message: 'Took too long to connect, cancelTimeout',
-      })
-      reject('took too long to connect, cancelTimeout')
-    }, timeToConnect)
-
-    void (async () => {
-      try {
-        if (!authToken) {
-          return reject('authToken is missing on connection initialization')
-        }
-        if (engineCommandManager.started) {
-          return reject('engine is already started. You cannot start again')
-        }
-
-        if (!videoWrapperRef.current) {
-          return reject('DOM is not initialized for the stream')
-        }
-
-        const { width, height } = getDimensions(
-          videoWrapperRef.current.clientWidth,
-          videoWrapperRef.current.clientHeight
-        )
-
-        await engineCommandManager.start({
-          width,
-          height,
-          token: authToken,
-          setStreamIsReady: () => {
-            setAppState({ isStreamReady: true })
-          },
-          rustContext,
-          geometryOnly,
-          kclVersion,
-          prepareForReconnect,
-        })
-
-        if (geometryOnly) {
-          setIsSceneReady(true)
-          clearTimeout(cancelTimeout)
-          return resolve(true)
-        }
-
-        if (!videoRef.current) {
-          EngineDebugger.addLog({
-            label: 'ConnectionStream.tsx',
-            message: 'Unable to reference the video. Calling tearDown()',
-          })
-          engineCommandManager.tearDown({
-            route: 'connection-attempt-failed',
-            initiatedBy: 'client',
-          })
-          return reject('Unable to reference the video, calling tearDown()')
-        }
-
-        if (!engineCommandManager.connection?.mediaStream) {
-          EngineDebugger.addLog({
-            label: 'ConnectionStream.tsx',
-            message: 'Unable to reference the mediaStream, calling tearDown()',
-          })
-          engineCommandManager.tearDown({
-            route: 'connection-attempt-failed',
-            initiatedBy: 'client',
-          })
-          return reject(
-            'Unable to reference the mediaStream, calling tearDown()'
-          )
-        }
-        // Scene is ready, start firing events!
-        videoRef.current.srcObject = engineCommandManager.connection.mediaStream
-        setIsSceneReady(true)
-        EngineDebugger.addLog({
-          label: 'attemptToConnectToEngine',
-          message: 'setIsSceneReady(true)',
-        })
-        clearTimeout(cancelTimeout)
-        return resolve(true)
-      } catch (err) {
-        clearTimeout(cancelTimeout)
-        return reject(err)
-      }
-    })()
+  const wrapper = videoWrapperRef.current
+  if (!wrapper)
+    return Promise.reject(new Error('DOM is not initialized for the scene'))
+  const connection = await connectScene({
+    manager: engineCommandManager,
+    token: authToken,
+    size: getDimensions(wrapper.clientWidth, wrapper.clientHeight),
+    presentation: geometryOnly ? 'local' : 'streamed',
+    timeoutMs: timeToConnect,
+    rustContext,
+    kclVersion,
+    prepareForReconnect,
+    onStreamReady: (isStreamReady) => setAppState({ isStreamReady }),
   })
-  return connection
+  if (isErr(connection)) {
+    if (connection instanceof UnsupportedEngineVideoCodecError)
+      void reportClientError({
+        code: ClientErrorCode.EngineUnsupportedVideoCodec,
+        error: connection,
+        dedupeKey: ClientErrorCode.EngineUnsupportedVideoCodec,
+        extra: {
+          browserVideoCodecs: connection.browserCodecs,
+          engineVideoCodecs: connection.engineCodecs,
+        },
+      })
+    return Promise.reject(connection)
+  }
+  if (!geometryOnly) {
+    const video = videoRef.current
+    if (!video) {
+      connection.dispose()
+      return Promise.reject(new Error('Unable to reference the scene video'))
+    }
+    const detach = connection.attachVideo(video)
+    if (isErr(detach)) {
+      connection.dispose()
+      return Promise.reject(detach)
+    }
+  }
+  setIsSceneReady(true)
+  return true
 }
 
 const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({

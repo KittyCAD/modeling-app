@@ -176,12 +176,15 @@ test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
         if (rendererTag === '@streamRenderer') await u.clearCommandLogs()
         const gizmo = page.locator('[aria-label*=gizmo]')
         await expect(gizmo).toBeVisible()
-        const clickPosition =
-          rendererTag === '@localRenderer'
-            ? await localAxisPosition(gizmo, axis, negative)
-            : gizmoClickPosition
-        await gizmo.hover({ position: clickPosition })
-        await gizmo.click({ position: clickPosition })
+        const clickTarget = gizmo.locator('canvas')
+        let clickPosition: { x: number; y: number } = gizmoClickPosition
+        if (rendererTag === '@localRenderer') {
+          await expect(async () => {
+            clickPosition = await localAxisPosition(clickTarget, axis, negative)
+          }).toPass({ timeout: 5_000 })
+        }
+        await clickTarget.hover({ position: clickPosition })
+        await clickTarget.click({ position: clickPosition })
         await page.mouse.move(0, 0)
 
         if (rendererTag === '@streamRenderer') {
