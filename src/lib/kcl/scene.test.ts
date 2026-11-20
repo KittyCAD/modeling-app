@@ -7,7 +7,10 @@ import {
   connectScene,
   type SceneConnection,
 } from '@src/lib/kcl/scene/connection'
-import { EngineConnectionEvents } from '@src/lib/engineConnection/utils'
+import {
+  EngineConnectionManagerEvents,
+  EngineConnectionEvents,
+} from '@src/lib/engineConnection/utils'
 import { Themes } from '@src/lib/theme'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { beforeEach, expect, it, vi } from 'vitest'
@@ -21,11 +24,13 @@ const owned = vi.hoisted(() => {
   const cameras: TestInfra['camControls'][] = []
   const infra: TestInfra[] = []
   const disposeInfra = vi.fn()
-  class TestManager {
+  class TestManager extends EventTarget {
     connection = new EventTarget()
     isReady = true
     settings = { viewportRendering: {} }
+    pendingCommands = {}
     constructor() {
+      super()
       managers.push(this)
     }
     setTheme = vi.fn(async () => {})
@@ -308,5 +313,32 @@ it.each(['local', 'streamed'] as const)(
       await scene.dispose()
       preferences.dispose()
     }
+  }
+)
+
+it.each([
+  EngineConnectionManagerEvents.WebsocketClosed,
+  EngineConnectionManagerEvents.peerConnectionDisconnected,
+  EngineConnectionManagerEvents.peerConnectionFailed,
+  EngineConnectionManagerEvents.dataChannelClose,
+])(
+  'reports %s for the captured scene and stops listening after disposal',
+  async (event) => {
+    const { options, preferences } = setup()
+    const scene = await openKclScene({ ...options, presentation: 'streamed' })
+    if (scene instanceof Error) throw scene
+    const manager = owned.managers[0]
+    manager.dispatchEvent(new Event(event))
+    expect(options.onDisconnect).toHaveBeenCalledWith(
+      expect.objectContaining({
+        retryable: true,
+        details: expect.objectContaining({ eventType: event }),
+      })
+    )
+    options.onDisconnect.mockClear()
+    await scene.dispose()
+    manager.dispatchEvent(new Event(event))
+    expect(options.onDisconnect).not.toHaveBeenCalled()
+    preferences.dispose()
   }
 )

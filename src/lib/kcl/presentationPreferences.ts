@@ -37,6 +37,7 @@ export interface ScenePresentationPreferences {
   appearance: ReadonlySignal<SceneAppearancePreferences>
   localRenderer: ReadonlySignal<LocalRendererPreferences>
   defaultUnit: ReadonlySignal<UnitLength>
+  idleTimeout: ReadonlySignal<number | undefined>
 }
 
 /** Resolve user/project values and OS theme for presentation consumers. The KCL registry releases the OS listener through `dispose` when its executor closes. */
@@ -87,6 +88,9 @@ export function createScenePresentationPreferences(
     localRenderer,
     defaultUnit: computed(
       () => getSettings().modeling.defaultUnit.currentSignal.value
+    ),
+    idleTimeout: computed(
+      () => getSettings().app.streamIdleMode.currentSignal.value
     ),
     dispose: () =>
       darkModeMatcher?.removeEventListener('change', onSystemThemeChange),

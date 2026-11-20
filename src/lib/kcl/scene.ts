@@ -1,10 +1,12 @@
 import { effect } from '@preact/signals-core'
+import type { CameraViewState } from '@kittycad/lib'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
   EngineConnectionEvents,
+  EngineConnectionManagerEvents,
   getDimensions,
 } from '@src/lib/engineConnection/utils'
 import { createKclRuntime, type KclRuntime } from '@src/lib/kcl/runtime'
@@ -21,6 +23,7 @@ import {
 } from '@src/lib/kcl/scene/connection'
 import type { SceneExecutionSettings } from '@src/lib/kcl/scene/executionSettings'
 import { isErr } from '@src/lib/trap'
+import { SceneDisconnected } from '@src/lib/kcl/scene/recovery'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 
@@ -35,6 +38,8 @@ export interface KclSceneResource {
   readonly presentation: ScenePresentation
   readonly localHost: LocalRendererHost | undefined
   readonly preferences: ScenePresentationPreferences
+  snapshotCamera: () => CameraViewState
+  restoreCamera: (view: CameraViewState) => Promise<void>
   resize: (size: { width: number; height: number }) => Promise<void>
   /** Apply the legacy initial-camera reset; `KclSession` requests it once per streamed connection. */
   frameModel: () => Promise<void>
@@ -109,7 +114,10 @@ export async function openKclScene({
     })
     if (isErr(connected)) {
       await dispose()
-      return connected
+      return new SceneDisconnected(
+        connected.message,
+        !manager.lastConnectionError?.terminal
+      )
     }
     connection = connected
     connectionWatch = watchConnection(
@@ -154,6 +162,13 @@ export async function openKclScene({
       presentation,
       localHost: view.localHost,
       preferences,
+      snapshotCamera: () => sceneInfra.camControls.snapshotCameraView(),
+      restoreCamera: (view) =>
+        sceneInfra.camControls.setCameraView({
+          ...view,
+          is_ortho:
+            preferences.camera.peek().cameraProjection === 'orthographic',
+        }),
       resize: view.resize,
       applySettings: view.applySettings,
       frameModel: view.frameModel,
@@ -176,21 +191,49 @@ function watchConnection(
   onDisconnect: (error: Error) => void
 ) {
   const ownedConnection = manager.connection
-  const disconnect = () => {
+  const disconnect = (event: Event) => {
     if (!isClosed())
       onDisconnect(
-        new Error('The engine disconnected. Return to this view to reconnect.')
+        new SceneDisconnected(
+          `Engine disconnected: ${event.type}`,
+          !manager.lastConnectionError?.terminal,
+          {
+            eventType: event.type,
+            connectionId: ownedConnection?.id,
+            modelingApiCallId: ownedConnection?.apiCallId,
+            pendingCommandCount: Object.keys(manager.pendingCommands).length,
+            websocketBufferedAmount: ownedConnection?.websocket?.bufferedAmount,
+            connectionConnected: ownedConnection?.connected,
+            peerConnectionState:
+              ownedConnection?.peerConnection?.connectionState,
+            iceConnectionState:
+              ownedConnection?.peerConnection?.iceConnectionState,
+            dataChannelReadyState:
+              ownedConnection?.unreliableDataChannel?.readyState,
+            connectionError: manager.lastConnectionError,
+          }
+        )
       )
   }
+  const events = [
+    EngineConnectionManagerEvents.WebsocketClosed,
+    EngineConnectionManagerEvents.peerConnectionClosed,
+    EngineConnectionManagerEvents.peerConnectionDisconnected,
+    EngineConnectionManagerEvents.peerConnectionFailed,
+    EngineConnectionManagerEvents.dataChannelClose,
+  ]
+  for (const event of events) manager.addEventListener(event, disconnect)
   ownedConnection?.addEventListener(EngineConnectionEvents.Closed, disconnect)
   return {
     isConnected: () =>
       !isClosed() && manager.isReady && manager.connection === ownedConnection,
-    dispose: () =>
+    dispose: () => {
+      for (const event of events) manager.removeEventListener(event, disconnect)
       ownedConnection?.removeEventListener(
         EngineConnectionEvents.Closed,
         disconnect
-      ),
+      )
+    },
   }
 }
 

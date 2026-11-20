@@ -143,3 +143,36 @@ it.each(['local', 'streamed'] as const)(
     expect(camera.isDragging).toBe(false)
   }
 )
+
+it('resizes the Three.js canvas when pixel density changes and removes the listener on disposal', async () => {
+  const changes = new EventTarget()
+  const media = {
+    matches: false,
+    media: '',
+    onchange: null,
+    addEventListener: changes.addEventListener.bind(changes),
+    removeEventListener: changes.removeEventListener.bind(changes),
+    addListener: () => {},
+    removeListener: () => {},
+    dispatchEvent: changes.dispatchEvent.bind(changes),
+  } satisfies MediaQueryList
+  vi.spyOn(window, 'matchMedia').mockReturnValue(media)
+  const { viewport, camera } = setup('local')
+  const resized = vi.spyOn(camera, 'onWindowResize')
+  changes.dispatchEvent(new Event('change'))
+  expect(resized).toHaveBeenCalledOnce()
+  viewport.dispose()
+  changes.dispatchEvent(new Event('change'))
+  expect(resized).toHaveBeenCalledOnce()
+})
+
+it.each([
+  ['Mozilla/5.0 Version/18.0 Safari/605.1.15', true],
+  ['Mozilla/5.0 Chrome/131.0.0.0 Safari/537.36', false],
+])('retains Safari video sizing for %s', (userAgent, safari) => {
+  vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue(String(userAgent))
+  const { viewport, canvas } = setup('streamed')
+  const video = canvas.parentElement?.querySelector('video')
+  expect(video?.className.includes('safariVideo')).toBe(safari)
+  viewport.dispose()
+})

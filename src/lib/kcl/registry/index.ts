@@ -25,6 +25,9 @@ import { createScenePresentationPreferences } from '@src/lib/kcl/presentationPre
 import projectSourcesExtension from '@src/lib/projectSession/registry/sources'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
 import { isErr } from '@src/lib/trap'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
+import { SceneDisconnected } from '@src/lib/kcl/scene/recovery'
+import { uuidv4 } from '@src/lib/utils'
 import { observations as authInputs } from '@src/registry/contracts/auth'
 import { observations as settingsInputs } from '@src/registry/contracts/settings'
 import { observations as wasmInputs } from '@src/registry/contracts/wasm'
@@ -74,6 +77,7 @@ const extension = factory({
         const settingsRevision = nativeSettings.revision(
           () => presentation.value === 'local'
         )
+        const viewId = uuidv4()
         const session = createKclSession(
           async (size, signal, onDisconnect) => {
             const wasm = getWasm()
@@ -92,7 +96,24 @@ const extension = factory({
               kclVersion: isErr(version) ? undefined : version,
               size,
               signal,
-              onDisconnect,
+              onDisconnect: (error) => {
+                void reportClientError({
+                  code: ClientErrorCode.EngineDisconnect,
+                  message: error.message,
+                  dedupeKey: `kcl-scene:${viewId}:${error.message}`,
+                  extra: {
+                    ...(error instanceof SceneDisconnected
+                      ? error.details
+                      : {}),
+                    source: 'KclScene',
+                    kclSourceLength: executor.editor.contents.peek().length,
+                    viewId,
+                    currentFileName: executor.editor.src.peek(),
+                    renderer: presentation.peek(),
+                  },
+                })
+                onDisconnect(error)
+              },
             })
           },
           () => executor.refresh()

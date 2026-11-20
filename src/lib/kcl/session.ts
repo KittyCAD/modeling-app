@@ -1,3 +1,5 @@
+import type { CameraViewState } from '@kittycad/lib'
+import { SceneDisconnected } from '@src/lib/kcl/scene/recovery'
 import { effect, signal } from '@preact/signals-core'
 import type { ExecState } from '@src/lang/wasm'
 import type { KclSceneResource, OpenKclScene } from '@src/lib/kcl/scene'
@@ -5,7 +7,7 @@ import type { KclSourceSnapshot } from '@src/lib/kcl/sources'
 import { isErr, reportRejection } from '@src/lib/trap'
 
 type KclConnectionState =
-  | { type: 'connecting' | 'ready' | 'closed' }
+  | { type: 'connecting' | 'ready' | 'closed' | 'idle' }
   | { type: 'error'; error: Error }
 /**
  * One attempt to obtain a `KclSceneResource` from `openKclScene`.
@@ -24,7 +26,7 @@ function opening() {
     // loss. The runtime's separate native queue still waits before freeing WASM.
     closed: Promise.withResolvers<Error>(),
     // Set after `execute` calls `frameModel` for the first successful streamed
-    // model. Later edits/reattachments retain the user's camera; reconnects start fresh.
+    // model. Later edits/reattachments and recovered connections retain the user's camera.
     framed: false,
     // `begin` installs the startup deadline; each `execute` has its own run timer.
     timer: undefined as ReturnType<typeof setTimeout> | undefined,
@@ -56,8 +58,37 @@ export function createKclSession(
   let queue: Promise<unknown> = Promise.resolve()
   let retired: Promise<void> | undefined
   let stopSettings: (() => void) | undefined
+  let savedCamera: CameraViewState | undefined
+  let retryTimer: ReturnType<typeof setTimeout> | undefined
+  let retryCount = 0
+  let lastInput = Date.now()
+  const cancelRetry = () => {
+    clearTimeout(retryTimer)
+    retryTimer = undefined
+  }
+  const rememberCamera = () => {
+    const active = resource.peek()
+    if (active && (attempt.framed || active.presentation === 'local'))
+      savedCamera = active.snapshotCamera()
+  }
+  const retry = () => {
+    cancelRetry()
+    if (disposed || retryCount >= 3 || navigator.onLine === false) return
+    const container = element.parentElement
+    if (!container || document.visibilityState === 'hidden') return
+    retryTimer = setTimeout(
+      () => {
+        recover(container)
+        retryCount += 1
+      },
+      500 * (retryCount + 1)
+    )
+  }
   const current = (owner: ReturnType<typeof opening>) =>
-    !disposed && attempt === owner && state.peek().type !== 'error'
+    !disposed &&
+    attempt === owner &&
+    !owner.lifetime.signal.aborted &&
+    state.peek().type !== 'error'
   // Orders session-level execution and preference application. Native execution,
   // exports, and freeing memory are serialized separately by `createKclRuntime`.
   const enqueue = <T>(work: () => Promise<T>): Promise<T> => {
@@ -79,11 +110,18 @@ export function createKclSession(
   const fail = (error: Error, owner = attempt) => {
     if (!current(owner)) return
     clearTimeout(owner.timer)
+    rememberCamera()
     state.value = { type: 'error', error }
     owner.lifetime.abort()
     owner.ready.resolve(error)
     owner.closed.resolve(error)
     retire()
+    if (
+      (error instanceof SceneDisconnected && error.retryable) ||
+      (retryCount > 0 &&
+        !(error instanceof SceneDisconnected && !error.retryable))
+    )
+      retry()
   }
   const start = async (
     size: { width: number; height: number },
@@ -107,6 +145,7 @@ export function createKclSession(
       element.appendChild(opened.element)
       resource.value = opened
       state.value = { type: 'ready' }
+      lastInput = Date.now()
       owner.ready.resolve(opened)
       stopSettings = effect(() => {
         void opened.preferences.camera.value
@@ -150,14 +189,44 @@ export function createKclSession(
       container.clientHeight < 4
     )
       return
+    if (retryCount >= 3) return
+    const failed = state.peek()
+    if (
+      failed.type === 'error' &&
+      failed.error instanceof SceneDisconnected &&
+      !failed.error.retryable
+    )
+      return
     const stale = resource.peek()?.isConnected?.() === false
-    if (state.peek().type !== 'error' && !stale) return
+    if (failed.type !== 'error' && failed.type !== 'idle' && !stale) return
+    cancelRetry()
     if (stale) fail(new Error('The scene connection expired'))
     attempt = opening()
     state.value = { type: 'connecting' }
     begin({ width: container.clientWidth, height: container.clientHeight })
     onReconnect() // The KCL registry supplies `executor.refresh` to reload current sources.
   }
+  const idle = setInterval(() => {
+    const active = resource.peek()
+    const timeout = active?.preferences.idleTimeout.peek()
+    if (
+      !active ||
+      active.presentation !== 'streamed' ||
+      !timeout ||
+      state.peek().type !== 'ready'
+    )
+      return
+    if (active.runtime.executing.peek()) {
+      lastInput = Date.now()
+      return
+    }
+    if (Date.now() - lastInput < timeout) return
+    rememberCamera()
+    state.value = { type: 'idle' }
+    attempt.lifetime.abort()
+    attempt.closed.resolve(new Error('The scene is idle'))
+    retire()
+  }, 1000)
   return {
     state,
     resource,
@@ -165,6 +234,10 @@ export function createKclSession(
     /** Retry this mounted view; healthy, detached, and disposed sessions are left alone. */
     reconnect: () => {
       const container = element.parentElement
+      retryCount = 0
+      const failed = state.peek()
+      if (failed.type === 'error' && failed.error instanceof SceneDisconnected)
+        state.value = { type: 'error', error: new Error(failed.error.message) }
       if (container) recover(container)
     },
     /** Attach the viewport and its listeners. The returned detach function preserves the scene and model. */
@@ -198,6 +271,28 @@ export function createKclSession(
       const focus = () => {
         if (document.visibilityState !== 'hidden') recover(container)
       }
+      const online = () => {
+        retryCount = 0
+        recover(container)
+      }
+      const offline = () => {
+        if (state.peek().type === 'ready')
+          fail(new SceneDisconnected('The network is offline.'))
+      }
+      const input = () => {
+        lastInput = Date.now()
+        if (state.peek().type === 'idle') recover(container)
+      }
+      const inputEvents = [
+        'pointerdown',
+        'pointermove',
+        'keydown',
+        'wheel',
+        'touchstart',
+      ]
+      for (const event of inputEvents) container.addEventListener(event, input)
+      window.addEventListener('online', online)
+      window.addEventListener('offline', offline)
       window.addEventListener('focus', focus)
       document.addEventListener('visibilitychange', focus)
       const observer = new ResizeObserver(resized)
@@ -206,6 +301,11 @@ export function createKclSession(
       resized()
       const detach = () => {
         detachments.delete(detach)
+        cancelRetry()
+        for (const event of inputEvents)
+          container.removeEventListener(event, input)
+        window.removeEventListener('online', online)
+        window.removeEventListener('offline', offline)
         window.removeEventListener('focus', focus)
         document.removeEventListener('visibilitychange', focus)
         observer.disconnect()
@@ -221,6 +321,7 @@ export function createKclSession(
       signal: AbortSignal
     ): Promise<{ result: ExecState } | Error> => {
       const owner = attempt
+      lastInput = Date.now()
       return enqueue(async () => {
         const scene = await owner.ready.promise
         if (isErr(scene)) return scene
@@ -243,11 +344,19 @@ export function createKclSession(
               return new Error('KCL execution was cancelled')
             await scene.applySettings()
             if (!owner.framed && scene.presentation === 'streamed') {
-              await scene.frameModel()
+              if (savedCamera) await scene.restoreCamera(savedCamera)
+              else await scene.frameModel()
               owner.framed = true
             }
             if (!current(owner) || signal.aborted)
               return new Error('KCL execution was cancelled')
+            if (scene.presentation === 'local' && savedCamera) {
+              await scene.restoreCamera(savedCamera)
+              savedCamera = undefined
+            }
+            if (!current(owner) || signal.aborted)
+              return new Error('KCL execution was cancelled')
+            lastInput = Date.now()
             return { result }
           }
           // Report a closed connection without waiting for a hung native call.
@@ -266,6 +375,9 @@ export function createKclSession(
     dispose: () => {
       if (disposed) return
       disposed = true
+      savedCamera = undefined
+      cancelRetry()
+      clearInterval(idle)
       clearTimeout(attempt.timer)
       for (const detach of [...detachments]) detach()
       for (const observer of observers) observer.disconnect()

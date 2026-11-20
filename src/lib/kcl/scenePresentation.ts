@@ -3,6 +3,7 @@ import { computed, signal } from '@preact/signals-core'
 import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
+import { DprDetector } from '@src/lib/DprDetector'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { getDimensions } from '@src/lib/engineConnection/utils'
 import type { KclRuntime } from '@src/lib/kcl/runtime'
@@ -107,6 +108,8 @@ function createStreamedPresentation({
   video.muted = true
   video.playsInline = true
   video.className = styles.video
+  if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent))
+    video.classList.add(styles.safariVideo)
   element.prepend(video)
   const detachVideo = connection.attachVideo(video)
   if (isErr(detachVideo)) return detachVideo
@@ -157,6 +160,11 @@ export function createSceneViewport(
       ? createLocalPresentation(context)
       : createStreamedPresentation(context)
   if (isErr(adapter)) return adapter
+  const density = new DprDetector(() => {
+    if (isClosed()) return
+    sceneInfra.onCanvasResized()
+    camera.onWindowResize()
+  })
   // `KclSession` also applies preferences after execution. Retaining applied
   // values prevents a new model from resetting the user's camera.
   let appliedCamera: SceneCameraPreferences | undefined
@@ -209,6 +217,9 @@ export function createSceneViewport(
     resume: () => {
       if (!isClosed()) adapter.resume()
     },
-    dispose: adapter.dispose,
+    dispose: () => {
+      density.dispose()
+      adapter.dispose()
+    },
   }
 }
