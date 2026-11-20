@@ -8,6 +8,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { AutoUpdateStatus } from '@src/components/StatusBar/AutoUpdateStatus'
 import { autoUpdateReadySignal } from '@src/lib/autoUpdate'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
+import { CloudApiError } from '@src/lib/cloudProjects/runtime/api'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
@@ -18,6 +19,33 @@ import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 
 const BROWSER_UPDATE_URL = 'https://browser-update.org/update-browser.html'
 const ITERATOR_TO_ARRAY_ERROR = '.toArray is not a function'
+
+export function ProjectErrorPage() {
+  const error = useRouteError()
+  if (!(error instanceof CloudApiError) || error.status !== 403)
+    return <ErrorPage />
+
+  return (
+    <div className="flex h-screen items-center justify-center px-6">
+      <section className="max-w-lg">
+        <h1 className="mb-4 text-3xl font-bold">
+          This project isn&apos;t available to this account
+        </h1>
+        <p className="mb-6 text-2">
+          Check that you&apos;re signed in with the right Zoo account, or ask
+          the project owner for access.
+        </p>
+        <ActionButton
+          Element="link"
+          to={PATHS.HOME}
+          iconStart={{ icon: 'arrowShortLeft' }}
+        >
+          Go Home
+        </ActionButton>
+      </section>
+    </div>
+  )
+}
 
 /** Type narrowing function of unknown error to a string */
 function errorMessage(error: unknown): string {
