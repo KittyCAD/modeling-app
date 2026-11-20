@@ -211,12 +211,13 @@ describe('PlaneRenderer default planes', () => {
 
   it.each([
     [0.1, 0.000001],
-    [1, 0.00001],
-    [10, 0.0001],
-    [100, 0.001],
-    [1000, 0.01],
-    [10000, 0.1],
-    [100000, 1],
+    [1, 0.000003],
+    [10, 0.00003],
+    [100, 0.0003],
+    [300, 0.001],
+    [1000, 0.003],
+    [10000, 0.03],
+    [100000, 0.3],
   ])(
     'scales with camera distance %s mm without rebuilding geometry',
     (distance, scale) => {
@@ -247,7 +248,7 @@ describe('PlaneRenderer default planes', () => {
       }
       planes.updateScale(1000)
       root.updateMatrixWorld(true)
-      expect(root.children[0].getWorldScale(new Vector3()).x).toBe(0.01)
+      expect(root.children[0].getWorldScale(new Vector3()).x).toBe(0.003)
       planes.dispose()
     }
   )
