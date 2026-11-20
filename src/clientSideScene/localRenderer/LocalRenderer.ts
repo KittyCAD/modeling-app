@@ -205,6 +205,12 @@ export interface LocalRendererFailure {
   kind: 'initialization' | 'lost'
   message: string
 }
+
+/** Camera intent when a model arrives; the first load also consumes the host's framing claim. */
+type CameraFraming =
+  | { phase: 'initial-load'; reset: 'host-policy' | 'requested' }
+  | { phase: 'subsequent-loads'; reset: 'preserve' | 'requested' }
+
 export interface LocalRendererProps {
   theme: ResolvedTheme
   enableSSAO: boolean
@@ -234,9 +240,10 @@ export class LocalRenderer {
   private executionVersion = 0
   /** The engine scene generation of the model on screen, once it has loaded. */
   private loadedSceneGeneration: number | null = null
-  /** Explicit camera resets wait for a loaded model; initial framing belongs to the host when supplied. */
-  private cameraResetPending = false
-  private initialModelLoaded = false
+  private cameraFraming: CameraFraming = {
+    phase: 'initial-load',
+    reset: 'host-policy',
+  }
   private camera: PerspectiveCamera | OrthographicCamera | null = null
   private ambientOcclusionRadius = 0.01
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
@@ -1484,21 +1491,18 @@ export class LocalRenderer {
     if (this.isLoadedSceneCurrent()) {
       this.resetCamera()
     } else {
-      this.cameraResetPending = true
+      this.cameraFraming = { ...this.cameraFraming, reset: 'requested' }
     }
   }
 
-  /**
-   * Also stands in for the reset after opening a project, which local mode
-   * skips because the model is not loaded yet.
-   */
+  /** Apply queued resets and consult the host only on this renderer's first successful scene load. */
   private resetCameraIfPending() {
+    const framing = this.cameraFraming
     const frameInitialModel =
-      !this.initialModelLoaded &&
+      framing.phase === 'initial-load' &&
       (this.host.claimInitialCameraFrame?.() ?? true)
-    this.initialModelLoaded = true
-    if (this.cameraResetPending || frameInitialModel) {
-      this.cameraResetPending = false
+    this.cameraFraming = { phase: 'subsequent-loads', reset: 'preserve' }
+    if (framing.reset === 'requested' || frameInitialModel) {
       this.resetCamera()
     }
   }
