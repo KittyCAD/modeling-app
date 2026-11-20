@@ -6,12 +6,12 @@ vi.mock('@src/clientSideScene/localRenderer/LocalWebGPUScene', () => ({
   LocalWebGPUSceneView: () => null,
 }))
 
-import { KclScene } from '@src/lib/kcl/KclScene'
+import { KclScene } from '@src/lib/kcl/modeling/KclScene'
 import { createSceneSelection } from '@src/lib/scene/selection'
 import { createExecutor } from '@src/lib/executors/executor'
 import { createEditorDocument } from '@src/lib/editors/document'
 import { createTestKclScene } from '@src/lib/kcl/testFixtures'
-import { createKclSession } from '@src/lib/kcl/session'
+import { createKclSession } from '@src/lib/kcl/modeling/session'
 
 it('keeps the visible selection count across remounts and lets the user clear it', async () => {
   const selection = createSceneSelection(
@@ -41,8 +41,15 @@ it('keeps the visible selection count across remounts and lets the user clear it
   }
   const owned = createExecutor(editor, signal([]), () => {})
   const executor = owned.executor
+  const viewExecution = {
+    state: signal({ running: false }),
+    refresh: vi.fn(),
+    dispose: vi.fn(),
+  }
   try {
-    const first = render(<KclScene context={{ executor, session }} />)
+    const first = render(
+      <KclScene context={{ executor, session, viewExecution }} />
+    )
     expect(screen.getByLabelText('Scene selection')).toHaveTextContent(
       '0 selected'
     )
@@ -54,7 +61,7 @@ it('keeps the visible selection count across remounts and lets the user clear it
       '1 selected'
     )
     first.unmount()
-    render(<KclScene context={{ executor, session }} />)
+    render(<KclScene context={{ executor, session, viewExecution }} />)
     expect(screen.getByLabelText('Scene selection')).toHaveTextContent(
       '1 selected'
     )
