@@ -35,9 +35,7 @@ it('keeps multiple selected entry points when searching a nested filename', () =
     target: { value: 'bracket' },
   })
   fireEvent.click(screen.getByRole('option', { name: 'parts/bracket.kcl' }))
-  expect(
-    screen.getByText('2 selected: main.kcl, parts/bracket.kcl')
-  ).toBeVisible()
+  expect(screen.getByText('2 files selected')).toBeVisible()
   fireEvent.change(screen.getByRole('combobox'), { target: { value: '' } })
   expect(screen.getByRole('option', { name: 'main.kcl' })).toHaveAttribute(
     'aria-selected',
@@ -155,10 +153,30 @@ it('corrects a rejected part without repeating successful jobs, then revises a j
   fireEvent.click(screen.getByRole('button', { name: 'Submit to Factory' }))
   fireEvent.click(await screen.findByRole('option', { name: 'main.kcl' }))
   fireEvent.click(screen.getByRole('option', { name: 'parts/bracket.kcl' }))
+  const progress = screen.getByRole('navigation', {
+    name: 'Factory submission progress',
+  })
+  expect(within(progress).getAllByRole('listitem')).toHaveLength(4)
+  expect(
+    within(progress).getByRole('listitem', { current: 'step' })
+  ).toHaveAttribute('aria-label', 'Step 1: Choose entry points')
+  fireEvent.click(screen.getByRole('button', { name: 'Close Factory' }))
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  fireEvent.click(screen.getByRole('button', { name: 'Submit to Factory' }))
+  expect(
+    screen.getByRole('option', { name: 'parts/bracket.kcl' })
+  ).toHaveAttribute('aria-selected', 'true')
   expect(screen.getByRole('note')).toHaveTextContent(
     'duplicate this project into a cloud library'
   )
   fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+  expect(
+    within(progress).getByRole('listitem', { current: 'step' })
+  ).toHaveAttribute('aria-label', 'Step 2: Job details')
+  expect(screen.getByRole('heading', { name: 'Job details' })).toBeVisible()
+  expect(
+    screen.getByRole('group', { name: 'Job 2: parts/bracket.kcl' })
+  ).toBeVisible()
   for (const input of screen.getAllByLabelText('Material'))
     fireEvent.change(input, { target: { value: 'Aluminum' } })
   for (const input of screen.getAllByLabelText('Finish'))
@@ -175,14 +193,16 @@ it('corrects a rejected part without repeating successful jobs, then revises a j
   expect(screen.getByRole('alert')).toHaveTextContent(
     'Adjust the bracket quantity.'
   )
-  fireEvent.click(screen.getByRole('button', { name: 'Back' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Previous' }))
   expect(screen.getByLabelText('Recipient')).toHaveValue('Recipient')
-  fireEvent.click(screen.getByRole('button', { name: 'Back' }))
-  const remainingPart = screen.getByRole('group', { name: 'parts/bracket.kcl' })
+  fireEvent.click(screen.getByRole('button', { name: 'Previous' }))
+  const remainingPart = screen.getByRole('group', {
+    name: 'Job 1: parts/bracket.kcl',
+  })
   fireEvent.change(within(remainingPart).getByLabelText('Quantity'), {
     target: { value: '5' },
   })
-  expect(screen.getByRole('button', { name: 'Back' })).toBeDisabled()
+  expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled()
   fireEvent.click(screen.getByRole('button', { name: 'Next' }))
   fireEvent.click(screen.getByRole('button', { name: 'Next' }))
   fireEvent.click(screen.getByRole('button', { name: 'Submit 1 Job' }))
@@ -220,5 +240,5 @@ it('corrects a rejected part without repeating successful jobs, then revises a j
   expect(
     screen.getByRole('combobox', { name: 'Entry point files' })
   ).toHaveValue('')
-  expect(screen.getByText('0 selected')).toBeVisible()
+  expect(screen.getByText('0 files selected')).toBeVisible()
 })

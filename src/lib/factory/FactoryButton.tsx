@@ -1,5 +1,12 @@
 import { Combobox, Popover } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
+import { ActionButton } from '@src/components/ActionButton'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { noAutofillInputProps } from '@src/lib/autofill'
+import {
+  FactoryProgress,
+  type FactoryFormStep,
+} from '@src/lib/factory/FactoryProgress'
 import {
   emptyShipping,
   shippingFromAddress,
@@ -18,9 +25,13 @@ import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import Fuse from 'fuse.js'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-const inputClass = 'w-full rounded border b-4 bg-1 px-2 py-1 text-1'
-const buttonClass =
-  'rounded border b-4 bg-2 px-3 py-1 text-1 hover:bg-3 disabled:opacity-50'
+const inputClass =
+  'mt-2 w-full rounded border b-4/80 bg-1/90 px-2.5 py-2 text-sm font-normal normal-case tracking-normal text-1 placeholder:text-3 focus:outline-none focus-visible:outline-appForeground dark:bg-2/80'
+const labelClass =
+  'block text-xs font-medium uppercase tracking-[0.14em] text-2'
+const primaryButtonClass =
+  'bg-primary py-2 !pr-3 text-white hover:bg-primary/90 dark:bg-primary dark:text-white dark:hover:bg-primary/90'
+const plainIcon = '!bg-transparent dark:!bg-transparent'
 const newPart = (entrypoint: string): FactoryPart => ({
   entrypoint,
   material: '',
@@ -43,7 +54,15 @@ export function FactoryButton({
     <Popover className="relative flex">
       {({ open }) => (
         <>
-          <Popover.Button className={buttonClass} data-testid="factory-button">
+          <Popover.Button
+            as={ActionButton}
+            Element="button"
+            tabIndex={0}
+            aria-label={`Submit to Factory${count > 0 ? ` (${count})` : ''}`}
+            iconStart={{ icon: 'printer3d', bgClassName: plainIcon }}
+            className="py-1"
+            data-testid="factory-button"
+          >
             Submit to Factory
             {count > 0 && ` (${count})`}
           </Popover.Button>
@@ -72,9 +91,9 @@ function FactoryPopover({
   const [shipping, setShipping] = useState<FactoryShippingForm>({
     ...emptyShipping,
   })
-  const [step, setStep] = useState<
-    'files' | 'parts' | 'shipping' | 'review' | 'jobs'
-  >(() => (workspace.jobs.peek().length ? 'jobs' : 'files'))
+  const [step, setStep] = useState<FactoryFormStep | 'jobs'>(() =>
+    workspace.jobs.peek().length ? 'jobs' : 'files'
+  )
   const [loadError, setLoadError] = useState('')
   const [error, setError] = useState('')
   const [attempt, setAttempt] = useState(0)
@@ -117,6 +136,11 @@ function FactoryPopover({
     }
   }, [context, open, signedIn, ready, catalog, attempt])
   const busy = preparing || workspace.pending.value
+  const submitLabel = busy
+    ? 'Submitting...'
+    : step === 'review'
+      ? `Submit ${parts.length} ${parts.length === 1 ? 'Job' : 'Jobs'}`
+      : 'Next'
   const submit = async () => {
     if (
       submissionLock.current ||
@@ -198,248 +222,291 @@ function FactoryPopover({
     <Popover.Panel
       static
       hidden={!open}
-      className="fixed right-4 top-16 z-20 max-h-[calc(100dvh-5rem)] w-[30rem] max-w-[calc(100vw-2rem)] overflow-y-auto rounded border b-4 bg-1 p-4 text-sm text-1 shadow-2xl"
+      className={`fixed right-4 top-16 z-20 max-h-[calc(100dvh-5rem)] w-[30rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded border b-4/80 bg-1/95 text-sm text-1 shadow-2xl backdrop-blur-sm dark:bg-2/95 ${open ? 'flex' : 'hidden'}`}
       role="dialog"
       aria-label="Submit to Factory"
     >
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-base font-medium">Submit to Factory</h2>
-        <Popover.Button aria-label="Close Factory">Close</Popover.Button>
-      </div>
-      {workspace.jobs.value.length > 0 && (
-        <section aria-label="Submitted Factory jobs" className="mb-4 space-y-2">
-          {workspace.jobs.value.map((job) => (
-            <FactoryJobEditor
-              key={job.id}
-              job={job}
-              catalog={catalog}
-              workspace={workspace}
-              requests={requests}
-            />
-          ))}
-        </section>
-      )}
-      {step === 'jobs' ? (
-        <button
-          type="button"
-          className={buttonClass}
-          onClick={() => {
-            setParts([])
-            setSelected([])
-            setStep('files')
-          }}
-        >
-          Add Job
-        </button>
-      ) : (
-        <>
-          <p className="mb-3 text-2">
-            {
-              {
-                files: '1. Choose entry points',
-                parts: '2. Job details',
-                shipping: '3. Delivery',
-                review: '4. Confirm jobs',
-              }[step]
-            }
+      <div className="flex shrink-0 items-start justify-between gap-3 border-b b-5/70 bg-2/70 px-4 py-4 dark:bg-3/40">
+        <div className="min-w-0">
+          <h2 className="text-base font-medium leading-none">
+            Submit to Factory
+          </h2>
+          <p className="mt-2 text-xs leading-5 text-2">
+            Request manufacturing for your project files.
           </p>
-          {!signedIn ? (
-            <p>Sign in to submit manufacturing jobs.</p>
-          ) : !catalog ? (
-            <div role={loadError ? 'alert' : 'status'}>
-              {loadError || 'Loading Factory options...'}
-              {loadError && (
-                <button
-                  type="button"
-                  className={buttonClass}
-                  onClick={() => setAttempt(attempt + 1)}
-                >
-                  Try Again
-                </button>
-              )}
-            </div>
-          ) : (
-            <form
-              onSubmit={(event) => {
-                event.preventDefault()
-                next()
-              }}
-            >
-              <fieldset
-                disabled={busy || workspace.uncertain.value}
-                className="space-y-4"
-              >
-                {step === 'files' && (
-                  <>
-                    <p>
-                      Choose one KCL file per manufacturing job. Each model
-                      should contain a single solid body.
-                    </p>
-                    <FactoryFilePicker
-                      paths={paths}
-                      selected={selected}
-                      onChange={setSelected}
-                    />
-                    {local && (
-                      <p role="note" className="rounded border b-4 bg-2 p-3">
-                        Submitting will duplicate this project into a cloud
-                        library. The local project will remain available.
-                      </p>
-                    )}
-                  </>
+        </div>
+        <Popover.Button
+          as={ActionButton}
+          Element="button"
+          tabIndex={0}
+          aria-label="Close Factory"
+          title="Close"
+          iconStart={{ icon: 'close', bgClassName: plainIcon }}
+          className="shrink-0 !border-transparent !bg-transparent !px-1 py-1 hover:!bg-3/50"
+        />
+      </div>
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain px-4 py-4">
+        {workspace.jobs.value.length > 0 && (
+          <section aria-label="Submitted Factory jobs" className="space-y-2">
+            {workspace.jobs.value.map((job) => (
+              <FactoryJobEditor
+                key={job.id}
+                job={job}
+                catalog={catalog}
+                workspace={workspace}
+                requests={requests}
+              />
+            ))}
+          </section>
+        )}
+        {step === 'jobs' ? (
+          <ActionButton
+            Element="button"
+            tabIndex={0}
+            iconStart={{ icon: 'plus', bgClassName: plainIcon }}
+            aria-label="Add Job"
+            type="button"
+            className="self-end py-2"
+            onClick={() => {
+              setParts([])
+              setSelected([])
+              setStep('files')
+            }}
+          >
+            Add Job
+          </ActionButton>
+        ) : (
+          <>
+            <FactoryProgress step={step} />
+            {!signedIn ? (
+              <p>Sign in to submit manufacturing jobs.</p>
+            ) : !catalog ? (
+              <div role={loadError ? 'alert' : 'status'}>
+                {loadError || 'Loading Factory options...'}
+                {loadError && (
+                  <ActionButton
+                    Element="button"
+                    tabIndex={0}
+                    type="button"
+                    className="mt-3 py-2"
+                    onClick={() => setAttempt(attempt + 1)}
+                  >
+                    Try Again
+                  </ActionButton>
                 )}
-                {step === 'parts' &&
-                  parts.map((part, index) => (
-                    <fieldset
-                      key={part.entrypoint}
-                      className="rounded border b-4 p-3"
-                    >
-                      <legend className="break-all px-1">
-                        {part.entrypoint}
-                      </legend>
-                      <PartFields
-                        part={part}
-                        catalog={catalog}
-                        onChange={(next) =>
-                          setParts(
-                            parts.map((value, i) =>
-                              i === index ? next : value
+              </div>
+            ) : (
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault()
+                  next()
+                }}
+              >
+                <fieldset
+                  disabled={busy || workspace.uncertain.value}
+                  className="space-y-5"
+                >
+                  {step === 'files' && (
+                    <>
+                      <p className="text-xs leading-5 text-2">
+                        Choose one KCL file per manufacturing job. Each model
+                        should contain a single solid body.
+                      </p>
+                      <FactoryFilePicker
+                        paths={paths}
+                        selected={selected}
+                        onChange={setSelected}
+                      />
+                      {local && (
+                        <p role="note" className="rounded border b-4 bg-2 p-3">
+                          Submitting will duplicate this project into a cloud
+                          library. The local project will remain available.
+                        </p>
+                      )}
+                    </>
+                  )}
+                  {step === 'parts' &&
+                    parts.map((part, index) => (
+                      <fieldset
+                        key={part.entrypoint}
+                        className="min-w-0 rounded-lg border b-4/70 bg-1/50 px-4 pb-4"
+                      >
+                        <legend className="max-w-full px-1 py-2">
+                          <span className="flex items-center gap-2 text-sm font-semibold text-1">
+                            <span
+                              aria-hidden="true"
+                              className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-primary text-white"
+                            >
+                              {index + 1}
+                            </span>
+                            <span className="break-all">
+                              <span className="sr-only">Job {index + 1}: </span>
+                              {part.entrypoint}
+                            </span>
+                          </span>
+                        </legend>
+                        <PartFields
+                          part={part}
+                          catalog={catalog}
+                          onChange={(next) =>
+                            setParts(
+                              parts.map((value, i) =>
+                                i === index ? next : value
+                              )
                             )
+                          }
+                        />
+                      </fieldset>
+                    ))}
+                  {step === 'shipping' && (
+                    <>
+                      <p>
+                        All jobs in this submission use the same delivery
+                        address. Shipping is currently available within the
+                        United States.
+                      </p>
+                      {catalog.addresses.length > 0 && (
+                        <label className={labelClass}>
+                          Saved address
+                          <select
+                            className={inputClass}
+                            defaultValue=""
+                            onChange={(event) => {
+                              const address = catalog.addresses.find(
+                                (item) => item.id === event.target.value
+                              )
+                              if (address)
+                                setShipping({
+                                  ...shippingFromAddress(address),
+                                  is_expedited: shipping.is_expedited,
+                                })
+                            }}
+                          >
+                            <option value="" disabled>
+                              Choose an address
+                            </option>
+                            {catalog.addresses.map((address) => (
+                              <option key={address.id} value={address.id}>
+                                {address.label || address.postal.street1}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      )}
+                      <ShippingFields value={shipping} onChange={setShipping} />
+                    </>
+                  )}
+                  {step === 'review' && (
+                    <>
+                      <ul className="space-y-2">
+                        {parts.map((part) => (
+                          <li
+                            key={part.entrypoint}
+                            className="rounded border b-4 p-2"
+                          >
+                            <strong className="break-all">
+                              {part.entrypoint}
+                            </strong>
+                            <p>
+                              {part.quantity} x {part.material}, {part.finish}
+                            </p>
+                            {part.notes && (
+                              <p className="whitespace-pre-wrap">
+                                {part.notes}
+                              </p>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                      <p>
+                        {shipping.name}, {shipping.street1}, {shipping.city},{' '}
+                        {shipping.state} {shipping.postal_code}, US
+                        {shipping.is_expedited && ' (expedited)'}
+                      </p>
+                      {local && !snapshot.current && (
+                        <p>
+                          This project will be duplicated into a cloud library.
+                        </p>
+                      )}
+                      <p>
+                        By submitting, you agree to the{' '}
+                        <a
+                          className="underline"
+                          href={withSiteBaseURL(
+                            '/terms-and-conditions#manufacturing-terms-of-use'
+                          )}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Manufacturing Terms of Use
+                        </a>
+                        .
+                      </p>
+                    </>
+                  )}
+                  <div className="flex justify-end gap-2 border-t b-5/70 pt-4">
+                    {step !== 'files' && (
+                      <ActionButton
+                        Element="button"
+                        tabIndex={0}
+                        iconStart={{
+                          icon: 'arrowLeft',
+                          bgClassName: plainIcon,
+                        }}
+                        type="button"
+                        aria-label="Previous"
+                        className="mr-auto py-2"
+                        disabled={Boolean(snapshot.current) && step === 'parts'}
+                        onClick={() =>
+                          setStep(
+                            step === 'review'
+                              ? 'shipping'
+                              : step === 'shipping'
+                                ? 'parts'
+                                : 'files'
                           )
                         }
-                      />
-                    </fieldset>
-                  ))}
-                {step === 'shipping' && (
-                  <>
-                    <p>
-                      All jobs in this submission use the same delivery address.
-                      Shipping is currently available within the United States.
-                    </p>
-                    {catalog.addresses.length > 0 && (
-                      <label className="block">
-                        Saved address
-                        <select
-                          className={inputClass}
-                          defaultValue=""
-                          onChange={(event) => {
-                            const address = catalog.addresses.find(
-                              (item) => item.id === event.target.value
-                            )
-                            if (address)
-                              setShipping({
-                                ...shippingFromAddress(address),
-                                is_expedited: shipping.is_expedited,
-                              })
-                          }}
-                        >
-                          <option value="" disabled>
-                            Choose an address
-                          </option>
-                          {catalog.addresses.map((address) => (
-                            <option key={address.id} value={address.id}>
-                              {address.label || address.postal.street1}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                    )}
-                    <ShippingFields value={shipping} onChange={setShipping} />
-                  </>
-                )}
-                {step === 'review' && (
-                  <>
-                    <ul className="space-y-2">
-                      {parts.map((part) => (
-                        <li
-                          key={part.entrypoint}
-                          className="rounded border b-4 p-2"
-                        >
-                          <strong className="break-all">
-                            {part.entrypoint}
-                          </strong>
-                          <p>
-                            {part.quantity} x {part.material}, {part.finish}
-                          </p>
-                          {part.notes && (
-                            <p className="whitespace-pre-wrap">{part.notes}</p>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                    <p>
-                      {shipping.name}, {shipping.street1}, {shipping.city},{' '}
-                      {shipping.state} {shipping.postal_code}, US
-                      {shipping.is_expedited && ' (expedited)'}
-                    </p>
-                    {local && !snapshot.current && (
-                      <p>
-                        This project will be duplicated into a cloud library.
-                      </p>
-                    )}
-                    <p>
-                      By submitting, you agree to the{' '}
-                      <a
-                        className="underline"
-                        href={withSiteBaseURL(
-                          '/terms-and-conditions#manufacturing-terms-of-use'
-                        )}
-                        target="_blank"
-                        rel="noreferrer"
                       >
-                        Manufacturing Terms of Use
-                      </a>
-                      .
-                    </p>
-                  </>
-                )}
-                <div className="flex justify-between gap-2">
-                  {step !== 'files' && (
-                    <button
-                      type="button"
-                      className={buttonClass}
-                      disabled={Boolean(snapshot.current) && step === 'parts'}
-                      onClick={() =>
-                        setStep(
-                          step === 'review'
-                            ? 'shipping'
-                            : step === 'shipping'
-                              ? 'parts'
-                              : 'files'
-                        )
-                      }
+                        Previous
+                      </ActionButton>
+                    )}
+                    <ActionButton
+                      Element="button"
+                      type="submit"
+                      tabIndex={0}
+                      className={primaryButtonClass}
+                      aria-label={submitLabel}
+                      iconEnd={{
+                        icon: 'arrowRight',
+                        size: 'sm',
+                        className: 'px-2',
+                        bgClassName: plainIcon,
+                      }}
                     >
-                      Back
-                    </button>
-                  )}
-                  <button type="submit" className={buttonClass}>
-                    {busy
-                      ? 'Submitting...'
-                      : step === 'review'
-                        ? `Submit ${parts.length} ${parts.length === 1 ? 'Job' : 'Jobs'}`
-                        : 'Next'}
-                  </button>
-                </div>
-              </fieldset>
-            </form>
-          )}
-        </>
-      )}
-      {(error || workspace.error.value) && (
-        <p role="alert" className="mt-3">
-          {error || workspace.error.value}
-        </p>
-      )}
-      {workspace.uncertain.value && (
-        <a
-          className="mt-2 block underline"
-          href={withSiteBaseURL('/account/manufacturing')}
-          target="_blank"
-          rel="noreferrer"
-        >
-          Check Manufacturing Jobs on zoo.dev
-        </a>
-      )}
+                      {submitLabel}
+                    </ActionButton>
+                  </div>
+                </fieldset>
+              </form>
+            )}
+          </>
+        )}
+        {(error || workspace.error.value) && (
+          <p role="alert" className="mt-3">
+            {error || workspace.error.value}
+          </p>
+        )}
+        {workspace.uncertain.value && (
+          <a
+            className="mt-2 block underline"
+            href={withSiteBaseURL('/account/manufacturing')}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Check Manufacturing Jobs on zoo.dev
+          </a>
+        )}
+      </div>
     </Popover.Panel>
   )
 }
@@ -458,29 +525,49 @@ export function FactoryFilePicker({
   const filtered = query ? fuse.search(query).map((item) => item.item) : paths
   return (
     <Combobox multiple value={selected} onChange={onChange}>
-      <Combobox.Label className="block">Entry point files</Combobox.Label>
-      <Combobox.Input
-        className={inputClass}
-        value={query}
-        onChange={(event) => setQuery(event.target.value)}
-        placeholder="Search project files"
-      />
+      <Combobox.Label className="sr-only">Entry point files</Combobox.Label>
+      <div className="group flex items-center gap-2 rounded border b-4/80 bg-1/60 py-1.5 pl-2.5 pr-1.5 focus-within:border-primary">
+        <Combobox.Input
+          {...noAutofillInputProps}
+          className="w-full min-w-0 bg-transparent focus:outline-none selection:bg-primary/20"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Search project files"
+        />
+        <CustomIcon
+          name="search"
+          aria-hidden="true"
+          className="h-5 w-5 shrink-0 rounded-sm bg-primary/10 text-primary group-focus-within:bg-primary group-focus-within:text-white"
+        />
+      </div>
       <Combobox.Options
         static
-        className="mt-2 max-h-48 overflow-y-auto rounded border b-4"
+        className="mt-3 max-h-52 overflow-y-auto overscroll-contain rounded-lg border b-5/80 bg-1/70 p-1.5"
       >
         {filtered.map((path) => (
           <Combobox.Option
             key={path}
             value={path}
-            className={({ active }) =>
-              `cursor-pointer break-all px-3 py-2 ${active ? 'bg-3' : 'bg-1'}`
+            className={({ active, selected }) =>
+              `flex cursor-pointer items-center gap-3 rounded-md px-2.5 py-2.5 transition-colors ${active ? 'bg-3/60' : selected ? 'bg-primary/10' : 'hover:bg-2/60'}`
             }
           >
             {({ selected }) => (
               <>
-                <span aria-hidden="true">{selected ? '[x] ' : '[ ] '}</span>
-                {path}
+                <span
+                  aria-hidden="true"
+                  className={`grid h-4 w-4 shrink-0 place-items-center rounded border ${selected ? 'border-primary bg-primary text-white' : 'b-4 bg-1'}`}
+                >
+                  {selected && (
+                    <CustomIcon name="checkmark" className="h-3 w-3" />
+                  )}
+                </span>
+                <CustomIcon
+                  name="file"
+                  aria-hidden="true"
+                  className="h-5 w-5 shrink-0 text-2"
+                />
+                <span className="break-all font-mono text-xs">{path}</span>
               </>
             )}
           </Combobox.Option>
@@ -489,9 +576,8 @@ export function FactoryFilePicker({
           <li className="p-2 text-2">No matching KCL files.</li>
         )}
       </Combobox.Options>
-      <p className="mt-2 text-2">
-        {selected.length} selected
-        {selected.length > 0 && `: ${selected.join(', ')}`}
+      <p className="mt-2 text-xs text-2" aria-live="polite">
+        {selected.length} {selected.length === 1 ? 'file' : 'files'} selected
       </p>
     </Combobox>
   )
@@ -509,7 +595,7 @@ export function PartFields({
   return (
     <div className="space-y-3">
       {(['material', 'finish'] as const).map((field) => (
-        <label key={field} className="block">
+        <label key={field} className={labelClass}>
           {field === 'material' ? 'Material' : 'Finish'}
           <select
             className={inputClass}
@@ -528,7 +614,7 @@ export function PartFields({
           </select>
         </label>
       ))}
-      <label className="block">
+      <label className={labelClass}>
         Quantity
         <input
           className={inputClass}
@@ -542,7 +628,7 @@ export function PartFields({
           }
         />
       </label>
-      <label className="block">
+      <label className={labelClass}>
         Notes
         <textarea
           className={inputClass}
@@ -579,7 +665,7 @@ function ShippingFields({
   return (
     <div className="grid grid-cols-2 gap-3">
       {fields.map(({ key, label, required }) => (
-        <label className="block" key={key}>
+        <label className={labelClass} key={key}>
           {label}
           <input
             className={inputClass}
@@ -656,9 +742,16 @@ function FactoryJobEditor({
             }
           >
             <PartFields part={part} catalog={catalog} onChange={setPart} />
-            <button className={`${buttonClass} mt-3`} type="submit">
+            <ActionButton
+              Element="button"
+              tabIndex={0}
+              iconStart={{ icon: 'checkmark', bgClassName: plainIcon }}
+              className={`${primaryButtonClass} mt-4 ml-auto`}
+              aria-label="Submit Revision"
+              type="submit"
+            >
               Submit Revision
-            </button>
+            </ActionButton>
           </fieldset>
           {saved && <p role="status">Revision submitted.</p>}
         </form>
