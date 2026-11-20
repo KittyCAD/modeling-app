@@ -65,6 +65,7 @@ function setupProcessor(storage: 'local' | 'cloud') {
     openFile: vi.fn(async (_path: string) => {}),
   }
   const onApplied = vi.fn()
+  const onFilesChanged = vi.fn()
   const processor = new ZookeeperFileRequestProcessor({
     getProject: () => state.project,
     isEditorCurrent: () => state.editorCurrent,
@@ -74,6 +75,7 @@ function setupProcessor(storage: 'local' | 'cloud') {
     projectOperations: { applyEdits },
     session,
     onEditApplied: onApplied,
+    onFilesChanged,
   })
   processors.push(processor)
   const requestFor = (
@@ -83,6 +85,7 @@ function setupProcessor(storage: 'local' | 'cloud') {
       deleted?: string[]
       activePath?: string
       patch?: boolean
+      runId?: string
     } = {}
   ) => {
     const files = options.files ?? { 'main.kcl': `edit-${id}` }
@@ -103,7 +106,7 @@ function setupProcessor(storage: 'local' | 'cloud') {
           ? {}
           : {
               zookeeper_edit_patch: {
-                run_id: `run-${id}`,
+                run_id: options.runId ?? `run-${id}`,
                 changed_files: [
                   ...Object.keys(files).map((path) => ({
                     path,
@@ -153,6 +156,7 @@ function setupProcessor(storage: 'local' | 'cloud') {
     history,
     session,
     onApplied,
+    onFilesChanged,
     enqueue,
     receive,
     idle,
@@ -161,6 +165,24 @@ function setupProcessor(storage: 'local' | 'cloud') {
 
 describe.each(['local', 'cloud'] as const)('legacy edits (%s)', (storage) => {
   const setup = () => setupProcessor(storage)
+
+  it('reports cumulative changes only after successful writes in the same run', async () => {
+    const s = setup()
+    s.enqueue(1, { runId: 'shared' })
+    await s.idle()
+    s.applyEdits.mockRejectedValueOnce(new Error('write failed'))
+    s.enqueue(2, { runId: 'shared', files: { 'failed.kcl': 'failed' } })
+    await s.idle()
+    s.enqueue(3, { runId: 'shared', files: { 'part.kcl': 'created' } })
+    await s.idle()
+    s.enqueue(4)
+    await s.idle()
+    expect(s.onFilesChanged.mock.calls).toEqual([
+      [{ created: 1, modified: 0, deleted: 0 }],
+      [{ created: 2, modified: 0, deleted: 0 }],
+      [{ created: 1, modified: 0, deleted: 0 }],
+    ])
+  })
 
   it('applies streamed content once even when actor snapshots repeat', async () => {
     const s = setup()

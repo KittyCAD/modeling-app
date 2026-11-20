@@ -13,6 +13,13 @@ import {
   type BulkFileWriteProgress,
 } from '@src/lib/zookeeper/projectFiles'
 
+import {
+  mergeZookeeperEditPatches,
+  summarizeZookeeperEditPatch,
+  type ZookeeperEditPatch,
+  type ZookeeperFileChangeSummary,
+} from '@src/lib/zookeeper/zookeeperEditPatch'
+
 interface ZookeeperFileRequestProcessorDependencies {
   history: ZookeeperEditPatchHistory
   getProject: () => Project | undefined
@@ -22,6 +29,7 @@ interface ZookeeperFileRequestProcessorDependencies {
   projectOperations: Pick<ProjectOperationsService, 'applyEdits'>
   session: Pick<ProjectSessionService, 'refreshProject' | 'openFile'>
   onEditApplied: (response: MlCopilotServerMessage) => void
+  onFilesChanged?: (summary: ZookeeperFileChangeSummary) => void
   onQueueIdle?: () => void
 }
 
@@ -49,6 +57,8 @@ type QueuedZookeeperFileRequest = {
 export class ZookeeperFileRequestProcessor {
   private disposed = false
   private generation = 0
+  private latestAppliedPatch?: ZookeeperEditPatch
+  private latestAppliedExchangeId?: number
   private lastMessageId: number | undefined
   // IDs stay monotonic when reset() replaces the conversation.
   private nextOrderedId = 0
@@ -87,6 +97,8 @@ export class ZookeeperFileRequestProcessor {
     this.generation += 1
     this.fileWriteProgressSignal.value = undefined
     this.lastMessageId = undefined
+    this.latestAppliedPatch = undefined
+    this.latestAppliedExchangeId = undefined
     return this.waitForQueuedRequests()
   }
 
@@ -322,6 +334,24 @@ export class ZookeeperFileRequestProcessor {
             ],
             ({ written }) => updateWriteProgress(written)
           )
+          if (requestIsCurrent()) {
+            const patch = payload.zookeeperEditPatch
+            const previous = this.latestAppliedPatch
+            const cumulativePatch = patch
+              ? previous?.run_id === patch.run_id && previous
+                ? mergeZookeeperEditPatches(previous, patch)
+                : patch
+              : this.latestAppliedExchangeId === request.exchangeId
+                ? previous
+                : undefined
+            this.latestAppliedPatch = cumulativePatch
+            this.latestAppliedExchangeId = request.exchangeId
+            if (cumulativePatch) {
+              this.deps.onFilesChanged?.(
+                summarizeZookeeperEditPatch(cumulativePatch)
+              )
+            }
+          }
           updateWriteProgress(payload.files.length)
           if (!canFinish()) {
             cancelHistory()
