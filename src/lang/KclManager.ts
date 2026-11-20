@@ -1,3 +1,4 @@
+import { applySceneOverlayTheme } from '@src/lib/kcl/scene/applyPreferences'
 import { observeLegacySceneExecutionSettings } from '@src/lib/kcl/scene/legacyExecutionSettings'
 import {
   SceneExecutionEvents as KclManagerEvents,
@@ -190,10 +191,7 @@ import { resetCameraAfterExecution } from '@src/lib/resetCameraPosition'
 import { createProjectThumbnail } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { type Themes, getResolvedTheme } from '@src/lib/theme'
-import {
-  getViewportPostEffect,
-  getSceneOverlayTheme,
-} from '@src/lib/settings/viewportRendering'
+import { getViewportPostEffect } from '@src/lib/settings/viewportRendering'
 import type {
   ModelingMachineEvent,
   modelingMachine,
@@ -3016,12 +3014,12 @@ export class KclManager extends File {
     const useLocalRenderer =
       this.engineCommandManager.connection?.geometryOnly ??
       settings.modeling.useLocalRenderer.current
-    const opposingTheme = getSceneOverlayTheme(
+    const opposingTheme = applySceneOverlayTheme(
+      this.sceneInfra,
       newTheme,
       settings.modeling.viewportRendering.current,
       useLocalRenderer
     )
-    this.sceneInfra.theme = opposingTheme
     this.sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
     this.setEditorTheme(resolvedTheme)
     if (updateEngine && this.engineCommandManager.connection) {

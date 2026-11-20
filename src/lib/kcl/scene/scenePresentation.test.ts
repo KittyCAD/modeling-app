@@ -15,6 +15,7 @@ import {
 } from '@src/lib/kcl/testFixtures'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { expect, it, onTestFinished, vi } from 'vitest'
+import { Themes } from '@src/lib/theme'
 
 function setup(presentation: ScenePresentation) {
   const settings = createTestSettings()
@@ -69,7 +70,7 @@ function setup(presentation: ScenePresentation) {
     element.remove()
     vi.restoreAllMocks()
   })
-  return { viewport, canvas, camera: infra.camControls, send }
+  return { viewport, canvas, camera: infra.camControls, send, settings }
 }
 
 function pointer(
@@ -176,3 +177,26 @@ it.each([
   expect(video?.className.includes('safariVideo')).toBe(safari)
   viewport.dispose()
 })
+
+it.each(['local', 'streamed'] as const)(
+  'keeps %s camera input and projection intact when appearance changes',
+  async (presentation) => {
+    const { viewport, camera, settings } = setup(presentation)
+    await viewport.applySettings()
+    const touch = vi.spyOn(camera, 'initTouchControls')
+    const projection = vi.spyOn(camera, 'setCameraProjection')
+    const guards = camera.interactionGuards
+    settings.current.peek().app.theme.user = Themes.Light
+    settings.current.peek().modeling.viewportRendering.user = 'retrocad'
+    await viewport.applySettings()
+    expect(camera.interactionGuards).toBe(guards)
+    expect(touch).not.toHaveBeenCalled()
+    expect(projection).not.toHaveBeenCalled()
+    settings.current.peek().modeling.enableTouchControls.user = false
+    await viewport.applySettings()
+    expect(touch).toHaveBeenCalledExactlyOnceWith(false)
+    expect(projection).not.toHaveBeenCalled()
+    await viewport.applySettings()
+    expect(touch).toHaveBeenCalledOnce()
+  }
+)

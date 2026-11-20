@@ -2,8 +2,15 @@ import type { EntityType } from '@kittycad/lib'
 import { computed, signal } from '@preact/signals-core'
 import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { cameraMouseDragGuards } from '@src/lib/cameraControls'
-import { DprDetector } from '@src/lib/DprDetector'
+import {
+  createCameraInputApplier,
+  applySceneOverlayTheme,
+} from '@src/lib/kcl/scene/applyPreferences'
+import {
+  observeViewportDensity,
+  streamVideoObjectFit,
+  resizeSceneCanvas,
+} from '@src/lib/kcl/scene/viewport'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { getDimensions } from '@src/lib/engineConnection/utils'
 import type { KclRuntime } from '@src/lib/kcl/execution/runtime'
@@ -14,7 +21,6 @@ import type {
 } from '@src/lib/kcl/scene/presentationPreferences'
 import styles from './scenePresentation.module.css'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { getSceneOverlayTheme } from '@src/lib/settings/viewportRendering'
 import type {
   SceneConnection,
   ScenePresentation,
@@ -108,7 +114,7 @@ function createStreamedPresentation({
   video.muted = true
   video.playsInline = true
   video.className = styles.video
-  if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent))
+  if (streamVideoObjectFit(navigator.userAgent) === 'fill')
     video.classList.add(styles.safariVideo)
   element.prepend(video)
   const detachVideo = connection.attachVideo(video)
@@ -160,26 +166,25 @@ export function createSceneViewport(
       ? createLocalPresentation(context)
       : createStreamedPresentation(context)
   if (isErr(adapter)) return adapter
-  const density = new DprDetector(() => {
+  const stopDensity = observeViewportDensity(() => {
     if (isClosed()) return
-    sceneInfra.onCanvasResized()
-    camera.onWindowResize()
+    resizeSceneCanvas(sceneInfra)
   })
   // `KclSession` also applies preferences after execution. Retaining applied
   // values prevents a new model from resetting the user's camera.
+  const applyCameraInput = createCameraInputApplier(camera)
   let appliedCamera: SceneCameraPreferences | undefined
   let appliedAppearance: SceneAppearancePreferences | undefined
   const applyOverlayTheme = () => {
     const appearance = preferences.appearance.peek()
-    const overlayTheme = getSceneOverlayTheme(
+    const previousTheme = sceneInfra.theme
+    applySceneOverlayTheme(
+      sceneInfra,
       appearance.theme,
       appearance.viewportRendering,
       presentation === 'local'
     )
-    if (sceneInfra.theme !== overlayTheme) {
-      sceneInfra.theme = overlayTheme
-      sceneInfra.resumeRendering()
-    }
+    if (sceneInfra.theme !== previousTheme) sceneInfra.resumeRendering()
   }
   applyOverlayTheme()
   return {
@@ -187,8 +192,7 @@ export function createSceneViewport(
     video: adapter.video,
     resize: async (size: { width: number; height: number }) => {
       if (isClosed() || size.width < 4 || size.height < 4) return
-      sceneInfra.onCanvasResized()
-      camera.onWindowResize()
+      resizeSceneCanvas(sceneInfra)
       await connection.resize(getDimensions(size.width, size.height))
     },
     applySettings: async () => {
@@ -196,15 +200,9 @@ export function createSceneViewport(
       applyOverlayTheme()
       const nextCamera = preferences.camera.peek()
       const nextAppearance = preferences.appearance.peek()
-      if (appliedCamera?.mouseControls !== nextCamera.mouseControls)
-        camera.interactionGuards =
-          cameraMouseDragGuards[nextCamera.mouseControls]
-      if (
-        appliedCamera?.enableTouchControls !== nextCamera.enableTouchControls
-      ) {
+      if (appliedCamera?.enableTouchControls !== nextCamera.enableTouchControls)
         camera.enableTouchControls = nextCamera.enableTouchControls
-        camera.initTouchControls(nextCamera.enableTouchControls)
-      }
+      applyCameraInput(nextCamera)
       if (appliedCamera?.cameraProjection !== nextCamera.cameraProjection)
         await camera.setCameraProjection(nextCamera.cameraProjection)
       appliedCamera = nextCamera
@@ -218,7 +216,7 @@ export function createSceneViewport(
       if (!isClosed()) adapter.resume()
     },
     dispose: () => {
-      density.dispose()
+      stopDensity()
       adapter.dispose()
     },
   }
