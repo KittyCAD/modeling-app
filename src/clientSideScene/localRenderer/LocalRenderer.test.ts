@@ -584,11 +584,15 @@ describe('local renderer GPU failures', () => {
       reason: null,
       originalEvent: null,
     }
+    const dispose = vi.spyOn(f.renderer, 'dispose')
     created.onDeviceLost(lost)
     expect(f.onRendererFailed).toHaveBeenCalledExactlyOnceWith({
       kind: 'lost',
       message: 'Context lost',
     })
+    // A lost renderer stops, so it can't capture a blank thumbnail.
+    expect(dispose).toHaveBeenCalledOnce()
+    expect(f.renderer.readFrame(() => 'frame')).toBeUndefined()
     f.renderer.dispose()
     created.onDeviceLost(lost)
     expect(f.onRendererFailed).toHaveBeenCalledOnce()

@@ -826,7 +826,8 @@ export class LocalRenderer {
     // three.js ignores the loss that dispose() causes, but the scene may be gone.
     if (this.disposed) return
     console.error('[LocalRenderer] GPU device lost', info)
-    this.container.style.opacity = '0'
+    // Stop rendering, so a later execution can't save a blank project thumbnail.
+    this.dispose()
     this.onRendererFailed?.({ kind: 'lost', message: info.message })
   }
 
