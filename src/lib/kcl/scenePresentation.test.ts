@@ -1,0 +1,145 @@
+import { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { createScenePresentationPreferences } from '@src/lib/kcl/presentationPreferences'
+import type {
+  SceneConnection,
+  ScenePresentation,
+} from '@src/lib/kcl/scene/connection'
+import {
+  createSceneElement,
+  createSceneViewport,
+} from '@src/lib/kcl/scenePresentation'
+import {
+  createTestKclRuntime,
+  createTestSettings,
+} from '@src/lib/kcl/testFixtures'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { expect, it, onTestFinished, vi } from 'vitest'
+
+function setup(presentation: ScenePresentation) {
+  const settings = createTestSettings()
+  settings.current.peek().modeling.mouseControls.user = 'Zoo'
+  settings.current.peek().modeling.cameraOrbit.user = 'spherical'
+  const manager = new ConnectionManager({ settingsActor: settings.actor })
+  manager.streamDimensions = { width: 800, height: 600 }
+  const send = vi.spyOn(manager, 'sendSceneCommand').mockResolvedValue(null)
+  const preferences = createScenePresentationPreferences(
+    () => settings.current.value
+  )
+  const infra = new SceneInfra(manager, new Promise<ModuleType>(() => {}), () =>
+    settings.current.peek()
+  )
+  const element = createSceneElement()
+  document.body.append(element)
+  const canvas = infra.renderer.domElement
+  Object.defineProperties(canvas, {
+    clientWidth: { configurable: true, value: 800 },
+    clientHeight: { configurable: true, value: 600 },
+  })
+  vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue(
+    new DOMRect(0, 0, 800, 600)
+  )
+  const connection: SceneConnection = {
+    id: 'pointer-test',
+    presentation,
+    mediaStream: undefined,
+    send: manager.sendSceneCommand.bind(manager),
+    attachVideo: () => () => {},
+    resize: async () => {},
+    dispose: () => {},
+  }
+  const viewport = createSceneViewport(
+    {
+      element,
+      connection,
+      manager,
+      sceneInfra: infra,
+      model: createTestKclRuntime(),
+      settings,
+    },
+    presentation,
+    preferences,
+    () => false
+  )
+  if (viewport instanceof Error) throw viewport
+  onTestFinished(() => {
+    viewport.dispose()
+    infra.camControls.dispose()
+    preferences.dispose()
+    element.remove()
+    vi.restoreAllMocks()
+  })
+  return { viewport, canvas, camera: infra.camControls, send }
+}
+
+function pointer(
+  canvas: HTMLElement,
+  type: string,
+  x: number,
+  y: number,
+  buttons: number
+) {
+  canvas.dispatchEvent(
+    new PointerEvent(type, {
+      bubbles: true,
+      cancelable: true,
+      pointerId: 1,
+      pointerType: 'mouse',
+      button: 2,
+      buttons,
+      clientX: x,
+      clientY: y,
+    })
+  )
+}
+
+it.each(['local', 'streamed'] as const)(
+  'keeps the browser menu from interrupting a Zoo orbit in the %s viewport',
+  async (presentation) => {
+    const { viewport, canvas, camera, send } = setup(presentation)
+    await viewport.applySettings()
+    send.mockClear()
+    const before = camera.camera.position.clone()
+    const target = camera.target.clone()
+    pointer(canvas, 'pointerdown', 400, 300, 2)
+    const menu = new MouseEvent('contextmenu', {
+      bubbles: true,
+      cancelable: true,
+      button: 2,
+    })
+    canvas.dispatchEvent(menu)
+    expect(menu.defaultPrevented).toBe(true)
+    pointer(canvas, 'pointermove', 480, 350, 2)
+    pointer(canvas, 'pointerup', 480, 350, 0)
+    if (presentation === 'local') {
+      expect(camera.camera.position.distanceTo(before)).toBeGreaterThan(1)
+      expect(camera.camera.position.distanceTo(target)).toBeCloseTo(
+        before.distanceTo(target)
+      )
+      expect(camera.target.equals(target)).toBe(true)
+      expect(send).not.toHaveBeenCalled()
+    } else {
+      const commands = send.mock.calls.flatMap(([command]) =>
+        command.type === 'modeling_cmd_req' ? [command.cmd] : []
+      )
+      expect(commands).toEqual([
+        expect.objectContaining({
+          type: 'camera_drag_start',
+          interaction: 'rotate',
+          window: { x: 400, y: 300 },
+        }),
+        expect.objectContaining({
+          type: 'camera_drag_move',
+          interaction: 'rotate',
+          window: { x: 480, y: 350 },
+        }),
+        expect.objectContaining({
+          type: 'camera_drag_end',
+          interaction: 'rotate',
+          window: { x: 480, y: 350 },
+        }),
+      ])
+    }
+    expect(camera.isDragging).toBe(false)
+  }
+)
