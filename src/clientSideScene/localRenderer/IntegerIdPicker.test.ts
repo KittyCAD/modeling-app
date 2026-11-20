@@ -125,9 +125,10 @@ describe('IntegerIdPicker', () => {
     }
   )
 
-  it('reads a single grown ID and preserves sketch-line and face results', async () => {
-    const ids = new Uint32Array(32 * 32).fill(1)
-    ids[16 * 32 + 16] = 2 | selectionTypeTag(EdgeTargetType.BodyEdge)
+  it('reads one cursor pixel from the active ID buffer and resolves its target', async () => {
+    // Supply the GPU output: this exercises readback and ID decoding, not the growth shader.
+    let grownId = 2 | selectionTypeTag(EdgeTargetType.BodyEdge)
+    const sketchId = 3 | selectionTypeTag(EdgeTargetType.SketchLine)
     const readRenderTargetPixelsAsync = vi.fn(
       async (
         target: { texture: { name: string } },
@@ -136,17 +137,15 @@ describe('IntegerIdPicker', () => {
         width: number,
         height: number
       ) => {
-        expect(target.texture.name).toBe('local-renderer-grown-selection-ids')
-        expect([width, height]).toEqual([1, 1])
-        const pixels = new Uint32Array(width * height)
-        for (let row = 0; row < height; row++) {
-          for (let column = 0; column < width; column++) {
-            pixels[row * width + column] = ids[(y + row) * 32 + x + column]
-          }
-        }
-        return pixels
+        expect([x, y, width, height]).toEqual([9, 17, 1, 1])
+        return Uint32Array.of(
+          target.texture.name === 'local-renderer-grown-selection-ids'
+            ? grownId
+            : sketchId
+        )
       }
     )
+    const render = vi.fn()
     const renderer = {
       backend: {},
       autoClear: true,
@@ -154,7 +153,7 @@ describe('IntegerIdPicker', () => {
       getDrawingBufferSize: (size: Vector2) => size.set(32, 32),
       getRenderTarget: () => null,
       setRenderTarget: vi.fn(),
-      render: vi.fn(),
+      render,
       readRenderTargetPixelsAsync,
     } as unknown as WebGPURenderer
     const face = new Mesh()
@@ -170,14 +169,15 @@ describe('IntegerIdPicker', () => {
       { source: sketchLine, targets: [{ object: sketchLine, ranges: [] }] }
     )
     const camera = new PerspectiveCamera()
-    const cursor = { x: 16, y: 16, streamWidth: 32, streamHeight: 32, camera }
+    const cursor = { x: 9, y: 17, streamWidth: 32, streamHeight: 32, camera }
 
     expect((await picker.pick(cursor))?.target).toBe(edge)
-    ids[16 * 32 + 16] = 3 | selectionTypeTag(EdgeTargetType.SketchLine)
-    picker.invalidate()
+    render.mockClear()
+    picker.setEdgesVisible(false)
     expect((await picker.pick(cursor))?.target).toBe(sketchLine)
-    ids[16 * 32 + 16] = 1
-    picker.invalidate()
+    expect(render).toHaveBeenCalledTimes(1)
+    grownId = 1
+    picker.setEdgesVisible(true)
     expect((await picker.pick(cursor))?.target).toBe(face)
     expect(readRenderTargetPixelsAsync).toHaveBeenCalledTimes(3)
 
