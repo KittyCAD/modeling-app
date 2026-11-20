@@ -1,3 +1,4 @@
+import { canAutomaticallyRecoverEngine } from '@src/lib/engineConnection/recovery'
 import type { CameraViewState } from '@kittycad/lib'
 import { SceneDisconnected } from '@src/lib/kcl/scene/recovery'
 import { effect, signal } from '@preact/signals-core'
@@ -73,7 +74,12 @@ export function createKclSession(
   }
   const retry = () => {
     cancelRetry()
-    if (disposed || retryCount >= 3 || navigator.onLine === false) return
+    if (
+      disposed ||
+      !canAutomaticallyRecoverEngine(retryCount + 1) ||
+      navigator.onLine === false
+    )
+      return
     const container = element.parentElement
     if (!container || document.visibilityState === 'hidden') return
     retryTimer = setTimeout(
@@ -189,7 +195,7 @@ export function createKclSession(
       container.clientHeight < 4
     )
       return
-    if (retryCount >= 3) return
+    if (!canAutomaticallyRecoverEngine(retryCount + 1)) return
     const failed = state.peek()
     if (
       failed.type === 'error' &&
