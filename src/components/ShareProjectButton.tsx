@@ -6,34 +6,40 @@ import { getProjectHeaderButtonClasses } from '@src/components/actionButtonStyle
 import { CustomIcon } from '@src/components/CustomIcon'
 import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
 import type { CloudStorageService } from '@src/lib/cloudProjects/service'
+import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
+import { apiProjectLibraryId } from '@src/lib/projectLibraries/apiProjectLibraries'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
+import { PATHS } from '@src/lib/routePaths'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
 import { authService } from '@src/registry/contracts/auth'
+import { projectLibraryTypesFacet } from '@src/registry/contracts/projectLibraries'
 import { routerService } from '@src/registry/contracts/router'
 import { runtimeService } from '@src/registry/contracts/runtime'
-import { PATHS } from '@src/lib/routePaths'
+import type { Registry } from 'plankton'
 import { useEffect, useId, useState } from 'react'
 import toast from 'react-hot-toast'
 
 export function ShareProjectButton({ app }: AppHeaderItemProps) {
   useSignals()
   const { registry } = app
+  const pathname = registry.optional(routerService)?.location.value.pathname
+  const onProjectRoute = pathname?.startsWith(`${PATHS.PROJECT}/`)
+  const onFileRoute = pathname?.startsWith(`${PATHS.FILE}/`)
+  const onLocalRoute = pathname?.startsWith(`${PATHS.LOCAL}/`)
+  if (!onProjectRoute && !onFileRoute && !onLocalRoute) return null
+
   const cloud = registry.optional(cloudStorageService)
   const auth = registry.optional(authService)
   const appUrl = registry.optional(runtimeService)?.current.value.appUrl
-  const pathname = registry.optional(routerService)?.location.value.pathname
 
   const nextProject = registry.optional(projectSessionService)?.currentProject
     .value
   const project = app.projectSignal.value?.projectIORefSignal.value
   let projectId: string | undefined
-  if (
-    pathname?.startsWith(`${PATHS.PROJECT}/`) &&
-    nextProject?.storage?.type === 'cloud'
-  ) {
+  if (onProjectRoute && nextProject?.storage?.type === 'cloud') {
     projectId = nextProject.storage.projectId
   } else if (
-    pathname?.startsWith(`${PATHS.FILE}/`) &&
+    onFileRoute &&
     project?.cloudProjectId &&
     project.path === cloud?.pathFor(project.cloudProjectId)
   ) {
@@ -67,7 +73,9 @@ export function ShareProjectButton({ app }: AppHeaderItemProps) {
             <CustomIcon name="link" className="h-5 w-5" aria-hidden="true" />
             Share
           </Popover.Button>
-          {open && sharing && <ShareProjectDialog {...sharing} />}
+          {open && sharing && (
+            <ShareProjectDialog {...sharing} registry={registry} />
+          )}
         </>
       )}
     </Popover>
@@ -78,35 +86,51 @@ function ShareProjectDialog({
   url,
   projectId,
   cloud,
+  registry,
 }: {
   url: string
   projectId: string
   cloud: CloudStorageService
+  registry: Registry
 }) {
+  useSignals()
   const id = useId()
-  const [permissions, setPermissions] = useState<{
-    access: ProjectAccessResponse
+  const [details, setDetails] = useState<{
+    access?: ProjectAccessResponse
+    libraryId?: string
     organizationName?: string
   } | null>()
-  const access = permissions?.access
-  const organizationName = permissions?.organizationName
+  const access = details?.access
+  const organizationName = details?.organizationName
+  const libraryId = details?.libraryId
+  const library = libraryId
+    ? registry
+        .observe(projectLibraryTypesFacet)
+        .value.get(CLOUD_PROJECT_LIBRARY_TYPE)
+        ?.libraries?.find(
+          (library) =>
+            library.id === apiProjectLibraryId(libraryId) &&
+            !library.hiddenByDefault
+        )
+    : undefined
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     const controller = new AbortController()
     const { signal } = controller
     const load = async () => {
-      const access = await cloud
-        .getProjectAccess(projectId, signal)
-        .catch(() => undefined)
+      const info = await cloud
+        .getProjectSharingInfo(projectId, signal)
+        .catch(() => null)
       if (signal.aborted) return
-      setPermissions(access ? { access } : null)
+      setDetails(info ?? null)
+      const access = info?.access
       if (access?.scope !== 'organization' || !access.organization_id) return
       const organizationName = await cloud
         .getOrganizationName(access.organization_id, signal)
         .catch(() => undefined)
       if (!signal.aborted && organizationName)
-        setPermissions({ access, organizationName })
+        setDetails({ ...info, organizationName })
     }
     void load()
     return () => controller.abort()
@@ -165,6 +189,17 @@ function ShareProjectDialog({
             </ActionButton>
           </div>
         </div>
+        {library && (
+          <section aria-labelledby={`${id}-library`}>
+            <h3 id={`${id}-library`} className="text-sm font-medium">
+              Library
+            </h3>
+            <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
+              <dt className="text-2">Name</dt>
+              <dd className="min-w-0 break-words">{library.title}</dd>
+            </dl>
+          </section>
+        )}
         <section aria-labelledby={`${id}-permissions`}>
           <h3 id={`${id}-permissions`} className="text-sm font-medium">
             Current permissions
@@ -182,7 +217,7 @@ function ShareProjectDialog({
             </dl>
           ) : (
             <p role="status" className="mt-2 text-sm text-2">
-              {permissions === undefined
+              {details === undefined
                 ? 'Loading permissions…'
                 : 'Could not load project permissions.'}
             </p>
