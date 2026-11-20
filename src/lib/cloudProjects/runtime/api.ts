@@ -1,6 +1,6 @@
 import { validateProjectUpload } from '@src/lib/cloudProjects/runtime/archiveContents'
 import { collectApiPages } from '@src/lib/apiPagination'
-import { ApiError, type Client, projects } from '@kittycad/lib'
+import { ApiError, type Client, orgs, projects } from '@kittycad/lib'
 import { createKCClient } from '@src/lib/kcClient'
 import {
   CloudStorageError,
@@ -139,6 +139,13 @@ export async function getRemoteProject(
     (client) => projects.get_project({ client, id: projectId }),
     signal
   )
+}
+
+export function getRemoteOrganization(
+  config: CloudApiConfig,
+  signal: AbortSignal
+) {
+  return cloudCall(config, (client) => orgs.get_user_org({ client }), signal)
 }
 
 export async function getRemoteProjectVersion(
