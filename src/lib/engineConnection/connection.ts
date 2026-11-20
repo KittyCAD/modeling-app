@@ -679,6 +679,13 @@ export class Connection extends EventTarget {
     this.onReconnectRequested(this)
   }
 
+  get isAwaitingReconnectClose() {
+    return (
+      this.reconnectRequested &&
+      this.websocket?.readyState === WebSocket.CLOSING
+    )
+  }
+
   closeForReconnect() {
     if (
       !this.reconnectRequested ||
