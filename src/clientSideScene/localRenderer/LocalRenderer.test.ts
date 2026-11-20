@@ -449,6 +449,44 @@ describe('local GLB loading', () => {
     reattached.renderer.dispose()
   })
 
+  it('retains reset requests across failed loads and consumes initial framing only once', async () => {
+    const claimInitialCameraFrame = vi.fn(() => false)
+    const f = fixture(
+      new PerspectiveCamera(45, 1, 0.1, 10000),
+      claimInitialCameraFrame
+    )
+    try {
+      f.renderer.resetCameraAfterModelLoad()
+      f.done(false)
+      expect(resetCameraPosition).not.toHaveBeenCalled()
+      expect(claimInitialCameraFrame).not.toHaveBeenCalled()
+      f.done()
+      await vi.waitFor(() =>
+        expect(f.renderer.isLoadedSceneCurrent()).toBe(true)
+      )
+      expect(resetCameraPosition).toHaveBeenCalledOnce()
+      expect(claimInitialCameraFrame).toHaveBeenCalledOnce()
+
+      f.done(false)
+      f.renderer.resetCameraAfterModelLoad()
+      expect(resetCameraPosition).toHaveBeenCalledOnce()
+      f.done()
+      await vi.waitFor(() =>
+        expect(f.renderer.isLoadedSceneCurrent()).toBe(true)
+      )
+      expect(resetCameraPosition).toHaveBeenCalledTimes(2)
+      expect(claimInitialCameraFrame).toHaveBeenCalledOnce()
+
+      f.done()
+      await vi.waitFor(() =>
+        expect(f.renderer.isLoadedSceneCurrent()).toBe(true)
+      )
+      expect(resetCameraPosition).toHaveBeenCalledTimes(2)
+    } finally {
+      f.renderer.dispose()
+    }
+  })
+
   it('keeps planes in fit bounds until their visibility update follows the model load', async () => {
     const f = fixture()
     f.gpu.planeRenderer.updateDefaultPlanes(f.manager.rustContext.defaultPlanes)
