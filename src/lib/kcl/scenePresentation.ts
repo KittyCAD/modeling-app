@@ -25,6 +25,9 @@ import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 export function createSceneElement() {
   const element = document.createElement('div')
   element.className = styles.viewport
+  // Zoo camera controls use right-button drags; the browser menu interrupts
+  // their pointer sequence. Match the legacy ConnectionStream surface.
+  element.addEventListener('contextmenu', (event) => event.preventDefault())
   return element
 }
 
