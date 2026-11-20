@@ -971,11 +971,11 @@ export const doExport = async (
     const cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
 
-    const exportCommand = page.getByRole('option', {
-      name: /Export 3D model$/,
+    const exportCommand = cmdBar.cmdOptions.getByText('Export 3D model', {
+      exact: true,
     })
-    await expect(exportCommand.first()).toBeVisible()
-    await exportCommand.first().click()
+    await expect(exportCommand).toBeVisible()
+    await exportCommand.click()
   }
   await expect(page.getByTestId('command-bar')).toBeVisible()
 

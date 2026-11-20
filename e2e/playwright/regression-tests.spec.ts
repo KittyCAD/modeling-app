@@ -93,7 +93,9 @@ extrude001 = extrude(sketch001, length = 50)
 
       await test.step('Check arrow down works', async () => {
         await cmdBar.cmdBarOpenBtn.click()
-        await cmdBar.selectOption({ name: /Export 3D model$/ }).click()
+        await cmdBar.cmdOptions
+          .getByText('Export 3D model', { exact: true })
+          .click()
 
         // press arrow down key twice
         await page.keyboard.press('ArrowDown')
