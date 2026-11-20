@@ -744,7 +744,7 @@ for (const kind of storageKinds) {
             if (route.request().method() !== 'PUT') return route.fallback()
             const data = await uploadedProject(route)
             if (data.files['main.kcl'])
-              uploadedContents.push(data.files['main.kcl'])
+              uploadedContents.push(data.files['main.kcl'].toString())
             if (!uploadStarted) {
               uploadStarted = true
               await upload.promise

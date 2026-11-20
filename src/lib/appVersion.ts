@@ -62,7 +62,10 @@ export const IS_STAGING_OR_DEBUG =
 export const APP_DOWNLOAD_PATH = `design-studio/download${IS_STAGING_OR_DEBUG ? '/staging' : ''}`
 
 export function getRefFromVersion(version: string | undefined) {
-  const hash = version?.split('.').pop()
+  if (!version) {
+    return undefined
+  }
+  const hash = version.includes('+') ? version.split('+').pop() : version
   if (hash && hash.length === 7) {
     return hash
   }

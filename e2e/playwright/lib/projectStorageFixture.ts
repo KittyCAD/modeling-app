@@ -110,8 +110,9 @@ export async function prepareStorage(
   }
   const read = async (root: string, relativePath = 'main.kcl') => {
     if (kind === 'cloud') {
-      return remote.projects.find((project) => root.endsWith(project.id))
-        ?.files[relativePath]
+      return remote.projects
+        .find((project) => root.endsWith(project.id))
+        ?.files[relativePath]?.toString()
     }
     return new TextDecoder().decode(
       await fs.readFile(await fs.join(root, relativePath))

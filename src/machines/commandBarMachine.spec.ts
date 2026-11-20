@@ -10,6 +10,80 @@ import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 
 describe('commandBarMachine', () => {
+  it('retains text drafts across argument switches without submitting stale values', async () => {
+    const command = {
+      scopes: GLOBAL_COMMAND_SCOPES,
+      name: 'Test command',
+      groupId: 'test',
+      needsReview: false,
+      onSubmit: vi.fn(),
+      args: {
+        name: { inputType: 'string', required: true, defaultValue: 'untitled' },
+        units: {
+          inputType: 'options',
+          required: true,
+          options: [{ name: 'Millimeters', value: 'mm' }],
+        },
+      },
+    } satisfies Command
+    const actor = createActor(commandBarMachine, {
+      input: {
+        commands: [command],
+        wasmInstancePromise: Promise.resolve({} as ModuleType),
+        machineManager: {} as MachineManager,
+      },
+    }).start()
+    const select = () =>
+      actor.send({
+        type: 'Find and select command',
+        data: { name: command.name, groupId: command.groupId },
+      })
+    try {
+      select()
+      actor.send({ type: 'Submit argument', data: { name: 'old-title' } })
+      await vi.waitFor(() =>
+        expect(actor.getSnapshot().context.currentArgument?.name).toBe('units')
+      )
+      actor.send({
+        type: 'Change current argument',
+        data: { arg: { ...command.args.name, name: 'name' } },
+      })
+      actor.send({
+        type: 'Update argument draft',
+        data: { name: 'name', value: 'my-project' },
+      })
+      actor.send({
+        type: 'Change current argument',
+        data: { arg: { ...command.args.units, name: 'units' } },
+      })
+      actor.send({ type: 'Submit argument', data: { units: 'mm' } })
+      await vi.waitFor(() =>
+        expect(actor.getSnapshot().context.currentArgument?.name).toBe('name')
+      )
+      expect(actor.getSnapshot().context.argumentDrafts.name).toBe('my-project')
+      expect(actor.getSnapshot().context.argumentsToSubmit.name).toBeUndefined()
+      expect(command.onSubmit).not.toHaveBeenCalled()
+
+      actor.send({ type: 'Submit argument', data: { name: 'my-project' } })
+      await vi.waitFor(() =>
+        expect(command.onSubmit).toHaveBeenCalledExactlyOnceWith({
+          name: 'my-project',
+          units: 'mm',
+        })
+      )
+      select()
+      actor.send({
+        type: 'Update argument draft',
+        data: { name: 'name', value: 'discarded' },
+      })
+      actor.send({ type: 'Close' })
+      select()
+      expect(actor.getSnapshot().context.argumentDrafts).toEqual({})
+    } finally {
+      actor.stop()
+    }
+  })
+
   it('preserves hidden default values that are not declared command args', () => {
     const command = {
       scopes: GLOBAL_COMMAND_SCOPES,

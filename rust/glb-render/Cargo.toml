@@ -11,9 +11,10 @@ path = "src/main.rs"
 workspace = true
 
 [dependencies]
-bevy_math = "0.19.1"
 gltf = { git = "https://github.com/KittyCAD/gltf-rs", rev = "7e90eff77f296530e9573bd3680a742d740cde52", default-features = false, features = ["utils", "KITTYCAD_boundary_representation"] }
 image = { version = "0.25", default-features = false, features = ["png"] }
+libm = "0.2.16"
+nalgebra = { version = "0.35.0", default-features = false, features = ["std", "libm-force"] }
 
 [dev-dependencies]
 serde_json = { workspace = true }

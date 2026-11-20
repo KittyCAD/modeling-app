@@ -9,8 +9,9 @@ import type {
   CommandArgumentConfig,
   CommandArgumentOption,
 } from '@src/lib/commandTypes'
-import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
+import { MAX_PROJECT_NAME_LENGTH, PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import {
+  findHomeProjectByPath,
   getHomeProjectDeleteWarningMessage,
   getHomeProjectDisplayName,
   homeProjectDisplayNameExists,
@@ -24,7 +25,13 @@ import {
   getProjectOptionNameFromDirectoryName,
 } from '@src/lib/projectDisplayName'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
+import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
+import {
+  baseUnitLabels,
+  baseUnitsUnion,
+  type BaseUnit,
+} from '@src/lib/settings/settingsTypes'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type {
   HomeProjectActionsService,
@@ -42,6 +49,7 @@ export type ProjectsCommandSchema = {
   'Create project': {
     name: string
     libraryId?: string
+    units?: BaseUnit
   }
   'Clone project': {
     project: string
@@ -94,6 +102,7 @@ export function createProjectCommands({
   getCurrentProjectDirectoryName,
   getCurrentProjectPath,
   getCurrentProjectLibraryId,
+  getDefaultProjectUnits,
   getProjectLibraries,
   getCreateProjectLibraryTargets,
   getHomeProjectActions,
@@ -112,6 +121,7 @@ export function createProjectCommands({
   getCurrentProjectDirectoryName?: () => string | undefined
   getCurrentProjectPath?: () => string | undefined
   getCurrentProjectLibraryId?: () => string | undefined
+  getDefaultProjectUnits: () => BaseUnit
   getProjectLibraries?: () => readonly ProjectLibrary[]
   getCreateProjectLibraryTargets?: () => readonly CreateProjectLibraryTarget[]
   getHomeProjectActions?: () => HomeProjectActionsService | undefined
@@ -130,7 +140,7 @@ export function createProjectCommands({
   const isCurrentHomeProject = (project: HomeProjectEntry) => {
     const currentProjectPath = getCurrentProjectPath?.()
     if (currentProjectPath) {
-      return project.localProjectPath === currentProjectPath
+      return Boolean(findHomeProjectByPath([project], currentProjectPath))
     }
 
     const currentProjectDirectoryName = currentProjectDirectoryNameSnapshot()
@@ -389,12 +399,26 @@ export function createProjectCommands({
           return
         }
 
+        const units = record.units ?? getDefaultProjectUnits()
+        const initialProject = {
+          entrypointFilePath: PROJECT_ENTRYPOINT,
+          files: [
+            {
+              requestedFileName: PROJECT_ENTRYPOINT,
+              requestedData: new TextEncoder().encode(
+                `@settings(defaultLengthUnit = ${units}, kclVersion = ${DEFAULT_KCL_VERSION})\n`
+              ),
+            },
+          ],
+        }
+
         if (target) {
           return Promise.resolve(
             target.createProject.run({
               library: target.library,
               requestedProjectName,
               requestedProjectTitle,
+              initialProject,
             })
           ).then((project) => {
             if (project?.default_file) {
@@ -408,6 +432,7 @@ export function createProjectCommands({
             directory: projectLibraries.projectDirectoryPath,
             name: requestedProjectName,
             title: requestedProjectTitle,
+            initialProject,
           })
           .then((project) =>
             projectSession.openFile(project.default_file, {
@@ -428,6 +453,25 @@ export function createProjectCommands({
         createProjectLibraryOptions,
         defaultCreateProjectLibraryId
       ),
+      units: {
+        displayName: 'Units',
+        required: false,
+        prepopulate: true,
+        inputType: 'options',
+        defaultValue: getDefaultProjectUnits,
+        options: ({ argumentsToSubmit }) => {
+          const currentUnits =
+            typeof argumentsToSubmit.units === 'string'
+              ? argumentsToSubmit.units
+              : getDefaultProjectUnits()
+          return baseUnitsUnion.map((unit) => ({
+            name: baseUnitLabels[unit],
+            value: unit,
+            isCurrent: unit === currentUnits,
+          }))
+        },
+        valueSummary: (value: BaseUnit) => baseUnitLabels[value],
+      },
     },
   }
 

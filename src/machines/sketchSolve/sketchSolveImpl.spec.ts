@@ -643,7 +643,7 @@ describe('updateSketchOutcome', () => {
       expect(kclManager.currentSketchCheckpointId).toBe(3)
     } finally {
       actor.stop()
-      app.dispose()
+      await app.dispose()
     }
   })
 
