@@ -137,43 +137,35 @@ export async function saveFactoryDelivery(
   }
 }
 
-export function factoryJobFiles(
+export function factoryProjectJobBody(
   part: FactoryPart,
   snapshot: FactorySnapshot,
   delivery: FactoryDelivery
 ) {
   const { entrypoint, ...fields } = part
-  return [
-    {
-      name: 'body',
-      data: new Blob(
-        [JSON.stringify({ fields, ...delivery, entrypoint_path: entrypoint })],
-        { type: 'application/json' }
-      ),
-    },
-    // Factory generates a preview for the selected entry point; Studio's root preview belongs to the source project.
-    ...snapshot.files
-      .filter((file) => file.relativePath.toLowerCase() !== 'thumbnail.png')
-      .map((file) => ({
-        name: file.relativePath,
-        data: new File([Uint8Array.from(file.data)], file.relativePath),
-      })),
-  ]
+  return {
+    project_id: snapshot.projectId,
+    project_version_id: snapshot.versionId,
+    entrypoint_path: entrypoint,
+    fields,
+    ...delivery,
+  }
 }
 
 /** The dedicated route fails closed on servers that cannot select entry points. */
 async function createProjectFactoryJob(
   client: Client,
-  files: ReturnType<typeof factoryJobFiles>
+  body: ReturnType<typeof factoryProjectJobBody>
 ) {
-  const body = new FormData()
-  for (const file of files) body.append(file.name, file.data, file.name)
   const response = await (client.fetch ?? globalThis.fetch)(
     `${client.baseUrl}/user/factory/project-jobs`,
     {
       method: 'POST',
-      headers: client.token ? { Authorization: `Bearer ${client.token}` } : {},
-      body,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(client.token ? { Authorization: `Bearer ${client.token}` } : {}),
+      },
+      body: JSON.stringify(body),
     }
   )
   const result: unknown = await response.json().catch(() => null)
@@ -233,7 +225,7 @@ export function createFactoryRequests(
       write(() =>
         createProjectFactoryJob(
           client,
-          factoryJobFiles(part, snapshot, delivery)
+          factoryProjectJobBody(part, snapshot, delivery)
         )
       ),
     revise: (job, part) => {

@@ -94,6 +94,49 @@ describe.each([
     return { fs, diskWrite, diskRemove }
   }
 
+  it('captures the acknowledged version and its saved bytes together', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    await fs.writeFile(
+      paths.join(root, 'main.kcl'),
+      encoder.encode('saved solid')
+    )
+    const snapshot = await fs.withProject(
+      'one',
+      async ({ remote, files }) => ({
+        revision: remote.revision,
+        files,
+      }),
+      { requireSaved: true }
+    )
+    expect(snapshot.revision).toBe('2')
+    expect(
+      snapshot.files.find((file) => file.relativePath === 'main.kcl')?.data
+    ).toEqual(encoder.encode('saved solid'))
+  })
+
+  it('does not pin an older remote version after a local save failed', async () => {
+    const { fs } = setup()
+    const root = await fs.openProject('one')
+    vi.mocked(api.updateRemoteProject).mockRejectedValueOnce(
+      new Error('Save unavailable')
+    )
+    await expect(
+      fs.writeFile(
+        paths.join(root, 'main.kcl'),
+        encoder.encode('unsaved solid')
+      )
+    ).rejects.toThrow('Save unavailable')
+    const capture = vi.fn(
+      async ({ remote }: { remote: { revision?: string | number } }) =>
+        remote.revision
+    )
+    await expect(
+      fs.withProject('one', capture, { requireSaved: true })
+    ).rejects.toThrow('Save the cloud project')
+    expect(capture).not.toHaveBeenCalled()
+  })
+
   it.each(['success', 'failure'] as const)(
     'reports a seven-second project list request through %s and retry',
     async (outcome) => {

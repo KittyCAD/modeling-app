@@ -9,8 +9,10 @@ export interface FactoryPart {
   notes: string
 }
 
-/** A batch captures these bytes once and shares them between all split jobs. */
+/** A batch pins one saved Project version; all split jobs reference this same snapshot. */
 export interface FactorySnapshot {
+  projectId: string
+  versionId: string
   files: readonly { relativePath: string; data: Uint8Array }[]
 }
 
@@ -39,6 +41,11 @@ export interface FactoryJobRequests {
     job: SubmittedFactoryJob,
     part: FactoryPart
   ) => Promise<FactoryWriteResult>
+}
+
+/** Part selection accepts editable KCL models and original STEP solids. */
+export function isFactoryPartFile(path: string): boolean {
+  return /\.(?:kcl|step|stp)$/i.test(path)
 }
 
 export function parseFactoryPart(part: FactoryPart): FactoryPart | Error {

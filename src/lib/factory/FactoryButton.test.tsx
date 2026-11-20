@@ -23,7 +23,7 @@ it('keeps multiple selected entry points when searching a nested filename', () =
     const [selected, setSelected] = useState<string[]>([])
     return (
       <FactoryFilePicker
-        paths={['main.kcl', 'parts/bracket.kcl', 'parts/hinge.kcl']}
+        paths={['main.kcl', 'parts/bracket.kcl', 'parts/hinge.STEP']}
         selected={selected}
         onChange={setSelected}
       />
@@ -44,6 +44,8 @@ it('keeps multiple selected entry points when searching a nested filename', () =
   expect(
     screen.getByRole('option', { name: 'parts/bracket.kcl' })
   ).toHaveAttribute('aria-selected', 'true')
+  fireEvent.click(screen.getByRole('option', { name: 'parts/hinge.STEP' }))
+  expect(screen.getByText('3 files selected')).toBeVisible()
 })
 
 it('edits one part without changing another part specifications', () => {
@@ -97,6 +99,8 @@ it('corrects a rejected part without repeating successful jobs, then revises a j
   let catalogChanged = false
   let availablePaths = ['main.kcl', 'parts/bracket.kcl']
   const capture = vi.fn<FactoryFormContext['capture']>(async () => ({
+    projectId: 'source-project',
+    versionId: 'source-version',
     files: [
       { relativePath: 'main.kcl', data: new Uint8Array([1]) },
       { relativePath: 'parts/bracket.kcl', data: new Uint8Array([2]) },
@@ -293,6 +297,8 @@ it('returns to file selection when a reviewed file is deleted while closed and c
       },
     }),
     capture: async () => ({
+      projectId: 'source-project',
+      versionId: 'source-version',
       files: [{ relativePath: 'main.kcl', data: new Uint8Array([1]) }],
     }),
     saveDelivery: async () => ({

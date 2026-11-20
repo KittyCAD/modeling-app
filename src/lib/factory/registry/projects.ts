@@ -7,7 +7,7 @@ import {
 import type { FactoryFormContext } from '@src/lib/factory/types'
 import type { App } from '@src/lib/app'
 import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
-import type { FactorySnapshot } from '@src/lib/factory/jobs'
+import { isFactoryPartFile, type FactorySnapshot } from '@src/lib/factory/jobs'
 import fsZds from '@src/lib/fs-zds'
 import { findHomeProjectByPath } from '@src/lib/homeProjects'
 import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
@@ -62,10 +62,21 @@ export async function captureFactoryProject(
   const id = cloud?.idFor(path)
   if (!cloud || !id)
     return Promise.reject(new Error('The cloud project is unavailable.'))
-  const files = await cloud.snapshot(id)
-  if (!isCurrent())
-    return Promise.reject(new Error('The project changed before submission.'))
-  return { files }
+  return cloud.withProject(
+    id,
+    async ({ remote, files }) => {
+      if (!isCurrent())
+        return Promise.reject(
+          new Error('The project changed before submission.')
+        )
+      if (!remote.revision)
+        return Promise.reject(
+          new Error('Save the cloud project before submitting.')
+        )
+      return { projectId: id, versionId: String(remote.revision), files }
+    },
+    { requireSaved: true }
+  )
 }
 
 export async function listFactoryEntrypoints(app: App) {
@@ -75,7 +86,7 @@ export async function listFactoryEntrypoints(app: App) {
     fileOperations: app.fileOperations,
     projectRoot: project.path,
   })
-  return files.filter((path) => /\.kcl$/i.test(path))
+  return files.filter(isFactoryPartFile)
 }
 
 /** Read changing services when invoked; never retain a selected cloud or library provider. */

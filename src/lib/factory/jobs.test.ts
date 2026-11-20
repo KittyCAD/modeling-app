@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import fc from 'fast-check'
 import {
   createFactoryWorkspace,
+  isFactoryPartFile,
   type FactoryJobRequests,
   type FactoryPart,
   type FactoryWriteResult,
@@ -37,6 +38,8 @@ it('submits one job per entry point with common bytes and independent specificat
           part(`parts/${index}.kcl`, quantity)
         )
         const snapshot = {
+          projectId: 'source-project',
+          versionId: 'source-version',
           files: parts.map((part) => ({
             relativePath: part.entrypoint,
             data: new Uint8Array([1, 2, 3]),
@@ -69,6 +72,8 @@ it('submits one job per entry point with common bytes and independent specificat
 describe('submission failures', () => {
   const parts = [part('main.kcl'), part('other.kcl'), part('third.kcl')]
   const snapshot = {
+    projectId: 'source-project',
+    versionId: 'source-version',
     files: parts.map((part) => ({
       relativePath: part.entrypoint,
       data: new Uint8Array(),
@@ -144,10 +149,15 @@ describe('submission failures', () => {
   it('rejects a missing entry point before sending any jobs', async () => {
     const workspace = createFactoryWorkspace()
     const create = vi.fn()
-    await workspace.submit(parts, { files: [] }, delivery, {
-      create,
-      revise: vi.fn(),
-    })
+    await workspace.submit(
+      parts,
+      { projectId: 'source-project', versionId: 'source-version', files: [] },
+      delivery,
+      {
+        create,
+        revise: vi.fn(),
+      }
+    )
     expect(create).not.toHaveBeenCalled()
     expect(workspace.error.value).toContain('missing')
   })
@@ -163,6 +173,8 @@ it('updates only the revised job and retains its entry point', async () => {
   await workspace.submit(
     parts,
     {
+      projectId: 'source-project',
+      versionId: 'source-version',
       files: parts.map((part) => ({
         relativePath: part.entrypoint,
         data: new Uint8Array(),
@@ -197,6 +209,8 @@ it.each([0, -1, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1])(
     await workspace.submit(
       parts,
       {
+        projectId: 'source-project',
+        versionId: 'source-version',
         files: parts.map((part) => ({
           relativePath: part.entrypoint,
           data: new Uint8Array(),
@@ -211,3 +225,16 @@ it.each([0, -1, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1])(
     )
   }
 )
+
+it.each([
+  ['main.kcl', true],
+  ['parts/bracket.KCL', true],
+  ['parts/solid.step', true],
+  ['parts/solid.STEP', true],
+  ['parts/solid.stp', true],
+  ['parts/solid.STP', true],
+  ['reference/drawing.pdf', false],
+  ['part.step.backup', false],
+])('offers %s as a manufacturable part: %s', (path, expected) => {
+  expect(isFactoryPartFile(path)).toBe(expected)
+})

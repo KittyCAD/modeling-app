@@ -291,9 +291,9 @@ function FactoryPopover({
                   {step === 'files' && (
                     <>
                       <p className="text-xs leading-5 text-2">
-                        Select the KCL file for each part you want manufactured.
-                        Each file creates a separate job and should contain a
-                        single solid body.
+                        Select the KCL or STEP file for each part you want
+                        manufactured. Each file creates a separate job and
+                        should contain a single solid body.
                       </p>
                       <FactoryFilePicker
                         paths={paths}
@@ -561,7 +561,7 @@ export function FactoryFilePicker({
           </Combobox.Option>
         ))}
         {!filtered.length && (
-          <li className="p-2 text-2">No matching KCL files.</li>
+          <li className="p-2 text-2">No matching KCL or STEP files.</li>
         )}
       </Combobox.Options>
       <p className="mt-2 text-xs text-2" aria-live="polite">

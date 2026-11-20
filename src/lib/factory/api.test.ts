@@ -13,7 +13,10 @@ vi.mock('@src/lib/kcClient', () => ({
     }),
 }))
 
-import { createFactoryRequests, factoryJobFiles } from '@src/lib/factory/api'
+import {
+  createFactoryRequests,
+  factoryProjectJobBody,
+} from '@src/lib/factory/api'
 
 beforeEach(() => {
   mocks.fetch.mockReset()
@@ -27,6 +30,8 @@ const part = {
   notes: 'Deburr',
 }
 const snapshot = {
+  projectId: 'source-project',
+  versionId: 'source-version',
   files: [
     { relativePath: 'main.kcl', data: new TextEncoder().encode('main') },
     {
@@ -41,48 +46,26 @@ const delivery = {
   is_expedited: true,
 }
 
-it('serializes the chosen entry point and preserves every snapshot filename and byte', async () => {
-  const files = factoryJobFiles(part, snapshot, delivery)
-  expect(await files[0].data.text()).toBe(
-    JSON.stringify({
+it.each(['parts/bracket.kcl', 'parts/bracket.STEP', 'parts/bracket.stp'])(
+  'selects %s while referencing the same saved Project version',
+  (entrypoint) => {
+    expect(
+      factoryProjectJobBody({ ...part, entrypoint }, snapshot, delivery)
+    ).toEqual({
+      project_id: 'source-project',
+      project_version_id: 'source-version',
+      entrypoint_path: entrypoint,
       fields: {
         material: 'Aluminum',
         finish: 'Anodized',
         quantity: 5,
         notes: 'Deburr',
       },
-      ...delivery,
-      entrypoint_path: 'parts/bracket.kcl',
+      shipping_address_revision_id: 'revision-not-card-id',
+      is_expedited: true,
     })
-  )
-  expect(files.slice(1).map((file) => file.name)).toEqual([
-    'main.kcl',
-    'parts/bracket.kcl',
-    'data/input.csv',
-  ])
-  expect(new Uint8Array(await files[3].data.arrayBuffer())).toEqual(
-    new Uint8Array([0, 1, 255])
-  )
-})
-
-it('omits the Studio preview while retaining model dependencies for Factory to render anew', () => {
-  const files = factoryJobFiles(
-    part,
-    {
-      files: [
-        ...snapshot.files,
-        { relativePath: 'thumbnail.png', data: new Uint8Array([9]) },
-      ],
-    },
-    delivery
-  )
-  expect(files.map((file) => file.name)).toEqual([
-    'body',
-    'main.kcl',
-    'parts/bracket.kcl',
-    'data/input.csv',
-  ])
-})
+  }
+)
 
 it('revises organization jobs through the supported endpoint without replacing their files or delivery', async () => {
   mocks.fetch.mockResolvedValueOnce(
@@ -169,7 +152,7 @@ it('rejects an older server without falling back to automatic entry point select
   )
 })
 
-it('submits project jobs with the selected entry point and a complete snapshot', async () => {
+it('submits a selected part without copying or uploading the Project', async () => {
   mocks.fetch.mockResolvedValueOnce(
     new Response(JSON.stringify({ id: 'new-job', status: 'new' }), {
       status: 201,
@@ -181,23 +164,27 @@ it('submits project jobs with the selected entry point and a complete snapshot',
     delivery
   )
   expect(result).toEqual({ ok: true, id: 'new-job', status: 'new' })
+  expect(mocks.fetch).toHaveBeenCalledTimes(1)
   const [url, init] = mocks.fetch.mock.calls[0]
   expect(url).toBe('https://api.example.test/user/factory/project-jobs')
   expect(init?.method).toBe('POST')
-  expect(init?.headers).toEqual({ Authorization: 'Bearer test' })
-  const form = init?.body
-  expect(form).toBeInstanceOf(FormData)
-  if (!(form instanceof FormData)) return
-  expect([...form.keys()]).toEqual([
-    'body',
-    'main.kcl',
-    'parts/bracket.kcl',
-    'data/input.csv',
-  ])
-  const metadata = form.get('body')
-  expect(metadata).toBeInstanceOf(Blob)
-  if (!(metadata instanceof Blob)) return
-  expect(JSON.parse(await metadata.text()).entrypoint_path).toBe(
-    'parts/bracket.kcl'
-  )
+  expect(init?.headers).toEqual({
+    Authorization: 'Bearer test',
+    'Content-Type': 'application/json',
+  })
+  expect(typeof init?.body).toBe('string')
+  if (typeof init?.body !== 'string') return
+  expect(JSON.parse(init.body)).toEqual({
+    project_id: 'source-project',
+    project_version_id: 'source-version',
+    entrypoint_path: 'parts/bracket.kcl',
+    fields: {
+      material: 'Aluminum',
+      finish: 'Anodized',
+      quantity: 5,
+      notes: 'Deburr',
+    },
+    shipping_address_revision_id: 'revision-not-card-id',
+    is_expedited: true,
+  })
 })

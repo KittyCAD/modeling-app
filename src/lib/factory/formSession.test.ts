@@ -34,6 +34,8 @@ function preparation() {
     isCurrent: () => true,
     load: vi.fn(),
     capture: vi.fn(async () => ({
+      projectId: 'source-project',
+      versionId: 'source-version',
       files: [{ relativePath: 'main.kcl', data: new Uint8Array([1]) }],
     })),
     saveDelivery: vi.fn(async () => ({
@@ -62,6 +64,8 @@ it.each(['capture', 'saveDelivery'])(
       context.capture = vi.fn(async () => {
         current = false
         return {
+          projectId: 'source-project',
+          versionId: 'source-version',
           files: [{ relativePath: 'main.kcl', data: new Uint8Array([1]) }],
         }
       })
@@ -86,7 +90,11 @@ it('ignores preparation completing after its form is removed', async () => {
   let active = true
   context.capture = vi.fn(async () => {
     active = false
-    return { files: [{ relativePath: 'main.kcl', data: new Uint8Array([1]) }] }
+    return {
+      projectId: 'source-project',
+      versionId: 'source-version',
+      files: [{ relativePath: 'main.kcl', data: new Uint8Array([1]) }],
+    }
   })
   await session.submit(context, parts, shipping, () => active)
   expect(context.saveDelivery).not.toHaveBeenCalled()
