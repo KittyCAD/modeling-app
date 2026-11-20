@@ -8,10 +8,10 @@ import type {
 import { isErr } from '@src/lib/trap'
 
 /**
- * The project source provider used by KCL's executor capability. `capture` copies
- * all open document text synchronously, then reads missing files through the
- * captured session's `files.readBytes`. Storage reads happen per file; this is
- * not an atomic snapshot of external filesystem changes.
+ * Captures project files with open-document text taking precedence over storage.
+ * `capture` copies all open document text synchronously, then reads missing files
+ * through the captured session's `files.readBytes`. Storage reads happen per file;
+ * this is not an atomic snapshot of external filesystem changes.
  */
 export function createProjectSources(
   getProjects: () => ProjectSessionService | undefined,
