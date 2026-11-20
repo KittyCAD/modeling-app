@@ -1,4 +1,3 @@
-import { EdgeTargetType } from '@src/clientSideScene/localRenderer/EdgeRenderer'
 import { float, uint, vec3 } from 'three/tsl'
 import { type Node } from 'three/webgpu'
 
@@ -12,8 +11,18 @@ import { type Node } from 'three/webgpu'
 export const SELECTION_ID_TYPE_SHIFT = 22
 export const SELECTION_ID_MASK = (1 << SELECTION_ID_TYPE_SHIFT) - 1
 
+export enum EdgeTargetType {
+  BodyEdge = 1,
+  SketchLine = 2,
+}
+
 export function selectionTypeTag(type: EdgeTargetType) {
-  return (type + 1) << SELECTION_ID_TYPE_SHIFT
+  return type << SELECTION_ID_TYPE_SHIFT
+}
+
+export function isLineSelectionId(id: number) {
+  const type = id >>> SELECTION_ID_TYPE_SHIFT
+  return type === EdgeTargetType.BodyEdge || type === EdgeTargetType.SketchLine
 }
 
 export function selectionTargetId(packedId: number) {
@@ -25,10 +34,10 @@ export const getSelectionTypeFromId = (id: Node<'uint'>) =>
   id.shiftRight(uint(SELECTION_ID_TYPE_SHIFT))
 
 export const isBodyEdge = (id: Node<'uint'>) =>
-  getSelectionTypeFromId(id).equal(uint(EdgeTargetType.BodyEdge + 1))
+  getSelectionTypeFromId(id).equal(uint(EdgeTargetType.BodyEdge))
 
 export const isSketchLine = (id: Node<'uint'>) =>
-  getSelectionTypeFromId(id).equal(uint(EdgeTargetType.SketchLine + 1))
+  getSelectionTypeFromId(id).equal(uint(EdgeTargetType.SketchLine))
 
 export const encodeId = (id: Node<'uint'>) => {
   const byte = (shift: number) =>

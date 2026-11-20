@@ -1,6 +1,8 @@
 import { IntegerIdPicker } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
-import { EdgeTargetType } from '@src/clientSideScene/localRenderer/EdgeRenderer'
-import { selectionTypeTag } from '@src/clientSideScene/localRenderer/selectionId'
+import {
+  EdgeTargetType,
+  selectionTypeTag,
+} from '@src/clientSideScene/localRenderer/selectionId'
 import { Mesh, PerspectiveCamera, type Vector2 } from 'three'
 import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
@@ -44,9 +46,7 @@ describe('IntegerIdPicker', () => {
     const geometry = new LineSegmentsGeometry().setPositions([0, 0, 0, 1, 0, 0])
     const material = new Line2NodeMaterial()
     const edge = new LineSegments2(geometry, material)
-    edge.userData.type = EdgeTargetType.BodyEdge
     const sketchLine = new LineSegments2(geometry, material)
-    sketchLine.userData.type = EdgeTargetType.SketchLine
     const picker = new IntegerIdPicker(renderer)
     picker.setTargets(
       [face],

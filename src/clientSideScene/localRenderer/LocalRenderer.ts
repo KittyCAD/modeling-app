@@ -20,7 +20,6 @@ import {
   getSketchLineColor,
   getSketchSegmentEdges,
 } from '@src/clientSideScene/localRenderer/EdgeRenderer'
-import { EdgeTargetType } from '@src/clientSideScene/localRenderer/EdgeRenderer'
 import { createRegionMeshes } from '@src/clientSideScene/localRenderer/sketchRegions'
 import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
@@ -1440,8 +1439,7 @@ export class LocalRenderer {
       sketchLineRenderer: new EdgeRenderer(
         true,
         getSketchLineColor(theme),
-        LOCAL_WEBGPU_SKETCH_LINE_WIDTH_PX,
-        EdgeTargetType.SketchLine
+        LOCAL_WEBGPU_SKETCH_LINE_WIDTH_PX
       ),
       planeRenderer,
       integerIdPicker,

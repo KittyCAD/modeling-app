@@ -14,7 +14,6 @@ import {
 } from 'three'
 import {
   type EdgeSelectionTarget,
-  EdgeTargetType,
   SELECTION_INDEX_ATTRIBUTE,
 } from '@src/clientSideScene/localRenderer/EdgeRenderer'
 import { EdgeGrowthPass } from '@src/clientSideScene/localRenderer/EdgeGrowthPass'
@@ -23,6 +22,7 @@ import {
   type PickBufferSnapshot,
 } from '@src/clientSideScene/localRenderer/pickBufferDebug'
 import {
+  EdgeTargetType,
   selectionTargetId,
   selectionTypeTag,
 } from '@src/clientSideScene/localRenderer/selectionId'
@@ -338,7 +338,6 @@ export class IntegerIdPicker {
     const target = this.ensureRenderTarget()
     if (this.dirty) this.renderIdBuffer(target, camera)
     const version = this.version
-    const targets = this.targetById
     const grown = await this.renderer.readRenderTargetPixelsAsync(
       this.growthPass?.target ?? target,
       0,
@@ -362,15 +361,13 @@ export class IntegerIdPicker {
         grown,
         target.width,
         target.height,
-        this.packsIdsIntoColor,
-        targets
+        this.packsIdsIntoColor
       ),
       seedPixels: colorizePickBuffer(
         seeds,
         target.width,
         target.height,
-        this.packsIdsIntoColor,
-        targets
+        this.packsIdsIntoColor
       ),
     }
   }
