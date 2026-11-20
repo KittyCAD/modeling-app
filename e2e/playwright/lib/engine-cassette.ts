@@ -80,6 +80,146 @@ function isSelectionCommand(frame: Frame) {
   )
 }
 
+function commandName(frame: Frame): string {
+  const message = unpack(frame) as { type?: string; cmd?: { type: string } }
+  return message.cmd?.type ?? message.type ?? 'unknown'
+}
+
+type EmptySelectionCommand = 'select_clear' | 'select_add' | 'select_get'
+
+function emptySelectionRequest(frame: Frame) {
+  if (frame.from !== 'client' || frame.binary) {
+    return undefined
+  }
+  const { type, cmd_id: id, cmd } = JSON.parse(frame.wire)
+  if (
+    type !== 'modeling_cmd_req' ||
+    typeof id !== 'string' ||
+    !uuid.test(id) ||
+    !cmd
+  ) {
+    return undefined
+  }
+  if (
+    ((cmd.type === 'select_clear' || cmd.type === 'select_get') &&
+      Object.keys(cmd).length === 1) ||
+    (cmd.type === 'select_add' &&
+      Object.keys(cmd).length === 2 &&
+      isArray(cmd.entities) &&
+      cmd.entities.length === 0)
+  ) {
+    return { id, type: cmd.type as EmptySelectionCommand }
+  }
+  return undefined
+}
+
+function emptySelectionReply(type: EmptySelectionCommand, id: string) {
+  return {
+    success: true,
+    request_id: id,
+    resp: {
+      type: 'modeling',
+      data: {
+        modeling_response: {
+          type,
+          data: type === 'select_get' ? { entity_ids: [] } : {},
+        },
+      },
+    },
+  }
+}
+
+// An initially empty scene can synchronize its empty selection after its first
+// execution. Leaving that exchange in the transcript makes the next execution
+// depend on whether CodeMirror emitted a selection update during setup.
+function emptyStartupSelection(frames: Session) {
+  const requests = new Map<
+    string,
+    { index: number; type: EmptySelectionCommand }
+  >()
+  let opened = false
+  let finishedEmptyExecution = false
+  let end = 0
+
+  for (const [index, frame] of frames.entries()) {
+    if (frame.from !== 'client') {
+      continue
+    }
+    if (frame.binary) {
+      break
+    }
+    const message = JSON.parse(frame.wire)
+    const type = message.cmd?.type ?? message.type
+    switch (type) {
+      case 'headers':
+        break
+      case 'begin_execution':
+        if (opened) {
+          end = index
+        }
+        opened = true
+        break
+      case 'end_execution':
+        if (opened) {
+          finishedEmptyExecution = true
+        }
+        break
+      case 'set_kcl_version':
+      case 'set_default_system_properties':
+      case 'object_visible':
+      case 'set_selection_filter':
+        break
+      case 'modeling_cmd_batch_req':
+        if (
+          !message.requests.every(
+            (item: { cmd: { type: string } }) =>
+              item.cmd.type === 'make_plane' ||
+              item.cmd.type === 'object_visible'
+          )
+        ) {
+          return undefined
+        }
+        break
+      default: {
+        const request = finishedEmptyExecution && emptySelectionRequest(frame)
+        if (!request) {
+          return undefined
+        }
+        requests.set(request.id, { index, type: request.type })
+      }
+    }
+    if (end) {
+      break
+    }
+  }
+  if (!end || !finishedEmptyExecution) {
+    return undefined
+  }
+
+  const indices = new Set([...requests.values()].map(({ index }) => index))
+  for (const [index, frame] of frames.entries()) {
+    if (frame.from !== 'engine' || frame.binary) {
+      continue
+    }
+    const reply = JSON.parse(frame.wire)
+    const request = requests.get(reply.request_id)
+    if (!request) {
+      continue
+    }
+    try {
+      deepStrictEqual(
+        reply,
+        emptySelectionReply(request.type, reply.request_id)
+      )
+    } catch {
+      return undefined
+    }
+    indices.add(index)
+    requests.delete(reply.request_id)
+  }
+  return requests.size === 0 ? { indices, end } : undefined
+}
+
 export function replaySession(
   frames: Session,
   send: (data: string | Buffer) => void
@@ -94,7 +234,16 @@ export function replaySession(
     { request: Frame; reply?: Frame; boundary: number }
   >()
   let boundary = 0
-  const ordered = frames.filter((frame) => {
+  const startup = emptyStartupSelection(frames)
+  let optionalSelectionStart = -1
+  let optionalSelectionEnd = -1
+  const ordered = frames.filter((frame, i) => {
+    if (startup && i === startup.end) {
+      optionalSelectionEnd = boundary
+    }
+    if (startup?.indices.has(i)) {
+      return false
+    }
     const id = visibilityBatchId(frame, (id) => planes.has(id))
     if (id) {
       visibility.set(id, { request: frame, boundary })
@@ -112,6 +261,13 @@ export function replaySession(
     }
     if (frame.from === 'client' && !isSelectionCommand(frame)) {
       boundary++
+      if (
+        startup &&
+        i < startup.end &&
+        commandName(frame) === 'end_execution'
+      ) {
+        optionalSelectionStart = boundary
+      }
     }
     if (frame.from === 'engine' && !frame.binary) {
       const reply = JSON.parse(frame.wire)
@@ -249,6 +405,17 @@ export function replaySession(
         }
         return
       }
+      if (
+        boundary >= optionalSelectionStart &&
+        optionalSelectionStart >= 0 &&
+        boundary <= optionalSelectionEnd
+      ) {
+        const optional = emptySelectionRequest(frame)
+        if (optional) {
+          send(JSON.stringify(emptySelectionReply(optional.type, optional.id)))
+          return
+        }
+      }
       const expected = ordered[index]
       if (expected?.from !== 'client') {
         throw new CassetteMismatch(
@@ -259,7 +426,7 @@ export function replaySession(
         match(unpack(expected), unpack(frame))
       } catch (error) {
         throw new CassetteMismatch(
-          `Engine cassette mismatch at frame ${index} (${payloadType(frame)}). Use run-live-engine to refresh the cassette.`,
+          `Engine cassette mismatch at frame ${index}: expected ${commandName(expected)}, received ${commandName(frame)}. Use run-live-engine to refresh the cassette.`,
           { cause: error }
         )
       }
@@ -375,10 +542,11 @@ export async function installEngineCassette(page: Page, info: TestInfo) {
       socket.send(data)
     })
   })
-  return async () => {
+  return async (setupComplete: boolean) => {
     const mismatch =
       failure ??
-      (info.status === 'passed' &&
+      (setupComplete &&
+      info.status === 'passed' &&
       recorded &&
       (recorded.length !== replays.length ||
         replays.some((replay) => !replay.complete()))
@@ -400,7 +568,7 @@ export async function installEngineCassette(page: Page, info: TestInfo) {
       }
       throw mismatch
     }
-    if (info.status !== 'passed') {
+    if (!setupComplete || info.status !== 'passed') {
       return
     }
     if (verifying && recorded) {

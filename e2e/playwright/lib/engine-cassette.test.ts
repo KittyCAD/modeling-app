@@ -105,3 +105,62 @@ it('skips verification for a tagged test with no fresh recording on the shard', 
     await rm(directory, { recursive: true })
   }
 })
+
+it('replays startup with or without an empty selection sync', () => {
+  const begin = frame('client', {
+    cmd: { type: 'begin_execution', enable_render: true },
+  })
+  const end = frame('client', { cmd: { type: 'end_execution' } })
+  const selectGet = frame('client', {
+    type: 'modeling_cmd_req',
+    cmd_id: a,
+    cmd: { type: 'select_get' },
+  })
+  const emptyReply = frame('engine', {
+    success: true,
+    request_id: a,
+    resp: {
+      type: 'modeling',
+      data: {
+        modeling_response: { type: 'select_get', data: { entity_ids: [] } },
+      },
+    },
+  })
+
+  const skip = replaySession(
+    [begin, end, selectGet, emptyReply, begin],
+    vi.fn()
+  )
+  for (const request of [begin, end, begin]) {
+    skip.receive(request)
+  }
+  expect(skip.complete()).toBe(true)
+
+  const send = vi.fn()
+  const insert = replaySession([begin, end, begin], send)
+  for (const request of [begin, end, selectGet, begin]) {
+    insert.receive(request)
+  }
+  expect(JSON.parse(send.mock.calls[0][0])).toEqual(JSON.parse(emptyReply.wire))
+  expect(insert.complete()).toBe(true)
+
+  const strict = replaySession([begin, end, begin], vi.fn())
+  strict.receive(begin)
+  strict.receive(end)
+  const selectEntity = frame('client', {
+    type: 'modeling_cmd_req',
+    cmd_id: a,
+    cmd: { type: 'select_add', entities: [b] },
+  })
+  expect(() => strict.receive(selectEntity)).toThrow(
+    'expected begin_execution, received select_add'
+  )
+
+  const afterStartup = replaySession([begin, end, begin], vi.fn())
+  for (const request of [begin, end, begin]) {
+    afterStartup.receive(request)
+  }
+  expect(() => afterStartup.receive(selectGet)).toThrow(
+    'Unexpected engine command'
+  )
+})

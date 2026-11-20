@@ -691,6 +691,7 @@ const fixturesForWeb = {
     }
 
     const finishCassette = await installEngineCassette(page, testInfo)
+    let setupComplete = false
     try {
       const webApp = new AuthenticatedApp(context, page, testInfo)
       await webApp.initialise('', userFeatures, mockApiRoutes)
@@ -700,9 +701,10 @@ const fixturesForWeb = {
       // is needed on the project library, where no scene has mounted yet.
       await applyTestSceneMode(page, geometryOnlyForTestTags(testInfo.tags))
 
+      setupComplete = true
       await use(page)
     } finally {
-      await finishCassette?.()
+      await finishCassette?.(setupComplete)
     }
   },
 }
