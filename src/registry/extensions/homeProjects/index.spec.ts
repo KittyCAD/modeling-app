@@ -1,4 +1,7 @@
 import { signal } from '@preact/signals-core'
+import { posix } from '@chainner/node-path'
+import { createMemoryFileSystem } from '@src/lib/fs-zds/memory'
+import noopfs from '@src/lib/fs-zds/noopfs'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
@@ -22,9 +25,11 @@ import {
   type ProjectSessionService,
 } from '@src/registry/contracts/projectSession'
 import homeProjectsExtension from '@src/registry/extensions/homeProjects'
+import { createFileOperationsExtension } from '@src/registry/extensions/fileOperations'
 import { contribute, type InputOf, provide, Registry } from 'plankton'
 import { describe, expect, it, vi } from 'vitest'
 vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
+vi.mock('@src/lib/fs-zds', () => ({ default: posix }))
 const library = {
   id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   title: PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE,
@@ -129,9 +134,14 @@ describe('home project actions', () => {
       localProjectPath: '/source/project',
       localProjectName: 'Bracket',
     }
+    const memory = createMemoryFileSystem({ ...noopfs.impl, ...posix })
+    await memory.mkdir(source.localProjectPath, { recursive: true })
+    const data = new TextEncoder().encode('saved contents')
+    await memory.writeFile('/source/project/main.kcl', data)
     const copy = vi.fn(async () => ({ defaultFile: '/source/copy/main.kcl' }))
     await registry.configure([
       homeProjectsExtension,
+      createFileOperationsExtension(memory),
       contribute(projectLibraryTypesFacet, () => ({
         type: library.type,
         title: library.title,
@@ -158,7 +168,10 @@ describe('home project actions', () => {
           library: expect.objectContaining(library),
           sourceLibrary: expect.objectContaining(library),
           project,
-          source,
+          source: {
+            ...source,
+            files: [{ relativePath: 'main.kcl', data }],
+          },
         })
       )
     } finally {
@@ -172,15 +185,31 @@ describe('home project actions', () => {
       const entry = { ...project, projectPath: '/source/project' }
       const settings = signal({ app: { libraries: { current: [library] } } })
       const gate = Promise.withResolvers<boolean>()
-      let storedCode = 'previous contents'
+      const memory = createMemoryFileSystem({ ...noopfs.impl, ...posix })
+      await memory.mkdir(entry.projectPath, { recursive: true })
+      await memory.writeFile(
+        '/source/project/main.kcl',
+        new TextEncoder().encode('previous contents')
+      )
       let copiedCode: string | undefined
       const flushWriteToFile = vi.fn(async () => {
         const success = await gate.promise
-        if (success) storedCode = 'latest editor contents'
+        if (success) {
+          await memory.writeFile(
+            '/source/project/main.kcl',
+            new TextEncoder().encode('latest editor contents')
+          )
+        }
         return success
       })
+      const openProject = {
+        path: entry.projectPath,
+        executingEditor: signal({ flushWriteToFile }),
+        editors: new Map(),
+      }
       await registry.configure([
         homeProjectsExtension,
+        createFileOperationsExtension(memory),
         contribute(projectLibraryTypesFacet, () => ({
           type: library.type,
           title: library.title,
@@ -192,8 +221,11 @@ describe('home project actions', () => {
               }),
             },
             cloneProjectTo: {
-              run: async () => {
-                copiedCode = storedCode
+              run: async ({ source }) => {
+                copiedCode = new TextDecoder().decode(
+                  source.files?.find((file) => file.relativePath === 'main.kcl')
+                    ?.data
+                )
                 return undefined
               },
             },
@@ -204,10 +236,8 @@ describe('home project actions', () => {
           get: () => settings.value,
         } as unknown as SettingsRegistryService),
         provide(projectSession, {
-          project: signal({
-            path: entry.projectPath,
-            executingEditor: signal({ flushWriteToFile }),
-          }),
+          project: signal(openProject),
+          getProject: () => openProject,
         } as unknown as ProjectSessionService),
       ])
       try {
