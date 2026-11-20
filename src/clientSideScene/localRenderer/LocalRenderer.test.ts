@@ -219,7 +219,7 @@ function nativeExportResponse() {
       success: true,
       resp: {
         type: 'export',
-        data: { files: [{ name: 'preview.brep.json', contents: [123, 125] }] },
+        data: { files: [{ name: 'output.glb', contents: [123, 125] }] },
       },
     },
   ]
@@ -487,6 +487,35 @@ describe('local GLB loading', () => {
     cmd: { type: 'extrude', target: 'profile', distance: 5 },
   }
 
+  it('stops requesting preview exports until the Engine connection changes', async () => {
+    const worker = stubPreviewWorker()
+    const f = fixture()
+    const manager = f.manager.engineCommandManager
+    Object.assign(manager, { connection: { id: 'old' } })
+    manager.sendCommand.mockResolvedValue(nativeExportResponse())
+    f.manager.isExecutingSignal.value = true
+    f.state.nextExecutionPreviewAt = 0
+    await f.state.captureExecutionPreview(previewCheckpoint)
+    worker.onmessage?.({
+      data: {
+        id: worker.postMessage.mock.calls[0][0].id,
+        error: 'Engine did not return a mesh-free B-rep preview',
+        unsupportedExport: true,
+      },
+    } as MessageEvent<TessellationResponse>)
+
+    f.manager.isExecutingSignal.value = false
+    f.manager.isExecutingSignal.value = true
+    f.state.nextExecutionPreviewAt = 0
+    await f.state.captureExecutionPreview(previewCheckpoint)
+    expect(manager.sendCommand).toHaveBeenCalledOnce()
+
+    Object.assign(manager, { connection: { id: 'replacement' } })
+    await f.state.captureExecutionPreview(previewCheckpoint)
+    expect(manager.sendCommand).toHaveBeenCalledTimes(2)
+    f.renderer.dispose()
+  })
+
   it('captures geometry changes in a mixed batch but ignores selection commands', async () => {
     const worker = stubPreviewWorker()
     const f = fixture()
@@ -724,9 +753,7 @@ describe('local GLB loading', () => {
         resp: {
           type: 'export',
           data: {
-            files: [
-              { name: 'preview.brep.json', contents: Array.from(snapshot) },
-            ],
+            files: [{ name: 'output.glb', contents: Array.from(snapshot) }],
           },
         },
       },
@@ -754,7 +781,7 @@ describe('local GLB loading', () => {
     expect(worker.postMessage).toHaveBeenCalledTimes(3)
     expect(
       f.manager.engineCommandManager.sendCommand.mock.calls[0][1].command.cmd
-    ).toMatchObject({ format: { type: 'native_brep' } })
+    ).toMatchObject({ format: { type: 'gltf', brep_only: true } })
     const id = worker.postMessage.mock.calls[2][0].id as number
     const onmessage = worker.onmessage
     if (!onmessage) throw new Error('Missing worker callback')
@@ -800,7 +827,7 @@ describe('local GLB loading', () => {
         resp: {
           type: 'export',
           data: {
-            files: [{ name: 'preview.brep.json', contents: [123, 125] }],
+            files: [{ name: 'output.glb', contents: [123, 125] }],
           },
         },
       },
@@ -883,7 +910,7 @@ describe('local GLB loading', () => {
           resp: {
             type: 'export',
             data: {
-              files: [{ name: 'preview.brep.json', contents: [123, 125] }],
+              files: [{ name: 'output.glb', contents: [123, 125] }],
             },
           },
         },
