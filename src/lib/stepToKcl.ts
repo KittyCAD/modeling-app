@@ -14,13 +14,16 @@ export function generatedKclFileName(stepFileName: string): string {
   return `${baseName}.generated.kcl`
 }
 
-export function buildStepToKclPrompt(stepFileName: string): string {
+export function buildStepToKclPrompt(
+  stepFileName: string,
+  targetName?: string
+): string {
   const sourceName = stepFileName.replaceAll('`', "'")
-  const outputName = generatedKclFileName(sourceName)
+  const outputName = targetName ?? generatedKclFileName(sourceName)
 
   return `Reconstruct the attached STEP model \`${sourceName}\` as standalone, editable KCL.
 
-Activate the step-to-kcl skill before inspecting the source. Follow its evidence-ledger, source-frame, topology, workflow-budget, and final-verification rules. Treat the complete ISO-10303-21 data as dimensional and topological evidence: recover its units, coordinate system, solid bodies, overall dimensions, holes, pockets, repeated features, fillets, and chamfers as accurately as KCL supports.
+Activate the step-to-kcl skill before inspecting the source. Inspect and measure the source, reconstruct native geometry, then use compare_step_geometry when available to diagnose and repair mismatches. Preserve source units, placement, separate bodies, and functional cuts. Validate the exact final revision and distinguish unresolved geometry from verified measurements.
 
 Create a new file named \`${outputName}\`. Do not modify or delete existing project files, and do not import or reference the STEP file from the generated KCL. Prefer concise, idiomatic, parameterized KCL built from native sketches, sweeps, booleans, patterns, and edge treatments. Execute and render the result, fix any KCL errors, and clearly describe any approximations or unsupported source features when you finish.`
 }
