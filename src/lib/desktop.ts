@@ -685,7 +685,7 @@ export async function getProjectInfo(
   fileOperations: FileOperationsRegistryService,
   projectPath: string,
   wasmInstance: ModuleType,
-  options: { createMissingEntrypoint?: boolean } = {}
+  options: { createMissingEntrypoint?: boolean; readOnly?: boolean } = {}
 ): Promise<Project> {
   // Check the directory.
   let stats: FileStat | undefined
@@ -739,7 +739,7 @@ export async function getProjectInfo(
       projectPath,
       walked,
       wasmInstance,
-      options.createMissingEntrypoint
+      !options.readOnly && options.createMissingEntrypoint
     )
   }
   const projectTomlMetadata = canReadWriteProjectPath
@@ -753,7 +753,7 @@ export async function getProjectInfo(
     kcl_file_count: 0,
     directory_count: 0,
     default_file,
-    readWriteAccess: canReadWriteProjectPath,
+    readWriteAccess: canReadWriteProjectPath && !options.readOnly,
   }
 
   // Populate the number of KCL files in the project.

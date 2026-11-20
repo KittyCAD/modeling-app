@@ -33,7 +33,7 @@ kittycad = { version = "0.7.0", default-features = false, features = [
   "requests",
 ] }
 # Use the immutable viewport schema revision until its registry release.
-kittycad-modeling-cmds = { version = "0.2.259", git = "https://github.com/KittyCAD/modeling-api.git", rev = "421aa661b36a8cba26989da342a6b85633f780a8", features = [
+kittycad-modeling-cmds = { version = "0.2.263", git = "https://github.com/KittyCAD/modeling-api.git", rev = "05aebe6c3c03c5bfa18bb294090e75180d74e6d3", features = [
   "ts-rs",
   "websocket",
 ] }

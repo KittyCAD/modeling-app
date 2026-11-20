@@ -688,8 +688,7 @@ body = extrude(region(segments = [profile.perimeter]), length = height)
     )
     expect(commands).not.toContain('set_kcl_version')
     expect(commands).not.toContain('scene_clear_all')
-  }, 90_000)
-
+  })
   it('accepts open, update, and get requests', async () => {
     const projectFiles: ApiFile[] = [
       { id: 0, path: 'some/path/main.kcl', text: 'The first file!' },

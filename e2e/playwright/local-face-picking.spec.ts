@@ -1,3 +1,4 @@
+import { getPixelRGBs } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { isArray } from '@src/lib/utils'
@@ -62,6 +63,21 @@ test(
 
     // At x=9 mm the only surface is the middle of the tapered wall.
     await scene.moveCameraTo({ x: 9, y: -12, z: 8 }, { x: 9, y: 0, z: 0 })
+    const backgroundPoint = await scene.convertPagePositionToStream(
+      0.9,
+      0.3,
+      'ratio'
+    )
+    const [backgroundColor] = await getPixelRGBs(page)(backgroundPoint, 1)
+    if (!backgroundColor) {
+      throw new Error('Could not sample the viewport background')
+    }
+    await scene.expectPixelColorNotToBe(
+      backgroundColor,
+      { x: 0.5, y: 0.5 },
+      10,
+      { format: 'ratio' }
+    )
     const [clickSlope] = scene.makeMouseHelpers(0.5, 0.5, { format: 'ratio' })
     await clickSlope()
     await expect

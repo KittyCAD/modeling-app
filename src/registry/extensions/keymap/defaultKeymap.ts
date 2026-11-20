@@ -1,4 +1,3 @@
-import { defineRegistryItem, provide } from '@kittycad/registry'
 import { isDesktop } from '@src/lib/isDesktop'
 import { getDeleteKeys } from '@src/lib/utils'
 import {
@@ -6,16 +5,17 @@ import {
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   HOME_KEYMAP_SCOPE,
   type KeymapDocument,
+  keymapFacet,
   MODE_MODELING_KEYMAP_SCOPE,
-  MODELING_DIALOG_FOCUSED_KEYMAP_SCOPE,
-  MODE_SKETCHING_KEYMAP_SCOPE,
   MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+  MODE_SKETCHING_KEYMAP_SCOPE,
+  MODELING_DIALOG_FOCUSED_KEYMAP_SCOPE,
   PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
-  keymapValueSpec,
 } from '@src/registry/contracts/keymap'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommandIds'
+import { contribute } from 'plankton'
 
 const BASE_KEYMAP_SOURCE = 'Base'
 const FILE_KEYMAP_SCOPES = [
@@ -339,6 +339,13 @@ export const defaultKeymap: KeymapDocument = {
       command: 'standardViews:Zoom to fit',
     },
     {
+      id: 'view.zoom-to-fit-with-modifier',
+      title: 'Zoom to fit',
+      when: FILE_KEYMAP_SCOPES,
+      keystrokes: ['mod+alt+f'],
+      command: 'standardViews:Zoom to fit',
+    },
+    {
       id: 'view.reset',
       title: 'Reset view',
       when: [MODE_MODELING_KEYMAP_SCOPE],
@@ -611,10 +618,8 @@ export const defaultKeymap: KeymapDocument = {
     },
   ],
 }
-
-export const defaultKeymapItem = defineRegistryItem({
-  id: 'default-keymap',
-  provides: [
-    provide(keymapValueSpec, defaultKeymap, { key: defaultKeymap.source }),
-  ],
-})
+export const defaultKeymapItem = [
+  contribute(keymapFacet, () => defaultKeymap, {
+    key: defaultKeymap.source,
+  }),
+]

@@ -1,8 +1,16 @@
+import { PING_INTERVAL_MS } from '@src/lib/engineConnection/utils'
 import { Connection } from '@src/lib/engineConnection/connection'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 class TestWebSocket extends EventTarget {
   static instances: TestWebSocket[] = []
+  static OPEN = 1
+  static CLOSED = 3
+  readyState = TestWebSocket.OPEN
+  close() {
+    this.readyState = TestWebSocket.CLOSED
+    this.dispatchEvent(new Event('close'))
+  }
 
   binaryType: BinaryType = 'blob'
   readonly send = vi.fn()
@@ -39,11 +47,14 @@ function createUnitTestConnection({
 
 describe('unit testing engine connection', () => {
   beforeEach(() => {
+    vi.useFakeTimers()
     TestWebSocket.instances = []
     vi.stubGlobal('WebSocket', TestWebSocket)
   })
 
   afterEach(() => {
+    vi.clearAllTimers()
+    vi.useRealTimers()
     vi.unstubAllGlobals()
   })
 
@@ -139,4 +150,40 @@ describe('unit testing engine connection', () => {
     expect(callbackOnUnitTestingConnection).toHaveBeenCalledWith('auth success')
     expect(connection.handleMessage).toHaveBeenCalledOnce()
   })
+  it.each([false, true])(
+    'keeps an authenticated test session alive while modeling is idle (WebRTC: %s)',
+    (webrtc) => {
+      const { connection } = createUnitTestConnection({ webrtc })
+      const websocket = TestWebSocket.instances[0]
+      const message = (resp: object) =>
+        websocket.dispatchEvent(
+          new MessageEvent('message', {
+            data: JSON.stringify({ success: true, request_id: null, resp }),
+          })
+        )
+      vi.advanceTimersByTime(PING_INTERVAL_MS)
+      expect(websocket.send).not.toHaveBeenCalled()
+      message(
+        webrtc
+          ? { type: 'ice_server_info', data: {} }
+          : {
+              type: 'modeling_session_data',
+              data: { session: { api_call_id: 'session' } },
+            }
+      )
+      vi.advanceTimersByTime(PING_INTERVAL_MS)
+      expect(websocket.send).toHaveBeenCalledExactlyOnceWith(
+        JSON.stringify({ type: 'ping' })
+      )
+      vi.advanceTimersByTime(PING_INTERVAL_MS)
+      expect(websocket.send).toHaveBeenCalledTimes(1)
+      message({ type: 'pong' })
+      vi.advanceTimersByTime(PING_INTERVAL_MS)
+      expect(websocket.send).toHaveBeenCalledTimes(2)
+      websocket.close()
+      vi.advanceTimersByTime(3 * PING_INTERVAL_MS)
+      expect(websocket.send).toHaveBeenCalledTimes(2)
+      expect(connection.pingIntervalId).toBeUndefined()
+    }
+  )
 })
