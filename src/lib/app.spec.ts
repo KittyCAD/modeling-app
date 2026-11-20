@@ -1,3 +1,4 @@
+import { executorsService } from '@src/lib/executors/registry/contract'
 import '@src/lib/projectSession/next/testFeature'
 import type { Feature } from '@kittycad/lib'
 import { signal } from '@preact/signals-core'
@@ -189,7 +190,7 @@ function expectedRuntimeFlags() {
   })
 }
 describe('project system', () => {
-  it('closes project editor resources through the Home navigation boundary', async () => {
+  it('closes project editor and executor resources through the Home navigation boundary', async () => {
     const app = createAppForTest()
     try {
       await waitForSettingsIdle(app)
@@ -207,8 +208,10 @@ describe('project system', () => {
         },
       })
       const editors = app.registry.required(editorsService)
+      const executors = app.registry.required(executorsService)
       const editor = requireSuccess(editors.openEditor('/project/main.kcl', ''))
       const destroy = vi.spyOn(codeSurface(editors, editor), 'destroy')
+      executors.createExecutor(editor)
       // Exercise Home's actual close boundary without starting unrelated folder IO.
       loadHomeProjects({
         projectLibraries: {
@@ -224,6 +227,7 @@ describe('project system', () => {
       expect(projects.currentSession.value).toBeUndefined()
       expect(session.signal.aborted).toBe(true)
       expect(editors.editors.value).toEqual([])
+      expect(executors.executors.value).toEqual([])
       expect(destroy).toHaveBeenCalledOnce()
     } finally {
       await app.disposeAsync()

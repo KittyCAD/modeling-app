@@ -1,6 +1,7 @@
 import { computed, effect, signal } from '@preact/signals-core'
 import { newKclFile } from '@src/lang/project'
 import { observations as cloudProjectsObservations } from '@src/lib/cloudProjects/registry/contract'
+import { listRemoteProjectLibraries } from '@src/lib/cloudProjects/runtime/api'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
@@ -15,6 +16,11 @@ import {
   getDefaultCloudProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
 } from '@src/lib/projectLibraries'
+import {
+  apiProjectLibraries,
+  apiProjectLibraryId,
+  isApiProjectLibrary,
+} from '@src/lib/projectLibraries/apiProjectLibraries'
 import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
 import { collectProjectFilesForUpload } from '@src/lib/projectSession/projectFiles'
 import { isErr, reportRejection } from '@src/lib/trap'
@@ -31,7 +37,9 @@ import {
   projectLibraryTypesFacet,
 } from '@src/registry/contracts/projectLibraries'
 import { observations as routerObservations } from '@src/registry/contracts/router'
+import { runtimeService } from '@src/registry/contracts/runtime'
 import { observations as wasmObservations } from '@src/registry/contracts/wasm'
+import { observeService } from '@src/registry/inputs'
 import {
   factory as defineFactory,
   contribute,
@@ -47,6 +55,7 @@ export default defineFactory({
     wasm: wasmObservations,
     auth: authObservations,
     router: routerObservations,
+    runtime: observeService(runtimeService),
   },
   key: 'cloud-projects-library',
   create: ({
@@ -55,6 +64,7 @@ export default defineFactory({
     wasm: wasmInputs,
     auth: authInputs,
     router: routerInputs,
+    runtime: runtimeInput,
   }) => {
     const cloud = () => cloudProjectsInputs.cloudStorageService.required()
     const operations = () =>
@@ -64,6 +74,13 @@ export default defineFactory({
       Promise.reject(new Error('Missing WASM promise.'))
     const auth = authInputs.authService.current
     const router = routerInputs.routerService.current
+    const runtime = runtimeInput.current
+    const libraries = signal<ReturnType<typeof apiProjectLibraries>>([])
+    const refreshCatalog = signal(0)
+    const libraryIds = computed(() => [
+      PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+      ...libraries.value.map((library) => library.id),
+    ])
     const pathname = computed(() => router.value?.location.value.pathname)
     const settledAccount = signal<
       | {
@@ -77,7 +94,8 @@ export default defineFactory({
       const thumbnails = cloud().thumbnails.value
       return cloud()
         .projects.value.filter(
-          (project) => project.access?.scope !== 'organization'
+          (project) =>
+            project.library_id || project.access?.scope !== 'organization'
         )
         .map((project) => ({
           id: `cloud:${project.id}`,
@@ -94,8 +112,12 @@ export default defineFactory({
                 url: thumbnails.get(project.id)!,
               }
             : undefined,
-          libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
-          readWriteAccess: true,
+          libraryIds: [
+            project.library_id
+              ? apiProjectLibraryId(project.library_id)
+              : PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+          ],
+          readWriteAccess: project.access?.can_edit ?? true,
           deleteRemoteOnDelete: true,
           modified:
             typeof project.updated_at === 'string'
@@ -105,7 +127,10 @@ export default defineFactory({
     })
     const projectInfo = async (id: string) => {
       const path = await cloud().openProject(id)
-      const project = await getProjectInfo(operations(), path, await wasm())
+      const project = await getProjectInfo(operations(), path, await wasm(), {
+        createMissingEntrypoint: false,
+        readOnly: cloud().isReadOnlyProject(id),
+      })
       return {
         ...project,
         cloudProjectId: id,
@@ -152,6 +177,7 @@ export default defineFactory({
               return new Error('Sign in to refresh cloud projects.')
             const storage = cloud()
             if (storage.projectsLoading.peek()) return
+            refreshCatalog.value += 1
             try {
               await storage.listProjects()
             } catch (cause) {
@@ -162,6 +188,7 @@ export default defineFactory({
           },
         },
         createProject: {
+          isAvailable: ({ library }) => !isApiProjectLibrary(library),
           run: async ({
             requestedProjectTitle,
             initialKclFile,
@@ -208,6 +235,7 @@ export default defineFactory({
           },
         },
         renameProject: {
+          isAvailable: ({ library }) => !isApiProjectLibrary(library),
           run: async ({ project, requestedName }) => {
             if (project.remoteProjectId)
               await cloud().renameProject(
@@ -217,12 +245,14 @@ export default defineFactory({
           },
         },
         deleteProject: {
+          isAvailable: ({ library }) => !isApiProjectLibrary(library),
           run: async ({ project }) => {
             if (project.remoteProjectId)
               await cloud().deleteProject(project.remoteProjectId)
           },
         },
         duplicateProject: {
+          isAvailable: ({ library }) => !isApiProjectLibrary(library),
           run: async ({ project }) => {
             if (!project.remoteProjectId) return undefined
             const title = `${getHomeProjectDisplayName(project)}-copy`
@@ -238,8 +268,7 @@ export default defineFactory({
           },
         },
         cloneProjectFrom: {
-          canCloneProject: ({ project }) =>
-            Boolean(project.remoteProjectId && project.readWriteAccess),
+          canCloneProject: ({ project }) => Boolean(project.remoteProjectId),
           run: async ({ project }) => {
             if (!project.remoteProjectId) return undefined
             const info = await projectInfo(project.remoteProjectId)
@@ -251,11 +280,15 @@ export default defineFactory({
           },
         },
         cloneProjectTo: {
+          isAvailable: ({ library }) => !isApiProjectLibrary(library),
           run: async ({ source, project, requestedProjectTitle }) => {
-            const archive = await collectProjectFilesForUpload({
-              fileOperations: operations(),
-              projectRoot: source.localProjectPath,
-            })
+            const archive =
+              source.files ??
+              (await collectProjectFilesForUpload({
+                fileOperations: operations(),
+                projectRoot: source.localProjectPath,
+                includeIgnored: true,
+              }))
             const created = await cloud().createProject(
               requestedProjectTitle ?? getHomeProjectDisplayName(project),
               archive
@@ -271,18 +304,47 @@ export default defineFactory({
       },
     } satisfies InputOf<typeof projectLibraryTypesFacet>
     return {
-      start: () =>
-        effect(() => {
+      start: () => {
+        const onVisibilityChange = () => {
+          if (!document.hidden) refreshCatalog.value += 1
+        }
+        document.addEventListener('visibilitychange', onVisibilityChange)
+        let scope: string | undefined
+        const stopCatalog = effect(() => {
+          const token = auth.value?.token.value
+          const account = auth.value?.user.value?.id
+          const baseUrl = runtime.value?.current.value.apiBaseUrl
+          const loggedIn = auth.value?.isLoggedIn.value
+          void refreshCatalog.value
+          const nextScope = JSON.stringify([token, account, baseUrl, loggedIn])
+          if (scope !== nextScope) {
+            scope = nextScope
+            libraries.value = []
+          }
+          if (!loggedIn || !token) return
+          const controller = new AbortController()
+          void listRemoteProjectLibraries(
+            { enabled: true, token, baseUrl },
+            controller.signal
+          )
+            .then((result) => {
+              if (!controller.signal.aborted && !disposed)
+                libraries.value = apiProjectLibraries(result)
+            })
+            .catch((error: unknown) => {
+              if (!controller.signal.aborted && !disposed)
+                reportRejection(error)
+            })
+          return () => controller.abort()
+        })
+        const stopProjects = effect(() => {
           const loggedIn = auth.value?.isLoggedIn.value
           const token = auth.value?.token.value
           const path = pathname.value
           void token
           if (
             !loggedIn ||
-            !(
-              path === PATHS.HOME ||
-              path === `${PATHS.LIBRARY}/${PERSONAL_CLOUD_PROJECT_LIBRARY_ID}`
-            )
+            !(path === PATHS.HOME || path?.startsWith(`${PATHS.LIBRARY}/`))
           )
             return
           const accountId = auth.value?.user.value?.id
@@ -295,7 +357,13 @@ export default defineFactory({
               if (!disposed && auth.peek()?.user.peek()?.id === accountId)
                 settledAccount.value = { id: accountId }
             })
-        }),
+        })
+        return () => {
+          stopCatalog()
+          stopProjects()
+          document.removeEventListener('visibilitychange', onVisibilityChange)
+        }
+      },
       items: [
         contribute(
           homeProjectSettledLibraryIdsFacet,
@@ -304,7 +372,7 @@ export default defineFactory({
             return auth.value?.isLoggedIn.value &&
               account &&
               account.id === auth.value.user.value?.id
-              ? [PERSONAL_CLOUD_PROJECT_LIBRARY_ID]
+              ? libraryIds.value
               : []
           },
           {
@@ -315,7 +383,7 @@ export default defineFactory({
           homeProjectLoadingLibraryIdsFacet,
           () =>
             auth.value?.isLoggedIn.value && cloud().projectsLoading.value
-              ? [PERSONAL_CLOUD_PROJECT_LIBRARY_ID]
+              ? libraryIds.value
               : [],
           {
             key: 'cloud-projects.loading',
@@ -328,10 +396,10 @@ export default defineFactory({
           projectLibrarySettingDefaultPoliciesFacet,
           () => _projectLibrarySettingDefaultPoliciesContribution
         ),
-        contribute(
-          projectLibraryTypesFacet,
-          () => _projectLibraryTypesContribution
-        ),
+        contribute(projectLibraryTypesFacet, () => ({
+          ..._projectLibraryTypesContribution,
+          libraries: libraries.value,
+        })),
       ],
       dispose: () => {
         disposed = true

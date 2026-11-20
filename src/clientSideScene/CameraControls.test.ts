@@ -1033,6 +1033,8 @@ describe('local sketch camera transition', () => {
   function setup(geometryOnly = true) {
     const manager = makeConnectionManager({ width: 800, height: 600 })
     Object.defineProperty(manager, 'geometryOnly', { value: geometryOnly })
+    vi.spyOn(manager, 'subscribeTo').mockReturnValue(() => {})
+    vi.spyOn(manager, 'subscribeToUnreliable').mockReturnValue(() => {})
     const controls = new CameraControls(
       makeCanvas(800, 600),
       manager,
@@ -1171,6 +1173,33 @@ describe('local sketch camera transition', () => {
       ).toBeLessThan(1e-8)
     }
   )
+
+  it('ignores a pending face-center response after disposal', async () => {
+    const { controls, sendSceneCommand } = setup()
+    const response = promiseFactory<WebSocketResponse>()
+    sendSceneCommand.mockReturnValueOnce(response.promise)
+    const camera = controls.camera
+    const position = camera.position.clone()
+    controls.requestSketchCameraTransition('face-id')
+    const pending = controls.transitionToSketch(new Group())
+    controls.dispose()
+    response.resolve({
+      success: true,
+      resp: {
+        type: 'modeling',
+        data: {
+          modeling_response: {
+            type: 'face_get_center',
+            data: { pos: { x: 10, y: 20, z: 30 } },
+          },
+        },
+      },
+    })
+    await pending
+    expect(controls.camera).toBe(camera)
+    expect(camera.position).toEqual(position)
+    expect(controls.target.toArray()).toEqual([0, 0, 0])
+  })
 
   it('ignores a face-centre response after leaving sketch mode', async () => {
     const { controls, sendSceneCommand } = setup()
@@ -1460,3 +1489,30 @@ async function expectViewRestored(
   expect(restored.eye_offset).toBeCloseTo(view.eye_offset)
   expect({ ...restored, eye_offset: view.eye_offset }).toEqual(view)
 }
+
+it('releases camera input and engine subscriptions when a scene closes', () => {
+  const canvas = makeCanvas(640, 360)
+  const manager = makeConnectionManager({ width: 640, height: 360 })
+  const releases: Array<ReturnType<typeof vi.fn>> = []
+  const subscribe = () => {
+    const release = vi.fn()
+    releases.push(release)
+    return release
+  }
+  vi.spyOn(manager, 'subscribeTo').mockImplementation(subscribe)
+  vi.spyOn(manager, 'subscribeToUnreliable').mockImplementation(subscribe)
+  const controls = new CameraControls(canvas, manager, unusedSettings)
+  controls.localCameraMode = true
+  vi.spyOn(controls, 'getInteractionType').mockReturnValue('zoom')
+  controls.camera.position.set(0, 0, 100)
+  const initial = controls.camera.position.clone()
+  canvas.dispatchEvent(new WheelEvent('wheel', { deltaY: 100 }))
+  expect(controls.camera.position.distanceTo(initial)).toBeGreaterThan(0)
+  const previous = controls.camera.position.clone()
+  controls.dispose()
+  controls.dispose()
+  canvas.dispatchEvent(new WheelEvent('wheel', { deltaY: 100 }))
+  expect(controls.camera.position.equals(previous)).toBe(true)
+  expect(releases).toHaveLength(5)
+  for (const release of releases) expect(release).toHaveBeenCalledOnce()
+})

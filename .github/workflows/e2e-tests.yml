@@ -1,10 +1,17 @@
 name: E2E Tests
 
+# Due to test infrastructure scaling limitations, we do not automatically run
+# E2E tests on every push. Instead, PRs opt-in by applying the `run-e2e` label
+# once local development is complete. Remove the label to save CI costs if a PR
+# needs to undergo further changes. Consider only applying the label to the top
+# of large PR stacks.
+
 on:
   push:
     branches:
       - main
   pull_request:
+    types: [opened, synchronize, reopened, labeled]
   schedule:
     - cron: 0 * * * * # hourly
   workflow_call:
@@ -32,7 +39,16 @@ permissions:
   actions: read
 
 jobs:
+  e2e-enabled:
+    if: >-
+      github.event_name != 'pull_request' ||
+      contains(github.event.pull_request.labels.*.name, 'run-e2e')
+    runs-on: namespace-profile-ubuntu-2-cores
+    steps:
+      - run: echo "E2E is enabled for this event"
+
   track-setup:
+    needs: [e2e-enabled]
     if: ${{ !inputs.grep }}
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
@@ -77,7 +93,6 @@ jobs:
       TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
 
   build-web:
-    name: Build web E2E app
     needs: [build-wasm]
     if: ${{ !cancelled() && needs.build-wasm.result == 'success' && !inputs.grep }}
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
@@ -311,14 +326,13 @@ jobs:
             test_command: npm run test:e2e:web
             playwright_cache_path: ~/.cache/ms-playwright
         include:
-          # TODO: Enable Firefox testing on CI
-          # - shardIndex: 1
-          #   shardTotal: 1
-          #   config:
-          #     os: namespace-profile-ubuntu-8-cores
-          #     label: firefox
-          #     test_command: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:web:firefox
-          #     playwright_cache_path: ~/.cache/ms-playwright
+          - shardIndex: 1
+            shardTotal: 1
+            config:
+              os: namespace-profile-ubuntu-8-cores
+              label: firefox
+              test_command: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:web:firefox
+              playwright_cache_path: ~/.cache/ms-playwright
           - shardIndex: 1
             shardTotal: 1
             config:
@@ -574,6 +588,7 @@ jobs:
 
   vercel:
     name: e2e:web (vercel)
+    needs: [e2e-enabled]
     if: github.repository == 'kittycad/modeling-app' && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref_name == 'main'))
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
 

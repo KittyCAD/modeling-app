@@ -237,9 +237,7 @@ pub fn zoo_client(
             && zoo_token != token
         {
             return Err(anyhow::anyhow!(
-                "Both environment variables KITTYCAD_API_TOKEN=`{}` and ZOO_API_TOKEN=`{}` are set. Use only one.",
-                token,
-                zoo_token
+                "Both environment variables KITTYCAD_API_TOKEN and ZOO_API_TOKEN are set. Use only one."
             ));
         }
         token
