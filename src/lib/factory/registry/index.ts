@@ -84,7 +84,7 @@ const workspaceOwner = factory({
 export default createZdsPlugin({
   id: 'factory',
   title: 'Submit to Factory',
-  description: 'Submit project entry points as manufacturing jobs.',
+  description: 'Submit project parts as manufacturing jobs.',
   items: [workspaceOwner],
   defaultSetting: 'core',
   activationSetting: {

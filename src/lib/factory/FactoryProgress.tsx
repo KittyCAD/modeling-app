@@ -1,7 +1,7 @@
 export type FactoryFormStep = 'files' | 'parts' | 'shipping' | 'review'
 
 const steps: { id: FactoryFormStep; title: string }[] = [
-  { id: 'files', title: 'Choose entry points' },
+  { id: 'files', title: 'Choose parts' },
   { id: 'parts', title: 'Job details' },
   { id: 'shipping', title: 'Delivery' },
   { id: 'review', title: 'Confirm jobs' },

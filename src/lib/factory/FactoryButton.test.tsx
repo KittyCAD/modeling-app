@@ -159,7 +159,7 @@ it('corrects a rejected part without repeating successful jobs, then revises a j
   expect(within(progress).getAllByRole('listitem')).toHaveLength(4)
   expect(
     within(progress).getByRole('listitem', { current: 'step' })
-  ).toHaveAttribute('aria-label', 'Step 1: Choose entry points')
+  ).toHaveAttribute('aria-label', 'Step 1: Choose parts')
   fireEvent.click(screen.getByRole('button', { name: 'Close Factory' }))
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   fireEvent.click(screen.getByRole('button', { name: 'Submit to Factory' }))
@@ -237,8 +237,6 @@ it('corrects a rejected part without repeating successful jobs, then revises a j
   ).toHaveAttribute('href', expect.stringContaining('job=job-one'))
   await within(editor).findByText('Revision submitted.')
   fireEvent.click(screen.getByRole('button', { name: 'Add Job' }))
-  expect(
-    screen.getByRole('combobox', { name: 'Entry point files' })
-  ).toHaveValue('')
+  expect(screen.getByRole('combobox', { name: 'Part files' })).toHaveValue('')
   expect(screen.getByText('0 files selected')).toBeVisible()
 })

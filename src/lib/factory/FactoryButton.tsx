@@ -23,7 +23,7 @@ import {
 import type { FactoryCatalog, FactoryFormContext } from '@src/lib/factory/types'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import Fuse from 'fuse.js'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 
 const inputClass =
   'mt-2 w-full rounded border b-4/80 bg-1/90 px-2.5 py-2 text-sm font-normal normal-case tracking-normal text-1 placeholder:text-3 focus:outline-none focus-visible:outline-appForeground dark:bg-2/80'
@@ -84,6 +84,8 @@ function FactoryPopover({
 }) {
   useSignals()
   const { local, signedIn, ready, requests } = context
+  const formId = useId()
+  const bodyRef = useRef<HTMLDivElement>(null)
   const [catalog, setCatalog] = useState<Catalog>()
   const [paths, setPaths] = useState<string[]>([])
   const [selected, setSelected] = useState<string[]>([])
@@ -94,6 +96,9 @@ function FactoryPopover({
   const [step, setStep] = useState<FactoryFormStep | 'jobs'>(() =>
     workspace.jobs.peek().length ? 'jobs' : 'files'
   )
+  useEffect(() => {
+    if (bodyRef.current) bodyRef.current.scrollTop = 0
+  }, [step])
   const [loadError, setLoadError] = useState('')
   const [error, setError] = useState('')
   const [attempt, setAttempt] = useState(0)
@@ -136,6 +141,8 @@ function FactoryPopover({
     }
   }, [context, open, signedIn, ready, catalog, attempt])
   const busy = preparing || workspace.pending.value
+  const showNavigation = step !== 'jobs' && signedIn && Boolean(catalog)
+  const errorMessage = error || workspace.error.value
   const submitLabel = busy
     ? 'Submitting...'
     : step === 'review'
@@ -196,7 +203,7 @@ function FactoryPopover({
     setError('')
     if (step === 'files') {
       if (!selected.length) {
-        setError('Choose at least one KCL entry point.')
+        setError('Choose at least one part file.')
         return
       }
       setParts(
@@ -245,7 +252,10 @@ function FactoryPopover({
           className="shrink-0 !border-transparent !bg-transparent !px-1 py-1 hover:!bg-3/50"
         />
       </div>
-      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain px-4 py-4">
+      <div
+        ref={bodyRef}
+        className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain px-4 py-4"
+      >
         {workspace.jobs.value.length > 0 && (
           <section aria-label="Submitted Factory jobs" className="space-y-2">
             {workspace.jobs.value.map((job) => (
@@ -297,6 +307,7 @@ function FactoryPopover({
               </div>
             ) : (
               <form
+                id={formId}
                 onSubmit={(event) => {
                   event.preventDefault()
                   next()
@@ -309,8 +320,9 @@ function FactoryPopover({
                   {step === 'files' && (
                     <>
                       <p className="text-xs leading-5 text-2">
-                        Choose one KCL file per manufacturing job. Each model
-                        should contain a single solid body.
+                        Select the KCL file for each part you want manufactured.
+                        Each file creates a separate job and should contain a
+                        single solid body.
                       </p>
                       <FactoryFilePicker
                         paths={paths}
@@ -444,67 +456,79 @@ function FactoryPopover({
                       </p>
                     </>
                   )}
-                  <div className="flex justify-end gap-2 border-t b-5/70 pt-4">
-                    {step !== 'files' && (
-                      <ActionButton
-                        Element="button"
-                        tabIndex={0}
-                        iconStart={{
-                          icon: 'arrowLeft',
-                          bgClassName: plainIcon,
-                        }}
-                        type="button"
-                        aria-label="Previous"
-                        className="mr-auto !gap-1 !py-0 !pl-0.5 !pr-2"
-                        disabled={Boolean(snapshot.current) && step === 'parts'}
-                        onClick={() =>
-                          setStep(
-                            step === 'review'
-                              ? 'shipping'
-                              : step === 'shipping'
-                                ? 'parts'
-                                : 'files'
-                          )
-                        }
-                      >
-                        Previous
-                      </ActionButton>
-                    )}
-                    <ActionButton
-                      Element="button"
-                      type="submit"
-                      tabIndex={0}
-                      className={`${primaryButtonClass} !gap-1 !pl-2 !pr-0.5`}
-                      aria-label={submitLabel}
-                      iconEnd={{
-                        icon: 'arrowRight',
-                        bgClassName: plainIcon,
-                      }}
-                    >
-                      {submitLabel}
-                    </ActionButton>
-                  </div>
                 </fieldset>
               </form>
             )}
           </>
         )}
-        {(error || workspace.error.value) && (
-          <p role="alert" className="mt-3">
-            {error || workspace.error.value}
-          </p>
-        )}
-        {workspace.uncertain.value && (
-          <a
-            className="mt-2 block underline"
-            href={withSiteBaseURL('/account/manufacturing')}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Check Manufacturing Jobs on zoo.dev
-          </a>
-        )}
       </div>
+      {(showNavigation || errorMessage || workspace.uncertain.value) && (
+        <div className="shrink-0 border-t b-5/70 bg-1/95 px-4 py-3 dark:bg-2/95">
+          {errorMessage && (
+            <p role="alert" className="mb-3">
+              {errorMessage}
+            </p>
+          )}
+          {workspace.uncertain.value && (
+            <a
+              className="mb-3 block underline"
+              href={withSiteBaseURL('/account/manufacturing')}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Check Manufacturing Jobs on zoo.dev
+            </a>
+          )}
+
+          {showNavigation && (
+            <fieldset
+              aria-label="Factory form navigation"
+              disabled={busy || workspace.uncertain.value}
+              className="flex min-w-0 items-center justify-end gap-2"
+            >
+              {step !== 'files' && (
+                <ActionButton
+                  Element="button"
+                  tabIndex={0}
+                  iconStart={{
+                    icon: 'arrowLeft',
+                    bgClassName: plainIcon,
+                  }}
+                  type="button"
+                  aria-label="Previous"
+                  className="mr-auto !gap-1 !py-0 !pl-0.5 !pr-2"
+                  disabled={Boolean(snapshot.current) && step === 'parts'}
+                  onClick={() =>
+                    setStep(
+                      step === 'review'
+                        ? 'shipping'
+                        : step === 'shipping'
+                          ? 'parts'
+                          : 'files'
+                    )
+                  }
+                >
+                  Previous
+                </ActionButton>
+              )}
+              <ActionButton
+                Element="button"
+                type="submit"
+                form={formId}
+                tabIndex={0}
+                className={`${primaryButtonClass} !gap-1 !pl-2 !pr-0.5`}
+                aria-label={submitLabel}
+                iconEnd={{
+                  icon: 'arrowRight',
+                  bgClassName: plainIcon,
+                }}
+              >
+                {submitLabel}
+              </ActionButton>
+            </fieldset>
+          )}
+        </div>
+      )}
     </Popover.Panel>
   )
 }
@@ -523,14 +547,14 @@ export function FactoryFilePicker({
   const filtered = query ? fuse.search(query).map((item) => item.item) : paths
   return (
     <Combobox multiple value={selected} onChange={onChange}>
-      <Combobox.Label className="sr-only">Entry point files</Combobox.Label>
+      <Combobox.Label className="sr-only">Part files</Combobox.Label>
       <div className="group flex items-center gap-2 rounded border b-4/80 bg-1/60 py-1.5 pl-2.5 pr-1.5 focus-within:border-primary">
         <Combobox.Input
           {...noAutofillInputProps}
           className="w-full min-w-0 bg-transparent focus:outline-none selection:bg-primary/20"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search project files"
+          placeholder="Search part files"
         />
         <CustomIcon
           name="search"

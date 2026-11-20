@@ -2,6 +2,7 @@
 
 The `factory` plugin contributes one Top Bar item through `appHeaderItemsFacet`.
 The `factory_portal` feature controls activation through `createZdsPlugin`.
+The form calls selected models parts; each selected KCL file runs as its job's entry point.
 Its Factory owns account/project workspaces until the plugin is removed. Closing
 the popover preserves the draft; switching projects preserves confirmed jobs in
 memory. Signing out or changing accounts disposes the workspaces. Nothing is

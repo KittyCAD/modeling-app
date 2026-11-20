@@ -43,9 +43,7 @@ export interface FactoryJobRequests {
 
 export function parseFactoryPart(part: FactoryPart): FactoryPart | Error {
   if (!part.entrypoint || !part.material || !part.finish)
-    return new Error(
-      'Choose an entry point, material, and finish for each job.'
-    )
+    return new Error('Choose a part file, material, and finish for each job.')
   if (!Number.isSafeInteger(part.quantity) || part.quantity < 1)
     return new Error('Quantity must be a positive whole number.')
   return { ...part, notes: part.notes.trim() }
@@ -78,7 +76,7 @@ export function createFactoryWorkspace() {
       !parts.length ||
       new Set(parts.map((part) => part.entrypoint)).size !== parts.length
     ) {
-      error.value = 'Choose each entry point only once.'
+      error.value = 'Choose each part file only once.'
       return []
     }
     if (
@@ -87,8 +85,7 @@ export function createFactoryWorkspace() {
           !snapshot.files.some((file) => file.relativePath === part.entrypoint)
       )
     ) {
-      error.value =
-        'A selected entry point is missing from the project snapshot.'
+      error.value = 'A selected part file is missing from the project snapshot.'
       return []
     }
     pending.value = true
