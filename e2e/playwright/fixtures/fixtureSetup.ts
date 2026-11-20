@@ -134,12 +134,19 @@ export class AuthenticatedApp {
     const u = await getUtils(this.page)
 
     await this.page.addInitScript(async (code) => {
-      // Persistent WebKit starts on about:blank, where localStorage is unavailable.
+      // WebKit starts on about:blank, where localStorage is unavailable.
       if (window.location.protocol === 'about:') {
         return
       }
-      localStorage.setItem('persistCode', code)
-      ;(window as any).playwrightSkipFilePicker = true
+      try {
+        localStorage.setItem('persistCode', code)
+        ;(window as any).playwrightSkipFilePicker = true
+      } catch (error) {
+        // Firefox can raise SecurityError during navigation.
+        if ((error as { name?: string } | null)?.name !== 'SecurityError') {
+          throw error
+        }
+      }
     }, code)
 
     await this.page.setViewportSize(this.viewPortSize)

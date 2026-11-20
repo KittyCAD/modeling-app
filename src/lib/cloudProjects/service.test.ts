@@ -687,6 +687,25 @@ it('reports offline write policy only for paths belonging to cloud storage', asy
   expect(project.writeAvailability.value).toEqual({ writable: true })
 })
 
+it('reports a read-only cloud project through its storage handle', async () => {
+  const { storage, storageFor } = setup()
+  vi.mocked(api.getRemoteProject).mockResolvedValue({
+    ...remote,
+    access: {
+      can_edit: false,
+      can_delete: false,
+      can_manage_organization: false,
+      scope: 'organization',
+    },
+  })
+  const root = await storage.openProject('one')
+  const project = storageFor(root)!
+  expect(project.writeAvailability.value).toEqual({
+    writable: false,
+    reason: 'Read-only project.',
+  })
+})
+
 it('watches only the captured subtree and stops delivering changes after disposal', async () => {
   const { storage, storageFor } = setup()
   const root = await storage.openProject('one')

@@ -156,6 +156,7 @@ use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
 use crate::execution::KclValue;
 use crate::execution::KclValueControlFlow;
+use crate::execution::KclVersion;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::SketchSurface;
@@ -1154,7 +1155,7 @@ async fn step_eval(
         // ---- access / control ----
         Expr::MemberExpression(node) => {
             let node = node.arc();
-            if exec_state.entry_point_version_is_v3_or_higher() {
+            if exec_state.entry_point_version_at_least(KclVersion::V3Preview) {
                 // KCL 3.0: evaluate in source order, the object before the
                 // property.
                 let object = EvalRequest::expr(&node.object);
@@ -1642,7 +1643,7 @@ async fn step_block(
                         Vec::new(),
                     )));
                 };
-                if exec_state.entry_point_version_is_v3_or_higher() {
+                if exec_state.entry_point_version_at_least(KclVersion::V3Preview) {
                     // KCL 3.0: early return. The rest of this block is
                     // abandoned (this continuation is already popped and holds
                     // no ambient state); unwind_return absorbs the value at the

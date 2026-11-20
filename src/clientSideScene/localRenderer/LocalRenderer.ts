@@ -26,17 +26,20 @@ import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import { IntegerIdPicker } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
 import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
 import { SelectionHighlightRenderer } from '@src/clientSideScene/localRenderer/SelectionHighlightRenderer'
-import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
-import { KclManagerEvents } from '@src/lang/KclManager'
+import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
+import {
+  SceneExecutionEvents,
+  type SceneExecutionDoneDetail,
+} from '@src/lib/kcl/scene/execution'
 import { artifactToEntityRef } from '@src/lang/queryAst'
 import { DprDetector } from '@src/lib/DprDetector'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { type ResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { reportRejection, trap } from '@src/lib/trap'
 import { isArray, isNonNullable, uuidv4 } from '@src/lib/utils'
 import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
+import toast from 'react-hot-toast'
 import {
   Box3,
   BufferGeometry,
@@ -90,6 +93,8 @@ import type {
 } from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
 
 const ENGINE_MILLIMETERS_TO_GLTF_METERS = 1 / 1000
+
+const MODEL_LOAD_ERROR_TOAST_ID = 'local-renderer-model-load-error'
 
 // If the filter selects whole bodies, returns which kind: 'solid3d' (the "Bodies"
 // filter) or 'object' (set by commands, also allows planes and regions).
@@ -203,7 +208,7 @@ export interface LocalRendererProps {
 
 export class LocalRenderer {
   private readonly container: HTMLDivElement
-  private readonly kclManager: KclManager
+  private readonly host: LocalRendererHost
   private readonly settings: RendererSettings
   private readonly onModelLoadSettled: LocalRendererProps['onModelLoadSettled']
   private gpu: GpuResources | null = null
@@ -244,11 +249,11 @@ export class LocalRenderer {
 
   constructor(
     container: HTMLDivElement,
-    kclManager: KclManager,
+    host: LocalRendererHost,
     props: LocalRendererProps
   ) {
     this.container = container
-    this.kclManager = kclManager
+    this.host = host
     this.settings = {
       theme: props.theme,
       enableSSAO: props.enableSSAO,
@@ -262,18 +267,18 @@ export class LocalRenderer {
     this.gltfLoader.register(() => backfaceColorPlugin(this.backfaceColor))
 
     this.container.style.opacity = '0'
-    kclManager.addEventListener(
-      KclManagerEvents.ExecutionDone,
+    host.executionEvents.addEventListener(
+      SceneExecutionEvents.ExecutionDone,
       this.onExecutionDone
     )
     const dprDetector = new DprDetector(this.updateLocalCamera)
     this.disposers.push(
       () =>
-        kclManager.removeEventListener(
-          KclManagerEvents.ExecutionDone,
+        host.executionEvents.removeEventListener(
+          SceneExecutionEvents.ExecutionDone,
           this.onExecutionDone
         ),
-      kclManager.isExecutingSignal.subscribe((isExecuting) => {
+      host.executing.subscribe((isExecuting) => {
         if (isExecuting) {
           // A new execution invalidates exports, GLB parses, picks and engine
           // queries still in flight.
@@ -281,10 +286,8 @@ export class LocalRenderer {
           this.clearHover()
         }
       }),
-      kclManager.selectionFilter.subscribe(() =>
-        this.rebuildSelectionTargets()
-      ),
-      kclManager.sceneInfra.baseUnitChange.add(this.syncPlaneScale),
+      host.selectionFilter.subscribe(() => this.rebuildSelectionTargets()),
+      host.sceneInfra.baseUnitChange.add(this.syncPlaneScale),
       () => dprDetector.dispose()
     )
     void this.initialize().catch(this.handleInitializationError)
@@ -371,7 +374,7 @@ export class LocalRenderer {
     const { gpu } = this
     if (!gpu) return
     const { planeRenderer, edgeRenderer, sketchLineRenderer } = gpu
-    planeRenderer.updateDefaultPlanes(this.kclManager.rustContext.defaultPlanes)
+    planeRenderer.updateDefaultPlanes(this.host.defaultPlanes())
     planeRenderer.setDefaultVisibility(this.settings.defaultPlaneVisibility)
     const targets = Array.from(planeRenderer.planes.values()).flatMap(
       ({ meshes }) => meshes
@@ -400,7 +403,7 @@ export class LocalRenderer {
     }
 
     // Pass filtered targets to picker
-    const filter = this.kclManager.selectionFilter.peek()
+    const filter = this.host.selectionFilter.peek()
     gpu.integerIdPicker.setTargets(
       targets.filter((target) => this.isSelectable(target, filter)),
       this.currentModel,
@@ -442,7 +445,7 @@ export class LocalRenderer {
     if (this.gpu?.planeRenderer.planes.has(entityId)) {
       return { type: 'plane' as const, plane_id: entityId }
     }
-    const artifact = this.kclManager.artifactGraph.get(entityId)
+    const artifact = this.host.artifacts().get(entityId)
     if (!artifact) {
       return undefined
     }
@@ -465,12 +468,11 @@ export class LocalRenderer {
       return cached
     }
     const version = this.executionVersion
-    const response =
-      await this.kclManager.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: { type: 'query_entity_type', entity_id: entityId },
-      })
+    const response = await this.host.commands.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'query_entity_type', entity_id: entityId },
+    })
     // An execution started while the engine was answering.
     if (version !== this.executionVersion) {
       return undefined
@@ -502,12 +504,11 @@ export class LocalRenderer {
     if (version !== this.selectionRequestVersion) {
       return
     }
-    const response =
-      await this.kclManager.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: { type: 'select_get' },
-      })
+    const response = await this.host.commands.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'select_get' },
+    })
     // The selection changed again while the engine was answering.
     if (this.disposed || version !== this.selectionRequestVersion) {
       return
@@ -534,10 +535,10 @@ export class LocalRenderer {
       )
         return null
       const isHover = cmd.type === 'highlight_set_entity'
-      const controls = this.kclManager.sceneInfra.camControls
+      const controls = this.host.sceneInfra.camControls
       if (
         !this.settings.pickingEnabled ||
-        this.kclManager.isExecuting ||
+        this.host.executing.peek() ||
         // The old model stays on screen until the new one has loaded,
         // but don't allow hover/picking if the new model is already downloading.
         (this.currentModel !== null && !this.isLoadedSceneCurrent()) ||
@@ -552,7 +553,7 @@ export class LocalRenderer {
         ? ++this.hoverRequestVersion
         : this.hoverRequestVersion
       const executionVersion = this.executionVersion
-      const filter = this.kclManager.selectionFilter.peek()
+      const filter = this.host.selectionFilter.peek()
       const result = await this.gpu?.integerIdPicker.pick({
         ...cmd.selected_at_window,
         streamWidth: streamDimensions.width,
@@ -563,7 +564,7 @@ export class LocalRenderer {
       if (
         this.disposed ||
         !this.settings.pickingEnabled ||
-        this.kclManager.isExecuting ||
+        this.host.executing.peek() ||
         executionVersion !== this.executionVersion ||
         result?.stale ||
         (isHover && requestVersion !== this.hoverRequestVersion)
@@ -599,7 +600,7 @@ export class LocalRenderer {
         : undefined
       if (
         executionVersion !== this.executionVersion ||
-        filter !== this.kclManager.selectionFilter.peek()
+        filter !== this.host.selectionFilter.peek()
       ) {
         return {}
       }
@@ -639,14 +640,13 @@ export class LocalRenderer {
 
   /**
    * Whether the loaded model is the scene of the last finished execution.
-   * execState has its generation ready before the signal, which only updates after
-   * the artifact graph, so prefer using that.
+   * The host can finish execution before publishing the artifact graph, so prefer
+   * its current execution generation over the published generation.
    */
   isLoadedSceneCurrent() {
-    const { execState, engineSceneGenerationSignal } = this.kclManager
     return (
       this.loadedSceneGeneration ===
-      (execState.engineSceneGeneration ?? engineSceneGenerationSignal.peek())
+      (this.host.currentSceneGeneration() ?? this.host.sceneGeneration.peek())
     )
   }
 
@@ -726,7 +726,7 @@ export class LocalRenderer {
   }
 
   private readonly syncPlaneScale = () => {
-    const { camControls, baseUnitMultiplier } = this.kclManager.sceneInfra
+    const { camControls, baseUnitMultiplier } = this.host.sceneInfra
     // Match the engine's fixed grid: ten file units, expressed in decimeters.
     // baseUnitMultiplier converts one file unit to mm; 100 mm = one dm.
     const fixedGridScale = this.settings.fixedSizeGrid
@@ -739,7 +739,7 @@ export class LocalRenderer {
   }
 
   private readonly updateLocalCamera = () => {
-    const cameraControls = this.kclManager.sceneInfra.camControls
+    const cameraControls = this.host.sceneInfra.camControls
     if (cameraControls.isDragging) {
       // Dragging should clear hover, but mouse scroll shouldn't (to avoid flickering when over a plane)
       this.clearHover()
@@ -982,7 +982,7 @@ export class LocalRenderer {
       !canvas ||
       !this.currentModel ||
       !this.isLoadedSceneCurrent() ||
-      this.kclManager.isExecuting
+      this.host.executing.peek()
     )
       return []
     const version = this.executionVersion
@@ -1140,7 +1140,7 @@ export class LocalRenderer {
   }
 
   private async initialize() {
-    const { kclManager } = this
+    const { host } = this
     const { container } = this
 
     const hasNavigatorGpu = typeof navigator !== 'undefined' && !!navigator.gpu
@@ -1237,30 +1237,28 @@ export class LocalRenderer {
     // updateLocalCamera() below matches this to the shared camera.
     this.camera = new PerspectiveCamera()
     this.disposers.push(
-      kclManager.sceneInfra.camControls.cameraChange.add(this.updateLocalCamera)
+      host.sceneInfra.camControls.cameraChange.add(this.updateLocalCamera)
     )
 
     this.rebuildSelectionTargets()
     const removeSelectionHandler =
-      kclManager.engineCommandManager.setLocalSelectionCommandHandler(
-        (command, context) => {
-          if (this.disposed) return null
-          if (
-            command.type === 'modeling_cmd_req' &&
-            (command.cmd.type === 'select_entity' ||
-              command.cmd.type === 'select_add' ||
-              command.cmd.type === 'select_remove' ||
-              command.cmd.type === 'select_clear')
-          ) {
-            this.syncSelectionFromEngine().catch(reportRejection)
-            return null
-          }
-          return this.settings.pickingEnabled
-            ? this.handleLocalSelectionCommand(command, context)
-            : null
+      host.commands.setLocalSelectionCommandHandler((command, context) => {
+        if (this.disposed) return null
+        if (
+          command.type === 'modeling_cmd_req' &&
+          (command.cmd.type === 'select_entity' ||
+            command.cmd.type === 'select_add' ||
+            command.cmd.type === 'select_remove' ||
+            command.cmd.type === 'select_clear')
+        ) {
+          this.syncSelectionFromEngine().catch(reportRejection)
+          return null
         }
-      )
-    const inputCanvas = kclManager.sceneInfra.camControls.domElement
+        return this.settings.pickingEnabled
+          ? this.handleLocalSelectionCommand(command, context)
+          : null
+      })
+    const inputCanvas = host.sceneInfra.camControls.domElement
     this.pointerOverCanvas = inputCanvas.matches(':hover')
     const onEnter = () => {
       this.pointerOverCanvas = true
@@ -1291,27 +1289,25 @@ export class LocalRenderer {
     // was missed. A file switch empties execState, so an execution from the
     // previous file doesn't count.
     if (
-      !kclManager.isExecuting &&
-      kclManager.execState.engineSceneGeneration !== null &&
-      !kclManager.hasErrors()
+      !host.executing.peek() &&
+      host.currentSceneGeneration() !== null &&
+      !host.hasErrors()
     ) {
       void this.refreshModel().catch(reportRejection)
-    } else if (!kclManager.isExecuting) {
+    } else if (!host.executing.peek()) {
       this.onModelLoadSettled?.()
     }
   }
 
   private readonly onExecutionDone = (event: Event) => {
-    if (this.disposed || this.kclManager.isExecuting) return
+    if (this.disposed || this.host.executing.peek()) return
 
-    const { detail } = event as CustomEvent<KclExecutionDoneDetail>
+    const { detail } = event as CustomEvent<SceneExecutionDoneDetail>
     if (!detail.successful) {
       if (!this.isLoadedSceneCurrent()) {
         // The failed run replaced the scene, so its old geometry is stale.
         this.clearModel()
-        this.gpu?.planeRenderer.updateOffsetPlanes(
-          this.kclManager.artifactGraph
-        )
+        this.gpu?.planeRenderer.updateOffsetPlanes(this.host.artifacts())
       }
       this.rebuildSelectionTargets()
       this.syncPlaneScale()
@@ -1338,14 +1334,14 @@ export class LocalRenderer {
 
     // Read the signal instead of execState, because the signal updates
     // together with the artifact graph this load reads.
-    const sceneGeneration = this.kclManager.engineSceneGenerationSignal.peek()
+    const sceneGeneration = this.host.sceneGeneration.peek()
 
     const isCurrent = () => !this.disposed && version === this.executionVersion
     // Reference planes do not depend on a successful GLB export.
-    this.gpu?.planeRenderer.updateOffsetPlanes(this.kclManager.artifactGraph)
+    this.gpu?.planeRenderer.updateOffsetPlanes(this.host.artifacts())
     this.syncPlaneScale()
     // An empty execution has no GLB to export, but must clear the old model.
-    if (this.kclManager.artifactGraph.size === 0) {
+    if (this.host.artifacts().size === 0) {
       this.clearModel()
       this.loadedSceneGeneration = sceneGeneration
       this.rebuildSelectionTargets()
@@ -1355,18 +1351,15 @@ export class LocalRenderer {
     }
     this.rebuildSelectionTargets()
     try {
-      const files = await this.kclManager.rustContext.export(
-        {
-          type: 'gltf',
-          storage: 'binary',
-          presentation: 'compact',
-          // Deployed engines still need this flag to link exported geometry to the artifact graph.
-          // It also stands in for the `geometry_uuids` extra, which older engines reject.
-          include_uuids: true,
-          extras: ['sketches', 'regions'],
-        },
-        jsAppSettings(this.kclManager.systemDeps.settings)
-      )
+      const files = await this.host.exportModel({
+        type: 'gltf',
+        storage: 'binary',
+        presentation: 'compact',
+        // Deployed engines still need this flag to link exported geometry to the artifact graph.
+        // It also stands in for the `geometry_uuids` extra, which older engines reject.
+        include_uuids: true,
+        extras: ['sketches', 'regions'],
+      })
       if (!isCurrent()) return
 
       const file = files?.find((file) => file.name.endsWith('.glb'))
@@ -1403,10 +1396,7 @@ export class LocalRenderer {
       gpu?.edgeRenderer.addTo(gltf.scene)
       gpu?.sketchLineRenderer.buildEdges(gltf, getSketchSegmentEdges(gltf))
       gpu?.sketchLineRenderer.addTo(gltf.scene)
-      for (const mesh of createRegionMeshes(
-        gltf,
-        this.kclManager.artifactGraph
-      )) {
+      for (const mesh of createRegionMeshes(gltf, this.host.artifacts())) {
         gltf.scene.add(mesh)
       }
 
@@ -1416,6 +1406,7 @@ export class LocalRenderer {
       this.resetCameraIfPending()
       this.invalidateBaseRender()
       this.loadedSceneGeneration = sceneGeneration
+      toast.dismiss(MODEL_LOAD_ERROR_TOAST_ID)
       this.onModelLoadSettled?.(true)
     } catch (error) {
       if (isCurrent()) this.handleModelLoadError(error)
@@ -1427,6 +1418,9 @@ export class LocalRenderer {
     this.rebuildSelectionTargets()
     console.error('[LocalRenderer] GLB model load failed', error)
     reportRejection(error)
+    toast.error('Failed to load the model for display.', {
+      id: MODEL_LOAD_ERROR_TOAST_ID,
+    })
     this.onModelLoadSettled?.()
   }
 
@@ -1455,8 +1449,8 @@ export class LocalRenderer {
 
   private resetCamera() {
     resetCameraPosition({
-      sceneInfra: this.kclManager.sceneInfra,
-      settingsActor: this.kclManager.systemDeps.settings,
+      sceneInfra: this.host.sceneInfra,
+      settingsActor: this.host.settingsActor,
     }).catch(reportRejection)
   }
 }

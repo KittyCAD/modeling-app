@@ -11,6 +11,7 @@ import type {
 } from '@src/lib/commandTypes'
 import { MAX_PROJECT_NAME_LENGTH, PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import {
+  findHomeProjectByPath,
   getHomeProjectDeleteWarningMessage,
   getHomeProjectDisplayName,
   homeProjectDisplayNameExists,
@@ -139,7 +140,7 @@ export function createProjectCommands({
   const isCurrentHomeProject = (project: HomeProjectEntry) => {
     const currentProjectPath = getCurrentProjectPath?.()
     if (currentProjectPath) {
-      return project.localProjectPath === currentProjectPath
+      return Boolean(findHomeProjectByPath([project], currentProjectPath))
     }
 
     const currentProjectDirectoryName = currentProjectDirectoryNameSnapshot()

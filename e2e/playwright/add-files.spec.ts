@@ -1,4 +1,5 @@
-import { writeFile } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
+import { testsInputPath } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
@@ -37,8 +38,8 @@ test.describe('Local Drive picker', { tag: '@localRenderer' }, () => {
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await toolbar.openPane(DefaultLayoutPaneID.Files)
 
-      const fileName = 'notes.txt'
-      const content = 'Imported local file'
+      const fileName = 'cube.obj'
+      const content = await readFile(testsInputPath(fileName), 'utf8')
       await cmdBar.openCmdBar()
       await cmdBar.chooseCommand('Add file to project')
       const chooserPromise = page.waitForEvent('filechooser')
@@ -75,6 +76,11 @@ test.describe('Local Drive picker', { tag: '@localRenderer' }, () => {
           }, fileName)
         )
         .toBe(content)
+
+      await toolbar.insertButton.click()
+      await expect(
+        cmdBar.selectOption({ name: fileName, exact: true })
+      ).toBeVisible()
     }
   )
 
@@ -112,8 +118,8 @@ test.describe('Local Drive picker', { tag: '@localRenderer' }, () => {
     { tag: '@desktop' },
     async ({ page, homePage, toolbar, cmdBar, fs, tronApp }, testInfo) => {
       if (!tronApp) throw new Error('Desktop app is required')
-      const fileName = 'notes.txt'
-      const content = 'Imported local file'
+      const fileName = 'cube.obj'
+      const content = await readFile(testsInputPath(fileName), 'utf8')
       const sourcePath = testInfo.outputPath(fileName)
       await writeFile(sourcePath, content)
       await homePage.createAndGoToProject('local-drive')
@@ -142,6 +148,11 @@ test.describe('Local Drive picker', { tag: '@localRenderer' }, () => {
       if (!projectPath) throw new Error('No project is open')
       const filePath = await fs.join(projectPath, fileName)
       await expect.poll(() => fs.readFile(filePath, 'utf8')).toBe(content)
+
+      await toolbar.insertButton.click()
+      await expect(
+        cmdBar.selectOption({ name: fileName, exact: true })
+      ).toBeVisible()
     }
   )
 })
