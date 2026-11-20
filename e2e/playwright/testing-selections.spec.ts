@@ -1,5 +1,6 @@
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import fs from 'fs'
 import path from 'path'
 
@@ -399,15 +400,42 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = .1)`
       await homePage.goToModelingScene()
       await scene.settled()
 
+      await expect
+        .poll(() =>
+          page.evaluate(() => window.app.singletons.kclManager.read())
+        )
+        .toBe(code)
+
+      let innerFaceId: string | undefined
       if (await page.evaluate(() => window.engineCommandManager.geometryOnly)) {
         await scene.moveCameraTo(
           { x: 7, y: -5, z: 8 },
           { x: 1.76, y: 2.635, z: 0.5 }
         )
+        const response = await page.evaluate(async () => {
+          const shell = window.app.singletons.kclManager.variables.shell001
+          if (shell?.type !== 'Solid')
+            throw new Error('Expected shell001 to be a solid')
+          return window.engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: crypto.randomUUID(),
+            cmd: {
+              type: 'solid3d_get_face_uuid',
+              object_id: shell.value.id,
+              face_index: 7,
+            },
+          })
+        })
+        const result =
+          isModelingResponse(response) && response.resp.data.modeling_response
+        if (!result || result.type !== 'solid3d_get_face_uuid') {
+          throw new Error('Could not resolve faceId(shell001, index = 7)')
+        }
+        innerFaceId = result.data.face_id
       }
       const [clickOnInnerFace] = await scene.makeSelectionHelpers({
         kind: 'face',
-        id: '2a614cd2-f2e3-5062-8a89-c9006926aaa7',
+        id: innerFaceId,
         stream: { x: 0.6, y: 0.4, format: 'ratio' },
       })
 
