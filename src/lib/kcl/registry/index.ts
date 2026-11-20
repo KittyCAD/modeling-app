@@ -1,3 +1,4 @@
+import { kclExecutionSettingsExtension } from '@src/lib/kcl/scene/executionSettingsRegistry'
 import { kcl } from '@kittycad/codemirror-lang-kcl'
 import { editorKclHighlight } from '@src/editor/plugins/theme'
 import {
@@ -24,4 +25,7 @@ const extension = [
   contribute(codeEditorsExtensionFacet, () => editorExtensions),
 ] satisfies readonly Extension[]
 
-export default withProjectShellFeature(extension, 'kcl')
+export default [
+  kclExecutionSettingsExtension,
+  withProjectShellFeature(extension, 'kcl'),
+]

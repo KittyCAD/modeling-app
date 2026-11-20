@@ -1,6 +1,7 @@
 import type { EntityType } from '@kittycad/lib'
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
+import { legacyLocalRendererHost } from '@src/clientSideScene/localRenderer/legacyHost'
 import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import { Signal } from '@src/lib/signal'
@@ -15,7 +16,7 @@ import {
   Vector3,
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import { MeshStandardNodeMaterial } from 'three/webgpu'
+import { MeshStandardNodeMaterial, WebGPURenderer } from 'three/webgpu'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lang/KclManager', () => ({
@@ -26,12 +27,17 @@ vi.mock('@src/lib/settings/settingsUtils', () => ({
   jsAppSettings: () => ({ settings: { modeling: { base_unit: 'mm' } } }),
 }))
 vi.mock('@src/lib/trap', () => ({ reportRejection: vi.fn() }))
+vi.mock('@src/lib/clientErrors', () => ({
+  ClientErrorCode: { LocalRendererFailure: 'local_renderer_failure' },
+  reportClientError: vi.fn(async () => {}),
+}))
 vi.mock('@src/lib/resetCameraPosition', () => ({
   resetCameraPosition: vi.fn(async () => {}),
 }))
 
 import { LocalRenderer } from '@src/clientSideScene/localRenderer/LocalRenderer'
 import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
+import { reportClientError } from '@src/lib/clientErrors'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type { Artifact } from '@src/lang/wasm'
 
@@ -140,9 +146,10 @@ function fixture(
   })
   manager.sceneInfra.camControls.camera.position.set(100, -100, 100)
   const onModelLoadSettled = vi.fn()
+  const onRendererFailed = vi.fn()
   const renderer = new LocalRenderer(
     document.createElement('div'),
-    manager as unknown as KclManager,
+    legacyLocalRendererHost(manager as unknown as KclManager),
     {
       theme: Themes.Light,
       enableSSAO: false,
@@ -150,6 +157,7 @@ function fixture(
       fixedSizeGrid: true,
       backfaceColor: '#00D5FF',
       onModelLoadSettled,
+      onRendererFailed,
     }
   )
   const state = renderer as unknown as RendererInternals
@@ -165,7 +173,15 @@ function fixture(
       })
     )
   }
-  return { renderer, state, gpu, manager, done, onModelLoadSettled }
+  return {
+    renderer,
+    state,
+    gpu,
+    manager,
+    done,
+    onModelLoadSettled,
+    onRendererFailed,
+  }
 }
 
 describe('local GLB loading', () => {
@@ -190,8 +206,9 @@ describe('local GLB loading', () => {
     } = f.gpu
     planes.updateDefaultPlanes(f.manager.rustContext.defaultPlanes)
     planes.updateOffsetPlanes(new Map([['offset', offsetPlane()]]))
-    const target = planes.planes.get(id)?.mesh
-    if (!target) throw new Error('Missing plane mesh')
+    const targets = planes.planes.get(id)?.meshes
+    const target = targets?.[0]
+    if (!targets || !target) throw new Error('Missing plane mesh')
     picker.pick.mockResolvedValue({ target, stale: false })
     const setDefaultVisibility = vi.spyOn(planes, 'setDefaultVisibility')
     f.state.camera = new PerspectiveCamera()
@@ -217,10 +234,11 @@ describe('local GLB loading', () => {
       )
     const defaultTargets = [...planes.planes.values()]
       .filter((plane) => plane.defaultPlane)
-      .map(({ mesh }) => mesh)
+      .flatMap(({ meshes }) => meshes)
     return {
       ...f,
       target,
+      targets,
       defaultTargets,
       picker,
       highlights,
@@ -237,7 +255,7 @@ describe('local GLB loading', () => {
         type: 'highlight_set_entity',
         data: { entity_id: id },
       })
-      expect(f.highlights.setHover).toHaveBeenLastCalledWith([f.target])
+      expect(f.highlights.setHover).toHaveBeenLastCalledWith(f.targets)
       const result = await f.pick(true)
       expect(result?.modelingResponse).toEqual({
         type: 'query_entity_type_with_point',
@@ -258,7 +276,7 @@ describe('local GLB loading', () => {
         })
       engineSelects([id])
       await f.state.syncSelectionFromEngine()
-      expect(f.highlights.setSelection).toHaveBeenLastCalledWith([f.target])
+      expect(f.highlights.setSelection).toHaveBeenLastCalledWith(f.targets)
       engineSelects([])
       await f.state.syncSelectionFromEngine()
       expect(f.highlights.setSelection).toHaveBeenLastCalledWith([])
@@ -534,6 +552,78 @@ describe('local GLB loading', () => {
     expect(dispose).toHaveBeenCalledTimes(3)
     expect(f.state.ambientOcclusionPipeline).toBeNull()
     f.renderer.dispose()
+  })
+})
+
+// Runs the real initialize() up to renderer.init(), which these tests control.
+describe('local renderer GPU failures', () => {
+  beforeEach(() => {
+    const prototype = LocalRenderer.prototype as unknown as RendererInternals
+    vi.spyOn(prototype, 'scheduleRender').mockImplementation(() => {})
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.mocked(reportClientError).mockClear()
+  })
+  afterEach(() => vi.restoreAllMocks())
+
+  it('reports a renderer that cannot start', async () => {
+    const error = new Error('Error creating WebGL context.')
+    vi.spyOn(WebGPURenderer.prototype, 'init').mockRejectedValue(error)
+    const f = fixture()
+    await vi.waitFor(() =>
+      expect(f.onRendererFailed).toHaveBeenCalledWith({
+        kind: 'initialization',
+        message: 'Error creating WebGL context.',
+      })
+    )
+    expect(reportClientError).toHaveBeenCalledExactlyOnceWith({
+      code: 'local_renderer_failure',
+      message: 'Local renderer failed: initialization',
+      error,
+      dedupeKey: 'LocalRenderer:initialization',
+      extra: { kind: 'initialization' },
+    })
+    f.renderer.dispose()
+  })
+
+  it('reports a GPU lost while rendering, but not after dispose', async () => {
+    const init = vi
+      .spyOn(WebGPURenderer.prototype, 'init')
+      .mockReturnValue(new Promise(() => {}))
+    const f = fixture()
+    await vi.waitFor(() => expect(init).toHaveBeenCalledOnce())
+    const created = init.mock.contexts[0] as WebGPURenderer
+    const lost = {
+      api: 'WebGL' as const,
+      message: 'Context lost',
+      reason: 'unknown',
+      originalEvent: null,
+    }
+    const dispose = vi.spyOn(f.renderer, 'dispose')
+    created.onDeviceLost(lost)
+    expect(f.onRendererFailed).toHaveBeenCalledExactlyOnceWith({
+      kind: 'lost',
+      message: 'Context lost',
+    })
+    expect(reportClientError).toHaveBeenCalledExactlyOnceWith({
+      code: 'local_renderer_failure',
+      message: 'Local renderer failed: lost',
+      dedupeKey: 'LocalRenderer:lost',
+      extra: {
+        kind: 'lost',
+        api: 'WebGL',
+        reason: 'unknown',
+        message: 'Context lost',
+      },
+    })
+    // three.js's own handler still runs, so it skips work on the lost device.
+    expect(Reflect.get(created, '_isDeviceLost')).toBe(true)
+    // A lost renderer stops, so it can't capture a blank thumbnail.
+    expect(dispose).toHaveBeenCalledOnce()
+    expect(f.renderer.readFrame(() => 'frame')).toBeUndefined()
+    f.renderer.dispose()
+    created.onDeviceLost(lost)
+    expect(f.onRendererFailed).toHaveBeenCalledOnce()
+    expect(reportClientError).toHaveBeenCalledOnce()
   })
 })
 

@@ -93,7 +93,6 @@ jobs:
       TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
 
   build-web:
-    name: Build web E2E app
     needs: [build-wasm]
     if: ${{ !cancelled() && needs.build-wasm.result == 'success' && !inputs.grep }}
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
@@ -327,14 +326,13 @@ jobs:
             test_command: npm run test:e2e:web
             playwright_cache_path: ~/.cache/ms-playwright
         include:
-          # TODO: Enable Firefox testing on CI
-          # - shardIndex: 1
-          #   shardTotal: 1
-          #   config:
-          #     os: namespace-profile-ubuntu-8-cores
-          #     label: firefox
-          #     test_command: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:web:firefox
-          #     playwright_cache_path: ~/.cache/ms-playwright
+          - shardIndex: 1
+            shardTotal: 1
+            config:
+              os: namespace-profile-ubuntu-8-cores
+              label: firefox
+              test_command: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:web:firefox
+              playwright_cache_path: ~/.cache/ms-playwright
           - shardIndex: 1
             shardTotal: 1
             config:
