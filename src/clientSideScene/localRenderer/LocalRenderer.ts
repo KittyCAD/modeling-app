@@ -193,6 +193,15 @@ export class LocalRenderer {
   private nativePreviewBusy = false
   private nativeFinalExportFailed = false
   private nativePreviewUnavailable = false
+  private unsupportedPreviewConnectionId: string | undefined
+
+  private get previewExportUnsupported() {
+    return (
+      this.unsupportedPreviewConnectionId !== undefined &&
+      this.unsupportedPreviewConnectionId ===
+        this.kclManager.engineCommandManager.connection?.id
+    )
+  }
   private nativePreviewFailures = 0
   private nativePreviewTimeout: ReturnType<typeof setTimeout> | undefined
   private nativePreviewNotice: HTMLDivElement | null = null
@@ -1239,6 +1248,7 @@ export class LocalRenderer {
         : command.type === 'modeling_cmd_req'
           ? [command.cmd]
           : []
+    if (this.previewExportUnsupported) return
     if (
       !commands.some((cmd) =>
         /^(extrude|revolve|loft|sweep|boolean_|surface_blend|import_files|solid3d_(fillet|cut|shell|join)|entity_(linear_pattern|circular_pattern|mirror|clone))/.test(
@@ -1285,9 +1295,14 @@ export class LocalRenderer {
             type: 'modeling_cmd_req',
             cmd_id: id,
             cmd: {
-              type: 'export',
+              type: 'export3d',
               entity_ids: [],
-              format: { type: 'native_brep' },
+              format: {
+                type: 'gltf',
+                storage: 'binary',
+                presentation: 'compact',
+                brep_only: true,
+              },
             },
           },
           range: [0, 0, 0],
@@ -1302,17 +1317,16 @@ export class LocalRenderer {
       )
         return
       const file = response.resp.data.files.find((file) =>
-        file.name.endsWith('.brep.json')
+        file.name.endsWith('.glb')
       )
       if (!file) {
         this.nativePreviewUnavailable = true
         console.warn(
-          '[Native B-rep preview] Engine did not return a native B-rep export.'
+          '[Native B-rep preview] Engine did not return a preview GLB.'
         )
         return
       }
-      const bytes = new Uint8Array(file.contents)
-      const snapshot = new TextDecoder().decode(bytes)
+      const snapshot = new Uint8Array(file.contents)
       this.submitNativePreview(snapshot, version)
     } catch (error) {
       if (isCurrent()) this.failNativePreview(error, version)
@@ -1327,7 +1341,7 @@ export class LocalRenderer {
   }
 
   private submitNativePreview(
-    snapshot: string,
+    snapshot: string | Uint8Array,
     version: number,
     final = false
   ) {
@@ -1340,6 +1354,7 @@ export class LocalRenderer {
       this.failNativePreview(error, version)
       return
     }
+    const connectionId = this.kclManager.engineCommandManager.connection?.id
     const revision = ++this.nativePreviewRevision
     const worker = this.nativePreviewWorker
     this.nativePreviewBusy = true
@@ -1359,6 +1374,17 @@ export class LocalRenderer {
       )
         return
       if ('error' in result) {
+        if (
+          result.unsupportedExport &&
+          connectionId === this.kclManager.engineCommandManager.connection?.id
+        ) {
+          this.unsupportedPreviewConnectionId = connectionId
+          this.nativePreviewUnavailable = true
+          this.cancelDeferredPreview()
+          this.stopNativePreviewWorker()
+          if (this.failedPreviewVersion === version) this.settleFailedPreview()
+          return
+        }
         this.failNativePreview(result.error, version)
         return
       }
@@ -1702,6 +1728,10 @@ export class LocalRenderer {
   }
 
   private async refreshNativeModel(failed = false) {
+    if (this.previewExportUnsupported) {
+      if (!failed) await this.refreshModel()
+      return
+    }
     if (this.nativeFinalCaptureVersion === this.executionVersion) return
     this.nativeFinalCaptureVersion = this.executionVersion
     this.cancelDeferredPreview()
@@ -1720,9 +1750,14 @@ export class LocalRenderer {
             type: 'modeling_cmd_req',
             cmd_id: id,
             cmd: {
-              type: 'export',
+              type: 'export3d',
               entity_ids: [],
-              format: { type: 'native_brep' },
+              format: {
+                type: 'gltf',
+                storage: 'binary',
+                presentation: 'compact',
+                brep_only: true,
+              },
             },
           },
           range: [0, 0, 0],
@@ -1738,9 +1773,7 @@ export class LocalRenderer {
       if (!isCurrent()) return
       const file =
         'resp' in response && response.resp.type === 'export'
-          ? response.resp.data.files.find((file) =>
-              file.name.endsWith('.brep.json')
-            )
+          ? response.resp.data.files.find((file) => file.name.endsWith('.glb'))
           : undefined
       if (!file) {
         console.warn('[Native B-rep preview] Final preview unavailable')
@@ -1750,8 +1783,7 @@ export class LocalRenderer {
       // The worker has one pending slot for this final snapshot. Queue it behind
       // any active mesh without delaying the final GLB export on worker completion.
       if (!isCurrent()) return
-      const bytes = new Uint8Array(file.contents)
-      const snapshot = new TextDecoder().decode(bytes)
+      const snapshot = new Uint8Array(file.contents)
       this.submitNativePreview(snapshot, version, true)
     } catch (error) {
       if (isCurrent())

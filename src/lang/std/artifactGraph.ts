@@ -90,6 +90,7 @@ type UnreleasedExportRequest = Omit<
     format:
       | ExportCommand['format']
       | Extract<OutputFormat3d, { type: 'native_brep' }>
+      | (Extract<OutputFormat3d, { type: 'gltf' }> & { brep_only: true })
   }
 }
 

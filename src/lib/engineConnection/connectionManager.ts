@@ -131,6 +131,19 @@ export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
 }
 
+function isPreviewExport(command: EngineCommand): boolean {
+  if (command.type !== 'modeling_cmd_req') return false
+  const cmd = command.cmd
+  if (cmd.type !== 'export' && cmd.type !== 'export3d') return false
+  const { format } = cmd
+  return (
+    format.type === 'native_brep' ||
+    (format.type === 'gltf' &&
+      'brep_only' in format &&
+      format.brep_only === true)
+  )
+}
+
 export class ConnectionManager extends EventTarget {
   started: boolean
   inSequence = 1
@@ -1142,10 +1155,7 @@ export class ConnectionManager extends EventTarget {
     if (message.command.type === 'modeling_cmd_req') {
       const commandName = message.command.cmd.type
       if (commandName.includes('export')) {
-        timeoutPendingCommand =
-          (message.command.cmd.type === 'export' ||
-            message.command.cmd.type === 'export3d') &&
-          message.command.cmd.format.type === 'native_brep'
+        timeoutPendingCommand = isPreviewExport(message.command)
       }
     }
 
@@ -1214,10 +1224,7 @@ export class ConnectionManager extends EventTarget {
 
       const pending = this.pendingCommands[message.request_id || '']
       const isNativePreview =
-        (pending?.command.type === 'modeling_cmd_req' &&
-          (pending.command.cmd.type === 'export' ||
-            pending.command.cmd.type === 'export3d') &&
-          pending.command.cmd.format.type === 'native_brep') ||
+        (pending && isPreviewExport(pending.command)) ||
         (isExportResponse(message) &&
           message.resp.data.files.some((file) =>
             file.name.endsWith('.brep.json')
