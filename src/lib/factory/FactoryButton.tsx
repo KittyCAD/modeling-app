@@ -30,7 +30,7 @@ const inputClass =
 const labelClass =
   'block text-xs font-medium uppercase tracking-[0.14em] text-2'
 const primaryButtonClass =
-  'bg-primary py-2 !pr-3 text-white hover:bg-primary/90 dark:bg-primary dark:text-white dark:hover:bg-primary/90'
+  'bg-primary !py-0 text-white hover:bg-primary/90 dark:bg-primary dark:text-white dark:hover:bg-primary/90'
 const plainIcon = '!bg-transparent dark:!bg-transparent'
 const newPart = (entrypoint: string): FactoryPart => ({
   entrypoint,
@@ -59,8 +59,8 @@ export function FactoryButton({
             Element="button"
             tabIndex={0}
             aria-label={`Submit to Factory${count > 0 ? ` (${count})` : ''}`}
-            iconStart={{ icon: 'printer3d', bgClassName: plainIcon }}
-            className="py-1"
+            iconStart={{ icon: 'toolpath', bgClassName: plainIcon }}
+            className="relative inline-flex min-w-max !gap-1 !rounded !py-0 !pl-0.5 !pr-2 bg-1/80 hover:bg-1 focus-visible:outline-appForeground active:border-primary dark:!bg-1/50 dark:hover:!bg-1"
             data-testid="factory-button"
           >
             Submit to Factory
@@ -266,7 +266,7 @@ function FactoryPopover({
             iconStart={{ icon: 'plus', bgClassName: plainIcon }}
             aria-label="Add Job"
             type="button"
-            className="self-end py-2"
+            className="self-end !gap-1 !py-0 !pl-0.5 !pr-2"
             onClick={() => {
               setParts([])
               setSelected([])
@@ -288,7 +288,7 @@ function FactoryPopover({
                     Element="button"
                     tabIndex={0}
                     type="button"
-                    className="mt-3 py-2"
+                    className="mt-3 min-h-6 !py-0 !pl-2 !pr-2"
                     onClick={() => setAttempt(attempt + 1)}
                   >
                     Try Again
@@ -335,7 +335,7 @@ function FactoryPopover({
                           <span className="flex items-center gap-2 text-sm font-semibold text-1">
                             <span
                               aria-hidden="true"
-                              className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-primary text-white"
+                              className="grid h-7 w-7 shrink-0 place-items-center rounded-full border b-4 bg-2 text-1"
                             >
                               {index + 1}
                             </span>
@@ -455,7 +455,7 @@ function FactoryPopover({
                         }}
                         type="button"
                         aria-label="Previous"
-                        className="mr-auto py-2"
+                        className="mr-auto !gap-1 !py-0 !pl-0.5 !pr-2"
                         disabled={Boolean(snapshot.current) && step === 'parts'}
                         onClick={() =>
                           setStep(
@@ -474,12 +474,10 @@ function FactoryPopover({
                       Element="button"
                       type="submit"
                       tabIndex={0}
-                      className={primaryButtonClass}
+                      className={`${primaryButtonClass} !gap-1 !pl-2 !pr-0.5`}
                       aria-label={submitLabel}
                       iconEnd={{
                         icon: 'arrowRight',
-                        size: 'sm',
-                        className: 'px-2',
                         bgClassName: plainIcon,
                       }}
                     >
@@ -562,11 +560,6 @@ export function FactoryFilePicker({
                     <CustomIcon name="checkmark" className="h-3 w-3" />
                   )}
                 </span>
-                <CustomIcon
-                  name="file"
-                  aria-hidden="true"
-                  className="h-5 w-5 shrink-0 text-2"
-                />
                 <span className="break-all font-mono text-xs">{path}</span>
               </>
             )}
@@ -746,7 +739,7 @@ function FactoryJobEditor({
               Element="button"
               tabIndex={0}
               iconStart={{ icon: 'checkmark', bgClassName: plainIcon }}
-              className={`${primaryButtonClass} mt-4 ml-auto`}
+              className={`${primaryButtonClass} mt-4 ml-auto !gap-1 !pl-0.5 !pr-2`}
               aria-label="Submit Revision"
               type="submit"
             >
