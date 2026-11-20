@@ -141,7 +141,7 @@ describe('IntegerIdPicker', () => {
         return Uint32Array.of(
           target.texture.name === 'local-renderer-grown-selection-ids'
             ? grownId
-            : sketchId
+            : 1
         )
       }
     )
@@ -172,13 +172,14 @@ describe('IntegerIdPicker', () => {
     const cursor = { x: 9, y: 17, streamWidth: 32, streamHeight: 32, camera }
 
     expect((await picker.pick(cursor))?.target).toBe(edge)
-    render.mockClear()
+    grownId = sketchId
     picker.setEdgesVisible(false)
     expect((await picker.pick(cursor))?.target).toBe(sketchLine)
-    expect(render).toHaveBeenCalledTimes(1)
-    grownId = 1
-    picker.setEdgesVisible(true)
+    render.mockClear()
+    sketchLine.visible = false
+    picker.invalidate()
     expect((await picker.pick(cursor))?.target).toBe(face)
+    expect(render).toHaveBeenCalledTimes(1)
     expect(readRenderTargetPixelsAsync).toHaveBeenCalledTimes(3)
 
     picker.dispose()

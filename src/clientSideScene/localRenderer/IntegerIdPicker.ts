@@ -47,12 +47,8 @@ import {
   type WebGPURenderer,
 } from 'three/webgpu'
 
-// Uses a material to draw the selection lines with this width
-const SELECTION_LINE_WIDTH_PX = 24
-
-// This is the line width for the draw buffer, not the radius used for edge
-// selection. The radius is used to search for these lines
-const VISIBLE_EDGE_LINE_WIDTH_PX = 2
+// Rasterize thin seeds; EdgeGrowthPass supplies the selection radius.
+const PICK_SEED_WIDTH_PX = 2
 
 // The ID of whatever can't be picked: occluders, line segments that aren't
 // targets, and the background, which clears to 0. targetById[0] is null to match.
@@ -84,7 +80,7 @@ export class IntegerIdPicker {
   private grownTarget: RenderTarget | null = null
 
   private edgeObject: LineSegments2 | null = null
-  private hasEdgeTargets = false
+  private readonly growthSeeds = new Set<Mesh>()
   private edgesVisible = true
   private dirty = true
   private version = 0
@@ -195,22 +191,13 @@ export class IntegerIdPicker {
       addMesh(target, this.targetById.push(target) - 1)
     }
     if (edges) {
-      this.hasEdgeTargets = edges.targets.length > 0
-      this.edgeObject = this.addLines(
-        edges,
-        VISIBLE_EDGE_LINE_WIDTH_PX,
-        EdgeTargetType.BodyEdge
-      )
+      this.edgeObject = this.addLines(edges, EdgeTargetType.BodyEdge)
       if (this.edgeObject) {
         this.edgeObject.visible = this.edgesVisible
       }
     }
     if (sketchLines) {
-      this.addLines(
-        sketchLines,
-        SELECTION_LINE_WIDTH_PX,
-        EdgeTargetType.SketchLine
-      )
+      this.addLines(sketchLines, EdgeTargetType.SketchLine)
     }
   }
 
@@ -219,7 +206,6 @@ export class IntegerIdPicker {
   // geometry destroys the GPU buffers of all its attributes.
   private addLines(
     { source, targets }: LineTargets,
-    linewidth: number,
     targetType: EdgeTargetType
   ) {
     // The source numbers its targets from 1, in this order.
@@ -234,7 +220,7 @@ export class IntegerIdPicker {
     }
 
     const material = new Line2NodeMaterial({
-      linewidth,
+      linewidth: PICK_SEED_WIDTH_PX,
     })
     material.worldUnits = false
     material.alphaToCoverage = false
@@ -262,6 +248,7 @@ export class IntegerIdPicker {
     )
     material.outputNode = this.idOutput(varying(selectionId))
     const object = new LineSegments2(source.geometry, material)
+    if (targets.length > 0) this.growthSeeds.add(object)
     object.frustumCulled = false
     object.renderOrder = 2
     this.sourceByProxy.set(object, source)
@@ -391,7 +378,7 @@ export class IntegerIdPicker {
     this.sourceByProxy.clear()
     this.scene.clear()
     this.edgeObject = null
-    this.hasEdgeTargets = false
+    this.growthSeeds.clear()
     this.grownTarget = null
     this.targetById = [null]
     this.materials.forEach((material) => {
@@ -440,6 +427,7 @@ export class IntegerIdPicker {
   }
 
   private renderIdBuffer(target: RenderTarget, camera: Camera) {
+    let growLines = false
     for (const [proxy, source] of this.sourceByProxy) {
       source.updateWorldMatrix(true, false)
       proxy.matrix.copy(source.matrixWorld)
@@ -450,6 +438,13 @@ export class IntegerIdPicker {
       })
       proxy.visible &&=
         source.visible && (proxy !== this.edgeObject || this.edgesVisible)
+      if (
+        this.growthSeeds.has(proxy) &&
+        proxy.visible &&
+        camera.layers.test(proxy.layers)
+      ) {
+        growLines = true
+      }
     }
     const previousTarget = this.renderer.getRenderTarget()
     const previousAutoClear = this.renderer.autoClear
@@ -457,11 +452,7 @@ export class IntegerIdPicker {
     this.renderer.setRenderTarget(target)
     this.renderer.render(this.scene, camera)
     this.grownTarget = null
-    if (
-      this.hasEdgeTargets &&
-      this.edgeObject?.visible &&
-      camera.layers.test(this.edgeObject.layers)
-    ) {
+    if (growLines) {
       this.growthPass ??= new EdgeGrowthPass(
         this.renderer,
         target,

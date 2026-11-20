@@ -1,8 +1,7 @@
 import { LOCAL_EDGE_PICK_RADIUS_PX } from '@src/clientSideScene/localRenderer/config'
 import {
   encodeId,
-  isBodyEdge,
-  isSketchLine,
+  isLineSeed,
 } from '@src/clientSideScene/localRenderer/selectionId'
 import {
   NearestFilter,
@@ -96,7 +95,7 @@ export class EdgeGrowthPass {
     this.target.texture.name = 'local-renderer-grown-selection-ids'
 
     // WebGL stores each tagged ID in RGB bytes; WebGPU stores it as one integer.
-    // Both paths must preserve the tag so the passes can distinguish body edges.
+    // Both paths preserve the tag for body edges and sketch lines.
     const rawSample = (point: Node<'ivec2'>) => {
       const pixel = textureLoad(raw.texture, point)
       return packsIdsIntoColor
@@ -124,7 +123,7 @@ export class EdgeGrowthPass {
             () => {
               const candidate = rawSample(ivec2(neighborX, point.y))
               const dx = i.abs()
-              If(isBodyEdge(candidate).and(dx.lessThan(bestDx)), () => {
+              If(isLineSeed(candidate).and(dx.lessThan(bestDx)), () => {
                 bestId.assign(candidate)
                 bestDx.assign(dx)
               })
@@ -146,8 +145,8 @@ export class EdgeGrowthPass {
       const bestId = centerId.toVar()
       // Avoid a square root by just keeping distance squared
       const bestDistance = float(LOCAL_EDGE_PICK_RADIUS_PX ** 2).toVar()
-      // Don't search for an edge if a sketch line is at the center
-      If(isSketchLine(centerId).not(), () => {
+      // A seed under the cursor already wins at distance zero.
+      If(isLineSeed(centerId).not(), () => {
         Loop(
           { start: this.radiusY.negate(), end: this.radiusY.add(1) },
           ({ i }) => {
@@ -171,10 +170,13 @@ export class EdgeGrowthPass {
                 const dy = float(i).mul(this.pixelHeight)
                 const distance = dx.mul(dx).add(dy.mul(dy))
 
-                If(isBodyEdge(id).and(distance.lessThan(bestDistance)), () => {
-                  bestId.assign(id)
-                  bestDistance.assign(distance)
-                })
+                If(
+                  id.notEqual(uint(0)).and(distance.lessThan(bestDistance)),
+                  () => {
+                    bestId.assign(id)
+                    bestDistance.assign(distance)
+                  }
+                )
               }
             )
           }
