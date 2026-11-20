@@ -1,6 +1,7 @@
-import { EdgeTargetType } from '@src/clientSideScene/localRenderer/EdgeRenderer'
-import { selectionTargetId } from '@src/clientSideScene/localRenderer/selectionId'
-import type { Mesh } from 'three'
+import {
+  isLineSelectionId,
+  selectionTargetId,
+} from '@src/clientSideScene/localRenderer/selectionId'
 import type { LocalRenderer } from '@src/clientSideScene/localRenderer/LocalRenderer'
 import { reportRejection } from '@src/lib/trap'
 
@@ -132,32 +133,25 @@ export function colorizePickBuffer(
   pixels: ArrayLike<number>,
   width: number,
   height: number,
-  packedIds: boolean,
-  targetById: readonly (Mesh | null)[]
+  packedIds: boolean
 ): Uint8ClampedArray {
-  const ids = new Uint32Array(width * height)
+  const colors = new Uint8ClampedArray(width * height * 4)
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const sourceIndex =
         ((packedIds ? height - 1 - y : y) * width + x) * (packedIds ? 4 : 1)
-      ids[y * width + x] = packedIds
+      const encodedId = packedIds
         ? (pixels[sourceIndex] ?? 0) |
           ((pixels[sourceIndex + 1] ?? 0) << 8) |
           ((pixels[sourceIndex + 2] ?? 0) << 16)
         : (pixels[sourceIndex] ?? 0)
-    }
-  }
-  const colors = new Uint8ClampedArray(width * height * 4)
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const id = selectionTargetId(ids[y * width + x])
-      const target = targetById[id]
-      const color = !target
-        ? ([28, 28, 28] as const)
-        : target.userData.type === EdgeTargetType.BodyEdge ||
-            target.userData.type === EdgeTargetType.SketchLine
-          ? EDGE_COLORS[(id - 1) % EDGE_COLORS.length]
-          : FACE_COLORS[(id - 1) % FACE_COLORS.length]
+      const id = selectionTargetId(encodedId)
+      const color =
+        id === 0
+          ? ([28, 28, 28] as const)
+          : isLineSelectionId(encodedId)
+            ? EDGE_COLORS[(id - 1) % EDGE_COLORS.length]
+            : FACE_COLORS[(id - 1) % FACE_COLORS.length]
       const outputIndex = (y * width + x) * 4
       colors[outputIndex] = color[0]
       colors[outputIndex + 1] = color[1]

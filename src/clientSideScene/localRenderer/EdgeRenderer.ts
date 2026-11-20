@@ -19,11 +19,6 @@ export function getSketchLineColor(theme: ResolvedTheme) {
   return new Color(theme === Themes.Light ? 0x1c1c1c : 0xf2f3f5)
 }
 
-export enum EdgeTargetType {
-  BodyEdge,
-  SketchLine,
-}
-
 export type EdgeSelectionTarget = {
   object: LineSegments2
   ranges: Array<{ firstSegment: number; segmentCount: number }>
@@ -84,8 +79,7 @@ export class EdgeRenderer {
   constructor(
     visible = true,
     color = EDGE_COLOR,
-    linewidth = LOCAL_WEBGPU_EDGE_LINE_WIDTH_PX,
-    private readonly targetType: EdgeTargetType = EdgeTargetType.BodyEdge
+    linewidth = LOCAL_WEBGPU_EDGE_LINE_WIDTH_PX
   ) {
     this.material = new Line2NodeMaterial({ color, linewidth })
     this.material.worldUnits = false
@@ -158,7 +152,6 @@ export class EdgeRenderer {
       geometry.setPositions(edgePositions)
       const object = new LineSegments2(geometry, this.selectionMaterial)
       object.userData.edgeUuid = uuid
-      object.userData.type = this.targetType
       object.frustumCulled = false
       this.group.add(object)
       this.selectionTargets.push({
