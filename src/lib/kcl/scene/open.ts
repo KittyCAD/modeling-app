@@ -1,6 +1,9 @@
+import type { KclViewControlHost } from '@src/lib/kcl/KclViewControls'
+import { uuidv4 } from '@src/lib/utils'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { createKclSceneSelection } from '@src/lib/kcl/sceneSelection'
 import type { SceneSelectionController } from '@src/lib/scene/selection'
-import { effect } from '@preact/signals-core'
+import { computed, effect } from '@preact/signals-core'
 import type { CameraViewState } from '@kittycad/lib'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
@@ -43,6 +46,7 @@ export interface KclSceneResource {
   readonly runtime: KclRuntime
   readonly presentation: ScenePresentation
   readonly localHost: LocalRendererHost | undefined
+  readonly viewControls?: KclViewControlHost
   readonly selection: SceneSelectionController
   readonly preferences: ScenePresentationPreferences
   snapshotCamera: () => CameraViewState
@@ -178,6 +182,27 @@ export async function openKclScene({
       localHost: view.localHost,
       selection: selectionBinding.selection,
       preferences,
+      viewControls: {
+        id: uuidv4(),
+        sceneInfra,
+        theme: computed(() => preferences.appearance.value.theme),
+        gizmoType: computed(
+          () => settings.current.value.modeling.gizmoType.currentSignal.value
+        ),
+        toggleGizmo: () =>
+          settings.send({
+            type: 'set.modeling.gizmoType',
+            data: {
+              level: 'user',
+              value:
+                settings.current.peek().modeling.gizmoType.current === 'axis'
+                  ? 'cube'
+                  : 'axis',
+            },
+          }),
+        reset: () =>
+          resetCameraPosition({ sceneInfra, settingsActor: settings.actor }),
+      },
       snapshotCamera: () => sceneInfra.camControls.snapshotCameraView(),
       restoreCamera: (cameraView) => {
         // A restored camera replaces initial framing, even if the local GLB
