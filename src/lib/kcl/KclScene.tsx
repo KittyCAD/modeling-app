@@ -1,3 +1,5 @@
+import type { KclViewExecution } from '@src/lib/kcl/viewExecution'
+import { useSignals } from '@preact/signals-react/runtime'
 import { LocalWebGPUSceneView } from '@src/clientSideScene/localRenderer/LocalWebGPUScene'
 import type { Executor } from '@src/lib/executors/registry/contract'
 import type { KclSession } from '@src/lib/kcl/session'
@@ -8,21 +10,26 @@ const hiddenPlanes = { xy: false, xz: false, yz: false }
 
 /**
  * Renders one Modeling view using the session supplied by its mode context.
- * The effect's cleanup detaches the DOM through `session.attach`; executor-scope
- * cleanup owns closing the connection and freeing the native runtime.
+ * The effect's cleanup detaches presentation through `session.attach`; the mode
+ * context owns the connection and native runtime independently of sibling views.
  */
 export function KclScene({
   context,
 }: {
-  context: { executor: Executor; session: KclSession }
+  context: {
+    executor: Executor
+    session: KclSession
+    viewExecution: KclViewExecution
+  }
 }) {
+  useSignals()
   const container = useRef<HTMLDivElement>(null)
-  const { executor, session } = context
+  const { session, viewExecution } = context
   const state = session.state.value
   const resource = session.resource.value
   const preferences = resource?.preferences.localRenderer.value
-  const output = executor.output.value
-  const error = output.errors['kcl.execution']
+  const output = viewExecution.state.value
+  const error = output.error
   useEffect(() => {
     if (container.current) return session.attach(container.current)
   }, [session])
