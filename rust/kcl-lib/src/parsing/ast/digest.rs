@@ -54,8 +54,9 @@ use crate::parsing::ast::types::VariableKind;
 /// Position-independent digest of the AST node.
 pub type Digest = [u8; 32];
 
-/// Compute and store digests from the current AST fields. Editing a descendant
-/// can leave a stored digest on any ancestor. Keep the no_attrs version in sync.
+/// Recompute the digest from the current fields. An edit can leave the previous
+/// digest on every ancestor up to the program root. Reusing one of those digests
+/// would let the execution cache skip the edited statement.
 macro_rules! compute_digest {
     (|$slf:ident, $hasher:ident| $body:block) => {
         /// Compute a digest over the AST node.
@@ -79,10 +80,7 @@ macro_rules! compute_digest {
     };
 }
 
-/// Macro to implement `compute_digest` for AST nodes without outer attributes.
-/// You should always prefer the version with attributes, unless the AST node
-/// type *never* has them. If you update this, you probably want to update the
-/// attrs version as well.
+/// Keep this in sync with `compute_digest!` for types that cannot carry outer attributes.
 macro_rules! compute_digest_no_attrs {
     (|$slf:ident, $hasher:ident| $body:block) => {
         /// Compute a digest over the AST node.
@@ -614,6 +612,8 @@ impl Node<CallExpressionKw> {
             }
             hasher.update(argument.arg.compute_digest());
         }
+        // An absent block contributes zero bytes to preserve existing call
+        // digests. An empty trailing block contributes its own digest.
         if let Some(block) = &mut slf.block {
             hasher.update(block.compute_digest());
         }

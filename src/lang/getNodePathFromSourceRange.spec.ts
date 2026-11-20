@@ -19,6 +19,8 @@ describe('getNodePathFromSourceRange', () => {
   describe('testing getNodePathFromSourceRange', () => {
     it('resolves a selection inside an attached call block', async () => {
       const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
+      // Borrow a parsed sketch body so the selection uses real source offsets
+      // while the parser still accepts trailing blocks only on sketches.
       const code = 'draw(1)\nsketch(on = XY) {\n  width = 4mm\n}'
       const ast = assertParse(code, instance)
       const sketch = ast.body.pop()

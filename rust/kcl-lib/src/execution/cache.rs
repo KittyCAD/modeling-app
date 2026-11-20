@@ -463,41 +463,31 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
         reapply_settings = true;
     }
 
-    // If the ASTs are the EXACT same we return None.
-    // We don't even need to waste time computing the digests.
+    // The cache can skip hashing identical ASTs. Imported files can still change independently.
     if old.ast == new.ast {
-        // First we need to make sure an imported file didn't change it's ast.
-        // We know they have the same imports because the ast is the same.
-        // If we have no imports, we can skip this.
         if !old.ast.has_import_statements() {
             return CacheResult::NoAction(reapply_settings);
         }
 
-        // Tell the CacheResult we need to check all the imports, but the main ast is the same.
         return CacheResult::CheckImportsOnly {
             reapply_settings,
             ast: old.ast.clone(),
         };
     }
 
-    // We have to clone just because the digests are stored inline :-(
+    // A change to comments or whitespace can keep the same digest. Compare
+    // hashes on clones because computing them writes into the nodes.
     let mut old_ast = old.ast.clone();
     let mut new_ast = new.ast.clone();
 
-    // An edited AST can arrive with digests from before the edit.
     old_ast.compute_digest();
     new_ast.compute_digest();
 
-    // Check if the digest is the same.
     if old_ast.digest == new_ast.digest {
-        // First we need to make sure an imported file didn't change it's ast.
-        // We know they have the same imports because the ast is the same.
-        // If we have no imports, we can skip this.
         if !old.ast.has_import_statements() {
             return CacheResult::NoAction(reapply_settings);
         }
 
-        // Tell the CacheResult we need to check all the imports, but the main ast is the same.
         return CacheResult::CheckImportsOnly {
             reapply_settings,
             ast: old.ast.clone(),
@@ -654,6 +644,7 @@ mod tests {
             (Some("@settings(defaultLengthUnit = mm)\nwidth = 2"), true),
             (None, true),
         ] {
+            // Hash before cloning so each edit inherits the previous call and program digests.
             program.compute_digest();
             let mut edited = program.clone();
             let BodyItem::ExpressionStatement(stmt) = &mut edited.ast.body[0] else {

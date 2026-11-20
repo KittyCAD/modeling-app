@@ -560,6 +560,8 @@ fn fill_node_paths_body(body: &mut [BodyItem], path: NodePath) {
     }
 }
 
+// Keep these steps in sync with NodePath::from_expr so a visitor and a source
+// selection identify the same node, including inside a call used as a binary operand.
 fn fill_node_paths_call(node: &mut Node<CallExpressionKw>, mut path: NodePath) {
     node.node_path = Some(path.clone());
     let mut callee_path = path.clone();

@@ -1417,7 +1417,8 @@ impl SketchBlock {
 
 impl Block {
     fn recast_trailing(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize) {
-        // We don't want to end with a new line inside nested blocks.
+        // This formatter supplies the newline before the closing brace. Applying
+        // the file's final-newline option to the body would add a blank line.
         let mut new_options = options.clone();
         new_options.insert_final_newline = false;
 
